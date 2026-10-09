@@ -1614,7 +1614,6 @@ describe('value accessors', () => {
         }
 
         @Component({
-          selector: 'parent',
           template: '<child [ngModel]="value"></child>',
           imports: [FormsModule, Child],
         })
@@ -1686,7 +1685,6 @@ describe('value accessors in reactive forms with custom options', () => {
 });
 
 @Component({
-  selector: 'form-control-comp',
   template: `<input type="text" [formControl]="control" />`,
   imports: [ReactiveFormsModule],
 })
@@ -1695,7 +1693,6 @@ export class FormControlComp {
 }
 
 @Component({
-  selector: 'form-group-comp',
   template: ` <form [formGroup]="form" (ngSubmit)="event = $event">
     <input type="text" formControlName="login" />
   </form>`,
@@ -1709,7 +1706,6 @@ export class FormGroupComp {
 }
 
 @Component({
-  selector: 'form-control-number-input',
   template: `<input type="number" [formControl]="control" />`,
   imports: [ReactiveFormsModule],
 })
@@ -1718,7 +1714,6 @@ class FormControlNumberInput {
 }
 
 @Component({
-  selector: 'form-control-name-select',
   template: ` <div [formGroup]="form">
     <select formControlName="city">
       @for (c of cities; track c) {
@@ -1734,7 +1729,6 @@ class FormControlNameSelect {
 }
 
 @Component({
-  selector: 'form-control-select-ngValue',
   template: ` <div [formGroup]="form">
     <select formControlName="city">
       @for (c of cities; track c) {
@@ -1753,7 +1747,6 @@ class FormControlSelectNgValue {
 }
 
 @Component({
-  selector: 'form-control-select-compare-with',
   template: ` <div [formGroup]="form">
     <select formControlName="city" [compareWith]="compareFn">
       @for (c of cities; track c) {
@@ -1775,7 +1768,6 @@ class FormControlSelectWithCompareFn {
 }
 
 @Component({
-  selector: 'form-control-select-compare-with-perf',
   template: ` <div [formGroup]="form">
     <select formControlName="city" [compareWith]="compareFn">
       @for (c of cities; track c) {
@@ -1805,7 +1797,6 @@ class FormControlSelectWithComparePerfFn {
 }
 
 @Component({
-  selector: 'form-control-select-compare-with-track-by',
   template: ` <div [formGroup]="form">
     <select formControlName="city" [compareWith]="compareFn">
       @for (c of cities; track $index) {
@@ -1827,7 +1818,6 @@ class FormControlSelectWithCompareTrackByFn {
 }
 
 @Component({
-  selector: 'form-control-select-multiple',
   template: ` <div [formGroup]="form">
     <select multiple formControlName="city">
       @for (c of cities; track c) {
@@ -1844,7 +1834,6 @@ class FormControlSelectMultiple {
 }
 
 @Component({
-  selector: 'form-control-select-multiple',
   template: ` <div [formGroup]="form">
     <select multiple formControlName="city">
       @for (c of cities; track c) {
@@ -1864,7 +1853,6 @@ class FormControlSelectMultipleNgValue {
 }
 
 @Component({
-  selector: 'form-control-select-multiple-compare-with',
   template: ` <div [formGroup]="form">
     <select multiple formControlName="city" [compareWith]="compareFn">
       @for (c of cities; track c) {
@@ -1886,7 +1874,6 @@ class FormControlSelectMultipleWithCompareFn {
 }
 
 @Component({
-  selector: 'ng-model-select-form',
   template: `
     <select [(ngModel)]="selectedCity">
       @for (c of cities; track c) {
@@ -1903,7 +1890,6 @@ class NgModelSelectForm {
 }
 
 @Component({
-  selector: 'ng-model-select-placeholder-form',
   template: `
     <form #f="ngForm">
       <select name="city" ngModel>
@@ -1922,7 +1908,6 @@ class NgModelSelectWithPlaceholderForm {
 }
 
 @Component({
-  selector: 'ng-model-select-null-form',
   template: `
     <select [(ngModel)]="selectedCity">
       @for (c of cities; track c) {
@@ -1939,7 +1924,6 @@ class NgModelSelectWithNullForm {
 }
 
 @Component({
-  selector: 'ng-model-select-compare-with',
   template: `
     <select [(ngModel)]="selectedCity" [compareWith]="compareFn">
       @for (c of cities; track c) {
@@ -1958,7 +1942,6 @@ class NgModelSelectWithCustomCompareFnForm {
 }
 
 @Component({
-  selector: 'ng-model-select-multiple-compare-with',
   template: `
     <select multiple [(ngModel)]="selectedCities" [compareWith]="compareFn">
       @for (c of cities; track c) {
@@ -1976,7 +1959,6 @@ class NgModelSelectMultipleWithCustomCompareFnForm {
 }
 
 @Component({
-  selector: 'ng-model-select-multiple-form',
   template: `
     <select multiple [(ngModel)]="selectedCities">
       @for (c of cities; track c) {
@@ -1993,7 +1975,6 @@ class NgModelSelectMultipleForm {
 }
 
 @Component({
-  selector: 'form-control-range-input',
   template: `<input type="range" [formControl]="control" />`,
   imports: [ReactiveFormsModule],
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -2003,7 +1984,6 @@ class FormControlRangeInput {
 }
 
 @Component({
-  selector: 'ng-model-range-form',
   template: '<input type="range" [(ngModel)]="val">',
   imports: [FormsModule],
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -2013,7 +1993,6 @@ class NgModelRangeForm {
 }
 
 @Component({
-  selector: 'form-control-radio-buttons',
   template: ` @if (showRadio.value === 'yes') {
       <form [formGroup]="form">
         <input type="radio" formControlName="food" value="chicken" />
@@ -2038,7 +2017,6 @@ interface RadioOption {
 }
 
 @Component({
-  selector: 'dynamic-radio-form',
   template: `
     <form [formGroup]="form">
       @for (option of options(); track option.id) {
@@ -2068,7 +2046,6 @@ function getRadioCheckedStates(fixture: ComponentFixture<DynamicRadioForm>): boo
 }
 
 @Component({
-  selector: 'ng-model-radio-form',
   template: `
     <form>
       <input type="radio" name="food" [(ngModel)]="food" value="chicken" />
@@ -2142,7 +2119,6 @@ class CvaWithDisabledState implements ControlValueAccessor {
 }
 
 @Component({
-  selector: 'wrapped-value-form',
   template: ` <div [formGroup]="form">
     <cva-with-disabled-state formControlName="login"></cva-with-disabled-state>
   </div>`,
@@ -2188,7 +2164,6 @@ export class MyInput implements ControlValueAccessor {
 }
 
 @Component({
-  selector: 'my-input-form',
   template: ` <div [formGroup]="form">
     <my-input formControlName="login"></my-input>
   </div>`,
@@ -2200,7 +2175,6 @@ export class MyInputForm {
 }
 
 @Component({
-  selector: 'wrapped-value-form',
   template: ` <div [formGroup]="form">
     <input type="text" formControlName="login" wrapped-value />
   </div>`,
@@ -2244,7 +2218,6 @@ export class NgModelCustomComp implements ControlValueAccessor {
 }
 
 @Component({
-  selector: 'ng-model-custom-wrapper',
   template: `
     <form>
       <ng-model-custom-comp

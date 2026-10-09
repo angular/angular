@@ -23,6 +23,7 @@ import {
   ViewChildren,
   ViewContainerRef,
   ChangeDetectionStrategy,
+  forwardRef,
 } from '../../src/core';
 import {TestBed} from '../../testing';
 import {By} from '@angular/platform-browser';
@@ -37,7 +38,6 @@ describe('event listeners', () => {
     it('should call function on event emit', () => {
       @Component({
         template: `<button (click)="onClick()">Click me</button>`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -61,7 +61,6 @@ describe('event listeners', () => {
     it('should call function chain on event emit', () => {
       @Component({
         template: `<button (click)="onClick(); onClick2()">Click me</button>`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -90,7 +89,6 @@ describe('event listeners', () => {
     it('should evaluate expression on event emit', () => {
       @Component({
         template: `<button (click)="showing = !showing">Click me</button>`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -113,7 +111,6 @@ describe('event listeners', () => {
     it('should support listeners with specified set of args', () => {
       @Component({
         template: `<button (click)="onClick(data.a, data.b)">Click me</button>`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -144,7 +141,6 @@ describe('event listeners', () => {
 
       @Component({
         template: ` <button (click)="clicked(this.$event, $event)">Click me!</button> `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -157,7 +153,6 @@ describe('event listeners', () => {
         }
       }
 
-      TestBed.configureTestingModule({declarations: [MyComp]});
       const fixture = TestBed.createComponent(MyComp);
       fixture.detectChanges();
       fixture.nativeElement.querySelector('button').click();
@@ -176,15 +171,14 @@ describe('event listeners', () => {
 
           <ng-container [ngTemplateOutlet]="template"></ng-container>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [CommonModule],
       })
       class MyComp {
         message = '';
       }
 
-      TestBed.configureTestingModule({declarations: [MyComp], imports: [CommonModule]});
       const fixture = TestBed.createComponent(MyComp);
       fixture.detectChanges();
       const button = fixture.nativeElement.querySelector('button');
@@ -203,9 +197,9 @@ describe('event listeners', () => {
 
           <ng-container *ngTemplateOutlet="template; context: {$implicit: current}"></ng-container>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [CommonModule],
       })
       class MyComp {
         one = {value: 'one'};
@@ -213,7 +207,6 @@ describe('event listeners', () => {
         current = this.one;
       }
 
-      TestBed.configureTestingModule({declarations: [MyComp], imports: [CommonModule]});
       const fixture = TestBed.createComponent(MyComp);
       const instance = fixture.componentInstance;
       fixture.detectChanges();
@@ -278,7 +271,6 @@ describe('event listeners', () => {
     it('should call prevent default when a handler returns false', () => {
       @Component({
         template: `<button (click)="onClick($event)">Click</button>`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -324,9 +316,9 @@ describe('event listeners', () => {
     @Component({
       selector: 'with-clicks-cmpt',
       template: `<button likes-clicks (click)="count()" md-button>Click me!</button>`,
-      standalone: false,
 
       changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [forwardRef(() => MdButton), forwardRef(() => LikesClicks)],
     })
     class WithClicksCmpt {
       counter = 0;
@@ -337,7 +329,6 @@ describe('event listeners', () => {
 
     @Directive({
       selector: '[md-button]',
-      standalone: false,
     })
     class MdButton {
       counter = 0;
@@ -349,7 +340,6 @@ describe('event listeners', () => {
 
     @Directive({
       selector: '[likes-clicks]',
-      standalone: false,
     })
     class LikesClicks {
       counter = 0;
@@ -361,7 +351,6 @@ describe('event listeners', () => {
 
     @Directive({
       selector: '[returns-false]',
-      standalone: false,
     })
     class ReturnsFalse {
       counter = 0;
@@ -385,17 +374,12 @@ describe('event listeners', () => {
 
     it('should coalesce multiple event listeners for the same event on the same element', () => {
       @Component({
-        selector: 'test-cmpt',
         template: `<with-clicks-cmpt></with-clicks-cmpt><with-clicks-cmpt></with-clicks-cmpt>`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [WithClicksCmpt, LikesClicks, MdButton],
       })
       class TestCmpt {}
-
-      TestBed.configureTestingModule({
-        declarations: [TestCmpt, WithClicksCmpt, LikesClicks, MdButton],
-      });
 
       const fixture = TestBed.createComponent(TestCmpt);
       fixture.detectChanges();
@@ -421,11 +405,10 @@ describe('event listeners', () => {
 
     it('should coalesce multiple event listeners in presence of queries', () => {
       @Component({
-        selector: 'test-cmpt',
         template: `<button likes-clicks (click)="counter = counter + 1">Click me!</button>`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [LikesClicks],
       })
       class TestCmpt {
         counter = 0;
@@ -433,7 +416,6 @@ describe('event listeners', () => {
         @ViewChildren('nothing') nothing!: QueryList<any>;
       }
 
-      TestBed.configureTestingModule({declarations: [TestCmpt, LikesClicks]});
       const fixture = TestBed.createComponent(TestCmpt);
       fixture.detectChanges();
       const buttonDebugEl = fixture.debugElement.query(By.css('button'));
@@ -446,7 +428,6 @@ describe('event listeners', () => {
     it('should try to execute remaining coalesced listeners if one of the listeners throws', () => {
       @Directive({
         selector: '[throws-on-clicks]',
-        standalone: false,
       })
       class ThrowsOnClicks {
         @HostListener('click')
@@ -456,11 +437,10 @@ describe('event listeners', () => {
       }
 
       @Component({
-        selector: 'test-cmpt',
         template: `<button throws-on-clicks likes-clicks><button></button></button>`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [ThrowsOnClicks, LikesClicks],
       })
       class TestCmpt {}
 
@@ -474,7 +454,7 @@ describe('event listeners', () => {
 
       TestBed.configureTestingModule({
         rethrowApplicationErrors: false,
-        declarations: [TestCmpt, LikesClicks, ThrowsOnClicks],
+
         providers: [{provide: ErrorHandler, useClass: CountingErrorHandler}],
       });
       const fixture = TestBed.createComponent(TestCmpt);
@@ -490,15 +470,13 @@ describe('event listeners', () => {
 
     it('should prevent default if any of the listeners returns false', () => {
       @Component({
-        selector: 'test-cmpt',
         template: ` <button returns-false likes-clicks></button> `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [LikesClicks, ReturnsFalse],
       })
       class TestCmpt {}
 
-      TestBed.configureTestingModule({declarations: [TestCmpt, ReturnsFalse, LikesClicks]});
       const fixture = TestBed.createComponent(TestCmpt);
       fixture.detectChanges();
 
@@ -525,7 +503,6 @@ describe('event listeners', () => {
     it('should not subscribe twice to the output when there are 2 coalesced listeners', () => {
       @Directive({
         selector: '[foo]',
-        standalone: false,
       })
       class FooDirective {
         @Input('foo') model: any;
@@ -537,11 +514,10 @@ describe('event listeners', () => {
       }
 
       @Component({
-        selector: 'test-component',
         template: `<div [(foo)]="someValue" (fooChange)="fooChange($event)"></div>`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [FooDirective],
       })
       class TestComponent {
         count = 0;
@@ -558,7 +534,6 @@ describe('event listeners', () => {
         }
       }
 
-      TestBed.configureTestingModule({declarations: [TestComponent, FooDirective]});
       const fixture = TestBed.createComponent(TestComponent);
       fixture.detectChanges();
 
@@ -573,11 +548,10 @@ describe('event listeners', () => {
     it('should maintain the order in which listeners are registered', () => {
       const log: string[] = [];
       @Component({
-        selector: 'my-comp',
         template: '<button dirA dirB (click)="count()">Click me!</button>',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [forwardRef(() => DirA), forwardRef(() => DirB)],
       })
       class MyComp {
         counter = 0;
@@ -588,7 +562,6 @@ describe('event listeners', () => {
 
       @Directive({
         selector: '[dirA]',
-        standalone: false,
       })
       class DirA {
         @HostListener('click')
@@ -599,7 +572,6 @@ describe('event listeners', () => {
 
       @Directive({
         selector: '[dirB]',
-        standalone: false,
       })
       class DirB {
         @HostListener('click')
@@ -608,7 +580,6 @@ describe('event listeners', () => {
         }
       }
 
-      TestBed.configureTestingModule({declarations: [MyComp, DirA, DirB]});
       const fixture = TestBed.createComponent(MyComp);
       fixture.detectChanges();
 
@@ -622,11 +593,10 @@ describe('event listeners', () => {
   describe('destroy', () => {
     it('should destroy listeners when view is removed', () => {
       @Component({
-        selector: 'my-comp',
         template: ` <button *ngIf="visible" (click)="count()">Click me!</button> `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [CommonModule],
       })
       class MyComp {
         visible = true;
@@ -636,7 +606,6 @@ describe('event listeners', () => {
         }
       }
 
-      TestBed.configureTestingModule({declarations: [MyComp]});
       const fixture = TestBed.createComponent(MyComp);
       fixture.detectChanges();
 
@@ -656,11 +625,10 @@ describe('event listeners', () => {
     it('should destroy listeners when views generated using *ngFor are removed', () => {
       let counter = 0;
       @Component({
-        selector: 'my-comp',
         template: ` <button *ngFor="let button of buttons" (click)="count()">Click me!</button> `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [CommonModule],
       })
       class MyComp {
         buttons = [1, 2];
@@ -669,7 +637,6 @@ describe('event listeners', () => {
         }
       }
 
-      TestBed.configureTestingModule({declarations: [MyComp]});
       const fixture = TestBed.createComponent(MyComp);
       fixture.detectChanges();
 
@@ -690,16 +657,15 @@ describe('event listeners', () => {
 
     it('should destroy listeners when nested view is removed', () => {
       @Component({
-        selector: 'my-comp',
         template: `
           <ng-container *ngIf="isSectionVisible">
             Click to submit a form:
             <button *ngIf="isButtonVisible" (click)="count()">Click me!</button>
           </ng-container>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [CommonModule],
       })
       class MyComp {
         isSectionVisible = true;
@@ -710,7 +676,6 @@ describe('event listeners', () => {
         }
       }
 
-      TestBed.configureTestingModule({declarations: [MyComp]});
       const fixture = TestBed.createComponent(MyComp);
       fixture.detectChanges();
 
@@ -739,7 +704,6 @@ describe('event listeners', () => {
 
       @Component({
         template: ``,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -767,7 +731,6 @@ describe('event listeners', () => {
 
       @Component({
         template: ``,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -863,7 +826,6 @@ describe('event listeners', () => {
 
       @Directive({
         selector: '[add-global-listener]',
-        standalone: false,
       })
       class AddGlobalListener {
         @HostListener('document:click')
@@ -878,13 +840,12 @@ describe('event listeners', () => {
             <button>Click me!</button>
           </ng-container>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [AddGlobalListener],
       })
       class MyComp {}
 
-      TestBed.configureTestingModule({declarations: [MyComp, AddGlobalListener]});
       const fixture = TestBed.createComponent(MyComp);
       fixture.detectChanges();
       const button = fixture.nativeElement.querySelector('button');
@@ -898,7 +859,6 @@ describe('event listeners', () => {
 
       @Directive({
         selector: '[add-global-listener]',
-        standalone: false,
       })
       class AddGlobalListener {
         @HostListener('document:click')
@@ -915,16 +875,12 @@ describe('event listeners', () => {
 
           <ng-container [ngTemplateOutlet]="template"></ng-container>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [CommonModule, AddGlobalListener],
       })
       class MyComp {}
 
-      TestBed.configureTestingModule({
-        declarations: [MyComp, AddGlobalListener],
-        imports: [CommonModule],
-      });
       const fixture = TestBed.createComponent(MyComp);
       fixture.detectChanges();
       const button = fixture.nativeElement.querySelector('button');
@@ -938,7 +894,6 @@ describe('event listeners', () => {
 
       @Directive({
         selector: '[add-global-listener]',
-        standalone: false,
       })
       class AddGlobalListener implements OnInit {
         @HostListener('document:click')
@@ -962,13 +917,12 @@ describe('event listeners', () => {
             <button>Click me!</button>
           </div>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [AddGlobalListener],
       })
       class MyComp {}
 
-      TestBed.configureTestingModule({declarations: [MyComp, AddGlobalListener]});
       const fixture = TestBed.createComponent(MyComp);
       fixture.detectChanges();
       const button = fixture.nativeElement.querySelector('button');

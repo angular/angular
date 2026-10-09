@@ -404,7 +404,6 @@ describe('createComponent', () => {
       }
 
       @Component({
-        selector: 'my-comp',
         template: '',
         hostDirectives: [Chain1, Chain2, Chain3],
 

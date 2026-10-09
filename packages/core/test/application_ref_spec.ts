@@ -128,7 +128,6 @@ describe('bootstrap', () => {
     it('should throw when reentering tick', () => {
       @Component({
         template: '{{reenter()}}',
-        standalone: false,
       })
       class ReenteringComponent {
         reenterCount = 1;
@@ -147,9 +146,7 @@ describe('bootstrap', () => {
         }
       }
 
-      const fixture = TestBed.configureTestingModule({
-        declarations: [ReenteringComponent],
-      }).createComponent(ReenteringComponent);
+      const fixture = TestBed.createComponent(ReenteringComponent);
       const appRef = TestBed.inject(ApplicationRef);
       appRef.attachView(fixture.componentRef.hostView);
       appRef.tick();
@@ -229,7 +226,6 @@ describe('bootstrap', () => {
           }
 
           @Component({
-            selector: 'bootstrap-app',
             template: `{{ name }}`,
           })
           class StandaloneBootComp {
@@ -466,7 +462,10 @@ describe('bootstrap', () => {
     }));
 
     it('should wait for asynchronous app initializers', waitForAsync(async () => {
-      const {promise, resolve} = Promise.withResolvers<any>();
+      let resolve: (result: any) => void;
+      const promise: Promise<any> = new Promise((res) => {
+        resolve = res;
+      });
       let initializerDone = false;
       setTimeout(() => {
         resolve(true);
@@ -585,7 +584,6 @@ describe('bootstrap', () => {
 
     it('should resolve component resources when creating module factory', async () => {
       @Component({
-        selector: 'with-templates-app',
         templateUrl: '/test-template.html',
         standalone: false,
       })
@@ -604,7 +602,6 @@ describe('bootstrap', () => {
 
     it('should define `LOCALE_ID`', async () => {
       @Component({
-        selector: 'i18n-app',
         templateUrl: '',
         standalone: false,
       })
@@ -640,7 +637,10 @@ describe('bootstrap', () => {
       defaultPlatform = _platform;
     }));
     it('should wait for asynchronous app initializers', waitForAsync(async () => {
-      const {promise, resolve} = Promise.withResolvers<any>();
+      let resolve: (result: any) => void;
+      const promise: Promise<any> = new Promise((res) => {
+        resolve = res;
+      });
       let initializerDone = false;
       setTimeout(() => {
         resolve(true);
@@ -692,7 +692,6 @@ describe('bootstrap', () => {
   describe('attachView / detachView', () => {
     @Component({
       template: '{{name}}',
-      standalone: false,
     })
     class MyComp {
       name = 'Initial';
@@ -700,7 +699,6 @@ describe('bootstrap', () => {
 
     @Component({
       template: '<ng-container #vc></ng-container>',
-      standalone: false,
     })
     class ContainerComp {
       @ViewChild('vc', {read: ViewContainerRef}) vc!: ViewContainerRef;
@@ -708,7 +706,6 @@ describe('bootstrap', () => {
 
     @Component({
       template: '<ng-template #t>Dynamic content</ng-template>',
-      standalone: false,
     })
     class EmbeddedViewComp {
       @ViewChild(TemplateRef, {static: true}) tplRef!: TemplateRef<Object>;
@@ -716,7 +713,6 @@ describe('bootstrap', () => {
 
     beforeEach(() => {
       TestBed.configureTestingModule({
-        declarations: [MyComp, ContainerComp, EmbeddedViewComp],
         providers: [
           {provide: ComponentFixtureNoNgZone, useValue: true},
           provideZoneChangeDetection(),
@@ -824,18 +820,14 @@ describe('bootstrap', () => {
 describe('AppRef', () => {
   describe('stability', () => {
     @Component({
-      selector: 'sync-comp',
       template: `<span>{{ text }}</span>`,
-      standalone: false,
     })
     class SyncComp {
       text: string = '1';
     }
 
     @Component({
-      selector: 'click-comp',
       template: `<span (click)="onClick()">{{ text }}</span>`,
-      standalone: false,
     })
     class ClickComp {
       text: string = '1';
@@ -846,9 +838,7 @@ describe('AppRef', () => {
     }
 
     @Component({
-      selector: 'micro-task-comp',
       template: `<span>{{ text }}</span>`,
-      standalone: false,
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MicroTaskComp {
@@ -862,9 +852,7 @@ describe('AppRef', () => {
     }
 
     @Component({
-      selector: 'macro-task-comp',
       template: `<span>{{ text }}</span>`,
-      standalone: false,
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MacroTaskComp {
@@ -878,9 +866,7 @@ describe('AppRef', () => {
     }
 
     @Component({
-      selector: 'micro-macro-task-comp',
       template: `<span>{{ text }}</span>`,
-      standalone: false,
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MicroMacroTaskComp {
@@ -897,9 +883,7 @@ describe('AppRef', () => {
     }
 
     @Component({
-      selector: 'macro-micro-task-comp',
       template: `<span>{{ text }}</span>`,
-      standalone: false,
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MacroMicroTaskComp {
@@ -921,14 +905,6 @@ describe('AppRef', () => {
       stableCalled = false;
       TestBed.configureTestingModule({
         providers: [provideZoneChangeDetection()],
-        declarations: [
-          SyncComp,
-          MicroTaskComp,
-          MacroTaskComp,
-          MicroMacroTaskComp,
-          MacroMicroTaskComp,
-          ClickComp,
-        ],
       });
     });
 
@@ -1032,7 +1008,7 @@ describe('AppRef', () => {
 describe('injector', () => {
   it('should expose an EnvironmentInjector', () => {
     @Component({
-      standalone: false,
+      template: '',
     })
     class TestCmp {
       constructor(readonly envInjector: EnvironmentInjector) {}

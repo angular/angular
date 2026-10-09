@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
+import {CommonModule, DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
+import {BrowserModule, By, platformBrowser} from '@angular/platform-browser';
+import {expect} from '@angular/private/testing/matchers';
 import {
   ApplicationRef,
   Component,
@@ -18,6 +20,7 @@ import {
   EnvironmentInjector,
   ErrorHandler,
   EventEmitter,
+  forwardRef,
   HostListener,
   InjectionToken,
   Injector,
@@ -28,28 +31,26 @@ import {
   Pipe,
   PipeTransform,
   Provider,
+  provideZoneChangeDetection,
   QueryList,
   Renderer2,
   SimpleChanges,
   TemplateRef,
   ViewChildren,
   ViewContainerRef,
-  provideZoneChangeDetection,
 } from '../../src/core';
 import {inject, TestBed} from '../../testing';
-import {BrowserModule, By, platformBrowser} from '@angular/platform-browser';
-import {expect} from '@angular/private/testing/matchers';
 
 describe('regressions', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({declarations: [MyComp1, PlatformPipe]});
-  });
-
   describe('platform pipes', () => {
     it('should overwrite them by custom pipes', () => {
-      TestBed.configureTestingModule({declarations: [CustomPipe]});
       const template = '{{true | somePipe}}';
-      TestBed.overrideComponent(MyComp1, {set: {template}});
+      TestBed.overrideComponent(MyComp1, {
+        set: {
+          template,
+          imports: [CommonModule, forwardRef(() => PlatformPipe), forwardRef(() => CustomPipe)],
+        },
+      });
       const fixture = TestBed.createComponent(MyComp1);
 
       fixture.detectChanges();
@@ -77,9 +78,13 @@ describe('regressions', () => {
     });
 
     it('should only evaluate stateful pipes once - #10639', () => {
-      TestBed.configureTestingModule({declarations: [CountingPipe]});
       const template = '{{(null|countingPipe)?.value}}';
-      TestBed.overrideComponent(MyComp1, {set: {template}});
+      TestBed.overrideComponent(MyComp1, {
+        set: {
+          template,
+          imports: [CommonModule, forwardRef(() => PlatformPipe), forwardRef(() => CountingPipe)],
+        },
+      });
       const fixture = TestBed.createComponent(MyComp1);
 
       CountingPipe.reset();
@@ -91,7 +96,8 @@ describe('regressions', () => {
     it('should only update the bound property when using asyncPipe - #15205', async () => {
       @Component({
         template: '<div myDir [a]="p | async" [b]="2"></div>',
-        standalone: false,
+
+        imports: [CommonModule, forwardRef(() => MyDir)],
       })
       class MyComp {
         p = Promise.resolve(1);
@@ -99,7 +105,6 @@ describe('regressions', () => {
 
       @Directive({
         selector: '[myDir]',
-        standalone: false,
       })
       class MyDir {
         setterCalls: {[key: string]: any} = {};
@@ -119,7 +124,6 @@ describe('regressions', () => {
         }
       }
 
-      TestBed.configureTestingModule({declarations: [MyDir, MyComp]});
       const fixture = TestBed.createComponent(MyComp);
       const dir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir) as MyDir;
 
@@ -138,7 +142,6 @@ describe('regressions', () => {
     });
 
     it('should only evaluate methods once - #10639', () => {
-      TestBed.configureTestingModule({declarations: [MyCountingComp]});
       const template = '{{method()?.value}}';
       TestBed.overrideComponent(MyCountingComp, {set: {template}});
       const fixture = TestBed.createComponent(MyCountingComp);
@@ -151,9 +154,7 @@ describe('regressions', () => {
 
     it('should evaluate a conditional in a statement binding', () => {
       @Component({
-        selector: 'some-comp',
         template: '<p (click)="nullValue?.click()"></p>',
-        standalone: false,
       })
       class SomeComponent {
         nullValue: SomeReferencedClass | undefined;
@@ -164,9 +165,7 @@ describe('regressions', () => {
       }
 
       expect(() => {
-        const fixture = TestBed.configureTestingModule({
-          declarations: [SomeComponent],
-        }).createComponent(SomeComponent);
+        const fixture = TestBed.createComponent(SomeComponent);
 
         fixture.detectChanges(/* checkNoChanges */ false);
       }).not.toThrow();
@@ -236,9 +235,13 @@ describe('regressions', () => {
   });
 
   it('should support ngClass before a component and content projection inside of an ngIf', () => {
-    TestBed.configureTestingModule({declarations: [CmpWithNgContent]});
     const template = `A<cmp-content *ngIf="true" [ngClass]="'red'">B</cmp-content>C`;
-    TestBed.overrideComponent(MyComp1, {set: {template}});
+    TestBed.overrideComponent(MyComp1, {
+      set: {
+        template,
+        imports: [CommonModule, forwardRef(() => PlatformPipe), forwardRef(() => CmpWithNgContent)],
+      },
+    });
     const fixture = TestBed.createComponent(MyComp1);
 
     fixture.detectChanges();
@@ -246,7 +249,6 @@ describe('regressions', () => {
   });
 
   it('should handle mutual recursion entered from multiple sides - #7084', () => {
-    TestBed.configureTestingModule({declarations: [FakeRecursiveComp, LeftComp, RightComp]});
     const fixture = TestBed.createComponent(FakeRecursiveComp);
 
     fixture.detectChanges();
@@ -254,11 +256,11 @@ describe('regressions', () => {
   });
 
   it('should generate the correct output when constructors have the same name', () => {
-    function ComponentFactory(selector: string, template: string) {
+    function ComponentFactory(selector: string, template: string, imports: any[] = []) {
       @Component({
         selector,
         template,
-        standalone: false,
+        imports,
       })
       class MyComponent {}
       return MyComponent;
@@ -268,11 +270,8 @@ describe('regressions', () => {
     const MainComponent = ComponentFactory(
       'my-app',
       'I was saved by <my-hero></my-hero> from <a-villain></a-villain>.',
+      [HeroComponent, VillainComponent],
     );
-
-    TestBed.configureTestingModule({
-      declarations: [HeroComponent, VillainComponent, MainComponent],
-    });
     const fixture = TestBed.createComponent(MainComponent);
     expect(fixture.nativeElement).toHaveText('I was saved by my hero from a villain.');
   });
@@ -280,13 +279,11 @@ describe('regressions', () => {
   it('should allow to use the renderer outside of views', () => {
     @Component({
       template: '',
-      standalone: false,
     })
     class MyComp {
       constructor(public renderer: Renderer2) {}
     }
 
-    TestBed.configureTestingModule({declarations: [MyComp]});
     const ctx = TestBed.createComponent(MyComp);
 
     const txtNode = ctx.componentInstance.renderer.createText('test');
@@ -296,21 +293,19 @@ describe('regressions', () => {
   it('should not recreate TemplateRef references during dirty checking', () => {
     @Component({
       template: '<div [someDir]="someRef"></div><ng-template #someRef></ng-template>',
-      standalone: false,
+
+      imports: [forwardRef(() => MyDir)],
     })
     class MyComp {}
 
     @Directive({
       selector: '[someDir]',
-      standalone: false,
     })
     class MyDir {
       @Input('someDir') template: TemplateRef<any> | undefined;
     }
 
-    const ctx = TestBed.configureTestingModule({declarations: [MyComp, MyDir]}).createComponent(
-      MyComp,
-    );
+    const ctx = TestBed.createComponent(MyComp);
     const dir = <MyDir>ctx.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
 
     expect(dir.template).toBeUndefined();
@@ -326,7 +321,8 @@ describe('regressions', () => {
   it('should not recreate ViewContainerRefs in queries', () => {
     @Component({
       template: '<div #vc></div><div *ngIf="show" #vc></div>',
-      standalone: false,
+
+      imports: [CommonModule],
     })
     class MyComp {
       @ViewChildren('vc', {read: ViewContainerRef}) viewContainers!: QueryList<ViewContainerRef>;
@@ -334,7 +330,7 @@ describe('regressions', () => {
       show = true;
     }
 
-    const ctx = TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
+    const ctx = TestBed.createComponent(MyComp);
 
     ctx.componentInstance.show = true;
     ctx.changeDetectorRef.markForCheck();
@@ -360,13 +356,10 @@ describe('regressions', () => {
     it('should allow empty components', () => {
       @Component({
         template: '',
-        standalone: false,
       })
       class MyComp {}
 
-      const fixture = TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(
-        MyComp,
-      );
+      const fixture = TestBed.createComponent(MyComp);
       fixture.detectChanges();
 
       expect(fixture.debugElement.childNodes.length).toBe(0);
@@ -376,28 +369,26 @@ describe('regressions', () => {
   it('should throw if @ContentChild and @Input are on the same property', () => {
     @Directive({
       selector: 'test',
-      standalone: false,
     })
     class Test {
       @Input() @ContentChild(TemplateRef, {static: true}) tpl: TemplateRef<any> | undefined;
     }
 
     @Component({
-      selector: 'my-app',
       template: `<test></test>`,
-      standalone: false,
+
+      imports: [Test],
     })
     class App {}
 
     expect(() => {
-      TestBed.configureTestingModule({declarations: [App, Test]}).createComponent(App);
+      TestBed.createComponent(App);
     }).toThrowError(/Cannot combine @Input decorators with query decorators/);
   });
 
   it('should not add ng-version for dynamically created components', () => {
     @Component({
       template: '',
-      standalone: false,
     })
     class App {}
 
@@ -540,9 +531,9 @@ describe('regressions using bootstrap', () => {
 });
 
 @Component({
-  selector: 'my-comp',
   template: '',
-  standalone: false,
+
+  imports: [CommonModule, forwardRef(() => PlatformPipe)],
 })
 class MyComp1 {
   constructor(public injector: Injector) {}
@@ -551,7 +542,6 @@ class MyComp1 {
 @Pipe({
   name: 'somePipe',
   pure: true,
-  standalone: false,
 })
 class PlatformPipe implements PipeTransform {
   transform(value: any): any {
@@ -562,7 +552,6 @@ class PlatformPipe implements PipeTransform {
 @Pipe({
   name: 'somePipe',
   pure: true,
-  standalone: false,
 })
 class CustomPipe implements PipeTransform {
   transform(value: any): any {
@@ -573,14 +562,11 @@ class CustomPipe implements PipeTransform {
 @Component({
   selector: 'cmp-content',
   template: `<ng-content></ng-content>`,
-  standalone: false,
 })
 class CmpWithNgContent {}
 
 @Component({
-  selector: 'counting-cmp',
   template: '',
-  standalone: false,
 })
 class MyCountingComp {
   method(): {value: string} | undefined {
@@ -596,7 +582,6 @@ class MyCountingComp {
 
 @Pipe({
   name: 'countingPipe',
-  standalone: false,
 })
 class CountingPipe implements PipeTransform {
   transform(value: any): any {
@@ -612,20 +597,23 @@ class CountingPipe implements PipeTransform {
 @Component({
   selector: 'left',
   template: `L<right *ngIf="false"></right>`,
-  standalone: false,
+
+  imports: [CommonModule, forwardRef(() => RightComp)],
 })
 class LeftComp {}
 
 @Component({
   selector: 'right',
   template: `R<left *ngIf="false"></left>`,
-  standalone: false,
+
+  imports: [CommonModule, LeftComp],
 })
 class RightComp {}
 
 @Component({
   selector: 'fakeRecursiveComp',
   template: `[<left *ngIf="false"></left><right *ngIf="false"></right>]`,
-  standalone: false,
+
+  imports: [CommonModule, LeftComp, RightComp],
 })
 export class FakeRecursiveComp {}

@@ -7,6 +7,7 @@
  */
 
 import {
+  APP_ID,
   Component,
   destroyPlatform,
   ErrorHandler,
@@ -15,10 +16,9 @@ import {
   InjectionToken,
   NgModule,
   NgZone,
+  ɵNoopNgZone as NoopNgZone,
   PlatformRef,
   ɵR3Injector as R3Injector,
-  ɵNoopNgZone as NoopNgZone,
-  APP_ID,
   signal,
 } from '@angular/core';
 import {isNode, withBody} from '@angular/private/testing';

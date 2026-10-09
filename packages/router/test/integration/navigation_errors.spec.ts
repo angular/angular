@@ -48,7 +48,7 @@ import {
 } from './integration_helpers';
 import {timeout} from '@angular/private/testing';
 
-export function navigationErrorsIntegrationSuite(browserAPI: 'history' | 'navigation') {
+export async function navigationErrorsIntegrationSuite(browserAPI: 'history' | 'navigation') {
   it('should handle failed navigations gracefully', async () => {
     const router = TestBed.inject(Router);
     const fixture = await createRoot(router, RootCmp);

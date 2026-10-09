@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {NgIf} from '@angular/common';
 import {ChangeDetectionStrategy} from '@angular/compiler';
 import {dispatchEvent, isNode} from '@angular/private/testing';
 import {expect} from '@angular/private/testing/matchers';
@@ -33,9 +34,7 @@ import {
 } from '../testing';
 
 @Component({
-  selector: 'simple-comp',
   template: `<span>Original {{ simpleBinding }}</span>`,
-  standalone: false,
 })
 @Injectable()
 class SimpleComp {
@@ -46,22 +45,19 @@ class SimpleComp {
 }
 
 @Component({
-  selector: 'deferred-comp',
   template: `<div>Deferred Component</div>`,
 })
 class DeferredComp {}
 
 @Component({
-  selector: 'second-deferred-comp',
   template: `<div>More Deferred Component</div>`,
 })
 class SecondDeferredComp {}
 
 @Component({
-  selector: 'my-if-comp',
   template: `MyIf(<span *ngIf="showMore">More</span>)`,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [NgIf],
 })
 @Injectable()
 class MyIfComp {
@@ -69,9 +65,7 @@ class MyIfComp {
 }
 
 @Component({
-  selector: 'autodetect-comp',
   template: `<span (click)="click()">{{ text }}</span>`,
-  standalone: false,
 })
 class AutoDetectComp {
   text: string = '1';
@@ -82,9 +76,7 @@ class AutoDetectComp {
 }
 
 @Component({
-  selector: 'async-comp',
   template: `<span (click)="click()">{{ text }}</span>`,
-  standalone: false,
 })
 class AsyncComp {
   text: string = '1';
@@ -99,7 +91,6 @@ class AsyncComp {
 @Component({
   selector: 'async-child-comp',
   template: '<span>{{localText}}</span>',
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class AsyncChildComp {
@@ -114,10 +105,9 @@ class AsyncChildComp {
 }
 
 @Component({
-  selector: 'async-change-comp',
   template: `<async-child-comp (click)="click()" [text]="text"></async-child-comp>`,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [AsyncChildComp],
 })
 class AsyncChangeComp {
   text: string = '1';
@@ -128,9 +118,7 @@ class AsyncChangeComp {
 }
 
 @Component({
-  selector: 'async-timeout-comp',
   template: `<span (click)="click()">{{ text }}</span>`,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class AsyncTimeoutComp {
@@ -144,9 +132,7 @@ class AsyncTimeoutComp {
 }
 
 @Component({
-  selector: 'nested-async-timeout-comp',
   template: `<span (click)="click()">{{ text }}</span>`,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NestedAsyncTimeoutComp {
@@ -173,16 +159,6 @@ describe('ComponentFixture', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       providers: [provideZoneChangeDetection()],
-      declarations: [
-        AutoDetectComp,
-        AsyncComp,
-        AsyncTimeoutComp,
-        NestedAsyncTimeoutComp,
-        AsyncChangeComp,
-        MyIfComp,
-        SimpleComp,
-        AsyncChildComp,
-      ],
     });
   }));
 
@@ -461,7 +437,6 @@ describe('ComponentFixture', () => {
   describe('defer', () => {
     it('should return all defer blocks in the component', async () => {
       @Component({
-        selector: 'defer-comp',
         imports: [DeferredComp, SecondDeferredComp],
         template: `<div>
           @defer (on immediate) {
@@ -532,7 +507,6 @@ describe('ComponentFixture', () => {
     let throwError = false;
     @Component({
       template: '',
-      standalone: false,
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {
@@ -556,7 +530,6 @@ describe('ComponentFixture', () => {
     let throwError = false;
     @Component({
       template: '{{thing}}',
-      standalone: false,
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {

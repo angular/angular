@@ -88,10 +88,14 @@ describe('public PendingTasks', () => {
     const appRef = TestBed.inject(ApplicationRef);
     const pendingTasks = TestBed.inject(PendingTasks);
 
-    const {promise, resolve} = Promise.withResolvers<void>();
-    pendingTasks.run(() => promise);
+    let resolveFn: () => void;
+    pendingTasks.run(() => {
+      return new Promise<void>((r) => {
+        resolveFn = r;
+      });
+    });
     await expectAsync(applicationRefIsStable(appRef)).toBeResolvedTo(false);
-    resolve();
+    resolveFn!();
     await expectAsync(TestBed.inject(ApplicationRef).whenStable()).toBeResolved();
   });
 
@@ -101,10 +105,14 @@ describe('public PendingTasks', () => {
     const errorHandler = TestBed.inject(ErrorHandler);
     const spy = spyOn(errorHandler, 'handleError');
 
-    const {promise, reject} = Promise.withResolvers<void>();
-    pendingTasks.run(() => promise);
+    let rejectFn: () => void;
+    pendingTasks.run(() => {
+      return new Promise<void>((_, reject) => {
+        rejectFn = reject;
+      });
+    });
     await expectAsync(applicationRefIsStable(appRef)).toBeResolvedTo(false);
-    reject();
+    rejectFn!();
     await expectAsync(appRef.whenStable()).toBeResolved();
     expect(spy).toHaveBeenCalled();
   });

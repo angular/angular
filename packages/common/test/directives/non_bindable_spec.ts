@@ -50,7 +50,6 @@ class TestDirective {
 }
 
 @Component({
-  selector: 'test-cmp',
   template: '',
   imports: [TestDirective],
 })

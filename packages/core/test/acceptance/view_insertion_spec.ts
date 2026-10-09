@@ -394,7 +394,6 @@ describe('view insertion', () => {
 
       it('should insert before a ng-container with a ViewContainerRef on it', () => {
         @Component({
-          selector: 'app-root',
           template: `
             <div>start|</div>
             <ng-container [ngTemplateOutlet]="insertTpl ? tpl : null"></ng-container>
@@ -502,14 +501,12 @@ describe('view insertion', () => {
       }
 
       @Component({
-        selector: 'dynamic-cmpt',
         template: '|before',
       })
       class DynamicComponent {}
 
       it('should insert in front a dynamic component view', () => {
         @Component({
-          selector: 'test-cmpt',
           template: `
             <ng-template #insert>insert</ng-template>
             <div><ng-template #vi="vi" viewInserting></ng-template></div>
@@ -551,13 +548,11 @@ describe('view insertion', () => {
     // https://github.com/angular/angular/issues/31971
     it('should insert component views into ViewContainerRef injected by querying <ng-container>', () => {
       @Component({
-        selector: 'dynamic-cmpt',
         template: 'dynamic',
       })
       class DynamicComponent {}
 
       @Component({
-        selector: 'app-root',
         template: `
           <div>start|</div>
           <ng-container #container></ng-container>
@@ -586,7 +581,6 @@ describe('view insertion', () => {
     // https://github.com/angular/angular/issues/33679
     it('should insert embedded views into ViewContainerRef injected by querying <ng-container>', () => {
       @Component({
-        selector: 'app-root',
         template: `
           <div>container start|</div>
           <ng-container #container></ng-container>
@@ -617,7 +611,6 @@ describe('view insertion', () => {
 
     it('should properly insert before views in a ViewContainerRef injected on ng-container', () => {
       @Component({
-        selector: 'app-root',
         template: `
           <ng-template #parameterListItem let-parameter="parameter">
             {{ parameter }}

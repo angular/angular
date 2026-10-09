@@ -385,7 +385,6 @@ describe('NgModule', () => {
 
       it('should be supported in nested components', () => {
         @Component({
-          selector: 'parent',
           template: '<comp></comp>',
           standalone: false,
         })

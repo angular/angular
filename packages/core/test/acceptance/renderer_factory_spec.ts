@@ -54,7 +54,6 @@ describe('renderer factory lifecycle', () => {
   @Component({
     selector: 'some-component',
     template: `foo`,
-    standalone: false,
 
     changeDetection: ChangeDetectionStrategy.Eager,
   })
@@ -68,9 +67,7 @@ describe('renderer factory lifecycle', () => {
   }
 
   @Component({
-    selector: 'some-component-with-error',
     template: `With error`,
-    standalone: false,
 
     changeDetection: ChangeDetectionStrategy.Eager,
   })
@@ -81,11 +78,10 @@ describe('renderer factory lifecycle', () => {
   }
 
   @Component({
-    selector: 'lol',
     template: `<some-component></some-component>`,
-    standalone: false,
 
     changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [SomeComponent],
   })
   class TestComponent implements DoCheck {
     ngOnInit() {
@@ -125,7 +121,6 @@ describe('renderer factory lifecycle', () => {
     logs = [];
 
     TestBed.configureTestingModule({
-      declarations: [SomeComponent, SomeComponentWhichThrows, TestComponent],
       providers: [
         {
           provide: RendererFactory2,
@@ -251,7 +246,6 @@ describe('renderer factory lifecycle', () => {
 
   it('should not invoke renderer destroy method for embedded views', () => {
     @Component({
-      selector: 'comp',
       imports: [CommonModule],
       template: `
         <div>Root view</div>
@@ -315,7 +309,6 @@ describe('animation renderer factory', () => {
     MockAnimationDriver.log = [];
 
     TestBed.configureTestingModule({
-      declarations: [SomeComponentWithAnimation, SomeComponent],
       providers: [
         {
           provide: RendererFactory2,
@@ -327,7 +320,6 @@ describe('animation renderer factory', () => {
   });
 
   @Component({
-    selector: 'some-component',
     template: `
       <div
         [@myAnimation]="exp"
@@ -354,7 +346,6 @@ describe('animation renderer factory', () => {
         options: {},
       },
     ],
-    standalone: false,
 
     changeDetection: ChangeDetectionStrategy.Eager,
   })
@@ -367,9 +358,7 @@ describe('animation renderer factory', () => {
   }
 
   @Component({
-    selector: 'some-component',
     template: 'foo',
-    standalone: false,
 
     changeDetection: ChangeDetectionStrategy.Eager,
   })
@@ -448,9 +437,7 @@ function getAnimationRendererFactory2(document: Document): RendererFactory2 {
 
 describe('custom renderer', () => {
   @Component({
-    selector: 'some-component',
     template: `<div><span></span></div>`,
-    standalone: false,
 
     changeDetection: ChangeDetectionStrategy.Eager,
   })
@@ -477,7 +464,6 @@ describe('custom renderer', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [SomeComponent],
       providers: [
         {
           provide: RendererFactory2,
@@ -498,15 +484,14 @@ describe('custom renderer', () => {
 
 describe('Renderer2 destruction hooks', () => {
   @Component({
-    selector: 'some-component',
     template: `
       <span *ngIf="isContentVisible">A</span>
       <span *ngIf="isContentVisible">B</span>
       <span *ngIf="isContentVisible">C</span>
     `,
-    standalone: false,
 
     changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [CommonModule],
   })
   class SimpleApp {
     isContentVisible = true;
@@ -515,22 +500,20 @@ describe('Renderer2 destruction hooks', () => {
   @Component({
     selector: 'basic-comp',
     template: 'comp(<ng-content></ng-content>)',
-    standalone: false,
 
     changeDetection: ChangeDetectionStrategy.Eager,
   })
   class BasicComponent {}
 
   @Component({
-    selector: 'some-component',
     template: `
       <basic-comp *ngIf="isContentVisible">A</basic-comp>
       <basic-comp *ngIf="isContentVisible">B</basic-comp>
       <basic-comp *ngIf="isContentVisible">C</basic-comp>
     `,
-    standalone: false,
 
     changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [CommonModule, BasicComponent],
   })
   class AppWithComponents {
     isContentVisible = true;
@@ -538,7 +521,6 @@ describe('Renderer2 destruction hooks', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [SimpleApp, AppWithComponents, BasicComponent],
       providers: [
         {
           provide: RendererFactory2,

@@ -21,7 +21,6 @@ describe('view_traversal_utils', () => {
       class ChildComponent {}
 
       @Component({
-        selector: 'test-comp',
         template: '<div><child-comp></child-comp></div>',
         imports: [ChildComponent],
       })
@@ -47,7 +46,6 @@ describe('view_traversal_utils', () => {
       class ChildComponent {}
 
       @Component({
-        selector: 'test-comp',
         template: '<div>@if (show) {<child-comp></child-comp>}</div>',
         imports: [ChildComponent],
       })
@@ -79,7 +77,6 @@ describe('view_traversal_utils', () => {
       class ProjectorComponent {}
 
       @Component({
-        selector: 'test-comp',
         template: '<projector-comp><projected-comp></projected-comp></projector-comp>',
         imports: [ProjectorComponent, ProjectedComponent],
       })

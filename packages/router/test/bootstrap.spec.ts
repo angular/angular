@@ -44,7 +44,6 @@ describe('bootstrap', () => {
 
   @Component({
     template: 'simple',
-    standalone: false,
   })
   class SimpleCmp {}
 
@@ -264,7 +263,6 @@ describe('bootstrap', () => {
     @Component({
       selector: 'test',
       template: 'test',
-      standalone: false,
     })
     class TestCmpEnabled {}
 
@@ -276,7 +274,7 @@ describe('bootstrap', () => {
           {initialNavigation: 'enabledBlocking'},
         ),
       ],
-      declarations: [RootCmp, TestCmpEnabled],
+      declarations: [RootCmp],
       bootstrap: [RootCmp],
       providers: [...testProviders, TestResolver],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -302,7 +300,6 @@ describe('bootstrap', () => {
     @Component({
       selector: 'test',
       template: 'test',
-      standalone: false,
     })
     class TestCmpLegacyEnabled {}
 
@@ -314,7 +311,7 @@ describe('bootstrap', () => {
           {initialNavigation: 'enabledNonBlocking'},
         ),
       ],
-      declarations: [RootCmp, TestCmpLegacyEnabled],
+      declarations: [RootCmp],
       bootstrap: [RootCmp],
       providers: [...testProviders, TestResolver],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -342,7 +339,6 @@ describe('bootstrap', () => {
     @Component({
       selector: 'test',
       template: 'test',
-      standalone: false,
     })
     class TestCmpLegacyEnabled {}
 
@@ -353,7 +349,7 @@ describe('bootstrap', () => {
           {path: '**', component: TestCmpLegacyEnabled, resolve: {test: TestResolver}},
         ]),
       ],
-      declarations: [RootCmp, TestCmpLegacyEnabled],
+      declarations: [RootCmp],
       bootstrap: [RootCmp],
       providers: [...testProviders, TestResolver],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -381,7 +377,6 @@ describe('bootstrap', () => {
     @Component({
       selector: 'test',
       template: 'test',
-      standalone: false,
     })
     class TestCmpDiabled {}
 
@@ -393,7 +388,7 @@ describe('bootstrap', () => {
           {initialNavigation: 'disabled'},
         ),
       ],
-      declarations: [RootCmp, TestCmpDiabled],
+      declarations: [RootCmp],
       bootstrap: [RootCmp],
       providers: [...testProviders, TestResolver],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -469,7 +464,6 @@ describe('bootstrap', () => {
   if (!isNode) {
     it('should restore the scrolling position', async () => {
       @Component({
-        selector: 'component-a',
         template: `
           <div style="height: 3000px;"></div>
           <div id="marker1"></div>
@@ -479,7 +473,6 @@ describe('bootstrap', () => {
           <a name="marker3"></a>
           <div style="height: 3000px;"></div>
         `,
-        standalone: false,
       })
       class TallComponent {}
       @NgModule({
@@ -501,7 +494,7 @@ describe('bootstrap', () => {
             },
           ),
         ],
-        declarations: [TallComponent, RootCmp],
+        declarations: [RootCmp],
         bootstrap: [RootCmp],
         providers: [...testProviders],
         schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -591,7 +584,7 @@ describe('bootstrap', () => {
           {path: 'b', component: SimpleCmp},
         ]),
       ],
-      declarations: [RootCmp, SimpleCmp],
+      declarations: [RootCmp],
       bootstrap: [RootCmp],
       providers: [...testProviders],
     })

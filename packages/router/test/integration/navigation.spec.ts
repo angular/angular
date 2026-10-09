@@ -7,10 +7,10 @@
  */
 
 import {Location, PlatformNavigation} from '@angular/common';
-import {ApplicationRef, Component, inject, NgModule} from '@angular/core';
+import {ApplicationRef, Component, inject} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {RouterTestingHarness} from '@angular/router/testing';
 import {timeout} from '@angular/private/testing';
+import {RouterTestingHarness} from '@angular/router/testing';
 import {BehaviorSubject, filter, firstValueFrom} from 'rxjs';
 import {
   ActivatedRoute,
@@ -29,7 +29,6 @@ import {
   ResolveStart,
   Router,
   RouterLink,
-  RouterModule,
   Routes,
   withRouterConfig,
 } from '../../src';
@@ -40,10 +39,11 @@ import {
   onlyNavigationStartAndEnd,
   RelativeLinkCmp,
   RootCmp,
+  ROUTER_DIRECTIVES,
   SimpleCmp,
 } from './integration_helpers';
 
-export function navigationIntegrationTestSuite(browserAPI: 'history' | 'navigation') {
+export async function navigationIntegrationTestSuite(browserAPI: 'history' | 'navigation') {
   function setup(routes?: Routes): Router {
     TestBed.configureTestingModule({
       providers: [
@@ -623,7 +623,7 @@ export function navigationIntegrationTestSuite(browserAPI: 'history' | 'navigati
     describe('route activation', () => {
       @Component({
         template: '<router-outlet></router-outlet>',
-        standalone: false,
+        imports: [ROUTER_DIRECTIVES],
       })
       class Parent {
         constructor(route: ActivatedRoute) {
@@ -639,7 +639,7 @@ export function navigationIntegrationTestSuite(browserAPI: 'history' | 'navigati
           <router-outlet name="first" (deactivate)="logDeactivate('first')"></router-outlet>
           <router-outlet name="second" (deactivate)="logDeactivate('second')"></router-outlet>
         `,
-        standalone: false,
+        imports: [ROUTER_DIRECTIVES],
       })
       class NamedOutletHost {
         logDeactivate(route: string) {
@@ -649,7 +649,6 @@ export function navigationIntegrationTestSuite(browserAPI: 'history' | 'navigati
 
       @Component({
         template: 'child1',
-        standalone: false,
       })
       class Child1 {
         constructor() {
@@ -662,7 +661,6 @@ export function navigationIntegrationTestSuite(browserAPI: 'history' | 'navigati
 
       @Component({
         template: 'child2',
-        standalone: false,
       })
       class Child2 {
         constructor() {
@@ -675,7 +673,6 @@ export function navigationIntegrationTestSuite(browserAPI: 'history' | 'navigati
 
       @Component({
         template: 'child3',
-        standalone: false,
       })
       class Child3 {
         constructor() {
@@ -686,14 +683,7 @@ export function navigationIntegrationTestSuite(browserAPI: 'history' | 'navigati
         }
       }
 
-      @NgModule({
-        declarations: [Parent, NamedOutletHost, Child1, Child2, Child3],
-        imports: [RouterModule.forRoot([])],
-      })
-      class TestModule {}
-
       it('should advance the parent route after deactivating its children', async () => {
-        TestBed.configureTestingModule({imports: [TestModule]});
         const router = TestBed.inject(Router);
         const location = TestBed.inject(Location);
         const fixture = await createRoot(router, RootCmp);
@@ -726,7 +716,6 @@ export function navigationIntegrationTestSuite(browserAPI: 'history' | 'navigati
       });
 
       it('should deactivate outlet children with componentless parent', async () => {
-        TestBed.configureTestingModule({imports: [TestModule]});
         const router = TestBed.inject(Router);
         const fixture = await createRoot(router, RootCmp);
 
@@ -794,7 +783,6 @@ export function navigationIntegrationTestSuite(browserAPI: 'history' | 'navigati
       });
 
       it('should work between aux outlets under two levels of empty path parents', async () => {
-        TestBed.configureTestingModule({imports: [TestModule]});
         const router = TestBed.inject(Router);
         router.resetConfig([
           {

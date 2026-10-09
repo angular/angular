@@ -166,7 +166,6 @@ describe('reactivity', () => {
       let cleanupCount = 0;
 
       @Component({
-        selector: 'test-cmp',
         template: '',
       })
       class Cmp {
@@ -244,7 +243,6 @@ describe('reactivity', () => {
       let didRun = false;
 
       @Component({
-        selector: 'test-cmp',
         template: '',
       })
       class Cmp implements AfterViewInit {
@@ -658,7 +656,6 @@ describe('reactivity', () => {
       }
 
       @Component({
-        selector: 'test-cmp',
         imports: [WithInput],
         template: `<with-input [in]="'A'" />|<with-input [in]="'B'" />`,
       })
@@ -683,7 +680,6 @@ describe('reactivity', () => {
       }
 
       @Component({
-        selector: 'test-cmp',
         imports: [WithConstructor],
         template: `<with-constructor />`,
       })
@@ -709,7 +705,6 @@ describe('reactivity', () => {
       }
 
       @Component({
-        selector: 'test-cmp',
         imports: [WithInputSetter],
         template: `
           <with-input-setter [testInput]="'binding'" />|<with-input-setter testInput="static" />
@@ -737,7 +732,6 @@ describe('reactivity', () => {
       }
 
       @Component({
-        selector: 'test-cmp',
         imports: [WithQuery],
         template: `<with-query><div #item></div></with-query>`,
       })
@@ -752,7 +746,6 @@ describe('reactivity', () => {
       const state = signal('initial');
 
       @Component({
-        selector: 'with-query-setter',
         template: '<div #el></div>',
       })
       class WithQuerySetter {
@@ -767,7 +760,6 @@ describe('reactivity', () => {
       }
 
       @Component({
-        selector: 'test-cmp',
         template: ``,
       })
       class Cmp {
@@ -799,7 +791,6 @@ describe('reactivity', () => {
 
     it('should allow toObservable subscription in template (with async pipe)', () => {
       @Component({
-        selector: 'test-cmp',
         imports: [AsyncPipe],
         template: '{{counter$ | async}}',
       })
@@ -816,7 +807,6 @@ describe('reactivity', () => {
 
     it('should assign a debugName to the underlying node for an effect', async () => {
       @Component({
-        selector: 'test-cmp',
         template: '',
       })
       class Cmp {
@@ -832,7 +822,6 @@ describe('reactivity', () => {
 
     it('should disallow writing to signals within computed', () => {
       @Component({
-        selector: 'with-input',
         template: '{{comp()}}',
       })
       class WriteComputed {
@@ -850,7 +839,6 @@ describe('reactivity', () => {
 
     it('should disallow writing to signals within a template', () => {
       @Component({
-        selector: 'with-input',
         template: '{{func()}}',
       })
       class WriteComputed {
@@ -922,7 +910,6 @@ describe('reactivity', () => {
       it('when created during bootstrapping', () => {
         let log: string[] = [];
         @Component({
-          selector: 'test-cmp',
           template: '',
         })
         class TestCmp {
@@ -960,7 +947,6 @@ describe('reactivity', () => {
         }
 
         @Component({
-          selector: 'driver-cmp',
           imports: [TestCmp],
           template: `
             @if (cond) {
@@ -987,7 +973,6 @@ describe('reactivity', () => {
       it('when created dynamically', () => {
         let log: string[] = [];
         @Component({
-          selector: 'test-cmp',
           template: '',
         })
         class TestCmp {
@@ -1002,7 +987,6 @@ describe('reactivity', () => {
         }
 
         @Component({
-          selector: 'driver-cmp',
           template: '',
         })
         class DriverCmp {
@@ -1034,7 +1018,6 @@ describe('reactivity', () => {
         }
 
         @Component({
-          selector: 'test-cmp',
           template: '',
           providers: [EffectService],
         })
@@ -1054,7 +1037,6 @@ describe('reactivity', () => {
       it('if multiple effects are created', () => {
         let log: string[] = [];
         @Component({
-          selector: 'test-cmp',
           template: '',
         })
         class TestCmp {
@@ -1081,7 +1063,6 @@ describe('reactivity', () => {
     describe('should disallow creating an effect context', () => {
       it('inside template effect', () => {
         @Component({
-          standalone: false,
           template: '{{someFn()}}',
         })
         class Cmp {
@@ -1106,7 +1087,6 @@ describe('reactivity', () => {
 
       it('inside an effect', () => {
         @Component({
-          standalone: false,
           template: '',
         })
         class Cmp {
@@ -1147,7 +1127,6 @@ describe('reactivity', () => {
       const source = signal('initial');
 
       @Component({
-        selector: 'test-cmp',
         template: `{{ dynamic() }}{{ source() }}`,
       })
       class TestCmp {

@@ -24,6 +24,7 @@ import {
   Directive,
   EnvironmentInjector,
   EventEmitter,
+  forwardRef,
   Host,
   HostBinding,
   HostListener,
@@ -60,7 +61,6 @@ const ANCHOR_ELEMENT = new InjectionToken('AnchorElement');
 describe('integration tests', function () {
   describe('react to record changes', function () {
     it('should consume text node changes', () => {
-      TestBed.configureTestingModule({declarations: [MyComp]});
       const template = '<div>{{ctxProp()}}</div>';
       TestBed.overrideComponent(MyComp, {set: {template}});
       const fixture = TestBed.createComponent(MyComp);
@@ -71,7 +71,6 @@ describe('integration tests', function () {
     });
 
     it('should update text node with a blank string when interpolation evaluates to null', () => {
-      TestBed.configureTestingModule({declarations: [MyComp]});
       const template = '<div>{{null}}{{ctxProp()}}</div>';
       TestBed.overrideComponent(MyComp, {set: {template}});
       const fixture = TestBed.createComponent(MyComp);
@@ -83,15 +82,12 @@ describe('integration tests', function () {
 
     it('should allow both null and undefined in expressions', () => {
       const template = '<div>{{null == undefined}}|{{null === undefined}}</div>';
-      const fixture = TestBed.configureTestingModule({declarations: [MyComp]})
-        .overrideComponent(MyComp, {set: {template}})
-        .createComponent(MyComp);
+      const fixture = TestBed.overrideComponent(MyComp, {set: {template}}).createComponent(MyComp);
       fixture.detectChanges();
       expect(fixture.nativeElement).toHaveText('true|false');
     });
 
     it('should support an arbitrary number of interpolations in an element', () => {
-      TestBed.configureTestingModule({declarations: [MyComp]});
       const template = `<div>before{{'0'}}a{{'1'}}b{{'2'}}c{{'3'}}d{{'4'}}e{{'5'}}f{{'6'}}g{{'7'}}h{{'8'}}i{{'9'}}j{{'10'}}after</div>`;
       const fixture = TestBed.overrideComponent(MyComp, {set: {template}}).createComponent(MyComp);
 
@@ -100,7 +96,6 @@ describe('integration tests', function () {
     });
 
     it('should use a blank string when interpolation evaluates to null or undefined with an arbitrary number of interpolations', () => {
-      TestBed.configureTestingModule({declarations: [MyComp]});
       const template = `<div>0{{null}}a{{undefined}}b{{null}}c{{undefined}}d{{null}}e{{undefined}}f{{null}}g{{undefined}}h{{null}}i{{undefined}}j{{null}}1</div>`;
       const fixture = TestBed.overrideComponent(MyComp, {set: {template}}).createComponent(MyComp);
 
@@ -109,7 +104,6 @@ describe('integration tests', function () {
     });
 
     it('should consume element binding changes', () => {
-      TestBed.configureTestingModule({declarations: [MyComp]});
       const template = '<div [id]="ctxProp()"></div>';
       TestBed.overrideComponent(MyComp, {set: {template}});
       const fixture = TestBed.createComponent(MyComp);
@@ -121,7 +115,6 @@ describe('integration tests', function () {
     });
 
     it('should consume binding to aria-* attributes', () => {
-      TestBed.configureTestingModule({declarations: [MyComp]});
       const template = '<div [attr.aria-label]="ctxProp()"></div>';
       TestBed.overrideComponent(MyComp, {set: {template}});
       const fixture = TestBed.createComponent(MyComp);
@@ -140,7 +133,6 @@ describe('integration tests', function () {
     });
 
     it('should remove an attribute when attribute expression evaluates to null', () => {
-      TestBed.configureTestingModule({declarations: [MyComp]});
       const template = '<div [attr.foo]="ctxProp()"></div>';
       TestBed.overrideComponent(MyComp, {set: {template}});
       const fixture = TestBed.createComponent(MyComp);
@@ -155,7 +147,6 @@ describe('integration tests', function () {
     });
 
     it('should remove style when when style expression evaluates to null', () => {
-      TestBed.configureTestingModule({declarations: [MyComp]});
       const template = '<div [style.height.px]="ctxProp()"></div>';
       TestBed.overrideComponent(MyComp, {set: {template}});
       const fixture = TestBed.createComponent(MyComp);
@@ -170,7 +161,6 @@ describe('integration tests', function () {
     });
 
     it('should consume binding to property names where attr name and property name do not match', () => {
-      TestBed.configureTestingModule({declarations: [MyComp]});
       const template = '<div [tabindex]="ctxNumProp()"></div>';
       TestBed.overrideComponent(MyComp, {set: {template}});
       const fixture = TestBed.createComponent(MyComp);
@@ -184,7 +174,6 @@ describe('integration tests', function () {
     });
 
     it('should consume binding to camel-cased properties', () => {
-      TestBed.configureTestingModule({declarations: [MyComp]});
       const template = '<input [readOnly]="ctxBoolProp()">';
       TestBed.overrideComponent(MyComp, {set: {template}});
       const fixture = TestBed.createComponent(MyComp);
@@ -198,7 +187,6 @@ describe('integration tests', function () {
     });
 
     it('should consume binding to innerHtml', () => {
-      TestBed.configureTestingModule({declarations: [MyComp]});
       const template = '<div innerHtml="{{ctxProp()}}"></div>';
       TestBed.overrideComponent(MyComp, {set: {template}});
       const fixture = TestBed.createComponent(MyComp);
@@ -218,9 +206,7 @@ describe('integration tests', function () {
 
     it('should consume binding to htmlFor using for alias', () => {
       const template = '<label [for]="ctxProp()"></label>';
-      const fixture = TestBed.configureTestingModule({declarations: [MyComp]})
-        .overrideComponent(MyComp, {set: {template}})
-        .createComponent(MyComp);
+      const fixture = TestBed.overrideComponent(MyComp, {set: {template}}).createComponent(MyComp);
 
       const nativeEl = fixture.debugElement.children[0].nativeElement;
       fixture.debugElement.componentInstance.ctxProp.set('foo');
@@ -230,7 +216,6 @@ describe('integration tests', function () {
     });
 
     it('should consume directive watch expression change.', () => {
-      TestBed.configureTestingModule({declarations: [MyComp, MyDir]});
       const template =
         '<span>' +
         '<div my-dir [elprop]="ctxProp()"></div>' +
@@ -238,7 +223,12 @@ describe('integration tests', function () {
         '<div my-dir elprop="Hi {{\'there!\'}}"></div>' +
         '<div my-dir elprop="One more {{ctxProp()}}"></div>' +
         '</span>';
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [CommonModule, forwardRef(() => DynamicViewport), forwardRef(() => MyDir)],
+        },
+      });
       const fixture = TestBed.createComponent(MyComp);
 
       fixture.componentInstance.ctxProp.set('Hello World!');
@@ -256,9 +246,18 @@ describe('integration tests', function () {
 
     describe('pipes', () => {
       it('should support pipes in bindings', () => {
-        TestBed.configureTestingModule({declarations: [MyComp, MyDir, DoublePipe]});
         const template = '<div my-dir #dir="mydir" [elprop]="ctxProp() | double"></div>';
-        TestBed.overrideComponent(MyComp, {set: {template}});
+        TestBed.overrideComponent(MyComp, {
+          set: {
+            template,
+            imports: [
+              CommonModule,
+              forwardRef(() => DynamicViewport),
+              forwardRef(() => MyDir),
+              forwardRef(() => DoublePipe),
+            ],
+          },
+        });
         const fixture = TestBed.createComponent(MyComp);
 
         fixture.componentInstance.ctxProp.set('a');
@@ -270,9 +269,13 @@ describe('integration tests', function () {
     });
 
     it('should support nested components.', () => {
-      TestBed.configureTestingModule({declarations: [MyComp, ChildComp]});
       const template = '<child-cmp></child-cmp>';
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [CommonModule, forwardRef(() => DynamicViewport), forwardRef(() => ChildComp)],
+        },
+      });
       const fixture = TestBed.createComponent(MyComp);
 
       fixture.detectChanges();
@@ -282,9 +285,18 @@ describe('integration tests', function () {
 
     // GH issue 328 - https://github.com/angular/angular/issues/328
     it('should support different directive types on a single node', () => {
-      TestBed.configureTestingModule({declarations: [MyComp, ChildComp, MyDir]});
       const template = '<child-cmp my-dir [elprop]="ctxProp()"></child-cmp>';
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [
+            CommonModule,
+            forwardRef(() => DynamicViewport),
+            forwardRef(() => ChildComp),
+            forwardRef(() => MyDir),
+          ],
+        },
+      });
       const fixture = TestBed.createComponent(MyComp);
 
       fixture.componentInstance.ctxProp.set('Hello World!');
@@ -297,26 +309,41 @@ describe('integration tests', function () {
     });
 
     it('should support directives where a binding attribute is not given', () => {
-      TestBed.configureTestingModule({declarations: [MyComp, MyDir]});
       const template = '<p my-dir></p>';
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [CommonModule, forwardRef(() => DynamicViewport), forwardRef(() => MyDir)],
+        },
+      });
       const fixture = TestBed.createComponent(MyComp);
     });
 
     it('should execute a given directive once, even if specified multiple times', () => {
-      TestBed.configureTestingModule({
-        declarations: [MyComp, DuplicateDir, DuplicateDir, [DuplicateDir, [DuplicateDir]]],
-      });
       const template = '<p no-duplicate></p>';
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [
+            CommonModule,
+            forwardRef(() => DynamicViewport),
+            forwardRef(() => DuplicateDir),
+            [DuplicateDir, [DuplicateDir]],
+          ],
+        },
+      });
       const fixture = TestBed.createComponent(MyComp);
       expect(fixture.nativeElement).toHaveText('noduplicate');
     });
 
     it('should support directives where a selector matches property binding', () => {
-      TestBed.configureTestingModule({declarations: [MyComp, IdDir]});
       const template = '<p [id]="ctxProp()"></p>';
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [CommonModule, forwardRef(() => DynamicViewport), forwardRef(() => IdDir)],
+        },
+      });
       const fixture = TestBed.createComponent(MyComp);
 
       const tc = fixture.debugElement.children[0];
@@ -332,9 +359,13 @@ describe('integration tests', function () {
     });
 
     it('should support directives where a selector matches event binding', () => {
-      TestBed.configureTestingModule({declarations: [MyComp, EventDir]});
       const template = '<p (customEvent)="doNothing()"></p>';
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [CommonModule, forwardRef(() => DynamicViewport), forwardRef(() => EventDir)],
+        },
+      });
       const fixture = TestBed.createComponent(MyComp);
 
       const tc = fixture.debugElement.children[0];
@@ -345,7 +376,6 @@ describe('integration tests', function () {
       @Component({
         selector: 'my-uninitialized-output',
         template: '<p>It works!</p>',
-        standalone: false,
       })
       class UninitializedOutputComp {
         @Output() customEvent!: EventEmitter<any>;
@@ -353,26 +383,48 @@ describe('integration tests', function () {
 
       const template =
         '<my-uninitialized-output (customEvent)="doNothing()"></my-uninitialized-output>';
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [CommonModule, forwardRef(() => DynamicViewport), UninitializedOutputComp],
+        },
+      });
 
-      TestBed.configureTestingModule({declarations: [MyComp, UninitializedOutputComp]});
       expect(() => TestBed.createComponent(MyComp)).toThrowError(
         "@Output customEvent not initialized in 'UninitializedOutputComp'.",
       );
     });
 
     it('should read directives metadata from their binding token', () => {
-      TestBed.configureTestingModule({declarations: [MyComp, PrivateImpl, NeedsPublicApi]});
       const template = '<div public-api><div needs-public-api></div></div>';
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [
+            CommonModule,
+            forwardRef(() => DynamicViewport),
+            forwardRef(() => PrivateImpl),
+            forwardRef(() => NeedsPublicApi),
+          ],
+        },
+      });
       const fixture = TestBed.createComponent(MyComp);
     });
 
     it('should not share empty context for template directives - issue #10045', () => {
-      TestBed.configureTestingModule({declarations: [MyComp, PollutedContext, NoContext]});
       const template =
         '<ng-template pollutedContext let-foo="bar">{{foo}}</ng-template><ng-template noContext let-foo="bar">{{foo}}</ng-template>';
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [
+            CommonModule,
+            forwardRef(() => DynamicViewport),
+            forwardRef(() => PollutedContext),
+            forwardRef(() => NoContext),
+          ],
+        },
+      });
       const fixture = TestBed.createComponent(MyComp);
 
       fixture.detectChanges();
@@ -380,10 +432,18 @@ describe('integration tests', function () {
     });
 
     it('should not detach views in ViewContainers when the parent view is destroyed.', () => {
-      TestBed.configureTestingModule({declarations: [MyComp, SomeViewport]});
       const template =
         '<div *ngIf="ctxBoolProp()"><ng-template some-viewport let-greeting="someTmpl"><span>{{greeting}}</span></ng-template></div>';
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [
+            CommonModule,
+            forwardRef(() => DynamicViewport),
+            forwardRef(() => SomeViewport),
+          ],
+        },
+      });
       const fixture = TestBed.createComponent(MyComp);
 
       fixture.componentInstance.ctxBoolProp.set(true);
@@ -404,9 +464,9 @@ describe('integration tests', function () {
     });
 
     it('should use a comment while stamping out `<ng-template>` elements.', () => {
-      const fixture = TestBed.configureTestingModule({declarations: [MyComp]})
-        .overrideComponent(MyComp, {set: {template: '<ng-template></ng-template>'}})
-        .createComponent(MyComp);
+      const fixture = TestBed.overrideComponent(MyComp, {
+        set: {template: '<ng-template></ng-template>'},
+      }).createComponent(MyComp);
 
       const childNodesOfWrapper = fixture.nativeElement.childNodes;
       expect(childNodesOfWrapper.length).toBe(1);
@@ -415,20 +475,23 @@ describe('integration tests', function () {
 
     it('should allow to transplant TemplateRefs into other ViewContainers', () => {
       TestBed.configureTestingModule({
-        declarations: [
-          MyComp,
-          SomeDirective,
-          CompWithHost,
-          ToolbarComponent,
-          ToolbarViewContainer,
-          ToolbarPart,
-        ],
-        imports: [CommonModule],
         schemas: [NO_ERRORS_SCHEMA],
       });
       const template =
         '<some-directive><toolbar><ng-template toolbarpart let-toolbarProp="toolbarProp">{{ctxProp()}},{{toolbarProp}},<cmp-with-host></cmp-with-host></ng-template></toolbar></some-directive>';
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [
+            CommonModule,
+            forwardRef(() => DynamicViewport),
+            forwardRef(() => SomeDirective),
+            forwardRef(() => CompWithHost),
+            forwardRef(() => ToolbarComponent),
+            forwardRef(() => ToolbarPart),
+          ],
+        },
+      });
       const fixture = TestBed.createComponent(MyComp);
 
       fixture.componentInstance.ctxProp.set('From myComp');
@@ -441,9 +504,13 @@ describe('integration tests', function () {
 
     describe('reference bindings', () => {
       it('should assign a component to a ref-', () => {
-        TestBed.configureTestingModule({declarations: [MyComp, ChildComp]});
         const template = '<p><child-cmp ref-alice></child-cmp></p>';
-        TestBed.overrideComponent(MyComp, {set: {template}});
+        TestBed.overrideComponent(MyComp, {
+          set: {
+            template,
+            imports: [CommonModule, forwardRef(() => DynamicViewport), forwardRef(() => ChildComp)],
+          },
+        });
         const fixture = TestBed.createComponent(MyComp);
 
         expect(fixture.debugElement.children[0].children[0].references!['alice']).toBeInstanceOf(
@@ -452,9 +519,13 @@ describe('integration tests', function () {
       });
 
       it('should assign a directive to a ref-', () => {
-        TestBed.configureTestingModule({declarations: [MyComp, ExportDir]});
         const template = '<div><div export-dir #localdir="dir"></div></div>';
-        TestBed.overrideComponent(MyComp, {set: {template}});
+        TestBed.overrideComponent(MyComp, {
+          set: {
+            template,
+            imports: [CommonModule, forwardRef(() => DynamicViewport), forwardRef(() => ExportDir)],
+          },
+        });
         const fixture = TestBed.createComponent(MyComp);
 
         expect(fixture.debugElement.children[0].children[0].references!['localdir']).toBeInstanceOf(
@@ -463,12 +534,17 @@ describe('integration tests', function () {
       });
 
       it('should assign a directive to a ref when it has multiple exportAs names', () => {
-        TestBed.configureTestingModule({
-          declarations: [MyComp, DirectiveWithMultipleExportAsNames],
-        });
-
         const template = '<div multiple-export-as #x="dirX" #y="dirY"></div>';
-        TestBed.overrideComponent(MyComp, {set: {template}});
+        TestBed.overrideComponent(MyComp, {
+          set: {
+            template,
+            imports: [
+              CommonModule,
+              forwardRef(() => DynamicViewport),
+              forwardRef(() => DirectiveWithMultipleExportAsNames),
+            ],
+          },
+        });
 
         const fixture = TestBed.createComponent(MyComp);
         expect(fixture.debugElement.children[0].references!['x']).toBeInstanceOf(
@@ -480,10 +556,14 @@ describe('integration tests', function () {
       });
 
       it('should make the assigned component accessible in property bindings, even if they were declared before the component', () => {
-        TestBed.configureTestingModule({declarations: [MyComp, ChildComp]});
         const template =
           '<ng-template [ngIf]="true">{{alice.ctxProp()}}</ng-template>|{{alice.ctxProp()}}|<child-cmp ref-alice></child-cmp>';
-        TestBed.overrideComponent(MyComp, {set: {template}});
+        TestBed.overrideComponent(MyComp, {
+          set: {
+            template,
+            imports: [CommonModule, forwardRef(() => DynamicViewport), forwardRef(() => ChildComp)],
+          },
+        });
         const fixture = TestBed.createComponent(MyComp);
 
         fixture.detectChanges();
@@ -492,9 +572,13 @@ describe('integration tests', function () {
       });
 
       it('should assign two component instances each with a ref-', () => {
-        TestBed.configureTestingModule({declarations: [MyComp, ChildComp]});
         const template = '<p><child-cmp ref-alice></child-cmp><child-cmp ref-bob></child-cmp></p>';
-        TestBed.overrideComponent(MyComp, {set: {template}});
+        TestBed.overrideComponent(MyComp, {
+          set: {
+            template,
+            imports: [CommonModule, forwardRef(() => DynamicViewport), forwardRef(() => ChildComp)],
+          },
+        });
         const fixture = TestBed.createComponent(MyComp);
 
         const pEl = fixture.debugElement.children[0];
@@ -507,16 +591,19 @@ describe('integration tests', function () {
       });
 
       it('should assign the component instance to a ref- with shorthand syntax', () => {
-        TestBed.configureTestingModule({declarations: [MyComp, ChildComp]});
         const template = '<child-cmp #alice></child-cmp>';
-        TestBed.overrideComponent(MyComp, {set: {template}});
+        TestBed.overrideComponent(MyComp, {
+          set: {
+            template,
+            imports: [CommonModule, forwardRef(() => DynamicViewport), forwardRef(() => ChildComp)],
+          },
+        });
         const fixture = TestBed.createComponent(MyComp);
 
         expect(fixture.debugElement.children[0].references!['alice']).toBeInstanceOf(ChildComp);
       });
 
       it('should assign the element instance to a user-defined variable', () => {
-        TestBed.configureTestingModule({declarations: [MyComp]});
         const template = '<div><div ref-alice><i>Hello</i></div></div>';
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
@@ -527,18 +614,22 @@ describe('integration tests', function () {
       });
 
       it('should assign the TemplateRef to a user-defined variable', () => {
-        const fixture = TestBed.configureTestingModule({declarations: [MyComp]})
-          .overrideComponent(MyComp, {set: {template: '<ng-template ref-alice></ng-template>'}})
-          .createComponent(MyComp);
+        const fixture = TestBed.overrideComponent(MyComp, {
+          set: {template: '<ng-template ref-alice></ng-template>'},
+        }).createComponent(MyComp);
 
         const value = fixture.debugElement.childNodes[0].references!['alice'];
         expect(value.createEmbeddedView).toBeTruthy();
       });
 
       it('should preserve case', () => {
-        TestBed.configureTestingModule({declarations: [MyComp, ChildComp]});
         const template = '<p><child-cmp ref-superAlice></child-cmp></p>';
-        TestBed.overrideComponent(MyComp, {set: {template}});
+        TestBed.overrideComponent(MyComp, {
+          set: {
+            template,
+            imports: [CommonModule, forwardRef(() => DynamicViewport), forwardRef(() => ChildComp)],
+          },
+        });
         const fixture = TestBed.createComponent(MyComp);
 
         expect(
@@ -549,9 +640,13 @@ describe('integration tests', function () {
 
     describe('OnPush components', () => {
       it('should use ChangeDetectorRef to manually request a check', () => {
-        TestBed.configureTestingModule({declarations: [MyComp, [[PushCmpWithRef]]]});
         const template = '<push-cmp-with-ref #cmp></push-cmp-with-ref>';
-        TestBed.overrideComponent(MyComp, {set: {template}});
+        TestBed.overrideComponent(MyComp, {
+          set: {
+            template,
+            imports: [CommonModule, forwardRef(() => DynamicViewport), [[PushCmpWithRef]]],
+          },
+        });
         const fixture = TestBed.createComponent(MyComp);
 
         const cmp = fixture.debugElement.children[0].references!['cmp'];
@@ -569,12 +664,13 @@ describe('integration tests', function () {
       });
 
       it('should be checked when its bindings got updated', () => {
-        TestBed.configureTestingModule({
-          declarations: [MyComp, PushCmp, EventCmp],
-          imports: [CommonModule],
-        });
         const template = '<push-cmp [prop]="ctxProp()" #cmp></push-cmp>';
-        TestBed.overrideComponent(MyComp, {set: {template}});
+        TestBed.overrideComponent(MyComp, {
+          set: {
+            template,
+            imports: [CommonModule, forwardRef(() => DynamicViewport), forwardRef(() => PushCmp)],
+          },
+        });
         const fixture = TestBed.createComponent(MyComp);
 
         const cmp = fixture.debugElement.children[0].references!['cmp'];
@@ -590,9 +686,13 @@ describe('integration tests', function () {
 
       if (getDOM().supportsDOMEvents) {
         it('should allow to destroy a component from within a host event handler', async () => {
-          TestBed.configureTestingModule({declarations: [MyComp, [[PushCmpWithHostEvent]]]});
           const template = '<push-cmp-with-host-event></push-cmp-with-host-event>';
-          TestBed.overrideComponent(MyComp, {set: {template}});
+          TestBed.overrideComponent(MyComp, {
+            set: {
+              template,
+              imports: [CommonModule, forwardRef(() => DynamicViewport), [[PushCmpWithHostEvent]]],
+            },
+          });
           const fixture = TestBed.createComponent(MyComp);
 
           await fixture.whenStable();
@@ -607,12 +707,13 @@ describe('integration tests', function () {
       }
 
       it('should be checked when an event is fired', () => {
-        TestBed.configureTestingModule({
-          declarations: [MyComp, PushCmp, EventCmp],
-          imports: [CommonModule],
-        });
         const template = '<push-cmp [prop]="ctxProp()" #cmp></push-cmp>';
-        TestBed.overrideComponent(MyComp, {set: {template}});
+        TestBed.overrideComponent(MyComp, {
+          set: {
+            template,
+            imports: [CommonModule, forwardRef(() => DynamicViewport), forwardRef(() => PushCmp)],
+          },
+        });
         const fixture = TestBed.createComponent(MyComp);
 
         const cmpEl = fixture.debugElement.children[0];
@@ -647,9 +748,13 @@ describe('integration tests', function () {
       });
 
       it('should not affect updating properties on the component', () => {
-        TestBed.configureTestingModule({declarations: [MyComp, [[PushCmpWithRef]]]});
         const template = '<push-cmp-with-ref [prop]="ctxProp()" #cmp></push-cmp-with-ref>';
-        TestBed.overrideComponent(MyComp, {set: {template}});
+        TestBed.overrideComponent(MyComp, {
+          set: {
+            template,
+            imports: [CommonModule, forwardRef(() => DynamicViewport), [[PushCmpWithRef]]],
+          },
+        });
         const fixture = TestBed.createComponent(MyComp);
 
         const cmp = fixture.debugElement.children[0].references!['cmp'];
@@ -664,12 +769,17 @@ describe('integration tests', function () {
       });
 
       it('should be checked when an async pipe requests a check', async () => {
-        TestBed.configureTestingModule({
-          declarations: [MyComp, PushCmpWithAsyncPipe],
-          imports: [CommonModule],
-        });
         const template = '<push-cmp-with-async #cmp></push-cmp-with-async>';
-        TestBed.overrideComponent(MyComp, {set: {template}});
+        TestBed.overrideComponent(MyComp, {
+          set: {
+            template,
+            imports: [
+              CommonModule,
+              forwardRef(() => DynamicViewport),
+              forwardRef(() => PushCmpWithAsyncPipe),
+            ],
+          },
+        });
         const fixture = TestBed.createComponent(MyComp);
 
         await fixture.whenStable();
@@ -692,7 +802,6 @@ describe('integration tests', function () {
 
     it('should create a component that injects an @Host', () => {
       TestBed.configureTestingModule({
-        declarations: [MyComp, SomeDirective, CompWithHost],
         schemas: [NO_ERRORS_SCHEMA],
       });
       const template = `
@@ -701,7 +810,17 @@ describe('integration tests', function () {
                 <cmp-with-host #child></cmp-with-host>
               </p>
             </some-directive>`;
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [
+            CommonModule,
+            forwardRef(() => DynamicViewport),
+            forwardRef(() => SomeDirective),
+            forwardRef(() => CompWithHost),
+          ],
+        },
+      });
       const fixture = TestBed.createComponent(MyComp);
 
       const childComponent =
@@ -711,7 +830,6 @@ describe('integration tests', function () {
 
     it('should create a component that injects an @Host through viewcontainer directive', () => {
       TestBed.configureTestingModule({
-        declarations: [MyComp, SomeDirective, CompWithHost],
         schemas: [NO_ERRORS_SCHEMA],
       });
       const template = `
@@ -720,7 +838,17 @@ describe('integration tests', function () {
                 <cmp-with-host #child></cmp-with-host>
               </p>
             </some-directive>`;
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [
+            CommonModule,
+            forwardRef(() => DynamicViewport),
+            forwardRef(() => SomeDirective),
+            forwardRef(() => CompWithHost),
+          ],
+        },
+      });
       const fixture = TestBed.createComponent(MyComp);
 
       fixture.detectChanges();
@@ -732,11 +860,18 @@ describe('integration tests', function () {
     });
 
     it('should support events via EventEmitter on regular elements', waitForAsync(() => {
-      TestBed.configureTestingModule({
-        declarations: [MyComp, DirectiveEmittingEvent, DirectiveListeningEvent],
-      });
       const template = '<div emitter listener></div>';
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [
+            CommonModule,
+            forwardRef(() => DynamicViewport),
+            forwardRef(() => DirectiveEmittingEvent),
+            forwardRef(() => DirectiveListeningEvent),
+          ],
+        },
+      });
       const fixture = TestBed.createComponent(MyComp);
 
       const tc = fixture.debugElement.children[0];
@@ -763,15 +898,17 @@ describe('integration tests', function () {
     }));
 
     it('should support events via EventEmitter on template elements', waitForAsync(() => {
-      const fixture = TestBed.configureTestingModule({
-        declarations: [MyComp, DirectiveEmittingEvent, DirectiveListeningEvent],
-      })
-        .overrideComponent(MyComp, {
-          set: {
-            template: '<ng-template emitter listener (event)="ctxProp.set($event)"></ng-template>',
-          },
-        })
-        .createComponent(MyComp);
+      const fixture = TestBed.overrideComponent(MyComp, {
+        set: {
+          template: '<ng-template emitter listener (event)="ctxProp.set($event)"></ng-template>',
+          imports: [
+            CommonModule,
+            forwardRef(() => DynamicViewport),
+            forwardRef(() => DirectiveEmittingEvent),
+            forwardRef(() => DirectiveListeningEvent),
+          ],
+        },
+      }).createComponent(MyComp);
       const tc = fixture.debugElement.childNodes.find(
         (debugElement) => debugElement.nativeNode.nodeType === Node.COMMENT_NODE,
       )!;
@@ -794,9 +931,17 @@ describe('integration tests', function () {
     }));
 
     it('should support [()] syntax', waitForAsync(() => {
-      TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithTwoWayBinding]});
       const template = '<div [(control)]="ctxProp" two-way></div>';
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [
+            CommonModule,
+            forwardRef(() => DynamicViewport),
+            forwardRef(() => DirectiveWithTwoWayBinding),
+          ],
+        },
+      });
       const fixture = TestBed.createComponent(MyComp);
       const tc = fixture.debugElement.children[0];
       const dir = tc.injector.get(DirectiveWithTwoWayBinding);
@@ -816,9 +961,17 @@ describe('integration tests', function () {
     }));
 
     it('should support render events', () => {
-      TestBed.configureTestingModule({declarations: [MyComp, DirectiveListeningDomEvent]});
       const template = '<div listener></div>';
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [
+            CommonModule,
+            forwardRef(() => DynamicViewport),
+            forwardRef(() => DirectiveListeningDomEvent),
+          ],
+        },
+      });
       const fixture = TestBed.createComponent(MyComp);
 
       const tc = fixture.debugElement.children[0];
@@ -840,9 +993,17 @@ describe('integration tests', function () {
     });
 
     it('should support render global events', () => {
-      TestBed.configureTestingModule({declarations: [MyComp, DirectiveListeningDomEvent]});
       const template = '<div listener></div>';
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [
+            CommonModule,
+            forwardRef(() => DynamicViewport),
+            forwardRef(() => DirectiveListeningDomEvent),
+          ],
+        },
+      });
       const fixture = TestBed.createComponent(MyComp);
       const doc = TestBed.inject(DOCUMENT);
 
@@ -865,11 +1026,9 @@ describe('integration tests', function () {
       @Component({
         host: {'role': 'button'},
         template: '',
-        standalone: false,
       })
       class ComponentUpdatingHostAttributes {}
 
-      TestBed.configureTestingModule({declarations: [ComponentUpdatingHostAttributes]});
       const fixture = TestBed.createComponent(ComponentUpdatingHostAttributes);
 
       fixture.detectChanges();
@@ -878,9 +1037,17 @@ describe('integration tests', function () {
     });
 
     it('should support updating host element via hostAttributes on host elements', () => {
-      TestBed.configureTestingModule({declarations: [MyComp, DirectiveUpdatingHostAttributes]});
       const template = '<div update-host-attributes></div>';
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [
+            CommonModule,
+            forwardRef(() => DynamicViewport),
+            forwardRef(() => DirectiveUpdatingHostAttributes),
+          ],
+        },
+      });
       const fixture = TestBed.createComponent(MyComp);
 
       fixture.detectChanges();
@@ -889,9 +1056,17 @@ describe('integration tests', function () {
     });
 
     it('should support updating host element via hostProperties', () => {
-      TestBed.configureTestingModule({declarations: [MyComp, DirectiveUpdatingHostProperties]});
       const template = '<div update-host-properties></div>';
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [
+            CommonModule,
+            forwardRef(() => DynamicViewport),
+            forwardRef(() => DirectiveUpdatingHostProperties),
+          ],
+        },
+      });
       const fixture = TestBed.createComponent(MyComp);
 
       const tc = fixture.debugElement.children[0];
@@ -908,20 +1083,18 @@ describe('integration tests', function () {
       @Directive({
         selector: '[host-properties]',
         host: {'[id]': 'id', '[title]': 'unknownProp'},
-        standalone: false,
       })
       class DirectiveWithHostProps {
         id = 'one';
         unknownProp = 'unknownProp';
       }
 
-      const fixture = TestBed.configureTestingModule({
-        declarations: [MyComp, DirectiveWithHostProps],
-      })
-        .overrideComponent(MyComp, {
-          set: {template: `<div *ngFor="let id of ['forId']" host-properties></div>`},
-        })
-        .createComponent(MyComp);
+      const fixture = TestBed.overrideComponent(MyComp, {
+        set: {
+          template: `<div *ngFor="let id of ['forId']" host-properties></div>`,
+          imports: [CommonModule, forwardRef(() => DynamicViewport), DirectiveWithHostProps],
+        },
+      }).createComponent(MyComp);
       fixture.detectChanges();
 
       const tc = fixture.debugElement.children[0];
@@ -933,13 +1106,16 @@ describe('integration tests', function () {
       @Directive({
         selector: '[host-properties]',
         host: {'[id]': 'id | uppercase'},
-        standalone: false,
       })
       class DirectiveWithHostProps {}
 
-      TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithHostProps]});
       const template = '<div host-properties></div>';
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [CommonModule, forwardRef(() => DynamicViewport), DirectiveWithHostProps],
+        },
+      });
       expect(() => TestBed.createComponent(MyComp)).toThrowError(
         /Host binding expression cannot contain pipes/,
       );
@@ -949,7 +1125,6 @@ describe('integration tests', function () {
       @Directive({
         selector: '[host-listener]',
         host: {'(click)': 'doIt(id, unknownProp)'},
-        standalone: false,
       })
       class DirectiveWithHostListener {
         id = 'one';
@@ -960,13 +1135,12 @@ describe('integration tests', function () {
         }
       }
 
-      const fixture = TestBed.configureTestingModule({
-        declarations: [MyComp, DirectiveWithHostListener],
-      })
-        .overrideComponent(MyComp, {
-          set: {template: `<div *ngFor="let id of ['forId']" host-listener></div>`},
-        })
-        .createComponent(MyComp);
+      const fixture = TestBed.overrideComponent(MyComp, {
+        set: {
+          template: `<div *ngFor="let id of ['forId']" host-listener></div>`,
+          imports: [CommonModule, forwardRef(() => DynamicViewport), DirectiveWithHostListener],
+        },
+      }).createComponent(MyComp);
       fixture.detectChanges();
       const tc = fixture.debugElement.children[0];
       tc.triggerEventHandler('click', {});
@@ -978,13 +1152,16 @@ describe('integration tests', function () {
       @Directive({
         selector: '[host-listener]',
         host: {'(click)': 'doIt() | somePipe'},
-        standalone: false,
       })
       class DirectiveWithHostListener {}
 
-      TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithHostListener]});
       const template = '<div host-listener></div>';
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [CommonModule, forwardRef(() => DynamicViewport), DirectiveWithHostListener],
+        },
+      });
       expect(() => TestBed.createComponent(MyComp)).toThrowError(
         /Cannot have a pipe in an action expression/,
       );
@@ -992,16 +1169,19 @@ describe('integration tests', function () {
 
     if (getDOM().supportsDOMEvents) {
       it('should support preventing default on render events', () => {
-        TestBed.configureTestingModule({
-          declarations: [
-            MyComp,
-            DirectiveListeningDomEventPrevent,
-            DirectiveListeningDomEventNoPrevent,
-          ],
-        });
         const template =
           '<input type="checkbox" listenerprevent><input type="checkbox" listenernoprevent>';
-        TestBed.overrideComponent(MyComp, {set: {template}});
+        TestBed.overrideComponent(MyComp, {
+          set: {
+            template,
+            imports: [
+              CommonModule,
+              forwardRef(() => DynamicViewport),
+              forwardRef(() => DirectiveListeningDomEventPrevent),
+              forwardRef(() => DirectiveListeningDomEventNoPrevent),
+            ],
+          },
+        });
         const fixture = TestBed.createComponent(MyComp);
 
         const dispatchedEvent = createMouseEvent('click');
@@ -1016,11 +1196,18 @@ describe('integration tests', function () {
     }
 
     it('should support render global events from multiple directives', () => {
-      TestBed.configureTestingModule({
-        declarations: [MyComp, DirectiveListeningDomEvent, DirectiveListeningDomEventOther],
-      });
       const template = '<div *ngIf="ctxBoolProp()" listener listenerother></div>';
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [
+            CommonModule,
+            forwardRef(() => DynamicViewport),
+            forwardRef(() => DirectiveListeningDomEvent),
+            forwardRef(() => DirectiveListeningDomEventOther),
+          ],
+        },
+      });
       const fixture = TestBed.createComponent(MyComp);
       const doc = TestBed.inject(DOCUMENT);
 
@@ -1053,9 +1240,6 @@ describe('integration tests', function () {
 
     describe('ViewContainerRef', () => {
       beforeEach(() => {
-        TestBed.configureTestingModule({
-          declarations: [MyComp, DynamicViewport, ChildCompUsingService],
-        });
         TestBed.overrideComponent(MyComp, {
           add: {template: '<div><dynamic-vp #dynamic></dynamic-vp></div>'},
         });
@@ -1172,9 +1356,17 @@ describe('integration tests', function () {
     });
 
     it('should support static attributes', () => {
-      TestBed.configureTestingModule({declarations: [MyComp, NeedsAttribute]});
       const template = '<input static type="text" title>';
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [
+            CommonModule,
+            forwardRef(() => DynamicViewport),
+            forwardRef(() => NeedsAttribute),
+          ],
+        },
+      });
       const fixture = TestBed.createComponent(MyComp);
 
       const tc = fixture.debugElement.children[0];
@@ -1188,7 +1380,6 @@ describe('integration tests', function () {
   describe('dependency injection', () => {
     it('should support bindings', () => {
       TestBed.configureTestingModule({
-        declarations: [MyComp, DirectiveProvidingInjectable, DirectiveConsumingInjectable],
         schemas: [NO_ERRORS_SCHEMA],
       });
       const template = `
@@ -1197,7 +1388,17 @@ describe('integration tests', function () {
               </directive-consuming-injectable>
             </directive-providing-injectable>
           `;
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [
+            CommonModule,
+            forwardRef(() => DynamicViewport),
+            forwardRef(() => DirectiveProvidingInjectable),
+            forwardRef(() => DirectiveConsumingInjectable),
+          ],
+        },
+      });
       const fixture = TestBed.createComponent(MyComp);
 
       const comp = fixture.debugElement.children[0].children[0].references['consuming'];
@@ -1206,14 +1407,15 @@ describe('integration tests', function () {
 
     it('should support viewProviders', () => {
       TestBed.configureTestingModule({
-        declarations: [MyComp, DirectiveProvidingInjectableInView, DirectiveConsumingInjectable],
         schemas: [NO_ERRORS_SCHEMA],
       });
       const template = `
               <directive-consuming-injectable #consuming>
               </directive-consuming-injectable>
           `;
-      TestBed.overrideComponent(DirectiveProvidingInjectableInView, {set: {template}});
+      TestBed.overrideComponent(DirectiveProvidingInjectableInView, {
+        set: {template, imports: [forwardRef(() => DirectiveConsumingInjectable)]},
+      });
       const fixture = TestBed.createComponent(DirectiveProvidingInjectableInView);
 
       const comp = fixture.debugElement.children[0].references['consuming'];
@@ -1222,12 +1424,6 @@ describe('integration tests', function () {
 
     it('should support unbounded lookup', () => {
       TestBed.configureTestingModule({
-        declarations: [
-          MyComp,
-          DirectiveProvidingInjectable,
-          DirectiveContainingDirectiveConsumingAnInjectable,
-          DirectiveConsumingInjectableUnbounded,
-        ],
         schemas: [NO_ERRORS_SCHEMA],
       });
       const template = `
@@ -1236,12 +1432,23 @@ describe('integration tests', function () {
               </directive-containing-directive-consuming-an-injectable>
             </directive-providing-injectable>
           `;
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [
+            CommonModule,
+            forwardRef(() => DynamicViewport),
+            forwardRef(() => DirectiveProvidingInjectable),
+            forwardRef(() => DirectiveContainingDirectiveConsumingAnInjectable),
+          ],
+        },
+      });
       TestBed.overrideComponent(DirectiveContainingDirectiveConsumingAnInjectable, {
         set: {
           template: `
             <directive-consuming-injectable-unbounded></directive-consuming-injectable-unbounded>
           `,
+          imports: [forwardRef(() => DirectiveConsumingInjectableUnbounded)],
         },
       });
       const fixture = TestBed.createComponent(MyComp);
@@ -1252,12 +1459,6 @@ describe('integration tests', function () {
 
     it('should support the event-bus scenario', () => {
       TestBed.configureTestingModule({
-        declarations: [
-          MyComp,
-          GrandParentProvidingEventBus,
-          ParentProvidingEventBus,
-          ChildConsumingEventBus,
-        ],
         schemas: [NO_ERRORS_SCHEMA],
       });
       const template = `
@@ -1268,7 +1469,18 @@ describe('integration tests', function () {
               </parent-providing-event-bus>
             </grand-parent-providing-event-bus>
           `;
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [
+            CommonModule,
+            forwardRef(() => DynamicViewport),
+            forwardRef(() => GrandParentProvidingEventBus),
+            forwardRef(() => ParentProvidingEventBus),
+            forwardRef(() => ChildConsumingEventBus),
+          ],
+        },
+      });
       const fixture = TestBed.createComponent(MyComp);
 
       const gpComp = fixture.debugElement.children[0];
@@ -1287,7 +1499,6 @@ describe('integration tests', function () {
 
     it('should instantiate bindings lazily', () => {
       TestBed.configureTestingModule({
-        declarations: [MyComp, DirectiveConsumingInjectable, ComponentProvidingLoggingInjectable],
         schemas: [NO_ERRORS_SCHEMA],
       });
       const template = `
@@ -1296,7 +1507,17 @@ describe('integration tests', function () {
                 </directive-consuming-injectable>
               </component-providing-logging-injectable>
           `;
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [
+            CommonModule,
+            forwardRef(() => DynamicViewport),
+            forwardRef(() => DirectiveConsumingInjectable),
+            forwardRef(() => ComponentProvidingLoggingInjectable),
+          ],
+        },
+      });
       const fixture = TestBed.createComponent(MyComp);
 
       const providing = fixture.debugElement.children[0].references['providing'];
@@ -1311,7 +1532,6 @@ describe('integration tests', function () {
 
   describe('corner cases', () => {
     it('should remove script tags from templates', () => {
-      TestBed.configureTestingModule({declarations: [MyComp]});
       const template = `
             <script>alert("Ooops");</script>
             <div>before<script>alert("Ooops");</script><span>inside</span>after</div>`;
@@ -1334,7 +1554,7 @@ describe('integration tests', function () {
       })
       class SomeComponent {}
 
-      TestBed.configureTestingModule({declarations: [MyComp, SomeDirective, SomeComponent]});
+      TestBed.configureTestingModule({declarations: [SomeDirective, SomeComponent]});
       expect(() => TestBed.createComponent(MyComp)).toThrowError(
         `Directive ${stringify(SomeDirective)} has no selector, please add it!`,
       );
@@ -1379,42 +1599,7 @@ describe('integration tests', function () {
       class SomeComponent3 extends TestDirWithInputs {}
 
       TestBed.configureTestingModule({
-        declarations: [MyComp, SomeComponent, SomeComponent2, SomeComponent3],
-      });
-      expect(() => TestBed.createComponent(MyComp)).not.toThrowError();
-    });
-
-    it('should not throw when a declared pipe extends an abstract directive base class', () => {
-      // https://github.com/angular/angular/issues/36427
-      // An abstract base class with a lifecycle hook is compiled as a selector-less
-      // directive. A pipe that extends it inherits that directive def, which used to trip
-      // the "has no selector" (and later the "is standalone") NgModule checks.
-      @Directive({standalone: false})
-      abstract class NonStandaloneBase implements OnDestroy {
-        ngOnDestroy() {}
-      }
-
-      @Pipe({name: 'nonStandalonePipe', standalone: false})
-      class NonStandalonePipe extends NonStandaloneBase implements PipeTransform {
-        transform(value: unknown): unknown {
-          return value;
-        }
-      }
-
-      @Directive()
-      abstract class StandaloneBase implements OnDestroy {
-        ngOnDestroy() {}
-      }
-
-      @Pipe({name: 'standaloneDefaultPipe', standalone: false})
-      class StandaloneDefaultPipe extends StandaloneBase implements PipeTransform {
-        transform(value: unknown): unknown {
-          return value;
-        }
-      }
-
-      TestBed.configureTestingModule({
-        declarations: [MyComp, NonStandalonePipe, StandaloneDefaultPipe],
+        declarations: [SomeComponent, SomeComponent2, SomeComponent3],
       });
       expect(() => TestBed.createComponent(MyComp)).not.toThrowError();
     });
@@ -1433,7 +1618,7 @@ describe('integration tests', function () {
       })
       class SomeComponent {}
 
-      TestBed.configureTestingModule({declarations: [MyComp, SomeDirective, SomeComponent]});
+      TestBed.configureTestingModule({declarations: [SomeDirective, SomeComponent]});
       expect(() => TestBed.createComponent(MyComp)).toThrowError(
         `Directive ${stringify(SomeDirective)} has no selector, please add it!`,
       );
@@ -1458,7 +1643,7 @@ describe('integration tests', function () {
 
   describe('error handling', () => {
     it('should report a meaningful error when a directive is missing annotation', () => {
-      TestBed.configureTestingModule({declarations: [MyComp, SomeDirectiveMissingAnnotation]});
+      TestBed.configureTestingModule({declarations: [SomeDirectiveMissingAnnotation]});
 
       expect(() => TestBed.createComponent(MyComp)).toThrowError(
         `Unexpected value '${stringify(
@@ -1468,7 +1653,6 @@ describe('integration tests', function () {
     });
 
     it('should report a meaningful error when a component is missing view annotation', () => {
-      TestBed.configureTestingModule({declarations: [MyComp, ComponentWithoutView]});
       try {
         TestBed.createComponent(ComponentWithoutView);
       } catch (e) {
@@ -1480,9 +1664,17 @@ describe('integration tests', function () {
   });
 
   it('should support imperative views', () => {
-    TestBed.configureTestingModule({declarations: [MyComp, SimpleImperativeViewComponent]});
     const template = '<simple-imp-cmp></simple-imp-cmp>';
-    TestBed.overrideComponent(MyComp, {set: {template}});
+    TestBed.overrideComponent(MyComp, {
+      set: {
+        template,
+        imports: [
+          CommonModule,
+          forwardRef(() => DynamicViewport),
+          forwardRef(() => SimpleImperativeViewComponent),
+        ],
+      },
+    });
     const fixture = TestBed.createComponent(MyComp);
 
     expect(fixture.nativeElement).toHaveText('hello imp view');
@@ -1490,11 +1682,19 @@ describe('integration tests', function () {
 
   it('should support moving embedded views around', () => {
     TestBed.configureTestingModule({
-      declarations: [MyComp, SomeImperativeViewport],
       providers: [{provide: ANCHOR_ELEMENT, useValue: el('<div></div>')}],
     });
     const template = '<div><div *someImpvp="ctxBoolProp()">hello</div></div>';
-    TestBed.overrideComponent(MyComp, {set: {template}});
+    TestBed.overrideComponent(MyComp, {
+      set: {
+        template,
+        imports: [
+          CommonModule,
+          forwardRef(() => DynamicViewport),
+          forwardRef(() => SomeImperativeViewport),
+        ],
+      },
+    });
     const anchorElement = getTestBed().inject(ANCHOR_ELEMENT);
     const fixture = TestBed.createComponent(MyComp);
 
@@ -1513,9 +1713,7 @@ describe('integration tests', function () {
 
   describe('moving embedded views of projectable nodes in a dynamic component', () => {
     @Component({
-      selector: 'menu-item',
       template: '',
-      standalone: false,
     })
     class DynamicMenuItem {
       @ViewChild('templateRef', {static: true}) templateRef!: TemplateRef<any>;
@@ -1523,18 +1721,12 @@ describe('integration tests', function () {
     }
 
     @Component({
-      selector: 'test',
       template: `<ng-container #menuItemsContainer></ng-container>`,
-      standalone: false,
     })
     class TestCmp {
       @ViewChild('menuItemsContainer', {static: true, read: ViewContainerRef})
       menuItemsContainer!: ViewContainerRef;
     }
-
-    beforeEach(() => {
-      TestBed.configureTestingModule({declarations: [TestCmp, DynamicMenuItem]});
-    });
 
     const createElWithContent = (content: string, tagName = 'span') => {
       const element = document.createElement(tagName);
@@ -1613,8 +1805,6 @@ describe('integration tests', function () {
         `<ng-template #templateRef><ng-content select="span"></ng-content>{{itemContent}}<ng-content select="button"></ng-content></ng-template>`,
       );
 
-      TestBed.configureTestingModule({declarations: [TestCmp, DynamicMenuItem]});
-
       const fixture = TestBed.createComponent(TestCmp);
       const menuItemsContainer = fixture.componentInstance.menuItemsContainer;
 
@@ -1684,7 +1874,6 @@ describe('integration tests', function () {
 
   describe('Property bindings', () => {
     it('should throw on bindings to unknown properties', () => {
-      TestBed.configureTestingModule({declarations: [MyComp]});
       const template = '<div unknown="{{ctxProp()}}"></div>';
       TestBed.overrideComponent(MyComp, {set: {template}});
 
@@ -1697,7 +1886,6 @@ describe('integration tests', function () {
     });
 
     it('should throw on bindings to unknown properties (micro-syntax)', () => {
-      TestBed.configureTestingModule({imports: [CommonModule], declarations: [MyComp]});
       const template = '<div *ngFor="let item in ctxArrProp">{{item}}</div>';
       TestBed.overrideComponent(MyComp, {set: {template}});
       const spy = spyOn(console, 'error');
@@ -1709,16 +1897,28 @@ describe('integration tests', function () {
     });
 
     it('should not throw for property binding to a non-existing property when there is a matching directive property', () => {
-      TestBed.configureTestingModule({declarations: [MyComp, MyDir]});
       const template = '<div my-dir [elprop]="ctxProp()"></div>';
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [CommonModule, forwardRef(() => DynamicViewport), forwardRef(() => MyDir)],
+        },
+      });
       expect(() => TestBed.createComponent(MyComp)).not.toThrow();
     });
 
     it('should not be created when there is a directive with the same property', () => {
-      TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithTitle]});
       const template = '<span [title]="ctxProp()"></span>';
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [
+            CommonModule,
+            forwardRef(() => DynamicViewport),
+            forwardRef(() => DirectiveWithTitle),
+          ],
+        },
+      });
       const fixture = TestBed.createComponent(MyComp);
 
       fixture.componentInstance.ctxProp.set('TITLE');
@@ -1729,9 +1929,17 @@ describe('integration tests', function () {
     });
 
     it('should work when a directive uses hostProperty to update the DOM element', () => {
-      TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithTitleAndHostProperty]});
       const template = '<span [title]="ctxProp()"></span>';
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [
+            CommonModule,
+            forwardRef(() => DynamicViewport),
+            forwardRef(() => DirectiveWithTitleAndHostProperty),
+          ],
+        },
+      });
       const fixture = TestBed.createComponent(MyComp);
 
       fixture.componentInstance.ctxProp.set('TITLE');
@@ -1745,11 +1953,11 @@ describe('integration tests', function () {
   describe('logging property updates', () => {
     describe('by default, when provideNgReflectAttributes() is not provided', () => {
       it('should not reflect properties', () => {
-        TestBed.configureTestingModule({
-          declarations: [MyComp, MyDir],
-        });
         TestBed.overrideComponent(MyComp, {
-          set: {template: `<div my-dir [elprop]="ctxProp()"></div>`},
+          set: {
+            template: `<div my-dir [elprop]="ctxProp()"></div>`,
+            imports: [CommonModule, forwardRef(() => DynamicViewport), forwardRef(() => MyDir)],
+          },
         });
         const fixture = TestBed.createComponent(MyComp);
 
@@ -1761,13 +1969,9 @@ describe('integration tests', function () {
       });
 
       it('should not reflect property values on template comments', () => {
-        const fixture = TestBed.configureTestingModule({
-          declarations: [MyComp],
-        })
-          .overrideComponent(MyComp, {
-            set: {template: `<ng-template [ngIf]="ctxBoolProp()"></ng-template>`},
-          })
-          .createComponent(MyComp);
+        const fixture = TestBed.overrideComponent(MyComp, {
+          set: {template: `<ng-template [ngIf]="ctxBoolProp()"></ng-template>`},
+        }).createComponent(MyComp);
 
         fixture.componentInstance.ctxBoolProp.set(true);
         fixture.detectChanges();
@@ -1779,11 +1983,13 @@ describe('integration tests', function () {
 
     it('should reflect property values as attributes', () => {
       TestBed.configureTestingModule({
-        declarations: [MyComp, MyDir],
         providers: [provideNgReflectAttributes()],
       });
       TestBed.overrideComponent(MyComp, {
-        set: {template: `<div my-dir [elprop]="ctxProp()"></div>`},
+        set: {
+          template: `<div my-dir [elprop]="ctxProp()"></div>`,
+          imports: [CommonModule, forwardRef(() => DynamicViewport), forwardRef(() => MyDir)],
+        },
       });
       const fixture = TestBed.createComponent(MyComp);
 
@@ -1796,11 +2002,13 @@ describe('integration tests', function () {
 
     it('should reflect property values on unbound inputs', () => {
       TestBed.configureTestingModule({
-        declarations: [MyComp, MyDir],
         providers: [provideNgReflectAttributes()],
       });
       TestBed.overrideComponent(MyComp, {
-        set: {template: `<div my-dir elprop="hello" title="Reflect test"></div>`},
+        set: {
+          template: `<div my-dir elprop="hello" title="Reflect test"></div>`,
+          imports: [CommonModule, forwardRef(() => DynamicViewport), forwardRef(() => MyDir)],
+        },
       });
       const fixture = TestBed.createComponent(MyComp);
       fixture.detectChanges();
@@ -1812,7 +2020,6 @@ describe('integration tests', function () {
 
     it(`should work with prop names containing '$'`, () => {
       TestBed.configureTestingModule({
-        declarations: [ParentCmp, SomeCmpWithInput],
         providers: [provideNgReflectAttributes()],
       });
       const fixture = TestBed.createComponent(ParentCmp);
@@ -1824,7 +2031,6 @@ describe('integration tests', function () {
 
     it('should reflect property values on template comments', () => {
       const fixture = TestBed.configureTestingModule({
-        declarations: [MyComp],
         providers: [provideNgReflectAttributes()],
       })
         .overrideComponent(MyComp, {
@@ -1841,7 +2047,6 @@ describe('integration tests', function () {
 
     it('should reflect property values on ng-containers', () => {
       const fixture = TestBed.configureTestingModule({
-        declarations: [MyComp],
         providers: [provideNgReflectAttributes()],
       })
         .overrideComponent(MyComp, {
@@ -1858,11 +2063,18 @@ describe('integration tests', function () {
 
     it('should reflect property values of multiple directive bound to the same input name', () => {
       TestBed.configureTestingModule({
-        declarations: [MyComp, MyDir, MyDir2],
         providers: [provideNgReflectAttributes()],
       });
       TestBed.overrideComponent(MyComp, {
-        set: {template: `<div my-dir my-dir2 [elprop]="ctxProp()"></div>`},
+        set: {
+          template: `<div my-dir my-dir2 [elprop]="ctxProp()"></div>`,
+          imports: [
+            CommonModule,
+            forwardRef(() => DynamicViewport),
+            forwardRef(() => MyDir),
+            forwardRef(() => MyDir2),
+          ],
+        },
       });
       const fixture = TestBed.createComponent(MyComp);
 
@@ -1876,11 +2088,15 @@ describe('integration tests', function () {
 
     it('should indicate when toString() throws', () => {
       TestBed.configureTestingModule({
-        declarations: [MyComp, MyDir],
         providers: [provideNgReflectAttributes()],
       });
       const template = '<div my-dir [elprop]="toStringThrow"></div>';
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [CommonModule, forwardRef(() => DynamicViewport), forwardRef(() => MyDir)],
+        },
+      });
       const fixture = TestBed.createComponent(MyComp);
 
       fixture.detectChanges();
@@ -1889,11 +2105,13 @@ describe('integration tests', function () {
 
     it('should not reflect undefined values', () => {
       TestBed.configureTestingModule({
-        declarations: [MyComp, MyDir, MyDir2],
         providers: [provideNgReflectAttributes()],
       });
       TestBed.overrideComponent(MyComp, {
-        set: {template: `<div my-dir [elprop]="ctxProp()"></div>`},
+        set: {
+          template: `<div my-dir [elprop]="ctxProp()"></div>`,
+          imports: [CommonModule, forwardRef(() => DynamicViewport), forwardRef(() => MyDir)],
+        },
       });
       const fixture = TestBed.createComponent(MyComp);
 
@@ -1910,11 +2128,13 @@ describe('integration tests', function () {
 
     it('should not reflect null values', () => {
       TestBed.configureTestingModule({
-        declarations: [MyComp, MyDir, MyDir2],
         providers: [provideNgReflectAttributes()],
       });
       TestBed.overrideComponent(MyComp, {
-        set: {template: `<div my-dir [elprop]="ctxProp()"></div>`},
+        set: {
+          template: `<div my-dir [elprop]="ctxProp()"></div>`,
+          imports: [CommonModule, forwardRef(() => DynamicViewport), forwardRef(() => MyDir)],
+        },
       });
       const fixture = TestBed.createComponent(MyComp);
 
@@ -1931,11 +2151,13 @@ describe('integration tests', function () {
 
     it('should reflect empty strings', () => {
       TestBed.configureTestingModule({
-        declarations: [MyComp, MyDir, MyDir2],
         providers: [provideNgReflectAttributes()],
       });
       TestBed.overrideComponent(MyComp, {
-        set: {template: `<div my-dir [elprop]="ctxProp()"></div>`},
+        set: {
+          template: `<div my-dir [elprop]="ctxProp()"></div>`,
+          imports: [CommonModule, forwardRef(() => DynamicViewport), forwardRef(() => MyDir)],
+        },
       });
       const fixture = TestBed.createComponent(MyComp);
 
@@ -1947,7 +2169,6 @@ describe('integration tests', function () {
 
     it('should not reflect in comment nodes when the value changes to undefined', () => {
       const fixture = TestBed.configureTestingModule({
-        declarations: [MyComp],
         providers: [provideNgReflectAttributes()],
       })
         .overrideComponent(MyComp, {
@@ -1972,7 +2193,6 @@ describe('integration tests', function () {
 
     it('should reflect in comment nodes when the value changes to null', () => {
       const fixture = TestBed.configureTestingModule({
-        declarations: [MyComp],
         providers: [provideNgReflectAttributes()],
       })
         .overrideComponent(MyComp, {
@@ -1999,11 +2219,19 @@ describe('integration tests', function () {
   describe('property decorators', () => {
     it('should support property decorators', () => {
       TestBed.configureTestingModule({
-        declarations: [MyComp, DirectiveWithPropDecorators],
         schemas: [NO_ERRORS_SCHEMA],
       });
       const template = '<with-prop-decorators elProp="aaa"></with-prop-decorators>';
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [
+            CommonModule,
+            forwardRef(() => DynamicViewport),
+            forwardRef(() => DirectiveWithPropDecorators),
+          ],
+        },
+      });
       const fixture = TestBed.createComponent(MyComp);
 
       fixture.detectChanges();
@@ -2013,11 +2241,19 @@ describe('integration tests', function () {
 
     it('should support host binding decorators', () => {
       TestBed.configureTestingModule({
-        declarations: [MyComp, DirectiveWithPropDecorators],
         schemas: [NO_ERRORS_SCHEMA],
       });
       const template = '<with-prop-decorators></with-prop-decorators>';
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [
+            CommonModule,
+            forwardRef(() => DynamicViewport),
+            forwardRef(() => DirectiveWithPropDecorators),
+          ],
+        },
+      });
       const fixture = TestBed.createComponent(MyComp);
 
       fixture.detectChanges();
@@ -2032,11 +2268,19 @@ describe('integration tests', function () {
     if (getDOM().supportsDOMEvents) {
       it('should support event decorators', async () => {
         TestBed.configureTestingModule({
-          declarations: [MyComp, DirectiveWithPropDecorators],
           schemas: [NO_ERRORS_SCHEMA],
         });
         const template = `<with-prop-decorators (elEvent)="ctxProp.set('called')">`;
-        TestBed.overrideComponent(MyComp, {set: {template}});
+        TestBed.overrideComponent(MyComp, {
+          set: {
+            template,
+            imports: [
+              CommonModule,
+              forwardRef(() => DynamicViewport),
+              forwardRef(() => DirectiveWithPropDecorators),
+            ],
+          },
+        });
         const fixture = TestBed.createComponent(MyComp);
 
         await fixture.whenStable();
@@ -2051,11 +2295,19 @@ describe('integration tests', function () {
 
       it('should support host listener decorators', () => {
         TestBed.configureTestingModule({
-          declarations: [MyComp, DirectiveWithPropDecorators],
           schemas: [NO_ERRORS_SCHEMA],
         });
         const template = '<with-prop-decorators></with-prop-decorators>';
-        TestBed.overrideComponent(MyComp, {set: {template}});
+        TestBed.overrideComponent(MyComp, {
+          set: {
+            template,
+            imports: [
+              CommonModule,
+              forwardRef(() => DynamicViewport),
+              forwardRef(() => DirectiveWithPropDecorators),
+            ],
+          },
+        });
         const fixture = TestBed.createComponent(MyComp);
 
         fixture.detectChanges();
@@ -2069,12 +2321,19 @@ describe('integration tests', function () {
 
     it('should support defining views in the component decorator', () => {
       TestBed.configureTestingModule({
-        declarations: [MyComp, ComponentWithTemplate],
-        imports: [CommonModule],
         schemas: [NO_ERRORS_SCHEMA],
       });
       const template = '<component-with-template></component-with-template>';
-      TestBed.overrideComponent(MyComp, {set: {template}});
+      TestBed.overrideComponent(MyComp, {
+        set: {
+          template,
+          imports: [
+            CommonModule,
+            forwardRef(() => DynamicViewport),
+            forwardRef(() => ComponentWithTemplate),
+          ],
+        },
+      });
       const fixture = TestBed.createComponent(MyComp);
 
       fixture.detectChanges();
@@ -2086,13 +2345,11 @@ describe('integration tests', function () {
   describe('whitespaces in templates', () => {
     it('should not remove whitespaces by default', waitForAsync(() => {
       @Component({
-        selector: 'comp',
         template: '<span>foo</span>  <span>bar</span>',
-        standalone: false,
       })
       class MyCmp {}
 
-      const f = TestBed.configureTestingModule({declarations: [MyCmp]}).createComponent(MyCmp);
+      const f = TestBed.createComponent(MyCmp);
       f.detectChanges();
 
       expect(f.nativeElement.childNodes.length).toBe(2);
@@ -2100,14 +2357,12 @@ describe('integration tests', function () {
 
     it('should not remove whitespaces when explicitly requested not to do so', waitForAsync(() => {
       @Component({
-        selector: 'comp',
         template: '<span>foo</span>  <span>bar</span>',
         preserveWhitespaces: true,
-        standalone: false,
       })
       class MyCmp {}
 
-      const f = TestBed.configureTestingModule({declarations: [MyCmp]}).createComponent(MyCmp);
+      const f = TestBed.createComponent(MyCmp);
       f.detectChanges();
 
       expect(f.nativeElement.childNodes.length).toBe(3);
@@ -2115,14 +2370,12 @@ describe('integration tests', function () {
 
     it('should remove whitespaces when explicitly requested to do so', waitForAsync(() => {
       @Component({
-        selector: 'comp',
         template: '<span>foo</span>  <span>bar</span>',
         preserveWhitespaces: false,
-        standalone: false,
       })
       class MyCmp {}
 
-      const f = TestBed.configureTestingModule({declarations: [MyCmp]}).createComponent(MyCmp);
+      const f = TestBed.createComponent(MyCmp);
       f.detectChanges();
 
       expect(f.nativeElement.childNodes.length).toBe(2);
@@ -2132,8 +2385,8 @@ describe('integration tests', function () {
   describe('orphan components', () => {
     it('should display correct error message for orphan component if forbidOrphanRendering option is set', () => {
       @Component({
-        template: '...',
         standalone: false,
+        template: '...',
       })
       class MainComp {}
       ɵsetClassDebugInfo(MainComp, {
@@ -2143,7 +2396,6 @@ describe('integration tests', function () {
         forbidOrphanRendering: true,
       });
 
-      TestBed.configureTestingModule({declarations: [MainComp]});
       expect(() => TestBed.createComponent(MainComp)).toThrowError(
         /^NG0981: Orphan component found\! Trying to render the component MainComp \(at test\.ts:11\) without first loading the NgModule that declares it/,
       );
@@ -2151,8 +2403,8 @@ describe('integration tests', function () {
 
     it('should not throw error for orphan component if forbidOrphanRendering option is not set', () => {
       @Component({
-        template: '...',
         standalone: false,
+        template: '...',
       })
       class MainComp {}
       ɵsetClassDebugInfo(MainComp, {
@@ -2161,7 +2413,6 @@ describe('integration tests', function () {
         lineNumber: 11,
       });
 
-      TestBed.configureTestingModule({declarations: [MainComp]});
       expect(() => TestBed.createComponent(MainComp)).not.toThrow();
     });
   });
@@ -2169,7 +2420,6 @@ describe('integration tests', function () {
   if (getDOM().supportsDOMEvents) {
     describe('svg', () => {
       it('should support svg elements', () => {
-        TestBed.configureTestingModule({declarations: [MyComp]});
         const template = '<svg><use xlink:href="Port" /></svg>';
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
@@ -2186,7 +2436,6 @@ describe('integration tests', function () {
       });
 
       it('should support foreignObjects with document fragments', () => {
-        TestBed.configureTestingModule({declarations: [MyComp]});
         const template =
           '<svg><foreignObject><xhtml:div><p>Test</p></xhtml:div></foreignObject></svg>';
         TestBed.overrideComponent(MyComp, {set: {template}});
@@ -2204,7 +2453,6 @@ describe('integration tests', function () {
 
     describe('attributes', () => {
       it('should support attributes with namespace', () => {
-        TestBed.configureTestingModule({declarations: [MyComp, SomeCmp]});
         const template = '<svg:use xlink:href="#id" />';
         TestBed.overrideComponent(SomeCmp, {set: {template}});
         const fixture = TestBed.createComponent(SomeCmp);
@@ -2214,7 +2462,6 @@ describe('integration tests', function () {
       });
 
       it('should support binding to attributes with namespace', () => {
-        TestBed.configureTestingModule({declarations: [MyComp, SomeCmp]});
         const template = '<svg:use [attr.xlink:href]="value" />';
         TestBed.overrideComponent(SomeCmp, {set: {template}});
         const fixture = TestBed.createComponent(SomeCmp);
@@ -2241,7 +2488,6 @@ describe('integration tests', function () {
 @Component({
   selector: 'cmp-with-default-interpolation',
   template: `{{ text }}`,
-  standalone: false,
 })
 class ComponentWithDefaultInterpolation {
   text = 'Default Interpolation';
@@ -2258,7 +2504,6 @@ class MyService {
 @Component({
   selector: 'simple-imp-cmp',
   template: '',
-  standalone: false,
 })
 class SimpleImperativeViewComponent {
   done: any;
@@ -2271,7 +2516,6 @@ class SimpleImperativeViewComponent {
 
 @Directive({
   selector: 'dynamic-vp',
-  standalone: false,
 })
 class DynamicViewport {
   private injector: Injector;
@@ -2305,7 +2549,6 @@ class DynamicViewport {
   selector: '[my-dir]',
   inputs: ['dirProp: elprop'],
   exportAs: 'mydir',
-  standalone: false,
 })
 class MyDir {
   dirProp: string;
@@ -2318,7 +2561,6 @@ class MyDir {
   selector: '[my-dir2]',
   inputs: ['dirProp2: elprop'],
   exportAs: 'mydir2',
-  standalone: false,
 })
 class MyDir2 {
   dirProp2: string;
@@ -2330,7 +2572,6 @@ class MyDir2 {
 @Directive({
   selector: '[title]',
   inputs: ['title'],
-  standalone: false,
 })
 class DirectiveWithTitle {
   title: string | undefined;
@@ -2340,7 +2581,6 @@ class DirectiveWithTitle {
   selector: '[title]',
   inputs: ['title'],
   host: {'[title]': 'title'},
-  standalone: false,
 })
 class DirectiveWithTitleAndHostProperty {
   title: string | undefined;
@@ -2349,7 +2589,6 @@ class DirectiveWithTitleAndHostProperty {
 @Component({
   selector: 'event-cmp',
   template: '<div (click)="noop()"></div>',
-  standalone: false,
 })
 class EventCmp {
   noop() {}
@@ -2361,7 +2600,8 @@ class EventCmp {
   host: {'(click)': 'true'},
   template:
     '{{field}}<div (click)="noop()"></div><div *ngIf="true" (click)="noop()"></div><event-cmp></event-cmp>',
-  standalone: false,
+
+  imports: [CommonModule, EventCmp],
 })
 class PushCmp {
   numberOfChecks: number;
@@ -2383,7 +2623,6 @@ class PushCmp {
   selector: 'push-cmp-with-ref',
   inputs: ['prop'],
   template: '{{field}}',
-  standalone: false,
 })
 class PushCmpWithRef {
   numberOfChecks: number;
@@ -2409,7 +2648,6 @@ class PushCmpWithRef {
   selector: 'push-cmp-with-host-event',
   host: {'(click)': 'ctxCallback($event)'},
   template: '',
-  standalone: false,
 })
 class PushCmpWithHostEvent {
   ctxCallback: Function = (_: any) => {};
@@ -2418,15 +2656,18 @@ class PushCmpWithHostEvent {
 @Component({
   selector: 'push-cmp-with-async',
   template: '{{field | async}}',
-  standalone: false,
+
+  imports: [CommonModule],
 })
 class PushCmpWithAsyncPipe {
   numberOfChecks: number = 0;
-  resolve: (result: any) => void;
+  resolve!: (result: any) => void;
   promise: Promise<any>;
 
   constructor() {
-    ({promise: this.promise, resolve: this.resolve} = Promise.withResolvers<any>());
+    this.promise = new Promise((resolve) => {
+      this.resolve = resolve;
+    });
   }
 
   get field() {
@@ -2438,8 +2679,9 @@ class PushCmpWithAsyncPipe {
 @Component({
   selector: 'my-comp',
   template: '',
-  standalone: false,
+
   changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [CommonModule, DynamicViewport],
 })
 class MyComp {
   readonly ctxProp = signal<string | undefined>(undefined);
@@ -2469,7 +2711,6 @@ class MyComp {
   inputs: ['dirProp'],
   viewProviders: [MyService],
   template: '{{ctxProp()}}',
-  standalone: false,
 })
 class ChildComp {
   ctxProp = signal<string | undefined>(undefined);
@@ -2483,7 +2724,6 @@ class ChildComp {
 @Component({
   selector: 'child-cmp-no-template',
   template: '',
-  standalone: false,
 })
 class ChildCompNoTemplate {
   ctxProp: string = 'hello';
@@ -2492,7 +2732,6 @@ class ChildCompNoTemplate {
 @Component({
   selector: 'child-cmp-svc',
   template: '{{ctxProp()}}',
-  standalone: false,
 })
 class ChildCompUsingService {
   ctxProp = signal<string | undefined>(undefined);
@@ -2503,7 +2742,6 @@ class ChildCompUsingService {
 
 @Directive({
   selector: 'some-directive',
-  standalone: false,
 })
 class SomeDirective {}
 
@@ -2512,7 +2750,6 @@ class SomeDirectiveMissingAnnotation {}
 @Component({
   selector: 'cmp-with-host',
   template: '<p>Component with an injected host</p>',
-  standalone: false,
 })
 class CompWithHost {
   myHost: SomeDirective;
@@ -2524,7 +2761,6 @@ class CompWithHost {
 @Component({
   selector: '[child-cmp2]',
   viewProviders: [MyService],
-  standalone: false,
 })
 class ChildComp2 {
   ctxProp: string;
@@ -2541,7 +2777,6 @@ class SomeViewportContext {
 
 @Directive({
   selector: '[some-viewport]',
-  standalone: false,
 })
 class SomeViewport {
   constructor(
@@ -2555,7 +2790,6 @@ class SomeViewport {
 
 @Directive({
   selector: '[pollutedContext]',
-  standalone: false,
 })
 class PollutedContext {
   constructor(
@@ -2569,7 +2803,6 @@ class PollutedContext {
 
 @Directive({
   selector: '[noContext]',
-  standalone: false,
 })
 class NoContext {
   constructor(
@@ -2582,7 +2815,6 @@ class NoContext {
 
 @Pipe({
   name: 'double',
-  standalone: false,
 })
 class DoublePipe implements PipeTransform, OnDestroy {
   ngOnDestroy() {}
@@ -2594,7 +2826,6 @@ class DoublePipe implements PipeTransform, OnDestroy {
 @Directive({
   selector: '[emitter]',
   outputs: ['event'],
-  standalone: false,
 })
 class DirectiveEmittingEvent {
   msg: string;
@@ -2613,14 +2844,12 @@ class DirectiveEmittingEvent {
 @Directive({
   selector: '[update-host-attributes]',
   host: {'role': 'button'},
-  standalone: false,
 })
 class DirectiveUpdatingHostAttributes {}
 
 @Directive({
   selector: '[update-host-properties]',
   host: {'[id]': 'id'},
-  standalone: false,
 })
 class DirectiveUpdatingHostProperties {
   id: string;
@@ -2633,7 +2862,6 @@ class DirectiveUpdatingHostProperties {
 @Directive({
   selector: '[listener]',
   host: {'(event)': 'onEvent($event)'},
-  standalone: false,
 })
 class DirectiveListeningEvent {
   msg: string;
@@ -2655,7 +2883,6 @@ class DirectiveListeningEvent {
     '(document:domEvent)': 'onDocumentEvent($event.type)',
     '(body:domEvent)': 'onBodyEvent($event.type)',
   },
-  standalone: false,
 })
 class DirectiveListeningDomEvent {
   eventTypes: string[] = [];
@@ -2677,7 +2904,6 @@ let globalCounter = 0;
 @Directive({
   selector: '[listenerother]',
   host: {'(window:domEvent)': 'onEvent($event.type)'},
-  standalone: false,
 })
 class DirectiveListeningDomEventOther {
   eventType: string;
@@ -2693,7 +2919,6 @@ class DirectiveListeningDomEventOther {
 @Directive({
   selector: '[listenerprevent]',
   host: {'(click)': 'onEvent($event)'},
-  standalone: false,
 })
 class DirectiveListeningDomEventPrevent {
   onEvent(event: any) {
@@ -2704,7 +2929,6 @@ class DirectiveListeningDomEventPrevent {
 @Directive({
   selector: '[listenernoprevent]',
   host: {'(click)': 'onEvent($event)'},
-  standalone: false,
 })
 class DirectiveListeningDomEventNoPrevent {
   onEvent(event: any) {
@@ -2715,7 +2939,6 @@ class DirectiveListeningDomEventNoPrevent {
 @Directive({
   selector: '[id]',
   inputs: ['id'],
-  standalone: false,
 })
 class IdDir {
   id: string | undefined;
@@ -2723,7 +2946,6 @@ class IdDir {
 
 @Directive({
   selector: '[customEvent]',
-  standalone: false,
 })
 class EventDir {
   @Output() customEvent = new EventEmitter();
@@ -2732,7 +2954,6 @@ class EventDir {
 
 @Directive({
   selector: '[static]',
-  standalone: false,
 })
 class NeedsAttribute {
   typeAttribute: string;
@@ -2755,13 +2976,11 @@ class PublicApi {}
 @Directive({
   selector: '[public-api]',
   providers: [{provide: PublicApi, useExisting: PrivateImpl, deps: []}],
-  standalone: false,
 })
 class PrivateImpl extends PublicApi {}
 
 @Directive({
   selector: '[needs-public-api]',
-  standalone: false,
 })
 class NeedsPublicApi {
   constructor(@Host() api: PublicApi) {
@@ -2775,7 +2994,6 @@ class ToolbarContext {
 
 @Directive({
   selector: '[toolbarpart]',
-  standalone: false,
 })
 class ToolbarPart {
   templateRef: TemplateRef<ToolbarContext>;
@@ -2787,7 +3005,6 @@ class ToolbarPart {
 @Directive({
   selector: '[toolbarVc]',
   inputs: ['toolbarVc'],
-  standalone: false,
 })
 class ToolbarViewContainer {
   constructor(public vc: ViewContainerRef) {}
@@ -2800,7 +3017,8 @@ class ToolbarViewContainer {
 @Component({
   selector: 'toolbar',
   template: 'TOOLBAR(<div *ngFor="let  part of query" [toolbarVc]="part"></div>)',
-  standalone: false,
+
+  imports: [CommonModule, ToolbarViewContainer],
 })
 class ToolbarComponent {
   @ContentChildren(ToolbarPart) query!: QueryList<ToolbarPart>;
@@ -2813,7 +3031,6 @@ class ToolbarComponent {
   selector: '[two-way]',
   inputs: ['control'],
   outputs: ['controlChange'],
-  standalone: false,
 })
 class DirectiveWithTwoWayBinding {
   controlChange = new EventEmitter();
@@ -2838,7 +3055,6 @@ function createInjectableWithLogging(inj: Injector) {
     {provide: InjectableService, useFactory: createInjectableWithLogging, deps: [Injector]},
   ],
   template: '',
-  standalone: false,
 })
 class ComponentProvidingLoggingInjectable {
   created: boolean = false;
@@ -2847,7 +3063,6 @@ class ComponentProvidingLoggingInjectable {
 @Directive({
   selector: 'directive-providing-injectable',
   providers: [[InjectableService]],
-  standalone: false,
 })
 class DirectiveProvidingInjectable {}
 
@@ -2855,7 +3070,6 @@ class DirectiveProvidingInjectable {}
   selector: 'directive-providing-injectable',
   viewProviders: [[InjectableService]],
   template: '',
-  standalone: false,
 })
 class DirectiveProvidingInjectableInView {}
 
@@ -2864,14 +3078,12 @@ class DirectiveProvidingInjectableInView {}
   providers: [{provide: InjectableService, useValue: 'host'}],
   viewProviders: [{provide: InjectableService, useValue: 'view'}],
   template: '',
-  standalone: false,
 })
 class DirectiveProvidingInjectableInHostAndView {}
 
 @Component({
   selector: 'directive-consuming-injectable',
   template: '',
-  standalone: false,
 })
 class DirectiveConsumingInjectable {
   injectable: any;
@@ -2883,7 +3095,6 @@ class DirectiveConsumingInjectable {
 
 @Component({
   selector: 'directive-containing-directive-consuming-an-injectable',
-  standalone: false,
 })
 class DirectiveContainingDirectiveConsumingAnInjectable {
   directive: any;
@@ -2892,7 +3103,6 @@ class DirectiveContainingDirectiveConsumingAnInjectable {
 @Component({
   selector: 'directive-consuming-injectable-unbounded',
   template: '',
-  standalone: false,
 })
 class DirectiveConsumingInjectableUnbounded {
   injectable: any;
@@ -2919,7 +3129,6 @@ class EventBus {
 @Directive({
   selector: 'grand-parent-providing-event-bus',
   providers: [{provide: EventBus, useValue: new EventBus(null!, 'grandparent')}],
-  standalone: false,
 })
 class GrandParentProvidingEventBus {
   bus: EventBus;
@@ -2937,8 +3146,9 @@ function createParentBus(peb: EventBus) {
   selector: 'parent-providing-event-bus',
   providers: [{provide: EventBus, useFactory: createParentBus, deps: [[EventBus, new SkipSelf()]]}],
   template: `<child-consuming-event-bus></child-consuming-event-bus>`,
-  standalone: false,
+
   changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [forwardRef(() => ChildConsumingEventBus)],
 })
 class ParentProvidingEventBus {
   bus: EventBus;
@@ -2952,7 +3162,6 @@ class ParentProvidingEventBus {
 
 @Directive({
   selector: 'child-consuming-event-bus',
-  standalone: false,
 })
 class ChildConsumingEventBus {
   bus: EventBus;
@@ -2965,7 +3174,6 @@ class ChildConsumingEventBus {
 @Directive({
   selector: '[someImpvp]',
   inputs: ['someImpvp'],
-  standalone: false,
 })
 class SomeImperativeViewport {
   view: EmbeddedViewRef<Object> | null;
@@ -2998,26 +3206,22 @@ class SomeImperativeViewport {
 @Directive({
   selector: '[export-dir]',
   exportAs: 'dir',
-  standalone: false,
 })
 class ExportDir {}
 
 @Directive({
   selector: '[multiple-export-as]',
   exportAs: 'dirX, dirY',
-  standalone: false,
 })
 export class DirectiveWithMultipleExportAsNames {}
 
 @Component({
   selector: 'comp',
-  standalone: false,
 })
 class ComponentWithoutView {}
 
 @Directive({
   selector: '[no-duplicate]',
-  standalone: false,
 })
 class DuplicateDir {
   constructor(elRef: ElementRef) {
@@ -3027,7 +3231,6 @@ class DuplicateDir {
 
 @Directive({
   selector: '[no-duplicate]',
-  standalone: false,
 })
 class OtherDuplicateDir {
   constructor(elRef: ElementRef) {
@@ -3037,7 +3240,6 @@ class OtherDuplicateDir {
 
 @Directive({
   selector: 'directive-throwing-error',
-  standalone: false,
 })
 class DirectiveThrowingAnError {
   constructor() {
@@ -3049,8 +3251,9 @@ class DirectiveThrowingAnError {
   selector: 'component-with-template',
   template: `No View Decorator:
     <div *ngFor="let item of items">{{ item }}</div>`,
-  standalone: false,
+
   changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [CommonModule],
 })
 class ComponentWithTemplate {
   items = [1, 2, 3];
@@ -3058,7 +3261,6 @@ class ComponentWithTemplate {
 
 @Directive({
   selector: 'with-prop-decorators',
-  standalone: false,
 })
 class DirectiveWithPropDecorators {
   target: any;
@@ -3079,7 +3281,7 @@ class DirectiveWithPropDecorators {
 
 @Component({
   selector: 'some-cmp',
-  standalone: false,
+
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class SomeCmp {
@@ -3089,8 +3291,9 @@ class SomeCmp {
 @Component({
   selector: 'parent-cmp',
   template: `<cmp [test$]="name"></cmp>`,
-  standalone: false,
+
   changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [forwardRef(() => SomeCmpWithInput)],
 })
 export class ParentCmp {
   name: string = 'hello';
@@ -3099,7 +3302,7 @@ export class ParentCmp {
 @Component({
   selector: 'cmp',
   template: '',
-  standalone: false,
+
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class SomeCmpWithInput {

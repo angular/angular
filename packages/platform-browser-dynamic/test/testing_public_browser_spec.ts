@@ -145,13 +145,15 @@ if (isBrowser) {
 
         it('should fail with an error from a promise', async () => {
           @Component({
-            selector: 'bad-template-comp',
             templateUrl: 'non-existent.html',
             standalone: false,
           })
           class BadTemplateUrl {}
 
-          TestBed.configureTestingModule({declarations: [BadTemplateUrl]});
+          TestBed.configureTestingModule({
+            declarations: [BadTemplateUrl],
+          });
+
           await expectAsync(TestBed.compileComponents()).toBeRejectedWith(
             'Failed to load non-existent.html',
           );
@@ -180,15 +182,16 @@ if (isBrowser) {
         }
 
         @Component({
-          selector: 'external-template-comp',
           templateUrl: '/base/angular/packages/platform-browser/test/static_assets/test.html',
           standalone: false,
         })
         class ExternalTemplateComp {}
 
-        TestBed.configureTestingModule({declarations: [ExternalTemplateComp]});
         TestBed.configureCompiler({
           providers: [{provide: ResourceLoader, useClass: MockResourceLoader}],
+        });
+        TestBed.configureTestingModule({
+          declarations: [ExternalTemplateComp],
         });
 
         await TestBed.compileComponents();

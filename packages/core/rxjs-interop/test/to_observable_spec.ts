@@ -19,7 +19,7 @@ import {toObservable} from '../src';
 import {ComponentFixture, TestBed} from '../../testing';
 import {take, toArray} from 'rxjs/operators';
 
-describe('toObservable()', () => {
+describe('toObservable()', async () => {
   let fixture!: ComponentFixture<unknown>;
   let injector!: EnvironmentInjector;
 
@@ -33,8 +33,8 @@ describe('toObservable()', () => {
     injector = TestBed.inject(EnvironmentInjector);
   });
 
-  function flushEffects(): void {
-    fixture.detectChanges();
+  async function flushEffects(): Promise<void> {
+    await fixture.whenStable();
   }
 
   it('should produce an observable that tracks a signal', async () => {
@@ -42,21 +42,21 @@ describe('toObservable()', () => {
     const counterValues = toObservable(counter, {injector}).pipe(take(3), toArray()).toPromise();
 
     // Initial effect execution, emits 0.
-    flushEffects();
+    await flushEffects();
 
     counter.set(1);
     // Emits 1.
-    flushEffects();
+    await flushEffects();
 
     counter.set(2);
     counter.set(3);
     // Emits 3 (ignores 2 as it was batched by the effect).
-    flushEffects();
+    await flushEffects();
 
     expect(await counterValues).toEqual([0, 1, 3]);
   });
 
-  it('should propagate errors from the signal', () => {
+  it('should propagate errors from the signal', async () => {
     const source = signal(1);
     const counter = computed(() => {
       const value = source();
@@ -77,17 +77,17 @@ describe('toObservable()', () => {
       error: (err) => (currentError = err),
     });
 
-    flushEffects();
+    await flushEffects();
     expect(currentValue).toBe(1);
 
     source.set(2);
-    flushEffects();
+    await flushEffects();
     expect(currentError).toBe('fail');
 
     sub.unsubscribe();
   });
 
-  it('monitors the signal even if the Observable is never subscribed', () => {
+  it('monitors the signal even if the Observable is never subscribed', async () => {
     let counterRead = false;
     const counter = computed(() => {
       counterRead = true;
@@ -100,11 +100,11 @@ describe('toObservable()', () => {
     expect(counterRead).toBeFalse();
 
     // The signal is read after effects have run.
-    flushEffects();
+    await flushEffects();
     expect(counterRead).toBeTrue();
   });
 
-  it('should still monitor the signal if the Observable has no active subscribers', () => {
+  it('should still monitor the signal if the Observable has no active subscribers', async () => {
     const counter = signal(0);
 
     // Tracks how many reads of `counter()` there have been.
@@ -119,13 +119,13 @@ describe('toObservable()', () => {
     const sub = counter$.subscribe();
     expect(readCount).toBe(0);
 
-    flushEffects();
+    await flushEffects();
     expect(readCount).toBe(1);
 
     // Sanity check of the read tracker - updating the counter should cause it to be read again
     // by the active effect.
     counter.set(1);
-    flushEffects();
+    await flushEffects();
     expect(readCount).toBe(2);
 
     // Tear down the only subscription.
@@ -133,11 +133,11 @@ describe('toObservable()', () => {
 
     // Now, setting the signal still triggers additional reads
     counter.set(2);
-    flushEffects();
+    await flushEffects();
     expect(readCount).toBe(3);
   });
 
-  it('stops monitoring the signal once injector is destroyed', () => {
+  it('stops monitoring the signal once injector is destroyed', async () => {
     const counter = signal(0);
 
     // Tracks how many reads of `counter()` there have been.
@@ -152,17 +152,17 @@ describe('toObservable()', () => {
 
     expect(readCount).toBe(0);
 
-    flushEffects();
+    await flushEffects();
     expect(readCount).toBe(1);
 
     // Now, setting the signal shouldn't trigger any additional reads, as the Injector was destroyed
     childInjector.destroy();
     counter.set(2);
-    flushEffects();
+    await flushEffects();
     expect(readCount).toBe(1);
   });
 
-  it('does not track downstream signal reads in the effect', () => {
+  it('does not track downstream signal reads in the effect', async () => {
     const counter = signal(0);
     const emits = signal(0);
     toObservable(counter, {injector}).subscribe(() => {
@@ -171,9 +171,9 @@ describe('toObservable()', () => {
       emits();
       emits.update((v) => v + 1);
     });
-    flushEffects();
+    await flushEffects();
     expect(emits()).toBe(1);
-    flushEffects();
+    await flushEffects();
     expect(emits()).toBe(1);
   });
 });

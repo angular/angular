@@ -50,7 +50,10 @@ describe('ApplicationInitStatus', () => {
     let initFnInvoked = false;
 
     beforeEach(() => {
-      ({promise, resolve, reject} = Promise.withResolvers<any>());
+      promise = new Promise((res, rej) => {
+        resolve = res;
+        reject = rej;
+      });
       TestBed.configureTestingModule({
         providers: [{provide: APP_INITIALIZER, useValue: [() => promise]}],
       });

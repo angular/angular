@@ -29,7 +29,6 @@ describe('components using pure function instructions internally', () => {
     @Component({
       selector: 'my-comp',
       template: ``,
-      standalone: false,
 
       changeDetection: ChangeDetectionStrategy.Eager,
     })
@@ -40,18 +39,15 @@ describe('components using pure function instructions internally', () => {
     it('should support an array literal with a binding', () => {
       @Component({
         template: ` <my-comp [names]="['Nancy', customName, 'Bess']"></my-comp> `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [MyComp],
       })
       class App {
         showing = true;
         customName = 'Carson';
       }
 
-      TestBed.configureTestingModule({
-        declarations: [App, MyComp],
-      });
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const myComp = fixture.debugElement.query(By.directive(MyComp)).componentInstance;
@@ -81,19 +77,15 @@ describe('components using pure function instructions internally', () => {
     it('should support array literals in dynamic views', () => {
       @Component({
         template: ` <my-comp *ngIf="showing" [names]="['Nancy', customName, 'Bess']"></my-comp> `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [CommonModule, MyComp],
       })
       class App {
         showing = true;
         customName = 'Carson';
       }
 
-      TestBed.configureTestingModule({
-        declarations: [App, MyComp],
-        imports: [CommonModule],
-      });
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const myComp = fixture.debugElement.query(By.directive(MyComp)).componentInstance;
@@ -104,7 +96,6 @@ describe('components using pure function instructions internally', () => {
       @Component({
         selector: 'many-prop-comp',
         template: ``,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -119,9 +110,9 @@ describe('components using pure function instructions internally', () => {
           <many-prop-comp [names1]="['Nancy', customName]" [names2]="[customName2]">
           </many-prop-comp>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [ManyPropComp],
       })
       class App {
         showing = true;
@@ -129,9 +120,6 @@ describe('components using pure function instructions internally', () => {
         customName2 = 'George';
       }
 
-      TestBed.configureTestingModule({
-        declarations: [App, ManyPropComp],
-      });
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const manyPropComp = fixture.debugElement.query(By.directive(ManyPropComp)).componentInstance;
@@ -150,9 +138,9 @@ describe('components using pure function instructions internally', () => {
       @Component({
         selector: 'parent-comp',
         template: ` <my-comp [names]="someFn(['Nancy', customName])"></my-comp> `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [MyComp],
       })
       class ParentComp {
         customName = 'Bess';
@@ -168,15 +156,12 @@ describe('components using pure function instructions internally', () => {
           <parent-comp></parent-comp>
           <parent-comp></parent-comp>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [ParentComp],
       })
       class App {}
 
-      TestBed.configureTestingModule({
-        declarations: [App, MyComp, ParentComp],
-      });
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const myComps = fixture.debugElement
@@ -201,9 +186,9 @@ describe('components using pure function instructions internally', () => {
         template: `
           <my-comp *ngIf="showing" [names]="['Nancy', customName, 'Bess', customName2]"></my-comp>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [CommonModule, MyComp],
       })
       class App {
         showing = true;
@@ -211,10 +196,6 @@ describe('components using pure function instructions internally', () => {
         customName2 = 'Hannah';
       }
 
-      TestBed.configureTestingModule({
-        declarations: [App, MyComp],
-        imports: [CommonModule],
-      });
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const myComp = fixture.debugElement.query(By.directive(MyComp)).componentInstance;
@@ -255,9 +236,9 @@ describe('components using pure function instructions internally', () => {
           <my-comp [names]="['a', v2, v3, v4, v5, v6, v7, v8]"></my-comp>
           <my-comp [names]="[v1, v2, v3, v4, v5, v6, v7, v8]"></my-comp>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [MyComp],
       })
       class App {
         v1 = 'a';
@@ -270,9 +251,6 @@ describe('components using pure function instructions internally', () => {
         v8 = 'h';
       }
 
-      TestBed.configureTestingModule({
-        declarations: [App, MyComp],
-      });
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -325,9 +303,9 @@ describe('components using pure function instructions internally', () => {
           <my-comp [names]="['start', v0, v1, v2, v3, 'modified_' + v4, v5, v6, v7, v8, 'end']">
           </my-comp>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [MyComp],
       })
       class App {
         v0 = 'a';
@@ -340,9 +318,7 @@ describe('components using pure function instructions internally', () => {
         v7 = 'h';
         v8 = 'i';
       }
-      TestBed.configureTestingModule({
-        declarations: [App, MyComp],
-      });
+
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const myComp = fixture.debugElement.query(By.directive(MyComp)).componentInstance;
@@ -402,7 +378,6 @@ describe('components using pure function instructions internally', () => {
     @Component({
       selector: 'object-comp',
       template: ``,
-      standalone: false,
 
       changeDetection: ChangeDetectionStrategy.Eager,
     })
@@ -413,17 +388,13 @@ describe('components using pure function instructions internally', () => {
     it('should support an object literal', () => {
       @Component({
         template: '<object-comp [config]="{duration: 500, animation: name}"></object-comp>',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [ObjectComp],
       })
       class App {
         name = 'slide';
       }
-
-      TestBed.configureTestingModule({
-        declarations: [App, ObjectComp],
-      });
 
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
@@ -458,18 +429,14 @@ describe('components using pure function instructions internally', () => {
           >
           </object-comp>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [ObjectComp],
       })
       class App {
         name = 'slide';
         duration = 100;
       }
-
-      TestBed.configureTestingModule({
-        declarations: [App, ObjectComp],
-      });
 
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
@@ -536,9 +503,9 @@ describe('components using pure function instructions internally', () => {
     it('should support multiple view instances with multiple bindings', () => {
       @Component({
         template: ` <object-comp *ngFor="let config of configs" [config]="config"> </object-comp> `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [CommonModule, ObjectComp],
       })
       class App {
         configs = [
@@ -546,11 +513,6 @@ describe('components using pure function instructions internally', () => {
           {opacity: 1, duration: 600},
         ];
       }
-
-      TestBed.configureTestingModule({
-        declarations: [App, ObjectComp],
-        imports: [CommonModule],
-      });
 
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
@@ -572,7 +534,6 @@ describe('components using pure function instructions internally', () => {
   describe('identical literals', () => {
     @Directive({
       selector: '[dir]',
-      standalone: false,
     })
     class Dir {
       @Input('dir') value: any;
@@ -584,15 +545,14 @@ describe('components using pure function instructions internally', () => {
           <div [dir]="{}"></div>
           <div [dir]="{}"></div>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         @ViewChildren(Dir) directives!: QueryList<Dir>;
       }
 
-      TestBed.configureTestingModule({declarations: [Dir, App]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -606,15 +566,14 @@ describe('components using pure function instructions internally', () => {
           <div [dir]="[]"></div>
           <div [dir]="[]"></div>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         @ViewChildren(Dir) directives!: QueryList<Dir>;
       }
 
-      TestBed.configureTestingModule({declarations: [Dir, App]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -625,15 +584,14 @@ describe('components using pure function instructions internally', () => {
     it('should not share object literals across component instances', () => {
       @Component({
         template: `<div [dir]="{}"></div>`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         @ViewChild(Dir) directive!: Dir;
       }
 
-      TestBed.configureTestingModule({declarations: [Dir, App]});
       const firstFixture = TestBed.createComponent(App);
       firstFixture.detectChanges();
 
@@ -648,15 +606,14 @@ describe('components using pure function instructions internally', () => {
     it('should not share array literals across component instances', () => {
       @Component({
         template: `<div [dir]="[]"></div>`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         @ViewChild(Dir) directive!: Dir;
       }
 
-      TestBed.configureTestingModule({declarations: [Dir, App]});
       const firstFixture = TestBed.createComponent(App);
       firstFixture.detectChanges();
 
@@ -674,15 +631,14 @@ describe('components using pure function instructions internally', () => {
           <div [dir]="{foo: null}"></div>
           <div [dir]="{foo: {}}"></div>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         @ViewChildren(Dir) directives!: QueryList<Dir>;
       }
 
-      TestBed.configureTestingModule({declarations: [Dir, App]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const values = fixture.componentInstance.directives.map((directive) => directive.value);
@@ -696,15 +652,14 @@ describe('components using pure function instructions internally', () => {
           <div [dir]="{foo: null}"></div>
           <div [dir]="{foo: []}"></div>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         @ViewChildren(Dir) directives!: QueryList<Dir>;
       }
 
-      TestBed.configureTestingModule({declarations: [Dir, App]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const values = fixture.componentInstance.directives.map((directive) => directive.value);
@@ -718,9 +673,9 @@ describe('components using pure function instructions internally', () => {
           <div [dir]="{foo: null}"></div>
           <div [dir]="{foo: getFoo()}"></div>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         @ViewChildren(Dir) directives!: QueryList<Dir>;
@@ -729,7 +684,6 @@ describe('components using pure function instructions internally', () => {
         }
       }
 
-      TestBed.configureTestingModule({declarations: [Dir, App]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const values = fixture.componentInstance.directives.map((directive) => directive.value);

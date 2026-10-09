@@ -80,7 +80,6 @@ describe('Number pipes', () => {
 
     it('should be available as a standalone pipe', async () => {
       @Component({
-        selector: 'test-component',
         imports: [DecimalPipe],
         template: '{{ value | number }}',
       })
@@ -132,7 +131,6 @@ describe('Number pipes', () => {
 
     it('should be available as a standalone pipe', async () => {
       @Component({
-        selector: 'test-component',
         imports: [PercentPipe],
         template: '{{ value | percent }}',
       })
@@ -229,7 +227,6 @@ describe('Number pipes', () => {
 
     it('should be available as a standalone pipe', async () => {
       @Component({
-        selector: 'test-component',
         imports: [CurrencyPipe],
         template: '{{ value | currency }}',
       })

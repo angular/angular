@@ -62,7 +62,10 @@ describe('injectAsync', () => {
     });
 
     await TestBed.runInInjectionContext(async () => {
-      const {promise: prefetchPromise, resolve: prefetchResolve} = Promise.withResolvers<void>();
+      let prefetchResolve!: () => void;
+      const prefetchPromise = new Promise<void>((resolve) => {
+        prefetchResolve = resolve;
+      });
 
       let prefetchCalled = false;
       const loader = () => {

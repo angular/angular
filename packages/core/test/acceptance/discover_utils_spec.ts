@@ -60,8 +60,6 @@ describe('discovery utils', () => {
     dirA = [];
     childComponent = [];
     TestBed.configureTestingModule({
-      imports: [CommonModule],
-      declarations: [MyApp, DirectiveA, Child],
       providers: [{provide: String, useValue: 'Module'}],
     });
     fixture = TestBed.createComponent(MyApp);
@@ -76,7 +74,6 @@ describe('discovery utils', () => {
     selector: 'child',
     template: '<p></p>',
     providers: [{provide: String, useValue: 'Child'}],
-    standalone: false,
 
     changeDetection: ChangeDetectionStrategy.Eager,
   })
@@ -89,7 +86,6 @@ describe('discovery utils', () => {
   @Directive({
     selector: '[dirA]',
     exportAs: 'dirA',
-    standalone: false,
   })
   class DirectiveA {
     @Input('a') b = 2;
@@ -100,7 +96,6 @@ describe('discovery utils', () => {
   }
 
   @Component({
-    selector: 'my-app',
     template: `
       <span (click)="log($event)" *ngIf="spanVisible">{{ text }}</span>
       <div dirA #div #foo="dirA"></div>
@@ -110,9 +105,9 @@ describe('discovery utils', () => {
       <ng-container><p></p></ng-container>
       <b *ngIf="visible">Bold</b>
     `,
-    standalone: false,
 
     changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [CommonModule, Child, DirectiveA],
   })
   class MyApp {
     text: string = 'INIT';
@@ -419,7 +414,6 @@ describe('discovery utils deprecated', () => {
       @Component({
         selector: 'inner-comp',
         template: '<div></div>',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -428,13 +422,12 @@ describe('discovery utils deprecated', () => {
       @Component({
         selector: 'comp',
         template: '<inner-comp></inner-comp>',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [InnerComp],
       })
       class Comp {}
 
-      TestBed.configureTestingModule({declarations: [Comp, InnerComp]});
       const fixture = TestBed.createComponent(Comp);
       fixture.detectChanges();
 
@@ -453,31 +446,27 @@ describe('discovery utils deprecated', () => {
     it('should return a list of the directives that are on the given element', () => {
       @Directive({
         selector: '[my-dir-1]',
-        standalone: false,
       })
       class MyDir1 {}
 
       @Directive({
         selector: '[my-dir-2]',
-        standalone: false,
       })
       class MyDir2 {}
 
       @Directive({
         selector: '[my-dir-3]',
-        standalone: false,
       })
       class MyDir3 {}
 
       @Component({
-        selector: 'comp',
         template: `
           <div my-dir-1 my-dir-2></div>
           <div my-dir-3></div>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [MyDir1, MyDir2, MyDir3],
       })
       class Comp {
         @ViewChild(MyDir1) myDir1Instance!: MyDir1;
@@ -485,7 +474,6 @@ describe('discovery utils deprecated', () => {
         @ViewChild(MyDir3) myDir3Instance!: MyDir3;
       }
 
-      TestBed.configureTestingModule({declarations: [Comp, MyDir1, MyDir2, MyDir3]});
       const fixture = TestBed.createComponent(Comp);
       fixture.detectChanges();
 
@@ -517,13 +505,11 @@ describe('discovery utils deprecated', () => {
     it('should return an injector that can return directive instances', () => {
       @Component({
         template: '',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Comp {}
 
-      TestBed.configureTestingModule({declarations: [Comp]});
       const fixture = TestBed.createComponent(Comp);
       const nodeInjector = getInjector(fixture.nativeElement);
       expect(nodeInjector.get(Comp)).toEqual(jasmine.any(Comp));
@@ -532,7 +518,6 @@ describe('discovery utils deprecated', () => {
     it('should return an injector that falls-back to a module injector', () => {
       @Component({
         template: '',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -542,7 +527,6 @@ describe('discovery utils deprecated', () => {
       const token = new InjectionToken<TestToken>('test token');
 
       TestBed.configureTestingModule({
-        declarations: [Comp],
         providers: [{provide: token, useValue: new TestToken()}],
       });
       const fixture = TestBed.createComponent(Comp);
@@ -556,19 +540,17 @@ describe('discovery utils deprecated', () => {
       @Directive({
         selector: '[myDir]',
         exportAs: 'myDir',
-        standalone: false,
       })
       class MyDir {}
 
       @Component({
         template: '<div myDir #elRef #dirRef="myDir"></div>',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [MyDir],
       })
       class Comp {}
 
-      TestBed.configureTestingModule({declarations: [Comp, MyDir]});
       const fixture = TestBed.createComponent(Comp);
       fixture.detectChanges();
 
@@ -582,7 +564,6 @@ describe('discovery utils deprecated', () => {
     it('should return a map of local refs for an element with styling context', () => {
       @Component({
         template: '<div #elRef class="fooClass" [style.color]="color"></div>',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -590,7 +571,6 @@ describe('discovery utils deprecated', () => {
         color = 'red';
       }
 
-      TestBed.configureTestingModule({declarations: [Comp]});
       const fixture = TestBed.createComponent(Comp);
       fixture.detectChanges();
 
