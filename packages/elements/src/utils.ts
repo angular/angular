@@ -5,7 +5,16 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {Injector, reflectComponentType, Type} from '@angular/core';
+import {
+  Injector,
+  reflectComponentType,
+  Type,
+  ɵComponentDef as ComponentDef,
+  ɵNG_COMP_DEF as NG_COMP_DEF,
+} from '@angular/core';
+
+// Mirrors `InputFlags.SignalBased` from Angular's internal input metadata.
+const SIGNAL_BASED_INPUT = 1 << 0;
 
 /**
  * Provide methods for scheduling the execution of a callback.
@@ -92,6 +101,99 @@ export function getDefaultAttributeToPropertyInputs(
   return attributeToPropertyInputs;
 }
 
+export interface HostDirectiveInput {
+  directive: Type<unknown>;
+  publicName: string;
+  directivePropName: string;
+  transform?: (value: any) => any;
+  isSignal: boolean;
+}
+
+export interface HostDirectiveOutput {
+  directive: Type<unknown>;
+  publicName: string;
+  directivePropName: string;
+}
+
+export interface HostDirectiveBindings {
+  inputs: readonly HostDirectiveInput[];
+  outputs: readonly HostDirectiveOutput[];
+}
+
+const hostDirectiveBindingsCache = new WeakMap<Type<any>, HostDirectiveBindings>();
+
+/**
+ * Gets the inputs and outputs that host directives expose through a component.
+ *
+ * Host directive resolution is delegated to Angular's runtime resolver instead of duplicating
+ * its traversal, aliasing, de-duplication, and forward-ref behavior here.
+ */
+export function getHostDirectiveBindings(component: Type<any>): HostDirectiveBindings {
+  const cached = hostDirectiveBindingsCache.get(component);
+  if (cached) {
+    return cached;
+  }
+
+  const componentDef = (component as any)[NG_COMP_DEF] as ComponentDef<unknown> | undefined;
+  const hostDirectiveDefs = componentDef?.resolveHostDirectives?.([componentDef])[1] ?? null;
+  const inputs: HostDirectiveInput[] = [];
+  const outputs: HostDirectiveOutput[] = [];
+
+  hostDirectiveDefs?.forEach((config, directiveDef) => {
+    for (const inputName in config.inputs) {
+      if (Object.hasOwn(config.inputs, inputName)) {
+        const [directivePropName, flags, transform] = directiveDef.inputs[inputName];
+        inputs.push({
+          directive: config.directive,
+          publicName: config.inputs[inputName],
+          directivePropName,
+          transform: transform ?? undefined,
+          isSignal: (flags & SIGNAL_BASED_INPUT) !== 0,
+        });
+      }
+    }
+
+    for (const outputName in config.outputs) {
+      if (Object.hasOwn(config.outputs, outputName)) {
+        outputs.push({
+          directive: config.directive,
+          publicName: config.outputs[outputName],
+          directivePropName: directiveDef.outputs[outputName],
+        });
+      }
+    }
+  });
+
+  const result = {inputs, outputs};
+  hostDirectiveBindingsCache.set(component, result);
+  return result;
+}
+
+/**
+ * Gets host directive inputs that can be added to the custom-element property namespace without
+ * replacing one of the component's existing input properties or aliases.
+ */
+export function getCustomElementHostDirectiveInputs(
+  component: Type<any>,
+): readonly HostDirectiveInput[] {
+  const componentInputs = reflectComponentType(component)!.inputs;
+  const occupiedPropNames = new Set(componentInputs.map((input) => input.propName));
+  const occupiedTemplateNames = new Set(componentInputs.map((input) => input.templateName));
+  const result: HostDirectiveInput[] = [];
+
+  for (const input of getHostDirectiveBindings(component).inputs) {
+    if (occupiedPropNames.has(input.publicName) || occupiedTemplateNames.has(input.publicName)) {
+      continue;
+    }
+
+    occupiedPropNames.add(input.publicName);
+    occupiedTemplateNames.add(input.publicName);
+    result.push(input);
+  }
+
+  return result;
+}
+
 /**
  * Gets a component's set of inputs. Uses the injector to get the component factory where the inputs
  * are defined.
@@ -105,5 +207,14 @@ export function getComponentInputs(
   transform?: (value: any) => any;
   isSignal: boolean;
 }[] {
-  return reflectComponentType(component)!.inputs;
+  const componentInputs = reflectComponentType(component)!.inputs;
+  return [
+    ...componentInputs,
+    ...getCustomElementHostDirectiveInputs(component).map((input) => ({
+      propName: input.publicName,
+      templateName: input.publicName,
+      transform: input.transform,
+      isSignal: input.isSignal,
+    })),
+  ];
 }
