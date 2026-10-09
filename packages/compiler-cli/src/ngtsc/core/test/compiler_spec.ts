@@ -20,6 +20,7 @@ import {runInEachFileSystem} from '../../file_system/testing';
 import {IncrementalBuildStrategy, NoopIncrementalBuildStrategy} from '../../incremental';
 import {ProgramDriver, TsCreateProgramDriver} from '../../program_driver';
 import {ClassDeclaration, isNamedClassDeclaration} from '../../reflection';
+import {createNgpTestCompiler, isNgpTestMode} from '../../testing';
 import {OptimizeFor} from '../../typecheck/api';
 
 import {NgCompilerOptions} from '../api';
@@ -36,6 +37,14 @@ function makeFreshCompiler(
   enableTemplateTypeChecker: boolean,
   usePoisonedData: boolean,
 ): NgCompiler {
+  if (isNgpTestMode()) {
+    return createNgpTestCompiler(
+      getFileSystem(),
+      host.inputFiles,
+      options,
+      program,
+    ) as unknown as NgCompiler;
+  }
   const ticket = freshCompilationTicket(
     program,
     options,
@@ -417,8 +426,11 @@ runInEachFileSystem(() => {
         fs.writeFile(TEMPLATE, `<h1>Resource</h2>`);
 
         // Perform a resource-only incremental step.
-        const resourceTicket = resourceChangeTicket(compilerA, new Set([TEMPLATE]));
-        const compilerB = NgCompiler.fromTicket(resourceTicket, host);
+        const compilerB = isNgpTestMode()
+          ? ((
+              compilerA as unknown as ReturnType<typeof createNgpTestCompiler>
+            ).applyResourceChange() as unknown as NgCompiler)
+          : NgCompiler.fromTicket(resourceChangeTicket(compilerA, new Set([TEMPLATE])), host);
 
         // A resource-only update should reuse the same compiler instance.
         expect(compilerB).toBe(compilerA);
