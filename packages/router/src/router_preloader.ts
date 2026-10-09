@@ -153,7 +153,8 @@ export class RouterPreloader implements OnDestroy {
       if (
         // TODO: Remove `canLoad` check once removed from 3p.
         (route.loadChildren && !route._loadedRoutes && (route as any).canLoad === undefined) ||
-        (route.loadComponent && !route._loadedComponent)
+        (route.loadComponent && !route._loadedComponent) ||
+        (route.loadConfig && !route._configLoaded)
       ) {
         res.push(this.preloadConfig(injectorForCurrentRoute, route));
       }
@@ -169,6 +170,11 @@ export class RouterPreloader implements OnDestroy {
       if (injector.destroyed) {
         return of(null);
       }
+      const loaders: Observable<unknown>[] = [];
+      if (route.loadConfig && !route._configLoaded) {
+        loaders.push(from(this.loader.loadConfig(route)));
+      }
+
       let loadedChildren$: Observable<LoadedRouterConfig | null>;
       // TODO: Remove `canLoad` check once removed from 3p.
       if (route.loadChildren && (route as any).canLoad === undefined) {
@@ -190,12 +196,11 @@ export class RouterPreloader implements OnDestroy {
           return this.processRoutes(config.injector ?? injector, config.routes);
         }),
       );
+      loaders.push(recursiveLoadChildren$);
       if (route.loadComponent && !route._loadedComponent) {
-        const loadComponent$ = this.loader.loadComponent(injector, route);
-        return from([recursiveLoadChildren$, loadComponent$]).pipe(mergeAll());
-      } else {
-        return recursiveLoadChildren$;
+        loaders.push(from(this.loader.loadComponent(injector, route)));
       }
+      return from(loaders).pipe(mergeAll()) as Observable<void>;
     });
   }
 }
