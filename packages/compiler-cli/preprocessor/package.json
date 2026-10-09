@@ -1,5 +1,5 @@
 {
-  "name": "@angular/ngp",
+  "name": "@angular/compiler-cli/preprocessor",
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular - Hybrid Preprocessor",
   "type": "module",
@@ -16,8 +16,7 @@
     }
   },
   "dependencies": {
-    "magic-string": "^1.0.0",
-    "vscode-uri": "^3.1.0"
+    "magic-string": "^1.0.0"
   },
   "peerDependencies": {
     "@angular/compiler": "0.0.0-PLACEHOLDER",
