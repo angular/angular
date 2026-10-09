@@ -168,6 +168,20 @@ export function getOrCreateSyntheticNodeModules(): string | null {
       }
     }
   }
+  const runfilesDir = process.env['JS_BINARY__RUNFILES'] || process.env['RUNFILES_DIR'];
+  if (runfilesDir) {
+    for (const extPkg of ['rxjs', 'tslib']) {
+      for (const prefix of ['_main', 'angular']) {
+        const candidate = path.join(runfilesDir, prefix, 'node_modules', extPkg);
+        const target = path.join(dir, extPkg);
+        if (fsSync.existsSync(candidate) && !fsSync.existsSync(target)) {
+          try {
+            fsSync.symlinkSync(candidate, target, 'junction');
+          } catch {}
+        }
+      }
+    }
+  }
   syntheticNodeModules = dir;
   return dir;
 }
