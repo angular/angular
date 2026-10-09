@@ -241,6 +241,10 @@ export class WasmAnalyzer implements IAnalyzer {
   }
 
   async readResource(containingFile: string, url: string): Promise<nga.ResolvedResource | null> {
+    return Promise.resolve(this.readResourceSync(containingFile, url));
+  }
+
+  readResourceSync(containingFile: string, url: string): nga.ResolvedResource | null {
     const fn = this.inner.readResource ?? this.inner.read_resource;
     if (!fn) {
       throw new Error('WasmInner does not support readResource');
@@ -275,5 +279,51 @@ export class WasmAnalyzer implements IAnalyzer {
     return res ? (JSON.parse(res) as nga.TemplateUsage[]) : null;
   }
 
-  close(): void {}
+  analyzeSync(): Generator<nga.CompilationChunk, void, unknown> {
+    return this.consumeStreamSync(() => this.inner.analyze());
+  }
+
+  analyzeOptimizedSync(): Generator<nga.CompilationChunk, void, unknown> {
+    return this.consumeStreamSync(() =>
+      this.startOptional(
+        this.inner.analyze_optimized ?? this.inner.analyzeOptimized,
+        'analyzeOptimized',
+      ),
+    );
+  }
+
+  private *consumeStreamSync(start: () => number): Generator<nga.CompilationChunk, void, unknown> {
+    const id = start();
+    try {
+      while (true) {
+        const eventStr = this.inner.pump();
+        if (!eventStr) {
+          throw new Error(`WASM analysis stream ${id} stalled before emitting analysisComplete`);
+        }
+        const event = JSON.parse(eventStr) as WasmEvent;
+        if (event.id !== id) {
+          continue;
+        }
+        if (event.event === 'analysisError' && event.error) {
+          throw new Error(event.error);
+        }
+        if (event.event === 'analysisComplete') {
+          return;
+        }
+        if (event.event === 'analysisResult' && event.data) {
+          yield event.data;
+        }
+      }
+    } finally {
+      this.releaseStream(id);
+    }
+  }
+
+  close(): void {
+    try {
+      this.inner.free();
+    } catch {
+      // Ignore if already freed.
+    }
+  }
 }

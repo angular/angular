@@ -8,6 +8,7 @@
 
 import type * as nga from './types.js';
 import * as path from 'path';
+import * as fsSync from 'node:fs';
 import {
   OutOfBandDiagnosticCategory,
   ParsedTemplate,
@@ -263,6 +264,47 @@ export async function processFile(
   metadata?: nga.AnalysisResult,
   chunkContext?: ChunkContext,
 ): Promise<ProcessedFile> {
+  const result = metadata || (await rawCtx.analyzer.getMetadataForFile(filePath));
+  if (!result) {
+    return {magicString: new MagicString(content)};
+  }
+  const fileAnalysis = getOrCreateFileAnalysis(rawCtx.fileCache, filePath);
+  if (!fileAnalysis.parsedTemplates) {
+    fileAnalysis.parsedTemplates = new Map<string, ParsedTemplate>();
+  }
+  const templatesByClass = fileAnalysis.parsedTemplates;
+  const resourceMap = new Map<string, nga.ResolvedResource | null>();
+  for (const classMeta of result.classes) {
+    if (!classMeta.component || !classMeta.className) continue;
+    const classKey = makeClassKey(classMeta.className, classMeta.span.start);
+    let parsed = templatesByClass.get(classKey);
+    if (!parsed) {
+      parsed = parseComponentTemplate(
+        classMeta.component,
+        filePath,
+        content,
+        rawCtx.templateParseOptions,
+      );
+      templatesByClass.set(classKey, parsed);
+    }
+    for (const styleUrl of parsed.styleUrls) {
+      if (!resourceMap.has(styleUrl)) {
+        const resource = await rawCtx.analyzer.readResource(filePath, styleUrl);
+        resourceMap.set(styleUrl, resource);
+      }
+    }
+  }
+  return processFileSync(rawCtx, filePath, content, resourceMap, result, chunkContext);
+}
+
+export function processFileSync(
+  rawCtx: HybridCompilerContext,
+  filePath: string,
+  content: string,
+  readResource?: ((file: string) => string | undefined) | Map<string, nga.ResolvedResource | null>,
+  metadata?: nga.AnalysisResult,
+  chunkContext?: ChunkContext,
+): ProcessedFile {
   const ctx: HybridCompilerContext & {
     remoteScopedClasses: Set<string>;
     metadataMap: Map<string, nga.AnalysisResult>;
@@ -278,7 +320,7 @@ export async function processFile(
   const printer = new ExpressionPrinter(filePath);
   const fileDiagnostics: nga.NgDiagnostic[] = [];
 
-  const result = metadata || (await ctx.analyzer.getMetadataForFile(filePath));
+  const result = metadata || ctx.analyzer.getMetadataForFileSync(filePath);
   if (!result) {
     return {magicString: s};
   }
@@ -605,7 +647,32 @@ export async function processFile(
       // preprocessor-extension fallback as the decorator's `styleUrls`.
       // https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L876-L923
       for (const styleUrl of parsed.styleUrls) {
-        const resource = await ctx.analyzer.readResource(filePath, styleUrl);
+        let resource: nga.ResolvedResource | null = null;
+        if (readResource instanceof Map) {
+          resource = readResource.get(styleUrl) ?? null;
+        } else if (ctx.analyzer.readResourceSync) {
+          resource = ctx.analyzer.readResourceSync(filePath, styleUrl);
+          if (resource === null && typeof readResource === 'function') {
+            const resolvedPath = path.resolve(path.dirname(filePath), styleUrl);
+            const content = readResource(resolvedPath);
+            if (content !== undefined) {
+              resource = {resolvedPath, content};
+            }
+          }
+        } else if (typeof readResource === 'function') {
+          const resolvedPath = path.resolve(path.dirname(filePath), styleUrl);
+          const content = readResource(resolvedPath);
+          resource = content !== undefined ? {resolvedPath, content} : null;
+        } else {
+          const resolvedPath = path.resolve(path.dirname(filePath), styleUrl);
+          try {
+            const content = fsSync.readFileSync(resolvedPath, 'utf8');
+            resource = {resolvedPath, content};
+          } catch {
+            resource = null;
+          }
+        }
+
         if (externalRuntimeStyles && resource !== null) {
           externalStyles.push(resource.resolvedPath);
           continue;

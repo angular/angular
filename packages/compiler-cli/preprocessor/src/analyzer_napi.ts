@@ -83,6 +83,10 @@ export class NapiAnalyzer implements IAnalyzer {
   }
 
   async readResource(containingFile: string, url: string): Promise<nga.ResolvedResource | null> {
+    return this.readResourceSync(containingFile, url);
+  }
+
+  readResourceSync(containingFile: string, url: string): nga.ResolvedResource | null {
     return this.analyzer.readResource(containingFile, url) ?? null;
   }
 
