@@ -50,6 +50,18 @@ const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 const diagnosticPublisher = new DiagnosticPublisher(connection);
 documents.listen(connection);
 
+let documentSync: Promise<void> = Promise.resolve();
+
+function enqueueDocumentSync(description: string, work: () => Promise<void>): void {
+  documentSync = documentSync.then(work).catch((err) => {
+    connection.console.error(`[SERVER] Error handling ${description}: ${err}`);
+  });
+}
+
+function whenDocumentsSynced(): Promise<void> {
+  return documentSync;
+}
+
 documents.onDidChangeContent((change: TextDocumentChangeEvent<TextDocument>) => {
   connection.console.log(`[SERVER] onDidChangeContent called for ${change.document.uri}`);
   if (!projectManager) {
@@ -63,16 +75,16 @@ documents.onDidChangeContent((change: TextDocumentChangeEvent<TextDocument>) => 
   }
 
   if (filePath.endsWith('.html') || filePath.endsWith('.ts')) {
-    projectManager.updateFileContent([{filePath, content}]).catch((err) => {
-      connection.console.error(`[SERVER] Error updating file content for ${filePath}: ${err}`);
-    });
+    enqueueDocumentSync(`content change for ${filePath}`, () =>
+      projectManager!.updateFileContent([{filePath, content}]),
+    );
   }
 });
 
-documents.onDidClose(async (event: TextDocumentChangeEvent<TextDocument>) => {
+documents.onDidClose((event: TextDocumentChangeEvent<TextDocument>) => {
   connection.console.log(`[SERVER] onDidClose called for ${event.document.uri}`);
-  await diagnosticPublisher.clearAllFor(event.document.uri);
-  try {
+  enqueueDocumentSync(`onDidClose for ${event.document.uri}`, async () => {
+    await diagnosticPublisher.clearAllFor(event.document.uri);
     const filePath = fileURLToPath(event.document.uri);
     if (!projectManager) {
       return;
@@ -80,11 +92,7 @@ documents.onDidClose(async (event: TextDocumentChangeEvent<TextDocument>) => {
     if (filePath.endsWith('.html') || filePath.endsWith('.ts')) {
       await projectManager.invalidateFiles([{filePath, updateType: FileUpdateType.Changed}]);
     }
-  } catch (err) {
-    connection.console.error(
-      `[SERVER] Error handling onDidClose for ${event.document.uri}: ${err}`,
-    );
-  }
+  });
 });
 
 connection.onDidChangeWatchedFiles((params: DidChangeWatchedFilesParams) => {
@@ -126,9 +134,9 @@ connection.onDidChangeWatchedFiles((params: DidChangeWatchedFilesParams) => {
     invalidations.push({filePath, updateType});
   }
 
-  projectManager.invalidateFiles(invalidations).catch((err) => {
-    connection.console.error(`[SERVER] Error handling onDidChangeWatchedFiles: ${err}`);
-  });
+  enqueueDocumentSync('onDidChangeWatchedFiles', () =>
+    projectManager!.invalidateFiles(invalidations),
+  );
 });
 
 connection.onInitialize(async (params: InitializeParams) => {
@@ -213,6 +221,8 @@ async function getProjectInfo(uri: string) {
   if (uri.endsWith('.ngtypecheck.ts')) {
     return null;
   }
+  // Requests must see every document notification that preceded them.
+  await whenDocumentsSynced();
   const filePath = fileURLToPath(uri);
   const project = await projectManager.getProjectForFile(filePath);
   if (!project) {
@@ -247,6 +257,7 @@ connection.onCompletionResolve(async (item: CompletionItem) => {
   const data = item.data as
     {filePath?: string; position?: {line: number; character: number}} | undefined;
   if (data?.filePath) {
+    await whenDocumentsSynced();
     const project = await projectManager.getProjectForFile(data.filePath);
     if (project) {
       return onCompletionResolve(item, {
@@ -332,6 +343,7 @@ async function computeWorkspaceDiagnostics(): Promise<WorkspaceDiagnosticReport>
     return {items: []};
   }
 
+  await whenDocumentsSynced();
   const projects = projectManager.getLoadedProjects();
   const allDocumentDiagnostics = new Map<string, Diagnostic[]>();
 
