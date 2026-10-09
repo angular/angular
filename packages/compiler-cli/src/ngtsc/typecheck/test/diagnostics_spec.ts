@@ -778,6 +778,221 @@ class TestComponent {
         `TestComponent.html(1, 14): Property 'a' is private and only accessible within class 'Model'.`,
       ]);
     });
+
+    it('disallows access to private members of a parent class while allowing own private and parent protected members', () => {
+      const messages = diagnose(
+        `<button (click)="parentMethod(); childMethod(); parentSetter = 'a'">{{ parentProp }} {{ parentParam }} {{ parentGetter }} {{ childProp }} {{ childParam }} {{ parentProtected }}</button>`,
+        `
+        export class Parent {
+          private parentProp = 'parent';
+          private get parentGetter(): string { return 'getter'; }
+          private set parentSetter(v: string) {}
+          protected parentProtected = 'protected';
+          constructor(private parentParam: string) {}
+          private parentMethod(): void {}
+        }
+
+        export class TestComponent extends Parent {
+          private childProp = 'child';
+          constructor(private childParam: string) {
+            super(childParam);
+          }
+          private childMethod(): void {}
+        }
+        `,
+      );
+
+      expect(messages).toEqual([
+        `TestComponent.html(1, 18): Property 'parentMethod' is private and only accessible within class 'Parent'.`,
+        `TestComponent.html(1, 49): Property 'parentSetter' is private and only accessible within class 'Parent'.`,
+        `TestComponent.html(1, 72): Property 'parentProp' is private and only accessible within class 'Parent'.`,
+        `TestComponent.html(1, 89): Property 'parentParam' is private and only accessible within class 'Parent'.`,
+        `TestComponent.html(1, 107): Property 'parentGetter' is private and only accessible within class 'Parent'.`,
+      ]);
+    });
+
+    it('disallows access to private members across multi-level inheritance', () => {
+      const messages = diagnose(
+        `{{ grandParentPrivate }} {{ parentPrivate }} {{ childPrivate }} {{ grandParentProtected }}`,
+        `
+        export class GrandParent {
+          private grandParentPrivate = 1;
+          protected grandParentProtected = 2;
+        }
+
+        export class Parent extends GrandParent {
+          private parentPrivate = 3;
+        }
+
+        export class TestComponent extends Parent {
+          private childPrivate = 4;
+        }
+        `,
+      );
+
+      expect(messages).toEqual([
+        `TestComponent.html(1, 4): Property 'grandParentPrivate' is private and only accessible within class 'GrandParent'.`,
+        `TestComponent.html(1, 29): Property 'parentPrivate' is private and only accessible within class 'Parent'.`,
+      ]);
+    });
+
+    it('handles private members on generic parent and generic child classes', () => {
+      const messages = diagnose(
+        `{{ parentPrivate }} {{ childPrivate }} {{ parentProtected }}`,
+        `
+        export class Parent<T> {
+          private parentPrivate!: T;
+          protected parentProtected!: T;
+        }
+
+        export class TestComponent<T> extends Parent<T> {
+          private childPrivate!: T;
+        }
+        `,
+      );
+
+      expect(messages).toEqual([
+        `TestComponent.html(1, 4): Property 'parentPrivate' is private and only accessible within class 'Parent<T>'.`,
+      ]);
+    });
+
+    it('disallows access to private members from a mixin base class', () => {
+      const messages = diagnose(
+        `{{ basePrivate }} {{ mixinPrivate }} {{ ownPrivate }}`,
+        `
+        type Constructor<T = {}> = new (...args: any[]) => T;
+
+        export class Base {
+          private basePrivate = 'base';
+        }
+
+        function WithMixin<TBase extends Constructor>(Ctor: TBase) {
+          return class MixinClass extends Ctor {
+            private mixinPrivate = 'mixin';
+          };
+        }
+
+        export class TestComponent extends WithMixin(Base) {
+          private ownPrivate = 'own';
+        }
+        `,
+      );
+
+      expect(messages).toEqual([
+        `TestComponent.html(1, 4): Property 'basePrivate' is private and only accessible within class 'Base'.`,
+        `TestComponent.html(1, 22): Property 'mixinPrivate' is private and only accessible within class 'MixinClass'.`,
+      ]);
+    });
+
+    it('handles getter and setter with divergent visibility on parent and child classes', () => {
+      const messages = diagnose(
+        `<button (click)="parentProp = 'a'; ownProp = 'b'">{{ parentProp }} {{ ownProp }}</button>`,
+        `
+        export class Parent {
+          get parentProp(): string { return ''; }
+          private set parentProp(v: string) {}
+        }
+
+        export class TestComponent extends Parent {
+          get ownProp(): string { return ''; }
+          private set ownProp(v: string) {}
+        }
+        `,
+      );
+
+      expect(messages).toEqual([
+        `TestComponent.html(1, 18): Property 'parentProp' is private and only accessible within class 'Parent'.`,
+      ]);
+    });
+
+    it('handles optional chaining, non-null assertion, and parentheses on explicit this for private members', () => {
+      const messages = diagnose(
+        `{{ this.own }} {{ this?.own }} {{ this!.own }} {{ (this).own }} {{ this.parent }} {{ this?.parent }} {{ this!.parent }} {{ (this).parent }}`,
+        `
+        export class Parent {
+          private parent = 'parent';
+        }
+
+        export class TestComponent extends Parent {
+          private own = 'own';
+        }
+        `,
+      );
+
+      expect(messages).toEqual([
+        `TestComponent.html(1, 73): Property 'parent' is private and only accessible within class 'Parent'.`,
+        `TestComponent.html(1, 92): Property 'parent' is private and only accessible within class 'Parent'.`,
+        `TestComponent.html(1, 111): Property 'parent' is private and only accessible within class 'Parent'.`,
+        `TestComponent.html(1, 131): Property 'parent' is private and only accessible within class 'Parent'.`,
+      ]);
+    });
+
+    it('handles type narrowing of this with private members', () => {
+      const messages = diagnose(
+        `@if (isSub()) { {{ subPrivate }} {{ ownPrivate }} } @if (hasExtra()) { {{ extra }} {{ ownPrivate }} } @if (ownNullable !== null) { {{ ownNullable.value }} }`,
+        `
+        export class TestComponent {
+          private ownPrivate = 'own';
+          private ownNullable: {value: string} | null = null;
+
+          isSub(): this is SubComponent {
+            return true;
+          }
+
+          hasExtra(): this is { extra: string } {
+            return true;
+          }
+        }
+
+        export class SubComponent extends TestComponent {
+          private subPrivate = 'sub';
+        }
+        `,
+      );
+
+      expect(messages).toEqual([
+        `TestComponent.html(1, 20): Property 'subPrivate' is private and only accessible within class 'SubComponent'.`,
+      ]);
+    });
+
+    it('allows access to own private members when component class merges with an interface', () => {
+      const messages = diagnose(
+        `{{ ownPrivate }} {{ parentPrivate }}`,
+        `
+        export class Parent {
+          private parentPrivate = 'parent';
+        }
+
+        export interface TestComponent {
+          extraProp: string;
+        }
+
+        export class TestComponent extends Parent {
+          private ownPrivate = 'own';
+        }
+        `,
+      );
+
+      expect(messages).toEqual([
+        `TestComponent.html(1, 21): Property 'parentPrivate' is private and only accessible within class 'Parent'.`,
+      ]);
+    });
+
+    it('disallows access to private members on another instance of the same component class', () => {
+      const messages = diagnose(
+        `{{ other.secret }}`,
+        `
+        export class TestComponent {
+          private secret = 'shh';
+          other!: TestComponent;
+        }
+        `,
+      );
+
+      expect(messages).toEqual([
+        `TestComponent.html(1, 10): Property 'secret' is private and only accessible within class 'TestComponent'.`,
+      ]);
+    });
   });
 
   describe('method call spans', () => {

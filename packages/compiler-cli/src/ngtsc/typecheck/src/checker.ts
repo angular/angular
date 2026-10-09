@@ -669,6 +669,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       const fileRecord = this.state.get(sfPath)!;
 
       const typeCheckProgram = this.programDriver.getProgram();
+      const typeChecker = typeCheckProgram.getTypeChecker();
 
       const diagnostics: (ts.Diagnostic | null)[] = [];
       if (fileRecord.hasInlines) {
@@ -676,7 +677,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
         diagnostics.push(
           ...typeCheckProgram
             .getSemanticDiagnostics(inlineSf)
-            .map((diag) => convertDiagnostic(diag, fileRecord.sourceManager)),
+            .map((diag) => convertDiagnostic(diag, fileRecord.sourceManager, typeChecker)),
         );
       }
 
@@ -687,7 +688,9 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
         const filteredDiagnostics = this.filterShimDiagnostics(shimSf, semanticDiagnostics);
 
         diagnostics.push(
-          ...filteredDiagnostics.map((diag) => convertDiagnostic(diag, fileRecord.sourceManager)),
+          ...filteredDiagnostics.map((diag) =>
+            convertDiagnostic(diag, fileRecord.sourceManager, typeChecker),
+          ),
         );
         diagnostics.push(...shimRecord.genesisDiagnostics);
 
@@ -757,6 +760,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       const shimRecord = fileRecord.shimData.get(shimPath)!;
 
       const typeCheckProgram = this.programDriver.getProgram();
+      const typeChecker = typeCheckProgram.getTypeChecker();
 
       const diagnostics: (TemplateDiagnostic | null)[] = [];
       if (shimRecord.hasInlines) {
@@ -764,7 +768,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
         diagnostics.push(
           ...typeCheckProgram
             .getSemanticDiagnostics(inlineSf)
-            .map((diag) => convertDiagnostic(diag, fileRecord.sourceManager)),
+            .map((diag) => convertDiagnostic(diag, fileRecord.sourceManager, typeChecker)),
         );
       }
 
@@ -773,7 +777,9 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       const filteredDiagnostics = this.filterShimDiagnostics(shimSf, semanticDiagnostics);
 
       diagnostics.push(
-        ...filteredDiagnostics.map((diag) => convertDiagnostic(diag, fileRecord.sourceManager)),
+        ...filteredDiagnostics.map((diag) =>
+          convertDiagnostic(diag, fileRecord.sourceManager, typeChecker),
+        ),
       );
       diagnostics.push(...shimRecord.genesisDiagnostics);
 
@@ -1784,8 +1790,9 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 function convertDiagnostic(
   diag: ts.Diagnostic,
   sourceResolver: TypeCheckSourceResolver,
+  typeChecker: ts.TypeChecker,
 ): TemplateDiagnostic | null {
-  if (!shouldReportDiagnostic(diag)) {
+  if (!shouldReportDiagnostic(diag, typeChecker)) {
     return null;
   }
   return translateDiagnostic(diag, sourceResolver);
@@ -2004,9 +2011,10 @@ function getDeprecatedSuggestionDiagnostics(
     return [];
   }
 
+  const typeChecker = program.getTypeChecker();
   const tsDiags = tsLs.getSuggestionDiagnostics(path).filter(isDeprecatedDiagnostics);
   const commonTemplateDiags = tsDiags.map((diag) => {
-    return convertDiagnostic(diag, fileRecord.sourceManager);
+    return convertDiagnostic(diag, fileRecord.sourceManager, typeChecker);
   });
 
   const elementTagDiags = getTheElementTagDeprecatedSuggestionDiagnostics(
