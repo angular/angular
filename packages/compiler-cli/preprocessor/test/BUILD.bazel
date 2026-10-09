@@ -1,16 +1,36 @@
 load("//tools:defaults.bzl", "jasmine_test", "ts_project")
 
 ts_project(
+    name = "test_support",
+    testonly = True,
+    srcs = [
+        "golden_cases.ts",
+        "golden_markdown.ts",
+        "utils.ts",
+    ],
+    deps = [
+        "//:node_modules/@types/jasmine",
+        "//:node_modules/@types/node",
+        "//:node_modules/diff",
+        "//:node_modules/prettier",
+        "//:node_modules/typescript",
+        "//packages/compiler",
+        "//packages/compiler-cli/preprocessor",
+    ],
+)
+
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(
-        [
-            "**/*_spec.ts",
-            "*.ts",
+        ["**/*_spec.ts"],
+        exclude = [
+            "golden/**",
+            "typecheck_goldens_spec.ts",
         ],
-        exclude = ["golden/**"],
     ),
     deps = [
+        ":test_support",
         "//:node_modules/@types/jasmine",
         "//:node_modules/@types/node",
         "//:node_modules/diff",
@@ -26,6 +46,34 @@ jasmine_test(
     timeout = "long",
     data = [
         ":test_lib",
+        "//packages/common:npm_package",
+        "//packages/compiler-cli/preprocessor/ng-analyze:ng_analyze_bin",
+        "//packages/compiler-cli/preprocessor/ng-analyze:ng_analyze_wasm",
+        "//packages/compiler-cli/preprocessor/ng-analyze:package_json",
+        "//packages/core:npm_package",
+    ] + glob(["golden/**"]),
+    shard_count = 4,
+)
+
+ts_project(
+    name = "typecheck_goldens_lib",
+    testonly = True,
+    srcs = ["typecheck_goldens_spec.ts"],
+    deps = [
+        ":test_support",
+        "//:node_modules/@types/jasmine",
+        "//:node_modules/@types/node",
+        "//:node_modules/typescript",
+    ],
+)
+
+jasmine_test(
+    name = "typecheck_goldens_test",
+    timeout = "long",
+    data = [
+        ":typecheck_goldens_lib",
+        "//:node_modules/rxjs",
+        "//:node_modules/tslib",
         "//packages/common:npm_package",
         "//packages/compiler-cli/preprocessor/ng-analyze:ng_analyze_bin",
         "//packages/compiler-cli/preprocessor/ng-analyze:ng_analyze_wasm",
