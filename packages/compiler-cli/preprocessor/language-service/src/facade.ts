@@ -21,7 +21,6 @@ import {
 import * as rpc from 'vscode-jsonrpc/node';
 import {URI} from 'vscode-uri';
 import {fileURLToPath} from 'node:url';
-import * as path from 'node:path';
 
 export interface StructuralQuickInfo {
   text: string;

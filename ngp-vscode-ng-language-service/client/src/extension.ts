@@ -1,3 +1,11 @@
+/*!
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
 import * as path from 'path';
 import * as vscode from 'vscode';
 import {
@@ -69,7 +77,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   registerCommands(context, client, outputChannel);
 
-  const startAngularClientPromise = client.start().catch((err) => {
+  client.start().catch((err) => {
     outputChannel.appendLine(`Failed to start Angular Language Service: ${err}`);
   });
 

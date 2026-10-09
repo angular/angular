@@ -1,3 +1,11 @@
+/*!
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
 import esbuild from 'esbuild';
 import path from 'node:path';
 import {fileURLToPath, pathToFileURL} from 'node:url';

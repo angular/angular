@@ -1,3 +1,11 @@
+/*!
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
 import * as path from 'path';
 import * as fs from 'node:fs/promises';
 import * as cp from 'child_process';
@@ -334,13 +342,6 @@ export class TestEnv {
     this.openedFiles.push(normPath);
   }
 
-  async updateFiles(updates: {filePath: string; text: string; version: number}[]) {
-    for (const update of updates) {
-      const normPath = await normalizePath(update.filePath);
-      await this.lspClient.didChange(normPath, update.text, update.version);
-    }
-  }
-
   async closeFile(filePath: string) {
     const normPath = await normalizePath(filePath);
     this.openedFiles = this.openedFiles.filter((u) => u !== normPath);
@@ -420,16 +421,6 @@ export class TestEnv {
     } else {
       expect(result).toBeNull();
     }
-  }
-
-  async expectDefinitionAtCursor(filePath: string, expectedFileName: string) {
-    const {normPath, position} = await this.getCursorContext(filePath);
-    const result = await this.lspClient.definition(normPath, position);
-
-    expect(result).toBeTruthy();
-    const locations = Array.isArray(result) ? result : [result];
-    const fileNames = locations.map((l: any) => l.uri || l.targetUri);
-    expect(fileNames.some((f: string) => f && f.includes(expectedFileName))).toBe(true);
   }
 
   async expectDiagnostics(filePath: string, expectedMessages: string[]) {

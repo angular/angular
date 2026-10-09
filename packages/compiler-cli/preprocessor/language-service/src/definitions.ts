@@ -46,7 +46,7 @@ export class DefinitionBuilder {
     if (!setup) {
       return null;
     }
-    const {tsFilePath, parsedTemplate, isHostBinding, hostElement} = setup;
+    const {parsedTemplate, isHostBinding, hostElement} = setup;
 
     let target;
     if (isHostBinding && hostElement) {

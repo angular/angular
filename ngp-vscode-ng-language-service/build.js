@@ -1,22 +1,14 @@
+/*!
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
 const esbuild = require('esbuild');
 const fs = require('fs/promises');
 const path = require('path');
-
-const exactExternalPlugin = {
-  name: 'exact-external',
-  setup(build) {
-    const externals = new Set([
-      '@angular/compiler',
-      '@angular/compiler-cli',
-      '@angular/language-service/api',
-    ]);
-    build.onResolve({filter: /^@angular\//}, (args) => {
-      if (externals.has(args.path)) {
-        return {path: args.path, external: true};
-      }
-    });
-  },
-};
 
 async function build() {
   // 1. Build Client
@@ -42,7 +34,6 @@ async function build() {
     outfile: path.join(__dirname, 'dist/server/server.js'),
     external: [
       path.join(__dirname, '../packages/compiler-cli/preprocessor/ng-analyze/index.js'),
-      path.join(__dirname, '../packages/compiler-cli/preprocessor/ng-analyze-wasm/ng_analyze.js'),
       'typescript',
     ],
     alias: {
@@ -60,9 +51,6 @@ async function build() {
         repoRoot,
         'packages/language-service/private.ts',
       ),
-      '@angular/language-service/api': path.join(repoRoot, 'packages/language-service/api.ts'),
-      '@angular/language-service': path.join(repoRoot, 'packages/language-service/api.ts'),
-      '@angular/core': path.join(repoRoot, 'packages/core/index.ts'),
     },
     logOverride: {
       'empty-import-meta': 'silent',
