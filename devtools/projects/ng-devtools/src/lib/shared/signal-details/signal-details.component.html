@@ -2,24 +2,36 @@
 @let isSignalNode = this.isSignalNode(node);
 @let isClusterNode = this.isClusterNode(node);
 @let isWatchable = this.isWatchable(node);
+@let available = availableActions();
 
 <div class="header">
-  <div class="controls">
-    @if (isSignalNode) {
-      <button
-        ng-button
-        size="compact"
-        class="action-btn"
-        btnType="secondary"
-        (click)="gotoSource.emit(node)"
-        [disabled]="!node.debuggable"
-        [matTooltip]="
-          node.debuggable ? 'View source' : 'Source location is not available for this node'
-        "
-      >
-        <mat-icon> code </mat-icon>
-      </button>
-      @if (supportsBreakpoints) {
+  @if (actionsVisible()) {
+    <div class="actions">
+      @if (available.gotoSource && isSignalNode) {
+        <button
+          ng-button
+          size="compact"
+          class="action-btn"
+          btnType="secondary"
+          (click)="gotoSource.emit(node)"
+          [disabled]="!node.debuggable"
+          matTooltip="View source"
+        >
+          <mat-icon> code </mat-icon>
+        </button>
+      } @else if (available.expandCluster && isClusterNode) {
+        <button
+          ng-button
+          size="compact"
+          class="action-btn"
+          btnType="secondary"
+          (click)="expandCluster.emit(node.id)"
+          matTooltip="Expand"
+        >
+          <mat-icon> expand_content </mat-icon>
+        </button>
+      }
+      @if (available.setBreakpoint && isSignalNode && supportsBreakpoints) {
         <button
           ng-button
           size="compact"
@@ -34,52 +46,62 @@
           <mat-icon> label </mat-icon>
         </button>
       }
-    } @else if (isClusterNode) {
-      <button
-        ng-button
-        size="compact"
-        class="action-btn"
-        btnType="secondary"
-        (click)="expandCluster.emit(node.id)"
-        matTooltip="Expand"
-      >
-        <mat-icon> expand_content </mat-icon>
-      </button>
-    }
-    <button
-      ng-button
-      size="compact"
-      class="action-btn"
-      btnType="secondary"
-      (click)="highlightDeps.emit({node, direction: 'down'})"
-      matTooltip="Highlight downstream dependents path"
-    >
-      <ng-icon name="graph_downstream" />
-    </button>
-    <button
-      ng-button
-      size="compact"
-      class="action-btn"
-      btnType="secondary"
-      (click)="highlightDeps.emit({node, direction: 'up'})"
-      matTooltip="Highlight upstream dependencies path"
-    >
-      <ng-icon name="graph_upstream" />
-    </button>
-    @if (isWatchable) {
-      <button
-        ng-button
-        size="compact"
-        class="action-btn"
-        [class.watched]="node.watched"
-        [btnType]="node.watched ? 'primary' : 'secondary'"
-        (click)="toggleIsBeingWatched()"
-        [matTooltip]="node.watched ? 'Unwatch signal' : 'Watch signal (log in console)'"
-      >
-        <mat-icon> {{ node.watched ? 'visibility_off' : 'visibility' }} </mat-icon>
-      </button>
-    }
-  </div>
+      @if (available.highlightDownstreamDeps) {
+        <button
+          ng-button
+          size="compact"
+          class="action-btn"
+          btnType="secondary"
+          (click)="highlightDeps.emit({node, direction: 'down'})"
+          matTooltip="Highlight local downstream dependants path"
+        >
+          <ng-icon name="graph_downstream" />
+        </button>
+      }
+      @if (available.highlightUpstreamDeps) {
+        <button
+          ng-button
+          size="compact"
+          class="action-btn"
+          btnType="secondary"
+          (click)="highlightDeps.emit({node, direction: 'up'})"
+          matTooltip="Highlight local upstream dependencies path"
+        >
+          <ng-icon name="graph_upstream" />
+        </button>
+      }
+      @if (
+        available.showTransitiveDeps &&
+        isSignalNode &&
+        supportedApis().signals &&
+        supportedApis().transitiveSignalDepsInspection
+      ) {
+        <button
+          ng-button
+          size="compact"
+          class="action-btn"
+          btnType="secondary"
+          (click)="showTransitiveDeps.emit({signalNode: node})"
+          matTooltip="Show transitive dependencies"
+        >
+          <mat-icon>graph_3</mat-icon>
+        </button>
+      }
+      @if (available.watch && isSignalNode && isWatchable) {
+        <button
+          ng-button
+          size="compact"
+          class="action-btn"
+          [class.watched]="node.watched"
+          [btnType]="node.watched ? 'primary' : 'secondary'"
+          (click)="toggleIsBeingWatched()"
+          [matTooltip]="node.watched ? 'Unwatch signal' : 'Watch signal (log in console)'"
+        >
+          <mat-icon> {{ node.watched ? 'visibility_off' : 'visibility' }} </mat-icon>
+        </button>
+      }
+    </div>
+  }
   <button
     ng-button
     btnType="icon"
@@ -147,7 +169,13 @@
     node.kind === 'childSignalProp');
 
 @if (isPreviewable || resourceCluster()) {
-  @if (previewableNode(); as previewableNode) {
-    <ng-signal-value-tree [node]="previewableNode" [element]="element()" />
+  @let element = this.element();
+  @let transitiveDepsNode = this.transitiveDepsNode();
+
+  @if ((element || transitiveDepsNode) && previewableNode(); as previewableNode) {
+    <ng-signal-value-tree [node]="previewableNode" [locator]="(element ?? transitiveDepsNode)!" />
+  } @else if (isSignalNode) {
+    <!-- Fallback preview -->
+    <div class="value-preview">{{ fallbackPreview() }}</div>
   }
 }

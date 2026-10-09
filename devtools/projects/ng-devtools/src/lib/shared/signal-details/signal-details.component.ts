@@ -11,7 +11,6 @@ import {Platform} from '@angular/cdk/platform';
 import {MatIcon} from '@angular/material/icon';
 
 import {DebugSignalGraphNode, ElementPosition, Events, MessageBus} from '../../../../../protocol';
-import {SUPPORTED_APIS} from '../../application-providers/supported_apis';
 import {SignalValueTreeComponent} from './signal-value-tree/signal-value-tree.component';
 import {ButtonComponent} from '../button/button.component';
 import {
@@ -25,6 +24,8 @@ import {
 } from '../signal-graph';
 import {MatTooltip} from '@angular/material/tooltip';
 import {IconComponent} from '../icon/icon.component';
+import {SUPPORTED_APIS} from '../../application-providers/supported_apis';
+import {SignalTransitiveDepsEvent} from '../../devtools-tabs/directive-explorer/signal-transitive-deps-pane/types';
 
 const TYPE_CLASS_MAP: {[key in DebugSignalGraphNode['kind']]: string} = {
   'signal': 'type-signal',
@@ -47,6 +48,40 @@ interface ResourceCluster {
   errored: boolean;
 }
 
+/** Available actions for a signal node. */
+export interface AvailableActions {
+  /** Show source of a regular signal node. */
+  gotoSource: boolean;
+
+  /** Expand a cluster node. */
+  expandCluster: boolean;
+
+  /** Highlight local downstream dependants. */
+  highlightDownstreamDeps: boolean;
+
+  /** Highlight local upstream dependencies. */
+  highlightUpstreamDeps: boolean;
+
+  /** Show a graph with all transtive dependencies of the selected node. */
+  showTransitiveDeps: boolean;
+
+  /** Set breakpoint at signal source. */
+  setBreakpoint: boolean;
+
+  /** Watch signal node. */
+  watch: boolean;
+}
+
+const DEFAULT_ACTIONS: AvailableActions = {
+  gotoSource: true,
+  expandCluster: true,
+  highlightDownstreamDeps: true,
+  highlightUpstreamDeps: true,
+  showTransitiveDeps: true,
+  setBreakpoint: true,
+  watch: true,
+};
+
 @Component({
   selector: 'ng-signal-details',
   templateUrl: './signal-details.component.html',
@@ -57,10 +92,24 @@ export class SignalDetailsComponent {
   private readonly platform = inject(Platform);
   protected readonly supportsBreakpoints = !this.platform.FIREFOX;
 
+  protected readonly supportedApis = inject(SUPPORTED_APIS);
+  private readonly messageBus = inject<MessageBus<Events>>(MessageBus);
+
+  /** Signal node to show details for. */
   protected readonly node = input.required<DevtoolsSignalGraphNode>();
+
+  /** Node's host signal graph. */
   protected readonly graph = input.required<DevtoolsSignalGraph>();
-  protected readonly element = input.required<ElementPosition>();
+
+  /** Signal node host element. Required for nested signal values inspection. */
+  protected readonly element = input<ElementPosition>();
+
   protected readonly hasBreakpoint = input<boolean>(false);
+
+  /** Target node of transitive deps signal graph. Required for nested signal values inspection. */
+  protected readonly transitiveDepsNode = input<DebugSignalGraphNode>();
+
+  protected readonly availableActions = input<AvailableActions>(DEFAULT_ACTIONS);
 
   protected readonly gotoSource = output<DevtoolsSignalGraphNode>();
   protected readonly setBreakpoint = output<DevtoolsSignalGraphNode>();
@@ -71,9 +120,7 @@ export class SignalDetailsComponent {
     direction: 'up' | 'down';
   }>();
   protected readonly close = output<void>();
-
-  private readonly _messageBus = inject<MessageBus<Events>>(MessageBus);
-  private readonly _supportedApis = inject(SUPPORTED_APIS);
+  protected readonly showTransitiveDeps = output<SignalTransitiveDepsEvent>();
 
   protected readonly TYPE_CLASS_MAP = TYPE_CLASS_MAP;
   protected readonly CLUSTER_TYPE_CLASS_MAP = CLUSTER_TYPE_CLASS_MAP;
@@ -81,13 +128,9 @@ export class SignalDetailsComponent {
   protected readonly isSignalNode = isSignalNode;
   protected readonly isClusterNode = isClusterNode;
 
-  protected isWatchable(node: DevtoolsSignalGraphNode): node is DevtoolsSignalNode {
-    return (
-      this._supportedApis().signalWatch &&
-      isSignalNode(node) &&
-      (node.kind === 'signal' || node.kind === 'computed' || node.kind === 'linkedSignal')
-    );
-  }
+  protected readonly actionsVisible = computed(
+    () => !!Object.values(this.availableActions()).find((a) => a),
+  );
 
   protected readonly cluster = computed(() => {
     const node = this.node();
@@ -132,10 +175,26 @@ export class SignalDetailsComponent {
     return previewableNode;
   });
 
+  protected readonly fallbackPreview = computed<string>(() => {
+    const node = this.node();
+    if (isSignalNode(node)) {
+      return String(node.preview.value);
+    }
+    return '';
+  });
+
+  protected isWatchable(node: DevtoolsSignalGraphNode): node is DevtoolsSignalNode {
+    return (
+      this.supportedApis().signalWatch &&
+      isSignalNode(node) &&
+      (node.kind === 'signal' || node.kind === 'computed' || node.kind === 'linkedSignal')
+    );
+  }
+
   protected toggleIsBeingWatched() {
     const selectedNode = this.node();
     if (!this.isWatchable(selectedNode)) return;
-    this._messageBus.emit('toggleWatchSignal', [selectedNode.id]);
+    this.messageBus.emit('toggleWatchSignal', [selectedNode.id]);
   }
 
   private getCompoundNodeValueHof(node: DevtoolsClusterNode) {

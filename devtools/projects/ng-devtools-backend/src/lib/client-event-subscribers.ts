@@ -70,7 +70,10 @@ import {
   ngDebugDependencyInjectionApiIsSupported,
 } from './shared/ng-debug-api/ng-debug-api';
 import {getSupportedApis} from './shared/ng-debug-api/supported-apis';
-import {serializeDirectiveState, serializeValue} from './shared/state-serializer/state-serializer';
+import {
+  serializeDirectiveState,
+  serializeSignalNode,
+} from './shared/state-serializer/state-serializer';
 import {runOutsideAngular, unwrapSignal} from './shared/utils/general';
 import {debugLog, log, setupLogging} from './shared/utils/log';
 import {sanitizeObject} from './shared/utils/serialization';
@@ -142,6 +145,7 @@ export const subscribeToClientEvents = (
   messageBus.on('getSignalGraph', getSignalGraphCallback(messageBus));
 
   messageBus.on('toggleWatchSignal', toggleWatchSignal(messageBus));
+  messageBus.on('getSignalTransitiveDependencies', getSignalTransitiveDependencies(messageBus));
 
   if (appIsAngularInDevMode() && appIsSupportedAngularVersion() && appIsAngularIvy()) {
     inspector.ref = setupInspector(messageBus);
@@ -283,45 +287,98 @@ const getNestedPropertiesCallback =
     return;
   };
 
+/** Describes `getSignalNestedProperties` signal graph fetch strategy. */
+type SignalNestedPropsLocatorStrategy<T> = (identifier: T) => InternalDebugSignalGraph | null;
+
+// Represents a strategy intended for a transitive deps signal graph.
+const debugNodeLocatorStrategy: SignalNestedPropsLocatorStrategy<DebugSignalGraphNode> = (
+  signalNode,
+) => {
+  const ng = ngDebugClient();
+  const signalGraph = ng.ɵgetSignalTransitiveDependencies?.([signalNode.id]);
+
+  if (!signalGraph) {
+    return null;
+  }
+  return signalGraph;
+};
+
+// Represents a strategy intended for a component signal graph.
+const elementPositionLocatorStrategy: SignalNestedPropsLocatorStrategy<ElementPosition> = (
+  position,
+) => {
+  const node = queryDirectiveForest(
+    position,
+    getDirectiveForestManager().getIndexedDirectiveForest(),
+  );
+
+  if (!node || !node.nativeElement) {
+    return null;
+  }
+
+  const injector = getInjectorFromElementNode(node.nativeElement);
+  if (!injector) {
+    return null;
+  }
+
+  const ng = ngDebugClient();
+
+  let signalGraph: InternalDebugSignalGraph | undefined;
+
+  // Considering that the inspection of signal value nested properties
+  // usually involves multiple requests, we store the signal graph
+  // during the first call. We keep only the last requested signal graph
+  // to avoid filling the heap with graphs that may not be needed.
+  if (componentSignalGraphRef.exists(node.nativeElement)) {
+    signalGraph = componentSignalGraphRef.deref(node.nativeElement);
+  } else {
+    signalGraph = ng.ɵgetSignalGraph?.(injector);
+    if (signalGraph) {
+      componentSignalGraphRef.set(node.nativeElement, signalGraph);
+    }
+  }
+
+  if (!signalGraph) {
+    return null;
+  }
+
+  return signalGraph;
+};
+
+function isElementPosition(locator: unknown): locator is ElementPosition {
+  return locator instanceof Array && locator.every((v) => typeof v === 'number');
+}
+
+function isDebugSignalGraphNode(locator: unknown): locator is DebugSignalGraphNode {
+  const properties: (keyof DebugSignalGraphNode)[] = [
+    'id',
+    'kind',
+    'debuggable',
+    'epoch',
+    'preview',
+  ];
+  return properties.every((prop) => prop in (locator as any));
+}
+
 const getSignalNestedPropertiesCallback =
-  (messageBus: MessageBus<Events>) => (position: SignalNodePosition, propPath: string[]) => {
-    const emitEmpty = () =>
-      messageBus.emit('signalNestedProperties', [position, {props: {}}, propPath]);
-    const node = queryDirectiveForest(
-      position.element,
-      getDirectiveForestManager().getIndexedDirectiveForest(),
-    );
-    if (!node || !node.nativeElement) {
-      return emitEmpty();
-    }
+  (messageBus: MessageBus<Events>) =>
+  ({locator, signalId}: SignalNodePosition, propPath: string[]) => {
+    const emitEmpty = () => messageBus.emit('signalNestedProperties', [{props: {}}, propPath]);
 
-    const injector = getInjectorFromElementNode(node.nativeElement);
-    if (!injector) {
-      return emitEmpty();
-    }
-
-    const ng = ngDebugClient();
-
-    let signalGraph: InternalDebugSignalGraph | undefined;
-
-    // Considering that the inspection of signal value nested properties
-    // usually involves multiple requests, we store the signal graph
-    // during the first call. We keep only the last requested signal graph
-    // to avoid filling the heap with graphs that may not be needed.
-    if (componentSignalGraphRef.exists(node.nativeElement)) {
-      signalGraph = componentSignalGraphRef.deref(node.nativeElement);
+    let signalGraph: InternalDebugSignalGraph | null;
+    if (isElementPosition(locator)) {
+      signalGraph = elementPositionLocatorStrategy(locator);
+    } else if (isDebugSignalGraphNode(locator)) {
+      signalGraph = debugNodeLocatorStrategy(locator);
     } else {
-      signalGraph = ng.ɵgetSignalGraph?.(injector);
-      if (signalGraph) {
-        componentSignalGraphRef.set(node.nativeElement, signalGraph);
-      }
+      throw new Error('Unsupported `getSignalNestedProperties` locator argument.');
     }
 
     if (!signalGraph) {
       return emitEmpty();
     }
 
-    const current = signalGraph.nodes.find((n) => n.id === position.signalId);
+    const current = signalGraph.nodes.find((node) => node.id === signalId);
     if (!current) {
       return emitEmpty();
     }
@@ -330,14 +387,10 @@ const getSignalNestedPropertiesCallback =
     for (const prop of propPath) {
       data = (data as Record<string, object>)[prop];
       if (!data) {
-        log.error('Cannot access the properties', propPath, 'of', node);
+        log.error('Cannot access the properties', propPath, 'of', signalId);
       }
     }
-    messageBus.emit('signalNestedProperties', [
-      position,
-      {props: serializeDirectiveState(data)},
-      propPath,
-    ]);
+    messageBus.emit('signalNestedProperties', [{props: serializeDirectiveState(data)}, propPath]);
     return;
   };
 
@@ -669,17 +722,7 @@ const getSignalGraphCallback = (messageBus: MessageBus<Events>) => (element: Ele
 
   const graph = ng.ɵgetSignalGraph?.(injector);
   if (graph) {
-    const nodes = graph.nodes.map<DebugSignalGraphNode>((node) => {
-      return {
-        id: node.id,
-        kind: node.kind,
-        label: node.label,
-        epoch: node.epoch,
-        preview: serializeValue(node.value),
-        debuggable: !!node.debuggableFn,
-        watched: node.watched ?? false,
-      };
-    });
+    const nodes = graph.nodes.map<DebugSignalGraphNode>((node) => serializeSignalNode(node));
     messageBus.emit('latestSignalGraph', [{nodes, edges: graph.edges}]);
   }
 };
@@ -695,6 +738,17 @@ const toggleWatchSignal = (messageBus: MessageBus<Events>) => (id: string) => {
 const setConfigCallback = (config: Partial<DevtoolsConfig>) => {
   getConfig().set(config);
 };
+
+const getSignalTransitiveDependencies =
+  (messageBus: MessageBus<Events>) => (signals: DebugSignalGraphNode[]) => {
+    const ng = ngDebugClient();
+    const graph = ng.ɵgetSignalTransitiveDependencies?.(signals.map((n) => n.id));
+
+    if (graph) {
+      const nodes = graph.nodes.map<DebugSignalGraphNode>((node) => serializeSignalNode(node));
+      messageBus.emit('signalTransitiveDependencies', [{nodes, edges: graph.edges}]);
+    }
+  };
 
 // Route data needs to be serializable to be sent over the message bus.
 export function sanitizeRouteData(route: Route): Route {

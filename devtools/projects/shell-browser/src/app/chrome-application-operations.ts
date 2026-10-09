@@ -12,7 +12,7 @@
 import {Platform} from '@angular/cdk/platform';
 import {inject} from '@angular/core';
 import {ApplicationOperations, Frame, TOP_LEVEL_FRAME_ID} from '../../../ng-devtools';
-import {DirectivePosition, ElementPosition, SignalNodePosition} from '../../../protocol';
+import {ComponentSignalNodePosition, DirectivePosition, ElementPosition} from '../../../protocol';
 import {stringifyAndEscape} from './comm-utils';
 
 export class ChromeApplicationOperations extends ApplicationOperations {
@@ -43,17 +43,14 @@ export class ChromeApplicationOperations extends ApplicationOperations {
     this.runInInspectedWindow(inspect, target);
   }
 
-  override inspectSignal(position: SignalNodePosition, target: Frame): void {
+  override inspectSignal(position: ComponentSignalNodePosition, target: Frame): void {
     const inspectSignal = `inspect(inspectedApplication.findSignalNodeByPosition(${stringifyAndEscape(
       position,
     )}))`;
     this.runInInspectedWindow(inspectSignal, target);
   }
 
-  override async setSignalBreakpoint(
-    position: SignalNodePosition,
-    target: Frame,
-  ): Promise<boolean> {
+  override async setSignalBreakpoint(position: ComponentSignalNodePosition): Promise<boolean> {
     const tabId = chrome.devtools.inspectedWindow.tabId;
     try {
       const response = await chrome.runtime.sendMessage({
@@ -72,7 +69,7 @@ export class ChromeApplicationOperations extends ApplicationOperations {
   }
 
   override async removeSignalBreakpoint(
-    position: SignalNodePosition,
+    position: ComponentSignalNodePosition,
     target: Frame,
   ): Promise<boolean> {
     const tabId = chrome.devtools.inspectedWindow.tabId;
@@ -92,7 +89,7 @@ export class ChromeApplicationOperations extends ApplicationOperations {
     }
   }
 
-  override async getActiveSignalBreakpoints(target: Frame): Promise<SignalNodePosition[]> {
+  override async getActiveSignalBreakpoints(target: Frame): Promise<ComponentSignalNodePosition[]> {
     const tabId = chrome.devtools.inspectedWindow.tabId;
     try {
       const response = await chrome.runtime.sendMessage({

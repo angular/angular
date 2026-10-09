@@ -94,6 +94,7 @@ interface NonCoreGlobalUtils {
  */
 interface InternalCoreGlobalUtils {
   toggleWatchSignal(id: string): void;
+  ɵgetSignalTransitiveDependencies(signalNodesIds: string[]): DebugSignalGraph;
 }
 
 /**
@@ -137,6 +138,7 @@ export interface ExternalCoreGlobalUtils {
 
 const internalCoreGlobalUtils: InternalCoreGlobalUtils = {
   toggleWatchSignal,
+  ɵgetSignalTransitiveDependencies: () => ({}) as any, // Temporary
 };
 
 const externalCoreGlobalUtils: ExternalCoreGlobalUtils = {
