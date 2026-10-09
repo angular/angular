@@ -138,8 +138,7 @@ export function getUniqueIdForProperty(
   info: ProgramInfo,
   prop: ts.PropertyDeclaration,
 ): ClassFieldUniqueKey {
-  const {id} = projectFile(prop.getSourceFile(), info);
-  id.replace(/\.d\.ts$/, '.ts');
+  const id = projectFile(prop.getSourceFile(), info).id.replace(/\.d\.ts$/, '.ts');
   return `${id}@@${prop.parent.name ?? 'unknown-class'}@@${prop.name.getText()}` as ClassFieldUniqueKey;
 }
 
