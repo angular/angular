@@ -6,16 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Position, TextDocuments, Connection} from 'vscode-languageserver';
+import {Position, TextDocuments} from 'vscode-languageserver';
 import {TextDocument} from 'vscode-languageserver-textdocument';
 import {fileURLToPath} from 'node:url';
 import {LanguageService} from '../../../../packages/compiler-cli/preprocessor/language-service/src/language_service.js';
 import {positionToOffset} from '../../../../packages/compiler-cli/preprocessor/src/tcb_ls_util.js';
 
 export interface HandlerContext {
-  workspaceRoot: string;
   languageService: LanguageService;
-  connection: Connection;
   documents: TextDocuments<TextDocument>;
 }
 

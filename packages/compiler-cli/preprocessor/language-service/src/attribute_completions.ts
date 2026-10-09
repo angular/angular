@@ -9,7 +9,6 @@
 import {
   CssSelector,
   DomElementSchemaRegistry,
-  MatchSource,
   SelectorMatcher,
   TmplAstElement,
   TmplAstTemplate,
@@ -36,7 +35,6 @@ const REGISTRY = new DomElementSchemaRegistry();
  */
 export enum AttributeCompletionKind {
   DomAttribute,
-  DomProperty,
   DomEvent,
   DirectiveAttribute,
   StructuralDirectiveAttribute,
@@ -48,11 +46,6 @@ export interface DomAttributeCompletion {
   kind: AttributeCompletionKind.DomAttribute;
   attribute: string;
   isAlsoProperty: true;
-}
-
-export interface DomPropertyCompletion {
-  kind: AttributeCompletionKind.DomProperty;
-  property: string;
 }
 
 export interface DomEventCompletion {
@@ -85,7 +78,6 @@ export interface DirectiveOutputCompletion {
 
 export type AttributeCompletion =
   | DomAttributeCompletion
-  | DomPropertyCompletion
   | DirectiveAttributeCompletion
   | DirectiveInputCompletion
   | DirectiveOutputCompletion
@@ -568,33 +560,6 @@ export function addAttributeCompletionEntries(
               completion.attribute + '_1',
               insertSnippet,
               buildSnippet(insertSnippet, `[${completion.attribute}]`),
-              replacementRange,
-            ),
-          );
-        }
-      }
-      break;
-    }
-    case AttributeCompletionKind.DomProperty: {
-      if (!isAttributeContext) {
-        entries.push(
-          createItem(
-            completion.property,
-            CompletionItemKind.Property,
-            completion.property,
-            insertSnippet,
-            buildSnippet(insertSnippet, completion.property),
-            replacementRange,
-          ),
-        );
-        if (insertSnippet) {
-          entries.push(
-            createItem(
-              `[${completion.property}]`,
-              CompletionItemKind.Property,
-              completion.property + '_1',
-              insertSnippet,
-              buildSnippet(insertSnippet, `[${completion.property}]`),
               replacementRange,
             ),
           );

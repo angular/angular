@@ -1,3 +1,11 @@
+/*!
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
 import * as rpc from 'vscode-jsonrpc/node';
 import {TestEnv, getTestWorkspacePath, startTestServer} from './test_helpers';
 import {TestFileManager} from '../../packages/compiler-cli/preprocessor/language-service/tests/test_file_manager';

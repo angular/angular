@@ -34,21 +34,6 @@ export class LanguageService {
     this.templateTypeChecker = new TemplateTypeChecker(hybridCompiler);
   }
 
-  // Standalone LSP runs in angularOnly mode because the default TS server handles regular TS code.
-  // https://github.com/angular/angular/blob/d27e2c2/packages/language-service/src/ts_plugin.ts#L38-L46
-  private readonly angularOnly = true;
-  private async withFallback<T>(
-    filePath: string,
-    tsOp: () => Promise<T | null>,
-    ngOp: () => Promise<T | null>,
-  ): Promise<T | null> {
-    if (this.angularOnly || !filePath.endsWith('.ts')) {
-      return await ngOp();
-    }
-
-    return (await tsOp()) ?? ngOp();
-  }
-
   async getHover(
     filePath: string,
     offset: number,
@@ -56,22 +41,14 @@ export class LanguageService {
     fileContent: string,
   ): Promise<{text: string; span?: {start: number; length: number}} | null> {
     await this.hybridCompiler.ensureReady();
-    return this.withFallback<{text: string; span?: {start: number; length: number}}>(
+    return getHover(
       filePath,
-      async () => {
-        const result = await this.facade.getQuickInfoAtPosition(filePath, position);
-        return result ? {text: result.text} : null;
-      },
-      () =>
-        getHover(
-          filePath,
-          offset,
-          position,
-          fileContent,
-          this.hybridCompiler,
-          this.templateTypeChecker,
-          this.facade,
-        ),
+      offset,
+      position,
+      fileContent,
+      this.hybridCompiler,
+      this.templateTypeChecker,
+      this.facade,
     );
   }
 
@@ -83,19 +60,14 @@ export class LanguageService {
     fileContent: string,
   ): Promise<unknown> {
     await this.hybridCompiler.ensureReady();
-    return this.withFallback(
+    return getDefinition(
       filePath,
-      () => this.facade.getDefinitionAtPosition(filePath, position),
-      () =>
-        getDefinition(
-          filePath,
-          offset,
-          position,
-          fileContent,
-          this.hybridCompiler,
-          this.templateTypeChecker,
-          this.facade,
-        ),
+      offset,
+      position,
+      fileContent,
+      this.hybridCompiler,
+      this.templateTypeChecker,
+      this.facade,
     );
   }
 
@@ -108,25 +80,17 @@ export class LanguageService {
     filePath: string,
     offset: number,
     position: {line: number; character: number},
-    fileContent: string,
+    _fileContent?: string,
   ): Promise<CompletionList | null> {
     await this.hybridCompiler.ensureReady();
-    return getCompletionsAtPosition(
-      filePath,
-      offset,
-      position,
-      fileContent,
-      this.hybridCompiler,
-      this.templateTypeChecker,
-      this.facade,
-    );
+    return getCompletionsAtPosition(filePath, offset, position, this.hybridCompiler, this.facade);
   }
 
   async getCompletionEntryDetails(
     filePath: string,
     offset: number,
     position: {line: number; character: number},
-    fileContent: string,
+    _fileContent: string,
     item: CompletionItem | string,
   ): Promise<CompletionItem | null> {
     await this.hybridCompiler.ensureReady();
@@ -134,9 +98,7 @@ export class LanguageService {
       filePath,
       offset,
       position,
-      fileContent,
       this.hybridCompiler,
-      this.templateTypeChecker,
       this.facade,
       item,
     );
@@ -195,20 +157,15 @@ export class LanguageService {
     context?: SignatureHelpContext,
   ): Promise<SignatureHelp | null> {
     await this.hybridCompiler.ensureReady();
-    return this.withFallback<SignatureHelp>(
+    return getSignatureHelp(
       filePath,
-      () => this.facade.getSignatureHelpAtPosition(filePath, position, context),
-      () =>
-        getSignatureHelp(
-          filePath,
-          offset,
-          position,
-          fileContent,
-          this.hybridCompiler,
-          this.templateTypeChecker,
-          this.facade,
-          context,
-        ),
+      offset,
+      position,
+      fileContent,
+      this.hybridCompiler,
+      this.templateTypeChecker,
+      this.facade,
+      context,
     );
   }
 }
