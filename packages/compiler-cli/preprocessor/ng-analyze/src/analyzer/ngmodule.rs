@@ -14,7 +14,6 @@ use super::utils::{extract_property_key, extract_schemas};
 /// Parse an @NgModule decorator
 pub fn parse_decorator<'a>(
     decorator: &Decorator<'a>,
-    converter: &crate::utils::Utf8ToUtf16,
     semantic: &Semantic<'a>,
     import_map: &HashMap<String, ImportedSymbol>,
     eval: &EvalInput<'a, '_>,
@@ -35,7 +34,6 @@ pub fn parse_decorator<'a>(
     parse_ng_module_args(
         call_expr,
         crate::analyzer::utils::extract_decorator_name(decorator),
-        converter,
         semantic,
         import_map,
         eval,
@@ -45,7 +43,6 @@ pub fn parse_decorator<'a>(
 fn parse_ng_module_args<'a>(
     call_expr: &oxc_ast::ast::CallExpression<'a>,
     decorator_name: Option<String>,
-    _converter: &crate::utils::Utf8ToUtf16,
     semantic: &Semantic<'a>,
     import_map: &HashMap<String, ImportedSymbol>,
     eval: &EvalInput<'a, '_>,
@@ -461,10 +458,8 @@ mod tests {
             env: &env,
             foreign,
         };
-        let converter = crate::utils::Utf8ToUtf16::new(source);
         parse_decorator(
             decorator,
-            &converter,
             &semantic_ret.semantic,
             &import_map,
             &eval,

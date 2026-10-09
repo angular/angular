@@ -7,7 +7,7 @@
  */
 
 /**
- * Golden tests for the ng-hybrid-preprocessor pipeline
+ * Golden tests for the Angular hybrid preprocessor pipeline
  *
  * Each test case is a directory in test/golden/ containing:
  * - source.md: Input files in markdown format
@@ -28,8 +28,7 @@ import {
 import {resolveGoldenRoot, collectGoldenCasesSync, pipelineOptionsFor} from './golden_cases.js';
 
 const testCases = collectGoldenCasesSync();
-const isUpdating =
-  process.env['UPDATE_GOLDENS'] === 'true' || process.env['VITEST_UPDATE_SNAPSHOT'] === 'true';
+const isUpdating = process.env['UPDATE_GOLDENS'] === 'true';
 
 describe('Golden Tests', () => {
   if (testCases.length === 0) {

@@ -26,11 +26,9 @@ ts_project(
         "//:node_modules/@types/node",
         "//:node_modules/magic-string",
         "//:node_modules/typescript",
-        "//packages/common",
         "//packages/compiler",
         "//packages/compiler-cli",
         "//packages/compiler-cli/preprocessor/ng-analyze:wasm",
-        "//packages/compiler-cli/private",
     ],
 )
 
@@ -38,6 +36,7 @@ npm_package(
     srcs = [
         "package.json",
         ":preprocessor",
+        "//packages/compiler-cli/preprocessor/ng-analyze:wasm",
     ],
     package = "@angular/compiler-cli/preprocessor",
 )

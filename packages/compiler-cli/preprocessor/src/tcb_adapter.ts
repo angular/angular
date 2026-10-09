@@ -33,8 +33,6 @@ import type {TcbTargetInput, NgpTypeCheckingConfig} from './tcb.js';
 import * as nga from './types.js';
 import {createSpan, isStaticSourceNode} from './compiler-utils.js';
 
-// PropertyMappingImpl is removed as we now use ClassPropertyMapping directly.
-
 export function createInputPropertyMapping(
   metadata: nga.InputMetadata[] | null | undefined,
   content?: string,

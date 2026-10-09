@@ -544,7 +544,7 @@ pub struct AngularFieldMetadata {
     pub coercion: Option<String>,
 }
 
-// NOTE: `SourceNodeKind` requires duplicated #[cfg] blocks rather than #[cfg_attr] because
+// NOTE: `ExpressionValueKindMetadata` requires duplicated #[cfg] blocks rather than #[cfg_attr] because
 // `napi-derive` proc macro limitations prevent evaluating #[cfg_attr] on individual enum variants
 // inside a `#[napi(string_enum)]` container.
 #[cfg(feature = "napi")]
@@ -609,15 +609,6 @@ impl DeclarationTuple {
     pub fn export_name(&self) -> &str {
         self.imported_name.as_deref().unwrap_or(&self.local_name)
     }
-}
-
-#[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ImportViaMetadata {
-    pub module_specifier: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub symbol: Option<String>,
 }
 
 /// How to write an import for a symbol, if the consumer decides it needs one.

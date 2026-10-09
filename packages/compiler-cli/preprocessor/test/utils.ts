@@ -21,7 +21,6 @@ import type {TestFile} from './golden_markdown.js';
 import {getDiagnosticPath, serializeDiagnostics, HybridCompiler} from '../src/hybrid_compiler.js';
 import {createAnalyzer} from '../api.js';
 import {buildTypeCheckingConfig} from '../src/tcb.js';
-import type {AnalysisResult, CompilationChunk} from '../src/types.js';
 
 export {
   parseMarkdownContent,
@@ -83,6 +82,47 @@ export function resolveWasmBinding(): string {
   );
 }
 
+export function resolveSidecarBinary(): string {
+  const ext = process.platform === 'win32' ? '.exe' : '';
+  const runfilesDir = process.env['JS_BINARY__RUNFILES'] || process.env['RUNFILES_DIR'];
+  if (runfilesDir) {
+    const candidates = [
+      path.join(
+        runfilesDir,
+        `_main/packages/compiler-cli/preprocessor/ng-analyze/ng_analyze_bin${ext}`,
+      ),
+      path.join(
+        runfilesDir,
+        `angular/packages/compiler-cli/preprocessor/ng-analyze/ng_analyze_bin${ext}`,
+      ),
+      path.join(runfilesDir, `packages/compiler-cli/preprocessor/ng-analyze/ng_analyze_bin${ext}`),
+    ];
+    for (const c of candidates) {
+      if (fsSync.existsSync(c)) {
+        return c;
+      }
+    }
+  }
+  const relativeCandidates = [
+    path.resolve(
+      process.cwd(),
+      `../../packages/compiler-cli/preprocessor/ng-analyze/ng_analyze_bin${ext}`,
+    ),
+    path.resolve(
+      process.cwd(),
+      `dist/bin/packages/compiler-cli/preprocessor/ng-analyze/ng_analyze_bin${ext}`,
+    ),
+  ];
+  for (const c of relativeCandidates) {
+    if (fsSync.existsSync(c)) {
+      return c;
+    }
+  }
+  throw new Error(
+    `Could not find ng_analyze_bin in runfiles. Checked runfilesDir=${runfilesDir}, cwd=${process.cwd()}`,
+  );
+}
+
 function resolvePackagePath(pkg: string): string | null {
   const runfilesDir = process.env['JS_BINARY__RUNFILES'] || process.env['RUNFILES_DIR'];
   if (runfilesDir) {
@@ -125,6 +165,20 @@ export function getOrCreateSyntheticNodeModules(): string | null {
         try {
           fsSync.symlinkSync(pkgPath, symlink, 'junction');
         } catch {}
+      }
+    }
+  }
+  const runfilesDir = process.env['JS_BINARY__RUNFILES'] || process.env['RUNFILES_DIR'];
+  if (runfilesDir) {
+    for (const extPkg of ['rxjs', 'tslib']) {
+      for (const prefix of ['_main', 'angular']) {
+        const candidate = path.join(runfilesDir, prefix, 'node_modules', extPkg);
+        const target = path.join(dir, extPkg);
+        if (fsSync.existsSync(candidate) && !fsSync.existsSync(target)) {
+          try {
+            fsSync.symlinkSync(candidate, target, 'junction');
+          } catch {}
+        }
       }
     }
   }
@@ -250,9 +304,8 @@ export async function runPipeline(
   sourceFiles: TestFile[],
   options: {
     optimize: boolean;
-    wasm?: boolean;
-    enableSelectorless?: boolean;
     sidecar?: boolean;
+    enableSelectorless?: boolean;
     templateParseOptions?: Record<string, any>;
     errors?: string[];
     format?: boolean;
@@ -336,16 +389,27 @@ export async function runPipeline(
     virtualFileMap.set('/' + withoutSlash, f.content);
   }
 
-  const wasmBinding = resolveWasmBinding();
-  const analyzer = await createAnalyzer(tsconfigFile.path, {
-    backend: 'wasm',
-    wasmBinding,
-    virtualFiles,
-    optimize: options.optimize,
-    nodeModulesPathOverride: nodeModulesPath,
-    workspaceName,
-    rootDirs,
-  });
+  let analyzer;
+  if (options.sidecar) {
+    const {SidecarAnalyzer} = await import('../api.js');
+    const sidecar = new SidecarAnalyzer(resolveSidecarBinary());
+    await sidecar.initialize(tsconfigFile.path, options.optimize, virtualFiles, nodeModulesPath, {
+      workspaceName,
+      rootDirs,
+    });
+    analyzer = sidecar;
+  } else {
+    const wasmBinding = resolveWasmBinding();
+    analyzer = await createAnalyzer(tsconfigFile.path, {
+      backend: 'wasm',
+      wasmBinding,
+      virtualFiles,
+      optimize: options.optimize,
+      nodeModulesPathOverride: nodeModulesPath,
+      workspaceName,
+      rootDirs,
+    });
+  }
 
   const compiler = new HybridCompiler(analyzer, {
     optimize: options.optimize,
@@ -539,14 +603,4 @@ function normalizeWhitespace(s: string): string {
   normalized = normalized.replace(/\):\s*any\s*\{/g, ') {');
 
   return normalized;
-}
-
-export async function* flatten(
-  iterator: AsyncIterable<CompilationChunk>,
-): AsyncGenerator<AnalysisResult, void, unknown> {
-  for await (const chunk of iterator) {
-    for (const file of chunk.files) {
-      yield file;
-    }
-  }
 }

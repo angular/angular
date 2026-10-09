@@ -18,8 +18,6 @@ import {
   expectContain,
   expectAll,
   expectDoesNotContain,
-  expectReplacementText,
-  expectContainInsertText,
   expectContainInsertTextWithSnippet,
   expectDoesNotContainInsertTextWithSnippet,
   toText,

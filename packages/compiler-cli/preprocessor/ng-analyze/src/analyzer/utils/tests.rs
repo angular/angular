@@ -593,50 +593,20 @@ fn test_extract_string_constant_folding() {
     assert_string_in_program("greeting - target", None);
 }
 
-/// Parse `source` and hand its final expression statement to `f`, with the preceding
-/// declarations in scope.
-fn with_last_expression<F>(source: &str, f: F)
-where
-    F: FnOnce(&Expression, &Semantic),
-{
-    let allocator = Allocator::default();
-    let ret = Parser::new(&allocator, source, SourceType::ts()).parse();
-    assert!(
-        ret.diagnostics.is_empty(),
-        "parse errors: {:?}",
-        ret.diagnostics
-    );
-    let semantic = SemanticBuilder::new()
-        .with_build_nodes(true)
-        .build(&ret.program)
-        .semantic;
-    let expr = ret
-        .program
-        .body
-        .iter()
-        .rev()
-        .find_map(|stmt| match stmt {
-            oxc_ast::ast::Statement::ExpressionStatement(s) => Some(&s.expression),
-            _ => None,
-        })
-        .expect("source must end with an expression statement");
-    f(expr, &semantic);
-}
-
 #[test]
 fn resolve_local_expression_declines_destructured_bindings() {
     // Regression: a declarator's initializer is the value of the whole *pattern*, not of any
     // single name it binds. Handing it back made `template: x` emit an unrelated string.
-    with_last_expression(
+    with_trailing_expression(
         "const STYLES = ['.a {}', '.b {}']; const [firstStyle] = STYLES; firstStyle;",
         |expr, semantic| assert_eq!(extract_string(expr, semantic), None),
     );
-    with_last_expression(
+    with_trailing_expression(
         "const TPL = '<p>outer</p>'; const {x} = {x: TPL}; x;",
         |expr, semantic| assert_eq!(extract_string(expr, semantic), None),
     );
     // Plain identifier bindings still resolve, including through a chain.
-    with_last_expression(
+    with_trailing_expression(
         "const TPL = '<p>outer</p>'; const ALIAS = TPL; ALIAS;",
         |expr, semantic| {
             assert_eq!(

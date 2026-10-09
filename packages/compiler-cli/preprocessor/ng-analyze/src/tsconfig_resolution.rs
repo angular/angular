@@ -785,7 +785,6 @@ mod tests {
 
     #[test]
     fn test_extends_without_json_extension_virtual() {
-        println!("test_extends_without_json_extension_virtual");
         let dir = TempDir::new().unwrap();
         let base_path = dir.path().join("base.json");
         let src_dir = dir.path().join("src");
@@ -843,7 +842,6 @@ mod tests {
             load_and_resolve_tsconfig(&path_a, &crate::fs::OverlayFileSystem::new_with_overlay());
         assert!(result.is_err());
         let err = result.err().unwrap();
-        println!("CIRCULAR ERROR IS: {}", err);
         assert!(
             err.contains("Circular")
                 || err.contains("circular")

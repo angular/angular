@@ -13,7 +13,6 @@ export class TestFileManager {
   private files: string[] = [];
   private virtualFiles: Record<string, string> = {};
   private cursorOffset?: number;
-  private currentVersion = 0;
 
   constructor(private workspacePath: string) {}
 
@@ -97,18 +96,6 @@ export class TestFileManager {
 
   getFiles(): string[] {
     return this.files;
-  }
-
-  getVirtualFiles(): Record<string, string> {
-    return this.virtualFiles;
-  }
-
-  incrementVersion(): number {
-    return ++this.currentVersion;
-  }
-
-  getCurrentVersion(): number {
-    return this.currentVersion;
   }
 }
 

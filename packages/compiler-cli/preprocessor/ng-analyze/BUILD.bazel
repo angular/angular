@@ -13,9 +13,6 @@ rust_shared_library(
     ),
     crate_name = "ng_analyze",
     edition = "2021",
-    proc_macro_deps = [
-        "@crates//:oxc-miette-derive",
-    ],
     target_compatible_with = ["@platforms//cpu:wasm32"],
     deps = [
         "@crates//:futures",
@@ -66,9 +63,6 @@ rust_library(
         exclude = ["src/main.rs"],
     ),
     edition = "2021",
-    proc_macro_deps = [
-        "@crates//:oxc-miette-derive",
-    ],
     deps = [
         "@crates//:futures",
         "@crates//:glob",
@@ -108,4 +102,9 @@ rust_test(
     deps = [
         "@crates//:tempfile",
     ],
+)
+
+rust_test(
+    name = "bin_test",
+    crate = ":ng_analyze_bin",
 )

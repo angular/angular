@@ -37,13 +37,6 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryContext<Fs> {
         }
     }
 
-    pub fn merge_subquery(&self, other: &QueryContext<Fs>) {
-        let other_deps = other.dependencies();
-        if let Ok(mut guard) = self.dependencies.lock() {
-            guard.extend(other_deps);
-        }
-    }
-
     pub fn dependencies(&self) -> HashSet<FileId> {
         if let Ok(guard) = self.dependencies.lock() {
             guard.clone()

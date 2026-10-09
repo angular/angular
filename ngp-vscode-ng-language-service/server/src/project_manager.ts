@@ -1,3 +1,11 @@
+/*!
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
 import * as fs from 'node:fs/promises';
 import {readConfiguration} from '@angular/compiler-cli';
 import {API, Snapshot} from '@typescript/native-preview/unstable/async';
@@ -50,16 +58,8 @@ export class ProjectManager {
     this.currentSnapshot = undefined;
   }
 
-  getApi(): API | undefined {
-    return this.api;
-  }
-
   getLoadedProjects(): readonly ProjectInstance[] {
     return Array.from(this.projects.values());
-  }
-
-  async getLoadedProject(tsconfigPath: string): Promise<ProjectInstance | undefined> {
-    return this.projects.get(await normalizePath(tsconfigPath));
   }
 
   async getProjectForFile(filePath: string): Promise<ProjectInstance | null> {
@@ -258,16 +258,6 @@ export class ProjectManager {
       Array.from(this.projects.values()).map((project) =>
         project.hybridCompiler.invalidateFiles(invalidations),
       ),
-    );
-  }
-
-  async onDidClose(filePath: string): Promise<void> {
-    const project = await this.getProjectForFile(filePath);
-    const compilers = project
-      ? [project.hybridCompiler]
-      : Array.from(this.projects.values()).map((p) => p.hybridCompiler);
-    await Promise.all(
-      compilers.map((p) => p.invalidateFiles([{filePath, updateType: FileUpdateType.Changed}])),
     );
   }
 }

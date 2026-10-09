@@ -115,7 +115,7 @@ describe('Diagnostics Mapping', () => {
       }
     `;
 
-    env.createFile('app.html', appHtmlContent);
+    await env.createFile('app.html', appHtmlContent);
 
     await env.run('app_diagnostics_ext_test.ts', appTsContent, async (ls, filePath) => {
       const htmlPath = path.join(testWorkspacePath, 'app.html');

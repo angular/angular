@@ -31,7 +31,6 @@ async function runTest(
   files: TestFile[],
   options: {
     optimize?: boolean;
-    wasm?: boolean;
     sidecar?: boolean;
     errors?: string[];
   } = {},
@@ -39,7 +38,7 @@ async function runTest(
   const prepared = await prepareSandbox(testName, files);
   const outputs = await runPipeline(prepared, {
     optimize: options.optimize ?? false,
-    wasm: true,
+    sidecar: options.sidecar,
     errors: options.errors,
   });
   return outputs.map((o) => ({
@@ -1532,47 +1531,22 @@ describe('Resource Resolution E2E Test Suite', () => {
         {path: 'node_modules/my-lib/style.css', content: '.my-lib-style { margin: 10px; }'},
       ];
 
-      // Run NAPI Mode
-      const napiOutputs = await runTest('t4_tri_modal_parity_audit_napi', files, {
-        wasm: false,
+      // Run WASM Mode
+      const wasmOutputs = await runTest('t4_tri_modal_parity_audit_wasm', files, {
         sidecar: false,
       });
 
-      // Run WASM Mode (if available, otherwise bypass/spot-check)
-      let wasmOutputs: TestFile[] = [];
-      try {
-        wasmOutputs = await runTest('t4_tri_modal_parity_audit_wasm', files, {
-          wasm: true,
-          sidecar: false,
-        });
-      } catch (e) {
-        // WASM might not be compiled or supported in this test run environment, that is fine
-      }
-
       // Run Sidecar Mode
-      let sidecarOutputs: TestFile[] = [];
-      try {
-        sidecarOutputs = await runTest('t4_tri_modal_parity_audit_sidecar', files, {
-          wasm: false,
-          sidecar: true,
-        });
-      } catch (e) {
-        // Sidecar binary might not be compiled or available, that is fine
-      }
+      const sidecarOutputs = await runTest('t4_tri_modal_parity_audit_sidecar', files, {
+        sidecar: true,
+      });
 
-      // Verify that if multiple modes succeeded, their outputs are identical
-      expect(napiOutputs.length).toBeGreaterThan(0);
-      const napiJs = napiOutputs.find((o) => o.path.endsWith('app.component.ts'))!.content;
-
-      if (wasmOutputs.length > 0) {
-        const wasmJs = wasmOutputs.find((o) => o.path.endsWith('app.component.ts'))!.content;
-        expect(wasmJs).toBe(napiJs);
-      }
-
-      if (sidecarOutputs.length > 0) {
-        const sidecarJs = sidecarOutputs.find((o) => o.path.endsWith('app.component.ts'))!.content;
-        expect(sidecarJs).toBe(napiJs);
-      }
+      // Verify that WASM and Sidecar modes produce identical output
+      expect(wasmOutputs.length).toBeGreaterThan(0);
+      expect(sidecarOutputs.length).toBeGreaterThan(0);
+      const wasmJs = wasmOutputs.find((o) => o.path.endsWith('app.component.ts'))!.content;
+      const sidecarJs = sidecarOutputs.find((o) => o.path.endsWith('app.component.ts'))!.content;
+      expect(sidecarJs).toBe(wasmJs);
     });
   });
 });

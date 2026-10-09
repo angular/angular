@@ -6,12 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  ParsedTemplate,
-  TcbDirectiveMetadata,
-  TmplAstHostElement,
-  BoundTarget,
-} from '@angular/compiler';
+import {ParsedTemplate} from '@angular/compiler';
 
 import {PreparedTcbData} from './tcb.js';
 import {AnalysisResult, DeclarationMetadata} from './types.js';
@@ -21,11 +16,6 @@ export interface FileAnalysis {
   tcb?: string | null;
   // maps keyed by className
   parsedTemplates?: Map<string, ParsedTemplate>;
-  // Cross-file map: resolved file path → set of type-only export names.
-  // Used to approximate ngtsc's ts.TypeChecker cross-file type resolution for DI tokens.
-  // See type_to_value.ts in ngtsc for the canonical TypeChecker-based approach:
-  // https://github.com/angular/angular/blob/50e599e/packages/compiler-cli/src/ngtsc/reflection/src/type_to_value.ts
-  typeOnlyExports?: Set<string>;
   preparedTcbData?: PreparedTcbData | null;
 }
 

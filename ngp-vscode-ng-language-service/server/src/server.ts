@@ -1,3 +1,11 @@
+/*!
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
 import {
   createConnection,
   ProposedFeatures,
@@ -40,7 +48,6 @@ import {ProjectManager} from './project_manager';
 import {DiagnosticPublisher} from './diagnostic_publisher';
 import {canonicalizePath as normalizePath} from '../../../packages/compiler-cli/preprocessor/language-service/src/utils.js';
 
-let workspaceRoot: string = '';
 let facade: TsGoFacade | null = null;
 let projectManager: ProjectManager | null = null;
 
@@ -133,11 +140,6 @@ connection.onDidChangeWatchedFiles((params: DidChangeWatchedFilesParams) => {
 
 connection.onInitialize(async (params: InitializeParams) => {
   connection.console.log(`Initializing Angular Hybrid Language Server`);
-  if (params.rootUri) {
-    workspaceRoot = fileURLToPath(params.rootUri);
-  } else if (params.rootPath) {
-    workspaceRoot = params.rootPath;
-  }
 
   let api: API | undefined;
   if (params.initializationOptions?.tsApiPipe) {
@@ -229,9 +231,7 @@ function withProject<P extends {textDocument: {uri: string}}, R>(
     const info = await getProjectInfo(params.textDocument.uri);
     if (!info) return null;
     return handler(params, {
-      workspaceRoot,
       languageService: info.project.languageService,
-      connection,
       documents,
     });
   };
@@ -250,9 +250,7 @@ connection.onCompletionResolve(async (item: CompletionItem) => {
     const project = await projectManager.getProjectForFile(data.filePath);
     if (project) {
       return onCompletionResolve(item, {
-        workspaceRoot,
         languageService: project.languageService,
-        connection,
         documents,
       });
     }

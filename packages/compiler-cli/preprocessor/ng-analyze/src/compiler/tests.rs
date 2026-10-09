@@ -1462,8 +1462,6 @@ fn test_ngmodule_dts_tuple_typeof_array_spread() {
         }
     }
 
-    let file_paths: Vec<&str> = results.iter().map(|res| res.file_path.as_str()).collect();
-    println!("results file_paths: {:?}", file_paths);
     let app_meta = results
         .iter()
         .find(|res| res.file_path == "/project/app.ts")

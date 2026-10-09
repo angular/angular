@@ -8,13 +8,7 @@
 
 import ts from 'typescript';
 import {HybridCompiler} from './hybrid_compiler.js';
-import {
-  Diagnostic,
-  DiagnosticSeverity,
-  DiagnosticTag,
-  DiagnosticRelatedInformation,
-  Position,
-} from 'vscode-languageserver';
+import {Diagnostic, Position} from 'vscode-languageserver';
 import * as path from 'node:path';
 import {URI} from 'vscode-uri';
 
@@ -27,8 +21,6 @@ import {
 } from './tcb_ls_util.js';
 import {hasIgnoreForDiagnosticsMarker} from './comments.js';
 import {makeClassKey} from './compiler-utils.js';
-
-const IGNORE_MARKER_REGEX = /\/\*\s*D:ignore\s*\*\//;
 
 /**
  * Fallback check for ignore markers when the AST is broken due to syntax errors
@@ -161,7 +153,6 @@ export function mapDiagnostics(
   const results: {[filePath: string]: Diagnostic[]} = {};
   const tcbPath = getTcbPath(tsFilePath);
   const tcbSf = ts.createSourceFile(tcbPath, tcbCode, ts.ScriptTarget.Latest, true);
-  const currentTcbUri = URI.file(tcbPath).toString();
   const currentTcbFsPath = URI.file(tcbPath).fsPath;
 
   const metadata = hybridCompiler.getClassMetadata(tsFilePath);

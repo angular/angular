@@ -1,3 +1,11 @@
+/*!
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
 import {HandlerContext, getDocumentContext} from './utils.js';
 import {offsetToPosition} from '../../../../packages/compiler-cli/preprocessor/src/tcb_ls_util.js';
 
