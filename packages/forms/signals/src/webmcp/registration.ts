@@ -19,6 +19,7 @@ import type {JsonSchemaForInference} from '@mcp-b/webmcp-types';
 import {submit} from '../api/structure';
 import {FieldTree} from '../api/types';
 import {FieldNode} from '../field/node';
+import {isObject} from '../util/type_guards';
 import {REGISTER_WEBMCP_FORM, RegisterWebMcpForm} from './tokens';
 
 const registerWebMcpForm: RegisterWebMcpForm = (formTree, options) => {
@@ -70,8 +71,9 @@ async function initWebMcpForm(
         debugging: false,
       },
       execute: async (args: Record<string, unknown> | unknown[]) => {
-        // Populate the form with changes from the agent.
-        node.value.set(args);
+        // Populate the form with changes from the agent. Properties which are not `required` are
+        // optional in the schema, so the agent may omit them and they must keep their value.
+        node.value.set(overlayValue(node.value(), args));
 
         // Trigger form submission.
         const success = await submit(formTree);
@@ -95,8 +97,39 @@ async function initWebMcpForm(
   );
 }
 
-/** Infers the JSON schema from a specific form field. */
-function inferSchemaFromFieldNode(node: FieldNode): JsonSchemaForInference | undefined {
+/**
+ * Overlays the `incoming` value from an agent on top of the `current` form value.
+ *
+ * Object properties which are missing from `incoming` keep their current value. Everything else,
+ * including arrays, is replaced as a whole.
+ */
+function overlayValue(current: unknown, incoming: unknown): unknown {
+  if (!isPlainObject(current) || !isPlainObject(incoming)) return incoming;
+
+  return {
+    ...current,
+    // `Object.fromEntries` defines own properties, so a `__proto__` key from the agent is inert.
+    ...Object.fromEntries(
+      Object.entries(incoming).map(([key, value]) => [key, overlayValue(current[key], value)]),
+    ),
+  };
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return isObject(value) && !Array.isArray(value);
+}
+
+/**
+ * Infers the JSON schema from a specific form field.
+ *
+ * @param inArray Whether the field is (nested in) an array item. Arrays are replaced as a whole
+ *   rather than overlaid, so every property of an array item is `required`, otherwise the agent
+ *   could omit it and it would be dropped from the model.
+ */
+function inferSchemaFromFieldNode(
+  node: FieldNode,
+  inArray = false,
+): JsonSchemaForInference | undefined {
   const value = node.value();
 
   // Primitive types.
@@ -114,7 +147,7 @@ function inferSchemaFromFieldNode(node: FieldNode): JsonSchemaForInference | und
     const firstChild = node.structure.getChild('0');
     if (!firstChild) return undefined;
 
-    const itemSchema = inferSchemaFromFieldNode(firstChild);
+    const itemSchema = inferSchemaFromFieldNode(firstChild, /* inArray */ true);
     if (!itemSchema) return undefined;
 
     return {
@@ -130,12 +163,12 @@ function inferSchemaFromFieldNode(node: FieldNode): JsonSchemaForInference | und
     const children = node.structure.children();
     for (const child of children) {
       const key = child.keyInParent();
-      const childSchema = inferSchemaFromFieldNode(child);
+      const childSchema = inferSchemaFromFieldNode(child, inArray);
       if (!childSchema) return undefined;
 
       properties[key] = childSchema;
 
-      if (child.required()) required.push(key.toString());
+      if (inArray || child.required()) required.push(key.toString());
     }
 
     return {
