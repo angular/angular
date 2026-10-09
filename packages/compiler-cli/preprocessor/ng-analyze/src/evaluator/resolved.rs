@@ -94,20 +94,6 @@ impl FromResolved for StringList {
     }
 }
 
-/// `@Component.styles` after partial evaluation: ngtsc's `parseDirectiveStyles` accepts a
-/// single string or an array of strings.
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub struct InlineStyles(pub Vec<String>);
-
-impl FromResolved for InlineStyles {
-    fn from_value(value: &ResolvedValue, origin: crate::query::FileId) -> Option<Self> {
-        if let ResolvedValue::String(style) = value.unwrap_named() {
-            return Some(InlineStyles(vec![style.clone()]));
-        }
-        StringList::from_value(value, origin).map(|list| InlineStyles(list.0))
-    }
-}
-
 /// The numeric value of a `ViewEncapsulation` member reached through the partial evaluator.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct ViewEncapsulationValue(pub i32);

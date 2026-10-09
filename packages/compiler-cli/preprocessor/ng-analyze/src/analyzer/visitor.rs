@@ -2,13 +2,10 @@ use std::collections::HashSet;
 use std::path::Path;
 
 use crate::ResourceResolverFs;
-use oxc_allocator::Allocator;
 use oxc_ast::ast::{Class, ClassElement};
 use oxc_ast_visit::utf8_to_utf16::Utf8ToUtf16;
-use oxc_parser::Parser;
 use oxc_resolver::ResolverGeneric;
-use oxc_semantic::{Semantic, SemanticBuilder};
-use oxc_span::SourceType;
+use oxc_semantic::Semantic;
 use oxc_syntax::module_record::{ExportExportName, ExportImportName, ModuleRecord};
 
 use crate::{query::ReferenceId, ConstructorParamMetadata, TemplateGuardMetadata};
@@ -482,7 +479,6 @@ fn process_class_common<'a, Fs: ResourceResolverFs>(
         }
         if let Some(facts) = super::ngmodule::parse_decorator(
             decorator,
-            converter,
             semantic,
             import_map,
             eval,
@@ -765,42 +761,6 @@ fn dependency_array_references(
         })
         .flatten()
         .collect()
-}
-
-// TODO(cleanup): port `test_reexports_extraction_optimized` onto the live path and delete this dead code.
-#[allow(dead_code)]
-pub fn analyze_file<Fs: ResourceResolverFs>(
-    path: &Path,
-    source_text: &str,
-    fs: &Fs,
-    resolver: &ResolverGeneric<Fs>,
-) -> ParsedFileAnalysis {
-    let allocator = Allocator::default();
-    let source_type = SourceType::from_path(path)
-        .unwrap_or_default()
-        .with_typescript(true);
-    let ret = Parser::new(&allocator, source_text, source_type).parse();
-    let program = &ret.program;
-
-    let semantic_ret = SemanticBuilder::new()
-        .with_build_nodes(true)
-        .with_class_table(true)
-        .build(program);
-    let semantic = semantic_ret.semantic;
-
-    let converter = Utf8ToUtf16::new(source_text);
-    analyze_parsed(
-        path,
-        crate::query::FileIdInterner::new().intern_path(path),
-        source_text,
-        program,
-        &ret.module_record,
-        &semantic,
-        fs,
-        resolver,
-        &converter,
-        true,
-    )
 }
 
 /// Extract a file's re-export table (`export { x } from …`, `export * from …`) from its module
@@ -1700,18 +1660,25 @@ export { default as baz } from 'qux';
 export * as ns from 'star-source';
 export * from 'wildcard-source';
 "#;
-        let fs = crate::fs::OverlayFileSystem::new_with_overlay();
-        let resolver = crate::utils::create_resolver_with_fs(
+        let fs = create_test_fs(&[("/test/file.ts", source)]);
+        let resolver = std::sync::Arc::new(crate::utils::create_resolver_with_fs(
             std::path::Path::new("/test/tsconfig.json"),
             fs.clone(),
             false,
             None,
+        ));
+        let engine = crate::query::QueryEngine::new_default(
+            fs,
+            resolver,
+            std::sync::Arc::new(crate::resource_registry::ResourceRegistry::default()),
+            std::sync::Arc::new(std::sync::RwLock::new(Vec::new())),
         );
-        let path = std::path::PathBuf::from("/test/file.ts");
+        let file_id = engine.intern_path("/test/file.ts");
+        let result = futures::executor::block_on(
+            crate::query::QueryContext::new(engine).analyze_file_syntax(file_id),
+        );
 
-        let result = analyze_file(&path, source, &fs, &resolver);
-
-        let file_exports = result.file_exports;
+        let file_exports = &result.file_exports;
 
         // Verify named re-exports
         assert_eq!(file_exports.named.len(), 3);

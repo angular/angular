@@ -46,8 +46,8 @@ pub use interpreter::{
 };
 pub use resolved::{
     is_enum_member_value, ChangeDetectionStrategyValue, ComponentStyles, ComponentStylesError,
-    ExportAsNames, FromResolved, HostMetadata, HostMetadataValue, InlineStyles, QuerySelectors,
-    Resolved, StillIncomplete, StringList, UnresolvedCause, ViewEncapsulationValue,
+    ExportAsNames, FromResolved, HostMetadata, HostMetadataValue, QuerySelectors, Resolved,
+    StillIncomplete, StringList, UnresolvedCause, ViewEncapsulationValue,
 };
 pub use value::{
     collect_holes, demote_incomplete_to_dynamic, fingerprint, fingerprint_args, is_truthy,

@@ -77,7 +77,6 @@ pub fn parse_decorator<'a, Fs: ResourceResolverFs>(
         fs,
         resolver,
         directive_data,
-        angular_imports,
         eval,
     )
 }
@@ -165,7 +164,6 @@ fn parse_component_metadata<'a, Fs: ResourceResolverFs>(
     fs: &Fs,
     resolver: &ResolverGeneric<Fs>,
     directive_data: DirectiveData,
-    _angular_imports: &crate::analyzer::imports::AngularImports,
     eval: &EvalInput<'a, '_>,
 ) -> Option<ComponentData> {
     let mut data = ComponentData {

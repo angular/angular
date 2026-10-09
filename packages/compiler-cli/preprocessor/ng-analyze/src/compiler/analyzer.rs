@@ -122,7 +122,6 @@ pub struct Analyzer {
     tsconfig_path: PathBuf,
     entrypoints: Arc<RwLock<Vec<PathBuf>>>,
     current_cancel_token: RwLock<Option<CancellationToken>>,
-    eager_cancel_token: RwLock<Option<CancellationToken>>,
 }
 
 impl Analyzer {
@@ -186,8 +185,6 @@ impl Analyzer {
 
         let entrypoints_lock = Arc::new(RwLock::new(entrypoints));
 
-        let eager_cancel_token = CancellationToken::new();
-
         let resource_registry = Arc::new(ResourceRegistry::default());
 
         let resolver = Arc::new(create_resolver_with_fs(
@@ -240,7 +237,6 @@ impl Analyzer {
             tsconfig_path: path,
             entrypoints: entrypoints_lock,
             current_cancel_token: RwLock::new(None),
-            eager_cancel_token: RwLock::new(Some(eager_cancel_token.clone())),
         };
 
         Ok(analyzer)
@@ -331,10 +327,6 @@ impl Analyzer {
         if let Some(token) = token_write.take() {
             token.cancel();
         }
-        let mut eager_token_write = self.eager_cancel_token.write().unwrap();
-        if let Some(token) = eager_token_write.take() {
-            token.cancel();
-        }
 
         #[cfg(not(target_arch = "wasm32"))]
         {
@@ -351,23 +343,6 @@ impl Analyzer {
                 }
                 futures::executor::block_on(async { while pool.next().await.is_some() {} });
             }
-        }
-    }
-
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn wait_for_analysis(&self) {
-        let mut handles_write = self.active_handles.write().unwrap();
-        let handles = std::mem::take(&mut *handles_write);
-        drop(handles_write);
-
-        if !handles.is_empty() {
-            use futures::stream::FuturesUnordered;
-            use futures::StreamExt;
-            let mut pool = FuturesUnordered::new();
-            for h in handles {
-                pool.push(h);
-            }
-            futures::executor::block_on(async { while pool.next().await.is_some() {} });
         }
     }
 
@@ -912,7 +887,6 @@ async fn run_coordinator<S, LA, FutLA, P, FutP, Fs>(
                 let _ = event_sender
                     .clone()
                     .send(CoordinatorEvent::DepsDiscovered {
-                        path: path.clone(),
                         deps: local_res.program_dependencies().cloned().collect(),
                     })
                     .await;
@@ -958,7 +932,7 @@ async fn run_coordinator<S, LA, FutLA, P, FutP, Fs>(
             let mut spawned_any = false;
             while let Ok(event) = event_receiver.get_mut().try_recv() {
                 match event {
-                    CoordinatorEvent::DepsDiscovered { deps, .. } => {
+                    CoordinatorEvent::DepsDiscovered { deps } => {
                         for dep in deps {
                             if cancel_token.is_cancelled() {
                                 break;
@@ -999,7 +973,7 @@ async fn run_coordinator<S, LA, FutLA, P, FutP, Fs>(
             _ = pending_tasks.select_next_some() => {}
             event = event_receiver.select_next_some() => {
                 match event {
-                    CoordinatorEvent::DepsDiscovered { deps, .. } => {
+                    CoordinatorEvent::DepsDiscovered { deps } => {
                         for dep in deps {
                             if cancel_token.is_cancelled() {
                                 break;
@@ -1039,7 +1013,6 @@ async fn run_coordinator<S, LA, FutLA, P, FutP, Fs>(
 
 pub enum CoordinatorEvent {
     DepsDiscovered {
-        path: PathBuf,
         deps: Vec<PathBuf>,
     },
     FileCompleted {

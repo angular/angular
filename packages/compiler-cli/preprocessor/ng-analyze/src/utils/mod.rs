@@ -58,15 +58,6 @@ impl<K: Eq + std::hash::Hash + Clone, V: 'static> QueryCache<K, V> {
         let mut write = self.map.write().unwrap();
         write.remove(key)
     }
-
-    /// Retain elements matching the predicate.
-    pub fn retain<F>(&self, mut f: F)
-    where
-        F: FnMut(&K, &mut crate::SharedQuery<V>) -> bool,
-    {
-        let mut write = self.map.write().unwrap();
-        write.retain(&mut f);
-    }
 }
 
 pub(crate) fn create_resolver_with_fs<Fs: FileSystem + 'static>(

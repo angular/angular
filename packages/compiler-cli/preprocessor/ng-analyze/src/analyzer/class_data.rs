@@ -577,11 +577,6 @@ pub struct ComponentData {
     /// The `templateUrl` property's value expression span, present whenever the property is
     /// (even when its value could not be read as a string).
     pub template_url_span: Option<oxc_span::Span>,
-    /// True when an inline `template` property was present in the decorator but its
-    /// value could not be statically evaluated to a string (e.g. a template literal
-    /// with runtime `${...}` interpolation). ngtsc rejects such templates; we surface
-    /// it so the pipeline errors instead of silently emitting an empty template.
-    pub template_dynamic: bool,
     pub template_url: Option<UrlData>,
     /// `@Component.styles` as the partial evaluator sees it.
     pub styles: Option<Resolved<crate::evaluator::ComponentStyles>>,
@@ -3076,7 +3071,7 @@ impl ClassData {
                 })
         });
         let template = self.read_optional_string(&c.template, cx, "component.template")?;
-        let template_dynamic = c.template_dynamic || (c.template.is_some() && template.is_none());
+        let template_dynamic = c.template.is_some() && template.is_none();
         let encapsulation = self.read_core_enum_field(
             &c.encapsulation,
             c.encapsulation_span,

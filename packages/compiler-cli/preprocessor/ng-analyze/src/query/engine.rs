@@ -19,11 +19,6 @@ use crate::resource_registry::ResourceRegistry;
 use crate::utils::is_ts_source;
 use crate::{ClassInfo, FileData, NgModuleComponentMap};
 
-/// Cheap-to-clone handle to the [`QueryEngine`] that is captured into every query body. Sub-queries
-/// are requested through this handle (`ctx.analyze_file_semantic(p).await`) instead of threading
-/// `fs`/`resolver`/`resource_registry`/`file_analysis` through every call.
-pub type QueryCtx<Fs> = Arc<QueryEngine<Fs>>;
-
 /// The unified query engine.
 ///
 /// Every "question" the analyzer answers is a [`QueryKey`]; [`QueryEngine::query`] returns a cached,
@@ -32,8 +27,8 @@ pub type QueryCtx<Fs> = Arc<QueryEngine<Fs>>;
 /// ambient analysis state (`fs`, `resolver`, `resource_registry`, `entrypoints`) so query bodies
 /// don't have to thread it; the cross-file symbol table lives on the `AnalyzeFileSyntax` results.
 ///
-/// `Fs` is kept generic so a future virtual-filesystem-only WASM backend can be plugged in; the
-/// concrete `Analyzer` instantiates `QueryEngine<OverlayFileSystem>` today.
+/// `Fs` is generic over [`ResourceResolverFs`]; the concrete `Analyzer` instantiates
+/// `QueryEngine<OverlayFileSystem>`.
 pub struct QueryEngine<Fs: ResourceResolverFs + Clone + 'static> {
     pub(crate) fs: Fs,
     pub(crate) resolver: Arc<ResolverGeneric<Fs>>,
@@ -286,14 +281,6 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             }
             crate::compiler::analyzer::step_local_pool();
         }
-    }
-
-    pub fn parse_file_blocking(
-        self: &Arc<Self>,
-        path: impl AsRef<Path>,
-    ) -> Arc<std::sync::Mutex<crate::ParsedFile>> {
-        let file_id = self.intern_path(path);
-        self.parse_file_by_id_blocking(file_id)
     }
 
     async fn parse_file_body(
