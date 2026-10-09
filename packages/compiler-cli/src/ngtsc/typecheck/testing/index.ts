@@ -92,7 +92,7 @@ import {
   TypeCheckScopeRegistry,
 } from '../../scope';
 import {sfExtensionData} from '../../shims';
-import {makeProgram, resolveFromRunfiles} from '../../testing';
+import {isNgpTestMode, makeProgram, resolveFromRunfiles} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
 import {
   OptimizeFor,
@@ -106,6 +106,7 @@ import {TypeCheckableDirectiveMeta, TypeCheckBlockMetadata} from '../api/api';
 import {TemplateTypeCheckerImpl} from '../src/checker';
 import {TypeCheckShimGenerator} from '../src/shim';
 import {TypeCheckFile} from '../src/type_check_file';
+import {compileTargetsWithNgp, registerNgpTypeCheckSetup} from './src/ngp_typecheck_testing';
 
 export function typescriptLibDts(): TestFile {
   return {
@@ -782,6 +783,9 @@ export function setup(
     typeCheckScopeRegistry,
     NOOP_PERF_RECORDER,
   );
+  if (isNgpTestMode()) {
+    registerNgpTypeCheckSetup(templateTypeChecker, {targets, overrides, load});
+  }
   return {templateTypeChecker, program, programStrategy};
 }
 
@@ -799,17 +803,27 @@ export function diagnose(
   options?: ts.CompilerOptions,
 ): string[] {
   const sfPath = absoluteFrom('/main.ts');
-  const {program, templateTypeChecker} = setup(
-    [
-      {fileName: sfPath, templates: {'TestComponent': template}, source, declarations},
-      ...additionalSources.map((testFile) => ({
-        fileName: testFile.name,
-        source: testFile.contents,
-        templates: {},
-      })),
-    ],
-    {config, options},
-  );
+  const targets: TypeCheckingTarget[] = [
+    {fileName: sfPath, templates: {'TestComponent': template}, source, declarations},
+    ...additionalSources.map((testFile) => ({
+      fileName: testFile.name,
+      source: testFile.contents,
+      templates: {},
+    })),
+  ];
+  if (isNgpTestMode()) {
+    const diagnostics = compileTargetsWithNgp(targets, {config, options});
+    return diagnostics.map((diag) => {
+      const text = ts.flattenDiagnosticMessageText(diag.messageText, '\n');
+      let fileName = diag.file!.fileName;
+      if (fileName.endsWith('/TestComponent.html') || fileName.endsWith('\\TestComponent.html')) {
+        fileName = 'TestComponent.html';
+      }
+      const {line, character} = ts.getLineAndCharacterOfPosition(diag.file!, diag.start!);
+      return `${fileName}(${line + 1}, ${character + 1}): ${text}`;
+    });
+  }
+  const {program, templateTypeChecker} = setup(targets, {config, options});
   const sf = getSourceFileOrError(program, sfPath);
   const diagnostics = templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
 
