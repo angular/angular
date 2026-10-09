@@ -4,8 +4,8 @@
 //! Layering cut line: decorator-level data is fully internal (no decorator-level wire struct
 //! appears below). Small *value* types ([`InputMetadata`], [`SymbolReference`],
 //! [`DeclarationTuple`], [`ProviderField`], spans, …) remain shared crate currency for now.
-// TODO: migrate value types to internal representations per-field as they diverge from the
-// wire form (e.g. when InputMetadata's transform becomes a partially evaluated value).
+// TODO(cleanup): migrate remaining shared value types to internal representations as they diverge
+// from the wire form.
 
 use crate::analyzer::imports::ImportInfo;
 use crate::evaluator::Resolved;
@@ -163,9 +163,8 @@ pub struct ClassData {
 /// (`@Component + @Injectable` is valid Angular) and then nest inside the primary's data
 /// (e.g. [`DirectiveData::injectable`], [`PipeData::injectable`]). A class whose only
 /// Angular decorators are weak classifies as `Injectable`/`Service` directly.
-// TODO(parity): ngtsc reports an error when a class carries two colliding *primary*
-// decorators (e.g. @Component + @Directive); we silently keep the highest-priority
-// classification and drop the rest. No fixture exercises that case.
+// TODO(parity): ngtsc errors on colliding primary decorators (e.g. @Component + @Directive); we
+// silently keep the highest-priority classification and drop the rest. No fixture covers this.
 #[derive(Clone, Debug)]
 #[allow(clippy::large_enum_variant)] // Components dominate real codebases; boxing the common
                                      // case would add indirection to the hot path for a size win on the rare variants.
@@ -878,7 +877,7 @@ pub struct NgModuleData {
     /// expressions (the whole expression, verbatim). Used by LOCAL compilation mode to
     /// emit `ɵɵsetNgModuleScope` fields as `WrappedNodeExpr` of the raw node, matching
     /// ngtsc's local mode:
-    /// https://github.com/angular/angular/blob/e3ac727dfc/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L566-L603
+    /// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L566-L603
     pub declarations_span: Option<oxc_span::Span>,
     pub imports_span: Option<oxc_span::Span>,
     pub exports_span: Option<oxc_span::Span>,
@@ -887,8 +886,8 @@ pub struct NgModuleData {
     /// element verbatim, spreads kept). When the value is not an array literal, a single span
     /// covering the whole expression. Used by LOCAL mode to emit `ɵinj.imports` as the raw
     /// concatenation of imports+exports elements:
-    /// https://github.com/angular/angular/blob/e3ac727dfc/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L670-L688
-    /// (Distinct from [`imports_element_spans`](Self::imports_element_spans), which is the
+    /// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L670-L688
+    /// (Distinct from [`injector_import_raws`](Self::injector_import_raws), which is the
     /// selective, index-keyed set the OPTIMIZE path uses for `ModuleWithProviders` splicing.)
     pub local_imports_element_spans: Option<Vec<oxc_span::Span>>,
     pub local_exports_element_spans: Option<Vec<oxc_span::Span>>,
@@ -1344,17 +1343,14 @@ impl ClassData {
         }
     }
 
-    /// Report a class declared by more than one NgModule (NG6007) on its name, as ngtsc's
-    /// `makeDuplicateDeclarationError` does from `getDirectiveDiagnostics` (components and
-    /// directives) and the pipe handler's `resolve`. `kind` is the word ngtsc uses in the message.
-    // TODO: Feature Parity with @angular/compiler-cli — `makeDuplicateDeclarationError` attaches
-    // one related-information entry per declaring NgModule ("'C' is listed in the declarations of
-    // the NgModule 'M1Module'.") at the class's reference in that module's `declarations`;
-    // `NgDiagnostic` has no related information yet, so those entries are dropped.
-    // TODO: Feature Parity with @angular/compiler-cli — ngtsc skips a component's `resolve`, and
-    // with it NG6007, when the component's analysis is poisoned (e.g. by NG2010); and it reports
-    // a standalone component listed in two NgModules too, while `optimize_component` only looks
-    // up the declaring NgModules of a non-standalone one.
+    /// Report a class declared by more than one NgModule (NG6007) on its name, matching ngtsc's
+    /// `makeDuplicateDeclarationError` (from `getDirectiveDiagnostics` for components/directives
+    /// and the pipe handler's `resolve`). `kind` is the word ngtsc uses in the message.
+    // TODO(parity): `makeDuplicateDeclarationError` attaches a related-information entry per
+    // declaring NgModule; `NgDiagnostic` does not support related information yet.
+    // TODO(parity): ngtsc skips `resolve` (and NG6007) when component analysis is poisoned (e.g.
+    // NG2010). ngtsc also reports NG6007 for a standalone component listed in two NgModules, but
+    // `optimize_component` only collects declaring NgModules for non-standalone components.
     fn validate_unique_declaration(
         &self,
         kind: &str,
@@ -1499,7 +1495,7 @@ impl ClassData {
 
         // ngtsc rejects a @HostBinding with more than one argument, or whose argument does not
         // statically resolve to a string.
-        // https://github.com/angular/angular/blob/1c9c453/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L641-L671
+        // https://github.com/angular/angular/blob/1c9c453/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L631-L663
         for binding in &d.host_bindings {
             if binding.arguments.len() > 1 {
                 push_error(
@@ -1556,8 +1552,8 @@ impl ClassData {
         }
 
         // ngtsc rejects @HostListener arguments that cannot be statically resolved to a string array.
-        // https://github.com/angular/angular/blob/main/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L742-L754
-        // https://github.com/angular/angular/blob/main/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L1091-L1105
+        // https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L743-L754
+        // https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L1092-L1107
         for listener in &d.host_listeners {
             for err in &listener.args_errors {
                 match err {
@@ -3101,7 +3097,7 @@ impl ClassData {
                     cx,
                     "component.changeDetection",
                 )?
-                // https://github.com/angular/angular/blob/96b8042/packages/compiler/src/render3/view/compiler.ts#L308
+                // https://github.com/angular/angular/blob/96b8042/packages/compiler/src/render3/view/compiler.ts#L308-L321
                 .filter(|num| *num != CHANGE_DETECTION_ON_PUSH)
                 .map(|num| num.to_string()),
         };
@@ -3302,8 +3298,8 @@ impl ClassData {
     /// Build the curated per-class registration record (the cross-file `ClassInfo` index
     /// entry). `None` for anonymous classes.
     ///
-    /// A `selector` referencing another file is recorded as `None`; see
-    /// [`crate::analyzer::resolver::with_resolved_selector`].
+    /// In Stage 1, a `selector` referencing another file is recorded as `None`; cross-file
+    /// consumers needing evaluated selectors must read through `AnalyzeFileEvaluated`.
     pub fn to_registration(
         &self,
         source_text: &str,
@@ -3364,8 +3360,10 @@ impl ClassData {
             _ => None,
         };
 
-        // TODO(parity): Stage 1 only — `inputs`/`outputs` entries reached through another file
-        // are added in Stage 2 (`complete_legacy_io`) and never reach this record.
+        // TODO(parity): Stage 1 only — `inputs`/`outputs` entries resolved through cross-file
+        // constants in Stage 2 (`EvaluatedIo::complete_with` / `fold_pending_io`) are not reflected
+        // in this RegistrationInfo record, so cross-file inheritance via `flatten_class_info` cannot
+        // see them.
         let members = self.directive_part();
         let is_structural = match &self.decorator {
             DecoratorData::Directive(d) => d.is_structural,

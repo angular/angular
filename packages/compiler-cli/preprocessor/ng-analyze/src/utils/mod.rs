@@ -39,12 +39,10 @@ impl<K: Eq + std::hash::Hash + Clone, V: 'static> QueryCache<K, V> {
     where
         F: FnOnce() -> crate::SharedQuery<V>,
     {
-        // 1. Try read lock first
         if let Some(shared) = self.get(&key) {
             return shared;
         }
 
-        // 2. Acquire write lock to insert
         let mut write = self.map.write().unwrap();
         if let Some(shared) = write.get(&key) {
             return shared.clone();

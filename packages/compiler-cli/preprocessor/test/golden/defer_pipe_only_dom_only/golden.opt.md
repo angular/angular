@@ -25,7 +25,7 @@ export class MyPipe implements PipeTransform {
 // used in the @defer block as a directive dependency. In LOCAL mode (golden.md) deps
 // can't be inspected, so hasDirectiveDependencies is forced true and the FULL
 // instruction set (ɵɵelement*) is emitted regardless.
-// https://github.com/angular/angular/blob/e3ac727dfc/packages/compiler/src/render3/view/compiler.ts#L201-L203
+// https://github.com/angular/angular/blob/e3ac727/packages/compiler/src/render3/view/compiler.ts#L201-L203
 @Component({
   selector: 'app-root',
   template: `
@@ -46,7 +46,7 @@ class AppComponent {}
 function _tcb1(this: AppComponent) {
   if (true) {
     var _pipe1 = null! as MyPipe;
-    '' + _pipe1.transform(/*1044,1050*/ 'hello' /*1034,1041*/) /*1034,1050*/;
+    '' + _pipe1.transform(/*1041,1047*/ 'hello' /*1031,1038*/) /*1031,1047*/;
   }
 }
 
@@ -119,7 +119,7 @@ export class MyPipe implements PipeTransform {
 // used in the @defer block as a directive dependency. In LOCAL mode (golden.md) deps
 // can't be inspected, so hasDirectiveDependencies is forced true and the FULL
 // instruction set (ɵɵelement*) is emitted regardless.
-// https://github.com/angular/angular/blob/e3ac727dfc/packages/compiler/src/render3/view/compiler.ts#L201-L203
+// https://github.com/angular/angular/blob/e3ac727/packages/compiler/src/render3/view/compiler.ts#L201-L203
 class AppComponent {
   // @ts-ignore
   static ɵfac: i0.ɵɵFactoryDeclaration<AppComponent, never> = function AppComponent_Factory(

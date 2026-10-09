@@ -98,7 +98,7 @@ pub(crate) fn extract_query_options<'a>(
 ) -> (bool, bool, Option<oxc_span::Span>, bool) {
     let mut descendants = default_descendants;
     // emitDistinctChangesOnly defaults true for both signals and decorators
-    // https://github.com/angular/angular/blob/fd957355948f2802528a40d2c8ac3b75ba16a35b/packages/compiler-cli/src/ngtsc/annotations/directive/src/query_functions.ts#L123
+    // https://github.com/angular/angular/blob/fd95735/packages/compiler-cli/src/ngtsc/annotations/directive/src/query_functions.ts#L123
     let mut emit_distinct = true;
     let mut read_span = None;
     let mut is_static = false;
@@ -150,8 +150,6 @@ pub(crate) fn extract_query_options<'a>(
     (descendants, emit_distinct, read_span, is_static)
 }
 
-// get_signal_callee_name removed (replaced by resolve_angular_call)
-
 /// Extract query metadata from class members.
 pub fn extract_queries<'a>(
     class: &'a oxc_ast::ast::Class<'a>,
@@ -182,7 +180,6 @@ pub fn extract_queries<'a>(
         };
         let mut is_decorator_query = false;
 
-        // 1. Check decorators
         for decorator in decorators {
             let Some(canonical_name) = crate::analyzer::utils::get_canonical_decorator_name(
                 decorator,
@@ -209,7 +206,7 @@ pub fn extract_queries<'a>(
             }
 
             let predicate = extract_predicate(&args[0], PredicateKind::Decorator, eval);
-            // https://github.com/angular/angular/blob/fd957355948f2802528a40d2c8ac3b75ba16a35b/packages/compiler-cli/src/ngtsc/annotations/directive/src/query_functions.ts#L60
+            // https://github.com/angular/angular/blob/fd95735/packages/compiler-cli/src/ngtsc/annotations/directive/src/query_functions.ts#L60
             let default_descendants = canonical_name != "ContentChildren";
             let (descendants, emit_distinct_changes_only, read_span, is_static) =
                 extract_query_options(args, default_descendants, semantic);
@@ -239,7 +236,6 @@ pub fn extract_queries<'a>(
             continue;
         }
 
-        // 2. Check signal queries
         let Some(Expression::CallExpression(call)) = value.map(Expression::get_inner_expression)
         else {
             continue;
@@ -475,61 +471,52 @@ mod tests {
 
         assert_eq!(queries.len(), 4);
 
-        // 1. @ContentChild('content', { descendants: true }) content!: ElementRef;
         assert_eq!(queries[0].property_name, "content");
         assert!(queries[0].first);
         assert!(queries[0].descendants);
         assert_eq!(queries[0].predicate.len(), 1);
         assert_eq!(queries[0].predicate[0], "content");
         assert!(queries[0].is_predicate_string);
-        assert!(queries[0].emit_distinct_changes_only); // Default true
+        assert!(queries[0].emit_distinct_changes_only);
 
-        // 2. @ContentChild(SomeModule.SomeDirective, { read: x.y.z }) complexComponent!: any;
         assert_eq!(queries[1].property_name, "complexComponent");
         assert!(queries[1].first);
         assert_eq!(queries[1].predicate[0], "SomeModule.SomeDirective");
         assert_eq!(queries[1].read.as_deref(), Some("x.y.z"));
 
-        // 3. @ContentChildren('contentItem', { descendants: false, emitDistinctChangesOnly: true }) contentItems!: QueryList<ElementRef>;
         assert_eq!(queries[2].property_name, "contentItems");
         assert!(!queries[2].first);
         assert!(!queries[2].descendants);
         assert!(queries[2].emit_distinct_changes_only);
 
-        // 4. @ContentChildren('contentItemDefault') contentItemsDefault!: QueryList<ElementRef>;
         assert_eq!(queries[3].property_name, "contentItemsDefault");
         assert!(!queries[3].first);
-        assert!(!queries[3].descendants); // Defaults to false for ContentChildren
-        assert!(queries[3].emit_distinct_changes_only); // Defaults to true
+        assert!(!queries[3].descendants);
+        assert!(queries[3].emit_distinct_changes_only);
 
         assert_eq!(view_queries.len(), 5);
 
-        // 1. @ViewChild('myDiv') div!: ElementRef;
         assert_eq!(view_queries[0].property_name, "div");
         assert!(view_queries[0].first);
         assert_eq!(view_queries[0].predicate.len(), 1);
         assert_eq!(view_queries[0].predicate[0], "myDiv");
-        assert!(view_queries[0].descendants); // Defaults to true for ViewChild
-        assert!(view_queries[0].emit_distinct_changes_only); // Defaults to true
+        assert!(view_queries[0].descendants);
+        assert!(view_queries[0].emit_distinct_changes_only);
 
-        // 2. @ViewChild('myTpl', { read: TemplateRef, static: true }) tpl!: TemplateRef<any>;
         assert_eq!(view_queries[1].property_name, "tpl");
         assert!(view_queries[1].first);
         assert!(view_queries[1].is_static);
         assert_eq!(view_queries[1].read.as_deref(), Some("TemplateRef"));
 
-        // 3. @ViewChild(forwardRef(() => SomeComponent)) forwardComponent!: SomeComponent;
         assert_eq!(view_queries[2].property_name, "forwardComponent");
         assert!(view_queries[2].first);
         assert!(view_queries[2].is_forward_ref);
         assert_eq!(view_queries[2].predicate[0], "SomeComponent");
 
-        // 4. @ViewChild('setterQuery') set setterQuery(val: ElementRef) {}
         assert_eq!(view_queries[3].property_name, "setterQuery");
         assert!(view_queries[3].first);
         assert_eq!(view_queries[3].predicate[0], "setterQuery");
 
-        // 5. @ViewChildren('item', { emitDistinctChangesOnly: false }) items!: QueryList<ElementRef>;
         assert_eq!(view_queries[4].property_name, "items");
         assert!(!view_queries[4].first);
         assert!(!view_queries[4].emit_distinct_changes_only);
@@ -560,60 +547,50 @@ mod tests {
 
         assert_eq!(queries.len(), 4);
 
-        // 1. signalContent = contentChild<ElementRef>('content', { descendants: true });
         assert_eq!(queries[0].property_name, "signalContent");
         assert!(queries[0].first);
         assert!(queries[0].is_signal);
         assert!(queries[0].descendants);
-        assert!(queries[0].emit_distinct_changes_only); // Default true
+        assert!(queries[0].emit_distinct_changes_only);
 
-        // 2. signalContentItems = contentChildren<ElementRef>('contentItem', { descendants: false });
         assert_eq!(queries[1].property_name, "signalContentItems");
         assert!(!queries[1].first);
         assert!(queries[1].is_signal);
         assert!(!queries[1].descendants);
 
-        // 3. signalContentItemsDefault = contentChildren<ElementRef>('contentItemDefault');
         assert_eq!(queries[2].property_name, "signalContentItemsDefault");
         assert!(!queries[2].first);
-        assert!(!queries[2].descendants); // Defaults to false for contentChildren
-        assert!(queries[2].emit_distinct_changes_only); // Defaults to true
+        assert!(!queries[2].descendants);
+        assert!(queries[2].emit_distinct_changes_only);
 
-        // 4. signalContentItemsNoDistinct = contentChildren<ElementRef>('contentItemNoDistinct', { emitDistinctChangesOnly: false });
         assert_eq!(queries[3].property_name, "signalContentItemsNoDistinct");
         assert!(!queries[3].first);
         assert!(!queries[3].emit_distinct_changes_only);
 
         assert_eq!(view_queries.len(), 6);
 
-        // 1. signalDiv = viewChild<ElementRef>('myDiv');
         assert_eq!(view_queries[0].property_name, "signalDiv");
         assert!(view_queries[0].first);
         assert!(view_queries[0].is_signal);
         assert!(view_queries[0].descendants);
-        assert!(view_queries[0].emit_distinct_changes_only); // Default true
+        assert!(view_queries[0].emit_distinct_changes_only);
 
-        // 2. signalTpl = viewChild('myTpl', { read: TemplateRef });
         assert_eq!(view_queries[1].property_name, "signalTpl");
         assert!(view_queries[1].first);
         assert_eq!(view_queries[1].read.as_deref(), Some("TemplateRef"));
 
-        // 3. signalItems = viewChildren<ElementRef>('item');
         assert_eq!(view_queries[2].property_name, "signalItems");
         assert!(!view_queries[2].first);
 
-        // 4. reqSignalDiv = viewChild.required<ElementRef>('myDiv');
         assert_eq!(view_queries[3].property_name, "reqSignalDiv");
         assert!(view_queries[3].first);
         assert_eq!(view_queries[3].predicate[0], "myDiv");
 
-        // 5. namespacedView = core.viewChild('nsView');
         assert_eq!(view_queries[4].property_name, "namespacedView");
         assert!(view_queries[4].first);
         assert_eq!(view_queries[4].predicate[0], "nsView");
         assert!(view_queries[4].is_signal);
 
-        // 6. namespacedReqView = core.viewChild.required('nsReqView');
         assert_eq!(view_queries[5].property_name, "namespacedReqView");
         assert!(view_queries[5].first);
         assert_eq!(view_queries[5].predicate[0], "nsReqView");
@@ -622,9 +599,7 @@ mod tests {
 
     /// Regression: when Angular symbols are imported through a package-internal relative path
     /// (ngtsc's `isCore` mode, e.g. `@angular/core`'s own test files) they must still be
-    /// recognized as queries. Under `is_core=false` the strict `@angular/core` source check
-    /// rejects them; under `is_core=true` they are matched by name. Also exercises a query
-    /// decorator declared on a getter accessor.
+    /// recognized as queries.
     #[test]
     fn test_extract_queries_core_internal_import() {
         let source = r#"
@@ -640,18 +615,15 @@ mod tests {
         }
         "#;
 
-        // Non-core compilation: relative import is not `@angular/core`, so nothing is recognized.
         let (content_off, view_off) = parse_class_with_core(source, false);
         assert!(view_off.is_empty());
         assert!(content_off.is_empty());
 
-        // Core compilation: recognized by name regardless of import source.
         let (content_on, view_on) = parse_class_with_core(source, true);
         assert_eq!(view_on.len(), 1);
         assert_eq!(view_on[0].property_name, "viewChild");
         assert_eq!(view_on[0].predicate[0], "viewQuery");
 
-        // The content query lives on a getter accessor and carries `static: true`.
         assert_eq!(content_on.len(), 1);
         assert_eq!(content_on[0].property_name, "textDir");
         assert!(content_on[0].is_static);

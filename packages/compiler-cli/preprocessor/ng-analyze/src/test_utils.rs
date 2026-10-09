@@ -15,21 +15,7 @@ use oxc_parser::Parser;
 use oxc_semantic::{Semantic, SemanticBuilder};
 use oxc_span::SourceType;
 
-/// Create a test filesystem with the given files
-///
-/// # Arguments
-/// * `files` - Array of (path, content) tuples
-///
-/// # Returns
-/// An OverlayFileSystem with the virtual files added
-///
-/// # Example
-/// ```ignore
-/// let fs = create_test_fs(&[
-///     ("/test/tsconfig.json", r#"{"files": ["app.ts"]}"#),
-///     ("/test/app.ts", "import { Component } from '@angular/core';"),
-/// ]);
-/// ```
+/// Create a test filesystem with the given `(path, content)` virtual files.
 pub fn create_test_fs(files: &[(&str, &str)]) -> OverlayFileSystem {
     let fs = OverlayFileSystem::new_with_overlay();
     for (path, content) in files {
@@ -38,19 +24,8 @@ pub fn create_test_fs(files: &[(&str, &str)]) -> OverlayFileSystem {
     fs
 }
 
-// This utility function is intentionally preserved for future comprehensive tests.
-// Full feature parity tests will eventually need to resolve real @angular/core
-// package dependencies from a local node_modules directory, which is too
-// complex and impractical to fully mock using only virtual files.
+/// Preserved for future parity tests that resolve real `@angular/core` from `node_modules`.
 #[allow(dead_code)]
-/// Create a test filesystem with node_modules fallback
-///
-/// This allows tests to resolve real @angular packages from node_modules
-/// while using virtual files for the test sources.
-///
-/// # Arguments
-/// * `files` - Array of (path, content) tuples
-/// * `real_root` - Path to the real filesystem root (for node_modules)
 pub fn create_test_fs_with_fallback(files: &[(&str, &str)]) -> OverlayFileSystem {
     let fs = OverlayFileSystem::new_with_overlay();
     for (path, content) in files {
@@ -59,15 +34,7 @@ pub fn create_test_fs_with_fallback(files: &[(&str, &str)]) -> OverlayFileSystem
     fs
 }
 
-/// Run the analyzer on a test filesystem and collect all results
-///
-/// # Arguments
-/// * `fs` - The overlay filesystem with virtual files
-/// * `tsconfig_path` - Path to the tsconfig.json (must be a virtual path)
-/// * `optimize` - Whether to use optimized two-pass mode
-///
-/// # Returns
-/// Vector of analysis results for all processed files
+/// Run the analyzer on a test filesystem and collect all results.
 pub fn run_analyzer(
     fs: OverlayFileSystem,
     tsconfig_path: &str,

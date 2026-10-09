@@ -24,7 +24,7 @@ export interface FileAnalysis {
   // Cross-file map: resolved file path → set of type-only export names.
   // Used to approximate ngtsc's ts.TypeChecker cross-file type resolution for DI tokens.
   // See type_to_value.ts in ngtsc for the canonical TypeChecker-based approach:
-  // https://github.com/angular/angular/blob/50e599e73ec5/packages/compiler-cli/src/ngtsc/reflection/src/type_to_value.ts
+  // https://github.com/angular/angular/blob/50e599e/packages/compiler-cli/src/ngtsc/reflection/src/type_to_value.ts
   typeOnlyExports?: Set<string>;
   preparedTcbData?: PreparedTcbData | null;
 }

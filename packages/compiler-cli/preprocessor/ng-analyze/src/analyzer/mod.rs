@@ -297,12 +297,11 @@ pub fn get_constructor_params(
             continue;
         }
         if method.value.body.is_some() {
-            // Found the implementation constructor with a body. Stop searching immediately.
             target_method = Some(method);
             break;
         }
         if target_method.is_none() {
-            // Fallback to the first overload signature if no implementation constructor is found
+            // Fallback to the first overload signature if no implementation constructor is found.
             target_method = Some(method);
         }
     }
@@ -319,17 +318,13 @@ pub fn get_constructor_params(
         let is_value_verified = type_info
             .as_ref()
             .is_some_and(|(_, info)| info.is_value_verified);
-        // `type_name` stays `None` when the parameter has no runtime-referenceable type (a
-        // primitive keyword, an inline type, no annotation). ngtsc emits `type: undefined` for
-        // such parameters in `ɵsetClassMetadata` (typeValueReference UNAVAILABLE); consumers that
-        // need the legacy `Object` DI-token fallback apply it themselves.
+        // `None` when the parameter has no runtime-referenceable type (primitive, inline type, or
+        // untyped), emitted as `type: undefined` in `ɵsetClassMetadata`.
         let type_name = type_info.map(|(name, _)| name);
         let mut decorators = Vec::new();
 
-        // Resolve the type to its import source so a DI token that references an imported
-        // symbol can be emitted through the corresponding namespace import (e.g.
-        // `i0.ElementRef`), matching ngtsc's import manager. Only non-aliased named imports
-        // are namespaced; aliased or locally declared types keep their bare local name.
+        // Non-aliased named imports record their source module for namespaced DI token emission
+        // (e.g. `i0.ElementRef`).
         let type_module = type_name.as_deref().and_then(|name| {
             import_map.get(name).and_then(|sym| match &sym.kind {
                 crate::analyzer::ImportKind::Named(original) if original == name => {
@@ -339,7 +334,6 @@ pub fn get_constructor_params(
             })
         });
 
-        // Extract decorators
         for decorator in &param.decorators {
             let Some(name) = extract_decorator_name(decorator) else {
                 continue;
@@ -366,27 +360,17 @@ pub fn get_constructor_params(
                 }
             }
 
-            // KNOWN DEVIATION from ngtsc, tracked in #533. `is_type_only` gates the `type:`
-            // field of the constructor-parameter entry in `ɵsetClassMetadata`, and ngtsc derives
-            // that field *purely* from `param.typeValueReference`; no decorator, `@Inject`
-            // included, influences it. ngtsc emits
-            // `{type: SomeClass, decorators: [{type: Inject, …}]}`, not `{type: undefined, …}`.
-            // https://github.com/angular/angular/blob/16fe27bfefa6/packages/compiler-cli/src/ngtsc/annotations/common/src/metadata.ts#L160-L181
+            // KNOWN DEVIATION (#533): ngtsc derives `ɵsetClassMetadata` parameter `type:` purely
+            // from `param.typeValueReference` regardless of `@Inject`:
+            // https://github.com/angular/angular/blob/16fe27b/packages/compiler-cli/src/ngtsc/annotations/common/src/metadata.ts#L160-L181
             //
-            // We suppress the type anyway. It was introduced while `ɵsetClassMetadata` carried no
-            // `@ts-ignore`: standard mode cannot distinguish an imported interface from an
-            // imported class, and an `@Inject`ed dependency is the common case where the declared
-            // type is not a value, so emitting it was a TS2693 in the consumer's build. That
-            // reason is gone — `@angular/compiler` now guards every parameter type that is not
-            // `is_value_verified` — so this can be removed; it is left for #533 because doing so
-            // moves a lot of goldens. Until then it also overrides a verified value (a class in
-            // the same file), leaving `is_type_only` and `is_value_verified` both set.
-            //
-            // The token axis needs nothing from this flag: `buildDeps` in `src/compiler-utils.ts`
-            // resolves the token from the decorator itself for both `@Inject` and `@Attribute`,
-            // mirroring `getConstructorDependency`. That is why `@Attribute` is absent here and
-            // correctly stays absent.
-            // https://github.com/angular/angular/blob/16fe27bfefa6/packages/compiler-cli/src/ngtsc/annotations/common/src/di.ts#L67-L100
+            // Historically we set `is_type_only` on `@Inject` parameters to avoid TS2693 when the
+            // declared type was an imported interface. `@angular/compiler` now guards unverified
+            // parameter types with `@ts-ignore`, so this override is only kept until #533 updates
+            // the goldens. Until then it also overrides same-file classes, leaving `is_type_only`
+            // and `is_value_verified` both set. `@Attribute` needs no override: `buildDeps`
+            // resolves the DI token from the decorator for both (`getConstructorDependency`):
+            // https://github.com/angular/angular/blob/16fe27b/packages/compiler-cli/src/ngtsc/annotations/common/src/di.ts#L67-L100
             if canonical_name == Some("Inject") {
                 is_type_only = true;
             }
@@ -650,20 +634,12 @@ const TS_BUILTIN_UTILITY_TYPES: &[&str] = &[
     "WeakKey",
 ];
 
-// Exports of `@angular/core` that are interfaces or type aliases, with no runtime value.
-//
-// This list is about *runtime*, not typechecking: the `@ts-ignore` the compiler attaches to a
-// metadata entry silences TS2339/TS2693, but `import {OnInit} from '@angular/core'` still has no
-// binding to resolve once the emitted code names it in a value position. So these have to be
-// withheld, not guarded.
-// Kept in sorted order for binary_search.
-//
-// TODO: Feature Parity: this list is a single-file-mode stopgap and is deliberately not
-// exhaustive — `@angular/core` exports ~195 type-only symbols and the set moves between versions,
-// so enumerating it here would rot. It covers the names that realistically appear as a constructor
-// parameter type. Optimize mode answers the same question exactly, from the package's own `.d.ts`,
-// via `resolve_qualified_symbol_value_kind`; the list can go once single-file mode can reach a
-// resolver.
+// Type-only exports of `@angular/core` (sorted for `binary_search`). Must be withheld rather than
+// guarded with `@ts-ignore` because emitting them in value position causes a runtime missing-export
+// error.
+// TODO(parity): Single-file-mode stopgap, deliberately not exhaustive (`@angular/core`'s ~195
+// type-only exports shift between versions). Optimize mode resolves `.d.ts` declarations via
+// `resolve_qualified_symbol_value_kind`; remove once single-file mode can reach a resolver.
 const ANGULAR_CORE_TYPE_ONLY_EXPORTS: &[&str] = &[
     "AbstractType",
     "AfterContentChecked",
@@ -688,9 +664,8 @@ const ANGULAR_CORE_TYPE_ONLY_EXPORTS: &[&str] = &[
     "WritableSignal",
 ];
 
-/// The `@angular/core` export a type reference names, when it resolves there: `core.OnInit`
-/// through a namespace import, or `OnInit` / `OnInit as Hook` through a named one (the original
-/// exported name is what `ANGULAR_CORE_TYPE_ONLY_EXPORTS` holds, so an alias still matches).
+/// Returns the `@angular/core` export name referenced by `full_type_name` (via a `core.OnInit`
+/// namespace import or `OnInit` / `OnInit as Hook` named import).
 fn angular_core_member<'n>(
     sym: &'n ImportedSymbol,
     local_name: &str,
@@ -701,8 +676,6 @@ fn angular_core_member<'n>(
         return None;
     }
     match (&sym.kind, is_qualified) {
-        // Only a single qualification step names an export of the package: in `core.Foo.Bar`,
-        // `Bar` is a member of something nested inside `core.Foo`, not of `@angular/core`.
         (ImportKind::Namespace, true) => full_type_name
             .strip_prefix(local_name)?
             .strip_prefix('.')
@@ -712,15 +685,9 @@ fn angular_core_member<'n>(
     }
 }
 
-// Mirrors ngtsc's typeToValue() which determines if a type reference can be used
-// as a runtime DI token. ngtsc checks decl.valueDeclaration (undefined for interfaces/
-// type aliases), InterfaceDeclaration/TypeAliasDeclaration SyntaxKinds in local compilation
-// mode, and isTypeOnly/phaseModifier for type-only imports.
-// https://github.com/angular/angular/blob/50e599e73ec5/packages/compiler-cli/src/ngtsc/reflection/src/type_to_value.ts#L25-L179
-//
-// We use oxc's semantic analysis (SymbolFlags) as our equivalent of ts.TypeChecker:
-// - Interface/TypeAlias without Value ≈ decl.valueDeclaration === undefined
-// - TypeImport ≈ firstDecl.isTypeOnly || phaseModifier === TypeKeyword
+// Mirrors ngtsc's `typeToValue()` using oxc `SymbolFlags` to determine whether a type reference
+// can be emitted as a runtime DI token.
+// https://github.com/angular/angular/blob/50e599e/packages/compiler-cli/src/ngtsc/reflection/src/type_to_value.ts#L25-L179
 fn get_type_reference_info<'a>(
     ref_ident: &oxc_ast::ast::IdentifierReference<'a>,
     full_type_name: &str,
@@ -733,24 +700,14 @@ fn get_type_reference_info<'a>(
         .get()
         .and_then(|id| semantic.scoping().get_reference(id).symbol_id());
     let Some(symbol_id) = symbol_id else {
-        // Unresolved identifier with no local declaration or import: this is an ambient
-        // or global symbol.
-        //
-        // For a qualified reference whose namespace is not imported (`Gtag.Gtag`,
-        // `google.maps.Map`), treat it as type-only. The upstream `@ts-ignore` would clear the
-        // TS2708 this used to produce, but it cannot make the namespace exist: `Gtag` is a pure
-        // `.d.ts` namespace with no runtime object, while `google.maps` is a script-loaded global
-        // that does have one, and single-file analysis cannot tell them apart. Withholding costs
-        // a DI token that mostly would not have resolved anyway; emitting costs a `ReferenceError`
-        // from `ɵfac`, which runs in production.
+        // Unresolved ambient/global symbol. Non-imported qualified references (`Gtag.Gtag`,
+        // `google.maps.Map`) and built-in utility types (`Partial`, `Record`, `Omit`) are
+        // type-only; other globals (`Window`, `Date`) are runtime values guarded with `@ts-ignore`.
+        // Some qualified refs do exist at runtime (`google.maps`), but single-file analysis can't
+        // tell, and losing a DI token beats a `ReferenceError` from `ɵfac` in production.
         if is_qualified && !import_map.contains_key(ref_ident.name.as_str()) {
             return TypeRefInfo::TYPE_ONLY;
         }
-        // If it's a known TypeScript built-in utility type (e.g. Partial, Record, Omit), it has no
-        // runtime value declaration and must be treated as type-only. Otherwise, assume it is an
-        // ambient/global runtime value (e.g. `Window`, `FileReader`, `Date`, `Storage`) so that DI
-        // constructor injection continues to work. We have no way to confirm the binding from
-        // source, so the metadata entry is emitted under a `@ts-ignore`.
         if TS_BUILTIN_UTILITY_TYPES.contains(&ref_ident.name.as_str()) {
             return TypeRefInfo::TYPE_ONLY;
         }
@@ -758,10 +715,7 @@ fn get_type_reference_info<'a>(
     };
     let flags = semantic.scoping().symbol_flags(symbol_id);
 
-    // Case 1: Locally declared interface, type alias, type parameter, or namespace module
-    // without a value declaration (e.g. `namespace N { export type T = string; }`).
-    // Equivalent to ngtsc's NO_VALUE_DECLARATION check for InterfaceDeclaration,
-    // TypeAliasDeclaration, and type-only NamespaceDeclaration.
+    // Locally declared interface, type alias, type parameter, or type-only namespace module.
     if (flags.contains(oxc_syntax::symbol::SymbolFlags::Interface)
         || flags.contains(oxc_syntax::symbol::SymbolFlags::TypeAlias)
         || flags.contains(oxc_syntax::symbol::SymbolFlags::TypeParameter)
@@ -771,15 +725,12 @@ fn get_type_reference_info<'a>(
         return TypeRefInfo::TYPE_ONLY;
     }
 
-    // Case 2: `import type { X }` or `import type * as X` — always type-only.
-    // Equivalent to ngtsc's TYPE_ONLY_IMPORT check.
-    // https://github.com/angular/angular/blob/50e599e73ec5/packages/compiler-cli/src/ngtsc/reflection/src/type_to_value.ts#L106-L110
+    // Type-only import (`import type { X }` or `import type * as X`).
+    // https://github.com/angular/angular/blob/50e599e/packages/compiler-cli/src/ngtsc/reflection/src/type_to_value.ts#L106-L110
     if flags.contains(oxc_syntax::symbol::SymbolFlags::TypeImport) {
         return TypeRefInfo::TYPE_ONLY;
     }
 
-    // Case 2b: a known type-only export of `@angular/core`, reached either as `core.OnInit` or as
-    // a named `OnInit`. Both forms name the same declaration, so both have to answer the same way.
     if let Some(sym) = import_map.get(ref_ident.name.as_str()) {
         let member =
             angular_core_member(sym, ref_ident.name.as_str(), full_type_name, is_qualified);
@@ -788,8 +739,6 @@ fn get_type_reference_info<'a>(
         }
     }
 
-    // Case 3: Qualified type references (`A.B`) where `A` is not in `import_map` and has no local
-    // `Value` declaration in scope.
     if is_qualified
         && !import_map.contains_key(ref_ident.name.as_str())
         && !flags.intersects(oxc_syntax::symbol::SymbolFlags::Value)
@@ -797,9 +746,7 @@ fn get_type_reference_info<'a>(
         return TypeRefInfo::TYPE_ONLY;
     }
 
-    // A class declared in this file is the one case we can prove: the binding exists at runtime and
-    // the emitted reference is safe without a suppression. A qualified reference is excluded
-    // because the class only tells us about the namespace object, not the member being accessed.
+    // Unqualified class declared in the same file is guaranteed to exist at runtime.
     if !is_qualified
         && flags.contains(oxc_syntax::symbol::SymbolFlags::Class)
         && !flags.intersects(
@@ -809,12 +756,9 @@ fn get_type_reference_info<'a>(
         return TypeRefInfo::VERIFIED_VALUE;
     }
 
-    // For regular imports (`import { X }` or `import * as X`), we can't determine cross-file
-    // whether X is a class or interface without a type checker. Default to
-    // assuming it's a value (class) since Angular DI uses constructor param
-    // types as runtime tokens — emitting ɵɵinject(null) for a class would
-    // break injection. Cross-file resolution is handled separately in
-    // processor.ts via getTypeOnlyExports().
+    // Regular imports can't be classified without cross-file info. Default to an unverified value
+    // (emitted under `@ts-ignore`), since misclassifying a class as type-only would emit
+    // `ɵɵinject(null)` and break injection; `query::engine` verifies them in optimize mode.
     TypeRefInfo::UNVERIFIED_VALUE
 }
 

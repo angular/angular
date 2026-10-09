@@ -6,30 +6,6 @@ use crate::analyzer::evaluated_io::{
     read_input_options, read_output_alias, ClassMemberFacts, IoKind, MemberIoOptions, Read,
 };
 use crate::evaluator::{evaluate_expression, EvalInput, Resolved};
-///
-/// Input/Output Analysis Module
-///
-/// This module handles the extraction of Angular inputs and outputs from class members.
-/// It supports both:
-/// 1. Decorator-based inputs/outputs (@Input(), @Output())
-/// 2. Signal-based inputs/outputs (input(), output(), model())
-///
-/// # Feature Parity Status (vs compiler-cli)
-///
-/// | Feature | Status | Notes |
-/// |---------|--------|-------|
-/// | @Input/@Output Decorators | ✅ Supported | basic usage, aliases, required |
-/// | Signal Inputs/Outputs | ✅ Supported | input(), output(), model() |
-/// | Aliases | ✅ Supported | Decorator arguments are partially evaluated; signal options must be literals, as in ngtsc. |
-/// | Transforms | ✅ Supported | In decorated-based and signal inputs |
-/// | Inheritance | ❌ Missing | Base class inputs/outputs are NOT scanned here. This must be handled by the caller. |
-/// | Legacy Metadata | ✅ Supported | `inputs: [...]` and `outputs: [...]` arrays, evaluated in `directive.rs`. |
-///
-/// # Architecture
-/// This module uses `oxc_ast` to inspect class members. Decorator arguments go through the
-/// partial evaluator; one that names a constant from another file is handed on as a
-/// [`MemberIoOptions`] for Stage 2 to complete.
-///
 use oxc_semantic::Semantic;
 
 pub struct ExtractContext<'a, 'e> {
@@ -43,9 +19,8 @@ use super::utils::{
     resolve_angular_call, ResolvedAngularCall,
 };
 
-/// What member-level extraction found: the fields members declare themselves, the members
-/// an `inputs`/`outputs` entry may bind to, decorator arguments still waiting on another file,
-/// and arguments of the wrong shape.
+/// Member-level input/output extraction results, including class member facts for binding
+/// decorator metadata arrays, pending cross-file `@Input`/`@Output` arguments, and diagnostics.
 #[derive(Default)]
 pub struct MemberIo {
     pub fields: Vec<AngularField>,
@@ -425,11 +400,6 @@ fn process_decorators<'a>(
 }
 
 /// Extract the inputs and outputs a class declares through its members.
-///
-/// `decorator_fields` are the fields the class's `@Component`/`@Directive` metadata already
-/// declared through its `inputs`/`outputs` arrays. A member those arrays name is re-emitted
-/// here with its `property_span`, which is what marks the input as backed by a declared class
-/// member (ngtsc's `undeclaredInputFields` holds only the ones that are not).
 pub fn extract_inputs_outputs<'a>(
     class: &'a oxc_ast::ast::Class<'a>,
     angular_imports: &crate::analyzer::imports::AngularImports,
@@ -452,12 +422,10 @@ pub fn extract_inputs_outputs<'a>(
                     continue;
                 };
 
-                // Check for ngAcceptInputType_prop
                 if !prop.computed && prop.r#static && prop_name.starts_with("ngAcceptInputType_") {
                     static_coerced.push(prop_name["ngAcceptInputType_".len()..].to_string());
                 }
 
-                // Check for signal-based input()/output()/model() in initializer
                 let is_signal = parse_signal_input_output(prop, &ctx, &mut out);
 
                 process_decorators(
@@ -483,7 +451,7 @@ pub fn extract_inputs_outputs<'a>(
                     &prop_name,
                     &method.key,
                     method.accessibility,
-                    false, // Methods cannot be readonly
+                    false,
                     false,
                     Some(method.span),
                     &ctx,
@@ -500,7 +468,7 @@ pub fn extract_inputs_outputs<'a>(
                     &prop_name,
                     &acc.key,
                     acc.accessibility,
-                    false, // Accessors cannot be readonly
+                    false,
                     false,
                     Some(acc.span),
                     &ctx,
@@ -511,7 +479,6 @@ pub fn extract_inputs_outputs<'a>(
         }
     }
 
-    // Process static coerced fields
     for field in static_coerced {
         out.fields.push(AngularField::InputCoercion(field));
     }
@@ -650,7 +617,6 @@ mod tests {
     fn test_extract_inputs_outputs_from_methods_and_accessors() {
         let source = r#"import {Input, Output} from '@angular/core';
         class TestComponent {
-            // MethodDefinition (setter)
             @Input()
             set routerLink(commands: any[] | string | null | undefined) {}
 
@@ -660,7 +626,6 @@ mod tests {
             @Output()
             get activeStateChange() { return this._output; }
 
-            // AccessorProperty (auto-accessor / experimental decorators)
             @Input() accessor myAccessorProp: string;
         }
         "#;
@@ -669,7 +634,6 @@ mod tests {
         let inputs = ext.inputs;
         let outputs = ext.outputs;
 
-        // Asserting 3 inputs on methods/accessors
         assert_eq!(inputs.len(), 3);
         assert_eq!(inputs[0].name, "routerLink");
         assert_eq!(inputs[0].alias, None);
@@ -679,7 +643,6 @@ mod tests {
 
         assert_eq!(inputs[2].name, "myAccessorProp");
 
-        // Asserting 1 output on a getter
         assert_eq!(outputs.len(), 1);
         assert_eq!(outputs[0].name, "activeStateChange");
     }
@@ -689,17 +652,14 @@ mod tests {
         let source = r#"
         import { input, model, output } from '@angular/core';
         class SignalComponent {
-            // Signal inputs
             name = input<string>('World');
             aliasObj = input(123, { alias: 'inputAlias' });
             req = input.required<number>();
             reqAlias = input.required<string>({ alias: 'reqInputAlias' });
 
-            // Signal outputs
             submitted = output<string>();
             aliasedOut = output<void>({ alias: 'outLimit' });
 
-            // Model inputs/outputs
             val = model(0);
             checked = model(false, { alias: 'isChecked' });
             reqModel = model.required<string>();
@@ -711,68 +671,52 @@ mod tests {
         let inputs = ext.inputs;
         let outputs = ext.outputs;
 
-        // Inputs: name, aliasObj, req, reqAlias, val, checked, reqModel, reqModelAlias (8 total)
         assert_eq!(inputs.len(), 8);
 
-        // 1. name = input<string>('World')
         assert_eq!(inputs[0].name, "name");
         assert!(inputs[0].is_signal);
         assert!(!inputs[0].required);
         assert_eq!(inputs[0].alias, None);
 
-        // 2. aliasObj = input(123, { alias: 'inputAlias' })
         assert_eq!(inputs[1].name, "aliasObj");
         assert_eq!(inputs[1].alias.as_deref(), Some("inputAlias"));
 
-        // 3. req = input.required<number>()
         assert_eq!(inputs[2].name, "req");
         assert!(inputs[2].required);
 
-        // 4. reqAlias = input.required<string>({ alias: 'reqInputAlias' })
         assert_eq!(inputs[3].name, "reqAlias");
         assert!(inputs[3].required);
         assert_eq!(inputs[3].alias.as_deref(), Some("reqInputAlias"));
 
-        // 5. val = model(0) -> Input "val", Output "valChange"
         assert_eq!(inputs[4].name, "val");
         assert!(inputs[4].is_signal);
 
-        // 6. checked = model(false, { alias: 'isChecked' })
         assert_eq!(inputs[5].name, "checked");
         assert_eq!(inputs[5].alias.as_deref(), Some("isChecked"));
 
-        // 7. reqModel = model.required()
         assert_eq!(inputs[6].name, "reqModel");
         assert!(inputs[6].required);
 
-        // 8. reqModelAlias = model.required({ alias: 'reqModelAlias' })
         assert_eq!(inputs[7].name, "reqModelAlias");
         assert_eq!(inputs[7].alias.as_deref(), Some("reqModelAlias"));
 
-        // Outputs: submitted, aliasedOut, valChange, checkedChange, reqModelChange, reqModelAliasChange (6 total)
         assert_eq!(outputs.len(), 6);
 
-        // 1. submitted = output<string>()
         assert_eq!(outputs[0].name, "submitted");
         assert_eq!(outputs[0].alias, None);
 
-        // 2. aliasedOut = output<void>({ alias: 'outLimit' })
         assert_eq!(outputs[1].name, "aliasedOut");
         assert_eq!(outputs[1].alias.as_deref(), Some("outLimit"));
 
-        // 3. val -> name: "val", alias: "valChange"
         assert_eq!(outputs[2].name, "val");
         assert_eq!(outputs[2].alias.as_deref(), Some("valChange"));
 
-        // 4. checked -> name: "checked", alias: "isCheckedChange"
         assert_eq!(outputs[3].name, "checked");
         assert_eq!(outputs[3].alias.as_deref(), Some("isCheckedChange"));
 
-        // 5. reqModel -> name: "reqModel", alias: "reqModelChange"
         assert_eq!(outputs[4].name, "reqModel");
         assert_eq!(outputs[4].alias.as_deref(), Some("reqModelChange"));
 
-        // 6. reqModelAlias -> name: "reqModelAlias", alias: "reqModelAliasChange"
         assert_eq!(outputs[5].name, "reqModelAlias");
         assert_eq!(outputs[5].alias.as_deref(), Some("reqModelAliasChange"));
     }
@@ -823,12 +767,8 @@ mod tests {
         let source = r#"
         import { input } from '@angular/core';
         class InitialValueComponent {
-            // input({ alias: 'internal', count: 0 }) -> initial value is object, NO options
-            // The parser should NOT find an alias here because the first arg is initial value
+            // Single object arg is the initial value, not options.
             state = input({ alias: 'internal', count: 0 });
-
-            // input(initial, options)
-            // Here the second arg IS options
             correct = input({ count: 0 }, { alias: 'external' });
         }
         "#;
@@ -838,12 +778,9 @@ mod tests {
 
         assert_eq!(inputs.len(), 2);
 
-        // 1. state = input({ alias: 'internal', count: 0 });
         assert_eq!(inputs[0].name, "state");
-        // Should NOT have an alias, because the object is the initial value, not options
         assert_eq!(inputs[0].alias, None);
 
-        // 2. correct = input({ count: 0 }, { alias: 'external' });
         assert_eq!(inputs[1].name, "correct");
         assert_eq!(inputs[1].alias.as_deref(), Some("external"));
     }
@@ -853,10 +790,7 @@ mod tests {
         let source = r#"
         import { input, Input } from '@angular/core';
         class TemplateLiteralComponent {
-            // input(0, { alias: `tmplAlias` })
             input1 = input(0, { alias: `tmplAlias` });
-
-            // @Input(`decAlias`)
             @Input(`decAlias`) input2: string;
         }
         "#;
@@ -932,15 +866,12 @@ mod tests {
             @Input() protected protectedField: string;
             @Input() readonly readonlyField: string;
 
-            // Methods
             @Input() private set privateSetter(v: string) {}
             @Input() protected set protectedSetter(v: string) {}
 
-            // Public should NOT be restricted
             @Input() publicField: string;
             @Input() set publicSetter(v: string) {}
 
-            // Accessor
             @Input() private accessor privateAccessor: string;
         }
         "#;
@@ -985,11 +916,9 @@ mod tests {
         let inputs = ext.inputs;
         assert_eq!(inputs.len(), 7);
 
-        // noType
         assert_eq!(inputs[0].name, "noType");
         assert!(inputs[0].transform.is_none());
 
-        // unionType
         assert_eq!(inputs[1].name, "unionType");
         let ut = inputs[1].transform.as_ref().unwrap();
         let TransformData::Type {
@@ -1008,7 +937,6 @@ mod tests {
             "(v: string | number) => v"
         );
 
-        // funcExpr
         assert_eq!(inputs[2].name, "funcExpr");
         let fe = inputs[2].transform.as_ref().unwrap();
         let TransformData::Type {
@@ -1027,7 +955,6 @@ mod tests {
             "function(v: boolean[]) { return v; }"
         );
 
-        // identifier
         assert_eq!(inputs[3].name, "identifier");
         let id = inputs[3].transform.as_ref().unwrap();
         let TransformData::Expression(span) = id else {
@@ -1038,11 +965,9 @@ mod tests {
             "booleanAttribute"
         );
 
-        // sigNoType
         assert_eq!(inputs[4].name, "sigNoType");
         assert!(inputs[4].transform.is_none());
 
-        // sigUnionType
         assert_eq!(inputs[5].name, "sigUnionType");
         let sut = inputs[5].transform.as_ref().unwrap();
         let TransformData::Type {
@@ -1061,7 +986,6 @@ mod tests {
             "(v: 'a' | 'b') => v"
         );
 
-        // sigFuncExpr
         assert_eq!(inputs[6].name, "sigFuncExpr");
         let sfe = inputs[6].transform.as_ref().unwrap();
         let TransformData::Type {

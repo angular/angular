@@ -497,7 +497,6 @@ export async function convertToTemplateDocumentSpan(
     }
   }
 
-  // Resolve template URL from enclosing TCB function
   let currentNode: ts.Node | undefined = effectiveNode ?? tcbNode;
   let typeCheckId: string | undefined;
   while (currentNode !== undefined) {

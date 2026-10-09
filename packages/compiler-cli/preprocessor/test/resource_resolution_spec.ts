@@ -1221,22 +1221,17 @@ describe('Resource Resolution E2E Test Suite', () => {
       const analyzer = new NapiAnalyzer(rawAnalyzer);
       const compiler = new HybridCompiler(analyzer, {optimize: false});
 
-      // Initial analysis run
       await compiler.init();
       const metadata = await compiler.getClassMetadata(path.join(sandboxRoot, 'app.component.ts'));
       expect(metadata!.classes && metadata!.classes.length).toBeGreaterThan(0);
       expect(metadata!.classes[0]?.component?.template).toBe('<div>Original Template</div>');
 
-      // Update the physical template file and register update on analyzer
       const updatedTemplatePath = path.join(sandboxRoot, 'app.component.html');
       await fs.writeFile(updatedTemplatePath, '<div>Updated Template</div>');
-
-      // Trigger file update on the compiler/analyzer
       await compiler.updateFileContent([
         {filePath: updatedTemplatePath, content: '<div>Updated Template</div>'},
       ]);
 
-      // Run delta analysis
       const deltaIterator = compiler.analyzeDelta();
       const deltaResults: any[] = [];
       for await (const res of deltaIterator) {
@@ -1310,16 +1305,12 @@ describe('Resource Resolution E2E Test Suite', () => {
         '.my-style { color: red; }',
       );
 
-      // Update style
       const updatedStylePath = path.join(sandboxRoot, 'app.component.css');
       await fs.writeFile(updatedStylePath, '.my-style { color: blue; }');
-
-      // Trigger update
       await compiler.updateFileContent([
         {filePath: updatedStylePath, content: '.my-style { color: blue; }'},
       ]);
 
-      // Run delta
       const deltaIterator = compiler.analyzeDelta();
       for await (const _ of deltaIterator) {
       }

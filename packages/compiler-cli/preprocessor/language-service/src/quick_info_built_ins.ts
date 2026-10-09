@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-// copy of https://github.com/angular/angular/blob/main/packages/language-service/src/quick_info_built_ins.ts
+// https://github.com/angular/angular/blob/5b525f9/packages/language-service/src/quick_info_built_ins.ts
 
 import {StructuralQuickInfo} from './facade.js';
 import {Call, PropertyRead, ImplicitReceiver, TmplAstNode, AST} from '@angular/compiler';

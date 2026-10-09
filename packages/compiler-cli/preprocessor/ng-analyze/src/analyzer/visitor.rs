@@ -181,13 +181,7 @@ fn is_standalone_declaration(decorator: &DecoratorData) -> bool {
     }
 }
 
-/// Classify a parsed class by primary-decorator priority and assemble its [`ClassData`].
-/// Weak decorators (@Injectable/@Service, ngtsc `HandlerPrecedence.WEAK`) nest inside the
-/// primary classification's data rather than being dropped.
-// TODO(parity): ngtsc errors on colliding *primary* Angular decorators; we keep the
-// highest-priority classification (Component > Directive > Pipe > NgModule) and drop the
-// rest. (Classification also unifies the registration order, which historically was
-// last-write-wins — the opposite priority — while ClassInfo used Component-first.)
+/// Find an existing field in `fields` of the same kind and member name as `target`.
 fn find_matching_field_mut<'a>(
     fields: &'a mut [AngularField],
     target: &AngularField,
@@ -232,6 +226,12 @@ fn populate_directive_members(
     d.service = service;
 }
 
+/// Classify a parsed class by primary-decorator priority (`Component > Directive > Pipe > NgModule`)
+/// and assemble its [`ClassData`]. Weak decorators (`@Injectable`, `@Service`) nest inside the
+/// primary classification's data.
+///
+/// TODO(parity): ngtsc errors on colliding primary Angular decorators; we keep the highest-priority
+/// classification and drop the rest.
 fn classify(reference_id: ReferenceId, parsed: ParsedClass, has_real_symbol: bool) -> ClassData {
     let ParsedClass {
         common,
@@ -767,9 +767,7 @@ fn dependency_array_references(
         .collect()
 }
 
-// TODO(dead-code): the crate-level `deny(dead_code)` is telling the truth here — the only
-// caller left is `test_reexports_extraction_optimized`; production drives the syntax pass
-// through the query engine. Port that test onto the live path and delete this.
+// TODO(cleanup): port `test_reexports_extraction_optimized` onto the live path and delete this dead code.
 #[allow(dead_code)]
 pub fn analyze_file<Fs: ResourceResolverFs>(
     path: &Path,
@@ -878,8 +876,7 @@ fn extract_file_exports(module_record: &ModuleRecord<'_>) -> FileExportInfo {
 }
 
 /// Applies NgModule schemas to the components it declares within the same file.
-/// TODO: Feature parity: Support trans-file schema scoping. Currently, schemas are only applied to components in the same file as the NgModule.
-/// Resolving this requires a global context or a third analysis pass.
+/// TODO(parity): support cross-file NgModule schema scoping.
 fn apply_ngmodule_schemas_local(
     classes: &mut [ClassData],
     mut registrations: Option<&mut [RegistrationInfo]>,
@@ -953,7 +950,6 @@ pub fn resolve_local_imports(
     source_text: &str,
     converter: &Utf8ToUtf16,
 ) {
-    // 1. Create a lookup map for classes in the same file
     let mut local_registry = std::collections::HashMap::new();
     for class in classes.iter() {
         if let Some(ref name) = class.class_name {
@@ -961,7 +957,6 @@ pub fn resolve_local_imports(
         }
     }
 
-    // 2. Resolve imports for each component, reading the class's own parsed imports
     for class in classes.iter_mut() {
         let DecoratorData::Component(component) = &mut class.decorator else {
             continue;

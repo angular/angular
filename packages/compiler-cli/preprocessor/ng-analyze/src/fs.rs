@@ -1,12 +1,5 @@
-//! Virtual filesystem overlay for testing
-//!
-//! Provides an `OverlayFileSystem` that checks virtual files first,
-//! then falls back to the real filesystem.
-//!
-//! "The real filesystem" is reached through [`crate::physical_fs::PhysicalFs`] rather
-//! than [`std::fs`] directly. On native that is a pass-through; on
-//! `wasm32-unknown-unknown` it is a bridge to the JavaScript host, because the bare
-//! wasm target has no OS beneath it and `std::fs` fails at runtime for every call.
+//! Virtual filesystem overlay that checks in-memory files first and falls back to
+//! [`crate::physical_fs::PhysicalFs`].
 
 use crate::physical_fs::{default_physical_fs, PhysicalFs};
 use oxc_resolver::{FileMetadata, FileSystem, ResolveError};

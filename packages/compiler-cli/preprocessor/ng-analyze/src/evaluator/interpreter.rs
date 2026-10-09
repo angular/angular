@@ -798,7 +798,7 @@ impl<'a, 'e, 'i> Interpreter<'a, 'e, 'i> {
             }
             // Parity: upstream evaluates arrow/function expressions only through call sites and
             // foreign-function resolvers, never as first-class values.
-            // TODO(parity-extension): consider arrow-const callables.
+            // TODO(parity): consider arrow-const callables.
             _ => self.dynamic(span, DynamicReason::UnsupportedSyntax),
         }
     }
@@ -1113,7 +1113,7 @@ impl<'a, 'e, 'i> Interpreter<'a, 'e, 'i> {
     /// Upstream walks *up* from the `ts.BindingElement` it was handed. oxc attributes every
     /// destructured binding to the enclosing `VariableDeclarator`, so this walks *down* from the
     /// pattern looking for `symbol_id`. The resulting path is identical.
-    /// https://github.com/angular/angular/blob/96b80424c7/packages/compiler-cli/src/ngtsc/partial_evaluator/src/interpreter.ts#L651-L695
+    /// https://github.com/angular/angular/blob/96b8042/packages/compiler-cli/src/ngtsc/partial_evaluator/src/interpreter.ts#L651-L695
     fn visit_binding_element(
         &self,
         declarator: &VariableDeclarator<'a>,
@@ -1296,7 +1296,7 @@ impl<'a, 'e, 'i> Interpreter<'a, 'e, 'i> {
             ResolvedValue::String(s) => match key {
                 AccessKey::Str("concat") => ResolvedValue::KnownFn(KnownFn::StringConcat(s)),
                 // Parity: upstream supports *only* `string.concat`.
-                // TODO(parity-extension): `string.length` would be trivial and useful.
+                // TODO(parity): evaluate `string.length` on static string expressions.
                 _ => self.dynamic(span, DynamicReason::Unknown),
             },
             ResolvedValue::Reference(reference) => {

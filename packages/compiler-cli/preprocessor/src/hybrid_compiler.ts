@@ -82,7 +82,9 @@ export interface IAnalyzer {
   analyzeDelta(): AsyncIterable<nga.CompilationChunk>;
   analyzeOptimizedDelta(): AsyncIterable<nga.CompilationChunk>;
   getMetadataForFile(filePath: string): Promise<nga.AnalysisResult | null>;
+  /** Applies updates and returns every path whose cached analysis is now stale. */
   updateFileContent(updates: {filePath: string; content: string}[]): Promise<string[]>;
+  /** Like `updateFileContent`, for changed or deleted files. */
   invalidateFiles(updates: nga.FileInvalidation[]): Promise<string[]>;
   getTsFileForTemplate(templatePath: string): Promise<nga.TemplateUsage[] | null>;
   getFileContent(filePath: string): Promise<string>;
@@ -121,7 +123,7 @@ export interface HybridCompilerOptions {
   /** Literal inline templates always normalize, whatever this is set to. */
   i18nNormalizeLineEndingsInICUs?: boolean;
   /**
-   * Whther HMR is enabled.
+   * Whether HMR is enabled.
    * TODO(parity): accepted but ignored, still needs to be implemented.
    */
   enableHmr?: boolean;
@@ -135,6 +137,7 @@ export interface HybridCompilerOptions {
 
 export class HybridCompiler {
   public analyzer: IAnalyzer;
+  /** Bound targets and TCBs per file, keyed by `AnalysisResult.filePath`. */
   public fileCache = new Map<string, FileAnalysis>();
   public optimize: boolean;
   public tsconfigPath?: string;
@@ -230,7 +233,6 @@ export class HybridCompiler {
     const remoteScopedClasses = new Set<string>();
     const eagerlyUsedDeclarations = new Map<string, nga.DeclarationMetadata[]>();
 
-    // 1. Ensure all files in the chunk are bound and get their fileAnalysis.
     const boundFiles = await Promise.all(
       chunk.files.map(async (file) => ({
         file,
@@ -238,11 +240,10 @@ export class HybridCompiler {
       })),
     );
 
-    // 2. Identify template dependencies of components in the chunk and check cycleProne.
     const chunkFileIds = new Set(chunk.files.map((f) => f.fileId));
     const dynamicGraph = new Map<number, Set<number>>();
 
-    // 2a. Pre-seed graph with intra-chunk static TypeScript import edges from Rust
+    // Pre-seed graph with intra-chunk static TypeScript import edges from Rust.
     if (chunk.staticEdges) {
       for (const [fromIdStr, targets] of Object.entries(chunk.staticEdges)) {
         const fromId = Number(fromIdStr);
@@ -326,10 +327,7 @@ export class HybridCompiler {
       }
     }
 
-    // 3. Detect cycles in the local dynamic graph
     const cyclicFiles = findCyclicNodes(dynamicGraph);
-
-    // Mark all component classes declared in the cyclic files as remotely scoped
     for (const file of chunk.files) {
       if (cyclicFiles.has(file.fileId)) {
         for (const classMeta of file.classes) {
@@ -452,21 +450,21 @@ export class HybridCompiler {
   }
 
   /**
-   * Ensures that the targets for the given file are bound, resolving all selectors,
-   * bindings, and template AST relationships. This phase does NOT perform TCB code
-   * generation or printing, which is useful when indexing templates because the indexer
-   * only requires a `BoundTarget` (to map identifiers, variables, references, inputs, and outputs)
-   * rather than generating/compiling a full TCB representation.
+   * Binds template targets for `filePath` without generating or printing TCB code (sufficient for
+   * template indexing, which only needs `BoundTarget`).
    */
   private ensureBoundSync(filePath: string): FileAnalysis {
     const result = this.analyzer.getMetadataForFileSync(filePath);
-    const normalized = result ? result.filePath : filePath;
+    if (!result) {
+      return unanalyzedFile(filePath);
+    }
+    const normalized = result.filePath;
     const fileAnalysis = getOrCreateFileAnalysis(this.fileCache, normalized);
     if (fileAnalysis.preparedTcbData !== undefined) {
       return fileAnalysis;
     }
 
-    if (!result || !this.hasTcbCandidates(result.classes)) {
+    if (!this.hasTcbCandidates(result.classes)) {
       fileAnalysis.preparedTcbData = null;
       return fileAnalysis;
     }
@@ -475,25 +473,16 @@ export class HybridCompiler {
     return this.populateBoundData(normalized, fileAnalysis, result, content);
   }
 
-  /**
-   * Asynchronously ensures that the targets for the given file are bound.
-   * This is used in sidecar/async mode to avoid blocking CPU tasks.
-   */
+  /** Asynchronously binds template targets for `filePath`. */
   public async ensureBound(filePath: string): Promise<FileAnalysis> {
     const result = await this.analyzer.getMetadataForFile(filePath);
     if (!result) {
-      const fileAnalysis = getOrCreateFileAnalysis(this.fileCache, filePath);
-      fileAnalysis.preparedTcbData = null;
-      return fileAnalysis;
+      return unanalyzedFile(filePath);
     }
     return this.ensureBoundWithMetadata(result);
   }
 
-  /**
-   * Asynchronously ensures that the targets for the given file analysis result are bound.
-   * This avoids re-querying metadata for files whose AnalysisResult is already available
-   * from the chunk stream.
-   */
+  /** Asynchronously binds template targets using a pre-fetched `AnalysisResult`. */
   public async ensureBoundWithMetadata(
     result: nga.AnalysisResult,
     content?: string,
@@ -555,11 +544,7 @@ export class HybridCompiler {
     return fileAnalysis;
   }
 
-  /**
-   * Ensures that the Type Check Block (TCB) code has been generated and cached for the file.
-   * This builds upon the bound targets and performs string generation and import management
-   * only when requested (lazy-loaded), ensuring optimal performance for non-diagnostics/compilation tasks.
-   */
+  /** Generates and caches the Type Check Block (TCB) for `filePath` on demand. */
   private ensureTcb(filePath: string): FileAnalysis {
     const fileAnalysis = this.ensureBoundSync(filePath);
 
@@ -671,6 +656,11 @@ export class HybridCompiler {
   public getFileContent(filePath: string): string {
     return this.analyzer.getFileContentSync(filePath);
   }
+}
+
+/** Uncached empty analysis for a file the analyzer has no metadata for. */
+function unanalyzedFile(filePath: string): FileAnalysis {
+  return {filePath, parsedTemplates: new Map(), preparedTcbData: null};
 }
 
 export function findCyclicNodes(graph: ReadonlyMap<number, ReadonlySet<number>>): Set<number> {

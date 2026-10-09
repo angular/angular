@@ -159,10 +159,9 @@ fn parse_ng_module_args<'a>(
                         }
                     }
                 }
-                ObjectPropertyKind::SpreadProperty(_) => {
-                    // TODO: Feature parity: Support evaluating spread elements in NgModule configuration.
-                    // Requires PartialEvaluator like Angular's reference compiler.
-                }
+                // Ignored, matching ngtsc's `reflectObjectLiteral`, which skips spread properties.
+                // https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/reflection/src/typescript.ts#L748-L764
+                ObjectPropertyKind::SpreadProperty(_) => {}
             }
         }
     }
@@ -195,28 +194,14 @@ fn parse_ng_module_args<'a>(
     })
 }
 
-/// Split an `imports` value into its top-level elements and evaluate each one on its own,
-/// mirroring ngtsc's construction of `topLevelImports`:
-///
-/// - an array literal contributes one entry per element; a spread contributes the spread
-///   *argument* (`...SHARED` behaves exactly like a direct reference to `SHARED`, since
-///   `imports` allows nested arrays anyway);
-/// - any other value (`imports: SHARED`, `imports: makeImports()`) is one entry covering the
-///   whole expression.
-///
-/// Each entry is evaluated separately because `ɵinj.imports` keeps an element's *source
-/// expression* whenever all of its references survive filtering, which requires knowing which
-/// references each element contributes. The whole-`imports` evaluation cannot answer that:
-/// spreads splice their contents into it, so its items do not correspond to source elements.
+/// Split an `imports` value into its top-level elements and evaluate each one separately,
+/// mirroring ngtsc's `topLevelImports` so `ɵinj.imports` can emit a source element's expression
+/// whenever all of its references survive filtering. Elements are evaluated individually because
+/// the whole-`imports` evaluation splices spreads; a spread contributes its argument.
 /// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L621-L660
 ///
-/// Array holes contribute nothing: ngtsc keeps the `OmittedExpression` as a top-level entry,
-/// but it can never be emitted verbatim — it evaluates to a non-reference, which is a fatal
-/// `NG1010` in ngtsc — so skipping it only skips a candidate we would reject anyway.
-/// (Array holes are the one place LOCAL mode deliberately does the opposite in
-/// [`top_level_element_spans`], keeping a hole as a zero-width span so `imports: [A, , B]`
-/// re-emits its hole. The two are not in conflict: LOCAL re-prints the array without ever
-/// resolving it, so it has no reference to reject. Type-only syntax is peeled in both modes.)
+/// Array holes are skipped (a fatal `NG1010` non-reference in ngtsc), whereas LOCAL mode's
+/// [`top_level_element_spans`] keeps them because it re-prints without resolving.
 fn extract_top_level_imports<'a>(
     value: &Expression<'a>,
     eval: &EvalInput<'a, '_>,
@@ -226,8 +211,6 @@ fn extract_top_level_imports<'a>(
         resolved: Resolved::from_syntax(evaluate_expression(expr, eval), eval.file),
     };
 
-    // ngtsc reads `imports` through `unwrapExpression`, so `imports: ([A, B])` still splits
-    // into its elements.
     let Expression::ArrayExpression(arr) = value.get_inner_expression() else {
         return vec![evaluate(value)];
     };
@@ -239,7 +222,6 @@ fn extract_top_level_imports<'a>(
                 entries.push(evaluate(&spread.argument))
             }
             ArrayExpressionElement::Elision(_) => {}
-            // Everything that is neither a spread nor a hole is an expression.
             other => entries.push(evaluate(other.to_expression())),
         }
     }
@@ -263,33 +245,18 @@ fn is_module_id_expression(expr: &Expression) -> bool {
     object.name == "module" && member.property.name == "id"
 }
 
-/// The span to re-print for a top-level `imports` element.
+/// Returns the span to re-print for a top-level `imports` or `id` expression, peeling outer
+/// type-only syntax (and parentheses that only wrap type-only syntax) to match TypeScript's
+/// AST printer in ngtsc, e.g. `(Mod.forRoot())` keeps its parentheses while `(Mod as any)`
+/// narrows to `Mod`. In `imports`, `<T>x`, `satisfies` and `f<T>` are also peeled even though
+/// ngtsc's evaluator rejects them (fatal `NG1010`), so there is no ngtsc output to match.
 ///
-/// ngtsc wraps the element node itself and hands it to TypeScript's printer, which keeps
-/// parentheses but erases type-only syntax, so `[Mod as any]` reaches the output as `[Mod]`.
-/// We copy source text rather than printing an AST, so the span has to exclude the erased parts
-/// itself to land on the same text. Peeling descends through a parenthesized expression only
-/// when it wraps type-only syntax, so `(Mod.forRoot())` keeps its parentheses like ngtsc while
-/// `(Mod as any)` narrows to `Mod` — matching ngc, which emits `Mod` for both.
-///
-/// TODO(parity): only the outermost expression is peeled, which is as far as a span can reach —
-/// erasing type syntax *nested* inside an element (`[[A as any, B]]`) would mean rewriting the
-/// text, not selecting a subrange of it, so such an element is re-printed with the assertion
-/// intact. Cosmetic rather than a broken emit: the output of a `.ts` input is itself TypeScript
-/// (`ExpressionPrinter.emitTypes`), so `tsc` erases the assertion downstream exactly as ngtsc's
-/// printer would have.
-///
-/// `TSTypeAssertion` (`<any>Mod`) and `TSSatisfiesExpression` are peeled here even though
-/// ngtsc's `unwrapExpression` handles neither — it strips only parentheses and `as`, so both
-/// shapes are a fatal `NG1010` there and have no emitted output to match. Peeling them yields
-/// the sensible text for input ngtsc simply refuses.
+/// TODO(parity): Only outermost type assertions are peeled; assertions nested inside an element
+/// (e.g. `[[A as any, B]]`) remain in the sliced source text and are erased by `tsc` downstream.
 fn emit_span(expr: &Expression) -> oxc_span::Span {
     if let Some(inner) = strip_type_only_syntax(expr) {
         return emit_span(inner);
     }
-    // Parentheses are kept — but only when they are the user's own grouping. Parentheses that
-    // exist solely to wrap an erased assertion go with it, since ngtsc's printer emits `Mod`
-    // for `(Mod as any)`.
     if let Expression::ParenthesizedExpression(paren) = expr {
         if wraps_type_only_syntax(&paren.expression) {
             return emit_span(&paren.expression);
@@ -298,11 +265,8 @@ fn emit_span(expr: &Expression) -> oxc_span::Span {
     expr.span()
 }
 
-/// The expression under one layer of type-only syntax, or `None` if there is none.
-///
-/// Single source of truth for which oxc `Expression` variants TypeScript erases; both
-/// [`emit_span`] and [`wraps_type_only_syntax`] derive from it so a future variant cannot be
-/// taught to one and not the other.
+/// Unwraps one layer of TypeScript type-only syntax. Single source of truth for both
+/// [`emit_span`] and [`wraps_type_only_syntax`], so they cannot drift apart.
 fn strip_type_only_syntax<'b, 'a>(expr: &'b Expression<'a>) -> Option<&'b Expression<'a>> {
     match expr {
         Expression::TSAsExpression(e) => Some(&e.expression),
@@ -325,15 +289,9 @@ fn wraps_type_only_syntax(expr: &Expression) -> bool {
     }
 }
 
-/// Compute raw source spans of the top-level elements of an `imports`/`exports` value.
-///
-/// Mirrors ngtsc's LOCAL-mode handler, which adds each array element to the injector's
-/// imports entry-by-entry (`exp.elements.map(n => new WrappedNodeExpr(n))`), keeping spread
-/// elements as `...x`; a non-array value is added whole. Array holes (elisions) are kept as an
-/// empty slot (zero-width span → empty raw text) so `imports: [A, , B]` emits `[A, , B]`,
-/// matching ngtsc — whose `.map` includes the `OmittedExpression` — and staying consistent with
-/// the whole-array span `setNgModuleScope` emits for the same value.
-/// https://github.com/angular/angular/blob/e3ac727dfc/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L670-L688
+/// Compute raw source spans of the top-level elements of an `imports`/`exports` value for LOCAL
+/// compilation mode, keeping spread elements and representing array elisions as empty spans.
+/// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L670-L688
 fn top_level_element_spans(value: &Expression) -> Vec<oxc_span::Span> {
     match value {
         Expression::ArrayExpression(arr) => arr
@@ -343,11 +301,6 @@ fn top_level_element_spans(value: &Expression) -> Vec<oxc_span::Span> {
                 oxc_ast::ast::ArrayExpressionElement::Elision(e) => {
                     oxc_span::Span::empty(e.span.start)
                 }
-                // Type-only syntax is peeled here for the same reason the optimized path peels
-                // it: ngtsc wraps each element in a `WrappedNodeExpr`, so its printer erases the
-                // assertion. A spread keeps its `...`, which leaves an assertion on the spread
-                // *argument* in place — the same "cannot rewrite, only select" limit `emit_span`
-                // documents.
                 other => other
                     .as_expression()
                     .map_or_else(|| other.span(), emit_span),

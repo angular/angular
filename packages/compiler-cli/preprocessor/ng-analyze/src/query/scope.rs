@@ -45,7 +45,6 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         visited: &'a mut HashSet<ReferenceId>,
     ) -> BoxFuture<'a, Vec<DeclarationData>> {
         async move {
-            // Await local analysis of the NgModule's file to populate its symbol table.
             let local_result = ctx.analyze_file_syntax(reference_id.file).await;
 
             let Some(ng_module) = find_ng_module(reference_id, &local_result) else {
@@ -144,7 +143,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
 
         let foreign = crate::analyzer::resolvers::angular_foreign_resolvers();
 
-        // 1. Imports (recursively expands imported NgModules' exports first, matching ngtsc LocalModuleScopeRegistry).
+        // Imported NgModules' exports are expanded before local declarations (matching ngtsc).
         if let Some(ref imports_resolved) = ng_module.imports {
             let mut completed = imports_resolved.clone();
             completed.complete_with(ctx, foreign).await;
@@ -166,7 +165,6 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             }
         }
 
-        // 2. Local declarations of the module (added second, taking precedence over imports in ngtsc).
         if let Some(ref decls_resolved) = ng_module.declarations {
             let mut completed = decls_resolved.clone();
             completed.complete_with(ctx, foreign).await;
@@ -203,8 +201,8 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         })
     }
 
-    /// Which name the entry point rooted at `file_id` publishes each declaration under.
-    /// The body behind [`QueryKey::ModuleExportMap`].
+    /// Which name the entry point rooted at `file_id` publishes each declaration under
+    /// ([`QueryKey::ModuleExportMap`]).
     pub(crate) async fn module_export_map_body(
         self: &Arc<Self>,
         file_id: FileId,
@@ -215,8 +213,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         Arc::new(export_names_by_decl(&table))
     }
 
-    /// Recursively and concurrently expands the imports graph of an NgModule. Imported NgModules
-    /// have their exports scopes queried (driven concurrently via `join_all`).
+    /// Recursively and concurrently expands the imports graph of an NgModule.
     pub(crate) fn expand_ngmodule_scope_async<'a>(
         self: &'a Arc<Self>,
         references: &'a [crate::types::analysis::Reference],
@@ -272,8 +269,6 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
     }
 }
 
-/// Find the NgModule data for `reference_id` in this file, confirming the class was registered
-/// during local analysis.
 fn find_ng_module(
     reference_id: ReferenceId,
     local_result: &crate::FileData,
@@ -286,20 +281,13 @@ fn find_ng_module(
     class.as_ng_module()
 }
 
-/// Upstream keys its export map by declaration node; `(declaring file, declared name)` is the
-/// closest stand-in oxc gives us, and `class_index` and `Reference` agree on it.
+/// `(declaring file, declared name)` stand-in for upstream's declaration-node key.
 type DeclKey = (FileId, String);
 
-/// Published name -> the declaration behind it. Mirrors `getExportsOfModule`. Value exports
-/// only: a type-only export cannot back the value-position references this compiler emits.
-/// Records only class declarations
-/// (`export declare const/function/enum` never enter `local_aliases`), so it must not be reused
-/// as a general export oracle.
-///
-/// Insertion-ordered solely to match upstream's emitted alias choice: exports enumerate in
-/// source order and the tie-break in [`export_names_by_decl`] keeps the positionally last name.
-/// Any published alias imports the same declaration, so a plain map can replace this if exact
-/// output parity stops mattering. The name index keeps lookups O(1).
+/// Insertion-ordered map from published value-export name to class declaration (`getExportsOfModule`).
+/// Only classes are recorded (`export declare const/function/enum` are absent), so do not reuse it
+/// as a general export oracle. Source order exists only so [`export_names_by_decl`] matches
+/// upstream's alias tie-break; a plain map would do if exact output parity stops mattering.
 #[derive(Default)]
 struct ExportTable {
     entries: Vec<(String, DeclKey)>,
@@ -504,20 +492,11 @@ fn export_names_by_decl(table: &ExportTable) -> ModuleExportMap {
     by_decl
 }
 
-/// Propagates a `.d.ts` NgModule's absolute specifier to the declarations it exports.
-///
-/// Optimize mode flattens scopes to direct declaration dependencies, and a declaration in a
-/// package-private file has no absolute owning module of its own — without propagation its
-/// import degrades to a relative path into the package, which Google3/Bazel-style layouts
-/// reject.
-///
-/// Only an NgModule read from a declaration file hands its owning module down, as upstream's
-/// `DtsMetadataReader.getNgModuleMetadata` evaluates the `ɵmod` type with the module reference's
-/// `bestGuessOwningModule`. A source NgModule's scope is made of the references resolved in its
-/// own file (`LocalModuleScopeRegistry`), so a declaration it imported relatively keeps no owning
-/// module and is imported from its declaring file. Reaching the NgModule through a bare specifier
-/// (a tsconfig `paths` barrel) must not reroute that import through the barrel, which may import
-/// the consumer back and close a cycle.
+/// Propagates a `.d.ts` NgModule's absolute specifier to the declarations it exports (matching
+/// `DtsMetadataReader.getNgModuleMetadata`); without it, flattened scope entries in package-private
+/// files degrade to relative imports into the package, which Google3/Bazel layouts reject. Source
+/// NgModules keep their own relative references (`LocalModuleScopeRegistry`): rerouting them
+/// through a tsconfig `paths` barrel could import the consumer back and close a cycle.
 pub(crate) async fn propagate_owning_reference_validated<
     Fs: ResourceResolverFs + Clone + 'static,
 >(
@@ -531,14 +510,9 @@ pub(crate) async fn propagate_owning_reference_validated<
         return declarations.to_vec();
     }
 
-    // Recorded owning modules are absolute by construction.
     let absolute_owning = owning_reference.as_ref();
 
-    // The export name has to come from the package's *entry point*, not from the file that
-    // happens to declare the symbol: a barrel may rename on the way out
-    // (`export {InternalDir as PublicDir} from './deep'`), and an importer of the package can
-    // only write the name the package publishes. Falling back to the declaring file preserves
-    // the previous behaviour when the specifier can't be resolved.
+    // Resolve the package entry point so re-exported aliases use the published name.
     let package_entry = absolute_owning
         .and_then(|owning| {
             crate::evaluator::cross_file::resolve_specifier(
@@ -550,10 +524,8 @@ pub(crate) async fn propagate_owning_reference_validated<
         .map(|path| ctx.engine.intern_path(&path))
         .unwrap_or(parent_file);
 
-    // Enumerate the entry point's exports once and answer every declaration from the result,
-    // as upstream does with its per-specifier `moduleExportsCache`. Searching per declaration
-    // would re-walk the package for each one, and could not see a declaration's other export
-    // names — the tie-break needs all of them.
+    // Enumerate the entry point's exports once (matching ngtsc's `moduleExportsCache`): per-declaration
+    // searches would re-walk the package and miss alternative export names required for the alias tie-break.
     let exports = match absolute_owning {
         Some(_) => ctx.module_export_map(package_entry).await,
         None => Arc::new(ModuleExportMap::new()),
@@ -562,12 +534,7 @@ pub(crate) async fn propagate_owning_reference_validated<
     let mut result = Vec::with_capacity(declarations.len());
     for d in declarations {
         let mut d = d.clone();
-        // An owning module is only ever recorded for an absolute specifier.
-        let current_is_absolute = d.reference.owning_reference.is_some();
-
-        if !current_is_absolute {
-            // `export_name` is how `owning` exposes the symbol, which is exactly what an
-            // importer of that package must write. No entry means it is not published at all.
+        if d.reference.owning_reference.is_none() {
             let decl = (d.reference.file, d.reference.name.clone());
             let published = absolute_owning.zip(exports.get(&decl));
             d.reference.owning_reference = published.map(|(owning, export_name)| {

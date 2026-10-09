@@ -54,7 +54,6 @@ export async function getHover(
   }
   const {tsFilePath, parsedTemplate, isHostBinding, hostElement} = setup;
 
-  // 3. Get Target at position in template
   let target;
   if (isHostBinding && hostElement) {
     target = getTargetAtPosition([hostElement], offset);
@@ -108,7 +107,6 @@ export async function getHover(
     templateName = node.name;
   }
 
-  // 4. Get TCB using TemplateTypeChecker
   const tcbResult = templateTypeChecker.getTcb(filePath, position);
 
   if (!tcbResult) {

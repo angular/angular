@@ -5,17 +5,14 @@ use crate::ResourceResolverFs;
 use crate::{types::analysis::ResolvedHostDirective, ClassType, DeclarationTuple};
 use std::path::Path;
 
-/// Re-project one resolved declaration into the frame of the file it is being emitted into:
-/// *how do I write this symbol here?*
+/// Project a resolved declaration into `consumer`'s file frame.
 ///
-/// A scope entry is shared across every component that pulls it in, so its stored projection
-/// belongs to the declaring file and has to be recomputed per consumer. Everything comes off
-/// `reference.aliases` — a file appears there exactly when it binds the symbol — so a consumer
-/// with an entry can name it directly, and one without gets an import instead.
+/// Scope entries are shared across consumers, so `ref_meta` and generic type parameter specifiers
+/// must be recomputed per consumer. `reference.aliases` records only files that bind the symbol,
+/// so a consumer with an entry names it directly and one without emits an import.
 ///
-/// This must never invent an identifier. A name that isn't a real binding emits a dangling
-/// reference, which is what the old generated-alias scheme did once the emitter moved to
-/// namespace imports.
+/// Never invent an identifier: a name that isn't a real binding emits a dangling reference (the
+/// bug in the old generated-alias scheme once the emitter moved to namespace imports).
 async fn contextualize_declaration<Fs: ResourceResolverFs + Clone + 'static>(
     ctx: &QueryCtx<Fs>,
     decl: &DeclarationData,
@@ -29,11 +26,8 @@ async fn contextualize_declaration<Fs: ResourceResolverFs + Clone + 'static>(
     }
     contextual.ref_meta = ref_meta;
 
-    // Project generic type parameter constraints and defaults from the declaring file
-    // into the consumer file's frame:
-    // - ApfImportStrategy: Rebases declaring-relative specifiers (e.g. `./models`) to
-    //   consumer-relative paths (e.g. `../components/models`).
-    // - PrefixImportStrategy: Converts declaring-relative specifiers into workspace-prefixed paths.
+    // Rebase relative specifiers in generic type parameter bounds from the declaring file to the
+    // consumer file (or to workspace-prefixed paths under `PrefixImportStrategy`).
     if let Some(type_parameters) = &mut contextual.type_parameters {
         let declaring_path = ctx.engine.lookup_path(decl.reference.file);
         for param in type_parameters {
@@ -66,19 +60,12 @@ async fn project_reference<Fs: ResourceResolverFs + Clone + 'static>(
     )
 }
 
-/// Resolve `class_info`'s `hostDirectives` to their declarations, projected into the consumer's
-/// frame and recursing through each host directive's own `hostDirectives`. Mirrors ngtsc's
-/// `HostDirectivesResolver.resolve`.
+/// Resolve `class_info`'s `hostDirectives` recursively into `consumer_file`'s frame (mirroring
+/// ngtsc's `HostDirectivesResolver.resolve`).
 ///
-/// The result belongs to the hosting declaration and is never added to the consumer's template
-/// scope: ngtsc's `createMatcherFromScope` registers each scope dependency under its own selector
-/// only, and `componentDependenciesToDeclarations` emits only `MatchSource.Selector` matches, so a
-/// host directive is neither selectable in the consumer's template nor one of its `dependencies`
-/// unless the consumer imports or declares it directly.
-///
-/// Returns `None` when the class declares no `hostDirectives`. An entry that cannot be resolved is
-/// skipped. `ancestors` is the host chain being walked, so a cyclic chain (which ngtsc rejects
-/// separately) terminates instead of recursing forever.
+/// Host directives attach to the hosting declaration rather than the consumer's template scope
+/// (`createMatcherFromScope` registers only direct scope dependencies). `ancestors` tracks the
+/// active host chain to break cycles.
 async fn resolve_host_directives_for_class<Fs: ResourceResolverFs + Clone + 'static>(
     ctx: &QueryCtx<Fs>,
     class_info: &crate::ClassInfo,
@@ -207,17 +194,7 @@ async fn resolve_host_directives_for_declaration<Fs: ResourceResolverFs + Clone 
     .await
 }
 
-/// Stage-2 cross-file resolution for one component, mutating its internal data in place.
-/// `component.parsed_imports` is the legacy identifier-rooted fallback list;
-/// `component.imports` is the Stage-1 partial evaluation, preferred when it completes
-/// (it additionally covers imported constant arrays, spreads, and `ModuleWithProviders`
-/// calls) and written back completed so the semantic wire invariant holds.
-///
-/// Dependency tracking for invalidation needs no explicit bookkeeping here: every sub-query
-/// awaited during resolution records the files it touched on the `QueryContext`, and those
-/// records flow into the consuming semantic query's reverse-index entry automatically.
-/// A declaration extracted from an evaluated value, in the currency of the existing Stage-2
-/// resolution pipeline.
+/// A declaration reference extracted from an evaluated `imports` or `deferredImports` value.
 #[derive(Clone, Debug)]
 pub struct EvaluatedDeclaration {
     pub reference: crate::types::analysis::Reference,
@@ -290,13 +267,9 @@ fn legacy_import_reference(
     }
 }
 
-/// Project a set of `@NgModule` scope declarations into `reference_id`'s frame.
-///
-/// Shared by the optimized pipeline (`optimize_component`, which passes the whole scope) and the
-/// local-compilation extra-imports pass (`populate_local_component_extra_imports`, which passes a
-/// filtered subset). Keeping one implementation means the `cycle_prone`, `is_forward_ref` and
-/// `ref_in_declaring_module` projections cannot drift between the two modes — local mode reads
-/// `cycle_prone` to decide whether to emit side-effect imports at all.
+/// Project `@NgModule` scope declarations into `reference_id`'s frame, computing
+/// `ref_in_declaring_module`, `is_forward_ref`, `cycle_prone`, and `resolved_host_directives`.
+/// Shared by `optimize_component` and `populate_local_component_extra_imports`.
 #[allow(clippy::too_many_arguments)]
 async fn contextualize_ngmodule_scope_declarations<Fs: ResourceResolverFs + Clone + 'static>(
     ctx: &QueryCtx<Fs>,
@@ -356,6 +329,12 @@ async fn contextualize_ngmodule_scope_declarations<Fs: ResourceResolverFs + Clon
     resolved_declarations
 }
 
+/// Resolve cross-file component scope (`resolved_declarations`, `resolved_deferred_declarations`,
+/// and `resolved_host_directives`) for a component in optimized mode.
+///
+/// `component.imports` is completed in place so no `Incomplete` survives into the semantic result.
+/// Invalidation needs no explicit bookkeeping: every awaited sub-query records the files it touched
+/// on the `QueryContext`, and they flow into this semantic query's reverse-index entry.
 pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
     ctx: &QueryCtx<Fs>,
     file_path: &Path,
@@ -431,11 +410,9 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
         component.resolved_declarations = Some(resolved_declarations);
         component.raw_imports_span = None;
     } else if component.imports.is_some() || !component.parsed_imports.is_empty() {
-        // Standalone component whose `imports: [...]` weren't all resolved file-locally in
-        // Stage 1. Prefer the partial evaluation: it additionally covers imported constant
-        // arrays/tuples, spreads, and `ModuleWithProviders` calls. If the evaluation hits a
-        // genuinely dynamic entry, fall back to the legacy identifier-rooted list (which keeps
-        // today's behavior, e.g. unwrapping `X.forRoot()` to `X` by syntax alone).
+        // Prefer Stage-1 partial evaluation (`component.imports`), which handles imported constant
+        // arrays/tuples, spreads, and `ModuleWithProviders` calls. Fall back to identifier-rooted
+        // `parsed_imports` if evaluation hits a dynamic entry (e.g. unwrapping `X.forRoot()` syntactically).
         enum Entry {
             Evaluated(crate::types::analysis::Reference),
             Parsed(DeclarationTuple),
@@ -559,26 +536,19 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
 
         component.resolved_declarations = Some(resolved_declarations);
 
+        // When any import could not be resolved statically, keep `raw_imports_span` so the
+        // emitter falls back to the raw source expression (runtime resolution). This is a
+        // supported path (the norm in local mode), not an error, so it is deliberately silent.
         if all_resolved {
             component.raw_imports_span = None;
-        } else {
-            // Leave the original raw imports in place so the TS side falls back to runtime
-            // resolution for the imports that couldn't be resolved statically. This is a
-            // supported path (and the norm in local compilation mode), not an error, so it
-            // is deliberately silent.
         }
     }
 
     if component.directive.standalone
         && (component.deferred_imports.is_some() || !component.parsed_deferred_imports.is_empty())
     {
-        // Equality and hashing follow the symbol's identity, never its bare name: an evaluated
-        // `Reference` compares by declaring file and declared name, and a parsed tuple by local
-        // binding and import source. Two distinct classes that share a name (`Widget` from
-        // `./a` and `Widget as WidgetB` from `./b`) are therefore kept apart, as ngtsc keeps
-        // them apart by class declaration (`Reference.node`) in both
-        // `StandaloneComponentScopeReader.getScopeForComponent` and
-        // `ComponentDecoratorHandler.resolveComponentDependencies`.
+        // Key by symbol identity (`Reference` file + name, or `DeclarationTuple` local binding +
+        // import source) rather than bare class name, matching ngtsc's `Reference.node` keying.
         #[derive(Clone, Debug, PartialEq, Eq, Hash)]
         enum DefEntry {
             Evaluated(crate::types::analysis::Reference),
@@ -817,14 +787,11 @@ fn rebase_relative_specifier(
     }
 }
 
-/// Populate the side-effect imports a non-standalone component must carry in local compilation
-/// mode, mirroring ngtsc's `LocalCompilationExtraImportsTracker`.
+/// Populates side-effect imports for a non-standalone component in local compilation mode,
+/// mirroring ngtsc's `LocalCompilationExtraImportsTracker`.
 ///
-/// Local mode cannot resolve `@NgModule` scopes, so the emitted `ɵcmp` has no static dependency
-/// list. That is fine for the runtime (declarations are resolved at runtime), but it strips the
-/// module-graph edges that JsTrimmer/Closure need to topologically sort the `.closure.js` files
-/// built from the *optimized* pipeline. Emitting the same edges as bare `import '<spec>';`
-/// statements restores them without changing any runtime semantics.
+/// Local mode omits static `ɵcmp` dependency lists, stripping module-graph edges needed by
+/// JsTrimmer/Closure for topological sorting. Bare `import '<spec>';` statements restore them.
 pub async fn populate_local_component_extra_imports<Fs: ResourceResolverFs + Clone + 'static>(
     ctx: &QueryCtx<Fs>,
     file_path: &Path,
@@ -839,8 +806,8 @@ pub async fn populate_local_component_extra_imports<Fs: ResourceResolverFs + Clo
     }
 
     let mapping = ctx.component_mapping().await;
-    // An anonymous component can't be keyed into the module mapping; treat it as "not found". So
-    // is a module outside the unit: ngtsc's `LocalModuleScopeRegistry` never sees it.
+    // Skip anonymous components and modules outside the compilation unit (ngtsc's
+    // `LocalModuleScopeRegistry` never sees those).
     let Some(module_ref) = class_name
         .and_then(|name| mapping.get(reference_id.file, name))
         .filter(|module_ref| entrypoints_ids.contains(&module_ref.file))
@@ -848,15 +815,11 @@ pub async fn populate_local_component_extra_imports<Fs: ResourceResolverFs + Clo
         return;
     };
 
-    // Record the owning module as `optimize_component` does. Local mode has no NgModule scope to
-    // emit, but the streaming coordinator groups a compilation unit into chunks by exactly this
-    // link (`get_class_owner`), and the emitter needs the whole `@NgModule` in one chunk to see
-    // the template-induced cycles that decide whether the side-effect imports below may be
-    // emitted at all.
+    // Record the owning module so the streaming coordinator groups the whole `@NgModule` into one
+    // chunk and the emitter can detect template-induced cycles before emitting side-effect imports.
     component.directive.declaring_ng_module = Some(module_ref);
 
-    // A component declared by an `@NgModule` in its own file is never marked by ngtsc: the
-    // module's own imports already pull in everything, so there is no missing edge to restore.
+    // Same-file `@NgModule` imports already pull in dependencies, so no extra edge is needed.
     if module_ref.file == reference_id.file {
         return;
     }
@@ -883,14 +846,10 @@ pub async fn populate_local_component_extra_imports<Fs: ResourceResolverFs + Clo
 
     let scope = ctx.ngmodule_imports_scope(module_ref).await;
 
-    // Restrict to declarations that are (a) in another file — a same-file declaration would
-    // produce a self-import — and (b) part of this compilation unit. ngtsc's
-    // `LocalModuleScopeRegistry` only ever sees the current unit, so anything outside it is
-    // handled by the global set above; importing it directly would also be a strict-deps
-    // violation against a transitive `.d.ts`.
-    // Resolve pipe shadowing across the full compilation unit (including same-file pipes) before
-    // dropping same-file declarations so a local pipe in the component's own file still shadows an
-    // imported pipe from another file.
+    // Resolve pipe shadowing across the full unit (including same-file pipes) before filtering out
+    // same-file declarations (would self-import) and out-of-unit ones (ngtsc's
+    // `LocalModuleScopeRegistry` sees only this unit; the global set above covers them, and
+    // importing a transitive `.d.ts` directly would violate strict deps).
     let mut winning_pipes = std::collections::HashMap::new();
     for d in &scope.declarations {
         if entrypoints_ids.contains(&d.reference.file) && d.declaration_type == ClassType::Pipe {

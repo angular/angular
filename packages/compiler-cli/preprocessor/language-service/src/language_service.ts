@@ -34,12 +34,9 @@ export class LanguageService {
     this.templateTypeChecker = new TemplateTypeChecker(hybridCompiler);
   }
 
-  // In our standalone LSP setup, we effectively run in "angularOnly" mode
-  // because the default TS server handles regular TS code.
-  // This matches reference/angular/packages/language-service/src/ts_plugin.ts
-  // where angularOnly skips falling back to TS.
+  // Standalone LSP runs in angularOnly mode because the default TS server handles regular TS code.
+  // https://github.com/angular/angular/blob/d27e2c2/packages/language-service/src/ts_plugin.ts#L38-L46
   private readonly angularOnly = true;
-  // https://github.com/angular/angular/blob/d27e2c24e1aa6eaf60cfdf61ba812ff9c7f933c2/packages/language-service/src/ts_plugin.ts#L38-L46
   private async withFallback<T>(
     filePath: string,
     tsOp: () => Promise<T | null>,
@@ -78,7 +75,7 @@ export class LanguageService {
     );
   }
 
-  // TODO(future): Consider fetching file content or offsets from Rust VFS instead of passing it here.
+  // TODO(future): Fetch file content and offsets from the Rust VFS.
   async getDefinition(
     filePath: string,
     offset: number,

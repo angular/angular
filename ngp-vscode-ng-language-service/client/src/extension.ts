@@ -34,10 +34,7 @@ export async function activate(context: vscode.ExtensionContext) {
     outputChannel.appendLine(`Could not get existing TypeScript API connection: ${err}`);
   }
 
-  // The server is implemented in node
   const serverModule = context.asAbsolutePath(path.join('dist', 'server', 'server.js'));
-
-  // Define the server options
   const serverOptions: ServerOptions = {
     run: {module: serverModule, transport: TransportKind.ipc},
     debug: {
@@ -49,7 +46,6 @@ export async function activate(context: vscode.ExtensionContext) {
     },
   };
 
-  // Define client options
   const clientOptions: LanguageClientOptions = {
     outputChannel,
     documentSelector: [

@@ -166,8 +166,7 @@ export class WasmAnalyzer implements IAnalyzer {
 
     try {
       while (true) {
-        // TODO: this drops chunks that were queued before an error arrived. The NAPI
-        // iterator delivers them first and then rejects.
+        // TODO(wasm): deliver queued chunks before throwing on stream error to match N-API.
         if (stream.error) {
           throw stream.error;
         }

@@ -18,7 +18,7 @@ import { Component } from '@angular/core';
 //     is forced true and the FULL instruction set is emitted (ɵɵelementStart/End).
 //   - OPTIMIZE (golden.opt.md): the component is standalone with no directive deps, so it
 //     takes the DOM-only fast path (ɵɵdomElementStart/End).
-// https://github.com/angular/angular/blob/e3ac727dfc/packages/compiler/src/render3/view/compiler.ts#L201-L203
+// https://github.com/angular/angular/blob/e3ac727/packages/compiler/src/render3/view/compiler.ts#L201-L203
 @Component({
   selector: 'app-root',
   standalone: true,

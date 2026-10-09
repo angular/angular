@@ -15,7 +15,7 @@ pub struct ResourceRegistry {
     pub file_to_templates: RwLock<HashMap<PathBuf, HashSet<PathBuf>>>,
 }
 
-// https://github.com/angular/angular/blob/c64ee96e0cfa6311af6b8fc1786a79e226c0260f/packages/compiler-cli/src/ngtsc/metadata/src/resource_registry.ts
+// https://github.com/angular/angular/blob/c64ee96/packages/compiler-cli/src/ngtsc/metadata/src/resource_registry.ts#L53-L132
 impl ResourceRegistry {
     pub fn register_template(
         &self,
@@ -27,14 +27,12 @@ impl ResourceRegistry {
         let case_fold_component = normalize_path(&component_path).into_owned();
         let norm_comp = normalize_path_structural(&component_path);
 
-        // Update template -> components map (use folded key, but store original normalized path)
         {
             let mut write_tpl = self.template_to_components.write().unwrap();
             let vec = write_tpl.entry(case_fold_template.clone()).or_default();
             vec.push((norm_comp.into_owned(), symbol_id));
         }
 
-        // Update file -> templates map (use folded key, but store original normalized path)
         {
             let mut write_file = self.file_to_templates.write().unwrap();
             let templates = write_file.entry(case_fold_component).or_default();

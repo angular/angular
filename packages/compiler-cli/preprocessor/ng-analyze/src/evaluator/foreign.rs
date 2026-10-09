@@ -1,16 +1,12 @@
 //! Foreign-function resolvers: recognizers for specific call syntax forms with known
-//! semantics, mirroring `@angular/compiler-cli`'s `ForeignFunctionResolver` hooks.
+//! semantics, mirroring `@angular/compiler-cli`'s `ForeignFunctionResolver` hooks:
+//! - [`ForeignFunctionResolver::resolve_import_call`]: callee is an unresolved import binding.
+//! - [`ForeignFunctionResolver::resolve_reference_call`]: callee resolved to a declaration reference
+//!   (e.g. a value alias like `const fref = forwardRef`).
+//! - [`ForeignFunctionResolver::resolve_function_call`]: callee resolved to a function-like
+//!   declaration, invoked for body-less declarations or when body evaluation was dynamic.
 //!
-//! Two hook points reflect the two ways a foreign callee appears in a single-file world:
-//! - [`ForeignFunctionResolver::resolve_import_call`]: the callee is an unresolved import binding
-//!   (recognition needs only the import map, not the target file).
-//! - [`ForeignFunctionResolver::resolve_function_call`]: the callee resolved to a function-like
-//!   declaration in the *current* file — directly, or via the semantic driver's `Call`-hole
-//!   resolution running in the target file. Invoked for body-less declarations and as a
-//!   fallback when body evaluation was dynamic (upstream ordering).
-//!
-//! `None` means "not mine" (upstream's `unresolvable` sentinel); the interpreter then proceeds
-//! with its default behavior.
+//! Returning `None` (upstream's `unresolvable` sentinel) falls back to default interpreter evaluation.
 
 use crate::analyzer::ImportedSymbol;
 use crate::evaluator::interpreter::EvalInput;

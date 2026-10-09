@@ -364,7 +364,7 @@ describe('deferredImports codegen in local compilation mode', () => {
       // `Map<symbolName, dep>` on the way into `ɵsetClassMetadataAsync`, so the later entry wins
       // and only one parameter is bound. That map is downstream of the list the deps function is
       // built from, which is why the loader above keeps both.
-      // https://github.com/angular/angular/blob/main/packages/compiler/src/render3/r3_class_metadata_compiler.ts#L88-L92
+      // https://github.com/angular/angular/blob/5b525f9/packages/compiler/src/render3/r3_class_metadata_compiler.ts#L177-L181
       expect(asyncMetadata(out)).toEqual({loads: ['./module-b#Widget'], params: ['Widget']});
     });
 
@@ -609,7 +609,7 @@ ${deferFirst ? `${parentCmp}\n${helperCmp}` : `${helperCmp}\n${parentCmp}`}
       // uses `PerComponent` with `deferPerComponentDependencies = explicitlyDeferredTypes ?? []`,
       // `explicitlyDeferredTypes` is only populated when `rawDeferredImports !== null`, and an
       // empty list compiles to `dependenciesFn: null`.
-      // https://github.com/angular/angular/blob/main/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L1344-L1415
+      // https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L1344-L1418
       //
       // Emitting `() => [MyPipe]` here — as this used to — is harmless at runtime but claims
       // knowledge local mode is defined not to have, and diverges from ngtsc's output.

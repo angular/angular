@@ -41,9 +41,8 @@ use std::cell::RefCell;
 #[cfg(target_arch = "wasm32")]
 thread_local! {
     static LOCAL_POOL: RefCell<futures::executor::LocalPool> = RefCell::new(futures::executor::LocalPool::new());
-    // Cache the spawner once so `get_local_spawner` never re-borrows LOCAL_POOL. Self-driving queries
-    // spawn their sub-queries from *inside* `run_until_stalled` (which holds a `borrow_mut`), so a
-    // `borrow()` here would be a re-entrant RefCell borrow and panic (a wasm `unreachable` trap).
+    // Cache the spawner so `get_local_spawner` never re-borrows `LOCAL_POOL` while
+    // `run_until_stalled` holds `borrow_mut` (when self-driving queries spawn sub-queries).
     static LOCAL_SPAWNER: futures::executor::LocalSpawner =
         LOCAL_POOL.with(|pool| pool.borrow().spawner());
 }
@@ -132,11 +131,8 @@ impl Analyzer {
         Self::new_core_with_physical_fs(options, physical)
     }
 
-    /// As [`Self::new_core`], but over an explicit physical filesystem.
-    ///
-    /// The WebAssembly build uses this to hand in a JavaScript-backed filesystem: the
-    /// bare wasm target has no OS underneath it, so without one the analyzer can only
-    /// ever see files supplied through `virtual_files`.
+    /// Like [`Self::new_core`], but with an explicit physical filesystem (used by the WASM build to
+    /// supply a JS-backed filesystem).
     pub fn new_core_with_physical_fs(
         options: AnalyzerOptions,
         physical: std::sync::Arc<dyn crate::physical_fs::PhysicalFs>,
@@ -163,7 +159,6 @@ impl Analyzer {
         let tsconfig_path = options.tsconfig_path;
         let node_modules_path_override = options.node_modules_path_override;
 
-        // Parse tsconfig.json
         let path = PathBuf::from(&tsconfig_path);
         let resolved_config = tsconfig_resolution::load_and_resolve_tsconfig(&path, &fs)
             .map_err(|e| e.to_string())?;
@@ -393,8 +388,7 @@ impl Analyzer {
             })
     }
 
-    /// A template (`.html`) change invalidates each owning component's TS file: drop its query-cache
-    /// entries so the next analysis (or `get_metadata_for_file`) re-derives against the new template.
+    /// Invalidate query-cache entries for every component TS file that references `path`.
     fn handle_template_change(&self, path: &Path, invalidated_paths: &mut Vec<String>) {
         let Some(affected) = self.resource_registry.get_components_for_template(path) else {
             return;
@@ -402,22 +396,34 @@ impl Analyzer {
 
         for (ts_path, _class_name) in affected {
             invalidated_paths.push(ts_path.to_string_lossy().into_owned());
-            self.engine.invalidate_file(&ts_path);
+            self.evict_file(&ts_path, invalidated_paths);
         }
     }
 
-    /// Evict everything derived from `path` after its contents changed.
+    /// Evict all cached queries derived from `path`.
     ///
-    /// The file itself is always evicted, whatever its extension (`.ts`, `.d.ts`, `.mts`, `.tsx`,
-    /// `.js`, ...): every query that read it recorded it as a dependency (its own `ParseFile`, and
-    /// through the reverse index every file that imports it). Gating this on plain `.ts` sources
-    /// left edits to library typings invisible until restart. Evicting a path no query ever read is
-    /// a no-op. A registered template/stylesheet additionally evicts its owning components, which
-    /// read it through the resource registry rather than as a query dependency.
+    /// Unconditionally evicts `path` regardless of extension (including `.d.ts`, `.mts`, `.tsx`,
+    /// `.js`): dependents fall out through the reverse index, and evicting an unread path is a
+    /// no-op (gating on `.ts` once hid `.d.ts` edits until restart). Components using `path` as an
+    /// external template or stylesheet are evicted separately, since they read it through the
+    /// resource registry rather than as a query dependency.
     fn invalidate_changed_path(&self, path: &Path, invalidated_paths: &mut Vec<String>) {
         self.handle_template_change(path, invalidated_paths);
-        // Purge the query cache for this file (also cancels any in-flight tasks).
-        self.engine.invalidate_file(path);
+        self.evict_file(path, invalidated_paths);
+    }
+
+    /// Evict cached queries depending on `path` and append each evicted file's wire path.
+    fn evict_file(&self, path: &Path, invalidated_paths: &mut Vec<String>) {
+        let mut evicted: Vec<String> = self
+            .engine
+            .invalidate_file(path)
+            .into_iter()
+            .filter_map(|key| key.file_id())
+            .map(|file_id| crate::fs::path_to_string(self.engine.lookup_path(file_id)))
+            .collect();
+        evicted.sort_unstable();
+        evicted.dedup();
+        invalidated_paths.extend(evicted);
     }
 
     pub fn get_file_content_core(&self, file_path: String) -> Result<String, String> {
@@ -425,6 +431,7 @@ impl Analyzer {
         self.fs.read_to_string(&path).map_err(|e| e.to_string())
     }
 
+    /// Apply content updates and return every path whose cached results are now stale.
     pub fn update_file_content_core(
         &self,
         updates: Vec<FileUpdate>,
@@ -442,9 +449,10 @@ impl Analyzer {
         }
 
         self.re_resolve_entrypoints();
-        Ok(paths_to_invalidate)
+        Ok(dedup_preserving_order(paths_to_invalidate))
     }
 
+    /// Drop the virtual overlay of each changed or deleted file and return every stale TS path.
     pub fn invalidate_files_core(
         &self,
         updates: Vec<FileInvalidation>,
@@ -465,7 +473,7 @@ impl Analyzer {
         }
 
         self.re_resolve_entrypoints();
-        Ok(ts_paths_to_invalidate)
+        Ok(dedup_preserving_order(ts_paths_to_invalidate))
     }
 
     fn re_resolve_entrypoints(&self) {
@@ -631,24 +639,17 @@ impl Analyzer {
     #[cfg_attr(feature = "napi", napi)]
     pub fn get_metadata_for_file(&self, file_path: String) -> Option<AnalysisResult> {
         let path = PathBuf::from(&file_path);
-        // Only an existing TS/JS source (`.d.ts` included) has class metadata. Anything else —
-        // a template, a stylesheet, a JSON file, a path that names no file — has none, and this
-        // answers `None` rather than fail: callers such as the language service ask about every
-        // open document, and over N-API a panic here would abort the host process. Without the
-        // existence check an unreadable file would degrade to an empty parse in `parse_file_body`
-        // and yield an empty result indistinguishable from a real file without classes. This
-        // mirrors ngtsc, whose per-file queries (`NgCompiler.getComponentsWithTemplateFile`,
-        // `TraitCompiler.recordFor`) answer "nothing" for inputs outside the program.
+        // Non-TS files (templates, stylesheets, JSON) and missing files return `None`, like ngtsc's
+        // `TraitCompiler.recordFor`, rather than failing (the language service asks about every
+        // open document, and a panic over N-API aborts the host) or degrading to an empty
+        // `AnalysisResult` indistinguishable from a classless file.
         if !is_ts_file(&path) || !self.fs.metadata(&path).is_ok_and(|m| m.is_file()) {
             return None;
         }
 
-        // "What is the resolved metadata of this file?" is just the `AnalyzeFileSemantic` query,
-        // driven to completion synchronously (cached, so a re-ask is instant) — no on-demand
-        // work. Wire projection happens here, at the engine boundary.
-        // Wire projection happens here, at the engine boundary. An Err is an internal bug
-        // (semantic results are demoted hole-free) or, once required fields exist, a
-        // user-code error that deserves a structured diagnostics channel.
+        // Synchronously drive `AnalyzeFileSemantic` to completion. Wire projection happens at
+        // the engine boundary; an `Err` is an internal bug (semantic results are demoted hole-free)
+        // or user error, returning `None` to prevent an FFI panic across N-API.
         let file_data = self.engine.analyze_file_semantic_blocking(path);
         let parse_res = self.engine.parse_file_by_id_blocking(file_data.file_id);
         let source_text = parse_res.lock().unwrap().borrow_owner().source_text.clone();
@@ -665,9 +666,8 @@ impl Analyzer {
         match file_data.to_wire(&cx) {
             Ok(result) => Some(result),
             Err(err) => {
-                // The streaming twin of this entry point surfaces the same `WireError` on
-                // the stream, but this sync napi entry returns a plain `Option` and has
-                // nowhere to put it. See the TODO(diagnostics) above.
+                // TODO(diagnostics): surface WireError via a diagnostics channel instead of
+                // logging to stderr and returning None.
                 #[allow(clippy::print_stderr)]
                 {
                     eprintln!("ERROR: {err}; skipping metadata for this file");
@@ -703,10 +703,8 @@ impl Analyzer {
 
         let engine_clone = engine.clone();
 
-        // The coordinator drives dependency discovery off the *syntactic* result (its static and
-        // dynamic dependencies), for both pipelines — so local analysis is always `AnalyzeFileSyntax`.
-        // The mode difference is in `processor`: plain projects this syntax result; optimized requests
-        // the `AnalyzeFileSemantic` query, which resolves cross-file and produces the `AnalysisResult`.
+        // Dependency discovery always uses `AnalyzeFileSyntax`; `processor` below selects between
+        // projecting the syntax result (local mode) and running `AnalyzeFileSemantic` (optimized).
         let local_analyzer = move |file_path: PathBuf| {
             let engine = engine_clone.clone();
             async move {
@@ -722,9 +720,6 @@ impl Analyzer {
         let engine_clone = engine.clone();
         let cancel_token_clone = cancel_token.clone();
 
-        // Produce and stream a file's result. Skip-recomputation is handled by the query caches
-        // (optimized re-requests the cached `AnalyzeFileSemantic`; plain re-projects the cached
-        // `AnalyzeFileSyntax`), so there is no separate result cache here.
         let processor = move |file_path: PathBuf, _local_res: FileData| {
             let engine = engine_clone.clone();
             let cancel_token = cancel_token_clone.clone();
@@ -745,8 +740,6 @@ impl Analyzer {
                     );
                 }
 
-                // The queries speak internal types; this streaming boundary is where the
-                // wire `AnalysisResult` is projected, identically for all three transports.
                 // TODO(diagnostics): surface WireError on AnalysisResult instead of dropping
                 // the file from the stream.
                 let ctx = QueryContext::new(engine.clone());
@@ -774,19 +767,17 @@ impl Analyzer {
                         class.complete_selector(&ctx).await;
                         class.complete_styles(&ctx).await;
                     }
-                    // Must run before `validate()`/`to_wire()`: it mutates the component data
-                    // the wire projection reads.
+                    // Must run before `validate()`, `extract_chunk_info` and `to_wire()`: it sets
+                    // the extra imports and `declaring_ng_module` they read.
                     if engine.generate_extra_imports_in_local_mode {
                         engine
                             .populate_local_compilation_extra_imports(&mut syntax_res, &ctx)
                             .await;
                     }
                     syntax_res.validate();
-                    // Local mode otherwise streams each file as its own chunk. Under
-                    // `generateExtraImportsInLocalMode` it cannot: whether a component may emit
-                    // side-effect imports for its `@NgModule` siblings depends on whether their
-                    // templates form a cycle, and that is only visible with the whole module in
-                    // one chunk.
+                    // Local mode normally streams 1-file chunks, but under `generateExtraImportsInLocalMode`
+                    // it groups by NgModule because template cycle detection across sibling declarations
+                    // requires the whole module in one chunk.
                     let chunk_info = if engine.generate_extra_imports_in_local_mode {
                         extract_chunk_info(&syntax_res, &engine, &ctx).await
                     } else {
@@ -810,10 +801,9 @@ impl Analyzer {
 
         let (event_sender, event_receiver) = mpsc::channel::<CoordinatorEvent>(100);
 
-        // Grouping a compilation unit into `@NgModule`-sized chunks costs the streaming
-        // pipeline its per-file granularity, so it is only done where a chunk is actually read:
-        // the optimized pipeline (remote scoping, NgModule scope emit) and local mode under
-        // `generateExtraImportsInLocalMode` (template-induced cycle detection).
+        // Group into `@NgModule`-sized chunks only when needed: optimized mode (remote scoping,
+        // NgModule scope emit) and local mode with `generateExtraImportsInLocalMode` (template
+        // cycle detection across an NgModule's declarations).
         let group_chunks_by_ng_module =
             is_optimized || self.engine.generate_extra_imports_in_local_mode;
 
@@ -897,13 +887,10 @@ async fn run_coordinator<S, LA, FutLA, P, FutP, Fs>(
         return;
     }
 
-    // Spawn the full per-file task: Stage-1 analysis (which resolves the file's static and dynamic
-    // dependencies as part of `FileData`), fan-out of any newly discovered deps over
-    // `event_sender`, then Stage-2 processing — with a cancellation check at every await
-    // boundary. Shared by the entrypoint seeding loop and both dep-discovery branches below so
-    // the task body lives in exactly one place. The closure owns its captures (a `move`
-    // closure holding owned, `Send` values) so the coordinator future stays `Send` without
-    // requiring the spawner to be `Sync`.
+    // Spawns the per-file task: Stage-1 analysis (resolving static/dynamic dependencies),
+    // dep fan-out over `event_sender`, and Stage-2 processing, checking cancellation at each await.
+    // The closure owns its captures (`move` closure holding owned, `Send` values) so the
+    // coordinator future stays `Send` without requiring the spawner to be `Sync`.
     let task_cancel_token = cancel_token.clone();
     let task_engine = engine.clone();
     let spawn_file_task = move |path: PathBuf| {
@@ -933,7 +920,6 @@ async fn run_coordinator<S, LA, FutLA, P, FutP, Fs>(
                 if cancel_token.is_cancelled() {
                     return;
                 }
-                // Run Stage 2
                 let file_id = engine.intern_path(&path);
                 let (result, chunk_info) = processor(path, local_res).await;
                 let _ = event_sender
@@ -948,7 +934,6 @@ async fn run_coordinator<S, LA, FutLA, P, FutP, Fs>(
             .unwrap()
     };
 
-    // Queue entrypoints
     for entry in entrypoints {
         if cancel_token.is_cancelled() {
             break;
@@ -1011,9 +996,7 @@ async fn run_coordinator<S, LA, FutLA, P, FutP, Fs>(
         }
 
         futures::select! {
-            _ = pending_tasks.select_next_some() => {
-                // Task finished
-            }
+            _ = pending_tasks.select_next_some() => {}
             event = event_receiver.select_next_some() => {
                 match event {
                     CoordinatorEvent::DepsDiscovered { deps, .. } => {
@@ -1247,13 +1230,11 @@ async fn extract_chunk_info<Fs: FileSystem + Clone + 'static + ResourceResolverF
     }
 }
 
-/// The files an `@NgModule`'s `declarations` resolve to.
+/// Resolve an `@NgModule`'s `declarations` references.
 ///
-/// A semantic result is already hole-free, so the first read answers. A *syntactic* one is not:
-/// a declaration imported from another file is still an `Incomplete` hole there, and reading it
-/// unresolved yields a reference pointing at the importing file rather than at the declaration's
-/// own — which would group a module with nothing but itself. Completing is a no-op on a value
-/// that has no holes, so the syntactic path pays for the resolution and the semantic one does not.
+/// Semantic results are already hole-free; syntactic results (used when
+/// `generateExtraImportsInLocalMode` groups chunks) still contain `Incomplete` holes for imported
+/// declarations that must be completed to find their declaring files.
 async fn resolved_ng_module_declarations<Fs: ResourceResolverFs + Clone + 'static>(
     declarations: &crate::evaluator::Resolved<Vec<crate::types::analysis::Reference>>,
     ctx: &QueryContext<Fs>,
@@ -1309,7 +1290,6 @@ fn handle_completed_file<Fs: FileSystem + Clone + 'static + ResourceResolverFs>(
         uf.union(file_id, decl_file_id);
     }
 
-    // Since union could have changed the root, re-lookup the root
     let root = uf.find(file_id);
     let is_complete = if let Some(state) = uf.states.get(&root) {
         let expected_all_completed = state
@@ -1322,7 +1302,7 @@ fn handle_completed_file<Fs: FileSystem + Clone + 'static + ResourceResolverFs>(
             // file is also present (fixes the streaming race where a component completes
             // before its module). An ownerless non-standalone class (declared by no NgModule)
             // is emitted, not errored — ngtsc compiles a component with a null scope:
-            // https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L1355-L1356
+            // https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L1355-L1360
             let mut chunk_valid = true;
             'outer: for file_res in state.completed.values() {
                 for class in &file_res.classes {
@@ -1361,6 +1341,12 @@ fn handle_completed_file<Fs: FileSystem + Clone + 'static + ResourceResolverFs>(
             }));
         }
     }
+}
+
+fn dedup_preserving_order(mut paths: Vec<String>) -> Vec<String> {
+    let mut seen = HashSet::new();
+    paths.retain(|path| seen.insert(path.clone()));
+    paths
 }
 
 #[derive(Debug)]
@@ -1406,7 +1392,6 @@ fn get_class_owner(class: &crate::ClassMetadata) -> ClassOwner {
 mod chunk_order_tests {
     use super::*;
 
-    /// A file's optimized result and chunk info, as the streaming processor produces them.
     fn optimized_result(
         engine: &Arc<crate::QueryEngine<OverlayFileSystem>>,
         path: &str,
@@ -1432,10 +1417,8 @@ mod chunk_order_tests {
         })
     }
 
-    /// Hand an optimized analysis's files to the chunk grouper in `order`, exactly as the
-    /// coordinator does when they finish in that order, and return every chunk it streams plus
-    /// the ones still pending at the end (which the coordinator flushes), each as its sorted file
-    /// paths. The chunks are sorted too: only the partition is under test.
+    /// Feed `order` into `handle_completed_file` and return the resulting chunk partition (with
+    /// file paths within each chunk and the outer chunk list both sorted).
     fn chunks_for_completion_order(analyzer: &Analyzer, order: &[&str]) -> Vec<Vec<String>> {
         let engine = analyzer.engine.clone();
         let (sender, receiver) = futures::channel::mpsc::unbounded();
@@ -1475,10 +1458,8 @@ mod chunk_order_tests {
         chunks
     }
 
-    /// The chunk partition of a project whose NgModule is reached only through imports must not
-    /// depend on which file finishes first. An NgModule's declarations wait for it in one chunk;
-    /// a declaration the grouper believes ownerless is streamed alone the moment it completes —
-    /// split from its module when it finishes first, merged into it otherwise.
+    /// Chunk partitioning for an NgModule reached only through imports must not depend on file
+    /// completion order.
     #[test]
     fn test_chunks_independent_of_completion_order() {
         let analyzer = Analyzer::new(AnalyzerOptions {

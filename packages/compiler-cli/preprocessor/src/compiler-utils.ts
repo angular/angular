@@ -39,24 +39,12 @@ import {RawSource} from './output_ast_printer.js';
 import {offsetToPosition} from './tcb_util.js';
 import MagicString from 'magic-string';
 
-// ============================================================================
-// Interfaces
-// ============================================================================
-
-/**
- * Minimal directive meta for R3TargetBinder
- */
+/** Minimal directive metadata for `R3TargetBinder`. */
 export interface MinimalDirectiveMeta extends DirectiveMeta {
   animationTriggerNames: null;
 }
 
-// ============================================================================
-// Helper Functions
-// ============================================================================
-
-/**
- * Convert InputMetadata[] to Angular's R3InputMetadata format
- */
+/** Convert `InputMetadata[]` to Angular's `R3InputMetadata` map. */
 export function buildInputsMap(
   inputs: nga.InputMetadata[],
   content: string,
@@ -162,7 +150,7 @@ export interface HostBindingDiagnosticsContext {
 /**
  * The span ngtsc anchors a host binding verification error on: the string literal whose text
  * the parser failed on when it can be identified, the whole `host` object otherwise.
- * https://github.com/angular/angular/blob/1c9c453/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L2077-L2095
+ * https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L2077-L2095
  */
 function getHostBindingErrorSpan(
   error: ParseError,
@@ -184,18 +172,17 @@ function getHostBindingErrorSpan(
  * Build host metadata from the evaluated `host` object, @HostBinding and @HostListener
  * decorators. Combines all sources into a single host object that Angular's
  * `parseHostBindings` can process, mirroring ngtsc's `extractHostBindings`.
- * https://github.com/angular/angular/blob/1c9c453/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L607-L625
+ * https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L607-L625
  *
- * When `diagCtx` is provided, `host` object problems are reported as NG5001
- * (HOST_BINDING_PARSE_ERROR) diagnostics the way ngtsc's `evaluateHostExpressionBindings`
- * does — both parse failures and `verifyHostBindings` errors, the latter scoped to the
- * `host` object alone since ngtsc never verifies the decorator-sourced bindings there —
- * and compilation continues without the unparseable object. Without `diagCtx` a parse
- * failure still throws.
+ * When `diagCtx` is provided, `host` object parse and verification failures are reported as
+ * NG5001 (`HOST_BINDING_PARSE_ERROR`) diagnostics and compilation continues without the
+ * unparseable `host` object; without `diagCtx`, parse failures throw.
  *
- * TODO(parity): a decorator that should overwrite a `host` object entry of the same name
- * loses to it instead of replacing it in place. @HostListener's arguments are folded within
- * their own file only, where ngtsc also follows imported constants (shared.ts#L742-L753).
+ * TODO(parity): an unfoldable `@HostBinding` argument (e.g. an imported constant in unoptimized
+ * mode) is silently dropped, so it neither overrides a same-named `host` entry nor reports ngtsc's
+ * error: https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L640-L661
+ * `@HostListener` arguments are only folded within their own file, whereas ngtsc also follows
+ * imported constants: https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L732-L743
  */
 export function buildHostMetadata(
   hostMetadata: nga.HostMetadataEntry[],
@@ -207,7 +194,7 @@ export function buildHostMetadata(
   // Start with the host: object from the decorator, as the partial evaluator reduced it. Its
   // entries are either a folded string or an expression the evaluator could not fold, which
   // ngtsc passes through as a `WrappedNodeExpr`.
-  // https://github.com/angular/angular/blob/1c9c453/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L2036-L2039
+  // https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L2036-L2039
   const hostObj: Record<string, string | o.Expression> = {};
   for (const entry of hostMetadata) {
     if (entry.value != null) {
@@ -222,7 +209,7 @@ export function buildHostMetadata(
   // merged in. It throws when a binding/listener/class/style key holds a value that did not
   // fold to a string, and `verifyHostBindings` re-parses each binding expression collecting
   // syntax errors — NG5001 (HOST_BINDING_PARSE_ERROR) in both cases.
-  // https://github.com/angular/angular/blob/1c9c453/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L2049-L2067
+  // https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L2049-L2067
   if (diagCtx) {
     let failed = false;
     try {
@@ -299,7 +286,7 @@ export function buildHostMetadata(
   // always parse. Without a `diagCtx` the throw stands rather than being swallowed into a
   // silently wrong definition; name the class, which the bare message from
   // `@angular/compiler` does not.
-  // https://github.com/angular/angular/blob/1c9c453/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L2049-L2058
+  // https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L2049-L2058
   try {
     return parseHostBindings(hostObj);
   } catch (e) {
@@ -357,7 +344,7 @@ export function createDirectiveMeta(
  * Mirrors ngtsc's getConstructorDependencies() + unwrapConstructorDependencies() which
  * processes constructor params and returns 'invalid' when any param's type has no runtime
  * value (interface, type alias, type-only import) and no explicit @Inject/@Attribute override.
- * https://github.com/angular/angular/blob/50e599e73ec5/packages/compiler-cli/src/ngtsc/annotations/common/src/di.ts#L39-L151
+ * https://github.com/angular/angular/blob/50e599e/packages/compiler-cli/src/ngtsc/annotations/common/src/di.ts#L39-L151
  *
  * When deps is 'invalid', the Angular compiler skips factory generation entirely
  * (r3_factory.ts) rather than emitting broken ɵɵinject(null) calls.
@@ -421,7 +408,7 @@ export function buildDeps(
     // Decorator processing mirrors ngtsc's getConstructorDependencies() decorator loop.
     // @Inject and @Attribute provide explicit tokens that override the type reference,
     // so even a type-only param is valid if one of these decorators is present.
-    // https://github.com/angular/angular/blob/50e599e73ec5/packages/compiler-cli/src/ngtsc/annotations/common/src/di.ts#L62-L100
+    // https://github.com/angular/angular/blob/50e599e/packages/compiler-cli/src/ngtsc/annotations/common/src/di.ts#L62-L100
     for (const decorator of param.decorators) {
       const arg = decorator.args?.[0];
       let isInjectDecorator = false;

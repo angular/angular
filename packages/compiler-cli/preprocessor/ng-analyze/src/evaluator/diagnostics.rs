@@ -1,9 +1,6 @@
 //! Human-readable rendering of evaluation failures.
-//!
-//! Deliberately small: the full upstream `diagnostics.ts` machinery (`describeResolvedType`,
-//! `traceDynamicValue` with related-information spans) is deferred.
-// TODO(parity): related-information diagnostic chains once the evaluator feeds a diagnostics
-// channel.
+// TODO(parity): Port upstream `diagnostics.ts` (`describeResolvedType`, `traceDynamicValue` with
+// related-information spans) once the evaluator feeds a diagnostics channel.
 
 use crate::analyzer::ImportKind;
 use crate::evaluator::value::{

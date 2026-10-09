@@ -28,7 +28,7 @@ export class MyPipe implements PipeTransform {
 // used in the @defer block as a directive dependency. In LOCAL mode (golden.md) deps
 // can't be inspected, so hasDirectiveDependencies is forced true and the FULL
 // instruction set (ɵɵelement*) is emitted regardless.
-// https://github.com/angular/angular/blob/e3ac727dfc/packages/compiler/src/render3/view/compiler.ts#L201-L203
+// https://github.com/angular/angular/blob/e3ac727/packages/compiler/src/render3/view/compiler.ts#L201-L203
 @Component({
   selector: 'app-root',
   template: `

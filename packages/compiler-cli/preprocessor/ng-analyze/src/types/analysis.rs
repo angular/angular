@@ -8,35 +8,19 @@ use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
-/// A symbol as published by the package it is reached through: the specifier to import from,
-/// and the name that package exports it under.
-///
-/// Inseparable by construction: a barrel may rename on the way through
-/// (`export {InternalX as X} from './deep'`), so knowing the specifier without knowing its name
-/// for the symbol is not enough to write an import. Distinct from [`Reference::aliases`], which
-/// records *bindings* — `X` is not bound inside the barrel and cannot be written there.
+/// Package specifier and exported name through which a symbol is published (`bestGuessOwningModule`).
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct OwningReference {
-    /// Absolute/package specifier, e.g. `@angular/router`.
-    ///
-    /// Private on purpose: [`OwningReference::from_source_specifier`] is the only way to
-    /// populate it.
+    /// Absolute/package specifier (e.g. `@angular/router`), constructed only via
+    /// [`OwningReference::from_source_specifier`].
     specifier: String,
     export_name: String,
 }
 
 impl OwningReference {
-    /// The only way to build an `OwningReference`. `specifier` MUST be the literal text of a
-    /// module specifier written in input source (an `import`/`export … from`), or propagated
-    /// from another `OwningReference` that was. Never reconstruct one from a file path.
-    ///
-    /// This mirrors `Reference.bestGuessOwningModule` (`imports/src/references.ts`), which
-    /// ngtsc seeds from `viaModule` — the specifier text of a non-relative import, `null` for
-    /// a relative one (`reflection/src/typescript.ts`) — and then propagates through `.d.ts`
-    /// metadata by APF convention. Nothing upstream turns a path into a bare specifier;
-    /// `AbsoluteModuleStrategy` (`imports/src/emitter.ts`) re-resolves the specifier and
-    /// checks the target is in that module's export map, returning `ReferenceEmitKind.Failed`
-    /// rather than deriving a specifier of its own.
+    /// Construct from a literal non-relative module specifier written in source or propagated
+    /// through `.d.ts` metadata (`Reference.bestGuessOwningModule` in `imports/src/references.ts`).
+    /// Never reconstruct one from a file path.
     pub fn from_source_specifier(
         specifier: impl Into<String>,
         export_name: impl Into<String>,
@@ -47,9 +31,7 @@ impl OwningReference {
         }
     }
 
-    /// Whether `specifier` is bare/absolute, i.e. the kind an `OwningReference` may carry. A
-    /// relative or rooted specifier means the symbol was reached through a workspace file, not
-    /// through a package, and gets no owning reference at all.
+    /// True when `specifier` is bare/package-scoped (neither relative nor rooted).
     pub(crate) fn is_absolute_specifier(specifier: &str) -> bool {
         !specifier.starts_with('.') && !specifier.starts_with('/')
     }
@@ -99,23 +81,18 @@ impl HostDirectiveEntry {
     }
 }
 
-/// Internal Rust AST representation of a declaration reference
+/// Internal representation of a declaration reference.
 #[derive(Clone, Debug, Eq)]
 pub struct Reference {
     pub file: FileId,
     pub name: String,
-    /// How an external package publishes this symbol, if it was reached through one. `None`
-    /// when it was declared locally or resolved to a relative workspace source file — the
-    /// importer then uses `file` to look up the disk path and relative-resolve against it.
+    /// External package publishing this symbol (`None` for local or relative workspace files).
     pub owning_reference: Option<OwningReference>,
-    /// The name this symbol can be written as in each file that can name it: the declaring
-    /// file, plus every file the evaluation traversed that binds it (an import, or a
-    /// re-export that also binds). A file *absent* from this map cannot name the symbol and
-    /// must import it — so entries must only ever be real bindings, never invented names.
+    /// Local binding name for this symbol in each file that binds it (declaring file, importers,
+    /// and binding re-exports). A file absent from the map cannot name the symbol and must import
+    /// it, so only insert real bindings, never invented or exported-only names.
     pub aliases: std::collections::HashMap<FileId, String>,
-    /// True when the declaring module exports this symbol under the reserved `default` key.
-    /// Consumers that emit their own import reach it as `default`, not as [`Self::name`]
-    /// (which stays the declared class name, since that is what the declaring file binds).
+    /// True when exported under the reserved `default` key.
     pub is_default_export: bool,
 }
 
@@ -137,11 +114,8 @@ impl Reference {
         self.name.as_str()
     }
 
-    /// The name a generated import must use to reach this symbol — what a namespace import
-    /// dereferences (`i1.Foo`, `i1.default`, or `i1.X` for a barrel that renamed it).
-    ///
-    /// Deliberately not [`Self::name`]: the declared name is only the right thing to write
-    /// when the import targets the declaring file itself.
+    /// Exported symbol name to dereference on a generated import (`i1.Foo`, `i1.default`, or a
+    /// barrel's renamed export).
     pub fn export_name(&self) -> &str {
         if let Some(owning) = &self.owning_reference {
             return owning.export_name();
@@ -188,8 +162,6 @@ impl Reference {
         ))
     }
     pub fn from_value_reference(r: &crate::evaluator::value::ValueReference) -> Self {
-        // The declaring file always names the symbol by its declared name; the evaluation
-        // supplies the rest of the chain.
         let mut aliases = std::collections::HashMap::new();
         aliases.insert(r.file, r.name.clone());
         aliases.extend(r.aliases.iter().cloned());
@@ -223,35 +195,24 @@ pub struct DeclarationData {
     pub has_ng_field_directive: bool,
     pub is_forward_ref: bool,
     pub is_structural: bool,
-    /// How the file this declaration is being emitted into refers to it. Constructors project
-    /// into the declaring file's own frame — the only one they know — and stage 2 re-projects
-    /// into the consuming component's frame, since a scope entry is shared across consumers.
+    /// Reference as written in the emitting file: constructors fill it in the declaring file's
+    /// frame, and stage 2 re-projects it per consumer (scope entries are shared across consumers).
     pub ref_meta: crate::types::metadata::ReferenceMetadata,
-    /// The same declaration as seen from the file of the NgModule that declares the consuming
-    /// component. Remote scoping emits `ɵɵsetComponentScope` *there* rather than in the
-    /// component's own file, and a binding or relative specifier that is valid in one is not
-    /// generally valid in the other. `None` for a standalone component, which has no declaring
-    /// NgModule and can never be remotely scoped.
+    /// Reference projected into the declaring NgModule's file for remote scoping (`ɵɵsetComponentScope`),
+    /// or `None` for standalone components.
     pub ref_in_declaring_module: Option<crate::types::metadata::ReferenceMetadata>,
     pub cycle_prone: Option<bool>,
     pub is_exported: bool,
     pub has_non_exported_bounds: bool,
     pub is_explicitly_deferred: bool,
     pub deferred_blocks: Option<Vec<String>>,
-    /// This declaration's `hostDirectives`, resolved to their declarations in the consuming
-    /// component's frame. `None` when the declaration has no `hostDirectives` or when nothing
-    /// resolved them (a declaration outside a stage-2 scope).
-    ///
-    /// Host directives stay attached to the directive that declares them and never join the
-    /// consumer's scope: ngtsc's `createMatcherFromScope` registers each scope dependency under
-    /// its own selector only, and the type-check matcher reaches a host directive solely through
-    /// `HostDirectivesResolver.resolve` on its host, as `MatchSource.HostDirective`.
+    /// Resolved `hostDirectives` in the consuming component's frame; `None` if absent or unresolved
+    /// (outside a stage-2 scope). Kept attached to the host, not added to the consumer's scope:
+    /// ngtsc reaches them only via `HostDirectivesResolver` (`MatchSource.HostDirective`).
     pub resolved_host_directives: Option<Vec<ResolvedHostDirective>>,
 }
 
-/// One `hostDirectives` entry resolved to the directive it names. The stage-2 counterpart of
-/// ngtsc's `HostDirectiveMeta`, carrying the resolved declaration in place of a `Reference` so
-/// the TCB can build the host directive's metadata without a metadata reader of its own.
+/// Stage-2 resolved `hostDirectives` entry (`HostDirectiveMeta` with resolved `DeclarationData`).
 #[derive(Clone, Debug)]
 pub struct ResolvedHostDirective {
     /// The host directive's declaration, with its own `resolved_host_directives` for a chain.
@@ -477,21 +438,17 @@ pub struct ClassInfo {
     pub has_non_exported_bounds: bool,
 }
 
-/// Which NgModule declares each class, mirroring ngtsc's `LocalModuleScopeRegistry`
-/// (`declarationToModule` and `duplicateDeclarations`).
+/// Mapping from declared classes to their owning NgModules (`LocalModuleScopeRegistry`).
 #[derive(Default)]
 pub struct NgModuleComponentMap {
-    /// Classes declared by exactly one NgModule, keyed by the class's file and name.
+    /// Classes declared by exactly one NgModule, keyed by file and class name.
     pub component_to_module: HashMap<FileId, HashMap<String, ReferenceId>>,
-    /// Classes declared by more than one NgModule, with every declaring module in the order they
-    /// were registered. A class here is absent from `component_to_module`: it has no declaring
-    /// module and so no compilation scope, and is reported as NG6007.
+    /// Classes declared by multiple NgModules (excluded from `component_to_module` and reported as NG6007).
     pub duplicate_declarations: HashMap<FileId, HashMap<String, Vec<ReferenceId>>>,
 }
 
 impl NgModuleComponentMap {
-    /// The single NgModule declaring the class, or `None` when no NgModule, or more than one,
-    /// declares it (ngtsc's `getScopeForComponent` returning null).
+    /// The single NgModule declaring the class, or `None` if undeclared or declared by multiple modules.
     pub fn get(&self, file_id: FileId, class_name: &str) -> Option<ReferenceId> {
         self.component_to_module
             .get(&file_id)?
@@ -499,8 +456,8 @@ impl NgModuleComponentMap {
             .copied()
     }
 
-    /// Every NgModule declaring the class when more than one does (ngtsc's
-    /// `getDuplicateDeclarations`), otherwise `None`.
+    /// Every NgModule declaring the class when more than one does (`getDuplicateDeclarations`),
+    /// otherwise `None`.
     pub fn get_duplicate_declarations(
         &self,
         file_id: FileId,
@@ -512,9 +469,7 @@ impl NgModuleComponentMap {
             .map(Vec::as_slice)
     }
 
-    /// The class's declaring NgModule and, when more than one NgModule declares it, all of them
-    /// (the class then has no declaring NgModule). An anonymous class can't be keyed into the
-    /// mapping and has neither.
+    /// Returns `(declaring_module, duplicate_modules)` for `class_name` in `file_id`.
     pub fn declaring_ng_modules(
         &self,
         file_id: FileId,
@@ -530,13 +485,8 @@ impl NgModuleComponentMap {
         (self.get(file_id, class_name), duplicates)
     }
 
-    /// Record that `ng_module` declares the class `class_name` of `file_id`, as ngtsc's
-    /// `LocalModuleScopeRegistry.registerDeclarationOfModule` does: the first declaring module
-    /// owns the class, and a second, different one moves it to the duplicates with both modules.
-    /// A module listing the same class twice is not a duplicate.
-    ///
-    /// Which classes end up owned, and by which module, does not depend on the order modules are
-    /// registered in; only the order of a duplicate's module list does.
+    /// Record that `ng_module` declares `class_name` in `file_id` (`registerDeclarationOfModule`).
+    /// Moves the class to `duplicate_declarations` if a second distinct module declares it.
     pub fn register_declaration(
         &mut self,
         file_id: FileId,
@@ -570,23 +520,9 @@ impl NgModuleComponentMap {
     }
 }
 
-/// A file's analysis: the single shape produced by both per-file queries.
-///
-/// The syntactic query ([`crate::QueryKey::AnalyzeFileSyntax`]) produces it from one file
-/// alone (for both `.ts` and `.d.ts`); the semantic query
-/// ([`crate::QueryKey::AnalyzeFileSemantic`]) starts from a clone of the syntactic result and
-/// completes it — resolving each class's metadata in place across files. *Semantic is a more
-/// resolved Syntax*, so there is one data type with two production modes, not two types.
-///
-/// `class_index` and `file_exports` form this file's **symbol table** — the cross-file lookup
-/// that other files' semantic resolution reads by querying this file's `AnalyzeFileSyntax`
-/// directly (no shared index). The symbol-table fields are `Arc`-wrapped so the plain pipeline
-/// (which ignores them) clones cheaply.
-///
-/// The query engine speaks this internal type only — the serialized
-/// [`crate::AnalysisResult`] is a projection produced at the engine boundary by
-/// [`FileData::to_wire_syntax`] / [`FileData::to_wire_semantic`], so new internal analysis
-/// state never threatens the wire format.
+/// Internal per-file analysis result shared by [`crate::QueryKey::AnalyzeFileSyntax`] and
+/// [`crate::QueryKey::AnalyzeFileSemantic`], projected to [`crate::AnalysisResult`] at the API
+/// boundary via [`FileData::to_wire`].
 #[derive(Clone)]
 pub struct FileData {
     pub(crate) file_id: FileId,
@@ -595,42 +531,32 @@ pub struct FileData {
 
     pub(crate) imports_end: u32,
     pub(crate) classes: Vec<crate::analyzer::ClassData>,
-    /// The file's static `import` declarations, in source order.
+    /// Static `import` declarations in source order.
     pub(crate) import_declarations: Vec<crate::analyzer::ImportDeclarationInfo>,
     pub(crate) type_only_exports: Vec<String>,
-    /// The file's static import specifiers resolved to on-disk TS sources (single-file
-    /// resolution; no other file is *read*). These are the edges of the static import graph that
-    /// cycle detection walks.
+    /// Resolved on-disk TS paths of static imports (edges of the static import graph).
     pub(crate) resolved_dependencies: Vec<PathBuf>,
-    /// The file's dynamic imports (`import()` calls and literal import types), resolved the same
-    /// way. Like a static import, one brings its target into the program (TypeScript's
-    /// `collectExternalModuleReferences`), but it is no edge for cycle detection: ngtsc's
-    /// `ImportGraph` scans static imports only.
+    /// Resolved on-disk TS paths of dynamic `import()` calls and literal import types (included in
+    /// the program closure, excluded from static cycle detection).
     pub(crate) dynamic_dependencies: Vec<PathBuf>,
-    /// This file's declared classes, keyed by name — the symbol-table half consumed cross-file.
-    /// A `selector` referencing another file is `None` here; see
-    /// [`crate::analyzer::resolver::with_resolved_selector`].
+    /// Declared classes keyed by name. A cross-file `selector` is `None` here in Stage 1;
+    /// see `QueryKey::AnalyzeFileEvaluated`.
     pub(crate) class_index: Arc<HashMap<String, ClassInfo>>,
-    /// This file's declared classes, keyed by SymbolId — the O(1) lookup consumed cross-file.
-    /// Same selector caveat as [`Self::class_index`].
+    /// Declared classes keyed by `ReferenceId` (same Stage 1 selector caveat as `class_index`).
     pub(crate) symbol_index: Arc<HashMap<ReferenceId, ClassInfo>>,
-    /// This file's re-export table (`export … from …`).
+    /// Re-export table (`export … from …`).
     pub(crate) file_exports: Arc<crate::analyzer::FileExportInfo>,
     pub(crate) errors: Vec<String>,
     pub(crate) diagnostics: Vec<crate::NgDiagnostic>,
-    /// Where to add a signal's implicit `debugName`, as byte offsets.
+    /// Byte offsets for implicit signal `debugName` insertions.
     pub(crate) signal_debug_names:
         Vec<crate::analyzer::signal_debug_name::SignalDebugNameInsertion>,
 }
 
 impl FileData {
-    /// The files this one brings into the program: its static imports, then its dynamic imports.
-    /// The program closure (`ProgramFiles`) and the streaming coordinator both follow these, so
-    /// they agree on the program; the static import graph follows
-    /// [`Self::resolved_dependencies`] alone.
+    /// Static and dynamic import dependencies included in the program closure (`ProgramFiles`).
     ///
-    /// TODO: TypeScript also adds the targets of `/// <reference path="…" />` directives to the
-    /// program (`processReferencedFiles`). They are not followed here.
+    /// TODO(parity): follow `/// <reference path="…" />` directives (tsc's `processReferencedFiles`).
     pub(crate) fn program_dependencies(&self) -> impl Iterator<Item = &PathBuf> {
         self.resolved_dependencies
             .iter()

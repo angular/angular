@@ -10,8 +10,6 @@ use super::utils::{extract_literal_string, extract_property_key, is_angular_deco
 use crate::evaluator::{EvalInput, Resolved};
 use oxc_span::GetSpan;
 
-// TODO: we currently don't extract inherited host bindings.
-
 /// Parse @HostBinding() decorator on a property or accessor
 pub fn parse_host_binding_decorator<'a>(
     decorator: &'a Decorator<'a>,
@@ -54,16 +52,10 @@ fn create_source_node(
     ExpressionValueData { kind, text, span }
 }
 
-// Note: Do NOT use PartialEvaluator (extract_string / Semantic) to evaluate expressions or string concatenation here.
-// When generating Type Check Block (TCB) host metadata (hostBindingDecorators / hostListenerDecorators), reference ngtsc
-// maps decorator arguments via `sourceNodeFromTs`, which matches ONLY StringLiteral, NoSubstitutionTemplateLiteral, and Identifier,
-// returning Unspecified for all non-literal expressions. Using partial evaluation here would diverge from reference compiler behavior:
-// https://github.com/angular/angular/blob/1c9c453/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L786
-/// Classify expression kind according to ngtsc's `sourceNodeFromTs`:
-/// StringLiteral and NoSubstitutionTemplateLiteral -> String,
-/// Identifier -> Identifier,
-/// Any other non-literal expression -> Unspecified.
-/// https://github.com/angular/angular/blob/1c9c453/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L786
+/// Classify expression kind according to ngtsc's `sourceNodeFromTs` (for TCB host metadata):
+/// StringLiteral and NoSubstitutionTemplateLiteral -> String, Identifier -> Identifier,
+/// any other expression -> Unspecified (intentionally unevaluated).
+/// https://github.com/angular/angular/blob/1c9c453/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L783-L803
 fn classify_source_node_kind(expr: &Expression<'_>) -> ExpressionValueKind {
     if extract_literal_string(expr).is_some() {
         ExpressionValueKind::String
@@ -180,7 +172,6 @@ fn parse_host_listener_args(
     member_span: oxc_span::Span,
     eval: &EvalInput<'_, '_>,
 ) -> Option<HostListenerData> {
-    // First argument is the event name
     let Some(arg) = call.arguments.first() else {
         return Some(member_named_listener(
             method_name,
@@ -194,7 +185,6 @@ fn parse_host_listener_args(
     let resolved_event_name =
         Resolved::from_syntax(crate::evaluator::evaluate_expression(expr, eval), eval.file);
 
-    // Second argument is the args array, e.g., ['$event']
     let Some(arg) = call.arguments.get(1) else {
         return Some(HostListenerData {
             method_name,
@@ -208,9 +198,8 @@ fn parse_host_listener_args(
         });
     };
 
-    // For TCB metadata: reference ngtsc maps decorator arguments via `sourceNodeFromTs`.
-    // If the argument is an array literal, its elements are mapped; otherwise args is empty.
-    // https://github.com/angular/angular/blob/main/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L758-L762
+    // For TCB metadata: ngtsc maps array literal elements via `sourceNodeFromTs`, or leaves `args` empty.
+    // https://github.com/angular/angular/blob/1c9c453/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L758-L762
     let args = match arg {
         Argument::ArrayExpression(arr) => arr
             .elements
@@ -220,14 +209,12 @@ fn parse_host_listener_args(
         _ => Vec::new(),
     };
 
-    // For runtime metadata: reference ngtsc evaluates the 2nd argument via `evaluator.evaluate`.
-    // It must resolve to an array of strings (constant folding template literals / references).
-    // Non-array or non-string elements produce NG1010 diagnostics.
-    // TODO(parity): evaluated in Syntax mode (within-file) only. Unlike the event name, the
-    // arguments are not kept for Stage 2 cross-file resolution (`resolve_semantic`), so an
-    // argument list built from imported constants is a known parity gap with ngtsc.
-    // https://github.com/angular/angular/blob/main/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L731-L742
-    // https://github.com/angular/angular/blob/main/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L1081-L1096
+    // For runtime metadata: ngtsc evaluates the 2nd argument via `evaluator.evaluate` and
+    // validates it as a string array (`isStringArrayOrDie`), reporting NG1010 otherwise.
+    // TODO(parity): evaluated in Syntax mode (within-file) only; cross-file imported constants
+    // in `@HostListener` args are not resolved in Stage 2.
+    // https://github.com/angular/angular/blob/1c9c453/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L732-L743
+    // https://github.com/angular/angular/blob/1c9c453/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L1082-L1097
     let (runtime_args, args_errors) = evaluate_host_listener_runtime_args(arg, eval);
 
     Some(HostListenerData {
@@ -255,11 +242,8 @@ fn evaluate_host_listener_runtime_args(
 
     let resolved = crate::evaluator::evaluate_expression(expr, eval);
 
-    // If the expression cannot be fully evaluated within this file (it contains Incomplete
-    // holes from cross-file imports), do not report a false NG1010 diagnostic. Because member
-    // decorators are parsed in Stage 1 syntax mode and not resolved in Stage 2 semantic analysis,
-    // cross-file imported constants cannot be chased; we leave runtime_args as None so downstream
-    // code can fall back to the identifier text.
+    // Avoid false NG1010 diagnostics when the expression contains unresolved cross-file holes;
+    // leave `runtime_args` as `None` so downstream code falls back to the identifier text.
     if resolved.contains_incomplete() {
         return (None, Vec::new());
     }
@@ -365,7 +349,6 @@ fn extract_method_host_bindings_listeners<'a>(
     );
 
     for decorator in &method.decorators {
-        // Check for @HostListener on methods
         if let Some(listener) = parse_host_listener_decorator(
             decorator,
             name_node.clone(),
@@ -404,7 +387,6 @@ pub fn extract_host_bindings_listeners<'a>(
 
     for element in &class.body.body {
         match element {
-            // Property definitions with @HostBinding or @HostListener
             ClassElement::PropertyDefinition(prop) => {
                 if prop.r#static {
                     continue;
@@ -420,7 +402,6 @@ pub fn extract_host_bindings_listeners<'a>(
                 host_listeners.extend(listeners);
             }
 
-            // Accessor properties with @HostBinding or @HostListener
             ClassElement::AccessorProperty(acc) => {
                 if acc.r#static {
                     continue;
@@ -436,7 +417,6 @@ pub fn extract_host_bindings_listeners<'a>(
                 host_listeners.extend(listeners);
             }
 
-            // Method definitions with @HostListener or @HostBinding (for getters)
             ClassElement::MethodDefinition(method) => {
                 if method.r#static {
                     continue;

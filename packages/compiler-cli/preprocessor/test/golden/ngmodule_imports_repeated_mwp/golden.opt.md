@@ -1,8 +1,27 @@
+# /out/app.component.ngtypecheck.ts
+```ts
+/**
+ * TCB for /app.component.ts
+ * @generated
+ */
+
+import * as i0 from './app.component';
+
+/*tcb1*/
+function _tcb1(this: i0.AppComponent) {
+  if (true) {
+  }
+}
+
+```
+
 # /out/app.component.ts
 ```ts
 import { Component } from '@angular/core';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './shared';
 
 export class AppComponent {
   // @ts-ignore
@@ -36,7 +55,7 @@ export class AppComponent {
         i0.ɵɵelementEnd();
       }
     },
-    dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent),
+    dependencies: [i1.SharedDirective],
     encapsulation: 2,
   });
   static {
@@ -75,14 +94,17 @@ export class AppComponent {
 ```ts
 import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
-import { SharedModule, SHARED_IMPORTS } from './shared';
+import { SharedModule } from './shared';
+import { MORE } from './more';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './shared';
 
-// LOCAL mode emits `ɵinj.imports` as the verbatim, entry-by-entry concatenation of the
-// `imports` array elements: a ModuleWithProviders call (`SharedModule.forRoot()`) and a
-// spread (`...SHARED_IMPORTS`) both survive unresolved. Mirrors ngtsc handler.ts#L670-L688:
-// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L670-L688
+// `SharedModule.forRoot()` is reached twice along sibling paths: directly, and through the
+// `MORE` const. Each occurrence evaluates independently (as in ngtsc's `StaticInterpreter`),
+// so `SharedModule` is in the module's compilation scope and `AppComponent` depends on
+// `SharedDirective`.
 export class AppModule {
   // @ts-ignore
   static ɵfac: i0.ɵɵFactoryDeclaration<AppModule, never> = function AppModule_Factory(
@@ -91,10 +113,15 @@ export class AppModule {
     return new (__ngFactoryType__ || AppModule)();
   };
   // @ts-ignore
-  static ɵmod: AppModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
+  static ɵmod: i0.ɵɵNgModuleDeclaration<
+    AppModule,
+    [typeof AppComponent],
+    [typeof i1.SharedModule, typeof i1.SharedModule],
+    never
+  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
   // @ts-ignore
   static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [SharedModule.forRoot(), ...SHARED_IMPORTS],
+    imports: [SharedModule.forRoot(), MORE],
   });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
@@ -105,7 +132,7 @@ export class AppModule {
             type: NgModule,
             args: [
               {
-                imports: [SharedModule.forRoot(), ...SHARED_IMPORTS],
+                imports: [SharedModule.forRoot(), ...MORE],
                 declarations: [AppComponent],
               },
             ],
@@ -120,7 +147,7 @@ export class AppModule {
   (typeof ngJitMode === 'undefined' || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(AppModule, {
       declarations: [AppComponent],
-      imports: [SharedModule.forRoot(), ...SHARED_IMPORTS],
+      imports: [i1.SharedModule, i1.SharedModule],
     });
 })();
 
@@ -178,7 +205,7 @@ export class SharedDirective {
 
 export class SharedModule {
   static forRoot(): ModuleWithProviders<SharedModule> {
-    return { ngModule: SharedModule };
+    return { ngModule: SharedModule, providers: [] };
   }
   // @ts-ignore
   static ɵfac: i0.ɵɵFactoryDeclaration<SharedModule, never> = function SharedModule_Factory(
@@ -187,11 +214,14 @@ export class SharedModule {
     return new (__ngFactoryType__ || SharedModule)();
   };
   // @ts-ignore
-  static ɵmod: SharedModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: SharedModule });
+  static ɵmod: i0.ɵɵNgModuleDeclaration<
+    SharedModule,
+    [typeof SharedDirective],
+    never,
+    [typeof SharedDirective]
+  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: SharedModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<SharedModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [SharedDirective],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<SharedModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -219,7 +249,5 @@ export class SharedModule {
       exports: [SharedDirective],
     });
 })();
-
-export const SHARED_IMPORTS = [SharedModule];
 
 ```

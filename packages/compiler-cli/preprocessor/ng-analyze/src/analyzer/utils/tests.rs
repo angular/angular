@@ -322,7 +322,7 @@ fn test_unwrap_forward_ref_provenance() {
 
 /// The wrappers upstream's `unwrapExpression` strips, and the ones it deliberately keeps.
 ///
-/// https://github.com/angular/angular/blob/96b80424c7/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L176-L181
+/// https://github.com/angular/angular/blob/96b8042/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L176-L181
 #[test]
 fn test_unwrap_forward_ref_outer_wrappers() {
     const IMPORT: &str = "import { forwardRef } from '@angular/core';\n";
@@ -397,7 +397,7 @@ fn test_unwrap_forward_ref_evaluated_provenance() {
 /// `expandForwardRef` reaches the arrow/function through `unwrapExpression` and requires a
 /// block body to hold exactly one statement.
 ///
-/// https://github.com/angular/angular/blob/96b80424c7/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L183-L205
+/// https://github.com/angular/angular/blob/96b8042/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L183-L205
 #[test]
 fn test_expand_forward_ref_argument() {
     const IMPORT: &str = "import { forwardRef } from '@angular/core';\n";
@@ -528,13 +528,8 @@ fn assert_string_in_program(source: &str, expected: Option<&str>) {
 
 #[test]
 fn test_extract_string_constant_folding() {
-    // 1. Template literal without expressions
     assert_string_in_program("`hello`", Some("hello"));
-
-    // 2. Template literal with string literal expression
     assert_string_in_program("`hello ${'world'}`", Some("hello world"));
-
-    // 3. Template literal with local constant string reference
     assert_string_in_program(
         r#"
         const name = 'world';
@@ -542,8 +537,6 @@ fn test_extract_string_constant_folding() {
         "#,
         Some("hello world"),
     );
-
-    // 4. Template literal with multiple local constant references
     assert_string_in_program(
         r#"
         const greeting = 'hello';
@@ -552,8 +545,6 @@ fn test_extract_string_constant_folding() {
         "#,
         Some("hello world!"),
     );
-
-    // 5. Template literal with nested template literals
     assert_string_in_program(
         r#"
         const name = 'world';
@@ -561,11 +552,7 @@ fn test_extract_string_constant_folding() {
         "#,
         Some("hello beautiful world"),
     );
-
-    // 6. String concatenation of literals
     assert_string_in_program("'hello' + ' ' + 'world'", Some("hello world"));
-
-    // 7. String concatenation with local constants
     assert_string_in_program(
         r#"
         const greeting = 'hello';
@@ -574,8 +561,6 @@ fn test_extract_string_constant_folding() {
         "#,
         Some("hello world"),
     );
-
-    // 8. Mixed template literal and string concatenation
     assert_string_in_program(
         r#"
         const name = 'world';
@@ -583,11 +568,7 @@ fn test_extract_string_constant_folding() {
         "#,
         Some("hello beautiful world"),
     );
-
-    // 9. Edge case: Unresolved identifier
     assert_string_in_program("`hello ${unresolved}`", None);
-
-    // 10. Edge case: Non-string constant (number) inside template
     assert_string_in_program(
         r#"
         const age = 25;
@@ -595,8 +576,6 @@ fn test_extract_string_constant_folding() {
         "#,
         Some("age: 25"),
     );
-
-    // 11. Edge case: Non-string constant (boolean) inside template
     assert_string_in_program(
         r#"
         const is_active = true;
@@ -604,8 +583,6 @@ fn test_extract_string_constant_folding() {
         "#,
         Some("active: true"),
     );
-
-    // 12. Edge case: Non-string constant (null) inside template
     assert_string_in_program(
         r#"
         const value = null;
@@ -613,8 +590,6 @@ fn test_extract_string_constant_folding() {
         "#,
         Some("value: null"),
     );
-
-    // 13. Edge case: Unsupported binary operation
     assert_string_in_program("greeting - target", None);
 }
 

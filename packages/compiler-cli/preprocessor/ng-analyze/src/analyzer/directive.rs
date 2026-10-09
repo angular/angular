@@ -61,13 +61,11 @@ pub fn parse_directive_args<'a>(
     Some(data)
 }
 
-// Roughly mimics the shape of `extractDirectiveMetadata` in the compiler-cli:
-// https://github.com/angular/angular/blob/1c9c4536d6029372b192b2561d60bad6ba7d87e8/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L128
+// Roughly mimics the shape of `extractDirectiveMetadata` in compiler-cli:
+// https://github.com/angular/angular/blob/1c9c453/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L128
 //
-// Returns `None` when the decorator opts into JIT compilation (`jit: true`), mirroring the
-// reference's `jitForced` early return: the class is skipped entirely — no analysis is
-// produced and the decorator is left intact for runtime JIT compilation. The reference keys
-// off the mere presence of the `jit` property (its type only permits `true`):
+// Records `is_jit: true` when the `jit` property is present (its type only permits `true`), so
+// downstream emission leaves the decorator intact for runtime JIT compilation:
 // https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L176-L179
 pub fn extract_directive_metadata<'a>(
     obj: &'a oxc_ast::ast::ObjectExpression<'a>,
@@ -301,12 +299,10 @@ pub fn extract_host_object(expr: &Expression) -> Vec<HostPropertyData> {
             continue;
         };
 
-        // Get the key - use the shared helper
         let Some(key) = extract_property_key(&p.key).map(|n| n.into_owned()) else {
             continue;
         };
 
-        // Optional: exclude quotes from span if it's a string literal
         let mut raw_key_span = p.key.span();
         let key_kind = if matches!(&p.key, oxc_ast::ast::PropertyKey::StringLiteral(_)) {
             raw_key_span = oxc_span::Span::new(raw_key_span.start + 1, raw_key_span.end - 1);
@@ -320,7 +316,6 @@ pub fn extract_host_object(expr: &Expression) -> Vec<HostPropertyData> {
             span: raw_key_span,
         };
 
-        // Get the value - should be a string literal for host bindings
         let mut raw_value_span = p.value.span();
 
         let (value_text, value_kind) = if let Some(text) = extract_literal_string(&p.value) {
@@ -372,7 +367,6 @@ mod tests {
         let source_type = SourceType::default();
         let ret = Parser::new(&allocator, source_text, source_type).parse();
 
-        // Extract the object expression
         let mut object_expr = None;
         if let oxc_ast::ast::Statement::VariableDeclaration(decl) = &ret.program.body[0] {
             if let Some(init) = &decl.declarations[0].init {
@@ -386,7 +380,6 @@ mod tests {
 
         assert_eq!(properties.len(), 2);
 
-        // Check first property
         assert_eq!(properties[0].key.text, Some("class.active".to_string()));
         assert_eq!(properties[0].value.text, Some("isActive".to_string()));
         let key1_start = source_text.find("class.active").unwrap() as u32;
@@ -397,7 +390,6 @@ mod tests {
         assert_eq!(properties[0].value.span.start, val1_start);
         assert_eq!(properties[0].value.span.end, val1_start + 8);
 
-        // Check second property
         assert_eq!(properties[1].key.text, Some("[attr.disabled]".to_string()));
         assert_eq!(properties[1].value.text, Some("isDisabled".to_string()));
         assert_eq!(properties[1].value.kind, ExpressionValueKind::Identifier);
@@ -405,7 +397,6 @@ mod tests {
         assert_eq!(properties[1].key.span.start, key2_start);
         assert_eq!(properties[1].key.span.end, key2_start + 15);
 
-        // The value isDisabled is not a string literal, so we still get the full source for it
         let val2_start = source_text.find("isDisabled").unwrap() as u32;
         assert_eq!(properties[1].value.span.start, val2_start);
         assert_eq!(properties[1].value.span.end, val2_start + 10);
@@ -581,7 +572,6 @@ mod tests {
             }
         }
 
-        // Verify Inputs
         assert_eq!(inputs.len(), 3);
 
         assert_eq!(inputs[0].name, "simpleInput");
@@ -596,7 +586,6 @@ mod tests {
         assert_eq!(inputs[2].alias.as_deref(), Some("objAlias"));
         assert!(inputs[2].required);
 
-        // Verify Outputs
         assert_eq!(outputs.len(), 2);
 
         assert_eq!(outputs[0].name, "simpleOutput");
@@ -605,7 +594,6 @@ mod tests {
         assert_eq!(outputs[1].name, "outputWithAlias");
         assert_eq!(outputs[1].alias.as_deref(), Some("publicOutputAlias"));
 
-        // Verify Queries
         assert_eq!(queries.len(), 2);
 
         assert_eq!(queries[0].property_name, "myViewChild");

@@ -1636,7 +1636,6 @@ describe('QuickInfo with TS 7 binary', () => {
       `;
 
       await env.run('app_let.ts', appTsContent, async (ls, filePath) => {
-        // Target the second 'name' in the template '{{name}}'
         await env.expectHoverAtCursor(ls, filePath, ['Frodo']);
       });
     });
@@ -1655,7 +1654,6 @@ describe('QuickInfo with TS 7 binary', () => {
       `;
 
       await env.run('app_let_narrowed.ts', appTsContent, async (ls, filePath) => {
-        // Target the last 'name' in the template '{{name}}'
         await env.expectHoverAtCursor(ls, filePath, ['string']);
       });
     });

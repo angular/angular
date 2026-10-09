@@ -102,12 +102,8 @@ impl WasmAnalyzer {
 
 #[wasm_bindgen]
 impl WasmAnalyzer {
-    /// Constructs an analyzer.
-    ///
-    /// `host_fs` is an optional JavaScript filesystem bridge (see `WasmHostFs` in
-    /// `src/wasm_host_fs.ts`). This target has no OS beneath it, so without a host the
-    /// engine can only see files supplied through `virtualFiles` — which is the
-    /// historical behaviour and remains available by omitting the argument.
+    /// Constructs an analyzer with an optional JavaScript filesystem bridge (`WasmHostFs`).
+    /// Without `host_fs`, only `virtualFiles` are visible.
     #[wasm_bindgen(constructor)]
     pub fn new(
         options_json: &str,
@@ -116,12 +112,10 @@ impl WasmAnalyzer {
         let options: AnalyzerOptions =
             serde_json::from_str(options_json).map_err(|e| e.to_string())?;
 
-        // The host belongs to this analyzer's filesystem, so two WasmAnalyzers in one
-        // process can read from different sources without interfering.
         let physical: Arc<dyn crate::physical_fs::PhysicalFs> = match host_fs {
             Some(host) => Arc::new(crate::physical_fs::HostFs::new(host)),
-            // No host: virtual files only. `std::fs` exists on this target but fails
-            // at runtime for every call, so nothing on disk is reachable.
+            // `std::fs` compiles on wasm32 but fails at runtime, so without a host only virtual
+            // files exist.
             None => Arc::new(crate::physical_fs::NoopFs),
         };
 

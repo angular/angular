@@ -1150,10 +1150,8 @@ fn test_unsupported_type_operator_evaluation() {
 
 #[test]
 fn dynamic_value_is_anchored_on_the_referencing_node() {
-    // Upstream's `visitExpression` postlude re-anchors a dynamic result on the node being
-    // visited, so a reference to an unevaluable constant reports the *reference*, not the
-    // constant's initializer. Consumers that emit the node verbatim (`@Directive.host`)
-    // depend on this: the emitted text must be `BAR_CONST`, not `getBar()`.
+    // `visitExpression` re-anchors a dynamic result on the referencing node (`BAR_CONST`), not
+    // the initializer (`getBar()`), for consumers that emit the node verbatim.
     // https://github.com/angular/angular/blob/1c9c453/packages/compiler-cli/src/ngtsc/partial_evaluator/src/interpreter.ts#L155-L158
     let source = "function getBar() { return window.x; }\nconst BAR_CONST = getBar();\nBAR_CONST;";
     let value = eval_source(source);
@@ -1179,11 +1177,8 @@ fn dynamic_value_is_anchored_on_the_referencing_node() {
     ));
 }
 
-// ==================================================================== cross-file completion
-
-/// Evaluate the final expression statement of `consumer` in Syntax mode — the way a decorator
-/// field is evaluated — then complete it across files through the semantic driver
-/// (`evaluate_value_completely`, the path `Resolved::complete_with` takes).
+/// Evaluate the final expression statement of `consumer` in Syntax mode, then complete it
+/// across files via `evaluate_value_completely`.
 fn complete_across_files(files: &[(&str, &str)], consumer: &str) -> ResolvedValue {
     use crate::query::{QueryContext, QueryEngine};
     use std::path::PathBuf;
@@ -1271,15 +1266,12 @@ const LIST_IMPORTS: &str = "import { LIST } from './list';\n\
 
 #[test]
 fn imported_array_spread_is_spliced() {
-    // Control: a spread of the import itself splices its elements.
     let value = complete_list_consumer(&format!("{LIST_IMPORTS}[...LIST, C];"));
     assert_eq!(reference_names(&value), ["A", "B", "C"]);
 }
 
 #[test]
 fn imported_array_spread_through_a_parameter_is_spliced() {
-    // Control: the hole reaches the spread through a local function's parameter, which a
-    // re-evaluation of the spread argument alone could not see.
     let value = complete_list_consumer(&format!(
         "{LIST_IMPORTS}function withC(xs: any[]) {{ return [...xs, C]; }}\nwithC(LIST);"
     ));
@@ -1288,8 +1280,6 @@ fn imported_array_spread_through_a_parameter_is_spliced() {
 
 #[test]
 fn spread_of_an_imported_call_is_spliced() {
-    // The spread's argument re-evaluates to a call hole before it resolves; the result must
-    // still splice rather than nest.
     let value = complete_list_consumer(
         "import { make } from './make';\nimport { C } from './c';\n[...make(), C];",
     );
@@ -1298,9 +1288,8 @@ fn spread_of_an_imported_call_is_spliced() {
 
 #[test]
 fn element_access_through_a_parameter_is_never_the_whole_array() {
-    // TODO(parity): ngtsc evaluates this to `[A]`. The hole propagates out of `xs[0]` inside
-    // the function body, and re-evaluating that node has no binding for `xs`, so the element
-    // is dynamic — the runtime fallback — rather than the element, but never the whole array.
+    // TODO(parity): ngtsc evaluates this to `[A]`; re-evaluating `xs[0]` without the `xs`
+    // parameter binding falls back to `Dynamic` rather than returning the whole array.
     let value = complete_list_consumer(&format!(
         "{LIST_IMPORTS}function first(xs: any[]) {{ return xs[0]; }}\n[first(LIST)];"
     ));

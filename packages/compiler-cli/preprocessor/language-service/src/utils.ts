@@ -195,8 +195,7 @@ export function isPositionInHostBinding(c: ClassMetadata, offset: number): boole
     }
   }
 
-  // TODO: In reference Angular, components are a superset of directives and metadata is unified.
-  // Our extracted metadata separates them, which forces us to check both here. This could be cleaned up.
+  // TODO(cleanup): Unify component and directive hostProperties in ClassMetadata.
   const hostProps = c.component?.hostProperties || c.directive?.hostProperties || [];
   for (const hp of hostProps) {
     if (hp.key.sourceSpan && offset >= hp.key.sourceSpan.start && offset <= hp.key.sourceSpan.end) {

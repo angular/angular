@@ -136,12 +136,9 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             HashSet::new()
         };
 
-        // Always invalidate ComponentMapping when any file changes, as it is a whole-program singleton.
-        // TODO: Feature Parity with @angular/compiler-cli — optimize ComponentMapping invalidation so that modifications to template contents or internal method bodies (which do not alter structural @Component/@NgModule metadata) do not evict the global ComponentMapping singleton.
+        // TODO(parity): avoid evicting ComponentMapping on changes that do not affect @Component/@NgModule declarations.
         evicted_keys.insert(QueryKey::ComponentMapping);
-        // `ProgramFiles` records every file of the closure it walked, but it also reads the
-        // tsconfig root list, which is not a recorded input: a change that re-resolves the roots
-        // must not leave the mapping above rebuilt over the previous program.
+        // `ProgramFiles` also reads the unrecorded tsconfig root list, so evict it on any change.
         evicted_keys.insert(QueryKey::ProgramFiles);
 
         let evicted_vec: Vec<QueryKey> = evicted_keys.into_iter().collect();
@@ -212,10 +209,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         .boxed()
     }
 
-    /// Synchronously drive `AnalyzeFileSemantic(path)` to its resolved result. Lets the sync
-    /// `get_metadata_for_file` be a plain query like everything else (no bespoke on-demand analysis).
-    /// Native blocks the calling thread while the pool runs the query graph; WASM pumps the local
-    /// pool until it settles (`run_until_stalled` drives the whole self-contained sub-query graph).
+    /// Synchronously drive `AnalyzeFileSemantic(path)` to completion.
     #[cfg(not(target_arch = "wasm32"))]
     pub fn analyze_file_semantic_blocking(
         self: &Arc<Self>,
@@ -243,8 +237,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         }
     }
 
-    /// [`QueryContext::declaring_export_names`] driven to completion synchronously, for the
-    /// wire-projection entry points that are not themselves async.
+    /// Synchronously drive [`QueryContext::declaring_export_names`] to completion.
     #[cfg(not(target_arch = "wasm32"))]
     pub fn declaring_export_names_blocking(
         self: &Arc<Self>,
@@ -303,8 +296,6 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         self.parse_file_by_id_blocking(file_id)
     }
 
-    // --- Query bodies (cached + spawned by `query`/`execute`) ---
-
     async fn parse_file_body(
         self: &Arc<Self>,
         file_id: FileId,
@@ -315,9 +306,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         let source_text = match self.fs.read_to_string(&file_path) {
             Ok(s) => s,
             Err(e) => {
-                // An unreadable source degrades to an empty parse that yields zero parser
-                // errors, so without this the file is silently skipped. See
-                // TODO(diagnostics) in compiler/analyzer.rs.
+                // Warn before falling back to an empty parse so unreadable files are not silently skipped.
                 #[allow(clippy::print_stderr)]
                 {
                     eprintln!("Warning: Failed to read '{}': {}", file_path.display(), e);
@@ -523,20 +512,11 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             .await
     }
 
-    /// The program's files (the `ProgramFiles` singleton): the tsconfig root files plus every local
-    /// TS source reachable from them through static and dynamic imports (a router's
-    /// `loadChildren`/`loadComponent` `import()`, or an import type). This is the set of files a
-    /// TypeScript `Program` holds for the same root names, and therefore the set ngtsc analyzes —
-    /// its `LocalModuleScopeRegistry` learns a declaration's NgModule from any of them, not only
-    /// from the roots. The walk follows [`FileData::program_dependencies`], the same edges the
-    /// streaming coordinator follows, so it covers exactly the files the coordinator emits.
-    ///
-    /// The order is deterministic — roots in tsconfig order, then each breadth-first frontier in
-    /// the order its files were first imported — so every whole-program result built by iterating
-    /// it is too. A frontier's syntax queries run concurrently.
-    ///
-    /// Every file walked is a recorded dependency (through its syntax query): editing one can add
-    /// or drop an import edge and so change the closure.
+    /// Tsconfig root files plus every local TS source reachable through static and dynamic imports
+    /// ([`FileData::program_dependencies`], the same edges the streaming coordinator follows), in
+    /// deterministic BFS order. This is the TS `Program` ngtsc analyzes: its
+    /// `LocalModuleScopeRegistry` learns NgModules from any program file, not only the roots.
+    /// Every walked file is a recorded dependency, since editing one can change the closure.
     // TODO(#588): read the root list through a recorded query input instead of relying on the
     // unconditional eviction in `invalidate_file_id`.
     async fn program_files_body(self: &Arc<Self>, ctx: &QueryContext<Fs>) -> Arc<Vec<FileId>> {
@@ -570,21 +550,17 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
     }
 
     /// Build the component → owning-NgModule mapping across every file of the program (the
-    /// `ComponentMapping` singleton). Resolves every NgModule's raw declarations cross-file,
-    /// concurrently.
+    /// `ComponentMapping` singleton).
     async fn component_mapping_body(
         self: &Arc<Self>,
         ctx: &QueryContext<Fs>,
     ) -> Arc<NgModuleComponentMap> {
-        // Stage 1 for every program file (driven concurrently).
         let program_files = ctx.program_files().await;
         let analyze_futures = program_files
             .iter()
             .map(|&file_id| ctx.analyze_file_syntax(file_id));
         let all_results = futures::future::join_all(analyze_futures).await;
 
-        // A class declared by two NgModules gets neither as its owner: which classes are owned,
-        // and by which module, does not depend on the order NgModules are visited in.
         let mut mapping = NgModuleComponentMap::default();
         for result in &all_results {
             for class in &result.classes {
@@ -623,25 +599,14 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         Arc::new(mapping)
     }
 
-    /// Populate the local-compilation side-effect imports for every non-standalone component in
-    /// `local_result`, mirroring ngtsc's `LocalCompilationExtraImportsTracker`.
+    /// Populate local-compilation side-effect imports for non-standalone declarations in
+    /// `local_result` (mirroring ngtsc's `LocalCompilationExtraImportsTracker`).
     ///
-    /// Gated on `generateExtraImportsInLocalMode` by the caller. This is compilation-unit-wide
-    /// work (it has to see every `@NgModule` in the unit to build the global import set), so it
-    /// bails out immediately for files that can't possibly be marked.
-    ///
-    /// The global set holds `@NgModule.imports` entries that resolve *outside* the compilation
-    /// unit. ngtsc identifies them as the entries its partial evaluator leaves as `DynamicValue`;
-    /// here the equivalent signal is an evaluation hole (`IncompleteDep::Reference`) plus the
-    /// syntactic `parsed_imports` fallback, filtered by actually resolving the specifier and
-    /// checking whether it lands on an entrypoint. Entries that do resolve into the unit are
-    /// already covered per-component by the NgModule scope, so including them would duplicate.
-    ///
-    /// The unit here is the tsconfig root list, not the program closure (`ProgramFiles`). Local
-    /// compilation compiles one unit against dependencies it cannot see into: ngtsc's evaluator
-    /// leaves a reference into another unit as a `DynamicValue`, and its `LocalModuleScopeRegistry`
-    /// only learns the NgModules the unit itself declares. This compiler follows imports into
-    /// other units' sources, so an owning NgModule found outside the roots is ignored here.
+    /// Global extra imports are entrypoint `@NgModule.imports` entries that resolve outside the
+    /// compilation unit: ngtsc's `DynamicValue` entries, here `IncompleteDep::Reference` holes plus
+    /// the `parsed_imports` fallback. Entries resolving into the unit are skipped (the NgModule
+    /// scope covers them). Scoped to the root list, not `ProgramFiles`, because ngtsc cannot see
+    /// into other units while this compiler follows imports into their sources.
     pub async fn populate_local_compilation_extra_imports(
         self: &Arc<Self>,
         local_result: &mut FileData,
@@ -782,8 +747,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         }
     }
 
-    /// Full optimized analysis of a file → the resolved internal [`FileData`]. Thin wrapper
-    /// over the cached, self-driving `AnalyzeFileSemantic` query.
+    /// Full optimized analysis of a file → the resolved internal [`FileData`].
     pub async fn analyze_optimized(self: &Arc<Self>, file_path: PathBuf) -> Arc<FileData> {
         let file_id = self.intern_path(file_path);
         QueryContext::new(self.clone())
@@ -791,10 +755,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             .await
     }
 
-    /// Stage 2: apply decorator-specific optimization to each component. The result is the
-    /// same structure as the syntactic input, with each class's metadata resolved in place.
-    /// (Dependency tracking needs no bookkeeping here: the sub-queries awaited during
-    /// resolution record the files they touch on `ctx`, which is what invalidation uses.)
+    /// Stage 2: resolve cross-file class metadata and decorator scopes in place.
     async fn optimized_stage2(
         self: &Arc<Self>,
         file_path: PathBuf,
@@ -816,12 +777,10 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
 
             if let Some(ref mut params) = class.constructor_params {
                 for param in params {
-                    // A parameter the in-file pass already decided is type-only stays type-only:
-                    // `import type {X}` resolves to a real class across files, but the local
-                    // binding still has no runtime value. One it already verified is a class
-                    // declared in this file, and the chase could only get it wrong: it checks a
-                    // file's exports before its root bindings, so `export { Foo } from './iface';
-                    // class Foo {}` would resolve the local class to the re-exported interface.
+                    // Skip parameters already classified by the in-file pass; re-chasing is wrong:
+                    // `import type {X}` has no runtime value even if X is a class, and the chase
+                    // checks exports before root bindings (`export { Foo } from './iface'; class
+                    // Foo {}` would resolve to the interface).
                     if param.is_type_only || param.is_value_verified {
                         continue;
                     }
@@ -837,8 +796,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                         {
                             SymbolValueKind::TypeOnly => param.is_type_only = true,
                             SymbolValueKind::Value => param.is_value_verified = true,
-                            // Leave `is_value_verified` alone: the reference is emitted
-                            // optimistically and the compiler guards it with `@ts-ignore`.
+                            // Emit optimistically with `@ts-ignore`.
                             SymbolValueKind::Unresolved => {}
                         }
                     }
@@ -920,9 +878,8 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                     queue.push_back(dep_id);
                 }
             }
-            // A dynamic import is no edge of this graph — ngtsc's `ImportGraph` scans static
-            // imports only — but the subtree it loads is part of the program, and the static
-            // imports among that subtree's own files can still close a cycle.
+            // Dynamic imports are not edges of `StaticImportGraph`, but their reachable subtrees
+            // are still queued so static cycles within those subtrees are discovered.
             for dep_path in &file_data.dynamic_dependencies {
                 let dep_id = self.intern_path(dep_path);
                 if visited.insert(dep_id) {
@@ -970,9 +927,8 @@ impl StaticImportGraph {
     }
 }
 
-/// Materialize a file's `name → ClassInfo` symbol table from the single-file registration records.
-/// This is the canonical `.ts` `ClassInfo` construction (the `.d.ts` path builds the same map from
-/// `analyze_dts`); kept here so the syntactic query owns the symbol table.
+/// Materialize a file's `name → ClassInfo` and `ReferenceId → ClassInfo` tables from single-file
+/// registration records.
 fn class_index_from_registrations(
     file_path: &Path,
     registrations: &[crate::analyzer::RegistrationInfo],
@@ -1017,31 +973,24 @@ fn class_index_from_registrations(
     (class_index, symbol_index)
 }
 
-/// What cross-file resolution was able to establish about a symbol referenced in type position.
+/// Result of cross-file value verification for a symbol referenced in type position.
 ///
-/// The third state is the important one: `ɵsetClassMetadata` emits the reference in *value*
-/// position, so a symbol we failed to resolve has to be emitted optimistically and guarded with
-/// `@ts-ignore`. This mirrors ngtsc's `valueUnverified`, which it sets when a symbol has no
-/// `valueDeclaration` but local compilation has no way to prove it is type-only.
+/// [`SymbolValueKind::Unresolved`] mirrors ngtsc's `valueUnverified`: `ɵsetClassMetadata` emits
+/// the reference optimistically in value position guarded by `@ts-ignore`.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum SymbolValueKind {
-    /// Resolved to a declaration that has no runtime value (interface, type alias, `import type`).
+    /// No runtime value (interface, type alias, `import type`).
     TypeOnly,
-    /// Resolved to a declaration that does have a runtime value.
+    /// Verified runtime value declaration.
     Value,
-    /// Not resolvable from source: an ambient global, a namespace member, or a specifier that
-    /// does not map to a file we analyze.
+    /// Unresolvable from source (ambient global, namespace member, or external specifier).
     Unresolved,
 }
 
-/// Classify what the chase from `consumer` reached.
-///
-/// A value declaration only counts as [`SymbolValueKind::Value`] when every file the chase passed
-/// through hands the value on. A barrel that binds the name with `import type`, or exports it with
-/// `export type`, exports no value, so the consumer's reference is still unverified even though
-/// the chain ends at a class. That is reported as `Unresolved` rather than `TypeOnly`, matching
-/// how the chase already treats `export type { X } from './x'`: the reference stays in the
-/// metadata and the factory, and only the `@ts-ignore` guard is kept.
+/// Classify `decl` for `consumer`, downgrading value declarations reached through a type-only
+/// intermediate re-export/import hop to [`SymbolValueKind::Unresolved`]. `Unresolved` (not
+/// `TypeOnly`) keeps the reference in metadata and the factory with only the `@ts-ignore` guard,
+/// matching the chase's handling of `export type { X } from`.
 async fn classify_declaration<Fs: ResourceResolverFs + Clone + 'static>(
     decl: Option<crate::evaluator::cross_file::DeclaredSymbol>,
     consumer: &Path,
@@ -1059,21 +1008,15 @@ async fn classify_declaration<Fs: ResourceResolverFs + Clone + 'static>(
     SymbolValueKind::Value
 }
 
-/// Whether a file on the chain to `decl`, other than `consumer`, binds or exports the name only in
-/// type position.
-///
-/// The two halves are keyed differently because a file can rename on the way through. An import is
-/// judged by the name the file binds, which `decl.aliases` records; a bare
-/// `export { X } from './x'` binds nothing and has no import to judge. An export is judged by the
-/// name the file exports, which `decl.export_hops` records for every file the chase entered,
-/// forwarding ones included: `export type { X as Y }` records `Y` there and `X` in `aliases`.
+/// Whether any intermediate file on the chain to `decl` (excluding `consumer`) binds or exports
+/// the symbol only in type position. Imports are judged by the bound name (`decl.aliases`) and
+/// exports by the exported name (`decl.export_hops`), since a hop may rename
+/// (`export type { X as Y }` records `Y` in `export_hops` and `X` in `aliases`).
 async fn reached_through_type_only_hop<Fs: ResourceResolverFs + Clone + 'static>(
     decl: &crate::evaluator::cross_file::DeclaredSymbol,
     consumer: &Path,
     ctx: &QueryContext<Fs>,
 ) -> bool {
-    // The consumer's own binding was already judged by the in-file pass, and a type-only import
-    // there never reaches this chase.
     let consumer_id = ctx.engine.intern_path(consumer);
     for (file_id, local_name) in &decl.aliases {
         if *file_id == consumer_id {
@@ -1102,9 +1045,7 @@ async fn reached_through_type_only_hop<Fs: ResourceResolverFs + Clone + 'static>
     false
 }
 
-/// Whether `file` binds or exports `name` only in type position. Used for a namespace a barrel
-/// hands on (`ns.inner.X` through `import * as inner; export { inner }`), which the chase never
-/// visits: the member lookup starts from the namespace's own target instead.
+/// Whether `file` binds or exports `name` only in type position (used for re-exported namespaces).
 async fn namespace_is_type_only<Fs: ResourceResolverFs + Clone + 'static>(
     file: &Path,
     name: &str,
