@@ -5,11 +5,14 @@ import fs from 'node:fs/promises';
 import Jasmine from 'jasmine';
 import cp from 'node:child_process';
 import {createRequire} from 'node:module';
+import {ensureWasmBinding} from '../../packages/compiler-cli/preprocessor/language-service/tests/wasm_binding.mjs';
 
 const req = createRequire(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, '../..');
 const outDir = path.join(__dirname, '.jasmine_build');
+
+ensureWasmBinding(repoRoot);
 
 // If no arguments, run each spec in its own child process sequentially for clean isolation
 const args = process.argv.slice(2);
@@ -114,7 +117,8 @@ try {
   console.log(`\nRunning ${path.basename(specFile)} with Jasmine:`);
   const jasmine = new Jasmine();
   jasmine.exitOnCompletion = false;
-  jasmine.DEFAULT_TIMEOUT_INTERVAL = 30000;
+  // The timeout lives on jasmine-core (`runner.jasmine`), not on the runner itself.
+  jasmine.jasmine.DEFAULT_TIMEOUT_INTERVAL = 30000;
   jasmine.env.configure({random: false});
   jasmine.loadConfig({
     spec_files: [outFile],

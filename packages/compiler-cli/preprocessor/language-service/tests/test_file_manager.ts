@@ -75,10 +75,24 @@ export class TestFileManager {
   async cleanup() {
     for (const f of this.files) {
       await fs.rm(f, {force: true});
+      await this.removeEmptyParents(path.dirname(f));
     }
     this.files = [];
     this.virtualFiles = {};
     this.cursorOffset = undefined;
+  }
+
+  private async removeEmptyParents(dir: string): Promise<void> {
+    const root = path.resolve(this.workspacePath);
+    let current = path.resolve(dir);
+    while (current !== root && current.startsWith(root + path.sep)) {
+      try {
+        await fs.rmdir(current);
+      } catch {
+        return;
+      }
+      current = path.dirname(current);
+    }
   }
 
   getFiles(): string[] {

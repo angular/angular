@@ -508,11 +508,10 @@ export class TestEnv {
   }
 
   async run(name: string, content: string, callback: (filePath: string) => Promise<void>) {
-    const filePath = await this.createFile(name, content);
-    const finalContent = await this.getFileContent(filePath);
-    await this.openFile(filePath, finalContent);
-
     try {
+      const filePath = await this.createFile(name, content);
+      const finalContent = await this.getFileContent(filePath);
+      await this.openFile(filePath, finalContent);
       await callback(filePath);
     } finally {
       await this.cleanup();
