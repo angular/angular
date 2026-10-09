@@ -4,7 +4,7 @@ TIP: This guide assumes you're familiar with [component and directive outputs](g
 
 The `@angular/core/rxjs-interop` package offers two APIs related to component and directive outputs.
 
-## Creating an output based on an RxJs Observable
+## Creating an output based on an RxJS Observable
 
 The `outputFromObservable` lets you create a component or directive output that emits based on an RxJS observable:
 

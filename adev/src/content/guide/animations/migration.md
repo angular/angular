@@ -187,7 +187,7 @@ Applying this class to an element prevents any animation from firing on that ele
 
 2. Use the [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) media query to ensure no animations play for users that prefer less animation.
 
-3. Prevent adding animation classes programatically
+3. Prevent adding animation classes programmatically
 
 ### Animation Callbacks
 
