@@ -23,3 +23,19 @@ jasmine_test(
     ],
     shard_count = 2,
 )
+
+jasmine_test(
+    name = "codegen_ngp",
+    data = [
+        ":test_lib",
+        "//packages/animations:npm_package",
+        "//packages/compiler-cli/preprocessor/ng-analyze:wasm",
+        "//packages/compiler-cli/test/compliance/test_cases",
+        "//packages/core:npm_package",
+    ],
+    env = {
+        "NG_COMPILER_BACKEND": "ngp",
+        "NGP_SKIP_KNOWN_FAILURES": "1",
+    },
+    shard_count = 2,
+)
