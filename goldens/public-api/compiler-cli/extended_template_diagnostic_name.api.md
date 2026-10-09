@@ -29,6 +29,8 @@ export enum ExtendedTemplateDiagnosticName {
     // (undocumented)
     SUFFIX_NOT_SUPPORTED = "suffixNotSupported",
     // (undocumented)
+    TEMPLATE_REFERENCE_SHADOWS_CLASS_MEMBER = "templateReferenceShadowsClassMember",
+    // (undocumented)
     TEXT_ATTRIBUTE_NOT_BINDING = "textAttributeNotBinding",
     // (undocumented)
     UNINVOKED_FUNCTION_IN_EVENT_BINDING = "uninvokedFunctionInEventBinding",
