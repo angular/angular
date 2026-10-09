@@ -1,7 +1,10 @@
 load("//packages/compiler-cli/test/compliance/partial:partial_compliance_goldens.bzl", "partial_compliance_golden")
 load("//tools:defaults.bzl", "copy_to_bin")
 
-package(default_visibility = ["//packages/compiler-cli/test/compliance:__subpackages__"])
+package(default_visibility = [
+    "//packages/compiler-cli/preprocessor/test:__pkg__",
+    "//packages/compiler-cli/test/compliance:__subpackages__",
+])
 
 copy_to_bin(
     name = "test_cases",
