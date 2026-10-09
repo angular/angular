@@ -12,175 +12,83 @@ import {
   removeElementHighlights,
   removeHighlightsByType,
 } from '.';
-import {OVERLAY_CLASS} from './dom';
-import {
-  Highlight,
-  HighlightType,
-  hydrationCompletedHighlightTemplate,
-  inspectElementHighlightTemplate,
-} from './highlights';
+import {getRenderer} from './rendering/renderer';
+import {hydrationCompletedHighlightTemplate, inspectElementHighlightTemplate} from './templates';
+import {Highlight, HighlightType} from './types';
 
-function getHighlightOverlays(): NodeListOf<Element> {
-  return document.querySelectorAll('.' + OVERLAY_CLASS);
+function inspect(el: Element, name = 'TestComponent'): Highlight | null {
+  return highlightElement(el, inspectElementHighlightTemplate, {'component-name': [name]});
 }
 
-describe('highlighter', () => {
+function hydrate(el: Element): Highlight | null {
+  return highlightElement(el, hydrationCompletedHighlightTemplate, {'icon': ['hydrated']});
+}
+
+describe('Highlighter', () => {
+  let renderHighlight: jasmine.Spy;
+  let removeHighlight: jasmine.Spy;
   let getComponentSpy: jasmine.Spy;
-  let testElements: HTMLElement[] = [];
-
-  function createTargetElement(width: number = 100, height: number = 50): HTMLElement {
-    const el = document.createElement('div');
-
-    el.style.position = 'absolute';
-    el.style.width = `${width}px`;
-    el.style.height = `${height}px`;
-
-    document.body.appendChild(el);
-    spyOn(el, 'getBoundingClientRect').and.returnValue(new DOMRect(0, 0, width, height));
-
-    testElements.push(el);
-
-    return el;
-  }
 
   beforeEach(() => {
+    const renderer = getRenderer();
+    renderHighlight = spyOn(renderer, 'renderHighlight');
+    removeHighlight = spyOn(renderer, 'removeHighlight');
+
     getComponentSpy = jasmine.createSpy('getComponent').and.returnValue({});
     (window as any).ng = {getComponent: getComponentSpy};
   });
 
   afterEach(() => {
     removeAllHighlights();
-    for (const el of testElements) {
-      el.remove();
-    }
-    testElements = [];
-
-    for (const el of getHighlightOverlays()) {
-      el.remove();
-    }
-
     delete (window as any).ng;
   });
 
   describe('highlightElement', () => {
-    it('should return null when no Angular component is found', () => {
+    it('should return null when no Angular directive is found', () => {
       getComponentSpy.and.returnValue(null);
-      const el = createTargetElement();
 
-      const result = highlightElement(el, inspectElementHighlightTemplate, {
-        'component-name': ['TestComponent'],
-      });
-
-      expect(result).toBeNull();
-      expect(getHighlightOverlays().length).toBe(0);
+      expect(inspect(document.createElement('div'))).toBeNull();
+      expect(renderHighlight).not.toHaveBeenCalled();
     });
 
-    it('should return null when the element is not in the document (`isInDoc`)', () => {
-      const el = document.createElement('div');
+    it('should create a highlight', () => {
+      const highlight = inspect(document.createElement('div'))!;
 
-      const result = highlightElement(el, inspectElementHighlightTemplate, {
-        'component-name': ['TestComponent'],
-      });
-
-      expect(result).toBeNull();
-    });
-
-    it('should return null when the element has zero dimensions', () => {
-      const el = createTargetElement(0, 0);
-
-      const result = highlightElement(el, inspectElementHighlightTemplate, {
-        'component-name': ['TestComponent'],
-      });
-
-      expect(result).toBeNull();
-    });
-
-    it('should return a `Highlight` on success', () => {
-      const el = createTargetElement();
-
-      const result = highlightElement(el, inspectElementHighlightTemplate, {
-        'component-name': ['TestComponent'],
-      });
-
-      expect(result).toBeInstanceOf(Highlight);
-    });
-
-    it('should append an overlay element to document.body', () => {
-      const el = createTargetElement();
-
-      highlightElement(el, inspectElementHighlightTemplate, {
-        'component-name': ['TestComponent'],
-      });
-
-      expect(getHighlightOverlays().length).toBe(1);
-    });
-
-    it('should create a label with the component name ("inspect element" template)', () => {
-      const el = createTargetElement();
-
-      highlightElement(el, inspectElementHighlightTemplate, {
-        'component-name': ['MyComponent'],
-      });
-
-      expect(getHighlightOverlays()[0].textContent).toContain('<MyComponent>');
+      expect(highlight.type).toBe(HighlightType.InspectElement);
+      expect(highlight.props).toEqual({'component-name': ['TestComponent']});
+      expect(highlight.isDisplayed).toBeTrue();
+      expect(renderHighlight).toHaveBeenCalledOnceWith(highlight);
     });
 
     it('should highlight an SVG element', () => {
-      const width = 100;
-      const height = 50;
       const el = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
 
-      document.body.appendChild(el);
-      spyOn(el, 'getBoundingClientRect').and.returnValue(new DOMRect(0, 0, width, height));
-      testElements.push(el as unknown as HTMLElement);
-
-      highlightElement(el, inspectElementHighlightTemplate, {
-        'component-name': ['Svg'],
-      });
-
-      expect(getHighlightOverlays().length).toBe(1);
-      expect(getHighlightOverlays()[0].textContent).toContain('<Svg>');
+      expect(inspect(el, 'Svg')?.isDisplayed).toBeTrue();
     });
   });
 
   describe('removeElementHighlights', () => {
     it('should not throw an error when the element has no highlights', () => {
-      const el = createTargetElement();
-
-      expect(() => removeElementHighlights(el)).not.toThrow();
+      expect(() => removeElementHighlights(document.createElement('div'))).not.toThrow();
     });
 
-    it('should remove the overlay from the DOM', () => {
-      const el = createTargetElement();
+    it('should destroy all highlights of the provided element', () => {
+      const elFoo = document.createElement('div');
+      const foo = inspect(elFoo)!;
+      const fooHydration = hydrate(elFoo)!;
 
-      highlightElement(el, inspectElementHighlightTemplate, {
-        'component-name': ['TestComponent'],
-      });
-
-      expect(getHighlightOverlays().length).toBe(1);
-
-      removeElementHighlights(el);
-
-      expect(getHighlightOverlays().length).toBe(0);
-    });
-
-    it('should not affect highlights on other elements', () => {
-      const elFoo = createTargetElement();
-      const elBar = createTargetElement();
-
-      highlightElement(elFoo, inspectElementHighlightTemplate, {
-        'component-name': ['FooComponent'],
-      });
-      highlightElement(elBar, inspectElementHighlightTemplate, {
-        'component-name': ['BarComponent'],
-      });
-
-      expect(getHighlightOverlays().length).toBe(2);
+      // Adding a second element that should keep it's highlights.
+      const elBar = document.createElement('div');
+      const bar = inspect(elBar)!;
 
       removeElementHighlights(elFoo);
 
-      expect(getHighlightOverlays().length).toBe(1);
-      expect(getHighlightOverlays()[0].textContent).toContain('<BarComponent>');
+      expect(foo.isDestroyed).toBeTrue();
+      expect(fooHydration.isDestroyed).toBeTrue();
+
+      // bar's elements should remain visible.
+      expect(bar.isDestroyed).toBeFalse();
+      expect(bar.isDisplayed).toBeTrue();
     });
   });
 
@@ -189,92 +97,48 @@ describe('highlighter', () => {
       expect(() => removeAllHighlights()).not.toThrow();
     });
 
-    it('should remove all highlights from the DOM', () => {
-      const elFoo = createTargetElement();
-      const elBar = createTargetElement();
-
-      highlightElement(elFoo, inspectElementHighlightTemplate, {
-        'component-name': ['FooComponent'],
-      });
-      highlightElement(elBar, inspectElementHighlightTemplate, {
-        'component-name': ['BarComponent'],
-      });
-
-      expect(getHighlightOverlays().length).toBe(2);
+    it('should remove all highlights', () => {
+      const foo = inspect(document.createElement('div'))!;
+      const bar = hydrate(document.createElement('div'))!;
 
       removeAllHighlights();
 
-      expect(getHighlightOverlays().length).toBe(0);
+      expect(foo.isDestroyed).toBeTrue();
+      expect(bar.isDestroyed).toBeTrue();
+      expect(removeHighlight).toHaveBeenCalledTimes(2);
     });
   });
 
   describe('removeHighlightsByType', () => {
-    it('should not remove highlights of non-matching types', () => {
-      const elFoo = createTargetElement();
-      const elBar = createTargetElement();
-
-      highlightElement(elFoo, inspectElementHighlightTemplate, {
-        'component-name': ['FooComponent'],
-      });
-      highlightElement(elBar, hydrationCompletedHighlightTemplate, {
-        'icon': ['hydrated'],
-      });
+    it('should remove the highlights of the provided type only', () => {
+      const foo = inspect(document.createElement('div'))!;
+      const bar = hydrate(document.createElement('div'))!;
 
       removeHighlightsByType(HighlightType.HydrationCompleted);
 
-      expect(getHighlightOverlays().length).toBe(1);
-      expect(getHighlightOverlays()[0].textContent).toContain('<FooComponent>');
+      expect(bar.isDestroyed).toBeTrue();
+      expect(foo.isDestroyed).toBeFalse();
     });
   });
 
   describe('Priority system', () => {
     it('should display the highest priority highlight', () => {
-      const el = createTargetElement();
+      const el = document.createElement('div');
+      const hydration = hydrate(el)!;
+      const inspection = inspect(el)!; // Inspect has a higher priority
 
-      highlightElement(el, hydrationCompletedHighlightTemplate, {
-        'icon': ['hydrated'],
-      });
-      highlightElement(el, inspectElementHighlightTemplate, {
-        'component-name': ['TestComponent'],
-      });
-
-      expect(getHighlightOverlays().length).toBe(1);
-      expect(getHighlightOverlays()[0].textContent).toContain('<TestComponent>');
-    });
-
-    it('should hide lower-priority highlights', () => {
-      const el = createTargetElement();
-
-      highlightElement(el, inspectElementHighlightTemplate, {
-        'component-name': ['TestComponent'],
-      });
-
-      // The lower-priority highlight is added after the higher-priority one.
-      highlightElement(el, hydrationCompletedHighlightTemplate, {
-        'icon': ['hydrated'],
-      });
-
-      expect(getHighlightOverlays().length).toBe(1);
-      expect(getHighlightOverlays()[0].textContent).toContain('<TestComponent>');
+      expect(inspection.isDisplayed).toBeTrue();
+      expect(hydration.isDisplayed).toBeFalse(); // Hydration highlight is hidden
     });
 
     it('should promote the next highest priority highlight when the top one is destroyed', () => {
-      const el = createTargetElement();
+      const el = document.createElement('div');
+      const inspection = inspect(el)!;
+      const hydration = hydrate(el)!;
 
-      const inspectHighlight = highlightElement(el, inspectElementHighlightTemplate, {
-        'component-name': ['TestComponent'],
-      });
-      highlightElement(el, hydrationCompletedHighlightTemplate, {
-        'icon': ['hydrated'],
-      });
+      inspection.destroy();
 
-      expect(getHighlightOverlays().length).toBe(1);
-      expect(getHighlightOverlays()[0].textContent).toContain('<TestComponent>');
-
-      inspectHighlight!.destroy();
-
-      expect(getHighlightOverlays().length).toBe(1);
-      expect(getHighlightOverlays()[0].querySelector('svg')).not.toBeNull();
+      expect(hydration.isDisplayed).toBeTrue();
     });
   });
 });
