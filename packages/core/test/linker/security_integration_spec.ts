@@ -104,26 +104,20 @@ describe('security integration tests', function () {
 
         @Directive({
           selector: '[dirOnclick]',
-          standalone: false,
         })
         class LocalHostOnclickDirective {
           @HostBinding('attr.onclick') @Input() dirOnclick: string | undefined;
         }
 
         @Component({
-          selector: 'local-comp',
           template: `<button [dirOnclick]="ctxProp"></button>`,
-          standalone: false,
+          imports: [LocalHostOnclickDirective],
         })
         class LocalSecuredComponent {
           ctxProp: any = 'some value';
         }
 
         try {
-          TestBed.configureTestingModule({
-            declarations: [LocalSecuredComponent, LocalHostOnclickDirective],
-          });
-
           expect(() => {
             TestBed.createComponent(LocalSecuredComponent);
           }).toThrowError(
