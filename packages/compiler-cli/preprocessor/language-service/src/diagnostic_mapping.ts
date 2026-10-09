@@ -153,7 +153,6 @@ export function mapDiagnostics(
   const results: {[filePath: string]: Diagnostic[]} = {};
   const tcbPath = getTcbPath(tsFilePath);
   const tcbSf = ts.createSourceFile(tcbPath, tcbCode, ts.ScriptTarget.Latest, true);
-  const currentTcbUri = URI.file(tcbPath).toString();
   const currentTcbFsPath = URI.file(tcbPath).fsPath;
 
   const metadata = hybridCompiler.getClassMetadata(tsFilePath);

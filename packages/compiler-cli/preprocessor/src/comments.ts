@@ -7,7 +7,7 @@
  */
 
 // Note: This file is based on Angular's `packages/compiler-cli/src/ngtsc/typecheck/src/comments.ts`.
-// TODO(atscott): remove this and vitest alias when language service isn't deep importing
+// TODO(atscott): remove this when language service isn't deep importing
 
 import ts from 'typescript';
 import {AbsoluteSourceSpan} from '@angular/compiler';

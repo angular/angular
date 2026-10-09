@@ -7,16 +7,13 @@
  */
 
 /**
- * Public programmatic API of `ng-exp-compiler`.
+ * Public programmatic API of `@angular/compiler-cli/preprocessor`.
  *
  * This module is deliberately **free of static edges to the analysis-engine loader**.
  * The compiler also runs where N-API is unavailable, driven by an out-of-process
  * sidecar binary; a static `import` of `./src/analyzer_loader.js` here would pull
  * engine resolution into module evaluation and break those deployments. The engine is
  * reached only through {@link createAnalyzer}, which loads the resolver lazily.
- *
- * Consumers that always want the engine can import `ng-exp-compiler/analyzer`
- * directly instead.
  */
 
 import type {IAnalyzer} from './src/hybrid_compiler.js';

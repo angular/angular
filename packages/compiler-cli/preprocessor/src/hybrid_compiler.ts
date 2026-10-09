@@ -616,8 +616,6 @@ export class HybridCompiler {
       content,
       this.tcbConfig,
       result.classes,
-      this.workspaceName,
-      this.rootDirs,
     );
     if (prepared) {
       fileAnalysis.preparedTcbData = prepared;

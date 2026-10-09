@@ -6,91 +6,92 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type * as nga from './types.js';
-import * as path from 'path';
-import * as fsSync from 'node:fs';
 import {
+  ConstantPool,
+  CssSelector,
+  TmplAstDeferredBlock as DeferredBlock,
+  FactoryTarget,
   OutOfBandDiagnosticCategory,
-  ParsedTemplate,
   ParseTemplateOptions,
-  parseTemplate,
+  ParsedTemplate,
+  R3ClassDebugInfo,
+  R3ClassMetadataCtorParameter,
+  R3ComponentMetadata,
   R3DependencyMetadata,
   R3DirectiveMetadata,
   R3Identifiers,
   R3InjectableMetadata,
   R3NgModuleMetadata,
   R3ServiceMetadata,
-  compileComponentFromMetadata,
-  compileDirectiveFromMetadata,
-  compilePipeFromMetadata,
-  compileInjectable,
-  compileService,
-  compileFactoryFunction,
-  compileDeferResolverFunction,
-  compileNgModule,
-  compileInjector,
-  makeBindingParser,
-  type R3DeferPerBlockDependency,
-  type R3DeferPerComponentDependency,
-  ConstantPool,
-  outputAst as o,
-  FactoryTarget,
-  ViewEncapsulation,
-  CssSelector,
-  SelectorMatcher,
   R3TargetBinder,
-  TmplAstDeferredBlock as DeferredBlock,
-  SchemaMetadata,
-  R3ComponentMetadata,
   R3TemplateDependency,
-  ChangeDetectionStrategy,
-  compileComponentClassMetadata,
-  R3ClassDebugInfo,
-  R3ClassMetadataCtorParameter,
+  SchemaMetadata,
+  SelectorMatcher,
+  ViewEncapsulation,
   compileClassDebugInfo,
+  compileComponentClassMetadata,
+  compileComponentFromMetadata,
+  compileDeferResolverFunction,
+  compileDirectiveFromMetadata,
+  compileFactoryFunction,
   compileHmrInitializer,
+  compileInjectable,
+  compileInjector,
+  compileNgModule,
+  compilePipeFromMetadata,
+  compileService,
+  makeBindingParser,
+  outputAst as o,
+  parseTemplate,
   type BindingParser,
   type R3CompiledExpression,
   type R3ComponentDeferMetadata,
+  type R3DeferPerBlockDependency,
+  type R3DeferPerComponentDependency,
 } from '@angular/compiler';
+import MagicString from 'magic-string';
+import * as fsSync from 'node:fs';
+import * as path from 'path';
+import {
+  buildDeps,
+  buildHostDirectives,
+  buildHostMetadata,
+  buildInputsMap,
+  buildOutputsMap,
+  buildPipeRegistry,
+  buildQueriesMap,
+  createDirectiveMeta,
+  createDummySourceSpan,
+  createEmptySourceSpan,
+  createForeignComponentMatcher,
+  makeClassKey,
+  metadataToDeclaration,
+  parseDirectInlineTemplate,
+  refName,
+  refToExpression,
+  stripIife,
+  type MinimalDirectiveMeta,
+} from './compiler-utils.js';
+import {ChunkContext, FileAnalysis, getOrCreateFileAnalysis} from './file_analysis.js';
+import {analyzeForeignComponentFeatures} from './foreign_component.js';
+import {extractHmrMetadata, getHmrUpdateDeclaration} from './hmr.js';
+import type {IAnalyzer} from './hybrid_compiler.js';
+import {ExpressionPrinter, RawSource} from './output_ast_printer.js';
+import {analyzeTemplateForSelectorless} from './selectorless.js';
+import {
+  combineTcbContent,
+  generateTcbCode,
+  prepareTcbTargets,
+  type NgpTypeCheckingConfig,
+  type TcbResult,
+  type TcbTargetInput,
+} from './tcb.js';
+import {lineNumberAtOffset} from './tcb_util.js';
+import type * as nga from './types.js';
 
 interface HybridParseTemplateOptions extends ParseTemplateOptions {
   linkerJitMode?: boolean;
 }
-import {
-  prepareTcbTargets,
-  generateTcbCode,
-  combineTcbContent,
-  type TcbTargetInput,
-  type TcbResult,
-  type NgpTypeCheckingConfig,
-} from './tcb.js';
-import {
-  buildInputsMap,
-  buildOutputsMap,
-  buildQueriesMap,
-  metadataToDeclaration,
-  createDummySourceSpan,
-  createEmptySourceSpan,
-  buildHostMetadata,
-  createDirectiveMeta,
-  buildDeps,
-  type MinimalDirectiveMeta,
-  parseDirectInlineTemplate,
-  buildPipeRegistry,
-  buildHostDirectives,
-  stripIife,
-  makeClassKey,
-  createForeignComponentMatcher,
-} from './compiler-utils.js';
-import {ExpressionPrinter, RawSource} from './output_ast_printer.js';
-import MagicString from 'magic-string';
-import {analyzeTemplateForSelectorless} from './selectorless.js';
-import {analyzeForeignComponentFeatures} from './foreign_component.js';
-import {lineNumberAtOffset} from './tcb_util.js';
-import type {IAnalyzer} from './hybrid_compiler.js';
-import {FileAnalysis, getOrCreateFileAnalysis, ChunkContext} from './file_analysis.js';
-import {extractHmrMetadata, getHmrUpdateDeclaration} from './hmr.js';
 
 interface HybridCompilerContext {
   analyzer: IAnalyzer;
@@ -1764,15 +1765,7 @@ export function processFileSync(
       : [];
   const prepared =
     ctx.optimize && tcbTargets.length > 0
-      ? prepareTcbTargets(
-          filePath,
-          tcbTargets,
-          content,
-          ctx.tcbConfig,
-          classes,
-          ctx.workspaceName,
-          ctx.rootDirs,
-        )
+      ? prepareTcbTargets(filePath, tcbTargets, content, ctx.tcbConfig, classes)
       : null;
   const tcb = prepared
     ? (generateTcbCode(filePath, prepared, ctx.tcbConfig) ?? undefined)
@@ -2355,26 +2348,8 @@ function compileHmrUpdateModule(options: HmrUpdateModuleOptions): string | null 
 }
 
 /**
- * The identifier a reference resolves to in the file being emitted: the binding this file
- * already has, else the name its module exports it under (which a generated namespace import
- * will dereference).
- */
-function refName(ref: nga.ReferenceMetadata): string {
-  const name = ref.localAlias ?? ref.consumerImport?.symbol ?? ref.typecheckImport?.symbol;
-  if (name === undefined) {
-    // The analyzer guarantees one or the other: a symbol with no import path is declared
-    // here and therefore bound here. Emitting a guess would produce a dangling identifier.
-    throw new Error('ReferenceMetadata has neither a local binding nor an import path');
-  }
-  return name;
-}
-
-/**
- * Resolves `symbolName`, `importPath`, and `isDefaultImport` for a deferrable dependency from the
- * consuming file's own `ImportDeclaration` (matching ngtsc's `getImportOfIdentifier`), rather than
- * from the resolved target declaration (which may differ when re-exported under an alias or barrel:
- * `import {NgFor}` resolves to `NgForOf`, and naming the callback parameter after the declaration
- * would leave `imports: [NgFor]` unbound once its import is removed, TS2552).
+ * How a deferrable dependency is named and reached, taken from the `import` declaration the
+ * consuming file already has for it rather than from the declaration that import resolves to.
  *
  * Uses the specifier's exported name (`{Cmp as Alias}` -> `Cmp`), or the local binding for default
  * imports (since `symbolName` doubles as the `ɵsetClassMetadataAsync` callback parameter, where
@@ -2419,20 +2394,6 @@ function deferredDepKey(importPath: string, symbolName: string): string {
   return JSON.stringify([importPath, symbolName]);
 }
 
-function refToExpression(ref: nga.ReferenceMetadata): o.Expression {
-  // A binding in this file wins: reusing it avoids a redundant import, and for a `forwardRef`
-  // cycle it is the only form that works.
-  if (ref.localAlias) {
-    return o.variable(ref.localAlias);
-  }
-  if (ref.consumerImport) {
-    return new o.ExternalExpr({
-      moduleName: ref.consumerImport.specifier,
-      name: ref.consumerImport.symbol,
-    } as any);
-  }
-  return o.variable(refName(ref));
-}
 function compileNgModuleDef(
   className: string,
   ngModule: nga.NgModuleMetadata,
