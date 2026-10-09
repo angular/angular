@@ -6,6 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {escapeRegExp} from '@angular/compiler';
+import {
+  isNgpTestMode,
+  normalizeNgpEmitForComparison,
+  stripRedundantClarifyingParens,
+} from '../../../src/ngtsc/testing';
 
 const IDENTIFIER = /[A-Za-z_$ɵ][A-Za-z0-9_$]*/;
 const COMMENT_START = /\/\*/;
@@ -117,6 +122,10 @@ export function expectEmit(
   description: string,
   assertIdentifiers?: {[name: string]: RegExp},
 ) {
+  if (isNgpTestMode()) {
+    source = normalizeNgpEmitForComparison(stripRedundantClarifyingParens(source));
+    expected = normalizeNgpEmitForComparison(expected);
+  }
   expected = expected
     // turns `// ...` into `…`
     .replace(/\/\/\s*\.\.\./g, ELLIPSIS)
@@ -255,6 +264,13 @@ function buildChunkMatcher(
             results.push(`\\${matchGroup}`);
           }
         }
+      } else if (
+        isNgpTestMode() &&
+        ((piece.startsWith("'") && piece.endsWith("'")) ||
+          (piece.startsWith('"') && piece.endsWith('"')))
+      ) {
+        const inner = escapeRegExp(piece.slice(1, -1));
+        results.push(`(?:'${inner}'|"${inner}")`);
       } else {
         results.push(escapeRegExp(piece));
       }

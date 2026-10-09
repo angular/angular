@@ -19,3 +19,17 @@ jasmine_test(
     ],
     shard_count = 2,
 )
+
+jasmine_test(
+    name = "local_ngp",
+    data = [
+        ":test_lib",
+        "//packages/compiler-cli/preprocessor/ng-analyze:wasm",
+        "//packages/compiler-cli/test/compliance/test_cases",
+        "//packages/core:npm_package",
+    ],
+    env = {
+        "NG_COMPILER_BACKEND": "ngp",
+    },
+    shard_count = 2,
+)
