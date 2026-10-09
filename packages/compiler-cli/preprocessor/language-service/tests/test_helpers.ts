@@ -406,13 +406,12 @@ export class TestEnv {
       enableSelectorless?: boolean;
     },
   ) {
-    const filePath = await this.createFile(name, content);
-    const finalContent = await this.getFileContent(filePath);
-    await this.openFile(filePath, finalContent);
-
-    const ls = await this.getLanguageService(options);
-
     try {
+      const filePath = await this.createFile(name, content);
+      const finalContent = await this.getFileContent(filePath);
+      await this.openFile(filePath, finalContent);
+
+      const ls = await this.getLanguageService(options);
       await callback(ls, filePath);
     } finally {
       await this.cleanup();
