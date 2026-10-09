@@ -10690,6 +10690,27 @@ runInEachFileSystem((os: string) => {
             'Parser Error: Bindings cannot contain assignments at column 5 in [x = 2]',
           );
         });
+
+        it('should report a parse error for unexpected tokens in a template literal interpolation', () => {
+          env.write(
+            'test.ts',
+            `
+              import {Component} from '@angular/core';
+              @Component({
+                template: '{{ \`Hello, $\{first last}!\` }}',
+                selector: 'test-cmp',
+              })
+              export class TestCmp {
+                first = 'Jane';
+                last = 'Doe';
+              }
+            `,
+          );
+          const diags = env.driveDiagnostics();
+
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain('Parser Error: Missing expected }');
+        });
       });
 
       describe('shadow DOM selector diagnostics', () => {
