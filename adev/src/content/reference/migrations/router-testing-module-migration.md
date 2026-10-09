@@ -2,7 +2,7 @@
 
 This schematic migrates usages of `RouterTestingModule` inside tests to `RouterModule`.
 
-When a test imports `SpyLocation` from `@angular/common/testing` and uses `urlChanges` property , the schematic will also add `provideLocationMocks()` to preserve the original behavior.
+When a test imports `SpyLocation` from `@angular/common/testing` and uses the `urlChanges` property, the schematic will also add `provideLocationMocks()` to preserve the original behavior.
 
 Run the schematic with:
 

@@ -303,7 +303,7 @@ export class Host {
 }
 ```
 
-Since `Host` has the `host` option , no matter what the parent of `Host` might have as a `flower.emoji` value, the `Host` will use tulip <code>🌷</code>.
+Since `Host` has the `host` option, no matter what the parent of `Host` might have as a `flower.emoji` value, the `Host` will use tulip <code>🌷</code>.
 
 ### Modifiers with constructor injection
 

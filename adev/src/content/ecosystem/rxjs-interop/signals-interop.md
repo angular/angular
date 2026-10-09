@@ -2,7 +2,7 @@
 
 The `@angular/core/rxjs-interop` package offers APIs that help you integrate RxJS and Angular signals.
 
-## Create a signal from an RxJs Observable with `toSignal`
+## Create a signal from an RxJS Observable with `toSignal`
 
 Use the `toSignal` function to create a signal which tracks the value of an Observable. It behaves similarly to the `async` pipe in templates, but is more flexible and can be used anywhere in an application.
 
