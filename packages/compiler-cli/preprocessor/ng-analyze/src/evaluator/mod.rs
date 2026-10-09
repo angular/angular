@@ -47,7 +47,7 @@ pub use interpreter::{
 pub use resolved::{
     is_enum_member_value, ChangeDetectionStrategyValue, ComponentStyles, ComponentStylesError,
     ConstEnumLiteral, ConstEnumMember, ConstEnumResolution, ExportAsNames, FromResolved,
-    HostMetadata, HostMetadataValue, InlineStyles, QuerySelectors, Resolved, ScopeReferences,
+    HostMetadata, HostMetadataValue, QuerySelectors, Resolved, ScopeReferences,
     StillIncomplete, StringList, UnresolvedCause, ViewEncapsulationValue,
 };
 pub use value::{
