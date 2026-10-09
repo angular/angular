@@ -36,3 +36,20 @@ jasmine_test(
     ],
     shard_count = 4,
 )
+
+jasmine_test(
+    name = "ngtsc_ngp",
+    timeout = "long",
+    data = [
+        ":ngtsc_lib",
+        "//:node_modules/yargs",
+        "//packages/compiler-cli/preprocessor/ng-analyze:wasm",
+        "//packages/compiler-cli/src/ngtsc/testing/fake_common:npm_package",
+        "//packages/core:npm_package",
+        "//packages/forms:npm_package",
+    ],
+    env = {
+        "NG_COMPILER_BACKEND": "ngp",
+    },
+    shard_count = 4,
+)

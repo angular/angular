@@ -30,7 +30,12 @@ import {
 import {Folder, MockFileSystem} from '../../src/ngtsc/file_system/testing';
 import {NgtscProgram} from '../../src/ngtsc/program';
 import {DeclarationNode} from '../../src/ngtsc/reflection';
-import {NgtscTestCompilerHost} from '../../src/ngtsc/testing';
+import {
+  isNgpTestMode,
+  NgtscTestCompilerHost,
+  normalizeNgpOutputFile,
+  performNgpCompilationSync,
+} from '../../src/ngtsc/testing';
 import {TemplateTypeChecker} from '../../src/ngtsc/typecheck/api';
 import {setWrapHostForTest} from '../../src/transformers/compiler_host';
 
@@ -58,6 +63,7 @@ type TsCompilerOptions = Partial<
 export class NgtscTestEnvironment {
   private multiCompileHostExt: MultiCompileHostExt | null = null;
   private oldProgram: Program | null = null;
+  private lastTsProgram: ts.Program | null = null;
   private changedResources: Set<string> | null = null;
   private commandLineArgs: string[];
 
@@ -130,7 +136,11 @@ export class NgtscTestEnvironment {
   getContents(fileName: string): string {
     this.assertExists(fileName);
     const modulePath = this.fs.resolve(this.outDir, fileName);
-    return this.fs.readFile(modulePath);
+    const content = this.fs.readFile(modulePath);
+    if (isNgpTestMode() && (fileName.endsWith('.js') || fileName.endsWith('.d.ts'))) {
+      return normalizeNgpOutputFile(content);
+    }
+    return content;
   }
 
   enableMultipleCompilations(): void {
@@ -161,6 +171,9 @@ export class NgtscTestEnvironment {
   }
 
   getTsProgram(): ts.Program {
+    if (this.lastTsProgram !== null) {
+      return this.lastTsProgram;
+    }
     if (this.oldProgram === null) {
       throw new Error('No ts.Program has been created yet.');
     }
@@ -169,6 +182,9 @@ export class NgtscTestEnvironment {
 
   getReuseTsProgram(): ts.Program {
     if (this.oldProgram === null) {
+      if (this.lastTsProgram !== null) {
+        return this.lastTsProgram;
+      }
       throw new Error('No ts.Program has been created yet.');
     }
     return (this.oldProgram as NgtscProgram).getReuseTsProgram();
@@ -247,6 +263,36 @@ export class NgtscTestEnvironment {
    * Run the compiler to completion, and assert that no errors occurred.
    */
   driveMain(customTransformers?: CustomTransformers): void {
+    if (isNgpTestMode()) {
+      const {
+        rootNames,
+        options,
+        errors: configErrors,
+      } = readNgcCommandLineAndConfiguration(this.commandLineArgs);
+      expect(configErrors.length).toBe(0);
+      const tsconfigPath = this.fs.resolve(this.basePath, 'tsconfig.json');
+      const writeFileCallback =
+        this.multiCompileHostExt !== null
+          ? this.multiCompileHostExt.writeFile.bind(this.multiCompileHostExt)
+          : undefined;
+      const result = performNgpCompilationSync({
+        fs: this.fs,
+        basePath: this.basePath,
+        tsconfigPath,
+        rootNames,
+        options,
+        emit: true,
+        complianceMode: true,
+        customTransformers,
+        writeFileCallback,
+      });
+      this.lastTsProgram = result.tsProgram;
+      const errors = result.diagnostics.filter((d) => d.category === ts.DiagnosticCategory.Error);
+      expect(errors.map((e) => ts.flattenDiagnosticMessageText(e.messageText, '\n'))).toEqual([]);
+      expect(result.exitCode).toBe(0);
+      return;
+    }
+
     const errorSpy = jasmine.createSpy('consoleError').and.callFake(console.error);
     let reuseProgram: {program: Program | undefined} | undefined = undefined;
     if (this.multiCompileHostExt !== null) {
@@ -278,6 +324,41 @@ export class NgtscTestEnvironment {
    * Run the compiler to completion, and return any `ts.Diagnostic` errors that may have occurred.
    */
   driveDiagnostics(expectedExitCode?: number): ReadonlyArray<ts.Diagnostic> {
+    if (isNgpTestMode()) {
+      const {
+        rootNames,
+        options,
+        errors: configErrors,
+      } = readNgcCommandLineAndConfiguration(this.commandLineArgs);
+      if (configErrors.length > 0) {
+        return configErrors;
+      }
+      const tsconfigPath = this.fs.resolve(this.basePath, 'tsconfig.json');
+      const writeFileCallback =
+        this.multiCompileHostExt !== null
+          ? this.multiCompileHostExt.writeFile.bind(this.multiCompileHostExt)
+          : undefined;
+      const result = performNgpCompilationSync({
+        fs: this.fs,
+        basePath: this.basePath,
+        tsconfigPath,
+        rootNames,
+        options,
+        emit: true,
+        complianceMode: true,
+        writeFileCallback,
+      });
+      this.lastTsProgram = result.tsProgram;
+      if (expectedExitCode !== undefined) {
+        expect(result.exitCode)
+          .withContext(
+            `Expected program to exit with code ${expectedExitCode}, but it actually exited with code ${result.exitCode}.`,
+          )
+          .toBe(expectedExitCode);
+      }
+      return result.diagnostics;
+    }
+
     // ngtsc only produces ts.Diagnostic messages.
     let reuseProgram: {program: Program | undefined} | undefined = undefined;
     if (this.multiCompileHostExt !== null) {
@@ -309,6 +390,9 @@ export class NgtscTestEnvironment {
   }
 
   async driveDiagnosticsAsync(): Promise<ReadonlyArray<ts.Diagnostic>> {
+    if (isNgpTestMode()) {
+      return this.driveDiagnostics();
+    }
     const {rootNames, options} = readNgcCommandLineAndConfiguration(this.commandLineArgs);
     const host = createCompilerHost({options});
     const program = createProgram({rootNames, host, options});
@@ -330,6 +414,49 @@ export class NgtscTestEnvironment {
   }
 
   driveIndexer(): Map<DeclarationNode, IndexedComponent<DeclarationNode>> {
+    if (isNgpTestMode()) {
+      const {rootNames, options} = readNgcCommandLineAndConfiguration(this.commandLineArgs);
+      const tsconfigPath = this.fs.resolve(this.basePath, 'tsconfig.json');
+      const result = performNgpCompilationSync({
+        fs: this.fs,
+        basePath: this.basePath,
+        tsconfigPath,
+        rootNames,
+        options,
+        emit: false,
+        closeAnalyzer: false,
+      });
+      try {
+        const rawIndexed = result.compiler.getIndexedComponentsSync();
+        const out = new Map<DeclarationNode, IndexedComponent<DeclarationNode>>();
+        for (const [, comp] of rawIndexed.entries()) {
+          const fsFileUrl = this.fs.resolve(comp.fileUrl);
+          const sf =
+            result.originalSourceFiles.get(fsFileUrl) ?? result.tsProgram.getSourceFile(fsFileUrl);
+          if (!sf) continue;
+          let classDecl: DeclarationNode | undefined;
+          for (const stmt of sf.statements) {
+            if (ts.isClassDeclaration(stmt) && stmt.name?.text === comp.name) {
+              classDecl = stmt;
+              break;
+            }
+          }
+          if (!classDecl) continue;
+          const fsTemplateFileUrl = this.fs.resolve(comp.template.fileUrl);
+          out.set(classDecl, {
+            ...comp,
+            fileUrl: fsFileUrl,
+            template: {
+              ...comp.template,
+              fileUrl: fsTemplateFileUrl,
+            },
+          } as unknown as IndexedComponent<DeclarationNode>);
+        }
+        return out;
+      } finally {
+        result.compiler.analyzer.close();
+      }
+    }
     const {rootNames, options} = readNgcCommandLineAndConfiguration(this.commandLineArgs);
     const host = createCompilerHost({options});
     const program = createProgram({rootNames, host, options});
