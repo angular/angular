@@ -425,6 +425,12 @@ export interface NgLanguageService extends ts.LanguageService {
    */
   ensureProjectAnalyzed(): void;
 
+  /**
+   * Gets the files whose changes can change which Custom Elements Manifests resolve or what they
+   * contain, including resolution candidates that do not exist yet.
+   */
+  getCustomElementsManifestResolutionPaths(): string[];
+
   getTcb(fileName: string, position: number): GetTcbResponse | undefined;
 
   /**

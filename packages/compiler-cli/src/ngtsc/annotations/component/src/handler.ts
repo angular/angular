@@ -19,6 +19,7 @@ import {
   ConstantPool,
   createHostElement,
   CssSelector,
+  CustomElementsManifestIndex,
   DeclarationListEmitMode,
   DeclareComponentTemplateInfo,
   DeferBlockDepsEmitMode,
@@ -26,6 +27,7 @@ import {
   DomElementSchemaRegistry,
   ExternalExpr,
   FactoryTarget,
+  getCustomElementsManifestExactPropertyNames,
   IndexingContext,
   LegacyAnimationTriggerNames,
   makeBindingParser,
@@ -291,6 +293,8 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
     private readonly emitDeclarationOnly: boolean,
     private readonly legacyOptionalChaining: boolean,
     private readonly enableTemplateSourceLocations: boolean,
+    private readonly getCustomElementsManifestIndex: () => CustomElementsManifestIndex | null = () =>
+      null,
   ) {
     this.extractTemplateOptions = {
       enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
@@ -1583,6 +1587,16 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
     analysis.meta.styles = styles.filter((s) => s.trim().length > 0);
   }
 
+  /** Manifest property names in the template that bindings set without renaming. */
+  private getCustomElementPropertyNames(
+    analysis: Readonly<ComponentAnalysisData>,
+  ): ReadonlyMap<string, ReadonlySet<string>> | null {
+    return getCustomElementsManifestExactPropertyNames(
+      analysis.template.nodes,
+      this.getCustomElementsManifestIndex(),
+    );
+  }
+
   compileFull(
     node: ClassDeclaration,
     analysis: Readonly<ComponentAnalysisData>,
@@ -1603,6 +1617,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       ...resolution,
       defer,
       foreignImports,
+      customElementPropertyNames: this.getCustomElementPropertyNames(analysis),
     };
     const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
 
@@ -1676,6 +1691,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       ...analysis.meta,
       ...resolution,
       defer,
+      customElementPropertyNames: this.getCustomElementPropertyNames(analysis),
     };
     const fac = compileDeclareFactory(toFactoryMetadata(meta, FactoryTarget.Component));
     const inputTransformFields = compileInputTransformFields(analysis.inputs);
@@ -1735,6 +1751,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       ...resolution,
       defer,
       foreignImports,
+      customElementPropertyNames: this.getCustomElementPropertyNames(analysis),
     } as R3ComponentMetadata<R3TemplateDependency>;
 
     if (deferrableTypes !== null) {
@@ -1800,6 +1817,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       ...resolution,
       defer,
       foreignImports,
+      customElementPropertyNames: this.getCustomElementPropertyNames(analysis),
     };
     const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
     const def = compileComponentFromMetadata(meta, pool, this.getNewBindingParser());

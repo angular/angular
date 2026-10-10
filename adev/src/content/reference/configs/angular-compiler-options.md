@@ -64,6 +64,217 @@ Use `'partial'` for independently published libraries, such as NPM packages.
 `'partial'` compilations output a stable, intermediate format which better supports usage by applications built at different major or minor Angular versions from the library.
 Libraries built at "HEAD" alongside their applications and using the same version of Angular such as in a mono-repository can use `'full'` since there is no risk of version skew across minor versions. Note that the compiler ABI is stable across patch versions of the same minor, allowing for safe sharing of the Angular runtime in microfrontend architectures where different applications might be on different patch levels.
 
+### `customElementsManifests`
+
+A list of [Custom Elements Manifest](https://github.com/webcomponents/custom-elements-manifest) \(CEM\) files, such as `custom-elements.json`, that describe the custom elements used in templates.
+Angular uses them to check custom element tags, properties, attributes, events, and local references.
+The Angular Language Service uses them for completions and hover information.
+
+Use manifests instead of `CUSTOM_ELEMENTS_SCHEMA`, which allows every tag that contains a dash and any property on it.
+
+```json
+{
+  "angularCompilerOptions": {
+    "strictTemplates": true,
+    "customElementsManifests": ["@my/elements", "./custom-elements.json"]
+  }
+}
+```
+
+#### Manifest entries
+
+Each entry is one of the following:
+
+| Entry                            | Details                                                                                |
+| :------------------------------- | :------------------------------------------------------------------------------------- |
+| `'./custom-elements.json'`       | A file, relative to the project's `tsconfig.json`.                                     |
+| `'@my/lib/custom-elements.json'` | A `.json` file in a package, resolved with the project's module resolution.            |
+| `'@my/lib'`                      | A package whose `package.json` has a `customElements` field that points to a manifest. |
+
+As with the `extends` field of `tsconfig.json`, only entries that start with `./`, `../`, or an absolute path are files.
+Angular resolves any other entry as a module specifier, so write `./custom-elements.json`, not `custom-elements.json`.
+When a module specifier does not resolve but a file at that path exists, the `NG4007` error suggests the `./` form.
+
+Relative paths resolve against the directory of the `tsconfig.json` being compiled, including entries inherited through `extends`.
+Angular does not rebase inherited `angularCompilerOptions` paths, and the `NG4007` error names the directory it used.
+
+Angular supports manifest `schemaVersion` 1 and 2.
+It validates only the records it uses for templates, not the whole file against the CEM JSON schema.
+An unrecognized `schemaVersion` produces an `NG4014` warning, and Angular still reads the records it recognizes.
+
+#### What Angular checks
+
+For each element that a configured manifest declares:
+
+- The tag is a known element, so it does not produce `NG8001`.
+- Declared properties are known. Binding to an undeclared property or a `readonly` property produces `NG8002`.
+- A declared attribute does not create a property. Set it as a static attribute or with `[attr.name]`.
+
+With [strict template type checking](tools/cli/template-typecheck#strict-mode), Angular also checks types.
+`strictTemplates` turns on each of these flags:
+
+| Flag                     | What Angular checks                                                                                                     |
+| :----------------------- | :---------------------------------------------------------------------------------------------------------------------- |
+| `strictInputTypes`       | Property binding values, such as `[count]="value"`, against the property type.                                          |
+| `strictAttributeTypes`   | Static attribute values, only when the attribute type is a union of string literals such as `'primary' \| 'secondary'`. |
+| `strictDomEventTypes`    | The type of `$event`, from the event's declared `type`.                                                                 |
+| `strictDomLocalRefTypes` | Local references, such as `#ref`, typed as the element's class. See [Local references](#local-references).              |
+
+Angular checks a value only when the manifest provides a [supported type](#supported-types).
+Without one, property bindings are still checked for the property name, `$event` has the native DOM event type, and static attribute values are not checked.
+
+Static attributes are strings.
+Because CEM does not define how attribute strings convert to numbers or booleans, Angular does not check static number or boolean attributes.
+To check a number, bind the property: `[precision]="value"`.
+Interpolation also produces a string, so `precision="{{ value }}"` is an error when `precision` is a number.
+Values bound with `[attr.name]` are not checked against the manifest: `null` removes the attribute and other values become strings.
+
+For events:
+
+- When a manifest event has the same name as a native event, such as `click`, the manifest's type applies on that element.
+- An Angular directive output with the same name takes precedence over the manifest.
+- Targeted events, such as `(window:click)`, keep their native types.
+- When the event type is not supported, `$event` uses the native DOM event type.
+- With [`strictUnclaimedEventNames`](tools/cli/template-typecheck#troubleshooting-template-errors), Angular does not report events that a manifest declares, matched by exact name.
+
+A two-way binding such as `[(count)]` checks the bound value against the `count` property.
+Its `$event` uses the manifest type only when the manifest declares a `countChange` event.
+Angular does not map other event names, such as `count-changed`, to properties, and the Language Service does not suggest two-way bindings for manifest properties.
+When an event carries the new value, bind the property and the event separately: `[count]="count" (count-changed)="count = $event.detail"`.
+
+#### Supported types
+
+Angular checks values only when it can safely use the manifest's type text as a TypeScript type:
+
+- Type text without names: primitive keywords, literal unions, object types with identifier keys, and arrays of these.
+  For example, `boolean`, `'primary' | 'secondary'`, `{value: string}`, and `string[]`.
+- Named types, when `type.references` locates every name in the text:
+  - Include references to platform and TypeScript library types. For example, `CustomEvent<{value: string}>` needs a reference to `CustomEvent` with `package: "global:"`.
+  - A reference to a name inside a larger type needs `start` and `end` offsets that cover exactly that name.
+    A reference without offsets must name the whole type text.
+  - A reference without `package` refers to the manifest's package, and a reference without `module` refers to the declaration's module.
+    For a module in the manifest's own package, Angular resolves the path from the package root first, then from the manifest's directory.
+  - `name` must be the exact exported name. Angular does not treat it as a default export or an alias.
+
+Angular validates references against the package's TypeScript declarations.
+When a reference does not resolve, for example because it names an unpublished source file, a missing or value-only export, or a package without types, Angular reports an `NG4011` warning.
+Other type text, such as function types, qualified names like `Foo.Bar`, names without references, and malformed text, produces an `NG4013` warning.
+CEM allows type text from other type systems, so `NG4013` does not always mean the manifest is invalid.
+In both cases Angular falls back as described in [What Angular checks](#what-angular-checks), and these problems never produce template errors.
+
+Angular does not replace rejected type text with a type from `.d.ts` files.
+The Language Service still shows the declared type text in completions and hovers.
+
+#### Local references
+
+With `strictDomLocalRefTypes`, a local reference such as `#button` has the element's class type when:
+
+- The manifest entry names a package, such as `'@my/lib'` or `'@my/lib/custom-elements.json'`. File entries have no package to import the class from.
+- The class resolves to an exported declaration in the package's TypeScript declarations.
+
+Otherwise the reference is an `HTMLElement`.
+An unresolved class produces an `NG4011` warning, and a class that the manifest maps to more than one JavaScript export produces an `NG4013` warning.
+
+When a class's typings do not declare that it extends `HTMLElement`, Angular types the reference as the class combined with `HTMLElement`, so native event checks such as `(click)` still work.
+If the class's members conflict with `HTMLElement`, the reference is an `HTMLElement` and Angular reports an `NG4013` warning.
+
+#### Language Service
+
+The Angular Language Service suggests manifest tags, properties, attributes \(as static attributes and `[attr.name]` bindings\), and events.
+For attributes whose type is a union of string literals, it also suggests values, even when `strictAttributeTypes` is off.
+Completion details and hovers show the manifest's type text, default value, `description` or `summary`, and `deprecated` notice.
+
+#### Using manifests with `CUSTOM_ELEMENTS_SCHEMA`
+
+You can use both.
+Manifest declarations take precedence for the tags they declare, so Angular reports misspelled properties and invalid values on those tags even when `CUSTOM_ELEMENTS_SCHEMA` is present.
+`CUSTOM_ELEMENTS_SCHEMA` still allows other tags that contain a dash, so you can add manifests one library at a time.
+
+IMPORTANT: Adding a manifest can report errors that `CUSTOM_ELEMENTS_SCHEMA` hid, such as misspelled properties and invalid values.
+Fix the errors or remove the manifest entry.
+Use `NO_ERRORS_SCHEMA` only when you intend to turn off all schema checks.
+
+Manifests are used only by the AOT compiler.
+Components compiled at runtime, including templates in Karma-based `TestBed` tests, templates set with `TestBed.overrideComponent`, and JIT-bootstrapped applications, still need `CUSTOM_ELEMENTS_SCHEMA` for custom elements.
+The Angular Vitest builder compiles tests with AOT, so those tests use manifests.
+
+#### Fixing a library's manifest
+
+When a library's manifest is wrong or incomplete:
+
+- To replace it, add a corrected copy to your project and configure that file instead of the package.
+- To override some tags, list a manifest with corrected declarations before the package entry.
+  The first declaration of a tag wins, and the library's later declarations produce an expected `NG4010` warning that names both entries.
+
+A manifest in your project has no package, so its `type.references` need explicit `package` and `module` fields, or it can use type text without names.
+To also type local references with the element class, publish the correction as a workspace package with a `customElements` field and configure the package name.
+
+When the manifest names a declaration that it does not contain, such as one in another package, Angular still recognizes the tag but not its custom properties.
+Bindings to them produce `NG8002`, and an `NG4013` warning reports the missing declaration.
+Correct the manifest or configure a corrected copy.
+`CUSTOM_ELEMENTS_SCHEMA` does not allow properties on tags that a manifest declares.
+
+#### Generated code
+
+Angular sets manifest properties by their exact names.
+For example, `[readonly]` sets the element's `readonly` property instead of mapping it to the native `readOnly`.
+This also applies to property interpolation translated with `i18n-*`.
+Standard properties that the manifest does not declare keep Angular's usual mapping.
+
+Directive host bindings are compiled without the component's manifests, so `host: {'[readonly]': 'value'}` still sets `readOnly`.
+Bind the property in the component template when the exact name matters.
+
+When a library compiled with `compilationMode: 'partial'` binds a manifest property that Angular would otherwise rename, such as `readonly`, applications that use the library need Angular 22.3.0 or later.
+
+#### Limitations
+
+- Angular does not follow `superclass` or `mixins`.
+  The manifest must list inherited members on each element's declaration, as the [Custom Elements Manifest analyzer](https://custom-elements-manifest.open-wc.org/) does.
+- Angular's security checks reject property bindings whose names start with `on` \(ignoring case\), such as `[onDark]`, even when the manifest declares them.
+  Use the attribute instead, such as `ondark` or `[attr.ondark]`.
+- Manifest diagnostics do not point to a line in the manifest file.
+
+#### Diagnostics
+
+| Code     | Category | Cause                                                                                                                                                                                                | Result                                                                        |
+| :------- | :------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------- |
+| `NG4007` | Error    | An entry does not resolve to a file, or the file cannot be read.                                                                                                                                     | Angular skips the entry and loads the others.                                 |
+| `NG4008` | Error    | The file is not valid JSON, or is not an object with a string `schemaVersion` and a `modules` array.                                                                                                 | Angular skips the file and loads the others.                                  |
+| `NG4009` | Warning  | A declaration's tag is not a valid custom element name, such as `marquee`.                                                                                                                           | Angular skips the declaration.                                                |
+| `NG4010` | Warning  | Two declarations use the same tag, in one manifest or across manifests.                                                                                                                              | Angular keeps the first, as `customElements.define` does.                     |
+| `NG4011` | Warning  | A type reference does not resolve against the project's TypeScript declarations.                                                                                                                     | Affected values are not type-checked, and local references use `HTMLElement`. |
+| `NG4012` | Error    | `customElementsManifests` is not an array of non-empty strings, or `customElementsManifestsDiagnostics` is not `'summary'` or `'verbose'`.                                                           | An invalid `customElementsManifests` loads no manifests.                      |
+| `NG4013` | Warning  | Type text that Angular cannot safely use, an ambiguous class export, or a `custom-element-definition` export whose declaration is not in the manifest.                                               | Angular keeps the declaration and skips the affected type checks.             |
+| `NG4014` | Warning  | Inconsistent records, such as an unrecognized `schemaVersion`, a property whose `attribute` is not in `attributes`, an attribute whose `fieldName` is not a property, or a second tag for one class. | Angular keeps the other records and does not add missing ones.                |
+
+By default, Angular combines warnings of the same kind for each manifest into one warning with a count and up to three examples.
+To list each problem separately, set [`customElementsManifestsDiagnostics`](#customelementsmanifestsdiagnostics) to `'verbose'`.
+
+In VS Code, the Angular Language Service reports manifest diagnostics on the project's `tsconfig.json` and updates them when a manifest changes, including unsaved edits.
+
+#### Rebuilds
+
+Manifests are inputs to every template.
+When the build tool reports that a manifest changed, Angular reloads it and checks all templates again.
+Whether a change inside `node_modules` triggers a rebuild depends on the build tool's file watching.
+
+Validated types also depend on the declarations and global types they reference.
+Each incremental build compares them with the previous build and checks all templates again when they differ.
+
+### `customElementsManifestsDiagnostics`
+
+Specifies how the compiler reports warnings about [Custom Elements Manifests](#customelementsmanifests).
+When `'summary'`, the default, combines warnings of the same kind for each manifest into one warning with a count and up to three examples.
+When `'verbose'`, reports each problem separately, for example while you fix a manifest.
+Errors are always reported separately.
+
+### `disableExpressionLowering`
+
+When `true`, the default, transforms code that is or could be used in an annotation, to allow it to be imported from template factory modules.
+See [metadata rewriting](tools/cli/aot-compiler#metadata-rewriting) for more information.
+
+When `false`, disables this rewriting, requiring the rewriting to be done manually.
+
 ### `disableTypeScriptVersionCheck`
 
 When `true`, the compiler does not look at the TypeScript version and does not report an error when an unsupported version of TypeScript is used.
