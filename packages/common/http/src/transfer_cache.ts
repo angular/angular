@@ -114,6 +114,8 @@ export const HEADERS = 'h';
 export const STATUS = 's';
 export const STATUS_TEXT = 'st';
 export const REQ_URL = 'u';
+export const RESPONSE_URL = 'ru';
+export const REDIRECTED = 'rd';
 export const RESPONSE_TYPE = 'rt';
 
 interface TransferHttpResponse {
@@ -125,8 +127,12 @@ interface TransferHttpResponse {
   [STATUS]: number;
   /** statusText */
   [STATUS_TEXT]: string;
-  /** url */
+  /** request url */
   [REQ_URL]: string;
+  /** final response url when it differs from the request url */
+  [RESPONSE_URL]?: string;
+  /** whether the response was redirected */
+  [REDIRECTED]?: boolean;
   /** responseType */
   [RESPONSE_TYPE]: HttpRequest<unknown>['responseType'];
 }
@@ -239,7 +245,9 @@ export function retrieveStateFromCache(
     [HEADERS]: httpHeaders,
     [STATUS]: status,
     [STATUS_TEXT]: statusText,
-    [REQ_URL]: url,
+    [REQ_URL]: requestUrl,
+    [RESPONSE_URL]: responseUrl,
+    [REDIRECTED]: redirected,
   } = response;
   // Request found in cache. Respond using it.
   let body: ArrayBuffer | Blob | string | undefined = undecodedBody;
@@ -271,7 +279,8 @@ export function retrieveStateFromCache(
     headers,
     status,
     statusText,
-    url,
+    url: responseUrl ?? requestUrl,
+    redirected,
   });
 }
 
@@ -311,7 +320,7 @@ export function transferCacheInterceptorFn(
     return event$.pipe(
       tap((event: HttpEvent<unknown>) => {
         if (event instanceof HttpResponse) {
-          const {headers, body, status, statusText} = event;
+          const {headers, body, status, statusText, url, redirected} = event;
 
           // Only cache successful HTTP responses that are not non-cacheable.
           if (
@@ -323,6 +332,7 @@ export function transferCacheInterceptorFn(
 
           const {transferCache: requestOptions, responseType} = req;
           const headersToInclude = getHeadersToInclude(options, requestOptions);
+          const responseUrl = url !== null && originMap ? mapRequestOriginUrl(url, originMap) : url;
 
           transferState.set<TransferHttpResponse>(storeKey, {
             [BODY]:
@@ -331,6 +341,10 @@ export function transferCacheInterceptorFn(
             [STATUS]: status,
             [STATUS_TEXT]: statusText,
             [REQ_URL]: requestUrl,
+            ...(responseUrl !== null && responseUrl !== requestUrl
+              ? {[RESPONSE_URL]: responseUrl}
+              : {}),
+            ...(redirected === true ? {[REDIRECTED]: true} : {}),
             [RESPONSE_TYPE]: responseType,
           });
         }

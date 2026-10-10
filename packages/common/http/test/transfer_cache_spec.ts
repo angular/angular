@@ -36,7 +36,9 @@ import {
   CACHE_OPTIONS,
   HEADERS,
   HTTP_TRANSFER_CACHE_ORIGIN_MAP,
+  REDIRECTED,
   RESPONSE_TYPE,
+  RESPONSE_URL,
   STATUS,
   STATUS_TEXT,
   REQ_URL,
@@ -296,6 +298,133 @@ describe('TransferCache', () => {
 
       expect(firstNext).toHaveBeenCalledTimes(1);
       expect(secondNext).toHaveBeenCalledTimes(1);
+    });
+
+    it('should preserve redirect provenance when replaying a transferred response', () => {
+      configureInterceptor();
+
+      const requestUrl = 'https://app.example/api/runtime-config';
+      const finalUrl = 'https://attacker.example/runtime-config.json';
+      const attackerBody = {apiBaseUrl: 'https://attacker.example/api'};
+      const request = new HttpRequest('GET', requestUrl);
+
+      const serverNext = jasmine.createSpy('serverNext').and.returnValue(
+        of(
+          new HttpResponse({
+            body: attackerBody,
+            url: finalUrl,
+            redirected: true,
+          }),
+        ),
+      );
+
+      const serverResponse = runOnServer(() => runInterceptor(request, serverNext));
+
+      expect(serverResponse.body).toEqual(attackerBody);
+      expect(serverResponse.url).toBe(finalUrl);
+      expect(serverResponse.redirected).toBeTrue();
+      expect(serverNext).toHaveBeenCalledTimes(1);
+
+      const clientNext = jasmine.createSpy('clientNext').and.returnValue(
+        of(
+          new HttpResponse({
+            body: {apiBaseUrl: 'https://trusted.example/api'},
+            url: requestUrl,
+            redirected: false,
+          }),
+        ),
+      );
+
+      const cachedResponse = runInterceptor(request, clientNext);
+
+      expect(clientNext).not.toHaveBeenCalled();
+      expect(cachedResponse.body).toEqual(attackerBody);
+      expect(cachedResponse.url).toBe(finalUrl);
+      expect(cachedResponse.redirected).toBeTrue();
+    });
+
+    it('should not serialize redirect provenance for non-redirected responses', () => {
+      configureInterceptor();
+
+      const requestUrl = 'https://app.example/api/data';
+      const request = new HttpRequest('GET', requestUrl);
+
+      const serverNext = jasmine.createSpy('serverNext').and.returnValue(
+        of(
+          new HttpResponse({
+            body: {value: 'public-data'},
+            url: requestUrl,
+            redirected: false,
+          }),
+        ),
+      );
+
+      runOnServer(() => runInterceptor(request, serverNext));
+
+      const serializedState = JSON.parse(TestBed.inject(TransferState).toJson()) as Record<
+        string,
+        Record<string, unknown>
+      >;
+      const entries = Object.values(serializedState);
+
+      expect(entries.length).toBe(1);
+      expect(entries[0][REDIRECTED]).toBeUndefined();
+      expect(entries[0][RESPONSE_URL]).toBeUndefined();
+    });
+
+    it('should map the final response URL for redirects using HTTP_TRANSFER_CACHE_ORIGIN_MAP', () => {
+      configureInterceptor();
+
+      TestBed.configureTestingModule({
+        providers: [
+          {
+            provide: HTTP_TRANSFER_CACHE_ORIGIN_MAP,
+            useValue: {
+              'http://internal-domain.com:1234': 'https://external-domain.net:443',
+            },
+          },
+        ],
+      });
+
+      const internalRequestUrl = 'http://internal-domain.com:1234/api/runtime-config';
+      const publicRequestUrl = 'https://external-domain.net:443/api/runtime-config';
+      const internalFinalUrl = 'http://internal-domain.com:1234/api/runtime-config-v2';
+      const publicFinalUrl = 'https://external-domain.net:443/api/runtime-config-v2';
+      const responseBody = {apiBaseUrl: 'https://api.example'};
+      const serverRequest = new HttpRequest('GET', internalRequestUrl);
+
+      const serverNext = jasmine.createSpy('serverNext').and.returnValue(
+        of(
+          new HttpResponse({
+            body: responseBody,
+            url: internalFinalUrl,
+            redirected: true,
+          }),
+        ),
+      );
+
+      const serverResponse = runOnServer(() => runInterceptor(serverRequest, serverNext));
+
+      expect(serverResponse.url).toBe(internalFinalUrl);
+      expect(serverResponse.redirected).toBeTrue();
+      expect(serverNext).toHaveBeenCalledTimes(1);
+
+      const clientRequest = new HttpRequest('GET', publicRequestUrl);
+      const clientNext = jasmine.createSpy('clientNext').and.returnValue(
+        of(
+          new HttpResponse({
+            body: {apiBaseUrl: 'https://network.example'},
+            url: publicRequestUrl,
+          }),
+        ),
+      );
+
+      const cachedResponse = runInterceptor(clientRequest, clientNext);
+
+      expect(clientNext).not.toHaveBeenCalled();
+      expect(cachedResponse.body).toEqual(responseBody);
+      expect(cachedResponse.url).toBe(publicFinalUrl);
+      expect(cachedResponse.redirected).toBeTrue();
     });
   });
 
