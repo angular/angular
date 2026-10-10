@@ -454,15 +454,10 @@ export class Recognizer {
       parentRoute,
     );
 
-    const {segmentGroup, slicedSegments} = split(
-      rawSegment,
-      consumedSegments,
-      remainingSegments,
-      childConfig,
-      outlet,
-    );
-
     const matchedOnOutlet = getOutlet(route) === outlet;
+    const {segmentGroup, slicedSegments} = matchedOnOutlet
+      ? split(rawSegment, consumedSegments, remainingSegments, childConfig)
+      : {segmentGroup: rawSegment, slicedSegments: remainingSegments};
 
     if (matchedOnOutlet && slicedSegments.length === 0 && segmentGroup.hasChildren()) {
       const children = await this.processChildren(
