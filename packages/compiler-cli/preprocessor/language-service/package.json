@@ -6,8 +6,7 @@
   "scripts": {
     "compile": "tsc -p .",
     "watch": "tsc -p . -w",
-    "typecheck": "tsc -p . --noEmit",
-    "test": "node tests/run_jasmine.mjs"
+    "typecheck": "tsc -p . --noEmit"
   },
   "dependencies": {
     "@typescript/native-preview": "7.0.0-dev.20260707.2",

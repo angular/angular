@@ -5,7 +5,7 @@ import fs from 'node:fs/promises';
 import Jasmine from 'jasmine';
 import cp from 'node:child_process';
 import {createRequire} from 'node:module';
-import {ensureWasmBinding} from '../../packages/compiler-cli/preprocessor/language-service/tests/wasm_binding.mjs';
+import {ensureWasmBinding} from './wasm_binding.mjs';
 
 const req = createRequire(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

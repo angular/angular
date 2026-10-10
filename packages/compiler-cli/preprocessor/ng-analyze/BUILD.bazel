@@ -109,3 +109,9 @@ rust_test(
         "@crates//:tempfile",
     ],
 )
+
+# `main.rs` is excluded from `:ng_analyze`, so its tests need their own target.
+rust_test(
+    name = "bin_test",
+    crate = ":ng_analyze_bin",
+)

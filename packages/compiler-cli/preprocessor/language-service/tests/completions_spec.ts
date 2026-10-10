@@ -7,19 +7,17 @@
  */
 
 import {TsGoFacade} from '../src/facade';
-import * as path from 'path';
 import * as fs from 'node:fs/promises';
 import * as rpc from 'vscode-jsonrpc/node';
 import {CompletionItemKind} from 'vscode-languageserver';
 
 import {
   TestEnv,
+  getTestWorkspacePath,
   startTestServer,
   expectContain,
   expectAll,
   expectDoesNotContain,
-  expectReplacementText,
-  expectContainInsertText,
   expectContainInsertTextWithSnippet,
   expectDoesNotContainInsertTextWithSnippet,
   toText,
@@ -32,7 +30,7 @@ describe('Completions with TS 7 binary', () => {
   let serverCleanup: () => Promise<void>;
   let env: TestEnv;
 
-  const testWorkspacePath = path.resolve(__dirname, 'test-workspace');
+  const testWorkspacePath = getTestWorkspacePath();
 
   beforeAll(async () => {
     await fs.mkdir(testWorkspacePath, {recursive: true});

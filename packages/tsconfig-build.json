@@ -37,6 +37,7 @@
       "@angular/compiler-cli/src/ngtsc/reflection": ["./compiler-cli/src/ngtsc/reflection/index"],
       "@angular/compiler-cli/src/ngtsc/metadata": ["./compiler-cli/src/ngtsc/metadata/index"],
       "@angular/compiler-cli/private/migrations": ["./compiler-cli/private/migrations"],
+      "@angular/language-service/private": ["./language-service/private"],
       "@angular/core/schematics/utils/tsurge/*": ["./core/schematics/utils/tsurge/*"]
     }
   },

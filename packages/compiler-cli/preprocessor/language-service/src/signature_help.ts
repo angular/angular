@@ -109,6 +109,8 @@ export async function getSignatureHelp(
       shimPosition = shimNode.arguments.pos;
       break;
     }
+    default:
+      return null;
   }
 
   const tcbPath = getTcbPath(tsFilePath);

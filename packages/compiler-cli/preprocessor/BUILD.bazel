@@ -12,15 +12,10 @@ ts_config(
 
 ts_project(
     name = "preprocessor",
-    srcs = glob(
-        include = [
-            "*.ts",
-            "src/**/*.ts",
-        ],
-        exclude = [
-            "src/diagnostics.ts",
-        ],
-    ),
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]),
     tsconfig = ":tsconfig",
     deps = [
         "//:node_modules/@types/node",

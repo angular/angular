@@ -8,9 +8,11 @@
 
 import * as path from 'path';
 import * as fs from 'node:fs/promises';
+import * as fsSync from 'node:fs';
 import * as cp from 'child_process';
 import {HybridCompiler} from '../../src/hybrid_compiler.js';
 import {NapiAnalyzer} from '../../src/analyzer_napi.js';
+import {FileUpdateType} from '../../src/types.js';
 import {LanguageService} from '../src/language_service';
 import {buildTypeCheckingConfig} from '../../src/tcb';
 import {TsGoFacade} from '../src/facade';
@@ -32,6 +34,14 @@ import {URI} from 'vscode-uri';
 import {fileURLToPath} from 'node:url';
 import {createRequire} from 'node:module';
 import {canonicalizePath} from '../src/utils.js';
+import {TestFileManager} from './test_file_manager';
+
+/** Directory containing this file (and the spec files). */
+const TESTS_DIR = path.dirname(fileURLToPath(import.meta.url));
+
+/** Relative path to the wasm engine, from the root of the Bazel runfiles tree. */
+const WASM_RUNFILES_PATH =
+  'packages/compiler-cli/preprocessor/ng-analyze/ng_analyze_wasm/ng_analyze_wasm.js';
 
 async function pathExists(p: string): Promise<boolean> {
   try {
@@ -40,6 +50,58 @@ async function pathExists(p: string): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+function runfilesDir(): string | undefined {
+  return process.env['JS_BINARY__RUNFILES'] || process.env['RUNFILES_DIR'];
+}
+
+let testWorkspacePath: string | null = null;
+
+/**
+ * Returns the directory the specs use as their project workspace.
+ *
+ * Under Bazel the runfiles tree is read-only, so the checked-in `test-workspace` is copied
+ * into `TEST_TMPDIR` once per process. Outside Bazel the source directory is used directly.
+ */
+export function getTestWorkspacePath(): string {
+  if (testWorkspacePath !== null) {
+    return testWorkspacePath;
+  }
+  const source = path.join(TESTS_DIR, 'test-workspace');
+  const tmpDir = process.env['TEST_TMPDIR'];
+  if (tmpDir && runfilesDir()) {
+    const dest = path.join(tmpDir, 'ngp-language-service-test-workspace');
+    fsSync.cpSync(source, dest, {recursive: true, dereference: true});
+    testWorkspacePath = fsSync.realpathSync(dest);
+  } else {
+    testWorkspacePath = source;
+  }
+  return testWorkspacePath;
+}
+
+/**
+ * Locates the wasm-bindgen build of the analysis engine.
+ *
+ * Honors the same overrides as the standalone runner, then falls back to the Bazel
+ * runfiles tree. Returns `undefined` to let the analyzer loader use its own discovery.
+ */
+export function resolveWasmBinding(): string | undefined {
+  const fromEnv = process.env['NG_EXP_COMPILER_WASM_BINDING'] || process.env['NGP_WASM_BINDING'];
+  if (fromEnv) {
+    return fromEnv;
+  }
+  const runfiles = runfilesDir();
+  if (!runfiles) {
+    return undefined;
+  }
+  for (const workspace of ['_main', 'angular', '']) {
+    const candidate = path.join(runfiles, workspace, WASM_RUNFILES_PATH);
+    if (fsSync.existsSync(candidate)) {
+      return candidate;
+    }
+  }
+  return undefined;
 }
 
 async function toUri(filePath: string): Promise<string> {
@@ -72,7 +134,7 @@ export async function resolveTsGoPath(): Promise<string> {
     }
   } catch {}
 
-  const workspaceRoot = path.resolve(__dirname, '../..');
+  const workspaceRoot = path.resolve(TESTS_DIR, '../..');
   const platformName = `@typescript/native-preview-${process.platform}-${process.arch}`;
   const localCandidates = [
     path.join(workspaceRoot, 'node_modules', platformName, 'lib', 'tsgo'),
@@ -288,9 +350,11 @@ export class TestEnv {
     },
   ): Promise<LanguageService> {
     const tsconfigPath = path.join(this.fileManager.getWorkspacePath(), 'tsconfig.json');
+    const wasmBinding = resolveWasmBinding();
     const analyzer = await NapiAnalyzer.create(tsconfigPath, {
-      nodeModulesPathOverride: path.resolve(__dirname, '../../node_modules'),
-      ngAnalyzeDir: path.resolve(__dirname, '../../ng-analyze'),
+      nodeModulesPathOverride: path.resolve(TESTS_DIR, '../../node_modules'),
+      ngAnalyzeDir: path.resolve(TESTS_DIR, '../../ng-analyze'),
+      ...(wasmBinding ? {backend: 'wasm', wasmBinding} : {}),
     });
     this.compiler = new HybridCompiler(analyzer, {
       tcbConfig: buildTypeCheckingConfig(options, true),
@@ -394,7 +458,7 @@ export class TestEnv {
       await this.closeFile(uri);
     }
     this.openedFiles = [];
-    this.compiler = undefined;
+    this.compiler = null;
     await this.fileManager.cleanup();
   }
 
@@ -454,10 +518,11 @@ export function expectContain(
   expect(completions).toBeDefined();
   for (const name of names) {
     const found = completions!.items.some((e) => e.label === name && matchesKind(e.kind, kind));
-    expect(
-      found,
-      `Expected completions to contain entry "${name}" of kind "${kind}", but entries were: ${JSON.stringify(completions!.items.map((e) => ({label: e.label, kind: e.kind})))}`,
-    ).toBe(true);
+    expect(found)
+      .withContext(
+        `Expected completions to contain entry "${name}" of kind "${kind}", but entries were: ${JSON.stringify(completions!.items.map((e) => ({label: e.label, kind: e.kind})))}`,
+      )
+      .toBe(true);
   }
 }
 
@@ -517,10 +582,9 @@ export function expectContainInsertText(
     const found = completions!.items.some(
       (e) => (e.insertText === insertText || e.label === insertText) && matchesKind(e.kind, kind),
     );
-    expect(
-      found,
-      `Expected completions to contain insertText "${insertText}" of kind "${kind}"`,
-    ).toBe(true);
+    expect(found)
+      .withContext(`Expected completions to contain insertText "${insertText}" of kind "${kind}"`)
+      .toBe(true);
   }
 }
 
@@ -537,10 +601,11 @@ export function expectContainInsertTextWithSnippet(
         matchesKind(e.kind, kind) &&
         e.insertTextFormat === InsertTextFormat.Snippet,
     );
-    expect(
-      found,
-      `Expected completions to contain snippet insertText "${insertText}" of kind "${kind}"`,
-    ).toBe(true);
+    expect(found)
+      .withContext(
+        `Expected completions to contain snippet insertText "${insertText}" of kind "${kind}"`,
+      )
+      .toBe(true);
   }
 }
 
@@ -557,10 +622,11 @@ export function expectDoesNotContainInsertTextWithSnippet(
         matchesKind(e.kind, kind) &&
         e.insertTextFormat === InsertTextFormat.Snippet,
     );
-    expect(
-      found,
-      `Expected completions NOT to contain snippet insertText "${insertText}" of kind "${kind}"`,
-    ).toBe(false);
+    expect(found)
+      .withContext(
+        `Expected completions NOT to contain snippet insertText "${insertText}" of kind "${kind}"`,
+      )
+      .toBe(false);
   }
 }
 
