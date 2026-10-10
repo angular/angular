@@ -21,8 +21,43 @@ import {
   SignatureHelpContext,
 } from 'vscode-languageserver';
 import {TestFileManager} from '../../packages/compiler-cli/preprocessor/language-service/tests/test_file_manager';
-import {startTsgo} from '../../packages/compiler-cli/preprocessor/language-service/tests/test_helpers';
+import {
+  prepareTestWorkspace,
+  resolveWasmBinding,
+  startTsgo,
+} from '../../packages/compiler-cli/preprocessor/language-service/tests/test_helpers';
 import {canonicalizePath as normalizePath} from '../../packages/compiler-cli/preprocessor/language-service/src/utils.js';
+
+/** Directory containing this file (and the spec files). */
+const TESTS_DIR = path.dirname(fileURLToPath(import.meta.url));
+
+/** Relative path to the Bazel-built server bundle, from the root of the runfiles tree. */
+const SERVER_RUNFILES_PATH = 'ngp-vscode-ng-language-service/server/server_bundle.js';
+
+/** Returns the directory the LSP specs use as their project workspace. */
+export function getTestWorkspacePath(): string {
+  return prepareTestWorkspace(path.join(TESTS_DIR, 'test-workspace'));
+}
+
+/**
+ * Locates the bundled language server: the Bazel-built bundle when running under
+ * Bazel, otherwise the `dist/` output of `build.js`.
+ */
+async function resolveServerPath(): Promise<string> {
+  const runfiles = process.env['JS_BINARY__RUNFILES'] || process.env['RUNFILES_DIR'];
+  const candidates = runfiles
+    ? ['_main', 'angular', ''].map((ws) => path.join(runfiles, ws, SERVER_RUNFILES_PATH))
+    : [];
+  candidates.push(path.resolve(TESTS_DIR, '../dist/server/server.js'));
+
+  for (const candidate of candidates) {
+    try {
+      await fs.access(candidate);
+      return candidate;
+    } catch {}
+  }
+  throw new Error(`Server bundle not found. Checked:\n${candidates.join('\n')}`);
+}
 
 export async function startTestServer(workspacePath: string) {
   console.log('[LSP TEST DEBUG] Starting tsgo...');
@@ -31,15 +66,20 @@ export async function startTestServer(workspacePath: string) {
 
   console.log('[LSP TEST DEBUG] tsgo started. Spawning hybrid server...');
   // 2. Find and spawn our server (Hybrid server)
-  const serverPath = path.resolve(__dirname, '../dist/server/server.js');
+  const serverPath = await resolveServerPath();
 
-  await fs.access(serverPath).catch(() => {
-    throw new Error(`Server binary not found at ${serverPath}`);
-  });
+  // The server locates the analysis engine through this variable; make sure it is
+  // set even when no outer runner (e.g. `wasm_binding.mjs`) has done so.
+  const wasmBinding = resolveWasmBinding();
+  const serverEnv = {...process.env};
+  if (wasmBinding) {
+    serverEnv['NG_EXP_COMPILER_WASM_BINDING'] = wasmBinding;
+  }
 
   const serverProcess = cp.spawn(process.execPath, [serverPath, '--stdio'], {
     stdio: ['pipe', 'pipe', 'inherit'],
     cwd: workspacePath,
+    env: serverEnv,
   });
 
   const connection = rpc.createMessageConnection(

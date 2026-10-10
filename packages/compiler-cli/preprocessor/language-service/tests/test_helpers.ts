@@ -56,28 +56,56 @@ function runfilesDir(): string | undefined {
   return process.env['JS_BINARY__RUNFILES'] || process.env['RUNFILES_DIR'];
 }
 
-let testWorkspacePath: string | null = null;
+/**
+ * Recursively copies `source` to `dest`, following symlinks and writing fresh files.
+ *
+ * Deliberately avoids `fs.cpSync`: on macOS it clones via `copyfile(3)`, and when the
+ * source is a Bazel runfiles symlink the clone can `realpath()` back to the original
+ * `bazel-out` file from another process, which makes the language server resolve the
+ * fixture's `tsconfig.json` to the wrong location.
+ */
+function copyDirSync(source: string, dest: string): void {
+  fsSync.mkdirSync(dest, {recursive: true});
+  for (const entry of fsSync.readdirSync(source)) {
+    const from = path.join(source, entry);
+    const to = path.join(dest, entry);
+    if (fsSync.statSync(from).isDirectory()) {
+      copyDirSync(from, to);
+    } else {
+      fsSync.writeFileSync(to, fsSync.readFileSync(from));
+    }
+  }
+}
+
+const preparedWorkspaces = new Map<string, string>();
 
 /**
- * Returns the directory the specs use as their project workspace.
+ * Prepares a fixture directory for use as a project workspace by the specs.
  *
- * Under Bazel the runfiles tree is read-only, so the checked-in `test-workspace` is copied
- * into `TEST_TMPDIR` once per process. Outside Bazel the source directory is used directly.
+ * Under Bazel the runfiles tree is read-only, so `source` is copied into `TEST_TMPDIR`
+ * once per process. Outside Bazel the source directory is used directly.
  */
-export function getTestWorkspacePath(): string {
-  if (testWorkspacePath !== null) {
-    return testWorkspacePath;
+export function prepareTestWorkspace(source: string): string {
+  const cached = preparedWorkspaces.get(source);
+  if (cached !== undefined) {
+    return cached;
   }
-  const source = path.join(TESTS_DIR, 'test-workspace');
   const tmpDir = process.env['TEST_TMPDIR'];
+  let workspace: string;
   if (tmpDir && runfilesDir()) {
-    const dest = path.join(tmpDir, 'ngp-language-service-test-workspace');
-    fsSync.cpSync(source, dest, {recursive: true, dereference: true});
-    testWorkspacePath = fsSync.realpathSync(dest);
+    const dest = path.join(tmpDir, `ngp-test-workspace-${preparedWorkspaces.size}`);
+    copyDirSync(source, dest);
+    workspace = fsSync.realpathSync(dest);
   } else {
-    testWorkspacePath = source;
+    workspace = source;
   }
-  return testWorkspacePath;
+  preparedWorkspaces.set(source, workspace);
+  return workspace;
+}
+
+/** Returns the directory the language-service specs use as their project workspace. */
+export function getTestWorkspacePath(): string {
+  return prepareTestWorkspace(path.join(TESTS_DIR, 'test-workspace'));
 }
 
 /**

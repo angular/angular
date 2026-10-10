@@ -4,6 +4,7 @@ ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(["*.ts"]),
+    visibility = ["//ngp-vscode-ng-language-service/tests:__pkg__"],
     deps = [
         "//:node_modules/@types/jasmine",
         "//:node_modules/@types/node",
@@ -26,5 +27,8 @@ jasmine_test(
         "//packages/compiler-cli/preprocessor/ng-analyze:ng_analyze_wasm",
         "//packages/compiler-cli/preprocessor/ng-analyze:package_json",
     ] + glob(["test-workspace/**"]),
+    # The specs drive an external `tsgo` process over LSP and some rely on fixed
+    # sleeps, so they can occasionally fail under heavy machine load.
+    flaky = True,
     shard_count = 4,
 )

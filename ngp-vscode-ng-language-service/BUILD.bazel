@@ -1,0 +1,22 @@
+load("@npm//:defs.bzl", "npm_link_all_packages")
+load("//tools:defaults.bzl", "ts_config")
+
+package(default_visibility = ["//ngp-vscode-ng-language-service:__subpackages__"])
+
+npm_link_all_packages(name = "node_modules")
+
+ts_config(
+    name = "tsconfig_build",
+    src = "tsconfig-bazel.json",
+    deps = ["//packages/compiler-cli/preprocessor:tsconfig"],
+)
+
+ts_config(
+    name = "tsconfig_test",
+    testonly = True,
+    src = "tsconfig-bazel-test.json",
+    deps = [
+        ":tsconfig_build",
+        "//:node_modules/@types/jasmine",
+    ],
+)
