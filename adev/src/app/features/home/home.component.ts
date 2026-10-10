@@ -46,6 +46,7 @@ const FEATURE_TAB = {
 export default class Home {
   private readonly activatedRoute = inject(ActivatedRoute);
   protected readonly isUwu = 'uwu' in this.activatedRoute.snapshot.queryParams;
+  protected readonly isAngie = !this.isUwu && 'angie' in this.activatedRoute.snapshot.queryParams;
 
   protected readonly displaySearchDialog = inject(IS_SEARCH_DIALOG_OPEN);
 
