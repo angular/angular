@@ -1168,6 +1168,7 @@
       "trustedScriptURLFromStringBypass",
       "uniqueIdCounter",
       "unregisterLView",
+      "unregisterLViewTree",
       "untracked",
       "untracked2",
       "unwrapElementRef",

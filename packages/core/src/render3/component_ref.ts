@@ -68,7 +68,7 @@ import {ChainedInjector} from './chained_injector';
 import {createElementNode, setupStaticAttributes} from './dom_node_manipulation';
 import {BINDING, Binding, BindingInternal, DirectiveWithBindings} from './dynamic_bindings';
 import {getDocument} from './interfaces/document';
-import {unregisterLView} from './interfaces/lview_tracking';
+import {unregisterLViewTree} from './interfaces/lview_tracking';
 import {Renderer} from './interfaces/renderer';
 import {SHARED_STYLES_HOST} from './interfaces/shared_styles_host';
 import {
@@ -390,8 +390,6 @@ export class ComponentFactory<T> {
     // issues would allow us to drop this.
     enterView(rootLView);
 
-    let componentView: LView | null = null;
-
     try {
       const hostTNode = directiveHostFirstCreatePass(
         HEADER_OFFSET,
@@ -416,7 +414,7 @@ export class ComponentFactory<T> {
         projectNodes(hostTNode, this.ngContentSelectors, projectableNodes);
       }
 
-      componentView = getComponentLViewByIndex(hostTNode.index, rootLView);
+      const componentView = getComponentLViewByIndex(hostTNode.index, rootLView);
 
       // TODO(pk): why do we need this logic?
       rootLView[CONTEXT] = componentView[CONTEXT] as T;
@@ -425,10 +423,7 @@ export class ComponentFactory<T> {
     } catch (e) {
       // Stop tracking the views if creation failed since
       // the consumer won't have a way to dereference them.
-      if (componentView !== null) {
-        unregisterLView(componentView);
-      }
-      unregisterLView(rootLView);
+      unregisterLViewTree(rootLView);
       throw e;
     } finally {
       profiler(ProfilerEvent.DynamicComponentEnd);

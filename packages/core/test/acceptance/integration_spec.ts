@@ -36,7 +36,7 @@ import {
 import {Inject} from '../../src/di';
 import {readPatchedLView} from '../../src/render3/context_discovery';
 import {LContainer} from '../../src/render3/interfaces/container';
-import {getLViewById} from '../../src/render3/interfaces/lview_tracking';
+import {getLViewById, getTrackedLViews} from '../../src/render3/interfaces/lview_tracking';
 import {isLView} from '../../src/render3/interfaces/type_checks';
 import {ID, LView, PARENT, TVIEW} from '../../src/render3/interfaces/view';
 import {getLView} from '../../src/render3/state';
@@ -2796,6 +2796,80 @@ describe('acceptance integration tests', () => {
 
     // Expect all 3 views to be removed from the registry once the root is destroyed.
     expect(lViewIds.map(getLViewById)).toEqual([null, null, null]);
+  });
+
+  it('should remove nested LViews from the registry when a component throws during creation', () => {
+    @Component({
+      template: '<child></child>',
+      standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
+    class App {}
+
+    @Component({
+      selector: 'child',
+      template: '<div><grand-child></grand-child></div>',
+      standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
+    class Child {}
+
+    @Component({
+      selector: 'grand-child',
+      template: '',
+      standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
+    class GrandChild {
+      constructor() {
+        throw new Error('GrandChild failed');
+      }
+    }
+
+    TestBed.configureTestingModule({declarations: [App, Child, GrandChild]});
+    const trackedIds = new Set(getTrackedLViews().keys());
+
+    expect(() => TestBed.createComponent(App)).toThrowError('GrandChild failed');
+
+    // The `Child` view was registered before `GrandChild` threw and nothing can destroy it.
+    expect(Array.from(getTrackedLViews().keys()).filter((id) => !trackedIds.has(id))).toEqual([]);
+  });
+
+  it('should remove LViews from the registry when an embedded view throws during creation', () => {
+    @Component({
+      template: '<ng-template #tpl><child></child></ng-template>',
+      standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
+    class App {
+      @ViewChild('tpl', {static: true}) tpl!: TemplateRef<unknown>;
+    }
+
+    @Component({
+      selector: 'child',
+      template: '',
+      standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
+    class Child {
+      constructor() {
+        throw new Error('Child failed');
+      }
+    }
+
+    TestBed.configureTestingModule({declarations: [App, Child]});
+    const fixture = TestBed.createComponent(App);
+    const trackedIds = new Set(getTrackedLViews().keys());
+
+    expect(() => fixture.componentInstance.tpl.createEmbeddedView({})).toThrowError('Child failed');
+
+    // The embedded view is never returned to the caller, so nothing can destroy it.
+    expect(Array.from(getTrackedLViews().keys()).filter((id) => !trackedIds.has(id))).toEqual([]);
   });
 
   it('should handle content inside <template> elements', () => {
