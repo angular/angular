@@ -105,6 +105,9 @@ export {
   withViewTransitions,
   withRouterResources,
   RouterResourcesFeature,
+  withErrorBoundaries,
+  ErrorBoundaryOptions,
+  ErrorBoundariesFeature,
 } from './provide_router';
 
 export {
