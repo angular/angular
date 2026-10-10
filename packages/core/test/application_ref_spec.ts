@@ -19,7 +19,9 @@ import {
   APP_BOOTSTRAP_LISTENER,
   APP_INITIALIZER,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
+  createComponent,
   DestroyRef,
   Directive,
   EnvironmentInjector,
@@ -31,7 +33,9 @@ import {
   NgZone,
   PlatformRef,
   provideZoneChangeDetection,
+  provideZonelessChangeDetection,
   RendererFactory2,
+  signal,
   TemplateRef,
   Type,
   ViewChild,
@@ -797,6 +801,151 @@ describe('bootstrap', () => {
       embeddedViewRef.destroy();
 
       expect(appRef.viewCount).toBe(0);
+    });
+
+    describe('views detached from change detection', () => {
+      @Component({
+        template: '{{name}}|{{sig()}}',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class EagerComp {
+        name = 'Initial';
+        sig = signal('Initial');
+      }
+
+      @Component({template: '{{name}}|{{sig()}}'})
+      class OnPushComp {
+        name = 'Initial';
+        sig = signal('Initial');
+        constructor(readonly cdr: ChangeDetectorRef) {}
+      }
+
+      @Component({
+        template: '<ng-template #t>{{name}}</ng-template>',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class EagerEmbeddedViewComp {
+        name = 'Initial';
+        @ViewChild('t', {static: true}) tplRef!: TemplateRef<unknown>;
+      }
+
+      function attach<T>(type: Type<T>) {
+        const appRef = TestBed.inject(ApplicationRef);
+        const componentRef = createComponent(type, {
+          environmentInjector: TestBed.inject(EnvironmentInjector),
+        });
+        appRef.attachView(componentRef.hostView);
+        return {appRef, componentRef, element: componentRef.location.nativeElement};
+      }
+
+      it('should not check a detached component view on tick', () => {
+        const {appRef, componentRef, element} = attach(EagerComp);
+        appRef.tick();
+        expect(element).toHaveText('Initial|Initial');
+
+        componentRef.changeDetectorRef.detach();
+        componentRef.instance.name = 'New';
+        appRef.tick();
+        expect(element).toHaveText('Initial|Initial');
+
+        componentRef.changeDetectorRef.reattach();
+        appRef.tick();
+        expect(element).toHaveText('New|Initial');
+      });
+
+      it('should not check a detached embedded view on tick', () => {
+        const comp = TestBed.createComponent(EagerEmbeddedViewComp);
+        const appRef = TestBed.inject(ApplicationRef);
+        const viewRef = comp.componentInstance.tplRef.createEmbeddedView({});
+        appRef.attachView(viewRef);
+        appRef.tick();
+        expect(viewRef.rootNodes[0].textContent).toBe('Initial');
+
+        viewRef.detach();
+        comp.componentInstance.name = 'New';
+        appRef.tick();
+        expect(viewRef.rootNodes[0].textContent).toBe('Initial');
+
+        viewRef.reattach();
+        appRef.tick();
+        expect(viewRef.rootNodes[0].textContent).toBe('New');
+      });
+
+      it('should still check a detached view when detectChanges is called on it', () => {
+        const {appRef, componentRef, element} = attach(EagerComp);
+        appRef.tick();
+
+        componentRef.changeDetectorRef.detach();
+        componentRef.instance.name = 'New';
+        componentRef.changeDetectorRef.detectChanges();
+        expect(element).toHaveText('New|Initial');
+      });
+
+      it('should not check a detached view that was marked for check', () => {
+        const {appRef, componentRef, element} = attach(OnPushComp);
+        appRef.tick();
+
+        componentRef.changeDetectorRef.detach();
+        componentRef.instance.name = 'New';
+        componentRef.instance.cdr.markForCheck();
+        appRef.tick();
+        expect(element).toHaveText('Initial|Initial');
+
+        componentRef.changeDetectorRef.reattach();
+        appRef.tick();
+        expect(element).toHaveText('New|Initial');
+      });
+
+      describe('zoneless', () => {
+        beforeEach(() => {
+          TestBed.resetTestingModule();
+          TestBed.configureTestingModule({providers: [provideZonelessChangeDetection()]});
+        });
+
+        it('should not check a detached view that was marked for check', async () => {
+          const {appRef, componentRef, element} = attach(OnPushComp);
+          await appRef.whenStable();
+          expect(element).toHaveText('Initial|Initial');
+
+          componentRef.changeDetectorRef.detach();
+          componentRef.instance.name = 'New';
+          componentRef.instance.cdr.markForCheck();
+          await appRef.whenStable();
+          expect(element).toHaveText('Initial|Initial');
+
+          componentRef.changeDetectorRef.reattach();
+          await appRef.whenStable();
+          expect(element).toHaveText('New|Initial');
+        });
+
+        it('should not check a detached view when a signal it reads changes', async () => {
+          const {appRef, componentRef, element} = attach(OnPushComp);
+          await appRef.whenStable();
+
+          componentRef.changeDetectorRef.detach();
+          componentRef.instance.sig.set('New');
+          await appRef.whenStable();
+          expect(element).toHaveText('Initial|Initial');
+
+          componentRef.changeDetectorRef.reattach();
+          await appRef.whenStable();
+          expect(element).toHaveText('Initial|New');
+        });
+
+        it('should keep checking attached views while another one is detached', async () => {
+          const detached = attach(OnPushComp);
+          const attached = attach(OnPushComp);
+          await detached.appRef.whenStable();
+
+          detached.componentRef.changeDetectorRef.detach();
+          detached.componentRef.instance.sig.set('New');
+          attached.componentRef.instance.sig.set('New');
+          await detached.appRef.whenStable();
+
+          expect(detached.element).toHaveText('Initial|Initial');
+          expect(attached.element).toHaveText('Initial|New');
+        });
+      });
     });
 
     it('should not allow to attach a view to both, a view container and the ApplicationRef', () => {
