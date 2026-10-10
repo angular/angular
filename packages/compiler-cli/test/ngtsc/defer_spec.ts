@@ -82,6 +82,151 @@ runInEachFileSystem(() => {
       expect(jsContents).not.toContain('import { CmpA }');
     });
 
+    it('should emit an opaque dependency loader only for retry-enabled blocks', () => {
+      env.write(
+        'cmp-a.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({selector: 'cmp-a', template: 'CmpA!'})
+          export class CmpA {}
+        `,
+      );
+
+      env.write(
+        '/test.ts',
+        `
+          import {Component} from '@angular/core';
+          import {CmpA} from './cmp-a';
+
+          @Component({
+            selector: 'test-cmp',
+            imports: [CmpA],
+            template: \`
+              @defer {
+                <cmp-a />
+              } @error (retry 2) {
+                Failed!
+              }
+            \`,
+          })
+          export class TestCmp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = cleanNewLines(env.getContents('test.js'));
+      // Only the retry-enabled block wraps its import in a retained loader.
+      expect(jsContents).toContain(
+        '() => [i0.ɵɵdeferDependency(() => /* @ts-ignore */ import("./cmp-a"), m => m.CmpA)]',
+      );
+      expect(jsContents).toContain('i0.ɵɵdefer(2, 0, TestCmp_Defer_2_DepsFn');
+      expect(jsContents).toContain('null, null, 2, i0.ɵɵdeferEnableRetry)');
+      expect(jsContents).toContain(
+        'i0.ɵsetClassMetadataAsync(TestCmp, () => [/* @ts-ignore */ import("./cmp-a").then(m => m.CmpA)]',
+      );
+    });
+
+    it('should keep the plain import for non-retry blocks in a mixed template', () => {
+      env.write(
+        'cmp-a.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({selector: 'cmp-a', template: 'CmpA!'})
+          export class CmpA {}
+        `,
+      );
+      env.write(
+        'cmp-b.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({selector: 'cmp-b', template: 'CmpB!'})
+          export class CmpB {}
+        `,
+      );
+
+      env.write(
+        '/test.ts',
+        `
+          import {Component} from '@angular/core';
+          import {CmpA} from './cmp-a';
+          import {CmpB} from './cmp-b';
+
+          @Component({
+            selector: 'test-cmp',
+            imports: [CmpA, CmpB],
+            template: \`
+              @defer {
+                <cmp-a />
+              } @error (retry 2) {
+                Failed!
+              }
+              @defer {
+                <cmp-b />
+              } @error {
+                Failed!
+              }
+            \`,
+          })
+          export class TestCmp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = cleanNewLines(env.getContents('test.js'));
+      expect(jsContents).toContain(
+        '() => [i0.ɵɵdeferDependency(() => /* @ts-ignore */ import("./cmp-a"), m => m.CmpA)]',
+      );
+      expect(jsContents).toContain('() => [/* @ts-ignore */ import("./cmp-b").then(m => m.CmpB)]');
+      // Only the retry-enabled block references the retry runtime.
+      const enablerMatches = jsContents.match(/ɵɵdeferEnableRetry/g) ?? [];
+      expect(enablerMatches.length).toBe(1);
+    });
+
+    it('should not emit the retry runtime for `retry 0`', () => {
+      env.write(
+        'cmp-a.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({selector: 'cmp-a', template: 'CmpA!'})
+          export class CmpA {}
+        `,
+      );
+
+      env.write(
+        '/test.ts',
+        `
+          import {Component} from '@angular/core';
+          import {CmpA} from './cmp-a';
+
+          @Component({
+            selector: 'test-cmp',
+            imports: [CmpA],
+            template: \`
+              @defer {
+                <cmp-a />
+              } @error (retry 0) {
+                Failed!
+              }
+            \`,
+          })
+          export class TestCmp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = cleanNewLines(env.getContents('test.js'));
+      expect(jsContents).toContain('() => [/* @ts-ignore */ import("./cmp-a").then(m => m.CmpA)]');
+      expect(jsContents).not.toContain('ɵɵdeferDependency');
+      expect(jsContents).not.toContain('ɵɵdeferEnableRetry');
+    });
+
     it('should include timer scheduler function when `after` or `minimum` parameters are used', () => {
       env.write(
         'cmp-a.ts',
