@@ -1,0 +1,41 @@
+load("//devtools/tools:defaults.bzl", "ts_project", "ts_test_library", "zoneless_web_test_suite")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+ts_project(
+    name = "injector",
+    srcs = [
+        "injector.ts",
+    ],
+    deps = [
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:error",
+    ],
+)
+
+ts_project(
+    name = "root",
+    srcs = [
+        "index.ts",
+    ],
+    deps = [
+        ":injector",
+        "//devtools/projects/ng-devtools-backend/src/lib/profiling/profiler",
+    ],
+)
+
+ts_test_library(
+    name = "test_lib",
+    srcs = [
+        "injector.spec.ts",
+    ],
+    deps = [
+        ":injector",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "test",
+    deps = [
+        ":test_lib",
+    ],
+)

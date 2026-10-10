@@ -10,7 +10,6 @@ import {debounceTime, Subscription} from 'rxjs';
 import {HydrationStatus} from '../../../../protocol';
 import {getConfig} from '../config/config';
 import {getDirectiveForestManager} from '../directive-forest/manager';
-import {getProfiler} from '../profiling/profiler';
 import {highlightElement, removeHighlightsByType} from '../shared/highlighter';
 import {
   HighlightTemplate,
@@ -22,6 +21,8 @@ import {
 import {ComponentTreeNode} from '../shared/interfaces';
 import {AngularDevtoolsError} from '../shared/utils/error';
 import {runOutsideAngular} from '../shared/utils/general';
+import {inject} from '../di';
+import {Profiler} from '../profiling/profiler';
 
 let hydrationOverlaysEnabled = false;
 let profilerSubs: Subscription | undefined;
@@ -47,7 +48,7 @@ function enableHydrationOverlays() {
   runOutsideAngular(() => {
     // We are throttling CD events due to the
     // possiblity of scroll-induced event flood.
-    profilerSubs = getProfiler()
+    profilerSubs = inject(Profiler)
       .changeDetection$.pipe(debounceTime(250))
       .subscribe(() => refresh());
   });

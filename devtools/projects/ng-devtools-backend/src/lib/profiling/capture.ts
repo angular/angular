@@ -20,10 +20,11 @@ import {isCustomElement, runOutsideAngular} from '../shared/utils/general';
 
 import {DirectiveForestManager, getDirectiveForestManager} from '../directive-forest/manager';
 import {IdentityTracker} from '../directive-forest/identity-tracker/identity-tracker';
-import {getProfiler, Hooks} from './profiler';
+import {Profiler, Hooks} from './profiler';
 import {getDirectiveName} from '../directive-forest/component-tree/component-tree';
 import {debugLog} from '../shared/utils/log';
 import {AngularDevtoolsError} from '../shared/utils/error';
+import {inject} from '../di';
 
 let inProgress = false;
 let inChangeDetection = false;
@@ -50,13 +51,13 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
   IdentityTracker.getInstance().selectMode('preservation');
 
   hooks = getHooks(onFrame);
-  getProfiler().subscribe(hooks);
+  inject(Profiler).subscribe(hooks);
 };
 
 export const stop = (): ProfilerFrame => {
   const directiveForestManager = getDirectiveForestManager();
   const result = flushBuffer(directiveForestManager);
-  getProfiler().unsubscribe(hooks);
+  inject(Profiler).unsubscribe(hooks);
   inProgress = false;
   hooks = {};
   IdentityTracker.getInstance().selectMode('normal');
