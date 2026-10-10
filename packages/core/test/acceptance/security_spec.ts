@@ -816,6 +816,8 @@ describe('iframe processing', () => {
 });
 
 describe('SVG animation processing', () => {
+  const X_LINK_NAMESPACE_URI = 'http://www.w3.org/1999/xlink';
+
   it('should error when `attributeName` is bound', () => {
     @Component({
       template: '<svg><animate [attr.attributeName]="attr"></animate></svg>',
@@ -858,6 +860,82 @@ describe('SVG animation processing', () => {
     }).toThrowError(
       /NG0910: Angular has detected that the `attributeName` was applied as a binding to the <animate>/,
     );
+  });
+
+  for (const {elementName, boundAttributeName} of [
+    {elementName: 'set', boundAttributeName: 'to'},
+    {elementName: 'animate', boundAttributeName: 'to'},
+    {elementName: 'animate', boundAttributeName: 'from'},
+    {elementName: 'animate', boundAttributeName: 'values'},
+  ]) {
+    it(`should reject ${elementName} ${boundAttributeName} bindings when attributeName is an aliased XLink href QName`, async () => {
+      @Component({
+        template: `
+          <section xmlns:foo="${X_LINK_NAMESPACE_URI}">
+            <svg>
+              <a>
+                <${elementName}
+                  attributeName="foo:href"
+                  [attr.${boundAttributeName}]="destination"
+                />
+              </a>
+            </svg>
+          </section>
+        `,
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class AliasedXLinkHrefAnimation {
+        destination = 'javascript:alert(1)';
+      }
+
+      const fixture = TestBed.createComponent(AliasedXLinkHrefAnimation);
+
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(
+        new RegExp(
+          `NG0910: Angular has detected that the \`${boundAttributeName}\` was applied as a binding to the <${elementName}>`,
+        ),
+      );
+    });
+  }
+
+  it('should reject unresolved href QName aliases before their namespace mapping can change', async () => {
+    @Component({
+      template: `
+        <svg>
+          <set attributeName="unresolved:href" [attr.to]="destination" />
+        </svg>
+      `,
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
+    class UnresolvedHrefAliasAnimation {
+      destination = 'javascript:alert(1)';
+    }
+
+    const fixture = TestBed.createComponent(UnresolvedHrefAliasAnimation);
+
+    await expectAsync(fixture.whenStable()).toBeRejectedWithError(
+      /NG0910: Angular has detected that the `to` was applied as a binding to the <set>/,
+    );
+  });
+
+  it('should allow animation value bindings for a namespaced non-href attributeName', async () => {
+    @Component({
+      template: `
+        <svg xmlns:foo="urn:angular:svg-animation">
+          <animate attributeName="foo:opacity" [attr.to]="destination" />
+        </svg>
+      `,
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
+    class NamespacedNonHrefAnimation {
+      destination = '1';
+    }
+
+    const fixture = TestBed.createComponent(NamespacedNonHrefAnimation);
+
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.querySelector('animate').getAttribute('to')).toBe('1');
   });
 });
 
