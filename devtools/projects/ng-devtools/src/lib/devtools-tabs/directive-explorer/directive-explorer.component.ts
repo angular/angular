@@ -34,7 +34,7 @@ import {
 import {ApplicationOperations} from '../../application-operations/index';
 import {FrameManager} from '../../application-services/frame_manager';
 
-import {BreadcrumbsComponent} from './directive-forest/breadcrumbs/breadcrumbs.component';
+import {BreadcrumbsComponent} from './breadcrumbs/breadcrumbs.component';
 import {FlatNode} from './directive-forest/component-data-source';
 import {DirectiveForestComponent} from './directive-forest/directive-forest.component';
 import {IndexedNode} from './directive-forest/index-forest';
