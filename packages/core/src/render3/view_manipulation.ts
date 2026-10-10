@@ -16,8 +16,15 @@ import {assertDefined} from '../util/assert';
 import {assertLContainer, assertTNodeForLView} from './assert';
 import {renderView} from './instructions/render';
 import {TNode} from './interfaces/node';
-import {DECLARATION_LCONTAINER, FLAGS, LView, LViewFlags, QUERIES} from './interfaces/view';
-import {createLView} from './view/construction';
+import {
+  DECLARATION_LCONTAINER,
+  FLAGS,
+  HEADER_OFFSET,
+  LView,
+  LViewFlags,
+  QUERIES,
+} from './interfaces/view';
+import {createLView, createTView} from './view/construction';
 
 export function createAndRenderEmbeddedLView<T>(
   declarationLView: LView<unknown>,
@@ -31,8 +38,34 @@ export function createAndRenderEmbeddedLView<T>(
 ): LView<T> {
   const prevConsumer = setActiveConsumer(null);
   try {
-    const embeddedTView = templateTNode.tView!;
+    // If a previous attempt to create this embedded view threw partway through, rebuild its
+    // TView instead of reusing the corrupted one — mirrors what getOrCreateComponentTView()
+    // already does for component TViews.
+    let embeddedTView = templateTNode.tView!;
     ngDevMode && assertDefined(embeddedTView, 'TView must be defined for a template node.');
+    if (embeddedTView.incompleteFirstPass) {
+      const staleTView = embeddedTView;
+      embeddedTView = templateTNode.tView = createTView(
+        staleTView.type,
+        staleTView.declTNode,
+        staleTView.template,
+        staleTView.bindingStartIndex - HEADER_OFFSET,
+        staleTView.expandoStartIndex - staleTView.bindingStartIndex,
+        staleTView.directiveRegistry,
+        staleTView.pipeRegistry,
+        staleTView.viewQuery,
+        staleTView.schemas,
+        staleTView.consts,
+        staleTView.ssrId,
+      );
+      // Re-inherit the declaration view's queries, which templateCreate() won't wire up again.
+      const staleQueries = staleTView.queries;
+      if (staleQueries !== null) {
+        const inheritedQueryCount =
+          staleTView.contentQueries !== null ? staleTView.contentQueries[0] : staleQueries.length;
+        embeddedTView.queries = staleQueries.cloneForRebuild(inheritedQueryCount);
+      }
+    }
     ngDevMode && assertTNodeForLView(templateTNode, declarationLView);
 
     // Embedded views follow the change detection strategy of the view they're declared in.
