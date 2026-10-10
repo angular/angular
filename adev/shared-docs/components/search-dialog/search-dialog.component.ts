@@ -115,6 +115,10 @@ export class SearchDialog {
     this.onClose.emit();
   }
 
+  protected activateItem(index: number): void {
+    this.keyManager.setActiveItem(index);
+  }
+
   private navigateToTheActiveItem(): void {
     const activeItemLink: string | undefined = this.keyManager.activeItem?.item()?.url;
 
