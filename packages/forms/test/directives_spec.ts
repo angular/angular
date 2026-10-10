@@ -221,7 +221,7 @@ describe('Form Directives', () => {
         dir.name = 'invalidName';
 
         expect(() => form.addControl(dir)).toThrowError(
-          new RegExp(`Cannot find control with name: 'invalidName'`),
+          new RegExp(`Cannot find control with path: 'invalidName'`),
         );
       });
 

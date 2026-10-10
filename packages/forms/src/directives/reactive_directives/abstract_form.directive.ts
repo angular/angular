@@ -29,6 +29,7 @@ import {ControlContainer} from '../control_container';
 import type {Form} from '../form_interface';
 import {RuntimeErrorCode} from '../../errors';
 import {formControlNameExample} from '../error_examples';
+import {missingControlForPathError} from '../reactive_errors';
 import {
   CALL_SET_DISABLED_STATE,
   cleanUpControl,
@@ -199,6 +200,17 @@ export abstract class AbstractFormDirective
    */
   addControl(dir: FormControlName): FormControl {
     const ctrl = this.form.get(dir.path) as FormControl;
+    // TODO(JeanMeche): even tho this looks verbose i explicitly left this comment here.
+    // Ping me if it needs to be removed...
+    // `ctrl` is null when the template has a `formControlName` with no control for it in the
+    // form group. This is not gated behind `ngDevMode` because `_setupWithForm` reads `ctrl`
+    // right away, so it also crashes in production.
+    if (!ctrl) {
+      throw new RuntimeError(
+        RuntimeErrorCode.FORM_CONTROL_NAME_MISSING_CONTROL,
+        ngDevMode && missingControlForPathError(this.form, dir.path),
+      );
+    }
     dir._setupWithForm(ctrl, this.callSetDisabledState);
     ctrl.updateValueAndValidity({emitEvent: false});
     this.directives.push(dir);
