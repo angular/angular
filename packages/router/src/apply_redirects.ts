@@ -101,6 +101,8 @@ export class ApplyRedirects {
       this.urlSerializer.parse(redirect),
       segments,
       posParams,
+      // A string returned by a function can contain request data, so each parameter is used once.
+      typeof redirectTo === 'string' ? undefined : new Set(),
     );
 
     if (redirect[0] === '/') {
@@ -114,21 +116,25 @@ export class ApplyRedirects {
     urlTree: UrlTree,
     segments: UrlSegment[],
     posParams: {[k: string]: UrlSegment},
+    used?: Set<string>,
   ): UrlTree {
-    const newRoot = this.createSegmentGroup(redirectTo, urlTree.root, segments, posParams);
+    const newRoot = this.createSegmentGroup(redirectTo, urlTree.root, segments, posParams, used);
     return new UrlTree(
       newRoot,
-      this.createQueryParams(urlTree.queryParams, this.urlTree.queryParams),
+      this.createQueryParams(urlTree.queryParams, this.urlTree.queryParams, used && new Set()),
       urlTree.fragment,
     );
   }
 
-  createQueryParams(redirectToParams: Params, actualParams: Params): Params {
+  createQueryParams(redirectToParams: Params, actualParams: Params, used?: Set<string>): Params {
     const res: Params = {};
     Object.entries(redirectToParams).forEach(([k, v]) => {
-      const copySourceValue = typeof v === 'string' && v[0] === ':';
-      if (copySourceValue) {
-        const sourceName = v.substring(1);
+      const sourceName = typeof v === 'string' && v[0] === ':' ? v.substring(1) : null;
+      if (
+        sourceName !== null &&
+        (!used || (Object.hasOwn(actualParams, sourceName) && !used.has(sourceName)))
+      ) {
+        used?.add(sourceName);
         res[k] = actualParams[sourceName];
       } else {
         res[k] = v;
@@ -142,13 +148,20 @@ export class ApplyRedirects {
     group: UrlSegmentGroup,
     segments: UrlSegment[],
     posParams: {[k: string]: UrlSegment},
+    used?: Set<string>,
   ): UrlSegmentGroup {
-    const updatedSegments = this.createSegments(redirectTo, group.segments, segments, posParams);
+    const updatedSegments = this.createSegments(
+      redirectTo,
+      group.segments,
+      segments,
+      posParams,
+      used,
+    );
 
     // Keyed by outlet name, which can be `__proto__`, so use a null-prototype map.
     let children: {[n: string]: UrlSegmentGroup} = Object.create(null);
     Object.entries(group.children).forEach(([name, child]) => {
-      children[name] = this.createSegmentGroup(redirectTo, child, segments, posParams);
+      children[name] = this.createSegmentGroup(redirectTo, child, segments, posParams, used);
     });
 
     return new UrlSegmentGroup(updatedSegments, children);
@@ -159,12 +172,16 @@ export class ApplyRedirects {
     redirectToSegments: UrlSegment[],
     actualSegments: UrlSegment[],
     posParams: {[k: string]: UrlSegment},
+    used?: Set<string>,
   ): UrlSegment[] {
-    return redirectToSegments.map((s) =>
-      s.path[0] === ':'
-        ? this.findPosParam(redirectTo, s, posParams)
-        : this.findOrReturn(s, actualSegments),
-    );
+    return redirectToSegments.map((s) => {
+      const name = s.path.substring(1);
+      if (s.path[0] === ':' && (!used || (Object.hasOwn(posParams, name) && !used.has(name)))) {
+        used?.add(name);
+        return this.findPosParam(redirectTo, s, posParams);
+      }
+      return this.findOrReturn(s, actualSegments);
+    });
   }
 
   findPosParam(

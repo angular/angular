@@ -1923,6 +1923,32 @@ describe('redirects', () => {
       );
     });
 
+    it('uses each placeholder at most once in a string returned by a function', async () => {
+      await checkRedirect(
+        [
+          {path: 'a/:id', redirectTo: () => '/b/:id/:id?q=:id&r=:id'},
+          {path: '**', component: ComponentC},
+        ],
+        '/a/1?id=2',
+        (t: UrlTree) => {
+          expectTreeToBe(t, '/b/1/:id?q=2&r=:id');
+        },
+      );
+    });
+
+    it('keeps names that are not parameters in a string returned by a function', async () => {
+      await checkRedirect(
+        [
+          {path: 'a/:id', redirectTo: () => '/b/:constructor?q=:constructor'},
+          {path: '**', component: ComponentC},
+        ],
+        '/a/1',
+        (t: UrlTree) => {
+          expectTreeToBe(t, '/b/:constructor?q=:constructor');
+        },
+      );
+    });
+
     it('works when the returned redirect observable does not complete', async () => {
       await checkRedirect(
         [
