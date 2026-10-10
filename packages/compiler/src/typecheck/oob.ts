@@ -11,6 +11,7 @@ import {AST, BindingPipe, PropertyRead} from '../expression_parser/ast';
 import {
   BoundAttribute,
   BoundEvent,
+  BoundaryBlock,
   Component,
   Directive,
   Element,
@@ -154,7 +155,8 @@ export interface OutOfBandDiagnosticRecorder<T> {
     projectionNode: Element | Template,
     componentName: string,
     slotSelector: string,
-    controlFlowNode: IfBlockBranch | SwitchBlockCase | ForLoopBlock | ForLoopBlockEmpty,
+    controlFlowNode:
+      IfBlockBranch | SwitchBlockCase | ForLoopBlock | ForLoopBlockEmpty | BoundaryBlock,
     preservesWhitespaces: boolean,
   ): void;
 

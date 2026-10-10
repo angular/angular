@@ -8494,6 +8494,73 @@ suppress
         );
       });
 
+      it('should report when an @boundary block prevents an element from being projected', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content/> <ng-content select="bar, [foo]"/>',
+          })
+          class Comp {}
+
+          @Component({
+            imports: [Comp],
+            template: \`
+              <comp>
+                @boundary {
+                  <div foo></div>
+                  breaks projection
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `,
+        );
+
+        const diags = env
+          .driveDiagnostics()
+          .map((d) => ts.flattenDiagnosticMessageText(d.messageText, ''));
+        expect(diags.length).toBe(1);
+        expect(diags[0]).toContain(
+          `Node matches the "bar, [foo]" slot of the "Comp" component, but will ` +
+            `not be projected into the specific slot because the surrounding @boundary has more than one node at its root.`,
+        );
+      });
+
+      it('should not report when an @boundary block has only one root node', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content/> <ng-content select="bar, [foo]"/>',
+          })
+          class Comp {}
+
+          @Component({
+            imports: [Comp],
+            template: \`
+              <comp>
+                @boundary {
+                  <div foo></div>
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
       it('should work with @switch block declared in an ng-template with template scoped variables', () => {
         env.write(
           'test.ts',
