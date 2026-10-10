@@ -21,6 +21,7 @@ export {
   type NavigationUpdateCurrentEntryOptions as ɵNavigationUpdateCurrentEntryOptions,
 } from '../primitives/dom-navigation';
 export {maybeUnwrapDefaultExport as ɵmaybeUnwrapDefaultExport} from './util/default_export';
+export {decodeURIComponentSafe as ɵdecodeURIComponentSafe} from './util/decode_uri';
 
 export {setAlternateWeakRefImpl as ɵsetAlternateWeakRefImpl} from '../primitives/signals';
 export {ANIMATIONS_DISABLED as ɵANIMATIONS_DISABLED} from './animation/interfaces';
