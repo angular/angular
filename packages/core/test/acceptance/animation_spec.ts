@@ -20,11 +20,14 @@ import {
   createEnvironmentInjector,
   Directive,
   ElementRef,
+  EmbeddedViewRef,
   EnvironmentInjector,
   ErrorHandler,
   inject,
+  InjectionToken,
   NgModule,
   OnDestroy,
+  OnInit,
   provideZonelessChangeDetection,
   signal,
   TemplateRef,
@@ -2887,6 +2890,59 @@ describe('Animation', () => {
       await nextAnimationFrame();
 
       expect(errorHandler.handleError).not.toHaveBeenCalled();
+    });
+
+    it('should not throw when destroying ApplicationRef while removing an embedded view with animations in OnDestroy of a standalone component with NgModule providers', async () => {
+      const hostEl = document.createElement('app-root');
+      const overlay = document.createElement('div');
+      document.body.appendChild(hostEl);
+      document.body.appendChild(overlay);
+
+      @Directive({selector: 'ng-template[renderUntilDestroy]'})
+      class RenderUntilDestroy implements OnInit, OnDestroy {
+        private readonly vcr = inject(ViewContainerRef);
+        private readonly template = inject(TemplateRef);
+        private view: EmbeddedViewRef<unknown> | null = null;
+
+        ngOnInit(): void {
+          this.view = this.vcr.createEmbeddedView(this.template);
+          this.view.rootNodes.forEach((node) => overlay.appendChild(node));
+        }
+
+        ngOnDestroy(): void {
+          this.vcr.remove(this.vcr.indexOf(this.view!));
+        }
+      }
+
+      const SOME_TOKEN = new InjectionToken<string>('SOME_TOKEN');
+
+      @NgModule({providers: [{provide: SOME_TOKEN, useValue: 'value'}]})
+      class ModuleWithProviders {}
+
+      @Component({
+        imports: [RenderUntilDestroy, ModuleWithProviders],
+        template: `
+          <ng-template renderUntilDestroy>
+            <div class="panel" animate.enter="fade-in" animate.leave="fade-out">
+              Panel with animate.enter / animate.leave
+            </div>
+          </ng-template>
+        `,
+      })
+      class App {}
+
+      TestBed.configureTestingModule({animationsEnabled: true});
+      const appRef = TestBed.inject(ApplicationRef);
+      const compRef = createComponentFn(App, {
+        environmentInjector: TestBed.inject(EnvironmentInjector),
+        hostElement: hostEl,
+      });
+      appRef.attachView(compRef.hostView);
+      await appRef.whenStable();
+
+      expect(() => TestBed.resetTestingModule()).not.toThrow();
+      hostEl.remove();
+      overlay.remove();
     });
 
     it('should not wait for child component leave animations when host is inside an ng-container', async () => {
