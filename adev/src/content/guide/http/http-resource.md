@@ -137,3 +137,41 @@ await TestBed.inject(ApplicationRef).whenStable();
 
 expect(response.value()).toEqual(0);
 ```
+
+### Testing dependent requests
+
+When one `httpResource` uses the result of another, wait for the first resource's value before flushing the dependent request. Waiting for `ApplicationRef.whenStable()` between requests can leave the test waiting indefinitely: the application cannot become stable until the dependent request is also resolved.
+
+With Vitest, use `vi.waitUntil` to wait for a specific resource to have a value:
+
+```ts
+import {vi} from 'vitest';
+
+TestBed.configureTestingModule({
+  providers: [provideHttpClientTesting()],
+});
+
+const injector = TestBed.inject(Injector);
+const mockBackend = TestBed.inject(HttpTestingController);
+const users = httpResource<{id: number}[]>(() => '/users', {injector});
+const details = httpResource<{name: string}>(
+  () => {
+    const firstUser = users.hasValue() ? users.value()[0] : undefined;
+    return firstUser ? `/users/${firstUser.id}` : undefined;
+  },
+  {injector},
+);
+
+TestBed.tick();
+mockBackend.expectOne('/users').flush([{id: 1}]);
+
+// Wait for the first result without waiting for the dependent request to finish.
+await vi.waitUntil(() => users.hasValue());
+TestBed.tick();
+mockBackend.expectOne('/users/1').flush({name: 'Alice'});
+
+// All requests have responses, so it is now safe to wait for stability.
+await TestBed.inject(ApplicationRef).whenStable();
+expect(details.value()).toEqual({name: 'Alice'});
+mockBackend.verify();
+```
