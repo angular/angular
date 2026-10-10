@@ -7,12 +7,10 @@
  */
 
 import {TsGoFacade} from '../src/facade';
-import * as path from 'path';
 import * as fs from 'node:fs/promises';
 import * as rpc from 'vscode-jsonrpc/node';
-import {TextDocument} from 'vscode-languageserver-textdocument';
 
-import {TestEnv, startTestServer} from './test_helpers';
+import {TestEnv, getTestWorkspacePath, startTestServer} from './test_helpers';
 import {TestFileManager} from './test_file_manager';
 
 describe('QuickInfo with TS 7 binary', () => {
@@ -21,7 +19,7 @@ describe('QuickInfo with TS 7 binary', () => {
   let serverCleanup: () => Promise<void>;
   let env: TestEnv;
 
-  const testWorkspacePath = path.resolve(__dirname, 'test-workspace');
+  const testWorkspacePath = getTestWorkspacePath();
 
   beforeAll(async () => {
     await fs.mkdir(testWorkspacePath, {recursive: true});

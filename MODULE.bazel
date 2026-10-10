@@ -96,6 +96,7 @@ npm.npm_translate_lock(
         "//packages/compiler:package.json",
         "//packages/compiler-cli:package.json",
         "//packages/compiler-cli/linker/babel/test:package.json",
+        "//packages/compiler-cli/preprocessor/language-service:package.json",
         "//packages/core:package.json",
         "//packages/core/test/bundling:package.json",
         "//packages/elements:package.json",

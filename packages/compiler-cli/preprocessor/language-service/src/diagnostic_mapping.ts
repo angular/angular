@@ -7,14 +7,8 @@
  */
 
 import ts from 'typescript';
-import {HybridCompiler} from './hybrid_compiler.js';
-import {
-  Diagnostic,
-  DiagnosticSeverity,
-  DiagnosticTag,
-  DiagnosticRelatedInformation,
-  Position,
-} from 'vscode-languageserver';
+import {HybridCompiler} from '../../src/hybrid_compiler.js';
+import {Diagnostic, Position} from 'vscode-languageserver';
 import * as path from 'node:path';
 import {URI} from 'vscode-uri';
 
@@ -24,11 +18,9 @@ import {
   getTemplateLocationFromTcbLocation,
   getTcbPath,
   isTcbFunction,
-} from './tcb_ls_util.js';
-import {hasIgnoreForDiagnosticsMarker} from './comments.js';
-import {makeClassKey} from './compiler-utils.js';
-
-const IGNORE_MARKER_REGEX = /\/\*\s*D:ignore\s*\*\//;
+} from '../../src/tcb_ls_util.js';
+import {hasIgnoreForDiagnosticsMarker} from '../../src/comments.js';
+import {makeClassKey} from '../../src/compiler-utils.js';
 
 /**
  * Fallback check for ignore markers when the AST is broken due to syntax errors

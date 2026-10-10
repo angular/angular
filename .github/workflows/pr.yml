@@ -86,8 +86,6 @@ jobs:
           # Ensures Aspect lock files are up-to-date.
           # TODO(devversion): Remove when removing pnpm.
           ASPECT_RULES_JS_FROZEN_PNPM_LOCK: '1'
-      - name: Run hybrid language service tests
-        run: pnpm test:ngp:language-service
       - name: Run hybrid language service LSP tests
         run: pnpm test:ngp:vscode
       - name: Upload GRPC logs (for debugging of RBE issues)

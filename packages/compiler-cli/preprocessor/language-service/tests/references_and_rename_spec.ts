@@ -13,7 +13,7 @@ import * as rpc from 'vscode-jsonrpc/node';
 import {fileURLToPath} from 'node:url';
 import {Location} from 'vscode-languageserver';
 
-import {TestEnv, startTestServer} from './test_helpers';
+import {TestEnv, getTestWorkspacePath, startTestServer} from './test_helpers';
 import {TestFileManager} from './test_file_manager';
 import {positionToOffset} from '../../src/tcb_ls_util.js';
 
@@ -50,7 +50,7 @@ describe('References and Rename with TS 7 binary', () => {
   let serverCleanup: () => Promise<void>;
   let env: TestEnv;
 
-  const testWorkspacePath = path.resolve(__dirname, 'test-workspace');
+  const testWorkspacePath = getTestWorkspacePath();
 
   beforeAll(async () => {
     await fs.mkdir(testWorkspacePath, {recursive: true});

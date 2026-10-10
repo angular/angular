@@ -13,7 +13,7 @@ import * as rpc from 'vscode-jsonrpc/node';
 import {TextDocument} from 'vscode-languageserver-textdocument';
 import {DiagnosticSeverity} from 'vscode-languageserver';
 
-import {TestEnv, startTestServer} from './test_helpers';
+import {TestEnv, getTestWorkspacePath, startTestServer} from './test_helpers';
 import {TestFileManager} from './test_file_manager';
 
 describe('Diagnostics Mapping', () => {
@@ -21,7 +21,7 @@ describe('Diagnostics Mapping', () => {
   let facade: TsGoFacade;
   let serverCleanup: () => Promise<void>;
 
-  const testWorkspacePath = path.resolve(__dirname, 'test-workspace');
+  const testWorkspacePath = getTestWorkspacePath();
 
   beforeAll(async () => {
     await fs.mkdir(testWorkspacePath, {recursive: true});

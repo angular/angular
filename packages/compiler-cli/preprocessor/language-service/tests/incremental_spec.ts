@@ -8,12 +8,12 @@
 
 import * as path from 'path';
 import * as rpc from 'vscode-jsonrpc/node';
-import {TestEnv, startTestServer} from './test_helpers';
+import {TestEnv, getTestWorkspacePath, startTestServer} from './test_helpers';
 import {TestFileManager} from './test_file_manager';
 
 import {TsGoFacade} from '../src/facade';
 
-const testWorkspacePath = path.join(__dirname, 'test-workspace');
+const testWorkspacePath = getTestWorkspacePath();
 
 describe('Incremental Analysis', () => {
   let connection: rpc.MessageConnection;
