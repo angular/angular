@@ -454,6 +454,24 @@ function createRootTView(
   let updateBindings: Binding[] | null = null;
   let varsToAllocate = 0;
 
+  // The host of a dynamically created component may have both the FormField directive and
+  // component-owned constraint inputs. Collect their names before the create callbacks run.
+  const allBindings: BindingInternal[] = [
+    ...((componentBindings ?? []) as BindingInternal[]),
+    ...(directives ?? []).flatMap((directive) =>
+      typeof directive === 'function' ? [] : (directive.bindings as BindingInternal[]),
+    ),
+  ];
+  const constraintNames = new Set(['min', 'max', 'minLength', 'maxLength']);
+  const explicitConstraintBindings = allBindings
+    .filter((binding) => binding.publicName !== undefined && constraintNames.has(binding.publicName))
+    .map((binding) => binding.publicName!);
+  for (const binding of allBindings) {
+    if (binding.publicName === 'formField') {
+      binding.explicitConstraintBindings = explicitConstraintBindings;
+    }
+  }
+
   if (componentBindings) {
     for (const binding of componentBindings as BindingInternal[]) {
       varsToAllocate += binding[BINDING].requiredVars;

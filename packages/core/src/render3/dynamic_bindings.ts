@@ -41,6 +41,12 @@ export interface BindingInternal extends Binding {
   };
 
   /** Target index (in a view's registry) to which to apply the binding. */
+  /** Public name of this input, for collecting sibling constraint bindings. */
+  publicName?: string;
+
+  /** Constraint bindings explicitly provided on the same host. */
+  explicitConstraintBindings?: readonly string[];
+
   targetIdx?: number;
 
   /** Callback that will be invoked during creation. */
@@ -134,8 +140,9 @@ export function inputBinding(publicName: string, value: () => unknown): Binding 
   if (publicName === 'formField') {
     const binding: BindingInternal = {
       [BINDING]: INPUT_BINDING_METADATA,
+      publicName,
       create: () => {
-        controlCreateInternal();
+        controlCreateInternal(binding.explicitConstraintBindings);
       },
       update: () => {
         // Update the [formField] input binding, regardless of whether this targets a 'FormField' directive.
@@ -150,6 +157,7 @@ export function inputBinding(publicName: string, value: () => unknown): Binding 
   // don't get tree shaken when constructed by a function like this.
   const binding: BindingInternal = {
     [BINDING]: INPUT_BINDING_METADATA,
+    publicName,
     update: () => inputBindingUpdate(binding.targetIdx!, publicName, value()),
   };
 
@@ -230,6 +238,7 @@ export function twoWayBinding(publicName: string, value: WritableSignal<unknown>
   ngDevMode && assertNotDefined(output.update, 'Unexpected `update` callback in outputBinding');
 
   const binding: BindingInternal = {
+    publicName,
     [BINDING]: {
       kind: 'twoWay',
       requiredVars: input[BINDING].requiredVars + output[BINDING].requiredVars,

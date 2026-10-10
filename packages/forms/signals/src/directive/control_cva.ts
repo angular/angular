@@ -97,6 +97,9 @@ export function cvaControlCreate(
     }
 
     for (const name of CONTROL_BINDING_NAMES) {
+      if (host.hasExplicitInputBinding(name)) {
+        continue;
+      }
       const value = readFieldStateBindingValue(fieldState, name);
       if (bindingUpdated(bindings, name, value)) {
         const propertyWasSet = host.setInputOnDirectives(

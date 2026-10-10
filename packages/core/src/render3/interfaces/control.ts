@@ -74,6 +74,9 @@ export interface ControlDirectiveHost<_TPassthroughInput extends string | undefi
    */
   customControlHasInput(inputName: string): boolean;
 
+  /** Whether the template explicitly binds this constraint on the control. */
+  hasExplicitInputBinding(inputName: string): boolean;
+
   /**
    * Updates a property binding on all directives on this node, aside from the control directive
    * itself.
