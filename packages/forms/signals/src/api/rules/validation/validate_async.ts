@@ -12,6 +12,7 @@ import {addDefaultField} from '../../../field/validation';
 import {FieldPathNode} from '../../../schema/path_node';
 import {assertPathIsCurrent} from '../../../schema/schema';
 import {
+  AsyncValidationProcessingMode,
   FieldContext,
   LogicFn,
   PathKind,
@@ -19,6 +20,7 @@ import {
   SchemaPathRules,
   TreeValidationResult,
 } from '../../types';
+export type {AsyncValidationProcessingMode};
 import {IS_ASYNC_VALIDATION_RESOURCE, createManagedMetadataKey, metadata} from '../metadata';
 
 /**
@@ -107,11 +109,20 @@ export interface AsyncValidatorOptions<
    * A function that receives the field context and returns true if the async validation should be run.
    */
   readonly when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
+  /**
+   * Defines when this asynchronous validator should be executed and processed.
+   * Overrides the form-level `processAsyncValidators` setting if specified.
+   *
+   * - `'whenSyncValid'`: Async validation runs only when all synchronous validation has passed.
+   * - `'always'`: Async validation runs regardless of whether synchronous validation errors are present.
+   */
+  readonly processAsyncValidators?: AsyncValidationProcessingMode;
 }
 
 /**
  * Adds async validation to the field corresponding to the given path based on a resource.
- * Async validation for a field only runs once all synchronous validation is passing.
+ * By default, async validation for a field only runs once all synchronous validation is passing,
+ * unless `processAsyncValidators` is configured to `'always'` (either on the validator or the form).
  *
  * @param path A path indicating the field to bind the async validation logic to.
  * @param opts The async validation options.
@@ -147,7 +158,12 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
   metadata(path, RESOURCE, (ctx) => {
     const node = ctx.stateOf(path) as FieldNode;
     const validationState = node.validationState;
-    if (validationState.shouldSkipValidation() || !validationState.syncValid()) {
+    if (validationState.shouldSkipValidation()) {
+      return undefined;
+    }
+    const mode =
+      opts.processAsyncValidators ?? node.structure.fieldManager.processAsyncValidators;
+    if (mode !== 'always' && !validationState.syncValid()) {
       return undefined;
     }
     if (opts.when && !opts.when(ctx)) {
