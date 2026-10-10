@@ -14,6 +14,7 @@ import {TNode, TNodeType} from '../../src/render3/interfaces/node';
 import {RElement} from '../../src/render3/interfaces/renderer_dom';
 import {ANIMATIONS, ID, LView, TVIEW} from '../../src/render3/interfaces/view';
 import {
+  areLeaveAnimationsEnabled,
   clearViewDetachAnimations,
   enableAnimationRuntimeSupport,
   enableViewDetachAnimationsSupport,
@@ -118,8 +119,10 @@ describe('node animations runtime switch', () => {
 
       initViewDetachAnimations(lView);
       expect(lView[ANIMATIONS]!.detachedLeaveAnimationFns).toBeUndefined();
+      expect(areLeaveAnimationsEnabled()).toBe(false);
 
       enableViewDetachAnimationsSupport();
+      expect(areLeaveAnimationsEnabled()).toBe(true);
       initViewDetachAnimations(lView);
       expect(lView[ANIMATIONS]!.detachedLeaveAnimationFns).toEqual([]);
 
