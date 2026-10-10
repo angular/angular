@@ -1,0 +1,27 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "cli": {
+    "analytics": false,
+    "cache": {
+      "enabled": false
+    }
+  },
+  "projects": {
+    "post": {
+      "projectType": "library",
+      "root": "libs/post",
+      "sourceRoot": "libs/post/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:library",
+          "options": {
+            "tsConfig": "libs/post/tsconfig.lib.json",
+            "declarationMap": true
+          }
+        }
+      }
+    }
+  }
+}

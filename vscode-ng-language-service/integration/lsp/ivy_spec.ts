@@ -23,7 +23,6 @@ import {
 } from '../../common/requests';
 import {
   APP_COMPONENT,
-  APP_COMPONENT_MODULE,
   APP_COMPONENT_MODULE_URI,
   APP_COMPONENT_URI,
   BAR_COMPONENT,
