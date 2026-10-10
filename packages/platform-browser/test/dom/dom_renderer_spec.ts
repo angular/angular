@@ -5,9 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {NgIf} from '@angular/common';
+import {NgIf, NgStyle} from '@angular/common';
 import {ChangeDetectionStrategy} from '@angular/compiler';
-import {Component, Renderer2, ViewEncapsulation} from '@angular/core';
+import {Component, Renderer2, signal, ViewEncapsulation} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {isNode} from '@angular/private/testing';
 import {expect} from '@angular/private/testing/matchers';
@@ -89,6 +89,198 @@ describe('DefaultDomRendererV2', () => {
 
         expect(div.hasAttributeNS(namespaceUri, 'name')).toBe(false);
       }
+    });
+  });
+
+  describe('style DOM clobbering', () => {
+    const unsafeValue = '<img data-injected>';
+
+    describe('[style] bindings', () => {
+      async function expectStyleBinding(options: {
+        template: string;
+        expectedNamespace?: string;
+        expectedStyle?: string;
+      }): Promise<void> {
+        @Component({
+          template: options.template,
+        })
+        class App {
+          readonly unsafeValue = unsafeValue;
+          readonly stringStyles = `color: red; outerHTML: ${unsafeValue}`;
+          readonly objectStyles = {color: 'red', outerHTML: unsafeValue};
+        }
+
+        TestBed.resetTestingModule();
+        const fixture = TestBed.createComponent(App);
+        await fixture.whenStable();
+
+        const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+        const control = fixture.nativeElement.querySelector('[data-control]') as HTMLElement;
+
+        expect(form.style as unknown as HTMLElement).toBe(control);
+        expect(fixture.nativeElement.querySelector('[data-injected]')).toBeNull();
+        expect(control.isConnected).toBeTrue();
+        expect(form.getAttribute('style')).toContain(options.expectedStyle ?? 'color: red');
+        if (options.expectedNamespace) {
+          expect(form.namespaceURI).toBe(options.expectedNamespace);
+        }
+      }
+
+      async function expectStyleRemoval(style: string, value: string): Promise<void> {
+        @Component({
+          template: `
+            <form [style]="styles()">
+              <input name="style" data-control />
+            </form>
+          `,
+        })
+        class App {
+          readonly styles = signal<Record<string, string>>({[style]: value});
+        }
+
+        TestBed.resetTestingModule();
+        const fixture = TestBed.createComponent(App);
+        await fixture.whenStable();
+
+        const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+        const control = fixture.nativeElement.querySelector('[data-control]') as HTMLElement;
+        expect(form.getAttribute('style')).toContain(`${style}: ${value}`);
+
+        fixture.componentInstance.styles.set({});
+        await fixture.whenStable();
+
+        expect(form.style as unknown as HTMLElement).toBe(control);
+        expect(control.isConnected).toBeTrue();
+        expect(form.getAttribute('style')).not.toContain(style);
+      }
+
+      it('should recover the style declaration for string style maps', async () => {
+        await expectStyleBinding({
+          template: `
+          <form [style]="stringStyles">
+            <input name="style" id="localName" data-control />
+          </form>
+        `,
+        });
+      });
+
+      it('should recover the style declaration for object style maps', async () => {
+        await expectStyleBinding({
+          template: `
+          <form [style]="objectStyles">
+            <input id="style" data-control />
+          </form>
+        `,
+        });
+      });
+
+      it('should recover the style declaration when multiple controls clobber it', async () => {
+        @Component({
+          template: `
+            <form [style]="styles">
+              <input name="style" data-control />
+              <input name="style" data-control />
+            </form>
+          `,
+        })
+        class App {
+          readonly styles = {color: 'red', outerHTML: unsafeValue};
+        }
+
+        TestBed.resetTestingModule();
+        const fixture = TestBed.createComponent(App);
+        await fixture.whenStable();
+
+        const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+        const controls = fixture.nativeElement.querySelectorAll('[data-control]');
+        const clobberedStyle = form.style as unknown as RadioNodeList;
+
+        expect(clobberedStyle.length).toBe(2);
+        expect(clobberedStyle[0]).toBe(controls[0]);
+        expect(fixture.nativeElement.querySelector('[data-injected]')).toBeNull();
+        expect(controls.length).toBe(2);
+        expect(form.getAttribute('style')).toContain('color: red');
+      });
+
+      it('should recover the style declaration for style property bindings', async () => {
+        await expectStyleBinding({
+          template: `
+          <form [style.color]="'red'" [style.outerHTML]="unsafeValue">
+            <button name="style" data-control></button>
+          </form>
+        `,
+        });
+      });
+
+      it('should recover the style declaration for prefixed XHTML forms', async () => {
+        await expectStyleBinding({
+          template: `
+          <xhtml:form xmlns:xhtml="http://www.w3.org/1999/xhtml" [style]="objectStyles">
+            <xhtml:input name="style" data-control />
+          </xhtml:form>
+        `,
+          expectedNamespace: NAMESPACE_URIS['xhtml'],
+        });
+      });
+
+      it('should set dash-cased styles on prefixed XHTML forms', async () => {
+        await expectStyleBinding({
+          template: `
+          <xhtml:form xmlns:xhtml="http://www.w3.org/1999/xhtml" [style.--token]="'blue'">
+            <xhtml:input name="style" data-control />
+          </xhtml:form>
+        `,
+          expectedNamespace: NAMESPACE_URIS['xhtml'],
+          expectedStyle: '--token: blue',
+        });
+      });
+
+      it('should remove camel-cased styles from forms with clobbered style properties', async () => {
+        await expectStyleRemoval('color', 'red');
+      });
+
+      it('should remove dash-cased styles from forms with clobbered style properties', async () => {
+        await expectStyleRemoval('--token', 'blue');
+      });
+    });
+
+    describe('NgStyle', () => {
+      async function expectNgStyleBinding(template: string): Promise<void> {
+        @Component({
+          imports: [NgStyle],
+          template,
+        })
+        class App {
+          readonly styles = {color: 'red', outerHTML: unsafeValue};
+        }
+
+        TestBed.resetTestingModule();
+        const fixture = TestBed.createComponent(App);
+        await fixture.whenStable();
+
+        const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+        const control = fixture.nativeElement.querySelector('[data-control]') as HTMLElement;
+
+        expect(form.style as unknown as HTMLElement).toBe(control);
+        expect(fixture.nativeElement.querySelector('[data-injected]')).toBeNull();
+        expect(control.isConnected).toBeTrue();
+        expect(form.getAttribute('style')).toContain('color: red');
+      }
+
+      it('should recover the style declaration for associated controls', async () => {
+        await expectNgStyleBinding(`
+          <form [ngStyle]="styles">
+            <textarea name="style" data-control></textarea>
+          </form>
+        `);
+      });
+
+      it('should recover the style declaration for externally associated controls', async () => {
+        await expectNgStyleBinding(`
+          <form id="ng-style" [ngStyle]="styles"></form>
+          <select form="ng-style" name="style" data-control></select>
+        `);
+      });
     });
   });
 
