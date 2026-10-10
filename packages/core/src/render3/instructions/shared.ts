@@ -630,7 +630,11 @@ export function elementLikeStartShared(
   // It's important that this runs before we've instantiated the directives.
   const isElement = tNode.type === TNodeType.Element;
   if (isElement) {
-    setupStaticAttributes(lView[RENDERER], native as RElement, tNode);
+    // Hydrated elements already have their static attributes from the server. Writing them again
+    // would drop classes, styles and attributes added during SSR (e.g. through `Renderer2`).
+    if (wasLastNodeCreated()) {
+      setupStaticAttributes(lView[RENDERER], native as RElement, tNode);
+    }
 
     // any immediate children of a component or template container must be pre-emptively
     // monkey-patched with the component view data so that the element can be inspected

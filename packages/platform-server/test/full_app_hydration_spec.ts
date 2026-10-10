@@ -48,6 +48,7 @@ import {
   Provider,
   provideZoneChangeDetection,
   QueryList,
+  Renderer2,
   signal,
   TemplateRef,
   ViewChild,
@@ -480,6 +481,48 @@ describe('platform-server full application hydration integration', () => {
           appRef.tick();
 
           const clientRootNode = compRef.location.nativeElement;
+          verifyAllNodesClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        });
+
+        it('should keep classes and styles added during SSR on elements with static styling', async () => {
+          @Directive({selector: '[serverStyling]'})
+          class ServerStyling {
+            constructor() {
+              // Only runs on the server, so anything kept on the client comes from the SSR output.
+              if (isPlatformServer(inject(PLATFORM_ID))) {
+                const renderer = inject(Renderer2);
+                const element = inject(ElementRef).nativeElement;
+                renderer.addClass(element, 'active');
+                renderer.setStyle(element, 'color', 'red');
+              }
+            }
+          }
+
+          @Component({
+            selector: 'app',
+            imports: [ServerStyling],
+            template: `<a class="nav-link" style="display: block" serverStyling>Link</a>`,
+          })
+          class SimpleComponent {}
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+          resetTViewsFor(SimpleComponent);
+
+          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+
+          const clientRootNode = compRef.location.nativeElement;
+          const link = clientRootNode.querySelector('a');
+          expect(link.className).toBe('nav-link active');
+          expect(link.style.display).toBe('block');
+          expect(link.style.color).toBe('red');
+
           verifyAllNodesClaimedForHydration(clientRootNode);
           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
         });
