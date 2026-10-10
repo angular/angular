@@ -205,8 +205,13 @@ function parseSelector(tag: MetaDefinition): string {
 
 function escapeSelectorValue(value: string): string {
   // Escape backslashes and double quotes to prevent CSS selector injection.
-  // This securely confines the value inside an attribute selector.
-  return `"${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
+  // This securely confines the value inside an attribute selector. A newline cannot be confined
+  // that way: it terminates the string token (CSS Syntax 3 4.3.5), and carriage return and form
+  // feed are preprocessed into one (CSS Syntax 3 3.3), so write those as character escapes.
+  return `"${value
+    .replace(/\\/g, '\\\\')
+    .replace(/"/g, '\\"')
+    .replace(/[\n\r\f]/g, (char) => `\\${char.charCodeAt(0).toString(16)} `)}"`;
 }
 
 function containsAttributes(tag: MetaDefinition, elem: HTMLMetaElement): boolean {

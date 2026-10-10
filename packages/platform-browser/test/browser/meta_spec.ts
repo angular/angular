@@ -244,6 +244,25 @@ describe('Meta service', () => {
     metaService.removeTagElement(meta);
   });
 
+  it('should escape newlines in selector values derived from the tag definition', () => {
+    // A raw newline terminates the CSS string token, so the derived `meta[name="..."]`
+    // selector is invalid and `querySelector` rejects it. Carriage return and form feed are
+    // preprocessed into a newline, so they behave the same way.
+    for (const name of ['description\nevil', 'description\revil', 'description\fevil']) {
+      const meta = metaService.addTag({name, content: 'first'})!;
+
+      expect(meta.getAttribute('name')).toEqual(name);
+      // Re-adding has to resolve the existing tag through the derived selector.
+      expect(metaService.addTag({name, content: 'first'})).toBe(meta);
+
+      metaService.updateTag({name, content: 'second'});
+      expect(meta.getAttribute('content')).toEqual('second');
+
+      // clean up
+      metaService.removeTagElement(meta);
+    }
+  });
+
   it('should not let a quoted name break out of the meta selector and target body', () => {
     // This payload attempts to break out of the `meta[name="..."]` constraint entirely
     // and inject a comma to target arbitrary DOM elements like the `body` tag.
