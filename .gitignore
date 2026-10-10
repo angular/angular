@@ -9,7 +9,6 @@ modules/ssr-benchmarks/node_modules/
 /ngp-vscode-ng-language-service/dist/
 /.vscode-test/
 /.vscode-test-user-data/
-.jasmine_build/
 
 # Include when developing application packages.
 pubspec.lock

@@ -1,8 +1,0 @@
-{
-  "extends": "../tsconfig.json",
-  "compilerOptions": {
-    "outDir": "../../dist/tsc/vscode-ng-language-service/tests",
-    "rootDir": "../.."
-  },
-  "include": ["*.ts"]
-}

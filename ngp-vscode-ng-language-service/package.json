@@ -147,7 +147,7 @@
   "main": "./dist/client/extension.js",
   "scripts": {
     "compile": "tsc -p client --noEmit && tsc -p server --noEmit && node build.js",
-    "typecheck": "tsc -p client --noEmit && tsc -p server --noEmit && tsc -p tests --noEmit",
+    "typecheck": "tsc -p client --noEmit && tsc -p server --noEmit",
     "test": "pnpm run compile && node e2e/build-tests.js && node e2e/runTests.js",
     "watch": "pnpm --prefix client run watch & pnpm --prefix server run watch"
   },
