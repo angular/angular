@@ -7,15 +7,15 @@
  */
 
 import {
-  isEarlyEventType,
-  isCaptureEventType,
-  EventContractContainer,
-  EventContract,
-  EventDispatcher,
-  registerDispatcher,
-  getAppScopedQueuedEventInfos,
   clearAppScopedEarlyEventContract,
+  EventContract,
+  EventContractContainer,
+  EventDispatcher,
   EventPhase,
+  getAppScopedQueuedEventInfos,
+  isCaptureEventType,
+  isEarlyEventType,
+  registerDispatcher,
 } from '../../primitives/event-dispatch';
 
 import {APP_BOOTSTRAP_LISTENER, ApplicationRef} from '../application/application_ref';
@@ -24,29 +24,30 @@ import {inject} from '../di/injector_compatibility';
 import {Provider} from '../di/interface/provider';
 import {RElement, RNode} from '../render3/interfaces/renderer_dom';
 import {CLEANUP, LView, TView} from '../render3/interfaces/view';
-import {unwrapRNode} from '../render3/util/view_utils';
+import {storeLViewOnDestroy, unwrapRNode} from '../render3/util/view_utils';
 
+import {APP_ID} from '../application/application_tokens';
+import {triggerHydrationFromBlockName} from '../defer/triggering';
 import {
-  JSACTION_BLOCK_ELEMENT_MAP,
+  DEFER_BLOCK_SSR_ID_ATTRIBUTE,
+  enableStashEventListenerImpl,
+  EventContractDetails,
+  invokeListeners,
+  JSACTION_EVENT_CONTRACT,
+  removeElementFromSharedMap,
+  removeListeners,
+  setStashFn,
+  sharedMapFunction,
+  sharedStashFunction,
+} from '../event_delegation_utils';
+import {performanceMarkFeature} from '../util/performance';
+import {
   EVENT_REPLAY_ENABLED_DEFAULT,
-  IS_EVENT_REPLAY_ENABLED,
   EVENT_REPLAY_QUEUE,
   EventReplayQueue,
+  IS_EVENT_REPLAY_ENABLED,
+  JSACTION_BLOCK_ELEMENT_MAP,
 } from './tokens';
-import {
-  sharedStashFunction,
-  sharedMapFunction,
-  DEFER_BLOCK_SSR_ID_ATTRIBUTE,
-  EventContractDetails,
-  JSACTION_EVENT_CONTRACT,
-  invokeListeners,
-  removeListeners,
-  enableStashEventListenerImpl,
-  setStashFn,
-} from '../event_delegation_utils';
-import {APP_ID} from '../application/application_tokens';
-import {performanceMarkFeature} from '../util/performance';
-import {triggerHydrationFromBlockName} from '../defer/triggering';
 import {isIncrementalHydrationEnabled} from './utils';
 
 /** Apps in which we've enabled event replay.
@@ -111,13 +112,20 @@ export function withEventReplay(): Provider[] {
               const appId = injector.get(APP_ID);
               const clearStashFn = setStashFn(
                 appId,
-                (rEl: RNode, eventName: string, listenerFn: VoidFunction) => {
+                (rEl: RNode, eventName: string, listenerFn: VoidFunction, lView: LView) => {
                   // If a user binds to a ng-container and uses a directive that binds using a host listener,
                   // this element could be a comment node. So we need to ensure we have an actual element
                   // node before stashing anything.
                   if ((rEl as Node).nodeType !== Node.ELEMENT_NODE) return;
                   sharedStashFunction(rEl as RElement, eventName, listenerFn);
                   sharedMapFunction(rEl as RElement, jsActionMap);
+
+                  // The event listener stashing is retaining the element we listening to.
+                  // To prevent any temporary memory leaks, we remove the stashed listeners
+                  // when the LView is destroyed.
+                  storeLViewOnDestroy(lView, () =>
+                    removeElementFromSharedMap(rEl as RElement, jsActionMap),
+                  );
                 },
               );
               // Clean up the reference to the function set by the environment initializer,
