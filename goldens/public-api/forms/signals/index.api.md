@@ -102,6 +102,7 @@ export type Debouncer<TValue, TPathKind extends PathKind = PathKind.Root> = (con
 // @public
 export function disabled<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, config?: {
     when?: string | NoInfer<LogicFn<TValue, boolean | string, TPathKind>>;
+    validate?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
 }): void;
 
 // @public @deprecated
@@ -219,6 +220,9 @@ export interface FormOptions<TModel> {
     };
     injector?: Injector;
     name?: string;
+    skipDisabledValidation?: boolean;
+    skipHiddenValidation?: boolean;
+    skipReadonlyValidation?: boolean;
     submission?: FormSubmitOptions<TModel, unknown>;
 }
 
@@ -279,6 +283,7 @@ export interface FormValueControl<TValue> extends FormUiControl<TValue> {
 // @public
 export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, config?: {
     when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
+    validate?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
 }): void;
 
 // @public @deprecated
@@ -570,6 +575,7 @@ export function provideSignalFormsConfig(config: SignalFormsConfig): Provider[];
 // @public
 export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, config?: {
     when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
+    validate?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
 }): void;
 
 // @public @deprecated
