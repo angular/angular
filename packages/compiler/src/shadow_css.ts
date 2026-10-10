@@ -753,7 +753,9 @@ export class ShadowCss {
     const _scopeSelectorPart = (p: string) => {
       let scopedP = p.trim();
 
-      if (!scopedP || scopedP === '&') {
+      // Comments are replaced with placeholders before scoping. A part that only consists of
+      // comments is not a selector and must be left untouched.
+      if (!scopedP || scopedP === '&' || _onlyCommentPlaceholdersRe.test(scopedP)) {
         return p;
       }
 
@@ -1031,6 +1033,7 @@ const _commentRe = /\/\*[\s\S]*?\*\//g;
 const _commentWithHashRe = /\/\*\s*#\s*source(Mapping)?URL=/g;
 const COMMENT_PLACEHOLDER = '%COMMENT%';
 const _commentWithHashPlaceHolderRe = new RegExp(COMMENT_PLACEHOLDER, 'g');
+const _onlyCommentPlaceholdersRe = new RegExp(`^(?:${COMMENT_PLACEHOLDER})+$`);
 
 const BLOCK_PLACEHOLDER = '%BLOCK%';
 const _ruleRe = new RegExp(
