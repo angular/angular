@@ -80,40 +80,39 @@ export interface FormUiControl<TValue> {
    */
   readonly required?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
   /**
-   * An input to receive the min value for the field. If implemented, the `Field` directive will
-   * automatically bind the min value from the bound field to this input.
+   * An input that may receive the minimum value from the form schema.
+   *
+   * @deprecated Constraint inputs are discovered by name at runtime and are not required by
+   * `FormUiControl`. A future major release will remove this member from the interface.
    */
-  readonly min?:
-    | InputSignal<NonNullable<TValue> | undefined>
-    | InputSignalWithTransform<NonNullable<TValue> | undefined, unknown>;
+  readonly min?: InputSignalWithTransform<any, any>;
   /**
-   * An input to receive the min length for the field. If implemented, the `Field` directive will
-   * automatically bind the min length from the bound field to this input.
+   * An input that may receive the maximum value from the form schema.
+   *
+   * @deprecated Constraint inputs are discovered by name at runtime and are not required by
+   * `FormUiControl`. A future major release will remove this member from the interface.
    */
-  readonly minLength?:
-    | InputSignal<number | undefined>
-    | InputSignalWithTransform<number | undefined, unknown>;
+  readonly max?: InputSignalWithTransform<any, any>;
   /**
-   * An input to receive the max value for the field. If implemented, the `Field` directive will
-   * automatically bind the max value from the bound field to this input.
+   * An input that may receive the minimum length from the form schema.
+   *
+   * @deprecated Constraint inputs are discovered by name at runtime and are not required by
+   * `FormUiControl`. A future major release will remove this member from the interface.
    */
-  readonly max?:
-    | InputSignal<NonNullable<TValue> | undefined>
-    | InputSignalWithTransform<NonNullable<TValue> | undefined, unknown>;
+  readonly minLength?: InputSignalWithTransform<any, any>;
   /**
-   * An input to receive the max length for the field. If implemented, the `Field` directive will
-   * automatically bind the max length from the bound field to this input.
+   * An input that may receive the maximum length from the form schema.
+   *
+   * @deprecated Constraint inputs are discovered by name at runtime and are not required by
+   * `FormUiControl`. A future major release will remove this member from the interface.
    */
-  readonly maxLength?:
-    | InputSignal<number | undefined>
-    | InputSignalWithTransform<number | undefined, unknown>;
+  readonly maxLength?: InputSignalWithTransform<any, any>;
   /**
    * An input to receive the value patterns for the field. If implemented, the `Field` directive
    * will automatically bind the value patterns from the bound field to this input.
    */
   readonly pattern?:
-    | InputSignal<readonly RegExp[]>
-    | InputSignalWithTransform<readonly RegExp[], unknown>;
+    InputSignal<readonly RegExp[]> | InputSignalWithTransform<readonly RegExp[], unknown>;
   /**
    * An output to emit when the user finishes interacting with the control, marking the field as
    * touched. Emit this in response to the native `blur` event (when focus leaves the control), not

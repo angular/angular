@@ -9,11 +9,14 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  createComponent,
   Directive,
+  EnvironmentInjector,
   forwardRef,
   inject,
   Input,
   input,
+  inputBinding,
   model,
   resource,
   signal,
@@ -1222,6 +1225,126 @@ describe('ControlValueAccessor', () => {
     });
 
     describe('min', () => {
+      it('should honor explicit dynamic input bindings on a CVA', () => {
+        @Component({
+          selector: 'dynamic-cva',
+          template: '',
+          providers: [{provide: NG_VALUE_ACCESSOR, useExisting: DynamicCva, multi: true}],
+        })
+        class DynamicCva implements ControlValueAccessor {
+          readonly min = input(0);
+          readonly max = input(100);
+          writeValue(value: unknown): void {}
+          registerOnChange(fn: (value: unknown) => void): void {}
+          registerOnTouched(fn: () => void): void {}
+        }
+
+        const field = form(signal(20), (p) => {
+          min(p, 30);
+          max(p, 50);
+        });
+        const ref = createComponent(DynamicCva, {
+          environmentInjector: TestBed.inject(EnvironmentInjector),
+          bindings: [inputBinding('min', () => 5)],
+          directives: [
+            {type: FormField, bindings: [inputBinding('formField', () => field)]},
+          ],
+        });
+
+        try {
+          act(() => ref.changeDetectorRef.detectChanges());
+          expect(ref.instance.min()).toBe(5);
+          expect(ref.instance.max()).toBe(50);
+        } finally {
+          ref.destroy();
+        }
+      });
+
+      it('should preserve CVA constraint input defaults without schema rules', () => {
+        @Component({
+          selector: 'range-cva',
+          template: '',
+          providers: [{provide: NG_VALUE_ACCESSOR, useExisting: RangeCva, multi: true}],
+        })
+        class RangeCva implements ControlValueAccessor {
+          readonly min = input(0);
+          readonly max = input(100);
+          readonly minLength = input<{days: number} | null>(null);
+          readonly maxLength = input(99);
+          writeValue(value: unknown): void {}
+          registerOnChange(fn: (value: unknown) => void): void {}
+          registerOnTouched(fn: () => void): void {}
+        }
+
+        @Component({
+          imports: [FormField, RangeCva],
+          template: '<range-cva [formField]="field" />',
+        })
+        class TestCmp {
+          readonly field = form(signal(20));
+          readonly control = viewChild.required(RangeCva);
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const control = fixture.componentInstance.control();
+        expect(control.min()).toBe(0);
+        expect(control.max()).toBe(100);
+        expect(control.minLength()).toBeNull();
+        expect(control.maxLength()).toBe(99);
+      });
+
+      it('should validate schema constraints without overwriting explicit CVA inputs', () => {
+        @Component({
+          selector: 'range-cva',
+          template: '',
+          providers: [{provide: NG_VALUE_ACCESSOR, useExisting: RangeCva, multi: true}],
+        })
+        class RangeCva implements ControlValueAccessor {
+          readonly min = input('local');
+          readonly max = input(100);
+          readonly minLength = input<{days: number} | null>(null);
+          readonly maxLength = input(99);
+          readonly invalid = input(false);
+          writeValue(value: unknown): void {}
+          registerOnChange(fn: (value: unknown) => void): void {}
+          registerOnTouched(fn: () => void): void {}
+        }
+
+        @Component({
+          imports: [FormField, RangeCva],
+          template: '<range-cva [formField]="field" [min]="localMin()" [minLength]="{days: 3}" />',
+        })
+        class TestCmp {
+          readonly localMin = signal('local');
+          readonly validationMin = signal(30);
+          readonly validationMax = signal(80);
+          readonly field = form(signal(20), (p) => {
+            min(p, this.validationMin);
+            max(p, this.validationMax);
+          });
+          readonly control = viewChild.required(RangeCva);
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const component = fixture.componentInstance;
+        expect(component.control().min()).toBe('local');
+        expect(component.control().max()).toBe(80);
+        expect(component.control().minLength()).toEqual({days: 3});
+        expect(component.control().maxLength()).toBe(99);
+        expect(component.field().invalid()).toBe(true);
+        expect(component.control().invalid()).toBe(true);
+
+        act(() => {
+          component.localMin.set('updated');
+          component.validationMin.set(10);
+          component.validationMax.set(50);
+        });
+        expect(component.control().min()).toBe('updated');
+        expect(component.control().max()).toBe(50);
+        expect(component.field().invalid()).toBe(false);
+        expect(component.control().invalid()).toBe(false);
+      });
+
       it('should bind to directive input', () => {
         @Directive({selector: '[testDir]'})
         class TestDir {

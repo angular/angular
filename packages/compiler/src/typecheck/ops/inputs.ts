@@ -23,7 +23,10 @@ import {
   CustomFormControlType,
   customFormControlBannedInputFields,
   expandBoundAttributesForField,
+  hasExplicitConstraintBinding,
 } from './signal_forms';
+import {CUSTOM_CONTROL_CONSTRAINT_INPUTS} from '../../render3/signal_forms_constraints';
+import {MatchSource} from '../../render3/view/t2_api';
 import {getBoundAttributes, widenBinding} from './bindings';
 import {LocalSymbol} from './references';
 import {isUnsafeObjectKey} from '../../render3/util';
@@ -71,7 +74,15 @@ export class TcbDirectiveInputsOp extends TcbOp {
     const boundAttrs = getBoundAttributes(this.dir, this.node);
 
     if (this.customFormControlType !== null) {
-      checkUnsupportedFieldBindings(this.node, customFormControlBannedInputFields, this.tcb);
+      checkUnsupportedFieldBindings(
+        this.node,
+        new Set(
+          [...customFormControlBannedInputFields].filter(
+            (name) => !hasExplicitConstraintBinding(this.node, name),
+          ),
+        ),
+        this.tcb,
+      );
     }
 
     if (this.customFormControlType !== null || this.isFormControl) {
@@ -201,6 +212,22 @@ export class TcbDirectiveInputsOp extends TcbOp {
       }
 
       this.scope.addStatement(assignment);
+    }
+
+    // Field constraints are supplied by Signal Forms at runtime (when present in the schema).
+    // Dropping their synthetic TCB assignments must not introduce a missing required input
+    // diagnostic for custom controls or host directives.
+    if (
+      this.isFormControl &&
+      (this.customFormControlType !== null ||
+        this.dir.matchSource === MatchSource.HostDirective ||
+        this.dir.isComponent)
+    ) {
+      for (const input of this.dir.inputs) {
+        if (CUSTOM_CONTROL_CONSTRAINT_INPUTS.has(input.bindingPropertyName)) {
+          seenRequiredInputs.add(input.classPropertyName);
+        }
+      }
     }
 
     this.checkRequiredInputs(seenRequiredInputs);
