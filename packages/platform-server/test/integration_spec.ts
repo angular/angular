@@ -28,6 +28,7 @@ import {
   inject as coreInject,
   destroyPlatform,
   EnvironmentProviders,
+  ErrorHandler,
   getPlatform,
   Inject,
   inject,
@@ -40,6 +41,7 @@ import {
   NgZone,
   PendingTasks,
   PLATFORM_ID,
+  provideEnvironmentInitializer,
   provideNgReflectAttributes,
   Provider,
   provideZoneChangeDetection,
@@ -58,7 +60,7 @@ import {
   provideClientHydration,
   Title,
 } from '@angular/platform-browser';
-import {provideRouter, RouterOutlet, Routes} from '@angular/router';
+import {provideRouter, Router, RouterLink, RouterOutlet, Routes} from '@angular/router';
 import {Observable} from 'rxjs';
 import {
   BEFORE_APP_SERIALIZED,
@@ -1428,6 +1430,44 @@ class HiddenModule {}
         // Expect serialization to happen once a lazy-loaded route completes loading
         // and a lazy component is rendered.
         expect(output).toContain('<lazy>LazyCmp content</lazy>');
+      });
+
+      it('should still render links when the router is disposed mid-render', async () => {
+        const recorder: string[] = [];
+
+        @Component({
+          selector: 'app',
+          imports: [RouterLink],
+          template: `<a routerLink="/one">one</a>`,
+        })
+        class MyServerApp {}
+
+        class RecordingErrorHandler implements ErrorHandler {
+          handleError(error: unknown) {
+            recorder.push(`${error}`);
+          }
+        }
+
+        const output = await renderApplication(
+          getStandaloneBootstrapFn(MyServerApp, [
+            provideRouter([]),
+            {provide: ErrorHandler, useClass: RecordingErrorHandler},
+            provideEnvironmentInitializer(() => {
+              const router = inject(Router);
+              const errorHandler = inject(ErrorHandler);
+              // Mimics a navigation loop breaker, which stops the router and reports why.
+              router.dispose();
+              errorHandler.handleError(new Error('navigation loop detected'));
+            }),
+          ]),
+          {document: '<html><head></head><body><app></app></body></html>'},
+        );
+
+        // output before the fix: none, RouterLink failed to create ReactiveRouterState
+        expect(output).toContain('href="/one"');
+        // recorder before the fix:
+        // ['Error: navigation loop detected', 'ObjectUnsubscribedError: object unsubscribed']
+        expect(recorder).toEqual(['Error: navigation loop detected']);
       });
     });
 
