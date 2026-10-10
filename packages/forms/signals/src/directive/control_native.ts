@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {
+  untracked,
   type ɵControlDirectiveHost as ControlDirectiveHost,
   type Signal,
   type WritableSignal,
@@ -41,6 +42,9 @@ export function nativeControlCreate(
 ): () => void {
   let updateMode = false;
   const input = parent.nativeFormElement;
+  // The DOM's own string, recorded after each write. The browser rejects values it can't parse and
+  // truncates ones it can't represent, so comparing model values reads those as edits (#69632).
+  let lastWrittenDomValue = input.value;
 
   // TODO: (perf) ok to always create this?
   const parser = createParser(
@@ -54,19 +58,42 @@ export function nativeControlCreate(
   );
 
   parseErrorsSource.set(parser.errors);
+  // Records what the DOM kept, which may differ from what we asked it to hold.
+  const writeNativeControlValue = (value: unknown) => {
+    setNativeControlValue(input, value);
+    lastWrittenDomValue = input.value;
+  };
+
   parent.onReset = () => {
     parser.reset();
     const value = parent.state().value();
     bindings['controlValue'] = value;
-    setNativeControlValue(input, value);
+    writeNativeControlValue(value);
   };
   // Pass undefined as the raw value since the parse function doesn't care about it.
-  host.listenToDom('input', () => parser.setRawValue(undefined));
+  host.listenToDom('input', () => {
+    // An `input` event means the user edited, even if parsing then fails and no value reaches
+    // `controlValue`.
+    parent.state().markAsDirty();
+    parser.setRawValue(undefined);
+  });
   host.listenToDom('blur', () => parent.state().markAsTouched());
 
   // TODO: move extraction to first update pass?
   if (isInput(input) && inputRequiresValidityTracking(input)) {
-    validityMonitor.watchValidity(parent.destroyRef, input, () => parser.setRawValue(undefined));
+    validityMonitor.watchValidity(parent.destroyRef, input, () => {
+      // The `:valid` / `:invalid` animation fires on render, which is not an edit: if the DOM still
+      // holds what we wrote, nothing changed. `badInput` and a pending parse error are exempt —
+      // both mean the user edited while `value` stayed empty.
+      if (
+        untracked(parser.errors).length === 0 &&
+        !validityMonitor.isBadInput(input) &&
+        input.value === lastWrittenDomValue
+      ) {
+        return;
+      }
+      parser.setRawValue(undefined);
+    });
   }
 
   parent.registerAsBinding();
@@ -122,7 +149,7 @@ export function nativeControlCreate(
       input.type === 'radio' && bindingUpdated(bindings, 'radioValue', input.value);
 
     if (controlValueChanged || radioValueChanged) {
-      setNativeControlValue(input, controlValue);
+      writeNativeControlValue(controlValue);
     }
 
     updateMode = true;
