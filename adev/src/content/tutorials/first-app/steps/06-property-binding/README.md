@@ -6,8 +6,8 @@ This tutorial lesson demonstrates how to add property binding to a template and 
 
 ## What you'll learn
 
-- Your app has data bindings in the `Home` template.
-- Your app sends data from the `Home` to the `HousingLocation`.
+- Your app will have data bindings in the `Home` template.
+- Your app will send data from the `Home` to the `HousingLocation`.
 
 ## Conceptual preview of Inputs
 

@@ -12,8 +12,8 @@ IMPORTANT: We recommend using your local environment for this step of the tutori
 
 ## What you'll learn
 
-- Your app has a form into which users can enter data that is sent to your app's service.
-- The service writes the data from the form to the browser's console log.
+- Your app will have a form into which users can enter data that is sent to your app's service.
+- The service will write the data from the form to the browser's console log.
 
 <docs-workflow>
 
@@ -23,9 +23,9 @@ In this example, the method writes the data from the form to the browser's conso
 
 In the **Edit** pane of your IDE:
 
-1.  In `src/app/housing.service.ts`, inside the `HousingService` class, paste this method at the bottom of the class definition.
+1.  In `src/app/housing-service.ts`, inside the `HousingService` class, paste this method at the bottom of the class definition.
 
-       <docs-code header="Submit method in src/app/housing.service.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/housing.service.ts" visibleLines="[118,122]"/>
+       <docs-code header="Submit method in src/app/housing-service.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/housing-service.ts" visibleLines="[119,123]"/>
 
 1.  Confirm that the app builds without error.
     Correct any errors before you continue to the next step.
@@ -96,7 +96,7 @@ This step tests the new form to see that when the form data is submitted to the 
 
 </docs-workflow>
 
-SUMMARY: In this lesson, you updated your app to add a form using Angular's forms feature, and connect the data captured in the form to a component using an event handler.
+SUMMARY: In this lesson, you added a form using Angular's forms feature, and connected the data captured in the form to a component using an event handler.
 
 For more information about the topics covered in this lesson, visit:
 

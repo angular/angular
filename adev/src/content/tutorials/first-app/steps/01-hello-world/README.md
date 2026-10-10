@@ -68,9 +68,8 @@ In the **Explorer** pane of your IDE:
       1. New components are added to this directory.
 
    1. In the file explorer, find the image directory (`/assets`) that contains images used by the app.
-   1. In the file explorer, find the files and directories that an Angular app needs to build and run, but they are not files that you normally interact with.
+   1. In the file explorer, find the files and directories that an Angular app needs to build and run. They are not files that you normally interact with.
       1. `.angular` has files required to build the Angular app.
-      1. `.e2e` has files used to test the app.
       1. `.node_modules` has the node.js packages that the app uses.
       1. `angular.json` describes the Angular app to the app building tools.
       1. `package.json` is used by `npm` (the node package manager) to run the finished app.
@@ -96,7 +95,7 @@ In your IDE:
 1. Next, open `first-app/src/app/app.ts`.
 1. In `app.ts`, in the `@Component` definition, replace the `template` line with this code to change the text in the app component.
 
-   <docs-code language="angular-ts" header="Replace in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/02-Home/src/app/app.ts" visibleLines="[6,8]"/>
+   <docs-code language="angular-ts" header="Replace in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/02-Home/src/app/app.ts" visibleLines="[6]"/>
 
 1. In `app.ts`, in the `App` class definition, replace the `title` line with this code to change the component title.
 

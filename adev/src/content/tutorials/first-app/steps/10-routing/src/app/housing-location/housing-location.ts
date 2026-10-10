@@ -16,7 +16,7 @@ import {HousingLocationInfo} from '../housinglocation';
       <p class="listing-location">{{ housingLocation().city }}, {{ housingLocation().state }}</p>
     </section>
   `,
-  styleUrls: ['./housing-location.css'],
+  styleUrl: './housing-location.css',
 })
 export class HousingLocation {
   housingLocation = input.required<HousingLocationInfo>();

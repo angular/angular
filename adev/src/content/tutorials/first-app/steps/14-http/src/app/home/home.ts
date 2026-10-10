@@ -1,7 +1,7 @@
 import {ChangeDetectorRef, Component, inject} from '@angular/core';
 import {HousingLocation} from '../housing-location/housing-location';
 import {HousingLocationInfo} from '../housinglocation';
-import {HousingService} from '../housing.service';
+import {HousingService} from '../housing-service';
 
 @Component({
   selector: 'app-home',
@@ -19,7 +19,7 @@ import {HousingService} from '../housing.service';
       }
     </section>
   `,
-  styleUrls: ['./home.css'],
+  styleUrl: './home.css',
 })
 export class Home {
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
