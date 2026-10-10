@@ -76,6 +76,9 @@ export abstract class FieldNodeStructure {
   /** The parent field of this field. */
   abstract readonly parent: FieldNode | undefined;
 
+  /** The identity used to track this field in its parent, or `undefined` if it is not tracked. */
+  abstract readonly identityInParent: TrackingKey | undefined;
+
   readonly logic: LogicNode;
   readonly node: FieldNode;
 
@@ -342,6 +345,9 @@ export abstract class FieldNodeStructure {
       }
     }
 
+    // Tracking keys already claimed during this pass, mapped to the array item that claimed them.
+    let claimedKeys: Map<TrackingKey, object> | undefined;
+
     // Now, go through the values and add any new ones.
     for (const key of Object.keys(value)) {
       let trackingKey: TrackingKey | undefined = undefined;
@@ -362,9 +368,12 @@ export abstract class FieldNodeStructure {
       if (parentIsArray && isObject(childValue) && !isArray(childValue)) {
         // For object values in arrays, assign a synthetic identity. This will be used to
         // preserve the field instance even as this object moves around in the parent array.
-        trackingKey = (childValue[this.identitySymbol] as TrackingKey) ??= Symbol(
-          ngDevMode ? `id:${globalId++}` : '',
-        ) as TrackingKey;
+        trackingKey = claimTrackingKey(
+          childValue,
+          this.identitySymbol,
+          (claimedKeys ??= new Map()),
+          prevData.byPropertyKey.get(key),
+        );
       }
 
       let childNode: FieldNode | undefined;
@@ -385,6 +394,9 @@ export abstract class FieldNodeStructure {
         // Note: materializedChildren ?? prevData is needed because we might have freshly instantiated
         // `byTrackingKey` only in `materializedChildren` above.
         childNode = (materializedChildren ?? prevData).byTrackingKey!.get(trackingKey)!;
+      } else {
+        // Only array parents have tracked fields to replace.
+        childNode = this.replaceTrackedNode(materializedChildren ?? prevData, key);
       }
 
       // Next, make sure the `ChildData` for this key in `byPropertyKey` is up to date. We need
@@ -414,6 +426,18 @@ export abstract class FieldNodeStructure {
     }
 
     return materializedChildren ?? prevData;
+  }
+
+  /**
+   * Returns a new index-tracked field for an array element when the record at `key` holds a
+   * tracked field. That field belongs to another item, either elsewhere in the array or removed
+   * from it, so keeping it would make this element share or inherit that item's field.
+   */
+  private replaceTrackedNode(data: ChildrenData, key: string): FieldNode | undefined {
+    if (data.byPropertyKey.get(key)?.node.structure.identityInParent === undefined) {
+      return undefined;
+    }
+    return this.createChildNode(key, undefined, true);
   }
 
   /**
@@ -447,6 +471,8 @@ export class RootFieldNodeStructure extends FieldNodeStructure {
   }
 
   override readonly isOrphaned = FALSE_SIGNAL;
+
+  override readonly identityInParent = undefined;
 
   /** @internal */
   override readonly childrenMap: Signal<ChildrenData | undefined>;
@@ -505,7 +531,7 @@ export class ChildFieldNodeStructure extends FieldNodeStructure {
     node: FieldNode,
     override readonly logic: LogicNode,
     override readonly parent: ParentFieldNode,
-    identityInParent: TrackingKey | undefined,
+    override readonly identityInParent: TrackingKey | undefined,
     initialKeyInParent: string,
     createChildNode: ChildNodeCtor,
   ) {
@@ -520,7 +546,16 @@ export class ChildFieldNodeStructure extends FieldNodeStructure {
 
     this.pathKeys = computed(() => [...parent.structure.pathKeys(), this.keyInParent()]);
 
-    this.value = deepSignal(this.parent.structure.value, this.keyInParent);
+    // A field tracked by index writes a copy of its item, which still carries the tracking key of
+    // the item it was copied from. Drop it, so the copy stays on this field.
+    const identitySymbol = parent.structure.identitySymbol;
+    this.value = deepSignal(
+      this.parent.structure.value,
+      this.keyInParent,
+      identityInParent === undefined
+        ? (value) => withoutTrackingKey(value, identitySymbol)
+        : undefined,
+    );
     this.childrenMap = this.createChildrenMap();
     this.fieldManager.structures.add(this);
   }
@@ -663,6 +698,47 @@ function maybeRemoveStaleArrayFields(
   }
 
   return data;
+}
+
+/**
+ * Returns the tracking key of an object item in an array, assigning a new one if needed, or
+ * `undefined` if the item has to be tracked by index.
+ *
+ * A key already claimed by an earlier item (e.g. a `{...item}` copy of it) stays with that item.
+ * The same object appearing twice, and objects that cannot be extended (e.g. frozen), are tracked
+ * by index, like primitives. An item at an index whose field is tracked by index stays on that
+ * field, so the copy made by writing through the field does not replace it.
+ */
+function claimTrackingKey(
+  item: Record<PropertyKey, unknown>,
+  identitySymbol: PropertyKey,
+  claimedKeys: Map<TrackingKey, object>,
+  previous: ChildData | undefined,
+): TrackingKey | undefined {
+  let trackingKey = item[identitySymbol] as TrackingKey | undefined;
+  const claimedBy = trackingKey && claimedKeys.get(trackingKey);
+  if (trackingKey === undefined || claimedBy) {
+    if (claimedBy === item || !Object.isExtensible(item)) {
+      return undefined;
+    }
+    if (previous !== undefined && previous.node.structure.identityInParent === undefined) {
+      // Drop a key claimed by another item so this item cannot take over that item's field later.
+      delete item[identitySymbol];
+      return undefined;
+    }
+    trackingKey = item[identitySymbol] = Symbol(ngDevMode ? `id:${globalId++}` : '') as TrackingKey;
+  }
+  claimedKeys.set(trackingKey, item);
+  return trackingKey;
+}
+
+/** Returns `value` without the tracking key stored under `identitySymbol`, copying it if needed. */
+function withoutTrackingKey(value: unknown, identitySymbol: PropertyKey): unknown {
+  if (!isObject(value) || !Object.hasOwn(value, identitySymbol)) {
+    return value;
+  }
+  const {[identitySymbol]: _, ...rest} = value;
+  return rest;
 }
 
 function maybeRemoveStaleObjectFields(

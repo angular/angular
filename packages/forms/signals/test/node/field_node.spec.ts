@@ -840,6 +840,167 @@ describe('FieldNode', () => {
         expect(f[0] === first).toBeTrue();
         expect(f[1] === second).toBeTrue();
       });
+
+      it('gives a spread copy of an item its own field', () => {
+        const value = signal([{name: 'A'}]);
+        const f = form(value, {injector: TestBed.inject(Injector)});
+        const original = f[0];
+
+        value.update((old) => [...old, {...old[0]}]);
+
+        expect(f[0] === original).toBeTrue();
+        expect(f[1] === original).toBeFalse();
+
+        f[1].name().value.set('Copy');
+        expect(value().map((item) => item.name)).toEqual(['A', 'Copy']);
+
+        f[1]().markAsTouched();
+        expect(f[0]().touched()).toBeFalse();
+      });
+
+      it('gives the same object at two indices separate fields', () => {
+        const value = signal([{name: 'A'}]);
+        const f = form(value, {injector: TestBed.inject(Injector)});
+        const original = f[0];
+
+        value.update((old) => [old[0], old[0]]);
+
+        expect(f[0] === original).toBeTrue();
+        expect(f[1] === original).toBeFalse();
+
+        f[1].name().value.set('B');
+        expect(value().map((item) => item.name)).toEqual(['A', 'B']);
+      });
+
+      it('supports frozen items', () => {
+        const item: {name: string} = {name: 'A'};
+        const value = signal([Object.freeze(item)]);
+        const f = form(value, {injector: TestBed.inject(Injector)});
+
+        f[0].name().value.set('B');
+
+        expect(value()[0].name).toBe('B');
+      });
+
+      it('does not share a field when a tracked item repeats at an index that held another item', () => {
+        const value = signal([{name: 'A'}, {name: 'B'}]);
+        const f = form(value, {injector: TestBed.inject(Injector)});
+        const b = f[1];
+
+        value.update((old) => [old[1], old[1]]);
+
+        expect(f[0] === b).toBeTrue();
+        expect(f[1] === b).toBeFalse();
+
+        f[0].name().value.set('X');
+        expect(value().map((item) => item.name)).toEqual(['X', 'B']);
+        f[1].name().value.set('Y');
+        expect(value().map((item) => item.name)).toEqual(['X', 'Y']);
+      });
+
+      it('does not share a field when a frozen item takes the index of a tracked item', () => {
+        const c: {name: string} = {name: 'C'};
+        const value = signal([{name: 'A'}, {name: 'B'}]);
+        const f = form(value, {injector: TestBed.inject(Injector)});
+        const b = f[1];
+
+        value.update((old) => [old[1], Object.freeze(c)]);
+
+        expect(f[0] === b).toBeTrue();
+        expect(f[1] === b).toBeFalse();
+
+        f[0].name().value.set('X');
+        expect(value().map((item) => item.name)).toEqual(['X', 'C']);
+        f[1].name().value.set('Y');
+        expect(value().map((item) => item.name)).toEqual(['X', 'Y']);
+      });
+
+      it('does not reuse the field of a removed item for a frozen item at its index', () => {
+        const c: {name: string} = {name: 'C'};
+        const value = signal([{name: 'A'}, {name: 'B'}]);
+        const f = form(value, {injector: TestBed.inject(Injector)});
+        const a = f[0];
+        a().markAsTouched();
+
+        value.update((old) => [Object.freeze(c), old[1]]);
+
+        expect(f[0] === a).toBeFalse();
+        expect(f[0]().touched()).toBe(false);
+      });
+
+      it('keeps the field of a frozen item when writing through it', () => {
+        const item: {name: string} = {name: 'A'};
+        const value = signal([Object.freeze(item)]);
+        const f = form(value, {injector: TestBed.inject(Injector)});
+        const before = f[0];
+        f[0].name().markAsTouched();
+
+        f[0].name().value.set('B');
+
+        expect(f[0] === before).toBeTrue();
+        expect(f[0].name().touched()).toBeTrue();
+        expect(value().map((i) => i.name)).toEqual(['B']);
+      });
+
+      it('keeps the field of a repeated object when writing through the later index', () => {
+        const value = signal([{name: 'A'}]);
+        const f = form(value, {injector: TestBed.inject(Injector)});
+        value.update((old) => [old[0], old[0]]);
+        const first = f[0];
+        const second = f[1];
+        f[1].name().markAsTouched();
+
+        f[1].name().value.set('B');
+
+        expect(f[0] === first).toBeTrue();
+        expect(f[1] === second).toBeTrue();
+        expect(f[1].name().touched()).toBeTrue();
+        expect(f[0].name().touched()).toBeFalse();
+        expect(value().map((i) => i.name)).toEqual(['A', 'B']);
+      });
+
+      it('keeps the field of a spread copy when writing through it', () => {
+        const value = signal([{name: 'A'}]);
+        const f = form(value, {injector: TestBed.inject(Injector)});
+        value.update((old) => [...old, {...old[0]}]);
+        const original = f[0];
+        const copy = f[1];
+        f[1].name().markAsTouched();
+
+        f[1].name().value.set('B');
+
+        expect(f[0] === original).toBeTrue();
+        expect(f[1] === copy).toBeTrue();
+        expect(f[1].name().touched()).toBeTrue();
+        expect(f[0].name().touched()).toBeFalse();
+        expect(value().map((i) => i.name)).toEqual(['A', 'B']);
+      });
+
+      it('does not move the field of a removed row to an edited repeat of it', () => {
+        const value = signal([{name: 'A'}]);
+        const f = form(value, {injector: TestBed.inject(Injector)});
+        value.update((old) => [old[0], old[0]]);
+        f[0].name().markAsTouched();
+        f[1].name().value.set('B');
+
+        value.update((old) => [old[1]]);
+
+        expect(f[0].name().touched()).toBeFalse();
+        expect(value().map((i) => i.name)).toEqual(['B']);
+      });
+
+      it('does not move the field of a removed row to a copy placed at an index-tracked row', () => {
+        const value = signal<Array<{name: string} | string>>([{name: 'A'}, 'x']);
+        const f = form(value, {injector: TestBed.inject(Injector)});
+        f[0]().markAsTouched();
+        expect(f[1]).toBeDefined();
+
+        value.update((old) => [old[0], {...(old[0] as {name: string}), name: 'B'}]);
+        expect(f[1]).toBeDefined();
+        value.update((old) => [old[1]]);
+
+        expect(f[0]().touched()).toBeFalse();
+      });
     });
   });
 
