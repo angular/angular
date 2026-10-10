@@ -147,12 +147,31 @@ export class TcbDirectiveInputsOp extends TcbOp {
           }
 
           const id = new TcbExpr(this.tcb.allocateId());
+          // Note: the indexed access type is used rather than a type query with a qualified name
+          // (`typeof _t1.fieldName`) because, unlike the latter, it widens fresh literal types of
+          // `readonly` fields (e.g. `@Input() readonly showBadge = false;` must still accept a
+          // `true` binding).
           const type = new TcbExpr(
             `(typeof ${dirId.print()})[${TcbExpr.quoteAndEscape(fieldName)}]`,
           );
           const temp = declareVariable(id, type);
           this.scope.addStatement(temp);
           target = id;
+
+          if (!this.dir.stringLiteralInputFields.has(fieldName) && attr.keySpan !== null) {
+            // TypeScript does not treat the string literal in the indexed access type as a
+            // reference to the class member, so emit a separate type query with a qualified name
+            // that keeps a TypeScript-visible reference to the input's class member. The language
+            // service relies on it e.g. to find references to a `readonly` input. Reading the
+            // field is an error if it is private/protected, so diagnostics are ignored for this
+            // statement; the assignment into the temporary variable remains fully type-checked.
+            // Non-identifier field names cannot be expressed as a type query and are skipped.
+            this.scope.addStatement(
+              new TcbExpr(`null! as typeof ${dirId.print()}.${fieldName}`)
+                .markIgnoreDiagnostics()
+                .addParseSpanInfo(attr.keySpan),
+            );
+          }
         } else {
           if (dirId === null) {
             dirId = this.scope.resolve(this.node, this.dir);
