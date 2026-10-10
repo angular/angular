@@ -15,7 +15,7 @@ describe('integration tests', () => {
   let fixture: ComponentFixture<TestComponent>;
 
   describe('directives', () => {
-    it('should support dotted selectors', () => {
+    it('should support dotted selectors', async () => {
       @Directive({
         selector: '[dot.name]',
         standalone: false,
@@ -30,14 +30,14 @@ describe('integration tests', () => {
 
       const template = `<div [dot.name]="'foo'"></div>`;
       fixture = createTestComponent(template);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
       expect(myDir.value).toEqual('foo');
     });
   });
 
   describe('ng-container', () => {
-    it('should work regardless the namespace', () => {
+    it('should work regardless the namespace', async () => {
       @Component({
         selector: 'comp',
         template:
@@ -47,9 +47,50 @@ describe('integration tests', () => {
       class MyCmp {}
 
       const f = TestBed.configureTestingModule({declarations: [MyCmp]}).createComponent(MyCmp);
-      f.detectChanges();
+      await f.whenStable();
 
       expect(f.nativeElement.children[0].children[0].tagName).toEqual('rect');
+    });
+  });
+
+  describe('HTML entities', () => {
+    it('should not treat entity-encoded braces as interpolation', async () => {
+      @Component({
+        selector: 'test-comp',
+        template: '&lbrace;&lbrace; &rbrace;&rbrace;',
+      })
+      class TestCmp {}
+
+      const fixture = TestBed.createComponent(TestCmp);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.textContent).toBe('{{ }}');
+    });
+
+    it('should handle entity-encoded braces in attributes', async () => {
+      @Component({
+        selector: 'test-comp',
+        template: '<div title="&lbrace;&lbrace; value &rbrace;&rbrace;"></div>',
+      })
+      class TestCmp {}
+
+      const fixture = TestBed.createComponent(TestCmp);
+      await fixture.whenStable();
+      const div = fixture.nativeElement.querySelector('div');
+      expect(div.getAttribute('title')).toBe('{{ value }}');
+    });
+
+    it('should render entity-encoded braces as plain text', async () => {
+      @Component({
+        selector: 'test-comp',
+        template: '&lbrace;&lbrace;message&rbrace;&rbrace;',
+      })
+      class TestCmp {
+        message = 'Hello';
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.textContent).toBe('{{message}}');
     });
   });
 });
