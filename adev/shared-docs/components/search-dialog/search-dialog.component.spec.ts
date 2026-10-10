@@ -77,6 +77,38 @@ describe('SearchDialog', () => {
     expect(navigateByUrlSpy).toHaveBeenCalledOnceWith('fakeUrl1#h1');
   });
 
+  it('should navigate to the item the pointer moved over when user pressed Enter', async () => {
+    const router = TestBed.inject(Router);
+    const navigateByUrlSpy = spyOn(router, 'navigateByUrl');
+
+    search.searchQuery.set('fakeQuery');
+    searchResults.and.returnValue(Promise.resolve({results: [{hits: fakeSearchResults}]}));
+
+    TestBed.inject(ApplicationRef).tick();
+    await timeout(300);
+    await TestBed.inject(ApplicationRef).whenStable();
+
+    const items = fixture.debugElement.queryAll(By.css('.docs-search-result'));
+    items[1].nativeElement.dispatchEvent(new MouseEvent('mousemove', {bubbles: true}));
+    await fixture.whenStable();
+
+    expect(items[0].nativeElement.classList).not.toContain('active');
+    expect(items[1].nativeElement.classList).toContain('active');
+
+    fakeWindow.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        code: 'Enter',
+        key: 'Enter',
+        charCode: 13,
+        keyCode: 13,
+        view: window,
+        bubbles: true,
+      }),
+    );
+
+    expect(navigateByUrlSpy).toHaveBeenCalledOnceWith('fakeUrl2#h1');
+  });
+
   it('should always display algolia logo', () => {
     const algoliaIcon = fixture.debugElement.query(By.directive(AlgoliaIcon));
 

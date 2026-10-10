@@ -11,8 +11,13 @@
 
     @if (searchResults().length) {
       <ul class="docs-search-results docs-mini-scroll-track">
-        @for (result of searchResults(); track result.id) {
-          <li docsSearchItem [item]="result" class="docs-search-result">
+        @for (result of searchResults(); track result.id; let i = $index) {
+          <li
+            docsSearchItem
+            [item]="result"
+            class="docs-search-result"
+            (mousemove)="activateItem(i)"
+          >
             <a
               [routerLink]="'/' + result.url | relativeLink: 'pathname'"
               [fragment]="result.url | relativeLink: 'hash'"
