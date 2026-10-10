@@ -16,8 +16,7 @@
     }
   },
   "dependencies": {
-    "magic-string": "^1.0.0",
-    "vscode-uri": "^3.1.0"
+    "magic-string": "^1.0.0"
   },
   "peerDependencies": {
     "@angular/compiler": "0.0.0-PLACEHOLDER",
