@@ -164,7 +164,7 @@
     "@types/node": "^20.14.8",
     "@types/vscode": "^1.125.0",
     "@vscode/test-electron": "^3.1.0",
-    "esbuild": "^0.25.0",
+    "esbuild": "^0.28.0",
     "jasmine": "^7.0.0",
     "typescript": "5.9.3"
   }

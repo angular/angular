@@ -72,8 +72,8 @@ use_repo(node, "nodejs_windows_amd64")
 pnpm = use_extension("@aspect_rules_js//npm:extensions.bzl", "pnpm")
 pnpm.pnpm(
     name = "pnpm",
-    pnpm_version = "11.28.4",
-    pnpm_version_integrity = "sha512-+QWmFWP4m0mikmNNPYfQJM/eqdzPXGayzMJhZ1+nsndDIKlZ20cubKp/n/cxRwnNUNBsj9ZK3bYGRzd6eNJQ/w==",
+    pnpm_version = "11.28.5",
+    pnpm_version_integrity = "sha512-SEVj0wtMKtJ8tIqpT/KzAtvOvI/2vyiBbCWJiG4UbOf3bzVPO8GkOOb16XaMMCqgpvet2CMpA81M+BQmy8FNng==",
 )
 use_repo(pnpm, "pnpm")
 
