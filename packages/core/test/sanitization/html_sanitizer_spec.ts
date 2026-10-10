@@ -296,6 +296,49 @@ describe('HTML sanitizer', () => {
     );
   });
 
+  it('should clear each inert tree before parsing the next one', () => {
+    // Create the cached inert helper first, so that only the parses below are recorded.
+    sanitizeHtml(defaultDoc, '');
+    const inertRoots: Node[] = [];
+    // For each parse, how many of the earlier inert trees still have content.
+    const populatedAtParse: number[] = [];
+    const countPopulated = () => inertRoots.filter((root) => root.firstChild).length;
+
+    if (isDOMParserAvailable()) {
+      const parseFromString = DOMParser.prototype.parseFromString;
+      spyOn(DOMParser.prototype, 'parseFromString').and.callFake(function (
+        this: DOMParser,
+        html: string,
+        type: DOMParserSupportedType,
+      ) {
+        populatedAtParse.push(countPopulated());
+        const doc = parseFromString.call(this, html, type);
+        inertRoots.push(doc.body);
+        return doc;
+      });
+    } else {
+      // Domino's parser also calls `createElement` for its own root, so only record templates.
+      const createElement = Document.prototype.createElement;
+      spyOn(Document.prototype, 'createElement').and.callFake(function (
+        this: Document,
+        tagName: string,
+        options?: ElementCreationOptions,
+      ): any {
+        const element = createElement.call(this, tagName, options);
+        if (tagName === 'template') {
+          populatedAtParse.push(countPopulated());
+          inertRoots.push((element as HTMLTemplateElement).content);
+        }
+        return element;
+      });
+    }
+
+    // The input is parsed three times, because its serialization differs from it.
+    expect(sanitizeHtml(defaultDoc, '<p>a<p>b')).toBe('<p>a</p><p>b</p>');
+    expect(populatedAtParse).toEqual([0, 0, 0]);
+    expect(countPopulated()).toBe(0);
+  });
+
   if (isDOMParserAvailable()) {
     it('should work even if DOMParser returns a null body', () => {
       // Simulate `DOMParser.parseFromString()` returning a null body.
