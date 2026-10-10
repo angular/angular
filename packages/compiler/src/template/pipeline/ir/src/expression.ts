@@ -983,8 +983,8 @@ export class ReadTemporaryExpr extends ExpressionBase {
 
   override visitExpression(visitor: o.ExpressionVisitor, context: any): any {}
 
-  override isEquivalent(): boolean {
-    return this.xref === this.xref;
+  override isEquivalent(e: o.Expression): boolean {
+    return e instanceof ReadTemporaryExpr && e.xref === this.xref;
   }
 
   override isConstant(): boolean {
