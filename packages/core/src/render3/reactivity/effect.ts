@@ -204,6 +204,16 @@ export interface EffectNode extends BaseEffectNode, SchedulableEffect {
   userFn: (onCleanup: EffectCleanupRegisterFn) => void;
 
   onDestroyFns: (() => void)[] | null;
+
+  /**
+   * Whether the effect is running. `destroy()` waits for the run to end while this is set.
+   */
+  running: boolean;
+
+  /**
+   * Whether `destroy()` was called while the effect was running.
+   */
+  destroyPending: boolean;
 }
 
 export interface ViewEffectNode extends EffectNode {
@@ -220,6 +230,8 @@ export const EFFECT_NODE: Omit<EffectNode, 'fn' | 'userFn' | 'destroy' | 'inject
     cleanupFns: undefined,
     zone: null,
     onDestroyFns: null,
+    running: false,
+    destroyPending: false,
     run(this: EffectNode): void {
       if (ngDevMode && isInNotificationPhase()) {
         throw new Error(`Schedulers cannot synchronously execute watches while scheduling.`);
@@ -227,10 +239,17 @@ export const EFFECT_NODE: Omit<EffectNode, 'fn' | 'userFn' | 'destroy' | 'inject
       // We clear `setIsRefreshingViews` so that `markForCheck()` within the body of an effect will
       // cause CD to reach the component in question.
       const prevRefreshingViews = setIsRefreshingViews(false);
+      this.running = true;
       try {
         runEffect(this);
       } finally {
+        this.running = false;
         setIsRefreshingViews(prevRefreshingViews);
+        if (this.destroyPending) {
+          // `destroy()` was called during this run. Destroying the effect only now drops the
+          // signals it read after that call and runs the cleanup functions it registered after it.
+          this.destroy();
+        }
       }
     },
 
@@ -263,6 +282,11 @@ export const ROOT_EFFECT_NODE: Omit<
     this.notifier.notify(NotificationSource.RootEffect);
   },
   destroy(this: RootEffectNode) {
+    if (this.running) {
+      // Called during the effect's run, `run()` destroys the effect once that run ends.
+      this.destroyPending = true;
+      return;
+    }
     consumerDestroy(this);
 
     if (this.onDestroyFns !== null) {
@@ -287,6 +311,11 @@ export const VIEW_EFFECT_NODE: Omit<
     this.notifier.notify(NotificationSource.ViewEffect);
   },
   destroy(this: ViewEffectNode): void {
+    if (this.running) {
+      // Called during the effect's run, `run()` destroys the effect once that run ends.
+      this.destroyPending = true;
+      return;
+    }
     consumerDestroy(this);
 
     if (this.onDestroyFns !== null) {

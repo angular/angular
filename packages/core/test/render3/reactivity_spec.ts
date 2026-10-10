@@ -12,7 +12,7 @@ import type {} from 'zone.js';
 import {AsyncPipe} from '@angular/common';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
-import {SIGNAL} from '../../primitives/signals';
+import {ReactiveNode, SIGNAL} from '../../primitives/signals';
 import {toObservable} from '../../rxjs-interop';
 import {
   AfterViewInit,
@@ -26,6 +26,7 @@ import {
   destroyPlatform,
   Directive,
   effect,
+  EffectRef,
   EnvironmentInjector,
   ErrorHandler,
   inject,
@@ -628,6 +629,86 @@ describe('reactivity', () => {
         fixture.componentInstance.counter.set(2);
         TestBed.tick();
         expect(effectCounter).toBe(0);
+      });
+
+      it('should not track signals read after a root effect destroys itself', async () => {
+        const ready = signal(false);
+        const settings = signal('dark');
+        let settingsReads = 0;
+        const effectRef: EffectRef = effect(
+          () => {
+            if (ready()) {
+              effectRef.destroy();
+              settings();
+              settingsReads++;
+            }
+          },
+          {injector: TestBed.inject(EnvironmentInjector)},
+        );
+        const appRef = TestBed.inject(ApplicationRef);
+        await appRef.whenStable();
+
+        ready.set(true);
+        await appRef.whenStable();
+
+        expect(settingsReads).toBe(1);
+        expect((settings[SIGNAL] as ReactiveNode).consumers).toBeUndefined();
+      });
+
+      it('should not leak cleanup functions if registered after destroy', async () => {
+        const ready = signal(false);
+        let cleanupCount = 0;
+
+        const effectRef: EffectRef = effect(
+          (onCleanup) => {
+            if (ready()) {
+              effectRef.destroy();
+            }
+
+            // On the second run, this cleanup function is registered after `destroy()`.
+            onCleanup(() => {
+              cleanupCount++;
+            });
+          },
+          {injector: TestBed.inject(EnvironmentInjector)},
+        );
+
+        const appRef = TestBed.inject(ApplicationRef);
+        await appRef.whenStable();
+
+        ready.set(true);
+        await appRef.whenStable();
+
+        // The first cleanup runs before the second run starts, the second one once the effect is
+        // destroyed at the end of that run.
+        expect(cleanupCount).toBe(2);
+      });
+
+      it('should not track signals read after a view effect destroys itself', async () => {
+        const settings = signal('dark');
+        let settingsReads = 0;
+
+        @Component({template: ''})
+        class TestCmp {
+          ready = signal(false);
+          effectRef: EffectRef = effect(() => {
+            if (this.ready()) {
+              this.effectRef.destroy();
+              settings();
+              settingsReads++;
+            }
+          });
+        }
+
+        const fixture = TestBed.createComponent(TestCmp);
+        await fixture.whenStable();
+
+        fixture.componentInstance.ready.set(true);
+        await fixture.whenStable();
+        fixture.destroy();
+
+        expect(settingsReads).toBe(1);
+        expect((settings[SIGNAL] as ReactiveNode).consumers).toBeUndefined();
       });
     });
   });
