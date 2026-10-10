@@ -39,6 +39,18 @@ export class Settings {
     initialValue: true,
   });
 
+  readonly showIfBlocks = this.settingsStore.create({
+    key: 'show_if_blocks',
+    category: 'components',
+    initialValue: true,
+  });
+
+  readonly showSwitchBlocks = this.settingsStore.create({
+    key: 'show_switch_blocks',
+    category: 'components',
+    initialValue: true,
+  });
+
   readonly performanceTrack = this.settingsStore.create({
     key: 'performance_track',
     category: 'profiling',

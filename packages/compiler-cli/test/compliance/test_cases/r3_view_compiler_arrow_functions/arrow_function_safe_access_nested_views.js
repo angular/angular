@@ -16,6 +16,7 @@ function TestComp_Conditional_0_Conditional_0_Conditional_0_Template(rf, ctx) {
 function TestComp_Conditional_0_Conditional_0_Template(rf, ctx) {
   if (rf & 1) {
     $r3$.ɵɵconditionalCreate(0, TestComp_Conditional_0_Conditional_0_Conditional_0_Template, 1, 2);
+    (typeof ngDevMode === "undefined" || ngDevMode) && $r3$.ɵɵconditionalMetadata(0, "if", 1, null, "true", ["true"]);
   }
   if (rf & 2) {
     $r3$.ɵɵconditional(true ? 0 : -1);
@@ -25,6 +26,7 @@ function TestComp_Conditional_0_Conditional_0_Template(rf, ctx) {
 function TestComp_Conditional_0_Template(rf, ctx) {
   if (rf & 1) {
     $r3$.ɵɵconditionalCreate(0, TestComp_Conditional_0_Conditional_0_Template, 1, 1);
+    (typeof ngDevMode === "undefined" || ngDevMode) && $r3$.ɵɵconditionalMetadata(0, "if", 1, null, "true", ["true"]);
   }
   if (rf & 2) {
     $r3$.ɵɵconditional(true ? 0 : -1);
@@ -40,6 +42,7 @@ $r3$.ɵɵdefineComponent({
   template: function TestComp_Template(rf, ctx) {
     if (rf & 1) {
       $r3$.ɵɵconditionalCreate(0, TestComp_Conditional_0_Template, 1, 1);
+      (typeof ngDevMode === "undefined" || ngDevMode) && $r3$.ɵɵconditionalMetadata(0, "if", 1, null, "true", ["true"]);
     }
     if (rf & 2) {
       $r3$.ɵɵconditional(true ? 0 : -1);
