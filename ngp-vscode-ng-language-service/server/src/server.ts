@@ -162,7 +162,7 @@ connection.onInitialize(async (params: InitializeParams) => {
   projectManager = new ProjectManager({
     facade,
     api,
-    nodeModulesPathOverride: process.env.NG_HYBRID_NODE_MODULES_OVERRIDE,
+    nodeModulesPathOverride: process.env['NG_HYBRID_NODE_MODULES_OVERRIDE'],
     onLog: (msg) => connection.console.log(msg),
     onError: (msg) => connection.console.error(msg),
   });

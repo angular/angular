@@ -1,0 +1,16 @@
+// Resolution-only tsconfig for the esbuild server bundle. esbuild cannot follow
+// `extends` across Bazel packages, so the `@angular/*` mappings (the equivalent of
+// the `alias` block in `build.js`) are spelled out here. Type-checking uses
+// `//ngp-vscode-ng-language-service:tsconfig_build` instead.
+{
+  "compilerOptions": {
+    "baseUrl": "../..",
+    "paths": {
+      "@angular/compiler": ["packages/compiler/index"],
+      "@angular/compiler-cli": ["packages/compiler-cli/index"],
+      "@angular/compiler-cli/private/*": ["packages/compiler-cli/private/*"],
+      "@angular/core": ["packages/core/index"],
+      "@angular/language-service/private": ["packages/language-service/private"]
+    }
+  }
+}

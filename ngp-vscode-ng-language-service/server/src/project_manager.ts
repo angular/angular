@@ -34,6 +34,12 @@ export class ProjectManager {
   private api?: API;
   private currentSnapshot?: Snapshot;
   private nodeModulesPathOverride?: string;
+  /**
+   * Document/file mutations that have been received but not yet applied. They are
+   * driven by LSP notifications, which nothing awaits, so a request that arrives in
+   * the meantime must not be served against stale state.
+   */
+  private pendingMutations = new Set<Promise<void>>();
   private log: (msg: string) => void;
   private err: (msg: string) => void;
 
@@ -62,7 +68,24 @@ export class ProjectManager {
     return this.projects.get(await normalizePath(tsconfigPath));
   }
 
+  /** Resolves the project owning `filePath`, after any in-flight mutations have settled. */
   async getProjectForFile(filePath: string): Promise<ProjectInstance | null> {
+    await Promise.allSettled(this.pendingMutations);
+    return this.lookupProjectForFile(filePath);
+  }
+
+  /** Runs `mutation`, tracking it so that requests issued meanwhile wait for it. */
+  private async trackMutation(mutation: () => Promise<void>): Promise<void> {
+    const pending = mutation();
+    this.pendingMutations.add(pending);
+    try {
+      await pending;
+    } finally {
+      this.pendingMutations.delete(pending);
+    }
+  }
+
+  private async lookupProjectForFile(filePath: string): Promise<ProjectInstance | null> {
     const normFilePath = await normalizePath(filePath);
 
     if (normFilePath.endsWith('.json')) {
@@ -211,64 +234,70 @@ export class ProjectManager {
     return null;
   }
 
-  async updateFileContent(updates: {filePath: string; content: string}[]): Promise<void> {
-    const updatesPerCompiler = new Map<HybridCompiler, {filePath: string; content: string}[]>();
+  updateFileContent(updates: {filePath: string; content: string}[]): Promise<void> {
+    return this.trackMutation(async () => {
+      const updatesPerCompiler = new Map<HybridCompiler, {filePath: string; content: string}[]>();
 
-    for (const update of updates) {
-      if (update.filePath.endsWith('.ngtypecheck.ts')) {
-        continue;
+      for (const update of updates) {
+        if (update.filePath.endsWith('.ngtypecheck.ts')) {
+          continue;
+        }
+
+        const project = await this.lookupProjectForFile(update.filePath);
+        const compilers = project
+          ? [project.hybridCompiler]
+          : Array.from(this.projects.values()).map((p) => p.hybridCompiler);
+
+        for (const compiler of compilers) {
+          const list = updatesPerCompiler.get(compiler) ?? [];
+          list.push(update);
+          updatesPerCompiler.set(compiler, list);
+        }
       }
 
-      const project = await this.getProjectForFile(update.filePath);
+      await Promise.all(
+        Array.from(updatesPerCompiler.entries()).map(([compiler, compilerUpdates]) =>
+          compiler.updateFileContent(compilerUpdates),
+        ),
+      );
+    });
+  }
+
+  invalidateFiles(invalidations: FileInvalidation[]): Promise<void> {
+    return this.trackMutation(async () => {
+      for (const inv of invalidations) {
+        const normInvPath = await normalizePath(inv.filePath);
+        if (normInvPath.endsWith('.json') && inv.updateType === FileUpdateType.Deleted) {
+          if (this.projects.has(normInvPath)) {
+            this.log(`Disposing project for deleted config: ${normInvPath}`);
+            this.projects.delete(normInvPath);
+          }
+        }
+        if (inv.updateType === FileUpdateType.Deleted) {
+          for (const project of this.projects.values()) {
+            project.rootNames.delete(normInvPath);
+          }
+        }
+      }
+
+      await Promise.all(
+        Array.from(this.projects.values()).map((project) =>
+          project.hybridCompiler.invalidateFiles(invalidations),
+        ),
+      );
+    });
+  }
+
+  onDidClose(filePath: string): Promise<void> {
+    return this.trackMutation(async () => {
+      const project = await this.lookupProjectForFile(filePath);
       const compilers = project
         ? [project.hybridCompiler]
         : Array.from(this.projects.values()).map((p) => p.hybridCompiler);
-
-      for (const compiler of compilers) {
-        const list = updatesPerCompiler.get(compiler) ?? [];
-        list.push(update);
-        updatesPerCompiler.set(compiler, list);
-      }
-    }
-
-    await Promise.all(
-      Array.from(updatesPerCompiler.entries()).map(([compiler, compilerUpdates]) =>
-        compiler.updateFileContent(compilerUpdates),
-      ),
-    );
-  }
-
-  async invalidateFiles(invalidations: FileInvalidation[]): Promise<void> {
-    for (const inv of invalidations) {
-      const normInvPath = await normalizePath(inv.filePath);
-      if (normInvPath.endsWith('.json') && inv.updateType === FileUpdateType.Deleted) {
-        if (this.projects.has(normInvPath)) {
-          this.log(`Disposing project for deleted config: ${normInvPath}`);
-          this.projects.delete(normInvPath);
-        }
-      }
-      if (inv.updateType === FileUpdateType.Deleted) {
-        for (const project of this.projects.values()) {
-          project.rootNames.delete(normInvPath);
-        }
-      }
-    }
-
-    await Promise.all(
-      Array.from(this.projects.values()).map((project) =>
-        project.hybridCompiler.invalidateFiles(invalidations),
-      ),
-    );
-  }
-
-  async onDidClose(filePath: string): Promise<void> {
-    const project = await this.getProjectForFile(filePath);
-    const compilers = project
-      ? [project.hybridCompiler]
-      : Array.from(this.projects.values()).map((p) => p.hybridCompiler);
-    await Promise.all(
-      compilers.map((p) => p.invalidateFiles([{filePath, updateType: FileUpdateType.Changed}])),
-    );
+      await Promise.all(
+        compilers.map((p) => p.invalidateFiles([{filePath, updateType: FileUpdateType.Changed}])),
+      );
+    });
   }
 }
 

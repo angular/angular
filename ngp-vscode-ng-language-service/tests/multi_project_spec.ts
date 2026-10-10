@@ -1,10 +1,10 @@
 import * as path from 'path';
 import * as fs from 'node:fs/promises';
 import * as rpc from 'vscode-jsonrpc/node';
-import {TestEnv, startTestServer} from './test_helpers';
+import {TestEnv, getTestWorkspacePath, startTestServer} from './test_helpers';
 import {TestFileManager} from '../../packages/compiler-cli/preprocessor/language-service/tests/test_file_manager';
 
-const testWorkspacePath = path.join(__dirname, 'test-workspace');
+const testWorkspacePath = getTestWorkspacePath();
 
 describe('Multi-Project Support', () => {
   let connection: rpc.MessageConnection;
@@ -41,7 +41,7 @@ describe('Multi-Project Support', () => {
       subprojectTsconfig,
       JSON.stringify(
         {
-          extends: '../../../tsconfig.json',
+          extends: '../tsconfig.json',
           compilerOptions: {
             rootDir: '.',
           },
@@ -99,7 +99,7 @@ describe('Multi-Project Support', () => {
         appTsconfig,
         JSON.stringify(
           {
-            extends: '../../../tsconfig.json',
+            extends: '../tsconfig.json',
             compilerOptions: {
               rootDir: '.',
             },

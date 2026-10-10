@@ -148,8 +148,7 @@
   "scripts": {
     "compile": "tsc -p client --noEmit && tsc -p server --noEmit && node build.js",
     "typecheck": "tsc -p client --noEmit && tsc -p server --noEmit && tsc -p tests --noEmit",
-    "test:lsp": "pnpm run compile && node tests/run_jasmine.mjs",
-    "test": "pnpm run compile && pnpm run test:lsp && node e2e/build-tests.js && node e2e/runTests.js",
+    "test": "pnpm run compile && node e2e/build-tests.js && node e2e/runTests.js",
     "watch": "pnpm --prefix client run watch & pnpm --prefix server run watch"
   },
   "dependencies": {

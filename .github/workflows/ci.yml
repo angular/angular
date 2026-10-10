@@ -80,8 +80,6 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Run CI tests for framework
         run: pnpm test:ci
-      - name: Run hybrid language service LSP tests
-        run: pnpm test:ngp:vscode
 
   integration-tests:
     runs-on: ubuntu-latest
