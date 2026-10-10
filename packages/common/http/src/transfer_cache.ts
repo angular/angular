@@ -9,16 +9,16 @@
 import {
   APP_BOOTSTRAP_LISTENER,
   ApplicationRef,
+  ɵformatRuntimeError as formatRuntimeError,
   inject,
   InjectionToken,
   makeStateKey,
+  ɵperformanceMarkFeature as performanceMarkFeature,
   Provider,
+  ɵRuntimeError as RuntimeError,
   StateKey,
   TransferState,
-  ɵformatRuntimeError as formatRuntimeError,
-  ɵperformanceMarkFeature as performanceMarkFeature,
   ɵtruncateMiddle as truncateMiddle,
-  ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 import {Observable, of} from 'rxjs';
 import {tap} from 'rxjs/operators';
@@ -26,9 +26,9 @@ import {tap} from 'rxjs/operators';
 import {RuntimeErrorCode} from './errors';
 import {HttpHeaders} from './headers';
 import {HTTP_ROOT_INTERCEPTOR_FNS, HttpHandlerFn} from './interceptor';
+import {HttpParams} from './params';
 import {HttpRequest} from './request';
 import {HttpEvent, HttpResponse} from './response';
-import {HttpParams} from './params';
 
 /**
  * Options to configure how TransferCache should be used to cache requests made via HttpClient.
@@ -50,7 +50,7 @@ export interface HttpTransferCacheOptions {
   includeHeaders?: string[];
 
   /**
-   * Enables caching for `POST` requests. By default, only `GET` and `HEAD` requests are cached.
+   * Enables caching for `POST` requests. By default, only `GET`, `QUERY` and `HEAD` requests are cached.
    * This option can be enabled if `POST` requests are used to retrieve data (for example using `GraphQL`).
    */
   includePostRequests?: boolean;
@@ -142,7 +142,7 @@ export const CACHE_OPTIONS = new InjectionToken<CacheOptions>(
 /**
  * A list of allowed HTTP methods to cache.
  */
-const ALLOWED_METHODS = ['GET', 'HEAD'];
+const ALLOWED_METHODS = ['GET', 'HEAD', 'QUERY'];
 
 function canUseOrCacheRequest(req: HttpRequest<unknown>, options: CacheOptions): boolean {
   const {
