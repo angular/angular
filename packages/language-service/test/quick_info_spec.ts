@@ -450,6 +450,14 @@ describe('quick info', () => {
         });
       });
 
+      it('should work in class bindings with dots in the class name', () => {
+        expectQuickInfo({
+          templateOverride: `<div [class.px-3.5]="tit¦le"></div>`,
+          expectedSpanText: 'title',
+          expectedDisplayString: '(property) AppCmp.title: string',
+        });
+      });
+
       it('should work for accessed function calls', () => {
         expectQuickInfo({
           templateOverride: `<div (click)="someObject.some¦Method()"></div>`,
@@ -1047,6 +1055,28 @@ describe('quick info', () => {
           moveTo: `'[title]': 'myT¦itle'`,
           expectedSpanText: 'myTitle',
           expectedDisplayString: '(property) AppCmp.myTitle: string',
+        });
+      });
+
+      it('should handle host class binding with dots in the class name', () => {
+        const source = `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: '',
+            selector: 'app-cmp',
+            host: {'[class.py-2.5]': 'isActive'}
+          })
+          export class AppCmp {
+            isActive = true;
+          }
+        `;
+
+        expectHostBindingsQuickInfo({
+          source,
+          moveTo: `'[class.py-2.5]': 'isAc¦tive'`,
+          expectedSpanText: 'isActive',
+          expectedDisplayString: '(property) AppCmp.isActive: boolean',
         });
       });
 
