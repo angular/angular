@@ -124,7 +124,7 @@ export class IdleScheduler implements OnDestroy {
 
       if (bucket.queue.size > 0) {
         this.scheduleBucket(bucket, options);
-      } else {
+      } else if (this.buckets.get(key) === bucket) {
         this.buckets.delete(key);
       }
     };
