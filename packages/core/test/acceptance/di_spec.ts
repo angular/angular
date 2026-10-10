@@ -7018,6 +7018,43 @@ describe('di', () => {
     expect(destroySpy).toHaveBeenCalled();
   });
 
+  describe('node injector in large templates', () => {
+    it('should resolve parent injectors when the LView has more than 32767 slots', () => {
+      @Directive({selector: '[root]'})
+      class RootDir {}
+
+      const leafDirs: LeafDir[] = [];
+
+      @Directive({selector: '[leaf]'})
+      class LeafDir {
+        root = inject(RootDir);
+
+        constructor() {
+          leafDirs.push(this);
+        }
+      }
+
+      @Component({selector: 'leaf', template: '<span leaf></span>', imports: [LeafDir]})
+      class Leaf {}
+
+      // Every `<leaf>` takes 11 slots in the parent LView (node, directive instance and the 9
+      // node injector slots), so 3000 of them push injector indices past 15 bits (32767). The
+      // parent injector location of each `<span leaf>` points at its `<leaf>` host.
+      @Component({
+        template: `<div root>${'<leaf></leaf>'.repeat(3000)}</div>`,
+        imports: [RootDir, Leaf],
+      })
+      class App {}
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      const root = fixture.debugElement.query(By.directive(RootDir)).injector.get(RootDir);
+      expect(leafDirs.length).toBe(3000);
+      expect(leafDirs.every((dir) => dir.root === root)).toBe(true);
+    });
+  });
+
   describe('cyclic dependency detector', () => {
     it('should detect cyclic dependency in Module/Environment injector when @Inject is used', () => {
       const A = new InjectionToken('A');
