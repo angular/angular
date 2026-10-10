@@ -33,6 +33,7 @@ const LINK_EXEMPT = new Set([
   'Host',
   'filter',
   'required',
+  'email',
   'pattern',
   'min',
   'max',
@@ -50,6 +51,74 @@ export type ApiEntries = Record<
   string,
   {moduleName: string; targetSymbol?: string; entryType?: string}
 >;
+
+export interface ApiManifestPackage {
+  moduleName: string;
+  entries: {name: string; type?: string; aliases?: string[]}[];
+}
+
+export type ApiManifest = ApiManifestPackage[];
+
+export function mapManifestToEntries(apiManifest: ApiManifest): ApiEntries {
+  const entryToModuleMap: ApiEntries = {};
+  const entryNames = new Set<string>();
+  const duplicateEntries = new Set<string>();
+  const aliasClaims = new Map<string, Map<string, ApiEntries[string] & {targetSymbol: string}>>();
+
+  for (const pkg of apiManifest) {
+    const moduleName = pkg.moduleName.replace(/^@angular\//, '');
+    for (const entry of pkg.entries) {
+      if (duplicateEntries.has(entry.name)) {
+        continue;
+      }
+      if (entryNames.has(entry.name)) {
+        delete entryToModuleMap[entry.name];
+        duplicateEntries.add(entry.name);
+        continue;
+      }
+
+      entryNames.add(entry.name);
+      entryToModuleMap[entry.name] = {moduleName, entryType: entry.type};
+
+      for (const alias of entry.aliases ?? []) {
+        const claims = aliasClaims.get(alias) ?? new Map();
+        claims.set(`${moduleName}/${entry.name}`, {
+          moduleName,
+          targetSymbol: entry.name,
+          entryType: entry.type,
+        });
+        aliasClaims.set(alias, claims);
+      }
+    }
+  }
+
+  for (const [alias, claims] of aliasClaims) {
+    if (entryNames.has(alias)) {
+      continue;
+    }
+
+    const candidates = Array.from(claims.values());
+    const claim =
+      candidates.length === 1
+        ? candidates[0]
+        : candidates.find((candidate) => isAliasOf(alias, candidate.targetSymbol));
+    if (claim) {
+      entryToModuleMap[alias] = claim;
+    }
+  }
+
+  return entryToModuleMap;
+}
+
+function isAliasOf(alias: string, symbol: string): boolean {
+  const normalizedAlias = alias.toLowerCase();
+  const normalizedSymbol = symbol.toLowerCase();
+  return (
+    normalizedSymbol === normalizedAlias ||
+    normalizedSymbol === `${normalizedAlias}directive` ||
+    (normalizedAlias.startsWith('ng') && normalizedSymbol === normalizedAlias.slice(2))
+  );
+}
 
 /**
  * Extracts the symbol name and property name from a symbol string.
