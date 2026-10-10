@@ -37,9 +37,17 @@ import {RElement} from '../interfaces/renderer_dom';
  * @param renderer The renderer to be used
  * @param native The element that the attributes will be assigned to
  * @param attrs The attribute array of values that will be assigned to the element
+ * @param attrNameToSkip The name of a static attribute to leave untouched, if present. Used
+ *     during hydration for attributes that must not be re-applied even with the same value
+ *     (e.g. `<iframe src="...">`, where re-setting `src` reloads the resource).
  * @returns the index value that was last accessed in the attributes array
  */
-export function setUpAttributes(renderer: Renderer, native: RElement, attrs: TAttributes): number {
+export function setUpAttributes(
+  renderer: Renderer,
+  native: RElement,
+  attrs: TAttributes,
+  attrNameToSkip: string | null = null,
+): number {
   let i = 0;
   while (i < attrs.length) {
     const value = attrs[i];
@@ -57,7 +65,9 @@ export function setUpAttributes(renderer: Renderer, native: RElement, attrs: TAt
       const namespaceURI = attrs[i++] as string;
       const attrName = attrs[i++] as string;
       const attrVal = attrs[i++] as string;
-      renderer.setAttribute(native, attrName, attrVal, namespaceURI);
+      if (attrName !== attrNameToSkip) {
+        renderer.setAttribute(native, attrName, attrVal, namespaceURI);
+      }
     } else {
       // attrName is string;
       const attrName = value as string;
@@ -65,7 +75,7 @@ export function setUpAttributes(renderer: Renderer, native: RElement, attrs: TAt
       // Standard attributes
       if (isAnimationProp(attrName)) {
         renderer.setProperty(native, attrName, attrVal);
-      } else {
+      } else if (attrName !== attrNameToSkip) {
         renderer.setAttribute(native, attrName, attrVal as string);
       }
       i++;
