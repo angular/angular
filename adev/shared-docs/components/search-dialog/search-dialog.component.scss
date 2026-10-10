@@ -130,11 +130,6 @@ dialog {
       }
 
       &.active {
-        background-color: var(--septenary-contrast); // stylelint-disable-line
-      }
-
-      &:hover,
-      &.active {
         background-color: var(--octonary-contrast); // stylelint-disable-line
         border-inline-start: 2px solid var(--primary-contrast);
 
