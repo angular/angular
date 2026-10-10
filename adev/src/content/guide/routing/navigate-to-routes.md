@@ -247,6 +247,23 @@ export class ProductList {
 }
 ```
 
+## Controlling scrolling with RouterLink
+
+When in-memory scrolling is enabled with `withInMemoryScrolling({scrollPositionRestoration: 'enabled'})` (or `'top'`), the router scrolls to the top of the page after a link is clicked, even when the link only changes a query parameter. The `RouterLink` directive supports a `scroll` input that lets a single link opt out:
+
+```angular-html
+<!-- Switches tabs without scrolling back to the top of the page -->
+<a routerLink="/products/42" [queryParams]="{tab: 'reviews'}" scroll="manual">Reviews</a>
+```
+
+With `scroll="manual"`, the router does not scroll for that navigation. The default, `'after-transition'`, scrolls according to the router's scrolling configuration.
+
+The same option is available for programmatic navigation:
+
+```ts
+router.navigateByUrl('/products/42?tab=reviews', {scroll: 'manual'});
+```
+
 ## Next steps
 
 Learn how to [read route state](/guide/routing/read-route-state) to create responsive and context-aware components.
