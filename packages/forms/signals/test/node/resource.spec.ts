@@ -238,6 +238,49 @@ describe('resources', () => {
     expect(f[1]().errors()).toEqual([]);
   });
 
+  it('should skip async validation when params function returns undefined', async () => {
+    let factoryCallCount = 0;
+    const value = signal('');
+
+    const f = form(
+      value,
+      (p) => {
+        validateAsync(p, {
+          params: ({value}) => {
+            const v = value().trim();
+            return v ? v : undefined;
+          },
+          factory: (params) => {
+            factoryCallCount++;
+            return resource({
+              params,
+              loader: async ({params}) => params !== undefined,
+            });
+          },
+          onSuccess: (exists) => (exists ? {kind: 'value-exists'} : undefined),
+          onError: () => null,
+        });
+      },
+      {injector},
+    );
+
+    // empty value: params return undefined, resource should be idle( not pending)
+    await appRef.whenStable();
+    expect(f().pending()).toBe(false);
+    expect(f().errors()).toEqual([]);
+
+    // non-empty value: params returns a string, resource should run
+    value.set('hello');
+    await appRef.whenStable();
+    expect(f().errors()).toEqual([{kind: 'value-exists', fieldTree: f} as any]);
+
+    //back to empty: resource should go idle again, no errors
+    value.set('');
+    await appRef.whenStable();
+    expect(f().errors()).toEqual([]);
+    expect(f().pending()).toBe(false);
+  });
+
   it('should support shorthand http validation', async () => {
     const usernameForm = form(
       signal('unique-user'),
