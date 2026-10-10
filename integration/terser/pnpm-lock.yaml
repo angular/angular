@@ -17,9 +17,6 @@ importers:
       '@angular/core':
         specifier: link:./in-existing-linked-by-bazel
         version: link:in-existing-linked-by-bazel
-      acorn:
-        specifier: ^8.5.0
-        version: 8.18.0
       rxjs:
         specifier: ^7.0.0
         version: 7.8.2
