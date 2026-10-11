@@ -596,10 +596,11 @@ export class ComponentRef<T> extends AbstractComponentRef<T> {
     super();
     this._tNode = getTNode(_rootLView[TVIEW], HEADER_OFFSET) as TElementNode;
     this.location = createElementRef(this._tNode, _rootLView);
-    this.instance = getComponentLViewByIndex(this._tNode.index, _rootLView)[CONTEXT] as T;
+    const componentLView = getComponentLViewByIndex(this._tNode.index, _rootLView);
+    this.instance = componentLView[CONTEXT] as T;
     this.hostView = this.changeDetectorRef = new ViewRef<T>(
       _rootLView,
-      undefined /* _cdRefInjectingView */,
+      componentLView /* _cdRefInjectingView */,
     );
     this.componentType = componentType;
   }

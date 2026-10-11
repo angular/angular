@@ -668,4 +668,22 @@ describe('ComponentFixture with zoneless', () => {
     const fixture = TestBed.createComponent(App);
     expect(() => fixture.autoDetectChanges(false)).toThrow();
   });
+
+  it('refreshes the component when changeDetectorRef.markForCheck is called', async () => {
+    @Component({
+      template: '{{value}}',
+    })
+    class App {
+      value = 0;
+    }
+
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    expect(fixture.nativeElement.textContent).toBe('0');
+
+    fixture.componentInstance.value = 1;
+    fixture.changeDetectorRef.markForCheck();
+    await fixture.whenStable();
+    expect(fixture.nativeElement.textContent).toBe('1');
+  });
 });
