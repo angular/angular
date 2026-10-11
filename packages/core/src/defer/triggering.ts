@@ -381,6 +381,17 @@ export async function triggerHydrationFromBlockName(
 
   // Make sure we don't hydrate/trigger the same thing multiple times
   if (blocksBeingHydrated.has(blockName)) {
+    // The block is already being hydrated, but this call may carry events that need to be
+    // replayed once it is done, so wait for the in-flight hydration before replaying them.
+    if (replayQueuedEventsFn) {
+      try {
+        await blocksBeingHydrated.get(blockName)!.promise;
+      } catch {
+        // Hydration of the block failed, so there is nothing to replay the events on.
+        return;
+      }
+      replayQueuedEventsFn([blockName]);
+    }
     return;
   }
 
