@@ -131,11 +131,11 @@ By default, every resource returned from `resources` is blocking: the router wai
 
 For a blocking resource, the router binds the resolved value to the component input, so the input type is `T` instead of `Resource<T>`. The component never observes a `loading` state because the router blocks navigation until the resource loads, and it never observes an `error` state because the router cancels the navigation when the resource errors.
 
-To handle loading states in the UI instead, wrap the resource in `nonBlocking()`. The router activates the component immediately and binds the full `Resource<T>` object to the component input, which gives you access to `isLoading()`, `error()`, and the other resource signals.
+To handle loading states in the UI instead, wrap the resource in `nonBlocking()`. The router activates the component immediately and binds the full `RouteResource<T>` object to the component input, which gives you access to `isLoading()`, `error()`, and the other resource signals.
 
 ```angular-ts
-import {Component, input, Resource, resource} from '@angular/core';
-import {Routes, nonBlocking} from '@angular/router';
+import {Component, input, resource} from '@angular/core';
+import {RouteResource, Routes, nonBlocking} from '@angular/router';
 
 const routes: Routes = [
   {
@@ -163,7 +163,7 @@ const routes: Routes = [
   `,
 })
 export class Reports {
-  reportData = input.required<Resource<ReportData>>();
+  reportData = input.required<RouteResource<ReportData>>();
 }
 ```
 
@@ -239,7 +239,7 @@ While a navigation is pending, the router freezes the resources that it exposes 
 
 If you navigate from `/user/1` to `/user/2` and the router reuses the `UserProfile` component, the component keeps rendering the data from `/user/1` until `/user/2` resolves. The router then unfreezes the resources and the UI transitions directly to the new data with no loading flash.
 
-The router exposes these resources as read-only, even when the `resources` function returns a writable resource such as `resource()`. You can read the resource signals and call `reload()`, but not `set()` or `update()`. A `reload()` call during an active navigation or during rollback recovery returns `false` so that it cannot interrupt the router's transition tracking.
+The router exposes these resources as read-only, even when the `resources` function returns a writable resource such as `resource()`. You can read the resource signals and call `reload()`, but not `set()` or `update()`. The router types these resources as `RouteResource`. A `reload()` call during an active navigation or during rollback recovery returns `false` so that it cannot interrupt the router's transition tracking.
 
 ### Rollback recovery on cancellation
 
