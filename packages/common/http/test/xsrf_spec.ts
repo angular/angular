@@ -101,6 +101,27 @@ describe('HttpXsrfInterceptor', () => {
     req.flush({});
   });
 
+  it('does not apply XSRF protection when request uses backslashes or whitespace and is cross-origin', () => {
+    // Browsers read `\` as `/`, drop leading spaces and control characters, and remove tabs and
+    // newlines anywhere, so all of these URLs point to `example.com`.
+    const urls = [
+      '/\\example.com/test',
+      '\\\\example.com/test',
+      'http:\\\\example.com/test',
+      ' //example.com/test',
+      '\u0000//example.com/test',
+      '\t//example.com/test',
+      '/\n/example.com/test',
+      'ht\ttp://example.com/test',
+    ];
+    for (const url of urls) {
+      interceptor.intercept(new HttpRequest('POST', url, {}), backend).subscribe();
+      const req = backend.expectOne(url);
+      expect(req.request.headers.has('X-XSRF-TOKEN')).withContext(JSON.stringify(url)).toBeFalse();
+      req.flush({});
+    }
+  });
+
   it('does apply XSRF protection when request is same-origin', () => {
     interceptor
       .intercept(new HttpRequest('POST', 'http://sub.example.com/test', {}), backend)
