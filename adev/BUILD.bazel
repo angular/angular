@@ -56,6 +56,7 @@ APPLICATION_DEPS = [
     ":node_modules/@codemirror/lint",
     ":node_modules/@codemirror/search",
     ":node_modules/@codemirror/state",
+    ":node_modules/@codemirror/streamparser",
     ":node_modules/@codemirror/view",
     ":node_modules/@lezer/common",
     ":node_modules/@lezer/highlight",
