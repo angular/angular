@@ -1390,6 +1390,46 @@ describe('quick info', () => {
       });
     });
 
+    it('should get quick info in a component using a non-exported directive from the same file', () => {
+      project = env.addProject(
+        'test',
+        {
+          'app.ts': `
+            import {Component, Directive, input, signal} from '@angular/core';
+
+            @Directive({selector: 'img[appHelper]'})
+            class HelperDirective {
+              readonly appHelper = input.required<string>();
+            }
+
+            @Component({
+              selector: 'app-some',
+              imports: [HelperDirective],
+              templateUrl: './app.html',
+            })
+            export class SomeComponent {
+              protected readonly open = signal(true);
+              protected readonly items = signal([{id: 1, src: '/photo.jpg'}]);
+            }
+          `,
+          'app.html': ``,
+        },
+        {strictTemplates: true},
+      );
+
+      expectQuickInfo({
+        templateOverride: `
+          @if (open()) {
+            @for (item of items(); track item.id) {
+              <img [appHelper]="item.s¦rc" alt="" />
+            }
+          }
+        `,
+        expectedSpanText: 'src',
+        expectedDisplayString: '(property) src: string',
+      });
+    });
+
     it('should get quick info for a standalone component defined in a closure', () => {
       project = env.addProject('test', {
         'app.ts': `
