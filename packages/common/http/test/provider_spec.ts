@@ -32,6 +32,7 @@ import {
   PLATFORM_ID,
   Provider,
 } from '@angular/core';
+import {MOCK_PLATFORM_LOCATION_CONFIG} from '@angular/common/testing';
 import {TestBed} from '@angular/core/testing';
 import {EMPTY, Observable, from} from 'rxjs';
 import {tap} from 'rxjs/operators';
@@ -274,6 +275,7 @@ describe('provideHttpClient', () => {
           provideHttpClient(),
           provideHttpClientTesting(),
           {provide: PLATFORM_ID, useValue: 'test'},
+          {provide: MOCK_PLATFORM_LOCATION_CONFIG, useValue: {startUrl: 'http://localhost/'}},
         ],
       });
 
@@ -296,6 +298,7 @@ describe('provideHttpClient', () => {
           ),
           provideHttpClientTesting(),
           {provide: PLATFORM_ID, useValue: 'test'},
+          {provide: MOCK_PLATFORM_LOCATION_CONFIG, useValue: {startUrl: 'http://localhost/'}},
         ],
       });
 
