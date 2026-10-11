@@ -676,7 +676,7 @@ export interface ResourceContext {
 }
 
 // @public
-export type ResourceResult = Record<string, Resource<unknown> & Pick<WritableResource<unknown>, 'reload'>>;
+export type ResourceResult = Record<string, RouteResource<unknown>>;
 
 // @public
 export interface Route {
@@ -784,6 +784,9 @@ export interface RouterConfigOptions {
 
 // @public
 export type RouterConfigurationFeature = RouterFeature<RouterFeatureKind.RouterConfigurationFeature>;
+
+// @public
+export type RouteResource<T> = Resource<T> & Pick<WritableResource<T>, 'reload'>;
 
 // @public
 export abstract class RouteReuseStrategy {
