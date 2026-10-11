@@ -52,6 +52,20 @@ export class ShippingMethodPicker {
 }
 ```
 
+## Customizing the `set` Operation
+
+By default, calling `.set()` on a `linkedSignal` updates its internal value directly. To write back to the source of truth instead, pass a `set` function in the options. It receives the new value plus a `rawSet` function that applies the default behavior directly (useful to skip the computation when it is expensive and you already know the result).
+
+```ts
+const tempC = signal(0);
+// tempF.set() writes back to tempC instead of only updating tempF
+const tempF = linkedSignal(() => (tempC() * 9) / 5 + 32, {
+  set: (valF) => tempC.set(((valF - 32) * 5) / 9),
+});
+
+tempF.set(212); // tempC() is now 100, tempF() re-derives to 212
+```
+
 ### When to use `linkedSignal` vs `computed` vs `effect`
 
 - Use `computed`: When state is **strictly** derived from other state and should never be manually updated.
