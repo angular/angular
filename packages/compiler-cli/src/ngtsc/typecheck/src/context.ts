@@ -268,10 +268,12 @@ export class TypeCheckContextImpl implements TypeCheckContext {
             },
     });
 
+    const usedDirectives = boundTarget.getUsedDirectives();
+
     if (this.inlining === InliningMode.InlineOps) {
       // Get all of the directives used in the template and record inline type constructors when
       // required.
-      for (const dir of boundTarget.getUsedDirectives()) {
+      for (const dir of usedDirectives) {
         const dirRef = dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>;
         const dirNode = dirRef.node;
 
@@ -305,12 +307,16 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       hostElement: hostBindingContext?.node ?? null,
     });
 
-    const usedPipes: Reference<ClassDeclaration<ts.ClassDeclaration>>[] = [];
+    const usedDependencies: Reference<ClassDeclaration<ts.ClassDeclaration>>[] = [];
+
+    for (const dir of usedDirectives) {
+      usedDependencies.push(dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>);
+    }
 
     if (templateContext !== null) {
       for (const name of boundTarget.getUsedPipes()) {
         if (templateContext.pipes.has(name)) {
-          usedPipes.push(
+          usedDependencies.push(
             templateContext.pipes.get(name)!.ref as Reference<
               ClassDeclaration<ts.ClassDeclaration>
             >,
@@ -322,7 +328,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     const inliningRequirement = requiresInlineTypeCheckBlock(
       ref,
       shimData.file,
-      usedPipes,
+      usedDependencies,
       this.reflector,
     );
 
