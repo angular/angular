@@ -18,7 +18,7 @@ import {
 } from '../interfaces/container';
 import {TNode} from '../interfaces/node';
 import {RComment, RElement} from '../interfaces/renderer_dom';
-import {isLView} from '../interfaces/type_checks';
+import {isDestroyed, isLView} from '../interfaces/type_checks';
 import {
   DECLARATION_COMPONENT_VIEW,
   DECLARATION_LCONTAINER,
@@ -153,21 +153,28 @@ export function detachView(lContainer: LContainer, removeIndex: number): LView |
   const viewToDetach = lContainer[indexInContainer];
 
   if (viewToDetach) {
-    const declarationLContainer = viewToDetach[DECLARATION_LCONTAINER];
-    if (declarationLContainer !== null && declarationLContainer !== lContainer) {
-      detachMovedView(declarationLContainer, viewToDetach);
+    const isViewDestroyed = isDestroyed(viewToDetach);
+
+    if (!isViewDestroyed) {
+      const declarationLContainer = viewToDetach[DECLARATION_LCONTAINER];
+      if (declarationLContainer !== null && declarationLContainer !== lContainer) {
+        detachMovedView(declarationLContainer, viewToDetach);
+      }
     }
 
     if (removeIndex > 0) {
       lContainer[indexInContainer - 1][NEXT] = viewToDetach[NEXT] as LView;
     }
     const removedLView = removeFromArray(lContainer, CONTAINER_HEADER_OFFSET + removeIndex);
-    removeViewFromDOM(viewToDetach[TVIEW], viewToDetach);
 
-    // notify query that a view has been removed
-    const lQueries = removedLView[QUERIES];
-    if (lQueries !== null) {
-      lQueries.detachView(removedLView[TVIEW]);
+    if (!isViewDestroyed) {
+      removeViewFromDOM(viewToDetach[TVIEW], viewToDetach);
+
+      // notify query that a view has been removed
+      const lQueries = removedLView[QUERIES];
+      if (lQueries !== null) {
+        lQueries.detachView(removedLView[TVIEW]);
+      }
     }
 
     viewToDetach[PARENT] = null;
