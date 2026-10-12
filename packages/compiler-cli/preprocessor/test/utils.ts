@@ -133,6 +133,54 @@ export function getOrCreateSyntheticNodeModules(): string | null {
 }
 
 /**
+ * Whether `nodeModules/@angular/core` is a *built* package. In this repository the workspace's
+ * `node_modules/@angular/{core,common}` are pnpm links to `packages/{core,common}` — TypeScript
+ * sources with no `.d.ts` metadata — which the analyzer resolves to nothing: `CommonModule` then
+ * exports no directives, core DI tokens become unverifiable, and goldens silently change.
+ */
+function hasBuiltAngularCore(nodeModules: string): boolean {
+  return fsSync.existsSync(path.join(nodeModules, '@angular', 'core', 'index.d.ts'));
+}
+
+/**
+ * The `node_modules` fixtures resolve `@angular/*` from.
+ *
+ * The packages Bazel built (`//packages/{core,common}:npm_package`) always win, so `bazel test`
+ * and `bazel run` (golden updates) see the same packages. Previously the first
+ * `node_modules/@angular` found walking up from `cwd` won instead; under `bazel test` the sandbox
+ * has none and the built packages were used, while under `bazel run` the walk reached the
+ * workspace's source-linked copy, producing spurious golden diffs. The walk-up remains only for
+ * running outside Bazel, and only accepts a built package.
+ */
+let fixtureNodeModules: string | null = null;
+export function resolveFixtureNodeModules(): string {
+  if (fixtureNodeModules) return fixtureNodeModules;
+
+  const synthetic = getOrCreateSyntheticNodeModules();
+  if (synthetic) {
+    fixtureNodeModules = synthetic;
+    return synthetic;
+  }
+
+  let dir = process.cwd();
+  while (true) {
+    const candidate = path.join(dir, 'node_modules');
+    if (hasBuiltAngularCore(candidate)) {
+      fixtureNodeModules = candidate;
+      return candidate;
+    }
+    const parent = path.dirname(dir);
+    if (parent === dir) break;
+    dir = parent;
+  }
+
+  throw new Error(
+    'Could not find a built @angular/core for fixtures: neither the Bazel npm_package runfiles ' +
+      `nor a node_modules with @angular/core/index.d.ts above cwd=${process.cwd()}.`,
+  );
+}
+
+/**
  * Merge actual output with expected golden file, preserving ellipses
  */
 export async function mergeGolden(actual: TestFile[], expected: TestFile[]): Promise<TestFile[]> {
@@ -262,19 +310,7 @@ export async function runPipeline(
   const maybeFormat = (p: string, content: string): Promise<string> =>
     options.format === false ? Promise.resolve(content) : formatContent(p, content);
 
-  // Find real node_modules path (walk up from current dir)
-  let nodeModulesPath = process.cwd();
-  while (!(await pathExists(path.join(nodeModulesPath, 'node_modules', '@angular')))) {
-    const parent = path.dirname(nodeModulesPath);
-    if (parent === nodeModulesPath) break;
-    nodeModulesPath = parent;
-  }
-  const candidatePath = path.join(nodeModulesPath, 'node_modules');
-  if (await pathExists(path.join(candidatePath, '@angular'))) {
-    nodeModulesPath = candidatePath;
-  } else {
-    nodeModulesPath = getOrCreateSyntheticNodeModules() || candidatePath;
-  }
+  const nodeModulesPath = resolveFixtureNodeModules();
 
   const virtualFiles: Record<string, string> = {};
   for (const f of sourceFiles) {

@@ -637,7 +637,10 @@ describe('Resource Resolution E2E Test Suite', () => {
           {path: 'src/app/my.component.css', content: '.local { color: blue; }'},
           {path: 'gen/app/generated.css', content: '.generated { color: red; }'},
         ];
-        const outputs = await runTest('f10_template_link_resolves_through_secondary_root_dir', files);
+        const outputs = await runTest(
+          'f10_template_link_resolves_through_secondary_root_dir',
+          files,
+        );
         expect(outputs.find((o) => o.path.endsWith('.ngdiag.json'))).toBeUndefined();
         const jsOutput = outputs.find((o) => o.path.endsWith('my.component.ts'));
         expect(jsOutput).toBeDefined();
