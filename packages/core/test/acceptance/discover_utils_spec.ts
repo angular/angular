@@ -24,6 +24,7 @@ import {ComponentFixture, TestBed} from '../../testing';
 
 import {getLContext} from '../../src/render3/context_discovery';
 import {getHostElement} from '../../src/render3/index';
+import {unwrapListener} from '../../src/render3/view/listeners';
 import {
   AngularComponentDebugMetadata,
   getComponent,
@@ -347,6 +348,23 @@ describe('discovery utils', () => {
       fixture.componentInstance.spanVisible = false;
       fixture.detectChanges();
       expect(getListeners(span[0]).length).toEqual(0);
+    });
+
+    it('should expose the authored handler via `unwrapListener`', () => {
+      const wrapped = getListeners(span[0])[0].callback;
+      const original = unwrapListener(wrapped);
+
+      expect(typeof original).toBe('function');
+      expect(original).not.toBe(wrapped);
+
+      // Invoking the unwrapped listener still runs the authored handler.
+      original('EVENT');
+      expect(log).toEqual(['EVENT']);
+    });
+
+    it('should return the argument unchanged when it is not a wrapped listener', () => {
+      const fn = () => {};
+      expect(unwrapListener(fn)).toBe(fn);
     });
   });
 
