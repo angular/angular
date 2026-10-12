@@ -82,7 +82,7 @@ describe('ShadowCss nesting', () => {
       .parent[contenta] {
         color: blue;
 
-        &.modifier[contenta] {
+        &.modifier {
           color: red;
         }
       }
@@ -337,6 +337,80 @@ describe('ShadowCss nesting', () => {
     expect(result).toEqualCss(expected);
   });
 
+  it('should not scope compound selectors starting with an ampersand nested in :host', () => {
+    const css = `
+      :host {
+        display: block;
+
+        &.modifier {
+          width: 70px;
+        }
+
+        &:hover, &[disabled] {
+          color: red;
+        }
+      }
+    `;
+
+    const expected = `
+      [a-host] {
+        display: block;
+
+        &.modifier {
+          width: 70px;
+        }
+
+        &:hover, &[disabled] {
+          color: red;
+        }
+      }
+    `;
+
+    const result = shim(css, 'contenta', 'a-host');
+    expect(result).toEqualCss(expected);
+  });
+
+  it('should scope descendants of an ampersand nested in :host', () => {
+    const css = `
+      :host {
+        & .child {
+          color: red;
+        }
+
+        &.modifier > .child {
+          color: blue;
+        }
+      }
+    `;
+
+    const expected = `
+      [a-host] {
+        & .child[contenta] {
+          color: red;
+        }
+
+        &.modifier > .child[contenta] {
+          color: blue;
+        }
+      }
+    `;
+
+    const result = shim(css, 'contenta', 'a-host');
+    expect(result).toEqualCss(expected);
+  });
+
+  it('should not scope compound selectors starting with an ampersand nested in :host with a selector', () => {
+    expect(shim(':host(.foo) { &.bar { color: red; } }', 'contenta', 'a-host')).toEqualCss(
+      '.foo[a-host] { &.bar { color: red; } }',
+    );
+  });
+
+  it('should not scope compound selectors starting with an ampersand nested in :host-context', () => {
+    expect(shim(':host-context(.dark) { &.bar { color: red; } }', 'contenta', 'a-host')).toEqualCss(
+      '.dark[a-host], .dark [a-host] { &.bar { color: red; } }',
+    );
+  });
+
   it('should shim selectors nested in :host-context', () => {
     const css = `
       :host-context(.foo) {
@@ -409,7 +483,7 @@ describe('ShadowCss nesting', () => {
         color: red;
 
         @media (width >= 1024px) {
-          &.modifier[contenta] {
+          &.modifier {
             color: blue;
           }
         }

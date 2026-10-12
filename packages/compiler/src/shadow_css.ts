@@ -753,7 +753,11 @@ export class ShadowCss {
     const _scopeSelectorPart = (p: string) => {
       let scopedP = p.trim();
 
-      if (!scopedP || scopedP === '&') {
+      // A compound selector starting with `&` (e.g. `&.foo`) only matches elements that are
+      // already matched by the scoped parent selector so it doesn't need to be scoped again.
+      // Adding the content attribute would also prevent it from matching when the parent is
+      // the host element (e.g. `:host { &.foo {} }`), because the host doesn't have it.
+      if (!scopedP || scopedP.startsWith('&')) {
         return p;
       }
 
