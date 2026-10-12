@@ -59,7 +59,7 @@ Tabs work well for organizing related content into distinct sections where users
 - **Selection modes** - Tabs activate automatically on focus or require manual activation
 - **Keyboard navigation** - Arrow keys, Home, and End for efficient tab navigation
 - **Orientation** - Horizontal or vertical tab list layouts
-- **Lazy content** - Tab panels render only when first activated
+- **Lazy content** - Tab panels render only when activated
 - **Disabled tabs** - Disable individual tabs with focus management
 - **Focus modes** - Roving tabindex or activedescendant focus strategies
 - **RTL support** - Right-to-left language navigation
@@ -164,7 +164,7 @@ Set `[orientation]="'vertical'"` on the tab list. Navigation changes to Up/Down 
 
 ### Lazy content rendering
 
-Use the `ngTabContent` directive on an `ng-template` to defer rendering tab panels until they're first shown.
+Use the `ngTabContent` directive on an `ng-template` to defer rendering tab panels until they're shown.
 
 ```angular-html
 <div ngTabs>
@@ -175,21 +175,21 @@ Use the `ngTabContent` directive on an `ng-template` to defer rendering tab pane
 
   <div ngTabPanel value="tab1">
     <ng-template ngTabContent>
-      <!-- This content only renders when Tab 1 is first shown -->
+      <!-- This content only renders when Tab 1 is shown -->
       <app-heavy-component />
     </ng-template>
   </div>
 
   <div ngTabPanel value="tab2">
     <ng-template ngTabContent>
-      <!-- This content only renders when Tab 2 is first shown -->
+      <!-- This content only renders when Tab 2 is shown -->
       <app-another-component />
     </ng-template>
   </div>
 </div>
 ```
 
-By default, content remains in the DOM after the panel is hidden. Set `[preserveContent]="false"` to remove content when the panel is deactivated.
+By default, content is removed from the DOM when the panel is hidden. Set `[preserveContent]="true"` to keep it, for example when the panel contains a video that shouldn't reset when switching tabs.
 
 ### Disabled tabs
 
