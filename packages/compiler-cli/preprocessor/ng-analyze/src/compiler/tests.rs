@@ -1049,6 +1049,135 @@ export declare class MyFieldComponent {
     }
 }
 
+/// `exports: SHARED` with `const SHARED = [ImportedPipe, ...]` must emit a reference tuple.
+#[test]
+fn test_isolated_type_tuple_resolves_local_const_of_imported_classes() {
+    use crate::types::metadata::IsolatedTypeElementKind;
+
+    let mut virtual_files = HashMap::new();
+    virtual_files.insert(
+        "/project/tsconfig.json".to_string(),
+        r#"{"files": ["index.ts", "greet.pipe.ts", "widget.ts", "hidden.ts"]}"#.to_string(),
+    );
+    virtual_files.insert(
+        "/project/greet.pipe.ts".to_string(),
+        r#"
+        import {Pipe} from '@angular/core';
+        @Pipe({name: 'greet', standalone: false})
+        export class GreetPipe { transform(v: string) { return v; } }
+        "#
+        .to_string(),
+    );
+    virtual_files.insert(
+        "/project/widget.ts".to_string(),
+        r#"
+        import {Component} from '@angular/core';
+        @Component({selector: 'shared-widget', template: '', standalone: false})
+        export class SharedWidget {}
+        "#
+        .to_string(),
+    );
+    // `Hidden` is not exported, so `HIDDEN` falls back to the syntactic `typeof HIDDEN`.
+    virtual_files.insert(
+        "/project/hidden.ts".to_string(),
+        r#"
+        import {Pipe} from '@angular/core';
+        @Pipe({name: 'hidden', standalone: false})
+        class Hidden { transform(v: string) { return v; } }
+        export const HIDDEN = [Hidden];
+        "#
+        .to_string(),
+    );
+    let index_src = r#"
+        import {NgModule, Type} from '@angular/core';
+        import {GreetPipe} from './greet.pipe';
+        import {SharedWidget} from './widget';
+        import {HIDDEN} from './hidden';
+
+        const SHARED: Array<Type<unknown>> = [GreetPipe, SharedWidget];
+
+        @NgModule({declarations: SHARED, exports: SHARED})
+        export class SharedModule {}
+
+        @NgModule({exports: [GreetPipe, HIDDEN]})
+        export class MixedModule {}
+        "#;
+    virtual_files.insert("/project/index.ts".to_string(), index_src.to_string());
+
+    for optimize in [false, true] {
+        let options = AnalyzerOptions {
+            tsconfig_path: "/project/tsconfig.json".to_string(),
+            optimize: Some(optimize),
+            virtual_files: Some(virtual_files.clone()),
+            ..Default::default()
+        };
+        let analyzer = Analyzer::new(options).unwrap();
+        let iterator = if optimize {
+            analyzer.analyze_optimized().unwrap()
+        } else {
+            analyzer.analyze().unwrap()
+        };
+        let mut results = Vec::new();
+        while let Some(chunk) = futures::executor::block_on(iterator.next()).unwrap() {
+            results.extend(chunk.files);
+        }
+
+        let index = results
+            .iter()
+            .find(|res| res.file_path == "/project/index.ts")
+            .expect("index.ts metadata");
+        let isolated_exports = |name: &str| {
+            index
+                .classes
+                .iter()
+                .find(|c| c.class_name.as_deref() == Some(name))
+                .and_then(|c| c.ng_module.as_ref())
+                .and_then(|m| m.isolated_exports.clone())
+                .unwrap_or_else(|| panic!("{name} isolated exports (optimize={optimize})"))
+        };
+        let local_names = |refs: &Option<Vec<crate::types::metadata::ReferenceMetadata>>| {
+            refs.iter()
+                .flatten()
+                .map(|r| r.local_alias.clone().unwrap_or_default())
+                .collect::<Vec<_>>()
+        };
+
+        let shared = isolated_exports("SharedModule");
+        assert!(!shared.is_array_literal);
+        assert_eq!(shared.elements.len(), 1);
+        assert_eq!(
+            shared.elements[0].kind,
+            IsolatedTypeElementKind::ReferenceTuple,
+            "`exports: SHARED` must become a reference tuple (optimize={optimize})"
+        );
+        assert_eq!(
+            local_names(&shared.elements[0].references),
+            vec!["GreetPipe", "SharedWidget"],
+            "optimize={optimize}"
+        );
+
+        let mixed = isolated_exports("MixedModule");
+        assert!(mixed.is_array_literal);
+        assert_eq!(mixed.elements.len(), 2);
+        // Source text of a syntactic `typeof` element (ASCII source, so UTF-16 == byte offsets).
+        let span_text = |el: &crate::types::metadata::IsolatedTypeElementMetadata| {
+            let span = el.span.expect("syntactic element has a span");
+            &index_src[span.start as usize..span.end as usize]
+        };
+        // A bare import resolves to the class and is emitted through the local binding.
+        assert_eq!(mixed.elements[0].kind, IsolatedTypeElementKind::Typeof);
+        assert_eq!(
+            local_names(&mixed.elements[0].references),
+            vec!["GreetPipe"],
+            "optimize={optimize}"
+        );
+        // `Hidden` is unexported, so the reference cannot be emitted from here: syntactic form.
+        assert_eq!(mixed.elements[1].kind, IsolatedTypeElementKind::Typeof);
+        assert!(mixed.elements[1].references.is_none(), "optimize={optimize}");
+        assert_eq!(span_text(&mixed.elements[1]), "HIDDEN");
+    }
+}
+
 #[test]
 fn test_injectable_with_deps() {
     let mut virtual_files = HashMap::new();

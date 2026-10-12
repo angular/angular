@@ -621,6 +621,9 @@ impl FileData {
                     out.insert((r.file, r.name.clone()));
                 }
             }
+            for r in class.isolated_tuple_references() {
+                out.insert((r.file, r.name));
+            }
         }
         out
     }
