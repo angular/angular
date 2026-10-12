@@ -11,6 +11,7 @@ ts_project(
     deps = [
         "//:node_modules/typescript",
         "//packages:types",
+        "//packages/compiler-cli",
         "//packages/compiler-cli/preprocessor",
         "//packages/compiler-cli/preprocessor/ng-analyze:wasm",
         "//packages/compiler-cli/src/ngtsc/diagnostics",
