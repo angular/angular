@@ -454,6 +454,8 @@ function createRootTView(
   let updateBindings: Binding[] | null = null;
   let varsToAllocate = 0;
 
+  // Gather constraint bindings after assigning target indexes, preserving their owners.
+
   if (componentBindings) {
     for (const binding of componentBindings as BindingInternal[]) {
       varsToAllocate += binding[BINDING].requiredVars;
@@ -489,6 +491,24 @@ function createRootTView(
           }
         }
       }
+    }
+  }
+
+  const allBindings: BindingInternal[] = [
+    ...((componentBindings ?? []) as BindingInternal[]),
+    ...(directives ?? []).flatMap((directive) =>
+      typeof directive === 'function' ? [] : (directive.bindings as BindingInternal[]),
+    ),
+  ];
+  const constraintNames = new Set(['min', 'max', 'minLength', 'maxLength']);
+  const explicitConstraintBindings = allBindings
+    .filter(
+      (binding) => binding.publicName !== undefined && constraintNames.has(binding.publicName),
+    )
+    .map((binding) => ({name: binding.publicName!, targetIdx: binding.targetIdx!}));
+  for (const binding of allBindings) {
+    if (binding.publicName === 'formField') {
+      binding.explicitConstraintBindings = explicitConstraintBindings;
     }
   }
 

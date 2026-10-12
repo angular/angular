@@ -11,6 +11,15 @@
       ]
     },
     {
+      "description": "should pool explicit constraint input names and exclude static and attribute bindings",
+      "inputFiles": ["constraint_bindings.ts"],
+      "expectations": [
+        {
+          "files": ["constraint_bindings.js"]
+        }
+      ]
+    },
+    {
       "description": "should generate control instruction for `field` property bindings on radio inputs and execute it after the value",
       "inputFiles": ["radio_bindings.ts"],
       "expectations": [

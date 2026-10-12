@@ -69,6 +69,7 @@ export class TcbDirectiveCtorOp extends TcbOp {
           this.dir,
           this.node,
           this.customFormControlType,
+          this.tcb.boundTarget.getDirectivesOfNode(this.node) ?? [],
         );
 
         if (additionalBindings !== null) {

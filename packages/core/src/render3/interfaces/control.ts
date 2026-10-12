@@ -19,6 +19,12 @@ export interface ControlDirectiveDef {
   readonly update: (instance: unknown, host: ControlDirectiveHost) => void;
 }
 
+/** A dynamic constraint binding with the index of the directive that owns it. */
+export interface ExplicitConstraintBinding {
+  readonly name: string;
+  readonly targetIdx: number;
+}
+
 /**
  * Interface provided by the runtime to directives that act as form controls, as the argument to
  * `ɵngControlCreate` and `ɵngControlUpdate` lifecycle hooks.
@@ -73,6 +79,9 @@ export interface ControlDirectiveHost<_TPassthroughInput extends string | undefi
    * Checks if the custom control has an input with the given name.
    */
   customControlHasInput(inputName: string): boolean;
+
+  /** Whether this constraint is explicitly bound on the control or the given CVA. */
+  hasExplicitInputBinding(inputName: string, control?: unknown): boolean;
 
   /**
    * Updates a property binding on all directives on this node, aside from the control directive
