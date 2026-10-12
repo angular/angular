@@ -31,7 +31,11 @@ import {
 
 import type {TcbTargetInput, NgpTypeCheckingConfig} from './tcb.js';
 import * as nga from './types.js';
-import {createSpan, isStaticSourceNode} from './compiler-utils.js';
+import {
+  createForeignComponentMatcher,
+  createSpan,
+  isStaticSourceNode,
+} from './compiler-utils.js';
 
 // PropertyMappingImpl is removed as we now use ClassPropertyMapping directly.
 
@@ -292,7 +296,10 @@ export function adaptTcbInput(
       )
     : [];
 
-  const binder = new R3TargetBinder<TcbDirectiveMetadata>(matcher);
+  const binder = new R3TargetBinder<TcbDirectiveMetadata>(
+    matcher,
+    createForeignComponentMatcher(target.foreignImports),
+  );
   const host = config.typeCheckHostBindings === false ? null : adaptHostElement(target, content);
   const boundTarget = binder.bind({
     template: target.templateNodes,

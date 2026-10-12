@@ -10,23 +10,16 @@ import * as i0 from './bindings.component';
 /*tcb1*/
 function _tcb1(this: i0.BindingsComponent) {
   if (true) {
-    this.role /*362,366*/ /*362,366*/;
-    this.custom /*380,386*/ /*380,386*/;
+    this.role; /*362,366*/ /*362,366*/
+    this.custom; /*380,386*/ /*380,386*/
     var _t1 /*311,388*/ = document.createElement('FancyButton'); /*311,388*/ /*311,388*/
     _t1.addEventListener(/*325,330*/ 'click', ($event /*T:EP*/): any => {
       this
         .onClick /*333,340*/
-        () /*333,342*/;
-    }) /*324,343*/;
+        (); /*333,342*/
+    }); /*324,343*/
   }
 }
-
-/* Diagnostics:
- - (311, 388) 'FancyButton' is not a known element:
-1. If 'FancyButton' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.
- - (368, 387) Can't bind to 'children' since it isn't a known property of 'FancyButton'.
-*/
 
 ```
 
@@ -61,16 +54,9 @@ import * as i0 from './content-blocks.component';
 /*tcb1*/
 function _tcb1(this: i0.ContentBlocksComponent) {
   if (true) {
-    this.title /*336,341*/ /*336,341*/;
+    this.title; /*336,341*/ /*336,341*/
   }
 }
-
-/* Diagnostics:
- - (316, 343) 'FancyCard' is not a known element:
-1. If 'FancyCard' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.
- - (327, 342) Can't bind to 'label' since it isn't a known property of 'FancyCard'.
-*/
 
 ```
 
@@ -129,51 +115,11 @@ export class ContentBlocksComponent {
     {
       "filePath": "/bindings.component.ts",
       "category": "error",
-      "code": 8001,
-      "messageText": "'FancyButton' is not a known element:\n1. If 'FancyButton' is an Angular component, then verify that it is included in the '@Component.imports' of this component.\n2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.",
-      "span": {
-        "start": 311,
-        "end": 388
-      }
-    },
-    {
-      "filePath": "/bindings.component.ts",
-      "category": "error",
       "code": 8029,
       "messageText": "A foreign component cannot have both a 'children' property and child nodes.",
       "span": {
         "start": 368,
         "end": 387
-      }
-    },
-    {
-      "filePath": "/bindings.component.ts",
-      "category": "error",
-      "code": 8002,
-      "messageText": "Can't bind to 'children' since it isn't a known property of 'FancyButton'.",
-      "span": {
-        "start": 368,
-        "end": 387
-      }
-    },
-    {
-      "filePath": "/content-blocks.component.ts",
-      "category": "error",
-      "code": 8001,
-      "messageText": "'FancyCard' is not a known element:\n1. If 'FancyCard' is an Angular component, then verify that it is included in the '@Component.imports' of this component.\n2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.",
-      "span": {
-        "start": 316,
-        "end": 343
-      }
-    },
-    {
-      "filePath": "/content-blocks.component.ts",
-      "category": "error",
-      "code": 8002,
-      "messageText": "Can't bind to 'label' since it isn't a known property of 'FancyCard'.",
-      "span": {
-        "start": 327,
-        "end": 342
       }
     },
     {

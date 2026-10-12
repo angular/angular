@@ -56,6 +56,7 @@ export interface TcbTargetInput {
   pipeRegistry: Map<string, PipeMeta> | null;
   enableSelectorless?: boolean;
   selectorlessEnabled?: boolean;
+  foreignImports?: nga.ForeignImportMetadata[] | null;
 }
 
 export interface PreparedTcbTarget {
