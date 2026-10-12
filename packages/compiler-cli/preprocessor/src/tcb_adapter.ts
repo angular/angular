@@ -31,11 +31,7 @@ import {
 
 import type {TcbTargetInput, NgpTypeCheckingConfig} from './tcb.js';
 import * as nga from './types.js';
-import {
-  createForeignComponentMatcher,
-  createSpan,
-  isStaticSourceNode,
-} from './compiler-utils.js';
+import {createForeignComponentMatcher, createSpan, isStaticSourceNode} from './compiler-utils.js';
 
 // PropertyMappingImpl is removed as we now use ClassPropertyMapping directly.
 

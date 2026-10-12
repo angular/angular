@@ -8,29 +8,10 @@
 
 import * as fs from 'node:fs/promises';
 import * as path from 'path';
-import {
-  getOrCreateSyntheticNodeModules,
-  pathExists,
-  resolveWasmBinding,
-  TestFile,
-} from './utils.js';
+import {resolveFixtureNodeModules, resolveWasmBinding, TestFile} from './utils.js';
 import {createAnalyzer} from '../api.js';
 import {HybridCompiler} from '../src/hybrid_compiler.js';
 import {buildTypeCheckingConfig} from '../src/tcb.js';
-
-async function findNodeModules(): Promise<string> {
-  let dir = process.cwd();
-  while (!(await pathExists(path.join(dir, 'node_modules', '@angular')))) {
-    const parent = path.dirname(dir);
-    if (parent === dir) break;
-    dir = parent;
-  }
-  const candidate = path.join(dir, 'node_modules');
-  if (await pathExists(path.join(candidate, '@angular'))) {
-    return candidate;
-  }
-  return getOrCreateSyntheticNodeModules() || candidate;
-}
 
 async function createCompiler(
   testName: string,
@@ -55,7 +36,7 @@ async function createCompiler(
     wasmBinding: resolveWasmBinding(),
     virtualFiles,
     optimize: true,
-    nodeModulesPathOverride: await findNodeModules(),
+    nodeModulesPathOverride: resolveFixtureNodeModules(),
   });
   const compiler = new HybridCompiler(analyzer, {
     optimize: true,
