@@ -892,10 +892,11 @@ pub struct NgModuleData {
     pub local_imports_element_spans: Option<Vec<oxc_span::Span>>,
     pub local_exports_element_spans: Option<Vec<oxc_span::Span>>,
 
-    /// Syntactic type-tuple classification of `imports`/`exports` for `emitDeclarationOnly`
-    /// (`R3NgModuleMetadataKind.Isolated`). Computed at syntax time from the single-file AST +
-    /// partial evaluator, matching `analyzeForDeclarationOnly` in
-    /// `ngtsc/annotations/ng_module/src/handler.ts`.
+    /// Type-tuple classification of `imports`/`exports` for `emitDeclarationOnly`
+    /// (`R3NgModuleMetadataKind.Isolated`), matching `analyzeForDeclarationOnly` in
+    /// `ngtsc/annotations/ng_module/src/handler.ts`. Elements that depend on other files are
+    /// kept as [`IsolatedTypeElementData::Deferred`] and completed by
+    /// [`ClassData::complete_isolated_type_tuples`].
     pub isolated_imports: Option<IsolatedTypeTupleData>,
     pub isolated_exports: Option<IsolatedTypeTupleData>,
 
@@ -919,12 +920,88 @@ pub enum IsolatedTypeElementData {
     ReferenceTuple { references: Vec<Reference> },
     /// `never` — unsupported expression shape in declaration-only mode.
     Never { span: oxc_span::Span },
+    /// Evaluation that still depends on other files (e.g. `const SHARED = [ImportedPipe]`).
+    /// Classified at wire time once completed, or projected as `fallback` (the syntactic form).
+    Deferred {
+        resolved: Resolved<crate::evaluator::ResolvedValue>,
+        fallback: Box<IsolatedTypeElementData>,
+    },
 }
 
 #[derive(Clone, Debug)]
 pub struct IsolatedTypeTupleData {
     pub is_array_literal: bool,
     pub elements: Vec<IsolatedTypeElementData>,
+}
+
+/// A deferred element's completed value, per ngtsc's `resolvedToTypeTupleElement`.
+pub(crate) enum ResolvedIsolatedElement {
+    /// `typeof Ref`
+    Single(Reference),
+    /// `[typeof A, typeof B]`
+    Tuple(Vec<Reference>),
+}
+
+impl ResolvedIsolatedElement {
+    /// `None` for any other value, including one that still has holes.
+    pub(crate) fn from_value(value: &crate::evaluator::ResolvedValue) -> Option<Self> {
+        use crate::evaluator::ResolvedValue;
+        match value.unwrap_named() {
+            ResolvedValue::Reference(r) => {
+                Some(Self::Single(Reference::from_value_reference(r)))
+            }
+            ResolvedValue::Array(items) if !items.is_empty() => items
+                .iter()
+                .map(|item| match item.unwrap_named() {
+                    ResolvedValue::Reference(r) => Some(Reference::from_value_reference(r)),
+                    _ => None,
+                })
+                .collect::<Option<Vec<_>>>()
+                .map(Self::Tuple),
+            _ => None,
+        }
+    }
+
+    pub(crate) fn references(&self) -> &[Reference] {
+        match self {
+            Self::Single(r) => std::slice::from_ref(r),
+            Self::Tuple(refs) => refs,
+        }
+    }
+}
+
+impl IsolatedTypeTupleData {
+    /// The evaluations of all `Deferred` elements.
+    pub(crate) fn deferred_values_mut(
+        &mut self,
+    ) -> impl Iterator<Item = &mut Resolved<crate::evaluator::ResolvedValue>> {
+        self.elements.iter_mut().filter_map(|el| match el {
+            IsolatedTypeElementData::Deferred { resolved, .. } => Some(resolved),
+            _ => None,
+        })
+    }
+
+    /// All references the wire projection may emit.
+    pub(crate) fn references(&self) -> Vec<Reference> {
+        let mut out = Vec::new();
+        for el in &self.elements {
+            match el {
+                IsolatedTypeElementData::Typeof {
+                    reference: Some(r), ..
+                } => out.push(r.clone()),
+                IsolatedTypeElementData::ReferenceTuple { references } => {
+                    out.extend(references.iter().cloned())
+                }
+                IsolatedTypeElementData::Deferred { resolved, .. } => {
+                    if let Some(element) = ResolvedIsolatedElement::from_value(resolved.raw()) {
+                        out.extend(element.references().iter().cloned());
+                    }
+                }
+                _ => {}
+            }
+        }
+        out
+    }
 }
 
 // ==================================================================== errors
@@ -1065,6 +1142,37 @@ impl ClassData {
         styles
             .complete_with(ctx, crate::analyzer::resolvers::angular_foreign_resolvers())
             .await;
+    }
+
+    /// Resolve cross-file holes in the `emitDeclarationOnly` type tuples. Uses no foreign
+    /// resolvers, like ngtsc's `transformToTypeTupleExpression`.
+    pub async fn complete_isolated_type_tuples<Fs: crate::ResourceResolverFs + Clone + 'static>(
+        &mut self,
+        ctx: &crate::query::QueryContext<Fs>,
+    ) {
+        let DecoratorData::NgModule(m) = &mut self.decorator else {
+            return;
+        };
+        for tuple in [&mut m.isolated_imports, &mut m.isolated_exports]
+            .into_iter()
+            .flatten()
+        {
+            for resolved in tuple.deferred_values_mut() {
+                resolved.complete_with(ctx, &[]).await;
+            }
+        }
+    }
+
+    /// References the `emitDeclarationOnly` type tuples may emit, for the export-name pre-pass.
+    pub(crate) fn isolated_tuple_references(&self) -> Vec<Reference> {
+        let Some(m) = self.as_ng_module() else {
+            return Vec::new();
+        };
+        [&m.isolated_imports, &m.isolated_exports]
+            .into_iter()
+            .flatten()
+            .flat_map(IsolatedTypeTupleData::references)
+            .collect()
     }
 
     /// The `@Injectable` data, whether it is the classification itself or a weak decorator
@@ -1241,6 +1349,7 @@ impl ClassData {
             }
             _ => {}
         }
+        self.complete_isolated_type_tuples(ctx).await;
     }
 
     /// Demote every remaining `Incomplete` hole in every `Resolved` field to `Dynamic`.
@@ -1287,6 +1396,14 @@ impl ClassData {
                 .flatten()
                 {
                     slot.demote();
+                }
+                for tuple in [&mut m.isolated_imports, &mut m.isolated_exports]
+                    .into_iter()
+                    .flatten()
+                {
+                    for resolved in tuple.deferred_values_mut() {
+                        resolved.demote();
+                    }
                 }
             }
             _ => {}
@@ -2944,10 +3061,6 @@ impl ClassData {
         tuple: &IsolatedTypeTupleData,
         cx: &WireContext,
     ) -> crate::types::metadata::IsolatedTypeTupleMetadata {
-        use crate::types::metadata::{
-            IsolatedTypeElementKind, IsolatedTypeElementMetadata, IsolatedTypeTupleMetadata,
-            SpanMetadata,
-        };
         let file_id = self.reference_id.file;
         let current_file_path = cx
             .path_lookup
@@ -2956,45 +3069,84 @@ impl ClassData {
         let elements = tuple
             .elements
             .iter()
-            .map(|el| match el {
-                IsolatedTypeElementData::Typeof { span, reference } => {
-                    IsolatedTypeElementMetadata {
-                        kind: IsolatedTypeElementKind::Typeof,
-                        span: span.map(|s| SpanMetadata::new(s, cx.converter)),
-                        references: reference
-                            .as_ref()
-                            .map(|r| vec![self.to_wire_single_ref(r, &current_file_path, cx)]),
-                    }
-                }
-                IsolatedTypeElementData::CallReturnType { callee_span } => {
-                    IsolatedTypeElementMetadata {
-                        kind: IsolatedTypeElementKind::CallReturnType,
-                        span: Some(SpanMetadata::new(*callee_span, cx.converter)),
-                        references: None,
-                    }
-                }
-                IsolatedTypeElementData::ReferenceTuple { references } => {
-                    IsolatedTypeElementMetadata {
-                        kind: IsolatedTypeElementKind::ReferenceTuple,
-                        span: None,
-                        references: Some(
-                            references
-                                .iter()
-                                .map(|r| self.to_wire_single_ref(r, &current_file_path, cx))
-                                .collect(),
-                        ),
-                    }
-                }
-                IsolatedTypeElementData::Never { span } => IsolatedTypeElementMetadata {
-                    kind: IsolatedTypeElementKind::Never,
-                    span: Some(SpanMetadata::new(*span, cx.converter)),
-                    references: None,
-                },
-            })
+            .map(|el| self.to_wire_isolated_element(el, &current_file_path, cx))
             .collect();
-        IsolatedTypeTupleMetadata {
+        crate::types::metadata::IsolatedTypeTupleMetadata {
             is_array_literal: tuple.is_array_literal,
             elements,
+        }
+    }
+
+    fn to_wire_isolated_element(
+        &self,
+        el: &IsolatedTypeElementData,
+        current_file_path: &std::path::Path,
+        cx: &WireContext,
+    ) -> crate::types::metadata::IsolatedTypeElementMetadata {
+        use crate::types::metadata::{
+            IsolatedTypeElementKind, IsolatedTypeElementMetadata, SpanMetadata,
+        };
+        match el {
+            IsolatedTypeElementData::Typeof { span, reference } => IsolatedTypeElementMetadata {
+                kind: IsolatedTypeElementKind::Typeof,
+                span: span.map(|s| SpanMetadata::new(s, cx.converter)),
+                references: reference
+                    .as_ref()
+                    .map(|r| vec![self.to_wire_single_ref(r, current_file_path, cx)]),
+            },
+            IsolatedTypeElementData::CallReturnType { callee_span } => {
+                IsolatedTypeElementMetadata {
+                    kind: IsolatedTypeElementKind::CallReturnType,
+                    span: Some(SpanMetadata::new(*callee_span, cx.converter)),
+                    references: None,
+                }
+            }
+            IsolatedTypeElementData::ReferenceTuple { references } => {
+                IsolatedTypeElementMetadata {
+                    kind: IsolatedTypeElementKind::ReferenceTuple,
+                    span: None,
+                    references: Some(
+                        references
+                            .iter()
+                            .map(|r| self.to_wire_single_ref(r, current_file_path, cx))
+                            .collect(),
+                    ),
+                }
+            }
+            IsolatedTypeElementData::Never { span } => IsolatedTypeElementMetadata {
+                kind: IsolatedTypeElementKind::Never,
+                span: Some(SpanMetadata::new(*span, cx.converter)),
+                references: None,
+            },
+            IsolatedTypeElementData::Deferred { resolved, fallback } => {
+                let Some(element) = ResolvedIsolatedElement::from_value(resolved.raw()) else {
+                    return self.to_wire_isolated_element(fallback, current_file_path, cx);
+                };
+                let emitted: Option<Vec<ReferenceMetadata>> = element
+                    .references()
+                    .iter()
+                    .map(|r| {
+                        let emitted = self.to_wire_single_ref(r, current_file_path, cx);
+                        // Neither a local binding nor an import: unreachable from this file
+                        // (e.g. not exported), so ngtsc's reference emit would fail too.
+                        (emitted.local_alias.is_some() || emitted.consumer_import.is_some())
+                            .then_some(emitted)
+                    })
+                    .collect();
+                let Some(references) = emitted else {
+                    return self.to_wire_isolated_element(fallback, current_file_path, cx);
+                };
+                IsolatedTypeElementMetadata {
+                    kind: match element {
+                        ResolvedIsolatedElement::Single(_) => IsolatedTypeElementKind::Typeof,
+                        ResolvedIsolatedElement::Tuple(_) => {
+                            IsolatedTypeElementKind::ReferenceTuple
+                        }
+                    },
+                    span: None,
+                    references: Some(references),
+                }
+            }
         }
     }
 

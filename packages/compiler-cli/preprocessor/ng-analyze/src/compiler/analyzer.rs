@@ -766,6 +766,7 @@ impl Analyzer {
                     for class in &mut syntax_res.classes {
                         class.complete_selector(&ctx).await;
                         class.complete_styles(&ctx).await;
+                        class.complete_isolated_type_tuples(&ctx).await;
                     }
                     // Must run before `validate()`, `extract_chunk_info` and `to_wire()`: it sets
                     // the extra imports and `declaring_ng_module` they read.
