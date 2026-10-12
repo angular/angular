@@ -669,7 +669,7 @@ fn extract_class_metadata(
             has_ng_template_context_guard,
             ng_template_guards,
             animation_trigger_names: None,
-            has_ng_field_directive: false,
+            has_ng_field_directive,
             is_structural: false,
             raw_imports: None,
             // A `.d.ts` carries no decorator literal, so no `providers` to read.
@@ -1308,6 +1308,43 @@ export declare class AppComponent {
             comp.ng_content_selectors.as_ref(),
             Some(&vec!["*".to_string()])
         );
+    }
+
+    #[test]
+    fn test_ng_field_directive_propagates_to_registration() {
+        let source = r#"
+import * as i0 from "@angular/core";
+declare const ɵNgFieldDirective: unique symbol;
+export declare class FormField {
+    readonly [ɵNgFieldDirective]: true;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<FormField, "[formField]", never, { "formField": { "alias": "formField"; "required": true; "isSignal": true; }; }, {}, never, never, true, never>;
+}
+export declare class NotAField {
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NotAField, "[notAField]", never, {}, {}, never, never, true, never>;
+}
+"#;
+        let result = run_analyze_dts(source);
+        let find_class = |name: &str| {
+            result
+                .classes
+                .iter()
+                .find(|c| c.class_name.as_deref() == Some(name))
+                .unwrap()
+        };
+        let find_registration = |name: &str| {
+            result
+                .registrations
+                .iter()
+                .find(|r| r.class_name == name)
+                .unwrap()
+        };
+
+        assert!(find_class("FormField").has_ng_field_directive);
+        // The query engine reads the flag from the registration, so it must be set there too.
+        assert!(find_registration("FormField").has_ng_field_directive);
+
+        assert!(!find_class("NotAField").has_ng_field_directive);
+        assert!(!find_registration("NotAField").has_ng_field_directive);
     }
 
     #[test]

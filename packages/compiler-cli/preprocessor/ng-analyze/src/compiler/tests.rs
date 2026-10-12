@@ -946,6 +946,110 @@ fn test_utf16_dts_declaration_name_span() {
 }
 
 #[test]
+fn test_dts_ng_field_directive_in_resolved_declarations() {
+    let forms_dts = r#"
+import * as i0 from '@angular/core';
+declare const ɵNgFieldDirective: unique symbol;
+export declare class FormField<T> {
+    readonly formField: i0.InputSignal<T>;
+    readonly [ɵNgFieldDirective]: true;
+    static ɵfac: i0.ɵɵFactoryDeclaration<FormField<any>, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<FormField<any>, "[formField]", never, { "formField": { "alias": "formField"; "required": true; "isSignal": true; }; }, {}, never, never, true, never>;
+}
+"#;
+    let lib_dts = r#"
+import * as i0 from '@angular/core';
+export declare class MyFieldComponent {
+    readonly value: i0.ModelSignal<string>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyFieldComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyFieldComponent, "my-field", never, { "value": { "alias": "value"; "required": true; "isSignal": true; }; }, { "value": "valueChange"; }, never, never, true, never>;
+}
+"#;
+
+    for optimize in [false, true] {
+        let mut virtual_files = HashMap::new();
+        virtual_files.insert(
+            "/project/tsconfig.json".to_string(),
+            r#"{"files": ["app.ts", "forms.d.ts", "lib.d.ts"]}"#.to_string(),
+        );
+        virtual_files.insert("/project/forms.d.ts".to_string(), forms_dts.to_string());
+        virtual_files.insert("/project/lib.d.ts".to_string(), lib_dts.to_string());
+        virtual_files.insert(
+            "/project/app.ts".to_string(),
+            r#"
+            import {Component} from '@angular/core';
+            import {FormField} from './forms';
+            import {MyFieldComponent} from './lib';
+
+            @Component({
+                selector: 'my-form',
+                imports: [FormField, MyFieldComponent],
+                template: '<my-field [formField]="name" />',
+            })
+            export class MyFormComponent {
+                name: any;
+            }
+            "#
+            .to_string(),
+        );
+
+        let options = AnalyzerOptions {
+            tsconfig_path: "/project/tsconfig.json".to_string(),
+            optimize: Some(optimize),
+            virtual_files: Some(virtual_files),
+            ..Default::default()
+        };
+        let analyzer = Analyzer::new(options).unwrap();
+
+        let mut results = Vec::new();
+        if optimize {
+            let iterator = analyzer.analyze_optimized().unwrap();
+            while let Ok(Some(chunk)) = futures::executor::block_on(iterator.next()) {
+                results.extend(chunk.files);
+            }
+        } else {
+            let iterator = analyzer.analyze().unwrap();
+            while futures::executor::block_on(iterator.next())
+                .unwrap()
+                .is_some()
+            {}
+            results.push(
+                analyzer
+                    .get_metadata_for_file("/project/app.ts".to_string())
+                    .expect("app.ts metadata"),
+            );
+        }
+
+        let app_meta = results
+            .iter()
+            .find(|res| res.file_path == "/project/app.ts")
+            .expect("app.ts metadata");
+        let decls = app_meta
+            .classes
+            .iter()
+            .find(|c| c.class_name.as_deref() == Some("MyFormComponent"))
+            .and_then(|c| c.component.as_ref())
+            .and_then(|c| c.resolved_declarations.as_ref())
+            .expect("MyFormComponent resolved_declarations");
+        let decl = |name: &str| {
+            decls
+                .iter()
+                .find(|d| d.name == name)
+                .unwrap_or_else(|| panic!("{name} declaration (optimize={optimize})"))
+        };
+
+        assert!(
+            decl("FormField").has_ng_field_directive,
+            "FormField from .d.ts must carry hasNgFieldDirective (optimize={optimize})"
+        );
+        assert!(
+            !decl("MyFieldComponent").has_ng_field_directive,
+            "MyFieldComponent is not a field directive (optimize={optimize})"
+        );
+    }
+}
+
+#[test]
 fn test_injectable_with_deps() {
     let mut virtual_files = HashMap::new();
     virtual_files.insert(
