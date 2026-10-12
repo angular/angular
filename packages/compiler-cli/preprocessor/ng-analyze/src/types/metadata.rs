@@ -595,6 +595,7 @@ pub struct HostBindingMetadata {
     pub host_property_name: Option<String>,
     pub decorator_span: SpanMetadata,
     pub member_span: SpanMetadata,
+    pub is_accessor: bool,
 }
 
 #[cfg_attr(feature = "napi", napi(object))]

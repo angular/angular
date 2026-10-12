@@ -15,8 +15,6 @@ function _tcb1(this: i0.ButtonComponent) {
     this.isPressed /*248,257*/ /*248,257*/;
     this.disabled /*284,292*/ /*284,292*/ ? 0.5 /*295,298*/ : 1 /*301,302*/ /*284,302*/;
     this.disabled /*334,342*/ /*334,342*/;
-    this.focusedClass /*490,505*/ /*490,505*/;
-    this.cursor /*577,591*/ /*577,591*/;
     var _t1 = document.createElement('app-button'); /*394,409*/
     _t1.addEventListener(/*350,357*/ 'focus', ($event /*T:EP*/): any => {
       this

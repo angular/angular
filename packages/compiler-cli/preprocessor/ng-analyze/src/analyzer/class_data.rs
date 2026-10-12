@@ -204,6 +204,7 @@ pub struct HostBindingData {
     pub host_property_name: Option<Resolved<String>>,
     pub decorator_span: oxc_span::Span,
     pub member_span: oxc_span::Span,
+    pub is_accessor: bool,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -2347,6 +2348,7 @@ impl HostBindingData {
                 converter,
             ),
             member_span: crate::types::metadata::SpanMetadata::new(self.member_span, converter),
+            is_accessor: self.is_accessor,
         }
     }
 }

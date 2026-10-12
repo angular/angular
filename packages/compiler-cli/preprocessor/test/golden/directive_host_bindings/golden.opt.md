@@ -13,7 +13,6 @@ function _tcb1(this: i0.TooltipDirective) {
   }
   if (true /*hostBindingsBlockGuard*/) {
     this.isHidden /*192,200*/ /*192,200*/;
-    this.activeClass /*298,312*/ /*298,312*/;
     this.tooltipId /*382,386*/ /*382,386*/;
     var _t1 = document.createElement('ng-directive'); /*224,240*/
     _t1.addEventListener(/*432,439*/ 'click', ($event /*T:EP*/): any => {

@@ -69,7 +69,6 @@ function _tcb7(this: i0.DecoratedHostBindingDir) {
   }
   if (true /*hostBindingsBlockGuard*/) {
     this.evil /*2751,2755*/ /*2751,2755*/;
-    this.srcBinding /*2838,2843*/ /*2838,2843*/;
   }
 }
 
@@ -101,7 +100,6 @@ function _tcb10(this: i0.TemplateBindingsCmp) {
 
 /* Diagnostics:
  - (2429, 2441) Can't bind to 'formAction' since it isn't a known property of 'ng-directive'.
- - (2838, 2843) Can't bind to 'src' since it isn't a known property of 'ng-directive'.
 */
 
 ```
@@ -696,16 +694,6 @@ export class TemplateBindingsCmp {
       "span": {
         "start": 2429,
         "end": 2441
-      }
-    },
-    {
-      "filePath": "/host_binding_sanitizers.ts",
-      "category": "error",
-      "code": 8002,
-      "messageText": "Can't bind to 'src' since it isn't a known property of 'ng-directive'.",
-      "span": {
-        "start": 2838,
-        "end": 2843
       }
     }
   ]
