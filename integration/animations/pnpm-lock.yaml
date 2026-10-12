@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@angular/cdk':
-        specifier: 22.3.0-next.0
-        version: 22.3.0-next.0(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/forms@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(rxjs@7.8.2)
+        specifier: 22.3.0-next.1
+        version: 22.3.0-next.1(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/forms@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(rxjs@7.8.2)
       '@angular/common':
         specifier: link:./in-existing-linked-by-bazel
         version: link:in-existing-linked-by-bazel
@@ -203,8 +203,8 @@ packages:
       vitest:
         optional: true
 
-  '@angular/cdk@22.3.0-next.0':
-    resolution: {integrity: sha512-uOaEscIfA3MOYX6YsgH/GGOEimHS2lyOUa4N5Q04GoO/1TWABTrvTSJHOmJX38/v5Xd3gQlmBv5fJdWgK2jaPA==}
+  '@angular/cdk@22.3.0-next.1':
+    resolution: {integrity: sha512-WAOIXq+8KtLn59xdt7rRKgdxO3VUCGSlSzoUJQez4EM+/MFa8GPMTHZ392ewBA3R2XpEJNFbSIH61A0+yfNBMg==}
     peerDependencies:
       '@angular/common': ^22.0.0-0 || ^22.1.0-0 || ^22.2.0-0 || ^22.3.0-0 || ^23.0.0-0
       '@angular/core': ^22.0.0-0 || ^22.1.0-0 || ^22.2.0-0 || ^22.3.0-0 || ^23.0.0-0
@@ -4414,7 +4414,7 @@ snapshots:
       - vue-tsc
       - yaml
 
-  '@angular/cdk@22.3.0-next.0(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/forms@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(rxjs@7.8.2)':
+  '@angular/cdk@22.3.0-next.1(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/forms@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(rxjs@7.8.2)':
     dependencies:
       '@angular/common': link:in-existing-linked-by-bazel
       '@angular/core': link:in-existing-linked-by-bazel
