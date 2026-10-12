@@ -13,7 +13,7 @@ import ts from 'typescript';
 import {ErrorCode} from '../../../diagnostics';
 import {absoluteFrom, AbsoluteFsPath, getFileSystem} from '../../../file_system';
 import {TestFile} from '../../../file_system/testing';
-import {performNgpCompilationSync} from '../../../testing/src/ngp_test_driver';
+import {performNgpCompilationSync} from '../../../testing';
 import {TemplateDiagnostic, TemplateTypeChecker} from '../../api';
 import {TemplateCheck} from '../../extended/api';
 import {ExtendedTemplateCheckerImpl} from '../../extended/src/extended_template_checker';
@@ -22,10 +22,10 @@ import {
   angularAnimationsDts,
   angularCoreDtsFiles,
   angularFormsDtsFiles,
-  TestDeclaration,
-  TypeCheckingTarget,
+  type TestDeclaration,
+  type TypeCheckingTarget,
   typescriptLibDts,
-} from '../index';
+} from './test_support';
 
 export interface NgpSetupContext {
   targets: TypeCheckingTarget[];
