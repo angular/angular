@@ -199,6 +199,11 @@ impl WasmAnalyzer {
         serde_json::to_string(&res).ok()
     }
 
+    pub fn read_resource(&self, containing_file: String, url: String) -> Option<String> {
+        let res = self.analyzer.read_resource_core(containing_file, url)?;
+        serde_json::to_string(&res).ok()
+    }
+
     pub fn pump(&mut self) -> Option<String> {
         step_local_pool();
 

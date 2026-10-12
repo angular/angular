@@ -124,6 +124,80 @@ export class DynamicTemplateComponent {
 
 ```
 
+# /out/missing-link-stylesheet-template-literal.component.ts
+```ts
+import { Component } from '@angular/core';
+// @ts-ignore
+import * as i0 from '@angular/core';
+
+// `templateUrl` as a no-substitution template literal: the NG2008 for the stylesheet linked
+// from the external template is anchored on the `templateUrl` expression, as in ngtsc.
+export class MissingLinkStylesheetTemplateLiteralComponent {
+  // @ts-ignore
+  static ɵfac: i0.ɵɵFactoryDeclaration<MissingLinkStylesheetTemplateLiteralComponent, never> =
+    function MissingLinkStylesheetTemplateLiteralComponent_Factory(__ngFactoryType__: any): any {
+      return new (__ngFactoryType__ || MissingLinkStylesheetTemplateLiteralComponent)();
+    };
+  // @ts-ignore
+  static ɵcmp: i0.ɵɵComponentDeclaration<
+    MissingLinkStylesheetTemplateLiteralComponent,
+    'app-missing-link-stylesheet-template-literal',
+    never,
+    {},
+    {},
+    never,
+    never,
+    true,
+    never
+  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
+    type: MissingLinkStylesheetTemplateLiteralComponent,
+    selectors: [['app-missing-link-stylesheet-template-literal']],
+    decls: 2,
+    vars: 0,
+    template: function MissingLinkStylesheetTemplateLiteralComponent_Template(
+      rf: number,
+      ctx: any,
+    ): any {
+      if (rf & 1) {
+        i0.ɵɵelementStart(0, 'div');
+        i0.ɵɵtext(1, 'Hello');
+        i0.ɵɵelementEnd();
+      }
+    },
+    encapsulation: 2,
+  });
+  static {
+    (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MissingLinkStylesheetTemplateLiteralComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: 'app-missing-link-stylesheet-template-literal',
+                standalone: true,
+                template: '<link rel="stylesheet" href="./missing.css"><div>Hello</div>',
+              },
+            ],
+          },
+        ],
+        null,
+        null,
+      );
+  }
+}
+((): any => {
+  (typeof ngDevMode === 'undefined' || ngDevMode) &&
+    i0.ɵsetClassDebugInfo(MissingLinkStylesheetTemplateLiteralComponent, {
+      className: 'MissingLinkStylesheetTemplateLiteralComponent',
+      filePath: 'missing-link-stylesheet-template-literal.component.ts',
+      lineNumber: 10,
+    });
+})();
+
+```
+
 # /out/missing-link-stylesheet.component.ts
 ```ts
 import { Component } from '@angular/core';
@@ -278,6 +352,16 @@ export class MissingTemplateComponent {
       "span": {
         "start": 125,
         "end": 159
+      }
+    },
+    {
+      "filePath": "/missing-link-stylesheet-template-literal.component.ts",
+      "category": "error",
+      "code": 2008,
+      "messageText": "Could not find stylesheet file './missing.css' linked from the template.",
+      "span": {
+        "start": 333,
+        "end": 392
       }
     },
     {

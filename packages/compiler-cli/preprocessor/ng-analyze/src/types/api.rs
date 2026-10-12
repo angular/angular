@@ -247,3 +247,17 @@ pub struct TemplateUsage {
     pub ts_file_path: String,
     pub symbol_id: u32,
 }
+
+/// A resource URL resolved and read on behalf of the TypeScript layer (`Analyzer::read_resource`),
+/// so that stylesheets it discovers itself (`<link rel="stylesheet">` in a template) load exactly
+/// like the decorator's `templateUrl`/`styleUrls`.
+#[cfg_attr(feature = "napi", napi(object))]
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ResolvedResource {
+    /// The canonical path the URL resolved to, as `UrlMetadata::resolved_path` reports it.
+    pub resolved_path: String,
+    /// The file's text; absent when the resolved path could not be read (`NG2008`).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub content: Option<String>,
+}

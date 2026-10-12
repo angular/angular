@@ -86,6 +86,15 @@ impl TestAnalyzer {
         self.analyzer.get_ts_file_for_template(template_path)
     }
 
+    #[cfg_attr(feature = "napi", napi)]
+    pub fn read_resource(
+        &self,
+        containing_file: String,
+        url: String,
+    ) -> Option<crate::ResolvedResource> {
+        self.analyzer.read_resource(containing_file, url)
+    }
+
     #[cfg(feature = "napi")]
     #[napi]
     pub fn update_file_content(&self, updates: Vec<FileUpdate>) -> napi::Result<Vec<String>> {

@@ -8,7 +8,8 @@
     "dynamic-template.component.ts",
     "missing-template.component.ts",
     "dynamic-template-url.component.ts",
-    "missing-link-stylesheet.component.ts"
+    "missing-link-stylesheet.component.ts",
+    "missing-link-stylesheet-template-literal.component.ts"
   ]
 }
 ```
@@ -58,4 +59,23 @@ import { Component } from '@angular/core';
   template: '<link rel="stylesheet" href="./missing.css"><div>Hello</div>',
 })
 export class MissingLinkStylesheetComponent {}
+```
+
+# /missing-link-stylesheet-template-literal.component.ts
+```ts
+import { Component } from '@angular/core';
+
+// `templateUrl` as a no-substitution template literal: the NG2008 for the stylesheet linked
+// from the external template is anchored on the `templateUrl` expression, as in ngtsc.
+@Component({
+  selector: 'app-missing-link-stylesheet-template-literal',
+  standalone: true,
+  templateUrl: `./missing-link-stylesheet-template-literal.component.html`,
+})
+export class MissingLinkStylesheetTemplateLiteralComponent {}
+```
+
+# /missing-link-stylesheet-template-literal.component.html
+```html
+<link rel="stylesheet" href="./missing.css"><div>Hello</div>
 ```

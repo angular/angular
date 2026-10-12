@@ -8,14 +8,14 @@
 
 import * as child_process from 'child_process';
 import * as readline from 'readline';
-import type {AnalysisResult, FileInvalidation, CompilationChunk, TemplateUsage} from './types.js';
+import type {
+  AnalysisResult,
+  FileInvalidation,
+  CompilationChunk,
+  ResolvedResource,
+  TemplateUsage,
+} from './types.js';
 import type {IAnalyzer} from './hybrid_compiler.js';
-
-interface SidecarResponse {
-  id: number;
-  result?: any;
-  error?: string;
-}
 
 export class SidecarAnalyzer implements IAnalyzer {
   private sidecarProcess: child_process.ChildProcess;
@@ -288,6 +288,10 @@ export class SidecarAnalyzer implements IAnalyzer {
 
   async getFileContent(filePath: string): Promise<string> {
     return this.callRpc('getFileContent', {filePath});
+  }
+
+  async readResource(containingFile: string, url: string): Promise<ResolvedResource | null> {
+    return this.callRpc<ResolvedResource | null>('readResource', {containingFile, url});
   }
 
   getMetadataForFileSync(filePath: string): AnalysisResult | null {

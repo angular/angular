@@ -8,7 +8,6 @@
 
 import type * as nga from './types.js';
 import * as path from 'path';
-import * as fs from 'node:fs/promises';
 import {
   OutOfBandDiagnosticCategory,
   ParsedTemplate,
@@ -259,7 +258,6 @@ export async function processFile(
   rawCtx: HybridCompilerContext,
   filePath: string,
   content: string,
-  readResource?: (file: string) => string | undefined,
   metadata?: nga.AnalysisResult,
   chunkContext?: ChunkContext,
 ): Promise<ProcessedFile> {
@@ -599,24 +597,26 @@ export async function processFile(
         continue;
       }
 
+      // Stylesheets linked from the template (`<link rel="stylesheet">`) resolve from the
+      // component file, like ngtsc's `resourceLoader.resolve(styleUrl.url, containingFile)`,
+      // and through the analyzer so they see the same `rootDirs`, virtual overlay and
+      // preprocessor-extension fallback as the decorator's `styleUrls`.
+      // https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L876-L923
       for (const styleUrl of parsed.styleUrls) {
-        const resolvedPath = path.resolve(path.dirname(filePath), styleUrl);
-        if (externalRuntimeStyles) {
-          externalStyles.push(resolvedPath);
+        const resource = await ctx.analyzer.readResource(filePath, styleUrl);
+        if (externalRuntimeStyles && resource !== null) {
+          externalStyles.push(resource.resolvedPath);
           continue;
         }
-        const resolvedContent = readResource
-          ? readResource(resolvedPath)
-          : await fs.readFile(resolvedPath, 'utf8').catch(() => undefined);
 
-        if (resolvedContent !== undefined) {
-          allStyles.push(resolvedContent);
+        if (resource?.content != null) {
+          allStyles.push(resource.content);
         } else {
           // NG2008 (COMPONENT_RESOURCE_NOT_FOUND), anchored where ngtsc anchors
           // template-sourced stylesheet failures: the template declaration node
           // (`templateUrl`'s expression for external templates, `template`'s for inline).
           // https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/component/src/resources.ts#L750-L761
-          const span = component.templateUrl?.stringLiteralSpan ?? component.templateSpan;
+          const span = component.templateUrlSpan ?? component.templateSpan;
           fileDiagnostics.push({
             category: 1,
             code: 2008,

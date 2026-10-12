@@ -82,6 +82,10 @@ export class NapiAnalyzer implements IAnalyzer {
     return this.analyzer.getFileContent(filePath);
   }
 
+  async readResource(containingFile: string, url: string): Promise<nga.ResolvedResource | null> {
+    return this.analyzer.readResource(containingFile, url) ?? null;
+  }
+
   getMetadataForFileSync(filePath: string): nga.AnalysisResult | null {
     return this.analyzer.getMetadataForFile(filePath) ?? null;
   }

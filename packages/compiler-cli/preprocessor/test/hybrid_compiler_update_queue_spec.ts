@@ -13,6 +13,7 @@ import {
   type AnalysisResult,
   type CompilationChunk,
   type FileInvalidation,
+  type ResolvedResource,
   type TemplateUsage,
 } from '../src/types.js';
 
@@ -97,6 +98,9 @@ class ScriptedAnalyzer implements IAnalyzer {
   }
   async getFileContent(filePath: string): Promise<string> {
     return '';
+  }
+  async readResource(containingFile: string, url: string): Promise<ResolvedResource | null> {
+    return null;
   }
   getMetadataForFileSync(filePath: string): AnalysisResult | null {
     return null;

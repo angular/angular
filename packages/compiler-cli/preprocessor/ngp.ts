@@ -54,7 +54,7 @@ async function processFile(
   const {filePath} = file;
 
   const content = await fs.readFile(filePath, 'utf-8');
-  const processed = await compiler.processFile(filePath, content, undefined, file, chunkContext);
+  const processed = await compiler.processFile(filePath, content, file, chunkContext);
   const s = processed.magicString;
 
   const writeOutput = outDir || options.inPlace;
