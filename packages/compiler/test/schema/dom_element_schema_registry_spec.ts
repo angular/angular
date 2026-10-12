@@ -158,47 +158,6 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
       SecurityContext.ATTRIBUTE_NO_BINDING,
     );
 
-    // SVG animate and set attributes
-    expect(registry.securityContext(':svg:animate', 'to', false)).toBe(
-      SecurityContext.ATTRIBUTE_NO_BINDING,
-    );
-    expect(registry.securityContext(':svg:animate', 'from', false)).toBe(
-      SecurityContext.ATTRIBUTE_NO_BINDING,
-    );
-    expect(registry.securityContext(':svg:animate', 'values', false)).toBe(
-      SecurityContext.ATTRIBUTE_NO_BINDING,
-    );
-    expect(registry.securityContext(':svg:set', 'to', false)).toBe(
-      SecurityContext.ATTRIBUTE_NO_BINDING,
-    );
-
-    // SVG animation elements are sensitive when their namespace is omitted at compile time.
-    expect(registry.securityContext('set', 'to', true)).toBe(SecurityContext.ATTRIBUTE_NO_BINDING);
-    expect(registry.securityContext('set', 'attributeName', true)).toBe(
-      SecurityContext.ATTRIBUTE_NO_BINDING,
-    );
-    expect(registry.securityContext('animate', 'to', true)).toBe(
-      SecurityContext.ATTRIBUTE_NO_BINDING,
-    );
-    expect(registry.securityContext('animate', 'from', true)).toBe(
-      SecurityContext.ATTRIBUTE_NO_BINDING,
-    );
-    expect(registry.securityContext('animate', 'values', true)).toBe(
-      SecurityContext.ATTRIBUTE_NO_BINDING,
-    );
-    expect(registry.securityContext('animate', 'attributeName', true)).toBe(
-      SecurityContext.ATTRIBUTE_NO_BINDING,
-    );
-    expect(registry.securityContext('animateMotion', 'attributeName', true)).toBe(
-      SecurityContext.ATTRIBUTE_NO_BINDING,
-    );
-    expect(registry.securityContext('animateTransform', 'attributeName', true)).toBe(
-      SecurityContext.ATTRIBUTE_NO_BINDING,
-    );
-
-    // The defensive SVG lookup must not apply to elements in an explicit foreign namespace.
-    expect(registry.securityContext(':math:set', 'to', true)).toBe(SecurityContext.NONE);
-
     // SVG link attributes
     expect(registry.securityContext(':svg:a', 'href', false)).toBe(SecurityContext.URL);
     expect(registry.securityContext(':svg:a', 'xlink:href', false)).toBe(SecurityContext.URL);
@@ -220,6 +179,247 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
     expect(registry.securityContext(':svg:foobar', 'xlink:href', false)).toBe(SecurityContext.NONE);
 
     expect(registry.securityContext('p', 'href', false)).toBe(SecurityContext.NONE);
+  });
+
+  describe('SVG animation security contexts', () => {
+    // An embedded view may be inserted into a different namespace than the one in which it was
+    // declared, so these sensitive bindings must be rejected in every declaration namespace.
+    it('should reject sensitive bindings on `<set>` in every namespace', () => {
+      // HTML namespace
+      expect(registry.securityContext('set', 'to', false)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext('set', 'to', true)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext('set', 'attributeName', false)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext('set', 'attributeName', true)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+
+      // SVG namespace
+      expect(registry.securityContext(':svg:set', 'to', false)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':svg:set', 'to', true)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':svg:set', 'attributeName', false)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':svg:set', 'attributeName', true)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+
+      // MathML namespace
+      expect(registry.securityContext(':math:set', 'to', false)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':math:set', 'to', true)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':math:set', 'attributeName', false)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':math:set', 'attributeName', true)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+
+      // Custom namespace
+      expect(registry.securityContext(':custom:set', 'to', false)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':custom:set', 'to', true)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':custom:set', 'attributeName', false)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':custom:set', 'attributeName', true)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+    });
+
+    it('should reject sensitive bindings on `<animate>` in every namespace', () => {
+      // HTML namespace
+      expect(registry.securityContext('animate', 'to', false)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext('animate', 'to', true)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext('animate', 'from', false)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext('animate', 'from', true)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext('animate', 'values', false)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext('animate', 'values', true)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext('animate', 'attributeName', false)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext('animate', 'attributeName', true)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+
+      // SVG namespace
+      expect(registry.securityContext(':svg:animate', 'to', false)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':svg:animate', 'to', true)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':svg:animate', 'from', false)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':svg:animate', 'from', true)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':svg:animate', 'values', false)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':svg:animate', 'values', true)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':svg:animate', 'attributeName', false)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':svg:animate', 'attributeName', true)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+
+      // MathML namespace
+      expect(registry.securityContext(':math:animate', 'to', false)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':math:animate', 'to', true)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':math:animate', 'from', false)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':math:animate', 'from', true)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':math:animate', 'values', false)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':math:animate', 'values', true)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':math:animate', 'attributeName', false)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':math:animate', 'attributeName', true)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+
+      // Custom namespace
+      expect(registry.securityContext(':custom:animate', 'to', false)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':custom:animate', 'to', true)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':custom:animate', 'from', false)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':custom:animate', 'from', true)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':custom:animate', 'values', false)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':custom:animate', 'values', true)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':custom:animate', 'attributeName', false)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':custom:animate', 'attributeName', true)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+    });
+
+    it('should reject `attributeName` bindings on `<animateMotion>` in every namespace', () => {
+      // HTML namespace
+      expect(registry.securityContext('animateMotion', 'attributeName', false)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext('animateMotion', 'attributeName', true)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+
+      // SVG namespace
+      expect(registry.securityContext(':svg:animateMotion', 'attributeName', false)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':svg:animateMotion', 'attributeName', true)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+
+      // MathML namespace
+      expect(registry.securityContext(':math:animateMotion', 'attributeName', false)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':math:animateMotion', 'attributeName', true)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+
+      // Custom namespace
+      expect(registry.securityContext(':custom:animateMotion', 'attributeName', false)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':custom:animateMotion', 'attributeName', true)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+    });
+
+    it('should reject `attributeName` bindings on `<animateTransform>` in every namespace', () => {
+      // HTML namespace
+      expect(registry.securityContext('animateTransform', 'attributeName', false)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext('animateTransform', 'attributeName', true)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+
+      // SVG namespace
+      expect(registry.securityContext(':svg:animateTransform', 'attributeName', false)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':svg:animateTransform', 'attributeName', true)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+
+      // MathML namespace
+      expect(registry.securityContext(':math:animateTransform', 'attributeName', false)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':math:animateTransform', 'attributeName', true)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+
+      // Custom namespace
+      expect(registry.securityContext(':custom:animateTransform', 'attributeName', false)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+      expect(registry.securityContext(':custom:animateTransform', 'attributeName', true)).toBe(
+        SecurityContext.ATTRIBUTE_NO_BINDING,
+      );
+    });
+
+    it('should leave unrelated MathML bindings alone', () => {
+      expect(registry.securityContext(':math:set', 'type', true)).toBe(SecurityContext.NONE);
+      expect(registry.securityContext(':math:mi', 'to', true)).toBe(SecurityContext.NONE);
+    });
   });
 
   it('should detect properties on namespaced elements', () => {

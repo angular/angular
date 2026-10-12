@@ -848,6 +848,219 @@ describe('sanitization', () => {
     expect(bindAttributeOutsideSvg('set', 'to', 'display')).not.toThrow();
   });
 
+  it('should allow SVG animation bindings on elements under MathML', async () => {
+    @Component({
+      template: `<math>
+        <set attributeName="href" [attr.to]="value"></set>
+        <set [attr.attributeName]="attributeName"></set>
+        <animate
+          attributeName="href"
+          [attr.to]="value"
+          [attr.from]="value"
+          [attr.values]="value"
+        ></animate>
+        <animate [attr.attributeName]="attributeName"></animate>
+        <animateMotion [attr.attributeName]="attributeName"></animateMotion>
+        <animateTransform [attr.attributeName]="attributeName"></animateTransform>
+      </math>`,
+    })
+    class TestComp {
+      readonly attributeName = 'href';
+      readonly value = UNSAFE_VALUE;
+    }
+
+    const fixture = TestBed.createComponent(TestComp);
+    await expectAsync(fixture.whenStable()).toBeResolved();
+  });
+
+  it('should continue sanitizing dynamic URL bindings on MathML elements', async () => {
+    @Component({
+      template: `<math><mi [attr.href]="value"></mi></math>`,
+    })
+    class TestComp {
+      readonly value = UNSAFE_VALUE;
+    }
+
+    const fixture = TestBed.createComponent(TestComp);
+    await fixture.whenStable();
+
+    const miElement = fixture.nativeElement.querySelector('mi') as Element;
+    expect(miElement.getAttribute('href')).toBe(`unsafe:${UNSAFE_VALUE}`);
+  });
+
+  it('should allow MathML bindings inside an SVG foreignObject', async () => {
+    @Component({
+      template: `
+        <svg>
+          <foreignObject>
+            <math>
+              <set attributeName="href" [attr.to]="value"></set>
+              <set [attr.attributeName]="attributeName"></set>
+            </math>
+          </foreignObject>
+        </svg>
+      `,
+    })
+    class TestComp {
+      readonly value = 'target';
+      readonly attributeName = 'display';
+    }
+
+    const fixture = TestBed.createComponent(TestComp);
+    await expectAsync(fixture.whenStable()).toBeResolved();
+  });
+
+  it('should allow MathML bindings inside an SVG desc', async () => {
+    @Component({
+      template: `
+        <svg>
+          <desc>
+            <math>
+              <set attributeName="href" [attr.to]="value"></set>
+              <set [attr.attributeName]="attributeName"></set>
+            </math>
+          </desc>
+        </svg>
+      `,
+    })
+    class TestComp {
+      readonly value = 'target';
+      readonly attributeName = 'display';
+    }
+
+    const fixture = TestBed.createComponent(TestComp);
+    await expectAsync(fixture.whenStable()).toBeResolved();
+  });
+
+  it('should allow MathML bindings inside an SVG title', async () => {
+    @Component({
+      template: `
+        <svg>
+          <svg:title>
+            <math> <set attributeName="href" [attr.to]="value"></set> <set
+            [attr.attributeName]="attributeName"></set> </math>
+          </svg:title>
+        </svg>
+      `,
+    })
+    class TestComp {
+      readonly value = 'target';
+      readonly attributeName = 'display';
+    }
+
+    const fixture = TestBed.createComponent(TestComp);
+    await expectAsync(fixture.whenStable()).toBeResolved();
+  });
+
+  it('should keep the declaration namespace of content projected into an svg element', async () => {
+    // Projection preserves the declaration namespace in the live DOM. Serialization and
+    // reparsing are covered separately in acceptance/svg_namespace_spec.ts.
+    @Component({
+      imports: [CommonModule],
+      template: `
+        <math>
+          <ng-template #content>
+            <set attributeName="display"></set>
+          </ng-template>
+        </math>
+        <svg>
+          <ng-container [ngTemplateOutlet]="content"></ng-container>
+        </svg>
+      `,
+    })
+    class TestComp {}
+
+    const fixture = TestBed.createComponent(TestComp);
+    await fixture.whenStable();
+
+    const setElement = fixture.nativeElement.querySelector('set') as Element;
+    expect(setElement.namespaceURI).toBe('http://www.w3.org/1998/Math/MathML');
+    expect(setElement.closest('svg')).not.toBeNull();
+  });
+
+  it('should throw when binding to MathML content projected into a nested svg element', async () => {
+    // `<foreignObject>` is an HTML integration point, so its children are parsed as HTML again
+    // and the inner `<svg>` opens a new SVG subtree. The serialized `<set>` is therefore parsed
+    // back as an SVG animation element, even though it was declared under `<math>`.
+    @Component({
+      imports: [CommonModule],
+      template: `
+        <math>
+          <ng-template #content>
+            <set [attr.attributeName]="attributeName"></set>
+          </ng-template>
+        </math>
+        <svg>
+          <foreignObject>
+            <svg>
+              <ng-container [ngTemplateOutlet]="content"></ng-container>
+            </svg>
+          </foreignObject>
+        </svg>
+      `,
+    })
+    class TestComp {
+      readonly attributeName = 'display';
+    }
+
+    const fixture = TestBed.createComponent(TestComp);
+    await expectAsync(fixture.whenStable()).toBeRejectedWithError(
+      /NG0910: Angular has detected that the `attributeName` was applied as a binding to the <set>/,
+    );
+  });
+
+  it('should allow MathML content projected into an svg foreignObject', async () => {
+    // Inside `<foreignObject>` the parser is back in HTML and `<math>` opens a MathML subtree,
+    // so the serialized `<set>` is parsed back as MathML and never animates.
+    @Component({
+      imports: [CommonModule],
+      template: `
+        <math>
+          <ng-template #content>
+            <set [attr.attributeName]="attributeName"></set>
+          </ng-template>
+        </math>
+        <svg>
+          <foreignObject>
+            <math>
+              <ng-container [ngTemplateOutlet]="content"></ng-container>
+            </math>
+          </foreignObject>
+        </svg>
+      `,
+    })
+    class TestComp {
+      readonly attributeName = 'display';
+    }
+
+    const fixture = TestBed.createComponent(TestComp);
+    await expectAsync(fixture.whenStable()).toBeResolved();
+  });
+
+  it('should allow MathML content projected into an svg element nested in MathML', async () => {
+    // An `<svg>` start tag inside MathML content inherits the surrounding namespace instead of
+    // opening an SVG subtree, so the serialized `<set>` stays MathML here as well.
+    @Component({
+      imports: [CommonModule],
+      template: `
+        <math>
+          <ng-template #content>
+            <set [attr.attributeName]="attributeName"></set>
+          </ng-template>
+          <svg>
+            <ng-container [ngTemplateOutlet]="content"></ng-container>
+          </svg>
+        </math>
+      `,
+    })
+    class TestComp {
+      readonly attributeName = 'display';
+    }
+
+    const fixture = TestBed.createComponent(TestComp);
+    await expectAsync(fixture.whenStable()).toBeResolved();
+  });
+
   it('should not throw when binding to animate element when attributeName is not href', () => {
     @Component({
       selector: 'test-comp',
