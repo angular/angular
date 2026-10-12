@@ -95,6 +95,8 @@ function trustedScriptFromString(script: string): TrustedScript | string {
   return getPolicy()?.createScript(script) || script;
 }
 
+const PARAM_NAME_PATTERN = /^[A-Za-z_$][\w$]*$/;
+
 /**
  * Unsafely call the Function constructor with the given string arguments.
  * @security This is a security-sensitive function; any use of this function
@@ -113,9 +115,16 @@ export function newTrustedFunctionForJIT(...args: string[]): Function {
   // constructor. The following implements the workaround proposed on the page
   // below, where the Chromium bug is also referenced:
   // https://github.com/w3c/webappsec-trusted-types/wiki/Trusted-Types-for-function-constructor
-  const fnArgs = args.slice(0, -1).join(',');
   const fnBody = args[args.length - 1];
-  const body = `(function anonymous(${fnArgs}
+  const fnParams = args.slice(0, -1);
+
+  for (const param of fnParams) {
+    if (!PARAM_NAME_PATTERN.test(param)) {
+      throw new Error(`newTrustedFunctionForJIT: invalid parameter name "${param}"`);
+    }
+  }
+
+  const body = `(function anonymous(${fnParams.join(',')}
 ) { ${fnBody}
 })`;
 
