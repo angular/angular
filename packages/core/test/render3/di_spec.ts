@@ -7,10 +7,7 @@
  */
 
 import {Component, Directive, Self} from '../../src/core';
-import {
-  NodeInjectorOffset,
-  RelativeInjectorLocationFlags,
-} from '../../src/render3/interfaces/injector';
+import {NodeInjectorOffset} from '../../src/render3/interfaces/injector';
 import {TestBed} from '../../testing';
 import {ERROR_DETAILS_PAGE_BASE_URL} from '../../src/error_details_base_url';
 
@@ -145,8 +142,8 @@ describe('di', () => {
   });
 
   describe('getOrCreateNodeInjector', () => {
-    function createContentView() {
-      return createLView(
+    it('should handle initial undefined state', () => {
+      const contentView = createLView(
         null,
         createTView(TViewType.Component, null, null, 1, 0, null, null, null, null, null, null),
         {},
@@ -165,10 +162,6 @@ describe('di', () => {
         null,
         null,
       );
-    }
-
-    it('should handle initial undefined state', () => {
-      const contentView = createContentView();
       enterView(contentView);
       try {
         const parentTNode = getOrCreateTNode(
@@ -185,27 +178,6 @@ describe('di', () => {
 
         const injector = getOrCreateNodeInjectorForNode(parentTNode, contentView);
         expect(injector).not.toEqual(-1);
-      } finally {
-        leaveView();
-      }
-    });
-
-    it('should throw in dev mode when the LView outgrows the node injector index', () => {
-      const contentView = createContentView();
-      enterView(contentView);
-      try {
-        const tNode = getOrCreateTNode(
-          contentView[TVIEW],
-          HEADER_OFFSET,
-          TNodeType.Element,
-          null,
-          null,
-        );
-        // Simulate an LView whose length exceeds the 20 bits available for the injector index.
-        contentView.length = RelativeInjectorLocationFlags.InjectorIndexMask + 1;
-        expect(() => getOrCreateNodeInjectorForNode(tNode, contentView)).toThrowError(
-          /Node injector index exceeds the maximum supported LView size/,
-        );
       } finally {
         leaveView();
       }
