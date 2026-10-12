@@ -54,11 +54,11 @@ Changing the params signal automatically triggers a reload, or you can manually 
 Add computed signals to access different states of the resource.
 
 ```ts
-isLoading = computed(() => this.userResource.status() === 'loading');
+isLoading = this.userResource.isLoading;
 hasError = computed(() => this.userResource.status() === 'error');
 ```
 
-Resources provide a `status()` signal that can be 'loading', 'resolved', or 'error', a `value()` signal for the loaded data, and a `hasValue()` method that safely checks if data is available.
+Resources provide a `status()` signal that can be 'loading', 'reloading', 'resolved', or 'error', a `value()` signal for the loaded data, and a `hasValue()` method that safely checks if data is available. The `isLoading()` signal is true for both 'loading' and 'reloading'.
 </docs-step>
 
 <docs-step title="Wire up the buttons and display resource states">
