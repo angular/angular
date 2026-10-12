@@ -700,7 +700,8 @@ export class HybridCompiler {
   public processFileSync(
     filePath: string,
     content: string,
-    readResource?: ((file: string) => string | undefined) | Map<string, nga.ResolvedResource | null>,
+    readResource?:
+      ((file: string) => string | undefined) | Map<string, nga.ResolvedResource | null>,
     metadata?: nga.AnalysisResult,
     chunkContext?: ChunkContext,
   ): ProcessedFile {
