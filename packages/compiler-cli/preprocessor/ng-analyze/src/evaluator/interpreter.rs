@@ -366,10 +366,33 @@ impl<'a, 'e, 'i> Interpreter<'a, 'e, 'i> {
             TSType::TSTypeOperatorType(op) if op.operator == TSTypeOperatorOperator::Readonly => {
                 self.visit_type(&op.type_annotation, scope)
             }
+            TSType::TSLiteralType(literal) => self.visit_literal_type(literal, scope),
             TSType::TSNeverKeyword(_) => ResolvedValue::Array(Vec::new()),
             // TODO(parity): Support `TSType::TSImportType` (`import("./mod").Foo`) in `.d.ts` type
             // evaluation (`StaticInterpreter.visitImportType` in `ngtsc/partial_evaluator`).
             _ => self.dynamic(ts_type.span(), DynamicReason::UnsupportedSyntax),
+        }
+    }
+
+    fn visit_literal_type(
+        &self,
+        literal: &oxc_ast::ast::TSLiteralType<'a>,
+        scope: &Scope,
+    ) -> ResolvedValue {
+        use oxc_ast::ast::TSLiteral;
+
+        match &literal.literal {
+            TSLiteral::BooleanLiteral(b) => ResolvedValue::Boolean(b.value),
+            TSLiteral::NumericLiteral(n) => ResolvedValue::Number(n.value),
+            TSLiteral::StringLiteral(s) => ResolvedValue::String(s.value.to_string()),
+            TSLiteral::TemplateLiteral(t) => self.visit_template(t, scope),
+            TSLiteral::UnaryExpression(u) => {
+                self.visit_unary(u.operator, &u.argument, u.span, scope)
+            }
+            // Parity: upstream's `visitExpression` has no BigInt arm either.
+            TSLiteral::BigIntLiteral(_) => {
+                self.dynamic(literal.span, DynamicReason::UnsupportedSyntax)
+            }
         }
     }
 

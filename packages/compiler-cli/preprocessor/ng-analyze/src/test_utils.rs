@@ -2144,6 +2144,58 @@ export class AppComponent {}
     }
 
     #[test]
+    fn test_component_with_cross_file_template_url_in_both_modes() {
+        let fs = create_test_fs(&[
+            (
+                "/test/tsconfig.json",
+                r#"{"compilerOptions": {}, "files": ["app/app.component.ts"]}"#,
+            ),
+            (
+                "/test/shared/paths.ts",
+                "export const APP_TEMPLATE_URL = './views/app.html';\n",
+            ),
+            (
+                "/test/app/app.component.ts",
+                r#"
+import { Component } from '@angular/core';
+import { APP_TEMPLATE_URL } from '../shared/paths';
+
+@Component({
+    selector: 'app-root',
+    templateUrl: APP_TEMPLATE_URL,
+    standalone: true,
+})
+export class AppComponent {}
+"#,
+            ),
+            ("/test/app/views/app.html", "<main>app</main>"),
+        ]);
+
+        for optimize in [false, true] {
+            let results = run_analyzer(fs.clone(), "/test/tsconfig.json", optimize);
+            let file = results
+                .iter()
+                .find(|r| r.file_path.ends_with("app.component.ts"))
+                .expect("app.component.ts result");
+            assert!(
+                file.diagnostics.is_empty(),
+                "optimize={optimize}: {:?}",
+                file.diagnostics
+            );
+            let component = find_class(&results, "AppComponent")
+                .and_then(|c| c.component.as_ref())
+                .expect("AppComponent");
+            let t_url = component
+                .template_url
+                .as_ref()
+                .unwrap_or_else(|| panic!("optimize={optimize}: templateUrl must resolve"));
+            assert_eq!(t_url.url, "./views/app.html");
+            assert_eq!(t_url.resolved_path, "/test/app/views/app.html");
+            assert_eq!(component.template.as_deref(), Some("<main>app</main>"));
+        }
+    }
+
+    #[test]
     fn test_component_template_literal() {
         let fs = create_test_fs(&[
             (
