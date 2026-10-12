@@ -10,7 +10,7 @@ crate-type = ["cdylib", "rlib"]
 napi = { version = "3", features = ["napi4", "tokio_rt"], optional = true }
 napi-derive = { version = "3", optional = true }
 futures = { version = "0.3", features = ["executor", "alloc", "std", "thread-pool"] }
-oxc_allocator = "0.144.0"
+oxc_allocator = "0.153.0"
 oxc_parser = "0.144.0"
 oxc_ast = "0.144.0"
 oxc_ast_visit = { version = "0.144.0", features = ["serialize"] }
