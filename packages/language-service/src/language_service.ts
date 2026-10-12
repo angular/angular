@@ -127,6 +127,16 @@ export class LanguageService {
     });
   }
 
+  /**
+   * Gets the files whose changes can change which Custom Elements Manifests resolve or what they
+   * contain, including resolution candidates that do not exist yet.
+   */
+  getCustomElementsManifestResolutionPaths(): string[] {
+    return this.withCompilerAndPerfTracing(PerfPhase.LsDiagnostics, (compiler) =>
+      Array.from(compiler.getCustomElementsManifestResolutionPaths()),
+    );
+  }
+
   getSemanticDiagnostics(fileName: string): ts.Diagnostic[] {
     return this.withCompilerAndPerfTracing(PerfPhase.LsDiagnostics, (compiler) => {
       let diagnostics: ts.Diagnostic[] = [];

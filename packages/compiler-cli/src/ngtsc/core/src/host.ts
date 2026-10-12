@@ -138,6 +138,7 @@ export class NgCompilerHost
   extends DelegatingCompilerHost
   implements RequiredDelegations<ExtendedTsCompilerHost>, ExtendedTsCompilerHost, NgCompilerAdapter
 {
+  readonly resourceResolutionHost: ExtendedTsCompilerHost;
   readonly entryPoint: AbsoluteFsPath | null = null;
   readonly constructionDiagnostics: ts.Diagnostic[];
 
@@ -155,6 +156,7 @@ export class NgCompilerHost
   ) {
     super(delegate);
 
+    this.resourceResolutionHost = delegate;
     this.entryPoint = entryPoint;
     this.constructionDiagnostics = diagnostics;
     this.inputFiles = [...inputFiles, ...shimAdapter.extraInputFiles];

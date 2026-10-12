@@ -7,6 +7,7 @@
  */
 
 import ts from 'typescript';
+import {customElementsManifest} from '../../src/ngtsc/custom_elements_manifest/testing';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {NgtscProgram} from '../../src/ngtsc/program';
 import {loadStandardTestFiles} from '../../src/ngtsc/testing';
@@ -132,6 +133,39 @@ runInEachFileSystem(() => {
       expect(hmrContents).toContain('Cmp.ɵcmp = /*@__PURE__*/ ɵhmr0.ɵɵdefineComponent');
       expect(hmrContents).toContain('ɵhmr0.ɵsetClassMetadata(Cmp,');
       expect(hmrContents).toContain('ɵhmr0.ɵsetClassDebugInfo(Cmp,');
+    });
+
+    it('should preserve exact manifest property names in HMR update code', () => {
+      enableHmr({customElementsManifests: ['./custom-elements.json']});
+      env.write(
+        'custom-elements.json',
+        JSON.stringify(
+          customElementsManifest({
+            tagName: 'my-button',
+            members: [{kind: 'field', name: 'readonly', type: {text: 'boolean'}}],
+          }),
+        ),
+      );
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'cmp',
+            template: '<my-button [readonly]="value"></my-button>',
+          })
+          export class Cmp { value = true; }
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      const hmrContents = env.driveHmr('test.ts', 'Cmp');
+      expect(jsContents).toContain('ɵɵdomProperty("readonly", ctx.value)');
+      expect(hmrContents).toContain('ɵɵdomProperty("readonly", ctx.value)');
+      expect(hmrContents).not.toContain('ɵɵdomProperty("readOnly", ctx.value)');
     });
 
     it('should generate an HMR initializer and update function for a class that depends on multiple namespaces', () => {

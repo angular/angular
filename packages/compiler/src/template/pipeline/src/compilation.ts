@@ -38,6 +38,7 @@ export abstract class CompilationJob {
     readonly pool: ConstantPool,
     readonly mode: TemplateCompilationMode,
     readonly legacyOptionalChaining: boolean,
+    readonly customElementPropertyNames: ReadonlyMap<string, ReadonlySet<string>> | null = null,
   ) {}
 
   kind: CompilationJobKind = CompilationJobKind.Both;
@@ -91,8 +92,9 @@ export class ComponentCompilationJob extends CompilationJob {
     readonly enableDebugLocations: boolean,
     legacyOptionalChaining: boolean,
     readonly foreignImports: R3ForeignComponentMetadata[] | null,
+    customElementPropertyNames: ReadonlyMap<string, ReadonlySet<string>> | null,
   ) {
-    super(componentName, pool, mode, legacyOptionalChaining);
+    super(componentName, pool, mode, legacyOptionalChaining, customElementPropertyNames);
     this.root = new ViewCompilationUnit(this, this.allocateXrefId(), null);
     this.views.set(this.root.xref, this.root);
 

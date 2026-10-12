@@ -7,7 +7,9 @@ ts_project(
     srcs = glob(["*.ts"]),
     deps = [
         "//vscode-ng-language-service:node_modules/@types/jasmine",
+        "//vscode-ng-language-service/server:node_modules/@types/node",
         "//vscode-ng-language-service/server:node_modules/typescript",
+        "//vscode-ng-language-service/server:node_modules/vscode-languageserver",
         "//vscode-ng-language-service/server/src",
     ],
 )

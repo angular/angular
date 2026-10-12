@@ -156,6 +156,12 @@ export interface R3DeclareDirectiveMetadata extends R3PartialDeclaration {
  */
 export interface R3DeclareComponentMetadata extends R3DeclareDirectiveMetadata {
   /**
+   * Manifest property names, by tag name, that bindings set without renaming. See
+   * `R3ComponentMetadata.customElementPropertyNames`.
+   */
+  customElementPropertyNames?: {[tagName: string]: string[]};
+
+  /**
    * The component's unparsed template string as opaque expression. The template is represented
    * using either a string literal or template literal without substitutions, but its value is
    * not read directly. Instead, the template parser is given the full source file's text and

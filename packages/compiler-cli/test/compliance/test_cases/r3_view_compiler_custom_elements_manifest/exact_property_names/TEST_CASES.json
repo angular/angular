@@ -1,0 +1,25 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should preserve exact manifest property names in every compilation mode",
+      "inputFiles": ["test.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect custom element property instructions",
+          "files": ["test.js"]
+        }
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "linked compile",
+        "local compile",
+        "declaration-only emit",
+        "instruction compile"
+      ],
+      "angularCompilerOptions": {
+        "customElementsManifests": ["./custom-elements.json"]
+      }
+    }
+  ]
+}

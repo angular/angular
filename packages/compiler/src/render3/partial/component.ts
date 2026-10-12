@@ -101,6 +101,22 @@ function createComponentDefinitionMap(
     definitionMap.set('minVersion', o.literal('17.0.0'));
   }
 
+  // Linkers before 22.3.0 ignore `customElementPropertyNames` and rename the properties. Keep this
+  // version at least as high as any `minVersion` set above.
+  if (meta.customElementPropertyNames !== null && meta.customElementPropertyNames !== undefined) {
+    definitionMap.set('minVersion', o.literal('22.3.0'));
+    definitionMap.set(
+      'customElementPropertyNames',
+      o.literalMap(
+        Array.from(meta.customElementPropertyNames, ([tagName, propertyNames]) => ({
+          key: tagName,
+          value: o.literalArr(Array.from(propertyNames, (propertyName) => o.literal(propertyName))),
+          quoted: true,
+        })),
+      ),
+    );
+  }
+
   definitionMap.set('styles', toOptionalLiteralArray(meta.styles, o.literal));
   definitionMap.set('dependencies', compileUsedDependenciesMetadata(meta));
   definitionMap.set('viewProviders', meta.viewProviders);
