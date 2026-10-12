@@ -1,7 +1,11 @@
-@use '../../../../../styles/typography';
+@use '../../../../styles/typography';
 
 :host {
   display: block;
+
+  ng-horizontal-scroller {
+    --horizontal-scroller-height: 22px;
+  }
 
   .breadcrumb {
     @extend %monospaced;
