@@ -383,6 +383,40 @@ async fn complete_style_urls<Fs: crate::ResourceResolverFs + Clone + 'static>(
     }
 }
 
+/// Stage 2 for a `templateUrl` that named a constant from another file: complete the
+/// expression, then read the template exactly as Stage 1 reads a literal URL — still relative
+/// to the component's own file, not to the file declaring the constant, as ngtsc's
+/// `resourceLoader.resolve(templateUrl, containingFile)` does — and register it so an edit to
+/// the template invalidates this component.
+/// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/component/src/resources.ts#L392-L439
+async fn complete_template_url<Fs: crate::ResourceResolverFs + Clone + 'static>(
+    c: &mut ComponentData,
+    reference_id: crate::query::ReferenceId,
+    ctx: &crate::query::QueryContext<Fs>,
+    foreign: &[&dyn crate::evaluator::ForeignFunctionResolver],
+) {
+    let Some(mut source) = c.pending_template_url.take() else {
+        return;
+    };
+    source.url.complete_with(ctx, foreign).await;
+    let file_path = ctx.lookup_path(reference_id.file);
+    let resource_resolver = crate::ResourceResolver::new(&ctx.fs, ctx.resolver.as_ref());
+    crate::analyzer::component::load_template_url(
+        &source,
+        c,
+        &resource_resolver,
+        &file_path,
+        reference_id.file,
+    );
+    if let Some(template_url) = &c.template_url {
+        ctx.resource_registry.register_template(
+            std::path::PathBuf::from(&template_url.resolved_path),
+            file_path,
+            reference_id.symbol,
+        );
+    }
+}
+
 impl Default for DirectiveData {
     fn default() -> Self {
         Self {
@@ -497,6 +531,16 @@ pub struct ValueIssue {
     pub message: String,
 }
 
+/// The `templateUrl` expression, as ngtsc's `parseTemplateDeclaration` evaluates it: must
+/// evaluate to a string (`NG1010` otherwise).
+/// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/component/src/resources.ts#L392-L439
+#[derive(Clone, Debug)]
+pub struct TemplateUrlSource {
+    pub url: Resolved<String>,
+    /// The span of the value when it is written as a string literal.
+    pub string_literal_span: Option<oxc_span::Span>,
+}
+
 /// One stylesheet URL expression, as ngtsc's `extractComponentStyleUrls` walks `styleUrl` and
 /// `styleUrls`.
 #[derive(Clone, Debug)]
@@ -577,7 +621,13 @@ pub struct ComponentData {
     /// with runtime `${...}` interpolation). ngtsc rejects such templates; we surface
     /// it so the pipeline errors instead of silently emitting an empty template.
     pub template_dynamic: bool,
+    /// The evaluated `templateUrl`, loaded. `None` while [`Self::pending_template_url`] is
+    /// set, and `None` for good when the property evaluated to something other than a string.
     pub template_url: Option<UrlData>,
+    /// The `templateUrl` expression, kept only while it still waits on a constant from another
+    /// file. Stage 2 (and local compilation, which evaluates it like ngtsc's does) completes it
+    /// and loads `template_url` and `template` from the result.
+    pub pending_template_url: Option<TemplateUrlSource>,
     /// `@Component.styles` as the partial evaluator sees it.
     pub styles: Option<Resolved<crate::evaluator::ComponentStyles>>,
     pub styles_span: Option<oxc_span::Span>,
@@ -1139,6 +1189,19 @@ impl ClassData {
             .await;
     }
 
+    pub async fn complete_resource_urls<Fs: crate::ResourceResolverFs + Clone + 'static>(
+        &mut self,
+        ctx: &crate::query::QueryContext<Fs>,
+    ) {
+        let reference_id = self.reference_id;
+        let Some(c) = self.as_component_mut() else {
+            return;
+        };
+        let foreign = crate::analyzer::resolvers::angular_foreign_resolvers();
+        complete_template_url(c, reference_id, ctx, foreign).await;
+        complete_style_urls(c, reference_id, ctx, foreign).await;
+    }
+
     /// Resolve cross-file holes in the `emitDeclarationOnly` type tuples. Uses no foreign
     /// resolvers, like ngtsc's `transformToTypeTupleExpression`.
     pub async fn complete_isolated_type_tuples<Fs: crate::ResourceResolverFs + Clone + 'static>(
@@ -1295,6 +1358,7 @@ impl ClassData {
                 if let Some(template) = &mut c.template {
                     template.complete_with(ctx, foreign).await;
                 }
+                complete_template_url(c, reference_id, ctx, foreign).await;
                 if let Some(styles) = &mut c.styles {
                     styles.complete_with(ctx, foreign).await;
                 }
@@ -1911,11 +1975,12 @@ impl ClassData {
         diagnostics: &mut Vec<crate::NgDiagnostic>,
     ) {
         if let Some(span) = c.template_url_span {
-            // `template_url` is only populated when the value read as a string, so a present
-            // property with no `UrlData` is ngtsc's "templateUrl must be a string" case.
-            // TODO(parity): `templateUrl` is read syntactically (single-file), while ngtsc
-            // evaluates it, so a constant imported from another file resolves there but is
-            // reported here. Route it through the evaluator like `template` to close the gap.
+            // `template_url` is only populated when the evaluated value is a string, so a
+            // present property with no `UrlData` is ngtsc's "templateUrl must be a string"
+            // case: a dynamic value, a non-string constant, or a constant from another file
+            // the evaluator could not reach. Stage 2 and the local pipeline both complete
+            // `pending_template_url` before validating, so an imported string constant is
+            // loaded rather than reported.
             if c.template_url.is_none() {
                 push_error(
                     diagnostics,

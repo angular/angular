@@ -791,11 +791,13 @@ impl Analyzer {
                     (semantic_res.to_wire(&cx), chunk_info)
                 } else {
                     let mut syntax_res = _local_res;
-                    // ngtsc's local compilation still resolves imported `selector`/`styles` constants.
+                    // ngtsc's local compilation still evaluates imported `selector`, `styles`,
+                    // `templateUrl` and `styleUrl(s)` constants; only scope resolution is off.
                     // TODO(parity): unresolvable imports should report NG11001, not NG1010.
                     for class in &mut syntax_res.classes {
                         class.complete_selector(&ctx).await;
                         class.complete_styles(&ctx).await;
+                        class.complete_resource_urls(&ctx).await;
                         class.complete_isolated_type_tuples(&ctx).await;
                     }
                     // Must run before `validate()`, `extract_chunk_info` and `to_wire()`: it sets

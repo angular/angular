@@ -3127,6 +3127,188 @@ fn test_template_url_takes_precedence_over_dynamic_template() {
     assert_eq!(meta.diagnostics.len(), 0);
 }
 
+/// The two-compilation-unit fixture from the bug report: the URL constant is only visible as a
+/// `.d.ts` initializer, the component lives in another directory, and the template sits next to
+/// the component. ngtsc evaluates `templateUrl` through the partial evaluator and resolves the
+/// result relative to the component file, so the preprocessor must too.
+fn imported_template_url_project(template_url_initializer: &str) -> HashMap<String, String> {
+    [
+        (
+            "/project/tsconfig.json",
+            r#"{"files": ["app/header.component.ts"]}"#.to_string(),
+        ),
+        (
+            "/project/lib/paths.d.ts",
+            format!(
+                "export declare const HEADER_TEMPLATE_URL = {template_url_initializer};\n\
+                 export declare const HEADER_STYLE_URLS: [\"./header.css\"];\n"
+            ),
+        ),
+        (
+            "/project/app/header.component.ts",
+            r#"
+            import { Component } from '@angular/core';
+            import { HEADER_TEMPLATE_URL, HEADER_STYLE_URLS } from '../lib/paths';
+
+            @Component({
+                selector: 'app-header',
+                templateUrl: HEADER_TEMPLATE_URL,
+                styleUrls: HEADER_STYLE_URLS,
+            })
+            export class HeaderComponent {}
+        "#
+            .to_string(),
+        ),
+        (
+            "/project/app/header_templates/default_header.html",
+            "<header>default</header>".to_string(),
+        ),
+        (
+            "/project/app/header.css",
+            "header { color: red; }".to_string(),
+        ),
+    ]
+    .into_iter()
+    .map(|(path, content)| (path.to_string(), content))
+    .collect()
+}
+
+#[test]
+fn test_template_url_from_imported_dts_constant_resolves() {
+    let analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: "/project/tsconfig.json".to_string(),
+        optimize: Some(true),
+        virtual_files: Some(imported_template_url_project(
+            r#""./header_templates/default_header.html""#,
+        )),
+        ..Default::default()
+    })
+    .unwrap();
+    let meta = analyzer
+        .get_metadata_for_file("/project/app/header.component.ts".to_string())
+        .expect("header.component.ts metadata");
+    assert_eq!(meta.diagnostics, vec![], "{:?}", meta.diagnostics);
+
+    let component = meta.classes[0].component.as_ref().unwrap();
+    let template_url = component
+        .template_url
+        .as_ref()
+        .expect("templateUrl resolved");
+    assert_eq!(template_url.url, "./header_templates/default_header.html");
+    // Relative to the component's own file, not to `lib/paths.d.ts`.
+    assert_eq!(
+        template_url.resolved_path,
+        "/project/app/header_templates/default_header.html"
+    );
+    // An imported identifier is not a string literal, so there is no literal span to map
+    // template diagnostics onto.
+    assert!(template_url.string_literal_span.is_none());
+    assert_eq!(
+        component.template.as_deref(),
+        Some("<header>default</header>")
+    );
+    assert!(!component.template_dynamic);
+    assert_eq!(
+        component.styles_from_urls.as_deref(),
+        Some(&["header { color: red; }".to_string()][..])
+    );
+
+    // The template was only discovered in Stage 2, but an edit to it must still invalidate the
+    // component, so it is registered like a Stage-1 template.
+    let usages = analyzer
+        .get_ts_file_for_template("/project/app/header_templates/default_header.html".to_string())
+        .expect("template registered");
+    assert_eq!(
+        usages
+            .iter()
+            .map(|usage| usage.ts_file_path.as_str())
+            .collect::<Vec<_>>(),
+        vec!["/project/app/header.component.ts"]
+    );
+}
+
+#[test]
+fn test_template_url_from_imported_non_string_constant_ng1010() {
+    let files = imported_template_url_project("42");
+    let analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: "/project/tsconfig.json".to_string(),
+        optimize: Some(true),
+        virtual_files: Some(files.clone()),
+        ..Default::default()
+    })
+    .unwrap();
+    let meta = analyzer
+        .get_metadata_for_file("/project/app/header.component.ts".to_string())
+        .expect("header.component.ts metadata");
+    assert_eq!(meta.diagnostics.len(), 1, "{:?}", meta.diagnostics);
+    let diag = &meta.diagnostics[0];
+    assert_eq!(diag.code, 1010);
+    assert_eq!(diag.category, 1);
+    assert_eq!(diag.message_text, "templateUrl must be a string");
+    // Reported on the `templateUrl` value expression, as before.
+    let source = &files["/project/app/header.component.ts"];
+    let span = diag.span.as_ref().expect("diagnostic span");
+    assert_eq!(
+        &source[span.start as usize..span.end as usize],
+        "HEADER_TEMPLATE_URL"
+    );
+    let component = meta.classes[0].component.as_ref().unwrap();
+    assert!(component.template_url.is_none());
+}
+
+#[test]
+fn test_template_url_from_same_file_constant_resolves() {
+    let mut virtual_files = HashMap::new();
+    virtual_files.insert(
+        "/project/tsconfig.json".to_string(),
+        r#"{"files": ["app.component.ts"]}"#.to_string(),
+    );
+    virtual_files.insert(
+        "/project/app.component.ts".to_string(),
+        r#"
+            import { Component } from '@angular/core';
+
+            const DIR = './templates';
+            const TEMPLATE_URL = `${DIR}/app.component.html`;
+
+            @Component({
+                selector: 'app-root',
+                templateUrl: TEMPLATE_URL,
+                standalone: true,
+            })
+            export class AppComponent {}
+        "#
+        .to_string(),
+    );
+    virtual_files.insert(
+        "/project/templates/app.component.html".to_string(),
+        "<span>ok</span>".to_string(),
+    );
+
+    let analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: "/project/tsconfig.json".to_string(),
+        optimize: Some(true),
+        virtual_files: Some(virtual_files),
+        ..Default::default()
+    })
+    .unwrap();
+    let meta = analyzer
+        .get_metadata_for_file("/project/app.component.ts".to_string())
+        .expect("app.component.ts metadata");
+    assert_eq!(meta.diagnostics, vec![], "{:?}", meta.diagnostics);
+    let component = meta.classes[0].component.as_ref().unwrap();
+    let template_url = component
+        .template_url
+        .as_ref()
+        .expect("templateUrl resolved");
+    assert_eq!(template_url.url, "./templates/app.component.html");
+    assert_eq!(
+        template_url.resolved_path,
+        "/project/templates/app.component.html"
+    );
+    assert_eq!(component.template.as_deref(), Some("<span>ok</span>"));
+}
+
 #[test]
 fn test_foreign_imports_shape_diagnostics_ng1010() {
     let mut virtual_files = HashMap::new();

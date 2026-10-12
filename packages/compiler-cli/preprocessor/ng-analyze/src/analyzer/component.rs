@@ -9,7 +9,7 @@ use std::path::Path;
 
 use crate::analyzer::class_data::{
     ComponentData, DirectiveData, ForeignImportData, ForeignImportIssue, ForeignImportIssueKind,
-    StyleUrlSource, UrlData, ValueIssue,
+    StyleUrlSource, TemplateUrlSource, UrlData, ValueIssue,
 };
 use crate::evaluator::{evaluate_expression, EvalInput, Resolved, ResolvedValue};
 
@@ -149,12 +149,6 @@ fn direct_template_content_span(expr: &Expression<'_>) -> Option<oxc_span::Span>
     ))
 }
 
-/// A URL parsed from the component decorator before filesystem resolution.
-struct UnresolvedUrl {
-    url: String,
-    string_literal_span: Option<oxc_span::Span>,
-}
-
 #[allow(clippy::too_many_arguments)]
 fn parse_component_metadata<'a, Fs: ResourceResolverFs>(
     obj: &'a oxc_ast::ast::ObjectExpression<'a>,
@@ -173,7 +167,7 @@ fn parse_component_metadata<'a, Fs: ResourceResolverFs>(
         ..Default::default()
     };
 
-    let mut template_url: Option<UnresolvedUrl> = None;
+    let mut template_url: Option<TemplateUrlSource> = None;
     let mut style_url: Option<StyleUrlSource> = None;
     let mut style_urls: Option<Vec<StyleUrlSource>> = None;
 
@@ -194,18 +188,7 @@ fn parse_component_metadata<'a, Fs: ResourceResolverFs>(
             }
             "templateUrl" => {
                 data.template_url_span = Some(p.value.span());
-                if let Some(url) = extract_string(&p.value, semantic) {
-                    let string_literal_span =
-                        if let Expression::StringLiteral(s) = p.value.get_inner_expression() {
-                            Some(s.span)
-                        } else {
-                            None
-                        };
-                    template_url = Some(UnresolvedUrl {
-                        url,
-                        string_literal_span,
-                    });
-                }
+                template_url = Some(template_url_source(&p.value, eval));
             }
             "styles" => {
                 data.styles_span = Some(p.value.span());
@@ -372,20 +355,36 @@ fn parse_component_metadata<'a, Fs: ResourceResolverFs>(
     Some(data)
 }
 
+/// `templateUrl`: evaluated like `template` (ngtsc's `parseTemplateDeclaration` runs the
+/// partial evaluator on it) and required to be a string.
+fn template_url_source<'a>(
+    expr: &'a Expression<'a>,
+    eval: &EvalInput<'a, '_>,
+) -> TemplateUrlSource {
+    TemplateUrlSource {
+        url: Resolved::from_syntax(evaluate_expression(expr, eval), eval.file),
+        string_literal_span: string_literal_span(expr),
+    }
+}
+
+/// The span of `expr` when it is written as a string literal (under TypeScript-only wrappers).
+fn string_literal_span(expr: &Expression<'_>) -> Option<oxc_span::Span> {
+    match expr.get_inner_expression() {
+        Expression::StringLiteral(s) => Some(s.span),
+        _ => None,
+    }
+}
+
 /// `styleUrl`, or one element of a `styleUrls` array literal: evaluated on its own and
 /// required to be a string.
 fn single_style_url_source<'a>(
     expr: &'a Expression<'a>,
     eval: &EvalInput<'a, '_>,
 ) -> StyleUrlSource {
-    let string_literal_span = match expr.get_inner_expression() {
-        Expression::StringLiteral(s) => Some(s.span),
-        _ => None,
-    };
     StyleUrlSource::Single {
         url: Resolved::from_syntax(evaluate_expression(expr, eval), eval.file),
         span: expr.span(),
-        string_literal_span,
+        string_literal_span: string_literal_span(expr),
     }
 }
 
@@ -560,18 +559,42 @@ fn load_url<Fs: ResourceResolverFs>(
     )
 }
 
+/// Stage 1 for `templateUrl`: load it now when it evaluated within this file, or park it for
+/// Stage 2 (and the local pipeline) when it still names a constant from another file.
 fn process_component_template_url<Fs: ResourceResolverFs>(
-    template_url: Option<UnresolvedUrl>,
+    template_url: Option<TemplateUrlSource>,
     data: &mut ComponentData,
     resource_resolver: &crate::ResourceResolver<'_, Fs>,
     file_path: &Path,
     eval_file: crate::query::FileId,
 ) {
-    let Some(t_url) = template_url else {
+    let Some(source) = template_url else {
+        return;
+    };
+    if source.url.contains_incomplete() {
+        data.pending_template_url = Some(source);
+        return;
+    }
+    load_template_url(&source, data, resource_resolver, file_path, eval_file);
+}
+
+/// Read the template `source` names, relative to the component's own `file_path`, into
+/// `data.template_url` and `data.template`. A value that did not evaluate to a string leaves
+/// `data.template_url` unset, which `validate()` reports as ngtsc's `NG1010`
+/// "templateUrl must be a string". Shared by Stage 1 and by Stage 2, which reloads once
+/// constants imported from other files are known.
+pub(crate) fn load_template_url<Fs: ResourceResolverFs>(
+    source: &TemplateUrlSource,
+    data: &mut ComponentData,
+    resource_resolver: &crate::ResourceResolver<'_, Fs>,
+    file_path: &Path,
+    eval_file: crate::query::FileId,
+) {
+    let Some(url) = source.url.get_optional() else {
         return;
     };
 
-    let (resolved_path, content) = load_url(resource_resolver, file_path, &t_url.url);
+    let (resolved_path, content) = load_url(resource_resolver, file_path, &url);
     let is_missing = content.is_none();
     if let Some(content) = content {
         data.template = Some(Resolved::from_syntax(
@@ -581,9 +604,9 @@ fn process_component_template_url<Fs: ResourceResolverFs>(
     }
 
     data.template_url = Some(UrlData {
-        url: t_url.url,
+        url,
         resolved_path,
-        string_literal_span: t_url.string_literal_span,
+        string_literal_span: source.string_literal_span,
         is_missing,
     });
 }
