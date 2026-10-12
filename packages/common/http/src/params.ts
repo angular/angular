@@ -96,26 +96,10 @@ function paramParser(rawParams: string, codec: HttpParameterCodec): Map<string, 
   return map;
 }
 
-/**
- * Encode input string with standard encodeURIComponent and then un-encode specific characters.
- */
-const STANDARD_ENCODING_REGEX = /%(\d[a-f0-9])/gi;
-const STANDARD_ENCODING_REPLACEMENTS: {[x: string]: string} = {
-  '40': '@',
-  '3A': ':',
-  '24': '$',
-  '2C': ',',
-  '3B': ';',
-  '3D': '=',
-  '3F': '?',
-  '2F': '/',
-};
+const STANDARD_ENCODING_REGEX = /[&+#]/g;
 
 function standardEncoding(v: string): string {
-  return encodeURIComponent(v).replace(
-    STANDARD_ENCODING_REGEX,
-    (s, t) => STANDARD_ENCODING_REPLACEMENTS[t] ?? s,
-  );
+  return encodeURI(v).replace(STANDARD_ENCODING_REGEX, encodeURIComponent);
 }
 
 function valueToString(value: string | number | boolean): string {
