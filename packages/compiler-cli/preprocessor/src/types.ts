@@ -46,7 +46,6 @@ export declare class TestAnalyzer {
   analyzeOptimizedDelta(): AnalysisIterator;
 }
 
-
 export interface AnalysisResult {
   fileId: FileId;
   filePath: string;
@@ -418,6 +417,7 @@ export interface HostBindingMetadata {
   hostPropertyName?: string;
   decoratorSpan: SpanMetadata;
   memberSpan: SpanMetadata;
+  isAccessor: boolean;
 }
 
 export interface HostDirectiveBinding {

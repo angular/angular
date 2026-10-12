@@ -396,7 +396,10 @@ function adaptHostElement(target: TcbTargetInput, content?: string): TmplAstHost
   }
 
   for (const decorator of target.hostBindings) {
-    if (!isStaticSourceNode(decorator.memberName)) {
+    // ngtsc only type-checks `@HostBinding`s on property declarations; those on getters and
+    // setters are emitted but never reach the type-check block.
+    // https://github.com/angular/angular/blob/cda8962/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L681-L682
+    if (decorator.isAccessor || !isStaticSourceNode(decorator.memberName)) {
       continue;
     }
 

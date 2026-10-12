@@ -11,9 +11,6 @@ import * as i0 from './host';
 function _tcb1(this: i0.MyComp) {
   if (true) {
   }
-  if (true /*hostBindingsBlockGuard*/) {
-    this.isReady /*367,380*/ /*367,380*/;
-  }
 }
 
 ```

@@ -38,6 +38,7 @@ pub fn parse_host_binding_decorator<'a>(
                 host_property_name: None,
                 decorator_span: decorator.span,
                 member_span,
+                is_accessor: false,
             })
         }
         _ => None,
@@ -116,6 +117,7 @@ fn parse_host_binding_args(
         host_property_name,
         decorator_span,
         member_span,
+        is_accessor: false,
     })
 }
 
@@ -370,7 +372,13 @@ fn extract_method_host_bindings_listeners<'a>(
                 eval,
                 angular_imports,
             ) {
-                host_bindings.push(binding);
+                // Accessor bindings are emitted, but ngtsc only type-checks `@HostBinding`s on
+                // property declarations, so they are tagged for the TCB to skip.
+                // https://github.com/angular/angular/blob/cda8962/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L681-L682
+                host_bindings.push(HostBindingData {
+                    is_accessor: true,
+                    ..binding
+                });
             }
         }
     }
@@ -1038,6 +1046,7 @@ mod tests {
         let (bindings, _) = parse_class(source_text);
 
         assert_eq!(bindings.len(), 2);
+        assert!(bindings.iter().all(|b| b.is_accessor));
         assert_eq!(bindings[0].member_name.text, Some("isReady".to_string()));
         assert_eq!(
             bindings[0]
