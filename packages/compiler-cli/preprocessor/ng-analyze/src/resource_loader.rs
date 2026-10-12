@@ -14,6 +14,18 @@ pub trait ResourceResolverFs: FileSystem {
     }
 }
 
+/// A resource located by [`ResourceResolver::load_resource`].
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct LoadedResource {
+    /// The canonical path of the file the URL resolved to. When no such file exists this is the
+    /// lenient candidate `resolve_resource` settled on, so a consumer can still name the file it
+    /// expected (e.g. `externalRuntimeStyles` emits URLs without reading them).
+    pub resolved_path: PathBuf,
+    /// The file's text, or `None` when the resolved path could not be read — ngtsc's
+    /// `resourceLoader.load` failing, which the caller reports as `NG2008`.
+    pub content: Option<String>,
+}
+
 /// Resource path resolver for component templates and stylesheets.
 pub struct ResourceResolver<'a, Fs: ResourceResolverFs> {
     fs: &'a Fs,
@@ -23,6 +35,29 @@ pub struct ResourceResolver<'a, Fs: ResourceResolverFs> {
 impl<'a, Fs: ResourceResolverFs> ResourceResolver<'a, Fs> {
     pub fn new(fs: &'a Fs, resolver: &'a ResolverGeneric<Fs>) -> Self {
         Self { fs, resolver }
+    }
+
+    /// Resolve `url` from `containing_file` and read it: ngtsc's `resourceLoader.resolve`
+    /// followed by `resourceLoader.load`. Every resource a component names — decorator
+    /// `templateUrl`/`styleUrls` and `<link rel="stylesheet">` from its template — goes through
+    /// here, so all of them see the same `rootDirs`, virtual overlay and preprocessor-extension
+    /// fallback.
+    pub fn load_resource(
+        &self,
+        containing_file: &Path,
+        url: &str,
+    ) -> Result<LoadedResource, String> {
+        let resolved_path = self.resolve_resource(containing_file, url)?;
+        let content = self.fs.read_to_string(&resolved_path).ok();
+        // A file that does not exist cannot be canonicalized; still report a clean path for it.
+        let canonical = self
+            .fs
+            .canonicalize(&resolved_path)
+            .unwrap_or_else(|_| crate::fs::normalize_path_structural(&resolved_path).into_owned());
+        Ok(LoadedResource {
+            resolved_path: canonical,
+            content,
+        })
     }
 
     /// Resolve a rooted path (starting with `/`) using the configured `rootDirs`.

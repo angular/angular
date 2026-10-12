@@ -2059,6 +2059,110 @@ fn test_missing_style_resource_diagnostic_ng2008() {
         .contains("Could not find stylesheet file './nonexistent.css'."));
 }
 
+/// Two `rootDirs` with the generated stylesheet only under the second, as a Bazel-style build
+/// lays them out.
+fn two_root_dirs_files() -> HashMap<String, String> {
+    let mut virtual_files = HashMap::new();
+    virtual_files.insert(
+        "/project/tsconfig.json".to_string(),
+        r#"{"compilerOptions": {"rootDirs": ["./src", "./gen"]}, "files": ["src/app/my.component.ts"]}"#.to_string(),
+    );
+    virtual_files.insert(
+        "/project/src/app/my.component.ts".to_string(),
+        r#"
+            import { Component } from '@angular/core';
+
+            @Component({
+                selector: 'my-cmp',
+                templateUrl: `./my.component.html`,
+                styleUrls: [`./generated.css`],
+            })
+            export class MyComponent {}
+        "#
+        .to_string(),
+    );
+    virtual_files.insert(
+        "/project/src/app/my.component.html".to_string(),
+        r#"<link href="generated.css" rel="stylesheet"><p>hello</p>"#.to_string(),
+    );
+    virtual_files.insert(
+        "/project/gen/app/generated.css".to_string(),
+        ".generated { color: red; }".to_string(),
+    );
+    virtual_files
+}
+
+/// `read_resource` is how the TypeScript layer loads stylesheets linked from a template; it must
+/// find them wherever the decorator's `styleUrls` would, including a secondary `rootDirs` entry.
+#[test]
+fn test_read_resource_resolves_through_root_dirs() {
+    let options = AnalyzerOptions {
+        tsconfig_path: "/project/tsconfig.json".to_string(),
+        optimize: Some(true),
+        virtual_files: Some(two_root_dirs_files()),
+        ..Default::default()
+    };
+    let analyzer = Analyzer::new(options).unwrap();
+
+    let resource = analyzer
+        .read_resource(
+            "/project/src/app/my.component.ts".to_string(),
+            "generated.css".to_string(),
+        )
+        .expect("resource should resolve");
+    assert_eq!(resource.resolved_path, "/project/gen/app/generated.css");
+    assert_eq!(
+        resource.content.as_deref(),
+        Some(".generated { color: red; }")
+    );
+
+    // The decorator path lands on the same file, so the two can never disagree.
+    let meta = analyzer
+        .get_metadata_for_file("/project/src/app/my.component.ts".to_string())
+        .expect("my.component.ts metadata");
+    assert_eq!(meta.diagnostics.len(), 0);
+    let component = meta.classes[0].component.as_ref().unwrap();
+    assert_eq!(
+        component.style_urls.as_ref().unwrap()[0].resolved_path,
+        resource.resolved_path
+    );
+    assert_eq!(
+        component.styles_from_urls.as_deref(),
+        Some(&[".generated { color: red; }".to_string()][..])
+    );
+}
+
+/// A `.scss` link whose compiled `.css` sibling is what exists on disk reads the `.css`, and a
+/// URL that resolves to nothing comes back without content rather than failing outright.
+#[test]
+fn test_read_resource_preprocessor_fallback_and_missing() {
+    let mut virtual_files = two_root_dirs_files();
+    virtual_files.insert(
+        "/project/src/app/theme.css".to_string(),
+        ".theme {}".to_string(),
+    );
+    let options = AnalyzerOptions {
+        tsconfig_path: "/project/tsconfig.json".to_string(),
+        optimize: Some(true),
+        virtual_files: Some(virtual_files),
+        ..Default::default()
+    };
+    let analyzer = Analyzer::new(options).unwrap();
+    let containing_file = "/project/src/app/my.component.ts".to_string();
+
+    let fallback = analyzer
+        .read_resource(containing_file.clone(), "./theme.scss".to_string())
+        .expect("resource should resolve");
+    assert_eq!(fallback.resolved_path, "/project/src/app/theme.css");
+    assert_eq!(fallback.content.as_deref(), Some(".theme {}"));
+
+    let missing = analyzer
+        .read_resource(containing_file, "./missing.css".to_string())
+        .expect("a relative URL always has a candidate path");
+    assert_eq!(missing.resolved_path, "/project/src/app/missing.css");
+    assert_eq!(missing.content, None);
+}
+
 #[test]
 fn test_missing_pipe_name_diagnostic_ng2002() {
     let mut virtual_files = HashMap::new();

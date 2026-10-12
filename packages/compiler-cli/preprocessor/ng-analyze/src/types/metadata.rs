@@ -319,6 +319,12 @@ pub struct ComponentMetadata {
     pub template_span: Option<SpanMetadata>,
     /// True when an inline `template` is present but not statically resolvable.
     pub template_dynamic: bool,
+    /// Span of the `templateUrl` value expression, present whenever the property is, whatever
+    /// its syntax. This is the node ngtsc anchors diagnostics about an external template
+    /// declaration on (`getTemplateDeclarationNodeForError`), e.g. a stylesheet linked from
+    /// the template that cannot be found.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub template_url_span: Option<SpanMetadata>,
     pub template_url: Option<UrlMetadata>,
     pub styles: Option<Vec<String>>,
     pub styles_from_urls: Option<Vec<String>>,

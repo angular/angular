@@ -396,13 +396,7 @@ export async function runPipeline(
       if (!content) continue;
 
       try {
-        const processed = await compiler.processFile(
-          filePath,
-          content,
-          (p) => virtualFileMap.get(normalizePathKey(p)),
-          result,
-          chunkContext,
-        );
+        const processed = await compiler.processFile(filePath, content, result, chunkContext);
         const emitted = processed.magicString.toString();
 
         const outPath = '/out/' + filePath.replace(/\\/g, '/').replace(/^\//, '');

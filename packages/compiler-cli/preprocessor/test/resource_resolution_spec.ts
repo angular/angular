@@ -605,6 +605,69 @@ describe('Resource Resolution E2E Test Suite', () => {
         expect(jsOutput!.content).toContain('.rooted-compiled-scss { border: 1px solid black; }');
       });
     });
+
+    // -----------------------------------------------------------------------
+    // F10: Stylesheets linked from the template
+    // -----------------------------------------------------------------------
+    // `<link rel="stylesheet">` in a template resolves from the component file, through the same
+    // resource resolution as the decorator's `styleUrls`.
+    describe('F10: Template-linked stylesheets', () => {
+      it('f10_template_link_resolves_through_secondary_root_dir', async () => {
+        const files: TestFile[] = [
+          {
+            path: 'tsconfig.json',
+            content: JSON.stringify({compilerOptions: {rootDirs: ['./src', './gen']}}),
+          },
+          {
+            path: 'src/app/my.component.ts',
+            content: `
+              import { Component } from '@angular/core';
+              @Component({
+                selector: 'my-cmp',
+                templateUrl: \`./my.component.html\`,
+                styleUrls: [\`./my.component.css\`, \`./generated.css\`],
+              })
+              export class MyComponent {}
+            `,
+          },
+          {
+            path: 'src/app/my.component.html',
+            content: '<link href="generated.css" rel="stylesheet"><p>hello</p>',
+          },
+          {path: 'src/app/my.component.css', content: '.local { color: blue; }'},
+          {path: 'gen/app/generated.css', content: '.generated { color: red; }'},
+        ];
+        const outputs = await runTest('f10_template_link_resolves_through_secondary_root_dir', files);
+        expect(outputs.find((o) => o.path.endsWith('.ngdiag.json'))).toBeUndefined();
+        const jsOutput = outputs.find((o) => o.path.endsWith('my.component.ts'));
+        expect(jsOutput).toBeDefined();
+        expect(jsOutput!.content).toContain('.local { color: blue; }');
+        expect(jsOutput!.content).toContain('.generated { color: red; }');
+      });
+
+      it('f10_template_link_preprocessor_fallback', async () => {
+        const files: TestFile[] = [
+          {path: 'tsconfig.json', content: JSON.stringify({compilerOptions: {}})},
+          {
+            path: 'app.component.ts',
+            content: `
+              import { Component } from '@angular/core';
+              @Component({
+                selector: 'app-root',
+                template: '<link rel="stylesheet" href="./theme.scss"><div>Linked</div>',
+              })
+              export class AppComponent {}
+            `,
+          },
+          {path: 'theme.css', content: '.linked-compiled-scss { color: teal; }'},
+        ];
+        const outputs = await runTest('f10_template_link_preprocessor_fallback', files);
+        expect(outputs.find((o) => o.path.endsWith('.ngdiag.json'))).toBeUndefined();
+        const jsOutput = outputs.find((o) => o.path.endsWith('app.component.ts'));
+        expect(jsOutput).toBeDefined();
+        expect(jsOutput!.content).toContain('.linked-compiled-scss { color: teal; }');
+      });
+    });
   });
 
   // =========================================================================

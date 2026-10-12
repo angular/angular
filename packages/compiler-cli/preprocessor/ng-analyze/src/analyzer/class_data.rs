@@ -372,13 +372,7 @@ async fn complete_style_urls<Fs: crate::ResourceResolverFs + Clone + 'static>(
     }
     let file_path = ctx.lookup_path(reference_id.file);
     let resource_resolver = crate::ResourceResolver::new(&ctx.fs, ctx.resolver.as_ref());
-    crate::analyzer::component::load_style_urls(
-        &sources,
-        c,
-        &resource_resolver,
-        &file_path,
-        &ctx.fs,
-    );
+    crate::analyzer::component::load_style_urls(&sources, c, &resource_resolver, &file_path);
     for style_url in c.style_urls.iter().flatten() {
         ctx.resource_registry.register_template(
             std::path::PathBuf::from(&style_url.resolved_path),
@@ -1748,7 +1742,7 @@ impl ClassData {
 
         if let Some(ref t_url) = c.template_url {
             if t_url.is_missing {
-                let span = t_url.string_literal_span.unwrap_or(default_span);
+                let span = c.template_url_span.unwrap_or(default_span);
                 push_error(
                     diagnostics,
                     file_path,
@@ -3298,6 +3292,9 @@ impl ClassData {
                 .template_span
                 .map(|s| crate::types::metadata::SpanMetadata::new(s, cx.converter)),
             template_dynamic,
+            template_url_span: c
+                .template_url_span
+                .map(|s| crate::types::metadata::SpanMetadata::new(s, cx.converter)),
             template_url: c.template_url.as_ref().map(|t| t.to_wire(cx.converter)),
             styles: self
                 .read_optional_field(c.styles.as_ref(), cx, "component.styles")?

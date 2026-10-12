@@ -30,6 +30,8 @@ export interface WasmInner {
   get_file_content?(filePath: string): string;
   getTsFileForTemplate?(templatePath: string): string | undefined;
   get_ts_file_for_template?(templatePath: string): string | undefined;
+  readResource?(containingFile: string, url: string): string | undefined;
+  read_resource?(containingFile: string, url: string): string | undefined;
   closeStream?(id: number): void;
   close_stream?(id: number): void;
 }
@@ -236,6 +238,15 @@ export class WasmAnalyzer implements IAnalyzer {
 
   async getFileContent(filePath: string): Promise<string> {
     return Promise.resolve(this.getFileContentSync(filePath));
+  }
+
+  async readResource(containingFile: string, url: string): Promise<nga.ResolvedResource | null> {
+    const fn = this.inner.readResource ?? this.inner.read_resource;
+    if (!fn) {
+      throw new Error('WasmInner does not support readResource');
+    }
+    const res = fn.call(this.inner, containingFile, url);
+    return res ? (JSON.parse(res) as nga.ResolvedResource) : null;
   }
 
   getMetadataForFileSync(filePath: string): nga.AnalysisResult | null {

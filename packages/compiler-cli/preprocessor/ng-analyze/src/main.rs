@@ -37,6 +37,13 @@ struct TemplatePathParam {
     template_path: String,
 }
 
+#[derive(Deserialize)]
+struct ReadResourceParams {
+    #[serde(rename = "containingFile")]
+    containing_file: String,
+    url: String,
+}
+
 #[cfg(target_arch = "wasm32")]
 fn main() {}
 
@@ -293,6 +300,21 @@ fn handle_rpc_request(req: RpcRequest, analyzer: &mut Option<Analyzer>) -> RpcRe
                     result: None,
                     error: Some(e),
                 },
+            }
+        }
+        "readResource" => {
+            let Ok(params) = serde_json::from_value::<ReadResourceParams>(req.params) else {
+                return RpcResponse {
+                    id: req.id,
+                    result: None,
+                    error: Some("Invalid readResource params".to_string()),
+                };
+            };
+            let res = a.read_resource_core(params.containing_file, params.url);
+            RpcResponse {
+                id: req.id,
+                result: Some(serde_json::to_value(&res).unwrap()),
+                error: None,
             }
         }
 

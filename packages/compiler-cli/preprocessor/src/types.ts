@@ -20,6 +20,7 @@ export declare class AnalysisIterator {
 export declare class Analyzer {
   constructor(options: AnalyzerOptions);
   getTsFileForTemplate(templatePath: string): Array<TemplateUsage> | null;
+  readResource(containingFile: string, url: string): ResolvedResource | null;
   updateFileContent(updates: Array<FileUpdate>): Array<string>;
   invalidateFiles(updates: Array<FileInvalidation>): Array<string>;
   analyze(): AnalysisIterator;
@@ -36,6 +37,7 @@ export declare class TestAnalyzer {
   getMetadataForFile(filePath: string): AnalysisResult | null;
   getFileContent(filePath: string): string;
   getTsFileForTemplate(templatePath: string): Array<TemplateUsage> | null;
+  readResource(containingFile: string, url: string): ResolvedResource | null;
   updateFileContent(updates: Array<FileUpdate>): Array<string>;
   invalidateFiles(updates: Array<FileInvalidation>): Array<string>;
   analyze(): AnalysisIterator;
@@ -43,6 +45,7 @@ export declare class TestAnalyzer {
   analyzeDelta(): AnalysisIterator;
   analyzeOptimizedDelta(): AnalysisIterator;
 }
+
 
 export interface AnalysisResult {
   fileId: FileId;
@@ -161,6 +164,13 @@ export interface ComponentMetadata {
   templateSpan?: SpanMetadata;
   /** True when an inline `template` is present but not statically resolvable. */
   templateDynamic: boolean;
+  /**
+   * Span of the `templateUrl` value expression, present whenever the property is, whatever
+   * its syntax. This is the node ngtsc anchors diagnostics about an external template
+   * declaration on (`getTemplateDeclarationNodeForError`), e.g. a stylesheet linked from
+   * the template that cannot be found.
+   */
+  templateUrlSpan?: SpanMetadata;
   templateUrl?: UrlMetadata;
   styles?: Array<string>;
   stylesFromUrls?: Array<string>;
@@ -708,6 +718,18 @@ export interface ResolvedHostDirectiveMetadata {
   directive: DeclarationMetadata;
   inputs?: Array<HostDirectiveBinding>;
   outputs?: Array<HostDirectiveBinding>;
+}
+
+/**
+ * A resource URL resolved and read on behalf of the TypeScript layer (`Analyzer.readResource`),
+ * so that stylesheets it discovers itself (`<link rel="stylesheet">` in a template) load exactly
+ * like the decorator's `templateUrl`/`styleUrls`.
+ */
+export interface ResolvedResource {
+  /** The canonical path the URL resolved to, as `UrlMetadata.resolvedPath` reports it. */
+  resolvedPath: string;
+  /** The file's text; absent when the resolved path could not be read (`NG2008`). */
+  content?: string;
 }
 
 export interface ServiceMetadata {

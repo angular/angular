@@ -431,6 +431,27 @@ impl Analyzer {
         self.fs.read_to_string(&path).map_err(|e| e.to_string())
     }
 
+    /// Resolve `url` the way a component's `templateUrl`/`styleUrls` are resolved from
+    /// `containing_file` and read it. Backs the stylesheets the TypeScript layer discovers only
+    /// after parsing a template (`<link rel="stylesheet">`), which ngtsc also resolves from the
+    /// component file rather than from the template.
+    /// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L876-L883
+    pub fn read_resource_core(
+        &self,
+        containing_file: String,
+        url: String,
+    ) -> Option<crate::ResolvedResource> {
+        let resource_resolver =
+            crate::ResourceResolver::new(&self.fs, self.engine.resolver.as_ref());
+        let resource = resource_resolver
+            .load_resource(Path::new(&containing_file), &url)
+            .ok()?;
+        Some(crate::ResolvedResource {
+            resolved_path: crate::fs::path_to_string(resource.resolved_path),
+            content: resource.content,
+        })
+    }
+
     /// Apply content updates and return every path whose cached results are now stale.
     pub fn update_file_content_core(
         &self,
@@ -687,6 +708,15 @@ impl Analyzer {
     #[cfg(not(feature = "napi"))]
     pub fn get_file_content(&self, file_path: String) -> Result<String, String> {
         self.get_file_content_core(file_path)
+    }
+
+    #[cfg_attr(feature = "napi", napi)]
+    pub fn read_resource(
+        &self,
+        containing_file: String,
+        url: String,
+    ) -> Option<crate::ResolvedResource> {
+        self.read_resource_core(containing_file, url)
     }
 
     fn run_coordinator_helper<S: Spawner>(

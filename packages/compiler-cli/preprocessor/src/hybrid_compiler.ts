@@ -88,6 +88,13 @@ export interface IAnalyzer {
   invalidateFiles(updates: nga.FileInvalidation[]): Promise<string[]>;
   getTsFileForTemplate(templatePath: string): Promise<nga.TemplateUsage[] | null>;
   getFileContent(filePath: string): Promise<string>;
+  /**
+   * Resolves `url` from `containingFile` exactly as the analyzer resolves a component's
+   * `templateUrl`/`styleUrls` (`rootDirs`, virtual overlay, preprocessor-extension fallback)
+   * and reads it. `null` when the URL cannot be resolved at all; a result without `content`
+   * when it resolved to a file that cannot be read.
+   */
+  readResource(containingFile: string, url: string): Promise<nga.ResolvedResource | null>;
 
   // Synchronous lookups (supported in NAPI mode, throws in Sidecar mode)
   getMetadataForFileSync(filePath: string): nga.AnalysisResult | null;
@@ -604,20 +611,12 @@ export class HybridCompiler {
   public async processFile(
     filePath: string,
     content: string,
-    readResource?: (file: string) => string | undefined,
     metadata?: nga.AnalysisResult,
     chunkContext?: ChunkContext,
   ): Promise<ProcessedFile> {
     const result = metadata || (await this.analyzer.getMetadataForFile(filePath));
     const normPath = result ? result.filePath : filePath;
-    const processed = await processFile(
-      this,
-      normPath,
-      content,
-      readResource,
-      result || undefined,
-      chunkContext,
-    );
+    const processed = await processFile(this, normPath, content, result || undefined, chunkContext);
     if (processed.diagnostics && processed.diagnostics.length > 0) {
       for (const diag of processed.diagnostics) {
         const targetPath = diag.filePath || normPath;

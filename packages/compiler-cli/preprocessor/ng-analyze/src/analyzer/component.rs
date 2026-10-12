@@ -358,7 +358,6 @@ fn parse_component_metadata<'a, Fs: ResourceResolverFs>(
         &mut data,
         &resource_resolver,
         file_path,
-        fs,
         default_span,
     );
 
@@ -367,7 +366,6 @@ fn parse_component_metadata<'a, Fs: ResourceResolverFs>(
         &mut data,
         &resource_resolver,
         file_path,
-        fs,
         eval.file,
     );
 
@@ -435,7 +433,6 @@ fn process_component_styles<Fs: ResourceResolverFs>(
     data: &mut ComponentData,
     resource_resolver: &crate::ResourceResolver<'_, Fs>,
     file_path: &Path,
-    fs: &Fs,
     default_span: oxc_span::Span,
 ) {
     let literal_span = |source: &StyleUrlSource| match source {
@@ -461,7 +458,7 @@ fn process_component_styles<Fs: ResourceResolverFs>(
         .into_iter()
         .chain(style_urls.into_iter().flatten())
         .collect();
-    load_style_urls(&sources, data, resource_resolver, file_path, fs);
+    load_style_urls(&sources, data, resource_resolver, file_path);
     if sources.iter().any(StyleUrlSource::contains_incomplete) {
         data.pending_style_urls = Some(sources);
     }
@@ -476,7 +473,6 @@ pub(crate) fn load_style_urls<Fs: ResourceResolverFs>(
     data: &mut ComponentData,
     resource_resolver: &crate::ResourceResolver<'_, Fs>,
     file_path: &Path,
-    fs: &Fs,
 ) {
     let mut styles_from_urls = Vec::new();
     let mut style_urls = Vec::new();
@@ -501,7 +497,6 @@ pub(crate) fn load_style_urls<Fs: ResourceResolverFs>(
                     *string_literal_span,
                     resource_resolver,
                     file_path,
-                    fs,
                     &mut styles_from_urls,
                 ));
             }
@@ -519,7 +514,6 @@ pub(crate) fn load_style_urls<Fs: ResourceResolverFs>(
                         None,
                         resource_resolver,
                         file_path,
-                        fs,
                         &mut styles_from_urls,
                     ));
                 }
@@ -537,31 +531,33 @@ fn load_style_url<Fs: ResourceResolverFs>(
     string_literal_span: Option<oxc_span::Span>,
     resource_resolver: &crate::ResourceResolver<'_, Fs>,
     file_path: &Path,
-    fs: &Fs,
     styles_from_urls: &mut Vec<String>,
 ) -> UrlData {
-    let Ok(resolved_path) = resource_resolver.resolve_resource(file_path, &url) else {
-        return UrlData {
-            url,
-            resolved_path: String::new(),
-            string_literal_span,
-            is_missing: true,
-        };
-    };
-    let is_missing = match fs.read_to_string(&resolved_path) {
-        Ok(content) => {
-            styles_from_urls.push(content);
-            false
-        }
-        Err(_) => true,
-    };
-    let canonical = fs.canonicalize(&resolved_path).unwrap_or(resolved_path);
+    let (resolved_path, content) = load_url(resource_resolver, file_path, &url);
+    let is_missing = content.is_none();
+    styles_from_urls.extend(content);
     UrlData {
         url,
-        resolved_path: crate::fs::path_to_string(canonical),
+        resolved_path,
         string_literal_span,
         is_missing,
     }
+}
+
+/// Load `url` for `UrlData`: the wire path (empty when the URL did not resolve at all) and the
+/// file's text when it could be read.
+fn load_url<Fs: ResourceResolverFs>(
+    resource_resolver: &crate::ResourceResolver<'_, Fs>,
+    file_path: &Path,
+    url: &str,
+) -> (String, Option<String>) {
+    let Ok(resource) = resource_resolver.load_resource(file_path, url) else {
+        return (String::new(), None);
+    };
+    (
+        crate::fs::path_to_string(resource.resolved_path),
+        resource.content,
+    )
 }
 
 fn process_component_template_url<Fs: ResourceResolverFs>(
@@ -569,37 +565,24 @@ fn process_component_template_url<Fs: ResourceResolverFs>(
     data: &mut ComponentData,
     resource_resolver: &crate::ResourceResolver<'_, Fs>,
     file_path: &Path,
-    fs: &Fs,
     eval_file: crate::query::FileId,
 ) {
     let Some(t_url) = template_url else {
         return;
     };
 
-    let resolved_path_opt = resource_resolver
-        .resolve_resource(file_path, &t_url.url)
-        .ok();
-
-    let (resolved_path_str, is_missing) = if let Some(resolved_path) = resolved_path_opt {
-        let is_missing = match fs.read_to_string(&resolved_path) {
-            Ok(content) => {
-                data.template = Some(Resolved::from_syntax(
-                    ResolvedValue::String(content),
-                    eval_file,
-                ));
-                false
-            }
-            Err(_) => true,
-        };
-        let canonical = fs.canonicalize(&resolved_path).unwrap_or(resolved_path);
-        (crate::fs::path_to_string(canonical), is_missing)
-    } else {
-        (String::new(), true)
-    };
+    let (resolved_path, content) = load_url(resource_resolver, file_path, &t_url.url);
+    let is_missing = content.is_none();
+    if let Some(content) = content {
+        data.template = Some(Resolved::from_syntax(
+            ResolvedValue::String(content),
+            eval_file,
+        ));
+    }
 
     data.template_url = Some(UrlData {
         url: t_url.url,
-        resolved_path: resolved_path_str,
+        resolved_path,
         string_literal_span: t_url.string_literal_span,
         is_missing,
     });
