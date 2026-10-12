@@ -38,7 +38,7 @@ export class App {
     loader: (params) => getUserData(params.params.id),
   });
 
-  isLoading = computed(() => this.userResource.status() === 'loading');
+  isLoading = this.userResource.isLoading;
   hasError = computed(() => this.userResource.status() === 'error');
 
   loadUser(id: number) {
