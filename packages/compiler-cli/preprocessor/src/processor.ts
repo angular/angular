@@ -76,6 +76,7 @@ import {
   buildHostDirectives,
   stripIife,
   makeClassKey,
+  createForeignComponentMatcher,
 } from './compiler-utils.js';
 import {ExpressionPrinter, RawSource} from './output_ast_printer.js';
 import MagicString from 'magic-string';
@@ -202,6 +203,7 @@ export function buildTcbTargets(
         schemas: parsedSchemas,
         typeParameters: cls.typeParameters ?? null,
         pipeRegistry: buildPipeRegistry(component.resolvedDeclarations ?? []),
+        foreignImports: component.foreignImports ?? null,
       });
     } else if (directive) {
       if (directive.isJit) continue;
@@ -691,8 +693,13 @@ export async function processFile(
         }
       }
 
-      // Bind template to find used directives
-      const binder = new R3TargetBinder(matcher);
+      // Bind template to find used directives. Foreign components are matched as well, like
+      // ngtsc's resolve phase does.
+      // https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L1926-L1929
+      const binder = new R3TargetBinder(
+        matcher,
+        createForeignComponentMatcher(component.foreignImports),
+      );
       const bound = binder.bind({template: parsed.nodes});
 
       /** Resolves binder matches back to the declarations they were registered from. */

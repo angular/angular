@@ -31,6 +31,8 @@ import {
   parseTemplate,
   ParseTemplateOptions,
   getSafePropertyAccessString,
+  SelectorlessMatcher,
+  ForeignComponentMeta,
 } from '@angular/compiler';
 
 import * as nga from './types.js';
@@ -639,6 +641,24 @@ export function buildPipeRegistry(declarations: nga.DeclarationMetadata[]): Map<
 }
 export function makeClassKey(className: string | undefined | null, spanStart: number): string {
   return `${className ?? ''}@${spanStart}`;
+}
+
+/**
+ * Creates the selectorless matcher `R3TargetBinder` uses to recognize foreign components (one
+ * registry entry per `foreignImports` name), or `null` when there are none.
+ * https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/metadata/src/util.ts#L384-L396
+ */
+export function createForeignComponentMatcher(
+  foreignImports: nga.ForeignImportMetadata[] | null | undefined,
+): SelectorlessMatcher<ForeignComponentMeta> | null {
+  if (!foreignImports || foreignImports.length === 0) {
+    return null;
+  }
+  const registry = new Map<string, ForeignComponentMeta[]>();
+  for (const {name} of foreignImports) {
+    registry.set(name, [{name}]);
+  }
+  return new SelectorlessMatcher(registry);
 }
 
 /**
