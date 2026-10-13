@@ -16,7 +16,6 @@ import {
   afterEveryRender,
   AfterViewChecked,
   AfterViewInit,
-  ChangeDetectionStrategy,
   Component,
   DoCheck,
   ErrorHandler,
@@ -27,6 +26,7 @@ import {
   OnInit,
   Output,
   provideZoneChangeDetection,
+  signal,
   ViewChild,
 } from '../../src/core';
 
@@ -67,7 +67,6 @@ describe('profiler', () => {
     it('should call the profiler for creation and change detection', () => {
       @Component({
         template: '<button (click)="onClick()"></button>',
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComponent {
         onClick() {}
@@ -107,7 +106,6 @@ describe('profiler', () => {
     it('should invoke the profiler when the template throws', () => {
       @Component({
         template: '{{ throw() }}',
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComponent {
         throw() {
@@ -140,7 +138,6 @@ describe('profiler', () => {
     it('should invoke the profiler on event handler', () => {
       @Component({
         template: '<button (click)="onClick()"></button>',
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComponent {
         onClick() {}
@@ -166,7 +163,6 @@ describe('profiler', () => {
     it('should invoke the profiler on event handler even when it throws', () => {
       @Component({
         template: '<button (click)="onClick()"></button>',
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComponent {
         onClick() {
@@ -201,7 +197,6 @@ describe('profiler', () => {
       @Component({
         selector: 'child',
         template: '',
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Child {
         @Output() childEvent = new EventEmitter();
@@ -210,7 +205,6 @@ describe('profiler', () => {
       @Component({
         template: '<child (childEvent)="onEvent()"></child>',
         imports: [Child],
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComponent {
         @ViewChild(Child) child!: Child;
@@ -241,8 +235,6 @@ describe('profiler', () => {
         selector: 'my-comp',
         template: '{{prop}}',
         providers: [Service],
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComponent
         implements
@@ -270,12 +262,11 @@ describe('profiler', () => {
       }
 
       @Component({
-        template: '<my-comp [prop]="prop"></my-comp>',
+        template: '<my-comp [prop]="prop()"></my-comp>',
         imports: [MyComponent],
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyParent {
-        prop = 1;
+        prop = signal(1);
         @ViewChild(MyComponent) child!: MyComponent;
       }
 
@@ -360,7 +351,7 @@ describe('profiler', () => {
       const onChangesSpy = spyOn(myComp, 'ngOnChanges');
       profilerSpy.calls.reset();
 
-      myParent.prop = 2;
+      myParent.prop.set(2);
       fixture.detectChanges();
 
       const ngOnChangesStart = findProfilerCall(
@@ -411,7 +402,6 @@ describe('profiler', () => {
     it('should call the profiler on lifecycle execution even after error', () => {
       @Component({
         template: '',
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComponent implements OnInit {
         ngOnInit() {
@@ -468,7 +458,6 @@ describe('profiler', () => {
     it('should capture component creation and change detection entry points', () => {
       @Component({
         template: '',
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComponent {}
 
@@ -498,7 +487,6 @@ describe('profiler', () => {
       @Component({
         selector: 'my-child',
         template: '{{ error() }}',
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class ChildComponent {
         constructor() {
@@ -508,7 +496,6 @@ describe('profiler', () => {
       @Component({
         imports: [ChildComponent],
         template: '<my-child/>',
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComponent {}
 
@@ -521,7 +508,6 @@ describe('profiler', () => {
       @Component({
         selector: 'my-child',
         template: '{{ error() }}',
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class ChildComponent {
         error() {
@@ -531,7 +517,6 @@ describe('profiler', () => {
       @Component({
         imports: [ChildComponent],
         template: '<my-child/>',
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComponent {}
 
@@ -548,7 +533,6 @@ describe('profiler', () => {
       @Component({
         selector: 'my-child',
         template: '{{ error() }}',
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class ChildComponent {
         error() {
@@ -558,7 +542,6 @@ describe('profiler', () => {
       @Component({
         imports: [ChildComponent],
         template: '<my-child/>',
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComponent {}
 
@@ -587,7 +570,6 @@ describe('profiler', () => {
       @Component({
         host: {'[a]': 'error()'},
         template: '',
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComponent {
         error() {
@@ -609,7 +591,6 @@ describe('profiler', () => {
     it('should capture symmetric tick events when incorrectly called recursively', () => {
       @Component({
         template: '{{ illegalTick() }}',
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComponent {
         illegalTick() {
@@ -642,8 +623,6 @@ describe('profiler', () => {
           '[id]': '"someId"',
         },
         template: '',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComponent {}
 
@@ -658,8 +637,6 @@ describe('profiler', () => {
     it('should invoke a profiler when after render hooks are executing', () => {
       @Component({
         template: '',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComponent {
         arRef = afterEveryRender(() => {});
@@ -680,8 +657,6 @@ describe('profiler', () => {
             nothing to see here...
           }
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComponent {}
 

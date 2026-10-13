@@ -802,8 +802,8 @@ class DirectiveNeedsContentChild {
   selector: 'needs-view-child',
   template: `<div *ngIf="shouldShow" text="foo"></div>`,
 
-  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, TextDirective],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NeedsViewChild implements AfterViewInit, AfterViewChecked {
   shouldShow: boolean = true;
@@ -872,8 +872,8 @@ class InertDirective {}
   selector: 'needs-query',
   template: '<div text="ignoreme"></div><b *ngFor="let  dir of query">{{dir.text}}|</b>',
 
-  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, TextDirective, InertDirective],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NeedsQuery {
   @ContentChildren(TextDirective) query!: QueryList<TextDirective>;
@@ -938,7 +938,6 @@ class NeedsQueryAndProject {
   selector: 'needs-view-query',
   template: '<div text="1"><div text="2"></div></div><div text="3"></div><div text="4"></div>',
 
-  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [TextDirective],
 })
 class NeedsViewQuery {
@@ -949,8 +948,8 @@ class NeedsViewQuery {
   selector: 'needs-view-query-if',
   template: '<div *ngIf="show" text="1"></div>',
 
-  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, TextDirective],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NeedsViewQueryIf {
   show: boolean = false;
@@ -960,7 +959,6 @@ class NeedsViewQueryIf {
 @Component({
   selector: 'needs-view-query-nested-if',
   template: '<div text="1"><div *ngIf="show"><div dir></div></div></div>',
-  changeDetection: ChangeDetectionStrategy.Eager,
 
   imports: [CommonModule, TextDirective, InertDirective],
 })
@@ -976,8 +974,8 @@ class NeedsViewQueryNestedIf {
     '<div *ngFor="let  i of list" [text]="i"></div>' +
     '<div text="4"></div>',
 
-  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, TextDirective],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NeedsViewQueryOrder {
   @ViewChildren(TextDirective) query!: QueryList<TextDirective>;
@@ -991,8 +989,8 @@ class NeedsViewQueryOrder {
     '<div *ngFor="let  i of list" [text]="i"></div>' +
     '<div text="4"></div></div>',
 
-  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, TextDirective, InertDirective],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NeedsViewQueryOrderWithParent {
   @ViewChildren(TextDirective) query!: QueryList<TextDirective>;
@@ -1012,7 +1010,6 @@ class NeedsTpl {
 @Component({
   selector: 'needs-named-tpl',
   template: '<ng-template #tpl><div>shadow</div></ng-template>',
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NeedsNamedTpl {
   @ViewChild('tpl', {static: true}) viewTpl!: TemplateRef<Object>;
@@ -1022,7 +1019,6 @@ class NeedsNamedTpl {
 
 @Component({
   template: '',
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NeedsContentChildrenWithRead {
   @ContentChildren('q', {read: TextDirective}) textDirChildren!: QueryList<TextDirective>;
@@ -1032,7 +1028,6 @@ class NeedsContentChildrenWithRead {
 @Component({
   selector: 'needs-content-child-read',
   template: '',
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NeedsContentChildWithRead {
   @ContentChild('q', {read: TextDirective}) textDirChild!: TextDirective;
@@ -1042,7 +1037,6 @@ class NeedsContentChildWithRead {
 @Component({
   selector: 'needs-content-children-shallow',
   template: '',
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NeedsContentChildrenShallow {
   @ContentChildren('q', {descendants: false}) children!: QueryList<ElementRef>;
@@ -1051,7 +1045,6 @@ class NeedsContentChildrenShallow {
 @Component({
   selector: 'needs-content-child-template-ref',
   template: '<div [ngTemplateOutlet]="templateRef"></div>',
-  changeDetection: ChangeDetectionStrategy.Eager,
 
   imports: [CommonModule],
 })
@@ -1065,7 +1058,6 @@ class NeedsContentChildTemplateRef {
     '<needs-content-child-template-ref>' +
     '<ng-template>OUTER<ng-template>INNER</ng-template></ng-template>' +
     '</needs-content-child-template-ref>',
-  changeDetection: ChangeDetectionStrategy.Eager,
 
   imports: [NeedsContentChildTemplateRef],
 })
@@ -1074,7 +1066,6 @@ class NeedsContentChildTemplateRefApp {}
 @Component({
   selector: 'needs-view-children-read',
   template: '<div #q text="va"></div><div #w text="vb"></div>',
-  changeDetection: ChangeDetectionStrategy.Eager,
 
   imports: [TextDirective],
 })
@@ -1087,7 +1078,6 @@ class NeedsViewChildrenWithRead {
   selector: 'needs-view-child-read',
   template: '<div #q text="va"></div>',
 
-  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [TextDirective],
 })
 class NeedsViewChildWithRead {
@@ -1098,8 +1088,6 @@ class NeedsViewChildWithRead {
 @Component({
   selector: 'needs-viewcontainer-read',
   template: '<div #q></div>',
-
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NeedsViewContainerWithRead {
   @ViewChild('q', {read: ViewContainerRef}) vc!: ViewContainerRef;
@@ -1114,8 +1102,6 @@ class NeedsViewContainerWithRead {
 @Component({
   selector: 'has-null-query-condition',
   template: '<div></div>',
-
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class HasNullQueryCondition {
   @ContentChildren(null!) errorTrigger: any;
@@ -1123,8 +1109,8 @@ class HasNullQueryCondition {
 
 @Component({
   template: '',
-
   changeDetection: ChangeDetectionStrategy.Eager,
+
   imports: [
     CommonModule,
     TextDirective,
@@ -1164,8 +1150,6 @@ class MyComp0 {
 
 @Component({
   template: '',
-
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class MyCompBroken0 {}
 

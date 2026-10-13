@@ -33,6 +33,7 @@ import {
   RendererFactory2,
   RendererType2,
   runInInjectionContext,
+  signal,
   ViewChild,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
@@ -40,7 +41,6 @@ import {el, isNode} from '@angular/private/testing';
 import {InjectableAnimationEngine} from '../../../animations/src/providers';
 import {ɵDomRendererFactory2 as DomRendererFactory2} from '../../../index';
 
-import {ChangeDetectionStrategy} from '@angular/compiler';
 import {provideAnimationsAsync} from '../public_api';
 import {
   AsyncAnimationRendererFactory,
@@ -293,7 +293,7 @@ type AnimationBrowserModule = typeof import('@angular/animations/browser');
 
       it('should properly insert/remove nodes through the animation renderer that do not contain animations', async () => {
         @Component({
-          template: '<div #elm *ngIf="exp"></div>',
+          template: '<div #elm *ngIf="exp()"></div>',
           animations: [
             trigger('someAnimation', [
               transition('* => *', [
@@ -302,26 +302,20 @@ type AnimationBrowserModule = typeof import('@angular/animations/browser');
               ]),
             ]),
           ],
-
-          changeDetection: ChangeDetectionStrategy.Eager,
           imports: [CommonModule],
         })
         class Cmp {
-          exp: any;
+          exp = signal(false);
           @ViewChild('elm') public element: any;
         }
 
-        TestBed.configureTestingModule({
-          providers: [provideZoneChangeDetection()],
-        });
-
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
-        cmp.exp = true;
+        cmp.exp.set(true);
         fixture.detectChanges();
         await fixture.whenStable();
 
-        cmp.exp = false;
+        cmp.exp.set(false);
         const element = cmp.element;
         expect(element.nativeElement.parentNode).toBeTruthy();
 
@@ -333,22 +327,20 @@ type AnimationBrowserModule = typeof import('@angular/animations/browser');
       it('should only queue up dom removals if the element itself contains a valid leave animation', async () => {
         @Component({
           template: `
-            <div #elm1 *ngIf="exp1"></div>
-            <div #elm2 @animation1 *ngIf="exp2"></div>
-            <div #elm3 @animation2 *ngIf="exp3"></div>
+            <div #elm1 *ngIf="exp1()"></div>
+            <div #elm2 @animation1 *ngIf="exp2()"></div>
+            <div #elm3 @animation2 *ngIf="exp3()"></div>
           `,
           animations: [
             trigger('animation1', [transition('a => b', [])]),
             trigger('animation2', [transition(':leave', [])]),
           ],
-
-          changeDetection: ChangeDetectionStrategy.Eager,
           imports: [CommonModule],
         })
         class Cmp {
-          exp1: any = true;
-          exp2: any = true;
-          exp3: any = true;
+          exp1 = signal(true);
+          exp2 = signal(true);
+          exp3 = signal(true);
 
           @ViewChild('elm1') public elm1: any;
 
@@ -356,10 +348,6 @@ type AnimationBrowserModule = typeof import('@angular/animations/browser');
 
           @ViewChild('elm3') public elm3: any;
         }
-
-        TestBed.configureTestingModule({
-          providers: [provideZoneChangeDetection()],
-        });
 
         const engine = TestBed.inject(AnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
@@ -375,7 +363,7 @@ type AnimationBrowserModule = typeof import('@angular/animations/browser');
         engine.flush();
         finishPlayers(engine.players);
 
-        cmp.exp1 = false;
+        cmp.exp1.set(false);
         fixture.detectChanges();
         assertHasParent(elm1, false);
         assertHasParent(elm2);
@@ -383,7 +371,7 @@ type AnimationBrowserModule = typeof import('@angular/animations/browser');
         engine.flush();
         expect(engine.players.length).toEqual(0);
 
-        cmp.exp2 = false;
+        cmp.exp2.set(false);
         fixture.detectChanges();
         assertHasParent(elm1, false);
         assertHasParent(elm2, false);
@@ -391,7 +379,7 @@ type AnimationBrowserModule = typeof import('@angular/animations/browser');
         engine.flush();
         expect(engine.players.length).toEqual(0);
 
-        cmp.exp3 = false;
+        cmp.exp3.set(false);
         fixture.detectChanges();
         assertHasParent(elm1, false);
         assertHasParent(elm2, false);

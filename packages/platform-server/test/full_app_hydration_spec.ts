@@ -26,7 +26,6 @@ import {computeMsgId} from '@angular/compiler';
 import {
   afterEveryRender,
   ApplicationRef,
-  ChangeDetectionStrategy,
   ChangeDetectorRef,
   ɵCLIENT_RENDER_MODE_FLAG as CLIENT_RENDER_MODE_FLAG,
   Component,
@@ -5934,7 +5933,6 @@ describe('platform-server full application hydration integration', () => {
             Project?: <span>{{ project ? 'yes' : 'no' }}</span>
             <ng-content *ngIf="project" />
           `,
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class ProjectorCmp {
           @Input() project: boolean = false;
@@ -5944,15 +5942,14 @@ describe('platform-server full application hydration integration', () => {
           imports: [ProjectorCmp],
           selector: 'app',
           template: `
-            <projector-cmp [project]="project">
+            <projector-cmp [project]="project()">
               <h1>This node is not projected.</h1>
               <h2>This node is not projected as well.</h2>
             </projector-cmp>
           `,
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class SimpleComponent {
-          project = false;
+          project = signal(false);
         }
 
         const html = await ssr(SimpleComponent);
@@ -5979,7 +5976,7 @@ describe('platform-server full application hydration integration', () => {
         expect(span.textContent).toBe('no');
 
         // Flip the flag to enable content projection.
-        compRef.instance.project = true;
+        compRef.instance.project.set(true);
         compRef.changeDetectorRef.detectChanges();
 
         h1 = clientRootNode.querySelector('h1');
@@ -5999,7 +5996,6 @@ describe('platform-server full application hydration integration', () => {
             Project?: <span>{{ project ? 'yes' : 'no' }}</span>
             <ng-content *ngIf="project" />
           `,
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class ProjectorCmp {
           @Input() project: boolean = false;
@@ -6009,15 +6005,14 @@ describe('platform-server full application hydration integration', () => {
           imports: [ProjectorCmp],
           selector: 'app',
           template: `
-            <projector-cmp [project]="project">
+            <projector-cmp [project]="project()">
               <h1>This node is projected.</h1>
               <h2>This node is projected as well.</h2>
             </projector-cmp>
           `,
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class SimpleComponent {
-          project = true;
+          project = signal(true);
         }
 
         const html = await ssr(SimpleComponent);
@@ -6044,7 +6039,7 @@ describe('platform-server full application hydration integration', () => {
         expect(span.textContent).toBe('yes');
 
         // Flip the flag to disable content projection.
-        compRef.instance.project = false;
+        compRef.instance.project.set(false);
         compRef.changeDetectorRef.detectChanges();
 
         h1 = clientRootNode.querySelector('h1');
@@ -7484,16 +7479,15 @@ describe('platform-server full application hydration integration', () => {
         @Component({
           selector: 'app',
           template: `
-            @if (conditionA) {
+            @if (conditionA()) {
               if block
             } @else {
               else block
             }
           `,
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class SimpleComponent {
-          conditionA = false;
+          conditionA = signal(false);
         }
 
         const html = await ssr(SimpleComponent);
@@ -7521,7 +7515,7 @@ describe('platform-server full application hydration integration', () => {
 
         // Verify that switching `if` condition results
         // in an update to the DOM which was previously hydrated.
-        compRef.instance.conditionA = true;
+        compRef.instance.conditionA.set(true);
         compRef.changeDetectorRef.detectChanges();
 
         expect(clientRootNode.innerHTML).not.toContain(`else block`);
@@ -7953,13 +7947,12 @@ describe('platform-server full application hydration integration', () => {
         @Component({
           selector: 'app',
           template: `
-            @let greeting = name + '!!!';
+            @let greeting = name() + '!!!';
             Hello, {{ greeting }}
           `,
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class SimpleComponent {
-          name = 'Frodo';
+          name = signal('Frodo');
         }
 
         const html = await ssr(SimpleComponent);
@@ -7979,7 +7972,7 @@ describe('platform-server full application hydration integration', () => {
         verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
         expect(clientRootNode.textContent).toContain('Hello, Frodo!!!');
 
-        compRef.instance.name = 'Bilbo';
+        compRef.instance.name.set('Bilbo');
         compRef.changeDetectorRef.detectChanges();
         expect(clientRootNode.textContent).toContain('Hello, Bilbo!!!');
       });
@@ -7988,15 +7981,14 @@ describe('platform-server full application hydration integration', () => {
         @Component({
           selector: 'app',
           template: `
-            @let plusOne = value + 1;
+            @let plusOne = value() + 1;
             @let plusTwo = plusOne + 1;
             @let result = plusTwo + 1;
             Result: {{ result }}
           `,
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class SimpleComponent {
-          value = 1;
+          value = signal(1);
         }
 
         const html = await ssr(SimpleComponent);
@@ -8016,7 +8008,7 @@ describe('platform-server full application hydration integration', () => {
         verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
         expect(clientRootNode.textContent).toContain('Result: 4');
 
-        compRef.instance.value = 2;
+        compRef.instance.value.set(2);
         compRef.changeDetectorRef.detectChanges();
 
         expect(clientRootNode.textContent).toContain('Result: 5');
@@ -8038,13 +8030,12 @@ describe('platform-server full application hydration integration', () => {
           selector: 'app',
           imports: [DoublePipe],
           template: `
-            @let result = value | double;
+            @let result = value() | double;
             Result: {{ result }}
           `,
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class SimpleComponent {
-          value = 1;
+          value = signal(1);
         }
 
         const html = await ssr(SimpleComponent);
@@ -8064,7 +8055,7 @@ describe('platform-server full application hydration integration', () => {
         verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
         expect(clientRootNode.textContent).toContain('Result: 2');
 
-        compRef.instance.value = 2;
+        compRef.instance.value.set(2);
         compRef.changeDetectorRef.detectChanges();
         expect(clientRootNode.textContent).toContain('Result: 4');
       });
@@ -8081,12 +8072,11 @@ describe('platform-server full application hydration integration', () => {
               @let two = one + 1;
             }
 
-            @let one = value + 1;
+            @let one = value() + 1;
           `,
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class SimpleComponent {
-          value = 0;
+          value = signal(0);
         }
 
         const html = await ssr(SimpleComponent);
@@ -8106,7 +8096,7 @@ describe('platform-server full application hydration integration', () => {
         verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
         expect(clientRootNode.textContent).toContain('The result is 3');
 
-        compRef.instance.value = 2;
+        compRef.instance.value.set(2);
         compRef.changeDetectorRef.detectChanges();
         expect(clientRootNode.textContent).toContain('The result is 5');
       });
@@ -8300,15 +8290,14 @@ describe('platform-server full application hydration integration', () => {
           selector: 'app',
           template: `
             @boundary {
-              Hello, {{ name }}
+              Hello, {{ name() }}
             } @error {
               Error occurred!
             }
           `,
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class SimpleComponent {
-          name = 'Frodo';
+          name = signal('Frodo');
         }
 
         const html = await ssr(SimpleComponent);
@@ -8329,7 +8318,7 @@ describe('platform-server full application hydration integration', () => {
         verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
         expect(clientRootNode.textContent).toContain('Hello, Frodo');
 
-        compRef.instance.name = 'Bilbo';
+        compRef.instance.name.set('Bilbo');
         compRef.changeDetectorRef.detectChanges();
         expect(clientRootNode.textContent).toContain('Hello, Bilbo');
       });
@@ -8359,7 +8348,6 @@ describe('platform-server full application hydration integration', () => {
               Error occurred on server!
             }
           `,
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class SimpleComponent {
           fail = isPlatformServer(inject(PLATFORM_ID));
@@ -8411,7 +8399,6 @@ describe('platform-server full application hydration integration', () => {
               Error occurred on server and client!
             }
           `,
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class SimpleComponent {}
 

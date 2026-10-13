@@ -35,7 +35,6 @@ describe('CheckAlways components', () => {
   it('can read a signal', () => {
     @Component({
       template: `{{ value() }}`,
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class CheckAlwaysCmp {
       value = signal('initial');
@@ -54,7 +53,6 @@ describe('CheckAlways components', () => {
   it('should properly remove stale dependencies from the signal graph', () => {
     @Component({
       template: `{{ show() ? name() + ' aged ' + age() : 'anonymous' }}`,
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class CheckAlwaysCmp {
       name = signal('John');
@@ -88,7 +86,6 @@ describe('CheckAlways components', () => {
     @Component({
       template: `{{ value() }}`,
       selector: 'check-always',
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class CheckAlwaysCmp {
       value = value;
@@ -199,7 +196,6 @@ describe('CheckAlways components', () => {
     const val = signal(0);
     @Component({
       template: '{{val()}}',
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       val = val;
@@ -328,7 +324,6 @@ describe('OnPush components with signals', () => {
     @Component({
       selector: 'with-input-setter',
       template: '{{test}}',
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class WithInputSetter {
       test = '';
@@ -376,7 +371,6 @@ describe('OnPush components with signals', () => {
     @Component({
       selector: 'with-query-setter',
       template: '<div #el>child</div>',
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class WithQuerySetter {
       el: unknown;
@@ -553,7 +547,6 @@ describe('OnPush components with signals', () => {
         <div misunderstood></div>
         {{ 'force advance()' }}
       `,
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestCmp {
       counter = counter;
@@ -585,7 +578,6 @@ describe('OnPush components with signals', () => {
         {{ counter() }}
         <div misunderstood></div>
       `,
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestCmp {
       counter = counter;
@@ -601,7 +593,6 @@ describe('OnPush components with signals', () => {
   it('should allow writing to signals in afterViewInit', () => {
     @Component({
       template: '{{loading()}}',
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyComp {
       loading = signal(true);
@@ -911,7 +902,6 @@ describe('OnPush components with signals', () => {
     @Component({
       template: '',
       selector: 'child',
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child {
       ngOnInit() {
@@ -922,7 +912,6 @@ describe('OnPush components with signals', () => {
     @Component({
       template: '{{val()}} <child />',
       imports: [Child],
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class SignalComponent {
       val = val;
@@ -941,7 +930,6 @@ describe('OnPush components with signals', () => {
     @Component({
       template: '{{double()}}',
       selector: 'child',
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child {
       double = double;
@@ -950,7 +938,6 @@ describe('OnPush components with signals', () => {
     @Component({
       template: '|{{double()}}|<child />|',
       imports: [Child],
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class SignalComponent {
       double = double;

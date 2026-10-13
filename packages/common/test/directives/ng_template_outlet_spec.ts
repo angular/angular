@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy} from '@angular/compiler';
 import {
   Component,
   ContentChildren,
@@ -19,6 +18,7 @@ import {
   Optional,
   Provider,
   QueryList,
+  signal,
   SkipSelf,
   TemplateRef,
   inject,
@@ -303,23 +303,22 @@ describe('NgTemplateOutlet', () => {
   it('should not mutate context object if two contexts with an identical shape are swapped', async () => {
     fixture = TestBed.createComponent(MultiContextComponent);
     const {componentInstance, nativeElement} = fixture;
-    componentInstance.context1 = {name: 'one'};
-    componentInstance.context2 = {name: 'two'};
+    componentInstance.context1.set({name: 'one'});
+    componentInstance.context2.set({name: 'two'});
     await fixture.whenStable();
 
     expect(nativeElement.textContent.trim()).toBe('one | two');
-    expect(componentInstance.context1).toEqual({name: 'one'});
-    expect(componentInstance.context2).toEqual({name: 'two'});
+    expect(componentInstance.context1()).toEqual({name: 'one'});
+    expect(componentInstance.context2()).toEqual({name: 'two'});
 
-    const temp = componentInstance.context1;
-    componentInstance.context1 = componentInstance.context2;
-    componentInstance.context2 = temp;
-    fixture.changeDetectorRef.markForCheck();
+    const temp = componentInstance.context1();
+    componentInstance.context1.set(componentInstance.context2());
+    componentInstance.context2.set(temp);
     await fixture.whenStable();
 
     expect(nativeElement.textContent.trim()).toBe('two | one');
-    expect(componentInstance.context1).toEqual({name: 'two'});
-    expect(componentInstance.context2).toEqual({name: 'one'});
+    expect(componentInstance.context1()).toEqual({name: 'two'});
+    expect(componentInstance.context2()).toEqual({name: 'one'});
   });
 
   it('should be able to specify an injector', async () => {
@@ -419,12 +418,11 @@ describe('NgTemplateOutlet', () => {
       imports: [NgTemplateOutlet],
       template: `
         <ng-template #tpl let-name>Name:{{ name }}</ng-template>
-        <ng-template [ngTemplateOutlet]="tpl" [ngTemplateOutletContext]="ctx"></ng-template>
+        <ng-template [ngTemplateOutlet]="tpl" [ngTemplateOutletContext]="ctx()"></ng-template>
       `,
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {
-      ctx: {$implicit: string} | undefined = undefined;
+      ctx = signal<{$implicit: string} | undefined>(undefined);
     }
 
     const fixture = TestBed.createComponent(TestComponent);
@@ -432,8 +430,7 @@ describe('NgTemplateOutlet', () => {
 
     expect(fixture.nativeElement.textContent).toBe('Name:');
 
-    fixture.componentInstance.ctx = {$implicit: 'Angular'};
-    fixture.changeDetectorRef.markForCheck();
+    fixture.componentInstance.ctx.set({$implicit: 'Angular'});
     await fixture.whenStable();
 
     expect(fixture.nativeElement.textContent).toBe('Name:Angular');
@@ -471,14 +468,12 @@ class CaptureTplRefs {
   selector: 'provide-value',
   template: '<ng-content />',
   providers: [{provide: templateToken, useValue: 'provide-value'}],
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class ProvideValueComponent {}
 
 @Component({
   selector: 'inject-value',
   template: 'Hello {{tokenValue}}',
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class InjectValueComponent {
   constructor(@Inject(templateToken) public tokenValue: string) {}
@@ -487,16 +482,15 @@ class InjectValueComponent {
 @Component({
   template: `
     <ng-template #template let-name="name">{{ name }}</ng-template>
-    <ng-template [ngTemplateOutlet]="template" [ngTemplateOutletContext]="context1"></ng-template>
+    <ng-template [ngTemplateOutlet]="template" [ngTemplateOutletContext]="context1()"></ng-template>
     |
-    <ng-template [ngTemplateOutlet]="template" [ngTemplateOutletContext]="context2"></ng-template>
+    <ng-template [ngTemplateOutlet]="template" [ngTemplateOutletContext]="context2()"></ng-template>
   `,
   imports: [NgTemplateOutlet],
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class MultiContextComponent {
-  context1: {name: string} | undefined;
-  context2: {name: string} | undefined;
+  context1 = signal<{name: string} | undefined>(undefined);
+  context2 = signal<{name: string} | undefined>(undefined);
 }
 
 const NESTING_DEPTH = new InjectionToken<number>('NESTING_DEPTH');
@@ -511,7 +505,6 @@ const NESTING_DEPTH = new InjectionToken<number>('NESTING_DEPTH');
       deps: [[new Optional(), new SkipSelf(), NESTING_DEPTH]],
     },
   ],
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NestingCounter {
   depth = inject(NESTING_DEPTH);
@@ -520,7 +513,6 @@ class NestingCounter {
 @Component({
   template: '',
   providers: [DestroyedSpyService],
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class TestComponent {
   currentTplRef?: TemplateRef<any>;

@@ -6,7 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, PLATFORM_ID, Provider, Type} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  PLATFORM_ID,
+  Provider,
+  signal,
+  Type,
+  WritableSignal,
+} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import {isBrowser, isNode, withHead} from '@angular/private/testing';
@@ -685,29 +693,28 @@ describe('Image directive', () => {
       it(`should throw if the \`${inputName}\` input changed after directive initialized the input`, async () => {
         @Component({
           template: `<img
-            [ngSrc]="ngSrc"
-            [width]="width"
-            [height]="height"
-            [priority]="priority"
-            [fill]="fill"
-            [loading]="loading"
-            [sizes]="sizes"
-            [disableOptimizedSrcset]="disableOptimizedSrcset"
-            [loaderParams]="loaderParams"
+            [ngSrc]="ngSrc()"
+            [width]="width()"
+            [height]="height()"
+            [priority]="priority()"
+            [fill]="fill()"
+            [loading]="loading()"
+            [sizes]="sizes()"
+            [disableOptimizedSrcset]="disableOptimizedSrcset()"
+            [loaderParams]="loaderParams()"
           />`,
           imports: [NgOptimizedImage],
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class TestComponent {
-          width = 100;
-          height = 50;
-          ngSrc = 'img.png';
-          priority = false;
-          fill = false;
-          loading = false;
-          sizes = '100vw';
-          disableOptimizedSrcset = false;
-          loaderParams = {bar: 'test2'};
+          width = signal(100);
+          height = signal(50);
+          ngSrc = signal('img.png');
+          priority = signal(false);
+          fill = signal(false);
+          loading = signal<any>(false);
+          sizes = signal('100vw');
+          disableOptimizedSrcset = signal(false);
+          loaderParams = signal<any>({bar: 'test2'});
         }
 
         setupTestingModule({component: TestComponent});
@@ -720,9 +727,9 @@ describe('Image directive', () => {
           `NG02953: The NgOptimizedImage directive (.*)? ` +
           `has detected that \`${inputName}\` was updated after initialization`;
         // Update input (expect to throw)
-        (fixture.componentInstance as unknown as {[key: string]: unknown})[inputName as string] =
-          value;
-        fixture.changeDetectorRef.markForCheck();
+        (fixture.componentInstance as unknown as {[key: string]: WritableSignal<unknown>})[
+          inputName as string
+        ].set(value);
         await expectAsync(fixture.whenStable()).toBeRejectedWithError(
           new RegExp(expectedErrorMessage),
         );
@@ -1882,12 +1889,11 @@ describe('Image directive', () => {
 
     it('should use the image loader to update `src` if `ngSrc` updated', async () => {
       @Component({
-        template: `<img [ngSrc]="ngSrc" width="300" height="300" />`,
+        template: `<img [ngSrc]="ngSrc()" width="300" height="300" />`,
         imports: [NgOptimizedImage],
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {
-        ngSrc = `img.png`;
+        ngSrc = signal(`img.png`);
       }
       const imageLoader = (config: ImageLoaderConfig) => `${IMG_BASE_URL}/${config.src}`;
       setupTestingModule({imageLoader, component: TestComponent});
@@ -1898,20 +1904,18 @@ describe('Image directive', () => {
       let imgs = nativeElement.querySelectorAll('img')!;
       expect(imgs[0].src).toBe(`${IMG_BASE_URL}/img.png`);
 
-      fixture.componentInstance.ngSrc = 'updatedImg.png';
-      fixture.changeDetectorRef.markForCheck();
+      fixture.componentInstance.ngSrc.set('updatedImg.png');
       await fixture.whenStable();
       expect(imgs[0].src).toBe(`${IMG_BASE_URL}/updatedImg.png`);
     });
 
     it('should use the image loader to update `srcset` if `ngSrc` updated', async () => {
       @Component({
-        template: `<img [ngSrc]="ngSrc" width="300" height="300" sizes="100vw" />`,
+        template: `<img [ngSrc]="ngSrc()" width="300" height="300" sizes="100vw" />`,
         imports: [NgOptimizedImage],
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {
-        ngSrc = `img.png`;
+        ngSrc = signal(`img.png`);
       }
       const imageLoader = (config: ImageLoaderConfig) => {
         const width = config.width ? `?w=${config.width}` : ``;
@@ -1927,8 +1931,7 @@ describe('Image directive', () => {
         `${IMG_BASE_URL}/img.png?w=640 640w, ${IMG_BASE_URL}/img.png?w=750 750w, ${IMG_BASE_URL}/img.png?w=828 828w, ${IMG_BASE_URL}/img.png?w=1080 1080w, ${IMG_BASE_URL}/img.png?w=1200 1200w, ${IMG_BASE_URL}/img.png?w=1920 1920w, ${IMG_BASE_URL}/img.png?w=2048 2048w, ${IMG_BASE_URL}/img.png?w=3840 3840w`,
       );
 
-      fixture.componentInstance.ngSrc = 'updatedImg.png';
-      fixture.changeDetectorRef.markForCheck();
+      fixture.componentInstance.ngSrc.set('updatedImg.png');
       nativeElement = fixture.nativeElement as HTMLElement;
       imgs = nativeElement.querySelectorAll('img')!;
       await fixture.whenStable();

@@ -8,7 +8,6 @@
 
 import {NgIf} from '@angular/common';
 import {
-  ChangeDetectionStrategy,
   Component,
   createEnvironmentInjector,
   DestroyRef,
@@ -84,8 +83,6 @@ describe('DestroyRef', () => {
 
       @Component({
         template: ``,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestCmp {
         constructor(destroyCtx: DestroyRef) {
@@ -118,8 +115,6 @@ describe('DestroyRef', () => {
         // listener)
         template: `<div withCleanup></div>
           <button (click)="noop()"></button>`,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestCmp {
         noop() {}
@@ -148,8 +143,6 @@ describe('DestroyRef', () => {
       @Component({
         imports: [WithCleanupDirective, NgIf],
         template: `<ng-template [ngIf]="show()"><div withCleanup></div></ng-template>`,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestCmp {
         show = signal(true);
@@ -169,8 +162,6 @@ describe('DestroyRef', () => {
       @Component({
         selector: 'child',
         template: '',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Child {
         constructor() {
@@ -180,8 +171,6 @@ describe('DestroyRef', () => {
       @Component({
         imports: [Child, NgIf],
         template: '<child *ngIf="showChild()"></child>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Parent {
         showChild = signal(true);
@@ -200,8 +189,6 @@ describe('DestroyRef', () => {
 
     @Component({
       template: ``,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestCmp {
       unRegFn: () => void;
@@ -226,8 +213,6 @@ describe('DestroyRef', () => {
 
     @Component({
       template: ``,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestCmp {
       unRegFn: () => void;
@@ -254,8 +239,6 @@ describe('DestroyRef', () => {
   it('should throw when trying to register destroy callback on destroyed LView', () => {
     @Component({
       template: ``,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestCmp {
       constructor(public destroyRef: DestroyRef) {}
@@ -275,8 +258,6 @@ describe('DestroyRef', () => {
 
     @Component({
       template: ``,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestCmp {
       constructor(destroyCtx: DestroyRef) {

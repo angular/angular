@@ -10,7 +10,6 @@ import {CommonModule} from '@angular/common';
 import {By, DomSanitizer, SafeUrl} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {
-  ChangeDetectionStrategy,
   Component,
   Directive,
   EventEmitter,
@@ -26,8 +25,6 @@ describe('property bindings', () => {
   it('should support bindings to properties', () => {
     @Component({
       template: `<span [id]="id"></span>`,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       id: string | undefined;
@@ -353,8 +350,6 @@ describe('property bindings', () => {
   it('should not stringify non-string values', () => {
     @Component({
       template: `<input [required]="isRequired" />`,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       isRequired = false;
@@ -664,7 +659,6 @@ describe('property bindings', () => {
       @Component({
         template: `<div role="button" myDir></div>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [MyDir],
       })
       class App {}
@@ -683,7 +677,6 @@ describe('property bindings', () => {
       @Component({
         template: `<div role="button" [role]="role()" myDir></div>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [MyDir],
       })
       class App {
@@ -707,7 +700,6 @@ describe('property bindings', () => {
       @Component({
         template: `<div role="button" myDir myDirB></div>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [MyDir, MyDirB],
       })
       class App {}
@@ -727,7 +719,6 @@ describe('property bindings', () => {
       @Component({
         template: `<div role="button" dir="rtl" myDir></div>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [MyDir],
       })
       class App {}
@@ -747,7 +738,6 @@ describe('property bindings', () => {
       @Component({
         template: `<div role="button" (change)="onChange()" myDir></div>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [MyDir],
       })
       class App {
@@ -774,7 +764,6 @@ describe('property bindings', () => {
           <div role="listbox" myDirB></div>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [MyDir, MyDirB],
       })
       class App {}
@@ -842,8 +831,7 @@ describe('property bindings', () => {
         selector: 'comp',
         template: `<div role="button" myDir #dir="myDir"></div>role: {{dir.role}}`,
         
-      
-        changeDetection: ChangeDetectionStrategy.Eager, imports: [MyDir]})
+       imports: [MyDir]})
       class Comp {}
 
       // prettier-ignore
@@ -852,8 +840,7 @@ describe('property bindings', () => {
           <comp *ngFor="let i of [0, 1]"></comp>
         `,
         
-      
-        changeDetection: ChangeDetectionStrategy.Eager, imports: [CommonModule, Comp]})
+       imports: [CommonModule, Comp]})
       class App {}
 
       const fixture = TestBed.createComponent(App);
@@ -886,8 +873,6 @@ describe('property bindings', () => {
       template: '',
       animations: [trigger('trigger', [state('void', style({opacity: 0}))])],
       host: {'[@trigger]': '"void"'},
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyComp {}
 
@@ -901,7 +886,6 @@ describe('property bindings', () => {
     @Component({
       template: '<my-comp my-dir></my-comp>',
 
-      changeDetection: ChangeDetectionStrategy.Eager,
       imports: [MyComp, MyDir],
     })
     class App {}
@@ -919,8 +903,6 @@ describe('property bindings', () => {
   it('should allow quoted binding syntax inside property binding', () => {
     @Component({
       template: `<span [id]="'{{ id }}'"></span>`,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {}
 
@@ -932,8 +914,6 @@ describe('property bindings', () => {
   it('should allow quoted binding syntax with escaped quotes inside property binding', () => {
     @Component({
       template: `<span [id]="'{{ \\' }}'"></span>`,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {}
 

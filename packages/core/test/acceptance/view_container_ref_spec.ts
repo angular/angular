@@ -97,7 +97,6 @@ describe('ViewContainerRef', () => {
           >after
         </div>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [forwardRef(() => ConstructorDir)],
       })
       class ViewInsertionTestCmpt {}
@@ -109,15 +108,12 @@ describe('ViewContainerRef', () => {
     it('should use comment node of host ng-container as insertion marker', () => {
       @Component({
         template: 'hello',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class HelloComp {}
 
       @Component({
         template: ` <ng-container vcref></ng-container> `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [forwardRef(() => VCRefDirective)],
       })
       class TestComp {
@@ -157,15 +153,11 @@ describe('ViewContainerRef', () => {
       @Component({
         selector: '[hello]',
         template: 'Hello',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class HelloComp {}
 
       @Component({
         template: ` <ng-container #container></ng-container> `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComp {
         @ViewChild('container', {read: ViewContainerRef}) vcRef!: ViewContainerRef;
@@ -188,8 +180,6 @@ describe('ViewContainerRef', () => {
     it('should view queries in dynamically created components', () => {
       @Component({
         template: `<div #foo></div>`,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class DynamicCompWithViewQueries {
         @ViewChildren('foo') fooList!: QueryList<ElementRef>;
@@ -197,8 +187,6 @@ describe('ViewContainerRef', () => {
 
       @Component({
         template: ``,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestCmp {
         constructor(readonly vcRf: ViewContainerRef) {}
@@ -218,16 +206,12 @@ describe('ViewContainerRef', () => {
           @Component({
             selector: svgSelector,
             template: '<svg><g></g></svg>',
-
-            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class SvgComp {}
 
           @Component({
             selector: mathMLSelector,
             template: '<math><matrix></matrix></math>',
-
-            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class MathMLComp {}
 
@@ -236,8 +220,6 @@ describe('ViewContainerRef', () => {
               <ng-container #svg></ng-container>
               <ng-container #mathml></ng-container>
             `,
-
-            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class TestComp {
             @ViewChild('svg', {read: ViewContainerRef}) svgVCRef!: ViewContainerRef;
@@ -284,15 +266,11 @@ describe('ViewContainerRef', () => {
         @Component({
           selector: 'g[dynamic-group]',
           template: '<svg:text>SVG content</svg:text>',
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class SvgGroupComp {}
 
         @Component({
           template: '<svg><ng-container #container></ng-container></svg>',
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class TestComp {
           @ViewChild('container', {read: ViewContainerRef}) container!: ViewContainerRef;
@@ -313,8 +291,6 @@ describe('ViewContainerRef', () => {
         @Component({
           selector: 'div[dynamic-html]',
           template: 'HTML content',
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class HtmlComp {}
 
@@ -326,8 +302,6 @@ describe('ViewContainerRef', () => {
               </foreignObject>
             </svg>
           `,
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class TestComp {
           @ViewChild('container', {read: ViewContainerRef}) container!: ViewContainerRef;
@@ -350,8 +324,6 @@ describe('ViewContainerRef', () => {
       @Component({
         selector: '[attr-a=a].class-a:not(.class-b):not([attr-b=b]).class-c[attr-c]',
         template: 'Hello',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class HelloComp {}
 
@@ -362,8 +334,6 @@ describe('ViewContainerRef', () => {
             <ng-container #container></ng-container>
           </div>
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComp {
         @ViewChild('container', {read: ViewContainerRef}) vcRef!: ViewContainerRef;
@@ -481,8 +451,6 @@ describe('ViewContainerRef', () => {
           <ng-template #t>content</ng-template>
           before|<ng-template #c1></ng-template>|middle|<ng-template #c2></ng-template>|after
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {
         @ViewChild('t', {static: true}) t!: TemplateRef<{}>;
@@ -513,8 +481,6 @@ describe('ViewContainerRef', () => {
     it('should add embedded views at the right position in the DOM tree (ng-template next to other ng-template)', () => {
       @Component({
         template: `before|<ng-template #a>A</ng-template><ng-template #b>B</ng-template>|after`,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestCmp {
         @ViewChild('a', {static: true}) ta!: TemplateRef<{}>;
@@ -852,7 +818,6 @@ describe('ViewContainerRef', () => {
           <footer></footer>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [forwardRef(() => VCRefDirective)],
       })
       class TestComponent {
@@ -883,7 +848,6 @@ describe('ViewContainerRef', () => {
           <footer></footer>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [forwardRef(() => VCRefDirective)],
       })
       class TestComponent {
@@ -902,8 +866,6 @@ describe('ViewContainerRef', () => {
       @Component({
         selector: 'header-cmp',
         template: ``,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class HeaderCmp {}
 
@@ -913,7 +875,6 @@ describe('ViewContainerRef', () => {
           <footer></footer>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [HeaderCmp, forwardRef(() => VCRefDirective)],
       })
       class TestComponent {
@@ -983,14 +944,10 @@ describe('ViewContainerRef', () => {
     });
 
     it('should not throw when destroying a detached component view', () => {
-      @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
+      @Component({})
       class DynamicCmp {}
 
-      @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
+      @Component({})
       class TestCmp {
         constructor(public vcRef: ViewContainerRef) {}
       }
@@ -1104,7 +1061,6 @@ describe('ViewContainerRef', () => {
           <ng-template #child> I am child template </ng-template>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [CommonModule, forwardRef(() => TemplateDirective)],
       })
       class AppComponent {
@@ -1157,7 +1113,6 @@ describe('ViewContainerRef', () => {
           <footer></footer>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [forwardRef(() => VCRefDirective)],
       })
       class TestComponent {}
@@ -1199,8 +1154,6 @@ describe('ViewContainerRef', () => {
       @Component({
         selector: 'header-cmp',
         template: ``,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class HeaderComponent {}
 
@@ -1211,7 +1164,6 @@ describe('ViewContainerRef', () => {
           <footer></footer>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [HeaderComponent, forwardRef(() => VCRefDirective)],
       })
       class TestComponent {}
@@ -1257,7 +1209,6 @@ describe('ViewContainerRef', () => {
           <div vcref [tplRef]="tplRef"></div>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [forwardRef(() => VCRefDirective)],
       })
       class TestComponent {}
@@ -1287,7 +1238,6 @@ describe('ViewContainerRef', () => {
           <footer></footer>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [forwardRef(() => VCRefDirective)],
       })
       class TestComponent {
@@ -1320,8 +1270,6 @@ describe('ViewContainerRef', () => {
       @Component({
         selector: 'child',
         template: `{{ name }}`,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Child {
         @Input() name: string | undefined;
@@ -1345,7 +1293,6 @@ describe('ViewContainerRef', () => {
           <child [name]="'B' | starPipe"></child>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Child, StarPipe, forwardRef(() => VCRefDirective)],
       })
       class SomeComponent {}
@@ -1381,8 +1328,8 @@ describe('ViewContainerRef', () => {
         selector: 'embedded-cmp',
         template: `foo`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [forwardRef(() => VCRefDirective)],
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class EmbeddedComponent implements DoCheck, OnInit {
         ngOnInit() {
@@ -1428,7 +1375,6 @@ describe('ViewContainerRef', () => {
         selector: 'embedded-cmp',
         template: `foo`,
         standalone: false,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class EmbeddedComponent implements DoCheck, OnInit {
@@ -1537,7 +1483,6 @@ describe('ViewContainerRef', () => {
           ><ng-content></ng-content
         ></embedded-cmp-with-ngcontent>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [
           forwardRef(() => EmbeddedComponentWithNgContent),
           forwardRef(() => VCRefDirective),
@@ -1593,8 +1538,6 @@ describe('ViewContainerRef', () => {
     it('should not throw when calling destroy() multiple times for a ComponentRef', () => {
       @Component({
         template: '',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {}
 
@@ -1612,8 +1555,6 @@ describe('ViewContainerRef', () => {
           <!-- Note that it's important for the test that the <svg> element is last. -->
           <svg></svg>
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComp {
         constructor(public viewContainerRef: ViewContainerRef) {}
@@ -1621,8 +1562,6 @@ describe('ViewContainerRef', () => {
 
       @Component({
         template: '',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class DynamicComponent {}
 
@@ -1642,7 +1581,6 @@ describe('ViewContainerRef', () => {
     it('should return ComponentRef with ChangeDetectorRef attached to root view', () => {
       @Component({
         template: ``,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class DynamicCmp {
@@ -1655,7 +1593,6 @@ describe('ViewContainerRef', () => {
 
       @Component({
         template: ``,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestCmp {
@@ -1691,7 +1628,6 @@ describe('ViewContainerRef', () => {
       @Component({
         template: `[Child Component A]`,
         standalone: false,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class ChildA {}
@@ -1704,7 +1640,6 @@ describe('ViewContainerRef', () => {
           {{ tokenB }}
         `,
         standalone: false,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class ChildB {
@@ -1724,7 +1659,6 @@ describe('ViewContainerRef', () => {
         template: '',
         providers: [{provide: TOKEN_B, useValue: '[TokenB - Value]'}],
         standalone: false,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
@@ -1831,7 +1765,6 @@ describe('ViewContainerRef', () => {
             'attr-three': 'host',
           },
 
-          changeDetection: ChangeDetectionStrategy.Eager,
           imports: [forwardRef(() => VCRefDirective)],
         })
         class HostComponent {
@@ -1878,8 +1811,8 @@ describe('ViewContainerRef', () => {
         @Component({
           template: 'Value: {{hostInput}}',
 
-          changeDetection: ChangeDetectionStrategy.Eager,
           imports: [forwardRef(() => VCRefDirective)],
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class HostComponent {
           @Input() hostInput = '';
@@ -1983,8 +1916,8 @@ describe('ViewContainerRef', () => {
         selector: 'child',
         template: `<div [tplDir]="tpl">{{ name }}</div>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [InsertionDir],
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Child {
         @Input() tpl: TemplateRef<any> | null = null;
@@ -2000,8 +1933,8 @@ describe('ViewContainerRef', () => {
           <child [tpl]="foo"></child>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Child],
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Parent {
         name = 'Parent';
@@ -2029,8 +1962,8 @@ describe('ViewContainerRef', () => {
         selector: 'loop-comp',
         template: ` <ng-template ngFor [ngForOf]="rows" [ngForTemplate]="tpl"> </ng-template> `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [CommonModule],
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class LoopComp {
         @Input() tpl!: TemplateRef<any>;
@@ -2051,8 +1984,8 @@ describe('ViewContainerRef', () => {
           <loop-comp [tpl]="rowTemplate" [rows]="rows"></loop-comp>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [LoopComp],
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Parent {
         name = 'Parent';
@@ -2092,8 +2025,8 @@ describe('ViewContainerRef', () => {
       @Component({
         template: ` <ng-container *ngFor="let item of items">|{{ item }}|</ng-container> `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [CommonModule],
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         items = ['one', 'two', 'three'];
@@ -2133,8 +2066,8 @@ describe('ViewContainerRef', () => {
           </ng-container>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [CommonModule],
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         items = ['one', 'two', 'three'];
@@ -2174,8 +2107,8 @@ describe('ViewContainerRef', () => {
           >
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [CommonModule],
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         items = ['one', 'two', 'three'];
@@ -2217,8 +2150,8 @@ describe('ViewContainerRef', () => {
           </ng-container>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [CommonModule],
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         items = ['one', 'two', 'three'];
@@ -2258,8 +2191,8 @@ describe('ViewContainerRef', () => {
           }</ng-container>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [CommonModule],
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         items = ['one', 'two', 'three'];
@@ -2299,7 +2232,6 @@ describe('ViewContainerRef', () => {
     @Component({
       selector: 'hooks',
       template: `{{ name }}`,
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class ComponentWithHooks {
@@ -2348,8 +2280,8 @@ describe('ViewContainerRef', () => {
           <hooks [name]="'B'"></hooks>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [ComponentWithHooks, forwardRef(() => VCRefDirective)],
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class SomeComponent {}
 
@@ -2485,8 +2417,8 @@ describe('ViewContainerRef', () => {
           <hooks [name]="'B'"></hooks>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [ComponentWithHooks, forwardRef(() => VCRefDirective)],
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class SomeComponent {}
 
@@ -2623,7 +2555,6 @@ describe('ViewContainerRef', () => {
         selector: 'host-bindings',
         host: {'id': 'attribute', '[title]': 'title'},
         template: ``,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class HostBindingCmpt {
@@ -2633,8 +2564,8 @@ describe('ViewContainerRef', () => {
       @Component({
         template: `<ng-template vcref></ng-template>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [forwardRef(() => VCRefDirective)],
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {
         @ViewChild(VCRefDirective, {static: true}) vcRefDir!: VCRefDirective;
@@ -2673,8 +2604,6 @@ describe('ViewContainerRef', () => {
       @Component({
         selector: 'child',
         template: '<div><ng-content></ng-content></div>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Child {}
 
@@ -2687,7 +2616,6 @@ describe('ViewContainerRef', () => {
             <header vcref [tplRef]="foo" [name]="name">blah</header>
           </child>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Child, forwardRef(() => VCRefDirective)],
       })
       class Parent {
@@ -2716,7 +2644,6 @@ describe('ViewContainerRef', () => {
         selector: 'child-with-view',
         template: `Before (inside)-<ng-content *ngIf="show"></ng-content>-After (inside)`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [CommonModule],
       })
       class ChildWithView {
@@ -2733,7 +2660,6 @@ describe('ViewContainerRef', () => {
             After projected
           </child-with-view>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [ChildWithView, forwardRef(() => VCRefDirective)],
       })
       class Parent {
@@ -2763,8 +2689,8 @@ describe('ViewContainerRef', () => {
         selector: 'root-comp',
         template: `<ng-template [ngIf]="show"><ng-content></ng-content></ng-template>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [CommonModule],
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class RootComp {
         @Input() show: boolean = true;
@@ -2776,8 +2702,8 @@ describe('ViewContainerRef', () => {
           <div></div
         ></root-comp>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [RootComp],
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyApp {
         show = true;
@@ -2797,7 +2723,6 @@ describe('ViewContainerRef', () => {
         selector: 'child-with-selector',
         template: ` <p class="a"><ng-content select="header"></ng-content></p>
           <p class="b"><ng-content></ng-content></p>`,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class ChildWithSelector {}
@@ -2814,7 +2739,6 @@ describe('ViewContainerRef', () => {
             </child-with-selector>
           `,
 
-          changeDetection: ChangeDetectionStrategy.Eager,
           imports: [ChildWithSelector, forwardRef(() => VCRefDirective)],
         })
         class Parent {
@@ -2843,8 +2767,6 @@ describe('ViewContainerRef', () => {
         @Component({
           selector: 'content-comp',
           template: '<ng-content></ng-content>',
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class ContentComp {}
 
@@ -2857,7 +2779,6 @@ describe('ViewContainerRef', () => {
             <ng-template #source>My Content</ng-template>
           `,
 
-          changeDetection: ChangeDetectionStrategy.Eager,
           imports: [ContentComp],
         })
         class MyComp {
@@ -2887,7 +2808,6 @@ describe('ViewContainerRef', () => {
             </child-with-selector>
           `,
 
-          changeDetection: ChangeDetectionStrategy.Eager,
           imports: [ChildWithSelector, forwardRef(() => VCRefDirective)],
         })
         class Parent {
@@ -2950,7 +2870,6 @@ describe('ViewContainerRef', () => {
       @Component({
         selector: 'dynamic-cmpt-with-bindings',
         template: `check count: {{ checkCount }}`,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class DynamicCompWithBindings implements DoCheck {
@@ -2963,7 +2882,6 @@ describe('ViewContainerRef', () => {
 
       @Component({
         template: ``,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComp {
@@ -2998,8 +2916,6 @@ describe('ViewContainerRef', () => {
     it('should create deep DOM tree immediately for dynamically created components', () => {
       @Component({
         template: ``,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComp {
         constructor(public vcRef: ViewContainerRef) {}
@@ -3008,8 +2924,6 @@ describe('ViewContainerRef', () => {
       @Component({
         selector: 'child',
         template: `<div>{{ name }}</div>`,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Child {
         name = 'text';
@@ -3019,7 +2933,6 @@ describe('ViewContainerRef', () => {
         selector: 'dynamic-cmpt-with-children',
         template: `<child></child>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Child],
       })
       class DynamicCompWithChildren {}
@@ -3059,9 +2972,8 @@ describe('ViewContainerRef', () => {
     <ng-template #tplRef let-name>{{ name }}</ng-template>
     <p vcref [tplRef]="tplRef"></p>
   `,
-
-  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [forwardRef(() => VCRefDirective)],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class EmbeddedViewInsertionComp {}
 
@@ -3093,8 +3005,6 @@ class VCRefDirective {
   template: `<ng-content></ng-content>
     <hr />
     <ng-content></ng-content>`,
-
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class EmbeddedComponentWithNgContent {}
 
@@ -3105,8 +3015,6 @@ class EmbeddedComponentWithNgContent {}
     <ng-template #ref1>1</ng-template>
     <ng-template #ref2>2</ng-template>
   `,
-
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class ViewContainerRefComp {
   @ViewChildren(TemplateRef) templates!: QueryList<TemplateRef<any>>;
@@ -3118,7 +3026,6 @@ class ViewContainerRefComp {
   selector: 'view-container-ref-app',
   template: ` <view-container-ref-comp></view-container-ref-comp> `,
 
-  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [ViewContainerRefComp],
 })
 class ViewContainerRefApp {
@@ -3147,7 +3054,6 @@ export class StructDir {
   selector: 'destroy-cases',
   template: ``,
   imports: [NgTemplateOutlet, StructDir],
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class DestroyCasesComp {
   @ViewChildren(StructDir) structDirs!: QueryList<StructDir>;
@@ -3170,7 +3076,6 @@ class ConstructorDir {
     </div>
   `,
 
-  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [ConstructorDir],
 })
 class ConstructorApp {
@@ -3185,7 +3090,6 @@ class ConstructorApp {
     </ng-template>
   `,
 
-  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [ConstructorDir],
 })
 class ConstructorAppWithQueries {

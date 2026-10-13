@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy} from '@angular/compiler';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -321,7 +320,6 @@ describe('ngIf directive', () => {
 
 @Component({
   template: '',
-  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [NgIf],
 })
 class TestComponent {

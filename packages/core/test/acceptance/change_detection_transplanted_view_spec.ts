@@ -12,9 +12,9 @@ import {expect} from '@angular/private/testing/matchers';
 import {of} from 'rxjs';
 import {provideCheckNoChangesConfig} from '../../src/change_detection/provide_check_no_changes_config';
 import {
+  ChangeDetectionStrategy,
   AfterViewChecked,
   ApplicationRef,
-  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   computed,
@@ -101,7 +101,6 @@ describe('change detection for transplanted views', () => {
         DeclareComp({{ name }})
         <ng-template #myTmpl let-greeting> {{ greeting }} {{ logName() }}! </ng-template>
       `,
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class CheckAlwaysDeclareComp extends DeclareComp {
@@ -500,8 +499,8 @@ describe('change detection for transplanted views', () => {
         <declaration></declaration>
       `,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
       imports: [CommonModule, Insertion, Declaration],
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       @ViewChild(Declaration) declaration!: Declaration;
@@ -590,8 +589,8 @@ describe('change detection for transplanted views', () => {
       selector: 'check-always-insertion',
       template: `<ng-container [ngTemplateOutlet]="template"></ng-container>`,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
       imports: [CommonModule],
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class CheckAlwaysInsertion {
       @Input() template!: TemplateRef<{}>;
@@ -637,8 +636,8 @@ describe('change detection for transplanted views', () => {
         <on-push-insertion-host [template]="template"></on-push-insertion-host>
       `,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
       imports: [OnPushInsertionHost],
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class CheckAlwaysDeclaration {
       @ViewChild(OnPushInsertionHost) onPushInsertionHost?: OnPushInsertionHost;
@@ -720,8 +719,8 @@ describe('change detection for transplanted views', () => {
         <triple [template]="template"></triple>
       `,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
       imports: [TripleTemplate],
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       name = 'Penny';
@@ -741,7 +740,6 @@ describe('change detection for transplanted views', () => {
   describe('ViewRef and ViewContainerRef operations', () => {
     @Component({
       template: '<ng-template>{{incrementChecks()}}</ng-template>',
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class AppComponent {
@@ -867,7 +865,6 @@ describe('change detection for transplanted views', () => {
     @Component({
       selector: 'check-always-component',
       template: ` <ng-container #vc></ng-container> `,
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class CheckAlwaysComponent {
@@ -890,8 +887,8 @@ describe('change detection for transplanted views', () => {
         <check-always-component [template]="transplantedTemplate"></check-always-component>
       `,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
       imports: [OnPushComponent, CheckAlwaysComponent],
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       @ViewChild(OnPushComponent) onPushComponent!: OnPushComponent;
@@ -970,8 +967,6 @@ describe('change detection for transplanted views', () => {
       @Component({
         selector: 'insertion',
         template: `<ng-container #vc></ng-container>`,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Insertion {
         @ViewChild('vc', {read: ViewContainerRef, static: true}) viewContainer!: ViewContainerRef;
@@ -987,8 +982,6 @@ describe('change detection for transplanted views', () => {
           <insertion [template]="transplantedTemplate"></insertion>
         `,
         imports: [Insertion],
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Root {
         readonly cdr = inject(ChangeDetectorRef);
@@ -1015,8 +1008,6 @@ describe('change detection for transplanted views', () => {
       @Component({
         template: '<ng-template #template>{{value}}</ng-template>',
         selector: 'declaration',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Declaration {
         @ViewChild('template', {static: true}) transplantedTemplate!: TemplateRef<{}>;
@@ -1030,8 +1021,6 @@ describe('change detection for transplanted views', () => {
           {{ incrementChecks() }}
         `,
         imports: [Insertion, Declaration],
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Root {
         @ViewChild(Declaration, {static: true}) declaration!: Declaration;
@@ -1064,8 +1053,6 @@ describe('change detection for transplanted views', () => {
       selector: 'insertion',
       imports: [NgTemplateOutlet, CommonModule],
       template: ` <ng-container [ngTemplateOutlet]="template"> </ng-container>`,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Insertion {
       @Input() template!: TemplateRef<{}>;
@@ -1076,8 +1063,6 @@ describe('change detection for transplanted views', () => {
       imports: [Insertion, AsyncPipe, CommonModule],
       template: `<ng-template #myTmpl> {{ newObservable() | async }} </ng-template>`,
       selector: 'declaration',
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Declaration {
       @ViewChild('myTmpl', {static: true}) template!: TemplateRef<{}>;
@@ -1088,8 +1073,6 @@ describe('change detection for transplanted views', () => {
     @Component({
       imports: [Declaration, Insertion],
       template: '<insertion [template]="declaration.template"/><declaration #declaration/>',
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {}
 
@@ -1141,8 +1124,6 @@ describe('change detection for transplanted views', () => {
         <insertion [template]="transplantedTemplate"></insertion>
       `,
       imports: [Insertion],
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Root {
       @ViewChild('template', {static: true}) transplantedTemplate!: TemplateRef<{}>;

@@ -9,7 +9,6 @@
 import {NgFor, NgIf, NgTemplateOutlet} from '@angular/common';
 import {By} from '@angular/platform-browser';
 import {
-  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   Directive,
@@ -18,6 +17,7 @@ import {
   Injector,
   Input,
   provideZoneChangeDetection,
+  signal,
   TemplateRef,
   ViewChild,
   ViewContainerRef,
@@ -396,18 +396,17 @@ describe('view insertion', () => {
         @Component({
           template: `
             <div>start|</div>
-            <ng-container [ngTemplateOutlet]="insertTpl ? tpl : null"></ng-container>
+            <ng-container [ngTemplateOutlet]="insertTpl() ? tpl : null"></ng-container>
             <ng-container [ngTemplateOutlet]="tpl"></ng-container>
             <div>|end</div>
 
             <ng-template #tpl>test</ng-template>
           `,
 
-          changeDetection: ChangeDetectionStrategy.Eager,
           imports: [NgTemplateOutlet],
         })
         class AppComponent {
-          insertTpl = false;
+          insertTpl = signal(false);
         }
 
         const fixture = TestBed.createComponent(AppComponent);
@@ -415,7 +414,7 @@ describe('view insertion', () => {
 
         expect(fixture.nativeElement.textContent).toBe('start|test|end');
 
-        fixture.componentInstance.insertTpl = true;
+        fixture.componentInstance.insertTpl.set(true);
         fixture.detectChanges();
         expect(fixture.nativeElement.textContent).toBe('start|testtest|end');
       });
@@ -616,25 +615,24 @@ describe('view insertion', () => {
             {{ parameter }}
           </ng-template>
           <ng-container
-            *ngFor="let parameter of items"
+            *ngFor="let parameter of items()"
             [ngTemplateOutlet]="parameterListItem"
             [ngTemplateOutletContext]="{parameter: parameter}"
           >
           </ng-container>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [NgFor, NgTemplateOutlet],
       })
       class AppComponent {
-        items = [1];
+        items = signal([1]);
       }
 
       const fixture = TestBed.createComponent(AppComponent);
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent.trim()).toContain('1');
 
-      fixture.componentInstance.items = [2, 1];
+      fixture.componentInstance.items.set([2, 1]);
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent.trim()).toContain('2  1');
@@ -834,13 +832,12 @@ describe('view insertion', () => {
       }
 
       @Component({
-        template: `<div failInConstructorOnce>{{ value }}</div>`,
+        template: `<div failInConstructorOnce>{{ value() }}</div>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [FailInConstructorOnce],
       })
       class TestCmpt {
-        value = 0;
+        value = signal(0);
       }
 
       expect(() => {
@@ -851,11 +848,11 @@ describe('view insertion', () => {
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toContain('0');
 
-      fixture.componentInstance.value = 1;
+      fixture.componentInstance.value.set(1);
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toContain('1');
 
-      fixture.componentInstance.value = 2;
+      fixture.componentInstance.value.set(2);
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toContain('2');
     });

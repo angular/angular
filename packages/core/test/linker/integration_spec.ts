@@ -9,11 +9,7 @@
 import {CommonModule, DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
 import {createMouseEvent, dispatchEvent, el, isCommentNode} from '@angular/private/testing';
 import {expect} from '@angular/private/testing/matchers';
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  PipeTransform,
-} from '../../src/change_detection/change_detection';
+import {ChangeDetectorRef, PipeTransform} from '../../src/change_detection/change_detection';
 import {
   Attribute,
   Compiler,
@@ -2640,7 +2636,6 @@ class PushCmpWithAsyncPipe {
   selector: 'my-comp',
   template: '',
 
-  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, DynamicViewport],
 })
 class MyComp {
@@ -3107,7 +3102,6 @@ function createParentBus(peb: EventBus) {
   providers: [{provide: EventBus, useFactory: createParentBus, deps: [[EventBus, new SkipSelf()]]}],
   template: `<child-consuming-event-bus></child-consuming-event-bus>`,
 
-  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [forwardRef(() => ChildConsumingEventBus)],
 })
 class ParentProvidingEventBus {
@@ -3212,7 +3206,6 @@ class DirectiveThrowingAnError {
   template: `No View Decorator:
     <div *ngFor="let item of items">{{ item }}</div>`,
 
-  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule],
 })
 class ComponentWithTemplate {
@@ -3241,8 +3234,6 @@ class DirectiveWithPropDecorators {
 
 @Component({
   selector: 'some-cmp',
-
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class SomeCmp {
   value: any;
@@ -3252,7 +3243,6 @@ class SomeCmp {
   selector: 'parent-cmp',
   template: `<cmp [test$]="name"></cmp>`,
 
-  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [forwardRef(() => SomeCmpWithInput)],
 })
 export class ParentCmp {
@@ -3262,8 +3252,6 @@ export class ParentCmp {
 @Component({
   selector: 'cmp',
   template: '',
-
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class SomeCmpWithInput {
   @Input() test$: any;

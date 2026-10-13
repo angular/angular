@@ -8,7 +8,7 @@
 
 import {CommonModule, ɵgetDOM as getDOM} from '@angular/common';
 import {
-  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   Directive,
   ElementRef,
@@ -16,6 +16,7 @@ import {
   Input,
   OnDestroy,
   OnInit,
+  signal,
   Type,
   ViewChild,
 } from '@angular/core';
@@ -231,7 +232,7 @@ describe('reactive forms integration tests', () => {
       await fixture.whenStable();
 
       fixture.componentInstance.form = new FormGroup({'login': new FormControl('newValue')});
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       const input = fixture.debugElement.query(By.css('input'));
@@ -245,7 +246,7 @@ describe('reactive forms integration tests', () => {
 
       const newForm = new FormGroup({'login': new FormControl('newValue')});
       fixture.componentInstance.form = newForm;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       const input = fixture.debugElement.query(By.css('input'));
@@ -274,7 +275,7 @@ describe('reactive forms integration tests', () => {
         }),
       });
       fixture.componentInstance.form = newForm;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       const inputs = fixture.debugElement.queryAll(By.css('input'));
@@ -311,7 +312,7 @@ describe('reactive forms integration tests', () => {
         'pattern': new FormControl(''),
       });
       fixture.componentInstance.form = newForm;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       expect(newForm.get('login')!.errors).toEqual({required: true});
@@ -330,7 +331,7 @@ describe('reactive forms integration tests', () => {
         'signin': new FormGroup({'login': new FormControl(''), 'password': new FormControl('')}),
       });
       fixture.componentInstance.form = newForm;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       expect(form.get('signin')!.valid).toBe(false);
@@ -345,7 +346,7 @@ describe('reactive forms integration tests', () => {
       await fixture.whenStable();
 
       form.addControl('email', new FormControl('email'));
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       let emailInput = fixture.debugElement.query(By.css('[formControlName="email"]'));
@@ -355,7 +356,7 @@ describe('reactive forms integration tests', () => {
         'signin': new FormGroup({'login': new FormControl(''), 'password': new FormControl('')}),
       });
       fixture.componentInstance.form = newForm;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       emailInput = fixture.debugElement.query(By.css('[formControlName="email"]'));
@@ -373,7 +374,7 @@ describe('reactive forms integration tests', () => {
       let inputs = fixture.debugElement.queryAll(By.css('input'));
       expect(inputs[2]).not.toBeDefined();
       cityArray.push(new FormControl('LA'));
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       inputs = fixture.debugElement.queryAll(By.css('input'));
@@ -383,7 +384,7 @@ describe('reactive forms integration tests', () => {
       const newForm = new FormGroup({cities: newArr});
       fixture.componentInstance.form = newForm;
       fixture.componentInstance.cityArray = newArr;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       inputs = fixture.debugElement.queryAll(By.css('input'));
@@ -394,17 +395,16 @@ describe('reactive forms integration tests', () => {
       @Component({
         imports: [FormsModule, ReactiveFormsModule, CommonModule],
         template: `
-          <form [formGroup]="form">
+          <form [formGroup]="form()">
             <input formControlName="input" />
           </form>
         `,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
-        form: FormGroup;
+        form = signal<FormGroup>(null!);
 
         constructor(private _fb: FormBuilder) {
-          this.form = this._getForm();
+          this.form.set(this._getForm());
         }
 
         private _getForm() {
@@ -412,8 +412,9 @@ describe('reactive forms integration tests', () => {
         }
 
         recreateAndDisable() {
-          this.form = this._getForm();
-          this.form.disable();
+          const nextForm = this._getForm();
+          nextForm.disable();
+          this.form.set(nextForm);
         }
       }
 
@@ -424,7 +425,6 @@ describe('reactive forms integration tests', () => {
       expect(input.disabled).toBe(false);
 
       fixture.componentInstance.recreateAndDisable();
-      fixture.changeDetectorRef.markForCheck();
       await fixture.whenStable();
       expect(input.disabled).toBe(true);
     });
@@ -536,11 +536,11 @@ describe('reactive forms integration tests', () => {
         ]);
         fixture.componentInstance.cityArray = newArr;
         form.setControl('cities', newArr);
-        fixture.changeDetectorRef.markForCheck();
+        fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
         await fixture.whenStable();
 
         newArr.removeAt(0);
-        fixture.changeDetectorRef.markForCheck();
+        fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
         await fixture.whenStable();
 
         let inputs = fixture.debugElement.queryAll(By.css('input'));
@@ -555,7 +555,7 @@ describe('reactive forms integration tests', () => {
         expect(newArr.value).toEqual(['new value', 'LA']);
 
         newArr.removeAt(0);
-        fixture.changeDetectorRef.markForCheck();
+        fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
         await fixture.whenStable();
 
         firstInput = fixture.debugElement.query(By.css('input')).nativeElement;
@@ -591,11 +591,11 @@ describe('reactive forms integration tests', () => {
         ]);
         fixture.componentInstance.cityArray = newArr;
         form.setControl('cities', newArr);
-        fixture.changeDetectorRef.markForCheck();
+        fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
         await fixture.whenStable();
 
         newArr.removeAt(0);
-        fixture.changeDetectorRef.markForCheck();
+        fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
         await fixture.whenStable();
 
         const formEl = fixture.debugElement.query(By.css('form'));
@@ -613,11 +613,11 @@ describe('reactive forms integration tests', () => {
         const newArr = new FormArray([new FormControl('SF'), new FormControl('NY')]);
         fixture.componentInstance.cityArray = newArr;
         form.setControl('cities', newArr);
-        fixture.changeDetectorRef.markForCheck();
+        fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
         await fixture.whenStable();
 
         newArr.insert(1, new FormControl('LA'));
-        fixture.changeDetectorRef.markForCheck();
+        fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
         await fixture.whenStable();
 
         let inputs = fixture.debugElement.queryAll(By.css('input'));
@@ -697,7 +697,7 @@ describe('reactive forms integration tests', () => {
       await fixture.whenStable();
 
       cityArray.push(new FormControl('LA'));
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       const inputs = fixture.debugElement.queryAll(By.css('input'));
@@ -839,40 +839,41 @@ describe('reactive forms integration tests', () => {
         @Component({
           imports: [ReactiveFormsModule, CommonModule],
           template: `
-            <form [formGroup]="form">
-              <input formControlName="name" id="standalone-id" *ngIf="!showAsGroup" />
-              <ng-container formGroupName="name" *ngIf="showAsGroup">
+            <form [formGroup]="form()">
+              <input formControlName="name" id="standalone-id" *ngIf="!showAsGroup()" />
+              <ng-container formGroupName="name" *ngIf="showAsGroup()">
                 <input formControlName="control" id="inside-group-id" />
               </ng-container>
             </form>
           `,
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class App {
-          showAsGroup = false;
-          form!: FormGroup;
+          showAsGroup = signal(false);
+          form = signal<FormGroup>(null!);
 
           useStandaloneControl() {
-            this.showAsGroup = false;
-            this.form = new FormGroup({
-              name: new FormControl('standalone'),
-            });
+            this.showAsGroup.set(false);
+            this.form.set(
+              new FormGroup({
+                name: new FormControl('standalone'),
+              }),
+            );
           }
 
           useControlInsideGroup() {
-            this.showAsGroup = true;
-            this.form = new FormGroup({
-              name: new FormGroup({
-                control: new FormControl('inside-group'),
+            this.showAsGroup.set(true);
+            this.form.set(
+              new FormGroup({
+                name: new FormGroup({
+                  control: new FormControl('inside-group'),
+                }),
               }),
-            });
+            );
           }
         }
 
         const fixture = initTest(App);
         fixture.componentInstance.useStandaloneControl();
-        fixture.changeDetectorRef.markForCheck();
         await fixture.whenStable();
 
         let input = fixture.nativeElement.querySelector('input');
@@ -882,7 +883,6 @@ describe('reactive forms integration tests', () => {
         // Replace `FormControl` with `FormGroup` at the same location
         // in data model and trigger change detection.
         fixture.componentInstance.useControlInsideGroup();
-        fixture.changeDetectorRef.markForCheck();
         await fixture.whenStable();
 
         input = fixture.nativeElement.querySelector('input');
@@ -892,7 +892,6 @@ describe('reactive forms integration tests', () => {
         // Swap `FormGroup` with `FormControl` back at the same location
         // in data model and trigger change detection.
         fixture.componentInstance.useStandaloneControl();
-        fixture.changeDetectorRef.markForCheck();
         await fixture.whenStable();
 
         input = fixture.nativeElement.querySelector('input');
@@ -904,40 +903,41 @@ describe('reactive forms integration tests', () => {
         @Component({
           imports: [ReactiveFormsModule, CommonModule],
           template: `
-            <form [formGroup]="form">
-              <input formControlName="name" id="standalone-id" *ngIf="!showAsArray" />
-              <ng-container formArrayName="name" *ngIf="showAsArray">
+            <form [formGroup]="form()">
+              <input formControlName="name" id="standalone-id" *ngIf="!showAsArray()" />
+              <ng-container formArrayName="name" *ngIf="showAsArray()">
                 <input formControlName="0" id="inside-array-id" />
               </ng-container>
             </form>
           `,
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class App {
-          showAsArray = false;
-          form!: FormGroup;
+          showAsArray = signal(false);
+          form = signal<FormGroup>(null!);
 
           useStandaloneControl() {
-            this.showAsArray = false;
-            this.form = new FormGroup({
-              name: new FormControl('standalone'),
-            });
+            this.showAsArray.set(false);
+            this.form.set(
+              new FormGroup({
+                name: new FormControl('standalone'),
+              }),
+            );
           }
 
           useControlInsideArray() {
-            this.showAsArray = true;
-            this.form = new FormGroup({
-              name: new FormArray([
-                new FormControl('inside-array'), //
-              ]),
-            });
+            this.showAsArray.set(true);
+            this.form.set(
+              new FormGroup({
+                name: new FormArray([
+                  new FormControl('inside-array'), //
+                ]),
+              }),
+            );
           }
         }
 
         const fixture = initTest(App);
         fixture.componentInstance.useStandaloneControl();
-        fixture.changeDetectorRef.markForCheck();
         await fixture.whenStable();
 
         let input = fixture.nativeElement.querySelector('input');
@@ -947,7 +947,6 @@ describe('reactive forms integration tests', () => {
         // Replace `FormControl` with `FormArray` at the same location
         // in data model and trigger change detection.
         fixture.componentInstance.useControlInsideArray();
-        fixture.changeDetectorRef.markForCheck();
         await fixture.whenStable();
 
         input = fixture.nativeElement.querySelector('input');
@@ -957,7 +956,6 @@ describe('reactive forms integration tests', () => {
         // Swap `FormArray` with `FormControl` back at the same location
         // in data model and trigger change detection.
         fixture.componentInstance.useStandaloneControl();
-        fixture.changeDetectorRef.markForCheck();
         await fixture.whenStable();
 
         input = fixture.nativeElement.querySelector('input');
@@ -969,44 +967,45 @@ describe('reactive forms integration tests', () => {
         @Component({
           imports: [ReactiveFormsModule, CommonModule],
           template: `
-            <form [formGroup]="form">
-              <ng-container formGroupName="name" *ngIf="!showAsArray">
+            <form [formGroup]="form()">
+              <ng-container formGroupName="name" *ngIf="!showAsArray()">
                 <input formControlName="control" id="inside-group-id" />
               </ng-container>
-              <ng-container formArrayName="name" *ngIf="showAsArray">
+              <ng-container formArrayName="name" *ngIf="showAsArray()">
                 <input formControlName="0" id="inside-array-id" />
               </ng-container>
             </form>
           `,
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class App {
-          showAsArray = false;
-          form!: FormGroup;
+          showAsArray = signal(false);
+          form = signal<FormGroup>(null!);
 
           useControlInsideGroup() {
-            this.showAsArray = false;
-            this.form = new FormGroup({
-              name: new FormGroup({
-                control: new FormControl('inside-group'),
+            this.showAsArray.set(false);
+            this.form.set(
+              new FormGroup({
+                name: new FormGroup({
+                  control: new FormControl('inside-group'),
+                }),
               }),
-            });
+            );
           }
 
           useControlInsideArray() {
-            this.showAsArray = true;
-            this.form = new FormGroup({
-              name: new FormArray([
-                new FormControl('inside-array'), //
-              ]),
-            });
+            this.showAsArray.set(true);
+            this.form.set(
+              new FormGroup({
+                name: new FormArray([
+                  new FormControl('inside-array'), //
+                ]),
+              }),
+            );
           }
         }
 
         const fixture = initTest(App);
         fixture.componentInstance.useControlInsideGroup();
-        fixture.changeDetectorRef.markForCheck();
         await fixture.whenStable();
 
         let input = fixture.nativeElement.querySelector('input');
@@ -1016,7 +1015,6 @@ describe('reactive forms integration tests', () => {
         // Replace `FormGroup` with `FormArray` at the same location
         // in data model and trigger change detection.
         fixture.componentInstance.useControlInsideArray();
-        fixture.changeDetectorRef.markForCheck();
         await fixture.whenStable();
 
         input = fixture.nativeElement.querySelector('input');
@@ -1026,7 +1024,6 @@ describe('reactive forms integration tests', () => {
         // Swap `FormArray` with `FormGroup` back at the same location
         // in data model and trigger change detection.
         fixture.componentInstance.useControlInsideGroup();
-        fixture.changeDetectorRef.markForCheck();
         await fixture.whenStable();
 
         input = fixture.nativeElement.querySelector('input');
@@ -1572,7 +1569,6 @@ describe('reactive forms integration tests', () => {
             <input type="text" [formControlName]="$index" />
           }
         </form>`,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class FormArrayComp {
         controls = [new FormControl('fish'), new FormControl('cat'), new FormControl('dog')];
@@ -1695,7 +1691,6 @@ describe('reactive forms integration tests', () => {
       @Component({
         imports: [ReactiveFormsModule, CommonModule],
         template: ` <form></form> `,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class FormComp {}
 
@@ -1716,7 +1711,6 @@ describe('reactive forms integration tests', () => {
             <input type="text" [formControl]="control" />
           </form>
         `,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class FormComp {
         control = new FormControl('abc');
@@ -2231,8 +2225,6 @@ describe('reactive forms integration tests', () => {
               <input formControlName="surname" />
             </form>
           `,
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class App implements OnDestroy {
           private _subscription: Subscription;
@@ -3007,7 +2999,7 @@ describe('reactive forms integration tests', () => {
         );
 
         fixture.componentInstance.login = 'some value';
-        fixture.changeDetectorRef.markForCheck();
+        fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
         await fixture.whenStable();
         await timeout();
 
@@ -3027,7 +3019,7 @@ describe('reactive forms integration tests', () => {
         );
 
         fixture.componentInstance.login = 'some value';
-        fixture.changeDetectorRef.markForCheck();
+        fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
         await fixture.whenStable();
         await timeout();
 
@@ -3400,14 +3392,14 @@ describe('reactive forms integration tests', () => {
         'pattern': new FormControl(''),
       });
       fixture.componentInstance.form = newForm;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       fixture.componentInstance.required = false;
       fixture.componentInstance.minLen = null!;
       fixture.componentInstance.maxLen = null!;
       fixture.componentInstance.pattern = null!;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       expect(newForm.hasError('required', ['login'])).toEqual(false);
@@ -3421,7 +3413,7 @@ describe('reactive forms integration tests', () => {
       const fixture = initTest(UniqLoginWrapper, UniqLoginValidator);
       const form = new FormGroup({'login': new FormControl('')});
       fixture.componentInstance.form = form;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       expect(form.pending).toEqual(true);
@@ -3614,19 +3606,17 @@ describe('reactive forms integration tests', () => {
               <input
                 [formControl]="control"
                 name="control"
-                [minlength]="minlen"
-                [maxlength]="maxlen"
+                [minlength]="minlen()"
+                [maxlength]="maxlen()"
               />
             </form>
           `,
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class MinMaxLengthComponent {
           control: FormControl = new FormControl();
           form: FormGroup = new FormGroup({'control': this.control});
-          minlen: number | null = null;
-          maxlen: number | null = null;
+          minlen = signal<number | null>(null);
+          maxlen = signal<number | null>(null);
         }
 
         const fixture = initTest(MinMaxLengthComponent);
@@ -3652,9 +3642,8 @@ describe('reactive forms integration tests', () => {
           await fixture.whenStable();
         };
         const setValidatorValues = async (values: minmax) => {
-          fixture.componentInstance.minlen = values.minlength;
-          fixture.componentInstance.maxlen = values.maxlength;
-          fixture.changeDetectorRef.markForCheck();
+          fixture.componentInstance.minlen.set(values.minlength);
+          fixture.componentInstance.maxlen.set(values.maxlength);
           await fixture.whenStable();
         };
         const verifyValidatorAttrValues = (values: {minlength: any; maxlength: any}) => {
@@ -3713,19 +3702,17 @@ describe('reactive forms integration tests', () => {
                 type="number"
                 [formControl]="control"
                 name="minmaxinput"
-                [min]="minlen"
-                [max]="maxlen"
+                [min]="minlen()"
+                [max]="maxlen()"
               />
             </form>
           `,
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class MinMaxComponent {
           control: FormControl = new FormControl();
           form: FormGroup = new FormGroup({'control': this.control});
-          minlen: number | null = null;
-          maxlen: number | null = null;
+          minlen = signal<number | null>(null);
+          maxlen = signal<number | null>(null);
         }
 
         const fixture = initTest(MinMaxComponent);
@@ -3751,9 +3738,8 @@ describe('reactive forms integration tests', () => {
           await fixture.whenStable();
         };
         const setValidatorValues = async (values: minmax) => {
-          fixture.componentInstance.minlen = values.min;
-          fixture.componentInstance.maxlen = values.max;
-          fixture.changeDetectorRef.markForCheck();
+          fixture.componentInstance.minlen.set(values.min);
+          fixture.componentInstance.maxlen.set(values.max);
           await fixture.whenStable();
         };
         const verifyValidatorAttrValues = (values: {min: any; max: any}) => {
@@ -3831,7 +3817,7 @@ describe('reactive forms integration tests', () => {
           expect(form.controls['pin'].errors).toBeNull();
 
           fixture.componentInstance.max = 1;
-          fixture.changeDetectorRef.markForCheck();
+          fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
           await fixture.whenStable();
 
           expect(input.getAttribute('max')).toEqual('1');
@@ -3840,7 +3826,7 @@ describe('reactive forms integration tests', () => {
 
           fixture.componentInstance.min = 0;
           fixture.componentInstance.max = 0;
-          fixture.changeDetectorRef.markForCheck();
+          fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
           await fixture.whenStable();
           expect(input.getAttribute('min')).toEqual('0');
           expect(input.getAttribute('max')).toEqual('0');
@@ -4171,8 +4157,6 @@ describe('reactive forms integration tests', () => {
               <input type="text" formControlName="fooInput" />
             </form>
           `,
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class NgModelNoOpValidation {
           validatorInput = 'bar';
@@ -4189,7 +4173,7 @@ describe('reactive forms integration tests', () => {
         expect(registerOnAsyncValidatorChangeFired).toBe(1);
 
         fixture.componentInstance.validatorInput = 'baz';
-        fixture.changeDetectorRef.markForCheck();
+        fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
         await fixture.whenStable();
 
         // Changing the validator input should not cause the onValidatorChange to be called
@@ -4753,7 +4737,7 @@ describe('reactive forms integration tests', () => {
 
       // Update `form` input with a new value.
       fixture.componentInstance.form = newForm;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       const validatorSpy = validatorSpyOn(ViewValidatorA);
@@ -4890,7 +4874,7 @@ describe('reactive forms integration tests', () => {
 
       // Case 2: update `logins` to render a new list of elements.
       fixture.componentInstance.logins = ['a', 'b', 'c', 'd', 'e', 'f'];
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       validatorSpy.calls.reset();
@@ -4924,7 +4908,7 @@ describe('reactive forms integration tests', () => {
       // `formControlName` directive that is bound to the `control` FormControl instance.
       const newFormA = new FormGroup({login: new FormControl('new-a')});
       fixture.componentInstance.formA = newFormA;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       validatorSpy.calls.reset();
@@ -4955,7 +4939,6 @@ describe('reactive forms integration tests', () => {
         template: `
           <input *ngIf="visible" type="text" [formControl]="control" cva-a validators-a />
         `,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         visible = true;
@@ -4980,7 +4963,7 @@ describe('reactive forms integration tests', () => {
       // Case 2: hide form control and verify no directive-related callbacks
       // (validators, value accessors) were invoked.
       fixture.componentInstance.visible = false;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       // Reset all spies again, prepare for next check.
@@ -5001,7 +4984,7 @@ describe('reactive forms integration tests', () => {
       // Case 3: make the form control visible again and verify all callbacks are correctly
       // attached.
       fixture.componentInstance.visible = true;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       // Reset all spies again, prepare for next check.
@@ -5035,7 +5018,6 @@ describe('reactive forms integration tests', () => {
           <input type="text" [formControl]="control" cva-a validators-a *ngIf="visible" />
           <input type="text" [formControl]="control" cva-b />
         `,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         visible = true;
@@ -5066,7 +5048,7 @@ describe('reactive forms integration tests', () => {
       // Case 2: hide form control and verify no directive-related callbacks
       // (validators, value accessors) were invoked.
       fixture.componentInstance.visible = false;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       // Reset all spies again, prepare for next check.
@@ -5112,7 +5094,6 @@ describe('reactive forms integration tests', () => {
             <input type="text" formControlName="control" cva-b />
           </div>
         `,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         visible = true;
@@ -5143,7 +5124,7 @@ describe('reactive forms integration tests', () => {
       // Case 2: hide form control and verify no directive-related callbacks
       // (validators, value accessors) were invoked.
       fixture.componentInstance.visible = false;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       // Reset all spies again, prepare for next check.
@@ -5194,7 +5175,6 @@ describe('reactive forms integration tests', () => {
             </div>
           </ng-container>
         `,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         visible = true;
@@ -5225,7 +5205,7 @@ describe('reactive forms integration tests', () => {
       // Case 2: hide form group and verify that no directive-related callbacks
       // (validators, value accessors) are invoked when we set control value later.
       fixture.componentInstance.visible = false;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       // Reset all spies again, prepare for next check.
@@ -5252,7 +5232,7 @@ describe('reactive forms integration tests', () => {
       // Case 3: make the form control visible again and verify all callbacks are correctly
       // attached and invoked.
       fixture.componentInstance.visible = true;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       // Reset all spies again, prepare for next check.
@@ -5297,7 +5277,6 @@ describe('reactive forms integration tests', () => {
             <input *ngIf="visible" type="text" [formControl]="control" cva-a validators-a />
           </div>
         `,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         visible = true;
@@ -5328,7 +5307,7 @@ describe('reactive forms integration tests', () => {
       // Case 2: hide form group and verify that no directive-related callbacks
       // (validators, value accessors) are invoked when we set control value later.
       fixture.componentInstance.visible = false;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       // Reset all spies again, prepare for next check.
@@ -5380,7 +5359,6 @@ describe('reactive forms integration tests', () => {
             </ng-container>
           </div>
         `,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         visible = true;
@@ -5415,7 +5393,7 @@ describe('reactive forms integration tests', () => {
       // Case 2: update the list of logins which would result in cleanups for no longer needed
       // (thus destroyed) directives.
       fixture.componentInstance.logins = ['c', 'd'];
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       // Reset all spies again, prepare for next check.
@@ -5441,7 +5419,7 @@ describe('reactive forms integration tests', () => {
       // Case 3: hide form group and verify that no directive-related callbacks
       // (validators, value accessors) are invoked when we set control value later.
       fixture.componentInstance.visible = false;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       // Reset all spies again, prepare for next check.
@@ -5494,7 +5472,6 @@ describe('reactive forms integration tests', () => {
             </ng-container>
           </div>
         `,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         visible = true;
@@ -5529,7 +5506,7 @@ describe('reactive forms integration tests', () => {
       // Case 2: hide form group and verify that no directive-related callbacks
       // (validators, value accessors) are invoked when we set control value later.
       fixture.componentInstance.visible = false;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       // Reset all spies again, prepare for next check.
@@ -5593,7 +5570,6 @@ describe('reactive forms integration tests', () => {
             </ng-container>
           </div>
         `,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         visible = true;
@@ -5628,7 +5604,7 @@ describe('reactive forms integration tests', () => {
       // Case 2: hide form group and verify that no directive-related callbacks
       // (validators, value accessors) are invoked when we set control value later.
       fixture.componentInstance.visible = false;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       // Reset all spies again, prepare for next check.
@@ -5660,7 +5636,7 @@ describe('reactive forms integration tests', () => {
       // Case 3: make the form array control available again and verify all callbacks are
       // correctly attached and invoked.
       fixture.componentInstance.visible = true;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       // Reset all spies again, prepare for next check.
@@ -5718,7 +5694,6 @@ describe('reactive forms integration tests', () => {
             </ng-container>
           </div>
         `,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         visible = true;
@@ -5753,7 +5728,7 @@ describe('reactive forms integration tests', () => {
       // Case 2: hide form group and verify that no directive-related callbacks
       // (validators, value accessors) are invoked when we set control value later.
       fixture.componentInstance.visible = false;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       // Reset all spies again, prepare for next check.
@@ -5785,7 +5760,7 @@ describe('reactive forms integration tests', () => {
       // Case 3: make the form group available again and verify all callbacks are correctly
       // attached and invoked.
       fixture.componentInstance.visible = true;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       // Reset all spies again, prepare for next check.
@@ -5851,7 +5826,6 @@ describe('reactive forms integration tests', () => {
             </ng-container>
           </div>
         `,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         visible = true;
@@ -5894,7 +5868,7 @@ describe('reactive forms integration tests', () => {
       // Case 2: remove ControlA from the view by updating the list of ids.
       // Verify that ControlA is detached from the view, but ControlB still works.
       fixture.componentInstance.ids = [1];
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       // Reset all spies again, prepare for next check.
@@ -5928,7 +5902,7 @@ describe('reactive forms integration tests', () => {
       // Case 3: hide form group and verify that no directive-related callbacks
       // (validators, value accessors) are invoked when we set control value later.
       fixture.componentInstance.visible = false;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       // Reset all spies again, prepare for next check.
@@ -5996,7 +5970,6 @@ describe('reactive forms integration tests', () => {
             </ng-container>
           </div>
         `,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         visible = true;
@@ -6031,7 +6004,7 @@ describe('reactive forms integration tests', () => {
       // Case 2: hide form group and verify that no directive-related callbacks
       // (validators, value accessors) are invoked when we set control value later.
       fixture.componentInstance.visible = false;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       // Reset all spies again, prepare for next check.
@@ -6093,7 +6066,6 @@ describe('reactive forms integration tests', () => {
             </ng-container>
           </div>
         `,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         visible = true;
@@ -6128,7 +6100,7 @@ describe('reactive forms integration tests', () => {
       // Case 2: hide form group and verify that no directive-related callbacks
       // (validators, value accessors) are invoked when we set control value later.
       fixture.componentInstance.visible = false;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       // Reset all spies again, prepare for next check.
@@ -6167,7 +6139,6 @@ describe('reactive forms integration tests', () => {
             <div formControlName="control"></div>
           </form>
         `,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class NoCVAComponent {
         form = new FormGroup({control: new FormControl()});
@@ -6193,7 +6164,6 @@ describe('reactive forms integration tests', () => {
             <input type="text" [formControlName]="$index" />
           }
         </form>`,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class FormArrayComp {
         controls = [new FormControl('fish'), new FormControl('cat'), new FormControl('dog')];
@@ -6275,14 +6245,14 @@ describe('reactive forms integration tests', () => {
         expect(inputs.length).toBe(3);
 
         controls.push(new FormControl('pineapple'));
-        fixture.changeDetectorRef.markForCheck();
+        fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
         await fixture.whenStable();
         inputs = fixture.debugElement.queryAll(By.css('input'));
         expect(inputs.length).toBe(4);
 
         controls.pop();
         controls.pop();
-        fixture.changeDetectorRef.markForCheck();
+        fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
         await fixture.whenStable();
         inputs = fixture.debugElement.queryAll(By.css('input'));
         expect(inputs.length).toBe(2);
@@ -6298,8 +6268,6 @@ describe('reactive forms integration tests', () => {
               </form>
             </form>
           `,
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class FormWithFormArrayName {
           public form = new FormArray([
@@ -6380,7 +6348,6 @@ class UniqLoginValidator implements AsyncValidator {
 @Component({
   imports: [ReactiveFormsModule, CommonModule],
   template: `<input type="text" [formControl]="control" />`,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormControlComp {
   control!: FormControl;
@@ -6391,7 +6358,6 @@ class FormControlComp {
   template: ` <form [formGroup]="form" (ngSubmit)="event = $event">
     <input type="text" formControlName="login" />
   </form>`,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormGroupComp {
   control!: FormControl;
@@ -6408,7 +6374,6 @@ class FormGroupComp {
     </div>
     <input *ngIf="form.contains('email')" formControlName="email" />
   </form>`,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NestedFormGroupNameComp {
   form!: FormGroup;
@@ -6423,7 +6388,6 @@ class NestedFormGroupNameComp {
       </div>
     </div>
   </form>`,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormArrayComp {
   form!: FormGroup;
@@ -6439,7 +6403,6 @@ class FormArrayComp {
       </div>
     </form>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NestedFormArrayNameComp {
   form!: FormGroup;
@@ -6455,7 +6418,6 @@ class NestedFormArrayNameComp {
       </div>
     </div>
   </div>`,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormArrayNestedGroup {
   form!: FormGroup;
@@ -6468,7 +6430,6 @@ class FormArrayNestedGroup {
     <input type="text" formControlName="login" [(ngModel)]="login" />
     <input type="text" formControlName="password" [(ngModel)]="password" />
   </form>`,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormGroupNgModel {
   form!: FormGroup;
@@ -6482,7 +6443,6 @@ class FormGroupNgModel {
     <input type="text" [formControl]="control" [(ngModel)]="login" />
     <input type="text" [formControl]="passwordControl" [(ngModel)]="password" />
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormControlNgModel {
   control!: FormControl;
@@ -6499,7 +6459,6 @@ class FormControlNgModel {
     <input type="text" formControlName="max" maxlength="3" />
     <input type="text" formControlName="pattern" pattern=".{3,}" />
   </div>`,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class LoginIsEmptyWrapper {
   form!: FormGroup;
@@ -6513,7 +6472,6 @@ class LoginIsEmptyWrapper {
     <input name="maxlength" type="text" formControlName="max" [maxlength]="maxLen" />
     <input name="pattern" type="text" formControlName="pattern" [pattern]="pattern" />
   </div>`,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class ValidationBindingsForm {
   form!: FormGroup;
@@ -6526,7 +6484,6 @@ class ValidationBindingsForm {
 @Component({
   imports: [ReactiveFormsModule, CommonModule],
   template: `<input type="checkbox" [formControl]="control" />`,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormControlCheckboxRequiredValidator {
   control!: FormControl;
@@ -6537,7 +6494,6 @@ class FormControlCheckboxRequiredValidator {
   template: ` <div [formGroup]="form">
     <input type="text" formControlName="login" uniq-login-validator="expected" />
   </div>`,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class UniqLoginWrapper {
   form!: FormGroup;
@@ -6550,7 +6506,6 @@ class UniqLoginWrapper {
       <input type="text" formControlName="login" />
     </div>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormGroupWithValidators {
   form = new FormGroup({login: new FormControl('INITIAL')});
@@ -6563,7 +6518,6 @@ class FormGroupWithValidators {
       <input type="text" formControlName="login" />
     </div>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormControlWithAsyncValidatorFn {
   control = new FormControl('INITIAL');
@@ -6583,7 +6537,6 @@ class FormControlWithAsyncValidatorFn {
       <input type="text" formControlName="login" validators-a />
     </div>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormControlWithValidators {
   form: FormGroup = new FormGroup({login: new FormControl('INITIAL')});
@@ -6599,7 +6552,6 @@ class FormControlWithValidators {
       <input type="text" formControlName="login" validators-a id="login" />
     </div>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class MultipleFormControls {
   control = new FormControl('a');
@@ -6616,7 +6568,6 @@ class MultipleFormControls {
       </ng-container>
     </div>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgForFormControlWithValidators {
   form: FormGroup = new FormGroup({login: new FormControl('a')});
@@ -6628,7 +6579,6 @@ class NgForFormControlWithValidators {
   template: ` <div [formGroup]="form">
     <input type="number" formControlName="pin" [max]="max" [min]="min" />
   </div>`,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class MinMaxFormControlNameComp {
   control!: FormControl;
@@ -6642,7 +6592,6 @@ class MinMaxFormControlNameComp {
   template: ` <div [formGroup]="form">
     <input type="number" [formControl]="control" [max]="max" [min]="min" />
   </div>`,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class MinMaxFormControlComp {
   control!: FormControl;
@@ -6660,7 +6609,6 @@ class MinMaxFormControlComp {
       </form>
     </dialog>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NativeDialogForm {
   @ViewChild('form') form!: ElementRef<HTMLFormElement>;
@@ -6675,7 +6623,6 @@ class NativeDialogForm {
       <input type="radio" formControlName="choice" value="two" /> Two
     </form>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class RadioForm {
   form = new FormGroup({
