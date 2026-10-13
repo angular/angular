@@ -40,7 +40,7 @@ import {
 import {ERROR_DETAILS_PAGE_BASE_URL} from '../src/error_details_base_url';
 import {ErrorHandler} from '../src/error_handler';
 import {ComponentRef} from '../src/linker/component_factory';
-import {createEnvironmentInjector, getLocaleId} from '../src/render3';
+import {createEnvironmentInjector} from '../src/render3';
 
 import {take} from 'rxjs/operators';
 import {compileNgModuleFactory} from '../src/application/application_ngmodule_factory_compiler';
@@ -565,22 +565,6 @@ describe('bootstrap', () => {
 
       expect(loadResourceSpy).toHaveBeenCalledTimes(1);
       expect(loadResourceSpy).toHaveBeenCalledWith('/test-template.html');
-    });
-
-    it('should define `LOCALE_ID`', async () => {
-      @Component({
-        templateUrl: '',
-        standalone: false,
-      })
-      class I18nComponent {}
-
-      const testModule = await createModule({
-        component: I18nComponent,
-        providers: [{provide: LOCALE_ID, useValue: 'ro'}],
-      });
-      await defaultPlatform.bootstrapModule(testModule);
-
-      expect(getLocaleId()).toEqual('ro');
     });
 
     it('should wait for APP_INITIALIZER to set providers for `LOCALE_ID`', async () => {

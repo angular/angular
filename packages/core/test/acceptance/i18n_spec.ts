@@ -14,8 +14,8 @@ import localeEs from '@angular/common/locales/es';
 import localeRo from '@angular/common/locales/ro';
 import {computeMsgId} from '@angular/compiler';
 import {clearTranslations, loadTranslations} from '@angular/localize';
-import {By} from '@angular/platform-browser';
-import {isBrowser} from '@angular/private/testing';
+import {bootstrapApplication, By} from '@angular/platform-browser';
+import {isBrowser, withBody} from '@angular/private/testing';
 import {expect} from '@angular/private/testing/matchers';
 import {BehaviorSubject} from 'rxjs';
 import {
@@ -40,6 +40,9 @@ import {
   ViewChild,
   ViewContainerRef,
   ɵsetDocument,
+  ɵunregisterLocaleData as unregisterLocaleData,
+  destroyPlatform,
+  signal,
 } from '../../src/core';
 import {provideNgReflectAttributes} from '../../src/ng_reflect';
 import {HEADER_OFFSET} from '../../src/render3/interfaces/view';
@@ -1748,7 +1751,6 @@ describe('runtime i18n', () => {
       // Spacing will break the ICU parsing
       // prettier-ignore
       @Component({
-
         template: `
           <div i18n="@@idA">{
             type, select,
@@ -1807,7 +1809,6 @@ describe('runtime i18n', () => {
       // Spacing will break the ICU parsing
       // prettier-ignore
       @Component({
-
         template: `
           <div i18n="@@idA">{count$ | async, select, 1 {{{count$ | async}} item} 2 {two items}}</div>
         `,
@@ -3635,6 +3636,70 @@ describe('runtime i18n', () => {
         }).toThrowError(/Action failed because the element is clobbered/);
       });
     }
+  });
+
+  describe('plural locale resolution', () => {
+    @Component({
+      selector: 'app',
+      template: `<div>{count(), plural, one {one item} few {a few items} other {many items}}</div>`,
+    })
+    class App {
+      readonly count = signal(3);
+    }
+
+    beforeEach(() => registerLocaleData(localeRo));
+    afterEach(() => unregisterLocaleData());
+
+    it('should resolve the plural case using the LOCALE_ID provided to TestBed', () => {
+      TestBed.configureTestingModule({providers: [{provide: LOCALE_ID, useValue: 'ro'}]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('a few items');
+
+      fixture.componentInstance.count.set(1);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('one item');
+
+      fixture.componentInstance.count.set(20);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('many items');
+
+      fixture.componentInstance.count.set(10);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('a few items');
+    });
+
+    describe('with bootstrapApplication', () => {
+      beforeEach(destroyPlatform);
+      afterEach(destroyPlatform);
+
+      it(
+        'should resolve the plural case using the LOCALE_ID provided during bootstrap',
+        withBody('<app></app>', async () => {
+          const appRef = await bootstrapApplication(App, {
+            providers: [{provide: LOCALE_ID, useValue: 'ro'}],
+          });
+          const host = document.querySelector('app')!;
+          const app = appRef.components[0].instance as App;
+          appRef.tick();
+          expect(host.textContent).toBe('a few items');
+
+          app.count.set(1);
+          appRef.tick();
+          expect(host.textContent).toBe('one item');
+
+          app.count.set(20);
+          appRef.tick();
+          expect(host.textContent).toBe('many items');
+
+          app.count.set(10);
+          appRef.tick();
+          expect(host.textContent).toBe('a few items');
+
+          appRef.destroy();
+        }),
+      );
+    });
   });
 });
 

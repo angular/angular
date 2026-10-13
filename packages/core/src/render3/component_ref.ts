@@ -83,6 +83,8 @@ import {getComponentLViewByIndex, getTNode, storeLViewOnDestroy} from './util/vi
 import {createLView, createTView, getInitialLViewFlagsFromDef} from './view/construction';
 import {directiveHostEndFirstCreatePass, directiveHostFirstCreatePass} from './view/elements';
 import {ViewRef} from './view_ref';
+import {DEFAULT_LOCALE_ID} from '../i18n/localization';
+import {LOCALE_ID} from '../i18n/tokens';
 
 const shadowRootSupported = typeof ShadowRoot !== 'undefined';
 const documentSupported = typeof Document !== 'undefined';
@@ -171,6 +173,7 @@ function createRootLViewEnvironment(rootLViewInjector: Injector): LViewEnvironme
     changeDetectionScheduler,
     ngReflect,
     tracingService,
+    locale: rootLViewInjector.get(LOCALE_ID, DEFAULT_LOCALE_ID),
   };
 }
 
