@@ -64,7 +64,7 @@ export class ReversePipe implements PipeTransform {
 
 </docs-step>
 
-<docs-step title="Use the `ReversePipe` in the template"></docs-step>
+<docs-step title="Use the `ReversePipe` in the template">
 With the pipe logic implemented, the final step is to use it in the template. In `app.ts` include the pipe in the template and add it to the component imports:
 
 ```angular-ts {highlight:[3,4]}
@@ -74,6 +74,8 @@ With the pipe logic implemented, the final step is to use it in the template. In
   imports: [ReversePipe]
 })
 ```
+
+</docs-step>
 
 </docs-workflow>
 

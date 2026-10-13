@@ -176,7 +176,7 @@ The data source has been configured, the next step is to update your web app to 
 
 1.  Once all the updates are complete, your updated service should match the following code.
 
-     <docs-code header="Final version of housing.service.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[1,25]" />
+     <docs-code header="Final version of housing.service.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[1,23]" />
 
 </docs-step>
 

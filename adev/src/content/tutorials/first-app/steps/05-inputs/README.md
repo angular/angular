@@ -21,9 +21,9 @@ Learn more in the [Accepting data with input properties](guide/components/inputs
 <docs-workflow>
 
 <docs-step title="Import the input() function">
-In the code editor, import the `input` helper method from `@angular/core` into the `HousingLocation` component.
+In the code editor, import the `input` helper method from `@angular/core` and the `HousingLocationInfo` interface from `../housinglocation` into the `HousingLocation` component.
 
-<docs-code header="Import input in housing-location.ts" path="adev/src/content/tutorials/first-app/steps/06-property-binding/src/app/housing-location/housing-location.ts" visibleLines="[1]"/>
+<docs-code header="Import input and HousingLocationInfo in housing-location.ts" path="adev/src/content/tutorials/first-app/steps/06-property-binding/src/app/housing-location/housing-location.ts" visibleLines="[1,2]"/>
 
 </docs-step>
 

@@ -80,17 +80,17 @@ constructor() {
 }
 ```
 
-This effect demonstrates how to clean up resources when effects are destroyed or re-run.
+This effect reads no signals while it runs, because `this.theme()` is only called later inside the `setInterval` callback. It runs once and never re-runs, so the cleanup only happens when the component is destroyed, for example when the preview reloads.
 </docs-step>
 
 <docs-step title="Test the effects">
 Open the browser console and interact with the app:
 
-- **Toggle Theme** - See localStorage saves and timer logs
+- **Toggle Theme** - See localStorage saves
 - **Login/Logout** - See user activity logging
 - **Watch Timer** - See periodic theme logging every 5 seconds
 
-The effects run automatically whenever their tracked signals change!
+Effects run once when the component is created, so some of these logs appear before you click anything. After that, they run again whenever the signals they read change.
 </docs-step>
 
 </docs-workflow>

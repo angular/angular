@@ -70,11 +70,11 @@ There are a few more lessons to complete before that happens.
 
 1.  In `src/app/home/home.ts`, replace the empty `export class Home {}` definition with this code to create a single instance of the new interface in the component.
 
-      <docs-code language="angular-ts" header="Add sample data to src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/05-inputs/src/app/home/home.ts" visibleLines="[22,35]"/>
+      <docs-code language="angular-ts" header="Add sample data to src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/05-inputs/src/app/home/home.ts" visibleLines="[21,34]"/>
 
 1.  Confirm that your `home.ts` file matches this example.
 
-      <docs-code language="angular-ts" header="src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/05-inputs/src/app/home/home.ts" visibleLines="[[1,7],[9,36]]" />
+      <docs-code language="angular-ts" header="src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/05-inputs/src/app/home/home.ts" visibleLines="[1,34]" />
 
     By adding the `housingLocation` property of type `HousingLocation` to the `Home` class, we're able to confirm that the data matches the description of the interface. If the data didn't satisfy the description of the interface, the IDE has enough information to give us helpful errors.
 
