@@ -31,9 +31,11 @@ import {
   UrlMetadata,
   IoMetadata,
 } from '../indexer_api.js';
+import type {FileAnalysis} from '../file_analysis.js';
 import type {HybridCompiler} from '../hybrid_compiler.js';
 import {makeClassKey} from '../compiler-utils.js';
 import {createInputPropertyMapping, createOutputPropertyMapping} from '../tcb_adapter.js';
+import type * as nga from '../types.js';
 
 type DirectiveHost = TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective;
 
@@ -134,112 +136,129 @@ export class IndexerBoundTemplate implements AbstractBoundTemplate<ClassEntity> 
 export async function getIndexedComponents(
   compiler: HybridCompiler,
 ): Promise<Map<string, IndexedComponent>> {
-  return getIndexedComponentsSync(compiler);
+  const indexedComponents = new Map<string, IndexedComponent>();
+
+  for (const [filePath, fileAnalysis] of compiler.fileCache.entries()) {
+    if (!fileAnalysis?.parsedTemplates) continue;
+    const result = await compiler.analyzer.getMetadataForFile(filePath);
+    if (!result) continue;
+    indexFileComponents(filePath, fileAnalysis, result, indexedComponents);
+  }
+
+  return indexedComponents;
 }
 
 export function getIndexedComponentsSync(compiler: HybridCompiler): Map<string, IndexedComponent> {
   const indexedComponents = new Map<string, IndexedComponent>();
 
   for (const [filePath, fileAnalysis] of compiler.fileCache.entries()) {
-    const templatesByClass = fileAnalysis?.parsedTemplates;
-    if (!templatesByClass) continue;
-
-    const boundTargetsByClass = fileAnalysis?.preparedTcbData?.boundTargetMap;
+    if (!fileAnalysis?.parsedTemplates) continue;
     const result = compiler.analyzer.getMetadataForFileSync(filePath);
     if (!result) continue;
-
-    for (const cls of result.classes) {
-      if (!cls.className || !cls.component) continue;
-
-      const classKey = makeClassKey(cls.className, cls.span.start);
-      const parsedTemplate = templatesByClass.get(classKey);
-      if (!parsedTemplate) continue;
-
-      const boundTarget = boundTargetsByClass?.get(classKey);
-      const target = fileAnalysis?.preparedTcbData?.targets.find(
-        (t) =>
-          t.comp.className === cls.className &&
-          (!t.comp.classMeta || t.comp.classMeta.span.start === cls.span.start),
-      );
-      const pipeMap = new Map<string, ClassEntity>();
-      if (target?.comp.pipeRegistry) {
-        for (const [name, pipeMeta] of target.comp.pipeRegistry.entries()) {
-          pipeMap.set(name, {
-            name: pipeMeta.className,
-            filePath: pipeMeta.filePath || '',
-          });
-        }
-      }
-      const visitor = new IndexerVisitor<ClassEntity>(
-        new IndexerBoundTemplate(boundTarget, pipeMap),
-      );
-      parsedTemplate.nodes.forEach((node: TmplAstNode) => node.visit(visitor));
-
-      const identifiers = new Set<TopLevelIdentifier>();
-
-      for (const id of visitor.identifiers) {
-        identifiers.add(id);
-      }
-
-      let templateUrl: UrlMetadata | undefined = undefined;
-      if (cls.component.templateUrl && cls.component.templateUrl.stringLiteralSpan) {
-        const span = cls.component.templateUrl.stringLiteralSpan;
-        templateUrl = {
-          url: cls.component.templateUrl.url,
-          span: {
-            start: span.start + 1,
-            end: span.end - 1,
-          },
-          resolvedPath: cls.component.templateUrl.resolvedPath,
-        };
-      }
-
-      const styleUrls: UrlMetadata[] = [];
-      if (cls.component.styleUrls) {
-        for (const s of cls.component.styleUrls) {
-          if (s.stringLiteralSpan) {
-            styleUrls.push({
-              url: s.url,
-              span: {
-                start: s.stringLiteralSpan.start + 1,
-                end: s.stringLiteralSpan.end - 1,
-              },
-              resolvedPath: s.resolvedPath,
-            });
-          }
-        }
-      }
-
-      const inputMapping = createInputPropertyMapping(cls.inputs);
-      const outputMapping = createOutputPropertyMapping(cls.outputs);
-
-      const inputs: IoMetadata[] = Array.from(inputMapping).map((m) => ({
-        directiveProperty: m.classPropertyName,
-        bindingName: m.bindingPropertyName,
-      }));
-      const outputs: IoMetadata[] = Array.from(outputMapping).map((m) => ({
-        directiveProperty: m.classPropertyName,
-        bindingName: m.bindingPropertyName,
-      }));
-
-      const templatePath = templateUrl?.resolvedPath || filePath;
-
-      indexedComponents.set(cls.className, {
-        name: cls.className,
-        selector: cls.component.selector || null,
-        fileUrl: filePath,
-        template: {
-          identifiers,
-          fileUrl: templatePath,
-        },
-        errors: visitor.errors,
-        templateUrl,
-        styleUrls,
-        inputs,
-        outputs,
-      });
-    }
+    indexFileComponents(filePath, fileAnalysis, result, indexedComponents);
   }
 
   return indexedComponents;
+}
+
+function indexFileComponents(
+  filePath: string,
+  fileAnalysis: FileAnalysis,
+  result: nga.AnalysisResult,
+  indexedComponents: Map<string, IndexedComponent>,
+): void {
+  const templatesByClass = fileAnalysis.parsedTemplates;
+  if (!templatesByClass) return;
+
+  const boundTargetsByClass = fileAnalysis.preparedTcbData?.boundTargetMap;
+
+  for (const cls of result.classes) {
+    if (!cls.className || !cls.component) continue;
+
+    const classKey = makeClassKey(cls.className, cls.span.start);
+    const parsedTemplate = templatesByClass.get(classKey);
+    if (!parsedTemplate) continue;
+
+    const boundTarget = boundTargetsByClass?.get(classKey);
+    const target = fileAnalysis.preparedTcbData?.targets.find(
+      (t) =>
+        t.comp.className === cls.className &&
+        (!t.comp.classMeta || t.comp.classMeta.span.start === cls.span.start),
+    );
+    const pipeMap = new Map<string, ClassEntity>();
+    if (target?.comp.pipeRegistry) {
+      for (const [name, pipeMeta] of target.comp.pipeRegistry.entries()) {
+        pipeMap.set(name, {
+          name: pipeMeta.className,
+          filePath: pipeMeta.filePath || '',
+        });
+      }
+    }
+    const visitor = new IndexerVisitor<ClassEntity>(new IndexerBoundTemplate(boundTarget, pipeMap));
+    parsedTemplate.nodes.forEach((node: TmplAstNode) => node.visit(visitor));
+
+    const identifiers = new Set<TopLevelIdentifier>();
+
+    for (const id of visitor.identifiers) {
+      identifiers.add(id);
+    }
+
+    let templateUrl: UrlMetadata | undefined = undefined;
+    if (cls.component.templateUrl && cls.component.templateUrl.stringLiteralSpan) {
+      const span = cls.component.templateUrl.stringLiteralSpan;
+      templateUrl = {
+        url: cls.component.templateUrl.url,
+        span: {
+          start: span.start + 1,
+          end: span.end - 1,
+        },
+        resolvedPath: cls.component.templateUrl.resolvedPath,
+      };
+    }
+
+    const styleUrls: UrlMetadata[] = [];
+    if (cls.component.styleUrls) {
+      for (const s of cls.component.styleUrls) {
+        if (s.stringLiteralSpan) {
+          styleUrls.push({
+            url: s.url,
+            span: {
+              start: s.stringLiteralSpan.start + 1,
+              end: s.stringLiteralSpan.end - 1,
+            },
+            resolvedPath: s.resolvedPath,
+          });
+        }
+      }
+    }
+
+    const inputMapping = createInputPropertyMapping(cls.inputs);
+    const outputMapping = createOutputPropertyMapping(cls.outputs);
+
+    const inputs: IoMetadata[] = Array.from(inputMapping).map((m) => ({
+      directiveProperty: m.classPropertyName,
+      bindingName: m.bindingPropertyName,
+    }));
+    const outputs: IoMetadata[] = Array.from(outputMapping).map((m) => ({
+      directiveProperty: m.classPropertyName,
+      bindingName: m.bindingPropertyName,
+    }));
+
+    const templatePath = templateUrl?.resolvedPath || filePath;
+
+    indexedComponents.set(cls.className, {
+      name: cls.className,
+      selector: cls.component.selector || null,
+      fileUrl: filePath,
+      template: {
+        identifiers,
+        fileUrl: templatePath,
+      },
+      errors: visitor.errors,
+      templateUrl,
+      styleUrls,
+      inputs,
+      outputs,
+    });
+  }
 }
