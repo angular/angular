@@ -35,11 +35,13 @@ export class HybridService {
   };
   /** @nocollapse */
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineInjectable({
-    token: HybridService,
-    factory: HybridService.ɵfac,
-    providedIn: 'root',
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /** @pureOrBreakMyCode */ i0.ɵɵdefineInjectable({
+      token: HybridService,
+      factory: HybridService.ɵfac,
+      providedIn: 'root',
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -72,14 +74,16 @@ export class MyCmp {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: MyCmp,
-    selectors: [['my-cmp']],
-    decls: 0,
-    vars: 0,
-    template: function MyCmp_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /** @pureOrBreakMyCode */ i0.ɵɵdefineComponent({
+      type: MyCmp,
+      selectors: [['my-cmp']],
+      decls: 0,
+      vars: 0,
+      template: function MyCmp_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -119,11 +123,9 @@ export class MyPipe implements PipeTransform {
   };
   /** @nocollapse */
   // @ts-ignore
-  static ɵpipe: i0.ɵɵPipeDeclaration<MyPipe, 'myPipe', true> = /*@__PURE__*/ i0.ɵɵdefinePipe({
-    name: 'myPipe',
-    type: MyPipe,
-    pure: true,
-  });
+  static ɵpipe: i0.ɵɵPipeDeclaration<MyPipe, 'myPipe', true> =
+    // @ts-ignore
+    /** @pureOrBreakMyCode */ i0.ɵɵdefinePipe({ name: 'myPipe', type: MyPipe, pure: true });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(MyPipe, [{ type: Pipe, args: [{ name: 'myPipe' }] }], null, null);
@@ -143,10 +145,12 @@ export class StillDecorated {
   };
   /** @nocollapse */
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineInjectable({
-    token: StillDecorated,
-    factory: StillDecorated.ɵfac,
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /** @pureOrBreakMyCode */ i0.ɵɵdefineInjectable({
+      token: StillDecorated,
+      factory: StillDecorated.ɵfac,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(StillDecorated, [{ type: Injectable }], null, null);

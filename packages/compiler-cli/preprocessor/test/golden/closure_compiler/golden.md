@@ -18,10 +18,9 @@ export class MyService {
   };
   /** @nocollapse */
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineInjectable({
-    token: MyService,
-    factory: MyService.ɵfac,
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /** @pureOrBreakMyCode */ i0.ɵɵdefineInjectable({ token: MyService, factory: MyService.ɵfac });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(MyService, [{ type: Injectable }], null, null);
@@ -49,25 +48,27 @@ export class MyApp {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: MyApp,
-    selectors: [['my-app']],
-    decls: 2,
-    vars: 0,
-    template: function MyApp_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(
-          1,
-          'This is a very long template string designed to exceed the one hundred character threshold of the constant pool sharing mechanism in the Angular compiler when annotateForClosureCompiler is enabled.',
-        );
-        i0.ɵɵelementEnd();
-      }
-    },
-    styles: [
-      'div[_ngcontent-%COMP%] { color: red; --%NS%long-prop: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"; }',
-    ],
-  });
+  > =
+    // @ts-ignore
+    /** @pureOrBreakMyCode */ i0.ɵɵdefineComponent({
+      type: MyApp,
+      selectors: [['my-app']],
+      decls: 2,
+      vars: 0,
+      template: function MyApp_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(
+            1,
+            'This is a very long template string designed to exceed the one hundred character threshold of the constant pool sharing mechanism in the Angular compiler when annotateForClosureCompiler is enabled.',
+          );
+          i0.ɵɵelementEnd();
+        }
+      },
+      styles: [
+        'div[_ngcontent-%COMP%] { color: red; --%NS%long-prop: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"; }',
+      ],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -117,20 +118,22 @@ export class MyOtherApp {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: MyOtherApp,
-    selectors: [['my-other-app']],
-    decls: 2,
-    vars: 0,
-    template: function MyOtherApp_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1, 'Short template');
-        i0.ɵɵelementEnd();
-      }
-    },
-    styles: [_c0()],
-  });
+  > =
+    // @ts-ignore
+    /** @pureOrBreakMyCode */ i0.ɵɵdefineComponent({
+      type: MyOtherApp,
+      selectors: [['my-other-app']],
+      decls: 2,
+      vars: 0,
+      template: function MyOtherApp_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'Short template');
+          i0.ɵɵelementEnd();
+        }
+      },
+      styles: [_c0()],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

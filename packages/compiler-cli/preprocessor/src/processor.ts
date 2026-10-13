@@ -2762,9 +2762,9 @@ function createStaticField(
   pure: boolean,
   isClosureCompilerEnabled?: boolean,
 ): string {
-  const pureComment = pure ? '/*@__PURE__*/ ' : '';
   const typeSuffix = type ? `: ${type}` : '';
   const nocollapse = isClosureCompilerEnabled ? '/** @nocollapse */\n  ' : '';
+  const tsignore = '// @ts-ignore';
   // `// @ts-ignore` only covers the line directly below it, so the initializer has to start on the
   // `static <name> =` line. Breaking after `=` would leave the guard covering the declaration
   // instead of the value it was emitted for. ngtsc emits this on one line too.
@@ -2772,7 +2772,25 @@ function createStaticField(
   // TODO(parity): `// @ts-ignore` only covers the initializer's first line, so properties emitted
   // after multi-line `hostBindings` or `template` functions land on uncovered continuation lines
   // (see `tests/emit_suppressions.test.ts`).
-  return `  ${nocollapse}// @ts-ignore\n  static ${name}${typeSuffix} = ${pureComment}${value};\n`;
+  if (!pure) {
+    return `  ${nocollapse}${tsignore}\n  static ${name}${typeSuffix} = ${value};\n`;
+  }
+  if (!isClosureCompilerEnabled) {
+    return `  ${nocollapse}${tsignore}\n  static ${name}${typeSuffix} = /*@__PURE__*/ ${value};\n`;
+  }
+  // ngtsc attaches the Closure annotation as a synthetic comment during its own emit, so it
+  // always lands right in front of the call. This output is compiled by a downstream `tsc`,
+  // whose emitter drops a comment sitting between `=` and the initializer whenever it rewrites
+  // the property (stripping the type annotation, or downleveling the static field to
+  // `Class.ɵcmp = ...`), but preserves it as leading trivia of an initializer that starts on its
+  // own line. The initializer line gets its own `// @ts-ignore`, since the one above `static`
+  // no longer reaches it.
+  return (
+    `  ${nocollapse}${tsignore}\n` +
+    `  static ${name}${typeSuffix} =\n` +
+    `    ${tsignore}\n` +
+    `    /** @pureOrBreakMyCode */ ${value};\n`
+  );
 }
 
 function compileFactoryField(
