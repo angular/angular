@@ -1109,6 +1109,7 @@ pub struct WireContext<'a> {
     /// Pre-resolved answers for [`crate::analyzer::import_emit::ReferenceEmitStrategy::emit`]'s
     /// `declaring_export_name`; build it with `declaring_export_names[_blocking]`.
     pub declaring_exports: &'a crate::analyzer::import_emit::DeclaringExportNames,
+    pub r3_symbols_path: Option<&'a std::path::Path>,
 }
 
 impl WireContext<'_> {

@@ -171,6 +171,7 @@ fn run_async_compiler_test<Fs: crate::ResourceResolverFs + Clone + 'static>(
 
             let path_lookup = |id| engine.lookup_path(id);
             let declaring_exports = engine.declaring_export_names_blocking(&resolved);
+            let r3_symbols_path = engine.r3_symbols_file();
             let cx = crate::analyzer::WireContext {
                 mode: crate::analyzer::WireMode::Semantic,
                 source_text: &source_text,
@@ -178,6 +179,7 @@ fn run_async_compiler_test<Fs: crate::ResourceResolverFs + Clone + 'static>(
                 reference_strategy: &*engine.reference_strategy,
                 path_lookup: Some(&path_lookup),
                 declaring_exports: &declaring_exports,
+                r3_symbols_path: r3_symbols_path.as_deref(),
             };
 
             let _ = final_sender.send(

@@ -7,6 +7,9 @@
  */
 
 import {outputAst as o, AbstractEmitterVisitor, EmitterVisitorContext} from '@angular/compiler';
+import {validateAndRewriteCoreSymbol} from '@angular/compiler-cli/private/hybrid_analysis';
+
+const CORE_MODULE = '@angular/core';
 
 const NUMERIC_OPERATORS = new Set([
   o.BinaryOperator.Bigger,
@@ -84,9 +87,12 @@ export class ExpressionPrinter {
   private readonly exprVisitor: EmitterVisitor;
   private readonly typeVisitor: EmitterVisitor;
 
-  constructor(filePath: string) {
+  constructor(
+    filePath: string,
+    private readonly r3SymbolsSpecifier: string | null = null,
+  ) {
     this.emitTypes = filePath.endsWith('.ts') || filePath.endsWith('.mts');
-    this.moduleToNamespace.set('@angular/core', 'i0');
+    this.moduleToNamespace.set(CORE_MODULE, 'i0');
     this.generatedNamespaceCount = 1;
     this.exprVisitor = new EmitterVisitor(this);
     this.typeVisitor = new EmitterVisitor(this, true);
@@ -122,9 +128,29 @@ export class ExpressionPrinter {
     return namespace;
   }
 
+  rewriteSymbol(symbolName: string, moduleName: string): string {
+    if (this.r3SymbolsSpecifier === null || moduleName !== CORE_MODULE) {
+      return symbolName;
+    }
+    return validateAndRewriteCoreSymbol(symbolName);
+  }
+
+  private rewriteSpecifier(moduleName: string): string {
+    if (this.r3SymbolsSpecifier === null || moduleName !== CORE_MODULE) {
+      return moduleName;
+    }
+    return this.r3SymbolsSpecifier;
+  }
+
   addNamespaceImport(moduleSpecifier: string, namespaceAlias: string): void {
-    this.moduleToNamespace.set(moduleSpecifier, namespaceAlias);
-    this.existingNamespaces.add(moduleSpecifier);
+    // A pre-existing namespace import of `r3_symbols.ts` is this file's `@angular/core` import,
+    // already rewritten; register it under the module name requests arrive with.
+    const moduleName =
+      this.r3SymbolsSpecifier !== null && moduleSpecifier === this.r3SymbolsSpecifier
+        ? CORE_MODULE
+        : moduleSpecifier;
+    this.moduleToNamespace.set(moduleName, namespaceAlias);
+    this.existingNamespaces.add(moduleName);
   }
 
   addSideEffectImport(moduleSpecifier: string): void {
@@ -141,7 +167,8 @@ export class ExpressionPrinter {
       }
 
       if (!this.existingNamespaces.has(moduleName)) {
-        statements.push(`// @ts-ignore\nimport * as ${namespace} from '${moduleName}';`);
+        const specifier = this.rewriteSpecifier(moduleName);
+        statements.push(`// @ts-ignore\nimport * as ${namespace} from '${specifier}';`);
       }
     }
 
@@ -152,7 +179,7 @@ export class ExpressionPrinter {
         continue;
       }
 
-      statements.push(`// @ts-ignore\nimport '${moduleName}';`);
+      statements.push(`// @ts-ignore\nimport '${this.rewriteSpecifier(moduleName)}';`);
     }
 
     return statements.length > 0 ? statements.join('\n') : null;
@@ -164,7 +191,7 @@ export class ExpressionPrinter {
     this.sideEffectImports.clear();
     this.usedNamespaces.clear();
     this.generatedNamespaceCount = 1;
-    this.moduleToNamespace.set('@angular/core', 'i0');
+    this.moduleToNamespace.set(CORE_MODULE, 'i0');
   }
 }
 
@@ -206,7 +233,8 @@ class EmitterVisitor extends AbstractEmitterVisitor {
 
     if (moduleName) {
       const namespace = this.printer.getOrCreateNamespace(moduleName);
-      ctx.print(ast, `${namespace}.${symbolName}`);
+      const symbol = symbolName !== null ? this.printer.rewriteSymbol(symbolName, moduleName) : '';
+      ctx.print(ast, `${namespace}.${symbol}`);
     } else {
       ctx.print(ast, symbolName || '');
     }

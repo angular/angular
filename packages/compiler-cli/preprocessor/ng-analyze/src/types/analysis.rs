@@ -555,6 +555,9 @@ pub struct FileData {
     /// Byte offsets for implicit signal `debugName` insertions.
     pub(crate) signal_debug_names:
         Vec<crate::analyzer::signal_debug_name::SignalDebugNameInsertion>,
+    /// Whether this file is part of `@angular/core` itself (see
+    /// [`crate::analyzer::imports::detect_is_core`]). Always `false` for `.d.ts` files.
+    pub(crate) is_core: bool,
 }
 
 impl FileData {
@@ -596,7 +599,19 @@ impl FileData {
                     )
                 })
                 .collect(),
+            r3_symbols_specifier: self.r3_symbols_specifier(cx.r3_symbols_path),
         })
+    }
+
+    fn r3_symbols_specifier(&self, r3_symbols_path: Option<&Path>) -> Option<String> {
+        if !self.is_core {
+            return None;
+        }
+        let r3_symbols_path = r3_symbols_path?;
+        Some(crate::analyzer::import_emit::relative_specifier_between(
+            &self.file_path,
+            r3_symbols_path,
+        ))
     }
 
     /// The import table is single-file syntactic data, identical in both projections.
