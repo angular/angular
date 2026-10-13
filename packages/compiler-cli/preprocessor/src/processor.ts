@@ -317,7 +317,6 @@ export function processFileSync(
     eagerlyUsedDeclarations: chunkContext?.eagerlyUsedDeclarations || new Map(),
   };
   const s = new MagicString(content);
-  const printer = new ExpressionPrinter(filePath);
   const fileDiagnostics: nga.NgDiagnostic[] = [];
 
   const result = metadata || ctx.analyzer.getMetadataForFileSync(filePath);
@@ -325,6 +324,9 @@ export function processFileSync(
     return {magicString: s};
   }
   const {classes, importsEnd, imports: importDeclarations} = result;
+
+  // Inside `@angular/core` itself, generated imports of `@angular/core` go to `r3_symbols.ts`.
+  const printer = new ExpressionPrinter(filePath, result.r3SymbolsSpecifier ?? null);
 
   if (!ctx.emitDeclarationOnly) {
     insertSignalDebugNames(s, result.signalDebugNames, printer.emitTypes);

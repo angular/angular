@@ -676,6 +676,7 @@ impl Analyzer {
         let source_text = parse_res.lock().unwrap().borrow_owner().source_text.clone();
         let path_lookup = |id| self.engine.lookup_path(id);
         let declaring_exports = self.engine.declaring_export_names_blocking(&file_data);
+        let r3_symbols_path = self.engine.r3_symbols_file();
         let cx = crate::analyzer::WireContext {
             mode: crate::analyzer::WireMode::Semantic,
             source_text: &source_text,
@@ -683,6 +684,7 @@ impl Analyzer {
             reference_strategy: &*self.engine.reference_strategy,
             path_lookup: Some(&path_lookup),
             declaring_exports: &declaring_exports,
+            r3_symbols_path: r3_symbols_path.as_deref(),
         };
         match file_data.to_wire(&cx) {
             Ok(result) => Some(result),
@@ -749,10 +751,12 @@ impl Analyzer {
 
         let engine_clone = engine.clone();
         let cancel_token_clone = cancel_token.clone();
+        let r3_symbols_path: Option<Arc<Path>> = self.engine.r3_symbols_file().map(Arc::from);
 
         let processor = move |file_path: PathBuf, _local_res: FileData| {
             let engine = engine_clone.clone();
             let cancel_token = cancel_token_clone.clone();
+            let r3_symbols_path = r3_symbols_path.clone();
 
             async move {
                 if cancel_token.is_cancelled() {
@@ -787,6 +791,7 @@ impl Analyzer {
                         reference_strategy: &*engine.reference_strategy,
                         path_lookup: Some(&path_lookup),
                         declaring_exports: &declaring_exports,
+                        r3_symbols_path: r3_symbols_path.as_deref(),
                     };
                     (semantic_res.to_wire(&cx), chunk_info)
                 } else {
@@ -824,6 +829,7 @@ impl Analyzer {
                         reference_strategy: &*engine.reference_strategy,
                         path_lookup: Some(&path_lookup),
                         declaring_exports: &declaring_exports,
+                        r3_symbols_path: r3_symbols_path.as_deref(),
                     };
                     (syntax_res.to_wire(&cx), chunk_info)
                 };
@@ -1438,6 +1444,7 @@ mod chunk_order_tests {
             let chunk_info = extract_chunk_info(&semantic, engine, &ctx).await;
             let declaring_exports = ctx.declaring_export_names(&semantic).await;
             let path_lookup = |id| engine.lookup_path(id);
+            let r3_symbols_path = engine.r3_symbols_file();
             let cx = crate::analyzer::WireContext {
                 mode: crate::analyzer::WireMode::Semantic,
                 source_text: &source_text,
@@ -1445,6 +1452,7 @@ mod chunk_order_tests {
                 reference_strategy: &*engine.reference_strategy,
                 path_lookup: Some(&path_lookup),
                 declaring_exports: &declaring_exports,
+                r3_symbols_path: r3_symbols_path.as_deref(),
             };
             (semantic.to_wire(&cx).expect("wire projection"), chunk_info)
         })

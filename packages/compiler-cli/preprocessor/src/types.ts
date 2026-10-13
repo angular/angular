@@ -59,6 +59,7 @@ export interface AnalysisResult {
   typeOnlyExports: Array<string>;
   diagnostics: Array<NgDiagnostic>;
   signalDebugNames: Array<SignalDebugNameMetadata>;
+  r3SymbolsSpecifier?: string;
 }
 
 export interface AnalyzerOptions {

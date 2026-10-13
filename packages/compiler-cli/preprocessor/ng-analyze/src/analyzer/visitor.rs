@@ -661,6 +661,8 @@ pub struct ParsedFileAnalysis {
     /// Where ngtsc's `signalMetadataTransform` would add a `debugName` to a signal-creating
     /// call ([`super::signal_debug_name`]). Byte offsets.
     pub signal_debug_names: Vec<super::signal_debug_name::SignalDebugNameInsertion>,
+    /// Whether the file belongs to `@angular/core` itself.
+    pub is_core: bool,
 }
 
 /// Raw output of [`ClassVisitor`] before the file-level fields (`imports_end`, …) are attached.
@@ -734,6 +736,7 @@ pub fn analyze_parsed<Fs: ResourceResolverFs>(
         dynamic_dependencies,
         diagnostics: output.diagnostics,
         signal_debug_names,
+        is_core,
     }
 }
 

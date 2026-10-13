@@ -24,6 +24,10 @@ use crate::{ClassInfo, FileData, NgModuleComponentMap};
 /// `fs`/`resolver`/`resource_registry`/`file_analysis` through every call.
 pub type QueryCtx<Fs> = Arc<QueryEngine<Fs>>;
 
+/// The file inside `@angular/core` that re-exports the runtime symbols generated code needs, and
+/// that core's own compilation imports instead of `@angular/core` (`packages/core/src/r3_symbols.ts`).
+const R3_SYMBOLS_FILE_NAME: &str = "r3_symbols.ts";
+
 /// The unified query engine.
 ///
 /// Every "question" the analyzer answers is a [`QueryKey`]; [`QueryEngine::query`] returns a cached,
@@ -112,6 +116,18 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
 
     pub fn lookup_path(&self, id: FileId) -> PathBuf {
         self.interner.lookup_path(id)
+    }
+
+    pub fn r3_symbols_file(&self) -> Option<PathBuf> {
+        self.entrypoints
+            .read()
+            .unwrap()
+            .iter()
+            .find(|path| {
+                path.file_name()
+                    .is_some_and(|name| name == R3_SYMBOLS_FILE_NAME)
+            })
+            .cloned()
     }
 
     /// Purge every cached query that depends on `path` (file invalidation). Dropping the cached
@@ -396,6 +412,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                 errors: dep.errors.clone(),
                 diagnostics: Vec::new(),
                 signal_debug_names: Vec::new(),
+                is_core: false,
             });
         }
 
@@ -455,6 +472,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             errors: dep.errors.clone(),
             diagnostics: analysis.diagnostics,
             signal_debug_names: analysis.signal_debug_names,
+            is_core: analysis.is_core,
         })
     }
 

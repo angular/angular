@@ -278,3 +278,69 @@ describe('binary operator @ts-ignore', () => {
     expect(emitStmt(lhs.plus(rhs))).toEqual('// @ts-ignore\n((!a > 1) + (!b > 2));');
   });
 });
+
+describe('ExpressionPrinter @angular/core import rewriting', () => {
+  const defineInjectable = o.importExpr({name: 'ɵɵdefineInjectable', moduleName: '@angular/core'});
+  const setClassMetadata = o.importExpr({name: 'ɵsetClassMetadata', moduleName: '@angular/core'});
+
+  it('should import @angular/core as is outside of core', () => {
+    const printer = new ExpressionPrinter('app/service.ts');
+    expect(printer.print(defineInjectable)).toBe('i0.ɵɵdefineInjectable');
+    expect(printer.print(setClassMetadata)).toBe('i0.ɵsetClassMetadata');
+    expect(printer.getImportStatements()).toBe(
+      "// @ts-ignore\nimport * as i0 from '@angular/core';",
+    );
+  });
+
+  it('should redirect the import to r3_symbols.ts and keep the namespace alias', () => {
+    const printer = new ExpressionPrinter('core/src/di/injectable.ts', '../r3_symbols');
+    expect(printer.print(defineInjectable)).toBe('i0.ɵɵdefineInjectable');
+    expect(printer.getImportStatements()).toBe(
+      "// @ts-ignore\nimport * as i0 from '../r3_symbols';",
+    );
+  });
+
+  it('should rename symbols to their r3_symbols.ts export name', () => {
+    const printer = new ExpressionPrinter('core/src/di/injectable.ts', '../r3_symbols');
+    expect(printer.print(setClassMetadata)).toBe('i0.setClassMetadata');
+    const ngModuleFactory = o.importExpr({name: 'ɵNgModuleFactory', moduleName: '@angular/core'});
+    expect(printer.print(ngModuleFactory)).toBe('i0.NgModuleFactory');
+  });
+
+  it('should rewrite symbols in type position as well', () => {
+    const printer = new ExpressionPrinter('core/src/di/injectable.ts', '../r3_symbols');
+    const declaration = o.importExpr({
+      name: 'ɵɵInjectableDeclaration',
+      moduleName: '@angular/core',
+    });
+    const type = new o.ExpressionType(declaration, undefined, [
+      new o.ExpressionType(o.variable('MyService')),
+    ]);
+    expect(printer.printType(type)).toBe('i0.ɵɵInjectableDeclaration<MyService>');
+    expect(printer.getImportStatements()).toBe(
+      "// @ts-ignore\nimport * as i0 from '../r3_symbols';",
+    );
+  });
+
+  it('should reject symbols that core is not allowed to import', () => {
+    const printer = new ExpressionPrinter('core/src/di/injectable.ts', '../r3_symbols');
+    const defineComponent = o.importExpr({name: 'ɵɵdefineComponent', moduleName: '@angular/core'});
+    expect(() => printer.print(defineComponent)).toThrowError(
+      'Importing unexpected symbol ɵɵdefineComponent while compiling @angular/core',
+    );
+  });
+
+  it('should leave imports of other modules alone', () => {
+    const printer = new ExpressionPrinter('core/src/di/injectable.ts', '../r3_symbols');
+    const injector = o.importExpr({name: 'Injector', moduleName: './injector'});
+    expect(printer.print(injector)).toBe('i1.Injector');
+    expect(printer.getImportStatements()).toBe("// @ts-ignore\nimport * as i1 from './injector';");
+  });
+
+  it('should reuse an existing namespace import of r3_symbols.ts for @angular/core', () => {
+    const printer = new ExpressionPrinter('core/src/di/injectable.ts', '../r3_symbols');
+    printer.addNamespaceImport('../r3_symbols', 'i0');
+    expect(printer.print(defineInjectable)).toBe('i0.ɵɵdefineInjectable');
+    expect(printer.getImportStatements()).toBeNull();
+  });
+});

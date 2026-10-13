@@ -63,6 +63,7 @@ pub struct AnalysisResult {
     pub type_only_exports: Vec<String>,
     pub diagnostics: Vec<NgDiagnostic>,
     pub signal_debug_names: Vec<super::metadata::SignalDebugNameMetadata>,
+    pub r3_symbols_specifier: Option<String>,
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
