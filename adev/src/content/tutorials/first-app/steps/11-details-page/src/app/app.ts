@@ -1,9 +1,9 @@
 import {Component} from '@angular/core';
-import {Home} from './home/home';
 import {RouterLink, RouterOutlet} from '@angular/router';
+
 @Component({
   selector: 'app-root',
-  imports: [Home, RouterOutlet, RouterLink],
+  imports: [RouterLink, RouterOutlet],
   template: `
     <main>
       <a [routerLink]="['/']">
@@ -16,7 +16,7 @@ import {RouterLink, RouterOutlet} from '@angular/router';
       </section>
     </main>
   `,
-  styleUrls: ['./app.css'],
+  styleUrl: './app.css',
 })
 export class App {
   title = 'homes';

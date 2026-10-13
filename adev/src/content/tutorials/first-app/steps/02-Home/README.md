@@ -6,7 +6,7 @@ This tutorial lesson demonstrates how to create a new [component](guide/componen
 
 ## What you'll learn
 
-Your app has a new component: `Home`.
+Your app will have a new component: `Home`.
 
 ## Conceptual preview of Angular components
 
@@ -21,7 +21,7 @@ When you create your `Home`, you use these properties:
 - `standalone`: to describe whether the component requires a `NgModule`.
 - `imports`: to describe the component's dependencies.
 - `template`: to describe the component's HTML markup and layout.
-- `styleUrls`: to list the URLs of the CSS files that the component uses in an array.
+- `styleUrl`: to specify the URL of the CSS file that the component uses.
 
 <docs-pill-row>
   <docs-pill href="api/core/Component" title="Learn more about Components"/>
