@@ -51,6 +51,7 @@
 | `NG05000` | [Hydration with unsupported Zone.js instance.](errors/NG05000)                       |
 | `NG05104` | [Root element was not found.](errors/NG05104)                                        |
 | `NG05106` | [Insertion reference node not found](errors/NG05106)                                 |
+| `NG05201` | [Unsafe resource URL passed to DomSanitizer](errors/NG05201)                         |
 | `NG05703` | [Suspicious URL origin change during SSR](errors/NG05703)                            |
 
 ## Compiler errors
