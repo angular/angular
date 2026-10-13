@@ -38228,7 +38228,7 @@ ${sanitize(logOutput)}`);
       if (status === 0 || options.suppressErrorOnFailingExitCode) {
         resolve5({ stdout, stderr, status });
       } else {
-        reject(options.mode === "silent" ? logOutput : void 0);
+        reject(options.mode === "silent" ? sanitize(logOutput) : void 0);
       }
     });
   });
@@ -65768,7 +65768,7 @@ content-type/dist/index.js:
 @octokit/graphql/dist-bundle/index.js:
   (* v8 ignore if -- @preserve *)
 
-@angular/ng-dev/bundles/chunk-6SDARNEM.mjs:
+@angular/ng-dev/bundles/chunk-ABXAGCLN.mjs:
   (*! Bundled license information:
   
   yargs-parser/build/lib/string-utils.js:
@@ -65809,7 +65809,7 @@ content-type/dist/index.js:
      *)
   *)
 
-@angular/ng-dev/bundles/chunk-TTC2AQGU.mjs:
+@angular/ng-dev/bundles/chunk-L2M3AJHF.mjs:
   (*! Bundled license information:
   
   content-type/dist/index.js:
