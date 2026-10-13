@@ -22,6 +22,8 @@ import { LocalModule, MyDirective } from './local.module';
 import { conditionalFlag } from './config';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './local.module';
 
 declare const DYNAMIC_MODULES: any[];
 
@@ -58,6 +60,7 @@ export class AppComponent {
         i0.ɵɵelement(0, 'div', 0);
       }
     },
+    dependencies: (): any => [i1.MyDirective],
     encapsulation: 2,
   });
   static {

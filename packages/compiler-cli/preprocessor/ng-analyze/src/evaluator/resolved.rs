@@ -313,14 +313,45 @@ impl FromResolved for ComponentStyles {
 }
 
 impl FromResolved for Vec<crate::types::analysis::Reference> {
+    /// All-or-nothing: an entry that did not evaluate to a reference lowers the whole list to
+    /// `None`, so emitters fall back to the raw source expression.
     fn from_value(value: &ResolvedValue, origin: crate::query::FileId) -> Option<Self> {
         let mut refs = Vec::new();
-        if collect_references(value, origin, &mut refs) {
+        if collect_references(value, origin, DynamicEntry::Reject, &mut refs) {
             Some(refs)
         } else {
             None
         }
     }
+}
+
+/// An NgModule `declarations`/`imports`/`exports` list read for scope computation.
+///
+/// TODO(parity): in full compilation mode (`allowUnresolvedReferences === false`) ngtsc reports
+/// NG1010 (`Value at position N in the NgModule.imports of X is not a reference`) for a genuinely
+/// dynamic entry instead of skipping it. The optimized pipeline should surface that diagnostic
+/// for the skipped entries rather than staying silent.
+/// https://github.com/angular/angular/blob/96b8042/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L1301-L1308
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct ScopeReferences(pub Vec<crate::types::analysis::Reference>);
+
+impl FromResolved for ScopeReferences {
+    fn from_value(value: &ResolvedValue, origin: crate::query::FileId) -> Option<Self> {
+        let mut refs = Vec::new();
+        if collect_references(value, origin, DynamicEntry::Skip, &mut refs) {
+            Some(ScopeReferences(refs))
+        } else {
+            None
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum DynamicEntry {
+    /// Fail the whole list.
+    Reject,
+    /// Drop the entry and keep collecting.
+    Skip,
 }
 
 /// Build the analyzer-facing `Reference` from an unresolved import hole.
@@ -359,13 +390,16 @@ fn to_reference(r: &crate::evaluator::value::ValueReference) -> crate::types::an
 fn collect_references(
     value: &ResolvedValue,
     origin: crate::query::FileId,
+    on_dynamic: DynamicEntry,
     out: &mut Vec<crate::types::analysis::Reference>,
 ) -> bool {
     match value {
-        ResolvedValue::Named { value: inner, .. } => collect_references(inner, origin, out),
+        ResolvedValue::Named { value: inner, .. } => {
+            collect_references(inner, origin, on_dynamic, out)
+        }
         ResolvedValue::Array(items) => {
             for item in items {
-                if !collect_references(item, origin, out) {
+                if !collect_references(item, origin, on_dynamic, out) {
                     return false;
                 }
             }
@@ -402,7 +436,7 @@ fn collect_references(
         }
         ResolvedValue::Map(map) => {
             if let Some(ng_module) = map.get("ngModule") {
-                collect_references(ng_module, origin, out)
+                collect_references(ng_module, origin, on_dynamic, out)
             } else {
                 false
             }
@@ -410,7 +444,7 @@ fn collect_references(
         ResolvedValue::Dynamic(d) => {
             let crate::evaluator::value::DynamicReason::UnresolvedImport(unresolved) = &d.reason
             else {
-                return false;
+                return on_dynamic == DynamicEntry::Skip;
             };
             out.push(reference_from_import_hole(d.file, unresolved, origin));
             true
@@ -928,6 +962,53 @@ mod tests {
         let after_first = resolved.raw().clone();
         resolved.demote();
         assert_eq!(resolved.raw(), &after_first);
+    }
+
+    fn class_reference(name: &str) -> ResolvedValue {
+        ResolvedValue::Reference(crate::evaluator::value::ValueReference {
+            file: 0,
+            name: name.to_string(),
+            member: None,
+            reference_id: None,
+            span: oxc_span::Span::new(0, 0),
+            kind: crate::evaluator::value::DeclKind::Class,
+            owning_reference: None,
+            synthetic: false,
+            aliases: Vec::new(),
+            is_default_export: false,
+        })
+    }
+
+    #[test]
+    fn scope_references_skip_dynamic_entries_but_reject_wrong_shapes() {
+        let imports = ResolvedValue::Array(vec![
+            class_reference("RouterModule"),
+            ResolvedValue::Array(vec![dynamic_value()]),
+        ]);
+        let strict: Resolved<Vec<crate::types::analysis::Reference>> =
+            Resolved::from_syntax(imports.clone(), 0);
+        assert_eq!(strict.get_optional(), None);
+
+        let scope: Resolved<ScopeReferences> = Resolved::from_syntax(imports, 0);
+        let names: Vec<_> = scope
+            .get_optional()
+            .expect("static siblings survive a dynamic entry")
+            .0
+            .into_iter()
+            .map(|r| r.name)
+            .collect();
+        assert_eq!(names, vec!["RouterModule"]);
+
+        // A value that is not a class at all is an NG1010 in every ngtsc mode; neither reader
+        // produces a partial list for it.
+        let wrong_shape: Resolved<ScopeReferences> = Resolved::from_syntax(
+            ResolvedValue::Array(vec![
+                class_reference("RouterModule"),
+                ResolvedValue::String("nope".into()),
+            ]),
+            0,
+        );
+        assert_eq!(wrong_shape.get_optional(), None);
     }
 
     #[test]
