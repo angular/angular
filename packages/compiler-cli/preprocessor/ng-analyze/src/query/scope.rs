@@ -10,6 +10,7 @@ use crate::ResourceResolverFs;
 use futures::future::{BoxFuture, FutureExt};
 
 use crate::analyzer::flatten_class_info;
+use crate::evaluator::{FromResolved, ScopeReferences};
 use crate::query::keys::ModuleExportMap;
 use crate::query::{FileId, QueryContext, QueryEngine, ReferenceId};
 use crate::types::analysis::{DeclarationData, OwningReference};
@@ -21,6 +22,17 @@ pub(crate) async fn resolve_reference_async<Fs: ResourceResolverFs + Clone + 'st
 ) -> Option<crate::ClassInfo> {
     let evaluated_file = ctx.analyze_file_evaluated(reference.file).await;
     evaluated_file.class_index.get(&reference.name).cloned()
+}
+
+async fn scope_references<Fs: ResourceResolverFs + Clone + 'static>(
+    slot: &crate::evaluator::Resolved<Vec<crate::types::analysis::Reference>>,
+    ctx: &QueryContext<Fs>,
+) -> Option<Vec<crate::types::analysis::Reference>> {
+    let mut completed = slot.clone();
+    completed
+        .complete_with(ctx, crate::analyzer::resolvers::angular_foreign_resolvers())
+        .await;
+    ScopeReferences::from_value(completed.raw(), completed.origin).map(|refs| refs.0)
 }
 
 impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
@@ -54,11 +66,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             let mut resolved_declarations = Vec::new();
 
             if let Some(ref exports_resolved) = ng_module.exports {
-                let mut completed = exports_resolved.clone();
-                completed
-                    .complete_with(ctx, crate::analyzer::resolvers::angular_foreign_resolvers())
-                    .await;
-                if let Some(references) = completed.get_optional() {
+                if let Some(references) = scope_references(exports_resolved, ctx).await {
                     let mut resolve_futures = Vec::new();
                     for r in &references {
                         resolve_futures.push((r, resolve_reference_async(r, ctx)));
@@ -141,13 +149,9 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         let mut resolved_declarations = Vec::new();
         let mut is_complete = true;
 
-        let foreign = crate::analyzer::resolvers::angular_foreign_resolvers();
-
         // Imported NgModules' exports are expanded before local declarations (matching ngtsc).
         if let Some(ref imports_resolved) = ng_module.imports {
-            let mut completed = imports_resolved.clone();
-            completed.complete_with(ctx, foreign).await;
-            if let Some(references) = completed.get_optional() {
+            if let Some(references) = scope_references(imports_resolved, ctx).await {
                 let mut visited_modules = HashSet::new();
                 let all_resolved = self
                     .expand_ngmodule_scope_async(
@@ -166,9 +170,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         }
 
         if let Some(ref decls_resolved) = ng_module.declarations {
-            let mut completed = decls_resolved.clone();
-            completed.complete_with(ctx, foreign).await;
-            if let Some(references) = completed.get_optional() {
+            if let Some(references) = scope_references(decls_resolved, ctx).await {
                 let mut resolve_futures = Vec::new();
                 for r in &references {
                     resolve_futures.push((r, resolve_reference_async(r, ctx)));
