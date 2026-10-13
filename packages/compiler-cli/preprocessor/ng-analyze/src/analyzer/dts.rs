@@ -6,7 +6,7 @@ use crate::{ClassType, HostDirectiveBinding, InputMetadata, OutputMetadata};
 
 use super::imports::{FileExportInfo, LocalExportAlias, ReexportInfo, WildcardExport};
 use super::utils::{
-    extract_property_key, extract_template_guards_and_field_directive, extract_type_parameters,
+    extract_class_body_type_check_meta, extract_property_key, extract_type_parameters,
 };
 use oxc_ast_visit::utf8_to_utf16::Utf8ToUtf16;
 
@@ -261,8 +261,11 @@ fn extract_class_metadata(
             .collect::<Vec<_>>()
     });
 
-    let (has_ng_template_context_guard, ng_template_guards, has_ng_field_directive) =
-        extract_template_guards_and_field_directive(class);
+    let type_check_meta = extract_class_body_type_check_meta(class);
+    let has_ng_template_context_guard = type_check_meta.has_ng_template_context_guard;
+    let ng_template_guards = type_check_meta.ng_template_guards;
+    let has_ng_field_directive = type_check_meta.has_ng_field_directive;
+    let public_methods = type_check_meta.public_methods;
 
     let mut class_type = None;
     let mut selector = None;
@@ -448,6 +451,7 @@ fn extract_class_metadata(
             has_ng_template_context_guard: false,
             ng_template_guards: Vec::new(),
             has_ng_field_directive: false,
+            public_methods: Vec::new(),
             uses_inheritance,
             uses_on_changes: false,
             is_exported: true,
@@ -477,6 +481,7 @@ fn extract_class_metadata(
             ng_template_guards: Vec::new(),
             animation_trigger_names: None,
             has_ng_field_directive: false,
+            public_methods: Vec::new(),
             is_structural: false,
             raw_imports: None,
             // NgModules declared outside the current compilation are assumed to contain providers, as it
@@ -639,6 +644,7 @@ fn extract_class_metadata(
             has_ng_template_context_guard,
             ng_template_guards: ng_template_guards.clone(),
             has_ng_field_directive,
+            public_methods: public_methods.clone(),
             uses_inheritance,
             uses_on_changes: false,
             is_exported: true,
@@ -670,6 +676,7 @@ fn extract_class_metadata(
             ng_template_guards,
             animation_trigger_names: None,
             has_ng_field_directive,
+            public_methods,
             is_structural: false,
             raw_imports: None,
             // A `.d.ts` carries no decorator literal, so no `providers` to read.

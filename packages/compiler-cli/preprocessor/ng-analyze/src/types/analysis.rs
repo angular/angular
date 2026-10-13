@@ -193,6 +193,7 @@ pub struct DeclarationData {
     pub ng_template_guards: Vec<crate::types::metadata::TemplateGuardMetadata>,
     pub animation_trigger_names: Option<crate::types::metadata::LegacyAnimationTriggerNames>,
     pub has_ng_field_directive: bool,
+    pub public_methods: Vec<String>,
     pub is_forward_ref: bool,
     pub is_structural: bool,
     /// Reference as written in the emitting file: constructors fill it in the declaring file's
@@ -263,6 +264,7 @@ impl DeclarationData {
             ng_template_guards: local_info.ng_template_guards.clone(),
             animation_trigger_names: local_info.animation_trigger_names.clone(),
             has_ng_field_directive: local_info.has_ng_field_directive,
+            public_methods: flattened_info.public_methods.clone(),
             is_forward_ref,
             is_structural: local_info.is_structural,
             ref_meta,
@@ -379,6 +381,7 @@ impl DeclarationData {
             ng_template_guards: class.ng_template_guards.clone(),
             animation_trigger_names,
             has_ng_field_directive: class.has_ng_field_directive,
+            public_methods: class.public_methods.clone(),
             is_forward_ref,
             is_structural,
             ref_meta,
@@ -430,6 +433,7 @@ pub struct ClassInfo {
     pub schemas: Option<Vec<String>>,
     pub animation_trigger_names: Option<LegacyAnimationTriggerNames>,
     pub has_ng_field_directive: bool,
+    pub public_methods: Vec<String>,
     pub raw_imports: Option<Vec<DeclarationTuple>>,
     /// ngtsc's `mayDeclareProviders`: the NgModule literal carries a non-empty `providers`.
     pub may_declare_providers: bool,

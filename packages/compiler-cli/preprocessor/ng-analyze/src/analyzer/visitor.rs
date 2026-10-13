@@ -25,7 +25,7 @@ use super::{
     component, directive, get_constructor_params, host_binding, injectable, input_output, pipe,
     queries, service,
     utils::{
-        extract_property_key, extract_template_guards_and_field_directive, extract_type_parameters,
+        extract_class_body_type_check_meta, extract_property_key, extract_type_parameters,
         get_local_exported_names, get_type_only_exports,
     },
 };
@@ -294,6 +294,7 @@ fn classify(reference_id: ReferenceId, parsed: ParsedClass, has_real_symbol: boo
         has_ng_template_context_guard: common.has_ng_template_context_guard,
         ng_template_guards: common.ng_template_guards,
         has_ng_field_directive: common.has_ng_field_directive,
+        public_methods: common.public_methods,
         uses_inheritance: common.uses_inheritance,
         uses_on_changes: common.uses_on_changes,
         is_exported: common.is_exported,
@@ -325,6 +326,7 @@ pub struct RegistrationInfo {
     pub ng_template_guards: Vec<crate::TemplateGuardMetadata>,
     pub animation_trigger_names: Option<crate::LegacyAnimationTriggerNames>,
     pub has_ng_field_directive: bool,
+    pub public_methods: Vec<String>,
     pub is_structural: bool,
     pub raw_imports: Option<Vec<crate::DeclarationTuple>>,
     pub may_declare_providers: bool,
@@ -375,6 +377,7 @@ struct ParsedCommon {
     has_ng_template_context_guard: bool,
     ng_template_guards: Vec<TemplateGuardMetadata>,
     has_ng_field_directive: bool,
+    public_methods: Vec<String>,
     uses_inheritance: bool,
     uses_on_changes: bool,
     is_exported: bool,
@@ -542,8 +545,7 @@ fn process_class_common<'a, Fs: ResourceResolverFs>(
         .is_some_and(|tp| tp.has_non_exported_bounds);
     let type_parameters = extracted_type_parameters.map(|tp| tp.params);
 
-    let (has_ng_template_context_guard, ng_template_guards, has_ng_field_directive) =
-        extract_template_guards_and_field_directive(class);
+    let type_check_meta = extract_class_body_type_check_meta(class);
 
     let super_class = class.heritage.as_ref().and_then(|heritage| {
         let evaluated = crate::evaluator::evaluate_expression(&heritage.expression, eval);
@@ -593,9 +595,10 @@ fn process_class_common<'a, Fs: ResourceResolverFs>(
             member_decorators,
             later_declaration_references,
             type_parameters,
-            has_ng_template_context_guard,
-            ng_template_guards,
-            has_ng_field_directive,
+            has_ng_template_context_guard: type_check_meta.has_ng_template_context_guard,
+            ng_template_guards: type_check_meta.ng_template_guards,
+            has_ng_field_directive: type_check_meta.has_ng_field_directive,
+            public_methods: type_check_meta.public_methods,
             uses_inheritance,
             uses_on_changes,
             is_exported,

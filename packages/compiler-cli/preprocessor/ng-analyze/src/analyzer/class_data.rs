@@ -146,6 +146,9 @@ pub struct ClassData {
     pub has_ng_template_context_guard: bool,
     pub ng_template_guards: Vec<TemplateGuardMetadata>,
     pub has_ng_field_directive: bool,
+    /// Public instance method names ngtsc's `publicMethods` would hold: the class's own after
+    /// single-file analysis, merged with its base classes' once Stage 2 flattens inheritance.
+    pub public_methods: Vec<String>,
     pub uses_inheritance: bool,
     pub uses_on_changes: bool,
     pub is_exported: bool,
@@ -992,9 +995,7 @@ impl ResolvedIsolatedElement {
     pub(crate) fn from_value(value: &crate::evaluator::ResolvedValue) -> Option<Self> {
         use crate::evaluator::ResolvedValue;
         match value.unwrap_named() {
-            ResolvedValue::Reference(r) => {
-                Some(Self::Single(Reference::from_value_reference(r)))
-            }
+            ResolvedValue::Reference(r) => Some(Self::Single(Reference::from_value_reference(r))),
             ResolvedValue::Array(items) if !items.is_empty() => items
                 .iter()
                 .map(|item| match item.unwrap_named() {
@@ -2961,6 +2962,7 @@ impl ClassData {
             has_ng_template_context_guard: self.has_ng_template_context_guard,
             ng_template_guards: self.ng_template_guards.clone(),
             has_ng_field_directive: self.has_ng_field_directive,
+            public_methods: self.public_methods.clone(),
             super_class: self.super_class.clone(),
             uses_inheritance: self.uses_inheritance,
             uses_on_changes: self.uses_on_changes,
@@ -3162,18 +3164,16 @@ impl ClassData {
                     references: None,
                 }
             }
-            IsolatedTypeElementData::ReferenceTuple { references } => {
-                IsolatedTypeElementMetadata {
-                    kind: IsolatedTypeElementKind::ReferenceTuple,
-                    span: None,
-                    references: Some(
-                        references
-                            .iter()
-                            .map(|r| self.to_wire_single_ref(r, current_file_path, cx))
-                            .collect(),
-                    ),
-                }
-            }
+            IsolatedTypeElementData::ReferenceTuple { references } => IsolatedTypeElementMetadata {
+                kind: IsolatedTypeElementKind::ReferenceTuple,
+                span: None,
+                references: Some(
+                    references
+                        .iter()
+                        .map(|r| self.to_wire_single_ref(r, current_file_path, cx))
+                        .collect(),
+                ),
+            },
             IsolatedTypeElementData::Never { span } => IsolatedTypeElementMetadata {
                 kind: IsolatedTypeElementKind::Never,
                 span: Some(SpanMetadata::new(*span, cx.converter)),
@@ -3634,6 +3634,7 @@ impl ClassData {
             ng_template_guards: self.ng_template_guards.clone(),
             animation_trigger_names,
             has_ng_field_directive: self.has_ng_field_directive,
+            public_methods: self.public_methods.clone(),
             is_structural,
             raw_imports,
             may_declare_providers,
