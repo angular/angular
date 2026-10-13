@@ -31,7 +31,7 @@ export class App {
 Two things to take note of:
 
 - There is an `@` prefix for the `if` because it is a special type of syntax called [Angular template syntax](guide/templates)
-- For applications using v16 and older please refer to the [Angular documentation for NgIf](guide/directives/structural-directives) for more information.
+- For applications that still use `*ngIf`, please refer to the [Angular documentation for NgIf](guide/directives/structural-directives) for more information.
 
 <docs-workflow>
 
