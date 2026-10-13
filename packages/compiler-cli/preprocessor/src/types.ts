@@ -137,6 +137,7 @@ export interface ClassMetadata {
   hasNgTemplateContextGuard: boolean;
   ngTemplateGuards: Array<TemplateGuardMetadata>;
   hasNgFieldDirective: boolean;
+  publicMethods: Array<string>;
   superClass?: DeclarationTuple;
   usesInheritance: boolean;
   usesOnChanges: boolean;
@@ -272,6 +273,8 @@ export interface DeclarationMetadata {
   ngTemplateGuards: Array<TemplateGuardMetadata>;
   animationTriggerNames?: LegacyAnimationTriggerNames;
   hasNgFieldDirective: boolean;
+  /** Public instance method names across the inheritance chain (`publicMethods` in ngtsc). */
+  publicMethods: Array<string>;
   isForwardRef: boolean;
   isStructural: boolean;
   cycleProne?: boolean;

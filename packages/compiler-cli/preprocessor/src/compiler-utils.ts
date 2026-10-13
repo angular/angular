@@ -609,6 +609,7 @@ export function metadataToDeclaration(
     hasNgTemplateContextGuard: classMeta.hasNgTemplateContextGuard || false,
     ngTemplateGuards: classMeta.ngTemplateGuards || [],
     hasNgFieldDirective: classMeta.hasNgFieldDirective || false,
+    publicMethods: classMeta.publicMethods ?? [],
     isForwardRef:
       'isForwardRef' in meta ? ((meta as {isForwardRef?: boolean}).isForwardRef ?? false) : false,
     isStructural:

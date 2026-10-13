@@ -81,6 +81,12 @@ fn merge_class_info(info: &mut ClassInfo, super_info: &ClassInfo) {
     }
     info.is_structural = info.is_structural || super_info.is_structural;
 
+    for name in &super_info.public_methods {
+        if !info.public_methods.contains(name) {
+            info.public_methods.push(name.clone());
+        }
+    }
+
     if let Some(super_host_dirs) = &super_info.host_directives {
         let local_host_dirs = info.host_directives.get_or_insert_with(Vec::new);
         for shd in super_host_dirs {

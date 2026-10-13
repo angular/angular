@@ -651,18 +651,42 @@ pub fn extract_provider_span_with_forward_ref<'a>(
     }
 }
 
-/// Extract `hasNgTemplateContextGuard`, `ngTemplateGuards`, and `hasNgFieldDirective` from a class body.
-pub fn extract_template_guards_and_field_directive(
+/// Type-checking facts read off a class body in a single pass.
+#[derive(Clone, Debug, Default)]
+pub struct ClassBodyTypeCheckMeta {
+    pub has_ng_template_context_guard: bool,
+    pub ng_template_guards: Vec<crate::TemplateGuardMetadata>,
+    pub has_ng_field_directive: bool,
+    /// Names of the class's own public instance methods, in declaration order and deduplicated
+    /// (overload signatures share a name). Signal-forms type-checking reads these to recognize
+    /// `ControlValueAccessor`-shaped directives.
+    pub public_methods: Vec<String>,
+}
+
+/// Extract `hasNgTemplateContextGuard`, `ngTemplateGuards`, `hasNgFieldDirective` and
+/// `publicMethods` from a class body.
+///
+/// Mirrors ngtsc's `extractDirectiveTypeCheckMeta`, which works on the class's own members only;
+/// inherited members are merged in by `flattenInheritedDirectiveMetadata`.
+/// https://github.com/angular/angular/blob/96b8042/packages/compiler-cli/src/ngtsc/metadata/src/util.ts#L180-L255
+pub fn extract_class_body_type_check_meta(
     class: &oxc_ast::ast::Class<'_>,
-) -> (bool, Vec<crate::TemplateGuardMetadata>, bool) {
+) -> ClassBodyTypeCheckMeta {
     let mut has_ng_template_context_guard = false;
     let mut ng_template_guards = Vec::new();
     let mut has_ng_field_directive = false;
+    let mut public_methods: Vec<String> = Vec::new();
 
     for member in &class.body.body {
         match member {
             oxc_ast::ast::ClassElement::MethodDefinition(method) => {
                 if !method.r#static {
+                    let Some(name) = public_instance_method_name(method) else {
+                        continue;
+                    };
+                    if !public_methods.iter().any(|existing| existing == name) {
+                        public_methods.push(name.to_string());
+                    }
                     continue;
                 }
                 let Some(property_name) = extract_property_key(&method.key) else {
@@ -721,11 +745,33 @@ pub fn extract_template_guards_and_field_directive(
         }
     }
 
-    (
+    ClassBodyTypeCheckMeta {
         has_ng_template_context_guard,
         ng_template_guards,
         has_ng_field_directive,
-    )
+        public_methods,
+    }
+}
+
+fn public_instance_method_name<'a>(
+    method: &'a oxc_ast::ast::MethodDefinition<'a>,
+) -> Option<&'a str> {
+    use oxc_ast::ast::{MethodDefinitionKind, PropertyKey, TSAccessibility};
+
+    if method.kind != MethodDefinitionKind::Method {
+        return None;
+    }
+    if matches!(
+        method.accessibility,
+        Some(TSAccessibility::Private | TSAccessibility::Protected)
+    ) {
+        return None;
+    }
+    match &method.key {
+        PropertyKey::StaticIdentifier(ident) => Some(ident.name.as_str()),
+        PropertyKey::StringLiteral(literal) => Some(literal.value.as_str()),
+        _ => None,
+    }
 }
 
 fn is_local_type_export(entry: &ExportEntry<'_>, scoping: &Scoping, root_scope: ScopeId) -> bool {

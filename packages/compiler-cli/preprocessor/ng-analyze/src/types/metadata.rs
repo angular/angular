@@ -948,6 +948,7 @@ pub struct ClassMetadata {
     pub has_ng_template_context_guard: bool,
     pub ng_template_guards: Vec<TemplateGuardMetadata>,
     pub has_ng_field_directive: bool,
+    pub public_methods: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub super_class: Option<DeclarationTuple>,
     pub uses_inheritance: bool,

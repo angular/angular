@@ -772,6 +772,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                     let flattened =
                         crate::analyzer::flatten_class_info(comp_info.clone(), ctx).await;
                     class.flattened_fields = flattened.fields;
+                    class.public_methods = flattened.public_methods;
                 }
             }
 
@@ -961,6 +962,7 @@ fn class_index_from_registrations(
             schemas: reg.schemas.clone(),
             animation_trigger_names: reg.animation_trigger_names.clone(),
             has_ng_field_directive: reg.has_ng_field_directive,
+            public_methods: reg.public_methods.clone(),
             raw_imports: reg.raw_imports.clone(),
             may_declare_providers: reg.may_declare_providers,
             super_class: reg.super_class.clone(),

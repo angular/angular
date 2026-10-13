@@ -568,9 +568,7 @@ function declarationToMetadata(
         .filter((f) => f.kind === 'input' && f.input && !f.input.propertySpan)
         .map((f) => f.input!.name),
     ),
-    // TODO(parity): populate `publicMethods`; signal-forms type-checking uses it to detect
-    // ControlValueAccessor directives (`writeValue`, `registerOnChange`, `registerOnTouched`).
-    publicMethods: new Set(),
+    publicMethods: new Set(decl.publicMethods ?? []),
     ngContentSelectors: decl.ngContentSelectors || null,
     animationTriggerNames: decl.animationTriggerNames || null,
   };
