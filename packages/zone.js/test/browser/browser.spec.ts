@@ -592,6 +592,7 @@ describe('Zone Browser', function () {
           htmlElementTagNames.forEach((tagName) => {
             checkIsOnPropertiesPatched(document.createElement(tagName), eventNames, [
               'onorientationchange',
+              'onpaint',
             ]);
           });
         });
