@@ -615,6 +615,45 @@ describe('HtmlLexer', () => {
           [TokenType.EOF, ''],
         ]);
       });
+
+      // A lowercase `@` cannot start a selectorless reference, so it is an ordinary attribute name.
+      // Angular uses `@name` for animation triggers, and this used to loop forever.
+      it('should treat a lowercase `@` as an attribute name', () => {
+        expect(tokenizeAndHumanizeParts('<div @fadeIn></div>', options)).toEqual([
+          [TokenType.TAG_OPEN_START, '', 'div'],
+          [TokenType.ATTR_NAME, '', '@fadeIn'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.TAG_CLOSE, '', 'div'],
+          [TokenType.EOF],
+        ]);
+        expect(tokenizeAndHumanizeParts('<div @fadeIn="state"></div>', options)).toEqual([
+          [TokenType.TAG_OPEN_START, '', 'div'],
+          [TokenType.ATTR_NAME, '', '@fadeIn'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_VALUE_TEXT, 'state'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.TAG_CLOSE, '', 'div'],
+          [TokenType.EOF],
+        ]);
+      });
+
+      it('should treat any other `@` that cannot start a directive as an attribute name', () => {
+        expect(tokenizeAndHumanizeParts('<div @></div>', options)).toEqual([
+          [TokenType.TAG_OPEN_START, '', 'div'],
+          [TokenType.ATTR_NAME, '', '@'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.TAG_CLOSE, '', 'div'],
+          [TokenType.EOF],
+        ]);
+        expect(tokenizeAndHumanizeParts('<div @1></div>', options)).toEqual([
+          [TokenType.TAG_OPEN_START, '', 'div'],
+          [TokenType.ATTR_NAME, '', '@1'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.TAG_CLOSE, '', 'div'],
+          [TokenType.EOF],
+        ]);
+      });
     });
 
     describe('escapable raw text', () => {

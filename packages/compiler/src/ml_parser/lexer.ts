@@ -934,12 +934,17 @@ class _Tokenizer {
           const nameStart = start.clone();
           nameStart.advance();
 
+          // Selectorless directives are referenced by their PascalCase class name (`@Dir`).
           if (isSelectorlessNameStart(nameStart.peek())) {
             this._consumeDirective(start, nameStart);
+            continue;
           }
-        } else {
-          this._consumeAttribute();
         }
+
+        // Any other `@` — a lowercase animation trigger like `@fadeIn`, or a lone `@` — is part of
+        // an attribute name. Falling through is also what makes the loop advance: previously such
+        // an `@` matched neither branch, so the cursor never moved and the lexer looped forever.
+        this._consumeAttribute();
       }
 
       if (openToken.type === TokenType.COMPONENT_OPEN_START) {
