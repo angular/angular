@@ -17,7 +17,6 @@ import {toObservable} from '../../rxjs-interop';
 import {
   AfterViewInit,
   ApplicationRef,
-  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   computed,
@@ -933,7 +932,6 @@ describe('reactivity', () => {
         @Component({
           selector: 'test-cmp',
           template: '',
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class TestCmp {
           ngOnInitRan = false;
@@ -949,14 +947,13 @@ describe('reactivity', () => {
         @Component({
           imports: [TestCmp],
           template: `
-            @if (cond) {
+            @if (cond()) {
               <test-cmp />
             }
           `,
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class DriverCmp {
-          cond = false;
+          cond = signal(false);
         }
 
         const fixture = TestBed.createComponent(DriverCmp);
@@ -964,8 +961,7 @@ describe('reactivity', () => {
         expect(log).toEqual([]);
 
         // Toggle the @if, which should create and run the effect.
-        fixture.componentInstance.cond = true;
-        fixture.changeDetectorRef.markForCheck();
+        fixture.componentInstance.cond.set(true);
         fixture.detectChanges();
         expect(log).toEqual(['init', 'effect']);
       });

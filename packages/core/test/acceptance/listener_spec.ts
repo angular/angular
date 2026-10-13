@@ -9,7 +9,6 @@
 import {NgFor, NgIf, NgTemplateOutlet} from '@angular/common';
 import {By} from '@angular/platform-browser';
 import {
-  ChangeDetectionStrategy,
   Component,
   Directive,
   ErrorHandler,
@@ -295,7 +294,6 @@ describe('event listeners', () => {
       selector: 'with-clicks-cmpt',
       template: `<button likes-clicks (click)="count()" md-button>Click me!</button>`,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
       imports: [forwardRef(() => MdButton), forwardRef(() => LikesClicks)],
     })
     class WithClicksCmpt {

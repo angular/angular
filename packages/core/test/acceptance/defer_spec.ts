@@ -11,9 +11,9 @@ import {isBrowser, timeout} from '@angular/private/testing';
 import {ActivatedRoute, provideRouter, Router, RouterOutlet} from '@angular/router';
 import {Console} from '../../src/console';
 import {
+  ChangeDetectionStrategy,
   ApplicationRef,
   Attribute,
-  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   createComponent,
@@ -189,8 +189,6 @@ function createFixture(template: string) {
   @Component({
     selector: 'nested-cmp',
     template: '{{ block }}',
-
-    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class NestedCmp {
     @Input() block!: string;
@@ -199,7 +197,6 @@ function createFixture(template: string) {
   @Component({
     imports: [NestedCmp],
     template,
-
     changeDetection: ChangeDetectionStrategy.Eager,
   })
   class MyCmp {
@@ -264,7 +261,6 @@ describe('@defer', () => {
     @Component({
       selector: 'my-lazy-cmp',
       template: 'Hi!',
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyLazyCmp {}
@@ -283,7 +279,6 @@ describe('@defer', () => {
           Failed to load dependencies :(
         }
       `,
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyCmp {
@@ -311,7 +306,6 @@ describe('@defer', () => {
     @Component({
       selector: 'my-lazy-cmp',
       template: 'Hi!',
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyLazyCmp {}
@@ -325,7 +319,6 @@ describe('@defer', () => {
           <my-lazy-cmp />
         }
       `,
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyCmp {
@@ -362,7 +355,6 @@ describe('@defer', () => {
       template: `@defer (when isVisible | test; prefetch when isVisible | test) {
         Hello
       }`,
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyCmp {
@@ -426,8 +418,6 @@ describe('@defer', () => {
         }
         <div mode="eager" dirA dirB dirC></div>
       `,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyCmp {
       isVisible = true;
@@ -453,8 +443,6 @@ describe('@defer', () => {
       @Component({
         selector: 'my-lazy-cmp',
         template: '{{ foo }}',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyLazyCmp {
         foo = 'bar';
@@ -498,8 +486,6 @@ describe('@defer', () => {
             <my-lazy-cmp />
           }
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {}
 
@@ -621,8 +607,6 @@ describe('@defer', () => {
             Defer block #3
           }
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {}
 
@@ -650,8 +634,6 @@ describe('@defer', () => {
     it('should not produce a message about eagerly loaded deps if no defer blocks are present', () => {
       @Component({
         template: `No defer blocks`,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {}
 
@@ -675,8 +657,6 @@ describe('@defer', () => {
       @Component({
         selector: 'nested-cmp',
         template: 'Rendering {{ block }} block.',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class NestedCmp {
         @Input() block!: string;
@@ -694,8 +674,6 @@ describe('@defer', () => {
             Loading
           }
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class RootCmp {}
 
@@ -748,8 +726,6 @@ describe('@defer', () => {
       @Component({
         selector: 'nested-cmp',
         template: 'Rendering {{ block }} block.',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class NestedCmp {
         @Input() block!: string;
@@ -767,8 +743,6 @@ describe('@defer', () => {
             Loading
           }
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class RootCmp {}
 
@@ -832,14 +806,12 @@ describe('@defer', () => {
       @Component({
         selector: 'cmp-a',
         template: 'A',
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class CmpA {}
 
       @Component({
         selector: 'cmp-b',
         template: 'B',
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class CmpB {}
 
@@ -856,7 +828,6 @@ describe('@defer', () => {
             }
           }
         `,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class RootCmp {
         showB = signal(false);
@@ -911,7 +882,6 @@ describe('@defer', () => {
       @Component({
         selector: 'nested-cmp',
         template: 'Rendering {{ block }} block.',
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class NestedCmp {
@@ -935,7 +905,6 @@ describe('@defer', () => {
             <nested-cmp [block]="'error'" />
           }
         `,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {
@@ -1112,7 +1081,6 @@ describe('@defer', () => {
       @Component({
         selector: 'nested-cmp',
         template: 'Rendering {{ block }} block.',
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class NestedCmp {
@@ -1134,7 +1102,6 @@ describe('@defer', () => {
             <nested-cmp [block]="'error'" />
           }
         `,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {
@@ -1182,7 +1149,6 @@ describe('@defer', () => {
       @Component({
         selector: 'nested-cmp',
         template: 'NestedCmp',
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class NestedCmp {}
@@ -1199,7 +1165,6 @@ describe('@defer', () => {
             Placeholder
           }
         `,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {
@@ -1321,7 +1286,6 @@ describe('@defer', () => {
       @Component({
         selector: 'cmp-with-error',
         template: 'CmpWithError',
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class CmpWithError {
@@ -1344,7 +1308,6 @@ describe('@defer', () => {
             Placeholder
           }
         `,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {
@@ -1410,7 +1373,6 @@ describe('@defer', () => {
           @Component({
             selector: 'nested-cmp',
             template: 'Rendering {{ block }} block.',
-
             changeDetection: ChangeDetectionStrategy.Eager,
           })
           class NestedCmp {
@@ -1429,7 +1391,6 @@ describe('@defer', () => {
                 Placeholder!
               }
             `,
-
             changeDetection: ChangeDetectionStrategy.Eager,
           })
           class MyCmp {
@@ -1494,7 +1455,6 @@ describe('@defer', () => {
       @Component({
         selector: 'nested-cmp',
         template: 'Rendering {{ block }} block.',
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class NestedCmp {
@@ -1518,7 +1478,6 @@ describe('@defer', () => {
             <nested-cmp [block]="'error'" />
           }
         `,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {
@@ -1562,7 +1521,6 @@ describe('@defer', () => {
       @Component({
         selector: 'cmp-a',
         template: 'CmpA',
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class CmpA {}
@@ -1570,7 +1528,6 @@ describe('@defer', () => {
       @Component({
         selector: 'cmp-b',
         template: 'CmpB',
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class CmpB {}
@@ -1578,7 +1535,6 @@ describe('@defer', () => {
       @Component({
         selector: 'nested-cmp',
         template: 'Rendering {{ block }} block.',
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class NestedCmp {
@@ -1603,7 +1559,6 @@ describe('@defer', () => {
             <nested-cmp [block]="'error'" />
           }
         `,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {
@@ -1625,7 +1580,6 @@ describe('@defer', () => {
             }
           </my-app>
         `,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class RootCmp {
@@ -1678,7 +1632,6 @@ describe('@defer', () => {
       @Component({
         selector: 'cmp-a',
         template: 'CmpA',
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class CmpA {}
@@ -1686,7 +1639,6 @@ describe('@defer', () => {
       @Component({
         selector: 'nested-cmp',
         template: 'Rendering {{ block }} block.',
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class NestedCmp {
@@ -1709,7 +1661,6 @@ describe('@defer', () => {
             <nested-cmp [block]="'placeholder'" />
           }
         `,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class RootCmp {
@@ -1755,8 +1706,6 @@ describe('@defer', () => {
       @Component({
         selector: 'cmp-a',
         template: 'CmpA',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class CmpA {}
 
@@ -1771,8 +1720,6 @@ describe('@defer', () => {
             }
           }
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class RootCmp {}
 
@@ -1911,7 +1858,6 @@ describe('@defer', () => {
       @Component({
         selector: 'nested-cmp',
         template: 'Rendering {{ block }} block.',
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class NestedCmp {
@@ -1928,7 +1874,6 @@ describe('@defer', () => {
             Placeholder
           }
         `,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class RootCmp {
@@ -1994,7 +1939,6 @@ describe('@defer', () => {
       @Component({
         selector: 'nested-cmp',
         template: 'Rendering {{ block }} block.',
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class NestedCmp {
@@ -2013,7 +1957,6 @@ describe('@defer', () => {
             Placeholder
           }
         `,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class RootCmp {
@@ -2076,7 +2019,6 @@ describe('@defer', () => {
       @Component({
         selector: 'nested-cmp',
         template: 'Rendering {{ block }} block.',
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class NestedCmp {
@@ -2095,7 +2037,6 @@ describe('@defer', () => {
             Placeholder
           }
         `,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class RootCmp {
@@ -2146,7 +2087,6 @@ describe('@defer', () => {
       @Component({
         selector: 'nested-cmp',
         template: 'Rendering {{ block }} block.',
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class NestedCmp {
@@ -2163,7 +2103,6 @@ describe('@defer', () => {
             Placeholder
           }
         `,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class RootCmp {
@@ -2251,7 +2190,6 @@ describe('@defer', () => {
       @Component({
         selector: 'nested-cmp',
         template: 'Rendering {{ block }} block.',
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class NestedCmp {
@@ -2270,7 +2208,6 @@ describe('@defer', () => {
             }
           }
         `,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class RootCmp {
@@ -2334,7 +2271,6 @@ describe('@defer', () => {
       @Component({
         selector: 'nested-cmp',
         template: 'Rendering {{ block }} block.',
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class NestedCmp {
@@ -2353,7 +2289,6 @@ describe('@defer', () => {
             }
           }
         `,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class RootCmp {
@@ -2428,7 +2363,6 @@ describe('@defer', () => {
       @Component({
         selector: 'nested-cmp',
         template: 'Rendering {{ block }} block.',
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class NestedCmp {
@@ -2451,7 +2385,6 @@ describe('@defer', () => {
             With Timeout Placeholder
           }
         `,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class RootCmp {
@@ -2516,8 +2449,6 @@ describe('@defer', () => {
       @Component({
         selector: 'nested-cmp',
         template: 'Rendering {{ block }} block.',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class NestedCmp {
         @Input() block!: string;
@@ -2535,8 +2466,6 @@ describe('@defer', () => {
             }
           }
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class RootCmp {
         items = ['a', 'b', 'c'];
@@ -2588,7 +2517,6 @@ describe('@defer', () => {
       @Component({
         selector: 'nested-cmp',
         template: 'Rendering {{ block }} block.',
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class NestedCmp {
@@ -2605,7 +2533,6 @@ describe('@defer', () => {
             Placeholder for prefetch idle timeout test
           }
         `,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class RootCmp {
@@ -2671,7 +2598,6 @@ describe('@defer', () => {
       @Component({
         selector: 'nested-cmp',
         template: 'Rendering {{ block }} block.',
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class NestedCmp {
@@ -2688,7 +2614,6 @@ describe('@defer', () => {
             Placeholder
           }
         `,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class RootCmp {
@@ -2752,8 +2677,6 @@ describe('@defer', () => {
       @Component({
         selector: 'nested-cmp',
         template: 'Primary block content.',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class NestedCmp {
         @Input() block!: string;
@@ -2762,8 +2685,6 @@ describe('@defer', () => {
       @Component({
         selector: 'another-nested-cmp',
         template: 'Nested block component.',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AnotherNestedCmp {}
 
@@ -2789,8 +2710,6 @@ describe('@defer', () => {
             Root block placeholder
           }
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class RootCmp {}
 
@@ -2852,8 +2771,6 @@ describe('@defer', () => {
       @Component({
         selector: 'nested-cmp',
         template: 'Rendering {{ block }} block.',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class NestedCmp {
         @Input() block!: string;
@@ -2871,8 +2788,6 @@ describe('@defer', () => {
             }
           }
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class RootCmp {
         items = ['a', 'b', 'c'];
@@ -2928,7 +2843,6 @@ describe('@defer', () => {
             Hello world!
           }
         `,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class RootCmp {
@@ -2979,8 +2893,6 @@ describe('@defer', () => {
             </div>
           </div>
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {}
 
@@ -2998,7 +2910,6 @@ describe('@defer', () => {
       @Component({
         selector: 'some-comp',
         template: '<button></button>',
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class SomeComp {}
 
@@ -3019,8 +2930,6 @@ describe('@defer', () => {
             </div>
           </div>
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {}
 
@@ -3049,8 +2958,6 @@ describe('@defer', () => {
             </div>
           </button>
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {}
 
@@ -3081,8 +2988,6 @@ describe('@defer', () => {
             }
           }
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {
         cond = true;
@@ -3102,7 +3007,6 @@ describe('@defer', () => {
       @Component({
         selector: 'some-comp',
         template: '<button></button>',
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class SomeComp {}
 
@@ -3123,8 +3027,6 @@ describe('@defer', () => {
             }
           }
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {
         cond = true;
@@ -3154,8 +3056,6 @@ describe('@defer', () => {
             </div>
           }
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {}
 
@@ -3173,7 +3073,6 @@ describe('@defer', () => {
       @Component({
         selector: 'some-comp',
         template: '<button></button>',
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class SomeComp {}
 
@@ -3191,8 +3090,6 @@ describe('@defer', () => {
             </div>
           }
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {}
 
@@ -3219,8 +3116,6 @@ describe('@defer', () => {
 
           <button #trigger></button>
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {}
 
@@ -3250,8 +3145,6 @@ describe('@defer', () => {
 
           <button #trigger></button>
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {}
 
@@ -3275,8 +3168,6 @@ describe('@defer', () => {
             <button>Placeholder</button>
           }
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {}
 
@@ -3306,8 +3197,6 @@ describe('@defer', () => {
             </div>
           </div>
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {}
 
@@ -3338,8 +3227,6 @@ describe('@defer', () => {
 
           <button #trigger></button>
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {}
 
@@ -3361,8 +3248,6 @@ describe('@defer', () => {
           }
           <button #trigger></button>
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {}
 
@@ -3391,7 +3276,6 @@ describe('@defer', () => {
             <button #trigger></button>
           }
         `,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {
@@ -3423,7 +3307,6 @@ describe('@defer', () => {
 
           <button #trigger></button>
         `,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {
@@ -3455,8 +3338,6 @@ describe('@defer', () => {
 
           <button #trigger></button>
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {}
 
@@ -3485,8 +3366,6 @@ describe('@defer', () => {
           }
           <button #trigger></button>
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {
         // We need a `when` trigger here so that `on idle` doesn't get added automatically.
@@ -3532,8 +3411,6 @@ describe('@defer', () => {
             <button></button>
           }
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {
         // We need a `when` trigger here so that `on idle` doesn't get added automatically.
@@ -3588,8 +3465,6 @@ describe('@defer', () => {
 
           <button #trigger></button>
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {}
 
@@ -3618,8 +3493,6 @@ describe('@defer', () => {
             <button>Placeholder</button>
           }
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {}
 
@@ -3657,8 +3530,6 @@ describe('@defer', () => {
 
           <button #trigger></button>
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {}
 
@@ -3686,8 +3557,6 @@ describe('@defer', () => {
           }
           <button #trigger></button>
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {}
 
@@ -3715,18 +3584,16 @@ describe('@defer', () => {
 
       @Component({
         template: `
-          @if (renderBlock) {
+          @if (renderBlock()) {
             @defer (on hover(trigger)) {
               Main content
             }
             <button #trigger></button>
           }
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {
-        renderBlock = true;
+        renderBlock = signal(true);
       }
 
       const fixture = TestBed.createComponent(MyCmp);
@@ -3735,7 +3602,7 @@ describe('@defer', () => {
       const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
       const spy = spyOn(button, 'removeEventListener');
 
-      fixture.componentInstance.renderBlock = false;
+      fixture.componentInstance.renderBlock.set(false);
       fixture.detectChanges();
 
       expect(spy).toHaveBeenCalledTimes(3);
@@ -3752,7 +3619,7 @@ describe('@defer', () => {
 
       @Component({
         template: `
-          @if (renderBlock) {
+          @if (renderBlock()) {
             @defer (on hover(trigger)) {
               Main content
             }
@@ -3760,11 +3627,9 @@ describe('@defer', () => {
 
           <button #trigger></button>
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {
-        renderBlock = true;
+        renderBlock = signal(true);
       }
 
       const fixture = TestBed.createComponent(MyCmp);
@@ -3773,7 +3638,7 @@ describe('@defer', () => {
       const button = fixture.nativeElement.querySelector('button');
       const spy = spyOn(button, 'removeEventListener');
 
-      fixture.componentInstance.renderBlock = false;
+      fixture.componentInstance.renderBlock.set(false);
       fixture.detectChanges();
 
       expect(spy).toHaveBeenCalledTimes(3);
@@ -3795,8 +3660,6 @@ describe('@defer', () => {
           }
           <button #trigger></button>
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {
         // We need a `when` trigger here so that `on idle` doesn't get added automatically.
@@ -3848,8 +3711,6 @@ describe('@defer', () => {
             <button></button>
           }
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {
         // We need a `when` trigger here so that `on idle` doesn't get added automatically.
@@ -3893,8 +3754,6 @@ describe('@defer', () => {
       @Component({
         selector: 'nested-cmp',
         template: 'Rendering {{ block }} block.',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class NestedCmp {
         @Input() block!: string;
@@ -3912,8 +3771,6 @@ describe('@defer', () => {
             }
           }
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class RootCmp {
         items = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
@@ -3989,8 +3846,6 @@ describe('@defer', () => {
             placeholder[top]
           }
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class RootCmp {}
 
@@ -4026,7 +3881,6 @@ describe('@defer', () => {
       @Component({
         selector: 'nested-cmp',
         template: 'Rendering {{ block }} block.',
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class NestedCmp {
@@ -4045,7 +3899,6 @@ describe('@defer', () => {
             }
           }
         `,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class RootCmp {
@@ -4126,7 +3979,6 @@ describe('@defer', () => {
             Hello world!
           }
         `,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class RootCmp {
@@ -4258,8 +4110,6 @@ describe('@defer', () => {
 
           <button #trigger></button>
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {}
 
@@ -4284,8 +4134,6 @@ describe('@defer', () => {
             <button>Placeholder</button>
           }
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {}
 
@@ -4313,8 +4161,6 @@ describe('@defer', () => {
 
           <button #trigger></button>
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {}
 
@@ -4358,8 +4204,6 @@ describe('@defer', () => {
 
           <button #trigger></button>
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {}
 
@@ -4382,8 +4226,6 @@ describe('@defer', () => {
           }
           <button #trigger></button>
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {}
 
@@ -4413,7 +4255,6 @@ describe('@defer', () => {
             <button #trigger></button>
           }
         `,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {
@@ -4446,7 +4287,6 @@ describe('@defer', () => {
 
           <button #trigger></button>
         `,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {
@@ -4481,8 +4321,6 @@ describe('@defer', () => {
             Two
           }
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {}
 
@@ -4517,8 +4355,6 @@ describe('@defer', () => {
           }
           <button #trigger></button>
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {
         // We need a `when` trigger here so that `on idle` doesn't get added automatically.
@@ -4565,8 +4401,6 @@ describe('@defer', () => {
             <button></button>
           }
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {
         // We need a `when` trigger here so that `on idle` doesn't get added automatically.
@@ -4613,7 +4447,6 @@ describe('@defer', () => {
                 @placeholder {<button>p{{item}} </button>}
               }
            `,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {
         items = [1, 2, 3, 4, 5, 6];
@@ -4654,8 +4487,6 @@ describe('@defer', () => {
           }
           <button #trigger></button>
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {}
 
@@ -4684,8 +4515,6 @@ describe('@defer', () => {
           }
           <button #trigger></button>
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {}
 
@@ -4715,8 +4544,6 @@ describe('@defer', () => {
 
           <button #trigger></button>
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {}
 
@@ -4746,8 +4573,6 @@ describe('@defer', () => {
 
           <button #trigger></button>
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {}
 
@@ -4783,8 +4608,6 @@ describe('@defer', () => {
 
           <button #trigger></button>
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {}
 
@@ -4851,7 +4674,6 @@ describe('@defer', () => {
           <button #trigger></button>
           <div #prefetchTrigger></div>
         `,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {
@@ -4900,7 +4722,6 @@ describe('@defer', () => {
           <button #trigger></button>
           <div #prefetchTrigger></div>
         `,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {
@@ -4968,16 +4789,12 @@ describe('@defer', () => {
         selector: 'parent-cmp',
         template: '<ng-content />',
         providers: [{provide: TokenA, useValue: 'TokenA.ParentCmp'}],
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class ParentCmp {}
 
       @Component({
         selector: 'child-cmp',
         template: 'Token A: {{ parentTokenA }} | Token B: {{ parentTokenB }}',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class ChildCmp {
         parentTokenA = inject(TokenA);
@@ -4994,8 +4811,6 @@ describe('@defer', () => {
         `,
         imports: [ChildCmp, ParentCmp],
         providers: [{provide: TokenB, useValue: 'TokenB.RootCmp'}],
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class RootCmp {
         isVisible = true;
@@ -5047,8 +4862,6 @@ describe('@defer', () => {
           selector: 'lazy',
           imports: [MyModule],
           template: ` Lazy Component! Token: {{ token }} `,
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Lazy {
           token = inject(TokenA);
@@ -5061,16 +4874,12 @@ describe('@defer', () => {
               <lazy />
             }
           `,
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Dialog {}
 
         @Component({
           providers: [{provide: TokenA, useValue: 'TokenA from RootCmp'}],
           template: ` <div #container></div> `,
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class RootCmp {
           injector = inject(Injector);
@@ -5142,8 +4951,6 @@ describe('@defer', () => {
         selector: 'chart',
         template: 'Service:{{ svc.id }}|TokenA:{{ tokenA }}',
         standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Chart {
         svc = inject(Service);
@@ -5161,8 +4968,6 @@ describe('@defer', () => {
         selector: 'chart-collection',
         template: '<chart />',
         imports: [ChartsModule],
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class ChartCollectionComponent {}
 
@@ -5176,8 +4981,6 @@ describe('@defer', () => {
         `,
         imports: [ChartCollectionComponent],
         providers: [{provide: TokenA, useValue: 'MyCmp.A'}],
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {
         items = [1, 2, 3];
@@ -5239,8 +5042,6 @@ describe('@defer', () => {
       @Component({
         imports: [RouterOutlet],
         template: '<router-outlet />',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {}
 
@@ -5248,8 +5049,6 @@ describe('@defer', () => {
         selector: 'another-child',
         imports: [CommonModule, MyModuleA],
         template: 'another child: {{route.snapshot.url[0]}} | token: {{tokenA}}',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AnotherChild {
         route = inject(ActivatedRoute);
@@ -5267,8 +5066,6 @@ describe('@defer', () => {
             <another-child />
           }
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Child {
         route = inject(ActivatedRoute);

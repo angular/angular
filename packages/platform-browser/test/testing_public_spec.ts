@@ -9,7 +9,6 @@
 import {NgIf} from '@angular/common';
 import {ResourceLoader} from '@angular/compiler';
 import {
-  ChangeDetectionStrategy,
   Compiler,
   Component,
   CUSTOM_ELEMENTS_SCHEMA,
@@ -22,6 +21,7 @@ import {
   NgModule,
   Optional,
   Pipe,
+  signal,
   SkipSelf,
   TransferState,
   Type,
@@ -67,13 +67,12 @@ class MockChildComp {}
 class ParentComp {}
 
 @Component({
-  template: `MyIf(<span *ngIf="showMore">More</span>)`,
-  changeDetection: ChangeDetectionStrategy.Eager,
+  template: `MyIf(<span *ngIf="showMore()">More</span>)`,
   imports: [NgIf],
 })
 @Injectable()
 class MyIfComp {
-  showMore: boolean = false;
+  showMore = signal(false);
 }
 
 @Component({
@@ -1016,40 +1015,39 @@ Did you run and wait for 'resolveComponentResources()'?`);
       expect(fixture.nativeElement).toHaveText('Original Child');
     }));
 
-    it('should allow changing members of the component', waitForAsync(() => {
+    it('should allow changing members of the component', waitForAsync(async () => {
       const componentFixture = TestBed.createComponent(MyIfComp);
-      componentFixture.detectChanges();
+      await componentFixture.whenStable();
       expect(componentFixture.nativeElement).toHaveText('MyIf()');
 
-      componentFixture.componentInstance.showMore = true;
-      componentFixture.changeDetectorRef.markForCheck();
-      componentFixture.detectChanges();
+      componentFixture.componentInstance.showMore.set(true);
+      await componentFixture.whenStable();
       expect(componentFixture.nativeElement).toHaveText('MyIf(More)');
     }));
 
-    it('should override a template', waitForAsync(() => {
+    it('should override a template', waitForAsync(async () => {
       TestBed.overrideComponent(ChildComp, {set: {template: '<span>Mock</span>'}});
       const componentFixture = TestBed.createComponent(ChildComp);
-      componentFixture.detectChanges();
+      await componentFixture.whenStable();
       expect(componentFixture.nativeElement).toHaveText('Mock');
     }));
 
-    it('should override a provider', waitForAsync(() => {
+    it('should override a provider', waitForAsync(async () => {
       TestBed.overrideComponent(TestProvidersComp, {
         set: {providers: [{provide: FancyService, useClass: MockFancyService}]},
       });
       const componentFixture = TestBed.createComponent(TestProvidersComp);
-      componentFixture.detectChanges();
+      await componentFixture.whenStable();
       expect(componentFixture.nativeElement).toHaveText('injected value: mocked out value');
     }));
 
-    it('should override a viewProvider', waitForAsync(() => {
+    it('should override a viewProvider', waitForAsync(async () => {
       TestBed.overrideComponent(TestViewProvidersComp, {
         set: {viewProviders: [{provide: FancyService, useClass: MockFancyService}]},
       });
 
       const componentFixture = TestBed.createComponent(TestViewProvidersComp);
-      componentFixture.detectChanges();
+      await componentFixture.whenStable();
       expect(componentFixture.nativeElement).toHaveText('injected value: mocked out value');
     }));
 

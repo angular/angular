@@ -175,7 +175,7 @@ describe('after render hooks', () => {
 
         @Component({
           selector: 'child-comp',
-          imports: [forwardRef(() => ParentComp)],
+
           template: '',
         })
         class ChildComp {
@@ -189,7 +189,7 @@ describe('after render hooks', () => {
         @Component({
           selector: 'parent',
           template: `<child-comp></child-comp>`,
-          imports: [forwardRef(() => ChildComp)],
+          imports: [ChildComp],
         })
         class ParentComp {
           changeDetectorRef = inject(ChangeDetectorRef);
@@ -347,7 +347,7 @@ describe('after render hooks', () => {
 
         @Component({
           selector: 'comp-a',
-          imports: [forwardRef(() => Root), forwardRef(() => CompB)],
+
           template: '',
         })
         class CompA {
@@ -380,7 +380,7 @@ describe('after render hooks', () => {
 
         @Component({
           selector: 'comp-b',
-          imports: [forwardRef(() => Root), forwardRef(() => CompA)],
+
           template: '',
         })
         class CompB {
@@ -718,7 +718,7 @@ describe('after render hooks', () => {
 
         @Component({
           selector: 'child-comp',
-          imports: [forwardRef(() => ParentComp)],
+
           template: '',
         })
         class ChildComp {
@@ -732,7 +732,7 @@ describe('after render hooks', () => {
         @Component({
           selector: 'parent',
           template: `<child-comp></child-comp>`,
-          imports: [forwardRef(() => ChildComp)],
+          imports: [ChildComp],
         })
         class ParentComp {
           changeDetectorRef = inject(ChangeDetectorRef);
@@ -862,7 +862,7 @@ describe('after render hooks', () => {
 
         @Component({
           selector: 'inner',
-          imports: [forwardRef(() => Outer)],
+
           template: '',
         })
         class Inner {
@@ -876,7 +876,7 @@ describe('after render hooks', () => {
         @Component({
           selector: 'outer',
           template: '<inner></inner>',
-          imports: [forwardRef(() => Inner)],
+          imports: [Inner],
         })
         class Outer {
           changeDetectorRef = inject(ChangeDetectorRef);
@@ -979,7 +979,7 @@ describe('after render hooks', () => {
 
         @Component({
           selector: 'comp-a',
-          imports: [forwardRef(() => Root), forwardRef(() => CompB)],
+
           template: '',
         })
         class CompA {
@@ -1012,7 +1012,7 @@ describe('after render hooks', () => {
 
         @Component({
           selector: 'comp-b',
-          imports: [forwardRef(() => Root), forwardRef(() => CompA)],
+
           template: '',
         })
         class CompB {

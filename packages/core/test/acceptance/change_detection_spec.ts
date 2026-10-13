@@ -83,7 +83,6 @@ describe('change detection', () => {
     @Component({
       template: ` <ng-template #vm="vm" viewManipulation>{{ 'change-detected' }}</ng-template> `,
       imports: [ViewManipulation],
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestCmpt {}
@@ -125,7 +124,6 @@ describe('change detection', () => {
 
       @Component({
         template: '<ng-template #template></ng-template>',
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Container {
         @ViewChild('template', {read: ViewContainerRef, static: true}) vcr!: ViewContainerRef;
@@ -182,7 +180,6 @@ describe('change detection', () => {
           <ng-template #vm="vm" viewManipulation>{{ increment('embeddedView') }}</ng-template>
         `,
         imports: [ViewManipulation],
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
@@ -359,9 +356,6 @@ describe('change detection', () => {
         host: {
           '[class.x]': 'x',
         },
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-        imports: [forwardRef(() => Root), forwardRef(() => Child)],
       })
       class HasHostBinding {
         x = true;
@@ -372,8 +366,7 @@ describe('change detection', () => {
         template: '<has-host-binding></has-host-binding>',
         inputs: ['input'],
 
-        changeDetection: ChangeDetectionStrategy.Eager,
-        imports: [forwardRef(() => Root), forwardRef(() => HasHostBinding)],
+        imports: [HasHostBinding],
       })
       class Child {
         /**
@@ -397,8 +390,7 @@ describe('change detection', () => {
         selector: 'root',
         template: '<child [input]="3"></child>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
-        imports: [forwardRef(() => Child), forwardRef(() => HasHostBinding)],
+        imports: [Child],
       })
       class Root {}
 
@@ -429,7 +421,7 @@ describe('change detection', () => {
     @Component({
       selector: 'my-app',
       template: '<my-comp [name]="name"></my-comp>',
-      imports: [forwardRef(() => MyComponent)],
+      imports: [MyComponent],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyApp {
@@ -524,8 +516,7 @@ describe('change detection', () => {
         selector: 'button-parent',
         template: '<my-comp></my-comp><button id="parent" (click)="noop()"></button>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
-        imports: [forwardRef(() => MyComponent)],
+        imports: [MyComponent],
       })
       class ButtonParent {
         @ViewChild(MyComponent) comp!: MyComponent;
@@ -551,7 +542,7 @@ describe('change detection', () => {
       @Component({
         selector: 'button-parent',
         template: '{{ doCheckCount }} - <my-comp></my-comp>',
-        imports: [forwardRef(() => MyButtonApp), forwardRef(() => MyComponent)],
+        imports: [MyComponent],
       })
       class ButtonParent implements DoCheck {
         @ViewChild(MyComponent) comp!: MyComponent;
@@ -567,8 +558,8 @@ describe('change detection', () => {
         selector: 'my-button-app',
         template: '<button-parent></button-parent>',
 
+        imports: [ButtonParent],
         changeDetection: ChangeDetectionStrategy.Eager,
-        imports: [forwardRef(() => MyComponent), forwardRef(() => ButtonParent)],
       })
       class MyButtonApp {
         @ViewChild(ButtonParent) parent!: ButtonParent;
@@ -621,7 +612,7 @@ describe('change detection', () => {
       @Component({
         selector: 'my-app',
         template: '{{message}} <ng-template emitter (event)="message = $event"></ng-template>',
-        imports: [forwardRef(() => Emitter)],
+        imports: [Emitter],
       })
       class MyApp {
         message = 'initial message';
@@ -659,7 +650,7 @@ describe('change detection', () => {
       @Component({
         selector: 'parent-comp',
         template: `{{ doCheckCount }} - <my-comp></my-comp>`,
-        imports: [forwardRef(() => MyComp)],
+        imports: [MyComp],
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class ParentComp implements DoCheck {
@@ -750,8 +741,7 @@ describe('change detection', () => {
         @Component({
           template: '<my-comp dir></my-comp>',
 
-          changeDetection: ChangeDetectionStrategy.Eager,
-          imports: [forwardRef(() => MyComp), forwardRef(() => Dir)],
+          imports: [MyComp, Dir],
         })
         class MyApp {
           @ViewChild(MyComp) myComp!: MyComp;
@@ -773,8 +763,8 @@ describe('change detection', () => {
         @Component({
           template: '{{ value }}<div dir></div>',
 
+          imports: [Dir],
           changeDetection: ChangeDetectionStrategy.Eager,
-          imports: [CommonModule, forwardRef(() => Dir)],
         })
         class MyApp {
           @ViewChild(MyComp) myComp!: MyComp;
@@ -799,8 +789,7 @@ describe('change detection', () => {
         @Component({
           template: '{{ name }}<div *ngIf="showing" dir></div>',
 
-          changeDetection: ChangeDetectionStrategy.Eager,
-          imports: [CommonModule, forwardRef(() => Dir)],
+          imports: [CommonModule, Dir],
         })
         class MyApp {
           @ViewChild(Dir) dir!: Dir;
@@ -822,8 +811,6 @@ describe('change detection', () => {
       it('should support call in ngOnInit', () => {
         @Component({
           template: '{{ value }}',
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class DetectChangesComp implements OnInit {
           value = 0;
@@ -848,7 +835,6 @@ describe('change detection', () => {
           @Component({
             template: '<child-comp [inp]="true"></child-comp>',
 
-            changeDetection: ChangeDetectionStrategy.Eager,
             imports: [forwardRef(() => ChildComp)],
           })
           class ParentComp {
@@ -862,8 +848,7 @@ describe('change detection', () => {
             template: '{{inp}}',
             selector: 'child-comp',
 
-            changeDetection: ChangeDetectionStrategy.Eager,
-            imports: [forwardRef(() => ParentComp)],
+            imports: [ParentComp],
           })
           class ChildComp {
             @Input() inp: any = '';
@@ -905,8 +890,6 @@ describe('change detection', () => {
       it('should support call in ngDoCheck', () => {
         @Component({
           template: '{{doCheckCount}}',
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class DetectChangesComp {
           doCheckCount = 0;
@@ -930,8 +913,6 @@ describe('change detection', () => {
         @Component({
           selector: 'app',
           template: ` <div *ngIf="visible" #ref>Visible text</div> `,
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class App {
           @ViewChildren('ref') ref!: QueryList<any>;
@@ -964,7 +945,6 @@ describe('change detection', () => {
         @Component({
           selector: 'structural-comp',
           template: '{{ value }}',
-
           changeDetection: ChangeDetectionStrategy.Eager,
         })
         class StructuralComp {
@@ -983,8 +963,8 @@ describe('change detection', () => {
             template:
               '<ng-template #foo let-ctx="ctx">{{ ctx.value }}</ng-template><structural-comp [tmp]="foo"></structural-comp>',
 
+            imports: [StructuralComp],
             changeDetection: ChangeDetectionStrategy.Eager,
-            imports: [forwardRef(() => StructuralComp)],
           })
           class App {
             @ViewChild(StructuralComp) structuralComp!: StructuralComp;
@@ -1015,8 +995,7 @@ describe('change detection', () => {
           @Component({
             template: '<ng-template #foo>Template text</ng-template><structural-comp [tmp]="foo">',
 
-            changeDetection: ChangeDetectionStrategy.Eager,
-            imports: [forwardRef(() => StructuralComp)],
+            imports: [StructuralComp],
           })
           class App {
             @ViewChild(StructuralComp) structuralComp!: StructuralComp;
@@ -1039,7 +1018,6 @@ describe('change detection', () => {
       @Component({
         selector: 'detached-comp',
         template: '{{ value }}',
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class DetachedComp implements DoCheck {
@@ -1055,7 +1033,7 @@ describe('change detection', () => {
 
       @Component({
         template: '<detached-comp></detached-comp>',
-        imports: [forwardRef(() => DetachedComp)],
+        imports: [DetachedComp],
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyApp {
@@ -1169,8 +1147,8 @@ describe('change detection', () => {
         @Component({
           template: '<on-push-comp [value]="value"></on-push-comp>',
 
+          imports: [OnPushComp],
           changeDetection: ChangeDetectionStrategy.Eager,
-          imports: [CommonModule, forwardRef(() => OnPushComp)],
         })
         class OnPushApp {
           @ViewChild(OnPushComp) onPushComp!: OnPushComp;
@@ -1217,7 +1195,7 @@ describe('change detection', () => {
 
       @Component({
         template: '{{ value }} - <on-push-comp></on-push-comp>',
-        imports: [forwardRef(() => OnPushComp)],
+        imports: [OnPushComp],
       })
       class OnPushParent {
         @ViewChild(OnPushComp) comp!: OnPushComp;
@@ -1278,7 +1256,7 @@ describe('change detection', () => {
       it('should ensure OnPush components in embedded views are checked', () => {
         @Component({
           template: '{{ value }} - <on-push-comp *ngIf="showing"></on-push-comp>',
-          imports: [CommonModule, forwardRef(() => OnPushComp)],
+          imports: [CommonModule, OnPushComp],
         })
         class EmbeddedViewParent {
           @ViewChild(OnPushComp) comp!: OnPushComp;
@@ -1331,7 +1309,7 @@ describe('change detection', () => {
               <span>{{ value | async }}</span>
             </ng-template>
           `,
-          imports: [CommonModule, forwardRef(() => Insertion)],
+          imports: [CommonModule, Insertion],
         })
         class Declaration {
           value = new BehaviorSubject('initial value');
@@ -1356,7 +1334,6 @@ describe('change detection', () => {
       @Component({
         selector: 'no-changes-comp',
         template: '{{ value }}',
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class NoChangesComp {
@@ -1384,7 +1361,7 @@ describe('change detection', () => {
 
       @Component({
         template: '{{ value }} - <no-changes-comp></no-changes-comp>',
-        imports: [forwardRef(() => NoChangesComp)],
+        imports: [NoChangesComp],
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AppComp {
@@ -1433,7 +1410,6 @@ describe('change detection', () => {
         @Component({
           template: '<span *ngIf="showing">{{ showing }}</span>',
           imports: [CommonModule],
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class EmbeddedViewApp {
           showing = true;
@@ -1618,8 +1594,8 @@ describe('change detection', () => {
             @Component({
               template: `<on-push-comp></on-push-comp>`,
 
+              imports: [OnPushComp],
               changeDetection: ChangeDetectionStrategy.Eager,
-              imports: [CommonModule, forwardRef(() => OnPushComp)],
             })
             class TestApp {
               @ViewChild(OnPushComp) onPushComp!: OnPushComp;
@@ -1666,8 +1642,7 @@ describe('change detection', () => {
           @Component({
             template: `<on-push-comp></on-push-comp>`,
 
-            changeDetection: ChangeDetectionStrategy.Eager,
-            imports: [CommonModule, forwardRef(() => OnPushComp)],
+            imports: [OnPushComp],
           })
           class TestApp {
             @ViewChild(OnPushComp) onPushComp!: OnPushComp;
@@ -1693,7 +1668,6 @@ describe('change detection', () => {
   describe('ExpressionChangedAfterItHasBeenCheckedError', () => {
     @Component({
       template: '...',
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyApp {

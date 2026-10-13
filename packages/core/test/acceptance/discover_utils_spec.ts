@@ -74,8 +74,6 @@ describe('discovery utils', () => {
     selector: 'child',
     template: '<p></p>',
     providers: [{provide: String, useValue: 'Child'}],
-
-    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class Child {
     constructor() {
@@ -106,8 +104,8 @@ describe('discovery utils', () => {
       <b *ngIf="visible">Bold</b>
     `,
 
-    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [CommonModule, Child, DirectiveA],
+    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class MyApp {
     text: string = 'INIT';
@@ -414,8 +412,6 @@ describe('discovery utils deprecated', () => {
       @Component({
         selector: 'inner-comp',
         template: '<div></div>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class InnerComp {}
 
@@ -423,7 +419,6 @@ describe('discovery utils deprecated', () => {
         selector: 'comp',
         template: '<inner-comp></inner-comp>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [InnerComp],
       })
       class Comp {}
@@ -465,7 +460,6 @@ describe('discovery utils deprecated', () => {
           <div my-dir-3></div>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [MyDir1, MyDir2, MyDir3],
       })
       class Comp {
@@ -505,8 +499,6 @@ describe('discovery utils deprecated', () => {
     it('should return an injector that can return directive instances', () => {
       @Component({
         template: '',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Comp {}
 
@@ -518,8 +510,6 @@ describe('discovery utils deprecated', () => {
     it('should return an injector that falls-back to a module injector', () => {
       @Component({
         template: '',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Comp {}
 
@@ -546,7 +536,6 @@ describe('discovery utils deprecated', () => {
       @Component({
         template: '<div myDir #elRef #dirRef="myDir"></div>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [MyDir],
       })
       class Comp {}
@@ -564,8 +553,6 @@ describe('discovery utils deprecated', () => {
     it('should return a map of local refs for an element with styling context', () => {
       @Component({
         template: '<div #elRef class="fooClass" [style.color]="color"></div>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Comp {
         color = 'red';

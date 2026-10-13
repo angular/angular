@@ -8,13 +8,13 @@
 
 import {CommonModule} from '@angular/common';
 import {
-  ChangeDetectionStrategy,
   Component,
   Directive,
   EventEmitter,
   Input,
   OnDestroy,
   Output,
+  signal,
   ViewChild,
 } from '../../src/core';
 import {TestBed} from '../../testing';
@@ -23,8 +23,6 @@ describe('outputs', () => {
   @Component({
     selector: 'button-toggle',
     template: '',
-
-    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class ButtonToggle {
     @Output('change') change = new EventEmitter<void>();
@@ -42,8 +40,6 @@ describe('outputs', () => {
   @Component({
     selector: 'destroy-comp',
     template: '',
-
-    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class DestroyComp implements OnDestroy {
     events: string[] = [];
@@ -65,7 +61,6 @@ describe('outputs', () => {
     @Component({
       template: '<button-toggle (change)="onChange()"></button-toggle>',
       imports: [ButtonToggle],
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       @ViewChild(ButtonToggle) buttonToggle!: ButtonToggle;
@@ -90,7 +85,6 @@ describe('outputs', () => {
     @Component({
       template: '<button-toggle (change)="onChange()" (reset)="onReset()"></button-toggle>',
       imports: [ButtonToggle],
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       @ViewChild(ButtonToggle) buttonToggle!: ButtonToggle;
@@ -115,7 +109,6 @@ describe('outputs', () => {
     @Component({
       template: '<button-toggle (change)="counter = counter + 1"></button-toggle>',
       imports: [ButtonToggle],
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       @ViewChild(ButtonToggle) buttonToggle!: ButtonToggle;
@@ -137,7 +130,6 @@ describe('outputs', () => {
     @Component({
       template: '<button-toggle *ngIf="condition" (change)="onChange()"></button-toggle>',
       imports: [ButtonToggle, CommonModule],
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       @ViewChild(ButtonToggle) buttonToggle!: ButtonToggle;
@@ -171,7 +163,6 @@ describe('outputs', () => {
         </div>
       `,
       imports: [ButtonToggle, CommonModule],
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       @ViewChild(ButtonToggle) buttonToggle!: ButtonToggle;
@@ -209,7 +200,6 @@ describe('outputs', () => {
         </div>
       `,
       imports: [ButtonToggle, CommonModule, DestroyComp],
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       @ViewChild(ButtonToggle) buttonToggle!: ButtonToggle;
@@ -253,7 +243,6 @@ describe('outputs', () => {
     @Component({
       template: '<button myButton (click)="onClick()">Click me</button>',
       imports: [MyButton],
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       @ViewChild(MyButton) buttonDir!: MyButton;
@@ -280,7 +269,6 @@ describe('outputs', () => {
     @Component({
       template: '<button-toggle (change)="onChange()" otherDir></button-toggle>',
       imports: [ButtonToggle, OtherDir],
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       @ViewChild(ButtonToggle) buttonToggle!: ButtonToggle;
@@ -311,14 +299,13 @@ describe('outputs', () => {
 
     @Component({
       template:
-        '<button-toggle (change)="onChange()" otherChangeDir [change]="change"></button-toggle>',
+        '<button-toggle (change)="onChange()" otherChangeDir [change]="change()"></button-toggle>',
       imports: [ButtonToggle, OtherChangeDir],
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       @ViewChild(ButtonToggle) buttonToggle!: ButtonToggle;
       @ViewChild(OtherChangeDir) otherDir!: OtherChangeDir;
-      change = true;
+      change = signal(true);
 
       onChange() {
         counter++;
@@ -330,14 +317,12 @@ describe('outputs', () => {
 
     expect(otherDir.change).toBe(true);
 
-    fixture.componentInstance.change = false;
-    fixture.changeDetectorRef.markForCheck();
+    fixture.componentInstance.change.set(false);
     fixture.detectChanges();
 
     expect(otherDir.change).toBe(false);
 
     buttonToggle.change.next();
-    fixture.changeDetectorRef.markForCheck();
     expect(counter).toBe(1);
   });
 });

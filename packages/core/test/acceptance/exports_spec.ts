@@ -8,7 +8,6 @@
 
 import {NgIf} from '@angular/common';
 import {
-  ChangeDetectionStrategy,
   Component,
   Directive,
   DoCheck,
@@ -224,7 +223,6 @@ function initWithTemplate(compType: Type<any>, template: string) {
   TestBed.overrideComponent(compType, {
     set: new Component({
       template,
-      changeDetection: ChangeDetectionStrategy.Eager,
     }),
   });
   return TestBed.createComponent(compType);
@@ -233,8 +231,6 @@ function initWithTemplate(compType: Type<any>, template: string) {
 @Component({
   selector: 'comp-to-ref',
   template: '',
-
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class ComponentToReference {
   name = 'Nancy';
@@ -242,7 +238,6 @@ class ComponentToReference {
 
 @Component({
   template: ``,
-  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     ComponentToReference,
     forwardRef(() => DirToReference),

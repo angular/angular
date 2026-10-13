@@ -71,7 +71,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
     components: any[] = [],
   ): ComponentFixture<T> {
     TestBed.overrideComponent(compType, {
-      set: new Component({template, changeDetection: ChangeDetectionStrategy.Eager}),
+      set: new Component({template}),
     });
     if (components.length > 0) {
       TestBed.overrideComponent(compType, {
@@ -1379,8 +1379,8 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
               ><ng-template><span [i]="log('tpl')"></span></ng-template
             ></outer-cmp>`,
 
-          changeDetection: ChangeDetectionStrategy.Eager,
           imports: [DummyDirective, forwardRef(() => OuterComp)],
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class MainComp {
           constructor(public cdRef: ChangeDetectorRef) {}
@@ -1396,8 +1396,8 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
               ><ng-template><span [i]="log('tpl')"></span></ng-template
             ></inner-cmp>`,
 
-          changeDetection: ChangeDetectionStrategy.Eager,
           imports: [DummyDirective, forwardRef(() => InnerComp)],
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class OuterComp {
           @ContentChild(TemplateRef, {static: true}) tpl!: TemplateRef<any>;
@@ -1415,8 +1415,8 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
             ></ng-container
             ><ng-container [ngTemplateOutlet]="tpl"></ng-container>`,
 
-          changeDetection: ChangeDetectionStrategy.Eager,
           imports: [CommonModule, DummyDirective],
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class InnerComp {
           @ContentChild(TemplateRef, {static: true}) tpl!: TemplateRef<any>;

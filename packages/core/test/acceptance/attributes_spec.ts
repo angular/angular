@@ -7,14 +7,13 @@
  */
 
 import {By, DomSanitizer, SafeUrl} from '@angular/platform-browser';
-import {ChangeDetectionStrategy, Component, inject} from '../../src/core';
+import {Component, inject, signal} from '../../src/core';
 import {TestBed} from '../../testing';
 
 describe('attribute creation', () => {
   it('should create an element', () => {
     @Component({
       template: `<div id="test" title="Hello"></div>`,
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {}
 
@@ -28,7 +27,6 @@ describe('attribute creation', () => {
   it('should allow for setting xlink namespaced attributes', () => {
     @Component({
       template: `<div id="test" xlink:href="bar" title="Hello"></div>`,
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {}
 
@@ -56,7 +54,6 @@ describe('attribute binding', () => {
   it('should set attribute values', () => {
     @Component({
       template: `<a [attr.href]="url"></a>`,
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       url = 'https://angular.io/robots.txt';
@@ -73,7 +70,6 @@ describe('attribute binding', () => {
   it('should be able to bind multiple attribute values per element', () => {
     @Component({
       template: `<a [attr.id]="id" [attr.href]="url" [attr.tabindex]="'-1'"></a>`,
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       url = 'https://angular.io/robots.txt';
@@ -93,7 +89,6 @@ describe('attribute binding', () => {
   it('should be able to bind multiple attributes in the presence of other bindings', () => {
     @Component({
       template: `<a [id]="id" [attr.href]="url" [title]="'hello'"></a>`,
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       url = 'https://angular.io/robots.txt';
@@ -117,7 +112,6 @@ describe('attribute binding', () => {
         [attr.title]="title"
         attr.tabindex="{{ 1 + 3 + 7 }}"
       ></button>`,
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       title = 'hello';
@@ -141,7 +135,6 @@ describe('attribute binding', () => {
           <span attr.title="span-{{ title }}" id="custom-span" [attr.tabindex]="-1"></span>
         </button>
       `,
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       title = 'hello';
@@ -165,11 +158,10 @@ describe('attribute binding', () => {
 
   it('should sanitize attribute values', async () => {
     @Component({
-      template: `<a [attr.href]="badUrl"></a>`,
-      changeDetection: ChangeDetectionStrategy.Eager,
+      template: `<a [attr.href]="badUrl()"></a>`,
     })
     class Comp {
-      badUrl: string | SafeUrl = 'javascript:true';
+      badUrl = signal<string | SafeUrl>('javascript:true');
     }
 
     const fixture = TestBed.createComponent(Comp);
@@ -180,10 +172,9 @@ describe('attribute binding', () => {
     expect(a.href.indexOf('unsafe:')).toBe(0);
 
     const domSanitizer: DomSanitizer = TestBed.inject(DomSanitizer);
-    fixture.componentInstance.badUrl = domSanitizer.bypassSecurityTrustUrl(
-      'javascript:alert("this is fine")',
+    fixture.componentInstance.badUrl.set(
+      domSanitizer.bypassSecurityTrustUrl('javascript:alert("this is fine")'),
     );
-    fixture.changeDetectorRef.markForCheck();
     await fixture.whenStable();
 
     // should not start with `unsafe:`.
@@ -223,7 +214,6 @@ describe('attribute interpolation', () => {
         <div attr.title="a{{ a }}b"></div>
         <div attr.title="{{ a }}"></div>
       `,
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       a = 1;

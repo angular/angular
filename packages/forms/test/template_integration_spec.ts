@@ -8,12 +8,13 @@
 
 import {CommonModule, ɵgetDOM as getDOM} from '@angular/common';
 import {
-  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   Directive,
   ElementRef,
   forwardRef,
   Input,
+  signal,
   Type,
   ViewChild,
 } from '@angular/core';
@@ -91,9 +92,8 @@ describe('template-driven forms integration tests', () => {
       // (template does not contain binding to `checked` explicitly)
       // https://github.com/angular/angular/issues/33695
       @Component({
-        imports: [FormsModule, CommonModule, forwardRef(() => NgAsyncValidator)],
+        imports: [FormsModule],
         template: `<input type="radio" value="one" [(ngModel)]="active" />`,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AppComponent {
         active = 'one';
@@ -166,7 +166,7 @@ describe('template-driven forms integration tests', () => {
       fixture.componentInstance.emailShowing = true;
       fixture.componentInstance.first = 'Nancy';
       fixture.componentInstance.email = 'some email';
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       const form = fixture.debugElement.children[0].injector.get(NgForm);
@@ -175,7 +175,7 @@ describe('template-driven forms integration tests', () => {
 
       // should remove individual control successfully
       fixture.componentInstance.emailShowing = false;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       expect(form.control.get('email')).toBe(null);
@@ -186,7 +186,7 @@ describe('template-driven forms integration tests', () => {
 
       // should remove form group successfully
       fixture.componentInstance.groupShowing = false;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       expect(form.control.get('name')).toBe(null);
@@ -352,7 +352,6 @@ describe('template-driven forms integration tests', () => {
             </div>
           </form>
         `,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         private _counter = 0;
@@ -373,27 +372,27 @@ describe('template-driven forms integration tests', () => {
         fixture.debugElement.queryAll(By.css('input')).map((el) => el.nativeElement.value);
       const fixture = initTest(App);
       fixture.componentInstance.add(3);
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
       expect(getValues()).toEqual(['0', '1', '2']);
 
       fixture.componentInstance.remove(1);
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
       expect(getValues()).toEqual(['0', '2']);
 
       fixture.componentInstance.add(1);
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
       expect(getValues()).toEqual(['0', '2', '3']);
 
       fixture.componentInstance.items[1].value = '1';
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
       expect(getValues()).toEqual(['0', '1', '3']);
 
       fixture.componentInstance.items[2].value = '2';
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
       expect(getValues()).toEqual(['0', '1', '2']);
     });
@@ -410,7 +409,6 @@ describe('template-driven forms integration tests', () => {
             </ng-container>
           </form>
         `,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         private _counter = 0;
@@ -432,27 +430,27 @@ describe('template-driven forms integration tests', () => {
         fixture.debugElement.queryAll(By.css('input')).map((el) => el.nativeElement.value);
       const fixture = initTest(App);
       fixture.componentInstance.add(3);
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
       expect(getValues()).toEqual(['0', '1', '2']);
 
       fixture.componentInstance.remove(1);
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
       expect(getValues()).toEqual(['0', '2']);
 
       fixture.componentInstance.add(1);
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
       expect(getValues()).toEqual(['0', '2', '3']);
 
       fixture.componentInstance.items[1].value = '1';
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
       expect(getValues()).toEqual(['0', '1', '3']);
 
       fixture.componentInstance.items[2].value = '2';
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
       expect(getValues()).toEqual(['0', '1', '2']);
     });
@@ -542,11 +540,11 @@ describe('template-driven forms integration tests', () => {
         const fixture = initTest(NgModelForm);
         fixture.componentInstance.name = 'Nancy Drew';
         fixture.componentInstance.options = {updateOn: 'blur'};
-        fixture.changeDetectorRef.markForCheck();
+        fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
         await fixture.whenStable();
 
         fixture.componentInstance.name = 'Carson';
-        fixture.changeDetectorRef.markForCheck();
+        fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
         await fixture.whenStable();
 
         const input = fixture.debugElement.query(By.css('input')).nativeElement;
@@ -790,11 +788,11 @@ describe('template-driven forms integration tests', () => {
         const fixture = initTest(NgModelForm);
         fixture.componentInstance.name = 'Nancy Drew';
         fixture.componentInstance.options = {updateOn: 'submit'};
-        fixture.changeDetectorRef.markForCheck();
+        fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
         await fixture.whenStable();
 
         fixture.componentInstance.name = 'Carson';
-        fixture.changeDetectorRef.markForCheck();
+        fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
         await fixture.whenStable();
 
         const input = fixture.debugElement.query(By.css('input')).nativeElement;
@@ -1352,7 +1350,7 @@ describe('template-driven forms integration tests', () => {
       fixture.componentInstance.first = '';
       fixture.componentInstance.last = 'Drew';
       fixture.componentInstance.email = 'some email';
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       const form = fixture.debugElement.children[0].injector.get(NgForm);
@@ -1361,7 +1359,7 @@ describe('template-driven forms integration tests', () => {
       expect(form.control.get('name.first')!.disabled).toBe(false);
 
       fixture.componentInstance.isDisabled = true;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       expect(form.value).toEqual({name: {last: 'Drew'}, email: 'some email'});
@@ -1434,7 +1432,7 @@ describe('template-driven forms integration tests', () => {
       expect(control.hasError('required')).toBe(false);
 
       fixture.componentInstance.required = true;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       expect(input.nativeElement.checked).toBe(false);
@@ -1472,7 +1470,7 @@ describe('template-driven forms integration tests', () => {
       expect(control.hasError('email')).toBe(false);
 
       fixture.componentInstance.validatorEnabled = true;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       expect(input.nativeElement.value).toEqual('');
@@ -1636,7 +1634,7 @@ describe('template-driven forms integration tests', () => {
       fixture.componentInstance.minLen = 3;
       fixture.componentInstance.maxLen = 3;
       fixture.componentInstance.pattern = '.{3,}';
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       dispatchEvent(required.nativeElement, 'input');
@@ -1665,7 +1663,7 @@ describe('template-driven forms integration tests', () => {
       fixture.componentInstance.minLen = null!;
       fixture.componentInstance.maxLen = null!;
       fixture.componentInstance.pattern = null!;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       expect(form.control.hasError('required', ['required'])).toEqual(false);
@@ -1712,7 +1710,7 @@ describe('template-driven forms integration tests', () => {
     it('should validate max', async () => {
       const fixture = initTest(NgModelMaxValidator);
       fixture.componentInstance.max = 10;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       const input = fixture.debugElement.query(By.css('input')).nativeElement;
@@ -1738,7 +1736,7 @@ describe('template-driven forms integration tests', () => {
       expect(form.controls['max'].errors).toBeNull();
 
       fixture.componentInstance.max = 0;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
       dispatchEvent(input, 'input');
       await fixture.whenStable();
@@ -1812,7 +1810,7 @@ describe('template-driven forms integration tests', () => {
     it('should re-validate if max changes', async () => {
       const fixture = initTest(NgModelMaxValidator);
       fixture.componentInstance.max = 10;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       const input = fixture.debugElement.query(By.css('input')).nativeElement;
@@ -1831,7 +1829,7 @@ describe('template-driven forms integration tests', () => {
       expect(form.controls['max'].errors).toBeNull();
 
       fixture.componentInstance.max = 5;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
       expect(form.valid).toEqual(false);
       expect(form.controls['max'].errors).toEqual({max: {max: 5, actual: 9}});
@@ -1840,7 +1838,7 @@ describe('template-driven forms integration tests', () => {
     it('should validate min', async () => {
       const fixture = initTest(NgModelMinValidator);
       fixture.componentInstance.min = 10;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       const input = fixture.debugElement.query(By.css('input')).nativeElement;
@@ -1866,7 +1864,7 @@ describe('template-driven forms integration tests', () => {
       expect(form.controls['min'].errors).toEqual({min: {min: 10, actual: 9}});
 
       fixture.componentInstance.min = 0;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
       input.value = -5;
       dispatchEvent(input, 'input');
@@ -1940,7 +1938,7 @@ describe('template-driven forms integration tests', () => {
     it('should re-validate if min changes', async () => {
       const fixture = initTest(NgModelMinValidator);
       fixture.componentInstance.min = 10;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       const input = fixture.debugElement.query(By.css('input')).nativeElement;
@@ -1959,7 +1957,7 @@ describe('template-driven forms integration tests', () => {
       expect(form.controls['min'].errors).toEqual({min: {min: 10, actual: 9}});
 
       fixture.componentInstance.min = 9;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
       expect(form.valid).toEqual(true);
       expect(form.controls['min'].errors).toBeNull();
@@ -2012,7 +2010,6 @@ describe('template-driven forms integration tests', () => {
           <my-custom-component name="min" ngModel [min]="min"></my-custom-component>
           <my-custom-component name="max" ngModel [max]="max"></my-custom-component>
         `,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AppComponent {}
 
@@ -2034,7 +2031,6 @@ describe('template-driven forms integration tests', () => {
       @Component({
         imports: [FormsModule, CommonModule],
         template: '<input type="range" min="10" max="20">',
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AppComponent {}
 
@@ -2059,12 +2055,11 @@ describe('template-driven forms integration tests', () => {
         @Component({
           imports: [FormsModule, CommonModule],
           template:
-            '<form><input name="amount" ngModel [minlength]="minlen" [maxlength]="maxlen"></form>',
-          changeDetection: ChangeDetectionStrategy.Eager,
+            '<form><input name="amount" ngModel [minlength]="minlen()" [maxlength]="maxlen()"></form>',
         })
         class MinLengthMaxLengthComponent {
-          minlen: number | null = null;
-          maxlen: number | null = null;
+          minlen = signal<number | null>(null);
+          maxlen = signal<number | null>(null);
           control!: FormControl;
         }
 
@@ -2097,9 +2092,8 @@ describe('template-driven forms integration tests', () => {
           expect(input.getAttribute('maxlength')).toBe(values.maxlength);
         };
         const setValidatorValues = async (values: minmax) => {
-          fixture.componentInstance.minlen = values.minlength;
-          fixture.componentInstance.maxlen = values.maxlength;
-          fixture.changeDetectorRef.markForCheck();
+          fixture.componentInstance.minlen.set(values.minlength);
+          fixture.componentInstance.maxlen.set(values.maxlength);
           await fixture.whenStable();
         };
         const verifyFormState = (state: state) => {
@@ -2148,12 +2142,11 @@ describe('template-driven forms integration tests', () => {
         @Component({
           imports: [FormsModule, CommonModule],
           template:
-            '<form><input type="number" name="minmaxinput" ngModel [min]="minlen" [max]="maxlen"></form>',
-          changeDetection: ChangeDetectionStrategy.Eager,
+            '<form><input type="number" name="minmaxinput" ngModel [min]="minlen()" [max]="maxlen()"></form>',
         })
         class MinLengthMaxLengthComponent {
-          minlen: number | null = null;
-          maxlen: number | null = null;
+          minlen = signal<number | null>(null);
+          maxlen = signal<number | null>(null);
           control!: FormControl;
         }
 
@@ -2186,9 +2179,8 @@ describe('template-driven forms integration tests', () => {
           expect(input.getAttribute('max')).toBe(values.max);
         };
         const setValidatorValues = async (values: minmax) => {
-          fixture.componentInstance.minlen = values.min;
-          fixture.componentInstance.maxlen = values.max;
-          fixture.changeDetectorRef.markForCheck();
+          fixture.componentInstance.minlen.set(values.min);
+          fixture.componentInstance.maxlen.set(values.max);
           await fixture.whenStable();
         };
         const verifyFormState = (state: state) => {
@@ -2343,7 +2335,7 @@ describe('template-driven forms integration tests', () => {
       const fixture = initTest(NgModelMinMaxValidator);
       fixture.componentInstance.min = 5;
       fixture.componentInstance.max = 10;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       const input = fixture.debugElement.query(By.css('input')).nativeElement;
@@ -2362,7 +2354,7 @@ describe('template-driven forms integration tests', () => {
       expect(form.controls['min_max'].errors).toEqual({max: {max: 10, actual: 12}});
 
       fixture.componentInstance.max = 12;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
       expect(form.valid).toEqual(true);
       expect(form.controls['min_max'].errors).toBeNull();
@@ -2380,7 +2372,7 @@ describe('template-driven forms integration tests', () => {
       expect(form.controls['min_max'].errors).toEqual({min: {min: 5, actual: 0}});
 
       fixture.componentInstance.min = 0;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
       expect(form.valid).toEqual(true);
       expect(form.controls['min_max'].errors).toBeNull();
@@ -2500,7 +2492,6 @@ describe('template-driven forms integration tests', () => {
             </div>
           </form>
         `,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class NgModelNoOpValidation {
         validatorInput = 'foo';
@@ -2514,7 +2505,7 @@ describe('template-driven forms integration tests', () => {
       expect(registerOnAsyncValidatorChangeFired).toBe(1);
 
       fixture.componentInstance.validatorInput = 'bar';
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       // Changing validator inputs should not cause `registerOnValidatorChange` to be invoked,
@@ -2610,7 +2601,7 @@ describe('template-driven forms integration tests', () => {
     it('should update the view when the model is set back to what used to be in the view', async () => {
       const fixture = initTest(StandaloneNgModel);
       fixture.componentInstance.name = '';
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
 
       const input = fixture.debugElement.query(By.css('input')).nativeElement;
@@ -2623,13 +2614,13 @@ describe('template-driven forms integration tests', () => {
 
       // Programmatically update the input value to be "bb".
       fixture.componentInstance.name = 'bb';
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
       expect(input.value).toEqual('bb');
 
       // Programatically set it back to "aa".
       fixture.componentInstance.name = 'aa';
-      fixture.changeDetectorRef.markForCheck();
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       await fixture.whenStable();
       expect(input.value).toEqual('aa');
     });
@@ -2719,7 +2710,6 @@ describe('template-driven forms integration tests', () => {
 @Component({
   imports: [FormsModule, CommonModule],
   template: ` <input type="text" [(ngModel)]="name" /> `,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class StandaloneNgModel {
   name!: string;
@@ -2732,7 +2722,6 @@ class StandaloneNgModel {
       <input name="name" [(ngModel)]="name" minlength="10" [ngModelOptions]="options" />
     </form>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelForm {
   name!: string | null;
@@ -2745,7 +2734,6 @@ class NgModelForm {
 @Component({
   imports: [FormsModule, CommonModule],
   template: `<form ngNativeValidate></form>`,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelNativeValidateForm {}
 
@@ -2760,7 +2748,6 @@ class NgModelNativeValidateForm {}
       <input name="email" [(ngModel)]="email" [ngModelOptions]="options" />
     </form>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelGroupForm {
   first!: string;
@@ -2780,7 +2767,6 @@ class NgModelGroupForm {
       </div>
     </form>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelValidBinding {
   first!: string;
@@ -2796,7 +2782,6 @@ class NgModelValidBinding {
       <input name="email" [(ngModel)]="email" *ngIf="emailShowing" />
     </form>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelNgIfForm {
   first!: string;
@@ -2817,7 +2802,6 @@ class NgModelNgIfForm {
       </div>
     </form>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelNestedForm {
   first!: string;
@@ -2831,7 +2815,6 @@ class NgModelNestedForm {
       <input name="name" />
     </form>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgNoFormComp {}
 
@@ -2842,7 +2825,6 @@ class NgNoFormComp {}
       <input [(ngModel)]="name" />
     </form>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class InvalidNgModelNoName {}
 
@@ -2854,7 +2836,6 @@ class InvalidNgModelNoName {}
       <input [(ngModel)]="two" [ngModelOptions]="options" />
     </form>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelOptionsStandalone {
   one!: string;
@@ -2873,7 +2854,6 @@ class NgModelOptionsStandalone {
       <input name="pattern" ngModel [pattern]="pattern" />
     </form>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelValidationBindings {
   required!: boolean;
@@ -2895,7 +2875,6 @@ class NgModelValidationBindings {
       />
     </form>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelMultipleValidators {
   required!: boolean;
@@ -2908,7 +2887,6 @@ class NgModelMultipleValidators {
   template: `<form>
     <input type="checkbox" [(ngModel)]="accepted" [required]="required" name="checkbox" />
   </form>`,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelCheckboxRequiredValidator {
   accepted: boolean = false;
@@ -2918,7 +2896,6 @@ class NgModelCheckboxRequiredValidator {
 @Component({
   imports: [FormsModule, CommonModule],
   template: `<form><input type="email" ngModel [email]="validatorEnabled" name="email" /></form>`,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelEmailValidator {
   validatorEnabled: boolean = false;
@@ -2938,9 +2915,8 @@ class NgAsyncValidator implements AsyncValidator {
 }
 
 @Component({
-  imports: [FormsModule, CommonModule, forwardRef(() => NgAsyncValidator)],
+  imports: [FormsModule, NgAsyncValidator],
   template: `<input name="async" ngModel ng-async-validator />`,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelAsyncValidation {}
 
@@ -2951,7 +2927,6 @@ class NgModelAsyncValidation {}
       <input name="async" [ngModel]="name" (ngModelChange)="log()" [ngModelOptions]="options" />
     </form>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelChangesForm {
   name!: string;
@@ -2968,7 +2943,6 @@ class NgModelChangesForm {
   template: `
     <input #ngModel="ngModel" ngModel [maxlength]="4" (ngModelChange)="onNgModelChange(ngModel)" />
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelChangeState {
   onNgModelChange = () => {};
@@ -2977,7 +2951,6 @@ class NgModelChangeState {
 @Component({
   imports: [FormsModule, CommonModule],
   template: `<form><input name="max" type="number" ngModel [max]="max" /></form>`,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelMaxValidator {
   max!: number;
@@ -2986,7 +2959,6 @@ class NgModelMaxValidator {
 @Component({
   imports: [FormsModule, CommonModule],
   template: `<form><input name="min" type="number" ngModel [min]="min" /></form>`,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelMinValidator {
   min!: number;
@@ -2995,7 +2967,6 @@ class NgModelMinValidator {
 @Component({
   imports: [FormsModule, CommonModule],
   template: ` <form><input name="min_max" type="number" ngModel [min]="min" [max]="max" /></form>`,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelMinMaxValidator {
   min!: number | string;
@@ -3018,7 +2989,6 @@ class CustomDirective {
       <input name="max" type="text" ngModel [max]="max" myDir />
     </form>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelNoMinMaxValidator {
   min!: number;
@@ -3035,7 +3005,6 @@ class NgModelNoMinMaxValidator {
       </form>
     </dialog>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NativeDialogForm {
   @ViewChild('form') form!: ElementRef<HTMLFormElement>;
@@ -3061,7 +3030,7 @@ class NgModelCrossComponentChildWithViewProviders {
 }
 
 @Component({
-  imports: [FormsModule, CommonModule, forwardRef(() => NgModelCrossComponentChild)],
+  imports: [FormsModule, NgModelCrossComponentChild],
   template: `
     <form>
       <input type="text" name="parent" [(ngModel)]="value" />
@@ -3074,11 +3043,7 @@ class NgModelCrossComponentParent {
 }
 
 @Component({
-  imports: [
-    FormsModule,
-    CommonModule,
-    forwardRef(() => NgModelCrossComponentChildWithViewProviders),
-  ],
+  imports: [FormsModule, NgModelCrossComponentChildWithViewProviders],
   template: `
     <form>
       <input type="text" name="parent" [(ngModel)]="value" />
@@ -3100,12 +3065,7 @@ class NgModelCrossComponentFormGroupChild {
 }
 
 @Component({
-  imports: [
-    FormsModule,
-    CommonModule,
-    ReactiveFormsModule,
-    forwardRef(() => NgModelCrossComponentFormGroupChild),
-  ],
+  imports: [FormsModule, ReactiveFormsModule, NgModelCrossComponentFormGroupChild],
   template: `
     <div [formGroup]="form">
       <ng-model-cross-component-form-group-child></ng-model-cross-component-form-group-child>
@@ -3126,7 +3086,7 @@ class NgModelCrossComponentGroupChild {
 }
 
 @Component({
-  imports: [FormsModule, CommonModule, forwardRef(() => NgModelCrossComponentGroupChild)],
+  imports: [FormsModule, NgModelCrossComponentGroupChild],
   template: `
     <form>
       <div ngModelGroup="group">
@@ -3145,7 +3105,7 @@ class NgModelCrossComponentGroupParent {}
 class NgModelCrossComponentChildStandaloneOpt {}
 
 @Component({
-  imports: [FormsModule, CommonModule, forwardRef(() => NgModelCrossComponentChildStandaloneOpt)],
+  imports: [FormsModule, NgModelCrossComponentChildStandaloneOpt],
   template: `
     <form>
       <ng-model-cross-component-child-standalone-opt></ng-model-cross-component-child-standalone-opt>
@@ -3172,7 +3132,7 @@ class NgModelCvaWithInternalNgModel implements ControlValueAccessor {
 }
 
 @Component({
-  imports: [FormsModule, CommonModule, forwardRef(() => NgModelCvaWithInternalNgModel)],
+  imports: [FormsModule, NgModelCvaWithInternalNgModel],
   template: `
     <form>
       <ng-model-cva-with-internal-ng-model name="x" ngModel></ng-model-cva-with-internal-ng-model>

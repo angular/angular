@@ -95,7 +95,6 @@ describe('Animation', () => {
     it('should delay element removal when an animation is specified', async () => {
       const logSpy = jasmine.createSpy('logSpy');
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: styles,
         template:
@@ -135,7 +134,6 @@ describe('Animation', () => {
 
     it('should remove right away when animations are disabled', async () => {
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: styles,
         template: '<div>@if (show()) {<p animate.leave="fade" #el>I should fade</p>}</div>',
@@ -158,7 +156,6 @@ describe('Animation', () => {
 
     it('should remove right away when classes have no animations', async () => {
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: styles,
         template: '<div>@if (show()) {<p animate.leave="not-a-class" #el>I should fade</p>}</div>',
@@ -206,7 +203,6 @@ describe('Animation', () => {
         }
       `;
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: multiple,
         template:
@@ -270,7 +266,6 @@ describe('Animation', () => {
         }
       `;
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: multiple,
         template: `<div>
@@ -336,7 +331,6 @@ describe('Animation', () => {
         }
       `;
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: multiple,
         template:
@@ -375,7 +369,6 @@ describe('Animation', () => {
 
     it('should support function syntax', async () => {
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: styles,
         template:
@@ -403,7 +396,6 @@ describe('Animation', () => {
 
     it('should be host bindable', async () => {
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'fade-cmp',
         host: {'animate.leave': 'fade'},
         template: '<p>I should fade</p>',
@@ -412,7 +404,6 @@ describe('Animation', () => {
       class FadeComponent {}
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: styles,
         imports: [FadeComponent],
@@ -446,7 +437,6 @@ describe('Animation', () => {
 
     it('should be host bindable with brackets', async () => {
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'fade-cmp',
         host: {'[animate.leave]': 'fade()'},
         template: '<p>I should fade</p>',
@@ -457,7 +447,6 @@ describe('Animation', () => {
       }
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: styles,
         imports: [FadeComponent],
@@ -492,7 +481,6 @@ describe('Animation', () => {
     it('should be host bindable with events', async () => {
       const fadeCalled = jasmine.createSpy('fadeCalled');
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'fade-cmp',
         styles: styles,
         host: {'(animate.leave)': 'fadeIn($event)'},
@@ -508,7 +496,6 @@ describe('Animation', () => {
       }
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         imports: [FadeComponent],
         template: '@if (show()) { <fade-cmp /> }',
@@ -612,7 +599,6 @@ describe('Animation', () => {
         }
       `;
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'child-cmp',
         host: {'[animate.leave]': 'slide()'},
         template: '<p>I should fade</p>',
@@ -623,7 +609,6 @@ describe('Animation', () => {
       }
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: multiple,
         imports: [ChildComponent],
@@ -698,7 +683,6 @@ describe('Animation', () => {
       }
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'child-cmp',
         styles: multiple,
         template: '<p>I should fade</p>',
@@ -707,7 +691,6 @@ describe('Animation', () => {
       class ChildComponent {}
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: multiple,
         imports: [ChildComponent, StuffDirective],
@@ -767,7 +750,6 @@ describe('Animation', () => {
         }
       `;
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'child-cmp',
         host: {'animate.leave': 'slide-out'},
         template: '<p>I should fade</p>',
@@ -776,7 +758,6 @@ describe('Animation', () => {
       class ChildComponent {}
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: multiple,
         imports: [ChildComponent],
@@ -826,7 +807,6 @@ describe('Animation', () => {
         }
       `;
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: multiple,
         template: '@if (show()) { <div animate.leave="slide-out"><p>Element with text</p></div> }',
@@ -888,7 +868,6 @@ describe('Animation', () => {
         }
       `;
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: multiple,
         template:
@@ -959,7 +938,6 @@ describe('Animation', () => {
       it('should have the same exact timing when AnimationsModule is present', async () => {
         const logSpy = jasmine.createSpy('logSpy');
         @Component({
-          changeDetection: ChangeDetectionStrategy.Eager,
           selector: 'test-cmp',
           styles: styles,
           template:
@@ -1029,7 +1007,6 @@ describe('Animation', () => {
 
     it('should apply classes on entry when animation is specified with no control flow', async () => {
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: styles,
         template: '<div><p animate.enter="slide-in" #el>I should slide in</p></div>',
@@ -1049,7 +1026,6 @@ describe('Animation', () => {
 
     it('should call animation function on entry when animation is specified with no control flow', async () => {
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: styles,
         template: '<div><p (animate.enter)="slideIn($event)">I should slide in</p></div>',
@@ -1073,7 +1049,6 @@ describe('Animation', () => {
 
     it('should call animation function only once on entry when animation is specified with control flow', async () => {
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: styles,
         template:
@@ -1104,7 +1079,6 @@ describe('Animation', () => {
 
     it('should apply classes on entry when animation is specified', async () => {
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: styles,
         template: '<div>@if (show()) {<p animate.enter="slide-in" #el>I should slide in</p>}</div>',
@@ -1128,7 +1102,6 @@ describe('Animation', () => {
 
     it('should support binding syntax', async () => {
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: styles,
         template:
@@ -1154,7 +1127,6 @@ describe('Animation', () => {
 
     it('should remove classes when animation is done', async () => {
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: styles,
         template: '<div>@if (show()) {<p animate.enter="slide-in" #el>I should slide in</p>}</div>',
@@ -1184,7 +1156,6 @@ describe('Animation', () => {
 
     it('should support function syntax', async () => {
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: styles,
         template:
@@ -1242,7 +1213,6 @@ describe('Animation', () => {
       }
       `;
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: multiple,
         template:
@@ -1299,7 +1269,6 @@ describe('Animation', () => {
       }
       `;
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: multiple,
         template: `<div>
@@ -1358,7 +1327,6 @@ describe('Animation', () => {
       }
       `;
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: multiple,
         template:
@@ -1393,7 +1361,6 @@ describe('Animation', () => {
 
     it('should remove right away when animations are disabled', async () => {
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: styles,
         template: '<div>@if (show()) {<p animate.enter="slide-in" #el>I should fade</p>}</div>',
@@ -1415,7 +1382,6 @@ describe('Animation', () => {
 
     it('should remove right away when no classes have animations', async () => {
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: styles,
         template: '<div>@if (show()) {<p animate.enter="not-a-class" #el>I should fade</p>}</div>',
@@ -1439,7 +1405,6 @@ describe('Animation', () => {
 
     it('should be host bindable', async () => {
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'child-cmp',
         host: {'animate.enter': 'slide-in'},
         template: '<p>I should fade</p>',
@@ -1448,7 +1413,6 @@ describe('Animation', () => {
       class ChildComponent {}
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: styles,
         imports: [ChildComponent],
@@ -1474,7 +1438,6 @@ describe('Animation', () => {
 
     it('should be host bindable with brackets', async () => {
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'child-cmp',
         host: {'[animate.enter]': 'slideIn()'},
         template: '<p>I should fade</p>',
@@ -1485,7 +1448,6 @@ describe('Animation', () => {
       }
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: styles,
         imports: [ChildComponent],
@@ -1511,7 +1473,6 @@ describe('Animation', () => {
     it('should be host bindable with events', async () => {
       const slideInCalled = jasmine.createSpy('slideInCalled');
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'child-cmp',
         host: {'(animate.enter)': 'slideIn($event)'},
         template: '<p>I should fade</p>',
@@ -1526,7 +1487,6 @@ describe('Animation', () => {
       }
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: styles,
         imports: [ChildComponent],
@@ -1549,7 +1509,6 @@ describe('Animation', () => {
 
     it('should compose class list when host binding and regular binding', async () => {
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'child-cmp',
         host: {'[animate.enter]': 'clazz'},
         template: '<p>I should fade</p>',
@@ -1560,7 +1519,6 @@ describe('Animation', () => {
       }
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: styles,
         imports: [ChildComponent],
@@ -1593,7 +1551,6 @@ describe('Animation', () => {
 
     it('should compose class list when host binding a string and regular class strings', async () => {
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'child-cmp',
         host: {'animate.enter': 'slide-in'},
         template: '<p>I should fade</p>',
@@ -1602,7 +1559,6 @@ describe('Animation', () => {
       class ChildComponent {}
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: styles,
         imports: [ChildComponent],
@@ -1656,7 +1612,6 @@ describe('Animation', () => {
       `;
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: animateStyles,
         template:
@@ -1717,7 +1672,6 @@ describe('Animation', () => {
       `;
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: animateStyles,
         template:
@@ -1776,7 +1730,6 @@ describe('Animation', () => {
       `;
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: animateStyles,
         template: '<div>@if (show()) {<p animate.leave="fade">I should fade</p>}</div>',
@@ -1910,7 +1863,6 @@ describe('Animation', () => {
       `;
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: animateStyles,
         template: `
@@ -1997,7 +1949,6 @@ describe('Animation', () => {
       `;
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: animateStyles,
         template: `
@@ -2089,7 +2040,6 @@ describe('Animation', () => {
       `;
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: animateStyles,
         imports: [NgFor],
@@ -2101,6 +2051,7 @@ describe('Animation', () => {
           </div>
         `,
         encapsulation: ViewEncapsulation.None,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {
         items = [1, 2, 3];
@@ -2152,7 +2103,6 @@ describe('Animation', () => {
       `;
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: animateStyles,
         template: `
@@ -2201,7 +2151,6 @@ describe('Animation', () => {
     it('should not remove elements when swapping or moving nodes', async () => {
       const animateSpy = jasmine.createSpy('animateSpy');
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         template: `
           <div>
@@ -2678,7 +2627,6 @@ describe('Animation', () => {
       `;
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: animateStyles,
         template: `
@@ -2773,7 +2721,6 @@ describe('Animation', () => {
       }
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         imports: [DynamicComponent],
         template: `
@@ -2842,7 +2789,6 @@ describe('Animation', () => {
       `;
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'animated-child',
         template: `
           @if (show()) {
@@ -3073,7 +3019,6 @@ describe('Animation', () => {
       }
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         imports: [MenuComponent],
         template: ` <dynamic-menu /> `,
@@ -3149,7 +3094,6 @@ describe('Animation', () => {
       `;
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'expandable-cmp',
         styles: [animateStyles],
         template: `
@@ -3165,7 +3109,6 @@ describe('Animation', () => {
       }
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         imports: [ExpandableComponent],
         // Two instances of the SAME template; only one open at a time.
@@ -3241,7 +3184,6 @@ describe('Animation', () => {
 
     it('should ignore infinite animations during animate.leave and remove element immediately', async () => {
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: styles,
         template:
@@ -3276,7 +3218,6 @@ describe('Animation', () => {
 
     it('should ignore infinite animations during animate.enter and remove classes immediately', async () => {
       @Component({
-        changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
         styles: styles,
         template:

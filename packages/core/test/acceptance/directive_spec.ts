@@ -9,7 +9,6 @@
 import {CommonModule} from '@angular/common';
 import {By} from '@angular/platform-browser';
 import {
-  ChangeDetectionStrategy,
   Component,
   Directive,
   ElementRef,
@@ -19,6 +18,7 @@ import {
   OnChanges,
   Output,
   provideZoneChangeDetection,
+  signal,
   SimpleChange,
   SimpleChanges,
   TemplateRef,
@@ -50,7 +50,6 @@ describe('directives', () => {
       selector: 'test-cmpt',
       template: '',
 
-      changeDetection: ChangeDetectionStrategy.Eager,
       imports: [TestDirective, TitleDirective],
     })
     class TestComponent {}
@@ -169,7 +168,6 @@ describe('directives', () => {
           <span>Some content</span>
         </ng-container>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [CommonModule, DirectiveA],
       })
       class MyComponent {
@@ -267,7 +265,6 @@ describe('directives', () => {
         selector: 'test-cmp',
         template: `<div *ngIf="condition" class="titleDir"></div>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [CommonModule, TitleClassDirective],
       })
       class TestCmp {
@@ -367,7 +364,6 @@ describe('directives', () => {
         template: `<p [attr.dir]="direction"></p>
           <p dir="rtl"></p>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [MyDir],
       })
       class MyComp {
@@ -398,7 +394,6 @@ describe('directives', () => {
         selector: `my-comp`,
         template: `<svg dir><text dir></text></svg>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [MyDir],
       })
       class MyComp {}
@@ -426,7 +421,6 @@ describe('directives', () => {
         selector: `my-comp`,
         template: `<svg dir><text dir></text></svg>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [MyDir],
       })
       class MyComp {}
@@ -460,7 +454,6 @@ describe('directives', () => {
           <div class="a" style="font-size: 10px;" [disabled]="true" [test]="test"></div>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [MyDir],
       })
       class MyComp {
@@ -490,7 +483,6 @@ describe('directives', () => {
       @Component({
         template: '<ng-template [dir]="message"></ng-template>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [WithInput],
       })
       class TestComp {
@@ -518,7 +510,6 @@ describe('directives', () => {
       @Component({
         template: '<ng-template dir="{{ message }}"></ng-template>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [WithInput],
       })
       class TestComp {
@@ -546,7 +537,6 @@ describe('directives', () => {
       @Component({
         template: '<ng-template *ngIf="true" dir="{{ message }}"></ng-template>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [CommonModule, WithInput],
       })
       class TestComp {
@@ -584,7 +574,6 @@ describe('directives', () => {
           </ng-template>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [StructuralDir],
       })
       class App {
@@ -630,7 +619,6 @@ describe('directives', () => {
           </ng-template>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [StructuralDir],
       })
       class App {
@@ -662,7 +650,6 @@ describe('directives', () => {
       @Component({
         template: '<div dir [plainInput]="plainValue" [alias]="aliasedValue"></div>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class App {
@@ -692,7 +679,6 @@ describe('directives', () => {
       @Component({
         template: '<div dir [plainInput]="plainValue" [alias]="aliasedValue"></div>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class App {
@@ -718,14 +704,12 @@ describe('directives', () => {
       }
 
       @Component({
-        template: '<div dir [value]="assignedValue"></div>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: '<div dir [value]="assignedValue()"></div>',
         imports: [Dir],
       })
       class TestComp {
         @ViewChild(Dir) dir!: Dir;
-        assignedValue = '';
+        assignedValue = signal('');
       }
 
       const fixture = TestBed.createComponent(TestComp);
@@ -733,7 +717,7 @@ describe('directives', () => {
 
       expect(fixture.componentInstance.dir.value).toBe(0);
 
-      fixture.componentInstance.assignedValue = 'hello';
+      fixture.componentInstance.assignedValue.set('hello');
       fixture.detectChanges();
 
       expect(fixture.componentInstance.dir.value).toBe(1);
@@ -749,14 +733,12 @@ describe('directives', () => {
       }
 
       @Component({
-        template: '<div dir [value]="assignedValue"></div>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: '<div dir [value]="assignedValue()"></div>',
         imports: [Dir],
       })
       class TestComp {
         @ViewChild(Dir) dir!: Dir;
-        assignedValue = '';
+        assignedValue = signal('');
       }
 
       const fixture = TestBed.createComponent(TestComp);
@@ -764,7 +746,7 @@ describe('directives', () => {
 
       expect(fixture.componentInstance.dir.value).toBe(0);
 
-      fixture.componentInstance.assignedValue = 'hello';
+      fixture.componentInstance.assignedValue.set('hello');
       fixture.detectChanges();
 
       expect(fixture.componentInstance.dir.value).toBe(1);
@@ -781,7 +763,6 @@ describe('directives', () => {
       @Component({
         template: '<div dir value="staticValue"></div>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class TestComp {
@@ -803,14 +784,12 @@ describe('directives', () => {
       }
 
       @Component({
-        template: '<div dir [valueAlias]="assignedValue"></div>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: '<div dir [valueAlias]="assignedValue()"></div>',
         imports: [Dir],
       })
       class TestComp {
         @ViewChild(Dir) dir!: Dir;
-        assignedValue = '';
+        assignedValue = signal('');
       }
 
       const fixture = TestBed.createComponent(TestComp);
@@ -818,7 +797,7 @@ describe('directives', () => {
 
       expect(fixture.componentInstance.dir.value).toBe(0);
 
-      fixture.componentInstance.assignedValue = 'hello';
+      fixture.componentInstance.assignedValue.set('hello');
       fixture.detectChanges();
 
       expect(fixture.componentInstance.dir.value).toBe(1);
@@ -836,14 +815,12 @@ describe('directives', () => {
       class Dir extends Parent {}
 
       @Component({
-        template: '<div dir [value]="assignedValue"></div>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: '<div dir [value]="assignedValue()"></div>',
         imports: [Dir],
       })
       class TestComp {
         @ViewChild(Dir) dir!: Dir;
-        assignedValue = '';
+        assignedValue = signal('');
       }
 
       const fixture = TestBed.createComponent(TestComp);
@@ -851,7 +828,7 @@ describe('directives', () => {
 
       expect(fixture.componentInstance.dir.value).toBe(0);
 
-      fixture.componentInstance.assignedValue = 'hello';
+      fixture.componentInstance.assignedValue.set('hello');
       fixture.detectChanges();
 
       expect(fixture.componentInstance.dir.value).toBe(1);
@@ -870,14 +847,12 @@ describe('directives', () => {
       class Dir {}
 
       @Component({
-        template: '<div dir [valueAlias]="assignedValue"></div>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: '<div dir [valueAlias]="assignedValue()"></div>',
         imports: [Dir],
       })
       class TestComp {
         @ViewChild(HostDir) hostDir!: HostDir;
-        assignedValue = '';
+        assignedValue = signal('');
       }
 
       const fixture = TestBed.createComponent(TestComp);
@@ -885,7 +860,7 @@ describe('directives', () => {
 
       expect(fixture.componentInstance.hostDir.value).toBe(0);
 
-      fixture.componentInstance.assignedValue = 'hello';
+      fixture.componentInstance.assignedValue.set('hello');
       fixture.detectChanges();
 
       expect(fixture.componentInstance.hostDir.value).toBe(1);
@@ -908,14 +883,12 @@ describe('directives', () => {
       }
 
       @Component({
-        template: '<div dir [value]="assignedValue"></div>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: '<div dir [value]="assignedValue()"></div>',
         imports: [Dir],
       })
       class TestComp {
         @ViewChild(Dir) dir!: Dir;
-        assignedValue = '';
+        assignedValue = signal('');
       }
 
       const fixture = TestBed.createComponent(TestComp);
@@ -925,7 +898,7 @@ describe('directives', () => {
         jasmine.objectContaining({previousValue: undefined, currentValue: 0}),
       ]);
 
-      fixture.componentInstance.assignedValue = 'hello';
+      fixture.componentInstance.assignedValue.set('hello');
       fixture.detectChanges();
 
       expect(trackedChanges).toEqual([
@@ -952,7 +925,6 @@ describe('directives', () => {
       @Component({
         template: '<div dir value="foo"></div>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class TestComp {
@@ -968,8 +940,6 @@ describe('directives', () => {
     it('should transform value assigned using setInput', () => {
       @Component({
         template: '',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Comp {
         @Input({transform: (value: string) => (value ? 1 : 0)}) value = -1;
@@ -977,8 +947,6 @@ describe('directives', () => {
 
       @Component({
         template: '<ng-container #location/>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComp {
         @ViewChild('location', {read: ViewContainerRef}) vcr!: ViewContainerRef;
@@ -1000,8 +968,6 @@ describe('directives', () => {
       @Component({
         selector: 'app-test[value]',
         template: ``,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {
         @Input() value = 'unset';
@@ -1010,8 +976,6 @@ describe('directives', () => {
       @Component({
         selector: 'app-root',
         template: ``,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         constructor(vcr: ViewContainerRef) {
@@ -1032,8 +996,6 @@ describe('directives', () => {
       @Component({
         selector: 'app-test',
         template: ``,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {
         @Input() value = 'unset';
@@ -1042,8 +1004,6 @@ describe('directives', () => {
       @Component({
         selector: 'app-root',
         template: ``,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         constructor(vcr: ViewContainerRef) {
@@ -1071,7 +1031,6 @@ describe('directives', () => {
       @Component({
         template: `<ng-template (out)="value = true"></ng-template>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [TestDir],
       })
       class TestComp {
@@ -1096,7 +1055,6 @@ describe('directives', () => {
           <span>Hello</span>
         </ng-container>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [TestDir],
       })
       class TestComp {
@@ -1130,7 +1088,6 @@ describe('directives', () => {
       @Component({
         template: `<div dir-with-title title="a"></div>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [DirWithTitle],
       })
       class App {}
@@ -1150,7 +1107,6 @@ describe('directives', () => {
       @Component({
         template: `<div dir-with-title [title]="value"></div>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [DirWithTitle],
       })
       class App {
@@ -1175,7 +1131,6 @@ describe('directives', () => {
       @Component({
         template: `<div dir-with-title [title]="value" attr.title="test"></div>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [DirWithTitle],
       })
       class App {
@@ -1198,7 +1153,6 @@ describe('directives', () => {
       @Component({
         template: `<div dir-with-title [title]="value1" [attr.title]="value2"></div>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [DirWithTitle],
       })
       class App {
@@ -1221,7 +1175,6 @@ describe('directives', () => {
       @Component({
         template: `<div dir-with-title [title]="value1" attr.title="{{ value2 }}"></div>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [DirWithTitle],
       })
       class App {
@@ -1244,7 +1197,6 @@ describe('directives', () => {
       @Component({
         template: `<div dir-with-title title="{{ value }}" attr.title="test"></div>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [DirWithTitle],
       })
       class App {
@@ -1267,7 +1219,6 @@ describe('directives', () => {
       @Component({
         template: `<div dir-with-title title="{{ value1 }}" [attr.title]="value2"></div>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [DirWithTitle],
       })
       class App {
@@ -1290,7 +1241,6 @@ describe('directives', () => {
       @Component({
         template: `<div dir-with-title title="{{ value1 }}" attr.title="{{ value2 }}"></div>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [DirWithTitle],
       })
       class App {
@@ -1313,7 +1263,6 @@ describe('directives', () => {
       @Component({
         template: `<div dir-with-title title="{{ value }}"></div>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [DirWithTitle],
       })
       class App {
@@ -1335,7 +1284,6 @@ describe('directives', () => {
       @Component({
         template: `<div dir-with-title attr.title="{{ value }}"></div>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [DirWithTitle],
       })
       class App {
@@ -1357,7 +1305,6 @@ describe('directives', () => {
       @Component({
         template: `<div dir-with-title [attr.title]="value"></div>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [DirWithTitle],
       })
       class App {
@@ -1415,8 +1362,6 @@ describe('directives', () => {
         selector: 'app',
         template: '<div dir></div>',
         standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {}
 
@@ -1479,8 +1424,6 @@ describe('directives', () => {
         selector: 'app',
         template: '<div dir></div>',
         standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {}
 

@@ -8,7 +8,7 @@
 
 import {CommonModule, NgFor, NgIf, NgTemplateOutlet} from '@angular/common';
 import {By} from '@angular/platform-browser';
-import {ChangeDetectionStrategy, Component, Directive, signal} from '../../src/core';
+import {Component, Directive, signal} from '../../src/core';
 import {TestBed} from '../../testing';
 
 describe('@angular/common integration', () => {
@@ -138,7 +138,6 @@ describe('@angular/common integration', () => {
             <li *ngFor="let item of items()">{{ item }}</li>
           </ul>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [NgFor],
       })
       class ToggleComponent {
@@ -193,7 +192,6 @@ describe('@angular/common integration', () => {
             >
           </li>
         </ul>`,
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [NgFor],
       })
       class MultiLevelComponent {
@@ -270,7 +268,6 @@ describe('@angular/common integration', () => {
           </p>
         </div>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [CommonModule],
       })
       class MultiLevelWithListenerComponent {
@@ -366,7 +363,6 @@ describe('@angular/common integration', () => {
           </span>
         </div>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [CommonModule],
       })
       class NineLevelsComponent {

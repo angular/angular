@@ -7,11 +7,11 @@
  */
 
 import {NgIf} from '@angular/common';
-import {ChangeDetectionStrategy} from '@angular/compiler';
 import {dispatchEvent, isNode} from '@angular/private/testing';
 import {expect} from '@angular/private/testing/matchers';
 import {
   ApplicationRef,
+  ChangeDetectionStrategy,
   Component,
   createComponent,
   EnvironmentInjector,
@@ -54,13 +54,12 @@ class DeferredComp {}
 class SecondDeferredComp {}
 
 @Component({
-  template: `MyIf(<span *ngIf="showMore">More</span>)`,
-  changeDetection: ChangeDetectionStrategy.Eager,
+  template: `MyIf(<span *ngIf="showMore()">More</span>)`,
   imports: [NgIf],
 })
 @Injectable()
 class MyIfComp {
-  showMore: boolean = false;
+  showMore = signal(false);
 }
 
 @Component({
@@ -105,8 +104,8 @@ class AsyncChildComp {
 
 @Component({
   template: `<async-child-comp (click)="click()" [text]="text"></async-child-comp>`,
-  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AsyncChildComp],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class AsyncChangeComp {
   text: string = '1';
@@ -466,7 +465,7 @@ describe('ComponentFixture', () => {
       componentFixture.detectChanges();
       expect(componentFixture.nativeElement).toHaveText('MyIf()');
 
-      componentFixture.componentInstance.showMore = true;
+      componentFixture.componentInstance.showMore.set(true);
       componentFixture.detectChanges();
       expect(componentFixture.nativeElement).toHaveText('MyIf(More)');
     });

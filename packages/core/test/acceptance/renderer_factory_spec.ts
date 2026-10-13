@@ -33,10 +33,10 @@ import {
   provideZoneChangeDetection,
   Renderer2,
   RendererFactory2,
+  signal,
   RendererStyleFlags2,
   RendererType2,
   ViewEncapsulation,
-  ChangeDetectionStrategy,
 } from '../../src/core';
 import {RElement} from '../../src/render3/interfaces/renderer_dom';
 import {NoopNgZone} from '../../src/zone/ng_zone';
@@ -54,8 +54,6 @@ describe('renderer factory lifecycle', () => {
   @Component({
     selector: 'some-component',
     template: `foo`,
-
-    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class SomeComponent implements DoCheck {
     ngOnInit() {
@@ -68,8 +66,6 @@ describe('renderer factory lifecycle', () => {
 
   @Component({
     template: `With error`,
-
-    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class SomeComponentWhichThrows {
     ngOnInit() {
@@ -80,7 +76,6 @@ describe('renderer factory lifecycle', () => {
   @Component({
     template: `<some-component></some-component>`,
 
-    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [SomeComponent],
   })
   class TestComponent implements DoCheck {
@@ -162,8 +157,6 @@ describe('renderer factory lifecycle', () => {
       styles: ['.some-css-class { color: red; }'],
       template: '...',
       encapsulation: ViewEncapsulation.ShadowDom,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class StyledComp {}
 
@@ -181,8 +174,6 @@ describe('renderer factory lifecycle', () => {
       @Component({
         template: '',
         animations: [animA, animB],
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AnimComp {}
 
@@ -199,8 +190,6 @@ describe('renderer factory lifecycle', () => {
       @Component({
         template: '...',
         animations: [],
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AnimComp {}
 
@@ -214,8 +203,6 @@ describe('renderer factory lifecycle', () => {
       @Component({
         template: '<div @fooAnimation></div>',
         animations: [],
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AnimComp {}
 
@@ -251,8 +238,6 @@ describe('renderer factory lifecycle', () => {
         <div>Root view</div>
         <div *ngIf="visible">Child view</div>
       `,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       visible = true;
@@ -322,7 +307,7 @@ describe('animation renderer factory', () => {
   @Component({
     template: `
       <div
-        [@myAnimation]="exp"
+        [@myAnimation]="exp()"
         (@myAnimation.start)="callback($event)"
         (@myAnimation.done)="callback($event)"
       >
@@ -346,11 +331,9 @@ describe('animation renderer factory', () => {
         options: {},
       },
     ],
-
-    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class SomeComponentWithAnimation {
-    exp: string | undefined;
+    exp = signal<string | undefined>(undefined);
 
     callback(event: AnimationEvent) {
       eventLogs.push(`${event.fromState ? event.fromState : event.toState} - ${event.phaseName}`);
@@ -359,8 +342,6 @@ describe('animation renderer factory', () => {
 
   @Component({
     template: 'foo',
-
-    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class SomeComponent {}
 
@@ -380,8 +361,7 @@ describe('animation renderer factory', () => {
         /<div class="ng-tns-c\d+-0 ng-trigger ng-trigger-myAnimation">\s+foo\s+<\/div>/,
       );
 
-      fixture.componentInstance.exp = 'on';
-      fixture.changeDetectorRef.markForCheck();
+      fixture.componentInstance.exp.set('on');
       fixture.detectChanges();
 
       const [player] = getAnimationLog();
@@ -438,8 +418,6 @@ function getAnimationRendererFactory2(document: Document): RendererFactory2 {
 describe('custom renderer', () => {
   @Component({
     template: `<div><span></span></div>`,
-
-    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class SomeComponent {}
 
@@ -485,38 +463,32 @@ describe('custom renderer', () => {
 describe('Renderer2 destruction hooks', () => {
   @Component({
     template: `
-      <span *ngIf="isContentVisible">A</span>
-      <span *ngIf="isContentVisible">B</span>
-      <span *ngIf="isContentVisible">C</span>
+      <span *ngIf="isContentVisible()">A</span>
+      <span *ngIf="isContentVisible()">B</span>
+      <span *ngIf="isContentVisible()">C</span>
     `,
-
-    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [CommonModule],
   })
   class SimpleApp {
-    isContentVisible = true;
+    isContentVisible = signal(true);
   }
 
   @Component({
     selector: 'basic-comp',
     template: 'comp(<ng-content></ng-content>)',
-
-    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class BasicComponent {}
 
   @Component({
     template: `
-      <basic-comp *ngIf="isContentVisible">A</basic-comp>
-      <basic-comp *ngIf="isContentVisible">B</basic-comp>
-      <basic-comp *ngIf="isContentVisible">C</basic-comp>
+      <basic-comp *ngIf="isContentVisible()">A</basic-comp>
+      <basic-comp *ngIf="isContentVisible()">B</basic-comp>
+      <basic-comp *ngIf="isContentVisible()">C</basic-comp>
     `,
-
-    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [CommonModule, BasicComponent],
   })
   class AppWithComponents {
-    isContentVisible = true;
+    isContentVisible = signal(true);
   }
 
   beforeEach(() => {
@@ -537,8 +509,7 @@ describe('Renderer2 destruction hooks', () => {
 
     expect(fixture.nativeElement.textContent).toBe('ABC');
 
-    fixture.componentInstance.isContentVisible = false;
-    fixture.changeDetectorRef.markForCheck();
+    fixture.componentInstance.isContentVisible.set(false);
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('');
@@ -550,8 +521,7 @@ describe('Renderer2 destruction hooks', () => {
 
     expect(fixture.nativeElement.textContent).toBe('comp(A)comp(B)comp(C)');
 
-    fixture.componentInstance.isContentVisible = false;
-    fixture.changeDetectorRef.markForCheck();
+    fixture.componentInstance.isContentVisible.set(false);
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('');

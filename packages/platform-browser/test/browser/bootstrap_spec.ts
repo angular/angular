@@ -243,7 +243,6 @@ describe('bootstrap factory method', () => {
     @Component({
       selector: 'hello-app',
       template: 'Hello from {{ name }}!',
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class ComponentWithDeps {
       constructor(@Inject(NAME) public name: string) {}

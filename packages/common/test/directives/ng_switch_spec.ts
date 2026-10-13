@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy} from '@angular/compiler';
-import {Attribute, Component, Directive, TemplateRef, Type, ViewChild} from '@angular/core';
+import {Attribute, Component, Directive, signal, TemplateRef, Type, ViewChild} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/private/testing/matchers';
 import {NgSwitch, NgSwitchCase, NgSwitchDefault, NgTemplateOutlet} from '../../index';
@@ -140,27 +139,24 @@ describe('NgSwitch', () => {
     @Component({
       imports: [NgSwitch, NgSwitchCase, NgSwitchDefault],
       template:
-        '<ul [ngSwitch]="switchValue">' +
+        '<ul [ngSwitch]="switchValue()">' +
         '<li *ngSwitchCase="\'a\'">when a</li>' +
         '<li *ngSwitchDefault>when default</li>' +
         '</ul>',
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {
-      switchValue = 'a';
+      switchValue = signal('a');
     }
 
     const fixture = TestBed.createComponent(TestComponent);
     await fixture.whenStable();
     expect(fixture.nativeElement).toHaveText('when a');
 
-    fixture.componentInstance.switchValue = 'b';
-    fixture.changeDetectorRef.markForCheck();
+    fixture.componentInstance.switchValue.set('b');
     await fixture.whenStable();
     expect(fixture.nativeElement).toHaveText('when default');
 
-    fixture.componentInstance.switchValue = 'c';
-    fixture.changeDetectorRef.markForCheck();
+    fixture.componentInstance.switchValue.set('c');
     await fixture.whenStable();
     expect(fixture.nativeElement).toHaveText('when default');
   });
@@ -244,13 +240,13 @@ describe('NgSwitch', () => {
       fixture = TestBed.createComponent(ComplexComponent);
       await detectChangesAndExpectText('Foo');
 
-      fixture.componentInstance.state = 'case2';
+      fixture.componentInstance.state.set('case2');
       await detectChangesAndExpectText('Bar');
 
-      fixture.componentInstance.state = 'notACase';
+      fixture.componentInstance.state.set('notACase');
       await detectChangesAndExpectText('Default');
 
-      fixture.componentInstance.state = 'case1';
+      fixture.componentInstance.state.set('case1');
       await detectChangesAndExpectText('Foo');
     });
   });
@@ -258,7 +254,6 @@ describe('NgSwitch', () => {
 
 @Component({
   template: '',
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class TestComponent {
   switchValue: any = null;
@@ -268,7 +263,7 @@ class TestComponent {
 
 @Component({
   template: `
-    <div [ngSwitch]="state">
+    <div [ngSwitch]="state()">
       <ng-container *ngSwitchCase="'case1'" [ngSwitch]="true">
         <ng-container *ngSwitchCase="true" [ngTemplateOutlet]="foo"></ng-container>
         <span *ngSwitchDefault>Should never render</span>
@@ -290,13 +285,12 @@ class TestComponent {
       <span>Bar</span>
     </ng-template>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [NgSwitch, NgSwitchCase, NgSwitchDefault, NgTemplateOutlet],
 })
 class ComplexComponent {
   @ViewChild('foo', {static: true}) foo!: TemplateRef<any>;
   @ViewChild('bar', {static: true}) bar!: TemplateRef<any>;
-  state: string = 'case1';
+  state = signal('case1');
 }
 
 function createTestComponent(

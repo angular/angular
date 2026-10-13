@@ -9,19 +9,11 @@
 import {computeMsgId} from '@angular/compiler';
 import {clearTranslations, loadTranslations} from '@angular/localize';
 import {DomSanitizer} from '@angular/platform-browser';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Directive,
-  HostBinding,
-  Input,
-  NO_ERRORS_SCHEMA,
-} from '../../src/core';
+import {Component, Directive, HostBinding, Input, NO_ERRORS_SCHEMA} from '../../src/core';
 import {ComponentFixture, getTestBed, TestBed} from '../../testing';
 
 @Component({
   template: '',
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class SecuredComponent {
   ctxProp: any = 'some value';

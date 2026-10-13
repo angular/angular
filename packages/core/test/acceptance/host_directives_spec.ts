@@ -10,7 +10,6 @@ import {By} from '@angular/platform-browser';
 import {
   AfterViewChecked,
   AfterViewInit,
-  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   Directive,
@@ -25,6 +24,7 @@ import {
   OnInit,
   Output,
   provideZoneChangeDetection,
+  signal,
   SimpleChanges,
   Type,
   ViewChild,
@@ -46,8 +46,6 @@ describe('host directives', () => {
   function createRootComponent<T>(componentType: Type<T>) {
     @Component({
       template: '<ng-container #insertionPoint></ng-container>',
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       @ViewChild('insertionPoint', {read: ViewContainerRef}) insertionPoint!: ViewContainerRef;
@@ -90,7 +88,6 @@ describe('host directives', () => {
     @Component({
       template: '<div dir></div>',
 
-      changeDetection: ChangeDetectionStrategy.Eager,
       imports: [Dir],
     })
     class App {}
@@ -146,7 +143,6 @@ describe('host directives', () => {
     @Component({
       template: '<div dir></div>',
       imports: [Dir],
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {}
 
@@ -193,7 +189,6 @@ describe('host directives', () => {
     @Component({
       template: '<div dir></div>',
       imports: [Dir],
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {}
 
@@ -290,8 +285,6 @@ describe('host directives', () => {
       template: '',
       hostDirectives: [Chain1, Chain2, Chain3],
       providers: [{provide: token, useValue: 'host value'}],
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyComp {
       constructor() {
@@ -319,7 +312,6 @@ describe('host directives', () => {
     @Component({
       template: '<my-comp selector-matched-dir></my-comp>',
 
-      changeDetection: ChangeDetectionStrategy.Eager,
       imports: [MyComp, SelectorMatchedDir],
     })
     class App {}
@@ -377,7 +369,6 @@ describe('host directives', () => {
     @Component({
       template: '<div dir></div>',
 
-      changeDetection: ChangeDetectionStrategy.Eager,
       imports: [Host],
     })
     class App {
@@ -420,7 +411,6 @@ describe('host directives', () => {
         </div>
       `,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
       imports: [Host],
     })
     class App {}
@@ -505,7 +495,6 @@ describe('host directives', () => {
     @Component({
       template: '<div dir></div>',
 
-      changeDetection: ChangeDetectionStrategy.Eager,
       imports: [Dir],
     })
     class App {}
@@ -581,7 +570,6 @@ describe('host directives', () => {
       @Component({
         template: '<div dir></div>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class App {}
@@ -635,8 +623,6 @@ describe('host directives', () => {
       @Component({
         selector: 'child',
         hostDirectives: [ChildHostDir, OtherChildHostDir],
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Child extends LogsLifecycles {
         override name = 'Child';
@@ -657,7 +643,6 @@ describe('host directives', () => {
         hostDirectives: [ParentHostDir, OtherParentHostDir],
         template: '<child plain-dir="PlainDir on child"></child>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Child, forwardRef(() => PlainDir)],
       })
       class Parent extends LogsLifecycles {
@@ -674,7 +659,6 @@ describe('host directives', () => {
       @Component({
         template: '<parent plain-dir="PlainDir on parent"></parent>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Parent, PlainDir],
       })
       class App {}
@@ -732,8 +716,6 @@ describe('host directives', () => {
           {directive: HostDir, inputs: ['someInput']},
           {directive: OtherHostDir, inputs: ['someInput']},
         ],
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class HostComp extends LogsLifecycles {
         override name = 'HostComp';
@@ -747,13 +729,11 @@ describe('host directives', () => {
       }
 
       @Component({
-        template: '<host-comp plain-dir="PlainDir" [someInput]="inputValue"></host-comp>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: '<host-comp plain-dir="PlainDir" [someInput]="inputValue()"></host-comp>',
         imports: [HostComp, PlainDir],
       })
       class App {
-        inputValue = 'hello';
+        inputValue = signal('hello');
       }
 
       const fixture = TestBed.createComponent(App);
@@ -767,7 +747,7 @@ describe('host directives', () => {
       ]);
 
       logs = [];
-      fixture.componentInstance.inputValue = 'changed';
+      fixture.componentInstance.inputValue.set('changed');
       fixture.detectChanges();
 
       expect(logs).toEqual([
@@ -813,7 +793,6 @@ describe('host directives', () => {
       @Component({
         template: '<button dir></button>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class App {}
@@ -850,7 +829,6 @@ describe('host directives', () => {
       @Component({
         template: '<div dir></div>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class App {}
@@ -898,7 +876,6 @@ describe('host directives', () => {
       @Component({
         template: '<div dir></div>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Host],
       })
       class App {}
@@ -920,8 +897,6 @@ describe('host directives', () => {
       @Component({
         selector: 'child',
         template: '',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Child {
         hostDir = inject(HostDir);
@@ -939,7 +914,6 @@ describe('host directives', () => {
         template: '<child></child>',
         hostDirectives: [HostDir],
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Child],
       })
       class Host {
@@ -949,7 +923,6 @@ describe('host directives', () => {
       @Component({
         template: '<host></host>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Host],
       })
       class App {
@@ -1000,7 +973,6 @@ describe('host directives', () => {
       @Component({
         template: '<div dir></div>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Host],
       })
       class App {}
@@ -1059,7 +1031,6 @@ describe('host directives', () => {
       @Component({
         template: '<div dir></div>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Host],
       })
       class App {}
@@ -1101,7 +1072,6 @@ describe('host directives', () => {
       @Component({
         template: '<div dir></div>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Host],
       })
       class App {
@@ -1128,7 +1098,6 @@ describe('host directives', () => {
         providers: [{provide: token, useValue: 'host'}],
         template: '<span child></span>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [forwardRef(() => Child)],
       })
       class Host {}
@@ -1145,7 +1114,6 @@ describe('host directives', () => {
       @Component({
         template: '<host></host>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Host],
       })
       class App {}
@@ -1172,15 +1140,12 @@ describe('host directives', () => {
         hostDirectives: [HostDir],
         viewProviders: [{provide: token, useValue: 'host'}],
         template: '',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Host {}
 
       @Component({
         template: '<host></host>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Host],
       })
       class App {}
@@ -1208,7 +1173,6 @@ describe('host directives', () => {
       @Component({
         template: '<div dir></div>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Host],
       })
       class App {}
@@ -1230,8 +1194,6 @@ describe('host directives', () => {
         selector: 'my-comp',
         hostDirectives: [HostDir],
         template: '',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Comp {
         changeDetectorRef = inject(ChangeDetectorRef) as InternalChangeDetectorRef;
@@ -1240,7 +1202,6 @@ describe('host directives', () => {
       @Component({
         template: '<my-comp></my-comp>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Comp],
       })
       class App {
@@ -1293,14 +1254,12 @@ describe('host directives', () => {
         imports: [InjectsExisting],
         hostDirectives: [HostDirective],
         viewProviders: [{provide: token, useExisting: ProvidesExisting}],
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class CompWithHostDirective {}
 
       @Component({
         template: '<comp-with-host-directive providesExisting/>',
         imports: [ProvidesExisting, CompWithHostDirective],
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {}
 
@@ -1334,7 +1293,6 @@ describe('host directives', () => {
       @Component({
         template: '<button dir (hasBeenClicked)="spy()"></button>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class App {
@@ -1371,7 +1329,6 @@ describe('host directives', () => {
       @Component({
         template: '<button dir (hasBeenClicked)="spy($event)"></button>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class App {
@@ -1406,7 +1363,6 @@ describe('host directives', () => {
           (hasBeenClicked)="invalidSpy($event)"
         ></button>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class App {
@@ -1443,7 +1399,6 @@ describe('host directives', () => {
           (hasBeenClicked)="invalidSpy($event)"
         ></button>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class App {
@@ -1479,7 +1434,6 @@ describe('host directives', () => {
       @Component({
         template: '<button dir (hasBeenClicked)="spy($event)"></button>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class App {
@@ -1513,7 +1467,6 @@ describe('host directives', () => {
       @Component({
         template: '<button dir (hasBeenClicked)="spy($event)"></button>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class App {
@@ -1549,7 +1502,6 @@ describe('host directives', () => {
       @Component({
         template: '<button dir (wasClicked)="spy($event)"></button>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class App {
@@ -1582,7 +1534,6 @@ describe('host directives', () => {
       @Component({
         template: '<button dir (hasBeenClicked)="spy($event)"></button>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class App {
@@ -1618,7 +1569,6 @@ describe('host directives', () => {
       @Component({
         template: '<button dir (hasBeenClicked)="spy($event)"></button>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class App {
@@ -1657,7 +1607,6 @@ describe('host directives', () => {
       @Component({
         template: '<button dir (hasBeenClicked)="spy($event)"></button>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class App {
@@ -1701,7 +1650,6 @@ describe('host directives', () => {
       @Component({
         template: '<button dir (wasClicked)="spy($event)"></button>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class App {
@@ -1743,7 +1691,6 @@ describe('host directives', () => {
       @Component({
         template: '<button dir (hasBeenClicked)="spy($event)"></button>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class App {
@@ -1776,7 +1723,6 @@ describe('host directives', () => {
       @Component({
         template: '<button dir [color]="color"></button>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class App {
@@ -1804,21 +1750,19 @@ describe('host directives', () => {
       class Dir {}
 
       @Component({
-        template: '<button dir [color]="color"></button>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: '<button dir [color]="color()"></button>',
         imports: [Dir],
       })
       class App {
         @ViewChild(HostDir) hostDir!: HostDir;
-        color = 'red';
+        color = signal('red');
       }
 
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       expect(fixture.componentInstance.hostDir.color).toBe('red');
 
-      fixture.componentInstance.color = 'green';
+      fixture.componentInstance.color.set('green');
       fixture.detectChanges();
       expect(fixture.componentInstance.hostDir.color).toBe('green');
     });
@@ -1836,21 +1780,19 @@ describe('host directives', () => {
       class Dir {}
 
       @Component({
-        template: '<button dir [buttonColor]="color"></button>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: '<button dir [buttonColor]="color()"></button>',
         imports: [Dir],
       })
       class App {
         @ViewChild(HostDir) hostDir!: HostDir;
-        color = 'red';
+        color = signal('red');
       }
 
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       expect(fixture.componentInstance.hostDir.color).toBe('red');
 
-      fixture.componentInstance.color = 'green';
+      fixture.componentInstance.color.set('green');
       fixture.detectChanges();
       expect(fixture.componentInstance.hostDir.color).toBe('green');
     });
@@ -1868,21 +1810,19 @@ describe('host directives', () => {
       class Dir {}
 
       @Component({
-        template: '<button dir [buttonColor]="color"></button>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: '<button dir [buttonColor]="color()"></button>',
         imports: [Dir],
       })
       class App {
         @ViewChild(HostDir) hostDir!: HostDir;
-        color = 'red';
+        color = signal('red');
       }
 
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       expect(fixture.componentInstance.hostDir.color).toBe('red');
 
-      fixture.componentInstance.color = 'green';
+      fixture.componentInstance.color.set('green');
       fixture.detectChanges();
       expect(fixture.componentInstance.hostDir.color).toBe('green');
     });
@@ -1902,15 +1842,13 @@ describe('host directives', () => {
       }
 
       @Component({
-        template: '<button dir [color]="color"></button>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: '<button dir [color]="color()"></button>',
         imports: [Dir],
       })
       class App {
         @ViewChild(Dir) dir!: Dir;
         @ViewChild(HostDir) hostDir!: HostDir;
-        color = 'red';
+        color = signal('red');
       }
 
       const fixture = TestBed.createComponent(App);
@@ -1920,7 +1858,7 @@ describe('host directives', () => {
       expect(dir.color).toBe('red');
       expect(hostDir.color).toBe(undefined);
 
-      fixture.componentInstance.color = 'green';
+      fixture.componentInstance.color.set('green');
       fixture.detectChanges();
 
       expect(dir.color).toBe('green');
@@ -1942,15 +1880,13 @@ describe('host directives', () => {
       }
 
       @Component({
-        template: '<button dir [color]="color"></button>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: '<button dir [color]="color()"></button>',
         imports: [Dir],
       })
       class App {
         @ViewChild(Dir) dir!: Dir;
         @ViewChild(HostDir) hostDir!: HostDir;
-        color = 'red';
+        color = signal('red');
       }
 
       const fixture = TestBed.createComponent(App);
@@ -1960,7 +1896,7 @@ describe('host directives', () => {
       expect(dir.color).toBe('red');
       expect(hostDir.color).toBe('red');
 
-      fixture.componentInstance.color = 'green';
+      fixture.componentInstance.color.set('green');
       fixture.detectChanges();
 
       expect(dir.color).toBe('green');
@@ -1982,15 +1918,13 @@ describe('host directives', () => {
       }
 
       @Component({
-        template: '<button dir [buttonColor]="color"></button>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: '<button dir [buttonColor]="color()"></button>',
         imports: [Dir],
       })
       class App {
         @ViewChild(Dir) dir!: Dir;
         @ViewChild(HostDir) hostDir!: HostDir;
-        color = 'red';
+        color = signal('red');
       }
 
       const fixture = TestBed.createComponent(App);
@@ -2000,7 +1934,7 @@ describe('host directives', () => {
       expect(dir.buttonColor).toBe('red');
       expect(hostDir.color).toBe('red');
 
-      fixture.componentInstance.color = 'green';
+      fixture.componentInstance.color.set('green');
       fixture.detectChanges();
 
       expect(dir.buttonColor).toBe('green');
@@ -2023,14 +1957,12 @@ describe('host directives', () => {
       class Dir {}
 
       @Component({
-        template: '<button dir [color]="color"></button>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: '<button dir [color]="color()"></button>',
         imports: [Dir],
       })
       class App {
         @ViewChild(HostDir) hostDir!: HostDir;
-        color = 'red';
+        color = signal('red');
       }
 
       const fixture = TestBed.createComponent(App);
@@ -2038,7 +1970,7 @@ describe('host directives', () => {
 
       expect(fixture.componentInstance.hostDir.color).toBe('red');
 
-      fixture.componentInstance.color = 'green';
+      fixture.componentInstance.color.set('green');
       fixture.detectChanges();
 
       expect(fixture.componentInstance.hostDir.color).toBe('green');
@@ -2062,15 +1994,13 @@ describe('host directives', () => {
       class Dir {}
 
       @Component({
-        template: '<button dir [color]="color"></button>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: '<button dir [color]="color()"></button>',
         imports: [Dir],
       })
       class App {
         @ViewChild(ExposedHostDir) exposedHostDir!: ExposedHostDir;
         @ViewChild(UnExposedHostDir) unExposedHostDir!: UnExposedHostDir;
-        color = 'red';
+        color = signal('red');
       }
 
       const fixture = TestBed.createComponent(App);
@@ -2080,7 +2010,7 @@ describe('host directives', () => {
       expect(exposedHostDir.color).toBe('red');
       expect(unExposedHostDir.color).toBe(undefined);
 
-      fixture.componentInstance.color = 'green';
+      fixture.componentInstance.color.set('green');
       fixture.detectChanges();
 
       expect(exposedHostDir.color).toBe('green');
@@ -2108,15 +2038,13 @@ describe('host directives', () => {
       class Dir {}
 
       @Component({
-        template: '<button dir [buttonColor]="color"></button>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: '<button dir [buttonColor]="color()"></button>',
         imports: [Dir],
       })
       class App {
         @ViewChild(FirstHostDir) firstHostDir!: FirstHostDir;
         @ViewChild(SecondHostDir) secondHostDir!: SecondHostDir;
-        color = 'red';
+        color = signal('red');
       }
 
       const fixture = TestBed.createComponent(App);
@@ -2126,7 +2054,7 @@ describe('host directives', () => {
       expect(firstHostDir.firstColor).toBe('red');
       expect(secondHostDir.secondColor).toBe('red');
 
-      fixture.componentInstance.color = 'green';
+      fixture.componentInstance.color.set('green');
       fixture.detectChanges();
 
       expect(firstHostDir.firstColor).toBe('green');
@@ -2148,7 +2076,6 @@ describe('host directives', () => {
       @Component({
         template: '<button dir color="red"></button>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class App {
@@ -2176,7 +2103,6 @@ describe('host directives', () => {
       @Component({
         template: '<button dir color="red"></button>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class App {
@@ -2203,7 +2129,6 @@ describe('host directives', () => {
       @Component({
         template: '<button dir buttonColor="red"></button>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class App {
@@ -2230,7 +2155,6 @@ describe('host directives', () => {
       @Component({
         template: '<button dir buttonColor="red"></button>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class App {
@@ -2262,7 +2186,6 @@ describe('host directives', () => {
       @Component({
         template: '<button dir color="red"></button>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class App {
@@ -2300,7 +2223,6 @@ describe('host directives', () => {
       @Component({
         template: '<button dir buttonColor="red"></button>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class App {
@@ -2342,7 +2264,6 @@ describe('host directives', () => {
           <span dir [buttonColor]="spanValue"></span>
           <button host-dir [buttonColor]="buttonValue"></button>
         `,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         spanValue = 'spanValue';
@@ -2377,21 +2298,19 @@ describe('host directives', () => {
       class Dir extends Parent {}
 
       @Component({
-        template: '<button dir [color]="color"></button>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: '<button dir [color]="color()"></button>',
         imports: [Dir],
       })
       class App {
         @ViewChild(HostDir) hostDir!: HostDir;
-        color = 'red';
+        color = signal('red');
       }
 
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       expect(fixture.componentInstance.hostDir.color).toBe('red');
 
-      fixture.componentInstance.color = 'green';
+      fixture.componentInstance.color.set('green');
       fixture.detectChanges();
       expect(fixture.componentInstance.hostDir.color).toBe('green');
     });
@@ -2430,13 +2349,11 @@ describe('host directives', () => {
       class Dir {}
 
       @Component({
-        template: '<button dir [color]="color"></button>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: '<button dir [color]="color()"></button>',
         imports: [Dir],
       })
       class App {
-        color = 'red';
+        color = signal('red');
       }
 
       const fixture = TestBed.createComponent(App);
@@ -2462,7 +2379,7 @@ describe('host directives', () => {
         }),
       );
 
-      fixture.componentInstance.color = 'green';
+      fixture.componentInstance.color.set('green');
       fixture.detectChanges();
 
       expect(firstDirChangeEvent).toEqual(
@@ -2517,13 +2434,11 @@ describe('host directives', () => {
       class Dir {}
 
       @Component({
-        template: '<button dir [buttonColor]="color"></button>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: '<button dir [buttonColor]="color()"></button>',
         imports: [Dir],
       })
       class App {
-        color = 'red';
+        color = signal('red');
       }
 
       const fixture = TestBed.createComponent(App);
@@ -2549,7 +2464,7 @@ describe('host directives', () => {
         }),
       );
 
-      fixture.componentInstance.color = 'green';
+      fixture.componentInstance.color.set('green');
       fixture.detectChanges();
 
       expect(firstDirChangeEvent).toEqual(
@@ -2601,13 +2516,11 @@ describe('host directives', () => {
       class Dir {}
 
       @Component({
-        template: '<button dir [color]="color"></button>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: '<button dir [color]="color()"></button>',
         imports: [Dir],
       })
       class App {
-        color = 'red';
+        color = signal('red');
       }
 
       const fixture = TestBed.createComponent(App);
@@ -2624,7 +2537,7 @@ describe('host directives', () => {
         }),
       );
 
-      fixture.componentInstance.color = 'green';
+      fixture.componentInstance.color.set('green');
       fixture.detectChanges();
 
       expect(firstDirChangeEvent).toBe(undefined);
@@ -2660,7 +2573,6 @@ describe('host directives', () => {
       @Component({
         template: '<button dir buttonColor="red"></button>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class App {}
@@ -2713,15 +2625,12 @@ describe('host directives', () => {
         selector: 'comp',
         template: '',
         hostDirectives: [HostDir, OtherHostDir],
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Comp {}
 
       @Component({
         template: '<comp plain-dir></comp>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [PlainDir, Comp],
       })
       class App {}
@@ -2750,8 +2659,6 @@ describe('host directives', () => {
         selector: 'comp',
         template: '',
         hostDirectives: [HostDir],
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Comp {
         constructor() {
@@ -2762,7 +2669,6 @@ describe('host directives', () => {
       @Component({
         template: '<comp></comp>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Comp],
       })
       class App {}
@@ -2785,8 +2691,6 @@ describe('host directives', () => {
         selector: 'comp',
         template: '',
         hostDirectives: [HostDir],
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Comp {
         constructor() {
@@ -2797,7 +2701,6 @@ describe('host directives', () => {
       @Component({
         template: '<comp></comp>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Comp],
       })
       class App {}
@@ -2818,8 +2721,6 @@ describe('host directives', () => {
         selector: 'comp',
         template: '',
         hostDirectives: [HostDir],
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Comp {
         constructor(public elementRef: ElementRef<HTMLElement>) {}
@@ -2828,7 +2729,6 @@ describe('host directives', () => {
       @Component({
         template: '<comp></comp>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Comp],
       })
       class App {
@@ -2862,8 +2762,6 @@ describe('host directives', () => {
         host: {'host-attr': '', 'class': 'dir', 'style': 'width: 50px'},
         hostDirectives: [HostDir],
         template: '',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class HostComp {
         constructor() {
@@ -2916,8 +2814,6 @@ describe('host directives', () => {
       @Component({
         template: '',
         hostDirectives: [HostDir, OtherHostDir],
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class HostComp implements OnInit, AfterViewInit, AfterViewChecked {
         ngOnInit() {
@@ -2953,35 +2849,33 @@ describe('host directives', () => {
       it('should support host attribute bindings coming from the host directives', () => {
         @Directive({
           host: {
-            '[attr.host-dir-only]': 'value',
-            '[attr.shadowed-attr]': 'value',
+            '[attr.host-dir-only]': 'value()',
+            '[attr.shadowed-attr]': 'value()',
           },
         })
         class HostDir {
-          value = 'host-dir';
+          value = signal('host-dir');
         }
 
         @Directive({
           host: {
-            '[attr.other-host-dir-only]': 'value',
-            '[attr.shadowed-attr]': 'value',
+            '[attr.other-host-dir-only]': 'value()',
+            '[attr.shadowed-attr]': 'value()',
           },
         })
         class OtherHostDir {
-          value = 'other-host-dir';
+          value = signal('other-host-dir');
         }
 
         @Component({
           selector: 'host-comp',
           host: {
-            '[attr.shadowed-attr]': 'value',
+            '[attr.shadowed-attr]': 'value()',
           },
           hostDirectives: [HostDir, OtherHostDir],
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class HostComp {
-          value = 'host';
+          value = signal('host');
           hostDir = inject(HostDir);
           otherHostDir = inject(OtherHostDir);
         }
@@ -2994,9 +2888,9 @@ describe('host directives', () => {
             'other-host-dir-only="other-host-dir"></host-comp>',
         );
 
-        ref.instance.hostDir.value = 'host-dir-changed';
-        ref.instance.otherHostDir.value = 'other-host-dir-changed';
-        ref.instance.value = 'host-changed';
+        ref.instance.hostDir.value.set('host-dir-changed');
+        ref.instance.otherHostDir.value.set('other-host-dir-changed');
+        ref.instance.value.set('host-changed');
         fixture.detectChanges();
 
         expect(fixture.nativeElement.innerHTML).toContain(
@@ -3025,8 +2919,6 @@ describe('host directives', () => {
         @Component({
           host: {'(click)': 'handleClick()'},
           hostDirectives: [HostDir, OtherHostDir],
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class HostComp {
           handleClick() {
@@ -3053,8 +2945,6 @@ describe('host directives', () => {
           template: '',
           host: {'id': 'host'},
           hostDirectives: [HostDir, OtherHostDir],
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class HostComp {}
 
@@ -3080,8 +2970,6 @@ describe('host directives', () => {
         @Component({
           hostDirectives: [HostDir],
           template: '',
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class HostComp {}
 
@@ -3104,8 +2992,6 @@ describe('host directives', () => {
         @Component({
           hostDirectives: [HostDir],
           template: '',
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class HostComp {
           hostDir = inject(HostDir);
@@ -3147,8 +3033,6 @@ describe('host directives', () => {
           template: '',
           hostDirectives: [FirstHostDir],
           providers: [{provide: token, useValue: 'HostDir'}],
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class HostComp {
           tokenValue = inject(token);
@@ -3185,8 +3069,6 @@ describe('host directives', () => {
         @Component({
           template: '',
           hostDirectives: [FirstHostDir],
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class HostComp {
           firstTokenValue = inject(firstToken);
@@ -3233,8 +3115,6 @@ describe('host directives', () => {
               inputs: ['color'],
             },
           ],
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class HostComp {
           @Input() color?: string;
@@ -3273,8 +3153,6 @@ describe('host directives', () => {
               inputs: ['color'],
             },
           ],
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class HostComp {
           color?: string; // Note: intentionally not marked as @Input.
@@ -3305,8 +3183,6 @@ describe('host directives', () => {
 
         @Component({
           hostDirectives: [HostDir],
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class HostComp {
           @Input() color?: string;
@@ -3343,8 +3219,6 @@ describe('host directives', () => {
               inputs: ['alias: customAlias'],
             },
           ],
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class HostComp {}
 
@@ -3381,8 +3255,6 @@ describe('host directives', () => {
 
         @Component({
           hostDirectives: [{directive: HostDir, inputs: ['alias: customAlias']}],
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class HostComp {}
 
@@ -3845,7 +3717,6 @@ describe('host directives', () => {
       @Component({
         template: '<div dir></div>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class App {}
@@ -3869,7 +3740,6 @@ describe('host directives', () => {
       @Component({
         template: '<div dir></div>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class App {}
@@ -3882,8 +3752,6 @@ describe('host directives', () => {
     it('should throw an error if a host directive is a component', () => {
       @Component({
         template: '',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class HostComp {}
 
@@ -3896,7 +3764,6 @@ describe('host directives', () => {
       @Component({
         template: '<div dir></div>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class App {}
@@ -3926,7 +3793,6 @@ describe('host directives', () => {
       @Component({
         template: '<div dir></div>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class App {}
@@ -3956,7 +3822,6 @@ describe('host directives', () => {
       @Component({
         template: '<div dir></div>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class App {}
@@ -3986,7 +3851,6 @@ describe('host directives', () => {
       @Component({
         template: '<div dir></div>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class App {}
@@ -4011,7 +3875,6 @@ describe('host directives', () => {
       @Component({
         template: '<div dir></div>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class App {}
@@ -4037,8 +3900,6 @@ describe('host directives', () => {
       @Component({
         imports: [Dir, HostDir],
         template: '<button dir buttonColor="red"></button>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {}
 
@@ -4067,8 +3928,6 @@ describe('host directives', () => {
       @Component({
         imports: [Dir, HostDir],
         template: '<button dir buttonColorAlias="red"></button>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {}
 
@@ -4096,8 +3955,6 @@ describe('host directives', () => {
       @Component({
         imports: [Dir, HostDir],
         template: '<button dir buttonColor="red"></button>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {}
 
@@ -4123,8 +3980,6 @@ describe('host directives', () => {
       @Component({
         imports: [Dir, HostDir],
         template: '<button dir (tappedAlias)="handleTap()"></button>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         handleTap() {}
@@ -4154,8 +4009,6 @@ describe('host directives', () => {
       @Component({
         imports: [Dir, HostDir],
         template: '<button dir (wasClicked)="handleClick()"></button>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         handleClick() {}
@@ -4185,7 +4038,6 @@ describe('host directives', () => {
       @Component({
         template: '<div host></div>',
         imports: [Host],
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {}
 
@@ -4216,7 +4068,6 @@ describe('host directives', () => {
       @Component({
         template: '<div host></div>',
         imports: [Host],
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {}
 

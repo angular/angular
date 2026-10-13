@@ -9,7 +9,7 @@
 // below. This would normally be done inside the application `polyfills.ts` file.
 import '@angular/localize/init';
 
-import {CommonModule, DOCUMENT, NgIf, registerLocaleData} from '@angular/common';
+import {AsyncPipe, CommonModule, DOCUMENT, NgIf, registerLocaleData} from '@angular/common';
 import localeEs from '@angular/common/locales/es';
 import localeRo from '@angular/common/locales/ro';
 import {computeMsgId} from '@angular/compiler';
@@ -24,6 +24,7 @@ import {
   Component,
   ContentChild,
   ContentChildren,
+  destroyPlatform,
   Directive,
   ElementRef,
   forwardRef,
@@ -35,14 +36,13 @@ import {
   PipeTransform,
   provideZoneChangeDetection,
   QueryList,
+  signal,
   TemplateRef,
   Type,
+  ɵunregisterLocaleData as unregisterLocaleData,
   ViewChild,
   ViewContainerRef,
   ɵsetDocument,
-  ɵunregisterLocaleData as unregisterLocaleData,
-  destroyPlatform,
-  signal,
 } from '../../src/core';
 import {provideNgReflectAttributes} from '../../src/ng_reflect';
 import {HEADER_OFFSET} from '../../src/render3/interfaces/view';
@@ -351,8 +351,6 @@ describe('runtime i18n', () => {
 
     @Component({
       template: `<div i18n (click)="onClick()">Hello {{ name }}</div>`,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class ListenerComp {
       name = `Angular`;
@@ -563,8 +561,6 @@ describe('runtime i18n', () => {
       template:
         '<div i18n>Content: @defer (when isLoaded) {before<span>middle</span>after} ' +
         '@placeholder {before<div>placeholder</div>after}!</div>',
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class DeferComp {
       isLoaded = false;
@@ -789,7 +785,6 @@ describe('runtime i18n', () => {
           </ng-template>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [CommonModule, Dir],
       })
       class Cmp {
@@ -1380,8 +1375,6 @@ describe('runtime i18n', () => {
       @Component({
         selector: 'child',
         template: '<div><ng-content></ng-content></div>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Child {}
 
@@ -1391,7 +1384,6 @@ describe('runtime i18n', () => {
           other {at least {{value}} .}
         }</child>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Child],
       })
       class Parent {
@@ -1442,8 +1434,8 @@ describe('runtime i18n', () => {
           </div>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {}
 
@@ -1452,8 +1444,8 @@ describe('runtime i18n', () => {
           <my-cmp i18n="test" *ngIf="condition">{count, plural, =1 {ONE} other {OTHER}}</my-cmp>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [CommonModule, Cmp],
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         count = 1;
@@ -1521,8 +1513,8 @@ describe('runtime i18n', () => {
           </div>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {}
 
@@ -1534,8 +1526,8 @@ describe('runtime i18n', () => {
           }</my-cmp>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Cmp],
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         count = 1;
@@ -1583,8 +1575,8 @@ describe('runtime i18n', () => {
           </ng-container>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [CommonModule],
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Comp {
         type = 'A';
@@ -1623,7 +1615,6 @@ describe('runtime i18n', () => {
             other {other - {{ typeC // i18n(ph="PH WITH SPACES") }}}
           }</ng-container>
         `,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Comp {
@@ -1663,7 +1654,6 @@ describe('runtime i18n', () => {
           </div>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [CommonModule],
       })
       class AppComponent {
@@ -1682,8 +1672,6 @@ describe('runtime i18n', () => {
 
       @Component({
         template: ` <div i18n="@@idA">{count, select, 1 {one} other {more than one}}</div> `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AppComponent {
         count = 2;
@@ -1706,7 +1694,6 @@ describe('runtime i18n', () => {
           -
           <div i18n="@@idB">{count, plural, =1 {one (plural)} =2 {two (plural)}}</div>
         `,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AppComponent {
@@ -1812,9 +1799,7 @@ describe('runtime i18n', () => {
         template: `
           <div i18n="@@idA">{count$ | async, select, 1 {{{count$ | async}} item} 2 {two items}}</div>
         `,
-        changeDetection: ChangeDetectionStrategy.Eager,
-        imports: [CommonModule]
-      })
+       imports: [AsyncPipe]})
       class AppComponent {
         count$ = new BehaviorSubject<number>(1);
       }
@@ -1992,7 +1977,6 @@ describe('runtime i18n', () => {
       @Component({
         template: '<ng-template i18n-title title="Hello"></ng-template>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [TitleDir],
       })
       class Comp {}
@@ -2023,7 +2007,6 @@ describe('runtime i18n', () => {
       @Component({
         template: ` <button *ngIf="true" i18n-title title="Hello"></button> `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [CommonModule, TitleDir],
       })
       class Cmp {}
@@ -2043,7 +2026,6 @@ describe('runtime i18n', () => {
       @Component({
         template: ` <div *ngIf="true" i18n-title title="Hello"></div> `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [CommonModule],
       })
       class Cmp {}
@@ -2071,7 +2053,6 @@ describe('runtime i18n', () => {
       @Component({
         template: '<ng-template i18n-dir dir="Hello {{ name }}"></ng-template>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [WithInput],
       })
       class TestComp {
@@ -2104,7 +2085,6 @@ describe('runtime i18n', () => {
         @Component({
           template: '<ng-template *ngIf="true" i18n-dir dir="Hello {{ name }}"></ng-template>',
 
-          changeDetection: ChangeDetectionStrategy.Eager,
           imports: [CommonModule, WithInput],
         })
         class TestComp {
@@ -2131,7 +2111,6 @@ describe('runtime i18n', () => {
         selector: 'other',
         template: `<div i18n #ref="dir" test="Set" i18n-test="This is also a test"></div>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class Other {}
@@ -2142,7 +2121,6 @@ describe('runtime i18n', () => {
           <other></other>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Other],
       })
       class Cmp {}
@@ -2189,7 +2167,6 @@ describe('runtime i18n', () => {
       @Component({
         template: ` <ng-container i18n-mydir="meaning|description" mydir="Hello"></ng-container> `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Dir],
       })
       class Cmp {}
@@ -2269,8 +2246,8 @@ describe('runtime i18n', () => {
         </div>
         <div test inner></div>`,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
       imports: [ClsDir],
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyApp {
       exp1 = 1;
@@ -2318,8 +2295,6 @@ describe('runtime i18n', () => {
     @Component({
       selector: 'my-comp',
       template: '',
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyComp {
       t!: string;
@@ -2402,8 +2377,6 @@ describe('runtime i18n', () => {
       @Component({
         selector: 'child',
         template: '<p><ng-content></ng-content></p>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Child {}
 
@@ -2417,7 +2390,6 @@ describe('runtime i18n', () => {
           <remove-me-3></remove-me-3>
         </div>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Child],
       })
       class Parent {
@@ -2446,7 +2418,6 @@ describe('runtime i18n', () => {
       @Component({
         selector: 'child',
         template: '<p><ng-content></ng-content></p>',
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Child {}
@@ -2460,8 +2431,8 @@ describe('runtime i18n', () => {
           </child>
         </div>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Child],
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Parent {
         name: string = 'Parent';
@@ -2497,8 +2468,6 @@ describe('runtime i18n', () => {
       @Component({
         selector: 'grand-child',
         template: '<div><ng-content></ng-content></div>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class GrandChild {}
 
@@ -2506,7 +2475,6 @@ describe('runtime i18n', () => {
         selector: 'child',
         template: '<grand-child><ng-content></ng-content></grand-child>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [GrandChild],
       })
       class Child {}
@@ -2514,7 +2482,6 @@ describe('runtime i18n', () => {
       @Component({
         template: `<child i18n><b>Hello</b> World!</child>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Child],
       })
       class Parent {
@@ -2536,8 +2503,6 @@ describe('runtime i18n', () => {
       @Component({
         selector: 'grand-child',
         template: '<div><ng-content></ng-content></div>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class GrandChild {}
 
@@ -2545,7 +2510,6 @@ describe('runtime i18n', () => {
         selector: 'child',
         template: '<grand-child><ng-content></ng-content></grand-child>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [GrandChild],
       })
       class Child {}
@@ -2553,7 +2517,6 @@ describe('runtime i18n', () => {
       @Component({
         template: `<child i18n><b>Hello</b> World!</child>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Child],
       })
       class Parent {
@@ -2574,8 +2537,6 @@ describe('runtime i18n', () => {
       @Component({
         selector: 'child',
         template: `<ng-content select="span"></ng-content>`,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Child {}
 
@@ -2588,7 +2549,6 @@ describe('runtime i18n', () => {
           </child>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Child],
       })
       class Parent {}
@@ -2608,7 +2568,6 @@ describe('runtime i18n', () => {
       @Component({
         selector: 'child',
         template: `<div i18n>Content projected from <ng-content></ng-content></div>`,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Child {}
@@ -2616,8 +2575,8 @@ describe('runtime i18n', () => {
       @Component({
         template: `<child>{{ name }}</child>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Child],
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Parent {
         name: string = 'Parent';
@@ -2645,8 +2604,6 @@ describe('runtime i18n', () => {
       @Component({
         selector: 'child',
         template: `<div i18n>Content projected from <ng-content></ng-content></div>`,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Child {}
 
@@ -2655,7 +2612,6 @@ describe('runtime i18n', () => {
           ><b>{{ name }}</b></child
         >`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Child],
       })
       class Parent {
@@ -2677,15 +2633,12 @@ describe('runtime i18n', () => {
       @Component({
         selector: 'child',
         template: `<div i18n>Child content <ng-content></ng-content></div>`,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Child {}
 
       @Component({
         template: `<child i18n>and projection from {{ name }}</child>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Child],
       })
       class Parent {
@@ -2713,8 +2666,6 @@ describe('runtime i18n', () => {
       @Component({
         selector: 'child',
         template: '<div><ng-content></ng-content></div>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Child {}
 
@@ -2724,7 +2675,6 @@ describe('runtime i18n', () => {
           other {at least {{value}} .}
         }</child>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Child],
       })
       class Parent {
@@ -2741,7 +2691,6 @@ describe('runtime i18n', () => {
       @Component({
         selector: 'child',
         template: `<div i18n>Child content <ng-content></ng-content></div>`,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Child {}
@@ -2751,8 +2700,8 @@ describe('runtime i18n', () => {
           >and projection from {name, select, angular {Angular} other {{{name}}}}</child
         >`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Child],
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Parent {
         name: string = 'Parent';
@@ -2786,15 +2735,12 @@ describe('runtime i18n', () => {
       @Component({
         selector: 'child',
         template: `<div i18n>Child content <ng-content></ng-content></div>`,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Child {}
 
       @Component({
         template: `<child i18n>and projection from {{ name }}</child>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Child],
       })
       class Parent {
@@ -2820,7 +2766,6 @@ describe('runtime i18n', () => {
       @Component({
         selector: 'app',
         template: ` <ng-container>(<ng-content></ng-content>)</ng-container> `,
-
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyContentApp {}
@@ -2828,8 +2773,8 @@ describe('runtime i18n', () => {
       @Component({
         template: ` <app i18n *ngIf="condition">{type, select, A {A} B {B} other {other}}</app> `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [CommonModule, MyContentApp],
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyApp {
         type = 'A';
@@ -2880,7 +2825,6 @@ describe('runtime i18n', () => {
         selector: 'div-query',
         template: '<ng-container #vc></ng-container>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [TextDirective],
       })
       class DivQuery {
@@ -3015,7 +2959,6 @@ describe('runtime i18n', () => {
         <div i18n>{{ myinput.value }}</div>
       `,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
       imports: [InputsDir],
     })
     class App {}
@@ -3043,7 +2986,6 @@ describe('runtime i18n', () => {
         <div i18n-title title="{{ myinput.value }}"></div>
       `,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
       imports: [InputsDir],
     })
     class App {}
@@ -3073,7 +3015,6 @@ describe('runtime i18n', () => {
         <button [close]="true">Button label</button>
       `,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
       imports: [CommonModule, forwardRef(() => DialogDir), forwardRef(() => CloseBtn)],
     })
     class ContentElementDialog {
@@ -3143,7 +3084,6 @@ describe('runtime i18n', () => {
           <ng-template #tmpl i18n> <ng-content></ng-content> B </ng-template>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [CommonModule],
       })
       class Projector {}
@@ -3151,7 +3091,6 @@ describe('runtime i18n', () => {
       @Component({
         template: ` <projector>a</projector> `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [Projector],
       })
       class AppComponent {}
@@ -3174,9 +3113,7 @@ describe('runtime i18n', () => {
         template: `
             <div i18n>before|<div myDir>inside</div>|after</div>
           `,
-        changeDetection: ChangeDetectionStrategy.Eager,
-        imports: [forwardRef(() => MyDir)]
-      })
+       imports: [forwardRef(() => MyDir)]})
       class MyApp {}
 
       @Directive({
@@ -3208,7 +3145,6 @@ describe('runtime i18n', () => {
         }
       </h1>`,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
       imports: [CommonModule],
     })
     class MyApp {
@@ -3226,7 +3162,6 @@ describe('runtime i18n', () => {
     @Component({
       template: `<div i18n>before|<child>TextNotProjected</child>|after</div>`,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
       imports: [forwardRef(() => Child)],
     })
     class MyApp {}
@@ -3234,8 +3169,6 @@ describe('runtime i18n', () => {
     @Component({
       selector: 'child',
       template: 'CHILD',
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child {}
 
@@ -3254,9 +3187,7 @@ describe('runtime i18n', () => {
       template: `
       <div i18n [title]="null | async"><div>A</div></div>
       <div i18n>{{(null | async)||'B'}}<div></div></div>`,
-      changeDetection: ChangeDetectionStrategy.Eager,
-      imports: [CommonModule]
-    })
+     imports: [AsyncPipe]})
     class MyApp {}
 
     const fixture = TestBed.createComponent(MyApp);
@@ -3275,28 +3206,20 @@ describe('runtime i18n', () => {
             <child>Text</child>
           </middle>
         </parent>`,
-      changeDetection: ChangeDetectionStrategy.Eager,
-      imports: [forwardRef(() => Parent), forwardRef(() => Middle), forwardRef(() => Child)]
-    })
+     imports: [forwardRef(() => Parent), forwardRef(() => Middle), forwardRef(() => Child)]})
     class MyApp {}
 
     @Component({
       selector: 'parent',
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Parent {}
 
     @Component({
       selector: 'middle',
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Middle {}
     @Component({
       selector: 'child',
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child {
       constructor(public middle: Middle) {
@@ -3319,7 +3242,6 @@ describe('runtime i18n', () => {
         <span [ngTemplateOutlet]="tmpl"></span>
       </div>`,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
       imports: [CommonModule],
     })
     class MyApp {}
@@ -3357,7 +3279,6 @@ describe('runtime i18n', () => {
         </ng-container>
       `,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
       imports: [CommonModule],
     })
     class MyApp {}
@@ -3407,8 +3328,6 @@ describe('runtime i18n', () => {
         }
         |after.
       `,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyApp {
       retention = {
@@ -3440,8 +3359,6 @@ describe('runtime i18n', () => {
           }
         </div>
       `,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyApp {
       parameters = [{name: 'void_abt_param'}];
@@ -3460,8 +3377,8 @@ describe('runtime i18n', () => {
         <li *ngFor="let item of items">{item, plural, =1 {<b>one</b>} =2 {<i>two</i>}},</li>
       </ul>`,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
       imports: [CommonModule],
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyApp {
       items = [1, 2];
@@ -3489,7 +3406,6 @@ describe('runtime i18n', () => {
     @Component({
       template: `<div i18n-title title="text" injectTitle></div>`,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
       imports: [InjectTitleDir],
     })
     class App {
@@ -3516,7 +3432,6 @@ describe('runtime i18n', () => {
     @Component({
       template: `<div i18n-title title="text {{ value }}" injectTitle></div>`,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
       imports: [InjectTitleDir],
     })
     class App {
@@ -3716,7 +3631,6 @@ function initWithTemplate(compType: Type<any>, template: string, imports?: Type<
 @Component({
   template: ``,
 
-  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     CommonModule,
     forwardRef(() => DirectiveWithTplRef),
@@ -3735,8 +3649,6 @@ class AppComp {
 @Component({
   template: ``,
   preserveWhitespaces: true,
-
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class AppCompWithWhitespaces {}
 

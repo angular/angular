@@ -11,7 +11,6 @@ import {By} from '@angular/platform-browser';
 import {isNode} from '@angular/private/testing';
 import {expect} from '@angular/private/testing/matchers';
 import {
-  ChangeDetectionStrategy,
   Component,
   ComponentRef,
   createComponent,
@@ -22,6 +21,7 @@ import {
   Input,
   OnInit,
   reflectComponentType,
+  signal,
   TemplateRef,
   ViewChild,
   ViewContainerRef,
@@ -297,14 +297,13 @@ describe('projection', () => {
     expect(main.nativeElement).toHaveText('(, BC)');
   });
 
-  it('should redistribute non-continuous blocks of nodes when the shadow dom changes', () => {
+  it('should redistribute non-continuous blocks of nodes when the shadow dom changes', async () => {
     @Component({
       selector: 'child',
       template: `<ng-content></ng-content>(<ng-template [ngIf]="showing"
           ><ng-content select="div"></ng-content></ng-template
         >)`,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
       imports: [CommonModule],
     })
     class Child {
@@ -312,33 +311,30 @@ describe('projection', () => {
     }
 
     @Component({
-      template: `<child [showing]="showing">
+      template: `<child [showing]="showing()">
         <div>A</div>
         <span>B</span>
         <div>A</div>
         <span>B</span>
       </child>`,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
       imports: [Child],
     })
     class App {
-      showing = false;
+      showing = signal(false);
     }
 
     const fixture = TestBed.createComponent(App);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(fixture.nativeElement).toHaveText('BB()');
 
-    fixture.componentInstance.showing = true;
-    fixture.changeDetectorRef.markForCheck();
-    fixture.detectChanges();
+    fixture.componentInstance.showing.set(true);
+    await fixture.whenStable();
     expect(fixture.nativeElement).toHaveText('BB(AA)');
 
-    fixture.componentInstance.showing = false;
-    fixture.changeDetectorRef.markForCheck();
-    fixture.detectChanges();
+    fixture.componentInstance.showing.set(false);
+    await fixture.whenStable();
     expect(fixture.nativeElement).toHaveText('BB()');
   });
 

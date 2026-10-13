@@ -16,6 +16,7 @@ import {
   HostBinding,
   inject,
   provideZoneChangeDetection,
+  signal,
   ViewContainerRef,
 } from '../../src/core';
 import {TestBed} from '../../testing';
@@ -555,14 +556,13 @@ describe('element discovery', () => {
 describe('sanitization', () => {
   it('should sanitize data using the provided sanitization interface', () => {
     @Component({
-      template: ` <a [href]="href"></a> `,
-      changeDetection: ChangeDetectionStrategy.Eager,
+      template: ` <a [href]="href()"></a> `,
     })
     class SanitizationComp {
-      href = '';
+      href = signal<any>('');
 
       updateLink(href: any) {
-        this.href = href;
+        this.href.set(href);
       }
     }
 
@@ -718,7 +718,6 @@ describe('sanitization', () => {
   ): () => void {
     @Component({
       template: '',
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class DynamicHost {}
 
@@ -789,7 +788,6 @@ describe('sanitization', () => {
           <set attributeName="href" [attr.to]="'javascript:alert(1)'"></set>
         </svg-wrapper>
       `,
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComp {}
 
@@ -807,7 +805,6 @@ describe('sanitization', () => {
         'attributeName': 'href',
         '[attr.to]': 'target',
       },
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class DynamicSetComp {
       target = 'javascript:alert(1)';
@@ -858,7 +855,6 @@ describe('sanitization', () => {
     @Component({
       imports: [UnsafeUrlHostBindingDir],
       template: ` <IFRAME unsafeUrlHostBindingDir></IFRAME>`,
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class SimpleComp {}
 
@@ -880,7 +876,6 @@ describe('sanitization', () => {
     @Component({
       imports: [UnsafeUrlHostBindingDir],
       template: ` <iframe unsafeUrlHostBindingDir></iframe>`,
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class SimpleComp {}
 
