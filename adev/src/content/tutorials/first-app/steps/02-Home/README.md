@@ -18,7 +18,6 @@ In Angular, components have metadata that define its properties.
 When you create your `Home`, you use these properties:
 
 - `selector`: to describe how Angular refers to the component in templates.
-- `standalone`: to describe whether the component requires a `NgModule`.
 - `imports`: to describe the component's dependencies.
 - `template`: to describe the component's HTML markup and layout.
 - `styleUrls`: to list the URLs of the CSS files that the component uses in an array.

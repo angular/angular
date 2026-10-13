@@ -71,7 +71,7 @@ export class App {
     const now = new Date();
     const hour = now.getHours();
     const isWeekday = now.getDay() > 0 && now.getDay() < 6;
-    return isWeekday && hour >= 9 && hour < 17 && this.userStatus() !== 'offline';
+    return this.userStatus() !== 'offline' && isWeekday && hour >= 9 && hour < 17;
   });
 
   toggleNotifications() {
