@@ -3,8 +3,7 @@ function MyComponent_ng_template_0_Template(rf, ctx) {
     $r3$.ɵɵi18n(0, 1);
   }
   if (rf & 2) {
-    const $ctx_r0$ = $r3$.ɵɵnextContext();
-    $r3$.ɵɵi18nExp($ctx_r0$.gender);
+    $r3$.ɵɵi18nExp($r3$.ɵɵnextContext().gender);
     $r3$.ɵɵi18nApply(0);
   }
 }

@@ -3,9 +3,8 @@ function MyApp_ng_template_0_Template(rf, ctx) {
     $r3$.ɵɵtext(0);
   }
   if (rf & 2) {
-    const $ctx_r0$ = $r3$.ɵɵnextContext();
     $r3$.ɵɵtextInterpolate1(" ", undefined, " ");
-    $ctx_r0$.value * 2;
+    $r3$.ɵɵnextContext().value * 2;
   }
 }
 

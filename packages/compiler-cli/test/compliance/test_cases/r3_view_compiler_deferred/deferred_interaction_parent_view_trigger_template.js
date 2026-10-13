@@ -16,7 +16,6 @@ function MyApp_ng_template_0_Template(rf, ctx) {
     $r3$.ɵɵtemplate(4, MyApp_ng_template_0_ng_template_4_Template, 1, 0, "ng-template");
   }
   if (rf & 2) {
-    const ctx_r0 = $r3$.ɵɵnextContext();
-    $r3$.ɵɵtextInterpolate1(" ", ctx_r0.message, " ");
+    $r3$.ɵɵtextInterpolate1(" ", $r3$.ɵɵnextContext().message, " ");
   }
 }

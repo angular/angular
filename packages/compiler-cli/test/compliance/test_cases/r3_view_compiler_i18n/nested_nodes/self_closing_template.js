@@ -11,8 +11,7 @@ function MyComponent_img_1_Template(rf, ctx) {
 	  $r3$.ɵɵelementEnd();
 	}
 	if (rf & 2) {
-	  const $ctx_r1$ = $r3$.ɵɵnextContext();
-	  $r3$.ɵɵi18nExp($ctx_r1$.id);
+	  $r3$.ɵɵi18nExp($r3$.ɵɵnextContext().id);
 	  $r3$.ɵɵi18nApply(1);
 	}
   }

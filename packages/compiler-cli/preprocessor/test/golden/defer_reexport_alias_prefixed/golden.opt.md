@@ -50,8 +50,7 @@ function ListComponent_Defer_0_Template(rf: number, ctx: any): any {
     i0.ɵɵtemplate(0, ListComponent_Defer_0_div_0_Template, 2, 1, 'div', 0);
   }
   if (rf & 2) {
-    const ctx_r1: any = i0.ɵɵnextContext();
-    i0.ɵɵproperty('ngForOf', ctx_r1.items);
+    i0.ɵɵproperty('ngForOf', i0.ɵɵnextContext().items);
   }
 }
 function ListComponent_DeferPlaceholder_1_Template(rf: number, ctx: any): any {

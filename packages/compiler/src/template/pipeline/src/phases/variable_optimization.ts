@@ -275,8 +275,7 @@ function optimizeVariablesInOpList(
     toInline.push(id);
   }
 
-  let candidate: ir.XrefId | undefined;
-  while ((candidate = toInline.pop())) {
+  for (const candidate of toInline) {
     // We will attempt to inline this variable. If inlining fails (due to fences for example),
     // no future operation will make inlining legal.
     const decl = varDecls.get(candidate)!;
@@ -300,7 +299,7 @@ function optimizeVariablesInOpList(
 
       // Is the variable used in this operation?
       if (opInfo.variablesUsed.has(candidate)) {
-        if (!allowConservativeInlining(decl, targetOp)) {
+        if (!allowConservativeInlining(decl)) {
           // We're in conservative mode, and this variable is not eligible for inlining into the
           // target operation in this mode.
           break;
@@ -416,7 +415,7 @@ function countVariableUsages(
     }
     varUsages.set(expr.xref, count + 1);
 
-    if (flags & ir.VisitorContextFlag.InChildOperation) {
+    if (flags & ir.VisitorContextFlag.InChildOperation || op.kind === ir.OpKind.ForeignComponent) {
       varRemoteUsage.add(expr.xref);
     }
   });
@@ -534,30 +533,25 @@ function tryInlineVariableInitializer(
 }
 
 /**
- * Determines whether inlining of `decl` should be allowed in "conservative" mode.
+ * Determines whether inlining of `decl` should be allowed.
  *
- * In conservative mode, inlining behavior is limited to those operations which the
- * `TemplateDefinitionBuilder` supported, with the goal of producing equivalent output.
+ * Identifier variables (such as template let-declarations, local refs, or context property reads)
+ * are preserved unless they directly alias a view context (`ctx`, `nextContext()`, or
+ * `restoreView()`), whereas `Context`, `Alias`, and `SavedView` variables can be inlined when used
+ * only once.
  */
-function allowConservativeInlining(
-  decl: ir.VariableOp<ir.CreateOp | ir.UpdateOp>,
-  target: ir.Op<ir.CreateOp | ir.UpdateOp>,
-): boolean {
-  // TODO(alxhub): understand exactly how TemplateDefinitionBuilder approaches inlining, and record
-  // that behavior here.
+function allowConservativeInlining(decl: ir.VariableOp<ir.CreateOp | ir.UpdateOp>): boolean {
   switch (decl.variable.kind) {
     case ir.SemanticVariableKind.Identifier:
-      if (decl.initializer instanceof o.ReadVarExpr && decl.initializer.name === CONTEXT_NAME) {
-        // Although TemplateDefinitionBuilder is cautious about inlining, we still want to do so
-        // when the variable is the context, to imitate its behavior with aliases in control flow
-        // blocks. This quirky behavior will become dead code once compatibility mode is no longer
-        // supported.
+      if (
+        (decl.initializer instanceof o.ReadVarExpr && decl.initializer.name === CONTEXT_NAME) ||
+        decl.initializer instanceof ir.NextContextExpr ||
+        decl.initializer instanceof ir.RestoreViewExpr
+      ) {
         return true;
       }
       return false;
     case ir.SemanticVariableKind.Context:
-      // Context can only be inlined into other variables.
-      return target.kind === ir.OpKind.Variable;
     default:
       return true;
   }
@@ -586,7 +580,15 @@ function optimizeSaveRestoreView(ops: ir.OpList<ir.UpdateOp>): void {
     tail.statement instanceof o.ReturnStatement &&
     tail.statement.value instanceof ir.ResetViewExpr
   ) {
-    ir.OpList.remove<ir.UpdateOp>(head);
-    tail.statement.value = tail.statement.value.expr;
+    let hasViewContextRead = false;
+    ir.visitExpressionsInOp(tail, (expr) => {
+      if (ir.isIrExpression(expr) && fencesForIrExpression(expr) & Fence.ViewContextRead) {
+        hasViewContextRead = true;
+      }
+    });
+    if (!hasViewContextRead) {
+      ir.OpList.remove<ir.UpdateOp>(head);
+      tail.statement.value = tail.statement.value.expr;
+    }
   }
 }

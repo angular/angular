@@ -4,9 +4,8 @@ function MyComponent_ng_template_2_Template(rf, ctx) {
     $r3$.ɵɵpipe(1, "uppercase");
   }
   if (rf & 2) {
-    const $ctx_r0$ = $r3$.ɵɵnextContext();
     $r3$.ɵɵadvance();
-    $r3$.ɵɵi18nExp($r3$.ɵɵpipeBind1(1, 1, $ctx_r0$.valueA));
+    $r3$.ɵɵi18nExp($r3$.ɵɵpipeBind1(1, 1, $r3$.ɵɵnextContext().valueA));
     $r3$.ɵɵi18nApply(0);
   }
 }

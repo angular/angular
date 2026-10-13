@@ -4,15 +4,13 @@ function MyComponent_div_0_Template(rf, ctx) {
     $r3$.ɵɵelementStart(0, "div")(1, "div", 1);
     $r3$.ɵɵlistener("click", function MyComponent_div_0_Template_div_click_1_listener() {
       $r3$.ɵɵrestoreView($s$);
-      const $comp$ = $r3$.ɵɵnextContext();
-      return $i0$.ɵɵresetView($comp$.onClick(1));
+      return $i0$.ɵɵresetView($r3$.ɵɵnextContext().onClick(1));
     });
     $r3$.ɵɵelementEnd();
     $r3$.ɵɵelementStart(2, "button", 1);
     $r3$.ɵɵlistener("click", function MyComponent_div_0_Template_button_click_2_listener() {
       $r3$.ɵɵrestoreView($s$);
-      const $comp2$ = $r3$.ɵɵnextContext();
-      return $i0$.ɵɵresetView($comp2$.onClick2(2));
+      return $i0$.ɵɵresetView($r3$.ɵɵnextContext().onClick2(2));
     });
     $r3$.ɵɵelementEnd()();
   }

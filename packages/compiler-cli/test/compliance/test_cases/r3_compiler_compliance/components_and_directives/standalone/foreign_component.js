@@ -48,8 +48,7 @@ function TestCmpConditional_Conditional_0_Template(rf, ctx) {
     i0.ɵɵconditionalCreate(0, TestCmpConditional_Conditional_0_Conditional_0_Template, 1, 0);
   }
   if (rf & 2) {
-    const ctx_r0 = i0.ɵɵnextContext();
-    i0.ɵɵconditional(ctx_r0.innerCondition ? 0 : -1);
+    i0.ɵɵconditional(i0.ɵɵnextContext().innerCondition ? 0 : -1);
   }
 }
 

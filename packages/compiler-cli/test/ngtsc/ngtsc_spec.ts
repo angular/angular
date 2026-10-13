@@ -224,7 +224,7 @@ runInEachFileSystem((os: string) => {
 
         const jsContents = env.getContents('test.js');
         expect(jsContents).toContain(
-          'i0.ɵɵanimateEnterListener(function TestComponent_Conditional_1_Template_p_animateenter_0_listener($event) { i0.ɵɵrestoreView(_r1); const ctx_r1 = i0.ɵɵnextContext(); return i0.ɵɵresetView(ctx_r1.animateFn($event)); });',
+          'i0.ɵɵanimateEnterListener(function TestComponent_Conditional_1_Template_p_animateenter_0_listener($event) { i0.ɵɵrestoreView(_r1); return i0.ɵɵresetView(i0.ɵɵnextContext().animateFn($event)); });',
         );
         const instances = jsContents.match(/ɵɵanimateEnter/g);
         expect(instances?.length).toBe(1);
@@ -252,7 +252,7 @@ runInEachFileSystem((os: string) => {
 
         const jsContents = env.getContents('test.js');
         expect(jsContents).toContain(
-          'i0.ɵɵanimateEnter(function TestComponent_Conditional_1_Template_animateenter_cb() { i0.ɵɵrestoreView(_r1); const ctx_r1 = i0.ɵɵnextContext(); return i0.ɵɵresetView(ctx_r1.fade()); });',
+          'i0.ɵɵanimateEnter(function TestComponent_Conditional_1_Template_animateenter_cb() { i0.ɵɵrestoreView(_r1); return i0.ɵɵresetView(i0.ɵɵnextContext().fade()); });',
         );
         const instances = jsContents.match(/ɵɵanimateEnter/g);
         expect(instances?.length).toBe(1);
@@ -280,7 +280,7 @@ runInEachFileSystem((os: string) => {
 
         const jsContents = env.getContents('test.js');
         expect(jsContents).toContain(
-          'i0.ɵɵanimateEnter(function TestComponent_Conditional_1_Template_animateenter_cb() { i0.ɵɵrestoreView(_r1); const ctx_r1 = i0.ɵɵnextContext(); return i0.ɵɵresetView(ctx_r1.classList); });',
+          'i0.ɵɵanimateEnter(function TestComponent_Conditional_1_Template_animateenter_cb() { i0.ɵɵrestoreView(_r1); return i0.ɵɵresetView(i0.ɵɵnextContext().classList); });',
         );
         const instances = jsContents.match(/ɵɵanimateEnter/g);
         expect(instances?.length).toBe(1);
@@ -381,7 +381,7 @@ runInEachFileSystem((os: string) => {
 
         const jsContents = env.getContents('test.js');
         expect(jsContents).toContain(
-          'i0.ɵɵanimateLeaveListener(function TestComponent_Conditional_1_Template_p_animateleave_0_listener($event) { i0.ɵɵrestoreView(_r1); const ctx_r1 = i0.ɵɵnextContext(); return i0.ɵɵresetView(ctx_r1.animateFn($event)); });',
+          'i0.ɵɵanimateLeaveListener(function TestComponent_Conditional_1_Template_p_animateleave_0_listener($event) { i0.ɵɵrestoreView(_r1); return i0.ɵɵresetView(i0.ɵɵnextContext().animateFn($event)); });',
         );
         const instances = jsContents.match(/ɵɵanimateLeave/g);
         expect(instances?.length).toBe(1);
@@ -409,7 +409,7 @@ runInEachFileSystem((os: string) => {
 
         const jsContents = env.getContents('test.js');
         expect(jsContents).toContain(
-          'i0.ɵɵanimateLeave(function TestComponent_Conditional_1_Template_animateleave_cb() { i0.ɵɵrestoreView(_r1); const ctx_r1 = i0.ɵɵnextContext(); return i0.ɵɵresetView(ctx_r1.fade()); });',
+          'i0.ɵɵanimateLeave(function TestComponent_Conditional_1_Template_animateleave_cb() { i0.ɵɵrestoreView(_r1); return i0.ɵɵresetView(i0.ɵɵnextContext().fade()); });',
         );
         const instances = jsContents.match(/ɵɵanimateLeave/g);
         expect(instances?.length).toBe(1);
@@ -437,7 +437,7 @@ runInEachFileSystem((os: string) => {
 
         const jsContents = env.getContents('test.js');
         expect(jsContents).toContain(
-          'i0.ɵɵanimateLeave(function TestComponent_Conditional_1_Template_animateleave_cb() { i0.ɵɵrestoreView(_r1); const ctx_r1 = i0.ɵɵnextContext(); return i0.ɵɵresetView(ctx_r1.classList); });',
+          'i0.ɵɵanimateLeave(function TestComponent_Conditional_1_Template_animateleave_cb() { i0.ɵɵrestoreView(_r1); return i0.ɵɵresetView(i0.ɵɵnextContext().classList); });',
         );
         const instances = jsContents.match(/ɵɵanimateLeave/g);
         expect(instances?.length).toBe(1);

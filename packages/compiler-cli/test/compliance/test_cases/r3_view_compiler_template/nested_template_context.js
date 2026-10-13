@@ -6,8 +6,7 @@ function MyComponent_ul_0_li_1_div_1_Template(rf, ctx) {
 		const $inner$ = $i0$.ɵɵrestoreView($s$).$implicit;
 		const $middle$ = $i0$.ɵɵnextContext().$implicit;
 		const $outer$ = $i0$.ɵɵnextContext().$implicit;
-		const $myComp$ = $i0$.ɵɵnextContext();
-		return $i0$.ɵɵresetView($myComp$.onClick($outer$, $middle$, $inner$));
+		return $i0$.ɵɵresetView($i0$.ɵɵnextContext().onClick($outer$, $middle$, $inner$));
 	  });
 	  $i0$.ɵɵtext(1);
 	  $i0$.ɵɵelementEnd();
@@ -31,9 +30,8 @@ function MyComponent_ul_0_li_1_div_1_Template(rf, ctx) {
 	  $i0$.ɵɵelementEnd();
 	}
 	if (rf & 2) {
-	  const $myComp2$ = $i0$.ɵɵnextContext(2);
 	  $r3$.ɵɵadvance();
-	  $i0$.ɵɵproperty("ngForOf", $myComp2$.items);
+	  $i0$.ɵɵproperty("ngForOf", $i0$.ɵɵnextContext(2).items);
 	}
   }
 

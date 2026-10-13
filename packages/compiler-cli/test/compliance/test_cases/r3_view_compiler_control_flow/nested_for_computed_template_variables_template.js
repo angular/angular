@@ -25,12 +25,11 @@ function MyApp_For_1_For_2_Template(rf, ctx) {
     const $ctx_r20$ = $r3$.ɵɵnextContext();
     const $index_1_r3$ = $ctx_r20$.$index;
     const $count_1_r5$ = $ctx_r20$.$count;
-    const $ctx_r6$ = $r3$.ɵɵnextContext();
     $r3$.ɵɵtextInterpolate4(" Inner vars: ", $index_r8$ % 2 !== 0, " ", $index_r8$ % 2 === 0, " ", $index_r8$ === 0, " ", $index_r8$ === $count_r10$ - 1, " ");
     $r3$.ɵɵadvance(2);
     $r3$.ɵɵtextInterpolate4(" Outer vars: ", $index_1_r3$ % 2 !== 0, " ", $index_1_r3$ % 2 === 0, " ", $index_1_r3$ === 0, " ", $index_1_r3$ === $count_1_r5$ - 1, " ");
     $r3$.ɵɵadvance();
-    $r3$.ɵɵrepeater($ctx_r6$.items);
+    $r3$.ɵɵrepeater($r3$.ɵɵnextContext().items);
   }
 }
 …
@@ -39,10 +38,9 @@ function MyApp_For_1_Template(rf, ctx) {
   if (rf & 2) {
     const $index_r2$ = ctx.$index;
     const $count_r4$ = ctx.$count;
-    const $ctx_r0$ = $r3$.ɵɵnextContext();
     $r3$.ɵɵtextInterpolate4(" Outer vars: ", $index_r2$ % 2 !== 0, " ", $index_r2$ % 2 === 0, " ", $index_r2$ === 0, " ", $index_r2$ === $count_r4$ - 1, " ");
     $r3$.ɵɵadvance();
-    $r3$.ɵɵrepeater($ctx_r0$.items);
+    $r3$.ɵɵrepeater($r3$.ɵɵnextContext().items);
   }
 }
 …

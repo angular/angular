@@ -11,8 +11,7 @@ function TestCmp_ng_template_1_Template(rf, ctx) {
     });
     $r3$.ɵɵelementEnd();
   } if (rf & 2) {
-    const $ctx_r0$ = $r3$.ɵɵnextContext();
-    $r3$.ɵɵtwoWayProperty("ngModel", $ctx_r0$.name);
+    $r3$.ɵɵtwoWayProperty("ngModel", $r3$.ɵɵnextContext().name);
     $r3$.ɵɵcontrol();
   }
 }

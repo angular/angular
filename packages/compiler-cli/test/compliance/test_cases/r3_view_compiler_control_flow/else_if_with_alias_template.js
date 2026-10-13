@@ -3,8 +3,7 @@ function MyApp_Conditional_2_Template(rf, ctx) {
     $r3$.ɵɵtext(0);
   }
   if (rf & 2) {
-    const $ctx_r0$ = $r3$.ɵɵnextContext();
-    $r3$.ɵɵtextInterpolate1(" ", $ctx_r0$.one, " ");
+    $r3$.ɵɵtextInterpolate1(" ", $r3$.ɵɵnextContext().one, " ");
   }
 }
 function MyApp_Conditional_3_Template(rf, ctx) {
@@ -12,8 +11,7 @@ function MyApp_Conditional_3_Template(rf, ctx) {
     $r3$.ɵɵtext(0);
   }
   if (rf & 2) {
-    const $ctx_r0$ = $r3$.ɵɵnextContext();
-    $r3$.ɵɵtextInterpolate2(" ", $ctx_r0$.value(), " as ", ctx, " ");
+    $r3$.ɵɵtextInterpolate2(" ", $r3$.ɵɵnextContext().value(), " as ", ctx, " ");
   }
 }
 …

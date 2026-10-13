@@ -1,7 +1,6 @@
 const $arrowFn0$ = (ctx, view) => () => {
   $r3$.ɵɵrestoreView(view);
-  const ctx_r0 = $r3$.ɵɵnextContext(3);
-  return $r3$.ɵɵresetView(ctx_r0.componentProp?.a?.b?.c?.()?.()?.()?.() );
+  return $r3$.ɵɵresetView($r3$.ɵɵnextContext(3).componentProp?.a?.b?.c?.()?.()?.()?.() );
 };
 
 function TestComp_Conditional_0_Conditional_0_Conditional_0_Template(rf, ctx) {

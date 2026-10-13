@@ -2,8 +2,7 @@ function MyComponent_div_0_Template(rf, ctx) {
 	if (rf & 1) {
 		$r3$.ɵɵdomElement(0, "div");
 	} if (rf & 2) {
-		const $ctx_r0$ = $r3$.ɵɵnextContext();
-		$r3$.ɵɵclassProp("bar", $ctx_r0$.field);
+		$r3$.ɵɵclassProp("bar", $r3$.ɵɵnextContext().field);
 	}
 }
 …

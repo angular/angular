@@ -15,7 +15,6 @@ function MyComponent_div_1_Template(rf, ctx) {
   if (rf & 1) {
     $r3$.ɵɵelement(0, "div", 3);
   } if (rf & 2) {
-    const $ctx_0$ = i0.ɵɵnextContext();
-    $r3$.ɵɵproperty("id", $ctx_0$);
+    $r3$.ɵɵproperty("id", i0.ɵɵnextContext());
   }
 }

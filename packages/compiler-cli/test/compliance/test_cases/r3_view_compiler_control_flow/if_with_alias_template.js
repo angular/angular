@@ -3,8 +3,7 @@ function MyApp_Conditional_2_Template(rf, ctx) {
     $r3$.ɵɵtext(0);
   }
   if (rf & 2) {
-    const $ctx0$ = $r3$.ɵɵnextContext();
-    $r3$.ɵɵtextInterpolate2(" ", $ctx0$.value(), " as ", ctx, " ");
+    $r3$.ɵɵtextInterpolate2(" ", $r3$.ɵɵnextContext().value(), " as ", ctx, " ");
   }
 }
 …

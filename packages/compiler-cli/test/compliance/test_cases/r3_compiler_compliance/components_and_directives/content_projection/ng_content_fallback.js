@@ -19,9 +19,8 @@ function TestComponent_ProjectionFallback_3_Template(rf, ctx) {
     $r3$.ɵɵdomElementEnd();
   }
   if (rf & 2) {
-    const $ctx_r0$ = $r3$.ɵɵnextContext();
     $r3$.ɵɵadvance();
-    $r3$.ɵɵtextInterpolate1("This is ", $ctx_r0$.type, " ");
+    $r3$.ɵɵtextInterpolate1("This is ", $r3$.ɵɵnextContext().type, " ");
   }
 }
 

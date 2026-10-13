@@ -5,8 +5,7 @@ function MyApp_Conditional_0_Conditional_1_Conditional_1_Template(rf, ctx) {
   if (rf & 2) {
     const $inner_r3$ = $r3$.ɵɵnextContext();
     const $root_r1$ = $r3$.ɵɵnextContext();
-    const $ctx_r4$ = $r3$.ɵɵnextContext();
-    $r3$.ɵɵtextInterpolate4(" Innermost: ", $ctx_r4$.value(), "/", $root_r1$, "/", $inner_r3$, "/", ctx, " ");
+    $r3$.ɵɵtextInterpolate4(" Innermost: ", $r3$.ɵɵnextContext().value(), "/", $root_r1$, "/", $inner_r3$, "/", ctx, " ");
   }
 }
 

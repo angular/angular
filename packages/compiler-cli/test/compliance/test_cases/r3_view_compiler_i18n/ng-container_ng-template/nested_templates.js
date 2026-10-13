@@ -3,8 +3,7 @@ function MyComponent_ng_template_2_ng_template_2_ng_template_1_Template(rf, ctx)
     $r3$.ɵɵi18n(0, 0, 3);
   }
   if (rf & 2) {
-    const $ctx_r2$ = $r3$.ɵɵnextContext(3);
-    $r3$.ɵɵi18nExp($ctx_r2$.valueC);
+    $r3$.ɵɵi18nExp($r3$.ɵɵnextContext(3).valueC);
     $r3$.ɵɵi18nApply(0);
   }
 }
@@ -15,9 +14,8 @@ function MyComponent_ng_template_2_ng_template_2_Template(rf, ctx) {
     $r3$.ɵɵi18nEnd();
   }
   if (rf & 2) {
-    const $ctx_r1$ = $r3$.ɵɵnextContext(2);
     $r3$.ɵɵadvance();
-    $r3$.ɵɵi18nExp($ctx_r1$.valueB);
+    $r3$.ɵɵi18nExp($r3$.ɵɵnextContext(2).valueB);
     $r3$.ɵɵi18nApply(0);
   }
 }
@@ -30,9 +28,8 @@ function MyComponent_ng_template_2_Template(rf, ctx) {
     $r3$.ɵɵi18nEnd();
   }
   if (rf & 2) {
-    const $ctx_r0$ = $r3$.ɵɵnextContext();
     $r3$.ɵɵadvance(2);
-    $r3$.ɵɵi18nExp($r3$.ɵɵpipeBind1(1, 1, $ctx_r0$.valueA));
+    $r3$.ɵɵi18nExp($r3$.ɵɵpipeBind1(1, 1, $r3$.ɵɵnextContext().valueA));
     $r3$.ɵɵi18nApply(0);
   }
 }

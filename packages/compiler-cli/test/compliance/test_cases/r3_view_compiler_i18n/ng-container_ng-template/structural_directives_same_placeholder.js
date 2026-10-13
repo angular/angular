@@ -21,9 +21,8 @@ function MyComponent_div_3_Template(rf, ctx) {
     i0.ɵɵi18nEnd();
   }
   if (rf & 2) {
-    const $ctx_r1$ = i0.ɵɵnextContext();
     i0.ɵɵadvance(2);
-    i0.ɵɵproperty("ngIf", $ctx_r1$.someFlag);
+    i0.ɵɵproperty("ngIf", i0.ɵɵnextContext().someFlag);
   }
 }
 function MyComponent_img_4_Template(rf, ctx) {

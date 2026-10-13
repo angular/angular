@@ -6,9 +6,8 @@ function MyComponent_div_0_div_1_div_1_Template(rf, ctx) {
   }
   if (rf & 2) {
     const $middle$ = $i0$.ɵɵnextContext().$implicit;
-    const $myComp$ = $i0$.ɵɵnextContext(2);
     $r3$.ɵɵadvance();
-    $i0$.ɵɵtextInterpolate2(" ", $middle$.value, " - ", $myComp$.name, " ");
+    $i0$.ɵɵtextInterpolate2(" ", $middle$.value, " - ", $i0$.ɵɵnextContext(2).name, " ");
   }
 }
 

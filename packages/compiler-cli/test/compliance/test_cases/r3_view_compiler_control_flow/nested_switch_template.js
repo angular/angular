@@ -27,10 +27,8 @@ function MyApp_Case_3_Template(rf, ctx) {
     $r3$.ɵɵconditionalCreate(0, MyApp_Case_3_Case_0_Template, 1, 0)(1, MyApp_Case_3_Case_1_Template, 1, 0)(2, MyApp_Case_3_Case_2_Template, 1, 0);
   }
   if (rf & 2) {
-    …
-    const $ctx_r1$ = $r3$.ɵɵnextContext();
-    …
-    $r3$.ɵɵconditional(($MyApp_Case_3_contFlowTmp$ = $ctx_r1$.nestedValue()) === 0 ? 0 : $MyApp_Case_3_contFlowTmp$ === 1 ? 1 : $MyApp_Case_3_contFlowTmp$ === 2 ? 2 : -1);
+    let $MyApp_Case_3_contFlowTmp$;
+    $r3$.ɵɵconditional(($MyApp_Case_3_contFlowTmp$ = $r3$.ɵɵnextContext().nestedValue()) === 0 ? 0 : $MyApp_Case_3_contFlowTmp$ === 1 ? 1 : $MyApp_Case_3_contFlowTmp$ === 2 ? 2 : -1);
   }
 }
 

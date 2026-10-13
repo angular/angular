@@ -7,9 +7,8 @@ function MyComponent_div_0_Template(rf, ctx) {
     $r3$.ɵɵelementEnd();
   }
   if (rf & 2) {
-    const $ctx_r0$ = $r3$.ɵɵnextContext();
     $r3$.ɵɵadvance(2);
-    $r3$.ɵɵi18nExp($ctx_r0$.valueA);
+    $r3$.ɵɵi18nExp($r3$.ɵɵnextContext().valueA);
     $r3$.ɵɵi18nApply(1);
   }
 }

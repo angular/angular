@@ -12,8 +12,7 @@ function MyApp_Conditional_3_Template(rf, ctx) {
     $r3$.ɵɵtext(0);
   }
   if (rf & 2) {
-    const ctx_r0 = $r3$.ɵɵnextContext();
-    $r3$.ɵɵtextInterpolate1(" Two: ", ctx_r0.two, " ");
+    $r3$.ɵɵtextInterpolate1(" Two: ", $r3$.ɵɵnextContext().two, " ");
   }
 }
 
@@ -40,8 +39,7 @@ function MyApp_Conditional_6_Template(rf, ctx) {
     $r3$.ɵɵtext(0);
   }
   if (rf & 2) {
-    const ctx_r0 = $r3$.ɵɵnextContext();
-    $r3$.ɵɵtextInterpolate1(" Five: ", ctx_r0.five, " ");
+    $r3$.ɵɵtextInterpolate1(" Five: ", $r3$.ɵɵnextContext().five, " ");
   }
 }
 

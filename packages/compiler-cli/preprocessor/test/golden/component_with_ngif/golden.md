@@ -12,9 +12,8 @@ function HelloComponent_div_0_Template(rf: number, ctx: any): any {
     i0.ɵɵelementEnd();
   }
   if (rf & 2) {
-    const ctx_r0: any = i0.ɵɵnextContext();
     i0.ɵɵadvance();
-    i0.ɵɵtextInterpolate1('Hello, ', ctx_r0.name, '!');
+    i0.ɵɵtextInterpolate1('Hello, ', i0.ɵɵnextContext().name, '!');
   }
 }
 

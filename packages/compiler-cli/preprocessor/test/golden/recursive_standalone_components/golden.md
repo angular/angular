@@ -9,8 +9,7 @@ function TreeComponent_Conditional_0_Template(rf: number, ctx: any): any {
     i0.ɵɵelement(0, 'app-tree', 0);
   }
   if (rf & 2) {
-    const ctx_r0: any = i0.ɵɵnextContext();
-    i0.ɵɵproperty('child', ctx_r0.child.child);
+    i0.ɵɵproperty('child', i0.ɵɵnextContext().child.child);
   }
 }
 

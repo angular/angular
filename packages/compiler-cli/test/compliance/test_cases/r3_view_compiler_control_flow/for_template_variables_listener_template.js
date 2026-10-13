@@ -7,8 +7,7 @@ function MyApp_For_3_Template(rf, ctx) {
 		const $index_r2$ = $restoredCtx$.$index;
 		const $index_2_r2$ = $restoredCtx$.$index;
 		const $count_r3$ = $restoredCtx$.$count;
-		const $ctx_r4$ = $r3$.ɵɵnextContext();
-		return $r3$.ɵɵresetView($ctx_r4$.log($index_r2$, $index_2_r2$ % 2 === 0, $index_2_r2$ === 0, $count_r3$));
+		return $r3$.ɵɵresetView($r3$.ɵɵnextContext().log($index_r2$, $index_2_r2$ % 2 === 0, $index_2_r2$ === 0, $count_r3$));
 	  });
 	  $r3$.ɵɵelementEnd();
 	}

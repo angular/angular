@@ -20,9 +20,8 @@ function MyComponent_div_0_span_3_Template(rf, ctx) {
 	  $i0$.ɵɵelementEnd();
 	}
 	if (rf & 2) {
-	  const $app$ = $i0$.ɵɵnextContext();
 	  $r3$.ɵɵadvance(3);
-	  $i0$.ɵɵproperty("ngIf", $app$.showing);
+	  $i0$.ɵɵproperty("ngIf", $i0$.ɵɵnextContext().showing);
 	}
   }
 

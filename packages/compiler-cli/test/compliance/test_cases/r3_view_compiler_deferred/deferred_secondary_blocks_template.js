@@ -10,8 +10,7 @@ function MyApp_DeferLoading_3_Template(rf, ctx) {
   }
 
   if (rf & 2) {
-    const $ctx$ = $r3$.ɵɵnextContext();
-    $r3$.ɵɵtextInterpolate1(" ", $ctx$.loadingMessage, " ");
+    $r3$.ɵɵtextInterpolate1(" ", $r3$.ɵɵnextContext().loadingMessage, " ");
   }
 }
 

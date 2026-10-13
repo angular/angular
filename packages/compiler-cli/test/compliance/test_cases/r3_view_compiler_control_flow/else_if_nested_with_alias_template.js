@@ -20,8 +20,7 @@ function MyApp_Conditional_1_Conditional_2_Conditional_2_Template(rf, ctx) {
   if (rf & 2) {
     const $inner_r1$ = $r3$.ɵɵnextContext();
     const $root_r2$ = $r3$.ɵɵnextContext();
-    const $ctx_r2$ = $r3$.ɵɵnextContext();
-    $r3$.ɵɵtextInterpolate4(" Innermost: ", $ctx_r2$.value(), "/", $root_r2$, "/", $inner_r1$, "/", ctx, " ");
+    $r3$.ɵɵtextInterpolate4(" Innermost: ", $r3$.ɵɵnextContext().value(), "/", $root_r2$, "/", $inner_r1$, "/", ctx, " ");
   }
 }
 function MyApp_Conditional_1_Conditional_2_Template(rf, ctx) {

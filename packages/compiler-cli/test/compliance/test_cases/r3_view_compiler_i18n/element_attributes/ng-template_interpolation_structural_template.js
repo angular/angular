@@ -4,8 +4,7 @@ function MyComponent_0_Template(rf, ctx) {
 	  $r3$.ɵɵi18nAttributes(1, 0);
 	}
 	if (rf & 2) {
-	  const $ctx_r2$ = $r3$.ɵɵnextContext();
-	  $r3$.ɵɵi18nExp($ctx_r2$.name);
+	  $r3$.ɵɵi18nExp($r3$.ɵɵnextContext().name);
 	  $r3$.ɵɵi18nApply(1);
 	}
   }
