@@ -81,7 +81,6 @@ export {
   ɵsetClassDebugInfo,
   setClassMetadata as ɵsetClassMetadata,
   setClassMetadataAsync as ɵsetClassMetadataAsync,
-  setLocaleId as ɵsetLocaleId,
   ɵsetUnknownElementStrictMode,
   ɵsetUnknownPropertyStrictMode,
   store as ɵstore,

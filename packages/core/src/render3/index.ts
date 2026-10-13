@@ -50,7 +50,6 @@ import {
 export {NgModuleType} from '../metadata/ng_module_def';
 export {ComponentFactory, ComponentRef} from './component_ref';
 export {ɵɵgetInheritedFactory} from './di';
-export {getLocaleId, setLocaleId} from './i18n/i18n_locale_id';
 export {
   ɵɵadvance,
   ɵɵariaProperty,

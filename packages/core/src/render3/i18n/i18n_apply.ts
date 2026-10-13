@@ -38,7 +38,7 @@ import {
 import {TNode} from '../interfaces/node';
 import {RElement, RNode, RText} from '../interfaces/renderer_dom';
 import {SanitizerFn} from '../interfaces/sanitization';
-import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
+import {ENVIRONMENT, HEADER_OFFSET, HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
 import {
   createCommentNode,
   createElementNode,
@@ -58,7 +58,6 @@ import {
 import {renderStringify} from '../util/stringify_utils';
 import {getNativeByIndex, unwrapRNode} from '../util/view_utils';
 
-import {getLocaleId} from './i18n_locale_id';
 import {
   getCurrentICUCaseIndex,
   getParentFromIcuCreateOpCode,
@@ -529,7 +528,7 @@ function applyIcuUpdateCase(tView: TView, tIcu: TIcu, bindingsStartIndex: number
  */
 function applyIcuSwitchCase(tView: TView, tIcu: TIcu, lView: LView, value: string) {
   // Rebuild a new case for this ICU
-  const caseIndex = getCaseIndex(tIcu, value);
+  const caseIndex = getCaseIndex(lView[ENVIRONMENT].locale, tIcu, value);
   let activeCaseIndex = getCurrentICUCaseIndex(tIcu, lView);
   if (activeCaseIndex !== caseIndex) {
     applyIcuSwitchCaseRemove(tView, tIcu, lView);
@@ -579,12 +578,12 @@ function applyIcuSwitchCaseRemove(tView: TView, tIcu: TIcu, lView: LView) {
  * @param icuExpression
  * @param bindingValue The value of the main binding used by this ICU expression
  */
-function getCaseIndex(icuExpression: TIcu, bindingValue: string): number | null {
+function getCaseIndex(locale: string, icuExpression: TIcu, bindingValue: string): number | null {
   let index = icuExpression.cases.indexOf(bindingValue);
   if (index === -1) {
     switch (icuExpression.type) {
       case IcuType.plural: {
-        const resolvedCase = getPluralCase(bindingValue, getLocaleId());
+        const resolvedCase = getPluralCase(bindingValue, locale);
         index = icuExpression.cases.indexOf(resolvedCase);
         if (index === -1 && resolvedCase !== 'other') {
           index = icuExpression.cases.indexOf('other');

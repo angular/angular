@@ -118,6 +118,7 @@ export class ViewFixture {
         changeDetectionScheduler: {notify: noop, runningTick: false},
         ngReflect: false,
         tracingService: null,
+        locale: 'en-us',
       },
       hostRenderer,
       null,

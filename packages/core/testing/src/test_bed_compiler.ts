@@ -34,7 +34,6 @@ import {
   ɵINTERNAL_APPLICATION_ERROR_HANDLER as INTERNAL_APPLICATION_ERROR_HANDLER,
   ɵInternalEnvironmentProviders as InternalEnvironmentProviders,
   ɵisEnvironmentProviders as isEnvironmentProviders,
-  LOCALE_ID,
   ModuleWithProviders,
   ɵNG_COMP_DEF as NG_COMP_DEF,
   ɵNG_DIR_DEF as NG_DIR_DEF,
@@ -54,7 +53,6 @@ import {
   ɵprovideZonelessChangeDetectionInternal as provideZonelessChangeDetectionInternal,
   ɵNgModuleFactory as R3NgModuleFactory,
   resolveForwardRef,
-  ɵsetLocaleId as setLocaleId,
   StaticProvider,
   ɵtransitiveScopesFor as transitiveScopesFor,
   Type,
@@ -449,13 +447,6 @@ export class TestBedCompiler {
     // ApplicationInitStatus.runInitializers() is marked @internal to core.
     // Cast it to any before accessing it.
     (this.testModuleRef.injector.get(ApplicationInitStatus) as any).runInitializers();
-
-    // Set locale ID after running app initializers, since locale information might be updated while
-    // running initializers. This is also consistent with the execution order while bootstrapping an
-    // app (see `packages/core/src/application_ref.ts` file).
-    const localeId = this.testModuleRef.injector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
-    setLocaleId(localeId);
-
     return this.testModuleRef;
   }
 
@@ -978,8 +969,6 @@ export class TestBedCompiler {
     this.initialNgDefs.clear();
     this.scopesWithOverriddenProviders.clear();
     this.restoreComponentResolutionQueue();
-    // Restore the locale ID to the default value, this shouldn't be necessary but we never know
-    setLocaleId(DEFAULT_LOCALE_ID);
   }
 
   private compileTestModule(): void {

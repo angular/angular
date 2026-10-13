@@ -404,6 +404,9 @@ export interface LViewEnvironment {
    * (always disabled in prod mode).
    */
   ngReflect: boolean;
+
+  /** Locale that should be used in i18n instructions. */
+  locale: string;
 }
 
 /** Flags associated with an LView (saved in LView[FLAGS]) */
