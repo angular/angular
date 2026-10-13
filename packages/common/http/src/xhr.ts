@@ -219,7 +219,7 @@ export class HttpXhrBackend implements HttpBackend {
 
             // Read the response URL from the XMLHttpResponse instance and fall back on the
             // request URL.
-            const url = xhr.responseURL || req.url;
+            const url = xhr.responseURL || req.urlWithParams;
 
             // Construct the HttpHeaderResponse and memoize it.
             headerResponse = new HttpHeaderResponse({headers, status: xhr.status, statusText, url});

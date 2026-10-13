@@ -10,6 +10,7 @@ import {TestBed} from '@angular/core/testing';
 import {Observable} from 'rxjs';
 import {toArray} from 'rxjs/operators';
 import {XhrFactory} from '../../index';
+import {HttpParams} from '../src/params';
 import {HttpRequest} from '../src/request';
 import {
   HttpDownloadProgressEvent,
@@ -424,6 +425,29 @@ describe('XhrBackend', () => {
         });
       factory.mock.responseURL = '/response/url';
       factory.mock.mockFlush(HttpStatusCode.Ok, 'OK', 'Test');
+    });
+    it('falls back on the request URL with params', (done) => {
+      backend
+        .handle(TEST_POST.clone({params: new HttpParams({fromObject: {page: '2'}})}))
+        .pipe(toArray())
+        .subscribe((events) => {
+          const response = events[1] as HttpResponse<string>;
+          expect(response.url).toBe('/test?page=2');
+          done();
+        });
+      factory.mock.mockFlush(HttpStatusCode.Ok, 'OK', 'Test');
+    });
+    it('includes the params in the URL of a network error', (done) => {
+      backend
+        .handle(TEST_POST.clone({params: new HttpParams({fromObject: {page: '2'}})}))
+        .subscribe({
+          error: (err: HttpErrorResponse) => {
+            expect(err.url).toBe('/test?page=2');
+            expect(err.message).toContain('/test?page=2');
+            done();
+          },
+        });
+      factory.mock.mockErrorEvent(new Error('blah'));
     });
     it('falls back on Request.url if neither are available', (done) => {
       backend
