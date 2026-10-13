@@ -31,8 +31,9 @@ json-strip-comments = "3.1.2"
 
 
 
-[target.'cfg(target_arch = "wasm32")'.dependencies]
-wasm-bindgen = "0.2"
+# Pin to 0.2.121 to match the wasm-bindgen-cli version bundled in rules_rust_wasm_bindgen.
+# wasm-bindgen requires exact schema match between the library and the CLI binary.
+wasm-bindgen = "=0.2.121"
 # Reflect/Uint8Array/Array, used by the JavaScript filesystem bridge in `physical_fs`.
 js-sys = "0.3"
 
