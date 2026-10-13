@@ -1377,6 +1377,68 @@ describe('<script> elements in templates', () => {
   });
 });
 
+describe('<style> elements in templates', () => {
+  it('should remove <style> elements inside svg', async () => {
+    @Component({
+      template: `
+        <svg>
+          <style [textContent]="evil"></style>
+          <circle cx="50" cy="50" r="50" />
+        </svg>
+      `,
+    })
+    class TestCmp {
+      evil = 'evil';
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.querySelector('style')).toBeFalsy();
+    expect(fixture.nativeElement.querySelector('circle').getAttribute('r')).toBe('50');
+  });
+
+  it('should remove <style> elements inherited into the XHTML namespace', async () => {
+    @Component({
+      template: `
+        <xhtml:div xmlns:xhtml="http://www.w3.org/1999/xhtml">
+          <style [textContent]="evil"></style>
+          <span>safe</span>
+        </xhtml:div>
+      `,
+    })
+    class TestCmp {
+      evil = 'evil';
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.querySelector('script')).toBeFalsy();
+    expect(fixture.nativeElement.querySelector('span').textContent).toBe('safe');
+  });
+
+  it('should remove <style> elements inherited into arbitrary custom namespaces', async () => {
+    @Component({
+      template: `
+        <foo:div xmlns:foo="urn:example">
+          <style [textContent]="evil"></style>
+          <span>custom safe</span>
+        </foo:div>
+      `,
+    })
+    class TestCmp {
+      evil = 'evil';
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.querySelector('style')).toBeFalsy();
+    expect(fixture.nativeElement.querySelector('span').textContent).toBe('custom safe');
+  });
+});
+
 describe('SVG <a> link sanitization', () => {
   it('should sanitize dynamic `href` bindings on <svg:a>', () => {
     @Component({
