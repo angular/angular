@@ -28,5 +28,12 @@ export {
   SymbolBoundTarget,
   SymbolDirectiveMeta,
 } from '../src/ngtsc/typecheck/src/template_symbol_builder';
+export {
+  extractHmrDependenciesFromOutput,
+  PotentialTopLevelReadsVisitor,
+  type HmrCompiledOutput,
+  type HmrDependencies,
+  type HmrReadResolver,
+} from '../src/ngtsc/hmr';
 
 export * from '../src/ngtsc/indexer';
