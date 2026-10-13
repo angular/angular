@@ -22,7 +22,7 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - It MUST pass all AXE checks.
 - It MUST follow all WCAG AA minimums, including focus management, color contrast, and ARIA attributes.
 
-### Components
+## Components
 
 - Keep components small and focused on a single responsibility
 - Use `input()` and `output()` functions instead of decorators
