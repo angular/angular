@@ -43,7 +43,7 @@ export class App {
   }));
 
   constructor() {
-    console.log(this.f.email().value()); // "angular_user"
+    console.log(this.f.email().value()); // ""
     console.log(this.f.password().value()); // Current value of passwordControl
   }
 }
