@@ -17,10 +17,12 @@ export class BazelService {
   };
   /** @nocollapse */
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineService({
-    token: BazelService,
-    factory: BazelService.ɵfac,
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /** @pureOrBreakMyCode */ i0.ɵɵdefineService({
+      token: BazelService,
+      factory: BazelService.ɵfac,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(BazelService, [{ type: Service }], null, null);
