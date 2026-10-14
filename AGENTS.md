@@ -20,6 +20,7 @@ This is the source code for the Angular framework. This guide outlines standard 
 - Create standalone component/directives by default, DO NOT introduce new NgModules/non-standalone components even if sibling tests use them.
 - Prefer current best practices over existing authoring styles in the same file
 - Test components usually do not need selectors unless they are used in templates
+- Components are `OnPush` by default, prefer signals for test component state
 - **Zoneless & Async-First:** Assume a zoneless environment where state changes schedule updates asynchronously.
   - **Do NOT** use `fixture.detectChanges()` to manually trigger updates.
   - **ALWAYS** use the "Act, Wait, Assert" pattern:

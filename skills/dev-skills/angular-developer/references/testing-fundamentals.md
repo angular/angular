@@ -7,6 +7,7 @@ This guide covers the fundamental principles and practices for writing unit test
 This project follows a modern, zoneless testing approach. State changes schedule updates asynchronously, and tests must account for this.
 
 **Do NOT** use `fixture.detectChanges()` to manually trigger updates.
+**Do NOT** use `fixture.changeDetectorRef.markForCheck()` either: it marks only the host view and does not refresh the template of `OnPush` components (the default). Update state through signals, inputs, or DOM events instead.
 **ALWAYS** use the "Act, Wait, Assert" pattern:
 
 1.  **Act:** Update state or perform an action (e.g., set a component input, click a button).

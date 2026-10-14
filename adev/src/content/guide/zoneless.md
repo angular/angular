@@ -163,7 +163,12 @@ change notification (i.e. `fixture.componentInstance.someValue = 'newValue';`).
 If the component is used in production, this issue should be addressed by updating
 the component to use signals for state or call `ChangeDetectorRef.markForCheck()`.
 If the component is only used as a test wrapper and never used in an application,
-it is acceptable to use `fixture.changeDetectorRef.markForCheck()`.
+it is acceptable to use `ChangeDetectionStrategy.Eager` for it and call `fixture.changeDetectorRef.markForCheck()`.
+
+IMPORTANT: `fixture.changeDetectorRef` belongs to the fixture's host view, so its `markForCheck()`
+doesn't refresh the template of an `OnPush` component. Your application components shouldn't need it
+in tests. If a test needs it, the component usually isn't fully reactive or
+[zoneless compatible](#requirements-for-zoneless-compatibility).
 
 ### Debug-mode check to ensure updates are detected
 
