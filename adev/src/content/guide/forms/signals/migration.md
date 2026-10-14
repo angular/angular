@@ -196,13 +196,12 @@ form.password().value(); // 'password'
 form().value(); // { email: '', password: FormControl}
 ```
 
-If you need the whole form value, you'd have to build it manually:
+If you need the whole form value with the controls unwrapped, use `extractValue` from `@angular/forms/signals/compat`:
 
 ```typescript
-const formValue = computed(() => ({
-  email: form.email().value(),
-  password: form.password().value(),
-})); // {email: '', password: ''}
+import {extractValue} from '@angular/forms/signals/compat';
+
+const formValue = computed(() => extractValue(form)); // {email: '', password: 'password'}
 ```
 
 ## Bottom-up migration
