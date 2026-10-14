@@ -32,7 +32,6 @@ bootstrapApplication(AppRoot, {
       {
         name: 'greet',
         description: 'Greets the agent.',
-        inputSchema: {type: 'object', properties: {}},
         execute: () => {
           const greeter = inject(Greeter);
 
@@ -113,7 +112,6 @@ export const routes: Routes = [
         {
           name: 'exportDashboardReports',
           description: 'Exports the current dashboard analytics.',
-          inputSchema: {type: 'object', properties: {}},
           execute: () => ({
             content: [{type: 'text', text: 'Dashboard export successfully triggered.'}],
           }),
@@ -151,7 +149,6 @@ export class Counter {
     declareExperimentalWebMcpTool({
       name: 'getCounter',
       description: 'Reads the global counter.',
-      inputSchema: {type: 'object', properties: {}},
       execute: () => ({
         content: [{type: 'text', text: `The count is: ${this.count()}.`}],
       }),
