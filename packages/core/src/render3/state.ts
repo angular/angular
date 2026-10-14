@@ -841,3 +841,20 @@ export function wasLastNodeCreated(): boolean {
 export function lastNodeWasCreated(flag: boolean): void {
   _wasLastNodeCreated = flag;
 }
+
+let _skippedStaticAttrName: string | null = null;
+
+/**
+ * Retrieves the name of a static attribute that must be left untouched on the most recent DOM
+ * node, or `null` if there isn't one. Set by hydration when it locates an existing node whose
+ * attribute must not be re-applied. Kept here, instead of read directly from hydration data,
+ * so this file doesn't have to import hydration code.
+ */
+export function getSkippedStaticAttrName(): string | null {
+  return _skippedStaticAttrName;
+}
+
+/** Sets the name of a static attribute that must be left untouched on the most recent DOM node. */
+export function setSkippedStaticAttrName(name: string | null): void {
+  _skippedStaticAttrName = name;
+}

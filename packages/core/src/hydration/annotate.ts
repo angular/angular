@@ -69,6 +69,7 @@ import {
   MULTIPLIER,
   NODES,
   NUM_ROOT_NODES,
+  PROTECTED_ATTRIBUTES,
   SerializedContainerView,
   SerializedDeferBlock,
   SerializedTriggerDetails,
@@ -77,6 +78,7 @@ import {
   TEMPLATES,
 } from './interfaces';
 import {calcPathForNode, isDisconnectedNode} from './node_lookup_utils';
+import {getHydrationProtectedAttributeName, getStaticAttrValue} from './protected_attributes';
 import {isInSkipHydrationBlock, SKIP_HYDRATION_ATTR_NAME} from './skip_hydration';
 import {EVENT_REPLAY_ENABLED_DEFAULT, IS_EVENT_REPLAY_ENABLED} from './tokens';
 import {
@@ -726,16 +728,30 @@ function serializeLView(
       }
     }
 
-    // Attach `jsaction` attribute to elements that have registered listeners,
-    // thus potentially having a need to do an event replay.
-    if (nativeElementsToEventTypes && tNode.type & TNodeType.Element) {
-      const nativeElement = unwrapRNode(lView[i]) as Element;
-      if (nativeElementsToEventTypes.has(nativeElement)) {
-        setJSActionAttributes(
-          nativeElement,
-          nativeElementsToEventTypes.get(nativeElement)!,
-          parentDeferBlockId,
-        );
+    if (tNode.type & TNodeType.Element) {
+      // Record static attributes that must be left untouched during hydration, because
+      // re-applying them (even with the same value) triggers unwanted side effects, such as
+      // an `<iframe src="...">` reloading its resource.
+      const protectedAttrName = getHydrationProtectedAttributeName(tNode.value);
+      if (
+        protectedAttrName !== undefined &&
+        getStaticAttrValue(tNode.mergedAttrs, protectedAttrName) !== null
+      ) {
+        ngh[PROTECTED_ATTRIBUTES] ??= {};
+        ngh[PROTECTED_ATTRIBUTES][noOffsetIndex] = protectedAttrName;
+      }
+
+      // Attach `jsaction` attribute to elements that have registered listeners,
+      // thus potentially having a need to do an event replay.
+      if (nativeElementsToEventTypes) {
+        const nativeElement = unwrapRNode(lView[i]) as Element;
+        if (nativeElementsToEventTypes.has(nativeElement)) {
+          setJSActionAttributes(
+            nativeElement,
+            nativeElementsToEventTypes.get(nativeElement)!,
+            parentDeferBlockId,
+          );
+        }
       }
     }
   }
