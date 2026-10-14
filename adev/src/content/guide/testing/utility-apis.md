@@ -82,7 +82,7 @@ Here are the most important properties for testers, in order of likely utility.
 | `componentInstance` | The instance of the component class created by `TestBed.createComponent`.                                                                                                                                                                                                                 |
 | `debugElement`      | The `DebugElement` associated with the root element of the component. <br /> The `debugElement` provides insight into the component and its DOM element during test and debugging. It's a critical property for testers. The most interesting members are covered [below](#debugelement). |
 | `nativeElement`     | The native DOM element at the root of the component.                                                                                                                                                                                                                                      |
-| `changeDetectorRef` | The `ChangeDetectorRef` for the component. <br /> The `ChangeDetectorRef` is most valuable when testing a component that has the `ChangeDetectionStrategy.OnPush` method or the component's change detection is under your programmatic control.                                          |
+| `changeDetectorRef` | The `ChangeDetectorRef` of the component's host view, not of the component itself. See [Using Zoneless in `TestBed`](guide/zoneless#using-zoneless-in-testbed).                                                                                                                           |
 
 ### `ComponentFixture` methods
 
