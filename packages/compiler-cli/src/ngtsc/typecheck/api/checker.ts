@@ -10,6 +10,8 @@ import {
   AbsoluteSourceSpan,
   AST,
   ForeignComponentMeta,
+  LiteralMap,
+  LiteralMapPropertyKey,
   LiteralPrimitive,
   ParseSourceSpan,
   PropertyRead,
@@ -229,6 +231,18 @@ export interface TemplateTypeChecker {
    */
   getLiteralCompletionLocation(
     strNode: LiteralPrimitive | TmplAstTextAttribute,
+    component: ts.ClassDeclaration,
+  ): TcbLocation | null;
+
+  /**
+   * For a position within a key of the given `LiteralMap` (or a position within the map that is
+   * not covered by an existing key, in which case `key` is `null`), retrieve a `TcbLocation` that
+   * can be used to perform autocompletion of the object literal's keys, if such a location
+   * exists.
+   */
+  getLiteralMapKeyCompletionLocation(
+    map: LiteralMap,
+    key: LiteralMapPropertyKey | null,
     component: ts.ClassDeclaration,
   ): TcbLocation | null;
 
