@@ -699,10 +699,10 @@ These four bindings demonstrate the difference between `providers` and `viewProv
 Remember that the dog emoji <code>🐶</code> is declared inside the `<#VIEW>` of `Child` and isn't visible to the projected content.
 Instead, the projected content sees the whale <code>🐳</code>.
 
-You might wonder why the projected `<app-inspector>` can still see <code>🐳</code> from `App`'s `viewProviders`.
+You might wonder why the projected `<app-inspector>` can still see <code>🐳</code>, which is the root-provided `AnimalService`.
 The reason is that Angular DI tracks **where a component was declared**, not where it ends up being rendered.
-`<app-inspector>` lives in `App`'s template — inside `App`'s `<#VIEW>` — so `App`'s `viewProviders` are fair game.
-Projecting it into `Child` cuts off access to `Child`'s `viewProviders` (<code>🐶</code>), but `App`'s providers (<code>🐳</code>) are still reachable up the tree.
+`<app-inspector>` lives in `App`'s template, inside `App`'s `<#VIEW>`, so its lookup never goes through `Child`'s `<#VIEW>`.
+Projecting it into `Child` cuts off access to `Child`'s `viewProviders` (<code>🐶</code>), but the root `AnimalService` (<code>🐳</code>) is still reachable up the tree.
 
 However, in the next output section though, the `Inspector` is an actual child component of `Child`, `Inspector` is inside the `<#VIEW>`, so when it asks for the `AnimalService`, it sees the dog <code>🐶</code>.
 
@@ -741,7 +741,7 @@ The `AnimalService` in the logical tree would look like this:
 ```
 
 The projected `<app-inspector>` gets <code>🐳</code> because <code>🐶</code> belongs to `Child`'s view and projected content can't reach it.
-<code>🐳</code> is accessible because `<app-inspector>` was declared in `App`'s template, so it can still walk up to `App`'s `viewProviders`.
+<code>🐳</code> is accessible because `<app-inspector>` was declared in `App`'s template, so it can still walk up to the root `AnimalService`.
 
 The `<app-inspector>` that lives directly inside `Child`'s template (not projected) gets <code>🐶</code> — it's inside the `<#VIEW>`, so no boundary to cross.
 
