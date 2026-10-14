@@ -169,7 +169,7 @@ When using [`RenderMode.Prerender`](api/ssr/RenderMode#Prerender 'API reference'
 
 For each route with [`RenderMode.Prerender`](api/ssr/RenderMode#Prerender 'API reference'), you can specify a [`getPrerenderParams`](api/ssr/ServerRoutePrerenderWithParams#getPrerenderParams 'API reference') function. This function lets you control which specific parameters produce separate prerendered documents.
 
-The [`getPrerenderParams`](api/ssr/ServerRoutePrerenderWithParams#getPrerenderParams 'API reference') function returns a `Promise` that resolves to an array of objects. Each object is a key-value map of route parameter name to value. For example, if you define a route like `post/:id`, `getPrerenderParams ` could return the array `[{id: 123}, {id: 456}]`, and thus render separate documents for `post/123` and `post/456`.
+The [`getPrerenderParams`](api/ssr/ServerRoutePrerenderWithParams#getPrerenderParams 'API reference') function returns a `Promise` that resolves to an array of objects. Each object is a key-value map of route parameter name to value. For example, if you define a route like `post/:id`, `getPrerenderParams ` could return the array `[{id: '123'}, {id: '456'}]`, and thus render separate documents for `post/123` and `post/456`.
 
 The body of [`getPrerenderParams`](api/ssr/ServerRoutePrerenderWithParams#getPrerenderParams 'API reference') can use Angular's [`inject`](api/core/inject 'API reference') function to inject dependencies and perform any work to determine which routes to prerender. This typically includes making requests to fetch data to construct the array of parameter values.
 
@@ -228,7 +228,7 @@ export const serverRoutes: ServerRoute[] = [
       // This function returns an array of objects representing prerendered posts at the paths:
       // `/post/1`, `/post/2`, and `/post/3`.
       // The path `/post/4` will utilize the fallback behavior if it's requested.
-      return [{id: 1}, {id: 2}, {id: 3}];
+      return [{id: '1'}, {id: '2'}, {id: '3'}];
     },
   },
 ];
@@ -623,7 +623,7 @@ import express from 'express';
 const app = express();
 const angularApp = new AngularNodeAppEngine();
 
-app.use('*', (req, res, next) => {
+app.use((req, res, next) => {
   angularApp
     .handle(req)
     .then((response) => {
