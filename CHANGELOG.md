@@ -1,3 +1,16 @@
+<a name="20.3.34"></a>
+# 20.3.34 (2026-10-14)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [fc0e50a2d2](https://github.com/angular/angular/commit/fc0e50a2d2441941de359c623621d8d530ee46ef) | fix | i18n flags leaking on errors |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [933ce817d5](https://github.com/angular/angular/commit/933ce817d53e25926844fa56af8230816763d08e) | fix | enable XSRF protection for same-origin absolute URLs |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="22.3.0-next.1"></a>
 # 22.3.0-next.1 (2026-10-08)
 ### compiler
