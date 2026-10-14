@@ -133,10 +133,7 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
    * @see {@link isActive}
    */
   @Input() routerLinkActiveOptions:
-    | {exact: boolean}
-    | Partial<IsActiveMatchOptions>
-    | null
-    | undefined = {exact: false};
+    {exact: boolean} | Partial<IsActiveMatchOptions> | null | undefined = {exact: false};
 
   /**
    * Aria-current attribute to apply when the router link is active.
@@ -207,12 +204,15 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
 
   @Input()
   set routerLinkActive(data: string[] | string | null | undefined) {
-    if (data == null) {
-      this.classes = [];
-      return;
+    const classes =
+      data == null ? [] : (Array.isArray(data) ? data : data.split(' ')).filter((c) => !!c);
+    // `update()` only touches the current classes, so drop the ones that are no longer used.
+    for (const c of this.classes) {
+      if (!classes.includes(c)) {
+        this.renderer.removeClass(this.element.nativeElement, c);
+      }
     }
-    const classes = Array.isArray(data) ? data : data.split(' ');
-    this.classes = classes.filter((c) => !!c);
+    this.classes = classes;
   }
 
   /** @docs-private */
