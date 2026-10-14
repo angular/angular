@@ -2631,6 +2631,46 @@ describe('di', () => {
           );
         });
 
+        it('should find a directive on the parent element when a component is nested in itself', async () => {
+          @Directive({selector: '[wrapper]'})
+          class Wrapper {}
+
+          @Component({
+            selector: 'recursive-comp',
+            template: `
+              @if (depth > 0) {
+                <div wrapper>
+                  <recursive-comp [depth]="depth - 1" />
+                </div>
+              }
+            `,
+            imports: [Wrapper, forwardRef(() => RecursiveComp)],
+          })
+          class RecursiveComp {
+            @Input() depth = 0;
+            wrapper = inject(Wrapper, {host: true, optional: true});
+          }
+
+          @Component({
+            template: '<recursive-comp [depth]="3" />',
+            imports: [RecursiveComp],
+          })
+          class App {}
+
+          const fixture = TestBed.createComponent(App);
+          await fixture.whenStable();
+
+          const wrappers = fixture.debugElement
+            .queryAll(By.directive(RecursiveComp))
+            .map((debugElement) => debugElement.componentInstance.wrapper);
+          const expectedWrappers = fixture.debugElement
+            .queryAll(By.directive(Wrapper))
+            .map((debugElement) => debugElement.injector.get(Wrapper));
+          expect(wrappers.map((wrapper) => expectedWrappers.indexOf(wrapper))).toEqual([
+            -1, 0, 1, 2,
+          ]);
+        });
+
         describe('regression', () => {
           // based on https://stackblitz.com/edit/angular-riss8k?file=src/app/app.component.ts
           it('should allow directives with Host flag to inject view providers from containing component', () => {

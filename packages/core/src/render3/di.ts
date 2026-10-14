@@ -555,6 +555,8 @@ function lookupTokenUsingNodeInjector<T>(
     let parentLocation = NO_PARENT_INJECTOR;
     let hostTElementNode: TNode | null =
       flags & InternalInjectFlags.Host ? lView[DECLARATION_COMPONENT_VIEW][T_HOST] : null;
+    const hostLView: LView | null =
+      flags & InternalInjectFlags.Host ? lView[DECLARATION_COMPONENT_VIEW][DECLARATION_VIEW] : null;
 
     // If we should skip this injector, or if there is no injector on this node, start by
     // searching the parent injector.
@@ -592,7 +594,7 @@ function lookupTokenUsingNodeInjector<T>(
           token,
           previousTView,
           flags,
-          hostTElementNode,
+          lView === hostLView ? hostTElementNode : null,
         );
         if (instance !== NOT_FOUND) {
           return instance;
@@ -603,7 +605,8 @@ function lookupTokenUsingNodeInjector<T>(
         parentLocation !== NO_PARENT_INJECTOR &&
         shouldSearchParent(
           flags,
-          lView[TVIEW].data[injectorIndex + NodeInjectorOffset.TNODE] === hostTElementNode,
+          lView === hostLView &&
+            lView[TVIEW].data[injectorIndex + NodeInjectorOffset.TNODE] === hostTElementNode,
         ) &&
         bloomHasToken(bloomHash, injectorIndex, lView)
       ) {
