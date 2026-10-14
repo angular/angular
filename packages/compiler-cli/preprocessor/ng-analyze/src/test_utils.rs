@@ -4388,7 +4388,7 @@ export class MyComp {
         assert_eq!(custom_member.decorators[0].name, "CustomDec");
         assert!(!custom_member.decorators[0].is_angular);
         assert!(custom_member.decorators[0].args_span.is_none());
-        assert!(custom_member.decorators[0].decorator_span.is_none());
+        assert!(custom_member.decorators[0].decorator_span.is_some());
 
         let literal_member = member_decorators
             .iter()
