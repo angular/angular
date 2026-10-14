@@ -1,3 +1,46 @@
+<a name="22.2.3"></a>
+# 22.2.3 (2026-10-14)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [fafec77b5d](https://github.com/angular/angular/commit/fafec77b5d4e6dfc89aad72db9c132d3dfe46ba6) | fix | harden param encoding against prototype pollution |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [54f3de517c](https://github.com/angular/angular/commit/54f3de517c2e4cda264eca5f2d143a1f6967c7a9) | fix | check `@boundary` blocks in the control flow content projection diagnostic |
+| [5e50658fd2](https://github.com/angular/angular/commit/5e50658fd23983dd27ef89a67cea26910af6fd79) | fix | compare the operand in ReadTemporaryExpr.isEquivalent |
+| [b6f9cc5d70](https://github.com/angular/angular/commit/b6f9cc5d7013f8f136b38cccfe486264200f04f5) | fix | do not scope comments placed inside of a selector |
+| [35a02f8097](https://github.com/angular/angular/commit/35a02f8097724f4b6e83e1c9c008da8f1fc7f127) | fix | harden JIT against prototype pollution |
+| [08075e8aa0](https://github.com/angular/angular/commit/08075e8aa03800bc1b8ae793fb3d52761cdd28b6) | fix | support dots in class binding names |
+| [c7a72c2bf2](https://github.com/angular/angular/commit/c7a72c2bf2213d881496e70933fc61bdaaa00621) | fix | support popover property bindings |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [fa21d083fe](https://github.com/angular/angular/commit/fa21d083fe92e67a2a070059b850b9a32a08cef9) | fix | inline tcb when depending on local directive |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b5208f9fc3](https://github.com/angular/angular/commit/b5208f9fc3a77a9631c2f38c30c38c777a642839) | fix | avoid deleting idle bucket created during another bucket&apos;s drain |
+| [90af679c3b](https://github.com/angular/angular/commit/90af679c3b585515651b138667b8eaf3df652968) | fix | do not swallow compilation errors in computeStandaloneComponentScope |
+| [eca5fa4665](https://github.com/angular/angular/commit/eca5fa466508ef68014cbebb0cafd63947f9eda7) | fix | don&apos;t crash initEventReplay when two apps share an APP_ID |
+| [e59a2303df](https://github.com/angular/angular/commit/e59a2303dfb4f3242552d382bbeebf6a38446856) | fix | error when destroying embedded view with animations |
+| [a23941fe75](https://github.com/angular/angular/commit/a23941fe7547634c9f1160541b3a2265e284f624) | fix | keep activeConsumer and currentInjector constant using Store helper |
+| [913ae7421f](https://github.com/angular/angular/commit/913ae7421f609c6ad375219045e9ab3f3b0eba73) | fix | skip nested tick from onMicrotaskEmpty while a tick is running |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cc515b8b23](https://github.com/angular/angular/commit/cc515b8b2331df643e7ff80915efc402bc97d3bb) | perf | use addEventListener to avoid unconditional CD scheduling on blur |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d04f214d04](https://github.com/angular/angular/commit/d04f214d04678f0dbb0b769a53d1f15ece09c4a2) | fix | normalize .d.ts paths in output migration field IDs |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f9a4f751f0](https://github.com/angular/angular/commit/f9a4f751f0ad0f3f22d49430475d6d57fa29fd3f) | fix | check abort signal state on subscribe |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="22.2.2"></a>
 # 22.2.2 (2026-10-08)
 ### compiler
