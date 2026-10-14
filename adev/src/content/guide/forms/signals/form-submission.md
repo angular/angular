@@ -13,7 +13,7 @@ The `submit()` function runs through a specific sequence:
 1. **Run the action** — The `action` function executes with the form's current value. While it runs, `submitting()` returns `true`.
 1. **Handle the result** — If the action returns errors, they are routed to their target fields. If it returns nothing, the submission is treated as successful.
 
-The `submit()` function returns a `Promise<boolean>` that resolves to `true` when the action completes without errors, and `false` when validation fails or the action returns errors.
+The `submit()` function returns a `Promise<boolean>` that resolves to `true` when the action completes without errors, and `false` when validation fails, the action returns errors, or a submission is already in progress. If the action throws, the promise rejects with that error.
 
 ## Setting up form submission with `FormRoot`
 
@@ -23,7 +23,7 @@ The `FormRoot` directive handles three things automatically when bound to a `<fo
 
 1. **Sets [`novalidate`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/form#novalidate)** — Disables the browser's built-in validation so Signal Forms manages validation instead
 1. **Prevents default** — Stops the browser from navigating on form submission
-1. **Calls `submit()`** — Triggers the submission flow when the user submits the form
+1. **Calls `submit()`** — Triggers the submission flow when the user submits the form, if the form was created with a `submission` option
 
 NOTE: The `FormRoot` directive sets the `novalidate` attribute on the `form` element automatically. You do not need to add it manually when using `FormRoot`.
 
@@ -271,7 +271,7 @@ export class Contact {
 
 ## Handling side effects
 
-The `submit()` function returns a `Promise<boolean>` — `true` when the action completes without errors, `false` when validation fails or the action returns errors. Use this to trigger side effects like navigation or notifications.
+The `submit()` function returns a `Promise<boolean>` — `true` when the action completes without errors, `false` when validation fails, the action returns errors, or a submission is already in progress. If the action throws, the promise rejects. Use this to trigger side effects like navigation or notifications.
 
 ```ts
 async onSave() {
