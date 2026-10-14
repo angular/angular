@@ -10,7 +10,6 @@ import {ApplicationRef, Component, input, linkedSignal, signal} from '@angular/c
 import {TestBed} from '@angular/core/testing';
 import {form, provideExperimentalWebMcpForms, required} from '@angular/forms/signals';
 import {cleanupWebMCPPolyfill, initializeWebMCPPolyfill} from '@mcp-b/webmcp-polyfill';
-import type {ChromeModelContextExtensions, ModelContext} from '@mcp-b/webmcp-types';
 import {REGISTER_WEBMCP_FORM, RegisterWebMcpForm} from '../../src/webmcp/tokens';
 
 describe('Signal Forms WebMCP Integration', () => {
@@ -356,13 +355,18 @@ describe('Signal Forms WebMCP Integration', () => {
   });
 });
 
-function getModelContext(): ModelContext & ChromeModelContextExtensions {
+// `@mcp-b/webmcp-polyfill` accepts serialized JSON args in `executeTool`.
+type PolyfillModelContext = WebMCP.ModelContext & {
+  executeTool(tool: WebMCP.RegisteredTool, inputArgsJson: string): Promise<string | null>;
+};
+
+function getModelContext(): PolyfillModelContext {
   // Because we use the 3p types, we need to cast the document.
-  return globalThis.document.modelContext!;
+  return globalThis.document.modelContext as PolyfillModelContext;
 }
 
 async function executeTool(toolName: string, args: string) {
   const toolsForSubmit = await getModelContext().getTools();
   const testFormSubmitTool = toolsForSubmit.find((t) => t.name === toolName)!;
-  return getModelContext().executeTool!(testFormSubmitTool, args);
+  return getModelContext().executeTool(testFormSubmitTool, args);
 }
