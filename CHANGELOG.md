@@ -1,3 +1,69 @@
+<a name="22.3.0-next.2"></a>
+# 22.3.0-next.2 (2026-10-14)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [01c883e2b6](https://github.com/angular/angular/commit/01c883e2b6fb92a61c0759978f53846f84a23367) | fix | harden param encoding against prototype pollution |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d9bd68258d](https://github.com/angular/angular/commit/d9bd68258dcb0192487837ed53ce393ca51c6ed6) | fix | check `@boundary` blocks in the control flow content projection diagnostic |
+| [3aaf026486](https://github.com/angular/angular/commit/3aaf0264867b712eae6c78a6f9632bcb78b5a38c) | fix | compare the operand in ReadTemporaryExpr.isEquivalent |
+| [8acf703db6](https://github.com/angular/angular/commit/8acf703db6b30305905dba59ad304f0a52e5e790) | fix | do not scope comments placed inside of a selector |
+| [f2b1c1d3d7](https://github.com/angular/angular/commit/f2b1c1d3d7d2c2816c79bb26a5128ecea2d1ff50) | fix | harden JIT against prototype pollution |
+| [f1d1953fa8](https://github.com/angular/angular/commit/f1d1953fa8d6c201f08d2433d83fe5fe65c93b1d) | fix | support dots in class binding names |
+| [9a2c9f1b20](https://github.com/angular/angular/commit/9a2c9f1b20edccf3478e45b3c22715f6c370f8b0) | fix | support popover property bindings |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d23ead8d51](https://github.com/angular/angular/commit/d23ead8d512bd68bd11f5457f2a12b1842ecd1e6) | feat | port preprocessor serve tool |
+| [4b6788f1fe](https://github.com/angular/angular/commit/4b6788f1fefa8aa97a61386a840edfab9e8595cf) | feat | support synchronous WASM execution in preprocessor ([#71313](https://github.com/angular/angular/pull/71313)) |
+| [0e49d96fe6](https://github.com/angular/angular/commit/0e49d96fe65dd1b9ddf43fc17ae53f2aef9a4183) | fix | capture public methods in preprocessor |
+| [3e45f7b51b](https://github.com/angular/angular/commit/3e45f7b51b8396f3d2b6b6c2a7d1bce1f345252c) | fix | correctly attach pure comments |
+| [69f705cf2d](https://github.com/angular/angular/commit/69f705cf2dea3c5d3f1cb69deea93ddbcdbe4d04) | fix | do not type check getter host bindings in preprocessor |
+| [389db18cdd](https://github.com/angular/angular/commit/389db18cdd92c0ba4fc0d91dcfb073954f95b3fb) | fix | fetch data asynchronously in hybrid indexer |
+| [ea3528fcdb](https://github.com/angular/angular/commit/ea3528fcdbed280669a7eebd5d3d00e21f348d68) | fix | handle imported templateUrl in preprocessor |
+| [8374641bcd](https://github.com/angular/angular/commit/8374641bcdaed05151ce05cf66ba750f3ab6ed75) | fix | handle imports arrays with some dynamic entries |
+| [b26f09f9f1](https://github.com/angular/angular/commit/b26f09f9f1024114411f4ddbd8bca9230c598b30) | fix | implement core handling in the preprocessor |
+| [d348fd884a](https://github.com/angular/angular/commit/d348fd884a2b71aa76eaedac315723094e29aaf3) | fix | implement HMR in preprocessor |
+| [0a77018368](https://github.com/angular/angular/commit/0a770183680c81cda04f35ed2d04216dd39fc877) | fix | inline tcb when depending on local directive |
+| [30e3b9ee72](https://github.com/angular/angular/commit/30e3b9ee72fa14ebb51149a911db6a1f82ede945) | fix | propagate hasNgFieldDirective in preprocessor |
+| [8984e6bf3d](https://github.com/angular/angular/commit/8984e6bf3daf5804eb3e4dcc7a78fe61d63aca4c) | fix | resolve imported classes in declaration-only NgModule types |
+| [520fe13f85](https://github.com/angular/angular/commit/520fe13f8578c962898e617b584979724fc60d34) | fix | resolve template stylesheets through the analyzer in the preprocessor |
+| [96ccdc02fe](https://github.com/angular/angular/commit/96ccdc02febd217c2d425344ae3e98d54f9c3b7c) | fix | sync hybrid preprocessor evaluator and cache invalidation fixes |
+| [684a89027b](https://github.com/angular/angular/commit/684a89027bcc28e397f0a345584c56de0334c61a) | fix | wire up foreign component matcher in preprocessor |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [09e132a2cd](https://github.com/angular/angular/commit/09e132a2cddb98a7ed4028b7fac48c3fd3ace6b9) | fix | avoid deleting idle bucket created during another bucket&apos;s drain |
+| [fd5ccc9df8](https://github.com/angular/angular/commit/fd5ccc9df85e79c9a12088813f3b08accb3b8bbb) | fix | avoid infinite loop in i18n if DOM is clobbered |
+| [54acced1d7](https://github.com/angular/angular/commit/54acced1d72e785b9bed13154cbd888558795d29) | fix | do not swallow compilation errors in computeStandaloneComponentScope |
+| [3a0835b332](https://github.com/angular/angular/commit/3a0835b33286bd0ca237339d3c920ba651d32a1b) | fix | don&apos;t crash initEventReplay when two apps share an APP_ID |
+| [97f8b6af93](https://github.com/angular/angular/commit/97f8b6af935baddd72906df3aa6f6a0d23e16efb) | fix | error when destroying embedded view with animations |
+| [1f1f1f10ab](https://github.com/angular/angular/commit/1f1f1f10ab924eeb06d1d9369b2a0813cf227052) | fix | harden hydration against clobbering |
+| [4fe5d08c7e](https://github.com/angular/angular/commit/4fe5d08c7ece5c08b4ec6456c1d27da6396985e7) | fix | improve clobbered element detection |
+| [6829292dc6](https://github.com/angular/angular/commit/6829292dc626ac57130998064bd3b79427a037f8) | fix | keep activeConsumer and currentInjector constant using Store helper |
+| [38816151b8](https://github.com/angular/angular/commit/38816151b8eb5c0cf62f23d8338c6c33bda612db) | fix | race condition when setting locale |
+| [8afd16848c](https://github.com/angular/angular/commit/8afd16848ca50e620e57c5df08bdba4988b03a78) | fix | skip nested tick from onMicrotaskEmpty while a tick is running |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6d36d6c097](https://github.com/angular/angular/commit/6d36d6c0977d9e8fd789143758033187da9ab5d7) | perf | use addEventListener to avoid unconditional CD scheduling on blur |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [33dcc7acfb](https://github.com/angular/angular/commit/33dcc7acfbe7a5ca1e08f7293149cc2cb9fcf0d4) | fix | await hybridCompiler.ensureReady before handling project requests |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [baa916d129](https://github.com/angular/angular/commit/baa916d129d1df1e3f5a48e29fe5da21433115e2) | fix | normalize .d.ts paths in output migration field IDs |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [44b7f00e88](https://github.com/angular/angular/commit/44b7f00e8895d969fb334990741b6675242d88b1) | fix | check abort signal state on subscribe |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.3.34"></a>
 # 20.3.34 (2026-10-14)
 ### core
