@@ -2610,6 +2610,35 @@ export async function guardsIntegrationSuite() {
         expect(location.path()).toEqual('/b');
       });
 
+      it('should give priority to an earlier guard over a later guard that throws', async () => {
+        const router = TestBed.inject(Router);
+        const location = TestBed.inject(Location);
+        const fixture = await createRoot(router, RootCmp);
+
+        let resolveFirstGuard!: (result: RedirectCommand) => void;
+        router.resetConfig([
+          {
+            path: 'a',
+            canActivate: [
+              () => new Promise<RedirectCommand>((resolve) => (resolveFirstGuard = resolve)),
+              () => {
+                throw new RedirectCommand(router.parseUrl('/upgrade'));
+              },
+            ],
+            component: BlankCmp,
+          },
+          {path: 'login', component: BlankCmp},
+          {path: 'upgrade', component: BlankCmp},
+        ]);
+
+        router.navigateByUrl('/a');
+        await advance(fixture);
+        resolveFirstGuard(new RedirectCommand(router.parseUrl('/login')));
+        await advance(fixture);
+
+        expect(location.path()).toEqual('/login');
+      });
+
       it('should redirect when a resolver throws a RedirectCommand', async () => {
         const router = TestBed.inject(Router);
         const location = TestBed.inject(Location);
