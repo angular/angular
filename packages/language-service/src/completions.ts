@@ -13,6 +13,8 @@ import {
   BindingType,
   EmptyExpr,
   ImplicitReceiver,
+  LiteralMap,
+  LiteralMapPropertyKey,
   LiteralPrimitive,
   ParseSourceSpan,
   ParsedEventType,
@@ -82,6 +84,8 @@ type ElementAttributeCompletionBuilder = CompletionBuilder<
 type PipeCompletionBuilder = CompletionBuilder<BindingPipe>;
 
 type LiteralCompletionBuilder = CompletionBuilder<LiteralPrimitive | TextAttribute>;
+
+type LiteralMapKeyCompletionBuilder = CompletionBuilder<LiteralMap | PropertyRead>;
 
 type ElementAnimationCompletionBuilder = CompletionBuilder<
   TmplAstBoundAttribute | TmplAstBoundEvent
@@ -193,6 +197,16 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
   getCompletionsAtPosition(
     options: ts.GetCompletionsAtPositionOptions | undefined,
   ): ts.WithMetadata<ts.CompletionInfo> | undefined {
+    if (this.isLiteralMapKeyCompletion()) {
+      const completions = this.getLiteralMapKeyCompletions(options);
+      if (completions !== undefined && completions.entries.length > 0) {
+        return completions;
+      }
+      // Otherwise the object literal has no known keys to suggest (e.g. its contextual type is
+      // `any`). A shorthand property (`{ti¦}`) is also a read of a member of the component, so
+      // it falls through to the expression completions below.
+    }
+
     if (this.isPropertyExpressionCompletion()) {
       return this.getPropertyExpressionCompletion(options);
     } else if (this.isElementTagCompletion()) {
@@ -271,6 +285,202 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
     return completionInfo;
   }
 
+  /**
+   * Determines whether the position is completing a key of an object literal, either within an
+   * existing key (`{he¦}`, `{he¦: value}`) or at a position where a new key can be written
+   * (`{¦}`, `{a: 1, ¦}`).
+   */
+  private isLiteralMapKeyCompletion(): this is LiteralMapKeyCompletionBuilder {
+    return this.getContainingLiteralMapKey() !== null;
+  }
+
+  /**
+   * Resolves the object literal whose key is being completed at the position, along with the key
+   * itself when the position is within an existing key.
+   */
+  private getContainingLiteralMapKey(): {
+    map: LiteralMap;
+    key: LiteralMapPropertyKey | null;
+  } | null {
+    if (this.node instanceof LiteralMap) {
+      // The keys of a `LiteralMap` are not AST nodes, so a position within a key targets the map
+      // itself. The same goes for any other position of the map that is not covered by one of
+      // its values, most of which are not places where a key can be written.
+      const key = findLiteralMapKeyAt(this.node, this.position);
+      if (key !== null || this.isNewLiteralMapKeyPosition(this.node)) {
+        return {map: this.node, key};
+      }
+    } else if (this.node instanceof PropertyRead && this.nodeParent instanceof LiteralMap) {
+      // A shorthand property (`{he¦}`) parses as a key with a `PropertyRead` value that spans
+      // the key, so the position targets the value instead of the map.
+      const key = findLiteralMapKeyAt(this.nodeParent, this.position);
+      if (key !== null && key.isShorthandInitialized === true) {
+        return {map: this.nodeParent, key};
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Determines whether the position, which is not within one of the keys or values of `map`, is
+   * a place where a new key can be written: after the opening brace (`{¦}`) or after the comma
+   * that follows a property (`{a: 1, ¦}`), whitespace aside. This leaves out the positions
+   * outside of the braces (`¦{}`, `{}¦`), the ones where a value is expected (`{a: ¦}`,
+   * `{...¦obj}`) and the ones that follow a value (`{a: 1 ¦}`).
+   */
+  private isNewLiteralMapKeyPosition(map: LiteralMap): boolean {
+    const mapStart = map.sourceSpan.start;
+    if (this.position <= mapStart) {
+      return false;
+    }
+    // The commas that separate the properties are not part of the AST, so the text that
+    // precedes the position has to be read from the source of the template.
+    const template = this.templateTypeChecker.getTemplate(this.component);
+    if (template === null || template.length === 0) {
+      return false;
+    }
+    const source = template[0].sourceSpan.start.file.content;
+    let index = this.position - 1;
+    while (index > mapStart && /\s/.test(source[index])) {
+      index--;
+    }
+    return index === mapStart || source[index] === ',';
+  }
+
+  private getLiteralMapKeyCompletions(
+    this: LiteralMapKeyCompletionBuilder,
+    options: ts.GetCompletionsAtPositionOptions | undefined,
+  ): ts.WithMetadata<ts.CompletionInfo> | undefined {
+    const target = this.getContainingLiteralMapKey();
+    if (target === null) {
+      return undefined;
+    }
+    const {map, key} = target;
+    const location = this.templateTypeChecker.getLiteralMapKeyCompletionLocation(
+      map,
+      key,
+      this.component,
+    );
+    if (location === null) {
+      return undefined;
+    }
+    const tsResults = this.tsLS.getCompletionsAtPosition(
+      location.tcbPath,
+      location.positionInFile,
+      options,
+    );
+    // TypeScript falls back to the identifiers that are in scope when the object literal has no
+    // known keys. In the TCB those include its internal variables, so only keep the members.
+    if (tsResults === undefined || !tsResults.isMemberCompletion) {
+      return undefined;
+    }
+
+    const isQuoted = key !== null && key.quoted;
+    let replacementSpan: ts.TextSpan | undefined;
+    if (key !== null && key.key.length > 0) {
+      replacementSpan = {
+        // The source span of a quoted key includes the quotes and the completion entries
+        // don't, so skip the open quote.
+        start: key.sourceSpan.start + (isQuoted ? 1 : 0),
+        length: key.key.length,
+      };
+    }
+
+    // TypeScript does not exclude the properties that are already present in the object literal
+    // when completing inside a quoted property name, so filter them out here.
+    const existingKeys = new Set<string>();
+    for (const existingKey of map.keys) {
+      if (existingKey.kind === 'property' && existingKey !== key) {
+        existingKeys.add(existingKey.key);
+      }
+    }
+
+    const entries: ts.CompletionEntry[] = [];
+    for (const entry of tsResults.entries) {
+      if (existingKeys.has(entry.name)) {
+        continue;
+      }
+      // The names that are not valid identifiers (e.g. `aria-label`) have to be quoted, so they
+      // are only suggested within a quoted key.
+      if (!isQuoted && !UNQUOTED_LITERAL_MAP_KEY.test(entry.name)) {
+        continue;
+      }
+      entries.push({
+        ...entry,
+        replacementSpan,
+      });
+    }
+    return {
+      ...tsResults,
+      entries,
+    };
+  }
+
+  private getLiteralMapKeyCompletionDetails(
+    this: LiteralMapKeyCompletionBuilder,
+    entryName: string,
+    formatOptions: ts.FormatCodeOptions | ts.FormatCodeSettings | undefined,
+    preferences: ts.UserPreferences | undefined,
+    data: ts.CompletionEntryData | undefined,
+  ): ts.CompletionEntryDetails | undefined {
+    const target = this.getContainingLiteralMapKey();
+    if (target === null) {
+      return undefined;
+    }
+    const location = this.templateTypeChecker.getLiteralMapKeyCompletionLocation(
+      target.map,
+      target.key,
+      this.component,
+    );
+    if (location === null) {
+      return undefined;
+    }
+    return this.tsLS.getCompletionEntryDetails(
+      location.tcbPath,
+      location.positionInFile,
+      entryName,
+      formatOptions,
+      /* source */ undefined,
+      preferences,
+      data,
+    );
+  }
+
+  private getLiteralMapKeyCompletionSymbol(
+    this: LiteralMapKeyCompletionBuilder,
+    name: string,
+  ): ts.Symbol | undefined {
+    const target = this.getContainingLiteralMapKey();
+    if (target === null) {
+      return undefined;
+    }
+    // TypeScript does not resolve the symbol of a completion entry within a string literal,
+    // which is what the keys are in the TCB, so look the key up in the contextual type of the
+    // object literal instead.
+    const location = this.templateTypeChecker.getLiteralMapKeyCompletionLocation(
+      target.map,
+      /* key */ null,
+      this.component,
+    );
+    if (location === null) {
+      return undefined;
+    }
+    const tsNode = this.getTsNodeAtPosition(location.tcbPath, location.positionInFile);
+    const objectLiteral = tsNode && ts.findAncestor(tsNode, ts.isObjectLiteralExpression);
+    const contextualType = objectLiteral && this.typeChecker.getContextualType(objectLiteral);
+    if (!contextualType) {
+      return undefined;
+    }
+    const types = contextualType.isUnion() ? contextualType.types : [contextualType];
+    for (const type of types) {
+      const symbol = this.typeChecker.getPropertyOfType(type, name);
+      if (symbol !== undefined) {
+        return symbol;
+      }
+    }
+    return undefined;
+  }
+
   private isLiteralCompletion(): this is LiteralCompletionBuilder {
     return (
       this.node instanceof LiteralPrimitive ||
@@ -346,6 +556,19 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
     preferences: ts.UserPreferences | undefined,
     data: ts.CompletionEntryData | undefined,
   ): ts.CompletionEntryDetails | undefined {
+    if (this.isLiteralMapKeyCompletion()) {
+      const details = this.getLiteralMapKeyCompletionDetails(
+        entryName,
+        formatOptions,
+        preferences,
+        data,
+      );
+      if (details !== undefined) {
+        return details;
+      }
+      // The entry is not a key of the object literal, see `getCompletionsAtPosition`.
+    }
+
     if (this.isPropertyExpressionCompletion()) {
       return this.getPropertyExpressionCompletionDetails(
         entryName,
@@ -365,6 +588,14 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
    * Analogue for `ts.LanguageService.getCompletionEntrySymbol`.
    */
   getCompletionEntrySymbol(name: string): ts.Symbol | undefined {
+    if (this.isLiteralMapKeyCompletion()) {
+      const symbol = this.getLiteralMapKeyCompletionSymbol(name);
+      if (symbol !== undefined) {
+        return symbol;
+      }
+      // The entry is not a key of the object literal, see `getCompletionsAtPosition`.
+    }
+
     if (this.isPropertyExpressionCompletion()) {
       return this.getPropertyExpressionCompletionSymbol(name);
     } else if (this.isElementTagCompletion()) {
@@ -1453,6 +1684,23 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
     }
     return false;
   }
+}
+
+/** Matches the keys of an object literal that can be written without quotes in a template. */
+const UNQUOTED_LITERAL_MAP_KEY = /^[a-zA-Z_$][\w$]*$/;
+
+/** Finds the property key of `map` whose source span contains `position`, if any. */
+function findLiteralMapKeyAt(map: LiteralMap, position: number): LiteralMapPropertyKey | null {
+  for (const key of map.keys) {
+    if (
+      key.kind === 'property' &&
+      position >= key.sourceSpan.start &&
+      position <= key.sourceSpan.end
+    ) {
+      return key;
+    }
+  }
+  return null;
 }
 
 function makeReplacementSpanFromParseSourceSpan(span: ParseSourceSpan): ts.TextSpan {

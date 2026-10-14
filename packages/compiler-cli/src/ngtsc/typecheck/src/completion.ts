@@ -10,6 +10,8 @@ import {
   AST,
   EmptyExpr,
   ImplicitReceiver,
+  LiteralMap,
+  LiteralMapPropertyKey,
   LiteralPrimitive,
   PropertyRead,
   SafePropertyRead,
@@ -58,7 +60,12 @@ export class CompletionEngine {
   >();
 
   private expressionCompletionCache = new Map<
-    PropertyRead | SafePropertyRead | LiteralPrimitive | TmplAstTextAttribute,
+    | PropertyRead
+    | SafePropertyRead
+    | LiteralPrimitive
+    | TmplAstTextAttribute
+    | LiteralMap
+    | LiteralMapPropertyKey,
     TcbLocation
   >();
 
@@ -252,6 +259,58 @@ export class CompletionEngine {
       positionInFile: positionInShimFile,
     };
     this.expressionCompletionCache.set(expr, res);
+    return res;
+  }
+
+  getLiteralMapKeyCompletionLocation(
+    expr: LiteralMap,
+    key: LiteralMapPropertyKey | null,
+  ): TcbLocation | null {
+    const cacheKey = key ?? expr;
+    if (this.expressionCompletionCache.has(cacheKey)) {
+      return this.expressionCompletionCache.get(cacheKey)!;
+    }
+
+    let positionInShimFile: number;
+    if (key !== null) {
+      // Object literal keys are generated in the TCB as quoted string literals carrying the
+      // key's source span, so the completion position is inside the quotes of the matching
+      // string literal.
+      const tsKey = findFirstMatchingNode(this.tcb, {
+        filter: ts.isStringLiteral,
+        withSpan: key.sourceSpan,
+      });
+      if (tsKey === null) {
+        return null;
+      }
+      positionInShimFile = tsKey.getEnd() - 1;
+    } else {
+      // The cursor is not within an existing key (e.g. an empty object literal, or right after a
+      // comma), so the completion position is just inside the opening brace of the object literal
+      // generated for the map.
+      let tsExpr: ts.Expression | null = findFirstMatchingNode(this.tcb, {
+        filter: (n: ts.Node): n is ts.Expression =>
+          ts.isObjectLiteralExpression(n) || ts.isAsExpression(n),
+        withSpan: expr.sourceSpan,
+      });
+      while (tsExpr !== null && !ts.isObjectLiteralExpression(tsExpr)) {
+        tsExpr =
+          ts.isAsExpression(tsExpr) || ts.isParenthesizedExpression(tsExpr)
+            ? tsExpr.expression
+            : null;
+      }
+      if (tsExpr === null) {
+        return null;
+      }
+      positionInShimFile = tsExpr.getStart() + 1;
+    }
+
+    const res: TcbLocation = {
+      tcbPath: this.tcbPath,
+      isShimFile: this.tcbIsShim,
+      positionInFile: positionInShimFile,
+    };
+    this.expressionCompletionCache.set(cacheKey, res);
     return res;
   }
 

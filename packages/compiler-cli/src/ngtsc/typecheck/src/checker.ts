@@ -14,6 +14,8 @@ import {
   DomElementSchemaRegistry,
   ExternalExpr,
   ForeignComponentMeta,
+  LiteralMap,
+  LiteralMapPropertyKey,
   LiteralPrimitive,
   ParseSourceSpan,
   PropertyRead,
@@ -869,6 +871,20 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     }
     return this.perf.inPhase(PerfPhase.TtcAutocompletion, () =>
       engine.getLiteralCompletionLocation(node),
+    );
+  }
+
+  getLiteralMapKeyCompletionLocation(
+    map: LiteralMap,
+    key: LiteralMapPropertyKey | null,
+    component: ts.ClassDeclaration,
+  ): TcbLocation | null {
+    const engine = this.getOrCreateCompletionEngine(component);
+    if (engine === null) {
+      return null;
+    }
+    return this.perf.inPhase(PerfPhase.TtcAutocompletion, () =>
+      engine.getLiteralMapKeyCompletionLocation(map, key),
     );
   }
 

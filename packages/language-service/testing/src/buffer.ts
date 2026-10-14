@@ -115,6 +115,10 @@ export class OpenBuffer {
     );
   }
 
+  getCompletionEntrySymbol(entryName: string): ts.Symbol | undefined {
+    return this.ngLS.getCompletionEntrySymbol(this.scriptInfo.fileName, this._cursor, entryName);
+  }
+
   getTcb() {
     return this.ngLS.getTcb(this.scriptInfo.fileName, this._cursor);
   }
