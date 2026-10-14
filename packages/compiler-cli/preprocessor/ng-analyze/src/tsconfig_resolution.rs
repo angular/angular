@@ -12,6 +12,7 @@ pub struct ResolvedTsConfig {
     pub workspace_name: Option<String>,
     pub generate_extra_imports_in_local_mode: bool,
     pub compile_non_exported_classes: bool,
+    pub enable_hmr: bool,
 }
 
 pub fn load_and_resolve_tsconfig(
@@ -80,6 +81,7 @@ pub fn load_and_resolve_tsconfig(
         compile_non_exported_classes: extended_options
             .compile_non_exported_classes
             .unwrap_or(true),
+        enable_hmr: extended_options.enable_hmr.unwrap_or(false),
     })
 }
 
@@ -250,6 +252,7 @@ struct ExtendedOptions {
     workspace_name: Option<String>,
     generate_extra_imports_in_local_mode: Option<bool>,
     compile_non_exported_classes: Option<bool>,
+    enable_hmr: Option<bool>,
 }
 
 fn resolve_extended_options_recursive(
@@ -310,6 +313,11 @@ fn resolve_extended_options_recursive(
             .and_then(|v| v.as_bool())
     });
 
+    let mut current_enable_hmr = parsed_json.as_ref().ok().and_then(|json| {
+        json.pointer("/angularCompilerOptions/_enableHmr")
+            .and_then(|v| v.as_bool())
+    });
+
     let base_dir = abs_path.parent().unwrap_or(Path::new("."));
 
     let mut current_root_dirs = tsconfig.compiler_options.root_dirs.clone().map(|dirs| {
@@ -326,6 +334,7 @@ fn resolve_extended_options_recursive(
         && current_workspace_name.is_some()
         && current_generate_extra_imports.is_some()
         && current_compile_non_exported.is_some()
+        && current_enable_hmr.is_some()
     {
         visited.remove(&canonical);
         return Ok(ExtendedOptions {
@@ -334,6 +343,7 @@ fn resolve_extended_options_recursive(
             workspace_name: current_workspace_name,
             generate_extra_imports_in_local_mode: current_generate_extra_imports,
             compile_non_exported_classes: current_compile_non_exported,
+            enable_hmr: current_enable_hmr,
         });
     }
 
@@ -345,6 +355,7 @@ fn resolve_extended_options_recursive(
             workspace_name: current_workspace_name,
             generate_extra_imports_in_local_mode: current_generate_extra_imports,
             compile_non_exported_classes: current_compile_non_exported,
+            enable_hmr: current_enable_hmr,
         });
     };
 
@@ -388,6 +399,9 @@ fn resolve_extended_options_recursive(
         if let Some(compile_non_exported) = res.compile_non_exported_classes {
             inherited.compile_non_exported_classes = Some(compile_non_exported);
         }
+        if let Some(enable_hmr) = res.enable_hmr {
+            inherited.enable_hmr = Some(enable_hmr);
+        }
     }
     if current_root_dirs.is_none() {
         current_root_dirs = inherited.root_dirs;
@@ -404,6 +418,9 @@ fn resolve_extended_options_recursive(
     if current_compile_non_exported.is_none() {
         current_compile_non_exported = inherited.compile_non_exported_classes;
     }
+    if current_enable_hmr.is_none() {
+        current_enable_hmr = inherited.enable_hmr;
+    }
 
     visited.remove(&canonical);
     Ok(ExtendedOptions {
@@ -412,6 +429,7 @@ fn resolve_extended_options_recursive(
         workspace_name: current_workspace_name,
         generate_extra_imports_in_local_mode: current_generate_extra_imports,
         compile_non_exported_classes: current_compile_non_exported,
+        enable_hmr: current_enable_hmr,
     })
 }
 

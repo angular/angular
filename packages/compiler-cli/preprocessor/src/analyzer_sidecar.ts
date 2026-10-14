@@ -171,7 +171,12 @@ export class SidecarAnalyzer implements IAnalyzer {
     optimize: boolean,
     virtualFiles?: Record<string, string>,
     nodeModulesPathOverride?: string,
-    options?: {allowedSources?: string[]; workspaceName?: string; rootDirs?: string[]},
+    options?: {
+      allowedSources?: string[];
+      workspaceName?: string;
+      rootDirs?: string[];
+      enableHmr?: boolean;
+    },
   ): Promise<void> {
     await this.callRpc('initialize', {
       tsconfigPath,
@@ -181,6 +186,7 @@ export class SidecarAnalyzer implements IAnalyzer {
       allowedSources: options?.allowedSources,
       workspaceName: options?.workspaceName,
       rootDirs: options?.rootDirs,
+      enableHmr: options?.enableHmr,
     });
   }
 

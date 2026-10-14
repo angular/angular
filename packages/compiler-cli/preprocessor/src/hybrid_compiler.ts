@@ -132,8 +132,8 @@ export interface HybridCompilerOptions {
   /** Literal inline templates always normalize, whatever this is set to. */
   i18nNormalizeLineEndingsInICUs?: boolean;
   /**
-   * Whether HMR is enabled.
-   * TODO(parity): accepted but ignored, still needs to be implemented.
+   * Whether HMR is enabled (`_enableHmr`): emits an HMR initializer after every component and
+   * enables `emitHmrUpdateModule`. The analyzer must run with `enableHmr` as well.
    */
   enableHmr?: boolean;
   /** Project root used to compute the relative `filePath` emitted in `ɵsetClassDebugInfo`. */
@@ -728,6 +728,43 @@ export class HybridCompiler {
         this.diagnosticsMap.set(targetPath, existing);
       }
     }
+  }
+
+  async emitHmrUpdateModule(filePath: string, className: string): Promise<string | null> {
+    if (!this.enableHmr) {
+      return null;
+    }
+    const result = await this.analyzer.getMetadataForFile(filePath);
+    if (!result) {
+      return null;
+    }
+    const content = await this.analyzer.getFileContent(result.filePath);
+    const processed = await processFile(
+      {...this, hmrUpdateTarget: className},
+      result.filePath,
+      content,
+      result,
+    );
+    return processed.hmrUpdateModule ?? null;
+  }
+
+  emitHmrUpdateModuleSync(filePath: string, className: string): string | null {
+    if (!this.enableHmr) {
+      return null;
+    }
+    const result = this.analyzer.getMetadataForFileSync(filePath);
+    if (!result) {
+      return null;
+    }
+    const content = this.analyzer.getFileContentSync(result.filePath);
+    const processed = processFileSync(
+      {...this, hmrUpdateTarget: className},
+      result.filePath,
+      content,
+      undefined,
+      result,
+    );
+    return processed.hmrUpdateModule ?? null;
   }
 
   getBoundTarget(filePath: string, classKey: string): BoundTarget<TcbDirectiveMetadata> | null {

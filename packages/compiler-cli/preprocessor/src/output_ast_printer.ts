@@ -8,6 +8,7 @@
 
 import {outputAst as o, AbstractEmitterVisitor, EmitterVisitorContext} from '@angular/compiler';
 import {validateAndRewriteCoreSymbol} from '@angular/compiler-cli/private/hybrid_analysis';
+import type {SpanMetadata} from './types.js';
 
 const CORE_MODULE = '@angular/core';
 
@@ -69,7 +70,10 @@ function binaryNeedsTsIgnore(expression: o.BinaryOperatorExpr): boolean {
 }
 
 export class RawSource {
-  constructor(public readonly source: string) {}
+  constructor(
+    public readonly source: string,
+    public readonly spans: readonly SpanMetadata[] = [],
+  ) {}
 }
 
 export class ExpressionPrinter {
@@ -233,8 +237,14 @@ class EmitterVisitor extends AbstractEmitterVisitor {
 
     if (moduleName) {
       const namespace = this.printer.getOrCreateNamespace(moduleName);
-      const symbol = symbolName !== null ? this.printer.rewriteSymbol(symbolName, moduleName) : '';
-      ctx.print(ast, `${namespace}.${symbol}`);
+      // `name` is `null` when the module itself is referenced (e.g. the namespaces an HMR
+      // initializer captures).
+      ctx.print(
+        ast,
+        symbolName == null
+          ? namespace
+          : `${namespace}.${this.printer.rewriteSymbol(symbolName, moduleName)}`,
+      );
     } else {
       ctx.print(ast, symbolName || '');
     }
@@ -247,6 +257,34 @@ class EmitterVisitor extends AbstractEmitterVisitor {
       });
       ctx.print(ast, '>');
     }
+  }
+
+  override visitReadPropExpr(ast: o.ReadPropExpr, ctx: EmitterVisitorContext): void {
+    // Add a `ts-ignore` since `import.meta` is only valid when es2020 is enabled.
+    if (
+      this.printTypes &&
+      ast.name === 'meta' &&
+      ast.receiver instanceof o.ReadVarExpr &&
+      ast.receiver.name === 'import'
+    ) {
+      ctx.addUniqueSingleLineComment(' @ts-ignore');
+    }
+    super.visitReadPropExpr(ast, ctx);
+  }
+
+  override visitDynamicImportExpr(ast: o.DynamicImportExpr, ctx: EmitterVisitorContext): void {
+    if (ast.urlComment == null) {
+      super.visitDynamicImportExpr(ast, ctx);
+      return;
+    }
+
+    this.printLeadingComments(ast, ctx);
+    ctx.print(ast, `import(/* ${ast.urlComment} */ `);
+
+    const url = typeof ast.url === 'string' ? o.literal(ast.url) : ast.url;
+    url.visitExpression(this, ctx);
+
+    ctx.print(ast, `)`);
   }
 
   override visitLocalizedString(ast: o.LocalizedString, ctx: EmitterVisitorContext): void {

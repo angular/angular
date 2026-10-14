@@ -56,7 +56,7 @@ export function buildInputsMap(
     let transformFunction = null;
     if (input.transform && !input.isSignal) {
       const fnStr = content.substring(input.transform.span.start, input.transform.span.end);
-      transformFunction = new WrappedNodeExpr(new RawSource(fnStr));
+      transformFunction = new WrappedNodeExpr(new RawSource(fnStr, [input.transform.span]));
     }
     result[input.name] = {
       classPropertyName: input.name,
@@ -92,7 +92,9 @@ export function buildQueriesMap(
     // reduced to them, otherwise an expression to emit as written.
     const predicate: R3QueryMetadata['predicate'] = q.predicateSelectors ?? {
       expression: new o.WrappedNodeExpr(
-        new RawSource(sourceText.substring(q.predicateSpan.start, q.predicateSpan.end)),
+        new RawSource(sourceText.substring(q.predicateSpan.start, q.predicateSpan.end), [
+          q.predicateSpan,
+        ]),
       ),
       forwardRef: q.isForwardRef
         ? 2 /* ForwardRefHandling.Unwrapped */
@@ -102,7 +104,7 @@ export function buildQueriesMap(
     let read: o.Expression | null = null;
     if (q.readSpan) {
       const readText = sourceText.substring(q.readSpan.start, q.readSpan.end);
-      read = new o.WrappedNodeExpr(new RawSource(readText));
+      read = new o.WrappedNodeExpr(new RawSource(readText, [q.readSpan]));
     }
 
     return {
@@ -202,7 +204,9 @@ export function buildHostMetadata(
     if (entry.value != null) {
       hostObj[entry.key] = entry.value;
     } else if (entry.expression != null) {
-      hostObj[entry.key] = new o.WrappedNodeExpr(new RawSource(entry.expression));
+      hostObj[entry.key] = new o.WrappedNodeExpr(
+        new RawSource(entry.expression, entry.expressionSpan ? [entry.expressionSpan] : []),
+      );
     }
   }
 
@@ -341,6 +345,18 @@ export function createDirectiveMeta(
 }
 
 /**
+ * A non-literal `@Inject`/`@Attribute` argument emitted as written. It is an arbitrary expression
+ * (`SomeConstEnum.Foo`, `forwardRef(() => Token)`), not an identifier, so it is wrapped like every
+ * other verbatim slice rather than read as a variable; the span lets HMR find the analyzer's
+ * top-level reads inside it.
+ */
+function rawToken(arg: nga.DecoratorArg, decorator: nga.DecoratorMetadata): outputAst.Expression {
+  return new outputAst.WrappedNodeExpr(
+    new RawSource(arg.value, decorator.argsSpan ? [decorator.argsSpan] : []),
+  );
+}
+
+/**
  * Build dependency injection tokens from constructor parameter types.
  *
  * Mirrors ngtsc's getConstructorDependencies() + unwrapConstructorDependencies() which
@@ -435,14 +451,14 @@ export function buildDeps(
           break;
         case 'Inject':
           if (arg) {
-            token = arg.isLiteral ? o.literal(arg.value) : o.variable(arg.value);
+            token = arg.isLiteral ? o.literal(arg.value) : rawToken(arg, decorator);
             tokenResolved = true;
           }
           isInjectDecorator = true;
           break;
         case 'Attribute':
           if (arg) {
-            token = arg.isLiteral ? o.literal(arg.value) : o.variable(arg.value);
+            token = arg.isLiteral ? o.literal(arg.value) : rawToken(arg, decorator);
             // https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/annotations/common/src/di.ts#L93-L100
             attributeNameType = arg.isLiteral
               ? o.literal(arg.value)

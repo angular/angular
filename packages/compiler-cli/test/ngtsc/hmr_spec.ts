@@ -302,6 +302,100 @@ runInEachFileSystem(() => {
       expect(hmrContents).not.toContain('import(');
     });
 
+    it('should not defer `deferredImports` dependencies when HMR is enabled', () => {
+      enableHmr({onlyExplicitDeferDependencyImports: true});
+      env.write(
+        'dep.ts',
+        `
+          import {Directive} from '@angular/core';
+
+          @Directive({
+            selector: '[dep]',
+          })
+          export class Dep {}
+        `,
+      );
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import {Dep} from './dep';
+
+          @Component({
+            selector: 'cmp',
+            template: '@defer (name block; on timer(1000)) {<div dep></div>}',
+            // @ts-ignore
+            deferredImports: {block: [Dep]},
+          })
+          export class Cmp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      const hmrContents = env.driveHmr('test.ts', 'Cmp');
+
+      // The dependency stays scoped to its block as a synchronous resolver: it is neither
+      // dynamically imported (its import has to survive) nor hoisted into `dependencies`.
+      expect(jsContents).toMatch(/import \{ ?Dep ?\} from ['"]\.\/dep['"];/);
+      expect(jsContents).toContain('const Cmp_Defer_1_DepsFn = () => [Dep];');
+      expect(jsContents).toContain('i0.ɵɵdefer(1, 0, Cmp_Defer_1_DepsFn);');
+      expect(jsContents).not.toContain('dependencies:');
+      expect(jsContents).not.toContain('import("./dep")');
+      expect(jsContents).not.toContain('ɵsetClassMetadataAsync');
+      expect(jsContents).toContain(
+        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [Component, Dep], import.meta, id)',
+      );
+
+      expect(hmrContents).toContain(
+        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, Component, Dep) {',
+      );
+      expect(hmrContents).toContain('const Cmp_Defer_1_DepsFn = () => [Dep];');
+      expect(hmrContents).not.toContain('import(');
+    });
+
+    it('should capture dependencies of non-literal `@Inject` and `@Attribute` arguments', () => {
+      // No `setClassMetadata`, so the factory is the only place the arguments appear.
+      enableHmr({supportTestBed: false});
+      env.write(
+        'test.ts',
+        `
+          import {Component, Inject, Attribute, InjectionToken, forwardRef} from '@angular/core';
+
+          const TOKEN = new InjectionToken<number>('TEST');
+          const ATTR = 'some-attr';
+
+          export const enum Foo {
+            one,
+            two = '2',
+          }
+
+          @Component({template: ''})
+          export class Cmp {
+            constructor(
+              @Inject(forwardRef(() => TOKEN)) token: number,
+              @Inject(Foo.two) viaEnum: string,
+              @Attribute(ATTR) attr: string,
+            ) {}
+          }
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      const hmrContents = env.driveHmr('test.ts', 'Cmp');
+
+      expect(jsContents).toContain(
+        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [forwardRef, TOKEN, { one: 0, two: "2" }, ATTR], import.meta, id)',
+      );
+      expect(hmrContents).toContain(
+        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, forwardRef, TOKEN, Foo, ATTR) {',
+      );
+    });
+
     it('should capture deferred dependencies when no class metadata is produced', () => {
       // `supportTestBed` determines whether we produce `setClassMetadata` calls.
       enableHmr({supportTestBed: false});

@@ -43,6 +43,7 @@ export interface LoadAnalyzerOptions {
   nodeModulesPathOverride?: string;
   workspaceName?: string;
   rootDirs?: string[];
+  enableHmr?: boolean;
 
   /**
    * Force a specific engine. When set, only that engine is attempted — a failure
@@ -238,6 +239,7 @@ async function constructNative(
       nodeModulesPathOverride: options.nodeModulesPathOverride,
       workspaceName: options.workspaceName,
       rootDirs: options.rootDirs,
+      enableHmr: options.enableHmr,
     }),
   );
 }
@@ -275,6 +277,7 @@ async function constructWasm(
       nodeModulesPathOverride: options.nodeModulesPathOverride,
       workspaceName: options.workspaceName,
       rootDirs: options.rootDirs,
+      enableHmr: options.enableHmr,
     }),
     hostFs,
   );

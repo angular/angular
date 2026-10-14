@@ -21,6 +21,8 @@ pub struct TestAnalyzerOptions {
     pub workspace_name: Option<String>,
     /// Root directories for `PrefixImportStrategy`
     pub root_dirs: Option<Vec<String>>,
+    /// Collect the HMR-only wire data; see `AnalyzerOptions::enable_hmr`.
+    pub enable_hmr: Option<bool>,
 }
 
 /// Test analyzer that uses virtual filesystem for in-memory testing
@@ -42,6 +44,7 @@ impl TestAnalyzer {
             allowed_sources: None,
             workspace_name: options.workspace_name,
             root_dirs: options.root_dirs,
+            enable_hmr: options.enable_hmr,
         })?;
 
         Ok(TestAnalyzer { analyzer })
@@ -57,6 +60,7 @@ impl TestAnalyzer {
             allowed_sources: None,
             workspace_name: options.workspace_name,
             root_dirs: options.root_dirs,
+            enable_hmr: options.enable_hmr,
         })?;
 
         Ok(TestAnalyzer { analyzer })

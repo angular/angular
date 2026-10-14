@@ -35,6 +35,7 @@ import {
   NgtscTestCompilerHost,
   normalizeNgpOutputFile,
   performNgpCompilationSync,
+  toPosixPath,
 } from '../../src/ngtsc/testing';
 import {TemplateTypeChecker} from '../../src/ngtsc/typecheck/api';
 import {setWrapHostForTest} from '../../src/transformers/compiler_host';
@@ -490,6 +491,39 @@ export class NgtscTestEnvironment {
 
   driveHmr(fileName: string, className: string): string | null {
     const {rootNames, options} = readNgcCommandLineAndConfiguration(this.commandLineArgs);
+
+    if (isNgpTestMode()) {
+      const tsconfigPath = this.fs.resolve(this.basePath, 'tsconfig.json');
+      const result = performNgpCompilationSync({
+        fs: this.fs,
+        basePath: this.basePath,
+        tsconfigPath,
+        rootNames,
+        options,
+        emit: false,
+        closeAnalyzer: false,
+      });
+      try {
+        const filePath = toPosixPath(this.fs.resolve(this.basePath, fileName));
+        const source = result.compiler.emitHmrUpdateModuleSync(filePath, className);
+        if (source === null) {
+          return null;
+        }
+        const output = ts.transpileModule(source, {
+          compilerOptions: {
+            ...options,
+            module: ts.ModuleKind.ES2022,
+            target: ts.ScriptTarget.ES2022,
+          } as ts.CompilerOptions,
+          fileName,
+          reportDiagnostics: false,
+        }).outputText;
+        return normalizeNgpOutputFile(output);
+      } finally {
+        result.compiler.analyzer.close();
+      }
+    }
+
     const host = createCompilerHost({options});
     const program = createProgram({rootNames, host, options});
     const sourceFile = program.getTsProgram().getSourceFile(fileName);

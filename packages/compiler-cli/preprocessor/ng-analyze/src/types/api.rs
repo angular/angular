@@ -64,6 +64,8 @@ pub struct AnalysisResult {
     pub diagnostics: Vec<NgDiagnostic>,
     pub signal_debug_names: Vec<super::metadata::SignalDebugNameMetadata>,
     pub r3_symbols_specifier: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub top_level_value_bindings: Option<Vec<String>>,
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
@@ -82,6 +84,10 @@ pub struct AnalyzerOptions {
     pub workspace_name: Option<String>,
     /// Root directories used by `PrefixImportStrategy` to strip prefixes.
     pub root_dirs: Option<Vec<String>>,
+    /// Collect the HMR-only wire data (`ClassMetadata.top_level_references`,
+    /// `AnalysisResult.top_level_value_bindings`). Falls back to the tsconfig's
+    /// `angularCompilerOptions._enableHmr` when unset.
+    pub enable_hmr: Option<bool>,
 }
 
 #[cfg_attr(feature = "napi", napi(object))]

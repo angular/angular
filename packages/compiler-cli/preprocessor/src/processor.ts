@@ -48,6 +48,10 @@ import {
   R3ClassDebugInfo,
   R3ClassMetadataCtorParameter,
   compileClassDebugInfo,
+  compileHmrInitializer,
+  type BindingParser,
+  type R3CompiledExpression,
+  type R3ComponentDeferMetadata,
 } from '@angular/compiler';
 
 interface HybridParseTemplateOptions extends ParseTemplateOptions {
@@ -86,6 +90,7 @@ import {analyzeForeignComponentFeatures} from './foreign_component.js';
 import {lineNumberAtOffset} from './tcb_util.js';
 import type {IAnalyzer} from './hybrid_compiler.js';
 import {FileAnalysis, getOrCreateFileAnalysis, ChunkContext} from './file_analysis.js';
+import {extractHmrMetadata, getHmrUpdateDeclaration} from './hmr.js';
 
 interface HybridCompilerContext {
   analyzer: IAnalyzer;
@@ -111,6 +116,8 @@ interface HybridCompilerContext {
   complianceMode?: boolean;
   workspaceName?: string;
   rootDirs?: string[];
+  enableHmr?: boolean;
+  hmrUpdateTarget?: string;
 }
 
 // These are const enums, so they're not available at runtime - use literal values
@@ -136,6 +143,7 @@ export interface ProcessedFile {
   magicString: MagicString;
   tcb?: TcbResult | null;
   diagnostics?: nga.NgDiagnostic[];
+  hmrUpdateModule?: string | null;
 }
 
 export function buildTcbTargets(
@@ -244,7 +252,7 @@ function mapDeps(
   return deps.map((dep) => {
     let token: o.Expression | null = null;
     if (dep.tokenSpan) {
-      token = new o.WrappedNodeExpr(new RawSource(sliceGuarded(content, dep.tokenSpan, guards)));
+      token = rawSlice(content, dep.tokenSpan, guards);
     }
     return {
       token,
@@ -318,6 +326,7 @@ export function processFileSync(
   };
   const s = new MagicString(content);
   const fileDiagnostics: nga.NgDiagnostic[] = [];
+  let hmrUpdateModule: string | null | undefined;
 
   const result = metadata || ctx.analyzer.getMetadataForFileSync(filePath);
   if (!result) {
@@ -376,6 +385,9 @@ export function processFileSync(
   }
 
   for (const classMeta of classes) {
+    if (ctx.hmrUpdateTarget !== undefined && classMeta.className !== ctx.hmrUpdateTarget) {
+      continue;
+    }
     const {
       span,
       className,
@@ -472,6 +484,7 @@ export function processFileSync(
 
     // NgModule side-effect statements, emitted after `ɵsetClassMetadata` (see below).
     let ngModuleStatements = '';
+    let hmrComponent: HmrComponentCompilation | null = null;
 
     const decoratorsToEmit: DecoratorMetadata[] = [];
     const guards = ctx.complianceMode ? [] : classMeta.laterDeclarationReferences;
@@ -546,26 +559,22 @@ export function processFileSync(
       // https://github.com/angular/angular/blob/c1829f6/packages/compiler-cli/src/ngtsc/annotations/component/src/resources.ts#L392-L431
 
       const rawImports = component.rawImportsSpan
-        ? sliceGuarded(s, component.rawImportsSpan, guards)
+        ? rawSlice(s, component.rawImportsSpan, guards)
         : undefined;
       const importsFactory = component.importsFactorySpan
-        ? sliceGuarded(s, component.importsFactorySpan, guards)
-        : undefined;
-      const providers = component.providersSpan
-        ? sliceGuarded(s, component.providersSpan, guards)
-        : undefined;
-      const viewProviders = component.viewProvidersSpan
-        ? sliceGuarded(s, component.viewProvidersSpan, guards)
-        : undefined;
-      const animations = component.animationsSpan
-        ? sliceGuarded(s, component.animationsSpan, guards)
+        ? rawSlice(s, component.importsFactorySpan, guards)
         : undefined;
 
       // Encapsulation arrives pre-resolved to its numeric enum member value; apply the same
       // default ngtsc does when the analyzer left it unresolved.
       const encapsulationValue = component.encapsulation ?? ViewEncapsulation.Emulated;
       const changeDetectionValue = component.changeDetection
-        ? new o.WrappedNodeExpr(new RawSource(component.changeDetection))
+        ? new o.WrappedNodeExpr(
+            new RawSource(
+              component.changeDetection,
+              component.changeDetectionSpan ? [component.changeDetectionSpan] : [],
+            ),
+          )
         : null;
 
       // When `externalRuntimeStyles` is enabled, styleUrls are not loaded from disk; instead
@@ -793,6 +802,30 @@ export function processFileSync(
       const usedPipes = new Set(bound.getUsedPipes());
       const eagerlyUsedDirectiveDecls = new Set(toDecls(bound.getEagerlyUsedDirectives()));
       const eagerlyUsedPipes = new Set(bound.getEagerlyUsedPipes());
+
+      // In HMR every dependency in scope is preserved and eager, because the dependency list
+      // has to stay consistent with the initially-generated code no matter what the template
+      // looks like after an edit. `@Component.deferredImports` are not in that list: they stay
+      // scoped to their `@defer` block, just not deferrable (see `canDeferDeps`).
+      if (ctx.enableHmr) {
+        for (const decl of filteredDeclarations) {
+          if (decl.name === className && decl.declarationType === 'component') {
+            continue;
+          }
+          if (decl.isExplicitlyDeferred) {
+            continue;
+          }
+          if (decl.declarationType === 'pipe') {
+            if (decl.pipeName) {
+              usedPipes.add(decl.pipeName);
+              eagerlyUsedPipes.add(decl.pipeName);
+            }
+          } else {
+            usedDirectiveDecls.add(decl);
+            eagerlyUsedDirectiveDecls.add(decl);
+          }
+        }
+      }
 
       const usedDeclarations = filteredDeclarations.filter((d) => {
         if (d.declarationType === 'ngmodule') {
@@ -1027,16 +1060,20 @@ export function processFileSync(
         );
       };
 
-      const isDeferrable = (decl: nga.DeclarationMetadata): boolean => isRefDeferrable(decl.ref);
+      const canDeferDeps = !ctx.enableHmr;
+      const deferredImportIfDeferrable = (ref: nga.ReferenceMetadata) =>
+        canDeferDeps && isRefDeferrable(ref) ? deferredImportOf(ref, importsByBinding) : null;
+      const markNotDeferrable = (local: string | undefined) => {
+        if (!canDeferDeps || local === undefined) return;
+        eagerlyBoundNames.add(local);
+        deferredOnlyNames.delete(local);
+      };
 
       if (isLocalCompilation && standalone && hasDeferredImportsField) {
         for (const ref of component.deferredImports ?? []) {
-          const imported = isRefDeferrable(ref) ? deferredImportOf(ref, importsByBinding) : null;
+          const imported = deferredImportIfDeferrable(ref);
           if (imported === null) {
-            if (ref.localAlias) {
-              eagerlyBoundNames.add(ref.localAlias);
-              deferredOnlyNames.delete(ref.localAlias);
-            }
+            markNotDeferrable(ref.localAlias);
             continue;
           }
           const key = deferredDepKey(imported.importPath, imported.symbolName);
@@ -1054,7 +1091,7 @@ export function processFileSync(
             blockName !== null ? (component.deferredImportsByBlock?.[blockName] ?? []) : [];
           const dependencies: R3DeferPerBlockDependency[] = [];
           for (const ref of blockRefs) {
-            const imported = isRefDeferrable(ref) ? deferredImportOf(ref, importsByBinding) : null;
+            const imported = deferredImportIfDeferrable(ref);
             dependencies.push({
               typeReference: refToExpression(ref),
               // Read only when `isDeferrable`: `compileDeferResolverFunction` emits the
@@ -1106,15 +1143,12 @@ export function processFileSync(
         const blockBound = binder.bind({template: block.children});
         const dependencies: R3DeferPerBlockDependency[] = [];
 
-        // Add deferred directives
         for (const decl of toDecls(blockBound.getEagerlyUsedDirectives())) {
-          if (eagerDirectiveDecls.has(decl)) continue;
           if (allowedNames !== null && !allowedNames.has(decl.name)) continue;
 
-          const imported = isDeferrable(decl) ? deferredImportOf(decl.ref, importsByBinding) : null;
-          if (imported === null && decl.ref.localAlias) {
-            eagerlyBoundNames.add(decl.ref.localAlias);
-            deferredOnlyNames.delete(decl.ref.localAlias);
+          const imported = deferredImportIfDeferrable(decl.ref);
+          if (imported === null) {
+            markNotDeferrable(decl.ref.localAlias);
           }
           dependencies.push({
             typeReference: refToExpression(decl.ref),
@@ -1127,17 +1161,13 @@ export function processFileSync(
 
         // Add deferred pipes
         for (const pipeName of blockBound.getEagerlyUsedPipes()) {
-          // Check if it's eager; if so, skip (it's in the component's dependencies)
-          if (eagerPipes.has(pipeName)) continue;
-
           const decl = pipeNameToDecl.get(pipeName);
           if (!decl) continue;
           if (allowedNames !== null && !allowedNames.has(decl.name)) continue;
 
-          const imported = isDeferrable(decl) ? deferredImportOf(decl.ref, importsByBinding) : null;
-          if (imported === null && decl.ref.localAlias) {
-            eagerlyBoundNames.add(decl.ref.localAlias);
-            deferredOnlyNames.delete(decl.ref.localAlias);
+          const imported = deferredImportIfDeferrable(decl.ref);
+          if (imported === null) {
+            markNotDeferrable(decl.ref.localAlias);
           }
           dependencies.push({
             typeReference: refToExpression(decl.ref),
@@ -1285,8 +1315,10 @@ export function processFileSync(
         usesInheritance: classMeta.usesInheritance,
         controlCreate: null,
         exportAs: component.exportAs || null,
-        providers: providers ? new o.WrappedNodeExpr(new RawSource(providers)) : null,
-        viewProviders: viewProviders ? new o.WrappedNodeExpr(new RawSource(viewProviders)) : null,
+        providers: component.providersSpan ? rawSlice(s, component.providersSpan, guards) : null,
+        viewProviders: component.viewProvidersSpan
+          ? rawSlice(s, component.viewProvidersSpan, guards)
+          : null,
         isStandalone: standalone,
         isSignal: component.signals,
         hostDirectives: buildHostDirectives(hostDirectives),
@@ -1308,7 +1340,7 @@ export function processFileSync(
         styles: allStyles,
         externalStyles: externalStyles.length > 0 ? externalStyles : undefined,
         encapsulation: encapsulationValue,
-        animations: animations ? new o.WrappedNodeExpr(new RawSource(animations)) : null,
+        animations: component.animationsSpan ? rawSlice(s, component.animationsSpan, guards) : null,
         changeDetection: changeDetectionValue,
         relativeContextFilePath: filePath,
         i18nUseExternalIds: ctx.i18nUseExternalIds ?? true,
@@ -1324,7 +1356,7 @@ export function processFileSync(
         foreignImports:
           component.foreignImports?.map((fi) => ({
             name: fi.name,
-            component: new o.WrappedNodeExpr(new RawSource(sliceGuarded(s, fi.span, guards))),
+            component: rawSlice(s, fi.span, guards),
           })) ?? [],
         legacyOptionalChaining: ctx.legacyOptionalChaining,
       };
@@ -1354,6 +1386,16 @@ export function processFileSync(
         ctx.isClosureCompilerEnabled,
       );
       s.appendLeft(span.end - 1, compiledFac + compiledCmp + classMeta.coercionMembers);
+
+      if (ctx.enableHmr) {
+        hmrComponent = {
+          meta: componentMeta,
+          bindingParser,
+          definition: compileResult,
+          factory: factoryRes,
+          defer: deferMeta,
+        };
+      }
     }
 
     if (directive) {
@@ -1364,9 +1406,6 @@ export function processFileSync(
       factoryGenerated = true;
       const {selector, standalone, hostDirectives} = directive;
       const hostMetadata = directive.hostMetadata ?? [];
-      const providers = directive.providersSpan
-        ? sliceGuarded(s, directive.providersSpan, guards)
-        : undefined;
 
       // Build R3DirectiveMetadata for directive
       // Use a valid source span when there are host bindings (required by Angular's binding parser)
@@ -1400,7 +1439,7 @@ export function processFileSync(
         usesInheritance: classMeta.usesInheritance,
         controlCreate: null,
         exportAs: directive.exportAs || null,
-        providers: providers ? new o.WrappedNodeExpr(new RawSource(providers)) : null,
+        providers: directive.providersSpan ? rawSlice(s, directive.providersSpan, guards) : null,
         isStandalone: standalone,
         isSignal: directive.signals,
         hostDirectives: buildHostDirectives(hostDirectives),
@@ -1485,7 +1524,7 @@ export function processFileSync(
       }
 
       const wrapProviderField = (field: nga.ProviderField) => ({
-        expression: new o.WrappedNodeExpr(new RawSource(sliceGuarded(s, field.span, guards))),
+        expression: rawSlice(s, field.span, guards),
         forwardRef: field.isForwardRef ? ForwardRefHandling.Unwrapped : ForwardRefHandling.None,
       });
 
@@ -1521,9 +1560,7 @@ export function processFileSync(
       } else if (injectable.useClass) {
         injectableMeta.useClass = wrapProviderField(injectable.useClass);
       } else if (injectable.useFactory) {
-        injectableMeta.useFactory = new o.WrappedNodeExpr(
-          new RawSource(sliceGuarded(s, injectable.useFactory.span, guards)),
-        );
+        injectableMeta.useFactory = rawSlice(s, injectable.useFactory.span, guards);
       }
 
       const def = compileInjectable(injectableMeta, false);
@@ -1568,9 +1605,7 @@ export function processFileSync(
         },
         typeArgumentCount: classMeta?.typeParameters?.length ?? 0,
         autoProvided: service.autoProvided,
-        factory: service.factory
-          ? new o.WrappedNodeExpr(new RawSource(sliceGuarded(s, service.factory.span, guards)))
-          : undefined,
+        factory: service.factory ? rawSlice(s, service.factory.span, guards) : undefined,
       };
 
       const def = compileService(serviceMeta, false);
@@ -1584,16 +1619,17 @@ export function processFileSync(
       s.appendLeft(span.end - 1, compiledFactory + compiledProv);
     }
 
+    let classMetadataStmt: o.Statement | null = null;
     if (decoratorsToEmit.length > 0 && ctx.supportTestBed !== false) {
-      const metadata = generateSetClassMetadata(
+      classMetadataStmt = buildSetClassMetadata(
         className,
         decoratorsToEmit,
         classMeta,
-        printer,
         s,
         perComponentDeferredDeps,
         ctx.complianceMode ?? false,
       );
+      const metadata = printSetClassMetadata(classMetadataStmt, printer, ctx.complianceMode);
       if (ctx.complianceMode) {
         s.appendRight(span.end, '\n' + metadata);
       } else {
@@ -1601,22 +1637,75 @@ export function processFileSync(
       }
     }
 
+    let debugInfoStmt: o.Statement | null = null;
     if (component) {
-      const debugInfoCall = generateSetClassDebugInfo(
+      debugInfoStmt = buildSetClassDebugInfo(
         className,
         getProjectRelativePath(filePath, ctx.rootDir),
         content,
         classMeta.nameSpan?.start ?? span.start,
         ctx.forbidOrphanComponents ?? false,
-        printer,
       );
-      s.appendRight(span.end, '\n' + debugInfoCall);
+      s.appendRight(span.end, '\n' + printer.printStatement(debugInfoStmt));
+    }
+
+    if (hmrComponent !== null) {
+      const hmrFilePath = getHmrFilePath(filePath, ctx);
+      const hmrMeta = extractHmrMetadata({
+        className,
+        filePath: hmrFilePath,
+        classMeta,
+        topLevelValueBindings: result.topLevelValueBindings ?? [],
+        compiled: {
+          definition: hmrComponent.definition,
+          factory: {
+            initializer: hmrComponent.factory.expression,
+            statements: hmrComponent.factory.statements,
+          },
+          deferBlockMetadata: hmrComponent.defer,
+          classMetadata: classMetadataStmt,
+          debugInfo: debugInfoStmt,
+        },
+      });
+      // ngtsc appends the initializer to the `ɵcmp` statements, after `ɵsetClassMetadata` and
+      // `ɵsetClassDebugInfo`.
+      // https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L427-L439
+      if (hmrMeta !== null) {
+        s.appendRight(
+          span.end,
+          '\n' + printer.printStatement(compileHmrInitializer(hmrMeta).toStmt()),
+        );
+      }
+      if (ctx.hmrUpdateTarget === className) {
+        hmrUpdateModule =
+          hmrMeta === null
+            ? null
+            : compileHmrUpdateModule({
+                compiled: hmrComponent,
+                className,
+                hmrFilePath,
+                filePath,
+                classMeta,
+                topLevelValueBindings: result.topLevelValueBindings ?? [],
+                decorators: decoratorsToEmit,
+                s,
+                content,
+                nameOffset: classMeta.nameSpan?.start ?? span.start,
+                ctx,
+              });
+        return {magicString: s, hmrUpdateModule};
+      }
     }
 
     // Emit NgModule side-effect statements after `ɵsetClassMetadata` to match the reference order.
     if (ngModuleStatements) {
       s.appendRight(span.end, '\n' + ngModuleStatements + '\n');
     }
+  }
+
+  // The target was not a component (or has no HMR metadata); nothing to update.
+  if (ctx.hmrUpdateTarget !== undefined) {
+    return {magicString: s, hmrUpdateModule: null};
   }
 
   for (const local of eagerDependencyNames) {
@@ -1632,13 +1721,9 @@ export function processFileSync(
     deferredOnlyNames,
     eagerlyBoundNames,
   );
-  const removedDecls = removeDeferredImports(
-    s,
-    content,
-    importDeclarations,
-    deferredOnlyNames,
-    eagerlyBoundNames,
-  );
+  const removedDecls = ctx.enableHmr
+    ? new Set<nga.ImportDeclarationMetadata>()
+    : removeDeferredImports(s, content, importDeclarations, deferredOnlyNames, eagerlyBoundNames);
 
   // Hoist any `import` declarations written after a non-import statement to `importsEnd` so that
   // downstream CommonJS / Closure downleveling never emits a lexical `const ... = require(...)`
@@ -1731,6 +1816,7 @@ export function processFileSync(
     magicString: s,
     tcb: returnTcb,
     diagnostics: fileDiagnostics,
+    hmrUpdateModule,
   };
 }
 
@@ -1830,6 +1916,18 @@ function sliceGuarded(
 }
 
 /**
+ * `sliceGuarded` wrapped for the output AST, remembering `span` so HMR can tell which identifier
+ * reads the emitted text contains.
+ */
+function rawSlice(
+  s: MagicString | string,
+  span: nga.SpanMetadata,
+  guards: nga.SpanMetadata[],
+): o.WrappedNodeExpr<RawSource> {
+  return new o.WrappedNodeExpr(new RawSource(sliceGuarded(s, span, guards), [span]));
+}
+
+/**
  * Build the `{ type: <Identifier>, args: [...] }` metadata object for a single decorator, slicing
  * the decorator's argument list verbatim from the original source (mirroring ngtsc, which re-emits
  * the original argument nodes), or using pre-rendered argsString when generic type arguments are stripped.
@@ -1849,9 +1947,13 @@ function buildDecoratorMetadataExpr(
   if (argsStr != null) {
     // Wrap the raw multi-argument string (e.g. `'alias', { transform }`) inside a single RawSource
     // element. When printed inside literalArr, this directly emits a valid multi-element JS array.
+    // A pre-rendered `argsString` only differs from the span's text by stripped type arguments,
+    // which contain no value reads, so the span still describes it for HMR.
     props.push({
       key: 'args',
-      value: o.literalArr([new o.WrappedNodeExpr(new RawSource(argsStr))]),
+      value: o.literalArr([
+        new o.WrappedNodeExpr(new RawSource(argsStr, argsSpan != null ? [argsSpan] : [])),
+      ]),
       quoted: false,
     });
   }
@@ -1988,7 +2090,9 @@ function buildPropDecoratorsExpr(
         : R3Identifiers.contentChildrenDecorator;
 
     const predicateStr = s.original.slice(query.predicateSpan.start, query.predicateSpan.end);
-    let predicateExpr: o.Expression = new o.WrappedNodeExpr(new RawSource(predicateStr));
+    let predicateExpr: o.Expression = new o.WrappedNodeExpr(
+      new RawSource(predicateStr, [query.predicateSpan]),
+    );
     // `memberMetadataFromSignalQuery`: a locator that is not string-literal-like (the only case
     // in which a signal query has no selectors) is wrapped in `forwardRef`.
     if (!query.predicateSelectors) {
@@ -2007,7 +2111,7 @@ function buildPropDecoratorsExpr(
       const readStr = s.original.slice(query.readSpan.start, query.readSpan.end);
       queryOptionsProps.push({
         key: 'read',
-        value: new o.WrappedNodeExpr(new RawSource(readStr)),
+        value: new o.WrappedNodeExpr(new RawSource(readStr, [query.readSpan])),
         quoted: false,
       });
     }
@@ -2047,15 +2151,15 @@ function buildPropDecoratorsExpr(
   return o.literalMap(entries);
 }
 
-function generateSetClassMetadata(
+/** The `ɵsetClassMetadata(...)` statement for a class (not yet printed). */
+function buildSetClassMetadata(
   className: string,
   decorators: DecoratorMetadata[],
   classMeta: nga.ClassMetadata,
-  printer: ExpressionPrinter,
   s: MagicString,
   deferredDeps: R3DeferPerComponentDependency[] = [],
   complianceMode: boolean = false,
-): string {
+): o.Statement {
   const guards = complianceMode ? [] : classMeta.laterDeclarationReferences;
   const decoratorObjs = decorators.map(
     ({decoratorName, argsSpan, preservedDecoratorProperties, resourceOverride}) => {
@@ -2064,10 +2168,10 @@ function generateSetClassMetadata(
       ];
 
       if (argsSpan != null) {
-        let argsStr =
-          resourceOverride && preservedDecoratorProperties
-            ? inlineDecoratorResources(preservedDecoratorProperties, resourceOverride, s, guards)
-            : sliceGuarded(s, argsSpan, guards);
+        const inlineResources = resourceOverride && preservedDecoratorProperties;
+        let argsStr = inlineResources
+          ? inlineDecoratorResources(preservedDecoratorProperties, resourceOverride, s, guards)
+          : sliceGuarded(s, argsSpan, guards);
         if (complianceMode) {
           // Match Angular compliance test formatting for single-line decorator object literals.
           argsStr = argsStr
@@ -2076,7 +2180,11 @@ function generateSetClassMetadata(
         }
         props.push({
           key: 'args',
-          value: o.literalArr([new o.WrappedNodeExpr(new RawSource(argsStr))]),
+          value: o.literalArr([
+            new o.WrappedNodeExpr(
+              new RawSource(argsStr, inlineResources ? preservedDecoratorProperties : [argsSpan]),
+            ),
+          ]),
           quoted: false,
         });
       }
@@ -2091,11 +2199,22 @@ function generateSetClassMetadata(
     ctorParameters: buildCtorParametersExpr(classMeta.constructorParams, s),
     propDecorators: buildPropDecoratorsExpr(classMeta, s, className, guards),
   };
-  const metadataExpr = compileComponentClassMetadata(classMetadata, deferredDeps);
-  if (complianceMode) {
-    return printer.printStatement(metadataExpr.toStmt());
+  return compileComponentClassMetadata(classMetadata, deferredDeps).toStmt();
+}
+
+/**
+ * Prints a `ɵsetClassMetadata` statement: as the trailing statement ngtsc emits in compliance
+ * mode, or as a static block inside the class otherwise.
+ */
+function printSetClassMetadata(
+  statement: o.Statement,
+  printer: ExpressionPrinter,
+  complianceMode: boolean = false,
+): string {
+  if (complianceMode || !(statement instanceof o.ExpressionStatement)) {
+    return printer.printStatement(statement);
   }
-  const stmts = stripIife(metadataExpr);
+  const stmts = stripIife(statement.expr);
   const printedStmt = stmts.map((stmt) => printer.printStatement(stmt)).join('\n');
   return createStaticBlock(printedStmt);
 }
@@ -2120,17 +2239,28 @@ function getProjectRelativePath(filePath: string, rootDir: string | undefined): 
 }
 
 /**
- * https://github.com/angular/angular/blob/c1829f6/packages/compiler-cli/src/ngtsc/annotations/common/src/debug_info.ts#L15-L36
- * https://github.com/angular/angular/blob/c1829f6/packages/compiler/src/render3/r3_class_debug_info_compiler.ts#L56-L82
+ * The path that identifies a component to the HMR runtime: project-relative through the
+ * configured root directories, else the file name itself (ngtsc's
+ * `getProjectRelativePath(...) || getCanonicalFileName(...)`).
  */
-function generateSetClassDebugInfo(
+function getHmrFilePath(filePath: string, ctx: HybridCompilerContext): string {
+  for (const rootDir of ctx.rootDirs ?? [ctx.rootDir]) {
+    const relative = getProjectRelativePath(filePath, rootDir);
+    if (relative !== null) {
+      return relative;
+    }
+  }
+  return filePath;
+}
+
+/** The `ɵsetClassDebugInfo(...)` statement for a component (not yet printed). */
+function buildSetClassDebugInfo(
   className: string,
   relativeFilePath: string | null,
   content: string,
   nameOffset: number,
   forbidOrphanRendering: boolean,
-  printer: ExpressionPrinter,
-): string {
+): o.Statement {
   const debugInfo: R3ClassDebugInfo = {
     type: o.variable(className),
     className: o.literal(className),
@@ -2140,8 +2270,88 @@ function generateSetClassDebugInfo(
     lineNumber: o.literal(relativeFilePath !== null ? lineNumberAtOffset(content, nameOffset) : 0),
     forbidOrphanRendering,
   };
-  const debugInfoExpr = compileClassDebugInfo(debugInfo);
-  return printer.printStatement(debugInfoExpr.toStmt());
+  return compileClassDebugInfo(debugInfo).toStmt();
+}
+
+/** What a component compiled to, as far as HMR needs it. */
+interface HmrComponentCompilation {
+  meta: R3ComponentMetadata<R3TemplateDependency>;
+  bindingParser: BindingParser;
+  definition: R3CompiledExpression;
+  factory: R3CompiledExpression;
+  defer: R3ComponentDeferMetadata;
+}
+
+interface HmrUpdateModuleOptions {
+  compiled: HmrComponentCompilation;
+  className: string;
+  /** The component's path as the HMR runtime identifies it (`getHmrFilePath`). */
+  hmrFilePath: string;
+  filePath: string;
+  classMeta: nga.ClassMetadata;
+  topLevelValueBindings: readonly string[];
+  decorators: DecoratorMetadata[];
+  s: MagicString;
+  content: string;
+  /** Offset of the class name, for `ɵsetClassDebugInfo`'s line number. */
+  nameOffset: number;
+  ctx: HybridCompilerContext;
+}
+
+function compileHmrUpdateModule(options: HmrUpdateModuleOptions): string | null {
+  const {compiled, className, hmrFilePath, filePath, classMeta, decorators, s, content, ctx} =
+    options;
+  const pool = new ConstantPool(ctx.isClosureCompilerEnabled);
+  const definition = compileComponentFromMetadata(compiled.meta, pool, compiled.bindingParser);
+  // The update callback replaces `ɵsetClassMetadata` outright, so it never defers dependencies.
+  const classMetadata =
+    decorators.length > 0 && ctx.supportTestBed !== false
+      ? buildSetClassMetadata(className, decorators, classMeta, s, [], ctx.complianceMode)
+      : null;
+  const debugInfo = buildSetClassDebugInfo(
+    className,
+    getProjectRelativePath(filePath, ctx.rootDir),
+    content,
+    options.nameOffset,
+    ctx.forbidOrphanComponents ?? false,
+  );
+  const hmrMeta = extractHmrMetadata({
+    className,
+    filePath: hmrFilePath,
+    classMeta,
+    topLevelValueBindings: options.topLevelValueBindings,
+    compiled: {
+      definition,
+      factory: {initializer: compiled.factory.expression, statements: compiled.factory.statements},
+      deferBlockMetadata: compiled.defer,
+      classMetadata,
+      debugInfo,
+    },
+  });
+  if (hmrMeta === null) {
+    return null;
+  }
+  // `compileResults` shape: the factory, then the definition carrying the metadata and debug
+  // info statements.
+  // https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L417-L457
+  const statements = [...definition.statements];
+  if (classMetadata !== null) {
+    statements.push(classMetadata);
+  }
+  statements.push(debugInfo);
+  return getHmrUpdateDeclaration(
+    [
+      {
+        name: 'ɵfac',
+        initializer: compiled.factory.expression,
+        statements: compiled.factory.statements,
+      },
+      {name: 'ɵcmp', initializer: definition.expression, statements},
+    ],
+    pool.statements,
+    hmrMeta,
+    filePath,
+  );
 }
 
 /**
@@ -2831,8 +3041,8 @@ function computeComponentDependencyMetadata(
   hasForwardRef: boolean,
   standalone: boolean,
   declarations: R3TemplateDependency[],
-  rawImportsString?: string,
-  importsFactoryString?: string,
+  rawImports?: o.Expression,
+  importsFactory?: o.Expression,
 ): ComponentDependencyMetadata {
   if (isLocalCompilation) {
     return {
@@ -2840,17 +3050,13 @@ function computeComponentDependencyMetadata(
       declarationListEmitMode: localRuntimeResolved
         ? DeclarationListEmitMode.RuntimeResolved
         : DeclarationListEmitMode.Direct,
-      rawImports:
-        localRuntimeResolved && importsFactoryString
-          ? new o.WrappedNodeExpr(new RawSource(importsFactoryString))
-          : undefined,
+      rawImports: localRuntimeResolved ? importsFactory : undefined,
     };
   }
 
-  const rawImports =
-    hasUnresolvedImports && rawImportsString
-      ? new o.WrappedNodeExpr(new RawSource(rawImportsString))
-      : undefined;
+  if (!hasUnresolvedImports) {
+    rawImports = undefined;
+  }
 
   if (isRemoteScoped) {
     // The scope is set from the NgModule's file instead, so the definition carries no
@@ -2877,7 +3083,7 @@ function computeComponentDependencyMetadata(
   return {
     declarations,
     declarationListEmitMode:
-      rawImportsString !== undefined || !standalone
+      rawImports !== undefined || !standalone
         ? DeclarationListEmitMode.RuntimeResolved
         : DeclarationListEmitMode.Direct,
     rawImports,

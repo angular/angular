@@ -43,6 +43,7 @@ pub struct ClassVisitor<'a, Fs: ResourceResolverFs> {
     semantic: &'a Semantic<'a>,
     local_exported_names: &'a HashSet<&'a str>,
     compile_non_exported_classes: bool,
+    enable_hmr: bool,
     results: Vec<ClassData>,
     registrations: Vec<RegistrationInfo>,
     fallback_symbol_id: usize,
@@ -63,6 +64,7 @@ impl<'a, Fs: ResourceResolverFs> ClassVisitor<'a, Fs> {
         angular_imports: &'a crate::analyzer::imports::AngularImports,
         local_exported_names: &'a HashSet<&'a str>,
         compile_non_exported_classes: bool,
+        enable_hmr: bool,
     ) -> Self {
         Self {
             source_text,
@@ -76,6 +78,7 @@ impl<'a, Fs: ResourceResolverFs> ClassVisitor<'a, Fs> {
             angular_imports,
             local_exported_names,
             compile_non_exported_classes,
+            enable_hmr,
             results: Vec::new(),
             registrations: Vec::new(),
             fallback_symbol_id: 1000000,
@@ -130,6 +133,7 @@ impl<'a, Fs: ResourceResolverFs> ClassVisitor<'a, Fs> {
             self.semantic,
             self.local_exported_names,
             &eval,
+            self.enable_hmr,
         ) else {
             return;
         };
@@ -290,6 +294,7 @@ fn classify(reference_id: ReferenceId, parsed: ParsedClass, has_real_symbol: boo
         unexpected_param_decorators: common.unexpected_param_decorators,
         member_decorators: common.member_decorators,
         later_declaration_references: common.later_declaration_references,
+        top_level_references: common.top_level_references,
         type_parameters: common.type_parameters,
         has_ng_template_context_guard: common.has_ng_template_context_guard,
         ng_template_guards: common.ng_template_guards,
@@ -373,6 +378,7 @@ struct ParsedCommon {
     unexpected_param_decorators: Vec<crate::analyzer::UnexpectedParamDecorator>,
     member_decorators: Vec<crate::DecoratedMemberMetadata>,
     later_declaration_references: Vec<oxc_span::Span>,
+    top_level_references: Option<Vec<super::TopLevelReference>>,
     type_parameters: Option<Vec<TypeParameterData>>,
     has_ng_template_context_guard: bool,
     ng_template_guards: Vec<TemplateGuardMetadata>,
@@ -423,11 +429,22 @@ fn process_class_common<'a, Fs: ResourceResolverFs>(
     semantic: &Semantic<'a>,
     local_exported_names: &HashSet<&'a str>,
     eval: &crate::evaluator::EvalInput<'a, '_>,
+    enable_hmr: bool,
 ) -> Option<ParsedClass> {
     let class_name = class.id.as_ref().map(|id| id.name.to_string());
     let name_span = class.id.as_ref().map(|id| id.span);
-    let constructor_params_result =
-        get_constructor_params(class, semantic, converter, import_map, angular_imports);
+    let mut top_level_reads = enable_hmr.then(|| super::TopLevelReads {
+        out: Vec::new(),
+        eval,
+    });
+    let constructor_params_result = get_constructor_params(
+        class,
+        semantic,
+        converter,
+        import_map,
+        angular_imports,
+        top_level_reads.as_mut(),
+    );
     let (constructor_params, unexpected_param_decorators) = match constructor_params_result {
         Some(result) => (Some(result.params), result.unexpected_decorators),
         None => (None, Vec::new()),
@@ -442,6 +459,7 @@ fn process_class_common<'a, Fs: ResourceResolverFs>(
         semantic.source_text(),
         &mut later_declaration_references,
         &mut member_removal_spans,
+        top_level_reads.as_mut(),
     );
 
     let mut injectable: Option<InjectableData> = None;
@@ -504,11 +522,12 @@ fn process_class_common<'a, Fs: ResourceResolverFs>(
     let mut decorator_removal_spans = Vec::new();
     for decorator in &class.decorators {
         if ng_decorator_spans.contains(&decorator.span) {
-            super::later_declaration_references(
+            super::collect_decorator_references(
                 decorator,
                 semantic,
                 class.span.end,
-                &mut later_declaration_references,
+                Some(&mut later_declaration_references),
+                top_level_reads.as_mut(),
             );
             decorator_removal_spans.push(super::utils::decorator_removal_span(
                 decorator,
@@ -530,6 +549,7 @@ fn process_class_common<'a, Fs: ResourceResolverFs>(
         angular_imports,
         semantic,
         eval,
+        top_level_reads.as_mut(),
     ));
     let (host_bindings, host_listeners) =
         host_binding::extract_host_bindings_listeners(class, eval, angular_imports);
@@ -594,6 +614,7 @@ fn process_class_common<'a, Fs: ResourceResolverFs>(
             unexpected_param_decorators,
             member_decorators,
             later_declaration_references,
+            top_level_references: top_level_reads.map(|reads| reads.out),
             type_parameters,
             has_ng_template_context_guard: type_check_meta.has_ng_template_context_guard,
             ng_template_guards: type_check_meta.ng_template_guards,
@@ -666,6 +687,9 @@ pub struct ParsedFileAnalysis {
     pub signal_debug_names: Vec<super::signal_debug_name::SignalDebugNameInsertion>,
     /// Whether the file belongs to `@angular/core` itself.
     pub is_core: bool,
+    /// Root-scope runtime binding names for HMR ([`super::top_level_value_bindings`]); `None`
+    /// unless analyzed with `enable_hmr`.
+    pub top_level_value_bindings: Option<Vec<String>>,
 }
 
 /// Raw output of [`ClassVisitor`] before the file-level fields (`imports_end`, …) are attached.
@@ -676,6 +700,7 @@ struct ClassVisitorOutput {
     diagnostics: Vec<crate::NgDiagnostic>,
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn analyze_parsed<Fs: ResourceResolverFs>(
     path: &Path,
     file_id: crate::query::FileId,
@@ -687,6 +712,7 @@ pub fn analyze_parsed<Fs: ResourceResolverFs>(
     resolver: &ResolverGeneric<Fs>,
     converter: &Utf8ToUtf16,
     compile_non_exported_classes: bool,
+    enable_hmr: bool,
 ) -> ParsedFileAnalysis {
     let import_map = super::imports::extract_import_map(module_record);
     let is_core = super::imports::detect_is_core(path, fs);
@@ -705,6 +731,7 @@ pub fn analyze_parsed<Fs: ResourceResolverFs>(
         &angular_imports,
         &local_exported_names,
         compile_non_exported_classes,
+        enable_hmr,
     );
     visitor.process_classes();
 
@@ -727,6 +754,7 @@ pub fn analyze_parsed<Fs: ResourceResolverFs>(
     let dynamic_dependencies = super::imports::extract_dynamic_imports(semantic);
     let signal_debug_names =
         super::signal_debug_name::collect_signal_debug_names(program, semantic, source_text);
+    let top_level_value_bindings = enable_hmr.then(|| super::top_level_value_bindings(semantic));
 
     ParsedFileAnalysis {
         classes: output.classes,
@@ -740,6 +768,7 @@ pub fn analyze_parsed<Fs: ResourceResolverFs>(
         diagnostics: output.diagnostics,
         signal_debug_names,
         is_core,
+        top_level_value_bindings,
     }
 }
 
@@ -806,6 +835,7 @@ pub fn analyze_file<Fs: ResourceResolverFs>(
         resolver,
         &converter,
         true,
+        false,
     )
 }
 
@@ -2533,6 +2563,235 @@ var hoisted = 1;
                 .as_deref(),
             Some("// @ts-ignore\nGenericLater")
         );
+    }
+
+    const HMR_TSCONFIG: &str = r#"{"compilerOptions": {}, "angularCompilerOptions": {"_enableHmr": true}, "files": ["app.ts"]}"#;
+
+    const HMR_APP_SOURCE: &str = r#"
+import { Component, Directive, Inject, Input, forwardRef, viewChild } from '@angular/core';
+import { TOKEN, factory } from './tokens';
+import type { OnlyAType } from './tokens';
+import * as ns from './tokens';
+
+export interface Shape {}
+export type Alias = string;
+const LOCAL = 'local';
+function helper() {}
+export const enum LocalConst { A = 1, B = 'b' }
+export enum LocalEnum { A }
+declare const GLOBAL_LIKE: number;
+
+@Directive({ selector: '[dep]' })
+export class Dep {}
+
+@Component({
+    selector: 'app',
+    template: '',
+    imports: [Dep],
+    providers: [
+        { provide: TOKEN, useFactory: (Dep: unknown) => factory(Dep, LOCAL, helper) },
+        { provide: 'const', useValue: LocalConst.A },
+        { provide: 'enum', useValue: LocalEnum.A },
+        { provide: 'ns', useValue: ns.TOKEN },
+        { provide: 'global', useValue: GLOBAL_LIKE },
+        { provide: 'forward', useExisting: forwardRef(() => Dep) },
+    ],
+    host: { '[attr.shape]': 'shape' },
+})
+export class AppComponent {
+    @Input({ transform: (v: Alias) => helper() }) value: Shape | OnlyAType | undefined;
+    query = viewChild('ref', { read: Dep<unknown> });
+    constructor(@Inject(TOKEN) token: unknown) {}
+}
+"#;
+
+    const HMR_TOKENS_SOURCE: &str = r#"
+export const TOKEN = 'token';
+export function factory(...args: unknown[]) {}
+export const enum RemoteConst { X = 2, Y = 'y' }
+export enum RemoteEnum { X }
+export const enum Opaque { Z = Math.random() }
+export const EMPTY = {};
+export enum Empty {}
+"#;
+
+    fn hmr_reference_names(class: &crate::ClassMetadata) -> Vec<&str> {
+        class
+            .top_level_references
+            .as_ref()
+            .expect("HMR reads should be collected")
+            .iter()
+            .map(|reference| reference.name.as_str())
+            .collect()
+    }
+
+    #[test]
+    fn hmr_reads_are_only_collected_when_enabled() {
+        let fs = create_test_fs(&[
+            (
+                "/test/tsconfig.json",
+                r#"{"compilerOptions": {}, "files": ["app.ts"]}"#,
+            ),
+            ("/test/app.ts", HMR_APP_SOURCE),
+            ("/test/tokens.ts", HMR_TOKENS_SOURCE),
+        ]);
+        let results = run_analyzer(fs, "/test/tsconfig.json", false);
+        assert!(find_class(&results, "AppComponent")
+            .unwrap()
+            .top_level_references
+            .is_none());
+        assert!(results[0].top_level_value_bindings.is_none());
+    }
+
+    #[test]
+    fn hmr_reads_resolve_root_scope_value_bindings() {
+        let fs = create_test_fs(&[
+            ("/test/tsconfig.json", HMR_TSCONFIG),
+            ("/test/app.ts", HMR_APP_SOURCE),
+            ("/test/tokens.ts", HMR_TOKENS_SOURCE),
+        ]);
+        let results = run_analyzer(fs, "/test/tsconfig.json", false);
+        let class = find_class(&results, "AppComponent").unwrap();
+
+        // Constructor parameter decorators, then member decorators, then class decorators, then
+        // signal initializer calls. `Dep` inside the `useFactory` arrow is a parameter, not the
+        // directive; `GLOBAL_LIKE` is `declare`d (ambient) but still a root-scope value; types
+        // never count, but the instantiation `Dep<unknown>` is a value read of `Dep`.
+        assert_eq!(
+            hmr_reference_names(class),
+            [
+                "TOKEN",
+                "helper",
+                "Dep",
+                "TOKEN",
+                "factory",
+                "LOCAL",
+                "helper",
+                "LocalConst",
+                "LocalEnum",
+                "ns",
+                "GLOBAL_LIKE",
+                "forwardRef",
+                "Dep",
+                "Dep",
+            ]
+        );
+        let reads = class.top_level_references.as_ref().unwrap();
+        for read in reads {
+            assert_eq!(
+                &HMR_APP_SOURCE[read.span.start as usize..read.span.end as usize],
+                read.name,
+                "span must cover the identifier"
+            );
+        }
+
+        let local_const = reads.iter().find(|r| r.name == "LocalConst").unwrap();
+        assert!(local_const.is_const_enum);
+        let members = local_const.const_enum_members.as_ref().unwrap();
+        assert_eq!(
+            members
+                .iter()
+                .map(|m| (m.key.as_str(), m.kind, m.value.as_str()))
+                .collect::<Vec<_>>(),
+            [
+                (
+                    "A",
+                    crate::types::metadata::ConstEnumMemberKind::Number,
+                    "1"
+                ),
+                (
+                    "B",
+                    crate::types::metadata::ConstEnumMemberKind::String,
+                    "b"
+                ),
+            ]
+        );
+        assert!(
+            !reads
+                .iter()
+                .find(|r| r.name == "LocalEnum")
+                .unwrap()
+                .is_const_enum
+        );
+        assert!(!reads.iter().find(|r| r.name == "ns").unwrap().is_const_enum);
+
+        assert_eq!(
+            results[0].top_level_value_bindings.as_deref().unwrap(),
+            [
+                "Component",
+                "Directive",
+                "Inject",
+                "Input",
+                "forwardRef",
+                "viewChild",
+                "TOKEN",
+                "factory",
+                "ns",
+                "LOCAL",
+                "helper",
+                "LocalConst",
+                "LocalEnum",
+                "GLOBAL_LIKE",
+                "Dep",
+                "AppComponent",
+            ]
+        );
+
+        // The later-declaration half of the walk is unaffected by the HMR half.
+        assert!(class.later_declaration_references.is_empty());
+    }
+
+    #[test]
+    fn hmr_reads_resolve_imported_const_enums_in_optimized_mode() {
+        let app = r#"
+import { Component } from '@angular/core';
+import { RemoteConst, RemoteEnum, Opaque, TOKEN, EMPTY, Empty } from './tokens';
+
+@Component({
+    template: '',
+    providers: [
+        { provide: 'a', useValue: RemoteConst.X },
+        { provide: 'b', useValue: RemoteEnum.X },
+        { provide: 'c', useValue: Opaque.Z },
+        { provide: 'd', useValue: TOKEN },
+        { provide: 'e', useValue: EMPTY.foo },
+        { provide: 'f', useValue: Empty.foo },
+    ],
+})
+export class AppComponent {}
+"#;
+        let fs = create_test_fs(&[
+            ("/test/tsconfig.json", HMR_TSCONFIG),
+            ("/test/app.ts", app),
+            ("/test/tokens.ts", HMR_TOKENS_SOURCE),
+        ]);
+        let results = run_analyzer(fs, "/test/tsconfig.json", true);
+        let class = find_class(&results, "AppComponent").unwrap();
+        let reads = class.top_level_references.as_ref().unwrap();
+        let read = |name: &str| reads.iter().find(|r| r.name == name).unwrap();
+
+        let remote_const = read("RemoteConst");
+        assert!(remote_const.is_const_enum);
+        assert_eq!(
+            remote_const
+                .const_enum_members
+                .as_ref()
+                .unwrap()
+                .iter()
+                .map(|m| (m.key.as_str(), m.value.as_str()))
+                .collect::<Vec<_>>(),
+            [("X", "2"), ("Y", "y")]
+        );
+        assert!(!read("RemoteEnum").is_const_enum);
+        // A const enum with a member the evaluator cannot fold: flagged so HMR is disabled.
+        let opaque = read("Opaque");
+        assert!(opaque.is_const_enum);
+        assert!(opaque.const_enum_members.is_none());
+        // A bare import (not `Name.member`) is never evaluated.
+        assert!(!read("TOKEN").is_const_enum);
+        // An empty object or enum has no member to prove it is a const enum: by reference.
+        assert!(!read("EMPTY").is_const_enum);
+        assert!(!read("Empty").is_const_enum);
     }
 
     fn diagnostics(results: &[crate::AnalysisResult]) -> Vec<(u32, String)> {
