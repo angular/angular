@@ -50,6 +50,7 @@ pub struct QueryEngine<Fs: ResourceResolverFs + Clone + 'static> {
     pub(crate) reference_strategy: Arc<dyn crate::analyzer::import_emit::ReferenceEmitStrategy>,
     pub generate_extra_imports_in_local_mode: bool,
     pub compile_non_exported_classes: bool,
+    pub enable_hmr: bool,
 }
 
 impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
@@ -68,9 +69,11 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             reference_strategy,
             false,
             true,
+            false,
         )
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn new_with_options(
         fs: Fs,
         resolver: Arc<ResolverGeneric<Fs>>,
@@ -79,6 +82,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         reference_strategy: Arc<dyn crate::analyzer::import_emit::ReferenceEmitStrategy>,
         generate_extra_imports_in_local_mode: bool,
         compile_non_exported_classes: bool,
+        enable_hmr: bool,
     ) -> Arc<Self> {
         Arc::new(Self {
             fs,
@@ -92,6 +96,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             reference_strategy,
             generate_extra_imports_in_local_mode,
             compile_non_exported_classes,
+            enable_hmr,
         })
     }
 
@@ -413,6 +418,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                 diagnostics: Vec::new(),
                 signal_debug_names: Vec::new(),
                 is_core: false,
+                top_level_value_bindings: None,
             });
         }
 
@@ -427,6 +433,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             self.resolver.as_ref(),
             &converter,
             self.compile_non_exported_classes,
+            self.enable_hmr,
         );
 
         self.resource_registry
@@ -473,6 +480,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             diagnostics: analysis.diagnostics,
             signal_debug_names: analysis.signal_debug_names,
             is_core: analysis.is_core,
+            top_level_value_bindings: analysis.top_level_value_bindings,
         })
     }
 

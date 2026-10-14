@@ -142,6 +142,7 @@ pub struct ClassData {
     pub unexpected_param_decorators: Vec<UnexpectedParamDecorator>,
     pub member_decorators: Vec<crate::DecoratedMemberMetadata>,
     pub later_declaration_references: Vec<oxc_span::Span>,
+    pub top_level_references: Option<Vec<super::TopLevelReference>>,
     pub type_parameters: Option<Vec<TypeParameterData>>,
     pub has_ng_template_context_guard: bool,
     pub ng_template_guards: Vec<TemplateGuardMetadata>,
@@ -1340,6 +1341,11 @@ impl ClassData {
         self.complete_declaration_metadata(ctx).await;
         let foreign = crate::analyzer::resolvers::angular_foreign_resolvers();
         let reference_id = self.reference_id;
+        for reference in self.top_level_references.iter_mut().flatten() {
+            if let Some(const_enum) = &mut reference.const_enum {
+                const_enum.complete_with(ctx, foreign).await;
+            }
+        }
         match &mut self.decorator {
             DecoratorData::Component(c) => {
                 if let Some(host) = &mut c.directive.host_expr {
@@ -1417,6 +1423,11 @@ impl ClassData {
     /// Stage 2 runs this on its `FileData` copy, making `to_wire_semantic`'s no-hole
     /// invariant hold by construction.
     pub fn demote_resolved(&mut self) {
+        for reference in self.top_level_references.iter_mut().flatten() {
+            if let Some(const_enum) = &mut reference.const_enum {
+                const_enum.demote();
+            }
+        }
         match &mut self.decorator {
             DecoratorData::Component(c) => {
                 c.directive.demote_resolved();
@@ -2200,14 +2211,19 @@ fn push_diagnostic(
 fn host_metadata_wire(
     host: crate::evaluator::HostMetadata,
     source_text: &str,
+    converter: &crate::utils::Utf8ToUtf16,
 ) -> Vec<crate::types::metadata::HostMetadataEntry> {
     let mut entries = Vec::with_capacity(host.0.len());
     for (key, value) in host.0 {
-        let (value, expression) = match value {
-            crate::evaluator::HostMetadataValue::Static(text) => (Some(text), None),
+        let (value, expression, expression_span) = match value {
+            crate::evaluator::HostMetadataValue::Static(text) => (Some(text), None, None),
             crate::evaluator::HostMetadataValue::Dynamic(span) => {
                 match source_text.get(span.start as usize..span.end as usize) {
-                    Some(text) if !text.is_empty() => (None, Some(text.to_string())),
+                    Some(text) if !text.is_empty() => (
+                        None,
+                        Some(text.to_string()),
+                        Some(crate::types::metadata::SpanMetadata::new(span, converter)),
+                    ),
                     _ => continue,
                 }
             }
@@ -2216,9 +2232,63 @@ fn host_metadata_wire(
             key,
             value,
             expression,
+            expression_span,
         });
     }
     entries
+}
+
+fn top_level_reference_wire(
+    reference: &super::TopLevelReference,
+    converter: &crate::utils::Utf8ToUtf16,
+) -> crate::types::metadata::TopLevelReferenceMetadata {
+    use crate::evaluator::{ConstEnumLiteral, ConstEnumResolution};
+    use crate::types::metadata::{ConstEnumMemberKind, ConstEnumMemberMetadata};
+
+    // TODO(parity): ngtsc's local compilation still resolves imported const enums through the
+    // type checker; single-file analysis has no way to.
+    let resolution = reference
+        .const_enum
+        .as_ref()
+        .and_then(Resolved::get_optional)
+        .unwrap_or(ConstEnumResolution::NotConstEnum);
+    let (is_const_enum, const_enum_members) = match resolution {
+        ConstEnumResolution::NotConstEnum => (false, None),
+        ConstEnumResolution::Unevaluable => (true, None),
+        ConstEnumResolution::Members(members) => {
+            let members = members
+                .into_iter()
+                .map(|member| {
+                    let (kind, value) = match member.value {
+                        ConstEnumLiteral::String(s) => (ConstEnumMemberKind::String, s),
+                        ConstEnumLiteral::Number(n) => (
+                            ConstEnumMemberKind::Number,
+                            crate::evaluator::js_number_to_string(n),
+                        ),
+                        ConstEnumLiteral::Boolean(b) => {
+                            (ConstEnumMemberKind::Boolean, b.to_string())
+                        }
+                        ConstEnumLiteral::Null => (ConstEnumMemberKind::Null, String::new()),
+                        ConstEnumLiteral::Undefined => {
+                            (ConstEnumMemberKind::Undefined, String::new())
+                        }
+                    };
+                    ConstEnumMemberMetadata {
+                        key: member.name,
+                        kind,
+                        value,
+                    }
+                })
+                .collect();
+            (true, Some(members))
+        }
+    };
+    crate::types::metadata::TopLevelReferenceMetadata {
+        name: reference.name.clone(),
+        span: crate::types::metadata::SpanMetadata::new(reference.span, converter),
+        is_const_enum,
+        const_enum_members,
+    }
 }
 
 /// An `@angular/core` enum the analyzer resolves by hand, with this tree's member numbering.
@@ -2882,6 +2952,12 @@ impl ClassData {
                 .iter()
                 .map(|span| crate::types::metadata::SpanMetadata::new(*span, cx.converter))
                 .collect(),
+            top_level_references: self.top_level_references.as_ref().map(|references| {
+                references
+                    .iter()
+                    .map(|reference| top_level_reference_wire(reference, cx.converter))
+                    .collect()
+            }),
             injectable,
             service,
             component,
@@ -3264,7 +3340,7 @@ impl ClassData {
                 .map(|s| crate::types::metadata::SpanMetadata::new(s, cx.converter)),
             host_metadata: self
                 .read_optional_field(d.host_expr.as_deref(), cx, "directive.host")?
-                .map(|host| host_metadata_wire(host, cx.source_text)),
+                .map(|host| host_metadata_wire(host, cx.source_text, cx.converter)),
             host_directives: self.to_wire_host_directives(&d.host_directives, cx),
             providers_span: d
                 .providers_span
@@ -3314,6 +3390,13 @@ impl ClassData {
                 // https://github.com/angular/angular/blob/96b8042/packages/compiler/src/render3/view/compiler.ts#L308-L321
                 .filter(|num| *num != CHANGE_DETECTION_ON_PUSH)
                 .map(|num| num.to_string()),
+        };
+        let change_detection_span = match cx.mode {
+            WireMode::Syntax => change_detection
+                .as_ref()
+                .and(c.change_detection_span)
+                .map(|s| crate::types::metadata::SpanMetadata::new(s, cx.converter)),
+            WireMode::Semantic => None,
         };
         let import_info_to_wire_ref = |i: &ImportInfo| -> ReferenceMetadata {
             let (consumer_import, typecheck_import) = if let Some(source) = &i.import_source {
@@ -3474,7 +3557,7 @@ impl ClassData {
                 .map(|s| crate::types::metadata::SpanMetadata::new(s, cx.converter)),
             host_metadata: self
                 .read_optional_field(c.directive.host_expr.as_deref(), cx, "component.host")?
-                .map(|host| host_metadata_wire(host, cx.source_text)),
+                .map(|host| host_metadata_wire(host, cx.source_text, cx.converter)),
             host_directives: self.to_wire_host_directives(&c.directive.host_directives, cx),
             providers_span: c
                 .directive
@@ -3484,6 +3567,7 @@ impl ClassData {
                 .view_providers_span
                 .map(|s| crate::types::metadata::SpanMetadata::new(s, cx.converter)),
             change_detection,
+            change_detection_span,
             preserve_whitespaces: c.preserve_whitespaces,
             animations_span: c
                 .animations_span

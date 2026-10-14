@@ -150,12 +150,15 @@ pub(crate) fn extract_query_options<'a>(
     (descendants, emit_distinct, read_span, is_static)
 }
 
-/// Extract query metadata from class members.
+/// Extract query metadata from class members. The arguments of signal queries feed
+/// `top_level_reads` (their predicate and `read` are re-emitted in `ɵcmp`); decorator queries are
+/// covered by `get_member_decorators`.
 pub fn extract_queries<'a>(
     class: &'a oxc_ast::ast::Class<'a>,
     angular_imports: &crate::analyzer::imports::AngularImports,
     semantic: &Semantic<'a>,
     eval: &crate::evaluator::EvalInput<'a, '_>,
+    mut top_level_reads: Option<&mut super::TopLevelReads<'_, 'a, '_>>,
 ) -> Vec<AngularField> {
     let mut fields = Vec::new();
 
@@ -260,6 +263,15 @@ pub fn extract_queries<'a>(
         let predicate = extract_predicate(&call.arguments[0], PredicateKind::Signal, eval);
         let (descendants, emit_distinct_changes_only, read_span, is_static) =
             extract_query_options(&call.arguments, default_descendants, semantic);
+        if let Some(reads) = top_level_reads.as_deref_mut() {
+            super::collect_argument_references(
+                &call.arguments,
+                semantic,
+                class.span.end,
+                None,
+                Some(reads),
+            );
+        }
 
         let meta = QueryData {
             property_name: prop_name_cow.into_owned(),
@@ -397,7 +409,7 @@ mod tests {
 
         for stmt in &ret.program.body {
             if let oxc_ast::ast::Statement::ClassDeclaration(class_decl) = stmt {
-                let fields = extract_queries(class_decl, &angular_imports, &semantic, &eval);
+                let fields = extract_queries(class_decl, &angular_imports, &semantic, &eval, None);
                 for field in fields {
                     if let AngularField::Query(q) = field {
                         // The selectors when there are any, otherwise the emitted expression.

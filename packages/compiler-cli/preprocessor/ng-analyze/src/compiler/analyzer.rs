@@ -229,6 +229,7 @@ impl Analyzer {
             reference_strategy,
             resolved_config.generate_extra_imports_in_local_mode,
             resolved_config.compile_non_exported_classes,
+            options.enable_hmr.unwrap_or(resolved_config.enable_hmr),
         );
 
         let analyzer = Analyzer {

@@ -174,70 +174,211 @@ fn has_later_property_declaration(
     })
 }
 
-/// Looks for an identifier or member access that a lowered static field initializer or
-/// `ɵsetClassMetadata` static block would evaluate while the binding or property declaration it
-/// resolves to is still after `class_end`. See [`later_declaration_references`].
-struct LaterDeclarationFinder<'s, 'a> {
-    semantic: &'s oxc_semantic::Semantic<'a>,
-    class_end: u32,
-    spans: &'s mut Vec<oxc_span::Span>,
+/// A read of a root-scope value binding inside a class's decorator metadata, destined for the
+/// wire as [`crate::types::metadata::TopLevelReferenceMetadata`].
+#[derive(Clone, Debug)]
+pub struct TopLevelReference {
+    pub name: String,
+    pub span: oxc_span::Span,
+    /// For the object of a `Name.member` access whose binding is an import or a local
+    /// `const enum`: what `Name` evaluates to. Stage 2 completes it, so an imported const
+    /// enum can be told apart from a class or a regular enum declared in another file.
+    pub const_enum: Option<crate::evaluator::Resolved<crate::evaluator::ConstEnumResolution>>,
 }
 
-impl<'a> Visit<'a> for LaterDeclarationFinder<'_, 'a> {
-    fn visit_identifier_reference(&mut self, ident: &oxc_ast::ast::IdentifierReference<'a>) {
-        use oxc_syntax::symbol::SymbolFlags;
+/// Per-class accumulator for HMR top-level reads across the class's decorators, member
+/// decorators and constructor-parameter decorators. Callers hold `None` when HMR is off.
+pub(crate) struct TopLevelReads<'s, 'a, 'e> {
+    pub out: Vec<TopLevelReference>,
+    pub eval: &'s crate::evaluator::EvalInput<'a, 'e>,
+}
+
+/// Where the HMR half of [`DecoratorReferenceFinder`] writes, plus what it needs to evaluate
+/// potential const enums.
+struct TopLevelReferenceSink<'s, 'a, 'e> {
+    out: &'s mut Vec<TopLevelReference>,
+    eval: &'s crate::evaluator::EvalInput<'a, 'e>,
+}
+
+/// One traversal of a decorator's arguments serving two consumers:
+///
+/// - **Later-declaration guards** (`later`): an identifier or member access that a lowered
+///   static field initializer or `ɵsetClassMetadata` static block would evaluate while the
+///   binding or property declaration it resolves to is still after `class_end`. Function bodies
+///   are skipped, since they are not evaluated when the static field is.
+/// - **HMR top-level reads** (`top_level`): every identifier resolving to a root-scope value
+///   binding, function bodies included — ngtsc's `PotentialTopLevelReadsVisitor` walks the whole
+///   `WrappedNodeExpr`. Resolving through `oxc_semantic` also rules out the locals and
+///   parameters that visitor can only approximate by name.
+///   https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/hmr/src/extract_dependencies.ts#L229-L263
+///
+/// Types are erased and never evaluated, so neither consumer looks inside them.
+struct DecoratorReferenceFinder<'s, 'a, 'e> {
+    semantic: &'s oxc_semantic::Semantic<'a>,
+    class_end: u32,
+    later: Option<&'s mut Vec<oxc_span::Span>>,
+    top_level: Option<TopLevelReferenceSink<'s, 'a, 'e>>,
+    /// How many function bodies enclose the current node.
+    function_depth: u32,
+}
+
+impl<'a> DecoratorReferenceFinder<'_, 'a, '_> {
+    fn resolve(
+        &self,
+        ident: &oxc_ast::ast::IdentifierReference<'a>,
+    ) -> Option<oxc_semantic::SymbolId> {
         let scoping = self.semantic.scoping();
-        let Some(symbol_id) = ident
+        ident
             .reference_id
             .get()
             .and_then(|id| scoping.get_reference(id).symbol_id())
-        else {
+    }
+
+    fn record_later_declaration(
+        &mut self,
+        symbol_id: oxc_semantic::SymbolId,
+        span: oxc_span::Span,
+    ) {
+        use oxc_syntax::symbol::SymbolFlags;
+        if self.function_depth > 0 {
+            return;
+        }
+        let Some(later) = self.later.as_deref_mut() else {
             return;
         };
+        let scoping = self.semantic.scoping();
         let flags = scoping.symbol_flags(symbol_id);
         if !flags.intersects(SymbolFlags::BlockScoped) || flags.contains(SymbolFlags::Ambient) {
             return;
         }
         if scoping.symbol_span(symbol_id).start >= self.class_end {
-            self.spans.push(ident.span);
+            later.push(span);
         }
     }
 
-    fn visit_static_member_expression(&mut self, expr: &oxc_ast::ast::StaticMemberExpression<'a>) {
-        let prev_len = self.spans.len();
-        oxc_ast_visit::walk::walk_static_member_expression(self, expr);
-        // Only non-chained member accesses (`obj.prop`, `this.prop`, `super.prop`) are checked by
-        // TypeScript's `checkPropertyNotUsedBeforeDeclaration` (TS2729). If `expr.object` was
-        // itself already recorded as a later block-scoped declaration, its guard at
-        // `expr.span.start` already covers this expression.
-        if self.spans.len() == prev_len
-            && matches!(
-                expr.object,
-                oxc_ast::ast::Expression::Identifier(_)
-                    | oxc_ast::ast::Expression::ThisExpression(_)
-                    | oxc_ast::ast::Expression::Super(_)
-            )
-            && has_later_property_declaration(
-                self.semantic,
-                expr.property.name.as_str(),
-                self.class_end,
-            )
+    /// Record `ident` as an HMR top-level read if it is bound at the root scope to something
+    /// that exists at runtime. `member_object` is the `Name` of a `Name.member` access.
+    fn record_top_level_read(
+        &mut self,
+        ident: &oxc_ast::ast::IdentifierReference<'a>,
+        symbol_id: oxc_semantic::SymbolId,
+        member_object: Option<&oxc_ast::ast::Expression<'a>>,
+    ) {
+        use oxc_syntax::symbol::SymbolFlags;
+        let Some(sink) = self.top_level.as_mut() else {
+            return;
+        };
+        let scoping = self.semantic.scoping();
+        if scoping.symbol_scope_id(symbol_id) != scoping.root_scope_id() {
+            return;
+        }
+        // Interfaces, type aliases and type-only imports are erased; namespace *values*
+        // (`ValueModule`) are part of `Value`. Const enums carry their own flag.
+        let flags = scoping.symbol_flags(symbol_id);
+        if flags.contains(SymbolFlags::TypeImport)
+            || !flags.intersects(SymbolFlags::Value | SymbolFlags::ConstEnum | SymbolFlags::Import)
         {
-            self.spans.push(expr.span);
+            return;
+        }
+
+        // ngtsc's `isConstEnumReference`: only the `Name.member` shape, and only when `Name`
+        // can be a const enum — one declared here, or an import whose declaration Stage 2
+        // chases. A namespace import names a module, never an enum.
+        let may_be_const_enum = flags.contains(SymbolFlags::ConstEnum)
+            || (flags.contains(SymbolFlags::Import)
+                && !matches!(
+                    sink.eval
+                        .import_map
+                        .get(ident.name.as_str())
+                        .map(|sym| &sym.kind),
+                    Some(ImportKind::Namespace)
+                ));
+        let const_enum = member_object.filter(|_| may_be_const_enum).map(|object| {
+            crate::evaluator::Resolved::from_syntax(
+                crate::evaluator::evaluate_expression(object, sink.eval),
+                sink.eval.file,
+            )
+        });
+        sink.out.push(TopLevelReference {
+            name: ident.name.to_string(),
+            span: ident.span,
+            const_enum,
+        });
+    }
+
+    /// `obj.prop`, `this.prop` and `super.prop` (non-chained member accesses) are what
+    /// TypeScript's `checkPropertyNotUsedBeforeDeclaration` (TS2729) rejects; guard them when
+    /// `prop` is declared later in the file.
+    fn record_later_property(&mut self, expr: &oxc_ast::ast::StaticMemberExpression<'a>) {
+        if self.function_depth > 0 || self.later.is_none() {
+            return;
+        }
+        if has_later_property_declaration(
+            self.semantic,
+            expr.property.name.as_str(),
+            self.class_end,
+        ) {
+            if let Some(later) = self.later.as_deref_mut() {
+                later.push(expr.span);
+            }
+        }
+    }
+}
+
+impl<'a> Visit<'a> for DecoratorReferenceFinder<'_, 'a, '_> {
+    fn visit_identifier_reference(&mut self, ident: &oxc_ast::ast::IdentifierReference<'a>) {
+        let Some(symbol_id) = self.resolve(ident) else {
+            return;
+        };
+        self.record_later_declaration(symbol_id, ident.span);
+        self.record_top_level_read(ident, symbol_id, None);
+    }
+
+    fn visit_static_member_expression(&mut self, expr: &oxc_ast::ast::StaticMemberExpression<'a>) {
+        if let oxc_ast::ast::Expression::Identifier(ident) = &expr.object {
+            let later_before = self.later.as_deref().map_or(0, Vec::len);
+            if let Some(symbol_id) = self.resolve(ident) {
+                self.record_later_declaration(symbol_id, ident.span);
+                self.record_top_level_read(ident, symbol_id, Some(&expr.object));
+            }
+            if self.later.as_deref().map_or(0, Vec::len) == later_before {
+                self.record_later_property(expr);
+            }
+            return;
+        }
+
+        oxc_ast_visit::walk::walk_static_member_expression(self, expr);
+        if matches!(
+            expr.object,
+            oxc_ast::ast::Expression::ThisExpression(_) | oxc_ast::ast::Expression::Super(_)
+        ) {
+            self.record_later_property(expr);
         }
     }
 
     fn visit_function(
         &mut self,
-        _func: &oxc_ast::ast::Function<'a>,
-        _flags: oxc_syntax::scope::ScopeFlags,
+        func: &oxc_ast::ast::Function<'a>,
+        flags: oxc_syntax::scope::ScopeFlags,
     ) {
+        if self.top_level.is_none() {
+            return;
+        }
+        self.function_depth += 1;
+        oxc_ast_visit::walk::walk_function(self, func, flags);
+        self.function_depth -= 1;
     }
 
     fn visit_arrow_function_expression(
         &mut self,
-        _arrow: &oxc_ast::ast::ArrowFunctionExpression<'a>,
+        arrow: &oxc_ast::ast::ArrowFunctionExpression<'a>,
     ) {
+        if self.top_level.is_none() {
+            return;
+        }
+        self.function_depth += 1;
+        oxc_ast_visit::walk::walk_arrow_function_expression(self, arrow);
+        self.function_depth -= 1;
     }
 
     // Types are erased and never evaluated.
@@ -245,24 +386,62 @@ impl<'a> Visit<'a> for LaterDeclarationFinder<'_, 'a> {
 }
 
 /// Pushes onto `spans` every identifier or static member expression in `decorator`'s arguments
-/// that eagerly references a declaration after `class_end`.
-pub(crate) fn later_declaration_references<'a>(
+/// that eagerly references a declaration after `class_end`, and, when `top_level` is given,
+/// every root-scope value read for HMR (see [`DecoratorReferenceFinder`]).
+pub(crate) fn collect_decorator_references<'a>(
     decorator: &oxc_ast::ast::Decorator<'a>,
     semantic: &oxc_semantic::Semantic<'a>,
     class_end: u32,
-    spans: &mut Vec<oxc_span::Span>,
+    later: Option<&mut Vec<oxc_span::Span>>,
+    top_level: Option<&mut TopLevelReads<'_, 'a, '_>>,
 ) {
     let Some(args) = get_decorator_args(decorator) else {
         return;
     };
-    let mut finder = LaterDeclarationFinder {
+    collect_argument_references(args, semantic, class_end, later, top_level);
+}
+
+pub(crate) fn collect_argument_references<'a>(
+    args: &[oxc_ast::ast::Argument<'a>],
+    semantic: &oxc_semantic::Semantic<'a>,
+    class_end: u32,
+    later: Option<&mut Vec<oxc_span::Span>>,
+    top_level: Option<&mut TopLevelReads<'_, 'a, '_>>,
+) {
+    let mut finder = DecoratorReferenceFinder {
         semantic,
         class_end,
-        spans,
+        later,
+        top_level: top_level.map(|reads| TopLevelReferenceSink {
+            out: &mut reads.out,
+            eval: reads.eval,
+        }),
+        function_depth: 0,
     };
     for arg in args {
         finder.visit_argument(arg);
     }
+}
+
+pub(crate) fn top_level_value_bindings(semantic: &oxc_semantic::Semantic<'_>) -> Vec<String> {
+    use oxc_syntax::symbol::SymbolFlags;
+    let scoping = semantic.scoping();
+    let mut bindings: Vec<(u32, String)> = scoping
+        .get_bindings(scoping.root_scope_id())
+        .iter()
+        .filter_map(|(name, &symbol_id)| {
+            let flags = scoping.symbol_flags(symbol_id);
+            if flags.contains(SymbolFlags::TypeImport)
+                || !flags
+                    .intersects(SymbolFlags::Value | SymbolFlags::ConstEnum | SymbolFlags::Import)
+            {
+                return None;
+            }
+            Some((scoping.symbol_span(symbol_id).start, name.to_string()))
+        })
+        .collect();
+    bindings.sort_unstable();
+    bindings.into_iter().map(|(_, name)| name).collect()
 }
 
 const DI_PARAMETER_DECORATORS: [&str; 6] = [
@@ -279,13 +458,15 @@ pub struct ConstructorParams {
     pub unexpected_decorators: Vec<crate::analyzer::UnexpectedParamDecorator>,
 }
 
-/// Extract constructor parameter types from a class
-pub fn get_constructor_params(
-    class: &oxc_ast::ast::Class,
-    semantic: &oxc_semantic::Semantic,
+/// Extract constructor parameter types from a class. Angular decorators on the parameters feed
+/// `top_level_reads` (their arguments are re-emitted in `ɵfac` and `ɵsetClassMetadata`).
+pub fn get_constructor_params<'a>(
+    class: &oxc_ast::ast::Class<'a>,
+    semantic: &oxc_semantic::Semantic<'a>,
     converter: &Utf8ToUtf16,
     import_map: &std::collections::HashMap<String, ImportedSymbol>,
     angular_imports: &crate::analyzer::imports::AngularImports,
+    mut top_level_reads: Option<&mut TopLevelReads<'_, 'a, '_>>,
 ) -> Option<ConstructorParams> {
     let mut target_method = None;
 
@@ -347,6 +528,15 @@ pub fn get_constructor_params(
                 None
             };
             let decorator_span = is_angular.then(|| SpanMetadata::new(decorator.span, converter));
+            if is_angular {
+                collect_decorator_references(
+                    decorator,
+                    semantic,
+                    class.span.end,
+                    None,
+                    top_level_reads.as_deref_mut(),
+                );
+            }
 
             // Flag unrecognized @angular/core decorators on constructor parameters (NG1005).
             if is_angular && !canonical_name.is_some_and(|c| DI_PARAMETER_DECORATORS.contains(&c)) {
@@ -415,8 +605,10 @@ pub fn get_constructor_params(
 /// semantic symbol table (non-Angular decorators are kept so the member still appears with an
 /// empty array, matching ngtsc).
 ///
-/// Pushes each Angular decorator's removal span onto `removal_spans`.
+/// Pushes each Angular decorator's removal span onto `removal_spans`, its later-declaration
+/// guards onto `later_references`, and its HMR top-level reads onto `top_level_reads`.
 /// https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/annotations/common/src/metadata.ts#L91-L131
+#[allow(clippy::too_many_arguments)]
 pub fn get_member_decorators<'a>(
     class: &'a oxc_ast::ast::Class<'a>,
     converter: &Utf8ToUtf16,
@@ -425,6 +617,7 @@ pub fn get_member_decorators<'a>(
     source_text: &str,
     later_references: &mut Vec<oxc_span::Span>,
     removal_spans: &mut Vec<oxc_span::Span>,
+    mut top_level_reads: Option<&mut TopLevelReads<'_, 'a, '_>>,
 ) -> Vec<crate::DecoratedMemberMetadata> {
     use oxc_ast::ast::{ClassElement, PropertyKey};
 
@@ -453,7 +646,13 @@ pub fn get_member_decorators<'a>(
                 let is_angular = is_angular_decorator(decorator, semantic, angular_imports);
                 let mut guards = Vec::new();
                 if is_angular {
-                    later_declaration_references(decorator, semantic, class.span.end, &mut guards);
+                    collect_decorator_references(
+                        decorator,
+                        semantic,
+                        class.span.end,
+                        Some(&mut guards),
+                        top_level_reads.as_deref_mut(),
+                    );
                     removal_spans.push(self::utils::decorator_removal_span(decorator, source_text));
                 }
                 // `args` is intentionally omitted as an optimization, because `ɵsetClassMetadata`

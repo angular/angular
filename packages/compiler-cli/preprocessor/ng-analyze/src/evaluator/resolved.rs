@@ -312,6 +312,73 @@ impl FromResolved for ComponentStyles {
     }
 }
 
+/// A primitive a const enum member folded to. The only values TypeScript admits in a const
+/// enum, and the only ones ngtsc's `getRuntimeRepresentation` re-emits as literals.
+#[derive(Clone, Debug, PartialEq)]
+pub enum ConstEnumLiteral {
+    String(String),
+    Number(f64),
+    Boolean(bool),
+    Null,
+    Undefined,
+}
+
+/// One member of a const enum referenced by HMR-relevant code.
+#[derive(Clone, Debug, PartialEq)]
+pub struct ConstEnumMember {
+    pub name: String,
+    pub value: ConstEnumLiteral,
+}
+
+/// What the object of a `Foo.bar` reference in decorator metadata turned out to be, for HMR's
+/// local-dependency capture (ngtsc's `isConstEnumReference` + `getRuntimeRepresentation`).
+#[derive(Clone, Debug, PartialEq)]
+pub enum ConstEnumResolution {
+    /// Anything other than a const enum (a class, a regular enum, an unresolvable import, …):
+    /// the identifier is passed to the HMR callback by reference.
+    NotConstEnum,
+    /// A const enum whose members all folded to primitives: passed as an object literal, since
+    /// TypeScript inlines const enums and leaves nothing to reference at runtime.
+    Members(Vec<ConstEnumMember>),
+    /// A const enum with a member the evaluator could not fold to a primitive. ngtsc gives up
+    /// on HMR for the class in that case rather than emit a wrong literal.
+    Unevaluable,
+}
+
+impl FromResolved for ConstEnumResolution {
+    fn from_value(value: &ResolvedValue, _origin: crate::query::FileId) -> Option<Self> {
+        let ResolvedValue::Map(map) = value.unwrap_named() else {
+            return Some(ConstEnumResolution::NotConstEnum);
+        };
+        if map.is_empty() {
+            return Some(ConstEnumResolution::NotConstEnum);
+        }
+        let mut members = Vec::with_capacity(map.len());
+        for (name, member) in map.iter() {
+            // An object literal evaluates to a `Map` too; only enum members mark it an enum.
+            let ResolvedValue::EnumValue(member) = member.unwrap_named() else {
+                return Some(ConstEnumResolution::NotConstEnum);
+            };
+            if member.enum_ref.kind != crate::evaluator::value::DeclKind::ConstEnum {
+                return Some(ConstEnumResolution::NotConstEnum);
+            }
+            let value = match member.resolved.unwrap_named() {
+                ResolvedValue::String(s) => ConstEnumLiteral::String(s.clone()),
+                ResolvedValue::Number(n) => ConstEnumLiteral::Number(*n),
+                ResolvedValue::Boolean(b) => ConstEnumLiteral::Boolean(*b),
+                ResolvedValue::Null => ConstEnumLiteral::Null,
+                ResolvedValue::Undefined => ConstEnumLiteral::Undefined,
+                _ => return Some(ConstEnumResolution::Unevaluable),
+            };
+            members.push(ConstEnumMember {
+                name: name.clone(),
+                value,
+            });
+        }
+        Some(ConstEnumResolution::Members(members))
+    }
+}
+
 impl FromResolved for Vec<crate::types::analysis::Reference> {
     /// All-or-nothing: an entry that did not evaluate to a reference lowers the whole list to
     /// `None`, so emitters fall back to the raw source expression.

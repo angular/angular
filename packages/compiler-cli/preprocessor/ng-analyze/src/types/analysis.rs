@@ -558,6 +558,9 @@ pub struct FileData {
     /// Whether this file is part of `@angular/core` itself (see
     /// [`crate::analyzer::imports::detect_is_core`]). Always `false` for `.d.ts` files.
     pub(crate) is_core: bool,
+    /// Root-scope runtime binding names for HMR (`None` unless the engine runs with
+    /// `enable_hmr`).
+    pub(crate) top_level_value_bindings: Option<Vec<String>>,
 }
 
 impl FileData {
@@ -600,6 +603,7 @@ impl FileData {
                 })
                 .collect(),
             r3_symbols_specifier: self.r3_symbols_specifier(cx.r3_symbols_path),
+            top_level_value_bindings: self.top_level_value_bindings.clone(),
         })
     }
 

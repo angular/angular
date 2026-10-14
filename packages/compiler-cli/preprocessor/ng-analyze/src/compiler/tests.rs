@@ -1175,7 +1175,10 @@ fn test_isolated_type_tuple_resolves_local_const_of_imported_classes() {
         );
         // `Hidden` is unexported, so the reference cannot be emitted from here: syntactic form.
         assert_eq!(mixed.elements[1].kind, IsolatedTypeElementKind::Typeof);
-        assert!(mixed.elements[1].references.is_none(), "optimize={optimize}");
+        assert!(
+            mixed.elements[1].references.is_none(),
+            "optimize={optimize}"
+        );
         assert_eq!(span_text(&mixed.elements[1]), "HIDDEN");
     }
 }

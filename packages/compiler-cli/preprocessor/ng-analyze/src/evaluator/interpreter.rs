@@ -1197,7 +1197,11 @@ impl<'a, 'e, 'i> Interpreter<'a, 'e, 'i> {
             enum_decl.id.name.to_string(),
             Some(symbol_id),
             enum_decl.span,
-            DeclKind::Enum,
+            if enum_decl.r#const {
+                DeclKind::ConstEnum
+            } else {
+                DeclKind::Enum
+            },
         );
         let mut map = ValueMap::new();
         for (index, member) in enum_decl.body.members.iter().enumerate() {

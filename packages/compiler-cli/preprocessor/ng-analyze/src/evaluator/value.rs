@@ -240,6 +240,10 @@ pub enum DeclKind {
     /// [`ValueReference::member`] the method.
     StaticMethod,
     Enum,
+    /// A `const enum`. Kept apart from [`DeclKind::Enum`] because TypeScript inlines its
+    /// members, so it has no runtime object to pass by reference (HMR hands out its members
+    /// as an object literal instead, like ngtsc's `getRuntimeRepresentation`).
+    ConstEnum,
     /// e.g. `declare const` with no statically reducible value (upstream parity).
     Variable,
     Other,
@@ -277,7 +281,8 @@ pub struct ValueReference {
 /// Mirror of upstream `EnumValue` (`result.ts`): a single enum member.
 #[derive(Clone, Debug, PartialEq)]
 pub struct EnumValue {
-    /// Reference to the enum declaration (`kind == DeclKind::Enum`).
+    /// Reference to the enum declaration (`kind` is [`DeclKind::Enum`] or
+    /// [`DeclKind::ConstEnum`]).
     pub enum_ref: ValueReference,
     /// Member name.
     pub name: String,
