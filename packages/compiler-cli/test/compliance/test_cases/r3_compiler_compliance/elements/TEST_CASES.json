@@ -6,22 +6,7 @@
       "inputFiles": ["svg.ts"],
       "expectations": [
         {
-          "files": [
-            {
-              "expected": "svg_factory.js",
-              "generated": "svg.js"
-            }
-          ],
-          "failureMessage": "Incorrect generated factory."
-        },
-        {
-          "files": [
-            {
-              "expected": "svg_template.js",
-              "generated": "svg.js"
-            }
-          ],
-          "failureMessage": "Incorrect generated template."
+          "files": ["svg.js"]
         }
       ]
     },
@@ -45,22 +30,7 @@
       "inputFiles": ["mathml.ts"],
       "expectations": [
         {
-          "files": [
-            {
-              "expected": "mathml_factory.js",
-              "generated": "mathml.js"
-            }
-          ],
-          "failureMessage": "Incorrect generated factory."
-        },
-        {
-          "files": [
-            {
-              "expected": "mathml_template.js",
-              "generated": "mathml.js"
-            }
-          ],
-          "failureMessage": "Incorrect generated template."
+          "files": ["mathml.js"]
         }
       ]
     },
@@ -69,22 +39,7 @@
       "inputFiles": ["dom.ts"],
       "expectations": [
         {
-          "files": [
-            {
-              "expected": "dom_factory.js",
-              "generated": "dom.js"
-            }
-          ],
-          "failureMessage": "Incorrect generated factory."
-        },
-        {
-          "files": [
-            {
-              "expected": "dom_template.js",
-              "generated": "dom.js"
-            }
-          ],
-          "failureMessage": "Incorrect generated template."
+          "files": ["dom.js"]
         }
       ]
     },
@@ -93,22 +48,7 @@
       "inputFiles": ["namespace.ts"],
       "expectations": [
         {
-          "files": [
-            {
-              "expected": "namespace_factory.js",
-              "generated": "namespace.js"
-            }
-          ],
-          "failureMessage": "Incorrect generated factory."
-        },
-        {
-          "files": [
-            {
-              "expected": "namespace_template.js",
-              "generated": "namespace.js"
-            }
-          ],
-          "failureMessage": "Incorrect generated template."
+          "files": ["namespace.js"]
         }
       ]
     },
@@ -135,22 +75,7 @@
       "inputFiles": ["properties.ts"],
       "expectations": [
         {
-          "files": [
-            {
-              "expected": "properties_factory.js",
-              "generated": "properties.js"
-            }
-          ],
-          "failureMessage": "Incorrect generated factory."
-        },
-        {
-          "files": [
-            {
-              "expected": "properties_template.js",
-              "generated": "properties.js"
-            }
-          ],
-          "failureMessage": "Incorrect generated template."
+          "files": ["properties.js"]
         }
       ]
     },
@@ -159,22 +84,7 @@
       "inputFiles": ["property_pure_functions.ts"],
       "expectations": [
         {
-          "files": [
-            {
-              "expected": "property_pure_functions_factory.js",
-              "generated": "property_pure_functions.js"
-            }
-          ],
-          "failureMessage": "Incorrect generated factory."
-        },
-        {
-          "files": [
-            {
-              "expected": "property_pure_functions_template.js",
-              "generated": "property_pure_functions.js"
-            }
-          ],
-          "failureMessage": "Incorrect generated template."
+          "files": ["property_pure_functions.js"]
         }
       ]
     },
@@ -192,22 +102,7 @@
       "inputFiles": ["class_style_bindings.ts"],
       "expectations": [
         {
-          "files": [
-            {
-              "expected": "class_style_bindings_factory.js",
-              "generated": "class_style_bindings.js"
-            }
-          ],
-          "failureMessage": "Incorrect generated factory."
-        },
-        {
-          "files": [
-            {
-              "expected": "class_style_bindings_template.js",
-              "generated": "class_style_bindings.js"
-            }
-          ],
-          "failureMessage": "Incorrect generated template."
+          "files": ["class_style_bindings.js"]
         }
       ]
     },

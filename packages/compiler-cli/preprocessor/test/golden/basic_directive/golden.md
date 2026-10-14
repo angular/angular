@@ -101,7 +101,7 @@ export class HighlightDirective {
         (): any => [
           {
             /* @ts-ignore */
-            type: ElementRef,
+            type: i0.ElementRef,
           },
         ],
         null,

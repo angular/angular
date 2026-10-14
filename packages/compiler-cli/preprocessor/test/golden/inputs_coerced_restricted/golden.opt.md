@@ -156,13 +156,13 @@ export class TestCoercedComponent {
           protectedInput: [{ type: Input }],
           readonlyInput: [{ type: Input }],
           'literalInput': [{ type: Input }],
-          normalInput: [{ type: Input }],
           signalWithTransform: [
             {
               type: i0.Input,
               args: [{ isSignal: true, alias: 'signalWithTransform', required: false }],
             },
           ],
+          normalInput: [{ type: Input }],
         },
       );
   }

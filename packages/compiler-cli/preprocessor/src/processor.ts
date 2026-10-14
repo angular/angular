@@ -543,7 +543,13 @@ export function processFileSync(
 
     // Build deps from constructor params
     // Use empty array for no-arg constructors (null means "inherit from parent")
-    const deps = buildDeps(constructorParams, classMeta.usesInheritance, o, s);
+    const deps = buildDeps(
+      constructorParams,
+      classMeta.usesInheritance,
+      o,
+      s,
+      ctx.complianceMode ?? false,
+    );
 
     // Avoid duplicate `ɵfac` generation when a class carries multiple decorators (e.g. `@Component` + `@Injectable`).
     // https://github.com/angular/angular/blob/d27e2c2/packages/compiler-cli/src/ngtsc/transform/src/compilation.ts#L710-L718
@@ -2139,6 +2145,7 @@ function buildCtorParametersExpr(
   constructorParams: nga.ConstructorParamMetadata[] | undefined,
   s: MagicString,
   omitEmptyDecorators = false,
+  complianceMode: boolean = false,
 ): R3ClassMetadataCtorParameter[] | null {
   if (constructorParams == null) {
     return null;
@@ -2154,8 +2161,17 @@ function buildCtorParametersExpr(
         decorators = o.literalArr(ngDecorators);
       }
     }
+    const useNamespaceImport =
+      typeName != null &&
+      param.typeModule != null &&
+      (param.typeModule === '@angular/core' || complianceMode);
     return {
-      type: typeName == null ? null : o.variable(typeName),
+      type:
+        typeName == null
+          ? null
+          : useNamespaceImport
+            ? o.importExpr(new o.ExternalReference(param.typeModule!, typeName))
+            : o.variable(typeName),
       decorators,
       // Ask the compiler for a `@ts-ignore` only when the analyzer emitted a reference it could
       // not resolve to a value declaration. Those are the references that make `tsc` fail on the
@@ -2177,13 +2193,18 @@ function buildPropDecoratorsExpr(
   guards: nga.SpanMetadata[],
 ): o.Expression | null {
   const {memberDecorators, inputs, outputs, queries, viewQueries} = classMeta;
-  const propMap = new Map<string, {key: string; quoted: boolean; decorators: o.Expression[]}>();
+  const propMap = new Map<
+    string,
+    {key: string; quoted: boolean; offset: number; decorators: o.Expression[]}
+  >();
 
-  function getOrCreateEntry(key: string, quoted: boolean) {
+  function getOrCreateEntry(key: string, quoted: boolean, offset = Infinity) {
     let entry = propMap.get(key);
     if (!entry) {
-      entry = {key, quoted, decorators: []};
+      entry = {key, quoted, offset, decorators: []};
       propMap.set(key, entry);
+    } else if (offset < entry.offset) {
+      entry.offset = offset;
     }
     return entry;
   }
@@ -2201,7 +2222,10 @@ function buildPropDecoratorsExpr(
         }
         seenMemberNames.add(member.propertyName);
       }
-      const entry = getOrCreateEntry(member.propertyName, member.isStringLiteral);
+      const decOffset = member.decorators.find((d) => d.decoratorSpan != null)?.decoratorSpan!
+        .start;
+      const offset = decOffset ?? s.original.indexOf(member.propertyName, classMeta.span.start);
+      const entry = getOrCreateEntry(member.propertyName, member.isStringLiteral, offset);
       const ngDecorators = member.decorators
         .filter((d) => d.isAngular)
         .map((d) => buildDecoratorMetadataExpr(d.name, d.argsSpan, d.argsString, s, guards));
@@ -2222,7 +2246,11 @@ function buildPropDecoratorsExpr(
   // 2. Signal inputs (including model() inputs)
   for (const input of inputs) {
     if (!input.isSignal) continue;
-    const entry = getOrCreateEntry(input.name, input.isLiteral);
+    const entry = getOrCreateEntry(
+      input.name,
+      input.isLiteral,
+      input.propertySpan?.start ?? input.decoratorSpan?.start,
+    );
     const inputOptionsProps: {key: string; value: o.Expression; quoted: boolean}[] = [
       {key: 'isSignal', value: o.literal(true), quoted: false},
       {key: 'alias', value: o.literal(input.alias ?? input.name), quoted: false},
@@ -2239,7 +2267,11 @@ function buildPropDecoratorsExpr(
   // 3. Signal outputs and model() outputs
   for (const output of outputs) {
     if (!output.isSignal) continue;
-    const entry = getOrCreateEntry(output.name, false);
+    const entry = getOrCreateEntry(
+      output.name,
+      false,
+      output.propertySpan?.start ?? output.decoratorSpan?.start,
+    );
     entry.decorators.push(
       o.literalMap([
         {key: 'type', value: new o.ExternalExpr(R3Identifiers.outputDecorator), quoted: false},
@@ -2251,7 +2283,11 @@ function buildPropDecoratorsExpr(
   // 4. Signal queries and view queries
   const allSignalQueries = [...(queries ?? []), ...(viewQueries ?? [])].filter((q) => q.isSignal);
   for (const query of allSignalQueries) {
-    const entry = getOrCreateEntry(query.propertyName, false);
+    const entry = getOrCreateEntry(
+      query.propertyName,
+      false,
+      query.propertySpan?.start ?? query.predicateSpan.start,
+    );
     const queryIdentifier = query.isView
       ? query.first
         ? R3Identifiers.viewChildDecorator
@@ -2265,11 +2301,13 @@ function buildPropDecoratorsExpr(
       new RawSource(predicateStr, [query.predicateSpan]),
     );
     // `memberMetadataFromSignalQuery`: a locator that is not string-literal-like (the only case
-    // in which a signal query has no selectors) is wrapped in `forwardRef`.
+    // in which a signal query has no selectors) is wrapped in `forwardRef`. When the user already
+    // wrote `forwardRef(() => ...)`, preserve the local `forwardRef` identifier to match ngtsc.
     if (!query.predicateSelectors) {
-      predicateExpr = new o.ExternalExpr(R3Identifiers.forwardRef).callFn([
-        new o.ArrowFunctionExpr([], predicateExpr),
-      ]);
+      const forwardRefFn = query.isForwardRef
+        ? o.variable('forwardRef')
+        : new o.ExternalExpr(R3Identifiers.forwardRef);
+      predicateExpr = forwardRefFn.callFn([new o.ArrowFunctionExpr([], predicateExpr)]);
     }
 
     const queryOptionsEntries: o.LiteralMapEntry[] = [];
@@ -2304,14 +2342,13 @@ function buildPropDecoratorsExpr(
     return null;
   }
 
-  const entries: {key: string; quoted: boolean; value: o.Expression}[] = [];
-  for (const [, entry] of propMap) {
-    entries.push({
+  const entries = [...propMap.values()]
+    .sort((a, b) => a.offset - b.offset)
+    .map((entry) => ({
       key: entry.key,
       quoted: entry.quoted,
       value: o.literalArr(entry.decorators),
-    });
-  }
+    }));
 
   return o.literalMap(entries);
 }
@@ -2397,7 +2434,12 @@ function buildSetClassMetadata(
   const classMetadata = {
     type: o.variable(className),
     decorators: o.literalArr(decoratorObjs),
-    ctorParameters: buildCtorParametersExpr(classMeta.constructorParams, s),
+    ctorParameters: buildCtorParametersExpr(
+      classMeta.constructorParams,
+      s,
+      /* omitEmptyDecorators */ false,
+      complianceMode,
+    ),
     propDecorators: buildPropDecoratorsExpr(classMeta, s, className, guards),
   };
   return compileComponentClassMetadata(classMetadata, deferredDeps).toStmt();

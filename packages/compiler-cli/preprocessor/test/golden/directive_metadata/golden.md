@@ -27,7 +27,7 @@ export class FullDir extends BaseDir {
   static ctorParameters = (): any => [
     {
       /* @ts-ignore */
-      type: TemplateRef,
+      type: i0.TemplateRef,
     },
   ];
 }

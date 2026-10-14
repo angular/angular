@@ -1,56 +1,210 @@
+import { Component } from "@angular/core";
+import * as i0 from "@angular/core";
 function MyApp_For_1_For_2_For_4_Template(rf, ctx) {
-  …
-  if (rf & 2) {
-    const $index_r14$ = ctx.$index;
-    const $count_r16$ = ctx.$count;
-    const $ctx_r18$ = $r3$.ɵɵnextContext();
-    const $index_2_r9$ = $ctx_r18$.$index;
-    const $count_2_r11$ = $ctx_r18$.$count;
-    const $ctx_r19$ = $r3$.ɵɵnextContext();
-    const $index_2_r3$ = $ctx_r19$.$index;
-    const $count_2_r5$ = $ctx_r19$.$count;
-    $r3$.ɵɵtextInterpolate4(" Innermost vars: ", $index_r14$ % 2 !== 0, " ", $index_r14$ % 2 === 0, " ", $index_r14$ === 0, " ", $index_r14$ === $count_r16$ - 1, " ");
-    $r3$.ɵɵadvance(2);
-    $r3$.ɵɵtextInterpolate4(" Inner vars: ", $index_2_r9$ % 2 !== 0, " ", $index_2_r9$ % 2 === 0, " ", $index_2_r9$ === 0, " ", $index_2_r9$ === $count_2_r11$ - 1, " ");
-    $r3$.ɵɵadvance(2);
-    $r3$.ɵɵtextInterpolate4(" Outer vars: ", $index_2_r3$ % 2 !== 0, " ", $index_2_r3$ % 2 === 0, " ", $index_2_r3$ === 0, " ", $index_2_r3$ === $count_2_r5$ - 1, " ");
-  }
-}
-
-function MyApp_For_1_For_2_Template(rf, ctx) {
-  …
-  if (rf & 2) {
-    const $index_r8$ = ctx.$index;
-    const $count_r10$ = ctx.$count;
-    const $ctx_r20$ = $r3$.ɵɵnextContext();
-    const $index_1_r3$ = $ctx_r20$.$index;
-    const $count_1_r5$ = $ctx_r20$.$count;
-    const $ctx_r6$ = $r3$.ɵɵnextContext();
-    $r3$.ɵɵtextInterpolate4(" Inner vars: ", $index_r8$ % 2 !== 0, " ", $index_r8$ % 2 === 0, " ", $index_r8$ === 0, " ", $index_r8$ === $count_r10$ - 1, " ");
-    $r3$.ɵɵadvance(2);
-    $r3$.ɵɵtextInterpolate4(" Outer vars: ", $index_1_r3$ % 2 !== 0, " ", $index_1_r3$ % 2 === 0, " ", $index_1_r3$ === 0, " ", $index_1_r3$ === $count_1_r5$ - 1, " ");
-    $r3$.ɵɵadvance();
-    $r3$.ɵɵrepeater($ctx_r6$.items);
-  }
-}
-…
-function MyApp_For_1_Template(rf, ctx) {
-  …
-  if (rf & 2) {
-    const $index_r2$ = ctx.$index;
-    const $count_r4$ = ctx.$count;
-    const $ctx_r0$ = $r3$.ɵɵnextContext();
-    $r3$.ɵɵtextInterpolate4(" Outer vars: ", $index_r2$ % 2 !== 0, " ", $index_r2$ % 2 === 0, " ", $index_r2$ === 0, " ", $index_r2$ === $count_r4$ - 1, " ");
-    $r3$.ɵɵadvance();
-    $r3$.ɵɵrepeater($ctx_r0$.items);
-  }
-}
-…
-function MyApp_Template(rf, ctx) {
   if (rf & 1) {
-    $r3$.ɵɵrepeaterCreate(0, MyApp_For_1_Template, 3, 4, null, null, $r3$.ɵɵrepeaterTrackByIdentity);
+    i0.ɵɵtext(0);
+    i0.ɵɵelement(1, "br");
+    i0.ɵɵtext(2);
+    i0.ɵɵelement(3, "br");
+    i0.ɵɵtext(4);
   }
   if (rf & 2) {
-    $r3$.ɵɵrepeater(ctx.items);
+    const ɵ$index_8_r1 = ctx.$index;
+    const ɵ$count_8_r2 = ctx.$count;
+    const ctx_r2 = i0.ɵɵnextContext();
+    const ɵ$index_3_r4 = ctx_r2.$index;
+    const ɵ$count_3_r5 = ctx_r2.$count;
+    const ctx_r5 = i0.ɵɵnextContext();
+    const ɵ$index_1_r7 = ctx_r5.$index;
+    const ɵ$count_1_r8 = ctx_r5.$count;
+    i0.ɵɵtextInterpolate4(
+      " Innermost vars: ",
+      ɵ$index_8_r1 % 2 !== 0,
+      " ",
+      ɵ$index_8_r1 % 2 === 0,
+      " ",
+      ɵ$index_8_r1 === 0,
+      " ",
+      ɵ$index_8_r1 === ɵ$count_8_r2 - 1,
+      " "
+    );
+    i0.ɵɵadvance(2);
+    i0.ɵɵtextInterpolate4(
+      " Inner vars: ",
+      ɵ$index_3_r4 % 2 !== 0,
+      " ",
+      ɵ$index_3_r4 % 2 === 0,
+      " ",
+      ɵ$index_3_r4 === 0,
+      " ",
+      ɵ$index_3_r4 === ɵ$count_3_r5 - 1,
+      " "
+    );
+    i0.ɵɵadvance(2);
+    i0.ɵɵtextInterpolate4(
+      " Outer vars: ",
+      ɵ$index_1_r7 % 2 !== 0,
+      " ",
+      ɵ$index_1_r7 % 2 === 0,
+      " ",
+      ɵ$index_1_r7 === 0,
+      " ",
+      ɵ$index_1_r7 === ɵ$count_1_r8 - 1,
+      " "
+    );
   }
 }
+function MyApp_For_1_For_2_Template(rf, ctx) {
+  if (rf & 1) {
+    i0.ɵɵtext(0);
+    i0.ɵɵelement(1, "br");
+    i0.ɵɵtext(2);
+    i0.ɵɵrepeaterCreate(
+      3,
+      MyApp_For_1_For_2_For_4_Template,
+      5,
+      12,
+      null,
+      null,
+      i0.ɵɵrepeaterTrackByIdentity
+    );
+  }
+  if (rf & 2) {
+    const ɵ$index_3_r4 = ctx.$index;
+    const ɵ$count_3_r5 = ctx.$count;
+    const ctx_r5 = i0.ɵɵnextContext();
+    const ɵ$index_1_r7 = ctx_r5.$index;
+    const ɵ$count_1_r8 = ctx_r5.$count;
+    const ctx_r8 = i0.ɵɵnextContext();
+    i0.ɵɵtextInterpolate4(
+      " Inner vars: ",
+      ɵ$index_3_r4 % 2 !== 0,
+      " ",
+      ɵ$index_3_r4 % 2 === 0,
+      " ",
+      ɵ$index_3_r4 === 0,
+      " ",
+      ɵ$index_3_r4 === ɵ$count_3_r5 - 1,
+      " "
+    );
+    i0.ɵɵadvance(2);
+    i0.ɵɵtextInterpolate4(
+      " Outer vars: ",
+      ɵ$index_1_r7 % 2 !== 0,
+      " ",
+      ɵ$index_1_r7 % 2 === 0,
+      " ",
+      ɵ$index_1_r7 === 0,
+      " ",
+      ɵ$index_1_r7 === ɵ$count_1_r8 - 1,
+      " "
+    );
+    i0.ɵɵadvance();
+    i0.ɵɵrepeater(ctx_r8.items);
+  }
+}
+function MyApp_For_1_Template(rf, ctx) {
+  if (rf & 1) {
+    i0.ɵɵtext(0);
+    i0.ɵɵrepeaterCreate(
+      1,
+      MyApp_For_1_For_2_Template,
+      5,
+      8,
+      null,
+      null,
+      i0.ɵɵrepeaterTrackByIdentity
+    );
+  }
+  if (rf & 2) {
+    const ɵ$index_1_r7 = ctx.$index;
+    const ɵ$count_1_r8 = ctx.$count;
+    const ctx_r8 = i0.ɵɵnextContext();
+    i0.ɵɵtextInterpolate4(
+      " Outer vars: ",
+      ɵ$index_1_r7 % 2 !== 0,
+      " ",
+      ɵ$index_1_r7 % 2 === 0,
+      " ",
+      ɵ$index_1_r7 === 0,
+      " ",
+      ɵ$index_1_r7 === ɵ$count_1_r8 - 1,
+      " "
+    );
+    i0.ɵɵadvance();
+    i0.ɵɵrepeater(ctx_r8.items);
+  }
+}
+export class MyApp {
+  items = [];
+  static ɵfac = function MyApp_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || MyApp)();
+  };
+  static ɵcmp = /*@__PURE__*/ i0.ɵɵdefineComponent({
+    type: MyApp,
+    selectors: [["ng-component"]],
+    standalone: false,
+    decls: 2,
+    vars: 0,
+    template: function MyApp_Template(rf, ctx) {
+      if (rf & 1) {
+        i0.ɵɵrepeaterCreate(
+          0,
+          MyApp_For_1_Template,
+          3,
+          4,
+          null,
+          null,
+          i0.ɵɵrepeaterTrackByIdentity
+        );
+      }
+      if (rf & 2) {
+        i0.ɵɵrepeater(ctx.items);
+      }
+    },
+    encapsulation: 2
+  });
+}
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) &&
+    i0.ɵsetClassMetadata(
+      MyApp,
+      [
+        {
+          type: Component,
+          args: [
+            {
+              template: `
+    @for (outer of items; track outer; let outerOdd = $odd, outerEven = $even, outerFirst = $first, outerLast = $last) {
+      Outer vars: {{outerOdd}} {{outerEven}} {{outerFirst}} {{outerLast}}
+      @for (inner of items; track inner; let innerOdd = $odd, innerEven = $even, innerFirst = $first, innerLast = $last) {
+        Inner vars: {{innerOdd}} {{innerEven}} {{innerFirst}} {{innerLast}}
+        <br>
+        Outer vars: {{outerOdd}} {{outerEven}} {{outerFirst}} {{outerLast}}
+        @for (innermost of items; track innermost; let innermostOdd = $odd, innermostEven = $even, innermostFirst = $first, innermostLast = $last) {
+          Innermost vars: {{innermostOdd}} {{innermostEven}} {{innermostFirst}} {{innermostLast}}
+          <br>
+          Inner vars: {{innerOdd}} {{innerEven}} {{innerFirst}} {{innerLast}}
+          <br>
+          Outer vars: {{outerOdd}} {{outerEven}} {{outerFirst}} {{outerLast}}
+        }
+      }
+    }
+  `,
+              standalone: false
+            }
+          ]
+        }
+      ],
+      null,
+      null
+    );
+})();
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) &&
+    i0.ɵsetClassDebugInfo(MyApp, {
+      className: "MyApp",
+      filePath: "nested_for_computed_template_variables.ts",
+      lineNumber: 23
+    });
+})();

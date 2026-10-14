@@ -184,6 +184,8 @@ export class AdvancedComp {
             },
             { type: i0.Output, args: ['directRequiredModelChange'] },
           ],
+          directOutput: [{ type: i0.Output, args: ['directOutput'] }],
+          directOutputObs: [{ type: i0.Output, args: ['directOutputObs'] }],
           nsInput: [
             { type: i0.Input, args: [{ isSignal: true, alias: 'nsInput', required: false }] },
           ],
@@ -204,18 +206,16 @@ export class AdvancedComp {
             },
             { type: i0.Output, args: ['nsRequiredModelChange'] },
           ],
-          directOutput: [{ type: i0.Output, args: ['directOutput'] }],
-          directOutputObs: [{ type: i0.Output, args: ['directOutputObs'] }],
           nsOutput: [{ type: i0.Output, args: ['nsOutput'] }],
           nsOutputObs: [{ type: i0.Output, args: ['nsOutputObs'] }],
+          directViewChild: [{ type: i0.ViewChild, args: ['tpl', { isSignal: true }] }],
+          directRequiredViewChild: [{ type: i0.ViewChild, args: ['tpl', { isSignal: true }] }],
+          directViewChildren: [{ type: i0.ViewChildren, args: ['tpl', { isSignal: true }] }],
           directContentChild: [{ type: i0.ContentChild, args: ['tpl', { isSignal: true }] }],
           directRequiredContentChild: [
             { type: i0.ContentChild, args: ['tpl', { isSignal: true }] },
           ],
           directContentChildren: [{ type: i0.ContentChildren, args: ['tpl', { isSignal: true }] }],
-          directViewChild: [{ type: i0.ViewChild, args: ['tpl', { isSignal: true }] }],
-          directRequiredViewChild: [{ type: i0.ViewChild, args: ['tpl', { isSignal: true }] }],
-          directViewChildren: [{ type: i0.ViewChildren, args: ['tpl', { isSignal: true }] }],
         },
       );
   }
