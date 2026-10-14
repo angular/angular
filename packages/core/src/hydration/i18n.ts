@@ -18,6 +18,7 @@ import {getFirstNativeNode} from '../render3/node_manipulation';
 import {nativeRemoveNode} from '../render3/dom_node_manipulation';
 import {unwrapRNode} from '../render3/util/view_utils';
 import {assertDefined, assertNotEqual} from '../util/assert';
+import {getFirstChild, getNextSibling} from '../util/dom';
 
 import type {HydrationContext} from './annotate';
 import {DehydratedIcuData, DehydratedView, I18N_DATA} from './interfaces';
@@ -391,7 +392,7 @@ function skipSiblingNodes(state: I18nHydrationState, skip: number) {
     if (!currentNode) {
       break;
     }
-    currentNode = currentNode?.nextSibling ?? null;
+    currentNode = getNextSibling(currentNode);
   }
   return currentNode;
 }
@@ -439,7 +440,7 @@ function prepareI18nBlockForHydrationImpl(
       // If this i18n block is attached to an <ng-container>, then we want to begin
       // hydrating directly with the RNode. Otherwise, for a TNode with a physical DOM
       // element, we want to recurse into the first child and begin there.
-      return parentTNode!.type & TNodeType.ElementContainer ? rootNode : rootNode.firstChild;
+      return parentTNode!.type & TNodeType.ElementContainer ? rootNode : getFirstChild(rootNode);
     }
 
     // This is a nested template in an i18n block. In this case, the entire view
@@ -503,7 +504,7 @@ function collectI18nNodesFromDom(
       case I18nNodeKind.TEXT: {
         // Claim a text node for hydration
         const currentNode = appendI18nNodeToCollection(context, state, nodeOrNodes);
-        setCurrentNode(state, currentNode?.nextSibling ?? null);
+        setCurrentNode(state, currentNode && getNextSibling(currentNode));
         break;
       }
 
@@ -511,13 +512,13 @@ function collectI18nNodesFromDom(
         // Recurse into the current element's children...
         collectI18nNodesFromDom(
           context,
-          forkHydrationState(state, state.currentNode?.firstChild ?? null),
+          forkHydrationState(state, state.currentNode && getFirstChild(state.currentNode)),
           nodeOrNodes.children,
         );
 
         // And claim the parent element itself.
         const currentNode = appendI18nNodeToCollection(context, state, nodeOrNodes);
-        setCurrentNode(state, currentNode?.nextSibling ?? null);
+        setCurrentNode(state, currentNode && getNextSibling(currentNode));
         break;
       }
 
@@ -547,10 +548,10 @@ function collectI18nNodesFromDom(
               // need to continue hydration with the children, and claim the node.
               collectI18nNodesFromDom(
                 context,
-                forkHydrationState(state, state.currentNode?.firstChild ?? null),
+                forkHydrationState(state, state.currentNode && getFirstChild(state.currentNode)),
                 nodeOrNodes.children,
               );
-              setCurrentNode(state, currentNode?.nextSibling ?? null);
+              setCurrentNode(state, currentNode && getNextSibling(currentNode));
 
               // Elements can also be the anchor of a view container, so there may
               // be elements after this node that we need to skip.
@@ -609,7 +610,7 @@ function collectI18nNodesFromDom(
 
         // Hydration expects to find the ICU anchor element.
         const currentNode = appendI18nNodeToCollection(context, state, nodeOrNodes);
-        setCurrentNode(state, currentNode?.nextSibling ?? null);
+        setCurrentNode(state, currentNode && getNextSibling(currentNode));
         break;
       }
     }

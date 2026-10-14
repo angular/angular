@@ -13,6 +13,7 @@ import {
   validateMatchingNode,
   validateNodeExists,
 } from '../../hydration/error_handling';
+import {getNextSibling} from '../../util/dom';
 import {locateNextRNode} from '../../hydration/node_lookup_utils';
 import {
   hasSkipHydrationAttrOnRElement,
@@ -359,8 +360,9 @@ function locateOrCreateElementNodeImpl(
     // `<div #vcrTarget>` is represented in the DOM as `<div></div>...<!--container-->`,
     // so while processing a `<div>` instruction, point to the next sibling as a
     // start of a segment.
-    ngDevMode && validateNodeExists(native.nextSibling, lView, tNode);
-    setSegmentHead(hydrationInfo, index, native.nextSibling);
+    const segmentHead = getNextSibling(native as unknown as Node);
+    ngDevMode && validateNodeExists(segmentHead, lView, tNode);
+    setSegmentHead(hydrationInfo, index, segmentHead);
   }
 
   if (hydrationInfo) {

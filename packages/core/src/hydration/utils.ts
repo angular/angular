@@ -42,6 +42,7 @@ import {sharedMapFunction} from '../event_delegation_utils';
 import {isDetachedByI18n} from '../i18n/utils';
 import {isInSkipHydrationBlock} from '../render3/state';
 import {TNode} from '../render3/interfaces/node';
+import {getFirstChild, getNextSibling} from '../util/dom';
 
 /**
  * The name of the key used in the TransferState collection,
@@ -166,7 +167,7 @@ export function retrieveHydrationInfoImpl(
   }
   const dehydratedView: DehydratedView = {
     data,
-    firstChild: rNode.firstChild ?? null,
+    firstChild: getFirstChild(rNode as unknown as Node),
   };
 
   if (isRootView) {
@@ -181,7 +182,7 @@ export function retrieveHydrationInfoImpl(
 
     // We use `0` here, since this is the slot (right after the HEADER_OFFSET)
     // where a component LView or an LContainer is located in a root LView.
-    setSegmentHead(dehydratedView, 0, rNode.nextSibling);
+    setSegmentHead(dehydratedView, 0, getNextSibling(rNode as unknown as Node));
   }
 
   if (remainingNgh) {

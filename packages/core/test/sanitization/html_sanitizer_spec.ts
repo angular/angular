@@ -256,7 +256,7 @@ describe('HTML sanitizer', () => {
     // depending on a platform.
     if (isBrowser) {
       // Running in a real browser
-      const errorMsg = 'Failed to traverse the DOM because the element is clobbered: ';
+      const errorMsg = 'Action failed because the element is clobbered: ';
       expect(nextSibling).toThrowError(`${errorMsg}<input name="nextSibling" form="a">`);
       expect(firstChild).toThrowError(`${errorMsg}<object form="a" id="firstChild"></object>`);
       expect(nestedFirstChild).toThrowError(`${errorMsg}<input name="firstChild">`);

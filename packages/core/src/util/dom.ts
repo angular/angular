@@ -52,18 +52,6 @@ export function escapeCommentText(value: string): string {
 }
 
 /**
- * Verifies whether a given child node is a descendant of a given parent node.
- * It may not be the case when properties like `.firstChild` are clobbered and
- * accessing `.firstChild` results in an unexpected node returned.
- */
-function isClobberedElement(parentNode: Node, childNode: Node): boolean {
-  return (
-    (parentNode.compareDocumentPosition(childNode) & Node.DOCUMENT_POSITION_CONTAINED_BY) !==
-    Node.DOCUMENT_POSITION_CONTAINED_BY
-  );
-}
-
-/**
  * Retrieves next sibling node and makes sure that there is no
  * clobbering of the `nextSibling` property happening.
  */
@@ -81,10 +69,16 @@ export function getNextSibling(node: Node): Node | null {
 /**
  * Retrieves first child node and makes sure that there is no
  * clobbering of the `firstChild` property happening.
+ *
+ * See `getNextSibling` for more information on clobbering.
  */
 export function getFirstChild(node: Node): Node | null {
   const firstChild = node.firstChild;
-  if (firstChild && isClobberedElement(node, firstChild)) {
+  // Make sure there is no `firstChild` clobbering: the real first child has
+  // `node` as its parent and no previous sibling. Note that checking whether
+  // the node is a descendant isn't enough, since a clobbering form control is
+  // typically located inside the form itself.
+  if (firstChild && (firstChild.parentNode !== node || firstChild.previousSibling !== null)) {
     throw clobberedElementError(firstChild);
   }
   return firstChild;
@@ -97,7 +91,7 @@ export function getNodeName(node: Node): string {
   return typeof nodeName === 'string' ? nodeName : 'FORM';
 }
 
-function clobberedElementError(node: Node) {
+export function clobberedElementError(node: Node) {
   return new Error(
     `Action failed because the element is clobbered: ${(node as Element).outerHTML}`,
   );

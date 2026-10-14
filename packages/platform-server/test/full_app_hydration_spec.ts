@@ -50,6 +50,7 @@ import {
   QueryList,
   signal,
   TemplateRef,
+  Type,
   ViewChild,
   ViewContainerRef,
   ViewEncapsulation,
@@ -7122,6 +7123,239 @@ describe('platform-server full application hydration integration', () => {
         // Ensure no error has been logged in the console,
         // such as "injector has already been destroyed."
         expect(errorSpy).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('DOM clobbering', () => {
+      function emulateFormDomClobbering(form: HTMLFormElement): () => void {
+        const clobbered = new Set<string>();
+        for (const control of Array.from(form.querySelectorAll('[name],[id]'))) {
+          for (const key of [control.getAttribute('name'), control.getAttribute('id')]) {
+            if (key && !clobbered.has(key)) {
+              clobbered.add(key);
+              Object.defineProperty(form, key, {value: control, configurable: true});
+            }
+          }
+        }
+        return () => {
+          for (const key of clobbered) {
+            delete (form as unknown as Record<string, unknown>)[key];
+          }
+        };
+      }
+
+      /** Undoes the currently installed DOM clobbering emulation, if any. */
+      let restoreDomClobbering: (() => void) | null = null;
+
+      afterEach(() => {
+        restoreDomClobbering?.();
+        restoreDomClobbering = null;
+      });
+
+      function emulateFormDomClobberingOnClient(): void {
+        if (isPlatformBrowser(inject(PLATFORM_ID))) {
+          restoreDomClobbering = emulateFormDomClobbering(inject(DOCUMENT).querySelector('form')!);
+        }
+      }
+
+      async function hydrateWithFormClobbering(
+        html: string,
+        component: Type<unknown>,
+      ): Promise<ApplicationRef> {
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, component);
+        appRef.tick();
+        restoreDomClobbering?.();
+        restoreDomClobbering = null;
+        return appRef;
+      }
+
+      it('should hydrate correctly when a form control has a non-clobbering name', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            <form>
+              <span>{{ label() }}</span>
+              <input [name]="key" />
+              <div>{{ help() }}</div>
+            </form>
+          `,
+        })
+        class SimpleComponent {
+          label = signal('Label');
+          help = signal('Help text');
+          key = 'username';
+
+          constructor() {
+            emulateFormDomClobberingOnClient();
+          }
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+        expect(ssrContents).toContain('<input name="username">');
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await hydrateWithFormClobbering(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+
+        compRef.instance.label.set('Updated label');
+        compRef.instance.help.set('Updated help');
+        appRef.tick();
+
+        expect(clientRootNode.querySelector('span').textContent).toBe('Updated label');
+        expect(clientRootNode.querySelector('div').textContent).toBe('Updated help');
+      });
+
+      async function expectHydrationToFailWithClobbering(
+        component: Type<unknown>,
+        expectedSsrContent: string,
+      ): Promise<Error> {
+        const html = await ssr(component);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+        expect(ssrContents).toContain(expectedSsrContent);
+
+        resetTViewsFor(component);
+
+        try {
+          await prepareEnvironmentAndHydrate(doc, html, component, {
+            envProviders: [withNoopErrorHandler()],
+          });
+        } catch (e: unknown) {
+          return e as Error;
+        }
+        fail('Expected the hydration process to throw.');
+        return null!;
+      }
+
+      it('should throw when a form control clobbers `form.firstChild`', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            <form>
+              <span>{{ label }}</span>
+              <div><input [name]="key" /></div>
+              <div>{{ help }}</div>
+            </form>
+          `,
+        })
+        class SimpleComponent {
+          label = 'Label';
+          help = 'Help text';
+          key = 'firstChild';
+
+          constructor() {
+            emulateFormDomClobberingOnClient();
+          }
+        }
+
+        const error = await expectHydrationToFailWithClobbering(
+          SimpleComponent,
+          '<input name="firstChild">',
+        );
+        expect(error.message).toBe(
+          'Action failed because the element is clobbered: <input name="firstChild">',
+        );
+      });
+
+      it('should throw when a form control clobbers `form.firstChild` in production mode (ngDevMode off)', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            <form>
+              <span>{{ label }}</span>
+              <div><input [name]="key" /></div>
+              <div>{{ help }}</div>
+            </form>
+          `,
+        })
+        class SimpleComponent {
+          label = 'Label';
+          help = 'Help text';
+          key = 'firstChild';
+
+          constructor() {
+            emulateFormDomClobberingOnClient();
+          }
+        }
+
+        const previousNgDevMode = (globalThis as any).ngDevMode;
+        (globalThis as any).ngDevMode = false;
+        try {
+          const error = await expectHydrationToFailWithClobbering(
+            SimpleComponent,
+            '<input name="firstChild">',
+          );
+          expect(error instanceof TypeError).toBe(false);
+          expect(error.message).toBe(
+            'Action failed because the element is clobbered: <input name="firstChild">',
+          );
+        } finally {
+          (globalThis as any).ngDevMode = previousNgDevMode;
+        }
+      });
+
+      it('should throw when a form control clobbers `form.nextSibling`', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            <form>
+              <input [name]="key" />
+            </form>
+            <div>{{ help }}</div>
+          `,
+        })
+        class SimpleComponent {
+          help = 'Help text';
+          key = 'nextSibling';
+
+          constructor() {
+            emulateFormDomClobberingOnClient();
+          }
+        }
+
+        const error = await expectHydrationToFailWithClobbering(
+          SimpleComponent,
+          '<input name="nextSibling">',
+        );
+        expect(error.message).toBe(
+          'Action failed because the element is clobbered: <input name="nextSibling">',
+        );
+      });
+
+      it('should throw when a form control clobbers `form.hasAttribute`', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            <form>
+              <input [name]="key" />
+            </form>
+          `,
+        })
+        class SimpleComponent {
+          key = 'hasAttribute';
+
+          constructor() {
+            emulateFormDomClobberingOnClient();
+          }
+        }
+
+        const error = await expectHydrationToFailWithClobbering(
+          SimpleComponent,
+          '<input name="hasAttribute">',
+        );
+        expect(error instanceof TypeError).toBe(false);
+        expect(error.message).toBe(
+          'Action failed because the element is clobbered: <input name="hasAttribute">',
+        );
       });
     });
 

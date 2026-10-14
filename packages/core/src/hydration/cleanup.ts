@@ -19,6 +19,7 @@ import {RNode} from '../render3/interfaces/renderer_dom';
 import {isLContainer, isLView} from '../render3/interfaces/type_checks';
 import {HEADER_OFFSET, HOST, LView, PARENT, RENDERER, TVIEW} from '../render3/interfaces/view';
 import {nativeRemoveNode} from '../render3/dom_node_manipulation';
+import {getNextSibling} from '../util/dom';
 
 import {validateSiblingNodeExists} from './error_handling';
 import {cleanupI18nHydrationData} from './i18n';
@@ -75,7 +76,7 @@ function removeDehydratedView(dehydratedView: DehydratedContainerView, renderer:
     const numNodes = dehydratedView.data[NUM_ROOT_NODES];
     while (nodesRemoved < numNodes) {
       ngDevMode && validateSiblingNodeExists(currentRNode);
-      const nextSibling: RNode = currentRNode.nextSibling!;
+      const nextSibling: RNode = getNextSibling(currentRNode as unknown as Node)!;
       nativeRemoveNode(renderer, currentRNode, false);
       currentRNode = nextSibling;
       nodesRemoved++;
