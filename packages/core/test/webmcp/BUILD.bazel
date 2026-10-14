@@ -11,9 +11,8 @@ ts_project(
     deps = [
         "//packages/core",
         "//packages/core:node_modules/@mcp-b/webmcp-polyfill",
-        "//packages/core:node_modules/@mcp-b/webmcp-types",
         "//packages/core/testing",
-        "//packages/core/third_party/@mcp-b/webmcp-types",
+        "//packages/core/third_party/webmcp-types",
         "//packages/router",
         "//packages/router/testing",
     ],
