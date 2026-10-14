@@ -91,11 +91,13 @@ The `resources` function can also be `async` and return a `Promise` if you need 
 
 ```ts
 resources: async (ctx) => {
+  const injector = inject(Injector);
   const {fetchUserData} = await import('./user-api');
   return {
     user: resource({
       params: () => ctx.params()['id'],
       loader: ({params: id}) => fetchUserData(id),
+      injector,
     }),
   };
 },
