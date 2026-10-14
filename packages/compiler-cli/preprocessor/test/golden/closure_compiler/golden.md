@@ -4,7 +4,7 @@ import { Component, Injectable } from '@angular/core';
 // @ts-ignore
 import * as i0 from '@angular/core';
 
-const _c0 = function (): any {
+let _c0 = function (): any {
   return 'div[_ngcontent-%COMP%] { color: red; --%NS%long-prop: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"; }';
 };
 

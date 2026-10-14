@@ -620,9 +620,11 @@ function normalizeWhitespace(s: string): string {
     .join('\n')
     .trim();
 
-  // Normalize Prettier 3.8 vs 3.9 semicolon placement for trailing block comments on statements
+  // Normalize Prettier 3.8 vs 3.9 semicolon placement for trailing block comments on statements.
+  // Only consider comments on the same line as the semicolon, otherwise we'd also capture
+  // leading comments of the next statement.
   while (true) {
-    const next = normalized.replace(/;\s*(\/\*[\s\S]*?\*\/)/g, ' $1;');
+    const next = normalized.replace(/;[ \t]*(\/\*[\s\S]*?\*\/)/g, ' $1;');
     if (next === normalized) break;
     normalized = next;
   }
