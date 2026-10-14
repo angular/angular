@@ -43,7 +43,7 @@ export class BaseDir {
         (): any => [
           {
             /* @ts-ignore */
-            type: ElementRef,
+            type: i0.ElementRef,
           },
         ],
         null,
@@ -145,7 +145,7 @@ export class ChildWithCtorDir extends BaseDir {
         (): any => [
           {
             /* @ts-ignore */
-            type: ElementRef,
+            type: i0.ElementRef,
           },
         ],
         null,

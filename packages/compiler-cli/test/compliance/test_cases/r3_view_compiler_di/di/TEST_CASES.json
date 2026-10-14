@@ -16,22 +16,7 @@
       "inputFiles": ["injectable_factory.ts"],
       "expectations": [
         {
-          "failureMessage": "Incorrect factory definition",
-          "files": [
-            {
-              "expected": "injectable_factory_fac.js",
-              "generated": "injectable_factory.js"
-            }
-          ]
-        },
-        {
-          "failureMessage": "Incorrect injectable definition",
-          "files": [
-            {
-              "expected": "injectable_factory_prov.js",
-              "generated": "injectable_factory.js"
-            }
-          ]
+          "files": ["injectable_factory.js"]
         }
       ]
     },
@@ -40,22 +25,7 @@
       "inputFiles": ["ctor_overload.ts"],
       "expectations": [
         {
-          "failureMessage": "Incorrect factory definition",
-          "files": [
-            {
-              "expected": "ctor_overload_fac.js",
-              "generated": "ctor_overload.js"
-            }
-          ]
-        },
-        {
-          "failureMessage": "Incorrect injectable definition",
-          "files": [
-            {
-              "expected": "ctor_overload_prov.js",
-              "generated": "ctor_overload.js"
-            }
-          ]
+          "files": ["ctor_overload.js"]
         }
       ]
     },
@@ -125,23 +95,11 @@
       "expectations": [
         {
           "failureMessage": "Invalid pipe factory function",
-          "files": [
-            {
-              "expected": "pipe_and_injectable_pipe_last.js",
-              "generated": "pipe_and_injectable.js"
-            }
-          ],
-          "extraChecks": [["verifyUniqueFactory", "MyPipe"]]
-        },
-        {
-          "failureMessage": "Invalid pipe factory function",
-          "files": [
-            {
-              "expected": "pipe_and_injectable_pipe_first.js",
-              "generated": "pipe_and_injectable.js"
-            }
-          ],
-          "extraChecks": [["verifyUniqueFactory", "MyOtherPipe"]]
+          "files": ["pipe_and_injectable.js"],
+          "extraChecks": [
+            ["verifyUniqueFactory", "MyPipe"],
+            ["verifyUniqueFactory", "MyOtherPipe"]
+          ]
         }
       ]
     }
