@@ -62198,10 +62198,11 @@ var findOwnedForksOfRepoQuery = params({
   })
 });
 var AuthenticatedGitClient = class _AuthenticatedGitClient extends GitClient {
-  constructor(githubToken, userType, config, baseDir) {
+  constructor(githubToken, userType, config, baseDir, tokenEnvironmentVariable = null) {
     super(config, baseDir);
     this.githubToken = githubToken;
     this.userType = userType;
+    this.tokenEnvironmentVariable = tokenEnvironmentVariable;
     this._githubTokenRegex = new RegExp(this.githubToken, "g");
     this._cachedOauthScopes = null;
     this._cachedForkRepositories = null;
@@ -62268,21 +62269,23 @@ Alternatively, a new token can be created at: ${GITHUB_TOKEN_GENERATE_URL}
       throw new Error("No instance of `AuthenticatedGitClient` has been configured.");
     }
     if (_AuthenticatedGitClient._authenticatedInstance === null) {
-      _AuthenticatedGitClient._authenticatedInstance = (async (token, userType) => {
-        return new _AuthenticatedGitClient(token, userType, await getConfig([assertValidGithubConfig]));
-      })(_AuthenticatedGitClient._token, _AuthenticatedGitClient._userType);
+      _AuthenticatedGitClient._authenticatedInstance = (async (token, userType, tokenEnvironmentVariable) => {
+        return new _AuthenticatedGitClient(token, userType, await getConfig([assertValidGithubConfig]), void 0, tokenEnvironmentVariable);
+      })(_AuthenticatedGitClient._token, _AuthenticatedGitClient._userType, _AuthenticatedGitClient._tokenEnvironmentVariable);
     }
     return _AuthenticatedGitClient._authenticatedInstance;
   }
-  static configure(token, userType = "user") {
+  static configure(token, userType = "user", tokenEnvironmentVariable = null) {
     if (_AuthenticatedGitClient._token) {
       throw Error("Unable to configure `AuthenticatedGitClient` as it has been configured already.");
     }
     _AuthenticatedGitClient._token = token;
     _AuthenticatedGitClient._userType = userType;
+    _AuthenticatedGitClient._tokenEnvironmentVariable = tokenEnvironmentVariable;
   }
 };
 AuthenticatedGitClient._token = null;
+AuthenticatedGitClient._tokenEnvironmentVariable = null;
 AuthenticatedGitClient._authenticatedInstance = null;
 var ReleaseTrain = class {
   constructor(branchName, version) {
@@ -65809,7 +65812,7 @@ content-type/dist/index.js:
      *)
   *)
 
-@angular/ng-dev/bundles/chunk-L2M3AJHF.mjs:
+@angular/ng-dev/bundles/chunk-535Q35KB.mjs:
   (*! Bundled license information:
   
   content-type/dist/index.js:
