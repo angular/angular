@@ -293,7 +293,7 @@ In the template, render an array case like this:
 }
 ```
 
-The `addItem()` method extends the model; the form re-derives the array's fields automatically. New items start with fresh validation state. `removeItem()` filters the model; the dropped item's field state goes with it.
+The `addItem()` method extends the model; the form re-derives the array's fields automatically. New items start with fresh validation state. `removeItem()` filters the model. Because arrays of primitives are [tracked by position](#tracking-item-identity), removing an item drops the last field, and the items after the removed one take on the state of the position they move into.
 
 ### Tracking item identity
 
