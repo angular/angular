@@ -191,7 +191,7 @@ export class App {}
 
 ```typescript {header: "./main.ts"}
 import {bootstrapApplication} from '@angular/platform-browser';
-import {App} from './app';
+import {App} from './app/app';
 
 bootstrapApplication(App).catch((e) => console.error(e));
 ```
