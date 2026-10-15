@@ -14,9 +14,10 @@ import {
   getDirectiveName,
 } from '../directive-forest/component-tree/component-tree';
 import {getDirectiveForestManager} from '../directive-forest/manager';
-import {Highlight, inspectElementHighlightTemplate} from '../shared/highlighter/highlights';
+import {inspectElementHighlightTemplate} from '../shared/highlighter/templates';
 import {highlightElement} from '../shared/highlighter';
 import {ComponentTreeNode} from '../shared/interfaces';
+import {Highlight} from '../shared/highlighter/types';
 
 export interface ComponentInspectorOptions {
   onComponentEnter: (id: number) => void;
