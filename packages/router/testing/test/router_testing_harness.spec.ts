@@ -36,6 +36,25 @@ describe('navigateForTest', () => {
     expect(harness.routeNativeElement?.innerHTML).toContain('hello world');
   });
 
+  it('navigates with commands, query params and fragment', async () => {
+    @Component({template: 'hello'})
+    class TestCmp {}
+
+    TestBed.configureTestingModule({providers: [provideRouter([{path: 'a', component: TestCmp}])]});
+    const harness = await RouterTestingHarness.create();
+    const activatedComponent = await harness.navigate(
+      ['/a'],
+      {
+        queryParams: {q: '1'},
+        fragment: 'frag',
+      },
+      TestCmp,
+    );
+
+    expect(activatedComponent).toBeInstanceOf(TestCmp);
+    expect(TestBed.inject(Router).url).toBe('/a?q=1#frag');
+  });
+
   it('executes guards on the path', async () => {
     let guardCalled = false;
     TestBed.configureTestingModule({
