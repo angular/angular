@@ -263,7 +263,7 @@ The `FormBuilder` service is an injectable provider from the reactive forms modu
 
 </docs-step>
 <docs-step title="Generate form controls">
-The `FormBuilder` service has three methods: `control()`, `group()`, and `array()`. These are factory methods for generating instances in your component classes including form controls, form groups, and form arrays. Use the `group` method to create the `profileForm` controls.
+The `FormBuilder` service has four methods: `control()`, `group()`, `record()`, and `array()`. These are factory methods for generating instances in your component classes including form controls, form groups, form records, and form arrays. Use the `group` method to create the `profileForm` controls.
 
 <docs-code header="profile-editor.component.ts (form builder)" path="adev/src/content/examples/reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" region="form-builder"/>
 
