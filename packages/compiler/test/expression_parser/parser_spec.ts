@@ -21,6 +21,7 @@ import {
   ParseSpan,
   PropertyRead,
   TemplateBinding,
+  TemplateLiteral,
   VariableBinding,
 } from '../../src/expression_parser/ast';
 import {Lexer} from '../../src/expression_parser/lexer';
@@ -690,6 +691,66 @@ describe('parser', () => {
         // we should retain the expression.
         checkBinding('`hello ${}`');
         expectBindingError('`hello ${}`', 'Template literal interpolation cannot be empty');
+      });
+
+      it('should not report errors for valid interpolations', () => {
+        for (const text of [
+          '`${a}`',
+          '`${a + b}`',
+          '`${foo.bar}`',
+          '`${condition ? a : b}`',
+          '`${a?.b}`',
+          '`${fn(a, [b, c])}`',
+          '`${{a: 1}.a}`',
+          '`${() => a}`',
+          '`${a | pipe: b}`',
+          '`before ${a} and ${b} after`',
+          '`outer ${`inner ${a}`}`',
+          '{"key": `${a}`}',
+          'tag`${a}`',
+        ]) {
+          expect(parseBinding(text).errors).withContext(text).toEqual([]);
+        }
+      });
+
+      it('should report an error if an interpolation has unexpected tokens after the expression', () => {
+        expectBindingError('`hello ${a b} world`', 'Missing expected }');
+        // Operators that are not supported in Angular expressions.
+        expectBindingError('`hello ${a & b} world`', 'Missing expected }');
+        expectBindingError('`hello ${a, b} world`', 'Missing expected }');
+        // Interpolations that are nested inside of other constructs that expect a closing brace.
+        expectBindingError('`hello ${`nested ${a b}`} world`', 'Missing expected }');
+        expectBindingError('{"a": `hello ${b c}`}', 'Missing expected }');
+        expectBindingError('tag`hello ${a b} world`', 'Missing expected }');
+        expectBindingError('`hello ${a | pipe b} world`', 'Missing expected }');
+        expectActionError('`hello ${a; b} world`', 'Missing expected }');
+      });
+
+      it('should report an error if an interpolation is not closed', () => {
+        expectBindingError('`hello ${a', 'Missing expected } at the end of the expression');
+        expectBindingError('`hello ${a ', 'Missing expected } at the end of the expression');
+      });
+
+      it('should report an error if a template literal with an interpolation is not closed', () => {
+        expectBindingError('`hello ${a}', 'Unterminated template literal');
+        expectBindingError('`hello ${a} world', 'Unterminated template literal');
+        expectBindingError('`hello ${a} and ${b} world', 'Unterminated template literal');
+      });
+
+      it('should retain all the elements and expressions of a malformed template literal', () => {
+        for (const text of [
+          '`before ${a b} after`',
+          '`before ${a b} ${c d} after`',
+          '`before ${a & b} after`',
+          '`before ${a; b} after`',
+        ]) {
+          const result = validate(parseAction(text));
+          const literal = result.ast as TemplateLiteral;
+          expect(result.errors.length).withContext(text).toBeGreaterThan(0);
+          expect(literal.elements.length)
+            .withContext(text)
+            .toBe(literal.expressions.length + 1);
+        }
       });
 
       it('should parse tagged template literals with no interpolations', () => {
