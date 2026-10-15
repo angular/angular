@@ -24,6 +24,7 @@ Before:
 
 ```ts
 import {RouterTestingModule} from '@angular/router/testing';
+import {TestBed} from '@angular/core/testing';
 import {SpyLocation} from '@angular/common/testing';
 
 describe('test', () => {
@@ -39,6 +40,7 @@ After:
 
 ```ts
 import {RouterModule} from '@angular/router';
+import {TestBed} from '@angular/core/testing';
 import {SpyLocation} from '@angular/common/testing';
 
 describe('test', () => {
@@ -56,6 +58,7 @@ Before:
 
 ```ts
 import {RouterTestingModule} from '@angular/router/testing';
+import {TestBed} from '@angular/core/testing';
 import {SpyLocation} from '@angular/common/testing';
 
 describe('test', () => {
@@ -78,6 +81,7 @@ After:
 
 ```ts
 import {RouterModule} from '@angular/router';
+import {TestBed} from '@angular/core/testing';
 import {SpyLocation, provideLocationMocks} from '@angular/common/testing';
 
 describe('test', () => {
