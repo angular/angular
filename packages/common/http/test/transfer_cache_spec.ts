@@ -297,6 +297,61 @@ describe('TransferCache', () => {
       expect(firstNext).toHaveBeenCalledTimes(1);
       expect(secondNext).toHaveBeenCalledTimes(1);
     });
+
+    it('should not cache requests when Cache-Control: no-store is appended to an existing Cache-Control header', () => {
+      configureInterceptor();
+
+      const request = new HttpRequest('GET', '/test-req-append-no-store', null, {
+        headers: new HttpHeaders({'Cache-Control': 'max-age=0'}).append(
+          'Cache-Control',
+          'no-store',
+        ),
+      });
+
+      const firstNext = jasmine
+        .createSpy('firstNext')
+        .and.returnValue(of(new HttpResponse({body: 'sensitive-data'})));
+      const secondNext = jasmine
+        .createSpy('secondNext')
+        .and.returnValue(of(new HttpResponse({body: 'fresh-data'})));
+
+      runOnServer(() => {
+        expect(runInterceptor(request, firstNext).body).toBe('sensitive-data');
+        expect(runInterceptor(request, secondNext).body).toBe('fresh-data');
+      });
+
+      expect(firstNext).toHaveBeenCalledTimes(1);
+      expect(secondNext).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not cache responses when Cache-Control: no-store is appended to an existing Cache-Control header', () => {
+      configureInterceptor();
+
+      const request = new HttpRequest('GET', '/test-res-append-no-store');
+
+      const firstNext = jasmine.createSpy('firstNext').and.returnValue(
+        of(
+          new HttpResponse({
+            body: 'sensitive-data',
+            headers: new HttpHeaders({'Cache-Control': 'max-age=0'}).append(
+              'Cache-Control',
+              'no-store',
+            ),
+          }),
+        ),
+      );
+      const secondNext = jasmine
+        .createSpy('secondNext')
+        .and.returnValue(of(new HttpResponse({body: 'fresh-data'})));
+
+      runOnServer(() => {
+        expect(runInterceptor(request, firstNext).body).toBe('sensitive-data');
+        expect(runInterceptor(request, secondNext).body).toBe('fresh-data');
+      });
+
+      expect(firstNext).toHaveBeenCalledTimes(1);
+      expect(secondNext).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('withRequestsMadeViaParent()', () => {
