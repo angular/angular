@@ -353,17 +353,18 @@ function hasAuthHeaders(req: HttpRequest<unknown>): boolean {
 const UNCACHEABLE_CACHE_CONTROL_DIRECTIVES = new Set(['no-store', 'private', 'no-cache']);
 
 function hasUncacheableCacheControl(headers: HttpHeaders): boolean {
-  const cacheControl = headers.get('cache-control');
+  const cacheControlValues = headers.getAll('cache-control');
 
-  if (!cacheControl) {
+  if (!cacheControlValues) {
     return false;
   }
 
-  return cacheControl.split(',').some((directive) => {
-    const directiveName = directive.split('=', 1)[0].trim().toLowerCase();
-
-    return UNCACHEABLE_CACHE_CONTROL_DIRECTIVES.has(directiveName);
-  });
+  return cacheControlValues.some((cacheControl) =>
+    cacheControl.split(',').some((directive) => {
+      const directiveName = directive.split('=', 1)[0].trim().toLowerCase();
+      return UNCACHEABLE_CACHE_CONTROL_DIRECTIVES.has(directiveName);
+    }),
+  );
 }
 
 function hasSetCookieHeader(headers: HttpHeaders): boolean {
