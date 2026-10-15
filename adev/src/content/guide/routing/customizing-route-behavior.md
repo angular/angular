@@ -77,7 +77,9 @@ export const routes: Routes = [
 ```
 
 ```ts
-@Component({/* ... */})
+@Component({
+  /* ... */
+})
 export class Customer {
   private route = inject(ActivatedRoute);
 
@@ -97,7 +99,9 @@ provideRouter(routes, withRouterConfig({paramsInheritanceStrategy: 'emptyOnly'})
 In that case, the `Customer` component has to read the parent parameters from its ancestor routes:
 
 ```ts
-@Component({/* ... */})
+@Component({
+  /* ... */
+})
 export class Customer {
   private route = inject(ActivatedRoute);
 
@@ -243,6 +247,8 @@ export class CustomRouteReuseStrategy implements RouteReuseStrategy {
   }
 }
 ```
+
+IMPORTANT: Inherited route [resources](guide/routing/data-fetching-with-resources#resource-inheritance) do not work with a custom `RouteReuseStrategy` that detaches a route without also detaching the ancestors whose resources it depends on.
 
 ### Manually destroying detached route handles
 
