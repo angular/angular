@@ -68,6 +68,7 @@ export {
   UrlMatchResult,
   ResourceContext,
   ResourceResult,
+  RouteResource,
 } from './models';
 export {ViewTransitionInfo, ViewTransitionsFeatureOptions} from './utils/view_transition';
 

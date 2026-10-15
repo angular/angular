@@ -26,13 +26,25 @@ import {Params} from './shared';
 import type {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 
 /**
+ * A read-only resource exposed by the router from a route's `resources`.
+ *
+ * You can read its state signals and call `reload()`, but it has no `set()` or `update()`.
+ * Use this type to receive a `nonBlocking()` resource in a component input.
+ *
+ * @usageNotes
+ * ```ts
+ * reportData = input.required<RouteResource<ReportData>>();
+ * ```
+ *
+ * @developerPreview 22.2
+ */
+export type RouteResource<T> = Resource<T> & Pick<WritableResource<T>, 'reload'>;
+
+/**
  * The expected return type of a `resources` function.
  * @developerPreview 22.2
  */
-export type ResourceResult = Record<
-  string,
-  Resource<unknown> & Pick<WritableResource<unknown>, 'reload'>
->;
+export type ResourceResult = Record<string, RouteResource<unknown>>;
 
 // Developer notes: properties are exposed as a plain Record (`Params`) rather than a `ParamMap`
 // to allow future type-check layers to infer exact keys (e.g., `{ id: string }`).

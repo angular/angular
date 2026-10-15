@@ -24,6 +24,7 @@ import {
   untracked,
 } from '@angular/core';
 import {Router} from './router';
+import type {RouteResource} from './models';
 import type {ActivatedRoute} from './router_state';
 import {
   NavigationStart,
@@ -64,7 +65,7 @@ export function nonBlocking<T, R extends Resource<T>>(res: R): R {
  * Wraps a Resource to make it cooperative with the Angular Router, freezing its state
  * during navigation transitions and handling rollback recovery.
  */
-export function routerResource<T>(source: Resource<T>): Resource<T> & {reload(): boolean} {
+export function routerResource<T>(source: Resource<T>): RouteResource<T> {
   ngDevMode && assertInInjectionContext(routerResource);
   const injector = inject(Injector);
   const router = injector.get(Router);

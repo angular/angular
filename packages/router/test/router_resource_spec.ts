@@ -10,13 +10,13 @@ import {
   Component,
   computed,
   inject,
+  input,
   Input,
   resource,
   Resource,
   ResourceSnapshot,
   ResourceStatus,
   signal,
-  WritableResource,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
@@ -31,6 +31,7 @@ import {
   ActivatedRoute,
   ResourceResult,
   Route,
+  RouteResource,
   RouterFeatures,
 } from '@angular/router';
 import {RouterTestingHarness} from '../testing';
@@ -330,8 +331,7 @@ describe('Router resources integration', () => {
           path: 'test',
           component: TargetCmp,
           resources: () => ({
-            data: {foo: 'bar'} as unknown as Resource<unknown> &
-              Pick<WritableResource<unknown>, 'reload'>,
+            data: {foo: 'bar'} as unknown as RouteResource<unknown>,
           }),
         },
       ]);
@@ -531,6 +531,40 @@ describe('Router resources integration', () => {
       const resourceRef = router.routerState.root.firstChild?.resources?.['user'];
       expect(resourceRef?.value()).toBe('loaded-user');
       expect(resourceRef?.isLoading()).toBe(false);
+    });
+
+    it('should allow calling reload() on a non-blocking resource received as a RouteResource input', async () => {
+      const loaderSpy = jasmine.createSpy('loader').and.resolveTo('loaded');
+
+      @Component({template: ''})
+      class RouteResourceInputCmp {
+        // Tests are JIT-compiled, so signal inputs must be declared explicitly.
+        @Input({isSignal: true, required: true} as any)
+        readonly report = input.required<RouteResource<string>>();
+      }
+
+      const {harness} = await setupRouter(
+        [
+          {
+            path: 'test',
+            component: RouteResourceInputCmp,
+            resources: () => ({
+              report: nonBlocking(resource({loader: loaderSpy})),
+            }),
+          },
+        ],
+        withComponentInputBinding(),
+      );
+
+      const cmp = await harness.navigateByUrl('/test', RouteResourceInputCmp);
+      await harness.fixture.whenStable();
+      expect(loaderSpy).toHaveBeenCalledTimes(1);
+
+      const reloaded = cmp.report().reload();
+      await harness.fixture.whenStable();
+
+      expect(reloaded).toBe(true);
+      expect(loaderSpy).toHaveBeenCalledTimes(2);
     });
 
     it('should complete navigation and expose error for non-blocking resources', async () => {
@@ -927,7 +961,7 @@ describe('Router resources integration', () => {
       const isLoadingSignal = signal<boolean>(true);
       const hasValueSignal = signal<boolean>(false);
 
-      const customResource: Resource<string | undefined> & {reload(): boolean} = {
+      const customResource: RouteResource<string | undefined> = {
         value: valueSignal.asReadonly(),
         status: statusSignal.asReadonly(),
         isLoading: isLoadingSignal.asReadonly(),
