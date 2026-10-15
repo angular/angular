@@ -183,4 +183,40 @@ describe('mergeFrames', () => {
       source: '',
     });
   });
+
+  it('should not mutate the merged frames', () => {
+    const createElement = (name: string): ElementProfile => ({
+      children: [],
+      directives: [
+        {
+          isComponent: false,
+          isElement: false,
+          lifecycle: {},
+          outputs: {},
+          changeDetection: 10,
+          name,
+        },
+      ],
+      type: 'element',
+    });
+    const createFrame = (directives: ElementProfile[]): ProfilerFrame => ({
+      directives,
+      duration: 5,
+      source: 'foo',
+    });
+
+    // Only the later frames have the `Bar` element, e.g. because it was created after the first one.
+    const frames = [
+      createFrame([createElement('Foo')]),
+      createFrame([createElement('Foo'), createElement('Bar')]),
+      createFrame([createElement('Foo'), createElement('Bar')]),
+    ];
+    const framesBefore = structuredClone(frames);
+
+    const result = mergeFrames(frames);
+
+    expect(frames).toEqual(framesBefore);
+    expect(mergeFrames(frames)).toEqual(result);
+    expect(result!.directives[1].directives[0].changeDetection).toBe(20);
+  });
 });
