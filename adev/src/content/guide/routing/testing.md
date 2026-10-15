@@ -290,6 +290,17 @@ describe('Search', () => {
 
     expect(component.searchTerm()).toBe('angular');
   });
+
+  it('should read search term and fragment passed as navigation extras', async () => {
+    component = await harness.navigate(
+      ['/search'],
+      {queryParams: {q: 'angular'}, fragment: 'results'},
+      Search,
+    );
+
+    expect(component.searchTerm()).toBe('angular');
+    expect(TestBed.inject(Router).url).toBe('/search?q=angular#results');
+  });
 });
 ```
 
