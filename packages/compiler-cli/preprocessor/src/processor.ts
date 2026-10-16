@@ -266,7 +266,7 @@ export function buildTcbTargets(
 
 function mapDeps(
   deps: nga.DependencyMetadata[],
-  content: string,
+  content: MagicString | string,
   guards: nga.SpanMetadata[] = [],
 ): R3DependencyMetadata[] {
   return deps.map((dep) => {
@@ -1364,7 +1364,7 @@ export function processFileSync(
           diagnostics: fileDiagnostics,
         }),
         lifecycle: {usesOnChanges: classMeta.usesOnChanges},
-        inputs: buildInputsMap(inputs, content),
+        inputs: buildInputsMap(inputs, content, (span) => sliceGuarded(s, span, guards)),
         outputs: buildOutputsMap(outputs),
         usesInheritance: classMeta.usesInheritance,
         controlCreate: null,
@@ -1488,7 +1488,7 @@ export function processFileSync(
           diagnostics: fileDiagnostics,
         }),
         lifecycle: {usesOnChanges: classMeta.usesOnChanges},
-        inputs: buildInputsMap(inputs, content),
+        inputs: buildInputsMap(inputs, content, (span) => sliceGuarded(s, span, guards)),
         outputs: buildOutputsMap(outputs),
         usesInheritance: classMeta.usesInheritance,
         controlCreate: null,
@@ -1542,7 +1542,7 @@ export function processFileSync(
         ctx,
         classes,
         classMeta,
-        content,
+        s,
         filePath,
         fileDiagnostics,
       );
@@ -1585,7 +1585,7 @@ export function processFileSync(
       // 2. Generate ɵprov (InjectableDef)
       const parsedDeps =
         injectable.deps && (injectable.useClass || injectable.useFactory)
-          ? mapDeps(injectable.deps, content, guards)
+          ? mapDeps(injectable.deps, s, guards)
           : undefined;
 
       const injectableMeta: R3InjectableMetadata = {
@@ -1910,37 +1910,50 @@ function inlineDecoratorResources(
 /** Mirrors `FORWARD_REFERENCE_GUARD` in `ng-analyze/src/analyzer/mod.rs`. */
 const FORWARD_REFERENCE_GUARD = '// @ts-ignore\n';
 
+interface SourceInsertion {
+  position: number;
+  text: string;
+}
+
+const signalDebugNameInsertionsBySource = new WeakMap<MagicString, SourceInsertion[]>();
+
 /**
  * Give each signal-creating call the analyzer found its implicit `debugName`.
  */
 function insertSignalDebugNames(
   s: MagicString,
-  insertions: nga.SignalDebugNameMetadata[],
+  insertions: nga.SignalDebugNameMetadata[] | undefined,
   emitTypes: boolean,
 ): void {
+  if (!insertions || insertions.length === 0) return;
   // Note: we diverge from ngtsc with the `as []` as opposed to adding a `@ts-ignore`.
+  const recorded: SourceInsertion[] = [];
   for (const insertion of insertions) {
     const debugName = `{ debugName: ${JSON.stringify(insertion.debugName)} }`;
     const separator = insertion.needsSeparator ? ', ' : '';
+    let text: string;
     if (insertion.intoOptions) {
-      s.appendLeft(
-        insertion.position,
-        `...(ngDevMode ? ${debugName} : /* istanbul ignore next */ {})${separator}`,
-      );
-      continue;
+      text = `...(ngDevMode ? ${debugName} : /* istanbul ignore next */ {})${separator}`;
+    } else {
+      const devArgs = insertion.prependUndefined ? `undefined, ${debugName}` : debugName;
+      const spread = `...(ngDevMode ? [${devArgs}] : /* istanbul ignore next */ [])`;
+      text = emitTypes ? `${separator}${spread} as []` : `${separator}/* @ts-ignore */ ${spread}`;
     }
-    const devArgs = insertion.prependUndefined ? `undefined, ${debugName}` : debugName;
-    const spread = `...(ngDevMode ? [${devArgs}] : /* istanbul ignore next */ [])`;
-    s.appendLeft(
-      insertion.position,
-      emitTypes ? `${separator}${spread} as []` : `${separator}/* @ts-ignore */ ${spread}`,
-    );
+    s.appendLeft(insertion.position, text);
+    recorded.push({position: insertion.position, text});
+  }
+  if (recorded.length > 0) {
+    signalDebugNameInsertionsBySource.set(s, recorded);
   }
 }
 
 /**
  * Slice `span` from the original source, with a `// @ts-ignore` line right before each identifier
- * in `guards` (`ClassMetadata.laterDeclarationReferences`) that falls inside it.
+ * in `guards` (`ClassMetadata.laterDeclarationReferences`) and any implicit signal `debugName`
+ * insertions that fall inside it (mirroring ngtsc, where `signalMetadataTransform` runs on the
+ * `SourceFile` after `ivyTransformFactory` has already re-emitted decorator expressions into
+ * `ɵcmp`/`ɵdir` and `ɵsetClassMetadata`:
+ * https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/core/src/compiler.ts#L879-L880).
  */
 function sliceGuarded(
   s: MagicString | string,
@@ -1948,16 +1961,33 @@ function sliceGuarded(
   guards: nga.SpanMetadata[],
 ): string {
   const source = typeof s === 'string' ? s : s.original;
-  const inside = [
-    ...new Set(
-      guards.map((guard) => guard.start).filter((start) => start >= span.start && start < span.end),
-    ),
-  ].sort((a, b) => a - b);
+  const insertions: SourceInsertion[] = [];
+  if (typeof s !== 'string') {
+    const debugInsertions = signalDebugNameInsertionsBySource.get(s);
+    if (debugInsertions !== undefined) {
+      for (const ins of debugInsertions) {
+        if (ins.position >= span.start && ins.position < span.end) {
+          insertions.push(ins);
+        }
+      }
+    }
+  }
+  const seenGuards = new Set<number>();
+  for (const guard of guards) {
+    if (guard.start >= span.start && guard.start < span.end && !seenGuards.has(guard.start)) {
+      seenGuards.add(guard.start);
+      insertions.push({position: guard.start, text: FORWARD_REFERENCE_GUARD});
+    }
+  }
+  if (insertions.length === 0) {
+    return source.slice(span.start, span.end);
+  }
+  insertions.sort((a, b) => a.position - b.position);
   let result = '';
   let cursor = span.start;
-  for (const start of inside) {
-    result += source.slice(cursor, start) + FORWARD_REFERENCE_GUARD;
-    cursor = start;
+  for (const ins of insertions) {
+    result += source.slice(cursor, ins.position) + ins.text;
+    cursor = ins.position;
   }
   return result + source.slice(cursor, span.end);
 }
@@ -2456,12 +2486,13 @@ function compileNgModuleDef(
   ctx: HybridCompilerContext,
   classes: nga.ClassMetadata[] = [],
   classMeta?: nga.ClassMetadata,
-  content?: string,
+  content?: MagicString | string,
   filePath?: string,
   diagnostics?: nga.NgDiagnostic[],
 ): {compiledFac: string; compiledMod: string; compiledInj: string; statements: string} {
   const {optimize, isClosureCompilerEnabled, emitDeclarationOnly} = ctx;
   const {declarations, imports, injectorImports, exports, bootstrap} = ngModule;
+  const sourceText = typeof content === 'string' ? content : content?.original;
 
   const mapToVarArr = (names: nga.ReferenceMetadata[] | undefined) =>
     names ? o.literalArr(names.map((d) => refToExpression(d))) : null;
@@ -2506,17 +2537,19 @@ function compileNgModuleDef(
           if (el.references && el.references.length > 0) {
             return new o.TypeofExpr(refToExpression(el.references[0]));
           }
-          if (el.span && content !== undefined) {
+          if (el.span && sourceText !== undefined) {
             return new o.TypeofExpr(
-              new o.WrappedNodeExpr(new RawSource(content.substring(el.span.start, el.span.end))),
+              new o.WrappedNodeExpr(
+                new RawSource(sourceText.substring(el.span.start, el.span.end)),
+              ),
             );
           }
           return new o.WrappedNodeExpr(new RawSource('never'));
         }
         case 'callReturnType': {
           const calleeText =
-            el.span && content !== undefined
-              ? content.substring(el.span.start, el.span.end)
+            el.span && sourceText !== undefined
+              ? sourceText.substring(el.span.start, el.span.end)
               : 'never';
           return new o.WrappedNodeExpr(new RawSource(`ReturnType<typeof ${calleeText}>`));
         }
@@ -2801,7 +2834,7 @@ function compileNgModuleDef(
  */
 function buildInjectorImports(
   ngModule: nga.NgModuleMetadata,
-  content?: string,
+  content?: MagicString | string,
   guards: nga.SpanMetadata[] = [],
 ): o.Expression[] {
   const {imports, injectorImports, exports} = ngModule;
