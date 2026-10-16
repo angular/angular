@@ -186,7 +186,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         `tsconfig.json for better type inference within this template.`,
       diagnosticVar.keySpan,
       OutOfBandDiagnosticCategory.Warning,
-      8104,
+      10002, // SUGGEST_SUBOPTIMAL_TYPE_INFERENCE
     );
   }
 
@@ -354,7 +354,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         `Selectorless references are only supported to classes or non-type import statements.`,
       node.startSourceSpan,
       OutOfBandDiagnosticCategory.Error,
-      8001,
+      2024, // MISSING_NAMED_TEMPLATE_DEPENDENCY
     );
   }
 
@@ -364,7 +364,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
       `Incorrect reference type. Type must be a standalone @Component or @Directive.`,
       node.startSourceSpan,
       OutOfBandDiagnosticCategory.Error,
-      8001,
+      2025, // INCORRECT_NAMED_TEMPLATE_DEPENDENCY_TYPE
     );
   }
 
@@ -412,7 +412,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         '@placeholder block with exactly one root element node',
       trigger.sourceSpan,
       OutOfBandDiagnosticCategory.Error,
-      8019,
+      8020, // DEFER_IMPLICIT_TRIGGER_INVALID_PLACEHOLDER
     );
   }
 
@@ -436,7 +436,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
       message = `Setting the '${node.name}' attribute is not allowed on nodes using the '[formField]' directive`;
     }
 
-    this.pushDiagnostic(id, message, node.sourceSpan, OutOfBandDiagnosticCategory.Error, 8020);
+    this.pushDiagnostic(id, message, node.sourceSpan, OutOfBandDiagnosticCategory.Error, 8022); // FORM_FIELD_UNSUPPORTED_BINDING
   }
 
   multipleMatchingComponents(id: TypeCheckId, element: TmplAstElement, componentNames: string[]) {
@@ -446,7 +446,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
       `Multiple components match node with tagname ${element.name}: ${names}.`,
       element.startSourceSpan,
       OutOfBandDiagnosticCategory.Error,
-      8001,
+      8023, // MULTIPLE_MATCHING_COMPONENTS
     );
   }
 

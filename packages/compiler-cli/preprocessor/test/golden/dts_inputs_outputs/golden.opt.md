@@ -11,21 +11,21 @@ import * as i1 from 'test-lib';
 /*tcb1*/
 function _tcb1(this: i0.AppComponent) {
   if (true) {
-    ('hello') /*183,190*/ /*173,191*/;
-    ('world') /*208,215*/ /*199,216*/;
-    ('backend') /*241,250*/ /*224,251*/;
-    ('sig') /*274,279*/ /*259,280*/;
+    ('hello'); /*183,190*/ /*173,191*/
+    ('world'); /*208,215*/ /*199,216*/
+    ('backend'); /*241,250*/ /*224,251*/
+    ('sig'); /*274,279*/ /*259,280*/
     var _t1 /*T:DIR:0*/ /*156,368*/ = null! as i1.TestComponent; /*T:VAE*/
     _t1['simpleOutput'] /*288,300*/
       .subscribe(($event /*T:EP*/): any => {
-        this.handle(/*303,309*/ $event /*310,316*/) /*303,317*/;
-      }) /*287,318*/;
+        this.handle(/*303,309*/ $event /*310,316*/); /*303,317*/
+      }); /*287,318*/
     _t1['aliasedOutput'] /*326,344*/
       .subscribe(($event /*T:EP*/): any => {
-        this.handle(/*347,353*/ $event /*354,360*/) /*347,361*/;
-      }) /*325,362*/;
-    ('test') /*410,416*/ /*398,417*/;
-    ('sig') /*428,433*/;
+        this.handle(/*347,353*/ $event /*354,360*/); /*347,361*/
+      }); /*325,362*/
+    ('test'); /*410,416*/ /*398,417*/
+    ('sig'); /*428,433*/
   }
 }
 
@@ -151,7 +151,7 @@ export class AppComponent {
       "filePath": "/app.component.ts",
       "category": "error",
       "code": 8002,
-      "messageText": "Can't bind to 'signal' since it isn't a known property of 'div'.",
+      "messageText": "Can't bind to 'signal' since it isn't a known property of 'div'. Find more at https://next.angular.dev/errors/NG8002",
       "span": {
         "start": 418,
         "end": 434

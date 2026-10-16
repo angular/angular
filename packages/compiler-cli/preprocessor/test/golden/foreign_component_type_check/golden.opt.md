@@ -248,7 +248,7 @@ export class MissingForeignImportsComponent {
       "filePath": "/missing-foreign-imports.component.ts",
       "category": "error",
       "code": 8001,
-      "messageText": "'Widget' is not a known element:\n1. If 'Widget' is an Angular component, then verify that it is included in the '@Component.imports' of this component.\n2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.",
+      "messageText": "'Widget' is not a known element:\n1. If 'Widget' is an Angular component, then verify that it is included in the '@Component.imports' of this component.\n2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component. Find more at https://next.angular.dev/errors/NG8001",
       "span": {
         "start": 206,
         "end": 230
@@ -258,7 +258,7 @@ export class MissingForeignImportsComponent {
       "filePath": "/missing-foreign-imports.component.ts",
       "category": "error",
       "code": 8002,
-      "messageText": "Can't bind to 'size' since it isn't a known property of 'Widget'.",
+      "messageText": "Can't bind to 'size' since it isn't a known property of 'Widget'. Find more at https://next.angular.dev/errors/NG8002",
       "span": {
         "start": 214,
         "end": 227

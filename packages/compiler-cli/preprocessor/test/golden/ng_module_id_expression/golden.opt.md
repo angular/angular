@@ -283,7 +283,7 @@ i0.ɵɵregisterNgModuleType(NonNullModuleIdModule, module.id);
       "filePath": "/id_expression.ts",
       "category": "warning",
       "code": 6100,
-      "messageText": "Using 'module.id' for NgModule.id is a common anti-pattern that is ignored by the Angular compiler.",
+      "messageText": "Using 'module.id' for NgModule.id is a common anti-pattern that is ignored by the Angular compiler. Find more at https://next.angular.dev/errors/NG6100",
       "span": {
         "start": 371,
         "end": 380
@@ -293,7 +293,7 @@ i0.ɵɵregisterNgModuleType(NonNullModuleIdModule, module.id);
       "filePath": "/id_expression.ts",
       "category": "warning",
       "code": 6100,
-      "messageText": "Using 'module.id' for NgModule.id is a common anti-pattern that is ignored by the Angular compiler.",
+      "messageText": "Using 'module.id' for NgModule.id is a common anti-pattern that is ignored by the Angular compiler. Find more at https://next.angular.dev/errors/NG6100",
       "span": {
         "start": 435,
         "end": 445

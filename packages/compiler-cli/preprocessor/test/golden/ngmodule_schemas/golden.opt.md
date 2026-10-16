@@ -10,28 +10,28 @@ import * as i0 from './ngmodule_schemas';
 /*tcb1*/
 function _tcb1(this: i0.MyCompCustomElements) {
   if (true) {
-    true /*231,235*/;
+    true; /*231,235*/
   }
 }
 
 /*tcb2*/
 function _tcb2(this: i0.MyCompNoErrors) {
   if (true) {
-    true /*572,576*/;
+    true; /*572,576*/
   }
 }
 
 /*tcb3*/
 function _tcb3(this: i0.MyCompStandaloneImportingModule) {
   if (true) {
-    true /*907,911*/;
+    true; /*907,911*/
   }
 }
 
 /*tcb4*/
 function _tcb4(this: i0.MyCompNoSchemas) {
   if (true) {
-    true /*1158,1162*/;
+    true; /*1158,1162*/
   }
 }
 
@@ -455,7 +455,7 @@ export class MyNoSchemasModule {
       "filePath": "/ngmodule_schemas.ts",
       "category": "error",
       "code": 8002,
-      "messageText": "Can't bind to 'unknown-property' since it isn't a known property of 'div'.",
+      "messageText": "Can't bind to 'unknown-property' since it isn't a known property of 'div'. Find more at https://next.angular.dev/errors/NG8002",
       "span": {
         "start": 211,
         "end": 236
@@ -465,7 +465,7 @@ export class MyNoSchemasModule {
       "filePath": "/ngmodule_schemas.ts",
       "category": "error",
       "code": 8001,
-      "messageText": "'unknown-element' is not a known element:\n1. If 'unknown-element' is an Angular component, then verify that it is included in the '@Component.imports' of this component.\n2. If 'unknown-element' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.",
+      "messageText": "'unknown-element' is not a known element:\n1. If 'unknown-element' is an Angular component, then verify that it is included in the '@Component.imports' of this component.\n2. If 'unknown-element' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. Find more at https://next.angular.dev/errors/NG8001",
       "span": {
         "start": 842,
         "end": 859
@@ -475,7 +475,7 @@ export class MyNoSchemasModule {
       "filePath": "/ngmodule_schemas.ts",
       "category": "error",
       "code": 8002,
-      "messageText": "Can't bind to 'unknown-property' since it isn't a known property of 'div'.",
+      "messageText": "Can't bind to 'unknown-property' since it isn't a known property of 'div'. Find more at https://next.angular.dev/errors/NG8002",
       "span": {
         "start": 887,
         "end": 912
@@ -485,7 +485,7 @@ export class MyNoSchemasModule {
       "filePath": "/ngmodule_schemas.ts",
       "category": "error",
       "code": 8001,
-      "messageText": "'unknown-element' is not a known element:\n1. If 'unknown-element' is an Angular component, then verify that it is part of this module.\n2. If 'unknown-element' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.",
+      "messageText": "'unknown-element' is not a known element:\n1. If 'unknown-element' is an Angular component, then verify that it is part of this module.\n2. If 'unknown-element' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message. Find more at https://next.angular.dev/errors/NG8001",
       "span": {
         "start": 1093,
         "end": 1110
@@ -495,7 +495,7 @@ export class MyNoSchemasModule {
       "filePath": "/ngmodule_schemas.ts",
       "category": "error",
       "code": 8002,
-      "messageText": "Can't bind to 'unknown-property' since it isn't a known property of 'div'.",
+      "messageText": "Can't bind to 'unknown-property' since it isn't a known property of 'div'. Find more at https://next.angular.dev/errors/NG8002",
       "span": {
         "start": 1138,
         "end": 1163

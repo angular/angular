@@ -221,7 +221,7 @@ export class ShadowWidgetComponent {
       "filePath": "/shadow-widget.component.ts",
       "category": "error",
       "code": 2009,
-      "messageText": "Selector of a component that uses ViewEncapsulation.ShadowDom must contain a hyphen.",
+      "messageText": "Selector of a component that uses ViewEncapsulation.ShadowDom must contain a hyphen. Find more at https://next.angular.dev/errors/NG2009",
       "span": {
         "start": 88,
         "end": 96
