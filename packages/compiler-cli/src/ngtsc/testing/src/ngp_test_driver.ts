@@ -366,7 +366,11 @@ export function performNgpCompilationSync(params: {
       i18nUseExternalIds: options.i18nUseExternalIds,
       i18nNormalizeLineEndingsInICUs: options.i18nNormalizeLineEndingsInICUs,
       enableHmr: Boolean(rawOpts['_enableHmr']),
-      rootDir: options.rootDir ? toPosixPath(fs.resolve(basePath, options.rootDir)) : posixBasePath,
+      rootDir: options.rootDir
+        ? toPosixPath(fs.resolve(basePath, options.rootDir))
+        : options.rootDirs
+          ? undefined
+          : posixBasePath,
       workspaceName,
       rootDirs,
       complianceMode,

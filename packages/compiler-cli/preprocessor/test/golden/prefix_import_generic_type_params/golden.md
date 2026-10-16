@@ -98,7 +98,7 @@ export class DashboardComponent {
   (typeof ngDevMode === 'undefined' || ngDevMode) &&
     i0.ɵsetClassDebugInfo(DashboardComponent, {
       className: 'DashboardComponent',
-      filePath: 'src/apps/dashboard.component.ts',
+      filePath: 'apps/dashboard.component.ts',
       lineNumber: 23,
     });
 })();
@@ -164,7 +164,7 @@ export class FilterBarComponent<T, P extends FilterConfig<T> = FilterConfig<T>> 
   (typeof ngDevMode === 'undefined' || ngDevMode) &&
     i0.ɵsetClassDebugInfo(FilterBarComponent, {
       className: 'FilterBarComponent',
-      filePath: 'src/widgets/filter_bar.component.ts',
+      filePath: 'widgets/filter_bar.component.ts',
       lineNumber: 9,
     });
 })();
@@ -286,7 +286,7 @@ export class LocalConfigComponent<T extends LocalConfig = LocalConfig> {
   (typeof ngDevMode === 'undefined' || ngDevMode) &&
     i0.ɵsetClassDebugInfo(LocalConfigComponent, {
       className: 'LocalConfigComponent',
-      filePath: 'src/widgets/local_config.component.ts',
+      filePath: 'widgets/local_config.component.ts',
       lineNumber: 12,
     });
 })();
@@ -352,7 +352,7 @@ export class NestedViewComponent<T extends NestedData<string> = NestedData<strin
   (typeof ngDevMode === 'undefined' || ngDevMode) &&
     i0.ɵsetClassDebugInfo(NestedViewComponent, {
       className: 'NestedViewComponent',
-      filePath: 'src/widgets/nested_view.component.ts',
+      filePath: 'widgets/nested_view.component.ts',
       lineNumber: 9,
     });
 })();

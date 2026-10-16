@@ -1403,8 +1403,8 @@ export function processFileSync(
         // and only under `enableTemplateSourceLocations`.
         // https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L812-L822
         relativeTemplatePath: getProjectRelativePath(
-          component.templateUrl?.resolvedPath ?? filePath,
-          ctx.rootDir,
+          component.templateUrl?.resolvedPath || filePath,
+          ctx,
         ),
         enableTemplateSourceLocations: ctx.enableTemplateSourceLocations ?? false,
         foreignImports:
@@ -1695,7 +1695,7 @@ export function processFileSync(
     if (component) {
       debugInfoStmt = buildSetClassDebugInfo(
         className,
-        getProjectRelativePath(filePath, ctx.rootDir),
+        getProjectRelativePath(filePath, ctx),
         content,
         classMeta.nameSpan?.start ?? span.start,
         ctx.forbidOrphanComponents ?? false,
@@ -2307,12 +2307,20 @@ function createStaticBlock(statement: string): string {
 /**
  * https://github.com/angular/angular/blob/c1829f6/packages/compiler-cli/src/ngtsc/util/src/path.ts#L29-L48
  */
-function getProjectRelativePath(filePath: string, rootDir: string | undefined): string | null {
-  if (!rootDir) {
-    return null;
+function getProjectRelativePath(filePath: string, ctx: HybridCompilerContext): string | null {
+  const rootDirs =
+    ctx.rootDirs && ctx.rootDirs.length > 0 ? ctx.rootDirs : ctx.rootDir ? [ctx.rootDir] : [];
+  let shortest: string | null = null;
+  for (const rootDir of rootDirs) {
+    if (!rootDir) continue;
+    const rel = path.posix.relative(rootDir, filePath);
+    if (!rel.startsWith('..') && !path.posix.isAbsolute(rel)) {
+      if (shortest === null || rel.length < shortest.length) {
+        shortest = rel;
+      }
+    }
   }
-  const rel = path.posix.relative(rootDir, filePath);
-  return rel.startsWith('..') ? null : rel;
+  return shortest;
 }
 
 /**
@@ -2321,13 +2329,7 @@ function getProjectRelativePath(filePath: string, rootDir: string | undefined): 
  * `getProjectRelativePath(...) || getCanonicalFileName(...)`).
  */
 function getHmrFilePath(filePath: string, ctx: HybridCompilerContext): string {
-  for (const rootDir of ctx.rootDirs ?? [ctx.rootDir]) {
-    const relative = getProjectRelativePath(filePath, rootDir);
-    if (relative !== null) {
-      return relative;
-    }
-  }
-  return filePath;
+  return getProjectRelativePath(filePath, ctx) ?? filePath;
 }
 
 /** The `ɵsetClassDebugInfo(...)` statement for a component (not yet printed). */
@@ -2387,7 +2389,7 @@ function compileHmrUpdateModule(options: HmrUpdateModuleOptions): string | null 
       : null;
   const debugInfo = buildSetClassDebugInfo(
     className,
-    getProjectRelativePath(filePath, ctx.rootDir),
+    getProjectRelativePath(filePath, ctx),
     content,
     options.nameOffset,
     ctx.forbidOrphanComponents ?? false,
