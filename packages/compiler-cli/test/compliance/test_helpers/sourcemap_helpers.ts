@@ -8,7 +8,7 @@
 import {AbsoluteFsPath, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 import {ConsoleLogger, LogLevel} from '../../../src/ngtsc/logging';
 import {SourceFileLoader} from '../../../src/ngtsc/sourcemaps';
-import {canonicalizeStringQuotes, isNgpTestMode} from '../../../src/ngtsc/testing';
+import {isNgpTestMode, normalizeNgpSourceMapSegment} from '../../../src/ngtsc/testing';
 
 /**
  * Check the source-mappings of the generated source file against mappings stored in the expected
@@ -180,17 +180,9 @@ function getMappedSegments(
  * @returns An error message if a matching segment cannot be found, or null if it can.
  */
 function checkMapping(mappings: SegmentMapping[], expected: SegmentMapping): string | null {
-  // NGP's printer quotes strings, parenthesizes and breaks lines differently from ngtsc's
-  // TypeScript emit, which also escapes non-ASCII characters (the emitted code comparison
-  // normalizes these with a parser, which can't run on a fragment). Only the generated side is
-  // relaxed; the source side must match exactly.
-  const normalize = isNgpTestMode()
-    ? (code: string) =>
-        canonicalizeStringQuotes(code)
-          .replace(/\\u([0-9a-fA-F]{4})/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
-          .replace(/[()]/g, '')
-          .replace(/\s+/g, ' ')
-    : (code: string) => code;
+  // NGP's printer emits code slightly differently from ngtsc's TypeScript emit; only the generated
+  // side is relaxed, the source side must match exactly.
+  const normalize = isNgpTestMode() ? normalizeNgpSourceMapSegment : (code: string) => code;
   const expectedGenerated = normalize(expected.generated);
   if (
     mappings.some(
