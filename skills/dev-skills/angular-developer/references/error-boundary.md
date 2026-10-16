@@ -16,7 +16,7 @@ and blank the page.
 
 ## Capturing the error and retrying
 
-Declare a template variable in the `@error` block to read the thrown error, and use the built-in
+Use a `when` condition on the `@error` block to match specific error types, and the built-in
 `$reset` function to attempt re-rendering the boundary's original content:
 
 ```html
@@ -41,8 +41,6 @@ Declare a template variable in the `@error` block to read the thrown error, and 
 Projected content belongs to the template that declares it. To catch its errors, wrap the receiving
 component and its projected content in a `@boundary` in the parent template. A `@boundary` around
 `<ng-content>` inside the receiving component does not catch them.
-through uncaught, even though the projecting component's own template content inside the same
-`@boundary` is covered.
 
 ## When to use it
 
