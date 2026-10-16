@@ -3111,6 +3111,35 @@ describe('runtime i18n', () => {
         /Unable to parse ICU expression in "Text { count }" message./,
       );
     });
+
+    it('should throw for every ICU added into an attribute translation', () => {
+      loadTranslations({
+        [computeMsgId('Title with enough text before the {$INTERPOLATION}')]:
+          'Title with enough text before the {{$INTERPOLATION}, select, other {name}}',
+        [computeMsgId('Hi {$INTERPOLATION}')]: '{{$INTERPOLATION}, select, other {name}}',
+      });
+
+      @Component({
+        selector: 'long-title',
+        template: '<div i18n-title title="Title with enough text before the {{name}}"></div>',
+      })
+      class LongTitle {
+        name = 'Angular';
+      }
+
+      @Component({
+        selector: 'short-title',
+        template: '<div i18n-title title="Hi {{name}}"></div>',
+      })
+      class ShortTitle {
+        name = 'Angular';
+      }
+
+      // The second check must not resume from where the first match ended.
+      const error = /ICU expressions are not supported in attributes/;
+      expect(() => TestBed.createComponent(LongTitle).detectChanges()).toThrowError(error);
+      expect(() => TestBed.createComponent(ShortTitle).detectChanges()).toThrowError(error);
+    });
   });
 
   it('should handle extra HTML in translation as plain text', () => {
