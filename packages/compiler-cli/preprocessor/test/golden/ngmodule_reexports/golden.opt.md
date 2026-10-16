@@ -189,7 +189,7 @@ export class AppComponent {
         i0.ɵɵelement(0, 'feature-cmp');
       }
     },
-    dependencies: (): any => [i1.FeatureComponent],
+    dependencies: [i1.FeatureComponent],
     encapsulation: 2,
   });
   static {

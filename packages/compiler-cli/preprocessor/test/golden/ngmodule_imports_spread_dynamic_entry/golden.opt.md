@@ -199,7 +199,7 @@ export class AppComponent {
         i0.ɵɵelement(0, 'router-outlet');
       }
     },
-    dependencies: (): any => [i1.RouterOutlet],
+    dependencies: [i1.RouterOutlet],
     encapsulation: 2,
   });
   static {
