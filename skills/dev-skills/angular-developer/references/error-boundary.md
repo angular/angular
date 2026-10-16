@@ -34,7 +34,9 @@ Declare a template variable in the `@error` block to read the thrown error, and 
 
 ## Content projection
 
-`<ng-content>` projected into a `@boundary` is not protected — errors from projected content pass
+Projected content belongs to the template that declares it. To catch its errors, wrap the receiving
+component and its projected content in a `@boundary` in the parent template. A `@boundary` around
+`<ng-content>` inside the receiving component does not catch them.
 through uncaught, even though the projecting component's own template content inside the same
 `@boundary` is covered.
 
