@@ -231,10 +231,18 @@ export function adaptTcbInput(
   let matcher: SelectorMatcher<TcbDirectiveMetadata[]> | SelectorlessMatcher<TcbDirectiveMetadata>;
 
   const declarations =
-    isStandalone &&
-    target.ownDeclaration &&
-    !target.declarations.some((d) => d.name === target.ownDeclaration.name)
-      ? [...target.declarations, target.ownDeclaration]
+    isStandalone && target.ownDeclaration
+      ? [
+          target.ownDeclaration,
+          ...target.declarations.filter(
+            (d) =>
+              !(
+                d.name === target.ownDeclaration.name &&
+                d.ref.localAlias === target.ownDeclaration.name &&
+                d.ref.consumerImport == null
+              ),
+          ),
+        ]
       : target.declarations;
 
   if (isSelectorless) {
