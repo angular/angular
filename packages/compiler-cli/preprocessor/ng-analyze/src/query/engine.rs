@@ -9,7 +9,7 @@ use oxc_resolver::ResolverGeneric;
 use crate::analyzer::DecoratorData;
 use crate::compiler::async_compiler::spawn_shared;
 use crate::compiler::decorators::component::{
-    optimize_component, populate_local_component_extra_imports,
+    optimize_component, optimize_directive, populate_local_component_extra_imports,
 };
 use crate::compiler::decorators::ng_module::optimize_ng_module;
 
@@ -846,6 +846,14 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                     directive.declaring_ng_module,
                     directive.duplicate_declaring_ng_modules,
                 ) = mapping.declaring_ng_modules(reference_id.file, class_name.as_deref());
+                optimize_directive(
+                    ctx,
+                    &file_path,
+                    reference_id,
+                    class_name.as_deref(),
+                    directive,
+                )
+                .await;
             } else if let DecoratorData::Pipe(pipe) = &mut class.decorator {
                 let mapping = ctx.component_mapping().await;
                 (

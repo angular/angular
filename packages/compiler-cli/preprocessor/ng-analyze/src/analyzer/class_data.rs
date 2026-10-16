@@ -259,6 +259,11 @@ pub struct DirectiveData {
     /// The `hostDirectives` expression, partially evaluated. Kept as a `Resolved` so
     /// Stage 2 can chase cross-file arrays and aliases before it is projected onto the wire.
     pub host_directives: Option<Resolved<Vec<HostDirectiveEntry>>>,
+    /// The directive's own `hostDirectives`, resolved in stage 2 — what ngtsc's
+    /// `TypeCheckScopeRegistry` puts in `directivesOnHost` ahead of the directive itself when
+    /// type-checking its host bindings. Components keep theirs on
+    /// [`ComponentData::resolved_host_directives`].
+    pub resolved_host_directives: Option<Vec<ResolvedHostDirective>>,
     pub providers_span: Option<oxc_span::Span>,
     pub args_span: Option<oxc_span::Span>,
     pub preserved_decorator_properties: Option<Vec<oxc_span::Span>>,
@@ -437,6 +442,7 @@ impl Default for DirectiveData {
             host_span: None,
             host_properties: Vec::new(),
             host_directives: None,
+            resolved_host_directives: None,
             providers_span: None,
             args_span: None,
             preserved_decorator_properties: None,
@@ -3342,6 +3348,11 @@ impl ClassData {
                 .read_optional_field(d.host_expr.as_deref(), cx, "directive.host")?
                 .map(|host| host_metadata_wire(host, cx.source_text, cx.converter)),
             host_directives: self.to_wire_host_directives(&d.host_directives, cx),
+            resolved_host_directives: d.resolved_host_directives.as_ref().map(|hds| {
+                hds.iter()
+                    .map(|hd| ResolvedHostDirectiveMetadata::to_wire(hd, cx.path_lookup))
+                    .collect()
+            }),
             providers_span: d
                 .providers_span
                 .map(|s| crate::types::metadata::SpanMetadata::new(s, cx.converter)),

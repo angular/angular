@@ -950,8 +950,6 @@ export const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'type checking of host bindings should check @HostListener decorator that passes too many arguments',
   'type checking of host bindings should check @HostListener with a target',
   'type checking of host bindings should check animation event listeners in `@HostListener`',
-  'type checking of host bindings should check directive listening to output from host directive',
-  'type checking of host bindings should check directive listening to own output and from host directive',
   'type checking of host bindings should check host bindings on a directive',
   'type checking of host bindings should infer the type of @HostListener parameters',
 ]);

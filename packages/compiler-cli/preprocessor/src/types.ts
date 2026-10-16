@@ -411,6 +411,8 @@ export interface DirectiveMetadata {
   hostMetadata?: Array<HostMetadataEntry>;
   /** Raw hostDirectives expression from the decorator */
   hostDirectives?: Array<HostDirectiveMetadata>;
+  /** The directive's own `hostDirectives`, resolved in its own frame for the type-check block. */
+  resolvedHostDirectives?: Array<ResolvedHostDirectiveMetadata>;
   providersSpan?: SpanMetadata;
   argsSpan?: SpanMetadata;
   declaringNgModule?: DeclaringNgModule;
