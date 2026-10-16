@@ -47,8 +47,14 @@ export class MyService {
     token: MyService,
     factory: (): any =>
       (() => {
-        const factoryState = signal('from-injectable');
-        const factoryWithOpts = signal(0, { equal: (a, b) => a === b });
+        const factoryState = signal(
+          'from-injectable',
+          ...((ngDevMode ? [{ debugName: 'factoryState' }] : /* istanbul ignore next */ []) as []),
+        );
+        const factoryWithOpts = signal(0, {
+          ...(ngDevMode ? { debugName: 'factoryWithOpts' } : /* istanbul ignore next */ {}),
+          equal: (a, b) => a === b,
+        });
         return new MyService(factoryState, factoryWithOpts);
       })(),
     providedIn: 'root',
@@ -64,8 +70,18 @@ export class MyService {
               {
                 providedIn: 'root',
                 useFactory: () => {
-                  const factoryState = signal('from-injectable');
-                  const factoryWithOpts = signal(0, { equal: (a, b) => a === b });
+                  const factoryState = signal(
+                    'from-injectable',
+                    ...((ngDevMode
+                      ? [{ debugName: 'factoryState' }]
+                      : /* istanbul ignore next */ []) as []),
+                  );
+                  const factoryWithOpts = signal(0, {
+                    ...(ngDevMode
+                      ? { debugName: 'factoryWithOpts' }
+                      : /* istanbul ignore next */ {}),
+                    equal: (a, b) => a === b,
+                  });
                   return new MyService(factoryState, factoryWithOpts);
                 },
               },
@@ -236,7 +252,10 @@ export class SignalDebugNamesComponent {
         'val',
         'val',
         (v: string) => {
-          const transformed = signal(v);
+          const transformed = signal(
+            v,
+            ...((ngDevMode ? [{ debugName: 'transformed' }] : /* istanbul ignore next */ []) as []),
+          );
           return transformed();
         },
       ],
@@ -253,7 +272,12 @@ export class SignalDebugNamesComponent {
         {
           provide: TOKEN,
           useFactory: () => {
-            const providerSignal = signal(42);
+            const providerSignal = signal(
+              42,
+              ...((ngDevMode
+                ? [{ debugName: 'providerSignal' }]
+                : /* istanbul ignore next */ []) as []),
+            );
             return { s: providerSignal };
           },
         },
@@ -292,7 +316,12 @@ export class SignalDebugNamesComponent {
                   {
                     provide: TOKEN,
                     useFactory: () => {
-                      const providerSignal = signal(42);
+                      const providerSignal = signal(
+                        42,
+                        ...((ngDevMode
+                          ? [{ debugName: 'providerSignal' }]
+                          : /* istanbul ignore next */ []) as []),
+                      );
                       return { s: providerSignal };
                     },
                   },
@@ -309,7 +338,12 @@ export class SignalDebugNamesComponent {
               args: [
                 {
                   transform: (v: string) => {
-                    const transformed = signal(v);
+                    const transformed = signal(
+                      v,
+                      ...((ngDevMode
+                        ? [{ debugName: 'transformed' }]
+                        : /* istanbul ignore next */ []) as []),
+                    );
                     return transformed();
                   },
                 },
@@ -371,7 +405,12 @@ export class AppModule {
       {
         provide: TOKEN,
         useFactory: () => {
-          const moduleSignal = signal(true);
+          const moduleSignal = signal(
+            true,
+            ...((ngDevMode
+              ? [{ debugName: 'moduleSignal' }]
+              : /* istanbul ignore next */ []) as []),
+          );
           return { s: moduleSignal };
         },
       },
@@ -390,7 +429,12 @@ export class AppModule {
                   {
                     provide: TOKEN,
                     useFactory: () => {
-                      const moduleSignal = signal(true);
+                      const moduleSignal = signal(
+                        true,
+                        ...((ngDevMode
+                          ? [{ debugName: 'moduleSignal' }]
+                          : /* istanbul ignore next */ []) as []),
+                      );
                       return { s: moduleSignal };
                     },
                   },

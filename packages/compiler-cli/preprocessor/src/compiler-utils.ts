@@ -49,12 +49,15 @@ export interface MinimalDirectiveMeta extends DirectiveMeta {
 export function buildInputsMap(
   inputs: nga.InputMetadata[],
   content: string,
+  sliceSpan?: (span: nga.SpanMetadata) => string,
 ): Record<string, R3InputMetadata> {
   const result: Record<string, R3InputMetadata> = {};
   for (const input of inputs) {
     let transformFunction = null;
     if (input.transform && !input.isSignal) {
-      const fnStr = content.substring(input.transform.span.start, input.transform.span.end);
+      const fnStr = sliceSpan
+        ? sliceSpan(input.transform.span)
+        : content.substring(input.transform.span.start, input.transform.span.end);
       transformFunction = new WrappedNodeExpr(new RawSource(fnStr, [input.transform.span]));
     }
     result[input.name] = {
