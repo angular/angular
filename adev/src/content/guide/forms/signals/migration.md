@@ -68,12 +68,26 @@ In the template, use standard reactive syntax by binding the underlying control:
     @if (f.password().touched() && f.password().invalid()) {
       <div class="error-list">
         @for (error of f.password().errors(); track error) {
-          <p>{{ error.message || error.kind }}</p>
+          <p>{{ errorMessage(error) }}</p>
         }
       </div>
     }
   </div>
 </form>
+```
+
+Errors from the existing validators are `CompatValidationError`s. They don't set `message`; the error object returned by the validator is available as `context` instead:
+
+```typescript
+import {ValidationError} from '@angular/forms/signals';
+import {CompatValidationError} from '@angular/forms/signals/compat';
+
+errorMessage(error: ValidationError) {
+  if (error instanceof CompatValidationError) {
+    return (error.context as {message?: string} | null)?.message ?? error.kind;
+  }
+  return error.message ?? error.kind;
+}
 ```
 
 <docs-code-multifile preview path="adev/src/content/examples/signal-forms/src/compat-form-control-integration/app/app.ts">
