@@ -112,7 +112,7 @@ When implementing navigation in Angular, consult the following references:
 - **Show Routes with Outlets**: Using `<router-outlet>`, nested outlets, and named outlets. Read [show-routes-with-outlets.md](references/show-routes-with-outlets.md)
 - **Navigate to Routes**: Declarative navigation with `RouterLink` and programmatic navigation with `Router`. Read [navigate-to-routes.md](references/navigate-to-routes.md)
 - **Control Route Access with Guards**: Implementing `CanActivate`, `CanMatch`, and other guards for security. Read [route-guards.md](references/route-guards.md)
-- **Data Resolvers**: Pre-fetching data before route activation with `ResolveFn`. Read [data-resolvers.md](references/data-resolvers.md)
+- **Data Resolvers**: Pre-fetching data before route activation with `ResolveFn`, and router resources (`withRouterResources`) as a reactive, `resource()`-based alternative. Read [data-resolvers.md](references/data-resolvers.md)
 - **Router Lifecycle and Events**: Chronological order of navigation events and debugging. Read [router-lifecycle.md](references/router-lifecycle.md)
 - **Rendering Strategies**: Choosing between CSR, SSG (prerendering), and SSR. Read [rendering-strategies.md](references/rendering-strategies.md)
 - **Server and Hybrid Rendering**: Implementing server routes, prerendering, hydration, server-compatible code, and request data in an SSR-configured app. Read [server-side-rendering.md](references/server-side-rendering.md)
