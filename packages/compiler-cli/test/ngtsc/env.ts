@@ -135,13 +135,20 @@ export class NgtscTestEnvironment {
   }
 
   getContents(fileName: string): string {
-    this.assertExists(fileName);
-    const modulePath = this.fs.resolve(this.outDir, fileName);
-    const content = this.fs.readFile(modulePath);
+    const content = this.getRawContents(fileName);
     if (isNgpTestMode() && (fileName.endsWith('.js') || fileName.endsWith('.d.ts'))) {
       return normalizeNgpOutputFile(content);
     }
     return content;
+  }
+
+  /**
+   * The contents of an emitted file exactly as written, without the normalization `getContents`
+   * applies to NGP output. Needed wherever positions matter, such as reading source maps.
+   */
+  getRawContents(fileName: string): string {
+    this.assertExists(fileName);
+    return this.fs.readFile(this.fs.resolve(this.outDir, fileName));
   }
 
   enableMultipleCompilations(): void {
