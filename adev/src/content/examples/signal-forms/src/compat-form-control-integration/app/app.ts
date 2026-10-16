@@ -1,8 +1,8 @@
 import {JsonPipe} from '@angular/common';
 import {Component, computed, signal} from '@angular/core';
 import {AbstractControl, FormControl, Validators} from '@angular/forms';
-import {FormField} from '@angular/forms/signals';
-import {compatForm} from '@angular/forms/signals/compat';
+import {FormField, ValidationError} from '@angular/forms/signals';
+import {compatForm, CompatValidationError} from '@angular/forms/signals/compat';
 
 // Dummy enterprisePasswordValidator for the example
 function enterprisePasswordValidator() {
@@ -41,6 +41,14 @@ export class App {
     email: this.f.email().value(),
     password: this.f.password().value(),
   }));
+
+  errorMessage(error: ValidationError) {
+    // Errors from reactive validators keep the validator's error object in `context`.
+    if (error instanceof CompatValidationError) {
+      return (error.context as {message?: string} | null)?.message ?? error.kind;
+    }
+    return error.message ?? error.kind;
+  }
 
   constructor() {
     console.log(this.f.email().value()); // ""
