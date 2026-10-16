@@ -47,7 +47,8 @@ export class AppComponent {
   // Signal queries
   signalDiv = viewChild<ElementRef>(
     'myDiv',
-    ...((ngDevMode ? [{ debugName: 'signalDiv' }] : /* istanbul ignore next */ []) as []),
+    /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: 'signalDiv' }] : /* istanbul ignore next */ []),
   );
   signalTpl = viewChild('myTpl', {
     ...(ngDevMode ? { debugName: 'signalTpl' } : /* istanbul ignore next */ {}),
@@ -55,11 +56,13 @@ export class AppComponent {
   });
   signalItems = viewChildren<ElementRef>(
     'item',
-    ...((ngDevMode ? [{ debugName: 'signalItems' }] : /* istanbul ignore next */ []) as []),
+    /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: 'signalItems' }] : /* istanbul ignore next */ []),
   );
   reqSignalDiv = viewChild.required<ElementRef>(
     'myDiv',
-    ...((ngDevMode ? [{ debugName: 'reqSignalDiv' }] : /* istanbul ignore next */ []) as []),
+    /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: 'reqSignalDiv' }] : /* istanbul ignore next */ []),
   );
 
   signalContent = contentChild<ElementRef>('content', {

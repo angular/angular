@@ -244,7 +244,8 @@ export function normalizeNgpEmitForComparison(code: string, ellipsisToken = '\u2
 export function normalizeNgpOutputFile(content: string): string {
   const normalized = content
     .replace(/^[ \t]*\/\/[ \t]*@ts-ignore[^\n]*\r?\n/gm, '')
-    .replace(/\/\*\s*@ts-ignore\s*\*\/\s*/g, '')
+    .replace(/,(\s*[\]})])/g, '$1')
+    .replace(/\(\s*\n\s*(\/\* @ts-ignore \*\/)/g, '($1')
     .replace(
       /(\.(?:ɵcmp|ɵdir|ɵpipe|ɵmod|ɵinj|ɵprov)\s*=\s*)(?!\/\*\s*@__PURE__\s*\*\/)([A-Za-z0-9_$ɵ]+\.ɵɵdefine)/g,
       '$1/*@__PURE__*/ $2',

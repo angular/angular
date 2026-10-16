@@ -22,39 +22,43 @@ const _c1 = ['el'];
 
 export const topLevel = signal(
   0,
-  ...((ngDevMode ? [{ debugName: 'topLevel' }] : /* istanbul ignore next */ []) as []),
+  /* @ts-ignore */
+  ...(ngDevMode ? [{ debugName: 'topLevel' }] : /* istanbul ignore next */ []),
 );
 
 export class SignalDebugNamesComponent {
   // No options argument: one is appended, after `undefined` when there are no arguments.
   count = signal(
     0,
-    ...((ngDevMode ? [{ debugName: 'count' }] : /* istanbul ignore next */ []) as []),
+    /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: 'count' }] : /* istanbul ignore next */ []),
   );
   noInitial = input(
-    ...((ngDevMode
-      ? [undefined, { debugName: 'noInitial' }]
-      : /* istanbul ignore next */ []) as []),
+    /* @ts-ignore */
+    ...(ngDevMode ? [undefined, { debugName: 'noInitial' }] : /* istanbul ignore next */ []),
   );
   typedNoInitial = input<string>(
-    ...((ngDevMode
-      ? [undefined, { debugName: 'typedNoInitial' }]
-      : /* istanbul ignore next */ []) as []),
+    /* @ts-ignore */
+    ...(ngDevMode ? [undefined, { debugName: 'typedNoInitial' }] : /* istanbul ignore next */ []),
   );
   twoWay = model(
     0,
-    ...((ngDevMode ? [{ debugName: 'twoWay' }] : /* istanbul ignore next */ []) as []),
+    /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: 'twoWay' }] : /* istanbul ignore next */ []),
   );
   required = input.required<string>(
-    ...((ngDevMode ? [{ debugName: 'required' }] : /* istanbul ignore next */ []) as []),
+    /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: 'required' }] : /* istanbul ignore next */ []),
   );
   el = viewChild(
     'el',
-    ...((ngDevMode ? [{ debugName: 'el' }] : /* istanbul ignore next */ []) as []),
+    /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: 'el' }] : /* istanbul ignore next */ []),
   );
   projected = contentChild.required<string>(
     'x',
-    ...((ngDevMode ? [{ debugName: 'projected' }] : /* istanbul ignore next */ []) as []),
+    /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: 'projected' }] : /* istanbul ignore next */ []),
   );
 
   // An options object literal: the name is spread into it.
@@ -86,7 +90,8 @@ export class SignalDebugNamesComponent {
   });
   fetched = httpResource(
     () => '/api',
-    ...((ngDevMode ? [{ debugName: 'fetched' }] : /* istanbul ignore next */ []) as []),
+    /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: 'fetched' }] : /* istanbul ignore next */ []),
   );
 
   // Left alone: already named, opaque options, not an Angular import under its own name.
@@ -96,23 +101,27 @@ export class SignalDebugNamesComponent {
 
   'quoted-name' = signal(
     '',
-    ...((ngDevMode ? [{ debugName: "'quoted-name'" }] : /* istanbul ignore next */ []) as []),
+    /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: "'quoted-name'" }] : /* istanbul ignore next */ []),
   );
   #secret = signal(
     1,
-    ...((ngDevMode ? [{ debugName: '#secret' }] : /* istanbul ignore next */ []) as []),
+    /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: '#secret' }] : /* istanbul ignore next */ []),
   );
   assigned;
 
   constructor() {
     this.assigned = computed(
       () => this.#secret() + 1,
-      ...((ngDevMode ? [{ debugName: 'assigned' }] : /* istanbul ignore next */ []) as []),
+      /* @ts-ignore */
+      ...(ngDevMode ? [{ debugName: 'assigned' }] : /* istanbul ignore next */ []),
     );
     effect(() => console.log(this.count()));
     const local = signal(
       false,
-      ...((ngDevMode ? [{ debugName: 'local' }] : /* istanbul ignore next */ []) as []),
+      /* @ts-ignore */
+      ...(ngDevMode ? [{ debugName: 'local' }] : /* istanbul ignore next */ []),
     );
     const outer = computed(
       () => {
@@ -120,7 +129,8 @@ export class SignalDebugNamesComponent {
         const inner = signal(1);
         return inner() + Number(local());
       },
-      ...((ngDevMode ? [{ debugName: 'outer' }] : /* istanbul ignore next */ []) as []),
+      /* @ts-ignore */
+      ...(ngDevMode ? [{ debugName: 'outer' }] : /* istanbul ignore next */ []),
     );
     void outer;
   }
