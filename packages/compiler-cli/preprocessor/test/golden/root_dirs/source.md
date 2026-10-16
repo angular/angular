@@ -3,7 +3,10 @@
 {
   "compilerOptions": {
     "strict": true,
-    "rootDirs": ["src", "extra"]
+    "rootDirs": [".", "src", "extra"]
+  },
+  "angularCompilerOptions": {
+    "enableTemplateSourceLocations": true
   },
   "files": ["src/app/app.component.ts"]
 }
