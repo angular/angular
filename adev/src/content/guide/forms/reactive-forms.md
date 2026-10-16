@@ -235,6 +235,45 @@ When a user clicks the button, the `profileForm` model is updated with new value
 This is necessary because the `patchValue()` method applies the update against the model structure.
 `patchValue()` only updates properties that the form model defines.
 
+### Splitting a form across child components
+
+As a form grows, you can move a nested group into a child component so that each component manages one section of the form. The child component joins the parent form instead of creating a separate one.
+
+To connect a child component to the parent form, provide the parent's `FormGroupDirective` as the `ControlContainer` for the child's view:
+
+<docs-code header="address-editor.component.ts" path="adev/src/content/examples/reactive-forms/src/app/address-editor/address-editor.component.ts"/>
+
+In the child template, use `formGroupName` to bind the nested group and `formControlName` for its controls, the same way you would in the parent template:
+
+<docs-code header="address-editor.component.html" path="adev/src/content/examples/reactive-forms/src/app/address-editor/address-editor.component.html"/>
+
+Render the child component inside the parent form, in place of the group it manages:
+
+```angular-html
+<form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+  <label for="first-name">First Name: </label>
+  <input id="first-name" type="text" formControlName="firstName" />
+
+  <label for="last-name">Last Name: </label>
+  <input id="last-name" type="text" formControlName="lastName" />
+
+  <app-address-editor></app-address-editor>
+
+  <button type="submit" [disabled]="!profileForm.valid">Submit</button>
+</form>
+```
+
+Because the child's controls register with the parent form, the parent continues to own the model:
+
+- `profileForm.value` includes the values entered in the child component.
+- Validation and status changes propagate in both directions, so `profileForm.valid` reflects the child's controls.
+- Submission stays with the parent form's `(ngSubmit)` handler.
+
+Use `formGroupName` in the child component, not `[formGroup]`. Binding `[formGroup]` in the child would create a separate form instead of joining the parent form.
+The same pattern works at any depth: each level binds its own group with `formGroupName`, and the entire tree reports to the single parent form.
+
+NOTE: If a child component should manage its own independent control instead of joining the parent form, implement [ControlValueAccessor](api/forms/ControlValueAccessor) in that component.
+
 ## Using the FormBuilder service to generate controls
 
 Creating form control instances manually can become repetitive when dealing with multiple forms.
@@ -708,3 +747,4 @@ For complete syntax details, see the API reference documentation for the [Forms 
 | `FormGroupName`        | Syncs a nested `FormGroup` instance to a DOM element.                                      |
 | `FormArrayName`        | Syncs a nested `FormArray` instance to a DOM element.                                      |
 | `FormArrayDirective`   | Syncs a standalone `FormArray` instance to a DOM element.                                  |
+
