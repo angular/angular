@@ -210,7 +210,7 @@ export class DisabledPropertyDirective {
       "filePath": "/host_binding_accessor_type_check.ts",
       "category": "error",
       "code": 8002,
-      "messageText": "Can't bind to 'disabled' since it isn't a known property of 'ng-directive'.",
+      "messageText": "Can't bind to 'disabled' since it isn't a known property of 'ng-directive'. Find more at https://next.angular.dev/errors/NG8002",
       "span": {
         "start": 613,
         "end": 623

@@ -555,7 +555,7 @@ export class AppByName {
       "filePath": "/standalone.ts",
       "category": "error",
       "code": 8001,
-      "messageText": "'Child' is not a known element:\n1. If 'Child' is an Angular component, then verify that it is included in the '@Component.imports' of this component.\n2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.",
+      "messageText": "'Child' is not a known element:\n1. If 'Child' is an Angular component, then verify that it is included in the '@Component.imports' of this component.\n2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component. Find more at https://next.angular.dev/errors/NG8001",
       "span": {
         "start": 790,
         "end": 797

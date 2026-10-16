@@ -188,7 +188,7 @@ export class LocalComp {
       "filePath": "/app.component.ts",
       "category": "error",
       "code": 8001,
-      "messageText": "'external-comp' is not a known element:\n1. If 'external-comp' is an Angular component, then verify that it is included in the '@Component.imports' of this component.\n2. If 'external-comp' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.",
+      "messageText": "'external-comp' is not a known element:\n1. If 'external-comp' is an Angular component, then verify that it is included in the '@Component.imports' of this component.\n2. If 'external-comp' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. Find more at https://next.angular.dev/errors/NG8001",
       "span": {
         "start": 247,
         "end": 262

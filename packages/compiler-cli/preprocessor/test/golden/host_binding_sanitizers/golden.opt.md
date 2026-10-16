@@ -12,7 +12,7 @@ function _tcb1(this: i0.AmbiguousUrlDir) {
   if (true) {
   }
   if (true /*hostBindingsBlockGuard*/) {
-    this.evil /*680,684*/ /*680,684*/;
+    this.evil; /*680,684*/ /*680,684*/
   }
 }
 
@@ -21,7 +21,7 @@ function _tcb2(this: i0.AmbiguousResourceUrlDir) {
   if (true) {
   }
   if (true /*hostBindingsBlockGuard*/) {
-    this.evil /*927,931*/ /*927,931*/;
+    this.evil; /*927,931*/ /*927,931*/
   }
 }
 
@@ -30,7 +30,7 @@ function _tcb3(this: i0.AmbiguousAttributeDir) {
   if (true) {
   }
   if (true /*hostBindingsBlockGuard*/) {
-    this.evil /*1308,1312*/ /*1308,1312*/;
+    this.evil; /*1308,1312*/ /*1308,1312*/
   }
 }
 
@@ -39,9 +39,9 @@ function _tcb4(this: i0.UnambiguousDir) {
   if (true) {
   }
   if (true /*hostBindingsBlockGuard*/) {
-    this.evil /*1658,1662*/ /*1658,1662*/;
-    this.evil /*1685,1689*/ /*1685,1689*/;
-    this.evil /*1713,1717*/ /*1713,1717*/;
+    this.evil; /*1658,1662*/ /*1658,1662*/
+    this.evil; /*1685,1689*/ /*1685,1689*/
+    this.evil; /*1713,1717*/ /*1713,1717*/
   }
 }
 
@@ -50,7 +50,7 @@ function _tcb5(this: i0.AmbiguousXlinkDir) {
   if (true) {
   }
   if (true /*hostBindingsBlockGuard*/) {
-    this.evil /*2039,2043*/ /*2039,2043*/;
+    this.evil; /*2039,2043*/ /*2039,2043*/
   }
 }
 
@@ -59,7 +59,7 @@ function _tcb6(this: i0.UnambiguousUrlDir) {
   if (true) {
   }
   if (true /*hostBindingsBlockGuard*/) {
-    this.evil /*2445,2449*/ /*2445,2449*/;
+    this.evil; /*2445,2449*/ /*2445,2449*/
   }
 }
 
@@ -68,7 +68,7 @@ function _tcb7(this: i0.DecoratedHostBindingDir) {
   if (true) {
   }
   if (true /*hostBindingsBlockGuard*/) {
-    this.evil /*2751,2755*/ /*2751,2755*/;
+    this.evil; /*2751,2755*/ /*2751,2755*/
   }
 }
 
@@ -77,7 +77,7 @@ function _tcb8(this: i0.ValidatedAttributeDir) {
   if (true) {
   }
   if (true /*hostBindingsBlockGuard*/) {
-    this.evil /*3228,3232*/ /*3228,3232*/;
+    this.evil; /*3228,3232*/ /*3228,3232*/
   }
 }
 
@@ -86,15 +86,15 @@ function _tcb9(this: i0.PlainDir) {
   if (true) {
   }
   if (true /*hostBindingsBlockGuard*/) {
-    this.safe /*3436,3440*/ /*3436,3440*/;
+    this.safe; /*3436,3440*/ /*3436,3440*/
   }
 }
 
 /*tcb10*/
 function _tcb10(this: i0.TemplateBindingsCmp) {
   if (true) {
-    this.evil /*3895,3899*/ /*3895,3899*/;
-    this.evil /*3926,3930*/ /*3926,3930*/;
+    this.evil; /*3895,3899*/ /*3895,3899*/
+    this.evil; /*3926,3930*/ /*3926,3930*/
   }
 }
 
@@ -690,7 +690,7 @@ export class TemplateBindingsCmp {
       "filePath": "/host_binding_sanitizers.ts",
       "category": "error",
       "code": 8002,
-      "messageText": "Can't bind to 'formAction' since it isn't a known property of 'ng-directive'.",
+      "messageText": "Can't bind to 'formAction' since it isn't a known property of 'ng-directive'. Find more at https://next.angular.dev/errors/NG8002",
       "span": {
         "start": 2429,
         "end": 2441

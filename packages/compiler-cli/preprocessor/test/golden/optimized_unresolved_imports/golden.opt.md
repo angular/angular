@@ -189,7 +189,7 @@ export class LocalComponent {
       "filePath": "/app.component.ts",
       "category": "error",
       "code": 8001,
-      "messageText": "'app-external' is not a known element:\n1. If 'app-external' is an Angular component, then verify that it is included in the '@Component.imports' of this component.\n2. If 'app-external' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.",
+      "messageText": "'app-external' is not a known element:\n1. If 'app-external' is an Angular component, then verify that it is included in the '@Component.imports' of this component.\n2. If 'app-external' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. Find more at https://next.angular.dev/errors/NG8001",
       "span": {
         "start": 230,
         "end": 244

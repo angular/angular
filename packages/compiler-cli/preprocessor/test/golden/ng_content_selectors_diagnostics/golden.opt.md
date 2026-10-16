@@ -134,7 +134,7 @@ export class MyApp {
       "filePath": "/ng_content_selectors_diagnostics.ts",
       "category": "warning",
       "code": 8011,
-      "messageText": "Node matches the \"div\" slot of the \"HasContent\" component, but will not be projected into the specific slot because the surrounding @if has more than one node at its root. To project the node in the right slot, you can:\n\n1. Wrap the content of the @if block in an <ng-container/> that matches the \"div\" selector.\n2. Split the content of the @if block across multiple @if blocks such that each one only has a single projectable node at its root.\n3. Remove all content from the @if block, except for the node being projected.\n\nThis check can be disabled using the `extendedDiagnostics.checks.controlFlowPreventingContentProjection = \"suppress\"` compiler option.",
+      "messageText": "Node matches the \"div\" slot of the \"HasContent\" component, but will not be projected into the specific slot because the surrounding @if has more than one node at its root. To project the node in the right slot, you can:\n\n1. Wrap the content of the @if block in an <ng-container/> that matches the \"div\" selector.\n2. Split the content of the @if block across multiple @if blocks such that each one only has a single projectable node at its root.\n3. Remove all content from the @if block, except for the node being projected.\n\nThis check can be disabled using the `extendedDiagnostics.checks.controlFlowPreventingContentProjection = \"suppress\"` compiler option. Find more at https://next.angular.dev/errors/NG8011",
       "span": {
         "start": 202,
         "end": 207
@@ -144,7 +144,7 @@ export class MyApp {
       "filePath": "/ng_content_selectors_diagnostics.ts",
       "category": "warning",
       "code": 8011,
-      "messageText": "Node matches the \"div\" slot of the \"HasContent\" component, but will not be projected into the specific slot because the surrounding @if has more than one node at its root. To project the node in the right slot, you can:\n\n1. Wrap the content of the @if block in an <ng-container/> that matches the \"div\" selector.\n2. Split the content of the @if block across multiple @if blocks such that each one only has a single projectable node at its root.\n3. Remove all content from the @if block, except for the node being projected.\n\nThis check can be disabled using the `extendedDiagnostics.checks.controlFlowPreventingContentProjection = \"suppress\"` compiler option.",
+      "messageText": "Node matches the \"div\" slot of the \"HasContent\" component, but will not be projected into the specific slot because the surrounding @if has more than one node at its root. To project the node in the right slot, you can:\n\n1. Wrap the content of the @if block in an <ng-container/> that matches the \"div\" selector.\n2. Split the content of the @if block across multiple @if blocks such that each one only has a single projectable node at its root.\n3. Remove all content from the @if block, except for the node being projected.\n\nThis check can be disabled using the `extendedDiagnostics.checks.controlFlowPreventingContentProjection = \"suppress\"` compiler option. Find more at https://next.angular.dev/errors/NG8011",
       "span": {
         "start": 222,
         "end": 227
