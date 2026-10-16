@@ -111,7 +111,7 @@ export class FeatureModule {
 
 # /out/main.ts
 ```ts
-import { Component, NgModule } from '@angular/core';
+import { Component, Directive, NgModule } from '@angular/core';
 import { FinalFeatureModule } from './lib';
 // @ts-ignore
 import * as i0 from '@angular/core';
@@ -215,6 +215,153 @@ export class AppModule {
   (typeof ngJitMode === 'undefined' || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(AppModule, {
       declarations: [AppComponent],
+      imports: [FinalFeatureModule],
+    });
+})();
+
+export class AppForwardComponent {
+  // @ts-ignore
+  static ɵfac: i0.ɵɵFactoryDeclaration<AppForwardComponent, never> =
+    function AppForwardComponent_Factory(__ngFactoryType__: any): any {
+      return new (__ngFactoryType__ || AppForwardComponent)();
+    };
+  // @ts-ignore
+  static ɵcmp: i0.ɵɵComponentDeclaration<
+    AppForwardComponent,
+    'app-forward',
+    never,
+    {},
+    {},
+    never,
+    never,
+    false,
+    never
+  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
+    type: AppForwardComponent,
+    selectors: [['app-forward']],
+    standalone: false,
+    decls: 1,
+    vars: 0,
+    consts: [['laterDir', '']],
+    template: function AppForwardComponent_Template(rf: number, ctx: any): any {
+      if (rf & 1) {
+        i0.ɵɵelement(0, 'feature-cmp', 0);
+      }
+    },
+    dependencies: i0.ɵɵgetComponentDepsFactory(AppForwardComponent),
+    encapsulation: 2,
+  });
+  static {
+    (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        AppForwardComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: 'app-forward',
+                template: '<feature-cmp laterDir></feature-cmp>',
+                standalone: false,
+              },
+            ],
+          },
+        ],
+        null,
+        null,
+      );
+  }
+}
+((): any => {
+  (typeof ngDevMode === 'undefined' || ngDevMode) &&
+    i0.ɵsetClassDebugInfo(AppForwardComponent, {
+      className: 'AppForwardComponent',
+      filePath: 'main.ts',
+      lineNumber: 22,
+    });
+})();
+
+export class LaterDirective {
+  // @ts-ignore
+  static ɵfac: i0.ɵɵFactoryDeclaration<LaterDirective, never> = function LaterDirective_Factory(
+    __ngFactoryType__: any,
+  ): any {
+    return new (__ngFactoryType__ || LaterDirective)();
+  };
+  // @ts-ignore
+  static ɵdir: i0.ɵɵDirectiveDeclaration<
+    LaterDirective,
+    '[laterDir]',
+    never,
+    {},
+    {},
+    never,
+    never,
+    false,
+    never
+  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
+    type: LaterDirective,
+    selectors: [['', 'laterDir', '']],
+    standalone: false,
+  });
+  static {
+    (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        LaterDirective,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: '[laterDir]',
+                standalone: false,
+              },
+            ],
+          },
+        ],
+        null,
+        null,
+      );
+  }
+}
+
+export class AppForwardModule {
+  // @ts-ignore
+  static ɵfac: i0.ɵɵFactoryDeclaration<AppForwardModule, never> = function AppForwardModule_Factory(
+    __ngFactoryType__: any,
+  ): any {
+    return new (__ngFactoryType__ || AppForwardModule)();
+  };
+  // @ts-ignore
+  static ɵmod: AppForwardModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppForwardModule });
+  // @ts-ignore
+  static ɵinj: i0.ɵɵInjectorDeclaration<AppForwardModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
+    imports: [FinalFeatureModule],
+  });
+  static {
+    (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        AppForwardModule,
+        [
+          {
+            type: NgModule,
+            args: [
+              {
+                imports: [FinalFeatureModule],
+                declarations: [AppForwardComponent, LaterDirective],
+              },
+            ],
+          },
+        ],
+        null,
+        null,
+      );
+  }
+}
+(function (): any {
+  (typeof ngJitMode === 'undefined' || ngJitMode) &&
+    i0.ɵɵsetNgModuleScope(AppForwardModule, {
+      declarations: [AppForwardComponent, LaterDirective],
       imports: [FinalFeatureModule],
     });
 })();

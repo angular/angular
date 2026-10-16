@@ -38,7 +38,7 @@ export { FeatureModule as FinalFeatureModule } from './intermediate';
 
 # /main.ts
 ```ts
-import { Component, NgModule } from '@angular/core';
+import { Component, Directive, NgModule } from '@angular/core';
 import { FinalFeatureModule } from './lib';
 
 @Component({
@@ -53,4 +53,25 @@ export class AppComponent {}
   declarations: [AppComponent]
 })
 export class AppModule {}
+
+@Component({
+  selector: 'app-forward',
+  template: '<feature-cmp laterDir></feature-cmp>',
+  standalone: false,
+})
+export class AppForwardComponent {}
+
+@Directive({
+  selector: '[laterDir]',
+  standalone: false,
+})
+export class LaterDirective {}
+
+@NgModule({
+  imports: [FinalFeatureModule],
+  declarations: [AppForwardComponent, LaterDirective]
+})
+export class AppForwardModule {}
 ```
+
+
