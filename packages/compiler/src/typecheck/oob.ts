@@ -160,6 +160,18 @@ export interface OutOfBandDiagnosticRecorder<T> {
     preservesWhitespaces: boolean,
   ): void;
 
+  /**
+   * Reports nodes in `@defer` blocks that match a specific content projection slot, but will be
+   * projected into the default slot instead.
+   */
+  deferredBlockPreventingContentProjection(
+    id: TypeCheckId,
+    category: OutOfBandDiagnosticCategory,
+    projectionNode: Element | Template,
+    componentName: string,
+    slotSelector: string,
+  ): void;
+
   /** Reports cases where users are writing to `@let` declarations. */
   illegalWriteToLetDeclaration(id: TypeCheckId, node: AST, target: LetDeclaration): void;
 

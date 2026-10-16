@@ -317,6 +317,21 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     this.pushDiagnostic(id, msg, node.startSourceSpan, category, 8011);
   }
 
+  deferredBlockPreventingContentProjection(
+    id: TypeCheckId,
+    category: OutOfBandDiagnosticCategory,
+    node: TmplAstElement | TmplAstTemplate,
+    componentName: string,
+    selector: string,
+  ) {
+    const msg =
+      `Node matches the "${selector}" slot of the "${componentName}" component, but will not be projected into the specific slot because it is inside a @defer block. ` +
+      `The content of @defer blocks, including their @placeholder, @loading and @error blocks, is always projected into the default slot, or not rendered if the component doesn't have one. ` +
+      `To project the node in the right slot, wrap the @defer block in an <ng-container/> with an "ngProjectAs" attribute that matches the "${selector}" selector.\n\n` +
+      'This check can be disabled using the `extendedDiagnostics.checks.controlFlowPreventingContentProjection = "suppress"` compiler option.';
+    this.pushDiagnostic(id, msg, node.startSourceSpan, category, 8011);
+  }
+
   illegalWriteToLetDeclaration(id: TypeCheckId, node: AST, target: TmplAstLetDeclaration) {
     this.pushDiagnostic(
       id,

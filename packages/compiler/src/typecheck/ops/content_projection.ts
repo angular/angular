@@ -10,6 +10,7 @@ import {CssSelector, SelectorMatcher} from '../../directive_matching';
 import {
   BoundaryBlock,
   Component,
+  DeferredBlock,
   Element,
   ForLoopBlock,
   ForLoopBlockEmpty,
@@ -62,8 +63,11 @@ export class TcbControlFlowContentProjectionOp extends TcbOp {
 
   override execute(): null {
     const controlFlowToCheck = this.findPotentialControlFlowNodes();
+    const deferredBlocks = this.element.children.filter(
+      (child): child is DeferredBlock => child instanceof DeferredBlock,
+    );
 
-    if (controlFlowToCheck.length > 0) {
+    if (controlFlowToCheck.length > 0 || deferredBlocks.length > 0) {
       const matcher = new SelectorMatcher<string>();
 
       for (const selector of this.ngContentSelectors) {
@@ -87,6 +91,31 @@ export class TcbControlFlowContentProjectionOp extends TcbOp {
                 this.tcb.hostPreserveWhitespaces,
               );
             });
+          }
+        }
+      }
+
+      // Unlike the control flow blocks above, `@defer` blocks don't copy the tag name and
+      // attributes of their root node so their content always ends up in the default slot,
+      // even if there's only one root node. This applies to all of the secondary blocks too.
+      for (const block of deferredBlocks) {
+        for (const view of [block, block.placeholder, block.loading, block.error]) {
+          if (view === null) {
+            continue;
+          }
+
+          for (const child of view.children) {
+            if (child instanceof Element || child instanceof Template) {
+              matcher.match(createCssSelectorFromNode(child), (_, originalSelector) => {
+                this.tcb.oobRecorder.deferredBlockPreventingContentProjection(
+                  this.tcb.id,
+                  this.category,
+                  child,
+                  this.componentName,
+                  originalSelector,
+                );
+              });
+            }
           }
         }
       }

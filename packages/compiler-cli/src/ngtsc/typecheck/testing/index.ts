@@ -844,6 +844,7 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder<TemplateDiag
   illegalForLoopTrackAccess(): void {}
   inaccessibleDeferredTriggerElement(): void {}
   controlFlowPreventingContentProjection(): void {}
+  deferredBlockPreventingContentProjection(): void {}
   formFieldUnsupportedBinding(): void {}
   illegalWriteToLetDeclaration(id: TypeCheckId, node: AST, target: TmplAstLetDeclaration): void {}
   letUsedBeforeDefinition(

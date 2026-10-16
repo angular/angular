@@ -8617,6 +8617,147 @@ suppress
         expect(diags.length).toBe(0);
       });
 
+      it('should report when a @defer block prevents an element from being projected', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content/> <ng-content select="bar, [foo]"/>',
+          })
+          class Comp {}
+
+          @Component({
+            imports: [Comp],
+            template: \`
+              <comp>
+                @defer {
+                  <div foo></div>
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `,
+        );
+
+        const diags = env
+          .driveDiagnostics()
+          .map((d) => ts.flattenDiagnosticMessageText(d.messageText, ''));
+        expect(diags.length).toBe(1);
+        expect(diags[0]).toContain(
+          `Node matches the "bar, [foo]" slot of the "Comp" component, but will ` +
+            `not be projected into the specific slot because it is inside a @defer block.`,
+        );
+      });
+
+      it('should report when the secondary blocks of a @defer block prevent elements from being projected', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content/> <ng-content select="[foo]"/> <ng-content select="[bar]"/>',
+          })
+          class Comp {}
+
+          @Component({
+            imports: [Comp],
+            template: \`
+              <comp>
+                @defer {
+                  <span></span>
+                } @placeholder {
+                  <div foo></div>
+                } @loading {
+                  <span bar></span>
+                } @error {
+                  <ng-template foo></ng-template>
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `,
+        );
+
+        const diags = env
+          .driveDiagnostics()
+          .map((d) => ts.flattenDiagnosticMessageText(d.messageText, ''));
+        expect(diags.length).toBe(3);
+        expect(diags[0]).toContain(`Node matches the "[foo]" slot of the "Comp" component`);
+        expect(diags[1]).toContain(`Node matches the "[bar]" slot of the "Comp" component`);
+        expect(diags[2]).toContain(`Node matches the "[foo]" slot of the "Comp" component`);
+      });
+
+      it('should not report when the content of a @defer block only matches the catch-all slot', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content/> <ng-content select="[foo]"/>',
+          })
+          class Comp {}
+
+          @Component({
+            imports: [Comp],
+            template: \`
+              <comp>
+                @defer {
+                  <div></div>
+                } @placeholder {
+                  <span></span>
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should not report when a @defer block is wrapped in an element with ngProjectAs', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content/> <ng-content select="[foo]"/>',
+          })
+          class Comp {}
+
+          @Component({
+            imports: [Comp],
+            template: \`
+              <comp>
+                <ng-container ngProjectAs="[foo]">
+                  @defer {
+                    <div foo></div>
+                  }
+                </ng-container>
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
       it('should work with @switch block declared in an ng-template with template scoped variables', () => {
         env.write(
           'test.ts',
