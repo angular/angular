@@ -9,7 +9,7 @@
 import {Injector} from '../../di';
 import {isInternalHydrationTransferStateKey} from '../../hydration/utils';
 import {APP_ID} from '../../application/application_tokens';
-import {retrieveTransferredState} from '../../transfer_state';
+import {createDictionary, retrieveTransferredState} from '../../transfer_state';
 import {DOCUMENT} from '../../document';
 
 /**
@@ -27,8 +27,9 @@ export function getTransferState(injector: Injector): Record<string, unknown> {
 
   const transferState = retrieveTransferredState(doc, appId);
 
-  // Strip internal keys
-  const filteredEntries: Record<string, unknown> = {};
+  // Strip internal keys. Keys are taken verbatim from the serialized state, so they can name
+  // `Object.prototype` properties like `__proto__`; a dictionary keeps them as ordinary entries.
+  const filteredEntries = createDictionary<unknown>();
   for (const [key, value] of Object.entries(transferState)) {
     if (!isInternalHydrationTransferStateKey(key)) {
       filteredEntries[key] = value;
