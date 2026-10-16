@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {decode, encode, SourceMapMappings, SourceMapSegment} from '@jridgewell/sourcemap-codec';
 import {AbstractBoundTemplate, ParseTemplateOptions} from '@angular/compiler';
 import * as fsSync from 'node:fs';
 import * as path from 'node:path';
@@ -30,6 +31,7 @@ import {exitCodeFromResult} from '../../../perform_compile';
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
 import {AbsoluteFsPath, FileSystem} from '../../file_system';
 import {ClassDeclaration, DeclarationNode} from '../../reflection';
+import {RawSourceMap} from '../../sourcemaps';
 import {hasIgnoreForDiagnosticsMarker, readSpanComment} from '../../typecheck/src/comments';
 import {shouldReportDiagnostic} from '../../typecheck/src/diagnostics';
 import {getTokenAtPosition} from '../../util/src/typescript';
@@ -375,6 +377,11 @@ export function performNgpCompilationSync(params: {
 
   // Map of original AbsoluteFsPath -> preprocessed .ng.ts content
   const preprocessedTsMap = new Map<AbsoluteFsPath, string>();
+  // Map of original AbsoluteFsPath -> source map from the original `.ts` to the preprocessed
+  // `.ng.ts` content. Only populated when source maps are requested, since it's used to compose
+  // the TS-emitted map (which targets the preprocessed text) back onto the original source.
+  const preprocessedSourceMaps = new Map<AbsoluteFsPath, RawSourceMap>();
+  const wantsSourceMaps = Boolean(options.sourceMap || options.inlineSourceMap);
   // Map of virtual .ngtypecheck.ts AbsoluteFsPath -> TCB content
   const tcbFileMap = new Map<AbsoluteFsPath, {code: string; originFsPath: AbsoluteFsPath}>();
   // Map of original Posix filePath -> Map<typeCheckId, resolvedTemplatePosixPath>
@@ -415,6 +422,15 @@ export function performNgpCompilationSync(params: {
       }
 
       preprocessedTsMap.set(fsFilePath, processed.magicString.toString());
+      if (wantsSourceMaps) {
+        preprocessedSourceMaps.set(
+          fsFilePath,
+          processed.generateSourceMap({
+            source: posixFilePath,
+            includeContent: false,
+          }) as RawSourceMap,
+        );
+      }
 
       if (processed.tcb && !options.emitDeclarationOnly) {
         const tcbFsPath = fs.resolve(fsFilePath.replace(/\.ts$/, '.ngtypecheck.ts'));
@@ -599,6 +615,11 @@ export function performNgpCompilationSync(params: {
         }
       : undefined;
     const baseWriteFile = writeFileCallback ?? overlayHost.writeFile.bind(overlayHost);
+    // TypeScript emits `.js` content for the *preprocessed* source text, but under the original
+    // file name. TS writes the `.js.map` *before* the `.js`, so buffer the map until the JS content
+    // is available and then compose TS's map (preprocessed -> JS) with the MagicString map
+    // (original -> preprocessed) before writing it out.
+    const pendingSourceMaps = new Map<AbsoluteFsPath, Parameters<ts.WriteFileCallback>>();
     const trackingWriteFile: ts.WriteFileCallback = (
       fileName,
       data,
@@ -607,7 +628,39 @@ export function performNgpCompilationSync(params: {
       sourceFiles,
       writeFileData,
     ) => {
-      emittedFiles.push(fs.resolve(basePath, fileName));
+      const absFileName = fs.resolve(basePath, fileName);
+      emittedFiles.push(absFileName);
+      if (preprocessedSourceMaps.size > 0) {
+        if (absFileName.endsWith('.js.map')) {
+          const jsPath = fs.resolve(absFileName.slice(0, -'.map'.length));
+          pendingSourceMaps.set(jsPath, [
+            fileName,
+            data,
+            writeByteOrderMark,
+            onError,
+            sourceFiles,
+            writeFileData,
+          ]);
+          return;
+        }
+        if (absFileName.endsWith('.js')) {
+          baseWriteFile(fileName, data, writeByteOrderMark, onError, sourceFiles, writeFileData);
+          const pendingMap = pendingSourceMaps.get(absFileName);
+          if (pendingMap !== undefined) {
+            pendingSourceMaps.delete(absFileName);
+            pendingMap[1] = composeEmittedSourceMap(
+              fs,
+              fs.resolve(basePath, pendingMap[0]),
+              pendingMap[1],
+              preprocessedTsMap,
+              preprocessedSourceMaps,
+              Boolean(options.inlineSources),
+            );
+            baseWriteFile(...pendingMap);
+          }
+          return;
+        }
+      }
       baseWriteFile(fileName, data, writeByteOrderMark, onError, sourceFiles, writeFileData);
     };
     for (const sf of tsProgram.getSourceFiles()) {
@@ -626,6 +679,11 @@ export function performNgpCompilationSync(params: {
         allDiagnostics.push(d);
       }
     }
+    // Safety net: write out any buffered maps whose `.js` was never emitted.
+    for (const pendingMap of pendingSourceMaps.values()) {
+      baseWriteFile(...pendingMap);
+    }
+    pendingSourceMaps.clear();
   }
 
   if (closeAnalyzer) {
@@ -640,6 +698,208 @@ export function performNgpCompilationSync(params: {
     originalSourceFiles,
     preprocessedTsMap,
     emittedFiles,
+  };
+}
+
+/**
+ * Rewrites a TS-emitted `.js.map` so that its mappings point into the original `.ts` sources
+ * rather than the preprocessed `.ng.ts` text that TypeScript actually compiled.
+ *
+ * Each TS mapping (JS -> preprocessed) is resolved through the preprocessor's map (preprocessed
+ * -> original) by taking the preprocessor mapping at or before the position. Every character of
+ * the carried-over original text has its own preprocessor mapping, so those resolve exactly;
+ * positions inside spliced-in compiled text resolve to the enclosing compiled node's mapping.
+ *
+ * TypeScript re-parses the compiled text and so emits a mapping for every token in it, which in
+ * ngtsc has no counterpart: ngtsc's synthesized nodes only produce a mapping where a node with a
+ * source-map range starts or ends. To match that, consecutive TS mappings that resolve to the
+ * same original location through the *same* preprocessor mapping collapse into one segment.
+ *
+ * TODO(ngp): this composition only exists in the test driver. A build that compiles the `.ng.ts`
+ * output with TypeScript (e.g. the CLI's NGP integration) has to chain the emitted `.js.map`
+ * through `ProcessedFile.generateSourceMap()` itself; generic remapping tools will do that, but
+ * keep every TS token mapping inside the compiled text, which is noisier than ngtsc's output.
+ * Move this into the preprocessor package once there is a production consumer for it.
+ */
+function composeEmittedSourceMap(
+  fs: FileSystem,
+  mapPath: AbsoluteFsPath,
+  rawMapJson: string,
+  preprocessedTsMap: ReadonlyMap<AbsoluteFsPath, string>,
+  preprocessedSourceMaps: ReadonlyMap<AbsoluteFsPath, RawSourceMap>,
+  includeSourcesContent: boolean,
+): string {
+  let tsMap: RawSourceMap;
+  try {
+    tsMap = JSON.parse(rawMapJson) as RawSourceMap;
+  } catch {
+    return rawMapJson;
+  }
+
+  const mapDir = fs.dirname(mapPath);
+  const sourceRoot = fs.resolve(mapDir, tsMap.sourceRoot ?? '');
+  const lookups = tsMap.sources.map((source) => {
+    const sourcePath = fs.resolve(sourceRoot, source);
+    const content = preprocessedTsMap.get(sourcePath);
+    const map = preprocessedSourceMaps.get(sourcePath);
+    return content !== undefined && map !== undefined
+      ? createPreprocessedLookup(fs, sourcePath, content, map)
+      : null;
+  });
+  if (lookups.every((lookup) => lookup === null)) {
+    return rawMapJson;
+  }
+
+  const outSources: AbsoluteFsPath[] = [];
+  const outSourceIndex = (sourcePath: AbsoluteFsPath): number => {
+    let index = outSources.indexOf(sourcePath);
+    if (index === -1) {
+      index = outSources.push(sourcePath) - 1;
+    }
+    return index;
+  };
+
+  const outMappings: SourceMapMappings = [];
+  let previous: ResolvedLocation | null = null;
+  for (const line of decode(tsMap.mappings)) {
+    const outLine: SourceMapSegment[] = [];
+    for (const segment of line) {
+      if (segment.length === 1) {
+        continue;
+      }
+      const generatedColumn = segment[0];
+      const sourceIndex = segment[1];
+      const sourceLine = segment[2];
+      const sourceColumn = segment[3];
+      const lookup = lookups[sourceIndex];
+      let resolved: ResolvedLocation;
+      if (lookup === null) {
+        resolved = {
+          sourcePath: fs.resolve(sourceRoot, tsMap.sources[sourceIndex]),
+          line: sourceLine,
+          column: sourceColumn,
+          via: null,
+        };
+      } else {
+        const lookedUp = lookup(sourceLine, sourceColumn);
+        if (lookedUp === null) {
+          continue;
+        }
+        if (
+          previous !== null &&
+          lookedUp.via !== null &&
+          lookedUp.via === previous.via &&
+          lookedUp.exact === false
+        ) {
+          // Another token inside the same compiled node; ngtsc has no mapping here.
+          continue;
+        }
+        resolved = lookedUp;
+      }
+      const out: SourceMapSegment = [
+        generatedColumn,
+        outSourceIndex(resolved.sourcePath),
+        resolved.line,
+        resolved.column,
+      ];
+      const last = outLine[outLine.length - 1];
+      if (last !== undefined && last[0] === generatedColumn) {
+        outLine[outLine.length - 1] = out;
+      } else {
+        outLine.push(out);
+      }
+      previous = resolved;
+    }
+    outMappings.push(outLine);
+  }
+
+  const composed: RawSourceMap = {
+    version: 3,
+    file: tsMap.file,
+    sourceRoot: '',
+    sources: outSources.map((sourcePath) => fs.relative(mapDir, sourcePath)),
+    names: [],
+    mappings: encode(outMappings),
+  };
+  if (includeSourcesContent) {
+    composed.sourcesContent = outSources.map((sourcePath) =>
+      fs.exists(sourcePath) ? fs.readFile(sourcePath) : null,
+    );
+  }
+  return JSON.stringify(composed);
+}
+
+interface ResolvedLocation {
+  sourcePath: AbsoluteFsPath;
+  line: number;
+  column: number;
+  /** The preprocessor mapping this was resolved through, used to collapse runs of tokens. */
+  via: object | null;
+  /** Whether the position sat exactly on `via` rather than somewhere after it. */
+  exact?: boolean;
+}
+
+/**
+ * Builds a function resolving a line/column in the preprocessed text of `sourcePath` to the
+ * original location that the preprocessor's `map` records at or before it.
+ */
+function createPreprocessedLookup(
+  fs: FileSystem,
+  sourcePath: AbsoluteFsPath,
+  content: string,
+  map: RawSourceMap,
+): (line: number, column: number) => ResolvedLocation | null {
+  const lineStarts = [0];
+  for (let i = 0; i < content.length; i++) {
+    if (content.charCodeAt(i) === 10 /* \n */) {
+      lineStarts.push(i + 1);
+    }
+  }
+  const sourcePaths = map.sources.map((source) => fromPosixPath(fs, source));
+  const entries: Array<{offset: number; sourcePath: AbsoluteFsPath; line: number; column: number}> =
+    [];
+  decode(map.mappings).forEach((segments, line) => {
+    for (const segment of segments) {
+      if (segment.length !== 1 && line < lineStarts.length) {
+        entries.push({
+          offset: lineStarts[line] + segment[0],
+          sourcePath: sourcePaths[segment[1]],
+          line: segment[2],
+          column: segment[3],
+        });
+      }
+    }
+  });
+  entries.sort((a, b) => a.offset - b.offset);
+
+  return (line, column) => {
+    if (line >= lineStarts.length) {
+      return null;
+    }
+    const offset = lineStarts[line] + column;
+    let low = 0;
+    let high = entries.length - 1;
+    let found = -1;
+    while (low <= high) {
+      const mid = (low + high) >> 1;
+      if (entries[mid].offset <= offset) {
+        found = mid;
+        low = mid + 1;
+      } else {
+        high = mid - 1;
+      }
+    }
+    if (found === -1) {
+      return null;
+    }
+    const entry = entries[found];
+    return {
+      sourcePath: entry.sourcePath,
+      line: entry.line,
+      column: entry.column,
+      via: entry,
+      exact: entry.offset === offset,
+    };
   };
 }
 

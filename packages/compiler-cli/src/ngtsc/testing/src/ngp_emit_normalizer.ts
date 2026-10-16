@@ -32,7 +32,8 @@ function canonicalizeSegmentQuotes(segment: string): string {
   });
 }
 
-function canonicalizeStringQuotes(code: string, ellipsisToken = '\u2026'): string {
+/** Rewrites single-quoted string literals in `code` to double quotes, as TypeScript emits them. */
+export function canonicalizeStringQuotes(code: string, ellipsisToken = '\u2026'): string {
   return code.split(ellipsisToken).map(canonicalizeSegmentQuotes).join(ellipsisToken);
 }
 
