@@ -8,7 +8,7 @@ and blank the page.
 @boundary {
 <app-risky-component />
 } @error {
-<app-error-fallback [error]="err" />
+<app-error-fallback [error]="$error" />
 }
 ```
 
@@ -23,6 +23,8 @@ Declare a template variable in the `@error` block to read the thrown error, and 
 } @error (when isNetworkError(err)) {
 <app-network-error [error]="$error" />
 <button (click)="$retry()">Retry</button>
+} @error {
+<p>Something went wrong.</p>
 }
 ```
 
