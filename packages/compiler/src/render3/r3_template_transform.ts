@@ -712,6 +712,13 @@ class HtmlAstToIvyAst implements html.Visitor {
         );
       }
 
+      // Static and interpolated `animate.` attributes don't go through the binding parser's
+      // animation path, so their name is validated here.
+      this.bindingParser.validateAnimationName(
+        attribute.name,
+        attribute.keySpan ?? attribute.sourceSpan,
+      );
+
       if (!hasBinding && !isTemplateBinding) {
         // don't include the bindings as attributes as well in the AST
         attributes.push(this.visitAttribute(attribute));
