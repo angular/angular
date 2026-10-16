@@ -5,9 +5,13 @@ import {
   computed,
   contentChild,
   effect,
+  Injectable,
+  InjectionToken,
+  Input,
   input,
   linkedSignal,
   model,
+  NgModule,
   resource,
   signal,
   viewChild,
@@ -24,8 +28,59 @@ export const topLevel = signal(
   0,
   ...((ngDevMode ? [{ debugName: 'topLevel' }] : /* istanbul ignore next */ []) as []),
 );
+export const TOKEN = new InjectionToken<{ s: unknown }>('TOKEN');
+
+export class MyService {
+  constructor(
+    readonly s: unknown,
+    readonly opts: unknown,
+  ) {}
+  // @ts-ignore
+  static ɵfac: i0.ɵɵFactoryDeclaration<MyService, never> = function MyService_Factory(
+    __ngFactoryType__: any,
+  ): any {
+    /* @ts-ignore */
+    return new (__ngFactoryType__ || MyService)(i0.ɵɵinject(Object), i0.ɵɵinject(Object));
+  };
+  // @ts-ignore
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineInjectable({
+    token: MyService,
+    factory: (): any =>
+      (() => {
+        const factoryState = signal('from-injectable');
+        const factoryWithOpts = signal(0, { equal: (a, b) => a === b });
+        return new MyService(factoryState, factoryWithOpts);
+      })(),
+    providedIn: 'root',
+  });
+  static {
+    (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        MyService,
+        [
+          {
+            type: Injectable,
+            args: [
+              {
+                providedIn: 'root',
+                useFactory: () => {
+                  const factoryState = signal('from-injectable');
+                  const factoryWithOpts = signal(0, { equal: (a, b) => a === b });
+                  return new MyService(factoryState, factoryWithOpts);
+                },
+              },
+            ],
+          },
+        ],
+        (): any => [{ type: undefined }, { type: undefined }],
+        null,
+      );
+  }
+}
 
 export class SignalDebugNamesComponent {
+  val = '';
+
   // No options argument: one is appended, after `undefined` when there are no arguments.
   count = signal(
     0,
@@ -139,6 +194,7 @@ export class SignalDebugNamesComponent {
     'signal-debug-names',
     never,
     {
+      'val': { 'alias': 'val'; 'required': false };
       'noInitial': { 'alias': 'noInitial'; 'required': false; 'isSignal': true };
       'typedNoInitial': { 'alias': 'typedNoInitial'; 'required': false; 'isSignal': true };
       'twoWay': { 'alias': 'twoWay'; 'required': false; 'isSignal': true };
@@ -175,6 +231,15 @@ export class SignalDebugNamesComponent {
       }
     },
     inputs: {
+      val: [
+        2,
+        'val',
+        'val',
+        (v: string) => {
+          const transformed = signal(v);
+          return transformed();
+        },
+      ],
       noInitial: [1, 'noInitial'],
       typedNoInitial: [1, 'typedNoInitial'],
       twoWay: [1, 'twoWay'],
@@ -183,6 +248,17 @@ export class SignalDebugNamesComponent {
       requiredWithOptions: [1, 'req', 'requiredWithOptions'],
     },
     outputs: { twoWay: 'twoWayChange', requiredWithOptions: 'reqChange' },
+    features: [
+      i0.ɵɵProvidersFeature([
+        {
+          provide: TOKEN,
+          useFactory: () => {
+            const providerSignal = signal(42);
+            return { s: providerSignal };
+          },
+        },
+      ]),
+    ],
     decls: 3,
     vars: 1,
     consts: [['el', '']],
@@ -199,6 +275,8 @@ export class SignalDebugNamesComponent {
     },
     encapsulation: 2,
   });
+  // @ts-ignore
+  declare static ngAcceptInputType_val: string;
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -210,12 +288,34 @@ export class SignalDebugNamesComponent {
               {
                 selector: 'signal-debug-names',
                 template: `<div #el>{{ count() }}</div>`,
+                providers: [
+                  {
+                    provide: TOKEN,
+                    useFactory: () => {
+                      const providerSignal = signal(42);
+                      return { s: providerSignal };
+                    },
+                  },
+                ],
               },
             ],
           },
         ],
         (): any => [],
         {
+          val: [
+            {
+              type: Input,
+              args: [
+                {
+                  transform: (v: string) => {
+                    const transformed = signal(v);
+                    return transformed();
+                  },
+                },
+              ],
+            },
+          ],
           noInitial: [
             { type: i0.Input, args: [{ isSignal: true, alias: 'noInitial', required: false }] },
           ],
@@ -252,8 +352,57 @@ export class SignalDebugNamesComponent {
     i0.ɵsetClassDebugInfo(SignalDebugNamesComponent, {
       className: 'SignalDebugNamesComponent',
       filePath: 'app.ts',
-      lineNumber: 22,
+      lineNumber: 51,
     });
 })();
+
+export class AppModule {
+  // @ts-ignore
+  static ɵfac: i0.ɵɵFactoryDeclaration<AppModule, never> = function AppModule_Factory(
+    __ngFactoryType__: any,
+  ): any {
+    return new (__ngFactoryType__ || AppModule)();
+  };
+  // @ts-ignore
+  static ɵmod: AppModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
+  // @ts-ignore
+  static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
+    providers: [
+      {
+        provide: TOKEN,
+        useFactory: () => {
+          const moduleSignal = signal(true);
+          return { s: moduleSignal };
+        },
+      },
+    ],
+  });
+  static {
+    (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        AppModule,
+        [
+          {
+            type: NgModule,
+            args: [
+              {
+                providers: [
+                  {
+                    provide: TOKEN,
+                    useFactory: () => {
+                      const moduleSignal = signal(true);
+                      return { s: moduleSignal };
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        null,
+        null,
+      );
+  }
+}
 
 ```
