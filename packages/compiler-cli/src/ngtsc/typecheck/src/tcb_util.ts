@@ -161,7 +161,8 @@ export function getSourceMapping(
   };
 }
 
-function isInHostBindingTcb(node: ts.Node): boolean {
+/** Whether `node` is inside the host bindings block of a type check block. */
+export function isInHostBindingTcb(node: ts.Node): boolean {
   let current = node;
   while (current && !ts.isFunctionDeclaration(current)) {
     if (isHostBindingsBlockGuard(current)) {

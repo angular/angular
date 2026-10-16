@@ -34,6 +34,7 @@ import {ClassDeclaration, DeclarationNode} from '../../reflection';
 import {RawSourceMap} from '../../sourcemaps';
 import {hasIgnoreForDiagnosticsMarker, readSpanComment} from '../../typecheck/src/comments';
 import {shouldReportDiagnostic} from '../../typecheck/src/diagnostics';
+import {isInHostBindingTcb} from '../../typecheck/src/tcb_util';
 import {getTokenAtPosition} from '../../util/src/typescript';
 import type * as api from '../../../transformers/api';
 import {NgtscTestCompilerHost} from './compiler_host';
@@ -384,8 +385,9 @@ export function performNgpCompilationSync(params: {
   const wantsSourceMaps = Boolean(options.sourceMap || options.inlineSourceMap);
   // Map of virtual .ngtypecheck.ts AbsoluteFsPath -> TCB content
   const tcbFileMap = new Map<AbsoluteFsPath, {code: string; originFsPath: AbsoluteFsPath}>();
-  // Map of original Posix filePath -> Map<typeCheckId, resolvedTemplatePosixPath>
-  const templatePathByTypeCheckId = new Map<string, string>();
+  // Map of typeCheckId -> where that component's template diagnostics are reported. Only set for
+  // templates whose spans are not offsets into the component file.
+  const templateTargetByTypeCheckId = new Map<string, TemplateDiagnosticTarget>();
   const processorThrownErrors: Array<{fsFilePath: AbsoluteFsPath; message: string}> = [];
 
   const chunks =
@@ -440,12 +442,31 @@ export function performNgpCompilationSync(params: {
       const typeCheckIdMap = compiler.getTypeCheckIdMap(posixFilePath);
       if (typeCheckIdMap) {
         for (const cls of fileResult.classes) {
-          if (cls.className && cls.component?.templateUrl?.resolvedPath) {
-            const classKey = `${cls.className}@${cls.span.start}`;
-            const tcId = typeCheckIdMap.get(classKey);
-            if (tcId) {
-              templatePathByTypeCheckId.set(tcId, cls.component.templateUrl.resolvedPath);
-            }
+          const component = cls.component;
+          if (!cls.className || !component) {
+            continue;
+          }
+          const tcId = typeCheckIdMap.get(`${cls.className}@${cls.span.start}`);
+          if (!tcId) {
+            continue;
+          }
+          if (component.templateUrl?.resolvedPath) {
+            templateTargetByTypeCheckId.set(tcId, {
+              fsPath: fromPosixPath(fs, component.templateUrl.resolvedPath),
+            });
+          } else if (component.templateContentSpan == null && component.template != null) {
+            // An inline template computed by an expression (ngtsc's `indirect` source mapping):
+            // its spans are offsets into the resolved template string, which ngtsc reports in a
+            // synthetic source file named after the component (see `makeTemplateDiagnostic`).
+            templateTargetByTypeCheckId.set(tcId, {
+              sourceFile: ts.createSourceFile(
+                `${fsFilePath} (${cls.className} template)`,
+                component.template,
+                ts.ScriptTarget.Latest,
+                /* setParentNodes */ false,
+                ts.ScriptKind.JSX,
+              ),
+            });
           }
         }
       }
@@ -594,8 +615,7 @@ export function performNgpCompilationSync(params: {
         tcbSf,
         tcbCode,
         originFsPath,
-        templatePathByTypeCheckId,
-        fs,
+        templateTargetByTypeCheckId,
         getOriginalSourceFile,
       );
       if (mapped !== null) {
@@ -982,13 +1002,19 @@ export function getTemplateSpanFromTcbLocation(
   };
 }
 
+/**
+ * Where diagnostics for a component's template are reported when its spans aren't offsets into
+ * the component file: an external template file, or a synthetic source file holding the text of
+ * an indirect inline template.
+ */
+export type TemplateDiagnosticTarget = {fsPath: AbsoluteFsPath} | {sourceFile: ts.SourceFile};
+
 export function translateTcbDiagnostic(
   diag: ts.Diagnostic,
   tcbSf: ts.SourceFile,
   tcbCode: string,
   originFsPath: AbsoluteFsPath,
-  templatePathByTypeCheckId: ReadonlyMap<string, string>,
-  fs: FileSystem,
+  templateTargetByTypeCheckId: ReadonlyMap<string, TemplateDiagnosticTarget>,
   getOriginalSourceFile: (fsPath: AbsoluteFsPath) => ts.SourceFile | undefined,
 ): ts.Diagnostic | null {
   if (!shouldReportDiagnostic(diag) || diag.start === undefined) {
@@ -1034,9 +1060,15 @@ export function translateTcbDiagnostic(
     return null;
   }
 
-  const templatePosixPath = templatePathByTypeCheckId.get(typeCheckId);
-  const targetFsPath = templatePosixPath ? fromPosixPath(fs, templatePosixPath) : originFsPath;
-  const targetSf = getOriginalSourceFile(targetFsPath);
+  // Host binding spans always index into the component file, even when the template's spans
+  // index into a template file or string (as in ngtsc's `getSourceMapping`).
+  const target = isInHostBindingTcb(node)
+    ? undefined
+    : templateTargetByTypeCheckId.get(typeCheckId);
+  const targetSf =
+    target !== undefined && 'sourceFile' in target
+      ? target.sourceFile
+      : getOriginalSourceFile(target?.fsPath ?? originFsPath);
   if (!targetSf) {
     return null;
   }
