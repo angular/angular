@@ -119,6 +119,21 @@ The `@switch` block renders content based on a value. It uses strict equality (`
 } }
 ```
 
+**Multiple Cases**: Stack consecutive `@case` statements with no content between them to share one
+block across several matches.
+
+```html
+@switch (status()) {
+  @case ('paused')
+  @case ('cancelled') {
+    <span>Not running</span>
+  }
+  @default {
+    <span>Running</span>
+  }
+}
+```
+
 **Exhaustive Type Checking**: Use `@default never;` to ensure all cases of a union type are handled.
 
 ```html
