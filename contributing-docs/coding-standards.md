@@ -9,6 +9,8 @@ The [Google JavaScript Style Guide](https://google.github.io/styleguide/jsguide.
 basis for Angular's coding style, with additional guidance here pertaining to TypeScript. The team
 uses `prettier` to automatically format code; automatic formatting is enforced by CI.
 
+Make sure to run `pnpm ng-dev format changed` to format modified files before committing them.
+
 ## Code practices
 
 ### Write useful comments
