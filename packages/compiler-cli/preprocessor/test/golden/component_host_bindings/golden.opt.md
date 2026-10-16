@@ -12,40 +12,40 @@ function _tcb1(this: i0.ButtonComponent) {
   if (true) {
   }
   if (true /*hostBindingsBlockGuard*/) {
-    this.isPressed /*248,257*/ /*248,257*/;
-    this.disabled /*284,292*/ /*284,292*/ ? 0.5 /*295,298*/ : 1 /*301,302*/ /*284,302*/;
-    this.disabled /*334,342*/ /*334,342*/;
+    this.isPressed; /*248,257*/ /*248,257*/
+    this.disabled /*284,292*/ /*284,292*/ ? 0.5 /*295,298*/ : 1 /*301,302*/; /*284,302*/
+    this.disabled; /*334,342*/ /*334,342*/
     var _t1 = document.createElement('app-button'); /*394,409*/
     _t1.addEventListener(/*350,357*/ 'focus', ($event /*T:EP*/): any => {
       this
         .onFocus /*361,368*/
-        () /*361,370*/;
-    }) /*350,370*/;
-    _t1.addEventListener(/*685,700*/ 'keydown.enter', ($event /*T:EP*/): any => {
+        (); /*361,370*/
+    }); /*350,370*/
+    _t1.addEventListener(/*686,699*/ 'keydown.enter', ($event /*T:EP*/): any => {
       this
         .onActivate /*737,747*/
-        () /*737,747*/;
-    }) /*671,701*/;
-    _t1.addEventListener(/*718,733*/ 'keydown.space', ($event /*T:EP*/): any => {
+        (); /*737,747*/
+    }); /*671,701*/
+    _t1.addEventListener(/*719,732*/ 'keydown.space', ($event /*T:EP*/): any => {
       this
         .onActivate /*737,747*/
-        () /*737,747*/;
-    }) /*704,734*/;
-    _t1.addEventListener(/*834,847*/ 'keyup.enter', ($event /*T:EP*/): any => {
+        (); /*737,747*/
+    }); /*704,734*/
+    _t1.addEventListener(/*835,846*/ 'keyup.enter', ($event /*T:EP*/): any => {
       this
         .onDeactivate /*882,894*/
-        () /*882,894*/;
-    }) /*820,848*/;
-    _t1.addEventListener(/*865,878*/ 'keyup.space', ($event /*T:EP*/): any => {
+        (); /*882,894*/
+    }); /*820,848*/
+    _t1.addEventListener(/*866,877*/ 'keyup.space', ($event /*T:EP*/): any => {
       this
         .onDeactivate /*882,894*/
-        () /*882,894*/;
-    }) /*851,879*/;
-    _t1.addEventListener(/*994,1000*/ 'blur', ($event /*T:EP*/): any => {
+        (); /*882,894*/
+    }); /*851,879*/
+    _t1.addEventListener(/*995,999*/ 'blur', ($event /*T:EP*/): any => {
       this
         .onBlur /*1004,1010*/
-        () /*1004,1010*/;
-    }) /*980,1001*/;
+        (); /*1004,1010*/
+    }); /*980,1001*/
   }
 }
 

@@ -12,23 +12,23 @@ function _tcb1(this: i0.TooltipDirective) {
   if (true) {
   }
   if (true /*hostBindingsBlockGuard*/) {
-    this.isHidden /*192,200*/ /*192,200*/;
-    this.tooltipId /*382,386*/ /*382,386*/;
+    this.isHidden; /*192,200*/ /*192,200*/
+    this.tooltipId; /*383,385*/ /*383,385*/
     var _t1 = document.createElement('ng-directive'); /*224,240*/
-    _t1.addEventListener(/*432,439*/ 'click', ($event /*T:EP*/): any => {
-      this.onClick(/*455,462*/ $event /*442,448*/) /*455,462*/;
-    }) /*418,452*/;
-    _t1.addEventListener(/*541,553*/ 'mouseenter', ($event /*T:EP*/): any => {
+    _t1.addEventListener(/*433,438*/ 'click', ($event /*T:EP*/): any => {
+      this.onClick(/*455,462*/ $event /*443,449*/); /*455,462*/
+    }); /*418,452*/
+    _t1.addEventListener(/*542,552*/ 'mouseenter', ($event /*T:EP*/): any => {
       this
         .onMouseEnter /*557,569*/
-        () /*557,569*/;
-    }) /*527,554*/;
-    _t1.addEventListener(/*622,629*/ 'input', ($event /*T:EP*/): any => {
+        (); /*557,569*/
+    }); /*527,554*/
+    _t1.addEventListener(/*623,628*/ 'input', ($event /*T:EP*/): any => {
       this.onInput(
-        /*668,675*/ $event /*632,638*/.target /*639,645*/ /*632,645*/.value /*646,651*/ /*632,651*/,
-        'test' /*655,661*/,
-      ) /*668,675*/;
-    }) /*608,665*/;
+        /*668,675*/ $event /*633,639*/.target /*640,646*/ /*633,646*/.value /*647,652*/ /*633,652*/,
+        'test' /*656,662*/,
+      ); /*668,675*/
+    }); /*608,665*/
   }
 }
 

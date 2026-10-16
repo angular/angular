@@ -12,9 +12,9 @@ function _tcb1(this: i0.ContainerComponent) {
   if (true) {
   }
   if (true /*hostBindingsBlockGuard*/) {
-    window.addEventListener(/*254,269*/ 'resize', ($event /*T:EP*/): any => {
-      this.onResize(/*331,339*/ 0 /*272,326*/ as any /*272,326*/) /*331,339*/;
-    }) /*240,328*/;
+    window.addEventListener(/*255,268*/ 'resize', ($event /*T:EP*/): any => {
+      this.onResize(/*331,339*/ 0 /*272,326*/ as any /*272,326*/); /*331,339*/
+    }); /*240,328*/
   }
 }
 

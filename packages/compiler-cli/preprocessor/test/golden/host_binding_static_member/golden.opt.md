@@ -12,13 +12,13 @@ function _tcb1(this: i0.TestComponent) {
   if (true) {
   }
   if (true /*hostBindingsBlockGuard*/) {
-    this.isActive /*427,441*/ /*427,441*/;
+    this.isActive; /*428,440*/ /*428,440*/
     var _t1 = document.createElement('test-cmp'); /*176,189*/
-    _t1.addEventListener(/*479,488*/ 'keydown', ($event /*T:EP*/): any => {
+    _t1.addEventListener(/*480,487*/ 'keydown', ($event /*T:EP*/): any => {
       this
         .onKeyDown /*492,501*/
-        () /*492,501*/;
-    }) /*465,489*/;
+        (); /*492,501*/
+    }); /*465,489*/
   }
 }
 
