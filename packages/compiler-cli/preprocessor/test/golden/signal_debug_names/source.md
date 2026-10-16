@@ -15,9 +15,13 @@ import {
   computed,
   contentChild,
   effect,
+  Injectable,
+  InjectionToken,
+  Input,
   input,
   linkedSignal,
   model,
+  NgModule,
   resource,
   signal,
   viewChild,
@@ -26,12 +30,45 @@ import {httpResource} from '@angular/common/http';
 import {signal as aliasedSignal} from '@angular/core';
 
 export const topLevel = signal(0);
+export const TOKEN = new InjectionToken<{s: unknown}>('TOKEN');
+
+@Injectable({
+  providedIn: 'root',
+  useFactory: () => {
+    const factoryState = signal('from-injectable');
+    const factoryWithOpts = signal(0, {equal: (a, b) => a === b});
+    return new MyService(factoryState, factoryWithOpts);
+  },
+})
+export class MyService {
+  constructor(
+    readonly s: unknown,
+    readonly opts: unknown,
+  ) {}
+}
 
 @Component({
   selector: 'signal-debug-names',
   template: `<div #el>{{ count() }}</div>`,
+  providers: [
+    {
+      provide: TOKEN,
+      useFactory: () => {
+        const providerSignal = signal(42);
+        return {s: providerSignal};
+      },
+    },
+  ],
 })
 export class SignalDebugNamesComponent {
+  @Input({
+    transform: (v: string) => {
+      const transformed = signal(v);
+      return transformed();
+    },
+  })
+  val = '';
+
   // No options argument: one is appended, after `undefined` when there are no arguments.
   count = signal(0);
   noInitial = input();
@@ -77,4 +114,17 @@ export class SignalDebugNamesComponent {
     return {};
   }
 }
+
+@NgModule({
+  providers: [
+    {
+      provide: TOKEN,
+      useFactory: () => {
+        const moduleSignal = signal(true);
+        return {s: moduleSignal};
+      },
+    },
+  ],
+})
+export class AppModule {}
 ```
