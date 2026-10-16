@@ -4,15 +4,15 @@ Handling user input with forms is the cornerstone of many common applications.
 
 Applications use forms to enable users to log in, to update a profile, to enter sensitive information, and to perform many other data-entry tasks.
 
-Angular provides two different approaches to handling user input through forms: reactive and template-driven.
+Angular provides three approaches to handling user input through forms: signal forms, reactive, and template-driven.
 
-Both capture user input events from the view, validate the input, create a form and data model, and provide a way to track changes.
+All three capture user input events from the view, validate the input, create a form and data model, and provide a way to track changes.
 
-TIP: If you're looking for the new Signal Forms, check out our [essential Signal Forms guide](/essentials/signal-forms)!
+Signal Forms is the newest approach, built on Angular signals. It provides automatic two-way binding, type-safe field access, and schema-based validation, and works best in new applications built with signals.
+To get started, see the [Signal Forms guide](guide/forms/signals/overview), or the [forms comparison guide](guide/forms/signals/comparison) for a side-by-side comparison of all three approaches.
 
-This guide provides information to help you decide which type of form works best for your situation.
-It introduces the common building blocks used by both approaches.
-It also summarizes the key differences between the two approaches, and demonstrates those differences in the context of setup, data flow, and testing.
+This guide focuses on the two established approaches, reactive and template-driven.
+It introduces the common building blocks they share, summarizes their key differences, and demonstrates those differences in the context of setup, data flow, and testing.
 
 ## Choosing an approach
 
@@ -21,6 +21,7 @@ Each approach offers different advantages.
 
 | Forms                 | Details                                                                                                                                                                                                                                                                                                                                                                                                             |
 | :-------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Signal forms        | Built on signals, with automatic two-way binding between a signal-based model and form fields, type-safe field access, and schema-based validation. Signal forms work best in new applications built with signals. To get started, see the [Signal Forms guide](guide/forms/signals/overview). |
 | Reactive forms        | Provide direct, explicit access to the underlying form's object model. Compared to template-driven forms, they are more robust: they're more scalable, reusable, and testable. If forms are a key part of your application, or you're already using reactive patterns for building your application, use reactive forms.                                                                                            |
 | Template-driven forms | Rely on directives in the template to create and manipulate the underlying object model. They are useful for adding a simple form to an app, such as an email list signup form. They're straightforward to add to an app, but they don't scale as well as reactive forms. If you have very basic form requirements and logic that can be managed solely in the template, template-driven forms could be a good fit. |
 
