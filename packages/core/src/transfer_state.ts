@@ -48,7 +48,7 @@ export function makeStateKey<T = void>(key: string): StateKey<T> {
   return key as StateKey<T>;
 }
 
-function createDictionary<T>(): Record<string, T> {
+export function createDictionary<T>(): Record<string, T> {
   // StateKey can be any string, including names of special Object prototype properties.
   return Object.create(null);
 }
