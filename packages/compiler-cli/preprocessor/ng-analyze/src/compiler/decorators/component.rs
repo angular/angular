@@ -1,4 +1,6 @@
-use crate::analyzer::{flatten_class_info, resolve_declaration_async, ComponentData};
+use crate::analyzer::{
+    flatten_class_info, resolve_declaration_async, ComponentData, DirectiveData,
+};
 use crate::query::{QueryCtx, ReferenceId};
 use crate::types::analysis::{DeclarationData, OwningReference};
 use crate::ResourceResolverFs;
@@ -173,6 +175,40 @@ async fn resolve_host_directive<Fs: ResourceResolverFs + Clone + 'static>(
         inputs: hd.inputs.clone(),
         outputs: hd.outputs.clone(),
     })
+}
+
+/// Resolve the `hostDirectives` a class declares on itself, in its own file's frame — what
+/// ngtsc's `TypeCheckScopeRegistry` puts in `directivesOnHost` ahead of the class itself when
+/// type-checking its host bindings. Shared by components and directives.
+async fn resolve_own_host_directives<Fs: ResourceResolverFs + Clone + 'static>(
+    ctx: &QueryCtx<Fs>,
+    file_path: &Path,
+    reference_id: ReferenceId,
+    class_name: Option<&str>,
+) -> Option<Vec<ResolvedHostDirective>> {
+    let syntax_file = ctx.analyze_file_syntax(reference_id.file).await;
+    let class_info = syntax_file.class_index.get(class_name?)?;
+    resolve_host_directives_for_class(
+        ctx,
+        class_info,
+        reference_id.file,
+        file_path,
+        &mut Vec::new(),
+    )
+    .await
+}
+
+/// Stage 2 for a directive: resolve its own `hostDirectives` for the host binding type-check
+/// block. The directive's template scope does not exist, so this is all it needs cross-file.
+pub async fn optimize_directive<Fs: ResourceResolverFs + Clone + 'static>(
+    ctx: &QueryCtx<Fs>,
+    file_path: &Path,
+    reference_id: ReferenceId,
+    class_name: Option<&str>,
+    directive: &mut DirectiveData,
+) {
+    directive.resolved_host_directives =
+        resolve_own_host_directives(ctx, file_path, reference_id, class_name).await;
 }
 
 /// Resolve the `hostDirectives` of a scope entry, looking its class up in its declaring file.
@@ -748,16 +784,8 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
 
     // The component's own host directives go on its host element, ahead of the component itself
     // (ngtsc's `directivesOnHost`). Like any host directive they stay out of its template scope.
-    if let Some(comp_info) = class_name.and_then(|name| syntax_file.class_index.get(name)) {
-        component.resolved_host_directives = resolve_host_directives_for_class(
-            ctx,
-            comp_info,
-            reference_id.file,
-            file_path,
-            &mut Vec::new(),
-        )
-        .await;
-    }
+    component.resolved_host_directives =
+        resolve_own_host_directives(ctx, file_path, reference_id, class_name).await;
 
     if let Some(ref mut decls) = component.resolved_declarations {
         DeclarationData::deduplicate(decls);

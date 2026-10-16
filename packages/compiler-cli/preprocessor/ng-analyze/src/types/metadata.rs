@@ -450,6 +450,9 @@ pub struct DirectiveMetadata {
     pub host_metadata: Option<Vec<HostMetadataEntry>>,
     /// Raw hostDirectives expression from the decorator
     pub host_directives: Option<Vec<HostDirectiveMetadata>>,
+    /// The directive's own `hostDirectives`, resolved in its own frame for the type-check block.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub resolved_host_directives: Option<Vec<ResolvedHostDirectiveMetadata>>,
     pub providers_span: Option<SpanMetadata>,
     pub args_span: Option<SpanMetadata>,
     #[serde(skip_serializing_if = "Option::is_none")]
