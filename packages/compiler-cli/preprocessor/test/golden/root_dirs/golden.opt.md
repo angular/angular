@@ -51,6 +51,7 @@ export class AppComponent {
         i0.ɵɵdomElementStart(0, 'div');
         i0.ɵɵtext(1, 'Hello from extra rootDir!');
         i0.ɵɵdomElementEnd();
+        i0.ɵɵattachSourceLocations('extra/app/app.component.html', [[0, 0, 0, 0]]);
       }
     },
     styles: ['div[_ngcontent-%COMP%] { color: red }'],
