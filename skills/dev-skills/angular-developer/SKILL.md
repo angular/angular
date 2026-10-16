@@ -52,6 +52,7 @@ When working with Angular components, consult the following references based on 
 - **Naming Conventions**: Modern Angular v20+ naming style ("Intent over Role") for files, components, services, directives, pipes, and models. Read [naming-conventions.md](references/naming-conventions.md)
 - **Queries and Content Projection**: Signal-based view and content queries (viewChild, viewChildren, contentChild, contentChildren) and content projection with `<ng-content>` slots and fallback content. Read [queries-and-projection.md](references/queries-and-projection.md)
 - **Deferrable Views**: Lazy loading, code splitting, triggers, prefetching, loading states, SSR, and layout stability with `@defer`. Read [deferrable-views.md](references/deferrable-views.md)
+- **Error Boundaries**: Catching render and change detection errors in a template subtree with `@boundary`/`@error`, retrying with `$reset`. Read [error-boundary.md](references/error-boundary.md)
 
 If you require deeper documentation not found in the references above, read the documentation at `https://angular.dev/guide/components`.
 
