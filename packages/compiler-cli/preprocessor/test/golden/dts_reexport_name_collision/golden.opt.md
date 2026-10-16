@@ -54,7 +54,7 @@ export class AppComponent {
         i0.ɵɵelement(0, 'div', 0);
       }
     },
-    dependencies: (): any => [i1.CollideDirective],
+    dependencies: [i1.CollideDirective],
     encapsulation: 2,
   });
   static {

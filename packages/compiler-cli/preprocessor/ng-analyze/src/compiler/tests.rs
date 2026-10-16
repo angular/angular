@@ -5253,3 +5253,115 @@ fn test_streaming_includes_files_reached_through_dynamic_import() {
         );
     }
 }
+
+/// When a component's declaring `@NgModule` appears later in the same file:
+/// - Declarations re-exported by imported `@NgModule`s (no local identifier in the component file,
+///   even if the symbol is also imported at the top of the file) emit as `ExternalExpr`
+///   (`i1.ExtDir`) in `ngtsc` and must not be marked `is_forward_ref`.
+/// - Cross-file declarations referenced directly by identifier in the later `@NgModule` have a
+///   local identifier at the `@NgModule` position (`module_span_start > comp_span_start`) and are
+///   marked `is_forward_ref`, matching `ngtsc`'s `LocalIdentifierStrategy` +
+///   `isExpressionForwardReference`.
+/// - Same-file declarations are marked `is_forward_ref` only when declared after the component.
+#[test]
+fn test_same_file_ngmodule_after_component_only_marks_later_same_file_decls_forward_ref() {
+    let mut virtual_files = HashMap::new();
+    virtual_files.insert(
+        "/project/tsconfig.json".to_string(),
+        r#"{"files": ["app.ts", "ext_dir.ts", "direct_ext_dir.ts"]}"#.to_string(),
+    );
+    virtual_files.insert(
+        "/project/ext_dir.ts".to_string(),
+        r#"
+            import {Directive, NgModule} from '@angular/core';
+            @Directive({selector: '[extDir]', standalone: false})
+            export class ExtDir {}
+            @NgModule({declarations: [ExtDir], exports: [ExtDir]})
+            export class ExtModule {}
+        "#
+        .to_string(),
+    );
+    virtual_files.insert(
+        "/project/direct_ext_dir.ts".to_string(),
+        r#"
+            import {Directive} from '@angular/core';
+            @Directive({selector: '[directExtDir]', standalone: false})
+            export class DirectExtDir {}
+        "#
+        .to_string(),
+    );
+    virtual_files.insert(
+        "/project/app.ts".to_string(),
+        r#"
+            import {Component, Directive, NgModule} from '@angular/core';
+            import {ExtModule, ExtDir} from './ext_dir';
+            import {DirectExtDir} from './direct_ext_dir';
+
+            @Directive({selector: '[earlyDir]', standalone: false})
+            export class EarlyDir {}
+
+            @Component({
+                selector: 'app-cmp',
+                template: '<div extDir directExtDir earlyDir lateDir></div>',
+                standalone: false,
+            })
+            export class AppCmp {}
+
+            @Directive({selector: '[lateDir]', standalone: false})
+            export class LateDir {}
+
+            @NgModule({
+                imports: [ExtModule],
+                declarations: [EarlyDir, AppCmp, LateDir, DirectExtDir],
+            })
+            export class AppModule {}
+        "#
+        .to_string(),
+    );
+
+    let analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: "/project/tsconfig.json".to_string(),
+        optimize: Some(true),
+        virtual_files: Some(virtual_files),
+        ..Default::default()
+    })
+    .unwrap();
+
+    let app_meta = analyzer
+        .get_metadata_for_file("/project/app.ts".to_string())
+        .expect("app.ts metadata");
+    let component = app_meta
+        .classes
+        .iter()
+        .find(|c| c.class_name.as_deref() == Some("AppCmp"))
+        .and_then(|c| c.component.as_ref())
+        .expect("AppCmp component");
+    let decls = component
+        .resolved_declarations
+        .as_ref()
+        .expect("resolved_declarations");
+
+    let is_fw = |name: &str| {
+        decls
+            .iter()
+            .find(|d| d.name == name)
+            .unwrap_or_else(|| panic!("missing {name} in scope"))
+            .is_forward_ref
+    };
+    assert!(
+        !is_fw("ExtDir"),
+        "re-exported cross-file declaration without local identifier must not be marked is_forward_ref"
+    );
+    assert!(
+        is_fw("DirectExtDir"),
+        "directly referenced cross-file declaration in later same-file NgModule must be marked is_forward_ref"
+    );
+    assert!(
+        !is_fw("EarlyDir"),
+        "earlier same-file declaration must not be marked is_forward_ref"
+    );
+    assert!(
+        is_fw("LateDir"),
+        "later same-file declaration must be marked is_forward_ref"
+    );
+}

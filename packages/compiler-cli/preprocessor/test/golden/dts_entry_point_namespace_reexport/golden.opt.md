@@ -54,7 +54,7 @@ export class AppComponent {
         i0.ɵɵelement(0, 'div', 0);
       }
     },
-    dependencies: (): any => [i1.NsDirective],
+    dependencies: [i1.NsDirective],
     encapsulation: 2,
   });
   static {

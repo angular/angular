@@ -60,7 +60,7 @@ export class AppComponent {
         i0.ɵɵelement(0, 'div', 0);
       }
     },
-    dependencies: (): any => [i1.MyDirective],
+    dependencies: [i1.MyDirective],
     encapsulation: 2,
   });
   static {

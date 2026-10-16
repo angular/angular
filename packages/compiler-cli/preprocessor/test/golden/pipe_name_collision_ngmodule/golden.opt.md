@@ -64,7 +64,7 @@ export class AppComponent {
         i0.ɵɵtextInterpolate(i0.ɵɵpipeBind1(2, 1, 'hello'));
       }
     },
-    dependencies: (): any => [i1.SharedTranslatePipe],
+    dependencies: [i1.SharedTranslatePipe],
     encapsulation: 2,
   });
   static {

@@ -278,8 +278,8 @@ async fn contextualize_ngmodule_scope_declarations<Fs: ResourceResolverFs + Clon
     declarations: &[DeclarationData],
     syntax_file: &crate::types::analysis::FileData,
     comp_span_start: u32,
+    module_span_start: Option<u32>,
     module_ref: ReferenceId,
-    module_span_start: u32,
 ) -> Vec<DeclarationData> {
     let mut resolved_declarations = Vec::new();
     let module_path = ctx.engine.lookup_path(module_ref.file);
@@ -291,25 +291,25 @@ async fn contextualize_ngmodule_scope_declarations<Fs: ResourceResolverFs + Clon
         contextual_decl.ref_in_declaring_module =
             Some(project_reference(ctx, &decl.reference, module_ref.file, &module_path).await);
 
-        // An owning module is only ever recorded for an absolute specifier.
-        let is_external = decl.reference.owning_reference.is_some();
-
+        // Match ngtsc's `isExpressionForwardReference(expr, context, contextSource)`:
+        // `ngtsc` only wraps a reference in `WrappedNodeExpr(id)` when `LocalIdentifierStrategy`
+        // finds an identifier for `ref` in `contextSource` (`local_alias.is_some()`). Re-exported
+        // declarations from imported NgModules have no local identifier in `contextSource` and
+        // emit as `ExternalExpr` (`i1.Dir`), which is never treated as a forward reference.
+        // https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L286-L297
+        // https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/imports/src/emitter.ts#L281-L290
         let is_forward_ref = if decl.is_forward_ref {
             true
         } else if decl.reference.file == reference_id.file {
-            let decl_class = syntax_file
+            syntax_file
                 .classes
                 .iter()
-                .find(|c| c.class_name.as_deref() == Some(&decl.reference.name));
-            if let Some(target_class) = decl_class {
-                target_class.span.start > comp_span_start
-            } else {
-                false
-            }
-        } else if is_external {
-            false
+                .find(|c| c.class_name.as_deref() == Some(&decl.reference.name))
+                .is_some_and(|target_class| target_class.span.start > comp_span_start)
+        } else if contextual_decl.ref_meta.local_alias.is_some() {
+            module_span_start.is_some_and(|m_start| m_start > comp_span_start)
         } else {
-            module_ref.file == reference_id.file && module_span_start > comp_span_start
+            false
         };
         contextual_decl.is_forward_ref = is_forward_ref;
 
@@ -383,18 +383,22 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
             component.schemas = Some(combined);
         }
 
-        let module_class = module_meta
-            .classes
-            .iter()
-            .find(|c| c.reference_id == module_ref);
-        let module_span_start = module_class.map(|c| c.span.start).unwrap_or(0);
-
         let scope = ctx.ngmodule_imports_scope(module_ref).await;
         if !scope.is_complete {
             component.resolved_declarations = None;
             component.raw_imports_span = None;
             return;
         }
+
+        let module_span_start = if module_ref.file == reference_id.file {
+            module_meta
+                .classes
+                .iter()
+                .find(|c| c.reference_id == module_ref)
+                .map(|c| c.span.start)
+        } else {
+            None
+        };
 
         let resolved_declarations = contextualize_ngmodule_scope_declarations(
             ctx,
@@ -403,8 +407,8 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
             &scope.declarations,
             &syntax_file,
             comp_span_start,
-            module_ref,
             module_span_start,
+            module_ref,
         )
         .await;
         component.resolved_declarations = Some(resolved_declarations);
@@ -890,14 +894,6 @@ pub async fn populate_local_component_extra_imports<Fs: ResourceResolverFs + Clo
         .map(|c| c.span.start)
         .unwrap_or(0);
 
-    let module_meta = ctx.analyze_file_syntax(module_ref.file).await;
-    let module_span_start = module_meta
-        .classes
-        .iter()
-        .find(|c| c.reference_id == module_ref)
-        .map(|c| c.span.start)
-        .unwrap_or(0);
-
     let mut resolved_declarations = contextualize_ngmodule_scope_declarations(
         ctx,
         file_path,
@@ -905,8 +901,8 @@ pub async fn populate_local_component_extra_imports<Fs: ResourceResolverFs + Clo
         &local_decls,
         &syntax_file,
         comp_span_start,
+        None,
         module_ref,
-        module_span_start,
     )
     .await;
     DeclarationData::deduplicate(&mut resolved_declarations);

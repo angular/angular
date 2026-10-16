@@ -79,7 +79,7 @@ export class AppComponent {
         );
       }
     },
-    dependencies: (): any => [i1.TransitPipe, i2.SubPipe],
+    dependencies: [i1.TransitPipe, i2.SubPipe],
     encapsulation: 2,
   });
   static {

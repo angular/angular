@@ -54,7 +54,7 @@ export class AppComponent {
         i0.ɵɵelement(0, 'div', 0);
       }
     },
-    dependencies: (): any => [i1.TypeOnlyDirective, i1.StarDirective],
+    dependencies: [i1.TypeOnlyDirective, i1.StarDirective],
     encapsulation: 2,
   });
   static {
