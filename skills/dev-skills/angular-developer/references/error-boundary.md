@@ -1,5 +1,7 @@
 # Error Boundaries
 
+IMPORTANT: `@boundary` requires Angular v22.2 or newer.
+
 Use a `@boundary` block to catch errors thrown during the initial render or a later change
 detection cycle of its child views, and render a fallback instead of letting the error propagate
 and blank the page.
