@@ -20,9 +20,9 @@ Declare a template variable in the `@error` block to read the thrown error, and 
 ```html
 @boundary {
 <app-risky-component />
-} @error (let err; retry = $reset; when isNetworkError(err)) {
-<app-network-error [error]="err" />
-<button (click)="retry()">Retry</button>
+} @error (when isNetworkError(err)) {
+<app-network-error [error]="$error" />
+<button (click)="$retry()">Retry</button>
 }
 ```
 
