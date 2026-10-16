@@ -85,7 +85,7 @@ async function processFile(
 
     await fs.mkdir(outputDir, {recursive: true});
 
-    const map = s.generateMap({
+    const map = processed.generateSourceMap({
       source: relativeSourcePath,
       file: path.basename(outputPath),
       includeContent: true,

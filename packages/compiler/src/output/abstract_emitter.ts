@@ -62,10 +62,10 @@ export class EmitterVisitorContext {
     return new EmitterVisitorContext(0);
   }
 
-  private _lines: EmittedLine[];
+  protected lines: EmittedLine[];
 
   constructor(private _indent: number) {
-    this._lines = [new EmittedLine(_indent)];
+    this.lines = [new EmittedLine(_indent)];
   }
 
   /**
@@ -73,7 +73,7 @@ export class EmitterVisitorContext {
    * https://github.com/microsoft/TypeScript/issues/36216
    */
   private get _currentLine(): EmittedLine {
-    return this._lines[this._lines.length - 1];
+    return this.lines[this.lines.length - 1];
   }
 
   println(from?: {sourceSpan?: ParseSourceSpan | null} | null, lastPart: string = ''): void {
@@ -99,13 +99,13 @@ export class EmitterVisitorContext {
       this._currentLine.srcSpans.push((from && from.sourceSpan) || null);
     }
     if (newLine) {
-      this._lines.push(new EmittedLine(this._indent));
+      this.lines.push(new EmittedLine(this._indent));
     }
   }
 
   removeEmptyLastLine() {
     if (this.lineIsEmpty()) {
-      this._lines.pop();
+      this.lines.pop();
     }
   }
 
@@ -190,7 +190,7 @@ export class EmitterVisitorContext {
   }
 
   spanOf(line: number, column: number): ParseSourceSpan | null {
-    const emittedLine = this._lines[line];
+    const emittedLine = this.lines[line];
     if (emittedLine) {
       let columnsLeft = column - INDENT_WITH.repeat(emittedLine.indent).length;
       for (let partIndex = 0; partIndex < emittedLine.parts.length; partIndex++) {
@@ -205,13 +205,13 @@ export class EmitterVisitorContext {
   }
 
   addUniqueSingleLineComment(commentText: string): void {
-    const previousIndex = this._lines.length - 2;
+    const previousIndex = this.lines.length - 2;
     const comment = `//${commentText}`;
 
     if (
       previousIndex >= 0 &&
-      this._lines[previousIndex].parts.length === 1 &&
-      this._lines[previousIndex].parts[0] === comment
+      this.lines[previousIndex].parts.length === 1 &&
+      this.lines[previousIndex].parts[0] === comment
     ) {
       return;
     }
@@ -219,7 +219,7 @@ export class EmitterVisitorContext {
     line.parts.push(comment);
     line.partsLength = comment.length;
     line.srcSpans.push(null);
-    this._lines.splice(this._lines.length - 1, 0, line);
+    this.lines.splice(this.lines.length - 1, 0, line);
   }
 
   /**
@@ -227,10 +227,10 @@ export class EmitterVisitorContext {
    * https://github.com/microsoft/TypeScript/issues/36216
    */
   private get sourceLines(): EmittedLine[] {
-    if (this._lines.length && this._lines[this._lines.length - 1].parts.length === 0) {
-      return this._lines.slice(0, -1);
+    if (this.lines.length && this.lines[this.lines.length - 1].parts.length === 0) {
+      return this.lines.slice(0, -1);
     }
-    return this._lines;
+    return this.lines;
   }
 }
 
