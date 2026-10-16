@@ -743,14 +743,31 @@ export function processFileSync(
       // compilation mode (`CompilationMode.LOCAL`, see `ngtsc/core/src/compiler.ts:1328-1330`).
       const isLocalCompilation = !ctx.optimize || !!ctx.emitDeclarationOnly;
 
-      if (standalone) {
-        const isAlreadyImported = filteredDeclarations.some((d) => d.name === className);
+      // Whether any resolved import of a standalone component was wrapped in `forwardRef(...)`.
+      // Evaluated before self-deduplication and template usage filtering so it mirrors ngtsc's
+      // `standaloneImportMayBeForwardDeclared` (`analysis.resolvedImports.some(ref => ref.synthetic)`):
+      // https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L2040-L2041
+      const standaloneImportMayBeForwardDeclared =
+        standalone && (resolvedDeclarations ?? []).some((d) => !!d.isForwardRef);
 
-        if (!isAlreadyImported) {
-          filteredDeclarations.push(
-            metadataToDeclaration(component, classMeta, 'component', parsed.ngContentSelectors),
-          );
-        }
+      if (standalone) {
+        // Standalone components always have themselves at the head of their template scope:
+        // `StandaloneComponentScopeReader` seeds `dependencies` and `seen` with the component
+        // before walking `imports`, so an explicit self-import is deduplicated in favor of index 0.
+        // Check `d.ref.localAlias === className` so an aliased cross-file import whose exported
+        // class name happens to match `className` (e.g. `import {Foo as OtherFoo}`) is preserved.
+        // https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/scope/src/standalone.ts#L45-L57
+        filteredDeclarations = filteredDeclarations.filter(
+          (d) =>
+            !(
+              d.name === className &&
+              d.ref.localAlias === className &&
+              d.ref.consumerImport == null
+            ),
+        );
+        filteredDeclarations.unshift(
+          metadataToDeclaration(component, classMeta, 'component', parsed.ngContentSelectors),
+        );
       }
 
       // Track declarations by object identity (MinimalDirectiveMeta -> DeclarationMetadata)
@@ -810,7 +827,12 @@ export function processFileSync(
       // scoped to their `@defer` block, just not deferrable (see `canDeferDeps`).
       if (ctx.enableHmr) {
         for (const decl of filteredDeclarations) {
-          if (decl.name === className && decl.declarationType === 'component') {
+          if (
+            decl.name === className &&
+            decl.ref.localAlias === className &&
+            decl.ref.consumerImport == null &&
+            decl.declarationType === 'component'
+          ) {
             continue;
           }
           if (decl.isExplicitlyDeferred) {
@@ -1240,14 +1262,23 @@ export function processFileSync(
 
       // Decide whether the `dependencies` list is emitted directly or wrapped in a closure,
       // mirroring the reference compiler's naming and conditions.
-      // https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L2040
-      // https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L286
+      // https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L2040-L2063
+      // https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L286-L297
       const isExpressionForwardReference = (d: nga.DeclarationMetadata): boolean => {
-        if (className && d.name === className) return false;
+        if (
+          className &&
+          d.name === className &&
+          d.ref.localAlias === className &&
+          d.ref.consumerImport == null
+        ) {
+          return false;
+        }
         return !!d.isForwardRef;
       };
 
-      const hasForwardRef = filteredDeclarations.some((d) => isExpressionForwardReference(d));
+      const hasForwardRef =
+        standaloneImportMayBeForwardDeclared ||
+        filteredDeclarations.some((d) => isExpressionForwardReference(d));
 
       // Whether the template uses any directive/component (pipes don't count). When there are
       // unresolved runtime imports, we conservatively assume true because those imports may
