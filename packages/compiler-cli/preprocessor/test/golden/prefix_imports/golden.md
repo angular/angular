@@ -106,7 +106,7 @@ export class ButtonComponent {
   (typeof ngDevMode === 'undefined' || ngDevMode) &&
     i0.ɵsetClassDebugInfo(ButtonComponent, {
       className: 'ButtonComponent',
-      filePath: 'generated/button.component.ts',
+      filePath: 'button.component.ts',
       lineNumber: 8,
     });
 })();
@@ -186,7 +186,7 @@ export class ParentComponent {
   (typeof ngDevMode === 'undefined' || ngDevMode) &&
     i0.ɵsetClassDebugInfo(ParentComponent, {
       className: 'ParentComponent',
-      filePath: 'src/app/parent.component.ts',
+      filePath: 'app/parent.component.ts',
       lineNumber: 11,
     });
 })();

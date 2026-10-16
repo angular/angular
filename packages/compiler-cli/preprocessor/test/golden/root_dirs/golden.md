@@ -32,7 +32,7 @@ export class AppComponent {
         i0.ɵɵelementStart(0, 'div');
         i0.ɵɵtext(1, 'Hello from extra rootDir!');
         i0.ɵɵelementEnd();
-        i0.ɵɵattachSourceLocations('extra/app/app.component.html', [[0, 0, 0, 0]]);
+        i0.ɵɵattachSourceLocations('app/app.component.html', [[0, 0, 0, 0]]);
       }
     },
     styles: ['div[_ngcontent-%COMP%] { color: red }'],
@@ -63,7 +63,7 @@ export class AppComponent {
   (typeof ngDevMode === 'undefined' || ngDevMode) &&
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
-      filePath: 'src/app/app.component.ts',
+      filePath: 'app/app.component.ts',
       lineNumber: 9,
     });
 })();

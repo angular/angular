@@ -206,7 +206,11 @@ export class HybridCompiler {
     this.complianceMode = options.complianceMode ?? false;
     this.workspaceName = options.workspaceName;
     if (options.rootDirs) {
-      const baseDir = options.rootDir ? options.rootDir.replace(/\\/g, '/') : '/';
+      const baseDir = options.rootDir
+        ? options.rootDir.replace(/\\/g, '/')
+        : options.tsconfigPath
+          ? path.posix.dirname(options.tsconfigPath.replace(/\\/g, '/'))
+          : '/';
       this.rootDirs = options.rootDirs.map((d) => {
         const norm = d.replace(/\\/g, '/');
         if (norm.startsWith('/') || /^[a-zA-Z]:/.test(norm)) {

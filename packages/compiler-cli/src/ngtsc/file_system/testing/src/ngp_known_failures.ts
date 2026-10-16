@@ -23,7 +23,7 @@
  * - Angular Diagnostic Error Codes (NG1xxx-NG11xxx): #684-#692
  * - Decorator Metadata Type-Checking: #693
  * - Compiler Pipeline Features (HMR, local compilation, declaration-only emission,
- *   setClassDebugInfo, incremental compilation, Xi18n, ComponentIndex, TemplateTypeChecker API)
+ *   incremental compilation, Xi18n, ComponentIndex, TemplateTypeChecker API)
  */
 
 export function isNgpSkipEnabled(): boolean {
@@ -283,7 +283,7 @@ const NGP_POTENTIAL_BREAKING_CHANGES: ReadonlySet<string> = new Set([
 
 /**
  * Known failures in `//packages/compiler-cli/test/ngtsc:ngtsc_ngp`
- * (HMR, local compilation, setClassDebugInfo, declaration-only emission, incremental compilation,
+ * (HMR, local compilation, declaration-only emission, incremental compilation,
  * Xi18n, ComponentIndex, and diagnostic/TCB gaps #673-#696).
  */
 const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
