@@ -109,7 +109,8 @@ import * as i0 from '@angular/core';
 export class BaseDir {
   counter = model(
     0,
-    ...((ngDevMode ? [{ debugName: 'counter' }] : /* istanbul ignore next */ []) as []),
+    /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: 'counter' }] : /* istanbul ignore next */ []),
   );
   // @ts-ignore
   static ɵfac: i0.ɵɵFactoryDeclaration<BaseDir, never> = function BaseDir_Factory(

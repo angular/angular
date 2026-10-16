@@ -13,53 +13,53 @@ import * as i2 from '@angular/core';
 function _tcb1(this: i0.AppComponent) {
   if (true) {
     var _t1 /*T:DIR:0*/ /*209,606*/ = null! as i1.GreetingComponent; /*T:VAE*/
-    _t1.count /*230,235*/ = 1 /*238,239*/ /*229,240*/;
-    _t1.displayName /*248,256*/ = 'User' /*259,265*/ /*247,266*/;
-    _t1.title /*274,279*/ = 'Hello' /*282,289*/ /*273,290*/;
-    _t1.name[i2.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] /*298,302*/ = 'Signal' /*305,313*/ /*297,314*/;
-    _t1.greeting[i2.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] /*322,334*/ = 'Hi' /*337,341*/ /*321,342*/;
-    _t1.id[i2.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] /*350,352*/ = 123 /*355,358*/ /*349,359*/;
+    _t1.count /*230,235*/ = 1 /*238,239*/; /*229,240*/
+    _t1.displayName /*248,256*/ = 'User' /*259,265*/; /*247,266*/
+    _t1.title /*274,279*/ = 'Hello' /*282,289*/; /*273,290*/
+    _t1.name[i2.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] /*298,302*/ = 'Signal' /*305,313*/; /*297,314*/
+    _t1.greeting[i2.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] /*322,334*/ = 'Hi' /*337,341*/; /*321,342*/
+    _t1.id[i2.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] /*350,352*/ = 123 /*355,358*/; /*349,359*/
     _t1.value[i2.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] /*519,524*/ = i2.ɵunwrapWritableSignal(
       this.value /*528,533*/ /*528,533*/,
-    ) /*517,534*/;
+    ); /*517,534*/
     _t1.checked[i2.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] /*543,552*/ = i2.ɵunwrapWritableSignal(
       this.isChecked /*556,565*/ /*556,565*/,
-    ) /*541,566*/;
+    ); /*541,566*/
     _t1.selectedId[i2.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] /*575,585*/ = i2.ɵunwrapWritableSignal(
       this.selectedId /*589,599*/ /*589,599*/,
-    ) /*573,600*/;
+    ); /*573,600*/
     _t1['clicked'] /*367,374*/
       .subscribe(($event /*T:EP*/): any => {
         this
           .handleClick /*377,388*/
-          () /*377,390*/;
-      }) /*366,391*/;
+          (); /*377,390*/
+      }); /*366,391*/
     _t1['change'] /*399,411*/
       .subscribe(($event /*T:EP*/): any => {
-        this.handleChange(/*414,426*/ $event /*427,433*/) /*414,434*/;
-      }) /*398,435*/;
+        this.handleChange(/*414,426*/ $event /*427,433*/); /*414,434*/
+      }); /*398,435*/
     _t1['submitted'] /*443,452*/
       .subscribe(($event /*T:EP*/): any => {
-        this.handleSubmit(/*455,467*/ $event /*468,474*/) /*455,475*/;
-      }) /*442,476*/;
+        this.handleSubmit(/*455,467*/ $event /*468,474*/); /*455,475*/
+      }); /*442,476*/
     _t1['cancelled'] /*484,492*/
       .subscribe(($event /*T:EP*/): any => {
         this
           .handleCancel /*495,507*/
-          () /*495,509*/;
-      }) /*483,510*/;
+          (); /*495,509*/
+      }); /*483,510*/
     _t1['value'] /*519,524*/
       .subscribe(($event /*T:EP*/): any => {
-        this.value /*528,533*/ /*528,533*/;
-      }) /*517,534*/;
+        this.value; /*528,533*/ /*528,533*/
+      }); /*517,534*/
     _t1['checked'] /*543,552*/
       .subscribe(($event /*T:EP*/): any => {
-        this.isChecked /*556,565*/ /*556,565*/;
-      }) /*541,566*/;
+        this.isChecked; /*556,565*/ /*556,565*/
+      }); /*541,566*/
     _t1['selectedId'] /*575,585*/
       .subscribe(($event /*T:EP*/): any => {
-        this.selectedId /*589,599*/ /*589,599*/;
-      }) /*573,600*/;
+        this.selectedId; /*589,599*/ /*589,599*/
+      }); /*573,600*/
   }
 }
 
@@ -272,7 +272,8 @@ export class GreetingComponent {
   // Signal input
   name = input<string>(
     'World',
-    ...((ngDevMode ? [{ debugName: 'name' }] : /* istanbul ignore next */ []) as []),
+    /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: 'name' }] : /* istanbul ignore next */ []),
   );
 
   // Signal input with alias
@@ -283,7 +284,8 @@ export class GreetingComponent {
 
   // Required signal input
   id = input.required<number>(
-    ...((ngDevMode ? [{ debugName: 'id' }] : /* istanbul ignore next */ []) as []),
+    /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: 'id' }] : /* istanbul ignore next */ []),
   );
 
   // Decorator-based output
@@ -301,7 +303,8 @@ export class GreetingComponent {
   // Model (two-way binding)
   value = model<string>(
     '',
-    ...((ngDevMode ? [{ debugName: 'value' }] : /* istanbul ignore next */ []) as []),
+    /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: 'value' }] : /* istanbul ignore next */ []),
   );
 
   // Model with alias
@@ -312,7 +315,8 @@ export class GreetingComponent {
 
   // Required model
   selectedId = model.required<number>(
-    ...((ngDevMode ? [{ debugName: 'selectedId' }] : /* istanbul ignore next */ []) as []),
+    /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: 'selectedId' }] : /* istanbul ignore next */ []),
   );
   // @ts-ignore
   static ɵfac: i0.ɵɵFactoryDeclaration<GreetingComponent, never> =

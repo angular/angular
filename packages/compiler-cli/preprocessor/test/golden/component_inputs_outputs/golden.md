@@ -183,7 +183,8 @@ export class GreetingComponent {
   // Signal input
   name = input<string>(
     'World',
-    ...((ngDevMode ? [{ debugName: 'name' }] : /* istanbul ignore next */ []) as []),
+    /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: 'name' }] : /* istanbul ignore next */ []),
   );
 
   // Signal input with alias
@@ -194,7 +195,8 @@ export class GreetingComponent {
 
   // Required signal input
   id = input.required<number>(
-    ...((ngDevMode ? [{ debugName: 'id' }] : /* istanbul ignore next */ []) as []),
+    /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: 'id' }] : /* istanbul ignore next */ []),
   );
 
   // Decorator-based output
@@ -212,7 +214,8 @@ export class GreetingComponent {
   // Model (two-way binding)
   value = model<string>(
     '',
-    ...((ngDevMode ? [{ debugName: 'value' }] : /* istanbul ignore next */ []) as []),
+    /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: 'value' }] : /* istanbul ignore next */ []),
   );
 
   // Model with alias
@@ -223,7 +226,8 @@ export class GreetingComponent {
 
   // Required model
   selectedId = model.required<number>(
-    ...((ngDevMode ? [{ debugName: 'selectedId' }] : /* istanbul ignore next */ []) as []),
+    /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: 'selectedId' }] : /* istanbul ignore next */ []),
   );
   // @ts-ignore
   static ɵfac: i0.ɵɵFactoryDeclaration<GreetingComponent, never> =

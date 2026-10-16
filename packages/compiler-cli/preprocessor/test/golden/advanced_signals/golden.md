@@ -14,17 +14,21 @@ export class AdvancedComp {
   // Direct function calls
   directInput = input<string>(
     'initial',
-    ...((ngDevMode ? [{ debugName: 'directInput' }] : /* istanbul ignore next */ []) as []),
+    /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: 'directInput' }] : /* istanbul ignore next */ []),
   );
   directRequiredInput = input.required<number>(
-    ...((ngDevMode ? [{ debugName: 'directRequiredInput' }] : /* istanbul ignore next */ []) as []),
+    /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: 'directRequiredInput' }] : /* istanbul ignore next */ []),
   );
   directModel = model(
     0,
-    ...((ngDevMode ? [{ debugName: 'directModel' }] : /* istanbul ignore next */ []) as []),
+    /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: 'directModel' }] : /* istanbul ignore next */ []),
   );
   directRequiredModel = model.required<boolean>(
-    ...((ngDevMode ? [{ debugName: 'directRequiredModel' }] : /* istanbul ignore next */ []) as []),
+    /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: 'directRequiredModel' }] : /* istanbul ignore next */ []),
   );
   directOutput = output();
   directOutputObs = outputFromObservable(new Observable<string>());

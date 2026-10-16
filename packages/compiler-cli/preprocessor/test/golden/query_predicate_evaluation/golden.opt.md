@@ -97,25 +97,28 @@ export class TestComp {
   // an expression, so the substituted template literal stays verbatim.
   signalString = viewChild(
     'sig',
-    ...((ngDevMode ? [{ debugName: 'signalString' }] : /* istanbul ignore next */ []) as []),
+    /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: 'signalString' }] : /* istanbul ignore next */ []),
   );
   signalTemplate = viewChild(
     `${PREFIX}Sig`,
-    ...((ngDevMode ? [{ debugName: 'signalTemplate' }] : /* istanbul ignore next */ []) as []),
+    /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: 'signalTemplate' }] : /* istanbul ignore next */ []),
   );
   signalNoSubstitution = viewChild(
     `bare`,
-    ...((ngDevMode
-      ? [{ debugName: 'signalNoSubstitution' }]
-      : /* istanbul ignore next */ []) as []),
+    /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: 'signalNoSubstitution' }] : /* istanbul ignore next */ []),
   );
   signalEscaped = contentChild(
     "sig's",
-    ...((ngDevMode ? [{ debugName: 'signalEscaped' }] : /* istanbul ignore next */ []) as []),
+    /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: 'signalEscaped' }] : /* istanbul ignore next */ []),
   );
   signalByType = viewChildren(
     Marker,
-    ...((ngDevMode ? [{ debugName: 'signalByType' }] : /* istanbul ignore next */ []) as []),
+    /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: 'signalByType' }] : /* istanbul ignore next */ []),
   );
   // @ts-ignore
   static ɵfac: i0.ɵɵFactoryDeclaration<TestComp, never> = function TestComp_Factory(

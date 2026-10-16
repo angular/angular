@@ -5,4 +5,7 @@ package(default_visibility = ["//visibility:public"])
 ts_project(
     name = "fake_http",
     srcs = ["index.ts"],
+    deps = [
+        "//packages/core",
+    ],
 )
