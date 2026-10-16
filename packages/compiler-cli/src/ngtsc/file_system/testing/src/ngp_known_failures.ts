@@ -946,12 +946,7 @@ export const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'strictStandalone flag should not allow a non-standalone directive',
   'strictStandalone flag should not allow a non-standalone pipe',
   'strictStandalone flag should retain metadata for non-standalone declarations',
-  'type checking of host bindings should check @HostBinding decorator with a string argument',
-  'type checking of host bindings should check @HostListener decorator that passes too many arguments',
-  'type checking of host bindings should check @HostListener with a target',
-  'type checking of host bindings should check animation event listeners in `@HostListener`',
   'type checking of host bindings should check host bindings on a directive',
-  'type checking of host bindings should infer the type of @HostListener parameters',
 ]);
 
 /**

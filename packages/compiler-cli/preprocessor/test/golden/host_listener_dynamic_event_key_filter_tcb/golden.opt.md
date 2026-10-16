@@ -12,9 +12,9 @@ function _tcb1(this: i0.ReproComponent) {
   if (true) {
   }
   if (true /*hostBindingsBlockGuard*/) {
-    window.addEventListener(/*472,493*/ 'keyup.escape', ($event /*T:EP*/): any => {
-      this.literalResetToInitialTransform(/*509,539*/ $event /*496,502*/) /*509,539*/;
-    }) /*458,506*/;
+    window.addEventListener(/*473,492*/ 'keyup.escape', ($event /*T:EP*/): any => {
+      this.literalResetToInitialTransform(/*509,539*/ $event /*497,503*/); /*509,539*/
+    }); /*458,506*/
   }
 }
 

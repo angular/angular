@@ -24,12 +24,12 @@ function _tcb3(this: i0.DisabledPropertyDirective) {
   if (true) {
   }
   if (true /*hostBindingsBlockGuard*/) {
-    this.isDisabled; /*613,623*/ /*613,623*/
+    this.isDisabled; /*614,622*/ /*614,622*/
   }
 }
 
 /* Diagnostics:
- - (613, 623) Can't bind to 'disabled' since it isn't a known property of 'ng-directive'.
+ - (614, 622) Can't bind to 'disabled' since it isn't a known property of 'ng-directive'.
 */
 
 ```
@@ -212,8 +212,8 @@ export class DisabledPropertyDirective {
       "code": 8002,
       "messageText": "Can't bind to 'disabled' since it isn't a known property of 'ng-directive'. Find more at https://next.angular.dev/errors/NG8002",
       "span": {
-        "start": 613,
-        "end": 623
+        "start": 614,
+        "end": 622
       }
     }
   ]

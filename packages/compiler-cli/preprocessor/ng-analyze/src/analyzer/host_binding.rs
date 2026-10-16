@@ -76,13 +76,18 @@ fn parse_host_argument_expression(
     };
 
     let kind = classify_source_node_kind(expr);
-    let text = match kind {
-        ExpressionValueKind::String => extract_literal_string(expr),
+    let (text, span) = match kind {
+        // ngtsc narrows the host bindings by one on each side to skip the quotes on strings
+        // and ensure that the spans are accurate when they come back from the parser.
+        ExpressionValueKind::String => (
+            extract_literal_string(expr),
+            oxc_span::Span::new(span.start + 1, span.end - 1),
+        ),
         ExpressionValueKind::Identifier => match expr {
-            Expression::Identifier(ident) => Some(ident.name.to_string()),
-            _ => None,
+            Expression::Identifier(ident) => (Some(ident.name.to_string()), span),
+            _ => (None, span),
         },
-        _ => None,
+        _ => (None, span),
     };
 
     create_source_node(span, kind, text)
@@ -531,6 +536,15 @@ mod tests {
         );
         assert_eq!(listeners[0].args.len(), 1);
         assert_eq!(listeners[0].args[0].text, Some("$event".to_string()));
+
+        // String-literal spans skip the quotes, as ngtsc's `sourceNodeFromTs` does.
+        let slice = |span: oxc_span::Span| &source_text[span.start as usize..span.end as usize];
+        assert_eq!(slice(bindings[0].arguments[0].span), "class.active");
+        assert_eq!(
+            slice(listeners[0].event_name.as_ref().unwrap().span),
+            "click"
+        );
+        assert_eq!(slice(listeners[0].args[0].span), "$event");
 
         let on_click_start = source_text.find("onClick").unwrap() as u32;
         let on_click_end = on_click_start + 7; // "onClick".len()
