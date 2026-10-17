@@ -256,7 +256,10 @@ export {CombinedRecursiveAstVisitor} from './combined_visitor';
 
 // Note: BindingParser is intentionally exported as a type only, because it should
 // be constructed through `makeBindingParser`, rather than its constructor.
-export {type BindingParser} from './template_parser/binding_parser';
+export {
+  type BindingParser,
+  getUnsupportedAnimationBindingError,
+} from './template_parser/binding_parser';
 export {createCssSelectorFromNode} from './render3/view/util';
 export * from './resource_loader';
 export * from './schema/dom_element_schema_registry';
