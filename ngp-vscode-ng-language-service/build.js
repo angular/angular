@@ -46,6 +46,7 @@ async function build() {
         'packages/compiler-cli/private/migrations.ts',
       ),
       '@angular/compiler-cli': path.join(repoRoot, 'packages/compiler-cli/index.ts'),
+      '@angular/compiler/indexing': path.join(repoRoot, 'packages/compiler/indexing/index.ts'),
       '@angular/compiler': path.join(repoRoot, 'packages/compiler/index.ts'),
       '@angular/language-service/private': path.join(
         repoRoot,
