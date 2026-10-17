@@ -9,6 +9,13 @@
 import {OutOfBandDiagnosticCategory, TypeCheckId, VERSION} from '@angular/compiler';
 import type {NgDiagnostic} from './types.js';
 
+export interface DiagnosticRelatedInformation {
+  readonly message: string;
+  readonly start: number;
+  readonly end: number;
+  readonly sourceFilePath?: string;
+}
+
 export interface Diagnostic {
   readonly typeCheckId: TypeCheckId;
   readonly category: OutOfBandDiagnosticCategory;
@@ -16,6 +23,8 @@ export interface Diagnostic {
   readonly message: string;
   readonly start: number;
   readonly end: number;
+  readonly sourceFilePath?: string;
+  readonly relatedInformation?: readonly DiagnosticRelatedInformation[];
 }
 
 /**

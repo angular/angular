@@ -9,6 +9,7 @@
 import {decode, encode, SourceMapMappings, SourceMapSegment} from '@jridgewell/sourcemap-codec';
 import {AbstractBoundTemplate, ParseTemplateOptions} from '@angular/compiler';
 import * as fsSync from 'node:fs';
+import {createRequire} from 'node:module';
 import * as path from 'node:path';
 import ts from 'typescript';
 
@@ -26,8 +27,8 @@ import {
   type WasmHostFs,
   type WasmInner,
 } from '../../../../preprocessor/api';
-import {createRequire} from 'node:module';
 import {exitCodeFromResult} from '../../../perform_compile';
+import type * as api from '../../../transformers/api';
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
 import {AbsoluteFsPath, FileSystem} from '../../file_system';
 import {ClassDeclaration, DeclarationNode} from '../../reflection';
@@ -36,7 +37,6 @@ import {hasIgnoreForDiagnosticsMarker, readSpanComment} from '../../typecheck/sr
 import {shouldReportDiagnostic} from '../../typecheck/src/diagnostics';
 import {isInHostBindingTcb} from '../../typecheck/src/tcb_util';
 import {getTokenAtPosition} from '../../util/src/typescript';
-import type * as api from '../../../transformers/api';
 import {NgtscTestCompilerHost} from './compiler_host';
 
 const SPAN_COMMENT_REGEX = /\/\*(\d+),(\d+)\*\//g;
@@ -488,7 +488,7 @@ export function performNgpCompilationSync(params: {
     if (sf) {
       return sf;
     }
-    if (!fs.exists(fsPath)) {
+    if (!fs.exists(fsPath) || fs.lstat(fsPath).isDirectory()) {
       return undefined;
     }
     const content = fs.readFile(fsPath);
@@ -599,10 +599,11 @@ export function performNgpCompilationSync(params: {
 
   // 2. Collect NGP analyzer & processor diagnostics from compiler.diagnosticsMap
   for (const [diagPosixPath, ngDiags] of compiler.diagnosticsMap.entries()) {
-    const diagFsPath = fromPosixPath(fs, diagPosixPath);
-    const origSf = getOriginalSourceFile(diagFsPath);
+    const origSf = diagPosixPath
+      ? getOriginalSourceFile(fromPosixPath(fs, diagPosixPath))
+      : undefined;
     for (const ngDiag of ngDiags) {
-      allDiagnostics.push(convertNgDiagnosticToTs(ngDiag, origSf));
+      allDiagnostics.push(convertNgDiagnosticToTs(ngDiag, origSf, getOriginalSourceFile, fs));
     }
   }
 
@@ -930,6 +931,8 @@ function createPreprocessedLookup(
 export function convertNgDiagnosticToTs(
   ngDiag: NgDiagnostic,
   sourceFile: ts.SourceFile | undefined,
+  getOriginalSourceFile?: (path: AbsoluteFsPath) => ts.SourceFile | undefined,
+  fs?: FileSystem,
 ): ts.Diagnostic {
   let category = ts.DiagnosticCategory.Error;
   if (ngDiag.category === 0) {
@@ -947,6 +950,27 @@ export function convertNgDiagnosticToTs(
   const start = ngDiag.span?.start;
   const length = ngDiag.span ? Math.max(0, ngDiag.span.end - ngDiag.span.start) : undefined;
 
+  const relatedInformation: ts.DiagnosticRelatedInformation[] | undefined =
+    ngDiag.relatedInformation?.map((rel) => {
+      let relSf = sourceFile;
+      if (rel.filePath) {
+        relSf =
+          getOriginalSourceFile && fs
+            ? getOriginalSourceFile(fromPosixPath(fs, rel.filePath))
+            : undefined;
+      }
+      const relStart = rel.span?.start;
+      const relLength = rel.span ? Math.max(0, rel.span.end - rel.span.start) : undefined;
+      return {
+        category: ts.DiagnosticCategory.Message,
+        code: 0,
+        file: relSf,
+        start: relStart,
+        length: relLength,
+        messageText: rel.messageText,
+      };
+    });
+
   return {
     file: sourceFile,
     start,
@@ -955,6 +979,7 @@ export function convertNgDiagnosticToTs(
     category,
     code,
     source: 'ngtsc',
+    ...(relatedInformation && relatedInformation.length > 0 ? {relatedInformation} : {}),
   };
 }
 

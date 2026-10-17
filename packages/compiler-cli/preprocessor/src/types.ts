@@ -154,6 +154,16 @@ export interface CompilationChunk {
   staticEdges?: Record<string, Array<FileId>>;
 }
 
+export interface ComponentImportEntryMetadata {
+  name: string;
+  filePath?: string;
+  declarationType: string;
+  pipeName?: string;
+  isStandalone?: boolean;
+  isPotentialShared: boolean;
+  usageSpan?: SpanMetadata;
+}
+
 export interface ComponentMetadata {
   decoratorName?: string;
   selector?: string;
@@ -184,8 +194,15 @@ export interface ComponentMetadata {
   exportAs?: Array<string>;
   schemas?: Array<string>;
   rawImportsSpan?: SpanMetadata;
+  /** Span of the `imports` property key in `@Component({ imports: ... })`. */
+  importsKeySpan?: SpanMetadata;
   /** Preserved `@Component.imports` expression span for local compilation mode. */
   importsFactorySpan?: SpanMetadata;
+  /**
+   * Resolved entries of `@Component.imports` (prior to NgModule export expansion), used by
+   * `unusedStandaloneImports` (`NG8113`) validation.
+   */
+  resolvedImportEntries?: Array<ComponentImportEntryMetadata>;
   resolvedDeclarations?: Array<DeclarationMetadata>;
   /** The component's own `hostDirectives`, resolved in its own frame for the type-check block. */
   resolvedHostDirectives?: Array<ResolvedHostDirectiveMetadata>;
@@ -625,12 +642,31 @@ export interface LegacyAnimationTriggerNames {
   includesDynamicAnimations: boolean;
 }
 
+/**
+ * Related information entry for an {@link NgDiagnostic}, pointing to an associated source location
+ * or context message (e.g. where a symbol was originally declared).
+ */
+export interface NgDiagnosticRelatedInformation {
+  messageText: string;
+  filePath?: string;
+  span?: SpanMetadata;
+}
+
+/**
+ * Diagnostic emitted by the preprocessor or template checker during analysis or type-checking.
+ */
 export interface NgDiagnostic {
   category: number;
   code: number;
   messageText: string;
   filePath?: string;
   span?: SpanMetadata;
+  /**
+   * TODO: The Rust side currently does not emit relatedInformation from oxc_diagnostics.
+   * When Rust analysis is expanded to report related spans, NgDiagnostic in Rust (types/api.rs)
+   * can mirror the relatedInformation field added here in TypeScript.
+   */
+  relatedInformation?: Array<NgDiagnosticRelatedInformation>;
 }
 
 export interface NgModuleMetadata {

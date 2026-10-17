@@ -16,6 +16,8 @@ import {
   ParsedTemplate,
   R3ClassDebugInfo,
   R3ClassMetadataCtorParameter,
+  R3CompiledExpression,
+  R3ComponentDeferMetadata,
   R3ComponentMetadata,
   R3DependencyMetadata,
   R3DirectiveMetadata,
@@ -44,8 +46,6 @@ import {
   outputAst as o,
   parseTemplate,
   type BindingParser,
-  type R3CompiledExpression,
-  type R3ComponentDeferMetadata,
   type R3DeferPerBlockDependency,
   type R3DeferPerComponentDependency,
 } from '@angular/compiler';
@@ -269,7 +269,7 @@ function mapDeps(
   content: MagicString | string,
   guards: nga.SpanMetadata[] = [],
 ): R3DependencyMetadata[] {
-  return deps.map((dep) => {
+  return deps.map((dep): R3DependencyMetadata => {
     let token: o.Expression | null = null;
     if (dep.tokenSpan) {
       token = rawSlice(content, dep.tokenSpan, guards);
@@ -1419,36 +1419,54 @@ export function processFileSync(
       const bindingParser = makeBindingParser(
         ctx.templateParseOptions?.enableSelectorless ?? false,
       );
-      const compileResult = compileComponentFromMetadata(componentMeta, sharedPool, bindingParser);
+      let compileResult: ReturnType<typeof compileComponentFromMetadata> | undefined;
+      try {
+        compileResult = compileComponentFromMetadata(componentMeta, sharedPool, bindingParser);
+      } catch (e: unknown) {
+        // When a @defer reference-based trigger has no target name and no @placeholder block,
+        // the template pipeline's `resolveDeferTargetNames` throws, whereas ngtsc reports this
+        // during template type-checking via `oobRecorder.deferImplicitTriggerMissingPlaceholder`.
+        // Swallow this specific pipeline error so TCB generation and extended diagnostics still run.
+        if (
+          !ctx.optimize ||
+          ctx.emitDeclarationOnly ||
+          !(e instanceof Error) ||
+          e.message !== 'defer on trigger with no target name must have a placeholder block'
+        ) {
+          throw e;
+        }
+      }
 
-      // 7. Generate factory (same as injectable)
-      const factoryRes = compileFactoryFunction({
-        name: className,
-        type: {value: o.variable(className), type: o.variable(className)},
-        typeArgumentCount: classMeta?.typeParameters?.length ?? 0,
-        deps: deps,
-        target: FactoryTarget.Component,
-      });
+      if (compileResult) {
+        // 7. Generate factory (same as injectable)
+        const factoryRes = compileFactoryFunction({
+          name: className,
+          type: {value: o.variable(className), type: o.variable(className)},
+          typeArgumentCount: classMeta?.typeParameters?.length ?? 0,
+          deps: deps,
+          target: FactoryTarget.Component,
+        });
 
-      // 8. Insert static fields
-      const compiledFac = compileFactoryField(factoryRes, printer, ctx);
-      const compiledCmp = createStaticField(
-        'ɵcmp',
-        printer.print(compileResult.expression),
-        printer.emitTypes ? printer.printType(compileResult.type) : null,
-        true,
-        ctx.isClosureCompilerEnabled,
-      );
-      out.appendLeft(span.end - 1, compiledFac + compiledCmp + classMeta.coercionMembers);
+        // 8. Insert static fields
+        const compiledFac = compileFactoryField(factoryRes, printer, ctx);
+        const compiledCmp = createStaticField(
+          'ɵcmp',
+          printer.print(compileResult.expression),
+          printer.emitTypes ? printer.printType(compileResult.type) : null,
+          true,
+          ctx.isClosureCompilerEnabled,
+        );
+        out.appendLeft(span.end - 1, compiledFac + compiledCmp + classMeta.coercionMembers);
 
-      if (ctx.enableHmr) {
-        hmrComponent = {
-          meta: componentMeta,
-          bindingParser,
-          definition: compileResult,
-          factory: factoryRes,
-          defer: deferMeta,
-        };
+        if (ctx.enableHmr) {
+          hmrComponent = {
+            meta: componentMeta,
+            bindingParser,
+            definition: compileResult,
+            factory: factoryRes,
+            defer: deferMeta,
+          };
+        }
       }
     }
 
@@ -1849,11 +1867,34 @@ export function processFileSync(
       }
 
       const span = {start: diag.start, end: diag.end};
+      const loc = diag.sourceFilePath
+        ? {filePath: diag.sourceFilePath, span}
+        : component
+          ? templateDiagnosticLocation(component, filePath, span)
+          : {filePath, span};
+
+      const relatedInformation: nga.NgDiagnosticRelatedInformation[] | undefined =
+        diag.relatedInformation?.map((rel) => {
+          const relSpan = {start: rel.start, end: rel.end};
+          const relLoc = rel.sourceFilePath
+            ? {filePath: rel.sourceFilePath, span: relSpan}
+            : component
+              ? templateDiagnosticLocation(component, filePath, relSpan)
+              : {filePath, span: relSpan};
+          return {
+            messageText: rel.message,
+            filePath: relLoc.filePath,
+            span: relLoc.span,
+          };
+        });
+
       fileDiagnostics.push({
         category: diag.category === OutOfBandDiagnosticCategory.Warning ? 0 : 1,
         code: diag.code ?? 8000,
         messageText: diag.message,
-        ...(component ? templateDiagnosticLocation(component, filePath, span) : {filePath, span}),
+        filePath: loc.filePath,
+        span: loc.span,
+        ...(relatedInformation && relatedInformation.length > 0 ? {relatedInformation} : {}),
       });
     }
   }

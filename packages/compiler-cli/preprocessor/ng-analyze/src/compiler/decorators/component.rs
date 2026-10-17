@@ -236,6 +236,18 @@ pub struct EvaluatedDeclaration {
     pub reference: crate::types::analysis::Reference,
     /// True when the reference came through a foreign-function resolver (`forwardRef`).
     pub synthetic: bool,
+    /// The file in which the reference expression was evaluated.
+    pub evaluated_in_file: crate::query::FileId,
+}
+
+fn value_reference_origin_file(
+    reference: &crate::evaluator::value::ValueReference,
+) -> crate::query::FileId {
+    reference
+        .aliases
+        .last()
+        .map(|(file, _)| *file)
+        .unwrap_or(reference.file)
 }
 
 fn collect_declaration_tuples(
@@ -256,6 +268,7 @@ fn collect_declaration_tuples(
             out.push(EvaluatedDeclaration {
                 reference: crate::types::analysis::Reference::from_value_reference(reference),
                 synthetic: reference.synthetic,
+                evaluated_in_file: value_reference_origin_file(reference),
             });
             Ok(())
         }
@@ -265,6 +278,7 @@ fn collect_declaration_tuples(
             out.push(EvaluatedDeclaration {
                 reference: crate::types::analysis::Reference::from_value_reference(ng_module),
                 synthetic: ng_module.synthetic,
+                evaluated_in_file: value_reference_origin_file(ng_module),
             });
             Ok(())
         }
@@ -454,7 +468,7 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
         // arrays/tuples, spreads, and `ModuleWithProviders` calls. Fall back to identifier-rooted
         // `parsed_imports` if evaluation hits a dynamic entry (e.g. unwrapping `X.forRoot()` syntactically).
         enum Entry {
-            Evaluated(crate::types::analysis::Reference),
+            Evaluated(crate::types::analysis::Reference, crate::query::FileId),
             Parsed(DeclarationTuple),
         }
 
@@ -468,7 +482,12 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
                 entries = Some(
                     evaluated
                         .into_iter()
-                        .map(|decl| (Entry::Evaluated(decl.reference), decl.synthetic))
+                        .map(|decl| {
+                            (
+                                Entry::Evaluated(decl.reference, decl.evaluated_in_file),
+                                decl.synthetic,
+                            )
+                        })
                         .collect(),
                 );
             }
@@ -483,6 +502,8 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
         });
 
         let mut resolved_declarations = Vec::new();
+        let mut resolved_import_entries = Vec::new();
+        let mut parsed_cursor = 0;
         // The legacy path with nothing to resolve (slot evaluation failed and no
         // identifier-rooted imports survived extraction) must keep the runtime fallback.
         let mut all_resolved = used_evaluated_entries || !entries.is_empty();
@@ -491,7 +512,7 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
             let ctx = ctx.clone();
             async move {
                 match entry {
-                    Entry::Evaluated(r) => crate::query::resolve_reference_async(r, &ctx).await,
+                    Entry::Evaluated(r, _) => crate::query::resolve_reference_async(r, &ctx).await,
                     Entry::Parsed(tuple) => resolve_declaration_async(tuple, file_path, &ctx).await,
                 }
             }
@@ -507,10 +528,49 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
             let flattened = flatten_class_info(class_info.clone(), ctx).await;
 
             let reference = match entry {
-                Entry::Evaluated(r) => r.clone(),
+                Entry::Evaluated(r, _) => r.clone(),
                 Entry::Parsed(tuple) => {
                     legacy_import_reference(tuple, &class_info, reference_id.file)
                 }
+            };
+
+            let matched_import_info = match entry {
+                Entry::Parsed(_) => {
+                    let info = component.parsed_imports.get(parsed_cursor);
+                    parsed_cursor += 1;
+                    info
+                }
+                Entry::Evaluated(_, evaluated_in_file) => {
+                    if *evaluated_in_file == reference_id.file {
+                        let mut found = None;
+                        for (idx, imp) in
+                            component.parsed_imports[parsed_cursor..].iter().enumerate()
+                        {
+                            let matches = if imp.import_source.is_none() {
+                                reference.file == reference_id.file
+                                    && imp.local_name == class_info.class_name
+                            } else {
+                                reference.aliases.get(&reference_id.file) == Some(&imp.local_name)
+                            };
+                            if matches {
+                                parsed_cursor += idx + 1;
+                                found = Some(imp);
+                                break;
+                            }
+                        }
+                        found
+                    } else {
+                        None
+                    }
+                }
+            };
+
+            let (is_potential_shared, usage_span) = match matched_import_info {
+                Some(imp) if imp.in_decorator => (false, Some(imp.span)),
+                Some(imp) if imp.import_source.is_some() && !imp.in_exported_variable => {
+                    (false, Some(imp.span))
+                }
+                _ => (true, None),
             };
 
             let same_file = reference.file == reference_id.file;
@@ -529,6 +589,15 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
                     &flattened,
                     is_fw,
                 ) {
+                    resolved_import_entries.push(crate::analyzer::ComponentImportEntryData {
+                        name: decl.reference.name.clone(),
+                        file: decl.reference.file,
+                        declaration_type: decl.declaration_type,
+                        pipe_name: decl.pipe_name.clone(),
+                        is_standalone: decl.is_standalone,
+                        is_potential_shared,
+                        usage_span,
+                    });
                     let contextual_decl =
                         contextualize_declaration(ctx, &decl, reference_id.file, file_path).await;
                     resolved_declarations.push(contextual_decl);
@@ -558,6 +627,15 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
             } else if let Some(decl) =
                 DeclarationData::from_class_info(reference, &class_info, &flattened, is_fw)
             {
+                resolved_import_entries.push(crate::analyzer::ComponentImportEntryData {
+                    name: decl.reference.name.clone(),
+                    file: decl.reference.file,
+                    declaration_type: decl.declaration_type,
+                    pipe_name: decl.pipe_name.clone(),
+                    is_standalone: decl.is_standalone,
+                    is_potential_shared,
+                    usage_span,
+                });
                 let mut contextual_decl =
                     contextualize_declaration(ctx, &decl, reference_id.file, file_path).await;
                 contextual_decl.resolved_host_directives = resolve_host_directives_for_class(
@@ -581,6 +659,9 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
         // supported path (the norm in local mode), not an error, so it is deliberately silent.
         if all_resolved {
             component.raw_imports_span = None;
+            component.resolved_import_entries = Some(resolved_import_entries);
+        } else {
+            component.resolved_import_entries = None;
         }
     }
 

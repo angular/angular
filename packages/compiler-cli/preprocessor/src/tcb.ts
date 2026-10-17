@@ -27,9 +27,10 @@ import {
   TypeCheckingConfig,
   TypeCtorMetadata,
 } from '@angular/compiler';
-import type {NgpCompilerOptions} from './compiler_options.js';
+import type {ExtendedDiagnosticsOptions, NgpCompilerOptions} from './compiler_options.js';
 import {Diagnostic} from './diagnostic.js';
 import {RegistryDomSchemaChecker} from './dom_schema_checker.js';
+import {runExtendedDiagnostics} from './extended_diagnostics.js';
 
 import MagicString from 'magic-string';
 
@@ -153,6 +154,8 @@ export interface PipeMeta {
 
 export interface NgpTypeCheckingConfig extends TypeCheckingConfig {
   typeCheckHostBindings?: boolean;
+  extendedDiagnostics?: ExtendedDiagnosticsOptions;
+  disabledExtendedDiagnostics?: boolean;
 }
 
 export function buildTypeCheckingConfig(
@@ -189,6 +192,7 @@ export function buildTypeCheckingConfig(
         options.extendedDiagnostics?.defaultCategory ??
         'warning',
       unusedStandaloneImports:
+        options.unusedStandaloneImports ??
         options.extendedDiagnostics?.checks?.unusedStandaloneImports ??
         options.extendedDiagnostics?.defaultCategory ??
         'warning',
@@ -226,6 +230,7 @@ export function buildTypeCheckingConfig(
         options.extendedDiagnostics?.defaultCategory ??
         'warning',
       unusedStandaloneImports:
+        options.unusedStandaloneImports ??
         options.extendedDiagnostics?.checks?.unusedStandaloneImports ??
         options.extendedDiagnostics?.defaultCategory ??
         'warning',
@@ -271,6 +276,7 @@ export function buildTypeCheckingConfig(
     typeCheckingConfig.strictLiteralTypes = options.strictLiteralTypes;
   }
   typeCheckingConfig.typeCheckHostBindings = options.typeCheckHostBindings ?? true;
+  typeCheckingConfig.extendedDiagnostics = options.extendedDiagnostics;
 
   return typeCheckingConfig;
 }
@@ -605,7 +611,7 @@ export function prepareTcbTargets(
 export function generateTcbCode(
   filePath: string,
   preparedData: PreparedTcbData,
-  config: TypeCheckingConfig,
+  config: NgpTypeCheckingConfig,
 ): TcbResult | null {
   const {targets, requiresInline} = preparedData;
   if (targets.length === 0) return null;
@@ -613,6 +619,7 @@ export function generateTcbCode(
   const importManager = new TcbImportManager();
   const oobRecorder = new OutOfBandDiagnosticRecorderImpl();
   const domSchemaChecker = new RegistryDomSchemaChecker();
+  const extendedDiagnostics: Diagnostic[] = [];
 
   let code = '';
   let functionStrings = '';
@@ -651,6 +658,21 @@ export function generateTcbCode(
       continue;
     }
 
+    if (!config.disabledExtendedDiagnostics) {
+      extendedDiagnostics.push(
+        ...runExtendedDiagnostics(
+          typeCheckId,
+          comp,
+          tcbMeta.boundTarget,
+          filePath,
+          config.extendedDiagnostics,
+          undefined,
+          config.checkTemplateBodies,
+          config.unusedStandaloneImports,
+        ),
+      );
+    }
+
     functionStrings += tcbString + '\n\n';
     const classKey = makeClassKey(comp.className, comp.classMeta.span.start);
     tcbMap.set(classKey, tcbString);
@@ -675,7 +697,11 @@ export function generateTcbCode(
     imports: importsStr,
     tcbMap,
     templateSources,
-    diagnostics: [...domSchemaChecker.diagnostics, ...oobRecorder.diagnostics],
+    diagnostics: [
+      ...domSchemaChecker.diagnostics,
+      ...oobRecorder.diagnostics,
+      ...extendedDiagnostics,
+    ],
     isInline: requiresInline,
   };
 }
