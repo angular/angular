@@ -132,6 +132,16 @@
       ]
     },
     {
+      "description": "should not leak the parameters of a nested arrow function into the scope of its parent",
+      "inputFiles": ["arrow_function_nested_parameter_scope.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid template",
+          "files": ["arrow_function_nested_parameter_scope.js"]
+        }
+      ]
+    },
+    {
       "description": "should handle arrow function with optional reads",
       "inputFiles": ["arrow_function_safe_access.ts"],
       "expectations": [
