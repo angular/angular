@@ -676,11 +676,10 @@ This section provides detailed information about specific Angular DI error codes
 This error occurs when Angular cannot find a provider for a token in the injector hierarchy. The error message includes a dependency path showing where the injection was attempted.
 
 ```
-NullInjectorError: No provider for UserClient!
-  Dependency path: App -> AuthClient -> UserClient
+NG0201: No provider found for `UserClient`. Path: AuthClient -> UserClient.
 ```
 
-The dependency path shows that `App` injected `AuthClient`, which tried to inject `UserClient`, but no provider was found.
+The dependency path shows that `AuthClient` tried to inject `UserClient`, but no provider was found.
 
 #### Missing the `@Service ` or `@Injectable` decorator
 
@@ -749,7 +748,7 @@ import {UserClient} from './user-client';
 
 @Component({
   selector: 'app-profile',
-  template: '<p>User: {{user().name}}</p>',
+  template: '<p>User: {{user.name}}</p>',
 })
 export class UserProfile {
   private userService = inject(UserClient); // ERROR: No provider
@@ -765,7 +764,7 @@ import {UserClient} from './user-client';
 
 @Component({
   selector: 'app-profile',
-  template: '<p>User: {{user().name}}</p>',
+  template: '<p>User: {{user.name}}</p>',
 })
 export class UserProfile {
   private userService = inject(UserClient); // Works: providedIn: 'root'
@@ -778,16 +777,14 @@ export class UserProfile {
 The dependency path in the error message shows the chain of injections that led to the failure.
 
 ```
-NullInjectorError: No provider for LoggerStore!
-  Dependency path: App -> DataStore -> ApiClient -> LoggerStore
+NG0201: No provider found for `LoggerStore`. Path: DataStore -> ApiClient -> LoggerStore.
 ```
 
 This path tells you:
 
-1. `App` injected `DataStore`
-2. `DataStore` injected `ApiClient`
-3. `ApiClient` tried to inject `LoggerStore`
-4. No provider for `LoggerStore` was found
+1. `DataStore` injected `ApiClient`
+2. `ApiClient` tried to inject `LoggerStore`
+3. No provider for `LoggerStore` was found
 
 Start your investigation at the end of the chain (`LoggerStore`) and verify it has proper configuration.
 
@@ -818,9 +815,10 @@ Optional injection returns `null` if no provider is found, allowing you to handl
 This error occurs when you call `inject()` outside of a valid injection context. Angular requires `inject()` to be called synchronously during class construction or factory execution.
 
 ```
-NG0203: inject() must be called from an injection context such as a
-constructor, a factory function, a field initializer, or a function
-used with `runInInjectionContext`.
+NG0203: The `UserClient` token injection failed. `inject()` function must
+be called from an injection context such as a constructor, a factory
+function, a field initializer, or a function used with
+`runInInjectionContext`.
 ```
 
 #### Valid injection contexts
@@ -835,7 +833,7 @@ Angular allows `inject()` in these locations:
 
    @Component({
      selector: 'app-profile',
-     template: '<p>User: {{user().name}}</p>',
+     template: '<p>User: {{user.name}}</p>',
    })
    export class UserProfile {
      private userService = inject(UserClient); // Valid
@@ -851,7 +849,7 @@ Angular allows `inject()` in these locations:
 
    @Component({
      selector: 'app-profile',
-     template: '<p>User: {{user().name}}</p>',
+     template: '<p>User: {{user.name}}</p>',
    })
    export class UserProfile {
      private userService: UserClient;
@@ -963,8 +961,7 @@ setTimeout(() => {
 This error occurs when two or more services depend on each other, creating a circular dependency that Angular cannot resolve.
 
 ```
-NG0200: Circular dependency in DI detected for AuthClient
-  Dependency path: AuthClient -> UserClient -> AuthClient
+NG0200: Circular dependency detected for `AuthClient`. Path: AuthClient -> UserClient -> AuthClient.
 ```
 
 The dependency path shows the cycle: `AuthClient` depends on `UserClient`, which depends back on `AuthClient`.
