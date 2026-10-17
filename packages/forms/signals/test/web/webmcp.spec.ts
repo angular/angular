@@ -187,6 +187,44 @@ describe('Signal Forms WebMCP Integration', () => {
       });
     });
 
+    it('should keep the current value of properties omitted by the agent', async () => {
+      const model = signal({
+        name: 'Alice',
+        age: 25,
+        address: {city: 'Sunnyvale', zip: 94089},
+        hobbies: ['reading'],
+      });
+
+      const submitSpy = jasmine.createSpy('submitSpy').and.returnValue(Promise.resolve(undefined));
+
+      TestBed.runInInjectionContext(() => {
+        form(model, {
+          experimentalWebMcpTool: {
+            name: 'testFormPartialTool',
+            description: 'A test form partial update tool',
+          },
+          submission: {
+            action: submitSpy,
+          },
+        });
+      });
+      await TestBed.inject(ApplicationRef).whenStable();
+
+      // None of these properties are `required`, so the schema allows omitting them.
+      await executeTool(
+        'testFormPartialTool',
+        JSON.stringify({name: 'Bob', address: {city: 'Paris'}}),
+      );
+
+      expect(model()).toEqual({
+        name: 'Bob',
+        age: 25,
+        address: {city: 'Paris', zip: 94089},
+        hobbies: ['reading'],
+      });
+      expect(submitSpy).toHaveBeenCalledTimes(1);
+    });
+
     it('should return a failure message if form validation fails', async () => {
       const model = signal({name: {first: ''}});
 

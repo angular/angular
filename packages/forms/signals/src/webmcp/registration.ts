@@ -19,6 +19,7 @@ import type {JsonSchemaForInference} from '@mcp-b/webmcp-types';
 import {submit} from '../api/structure';
 import {FieldTree} from '../api/types';
 import {FieldNode} from '../field/node';
+import {isObject} from '../util/type_guards';
 import {REGISTER_WEBMCP_FORM, RegisterWebMcpForm} from './tokens';
 
 const registerWebMcpForm: RegisterWebMcpForm = (formTree, options) => {
@@ -67,8 +68,9 @@ async function initWebMcpForm(
         untrustedContentHint: false,
       },
       execute: async (args: Record<string, unknown> | unknown[]) => {
-        // Populate the form with changes from the agent.
-        node.value.set(args);
+        // Populate the form with changes from the agent. Properties which are not `required` are
+        // optional in the schema, so the agent may omit them and they must keep their value.
+        node.value.set(overlayValue(node.value(), args));
 
         // Trigger form submission.
         const success = await submit(formTree);
@@ -90,6 +92,28 @@ async function initWebMcpForm(
     },
     injector,
   );
+}
+
+/**
+ * Overlays the `incoming` value from an agent on top of the `current` form value.
+ *
+ * Object properties which are missing from `incoming` keep their current value. Everything else,
+ * including arrays, is replaced as a whole.
+ */
+function overlayValue(current: unknown, incoming: unknown): unknown {
+  if (!isPlainObject(current) || !isPlainObject(incoming)) return incoming;
+
+  return {
+    ...current,
+    // `Object.fromEntries` defines own properties, so a `__proto__` key from the agent is inert.
+    ...Object.fromEntries(
+      Object.entries(incoming).map(([key, value]) => [key, overlayValue(current[key], value)]),
+    ),
+  };
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return isObject(value) && !Array.isArray(value);
 }
 
 /** Infers the JSON schema from a specific form field. */
