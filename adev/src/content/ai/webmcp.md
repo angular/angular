@@ -231,7 +231,7 @@ In this example, Angular generates a WebMCP tool with a JSON schema which:
 
 Beyond inferring the input schema, Angular also connects the WebMCP tool to the form's validation logic and submission handler. This means the agent will observe any validation errors triggered by its inputs or any failures which happen during submission, allowing it to self-correct and potentially retry.
 
-NOTE: Async validators are _not_ triggered and should be handled by the submission action.
+NOTE: By default, async validators don't block submission: the submission action runs before they finish, so their errors aren't reported to the agent. Handle these checks in the submission action instead.
 
 #### Constraints
 
