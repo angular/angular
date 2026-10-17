@@ -77,7 +77,7 @@ You can learn more about the [`resolve` configuration in the API docs](api/route
 
 ### Using ActivatedRoute
 
-You can access the resolved data in a component by accessing the snapshot data from the `ActivatedRoute` using the `signal` function:
+You can access the resolved data in a component by converting the `data` observable from the `ActivatedRoute` into a signal using the `toSignal` function:
 
 ```angular-ts
 import {Component, inject, computed} from '@angular/core';

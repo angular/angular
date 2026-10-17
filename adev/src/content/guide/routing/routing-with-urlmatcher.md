@@ -101,7 +101,7 @@ With your code in place, you can now test your custom URL matcher.
 
 1. Click the **my profile** hyperlink.
 
-   A new sentence, reading `Hello, Angular!` appears on the page.
+   A new sentence, reading `Hello Angular!` appears on the page.
 
 ## Next steps
 

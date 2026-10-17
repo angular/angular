@@ -188,7 +188,7 @@ export class Dashboard {}
 The routed component can inject the provided outlet data using `ROUTER_OUTLET_DATA`:
 
 ```angular-ts
-import {Component, inject} from '@angular/core';
+import {Component, inject, Signal} from '@angular/core';
 import {ROUTER_OUTLET_DATA} from '@angular/router';
 
 @Component({
