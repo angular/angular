@@ -141,7 +141,7 @@ export class PipeWithoutName implements PipeTransform {
     /*@__PURE__*/ i0.ɵɵdefinePipe({ name: 'PipeWithoutName', type: PipeWithoutName, pure: true });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
-      i0.ɵsetClassMetadata(PipeWithoutName, [{ type: Pipe }], null, null);
+      i0.ɵsetClassMetadata(PipeWithoutName, [{ type: Pipe, args: [null!] }], null, null);
   }
 }
 

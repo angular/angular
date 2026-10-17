@@ -49,10 +49,14 @@ fn parse_pipe_args<'a>(
         ..Default::default()
     };
 
+    if let (Some(first), Some(last)) = (call_expr.arguments.first(), call_expr.arguments.last()) {
+        data.args_span = Some(oxc_span::Span::new(first.span().start, last.span().end));
+    }
+
     let Some(oxc_ast::ast::Argument::ObjectExpression(obj)) = call_expr.arguments.first() else {
         return data;
     };
-    data.args_span = Some(obj.span);
+    data.metadata_span = Some(obj.span);
 
     for prop in &obj.properties {
         let ObjectPropertyKind::ObjectProperty(p) = prop else {
