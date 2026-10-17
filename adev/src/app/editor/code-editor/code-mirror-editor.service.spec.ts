@@ -75,9 +75,8 @@ class MockWorker {
 describe('CodeMirrorEditor', () => {
   let service: CodeMirrorEditor;
   let mockWorker: MockWorker;
-
-  const fakeNodeRuntimeSandbox = new FakeNodeRuntimeSandbox();
-  const fakeEmbeddedTutorialManager = new FakeEmbeddedTutorialManager();
+  let fakeNodeRuntimeSandbox: FakeNodeRuntimeSandbox;
+  let fakeEmbeddedTutorialManager: FakeEmbeddedTutorialManager;
 
   function dispatchDocumentChange(newContent: string) {
     for (let i = 0; i < newContent.length; i++) {
@@ -89,6 +88,8 @@ describe('CodeMirrorEditor', () => {
   }
 
   beforeEach(() => {
+    fakeNodeRuntimeSandbox = new FakeNodeRuntimeSandbox();
+    fakeEmbeddedTutorialManager = new FakeEmbeddedTutorialManager();
     mockWorker = new MockWorker();
 
     TestBed.configureTestingModule({
