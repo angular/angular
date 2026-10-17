@@ -14,6 +14,7 @@ import {isArray} from './type_guards';
  * Creates a writable signal for a specific property on a source writeable signal.
  * @param source A writeable signal to derive from
  * @param prop A signal of a property key of the source value
+ * @param prepareWrite Adjusts a value before it is written to the source
  * @returns A writeable signal for the given property of the source value.
  * @template S The source value type
  * @template K The key type for S
@@ -21,6 +22,7 @@ import {isArray} from './type_guards';
 export function deepSignal<S, K extends keyof S>(
   source: WritableSignal<S>,
   prop: Signal<K>,
+  prepareWrite?: (value: S[K]) => S[K],
 ): WritableSignal<S[K]> {
   // Memoize the property.
   const read = computed(() => source()[prop()]) as WritableSignal<S[K]>;
@@ -30,7 +32,8 @@ export function deepSignal<S, K extends keyof S>(
     if (Object.is(untracked(read), value)) {
       return;
     }
-    source.update((current) => valueForWrite(current, value, prop()) as S);
+    const written = prepareWrite ? prepareWrite(value) : value;
+    source.update((current) => valueForWrite(current, written, prop()) as S);
   };
 
   read.update = (fn: (current: S[K]) => S[K]) => {

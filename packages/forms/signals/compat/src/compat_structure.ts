@@ -21,6 +21,7 @@ import {
   FieldNodeOptions,
   FieldNodeStructure,
   RootFieldNodeOptions,
+  TrackingKey,
 } from '../../src/field/structure';
 
 import {toSignal} from '@angular/core/rxjs-interop';
@@ -116,6 +117,7 @@ export class CompatStructure extends FieldNodeStructure {
   override readonly parent: ParentFieldNode | undefined;
   override readonly fieldManager: FormFieldManager;
   override readonly isOrphaned: Signal<boolean>;
+  override readonly identityInParent: TrackingKey | undefined;
 
   constructor(node: FieldNode, options: CompatFieldNodeOptions) {
     super(options.logic, node, () => {
@@ -129,12 +131,12 @@ export class CompatStructure extends FieldNodeStructure {
     this.root = this.parent?.structure.root ?? node;
     this.fieldManager = getFieldManagerFromOptions(options);
 
-    const identityInParent = options.kind === 'child' ? options.identityInParent : undefined;
+    this.identityInParent = options.kind === 'child' ? options.identityInParent : undefined;
     const initialKeyInParent = options.kind === 'child' ? options.initialKeyInParent : undefined;
 
     const signals = this.createKeyOrOrphanSignals(
       options.kind,
-      identityInParent,
+      this.identityInParent,
       initialKeyInParent,
     );
     this.keyInParent = signals.keyInParent;
