@@ -742,6 +742,21 @@ class _ParseAST {
     return token.type === TokenType.Operator && Binary.isAssignmentOperation(token.strValue);
   }
 
+  /** Whether a token can only start a new operand, like `b` in `a--b`. */
+  private startsOperand(token: Token): boolean {
+    return (
+      token.isIdentifier() ||
+      token.isNumber() ||
+      token.isKeywordNull() ||
+      token.isKeywordUndefined() ||
+      token.isKeywordTrue() ||
+      token.isKeywordFalse() ||
+      token.isKeywordThis() ||
+      token.isKeywordTypeof() ||
+      token.isKeywordVoid()
+    );
+  }
+
   private validateIncrementDecrementTarget(operand: AST): boolean {
     if (!(this.parseFlags & ParseFlags.Action)) {
       this.error('Bindings cannot contain assignments');
@@ -1154,6 +1169,20 @@ class _ParseAST {
       // Note: we need to capture this here before we advance.
       const operator = this.next.strValue as '++' | '--';
       this.advance();
+
+      // Before `++` and `--` were supported, `a--b` parsed as `a - -b`. It's now a postfix update
+      // followed by an unexpected operand, like in JavaScript, so explain how to keep the old meaning.
+      if (this.startsOperand(this.next)) {
+        const sign = operator[0];
+        this.error(
+          `Unexpected token '${this.next}' after the '${operator}' ` +
+            `${operator === '++' ? 'increment' : 'decrement'} operator. ` +
+            `To ${operator === '++' ? 'add' : 'subtract'} '${sign}${this.next}', ` +
+            `write '${sign} ${sign}${this.next}'`,
+        );
+        return result;
+      }
+
       return this.validateIncrementDecrementTarget(result)
         ? Unary.createPostfixUpdate(this.span(start), this.sourceSpan(start), operator, result)
         : new EmptyExpr(this.span(start), this.sourceSpan(start));

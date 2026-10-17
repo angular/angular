@@ -632,6 +632,25 @@ describe('parser', () => {
         expectActionError('foo-- bar', "Unexpected token 'bar'");
       });
 
+      it('should explain how to space an update operator followed by an operand', () => {
+        expectActionError(
+          'x = a--b',
+          "Unexpected token 'b' after the '--' decrement operator. To subtract '-b', write '- -b'",
+        );
+        expectActionError(
+          'a++1',
+          "Unexpected token '1' after the '++' increment operator. To add '+1', write '+ +1'",
+        );
+        expectBindingError(
+          'a--b',
+          "Unexpected token 'b' after the '--' decrement operator. To subtract '-b', write '- -b'",
+        );
+        expectBindingError(
+          'a++this.b',
+          "Unexpected token 'this' after the '++' increment operator. To add '+this', write '+ +this'",
+        );
+      });
+
       it('should not allow assigning to an update expression', () => {
         expectActionError('foo++ = 1', "Unexpected token '='");
         expectActionError('++foo = 1', 'cannot be used in the assignment');
