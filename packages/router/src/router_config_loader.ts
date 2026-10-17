@@ -46,8 +46,9 @@ export class RouterConfigLoader {
   onLoadStartListener?: (r: Route) => void;
   onLoadEndListener?: (r: Route) => void;
   private readonly compiler = inject(Compiler);
+  private readonly environmentInjector = inject(EnvironmentInjector);
 
-  async loadComponent(injector: EnvironmentInjector, route: Route): Promise<Type<unknown>> {
+  async loadComponent(route: Route): Promise<Type<unknown>> {
     if (this.componentLoaders.get(route)) {
       return this.componentLoaders.get(route)!;
     } else if (route._loadedComponent) {
@@ -60,7 +61,7 @@ export class RouterConfigLoader {
     const loader = (async () => {
       try {
         const loaded = await wrapIntoPromise(
-          runInInjectionContext(injector, () => route.loadComponent!()),
+          runInInjectionContext(this.environmentInjector, () => route.loadComponent!()),
         );
         const component = await maybeResolveResources(maybeUnwrapDefaultExport(loaded));
 
@@ -96,6 +97,7 @@ export class RouterConfigLoader {
           this.compiler,
           parentInjector,
           this.onLoadEndListener,
+          this.environmentInjector,
         );
         route._loadedRoutes = result.routes;
         route._loadedInjector = result.injector;
@@ -123,9 +125,10 @@ export async function loadChildren(
   compiler: Compiler,
   parentInjector: Injector,
   onLoadEndListener?: (r: Route) => void,
+  environmentInjector?: EnvironmentInjector,
 ): Promise<LoadedRouterConfig> {
   const loaded = await wrapIntoPromise(
-    runInInjectionContext(parentInjector, () => route.loadChildren!()),
+    runInInjectionContext(environmentInjector ?? parentInjector, () => route.loadChildren!()),
   );
   const t = await maybeResolveResources(maybeUnwrapDefaultExport(loaded));
 
