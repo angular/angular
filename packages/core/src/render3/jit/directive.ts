@@ -423,8 +423,8 @@ function addDirectiveDefToUndecoratedParents(type: Type<any>) {
     // Since inheritance works if the class was annotated already, we only need to add
     // the def if there are no annotations and the def hasn't been created already.
     if (
-      !getDirectiveDef(parent) &&
-      !getComponentDef(parent) &&
+      !Object.hasOwn(parent, NG_DIR_DEF) &&
+      !Object.hasOwn(parent, NG_COMP_DEF) &&
       shouldAddAbstractDirective(parent)
     ) {
       compileDirective(parent, null);

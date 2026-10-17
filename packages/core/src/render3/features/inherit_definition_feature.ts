@@ -59,7 +59,9 @@ export function ɵɵInheritDefinitionFeature(
     if (isComponentDef(definition)) {
       superDef = cmpDef ?? dirDef;
     } else {
-      if (cmpDef) {
+      // Abstract directives (and undecorated base classes compiled as such)
+      // may extend components without throwing.
+      if (cmpDef && definition.selectors && definition.selectors.length > 0) {
         throw new RuntimeError(
           RuntimeErrorCode.INVALID_INHERITANCE,
           ngDevMode &&
@@ -68,7 +70,7 @@ export function ɵɵInheritDefinitionFeature(
             )} is attempting to extend component ${stringifyForError(superType)}`,
         );
       }
-      superDef = dirDef;
+      superDef = cmpDef ?? dirDef;
     }
 
     if (superDef) {
