@@ -7,7 +7,7 @@
     {
       "name": "TreeItemGroup",
       "isAbstract": false,
-      "entryType": "undecorated_class",
+      "entryType": "directive",
       "members": [
         {
           "name": "element",
@@ -24,10 +24,13 @@
           "type": "InputSignal<TreeItem<V>>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "Tree item that owns the group.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "ownedBy",
+          "isRequiredInput": true
         },
         {
           "name": "ngOnInit",
@@ -113,6 +116,14 @@
         "OnInit",
         "OnDestroy"
       ],
+      "isStandalone": true,
+      "selector": "ng-template[ngTreeItemGroup]",
+      "exportAs": [
+        "ngTreeItemGroup"
+      ],
+      "aliases": [
+        "ngTreeItemGroup"
+      ],
       "source": {
         "filePath": "/src/aria/tree/tree-item-group.ts",
         "startLine": 42,
@@ -136,7 +147,7 @@
         },
         {
           "name": "id",
-          "type": "InputSignal<any>",
+          "type": "InputSignal<string>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -249,7 +260,7 @@
         },
         {
           "name": "active",
-          "type": "Signal<any>",
+          "type": "Signal<boolean>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -259,7 +270,7 @@
         },
         {
           "name": "level",
-          "type": "Signal<any>",
+          "type": "Signal<number>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -269,7 +280,7 @@
         },
         {
           "name": "selected",
-          "type": "Signal<any>",
+          "type": "Signal<boolean | undefined>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -279,7 +290,7 @@
         },
         {
           "name": "visible",
-          "type": "Signal<any>",
+          "type": "Signal<boolean>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -352,6 +363,28 @@
           "rawComment": "",
           "memberType": "method",
           "memberTags": []
+        },
+        {
+          "name": "contentVisible",
+          "type": "WritableSignal<boolean>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "override"
+          ],
+          "description": "",
+          "jsdocTags": []
+        },
+        {
+          "name": "preserveContent",
+          "type": "ModelSignal<boolean>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "override"
+          ],
+          "description": "",
+          "jsdocTags": []
         }
       ],
       "generics": [
@@ -399,7 +432,7 @@
         },
         {
           "name": "id",
-          "type": "InputSignal<any>",
+          "type": "InputSignal<string>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -516,7 +549,7 @@
         },
         {
           "name": "tabIndex",
-          "type": "InputSignal<undefined>",
+          "type": "InputSignalWithTransform<number | undefined, string | number | undefined>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -865,6 +898,14 @@
     ],
     [
       "TreeItem.ngOnDestroy",
+      "@angular/aria/tree"
+    ],
+    [
+      "TreeItem.contentVisible",
+      "@angular/aria/tree"
+    ],
+    [
+      "TreeItem.preserveContent",
       "@angular/aria/tree"
     ],
     [
