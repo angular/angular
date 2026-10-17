@@ -7,18 +7,64 @@
  */
 import ts from 'typescript';
 
+import {getTokenAtPosition} from '../../util/src/typescript';
 import {TemplateDiagnostic} from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
 import {getSourceMapping, TypeCheckSourceResolver} from './tcb_util';
 
 /**
- * This function will the check the source text of the TCB instead of doing a more expensive AST traversal (via getTokenAtPosition)
+ * Determines whether a TS2341 ("Property 'x' is private and only accessible within class 'Y'")
+ * diagnostic occurred on a property access on the component/directive's `this` context for a
+ * private member declared on that component/directive class itself (as opposed to an inherited
+ * private member from a base class or a private member on a narrowed subtype).
  */
-function isAccessOnThis(text: string, start: number): boolean {
-  return (
-    text.substring(start - 5, start) === 'this.' || text.substring(start - 7, start) === '(this).'
-  );
+function isPrivatePropertyOnHostThis(
+  sf: ts.SourceFile,
+  start: number,
+  typeChecker: ts.TypeChecker,
+): boolean {
+  const node = getTokenAtPosition(sf, start);
+  if (!ts.isPropertyAccessExpression(node.parent) || node.parent.name !== node) {
+    return false;
+  }
+
+  let receiver: ts.Expression = node.parent.expression;
+  while (ts.isParenthesizedExpression(receiver) || ts.isNonNullExpression(receiver)) {
+    receiver = receiver.expression;
+  }
+  if (receiver.kind !== ts.SyntaxKind.ThisKeyword) {
+    return false;
+  }
+
+  const thisSymbol = typeChecker.getSymbolAtLocation(receiver);
+  if (thisSymbol === undefined) {
+    return false;
+  }
+  const hostDeclarations: readonly ts.Node[] | undefined = typeChecker
+    .getTypeOfSymbol(thisSymbol)
+    .getSymbol()?.declarations;
+  if (hostDeclarations === undefined || hostDeclarations.length === 0) {
+    return false;
+  }
+
+  const propSymbol = typeChecker.getSymbolAtLocation(node);
+  if (propSymbol?.declarations === undefined || propSymbol.declarations.length === 0) {
+    return false;
+  }
+
+  let hasPrivateDeclaration = false;
+  for (const decl of propSymbol.declarations) {
+    if ((ts.getCombinedModifierFlags(decl) & ts.ModifierFlags.Private) !== 0) {
+      hasPrivateDeclaration = true;
+      const declaringClass = ts.isParameter(decl) ? decl.parent?.parent : decl.parent;
+      if (declaringClass === undefined || !hostDeclarations.includes(declaringClass)) {
+        return false;
+      }
+    }
+  }
+
+  return hasPrivateDeclaration;
 }
 
 /**
@@ -26,7 +72,10 @@ function isAccessOnThis(text: string, start: number): boolean {
  * way TCBs are generated; those diagnostics should not be reported as type check errors of the
  * template.
  */
-export function shouldReportDiagnostic(diagnostic: ts.Diagnostic): boolean {
+export function shouldReportDiagnostic(
+  diagnostic: ts.Diagnostic,
+  typeChecker: ts.TypeChecker,
+): boolean {
   const {code} = diagnostic;
   if (code === 6133 /* $var is declared but its value is never read. */) {
     return false;
@@ -38,8 +87,9 @@ export function shouldReportDiagnostic(diagnostic: ts.Diagnostic): boolean {
     return false;
   } else if (code === 2341 /* Property 'X' is private and only accessible within class */) {
     if (diagnostic.file !== undefined && diagnostic.start !== undefined) {
-      // Here we're discarding private property reads error to allow them to be used in template expressions
-      if (isAccessOnThis(diagnostic.file.text, diagnostic.start)) {
+      // Discard private property access errors when accessing a private member declared on the
+      // component/directive class itself via `this` in a template or host binding expression.
+      if (isPrivatePropertyOnHostThis(diagnostic.file, diagnostic.start, typeChecker)) {
         return false;
       }
     }

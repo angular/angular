@@ -621,6 +621,39 @@ runInEachFileSystem(() => {
       expect(diags.length).toBe(0);
     });
 
+    it('should report host bindings accessing private members of a parent class while allowing own private members', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+
+          export class Parent {
+            private parentId = 'parent';
+            private handleParentClick() {}
+            protected parentProtected = 'prot';
+          }
+
+          @Component({
+            template: '',
+            host: {
+              '[attr.id]': 'parentId + ownId + parentProtected',
+              '(click)': 'handleParentClick(); handleOwnClick()',
+            },
+          })
+          export class Comp extends Parent {
+            private ownId = 'own';
+            private handleOwnClick() {}
+          }
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.map((d) => d.messageText)).toEqual([
+        `Property 'parentId' is private and only accessible within class 'Parent'.`,
+        `Property 'handleParentClick' is private and only accessible within class 'Parent'.`,
+      ]);
+    });
+
     it('should report diagnostic on the entire expression of property binding if node contains escaped string', () => {
       env.write(
         'test.ts',
