@@ -36,7 +36,7 @@ describe('integration tests', () => {
   });
 
   describe('ng-container', () => {
-    it('should work regardless the namespace', () => {
+    it('should work regardless the namespace', async () => {
       @Component({
         imports: [NgIf],
         template:
@@ -45,9 +45,50 @@ describe('integration tests', () => {
       class MyCmp {}
 
       const f = TestBed.createComponent(MyCmp);
-      f.detectChanges();
+      await f.whenStable();
 
       expect(f.nativeElement.children[0].children[0].tagName).toEqual('rect');
+    });
+  });
+
+  describe('HTML entities', () => {
+    it('should not treat entity-encoded braces as interpolation', async () => {
+      @Component({
+        selector: 'test-comp',
+        template: '&lbrace;&lbrace; &rbrace;&rbrace;',
+      })
+      class TestCmp {}
+
+      const fixture = TestBed.createComponent(TestCmp);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.textContent).toBe('{{ }}');
+    });
+
+    it('should handle entity-encoded braces in attributes', async () => {
+      @Component({
+        selector: 'test-comp',
+        template: '<div title="&lbrace;&lbrace; value &rbrace;&rbrace;"></div>',
+      })
+      class TestCmp {}
+
+      const fixture = TestBed.createComponent(TestCmp);
+      await fixture.whenStable();
+      const div = fixture.nativeElement.querySelector('div');
+      expect(div.getAttribute('title')).toBe('{{ value }}');
+    });
+
+    it('should render entity-encoded braces as plain text', async () => {
+      @Component({
+        selector: 'test-comp',
+        template: '&lbrace;&lbrace;message&rbrace;&rbrace;',
+      })
+      class TestCmp {
+        message = 'Hello';
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.textContent).toBe('{{message}}');
     });
   });
 });
