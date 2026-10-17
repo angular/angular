@@ -10,13 +10,16 @@ import {HttpTestingController, provideHttpClientTesting} from '@angular/common/h
 import {
   ApplicationRef,
   assertNotInReactiveContext,
+  effect,
   Injector,
   resource,
+  resourceFromSnapshots,
+  ResourceSnapshot,
   signal,
   type Signal,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {isNode, timeout, useAutoTick} from '@angular/private/testing';
+import {isNode, timeout, useAutoTick, waitFor} from '@angular/private/testing';
 
 import {
   applyEach,
@@ -439,6 +442,207 @@ describe('resources', () => {
     await appRef.whenStable();
 
     expect(usernameForm().valid()).toBe(false);
+  });
+
+  describe('validateAsync with debounce', () => {
+    it('should allow effects and snapshots to read params while debounce is pending', async () => {
+      const consumeParams = jasmine.createSpy('consumeParams');
+      const {promise: debouncePromise, resolve: resolveDebounce} = Promise.withResolvers<void>();
+      const model = signal('initial');
+      const validationForm = form(
+        model,
+        (path) => {
+          validateAsync(path, {
+            params: ({value}) => value(),
+            debounce: async () => debouncePromise,
+            factory: (params) => {
+              expect(params()).toBe('initial');
+              effect(() => consumeParams(params()));
+              return resourceFromSnapshots(() => ({status: 'resolved', value: params()}));
+            },
+            onSuccess: (value) => (value === 'updated' ? {kind: 'custom'} : undefined),
+            onError: () => undefined,
+          });
+        },
+        {injector},
+      );
+
+      await appRef.whenStable();
+      expect(consumeParams).toHaveBeenCalledOnceWith('initial');
+      expect(validationForm().valid()).toBe(true);
+
+      model.set('intermediate');
+      await appRef.whenStable();
+      expect(consumeParams).toHaveBeenCalledOnceWith('initial');
+      expect(validationForm().pending()).toBe(true);
+      expect(validationForm().valid()).toBe(false);
+
+      model.set('updated');
+      await appRef.whenStable();
+      expect(consumeParams).toHaveBeenCalledOnceWith('initial');
+
+      resolveDebounce();
+      await waitFor(() => {
+        throwUnless(consumeParams).toHaveBeenCalledTimes(2);
+      });
+      await appRef.whenStable();
+
+      expect(consumeParams.calls.allArgs()).toEqual([['initial'], ['updated']]);
+      expect(validationForm().pending()).toBe(false);
+      expect(validationForm().errors()).toEqual([{kind: 'custom', fieldTree: validationForm}]);
+    });
+
+    it('should propagate factory snapshots after debounce settles', async () => {
+      const {promise: debouncePromise, resolve: resolveDebounce} = Promise.withResolvers<void>();
+      const snapshot = signal<ResourceSnapshot<string | undefined>>({
+        status: 'idle',
+        value: undefined,
+      });
+      const validationForm = form(
+        signal('initial'),
+        (path) => {
+          validateAsync(path, {
+            params: ({value}) => value(),
+            debounce: () => debouncePromise,
+            factory: () => resourceFromSnapshots(snapshot),
+            onSuccess: (value) => ({kind: value}),
+            onError: () => ({kind: 'error'}),
+          });
+        },
+        {injector},
+      );
+
+      await appRef.whenStable();
+      expect(validationForm().valid()).toBe(true);
+
+      snapshot.set({status: 'loading', value: undefined});
+      await appRef.whenStable();
+      expect(validationForm().pending()).toBe(true);
+
+      snapshot.set({status: 'resolved', value: 'old'});
+      await appRef.whenStable();
+      expect(validationForm().errors()).toEqual([{kind: 'old', fieldTree: validationForm}]);
+
+      validationForm().value.set('updated');
+      await appRef.whenStable();
+      expect(validationForm().pending()).toBe(true);
+      expect(validationForm().errors()).toEqual([]);
+
+      snapshot.set({status: 'error', error: new Error('stale request failed')});
+      await appRef.whenStable();
+      expect(validationForm().pending()).toBe(true);
+      expect(validationForm().errors()).toEqual([]);
+
+      resolveDebounce();
+      await waitFor(() => {
+        throwUnless(validationForm().pending()).toBe(false);
+      });
+      await appRef.whenStable();
+      expect(validationForm().pending()).toBe(false);
+      expect(validationForm().errors()).toEqual([{kind: 'error', fieldTree: validationForm}]);
+
+      snapshot.set({status: 'reloading', value: 'old'});
+      await appRef.whenStable();
+      expect(validationForm().pending()).toBe(true);
+
+      snapshot.set({status: 'local', value: 'new'});
+      await appRef.whenStable();
+      expect(validationForm().pending()).toBe(false);
+      expect(validationForm().errors()).toEqual([{kind: 'new', fieldTree: validationForm}]);
+
+      expect(() => validationForm().reloadValidation()).not.toThrow();
+    });
+
+    it('should report params errors without throwing in factory effects and recover', async () => {
+      const {promise: debouncePromise, resolve: resolveDebounce} = Promise.withResolvers<void>();
+      const error = new Error('params failed');
+      const onError = jasmine.createSpy('onError').and.returnValue({kind: 'params'});
+      const consumeParams = jasmine.createSpy('consumeParams');
+      const validationForm = form(
+        signal('initial'),
+        (path) => {
+          validateAsync(path, {
+            params: ({value}) => {
+              if (value() === 'error') {
+                throw error;
+              }
+              return value();
+            },
+            debounce: () => debouncePromise,
+            factory: (params) => {
+              effect(() => consumeParams(params()));
+              return resourceFromSnapshots(() => ({status: 'resolved', value: params()}));
+            },
+            onSuccess: () => undefined,
+            onError,
+          });
+        },
+        {injector},
+      );
+
+      await appRef.whenStable();
+      expect(validationForm().valid()).toBe(true);
+
+      validationForm().value.set('error');
+      await appRef.whenStable();
+      expect(validationForm().errors()).toEqual([{kind: 'params', fieldTree: validationForm}]);
+      expect(onError.calls.mostRecent().args[0]).toBe(error);
+      expect(consumeParams.calls.mostRecent().args).toEqual([undefined]);
+
+      validationForm().value.set('recovered');
+      await appRef.whenStable();
+      resolveDebounce();
+      await waitFor(() => {
+        throwUnless(consumeParams.calls.mostRecent().args).toEqual(['recovered']);
+      });
+      await appRef.whenStable();
+      expect(validationForm().valid()).toBe(true);
+      expect(consumeParams.calls.mostRecent().args).toEqual(['recovered']);
+    });
+
+    it('should reload the factory resource only after debounce settles', async () => {
+      const {promise: debouncePromise, resolve: resolveDebounce} = Promise.withResolvers<void>();
+      const loader = jasmine
+        .createSpy('loader')
+        .and.callFake(async ({params}: {params: string}) => params);
+      const validationForm = form(
+        signal('initial'),
+        (path) => {
+          validateAsync(path, {
+            params: ({value}) => value(),
+            debounce: () => debouncePromise,
+            factory: (params) => resource({params, loader}),
+            onSuccess: () => undefined,
+            onError: () => undefined,
+          });
+        },
+        {injector},
+      );
+
+      await appRef.whenStable();
+      expect(validationForm().valid()).toBe(true);
+      expect(loader).toHaveBeenCalledTimes(1);
+
+      validationForm().reloadValidation();
+      await appRef.whenStable();
+      expect(loader).toHaveBeenCalledTimes(2);
+
+      validationForm().value.set('updated');
+      await appRef.whenStable();
+      validationForm().reloadValidation();
+      await appRef.whenStable();
+      expect(loader).toHaveBeenCalledTimes(2);
+      expect(validationForm().pending()).toBe(true);
+
+      resolveDebounce();
+      await waitFor(() => {
+        throwUnless(loader).toHaveBeenCalledTimes(3);
+      });
+      await appRef.whenStable();
+      expect(loader).toHaveBeenCalledTimes(3);
+      expect(loader.calls.mostRecent().args[0].params).toBe('updated');
+      expect(validationForm().valid()).toBe(true);
+    });
   });
 
   describe('reloadValidation', () => {
