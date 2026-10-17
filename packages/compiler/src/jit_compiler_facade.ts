@@ -39,14 +39,7 @@ import {
   R3TemplateDependencyFacade,
 } from './compiler_facade_interface';
 import {ConstantPool} from './constant_pool';
-import {
-  ChangeDetectionStrategy,
-  HostBinding,
-  HostListener,
-  Input,
-  Output,
-  ViewEncapsulation,
-} from './core';
+import {HostBinding, HostListener, Input, Output, ViewEncapsulation} from './core';
 import {compileInjectable} from './injectable_compiler_2';
 import {LEGACY_OPTIONAL_CHAINING_DEFAULT} from './legacy_optional_chaining_default';
 import {
@@ -109,7 +102,7 @@ import {makeBindingParser, parseTemplate} from './render3/view/template';
 import {ResourceLoader} from './resource_loader';
 import {DomElementSchemaRegistry} from './schema/dom_element_schema_registry';
 import {compileService} from './service_compiler';
-import {getJitStandaloneDefaultForVersion} from './util';
+import {getJitChangeDetectionDefaultForVersion, getJitStandaloneDefaultForVersion} from './util';
 
 export class CompilerFacadeImpl implements CompilerFacade {
   FactoryTarget = FactoryTarget;
@@ -707,6 +700,8 @@ function convertDeclareComponentFacadeToMetadata(
       kind === R3TemplateDependencyKind.Directive || kind === R3TemplateDependencyKind.NgModule,
   );
 
+  const defaultCdStrategy = getJitChangeDetectionDefaultForVersion(decl.version);
+
   return {
     ...convertDeclareDirectiveFacadeToMetadata(decl, typeSourceSpan),
     template,
@@ -716,7 +711,7 @@ function convertDeclareComponentFacadeToMetadata(
       decl.viewProviders !== undefined ? new WrappedNodeExpr(decl.viewProviders) : null,
     animations: decl.animations !== undefined ? new WrappedNodeExpr(decl.animations) : null,
     defer,
-    changeDetection: decl.changeDetection ?? ChangeDetectionStrategy.OnPush,
+    changeDetection: decl.changeDetection ?? defaultCdStrategy,
     encapsulation: decl.encapsulation ?? ViewEncapsulation.Emulated,
     declarationListEmitMode: DeclarationListEmitMode.ClosureResolved,
     relativeContextFilePath: '',
