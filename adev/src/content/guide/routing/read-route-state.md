@@ -7,7 +7,7 @@ Angular Router allows you to read and use information associated with a route to
 `ActivatedRoute` is a service from `@angular/router` that provides all the information associated with the current route.
 
 ```angular-ts
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 
 @Component({
@@ -43,11 +43,12 @@ Route snapshots contain essential information about the route, including its par
 Here’s an example of how you’d access a route snapshot:
 
 ```angular-ts
-import {ActivatedRoute, ActivatedRouteSnapshot} from '@angular/router';
+import {Component, inject} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
 
 @Component(/* ... */)
 export class UserProfile {
-  readonly userId: string;
+  readonly userId: string | null;
   private route = inject(ActivatedRoute);
 
   constructor() {
@@ -138,6 +139,7 @@ You can access query parameters with `route.queryParams`.
 Here is an example of a `ProductList` that updates the query parameters that affect how it displays a list of products:
 
 ```angular-ts
+import {Component, inject} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({

@@ -304,7 +304,9 @@ export class CustomRouteReuseStrategy implements RouteReuseStrategy {
   private readonly handles = new Map<Route, DetachedRouteHandle>();
 
   store(route: ActivatedRouteSnapshot, handle: DetachedRouteHandle | null) {
-    this.handles.set(route.routeConfig!, handle);
+    if (handle) {
+      this.handles.set(route.routeConfig!, handle);
+    }
   }
 
   retrieveStoredRouteHandles(): DetachedRouteHandle[] {
