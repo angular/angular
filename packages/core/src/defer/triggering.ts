@@ -27,7 +27,7 @@ import {assertLContainer} from '../render3/assert';
 import {getComponentDef, getDirectiveDef, getPipeDef} from '../render3/def_getters';
 import {getTemplateLocationDetails} from '../render3/instructions/element_validation';
 import {handleUncaughtError} from '../render3/instructions/shared';
-import {DirectiveDefList, PipeDefList} from '../render3/interfaces/definition';
+import {DependencyType, DirectiveDefList, PipeDefList} from '../render3/interfaces/definition';
 import {TNode} from '../render3/interfaces/node';
 import {INJECTOR, LView, TView, TVIEW} from '../render3/interfaces/view';
 import {getCurrentTNode, getLView} from '../render3/state';
@@ -43,8 +43,11 @@ import {
   DEFER_BLOCK_STATE,
   DeferBlockState,
   DeferBlockTrigger,
+  DeferBlockDependencyLoader,
+  DeferDependenciesLoadResult,
   DeferDependenciesLoadingState,
   DehydratedDeferBlock,
+  DependencyResolverFn,
   HydrateTriggerDetails,
   LDeferBlockDetails,
   ON_COMPLETE_FNS,
@@ -218,35 +221,16 @@ export function triggerResourceLoading(
     return tDetails.loadingPromise;
   }
 
-  // Start downloading of defer block dependencies.
-  tDetails.loadingPromise = Promise.allSettled(dependenciesFn()).then((results) => {
-    let failed = false;
-    let failedReason: Error | null = null;
-    const directiveDefs: DirectiveDefList = [];
-    const pipeDefs: PipeDefList = [];
-
-    for (let i = 0; i < results.length; i++) {
-      const result = results[i];
-      if (result.status === 'fulfilled') {
-        const dependency = result.value;
-        const directiveDef = getComponentDef(dependency) || getDirectiveDef(dependency);
-        if (directiveDef) {
-          directiveDefs.push(directiveDef);
-        } else {
-          const pipeDef = getPipeDef(dependency);
-          if (pipeDef) {
-            pipeDefs.push(pipeDef);
-          }
-        }
-      } else {
-        failed = true;
-        failedReason =
-          result.reason instanceof Error ? result.reason : new Error(String(result.reason));
-        break;
-      }
-    }
-
-    if (failed) {
+  // Retry handlers run only in the browser. A handler may wait indefinitely,
+  // so running it on the server could delay serialization.
+  const retryLoadingFn =
+    typeof ngServerMode !== 'undefined' && ngServerMode ? null : tDetails.retryLoadingFn;
+  const loadingResult =
+    retryLoadingFn !== null && tDetails.maxRetryCount !== null
+      ? retryLoadingFn(dependenciesFn, injector, tDetails.maxRetryCount)
+      : loadDeferDependencies(dependenciesFn);
+  tDetails.loadingPromise = loadingResult.then((result) => {
+    if (result.dependencies === null) {
       tDetails.loadingState = DeferDependenciesLoadingState.FAILED;
 
       if (tDetails.errorTmplIndex === null) {
@@ -260,7 +244,8 @@ export function triggerResourceLoading(
             'Consider using the `@error` block to render an error state.';
 
           const depsFn = tDetails.dependencyResolverFn;
-          const errorReason = failedReason?.message;
+          const errorReason =
+            result.error instanceof Error ? result.error.message : String(result.error);
 
           if (depsFn) {
             errorMsg +=
@@ -279,6 +264,21 @@ export function triggerResourceLoading(
         handleUncaughtError(lView, error);
       }
     } else {
+      const directiveDefs: DirectiveDefList = [];
+      const pipeDefs: PipeDefList = [];
+
+      for (const dependency of result.dependencies) {
+        const directiveDef = getComponentDef(dependency) || getDirectiveDef(dependency);
+        if (directiveDef) {
+          directiveDefs.push(directiveDef);
+        } else {
+          const pipeDef = getPipeDef(dependency);
+          if (pipeDef) {
+            pipeDefs.push(pipeDef);
+          }
+        }
+      }
+
       tDetails.loadingState = DeferDependenciesLoadingState.COMPLETE;
 
       // Update directive and pipe registries to add newly downloaded dependencies.
@@ -310,6 +310,53 @@ export function triggerResourceLoading(
     tDetails.loadingPromise = null;
     removeTask();
   });
+}
+
+export type DeferDependency = ReturnType<DependencyResolverFn>[number];
+
+function loadDeferDependencies(
+  dependenciesFn: DependencyResolverFn,
+): Promise<DeferDependenciesLoadResult> {
+  let dependencies: DeferDependency[];
+  try {
+    dependencies = dependenciesFn();
+  } catch (error) {
+    return Promise.resolve({dependencies: null, error});
+  }
+
+  const loads = dependencies.map((dependency) =>
+    isDeferBlockDependencyLoader(dependency) ? invokeDeferDependencyLoader(dependency) : dependency,
+  );
+
+  return Promise.allSettled(loads).then((results) => {
+    const resolved: DependencyType[] = [];
+    for (const result of results) {
+      if (result.status === 'rejected') {
+        return {dependencies: null, error: result.reason};
+      }
+      resolved.push(result.value);
+    }
+    return {dependencies: resolved, error: null};
+  });
+}
+
+export function invokeDeferDependencyLoader(
+  loader: DeferBlockDependencyLoader,
+): Promise<DependencyType> {
+  return Promise.resolve()
+    .then(() => loader.load())
+    .then((module) => loader.resolve(module));
+}
+
+export function isDeferBlockDependencyLoader(
+  dependency: DeferDependency,
+): dependency is DeferBlockDependencyLoader {
+  if (typeof dependency !== 'object' || dependency === null) {
+    return false;
+  }
+
+  const loader = dependency as DeferBlockDependencyLoader;
+  return typeof loader.load === 'function' && typeof loader.resolve === 'function';
 }
 
 /**

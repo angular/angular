@@ -330,6 +330,7 @@ export class DeferredBlockError extends BlockNode implements Node {
     startSourceSpan: ParseSourceSpan,
     endSourceSpan: ParseSourceSpan | null,
     public i18n?: I18nMeta,
+    public retryCount: number | null = null,
   ) {
     super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
   }
