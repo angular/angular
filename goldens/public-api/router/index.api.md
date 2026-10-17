@@ -861,6 +861,7 @@ class RouterLink implements OnChanges, OnDestroy {
     // (undocumented)
     get replaceUrl(): boolean;
     set routerLink(commandsOrUrlTree: readonly any[] | string | UrlTree | null | undefined);
+    readonly scroll: i0.InputSignal<"after-transition" | "manual" | undefined>;
     set skipLocationChange(value: boolean);
     // (undocumented)
     get skipLocationChange(): boolean;
@@ -877,7 +878,7 @@ class RouterLink implements OnChanges, OnDestroy {
     // (undocumented)
     get urlTree(): UrlTree | null;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLink, "[routerLink]", never, { "target": { "alias": "target"; "required": false; }; "queryParams": { "alias": "queryParams"; "required": false; }; "fragment": { "alias": "fragment"; "required": false; }; "queryParamsHandling": { "alias": "queryParamsHandling"; "required": false; }; "state": { "alias": "state"; "required": false; }; "info": { "alias": "info"; "required": false; }; "relativeTo": { "alias": "relativeTo"; "required": false; }; "preserveFragment": { "alias": "preserveFragment"; "required": false; }; "skipLocationChange": { "alias": "skipLocationChange"; "required": false; }; "replaceUrl": { "alias": "replaceUrl"; "required": false; }; "browserUrl": { "alias": "browserUrl"; "required": false; "isSignal": true; }; "routerLink": { "alias": "routerLink"; "required": false; }; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLink, "[routerLink]", never, { "target": { "alias": "target"; "required": false; }; "queryParams": { "alias": "queryParams"; "required": false; }; "fragment": { "alias": "fragment"; "required": false; }; "queryParamsHandling": { "alias": "queryParamsHandling"; "required": false; }; "state": { "alias": "state"; "required": false; }; "info": { "alias": "info"; "required": false; }; "relativeTo": { "alias": "relativeTo"; "required": false; }; "preserveFragment": { "alias": "preserveFragment"; "required": false; }; "skipLocationChange": { "alias": "skipLocationChange"; "required": false; }; "replaceUrl": { "alias": "replaceUrl"; "required": false; }; "browserUrl": { "alias": "browserUrl"; "required": false; "isSignal": true; }; "scroll": { "alias": "scroll"; "required": false; "isSignal": true; }; "routerLink": { "alias": "routerLink"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<RouterLink, [null, null, { attribute: "tabindex"; }, null, null, null]>;
 }
