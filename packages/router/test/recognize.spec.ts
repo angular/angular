@@ -728,6 +728,26 @@ describe('recognize', () => {
         checkActivatedRoute(s.root.firstChild!.firstChild!, 'abc', {}, ComponentB, 'detail');
         expect(s.root.firstChild!.firstChild!.children.length).toBe(0);
       });
+
+      it('should match an empty-path named outlet with multiple children', async () => {
+        const s = await recognize(
+          [
+            {
+              path: '',
+              outlet: 'aux',
+              component: ComponentA,
+              children: [
+                {path: 'b', component: ComponentB},
+                {path: 'c', outlet: 'c', component: ComponentC},
+              ],
+            },
+          ],
+          '(aux:/(b//c:c))',
+        );
+        checkActivatedRoute(s.root.children[0], '', {}, ComponentA, 'aux');
+        checkActivatedRoute(s.root.children[0].children[0], 'b', {}, ComponentB);
+        checkActivatedRoute(s.root.children[0].children[1], 'c', {}, ComponentC, 'c');
+      });
     });
 
     describe('nested empty paths with outlets (issue 67708)', () => {
@@ -792,6 +812,171 @@ describe('recognize', () => {
         expect(secondaryRoute).toBeDefined();
         checkActivatedRoute(secondaryRoute!, '', {}, ComponentD, 'secondary');
         checkActivatedRoute(secondaryRoute!.firstChild!, 'component-copy', {}, ComponentA);
+      });
+
+      it('should match named outlet child when another named outlet empty path sibling exists', async () => {
+        const config = [
+          {
+            path: '',
+            component: ComponentA,
+            children: [
+              {
+                path: '',
+                component: ComponentB,
+                children: [{path: 'component', component: ComponentC}],
+              },
+              {
+                path: '',
+                outlet: 'secondary',
+                component: ComponentD,
+                children: [{path: 'component-copy', component: ComponentA}],
+              },
+              {
+                path: '',
+                outlet: 'tertiary',
+                component: ComponentE,
+              },
+            ],
+          },
+        ];
+
+        const s = await recognize(config, '(secondary:component-copy)');
+        checkActivatedRoute(s.root.firstChild!, '', {}, ComponentA);
+        const c = s.root.firstChild!.children;
+        const primaryRoute = c.find((r: any) => r.outlet === PRIMARY_OUTLET);
+        expect(primaryRoute).toBeDefined();
+        checkActivatedRoute(primaryRoute!, '', {}, ComponentB, PRIMARY_OUTLET);
+
+        const secondaryRoute = c.find((r: any) => r.outlet === 'secondary');
+        expect(secondaryRoute).toBeDefined();
+        checkActivatedRoute(secondaryRoute!, '', {}, ComponentD, 'secondary');
+        checkActivatedRoute(secondaryRoute!.firstChild!, 'component-copy', {}, ComponentA);
+
+        const tertiaryRoute = c.find((r: any) => r.outlet === 'tertiary');
+        expect(tertiaryRoute).toBeDefined();
+        checkActivatedRoute(tertiaryRoute!, '', {}, ComponentE, 'tertiary');
+      });
+
+      it('should match non-empty named outlet child alongside an empty-path named outlet sibling', async () => {
+        const config = [
+          {
+            path: '',
+            component: ComponentB,
+            children: [
+              {
+                path: 'main',
+                component: ComponentA,
+              },
+              {
+                path: 'foo',
+                outlet: 'secondary',
+                component: ComponentC,
+              },
+              {
+                path: '',
+                outlet: 'tertiary',
+                component: ComponentD,
+              },
+            ],
+          },
+        ];
+
+        const s1 = await recognize(config, '(secondary:foo)');
+        checkActivatedRoute(s1.root.firstChild!, '', {}, ComponentB);
+        expect(s1.root.firstChild!.children.length).toBe(2);
+        checkActivatedRoute(
+          s1.root.firstChild!.children.find((r) => r.outlet === 'secondary')!,
+          'foo',
+          {},
+          ComponentC,
+          'secondary',
+        );
+        checkActivatedRoute(
+          s1.root.firstChild!.children.find((r) => r.outlet === 'tertiary')!,
+          '',
+          {},
+          ComponentD,
+          'tertiary',
+        );
+
+        const s2 = await recognize(config, '(main//secondary:foo)');
+        checkActivatedRoute(s2.root.firstChild!, '', {}, ComponentB);
+        expect(s2.root.firstChild!.children.length).toBe(3);
+        checkActivatedRoute(
+          s2.root.firstChild!.children.find((r) => r.outlet === PRIMARY_OUTLET)!,
+          'main',
+          {},
+          ComponentA,
+        );
+        checkActivatedRoute(
+          s2.root.firstChild!.children.find((r) => r.outlet === 'secondary')!,
+          'foo',
+          {},
+          ComponentC,
+          'secondary',
+        );
+        checkActivatedRoute(
+          s2.root.firstChild!.children.find((r) => r.outlet === 'tertiary')!,
+          '',
+          {},
+          ComponentD,
+          'tertiary',
+        );
+      });
+
+      it('should match named outlet across multiple nested empty-path routes when empty-path named outlet siblings exist', async () => {
+        const config = [
+          {
+            path: '',
+            component: ComponentA,
+            children: [
+              {
+                path: '',
+                outlet: 'side1',
+                component: ComponentB,
+              },
+              {
+                path: '',
+                component: ComponentC,
+                children: [
+                  {
+                    path: 'b',
+                    outlet: 'b',
+                    component: ComponentD,
+                  },
+                  {
+                    path: '',
+                    outlet: 'side2',
+                    component: ComponentE,
+                  },
+                ],
+              },
+            ],
+          },
+        ];
+
+        const s = await recognize(config, '(b:b)');
+        checkActivatedRoute(s.root.firstChild!, '', {}, ComponentA);
+        expect(s.root.firstChild!.children.length).toBe(2);
+        const level2 = s.root.firstChild!.children.find((r) => r.outlet === PRIMARY_OUTLET)!;
+        const side1 = s.root.firstChild!.children.find((r) => r.outlet === 'side1')!;
+        checkActivatedRoute(side1, '', {}, ComponentB, 'side1');
+        checkActivatedRoute(level2, '', {}, ComponentC, PRIMARY_OUTLET);
+        expect(level2.children.length).toBe(2);
+        checkActivatedRoute(
+          level2.children.find((r) => r.outlet === 'b')!,
+          'b',
+          {},
+          ComponentD,
+          'b',
+        );
+        checkActivatedRoute(
+          level2.children.find((r) => r.outlet === 'side2')!,
+          '',
+          {},
+          ComponentE,
+          'side2',
+        );
       });
     });
   });
