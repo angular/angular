@@ -974,6 +974,8 @@ function lookupTokenUsingEmbeddedInjector<T>(
 ) {
   let currentTNode: TDirectiveHostNode | null = tNode;
   let currentLView: LView | null = lView;
+  const hostTElementNode: TNode | null =
+    flags & InternalInjectFlags.Host ? lView[DECLARATION_COMPONENT_VIEW][T_HOST] : null;
 
   // When an LView with an embedded view injector is inserted, it'll likely be interlaced with
   // nodes who may have injectors (e.g. node injector -> embedded view injector -> node injector).
@@ -1006,6 +1008,11 @@ function lookupTokenUsingEmbeddedInjector<T>(
     // The injector of the node we started from has been checked at this point, so everything
     // we look at from here on is a parent and must not be skipped by the `SkipSelf` flag.
     flags &= ~InternalInjectFlags.SkipSelf;
+
+    // If @Host is set and we reached the host element node, we must not search any parent.
+    if (flags & InternalInjectFlags.Host && currentTNode === hostTElementNode) {
+      return notFoundValue;
+    }
 
     // Has an explicit type due to a TS bug: https://github.com/microsoft/TypeScript/issues/33191
     let parentTNode: TElementNode | TContainerNode | null = currentTNode.parent;
