@@ -901,22 +901,19 @@ export type FieldValidator<TValue, TPathKind extends PathKind = PathKind.Root> =
 >;
 
 /**
- * A function that takes the `FieldContext` for the field being validated and returns a promise
+ * A function that takes the current value of the field being validated and returns a promise
  * that resolves to a `ValidationResult` indicating errors for the field.
  *
  * @template TValue The type of value stored in the field being validated
- * @template TPathKind The kind of path being validated (root field, child field, or item of an array)
  *
  * @see [Custom validation rules](guide/forms/signals/validation#using-validatepromise)
  *
  * @category validation
  * @publicApi 22.2
  */
-export type FieldValidatorPromise<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<
-  TValue,
-  Promise<ValidationResult<ValidationError.WithoutFieldTree>>,
-  TPathKind
->;
+export type FieldValidatorPromise<TValue> = (
+  value: TValue,
+) => Promise<ValidationResult<ValidationError.WithoutFieldTree>>;
 
 /**
  * A function that takes the `FieldContext` for the field being validated and returns a

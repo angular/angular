@@ -443,7 +443,7 @@ While built-in validation rules handle common cases, you'll often need custom va
 
 ### Using validate()
 
-The `validate()` function creates custom validation rules. It receives a validator function that accesses the field context and returns:
+The `validate()` function creates custom validation rules. It receives a validator function that receives the field's current value and returns:
 
 | Return Value          | Meaning          |
 | --------------------- | ---------------- |
@@ -502,7 +502,7 @@ Return an error object with `kind` and `message` when validation fails. Return `
 
 ### Using validatePromise()
 
-The `validatePromise()` function creates custom asynchronous validation rules. It receives a validator function that accesses the field context and returns a `Promise` resolving to:
+The `validatePromise()` function creates custom asynchronous validation rules. It receives a validator function that receives the field's current value and returns a `Promise` resolving to:
 
 | Return Value          | Meaning          |
 | --------------------- | ---------------- |
@@ -511,7 +511,7 @@ The `validatePromise()` function creates custom asynchronous validation rules. I
 
 ```angular-ts
 import {Component, inject, signal} from '@angular/core';
-import {FieldContext, form, FormField, validatePromise} from '@angular/forms/signals';
+import {form, FormField, validatePromise} from '@angular/forms/signals';
 import {UserService} from './user.service';
 
 @Component({/* ... */})
@@ -521,11 +521,10 @@ export class UsernameFormComponent {
   usernameModel = signal({username: ''});
 
   usernameForm = form(this.usernameModel, (schemaPath) => {
-    validatePromise(schemaPath.username, (ctx) => this.validateUsername(ctx));
+    validatePromise(schemaPath.username, (username) => this.validateUsername(username));
   });
 
-  private async validateUsername({value}: FieldContext<string>) {
-    const username = value();
+  private async validateUsername(username: string) {
     const available = await this.userService.checkUsernameAvailability(username);
 
     if (!available) {
@@ -540,17 +539,17 @@ export class UsernameFormComponent {
 }
 ```
 
-The validator function receives the same `FieldContext` object as synchronous `validate()`.
+The validator function receives only the field's value, so the async operation re-runs exactly when the value changes. If you need the field context (for example, to read sibling fields), use [`validateAsync()`](guide/forms/signals/async-operations#custom-async-validation-with-validateasync).
 
 NOTE: For advanced async validation and complex scenarios requiring execution delays, conditional checks, unhandled error fallbacks, or direct access to Angular's `resource()` primitive, see the [Custom async validation with validateAsync() guide](guide/forms/signals/async-operations#custom-async-validation-with-validateasync).
 
 #### Optional Configuration Options
 
-| **Config Option** | **Type**                  | **Description**                                                                                                        |
-| ----------------- | ------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `debounce`        | `number \| DebounceTimer` | Duration in milliseconds to wait before triggering the async operation, or a function returning a timing promise.      |
-| `when`            | `LogicFn`                 | A function that receives the field context and returns `true` if the async validation should run.                      |
-| `onError`         | `Function`                | A handler for errors thrown by the validator. Defaults to an `{ kind: 'asyncError', message: ... }` object if omitted. |
+| **Config Option** | **Type**                  | **Description**                                                                                                                                                                |
+| ----------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `debounce`        | `number \| DebounceTimer` | Duration in milliseconds to wait before triggering the async operation, or a function returning a timing promise. A function receives the new value and the previous snapshot. |
+| `when`            | `LogicFn`                 | A function that receives the field context and returns `true` if the async validation should run.                                                                              |
+| `onError`         | `Function`                | A handler for errors thrown by the validator. Defaults to an `{ kind: 'asyncError', message: ... }` object if omitted.                                                         |
 
 ### Using validateTree()
 
