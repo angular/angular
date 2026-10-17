@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {Component} from '@angular/core';
+import {Component, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {Router, RouterLink, RouterLinkActive, provideRouter} from '../index';
 
@@ -38,6 +38,48 @@ describe('RouterLinkActive', () => {
     await TestBed.inject(Router).navigateByUrl('/abc');
     await fixture.whenStable();
     expect(Array.from(fixture.nativeElement.querySelector('a').classList)).toEqual([]);
+  });
+
+  it('removes the active class when routerLinkActive changes to null', async () => {
+    @Component({
+      imports: [RouterLinkActive, RouterLink],
+      template: '<a [routerLinkActive]="activeClass()" routerLink="/abc"></a>',
+    })
+    class MyCmp {
+      activeClass = signal<string | null>('active');
+    }
+
+    TestBed.configureTestingModule({providers: [provideRouter([{path: '**', children: []}])]});
+    const fixture = TestBed.createComponent(MyCmp);
+    fixture.autoDetectChanges();
+    await TestBed.inject(Router).navigateByUrl('/abc');
+    await fixture.whenStable();
+    const link = fixture.nativeElement.querySelector('a');
+    expect(Array.from(link.classList)).toEqual(['active']);
+
+    fixture.componentInstance.activeClass.set(null);
+    await fixture.whenStable();
+    expect(Array.from(link.classList)).toEqual([]);
+  });
+
+  it('replaces the active classes when routerLinkActive changes', async () => {
+    @Component({
+      imports: [RouterLinkActive, RouterLink],
+      template: '<a [routerLinkActive]="activeClass()" routerLink="/abc"></a>',
+    })
+    class MyCmp {
+      activeClass = signal('active');
+    }
+
+    TestBed.configureTestingModule({providers: [provideRouter([{path: '**', children: []}])]});
+    const fixture = TestBed.createComponent(MyCmp);
+    fixture.autoDetectChanges();
+    await TestBed.inject(Router).navigateByUrl('/abc');
+    await fixture.whenStable();
+
+    fixture.componentInstance.activeClass.set('selected');
+    await fixture.whenStable();
+    expect(Array.from(fixture.nativeElement.querySelector('a').classList)).toEqual(['selected']);
   });
 
   it('accepts undefined for routerLinkActive and applies no classes', async () => {
