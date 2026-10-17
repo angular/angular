@@ -63,10 +63,10 @@ export class LocalizeSimpleCmp {
         /**
          * @suppress {msgDescriptions}
          */
-        const MSG_EXTERNAL_4584092443788135411$$_APP_COMPONENT_TS_0 =
+        const MSG_EXTERNAL_4584092443788135411$$APP_COMPONENT_TS_0 =
           /* @ts-ignore */
           goog.getMsg('Hello World');
-        i18n_0 = MSG_EXTERNAL_4584092443788135411$$_APP_COMPONENT_TS_0;
+        i18n_0 = MSG_EXTERNAL_4584092443788135411$$APP_COMPONENT_TS_0;
       } else {
         /* @ts-ignore */
         i18n_0 = $localize`Hello World`;
@@ -77,10 +77,10 @@ export class LocalizeSimpleCmp {
          * @desc Header description
          * @meaning site header
          */
-        const MSG_EXTERNAL_customHeaderId$$_APP_COMPONENT_TS_1 =
+        const MSG_EXTERNAL_customHeaderId$$APP_COMPONENT_TS_1 =
           /* @ts-ignore */
           goog.getMsg('Welcome');
-        i18n_1 = MSG_EXTERNAL_customHeaderId$$_APP_COMPONENT_TS_1;
+        i18n_1 = MSG_EXTERNAL_customHeaderId$$APP_COMPONENT_TS_1;
       } else {
         /* @ts-ignore */
         i18n_1 = $localize`:site header|Header description@@customHeaderId:Welcome`;
@@ -163,14 +163,14 @@ export class LocalizeInterpolationCmp {
          * @desc Greeting to user
          * @meaning greeting
          */
-        const MSG_EXTERNAL_greetUser$$_APP_COMPONENT_TS_2 =
+        const MSG_EXTERNAL_greetUser$$APP_COMPONENT_TS_2 =
           /* @ts-ignore */
           goog.getMsg(
             'Hello, {$interpolation}!',
             { 'interpolation': '�0�' },
             { original_code: { 'interpolation': '{{ name }}' } },
           );
-        i18n_2 = MSG_EXTERNAL_greetUser$$_APP_COMPONENT_TS_2;
+        i18n_2 = MSG_EXTERNAL_greetUser$$APP_COMPONENT_TS_2;
       } else {
         /* @ts-ignore */
         i18n_2 = $localize`:greeting|Greeting to user@@greetUser:Hello, ${'�0�'}:INTERPOLATION:!`;
@@ -180,14 +180,14 @@ export class LocalizeInterpolationCmp {
         /**
          * @suppress {msgDescriptions}
          */
-        const MSG_EXTERNAL_8312755678848814973$$_APP_COMPONENT_TS_3 =
+        const MSG_EXTERNAL_8312755678848814973$$APP_COMPONENT_TS_3 =
           /* @ts-ignore */
           goog.getMsg(
             'You have {$interpolation} new notifications.',
             { 'interpolation': '�0�' },
             { original_code: { 'interpolation': '{{ count }}' } },
           );
-        i18n_3 = MSG_EXTERNAL_8312755678848814973$$_APP_COMPONENT_TS_3;
+        i18n_3 = MSG_EXTERNAL_8312755678848814973$$APP_COMPONENT_TS_3;
       } else {
         /* @ts-ignore */
         i18n_3 = $localize`You have ${'�0�'}:INTERPOLATION: new notifications.`;
@@ -276,10 +276,10 @@ export class LocalizeAttributesCmp {
          * @desc Description for tooltip
          * @meaning input tooltip
          */
-        const MSG_EXTERNAL_inputTitleId$$_APP_COMPONENT_TS_4 =
+        const MSG_EXTERNAL_inputTitleId$$APP_COMPONENT_TS_4 =
           /* @ts-ignore */
           goog.getMsg('Username input');
-        i18n_4 = MSG_EXTERNAL_inputTitleId$$_APP_COMPONENT_TS_4;
+        i18n_4 = MSG_EXTERNAL_inputTitleId$$APP_COMPONENT_TS_4;
       } else {
         /* @ts-ignore */
         i18n_4 = $localize`:input tooltip|Description for tooltip@@inputTitleId:Username input`;
