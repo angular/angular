@@ -745,6 +745,8 @@ pub struct PipeData {
     /// The `standalone` property's value expression span, present whenever the property is.
     pub standalone_span: Option<oxc_span::Span>,
     pub args_span: Option<oxc_span::Span>,
+    /// The metadata object literal span, present when an object literal was passed.
+    pub metadata_span: Option<oxc_span::Span>,
     /// Weak `@Injectable` accompanying this pipe.
     pub injectable: Option<InjectableData>,
     /// Weak `@Service` accompanying this pipe.
@@ -1928,7 +1930,7 @@ impl ClassData {
         converter: &crate::utils::Utf8ToUtf16,
         diagnostics: &mut Vec<crate::NgDiagnostic>,
     ) {
-        let Some(args_span) = p.args_span else {
+        let Some(metadata_span) = p.metadata_span else {
             return;
         };
 
@@ -1943,7 +1945,7 @@ impl ClassData {
                 file_path,
                 converter,
                 "2002",
-                args_span,
+                metadata_span,
                 "@Pipe decorator is missing name field".to_string(),
             );
         } else if p.name.as_ref().and_then(Resolved::get_optional).is_none() {
@@ -1952,7 +1954,7 @@ impl ClassData {
                 file_path,
                 converter,
                 "1010",
-                p.name_span.unwrap_or(args_span),
+                p.name_span.unwrap_or(metadata_span),
                 "@Pipe.name must be a string".to_string(),
             );
         }
