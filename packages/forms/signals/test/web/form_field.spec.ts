@@ -177,8 +177,8 @@ describe('field directive', () => {
       })
       class TestCmp {
         readonly f = form(signal('VALID'), (p) => {
-          validatePromise(p, async ({value}) => {
-            return value() === 'VALID' ? null : [{kind: 'custom'}];
+          validatePromise(p, async (value) => {
+            return value === 'VALID' ? null : [{kind: 'custom'}];
           });
         });
       }
