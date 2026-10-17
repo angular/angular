@@ -87,16 +87,20 @@ export function cvaControlCreate(
   });
 
   return () => {
+    const cva = parent.controlValueAccessor!;
     const fieldState = parent.state();
     const controlValue = fieldState.controlValue();
 
     if (bindingUpdated(bindings, 'controlValue', controlValue)) {
       // We don't know if the interop control has underlying signals, so we must use `untracked` to
       // prevent writing to a signal in a reactive context.
-      untracked(() => parent.controlValueAccessor!.writeValue(controlValue));
+      untracked(() => cva.writeValue(controlValue));
     }
 
     for (const name of CONTROL_BINDING_NAMES) {
+      if (host.hasExplicitInputBinding(name, cva)) {
+        continue;
+      }
       const value = readFieldStateBindingValue(fieldState, name);
       if (bindingUpdated(bindings, name, value)) {
         const propertyWasSet = host.setInputOnDirectives(
@@ -105,8 +109,8 @@ export function cvaControlCreate(
           name === 'name' ? isDefinedPredicate : undefined,
         );
 
-        if (name === 'disabled' && parent.controlValueAccessor!.setDisabledState) {
-          untracked(() => parent.controlValueAccessor!.setDisabledState!(value as boolean));
+        if (name === 'disabled' && cva.setDisabledState) {
+          untracked(() => cva.setDisabledState!(value as boolean));
         } else if (!propertyWasSet && parent.elementAcceptsNativeProperty(name)) {
           // Fall back to native DOM properties.
           setNativeDomProperty(

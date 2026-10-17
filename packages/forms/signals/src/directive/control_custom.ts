@@ -37,6 +37,9 @@ export function customControlCreate(
 
     // Bind remaining field state properties.
     for (const name of CONTROL_BINDING_NAMES) {
+      if (host.hasExplicitInputBinding(name)) {
+        continue;
+      }
       let value: unknown;
       if (name === 'errors') {
         value = parent.errors();

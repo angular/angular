@@ -143,6 +143,8 @@ IMPORTANT: Controls implementing `FormCheckboxControl` must NOT have a `value` p
 
 Both `FormValueControl` and `FormCheckboxControl` extend `FormUiControl` - a base interface that provides optional properties for integrating with form state.
 
+The `min`, `max`, `minLength`, and `maxLength` members of `FormUiControl` are deprecated. Angular recognizes these inputs by their public names, not by the TypeScript interface. Declare them on your component with independent input types, and replace type references such as `FormUiControl<T>['min']` with your declared input type.
+
 All properties are optional. Implement only what your control needs.
 
 #### Interaction state
@@ -181,14 +183,14 @@ NOTE: `disabledReasons` is an array of `DisabledReason` objects. Each object has
 
 Receive validation constraint values from the form:
 
-| Property    | Purpose                                              |
-| ----------- | ---------------------------------------------------- |
-| `required`  | Whether the field is required                        |
-| `min`       | Minimum numeric value (`undefined` if no constraint) |
-| `max`       | Maximum numeric value (`undefined` if no constraint) |
-| `minLength` | Minimum string length (undefined if no constraint)   |
-| `maxLength` | Maximum string length (undefined if no constraint)   |
-| `pattern`   | Array of regular expression patterns to match        |
+| Property    | Purpose                                             |
+| ----------- | --------------------------------------------------- |
+| `required`  | Whether the field is required                       |
+| `min`       | Minimum numeric value (deprecated interface member) |
+| `max`       | Maximum numeric value (deprecated interface member) |
+| `minLength` | Minimum string length (deprecated interface member) |
+| `maxLength` | Maximum string length (deprecated interface member) |
+| `pattern`   | Array of regular expression patterns to match       |
 
 #### Field metadata
 
@@ -491,6 +493,27 @@ export class NumberInput implements FormValueControl<number> {
 ```
 
 When you add `min()` and `max()` validation rules to the schema, the FormField directive passes these values to your control. Use them to apply HTML5 attributes or show constraint hints in your template.
+
+Some controls, including existing `ControlValueAccessor` components, use `min`, `max`, `minLength`,
+or `maxLength` for other settings, such as the ends of a slider's scale or the duration of a date
+range. Without a corresponding schema constraint, `FormField` leaves these inputs at the control's
+defaults. If the schema does define one of these constraints, bind the corresponding input
+explicitly to keep it under the control's ownership:
+
+```html
+<range-control [formField]="form.range" [min]="0" [max]="100" />
+```
+
+The form schema still validates the field. An explicit binding prevents that constraint from being
+written to the custom control (or its underlying native element); defined constraints without
+explicit bindings and other form state, including `required`, remain bound normally.
+
+When a constraint is not explicitly bound on the control, Signal Forms forwards the schema value
+to a matching input without checking its TypeScript type against the schema. The constraint can
+change or become `undefined` if a conditional validation rule stops applying. For these inputs,
+accept `undefined` when necessary, or explicitly bind a control-owned value so it is not
+overwritten. For inputs declared with `input.required()`, ensure they receive a value before they
+are read; a form schema without a matching constraint does not initialize them.
 
 IMPORTANT: Don't implement validation logic in your control. Define validation rules in the form schema and let your control display the results:
 
