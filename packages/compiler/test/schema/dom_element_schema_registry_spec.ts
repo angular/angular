@@ -49,6 +49,9 @@ describe('DOMElementSchema', () => {
     expect(registry.hasProperty('button', 'popoverTargetElement', [])).toBeTruthy();
     expect(registry.hasProperty('input', 'popoverTargetAction', [])).toBeTruthy();
     expect(registry.hasProperty('input', 'popoverTargetElement', [])).toBeTruthy();
+    expect(registry.hasProperty('img', 'fetchPriority', [])).toBeTruthy();
+    expect(registry.hasProperty('link', 'fetchPriority', [])).toBeTruthy();
+    expect(registry.hasProperty('script', 'fetchPriority', [])).toBeTruthy();
     expect(registry.hasProperty('h1', 'align', [])).toBeTruthy();
     expect(registry.hasProperty('h2', 'align', [])).toBeTruthy();
     expect(registry.hasProperty('h3', 'align', [])).toBeTruthy();
