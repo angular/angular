@@ -5484,6 +5484,91 @@ describe('di', () => {
       expect(fixture.componentInstance.menu.tokenValue).toBeNull();
     });
 
+    it('should respect @Host when resolving tokens in a child component inside an embedded view with custom injector', async () => {
+      @Directive({
+        selector: '[innerDir]',
+      })
+      class InnerDirective {
+        constructor(@Inject(token) @Host() @Optional() public tokenValue: string | null) {}
+      }
+
+      @Component({
+        selector: 'child-comp',
+        template: '<div innerDir></div>',
+        imports: [InnerDirective],
+      })
+      class ChildComp {
+        @ViewChild(InnerDirective) innerDir!: InnerDirective;
+      }
+
+      @Component({
+        template: `
+          <menu-trigger [triggerFor]="menuTemplate" />
+          <ng-template #menuTemplate>
+            <child-comp />
+          </ng-template>
+        `,
+        providers: [{provide: token, useValue: 'outer-value'}],
+        imports: [MenuTrigger, ChildComp],
+      })
+      class App {
+        @ViewChild(MenuTrigger) trigger!: MenuTrigger;
+        @ViewChild(ChildComp) childComp!: ChildComp;
+      }
+
+      const fixture = TestBed.createComponent(App);
+      await fixture.whenStable();
+
+      const injector = Injector.create({providers: [], parent: fixture.debugElement.injector});
+      fixture.componentInstance.trigger.open(injector);
+      await fixture.whenStable();
+
+      expect(fixture.componentInstance.childComp.innerDir.tokenValue).toBeNull();
+    });
+
+    it('should allow child component in embedded view with custom injector to resolve @Host token from its own viewProviders', async () => {
+      @Directive({
+        selector: '[innerDir]',
+      })
+      class InnerDirective {
+        constructor(@Inject(token) @Host() @Optional() public tokenValue: string | null) {}
+      }
+
+      @Component({
+        selector: 'child-comp',
+        template: '<div innerDir></div>',
+        viewProviders: [{provide: token, useValue: 'child-view-value'}],
+        imports: [InnerDirective],
+      })
+      class ChildComp {
+        @ViewChild(InnerDirective) innerDir!: InnerDirective;
+      }
+
+      @Component({
+        template: `
+          <menu-trigger [triggerFor]="menuTemplate" />
+          <ng-template #menuTemplate>
+            <child-comp />
+          </ng-template>
+        `,
+        providers: [{provide: token, useValue: 'outer-value'}],
+        imports: [MenuTrigger, ChildComp],
+      })
+      class App {
+        @ViewChild(MenuTrigger) trigger!: MenuTrigger;
+        @ViewChild(ChildComp) childComp!: ChildComp;
+      }
+
+      const fixture = TestBed.createComponent(App);
+      await fixture.whenStable();
+
+      const injector = Injector.create({providers: [], parent: fixture.debugElement.injector});
+      fixture.componentInstance.trigger.open(injector);
+      await fixture.whenStable();
+
+      expect(fixture.componentInstance.childComp.innerDir.tokenValue).toBe('child-view-value');
+    });
+
     it('should be able to provide an injection token to a nested template through a custom injector', () => {
       @Directive({
         selector: 'menu',
