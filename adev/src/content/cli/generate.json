@@ -741,7 +741,7 @@
           "name": "entry-file",
           "type": "string",
           "default": "public-api",
-          "description": "The path to the library's public API file, relative to the workspace root. This file defines what parts of the library are accessible to applications that import it."
+          "description": "The name of the library's public API file, without the `.ts` extension, created in the library's `src` directory. This file defines what parts of the library are accessible to applications that import it."
         },
         {
           "name": "name",
