@@ -6,11 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {escapeRegExp} from '@angular/compiler';
-import {
-  isNgpTestMode,
-  normalizeNgpEmitForComparison,
-  stripRedundantClarifyingParens,
-} from '../../../src/ngtsc/testing';
+import {isNgpTestMode, normalizeNgpEmitForComparison} from '../../../src/ngtsc/testing';
 
 const IDENTIFIER = /[A-Za-z_$ɵ][A-Za-z0-9_$]*/;
 const COMMENT_START = /\/\*/;
@@ -18,12 +14,37 @@ const COMMENT_END = /\*\//;
 const OPERATOR =
   /!|\?|%|\*|\/|\^|&&?|\|\|?|\(|\)|\{|\}|\[|\]|:|;|<=?|>=?|={1,3}|!==?|=>|\+\+?|--?|@|,|\.|\.\.\.|\\`|\\'/;
 const STRING = /'(\\'|[^'])*'|"(\\"|[^"])*"/;
-const INLINE_BACKTICK_STRING = /`(?:[\s\S]|(?:\$\{[^}]*?\}))*?[^\\]`/;
+const INLINE_BACKTICK_STRING = /`(?:\\[\s\S]|\$\{[^}]*?\}|[^\\`])*`/;
 const SINGLE_BACKTICK_STRING = new RegExp('^' + INLINE_BACKTICK_STRING.source);
 const BACKTICK_INTERPOLATION = /(\$\{[^}]*\})/;
 const NUMBER = /\d+/;
 
+const COMMENT_OR_STRING =
+  /\/\*[\s\S]*?\*\/|`(?:\\[\s\S]|\$\{[^}]*?\}|[^\\`])*`|"(?:\\[\s\S]|[^\\"])*"|'(?:\\[\s\S]|[^\\'])*'|(\/\/[^\n]*)/g;
+
 const ELLIPSIS = '…';
+
+function stripLineComments(code: string, convertEllipsisComment = false): string {
+  return code.replace(COMMENT_OR_STRING, (match, lineComment: string | undefined) => {
+    if (!lineComment) {
+      return match;
+    }
+    return convertEllipsisComment && /^\/\/\s*\.\.\./.test(lineComment) ? ELLIPSIS : '';
+  });
+}
+
+function transformOutsideStringsAndComments(
+  code: string,
+  transform: (segment: string) => string,
+): string {
+  let out = '';
+  let last = 0;
+  for (const match of code.matchAll(COMMENT_OR_STRING)) {
+    out += transform(code.slice(last, match.index!)) + match[0];
+    last = match.index! + match[0].length;
+  }
+  return out + transform(code.slice(last));
+}
 const TOKEN = new RegExp(
   `\\s*((${COMMENT_START.source})|(${COMMENT_END.source})|(${IDENTIFIER.source})|(${INLINE_BACKTICK_STRING.source})|(${OPERATOR.source})|(${STRING.source})|${NUMBER.source}|${ELLIPSIS})\\s*`,
   'y',
@@ -116,43 +137,121 @@ const BLUE = '\x1b[36m';
 const RED = '\x1b[31m';
 const GREEN = '\x1b[32m';
 
+export interface ExpectEmitOptions {
+  isLinkedCompilation?: boolean;
+  isNgpCompilation?: boolean;
+  allowPartial?: boolean;
+}
+
 export function expectEmit(
   source: string,
   expected: string,
   description: string,
   assertIdentifiers?: {[name: string]: RegExp},
+  options?: ExpectEmitOptions,
 ) {
-  if (isNgpTestMode()) {
-    source = normalizeNgpEmitForComparison(stripRedundantClarifyingParens(source));
+  const isNgpMode = isNgpTestMode() || Boolean(options?.isNgpCompilation);
+  const allowPartial = Boolean(options?.allowPartial);
+  if (isNgpMode) {
+    source = normalizeNgpEmitForComparison(source);
     expected = normalizeNgpEmitForComparison(expected);
   }
-  expected = expected
-    // turns `// ...` into `…`
-    .replace(/\/\/\s*\.\.\./g, ELLIPSIS)
-    // remove `// TODO` comment lines
-    .replace(/\/\/\s*TODO.*?\n/g, '')
-    // remove `// NOTE` comment lines
-    .replace(/\/\/\s*NOTE.*?\n/g, '');
+  if (options?.isLinkedCompilation) {
+    // Partial declaration linking does not emit `ɵsetClassDebugInfo` or `ɵɵsetNgModuleScope`
+    // side-effect calls, and generates Closure message constants from the linked `.js` path
+    // rather than the original `.ts` path + external hash.
+    expected = expected
+      .replace(
+        /(?:\(\(\)\s*=>|\(function\s*\(\))\s*\{\s*\(typeof\s+ngDevMode\s*===\s*(['"])undefined\1\s*\|\|\s*ngDevMode\)\s*&&\s*i0\.ɵsetClassDebugInfo\([\s\S]*?\}\)\(\);\s*/g,
+        '',
+      )
+      .replace(
+        /(?:\(\(\)\s*=>|\(function\s*\(\))\s*\{\s*\(typeof\s+ngJitMode\s*===\s*(['"])undefined\1\s*\|\|\s*ngJitMode\)\s*&&\s*i0\.ɵɵsetNgModuleScope\([\s\S]*?\}\)\(\);\s*/g,
+        '',
+      );
+    const normalizeLinkedTokens = (segment: string) =>
+      segment.replace(
+        /\bMSG_(?:EXTERNAL_[A-Za-z0-9_$.]+?\$\$)?(?:_BUILT_)?([A-Za-z0-9_$]+?)_(?:TS|JS)_(\d+)\b/g,
+        'MSG_$1_$2',
+      );
+    source = transformOutsideStringsAndComments(source, normalizeLinkedTokens).replace(
+      /\/\*\s*@ts-ignore\s*\*\/\s*/g,
+      '',
+    );
+    expected = transformOutsideStringsAndComments(expected, normalizeLinkedTokens).replace(
+      /\/\*\s*@ts-ignore\s*\*\/\s*/g,
+      '',
+    );
+  }
+  source = stripLineComments(source);
+  expected = stripLineComments(expected, true);
 
   const pieces = tokenize(expected);
+  const endsWithSkip = pieces[pieces.length - 1] === SKIP;
 
-  // Group pieces into chunks separated by SKIP.
-  const chunks: {pieces: (string | RegExp)[]; skipBefore: boolean}[] = [];
+  const MAX_CHUNK_PIECES = 500;
+  const MAX_PIECE_LENGTH = 4000;
+  // Group pieces into chunks separated by SKIP (and sub-chunk very large piece arrays or
+  // giant string literals to stay within V8's RegExp size limit).
+  const chunks: {
+    pieces: (string | RegExp)[];
+    skipBefore: boolean;
+    leadingWhitespace: boolean;
+  }[] = [];
   let currentChunk: (string | RegExp)[] = [];
   let hasSkip = false;
   for (const piece of pieces) {
     if (piece === SKIP) {
       if (currentChunk.length > 0 || hasSkip) {
-        chunks.push({pieces: currentChunk, skipBefore: hasSkip});
+        chunks.push({
+          pieces: currentChunk,
+          skipBefore: hasSkip,
+          leadingWhitespace: (chunks.length > 0 || !allowPartial) && !hasSkip,
+        });
       }
       hasSkip = true;
       currentChunk = [];
+    } else if (typeof piece === 'string' && piece.length > MAX_PIECE_LENGTH) {
+      if (currentChunk.length > 0) {
+        chunks.push({
+          pieces: currentChunk,
+          skipBefore: hasSkip,
+          leadingWhitespace: (chunks.length > 0 || !allowPartial) && !hasSkip,
+        });
+        hasSkip = false;
+        currentChunk = [];
+      }
+      for (let offset = 0; offset < piece.length; offset += MAX_PIECE_LENGTH) {
+        const slice = piece.slice(offset, offset + MAX_PIECE_LENGTH);
+        const isFirstSlice = offset === 0;
+        chunks.push({
+          pieces: [slice],
+          skipBefore: isFirstSlice ? hasSkip : false,
+          leadingWhitespace: isFirstSlice
+            ? (chunks.length > 0 || !allowPartial) && !hasSkip
+            : false,
+        });
+      }
+      hasSkip = false;
     } else {
       currentChunk.push(piece);
+      if (currentChunk.length >= MAX_CHUNK_PIECES) {
+        chunks.push({
+          pieces: currentChunk,
+          skipBefore: hasSkip,
+          leadingWhitespace: (chunks.length > 0 || !allowPartial) && !hasSkip,
+        });
+        hasSkip = false;
+        currentChunk = [];
+      }
     }
   }
   if (currentChunk.length > 0 || chunks.length === 0) {
-    chunks.push({pieces: currentChunk, skipBefore: hasSkip});
+    chunks.push({
+      pieces: currentChunk,
+      skipBefore: hasSkip,
+      leadingWhitespace: (chunks.length > 0 || !allowPartial) && !hasSkip,
+    });
   }
 
   const extractedGroups = new Map<string, string>();
@@ -162,7 +261,14 @@ export function expectEmit(
     const chunk = chunks[i];
     if (chunk.pieces.length === 0) continue;
 
-    const {regexp, newGroups} = buildChunkMatcher(chunk.pieces, extractedGroups, 'g');
+    const contiguous = (i > 0 || !allowPartial) && !chunk.skipBefore;
+    const flag = contiguous ? 'y' : 'g';
+    const {regexp, newGroups} = buildChunkMatcher(
+      chunk.pieces,
+      extractedGroups,
+      flag,
+      chunk.leadingWhitespace,
+    );
     regexp.lastIndex = lastIndex;
 
     let m = regexp.exec(source);
@@ -171,7 +277,12 @@ export function expectEmit(
       let errLast = lastIndex;
       for (let j = 1; j <= chunk.pieces.length; j++) {
         const subPieces = chunk.pieces.slice(0, j);
-        const {regexp: subRegexp} = buildChunkMatcher(subPieces, extractedGroups, 'g');
+        const {regexp: subRegexp} = buildChunkMatcher(
+          subPieces,
+          extractedGroups,
+          flag,
+          chunk.leadingWhitespace,
+        );
         subRegexp.lastIndex = lastIndex;
 
         let subMatch = subRegexp.exec(source);
@@ -208,6 +319,15 @@ export function expectEmit(
     lastIndex = m.index + m[0].length;
   }
 
+  if (!allowPartial && !endsWithSkip && source.slice(lastIndex).trim() !== '') {
+    throw new Error(
+      `${RED}${description}:\n${RESET}${BLUE}Unexpected trailing content at end of generated file:${RESET}\n\n` +
+        `${source.slice(0, lastIndex)}` +
+        `${RED}[[[ <<<<---HERE expected end of file ]]]${RESET}` +
+        `${source.slice(lastIndex)}`,
+    );
+  }
+
   if (assertIdentifiers) {
     const ids = Object.keys(assertIdentifiers);
     for (let i = 0; i < ids.length; i++) {
@@ -239,9 +359,10 @@ function buildChunkMatcher(
   pieces: (string | RegExp)[],
   knownGroups: Map<string, string>,
   flag: string,
+  leadingWhitespace = false,
 ): {regexp: RegExp; newGroups: Map<string, number>} {
   const results: string[] = [];
-  let first = true;
+  let first = !leadingWhitespace;
   let groupCounter = 0;
   const newGroups = new Map<string, number>();
 
@@ -264,13 +385,6 @@ function buildChunkMatcher(
             results.push(`\\${matchGroup}`);
           }
         }
-      } else if (
-        isNgpTestMode() &&
-        ((piece.startsWith("'") && piece.endsWith("'")) ||
-          (piece.startsWith('"') && piece.endsWith('"')))
-      ) {
-        const inner = escapeRegExp(piece.slice(1, -1));
-        results.push(`(?:'${inner}'|"${inner}")`);
       } else {
         results.push(escapeRegExp(piece));
       }

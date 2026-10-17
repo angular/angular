@@ -6,10 +6,71 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import ts from 'typescript';
-
 const STRING_LIKE_TOKEN =
   /\/\/[^\n]*|\/\*[\s\S]*?\*\/|`(?:\\[\s\S]|[^\\`])*`|"(?:\\[\s\S]|[^\\"])*"|'(?:\\[\s\S]|[^\\'])*'/g;
+
+/**
+ * Replacements for `normalizeNgpEmitForComparison`, which compares Prettier-formatted NGP and
+ * `ngtsc` compliance outputs.
+ */
+// TODO(ngp-parity): Eliminate each entry below by aligning NGP's emit with `ngtsc`:
+// - `/* @ts-ignore */`: Teach NGP's `ExpressionPrinter` to print statement leading comments on
+//   `$localize` and `goog.getMsg` AST nodes.
+// - `/*@__PURE__*/`: Wrap pure static initializers in parens or emit them in a form where `tsc`
+//   does not strip the `/*@__PURE__*/` comment when erasing static field type annotations or
+//   downleveling static fields to ES5.
+// - `{ ...{ ... }, isSignal: true }`: Slice the raw options argument span into an object spread in
+//   `processor.ts` (`buildPropDecoratorsExpr`) for signal queries, or emit a flat literal in `ngtsc`.
+// - `args: [null]`: Record `argsSpan` on decorator metadata in `ng-analyze` even when the argument
+//   is not an object literal (e.g. `@Pipe(null!)`).
+// - `MSG_...$$_FILE_TS`: Pass a rootDir-relative file path (without a leading `/`) when computing
+//   Closure `goog.getMsg` variable names in NGP so `/foo.ts` does not produce a leading `_FOO_TS`.
+const COMPARISON_REPLACEMENTS: ReadonlyArray<readonly [RegExp, string]> = [
+  [/\/\*\s*@ts-ignore\s*\*\/\s*/g, ''],
+  [
+    /(\.(?:ɵcmp|ɵdir|ɵpipe|ɵmod|ɵinj|ɵprov)\s*=\s*)(?!\/\*\s*@__PURE__\s*\*\/)([A-Za-z0-9_$ɵ]+\.ɵɵdefine)/g,
+    '$1/*@__PURE__*/ $2',
+  ],
+  [
+    /static\s+(ɵ(?:cmp|dir|pipe|mod|inj|prov|fac))\s*=\s*(?!\/\*\s*@__PURE__\s*\*\/)(i0\.ɵɵdefine|\(\(\)\s*=>)/g,
+    'static $1 = /*@__PURE__*/ $2',
+  ],
+  [/\{\s*\.\.\.\{\s*([^{}]*?)\s*\},\s*isSignal:\s*true\s*\}/g, '{ isSignal: true, $1 }'],
+  [/\{\s*type:\s*([A-Za-z0-9_$.]+),\s*args:\s*\[null\]\s*\}/g, '{ type: $1 }'],
+  [/\b(MSG_(?:EXTERNAL_[A-Za-z0-9_$.]+?\$\$)?)(?:_([A-Za-z0-9_$]+))\b/g, '$1$2'],
+];
+
+/**
+ * Replacements for `normalizeNgpOutputFile`, which inspects raw (non-Prettier) `.js` and `.d.ts`
+ * files via `NgtscTestEnvironment.getContents()`.
+ *
+ * TODO(ngp-parity): Format or AST-compare `NgtscTestEnvironment` JS assertions, or align NGP's
+ * `ExpressionPrinter` paren/quote/comment placement with `ngtsc`'s TypeScript printer.
+ */
+const OUTPUT_FILE_REPLACEMENTS: ReadonlyArray<readonly [RegExp, string]> = [
+  [/^[ \t]*\/\/[ \t]*@ts-ignore[^\n]*\r?\n/gm, ''],
+  [/\/\*\s*@ts-ignore\s*\*\/\s*/g, ''],
+  [
+    /(\.(?:ɵcmp|ɵdir|ɵpipe|ɵmod|ɵinj|ɵprov)\s*=\s*)(?!\/\*\s*@__PURE__\s*\*\/)([A-Za-z0-9_$ɵ]+\.ɵɵdefine)/g,
+    '$1/*@__PURE__*/ $2',
+  ],
+  // Under `annotateForClosureCompiler` NGP puts `/** @pureOrBreakMyCode */` on the line after `=`.
+  [/=\s*\n\s*(\/\*\* @pureOrBreakMyCode \*\/)/g, '= $1'],
+  [
+    /\(\(\(typeof\s+(ngDevMode|ngJitMode)\s*===\s*(['"])undefined\2\)\s*\|\|\s*\1\)/g,
+    '((typeof $1 === $2undefined$2 || $1)',
+  ],
+  [
+    /(\.ɵfac\s*=\s*function\s+[A-Za-z0-9_$]+\(__ngFactoryType__\)\s*\{)\s*\n\s*(return\s+new\s+\(__ngFactoryType__\s*\|\|\s*[A-Za-z0-9_$]+\)\([^;\n]*\);)\s*\n\s*\};/g,
+    '$1 $2 };',
+  ],
+  [
+    /\(\(typeof\s+(ngDevMode|ngJitMode)\s*===\s*(['"])undefined\2\s*\|\|\s*\1\)\s*&&\s*([^;\n]+)\);/g,
+    '(typeof $1 === $2undefined$2 || $1) && $3;',
+  ],
+  [/\((m\.default && [A-Za-z0-9_$]+\.ɵɵreplaceMetadata\([^;\n]*\))\)/g, '$1'],
+  [/'([^'\\\n]*)'/g, '"$1"'],
+];
 
 function canonicalizeSegmentQuotes(segment: string): string {
   return segment.replace(STRING_LIKE_TOKEN, (match) => {
@@ -43,7 +104,7 @@ export function canonicalizeStringQuotes(code: string, ellipsisToken = '\u2026')
  *
  * NGP's printer quotes strings, parenthesizes and breaks lines differently from ngtsc's
  * TypeScript emit, which also escapes non-ASCII characters. `normalizeNgpEmitForComparison`
- * handles whole files with a parser, which can't run on a fragment, so this is a text-only
+ * handles whole files with Prettier, which can't run on a fragment, so this is a text-only
  * approximation: quotes are canonicalized, `\uXXXX` escapes decoded, and parentheses and
  * whitespace runs dropped.
  */
@@ -54,137 +115,13 @@ export function normalizeNgpSourceMapSegment(code: string): string {
     .replace(/\s+/g, ' ');
 }
 
-function transformOutsideStringLikeTokens(
+function applyReplacements(
   code: string,
-  transform: (segment: string) => string,
+  replacements: ReadonlyArray<readonly [RegExp, string]>,
 ): string {
-  let out = '';
-  let last = 0;
-  for (const match of code.matchAll(STRING_LIKE_TOKEN)) {
-    out += transform(code.slice(last, match.index)) + match[0];
-    last = match.index + match[0].length;
-  }
-  return out + transform(code.slice(last));
-}
-
-/**
- * Strips redundant clarifying parentheses that NGP's `ExpressionPrinter` emits around binary,
- * conditional, or assignment expressions where TypeScript's AST printer omits them based on
- * operator precedence.
- */
-export function stripRedundantClarifyingParens(code: string): string {
-  const sf = ts.createSourceFile(
-    '__cmp__.ts',
-    code,
-    ts.ScriptTarget.Latest,
-    true,
-    ts.ScriptKind.TS,
-  );
-
-  const isAssignmentOp = (kind: ts.SyntaxKind): boolean =>
-    kind >= ts.SyntaxKind.FirstAssignment && kind <= ts.SyntaxKind.LastAssignment;
-
-  const isAssignmentPositionRedundant = (e: ts.Expression): boolean =>
-    (ts.isBinaryExpression(e) && e.operatorToken.kind !== ts.SyntaxKind.CommaToken) ||
-    ts.isConditionalExpression(e) ||
-    ts.isCallExpression(e) ||
-    ts.isPropertyAccessExpression(e) ||
-    ts.isElementAccessExpression(e) ||
-    ts.isIdentifier(e) ||
-    ts.isPrefixUnaryExpression(e) ||
-    ts.isPostfixUnaryExpression(e) ||
-    ts.isTaggedTemplateExpression(e) ||
-    ts.isTemplateExpression(e) ||
-    ts.isNoSubstitutionTemplateLiteral(e);
-
-  const probeId = ts.factory.createIdentifier('__probe__');
-  const isBinaryOperandRedundant = (p: ts.ParenthesizedExpression): boolean => {
-    const parent = p.parent;
-    if (!ts.isBinaryExpression(parent)) {
-      return false;
-    }
-    const op = parent.operatorToken;
-    if (isAssignmentOp(op.kind) && parent.right === p) {
-      return isAssignmentPositionRedundant(p.expression);
-    }
-    if (parent.left === p) {
-      if (op.kind === ts.SyntaxKind.AsteriskAsteriskToken) {
-        return false;
-      }
-      return !ts.isParenthesizedExpression(
-        ts.factory.createBinaryExpression(p.expression, op, probeId).left,
-      );
-    }
-    if (parent.right === p) {
-      return !ts.isParenthesizedExpression(
-        ts.factory.createBinaryExpression(probeId, op, p.expression).right,
-      );
-    }
-    return false;
-  };
-
-  const targetSet = new Set<ts.ParenthesizedExpression>();
-  const consider = (e: ts.Expression | undefined): void => {
-    let curr = e;
-    while (curr && ts.isParenthesizedExpression(curr)) {
-      if (isAssignmentPositionRedundant(curr.expression)) {
-        targetSet.add(curr);
-        curr = curr.expression;
-      } else {
-        break;
-      }
-    }
-  };
-
-  const visit = (node: ts.Node): void => {
-    if (ts.isReturnStatement(node)) {
-      consider(node.expression);
-    } else if (ts.isExpressionStatement(node)) {
-      consider(node.expression);
-    } else if (ts.isVariableDeclaration(node)) {
-      consider(node.initializer);
-    } else if (ts.isPropertyAssignment(node)) {
-      consider(node.initializer);
-    } else if (ts.isArrowFunction(node) && !ts.isBlock(node.body)) {
-      consider(node.body);
-    } else if (ts.isCallExpression(node)) {
-      node.arguments.forEach(consider);
-    } else if (ts.isNewExpression(node) && node.arguments) {
-      node.arguments.forEach(consider);
-    } else if (ts.isArrayLiteralExpression(node)) {
-      node.elements.forEach(consider);
-    } else if (ts.isElementAccessExpression(node)) {
-      consider(node.argumentExpression);
-    } else if (ts.isConditionalExpression(node)) {
-      if (
-        ts.isParenthesizedExpression(node.condition) &&
-        ts.isBinaryExpression(node.condition.expression) &&
-        !isAssignmentOp(node.condition.expression.operatorToken.kind) &&
-        node.condition.expression.operatorToken.kind !== ts.SyntaxKind.CommaToken
-      ) {
-        targetSet.add(node.condition);
-      }
-      consider(node.whenTrue);
-      consider(node.whenFalse);
-    } else if (ts.isParenthesizedExpression(node) && isBinaryOperandRedundant(node)) {
-      targetSet.add(node);
-    }
-    ts.forEachChild(node, visit);
-  };
-  visit(sf);
-
-  if (targetSet.size === 0) {
-    return code;
-  }
-
-  const cuts: number[] = [];
-  for (const p of targetSet) {
-    cuts.push(p.getStart(sf), p.getEnd() - 1);
-  }
-  cuts.sort((a, b) => b - a);
   let out = code;
-  for (const pos of cuts) {
-    out = out.slice(0, pos) + out.slice(pos + 1);
+  for (const [pattern, replacement] of replacements) {
+    out = out.replace(pattern, replacement);
   }
   return out;
 }
@@ -193,47 +130,74 @@ export function stripRedundantClarifyingParens(code: string): string {
  * Normalizes cosmetic differences between NGP's `ExpressionPrinter` + `tsc` emit and `ngtsc`'s
  * direct TypeScript AST transform emit for compliance golden comparisons.
  */
-export function normalizeNgpEmitForComparison(code: string, ellipsisToken = '\u2026'): string {
+export function normalizeNgpEmitForComparison(code: string): string {
+  let normalized = code;
+
+  // TODO(ngp-parity): `ngtsc` runs as a TS transformer during emit, after TypeScript's
+  // `emitDecoratorMetadata` pass has already marked types referenced by Angular decorators (e.g.
+  // `QueryList`, `ElementRef`, `TemplateRef`) as value-used. NGP strips Angular decorators before
+  // `tsc` runs, so `tsc` elides those imports. Either disable `emitDecoratorMetadata` in compliance
+  // tests that do not test decorator metadata, or preserve decorator-metadata imports in NGP.
+  const bodyWithoutImports = normalized.replace(
+    /^[ \t]*import\s+(?:type\s+)?(?:\*\s+as\s+\w+|\{[\s\S]*?\}|\w+)\s+from\s+['"][^'"]+['"];?[ \t]*\r?\n?/gm,
+    '',
+  );
+  normalized = normalized.replace(
+    /^[ \t]*import\s*\{([\s\S]*?)\}\s*from\s*(['"][^'"]+['"]);?[ \t]*\r?\n?/gm,
+    (_, specifiersStr: string, moduleQuote: string) => {
+      const kept = specifiersStr
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)
+        .filter((spec) => {
+          const parts = spec.split(/\s+as\s+/);
+          const localName = parts[parts.length - 1].trim().replace(/^type\s+/, '');
+          const escaped = localName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          return new RegExp(`(?<![.\\w$])${escaped}(?![\\w$])`).test(bodyWithoutImports);
+        });
+      return kept.length === 0 ? '' : `import { ${kept.join(', ')} } from ${moduleQuote};\n`;
+    },
+  );
+
+  // TODO(ngp-parity): When a class has both non-Angular decorators (e.g. `@CustomClassDecorator()`)
+  // and static fields (`static ɵfac`, `static ɵcmp`), TS 5.0+ emits a `static { Class_1 = this; }`
+  // alias. `ngtsc` avoids this because it adds static fields in an AST transformer after decorator
+  // downleveling. Emit static definitions outside the class body in NGP when non-Angular class
+  // decorators are present, or update those compliance goldens to standard TS 5.0+ decorator emit.
   const classAliases: string[] = [];
-  let normalized = code.replace(/static\s*\{\s*(\w+)_1\s*=\s*this;\s*\}\s*/g, (_, className) => {
-    classAliases.push(className);
-    return '';
-  });
+  normalized = normalized
+    .replace(/static\s*\{\s*(\w+)_1\s*=\s*this;\s*\}\s*/g, (_, className) => {
+      classAliases.push(className);
+      return '';
+    })
+    .replace(/(\w+)_1\s*=\s*\1;\s*var\s+\1_1;\s*/g, (_, className) => {
+      classAliases.push(className);
+      return '';
+    });
   for (const className of classAliases) {
-    const re1 = new RegExp(`${className}\\s=\\s${className}_1\\s=\\s__decorate`, 'g');
-    normalized = normalized.replace(re1, `${className} = __decorate`);
-    const re2 = new RegExp(`${className}_1\\b`, 'g');
-    normalized = normalized.replace(re2, className);
+    normalized = normalized
+      .replace(
+        new RegExp(`${className}\\s=\\s${className}_1\\s=\\s__decorate`, 'g'),
+        `${className} = __decorate`,
+      )
+      .replace(new RegExp(`\\b${className}_1\\b`, 'g'), className);
   }
-  return (
-    canonicalizeStringQuotes(normalized, ellipsisToken)
-      .replace(/^[ \t]*\/\/\s*@ts-ignore[^\n]*\r?\n/gm, '')
-      .replace(/\/\*\s*@ts-ignore\s*\*\/\s*/g, '')
-      // NGP emits `/*@__PURE__*/` on `.ng.ts` static definitions (`static ɵcmp: Type = /*@__PURE__*/ ...`),
-      // but TypeScript's emitter drops leading comments between `=` and the initializer expression when
-      // downleveling typed static class fields or when `removeComments: true` is active (whereas ngtsc
-      // attaches synthetic comments in an AST transformer during emit).
-      .replace(
-        /static\s+(ɵ(?:cmp|dir|pipe|mod|inj|prov|fac))\s*=\s*(?!\/\*\s*@__PURE__\s*\*\/)(i0\.ɵɵdefine|\(\(\)\s*=>)/g,
-        'static $1 = /*@__PURE__*/ $2',
-      )
-      // Under `annotateForClosureCompiler` NGP puts `/** @pureOrBreakMyCode */` on the line after
-      // `=` (the only placement `tsc` carries through to the downleveled assignment); ngtsc emits
-      // it on the same line.
-      .replace(/=\s*\n\s*(\/\*\* @pureOrBreakMyCode \*\/)/g, '= $1')
-      .replace(
-        /\(\(\(typeof\s+(ngDevMode|ngJitMode)\s*===\s*(['"])undefined\2\)\s*\|\|\s*\1\)/g,
-        '((typeof $1 === $2undefined$2 || $1)',
-      )
-      .replace(/\(([A-Za-z_$][A-Za-z0-9_$]*)\)\s*=>/g, '$1 =>')
-      .replace(/\\\\n/g, '\\n')
-      .replace(/\\\\r/g, '\\r')
-      .replace(/\\u([0-9a-fA-F]{4})/g, (_, hex) => {
-        return String.fromCharCode(parseInt(hex, 16));
-      })
-      .replace(/ɵɵqueryRefresh\(\(([^)]+)\)\)/g, 'ɵɵqueryRefresh($1)')
-      .replace(/,(\s*[\]})])/g, '$1')
-      .replace(/^(\s*)\(("(?:[^"\\]|\\.)*")\);$/gm, '$1$2;')
+  if (classAliases.length > 0) {
+    const aliasPattern = classAliases.join('|');
+    normalized = normalized.replace(
+      new RegExp(
+        `^[ \\t]*var\\s+(?:${aliasPattern})(?:,\\s*(?:${aliasPattern}))*;[ \\t]*\\r?\\n`,
+        'gm',
+      ),
+      '',
+    );
+  }
+
+  // TODO(ngp-parity): Escape non-ASCII characters (such as `\uFFFD` i18n placeholder markers) as
+  // `\uXXXX` in NGP's `ExpressionPrinter` string literal emitter to match `ngtsc` / TS emit.
+  return applyReplacements(normalized, COMPARISON_REPLACEMENTS).replace(
+    /\\u([0-9a-fA-F]{4})/g,
+    (_, hex) => String.fromCharCode(parseInt(hex, 16)),
   );
 }
 
@@ -242,28 +206,12 @@ export function normalizeNgpEmitForComparison(code: string, ellipsisToken = '\u2
  * `NgtscTestEnvironment.getContents()`.
  */
 export function normalizeNgpOutputFile(content: string): string {
-  const normalized = content
-    .replace(/^[ \t]*\/\/[ \t]*@ts-ignore[^\n]*\r?\n/gm, '')
-    .replace(/\/\*\s*@ts-ignore\s*\*\/\s*/g, '')
-    .replace(
-      /(\.(?:ɵcmp|ɵdir|ɵpipe|ɵmod|ɵinj|ɵprov)\s*=\s*)(?!\/\*\s*@__PURE__\s*\*\/)([A-Za-z0-9_$ɵ]+\.ɵɵdefine)/g,
-      '$1/*@__PURE__*/ $2',
-    )
-    // See `normalizeNgpEmitForComparison`: the Closure pure marker lands on the line after `=`.
-    .replace(/=\s*\n\s*(\/\*\* @pureOrBreakMyCode \*\/)/g, '= $1')
-    .replace(
-      /(\.ɵfac\s*=\s*function\s+[A-Za-z0-9_$]+\(__ngFactoryType__\)\s*\{)\s*\n\s*(return\s+new\s+\(__ngFactoryType__\s*\|\|\s*[A-Za-z0-9_$]+\)\([^;\n]*\);)\s*\n\s*\};/g,
-      '$1 $2 };',
-    )
-    .replace(
-      /\(\(\(typeof\s+(ngDevMode|ngJitMode)\s*===\s*(['"])undefined\2\)\s*\|\|\s*\1\)/g,
-      '((typeof $1 === $2undefined$2 || $1)',
-    )
-    .replace(
-      /\(\(typeof\s+(ngDevMode|ngJitMode)\s*===\s*(['"])undefined\2\s*\|\|\s*\1\)\s*&&\s*([^;\n]+)\);/g,
-      '(typeof $1 === $2undefined$2 || $1) && $3;',
-    )
-    .replace(/\((m\.default && [A-Za-z0-9_$]+\.ɵɵreplaceMetadata\([^;\n]*\))\)/g, '$1')
-    .replace(/'([^'\\\n]*)'/g, '"$1"');
-  return transformOutsideStringLikeTokens(normalized, (code) => code.replace(/,(?=[^\s,])/g, ', '));
+  const normalized = applyReplacements(content, OUTPUT_FILE_REPLACEMENTS);
+  let out = '';
+  let last = 0;
+  for (const match of normalized.matchAll(STRING_LIKE_TOKEN)) {
+    out += normalized.slice(last, match.index).replace(/,(?=[^\s,])/g, ', ') + match[0];
+    last = match.index + match[0].length;
+  }
+  return out + normalized.slice(last).replace(/,(?=[^\s,])/g, ', ');
 }

@@ -6,58 +6,7 @@
       "inputFiles": ["directives.ts"],
       "expectations": [
         {
-          "failureMessage": "Incorrect ChildComponent.ɵcmp",
-          "files": [
-            {
-              "expected": "directives_child_component_def.js",
-              "generated": "directives.js"
-            }
-          ]
-        },
-        {
-          "failureMessage": "Incorrect ChildComponent.ɵfac",
-          "files": [
-            {
-              "expected": "directives_child_component_fac.js",
-              "generated": "directives.js"
-            }
-          ]
-        },
-        {
-          "failureMessage": "Incorrect SomeDirective.ɵdir",
-          "files": [
-            {
-              "expected": "directives_some_directive_dir.js",
-              "generated": "directives.js"
-            }
-          ]
-        },
-        {
-          "failureMessage": "Incorrect SomeDirective.ɵfac",
-          "files": [
-            {
-              "expected": "directives_some_directive_fac.js",
-              "generated": "directives.js"
-            }
-          ]
-        },
-        {
-          "failureMessage": "Incorrect MyComponentDefinition.ɵcmp",
-          "files": [
-            {
-              "expected": "directives_my_component_def.js",
-              "generated": "directives.js"
-            }
-          ]
-        },
-        {
-          "failureMessage": "Incorrect MyComponentDefinition.ɵfac",
-          "files": [
-            {
-              "expected": "directives_my_component_fac.js",
-              "generated": "directives.js"
-            }
-          ]
+          "files": ["directives.js"]
         }
       ],
       "compilationModeFilter": ["full compile", "local compile", "declaration-only emit"]
@@ -67,40 +16,7 @@
       "inputFiles": ["complex_selectors.ts"],
       "expectations": [
         {
-          "failureMessage": "Incorrect SomeDirective.ɵdir",
-          "files": [
-            {
-              "expected": "complex_selectors_some_directive_dir.js",
-              "generated": "complex_selectors.js"
-            }
-          ]
-        },
-        {
-          "failureMessage": "Incorrect SomeDirective.ɵfac",
-          "files": [
-            {
-              "expected": "complex_selectors_some_directive_fac.js",
-              "generated": "complex_selectors.js"
-            }
-          ]
-        },
-        {
-          "failureMessage": "Incorrect OtherDirective.ɵdir",
-          "files": [
-            {
-              "expected": "complex_selectors_other_directive_dir.js",
-              "generated": "complex_selectors.js"
-            }
-          ]
-        },
-        {
-          "failureMessage": "Incorrect OtherDirective.ɵfac",
-          "files": [
-            {
-              "expected": "complex_selectors_other_directive_fac.js",
-              "generated": "complex_selectors.js"
-            }
-          ]
+          "files": ["complex_selectors.js"]
         }
       ]
     },
@@ -119,22 +35,7 @@
       "inputFiles": ["no_selector.ts"],
       "expectations": [
         {
-          "failureMessage": "Incorrect EmptyOutletComponent.ɵcmp",
-          "files": [
-            {
-              "expected": "no_selector_def.js",
-              "generated": "no_selector.js"
-            }
-          ]
-        },
-        {
-          "failureMessage": "Incorrect EmptyOutletComponent.ɵfac",
-          "files": [
-            {
-              "expected": "no_selector_fac.js",
-              "generated": "no_selector.js"
-            }
-          ]
+          "files": ["no_selector.js"]
         }
       ]
     },
@@ -143,22 +44,7 @@
       "inputFiles": ["view_tokens_di.ts"],
       "expectations": [
         {
-          "failureMessage": "Incorrect MyComponent.ɵcmp",
-          "files": [
-            {
-              "expected": "view_tokens_di_def.js",
-              "generated": "view_tokens_di.js"
-            }
-          ]
-        },
-        {
-          "failureMessage": "Incorrect MyComponent.ɵfac",
-          "files": [
-            {
-              "expected": "view_tokens_di_fac.js",
-              "generated": "view_tokens_di.js"
-            }
-          ]
+          "files": ["view_tokens_di.js"]
         }
       ]
     },
@@ -167,40 +53,7 @@
       "inputFiles": ["structural_directives.ts"],
       "expectations": [
         {
-          "failureMessage": "Incorrect IfDirective.ɵdir",
-          "files": [
-            {
-              "expected": "structural_directives_if_directive_def.js",
-              "generated": "structural_directives.js"
-            }
-          ]
-        },
-        {
-          "failureMessage": "Incorrect IfDirective.ɵfac",
-          "files": [
-            {
-              "expected": "structural_directives_if_directive_fac.js",
-              "generated": "structural_directives.js"
-            }
-          ]
-        },
-        {
-          "failureMessage": "Incorrect MyComponent.ɵcmp",
-          "files": [
-            {
-              "expected": "structural_directives_my_component_def.js",
-              "generated": "structural_directives.js"
-            }
-          ]
-        },
-        {
-          "failureMessage": "Incorrect MyComponent.ɵfac",
-          "files": [
-            {
-              "expected": "structural_directives_my_component_fac.js",
-              "generated": "structural_directives.js"
-            }
-          ]
+          "files": ["structural_directives.js"]
         }
       ]
     },

@@ -140,16 +140,16 @@ export class TestTransformsComponent {
         {
           decoratorInput: [{ type: Input, args: [{ transform: myBooleanTransform }] }],
           aliasedInput: [{ type: Input, args: [{ transform: aliasedTransform }] }],
-          inlineTransform: [
-            { type: Input, args: [{ transform: (v: string | null) => v || 'default' }] },
-          ],
-          externalTypeInput: [{ type: Input, args: [{ transform: externalToNumberTransform }] }],
           signalInput: [
             { type: i0.Input, args: [{ isSignal: true, alias: 'signalInput', required: false }] },
           ],
           aliasedSignal: [
             { type: i0.Input, args: [{ isSignal: true, alias: 'aliasedSignal', required: false }] },
           ],
+          inlineTransform: [
+            { type: Input, args: [{ transform: (v: string | null) => v || 'default' }] },
+          ],
+          externalTypeInput: [{ type: Input, args: [{ transform: externalToNumberTransform }] }],
         },
       );
   }

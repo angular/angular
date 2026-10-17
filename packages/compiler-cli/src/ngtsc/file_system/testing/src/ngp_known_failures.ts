@@ -968,5 +968,4 @@ const NGP_KNOWN_COMPLIANCE_FAILURES: ReadonlySet<string> = new Set([
   'declaration-only emit::r3_compiler_compliance/components_and_directives::should not use reexport names inside declarations when a direct export is available',
   'full compile::r3_compiler_compliance/components_and_directives::should not use reexport names inside declarations when a direct export is available',
   'full compile::r3_view_compiler_bindings/host_bindings::should handle host bindings with quoted names',
-  'local compile::r3_compiler_compliance/class_metadata::should guard unverified constructor parameter types in local compilation',
 ]);

@@ -83,6 +83,7 @@ export class TestComp {
         ],
         null,
         {
+          stringQuery: [{ type: i0.ViewChild, args: ['myDiv', { isSignal: true }] }],
           constantQuery: [
             {
               type: i0.ContentChildren,
@@ -92,7 +93,6 @@ export class TestComp {
               ],
             },
           ],
-          stringQuery: [{ type: i0.ViewChild, args: ['myDiv', { isSignal: true }] }],
         },
       );
   }

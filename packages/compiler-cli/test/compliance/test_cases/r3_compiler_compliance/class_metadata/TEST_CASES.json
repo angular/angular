@@ -28,32 +28,7 @@
       "expectations": [
         {
           "failureMessage": "Invalid class metadata",
-          "files": [
-            {
-              "expected": "parameter_decorators_custom.js",
-              "generated": "parameter_decorators.js"
-            },
-            {
-              "expected": "parameter_decorators_decorators.js",
-              "generated": "parameter_decorators.js"
-            },
-            {
-              "expected": "parameter_decorators_empty.js",
-              "generated": "parameter_decorators.js"
-            },
-            {
-              "expected": "parameter_decorators_no_ctor.js",
-              "generated": "parameter_decorators.js"
-            },
-            {
-              "expected": "parameter_decorators_no_decorators.js",
-              "generated": "parameter_decorators.js"
-            },
-            {
-              "expected": "parameter_decorators_derived.js",
-              "generated": "parameter_decorators.js"
-            }
-          ]
+          "files": ["parameter_decorators.js"]
         }
       ]
     },

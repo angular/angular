@@ -36,22 +36,7 @@
       "inputFiles": ["for_of.ts"],
       "expectations": [
         {
-          "failureMessage": "Invalid directive definition",
-          "files": [
-            {
-              "generated": "for_of.js",
-              "expected": "for_of_def.js"
-            }
-          ]
-        },
-        {
-          "failureMessage": "Invalid directive factory",
-          "files": [
-            {
-              "generated": "for_of.js",
-              "expected": "for_of_fac.js"
-            }
-          ]
+          "files": ["for_of.js"]
         }
       ]
     }

@@ -1,27 +1,108 @@
+import { Component, NgModule } from "@angular/core";
+import * as i0 from "@angular/core";
 function MyComponent_0_ng_template_0_Template(rf, ctx) {
   if (rf & 1) {
-    $r3$.ɵɵtext(0, "Test");
+    i0.ɵɵtext(0, "Test");
   }
 }
 function MyComponent_0_Template(rf, ctx) {
   if (rf & 1) {
-    $r3$.ɵɵtemplate(0, MyComponent_0_ng_template_0_Template, 1, 0, "ng-template", 1);
+    i0.ɵɵtemplate(0, MyComponent_0_ng_template_0_Template, 1, 0, "ng-template", 1);
   }
 }
-…
-consts: () => {
-  __i18nMsg__('Hello', [], {}, {})
-  return [
-    // NOTE: AttributeMarker.Template = 4
-    [4, "ngIf"],
-    ["title", $i18n_0$]
-  ];
-},
-template: function MyComponent_Template(rf, ctx) {
-  if (rf & 1) {
-    $r3$.ɵɵtemplate(0, MyComponent_0_Template, 1, 0, null, 0);
-  }
-  if (rf & 2) {
-    $r3$.ɵɵproperty("ngIf", ctx.visible);
-  }
+export class MyComponent {
+  visible = false;
+  static ɵfac = function MyComponent_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || MyComponent)();
+  };
+  static ɵcmp = /*@__PURE__*/ i0.ɵɵdefineComponent({
+    type: MyComponent,
+    selectors: [["my-component"]],
+    standalone: false,
+    decls: 1,
+    vars: 1,
+    consts: () => {
+      let i18n_0;
+      if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
+        /**
+         * @suppress {msgDescriptions}
+         */
+        const MSG_EXTERNAL_3902961887793684628$$NG_TEMPLATE_STRUCTURAL_TS_0 =
+          /* @ts-ignore */
+          goog.getMsg("Hello");
+        i18n_0 = MSG_EXTERNAL_3902961887793684628$$NG_TEMPLATE_STRUCTURAL_TS_0;
+      } else {
+        /* @ts-ignore */
+        i18n_0 = $localize`Hello`;
+      }
+      return [
+        [4, "ngIf"],
+        ["title", i18n_0]
+      ];
+    },
+    template: function MyComponent_Template(rf, ctx) {
+      if (rf & 1) {
+        i0.ɵɵtemplate(0, MyComponent_0_Template, 1, 0, null, 0);
+      }
+      if (rf & 2) {
+        i0.ɵɵproperty("ngIf", ctx.visible);
+      }
+    },
+    encapsulation: 2
+  });
 }
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) &&
+    i0.ɵsetClassMetadata(
+      MyComponent,
+      [
+        {
+          type: Component,
+          args: [
+            {
+              selector: "my-component",
+              template: `
+  <ng-template *ngIf="visible" i18n-title title="Hello">Test</ng-template>
+`,
+              standalone: false
+            }
+          ]
+        }
+      ],
+      null,
+      null
+    );
+})();
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) &&
+    i0.ɵsetClassDebugInfo(MyComponent, {
+      className: "MyComponent",
+      filePath: "ng-template_structural.ts",
+      lineNumber: 10
+    });
+})();
+export class MyModule {
+  static ɵfac = function MyModule_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || MyModule)();
+  };
+  static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
+  static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+}
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) &&
+    i0.ɵsetClassMetadata(
+      MyModule,
+      [
+        {
+          type: NgModule,
+          args: [{ declarations: [MyComponent] }]
+        }
+      ],
+      null,
+      null
+    );
+})();
+(function () {
+  (typeof ngJitMode === "undefined" || ngJitMode) &&
+    i0.ɵɵsetNgModuleScope(MyModule, { declarations: [MyComponent] });
+})();
