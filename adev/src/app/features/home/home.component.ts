@@ -55,6 +55,7 @@ const FEATURE_TAB = {
 export default class Home {
   /** Bound from the `?uwu` query param, which has an empty string value when present. */
   readonly uwu = input(false, {transform: booleanAttribute});
+  readonly angie = input(false, {transform: booleanAttribute});
 
   protected readonly displaySearchDialog = inject(IS_SEARCH_DIALOG_OPEN);
 

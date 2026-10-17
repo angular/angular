@@ -55,6 +55,8 @@ export class Navigation {
 
   // We can't use the ActivatedRouter queryParams as we're outside the router outlet
   protected readonly isUwu = 'location' in globalThis ? location.search.includes('uwu') : false;
+  protected readonly isAngie =
+    !this.isUwu && 'location' in globalThis ? location.search.includes('angie') : false;
 
   protected miniMenuPositions = [
     new ConnectionPositionPair(
