@@ -30,6 +30,7 @@ $r3$.ɵɵdefineComponent({
       $r3$.ɵɵdeclareLet(0);
       $r3$.ɵɵtext(1);
       $r3$.ɵɵconditionalCreate(2, TestComp_Conditional_2_Template, 2, 1);
+      (typeof ngDevMode === "undefined" || ngDevMode) && $r3$.ɵɵconditionalMetadata(2, "if", 1, null, "true", ["true"]);
     }
     if (rf & 2) {
       const $fn_r6$ = $r3$.ɵɵstoreLet($r3$.ɵɵarrowFunction(2, $arrowFn0$, ctx));

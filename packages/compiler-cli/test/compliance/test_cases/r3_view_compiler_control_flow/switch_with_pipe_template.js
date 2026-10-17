@@ -7,6 +7,7 @@ function MyApp_Template(rf, ctx) {
 	  $r3$.ɵɵpipe(4, "test");
 	  $r3$.ɵɵpipe(5, "test");
 	  $r3$.ɵɵconditionalBranchCreate(6, MyApp_Case_6_Template, 1, 0)(7, MyApp_Case_7_Template, 1, 0);
+	  (typeof ngDevMode === "undefined" || ngDevMode) && $r3$.ɵɵconditionalMetadata(2, "switch", 3, 2, "value() | test", [["0 | test"], ["1 | test"], []]);
 	  $r3$.ɵɵdomElementEnd();
 	}
 	if (rf & 2) {

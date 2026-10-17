@@ -67,6 +67,7 @@ $r3$.ɵɵdefineComponent({
       $r3$.ɵɵprojection(3, 1, null, TestComponent_ProjectionFallback_3_Template, 5, 1);
       $r3$.ɵɵdomElementEnd();
       $r3$.ɵɵconditionalCreate(5, TestComponent_Conditional_5_Template, 2, 0);
+      (typeof ngDevMode === "undefined" || ngDevMode) && $r3$.ɵɵconditionalMetadata(5, "if", 1, null, "hasFooter", ["hasFooter"]);
       $r3$.ɵɵdomTemplate(6, TestComponent_ng_content_6_Template, 2, 0, "ng-content", 0);
     }
     if (rf & 2) {
