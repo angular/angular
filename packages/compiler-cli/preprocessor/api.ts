@@ -16,11 +16,11 @@
  * reached only through {@link createAnalyzer}, which loads the resolver lazily.
  */
 
-import type {IAnalyzer} from './src/hybrid_compiler.js';
 import type {AnalyzerBackend, LoadAnalyzerOptions, LoadedAnalyzer} from './src/analyzer_loader.js';
+import type {IAnalyzer} from './src/hybrid_compiler.js';
 
 export {HybridCompiler} from './src/hybrid_compiler.js';
-export type {IAnalyzer, HybridCompilerOptions} from './src/hybrid_compiler.js';
+export type {HybridCompilerOptions, IAnalyzer} from './src/hybrid_compiler.js';
 
 // The sidecar transport: usable with no N-API addon and no wasm engine present.
 export {SidecarAnalyzer} from './src/analyzer_sidecar.js';
@@ -28,14 +28,14 @@ export {SidecarAnalyzer} from './src/analyzer_sidecar.js';
 export {run} from './ngp.js';
 export type {RunOptions} from './ngp.js';
 
+export {WasmAnalyzer, type WasmInner} from './src/analyzer_wasm.js';
+export type {ClassEntity} from './src/indexer_api.js';
+export {IndexerBoundTemplate} from './src/indexing/indexer.js';
 export {buildTypeCheckingConfig, type NgpTypeCheckingConfig} from './src/tcb.js';
+export type {NgDiagnostic, NgDiagnosticRelatedInformation} from './src/types.js';
+export type {HostDirEntry, HostFileStat, WasmHostFs} from './src/wasm_host_fs.js';
 export {resolveWorkspaceConfig} from './src/workspace.js';
 export type {WorkspaceConfig} from './src/workspace.js';
-export {WasmAnalyzer, type WasmInner} from './src/analyzer_wasm.js';
-export type {WasmHostFs, HostDirEntry, HostFileStat} from './src/wasm_host_fs.js';
-export type {NgDiagnostic} from './src/types.js';
-export {IndexerBoundTemplate} from './src/indexing/indexer.js';
-export type {ClassEntity} from './src/indexer_api.js';
 
 export type {AnalyzerBackend, LoadAnalyzerOptions, LoadedAnalyzer};
 

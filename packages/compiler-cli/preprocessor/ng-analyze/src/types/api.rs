@@ -7,6 +7,9 @@ use crate::query::FileId;
 use napi_derive::napi;
 use std::collections::HashMap;
 
+// TODO: The Rust side currently does not emit relatedInformation from oxc_diagnostics.
+// When Rust analysis is expanded to report related spans, NgDiagnostic in Rust (types/api.rs)
+// can mirror the relatedInformation field added in TypeScript (types.ts).
 #[cfg_attr(feature = "napi", napi(object))]
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]

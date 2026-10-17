@@ -26,11 +26,16 @@ pub struct ImportInfo {
     /// [`Self::in_decorator`]). oxc's `ReferenceId` (one per *use site*), not
     /// [`crate::query::ReferenceId`].
     pub reference_id: SemanticReferenceId,
+    /// Source span of the identifier occurrence this entry came from.
+    pub span: Span,
     /// Whether [`Self::reference_id`] is written inside the decorator, rather than in the
     /// initializer of a local variable the decorator names (`const SHARED = [A];` …
     /// `imports: [SHARED]`). The decorator is stripped from the output but the variable is not,
     /// so only an occurrence written in the decorator stops being a reference to its import.
     pub in_decorator: bool,
+    /// When [`Self::in_decorator`] is `false`, whether any enclosing local variable declaration
+    /// in the expansion chain has the `export` modifier (`export const SHARED = [A];`).
+    pub in_exported_variable: bool,
 }
 
 impl ImportInfo {
@@ -128,6 +133,7 @@ pub fn resolve_imports_expression<'a>(
         expr,
         EntryOrigin {
             in_decorator,
+            in_exported_variable: false,
             is_forward_ref: false,
         },
     );
@@ -139,6 +145,8 @@ pub fn resolve_imports_expression<'a>(
 struct EntryOrigin {
     /// See [`ImportInfo::in_decorator`].
     in_decorator: bool,
+    /// See [`ImportInfo::in_exported_variable`].
+    in_exported_variable: bool,
     /// Whether an enclosing expression was a `forwardRef(() => …)`. The wrapper defers the
     /// evaluation of everything under it, array elements included.
     is_forward_ref: bool,
@@ -191,7 +199,9 @@ impl<'a> ImportsCollector<'_, 'a> {
                 import_source: Some(imported.source.clone()),
                 is_forward_ref: origin.is_forward_ref,
                 reference_id,
+                span: ident.span,
                 in_decorator: origin.in_decorator,
+                in_exported_variable: origin.in_exported_variable,
             });
             return;
         }
@@ -207,7 +217,9 @@ impl<'a> ImportsCollector<'_, 'a> {
             import_source: None,
             is_forward_ref: origin.is_forward_ref,
             reference_id,
+            span: ident.span,
             in_decorator: origin.in_decorator,
+            in_exported_variable: origin.in_exported_variable,
         });
     }
 
@@ -226,9 +238,8 @@ impl<'a> ImportsCollector<'_, 'a> {
 
     /// Walk the initializer of the local variable `symbol_id` in place of a reference to it.
     fn expand_local_variable(&mut self, symbol_id: SymbolId, origin: EntryOrigin) -> bool {
-        let AstKind::VariableDeclarator(declarator) =
-            self.semantic.symbol_declaration(symbol_id).kind()
-        else {
+        let decl_node = self.semantic.symbol_declaration(symbol_id);
+        let AstKind::VariableDeclarator(declarator) = decl_node.kind() else {
             return false;
         };
         // A pattern binds a part of the initializer, not the whole of it: `const [first] = LIST`
@@ -241,13 +252,20 @@ impl<'a> ImportsCollector<'_, 'a> {
         };
         if !self.expanding.insert(symbol_id) {
             return false;
-        }
+        };
+
+        let var_decl_node = self.semantic.nodes().parent_node(decl_node.id());
+        let is_exported = matches!(
+            self.semantic.nodes().parent_kind(var_decl_node.id()),
+            AstKind::ExportDeclaration(_) | AstKind::ExportNamedDeclaration(_)
+        );
 
         let before = self.entries.len();
         self.collect_expression(
             init,
             EntryOrigin {
                 in_decorator: false,
+                in_exported_variable: origin.in_exported_variable || is_exported,
                 ..origin
             },
         );

@@ -656,10 +656,12 @@ pub struct ComponentData {
     /// `read_core_enum_field` applies when the evaluator could not answer.
     pub encapsulation_text: Option<String>,
     pub schemas: Option<Vec<String>>,
+    pub imports_key_span: Option<oxc_span::Span>,
     pub raw_imports_span: Option<oxc_span::Span>,
     /// Preserved copy of `@Component.imports` expression span, unaffected by same-file scope
     /// resolution. Required by local compilation mode for runtime dependency resolution.
     pub imports_factory_span: Option<oxc_span::Span>,
+    pub resolved_import_entries: Option<Vec<ComponentImportEntryData>>,
     pub resolved_declarations: Option<Vec<DeclarationData>>,
     /// The component's own `hostDirectives`, resolved in stage 2 — what ngtsc's
     /// `TypeCheckScopeRegistry` puts in `directivesOnHost` ahead of the component itself. Kept
@@ -693,6 +695,17 @@ pub struct ComponentData {
     pub foreign_imports_span: Option<oxc_span::Span>,
     /// Malformed `foreignImports` shapes recorded during extraction, reported by `validate()`.
     pub foreign_import_issues: Vec<ForeignImportIssue>,
+}
+
+#[derive(Clone, Debug)]
+pub struct ComponentImportEntryData {
+    pub name: String,
+    pub file: crate::query::FileId,
+    pub declaration_type: ClassType,
+    pub pipe_name: Option<String>,
+    pub is_standalone: Option<bool>,
+    pub is_potential_shared: bool,
+    pub usage_span: Option<oxc_span::Span>,
 }
 
 #[derive(Clone, Debug)]
@@ -3476,9 +3489,41 @@ impl ClassData {
             raw_imports_span: c
                 .raw_imports_span
                 .map(|s| crate::types::metadata::SpanMetadata::new(s, cx.converter)),
+            imports_key_span: c
+                .imports_key_span
+                .map(|s| crate::types::metadata::SpanMetadata::new(s, cx.converter)),
             imports_factory_span: c
                 .imports_factory_span
                 .map(|s| crate::types::metadata::SpanMetadata::new(s, cx.converter)),
+            resolved_import_entries: c.resolved_import_entries.as_ref().map(|entries| {
+                entries
+                    .iter()
+                    .map(|e| {
+                        let declaration_type = match e.declaration_type {
+                            ClassType::Component => "component",
+                            ClassType::Directive => "directive",
+                            ClassType::Pipe => "pipe",
+                            ClassType::NgModule => "ngmodule",
+                            ClassType::Injectable | ClassType::Service => "injectable",
+                        }
+                        .to_string();
+                        let file_path = cx
+                            .path_lookup
+                            .map(|lookup| lookup(e.file).to_string_lossy().into_owned());
+                        crate::types::metadata::ComponentImportEntryMetadata {
+                            name: e.name.clone(),
+                            file_path,
+                            declaration_type,
+                            pipe_name: e.pipe_name.clone(),
+                            is_standalone: e.is_standalone,
+                            is_potential_shared: e.is_potential_shared,
+                            usage_span: e.usage_span.map(|s| {
+                                crate::types::metadata::SpanMetadata::new(s, cx.converter)
+                            }),
+                        }
+                    })
+                    .collect()
+            }),
             foreign_imports: c.foreign_imports.as_ref().map(|list| {
                 list.iter()
                     .map(|fi| crate::types::metadata::ForeignImportMetadata {

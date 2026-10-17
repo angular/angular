@@ -306,6 +306,23 @@ pub struct UrlMetadata {
 #[cfg_attr(feature = "napi", napi(object))]
 #[derive(Clone, Debug, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
+pub struct ComponentImportEntryMetadata {
+    pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub file_path: Option<String>,
+    pub declaration_type: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub pipe_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub is_standalone: Option<bool>,
+    pub is_potential_shared: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub usage_span: Option<SpanMetadata>,
+}
+
+#[cfg_attr(feature = "napi", napi(object))]
+#[derive(Clone, Debug, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ComponentMetadata {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub decorator_name: Option<String>,
@@ -334,9 +351,16 @@ pub struct ComponentMetadata {
     pub export_as: Option<Vec<String>>,
     pub schemas: Option<Vec<String>>,
     pub raw_imports_span: Option<SpanMetadata>,
+    /// Span of the `imports` property key in `@Component({ imports: ... })`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub imports_key_span: Option<SpanMetadata>,
     /// Preserved `@Component.imports` expression span for local compilation mode.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub imports_factory_span: Option<SpanMetadata>,
+    /// Resolved entries of `@Component.imports` (prior to NgModule export expansion), used by
+    /// `unusedStandaloneImports` (`NG8113`) validation.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub resolved_import_entries: Option<Vec<ComponentImportEntryMetadata>>,
     pub resolved_declarations: Option<Vec<DeclarationMetadata>>,
     /// The component's own `hostDirectives`, resolved in its own frame for the type-check block.
     pub resolved_host_directives: Option<Vec<ResolvedHostDirectiveMetadata>>,
