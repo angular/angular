@@ -64,6 +64,7 @@ describe('Signal Forms WebMCP Integration', () => {
           annotations: {
             readOnlyHint: false,
             untrustedContentHint: false,
+            debugging: false,
           },
         }),
         jasmine.anything(),
