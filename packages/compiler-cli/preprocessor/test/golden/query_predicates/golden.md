@@ -12,8 +12,7 @@ export class TestComp {
   // String literal predicate: should compile to a string array
   stringQuery = viewChild(
     'myDiv',
-    /* @ts-ignore */
-    ...(ngDevMode ? [{ debugName: 'stringQuery' }] : /* istanbul ignore next */ []),
+    ...((ngDevMode ? [{ debugName: 'stringQuery' }] : /* istanbul ignore next */ []) as []),
   );
 
   // Constant identifier reference: should compile to the raw identifier expression (NOT evaluated to a string array)

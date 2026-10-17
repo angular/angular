@@ -8,8 +8,6 @@
 
 // Fake Http package with partial API coverage. Modify as needed.
 
-import {ResourceRef} from '@angular/core';
-
-export interface HttpResourceRef<T> extends ResourceRef<T> {}
+export type HttpResourceRef<T> = any;
 
 export declare function httpResource(...args: any): HttpResourceRef<any>;

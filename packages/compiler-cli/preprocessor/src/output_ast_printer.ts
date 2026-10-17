@@ -365,10 +365,6 @@ class MappingContext extends EmitterVisitorContext {
 
   /** Resolves the recorded points into offsets within the final printed `text`. */
   finish(text: string): PrintedMapping[] {
-    if (this.points.length === 0 && (this.current === null || !this.needsPoint)) {
-      return [];
-    }
-
     const lineStarts = [0];
     for (let i = 0; i < text.length; i++) {
       if (text.charCodeAt(i) === 10 /* \n */) {
