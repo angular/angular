@@ -43,8 +43,7 @@ import * as i0 from '@angular/core';
 export class DisableWhenBusyDirective {
   readonly busy = signal(
     false,
-    /* @ts-ignore */
-    ...(ngDevMode ? [{ debugName: 'busy' }] : /* istanbul ignore next */ []),
+    ...((ngDevMode ? [{ debugName: 'busy' }] : /* istanbul ignore next */ []) as []),
   );
 
   get isDisabled(): boolean {

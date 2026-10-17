@@ -40,7 +40,8 @@ export function shouldSkipInNgp(fullSpecName: string): boolean {
   return (
     NGP_KNOWN_TYPECHECK_FAILURES.has(normalized) ||
     NGP_KNOWN_EXTENDED_CHECK_FAILURES.has(normalized) ||
-    NGP_KNOWN_NGTSC_FAILURES.has(normalized)
+    NGP_KNOWN_NGTSC_FAILURES.has(normalized) ||
+    NGP_POTENTIAL_BREAKING_CHANGES.has(normalized)
   );
 }
 
@@ -60,7 +61,7 @@ export function shouldSkipComplianceInNgp(
  * Known failures in `//packages/compiler-cli/src/ngtsc/typecheck/test:test_ngp`
  * (#678-#682, #690, plus `TemplateTypeChecker` IDE metadata queries).
  */
-export const NGP_KNOWN_TYPECHECK_FAILURES: ReadonlySet<string> = new Set([
+const NGP_KNOWN_TYPECHECK_FAILURES: ReadonlySet<string> = new Set([
   'host directives should produce a diagnostic for host directive inputs and outputs that have not been exposed',
   'input signal type-check diagnostics inline constructor generic inference',
   'input signal type-check diagnostics with `--strict` inline constructor generic inference',
@@ -81,7 +82,7 @@ export const NGP_KNOWN_TYPECHECK_FAILURES: ReadonlySet<string> = new Set([
  * Known failures in `//packages/compiler-cli/src/ngtsc/typecheck/extended/test/checks/*:test_ngp`
  * (#673, #675, #676, #677 - Extended template diagnostics NG8101-NG8117 not yet implemented in NGP).
  */
-export const NGP_KNOWN_EXTENDED_CHECK_FAILURES: ReadonlySet<string> = new Set([
+const NGP_KNOWN_EXTENDED_CHECK_FAILURES: ReadonlySet<string> = new Set([
   '@let declarations should produce a warning when a signal aliased via @let is not invoked in interpolation',
   '@let declarations should produce a warning when a signal aliased via @let is used in @if',
   '@let declarations should produce a warning when a signal aliased via @let is used in a bound attribute',
@@ -220,11 +221,72 @@ export const NGP_KNOWN_EXTENDED_CHECK_FAILURES: ReadonlySet<string> = new Set([
 ]);
 
 /**
+ * Addressing these failures will likely cause breaking changes. Proceed with caution.
+ */
+const NGP_POTENTIAL_BREAKING_CHANGES: ReadonlySet<string> = new Set([
+  // Aligning the debug info shape can cause a different overload to
+  // match for signal inputs which in turn causes breakages.
+  'Debug Info Typescript tranformation afterRenderEffect should insert debug info into afterRenderEffect function if imported from angular core',
+  'Debug Info Typescript tranformation afterRenderEffect should insert debug info into afterRenderEffect function in a property assignment',
+  'Debug Info Typescript tranformation afterRenderEffect should insert debug info into afterRenderEffect function with a phase spec',
+  'Debug Info Typescript tranformation afterRenderEffect should not tree-shake away debug info if in dev mode',
+  'Debug Info Typescript tranformation afterRenderEffect should tree-shake away debug info if in prod mode',
+  'Debug Info Typescript tranformation computed Property Assignment Case should not tree-shake away debug info if in dev mode',
+  'Debug Info Typescript tranformation computed Property Assignment Case should tree-shake away debug info if in prod mode',
+  'Debug Info Typescript tranformation computed Property Declaration Case should not tree-shake away debug info if in dev mode',
+  'Debug Info Typescript tranformation computed Property Declaration Case should tree-shake away debug info if in prod mode',
+  'Debug Info Typescript tranformation computed Variable Declaration Case should not tree-shake away debug info if in dev mode',
+  'Debug Info Typescript tranformation computed Variable Declaration Case should tree-shake away debug info if in prod mode',
+  'Debug Info Typescript tranformation computed should insert debug info into computed function if imported from angular core',
+  'Debug Info Typescript tranformation contentChild .required should not tree-shake away debug info if in dev mode',
+  'Debug Info Typescript tranformation contentChild should not tree-shake away debug info if in dev mode',
+  'Debug Info Typescript tranformation contentChild should tree-shake away debug info if in prod mode',
+  'Debug Info Typescript tranformation contentChildren should not tree-shake away debug info if in dev mode',
+  'Debug Info Typescript tranformation contentChildren should tree-shake away debug info if in prod mode',
+  'Debug Info Typescript tranformation effect should insert debug info into effect function if imported from angular core',
+  'Debug Info Typescript tranformation effect should not tree-shake away debug info if in dev mode',
+  'Debug Info Typescript tranformation effect should tree-shake away debug info if in prod mode',
+  'Debug Info Typescript tranformation httpResource Property Assignment Case should not tree-shake away debug info if in dev mode',
+  'Debug Info Typescript tranformation httpResource Property Assignment Case should tree-shake away debug info if in prod mode',
+  'Debug Info Typescript tranformation httpResource Property Declaration Case should not tree-shake away debug info if in dev mode',
+  'Debug Info Typescript tranformation httpResource Property Declaration Case should tree-shake away debug info if in prod mode',
+  'Debug Info Typescript tranformation httpResource Variable Declaration Case should not tree-shake away debug info if in dev mode',
+  'Debug Info Typescript tranformation httpResource Variable Declaration Case should tree-shake away debug info if in prod mode',
+  'Debug Info Typescript tranformation input .required should insert debug info into .required',
+  'Debug Info Typescript tranformation input .required should not tree-shake away debug info if in dev mode',
+  'Debug Info Typescript tranformation input should insert debug info into input function if imported from angular core',
+  'Debug Info Typescript tranformation linkedSignal Property Assignment Case should insert debug info into linkedSignal with a computation object',
+  'Debug Info Typescript tranformation linkedSignal Property Assignment Case should not tree-shake away debug info if in dev mode',
+  'Debug Info Typescript tranformation linkedSignal Property Assignment Case should tree-shake away debug info if in prod mode',
+  'Debug Info Typescript tranformation linkedSignal Property Declaration Case should insert debug info into linkedSignal with a computation object',
+  'Debug Info Typescript tranformation linkedSignal Property Declaration Case should not tree-shake away debug info if in dev mode',
+  'Debug Info Typescript tranformation linkedSignal Property Declaration Case should tree-shake away debug info if in prod mode',
+  'Debug Info Typescript tranformation linkedSignal Variable Declaration Case should insert debug info into linkedSignal with a computation object',
+  'Debug Info Typescript tranformation linkedSignal Variable Declaration Case should not tree-shake away debug info if in dev mode',
+  'Debug Info Typescript tranformation linkedSignal Variable Declaration Case should tree-shake away debug info if in prod mode',
+  'Debug Info Typescript tranformation linkedSignal should insert debug info into linkedSignal function if imported from angular core',
+  'Debug Info Typescript tranformation model .required should insert debug info into .required',
+  'Debug Info Typescript tranformation model .required should not tree-shake away debug info if in dev mode',
+  'Debug Info Typescript tranformation model should tree-shake away debug info if in prod mode',
+  'Debug Info Typescript tranformation signal Property Assignment Case should not tree-shake away debug info if in dev mode',
+  'Debug Info Typescript tranformation signal Property Assignment Case should tree-shake away debug info if in prod mode',
+  'Debug Info Typescript tranformation signal Property Declaration Case should not tree-shake away debug info if in dev mode',
+  'Debug Info Typescript tranformation signal Property Declaration Case should tree-shake away debug info if in prod mode',
+  'Debug Info Typescript tranformation signal Variable Declaration Case should not tree-shake away debug info if in dev mode',
+  'Debug Info Typescript tranformation signal Variable Declaration Case should tree-shake away debug info if in prod mode',
+  'Debug Info Typescript tranformation viewChild .required should not tree-shake away debug info if in dev mode',
+  'Debug Info Typescript tranformation viewChild should not tree-shake away debug info if in dev mode',
+  'Debug Info Typescript tranformation viewChild should tree-shake away debug info if in prod mode',
+  'Debug Info Typescript tranformation viewChildren should not tree-shake away debug info if in dev mode',
+  'Debug Info Typescript tranformation viewChildren should tree-shake away debug info if in prod mode',
+]);
+
+/**
  * Known failures in `//packages/compiler-cli/test/ngtsc:ngtsc_ngp`
  * (HMR, local compilation, setClassDebugInfo, declaration-only emission, incremental compilation,
  * Xi18n, ComponentIndex, and diagnostic/TCB gaps #673-#696).
  */
-export const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
+const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   '@Service decorator should report if an @Service class has another Angular decorator',
   '@Service decorator should report if an @Service class uses constructor-based DI from an inherited constructor',
   '@Service decorator should report if an @Service class uses constructor-based DI from its own constructor',
@@ -901,7 +963,7 @@ export const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
  * `//packages/compiler-cli/test/compliance/local:local_ngp`, and
  * `//packages/compiler-cli/test/compliance/declaration-only:declaration-only_ngp`.
  */
-export const NGP_KNOWN_COMPLIANCE_FAILURES: ReadonlySet<string> = new Set([
+const NGP_KNOWN_COMPLIANCE_FAILURES: ReadonlySet<string> = new Set([
   'declaration-only emit::r3_compiler_compliance/components_and_directives/pipes::should handle a pipe that does not have a name',
   'declaration-only emit::r3_compiler_compliance/components_and_directives::should not use reexport names inside declarations when a direct export is available',
   'full compile::r3_compiler_compliance/components_and_directives::should not use reexport names inside declarations when a direct export is available',

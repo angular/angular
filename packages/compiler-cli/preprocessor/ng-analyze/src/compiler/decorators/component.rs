@@ -186,8 +186,8 @@ async fn resolve_own_host_directives<Fs: ResourceResolverFs + Clone + 'static>(
     reference_id: ReferenceId,
     class_name: Option<&str>,
 ) -> Option<Vec<ResolvedHostDirective>> {
-    let evaluated = ctx.analyze_file_evaluated(reference_id.file).await;
-    let class_info = evaluated.class_index.get(class_name?)?;
+    let syntax_file = ctx.analyze_file_syntax(reference_id.file).await;
+    let class_info = syntax_file.class_index.get(class_name?)?;
     resolve_host_directives_for_class(
         ctx,
         class_info,

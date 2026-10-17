@@ -22,43 +22,39 @@ const _c1 = ['el'];
 
 export const topLevel = signal(
   0,
-  /* @ts-ignore */
-  ...(ngDevMode ? [{ debugName: 'topLevel' }] : /* istanbul ignore next */ []),
+  ...((ngDevMode ? [{ debugName: 'topLevel' }] : /* istanbul ignore next */ []) as []),
 );
 
 export class SignalDebugNamesComponent {
   // No options argument: one is appended, after `undefined` when there are no arguments.
   count = signal(
     0,
-    /* @ts-ignore */
-    ...(ngDevMode ? [{ debugName: 'count' }] : /* istanbul ignore next */ []),
+    ...((ngDevMode ? [{ debugName: 'count' }] : /* istanbul ignore next */ []) as []),
   );
   noInitial = input(
-    /* @ts-ignore */
-    ...(ngDevMode ? [undefined, { debugName: 'noInitial' }] : /* istanbul ignore next */ []),
+    ...((ngDevMode
+      ? [undefined, { debugName: 'noInitial' }]
+      : /* istanbul ignore next */ []) as []),
   );
   typedNoInitial = input<string>(
-    /* @ts-ignore */
-    ...(ngDevMode ? [undefined, { debugName: 'typedNoInitial' }] : /* istanbul ignore next */ []),
+    ...((ngDevMode
+      ? [undefined, { debugName: 'typedNoInitial' }]
+      : /* istanbul ignore next */ []) as []),
   );
   twoWay = model(
     0,
-    /* @ts-ignore */
-    ...(ngDevMode ? [{ debugName: 'twoWay' }] : /* istanbul ignore next */ []),
+    ...((ngDevMode ? [{ debugName: 'twoWay' }] : /* istanbul ignore next */ []) as []),
   );
   required = input.required<string>(
-    /* @ts-ignore */
-    ...(ngDevMode ? [{ debugName: 'required' }] : /* istanbul ignore next */ []),
+    ...((ngDevMode ? [{ debugName: 'required' }] : /* istanbul ignore next */ []) as []),
   );
   el = viewChild(
     'el',
-    /* @ts-ignore */
-    ...(ngDevMode ? [{ debugName: 'el' }] : /* istanbul ignore next */ []),
+    ...((ngDevMode ? [{ debugName: 'el' }] : /* istanbul ignore next */ []) as []),
   );
   projected = contentChild.required<string>(
     'x',
-    /* @ts-ignore */
-    ...(ngDevMode ? [{ debugName: 'projected' }] : /* istanbul ignore next */ []),
+    ...((ngDevMode ? [{ debugName: 'projected' }] : /* istanbul ignore next */ []) as []),
   );
 
   // An options object literal: the name is spread into it.
@@ -90,8 +86,7 @@ export class SignalDebugNamesComponent {
   });
   fetched = httpResource(
     () => '/api',
-    /* @ts-ignore */
-    ...(ngDevMode ? [{ debugName: 'fetched' }] : /* istanbul ignore next */ []),
+    ...((ngDevMode ? [{ debugName: 'fetched' }] : /* istanbul ignore next */ []) as []),
   );
 
   // Left alone: already named, opaque options, not an Angular import under its own name.
@@ -101,27 +96,23 @@ export class SignalDebugNamesComponent {
 
   'quoted-name' = signal(
     '',
-    /* @ts-ignore */
-    ...(ngDevMode ? [{ debugName: "'quoted-name'" }] : /* istanbul ignore next */ []),
+    ...((ngDevMode ? [{ debugName: "'quoted-name'" }] : /* istanbul ignore next */ []) as []),
   );
   #secret = signal(
     1,
-    /* @ts-ignore */
-    ...(ngDevMode ? [{ debugName: '#secret' }] : /* istanbul ignore next */ []),
+    ...((ngDevMode ? [{ debugName: '#secret' }] : /* istanbul ignore next */ []) as []),
   );
   assigned;
 
   constructor() {
     this.assigned = computed(
       () => this.#secret() + 1,
-      /* @ts-ignore */
-      ...(ngDevMode ? [{ debugName: 'assigned' }] : /* istanbul ignore next */ []),
+      ...((ngDevMode ? [{ debugName: 'assigned' }] : /* istanbul ignore next */ []) as []),
     );
     effect(() => console.log(this.count()));
     const local = signal(
       false,
-      /* @ts-ignore */
-      ...(ngDevMode ? [{ debugName: 'local' }] : /* istanbul ignore next */ []),
+      ...((ngDevMode ? [{ debugName: 'local' }] : /* istanbul ignore next */ []) as []),
     );
     const outer = computed(
       () => {
@@ -129,8 +120,7 @@ export class SignalDebugNamesComponent {
         const inner = signal(1);
         return inner() + Number(local());
       },
-      /* @ts-ignore */
-      ...(ngDevMode ? [{ debugName: 'outer' }] : /* istanbul ignore next */ []),
+      ...((ngDevMode ? [{ debugName: 'outer' }] : /* istanbul ignore next */ []) as []),
     );
     void outer;
   }

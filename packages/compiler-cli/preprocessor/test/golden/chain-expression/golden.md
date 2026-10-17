@@ -7,8 +7,7 @@ import * as i0 from '@angular/core';
 export class AppComponent {
   sig = signal(
     false,
-    /* @ts-ignore */
-    ...(ngDevMode ? [{ debugName: 'sig' }] : /* istanbul ignore next */ []),
+    ...((ngDevMode ? [{ debugName: 'sig' }] : /* istanbul ignore next */ []) as []),
   );
   a() {}
   b() {}

@@ -54,11 +54,7 @@ export class SignalDir {
 }
 
 export class SignalComp {
-  val = model(
-    0,
-    /* @ts-ignore */
-    ...(ngDevMode ? [{ debugName: 'val' }] : /* istanbul ignore next */ []),
-  );
+  val = model(0, ...((ngDevMode ? [{ debugName: 'val' }] : /* istanbul ignore next */ []) as []));
   custom = model(false, {
     ...(ngDevMode ? { debugName: 'custom' } : /* istanbul ignore next */ {}),
     alias: 'customAlias',

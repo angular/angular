@@ -819,6 +819,29 @@ runInEachFileSystem(() => {
         );
       });
 
+      it('should not change which overload a zero-argument model call resolves to', () => {
+        env.write(
+          'test.ts',
+          `
+            import {model, ModelSignal, Component} from '@angular/core';
+
+            @Component({
+                template: ''
+            }) export class MyComponent {
+                explicit: ModelSignal<string | undefined> = model<string>();
+                inferred = model<string>();
+                untyped = model();
+            }
+          `,
+        );
+        env.driveMain();
+
+        const dtsContents = env.getContents('test.d.ts');
+        expect(dtsContents).toContain('explicit: ModelSignal<string | undefined>;');
+        expect(dtsContents).toContain('inferred: ModelSignal<string | undefined>;');
+        expect(dtsContents).toContain('untyped: ModelSignal<unknown>;');
+      });
+
       it('should tree-shake away debug info if in prod mode', async () => {
         env.write(
           'test.ts',
@@ -1006,6 +1029,29 @@ runInEachFileSystem(() => {
         expect(cleanNewLines(jsContents)).toContain(
           `input(/* @ts-ignore */ ...(ngDevMode ? [undefined, { debugName: "testInput" }] : /* istanbul ignore next */ []))`,
         );
+      });
+
+      it('should not change which overload a zero-argument input call resolves to', () => {
+        env.write(
+          'test.ts',
+          `
+            import {input, InputSignal, Component} from '@angular/core';
+
+            @Component({
+                template: ''
+            }) export class MyComponent {
+                explicit: InputSignal<string | undefined> = input<string>();
+                inferred = input<string>();
+                untyped = input();
+            }
+          `,
+        );
+        env.driveMain();
+
+        const dtsContents = env.getContents('test.d.ts');
+        expect(dtsContents).toContain('explicit: InputSignal<string | undefined>;');
+        expect(dtsContents).toContain('inferred: InputSignal<string | undefined>;');
+        expect(dtsContents).toContain('untyped: InputSignal<unknown>;');
       });
 
       it('should tree-shake away debug info if in prod mode', async () => {

@@ -361,7 +361,7 @@ export function processFileSync(
   const generateSourceMap = (options?: OutputSourceMapOptions) => out.generateMap(options);
 
   if (!ctx.emitDeclarationOnly) {
-    insertSignalDebugNames(s, result.signalDebugNames);
+    insertSignalDebugNames(s, result.signalDebugNames, printer.emitTypes);
   }
 
   // Reuse namespace aliases the file already has, so re-processing an already-processed file
@@ -1913,7 +1913,12 @@ const FORWARD_REFERENCE_GUARD = '// @ts-ignore\n';
 /**
  * Give each signal-creating call the analyzer found its implicit `debugName`.
  */
-function insertSignalDebugNames(s: MagicString, insertions: nga.SignalDebugNameMetadata[]): void {
+function insertSignalDebugNames(
+  s: MagicString,
+  insertions: nga.SignalDebugNameMetadata[],
+  emitTypes: boolean,
+): void {
+  // Note: we diverge from ngtsc with the `as []` as opposed to adding a `@ts-ignore`.
   for (const insertion of insertions) {
     const debugName = `{ debugName: ${JSON.stringify(insertion.debugName)} }`;
     const separator = insertion.needsSeparator ? ', ' : '';
@@ -1925,8 +1930,11 @@ function insertSignalDebugNames(s: MagicString, insertions: nga.SignalDebugNameM
       continue;
     }
     const devArgs = insertion.prependUndefined ? `undefined, ${debugName}` : debugName;
-    const spread = `\n/* @ts-ignore */\n...(ngDevMode ? [${devArgs}] : /* istanbul ignore next */ [])`;
-    s.appendLeft(insertion.position, `${insertion.needsSeparator ? ',' : ''}${spread}`);
+    const spread = `...(ngDevMode ? [${devArgs}] : /* istanbul ignore next */ [])`;
+    s.appendLeft(
+      insertion.position,
+      emitTypes ? `${separator}${spread} as []` : `${separator}/* @ts-ignore */ ${spread}`,
+    );
   }
 }
 
@@ -3151,7 +3159,7 @@ function parseComponentTemplate(
   // the template file itself (as in ngtsc's `extractTemplate`).
   return parseTemplate(
     component.template || '',
-    component.templateUrl?.resolvedPath ?? '',
+    component.templateUrl?.resolvedPath ?? filePath,
     parseOptions,
   );
 }
