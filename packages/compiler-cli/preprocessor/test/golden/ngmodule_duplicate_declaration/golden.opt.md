@@ -190,7 +190,25 @@ export class M2Module {
       "span": {
         "start": 156,
         "end": 157
-      }
+      },
+      "relatedInformation": [
+        {
+          "filePath": "/m1.module.ts",
+          "span": {
+            "start": 133,
+            "end": 134
+          },
+          "messageText": "'C' is listed in the declarations of the NgModule 'M1Module'."
+        },
+        {
+          "filePath": "/m2.module.ts",
+          "span": {
+            "start": 133,
+            "end": 134
+          },
+          "messageText": "'C' is listed in the declarations of the NgModule 'M2Module'."
+        }
+      ]
     },
     {
       "filePath": "/d.directive.ts",
@@ -200,7 +218,25 @@ export class M2Module {
       "span": {
         "start": 141,
         "end": 142
-      }
+      },
+      "relatedInformation": [
+        {
+          "filePath": "/m1.module.ts",
+          "span": {
+            "start": 136,
+            "end": 137
+          },
+          "messageText": "'D' is listed in the declarations of the NgModule 'M1Module'."
+        },
+        {
+          "filePath": "/m2.module.ts",
+          "span": {
+            "start": 136,
+            "end": 137
+          },
+          "messageText": "'D' is listed in the declarations of the NgModule 'M2Module'."
+        }
+      ]
     }
   ]
 }

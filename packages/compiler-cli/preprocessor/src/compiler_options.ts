@@ -18,13 +18,36 @@ export type DiagnosticCategoryLabel = 'warning' | 'error' | 'suppress';
 const DIAGNOSTIC_CATEGORY_LABELS: readonly string[] = ['warning', 'error', 'suppress'];
 
 /**
+ * Mirrors `ExtendedTemplateDiagnosticName` in
+ * `ngtsc/diagnostics/src/extended_template_diagnostic_name.ts`.
+ */
+export type ExtendedTemplateDiagnosticName =
+  | 'controlFlowPreventingContentProjection'
+  | 'unusedStandaloneImports'
+  | 'invalidBananaInBox'
+  | 'nullishCoalescingNotNullable'
+  | 'numericCssPropertyRequiresUnit'
+  | 'optionalChainNotNullable'
+  | 'missingControlFlowDirective'
+  | 'textAttributeNotBinding'
+  | 'missingNgForOfLet'
+  | 'missingStructuralDirective'
+  | 'suffixNotSupported'
+  | 'interpolatedSignalNotInvoked'
+  | 'uninvokedFunctionInEventBinding'
+  | 'unusedLetDeclaration'
+  | 'skipHydrationNotStatic'
+  | 'unparenthesizedNullishCoalescing'
+  | 'uninvokedTrackFunction'
+  | 'uninvokedFunctionInTextInterpolation'
+  | 'deferTriggerMisconfiguration';
+
+/**
  * Mirrors `SUPPORTED_DIAGNOSTIC_NAMES` in `ngtsc/typecheck/extended/index.ts`, in its iteration
  * order (the two option-only checks, then `ALL_DIAGNOSTIC_FACTORIES`), since the diagnostic
  * lists them. Keep in sync when a check is added upstream.
- *
- * TODO: dervive these from the actual diagnostics once they're implemented.
  */
-const SUPPORTED_DIAGNOSTIC_NAMES: ReadonlySet<string> = new Set([
+export const SUPPORTED_DIAGNOSTIC_NAMES: ReadonlySet<ExtendedTemplateDiagnosticName> = new Set([
   'controlFlowPreventingContentProjection',
   'unusedStandaloneImports',
   'invalidBananaInBox',
@@ -47,14 +70,13 @@ const SUPPORTED_DIAGNOSTIC_NAMES: ReadonlySet<string> = new Set([
 ]);
 
 /**
- * Mirrors `DiagnosticOptions['extendedDiagnostics']`. Upstream keys `checks` by
- * `ExtendedTemplateDiagnosticName`; only the checks the preprocessor reads are named here.
+ * Mirrors `DiagnosticOptions['extendedDiagnostics']`.
  */
 export interface ExtendedDiagnosticsOptions {
   defaultCategory?: DiagnosticCategoryLabel;
   checks?: {
-    controlFlowPreventingContentProjection?: DiagnosticCategoryLabel;
-    unusedStandaloneImports?: DiagnosticCategoryLabel;
+    [K in ExtendedTemplateDiagnosticName]?: DiagnosticCategoryLabel;
+  } & {
     readonly [name: string]: DiagnosticCategoryLabel | undefined;
   };
 }
@@ -82,6 +104,7 @@ export interface NgpCompilerOptions {
 
   // Diagnostics (`DiagnosticOptions`).
   extendedDiagnostics?: ExtendedDiagnosticsOptions;
+  unusedStandaloneImports?: DiagnosticCategoryLabel;
 
   // Emit and Bazel/google3 (`BazelAndG3Options`, `InternalOptions`).
   annotateForClosureCompiler?: boolean;
@@ -113,25 +136,24 @@ export interface NgpCompilerOptions {
   rootDirs?: string[];
 }
 
-const CONFIG_EXTENDED_DIAGNOSTICS_IMPLIES_STRICT_TEMPLATES = 4002;
-const CONFIG_EXTENDED_DIAGNOSTICS_UNKNOWN_CATEGORY_LABEL = 4003;
-const CONFIG_EXTENDED_DIAGNOSTICS_UNKNOWN_CHECK = 4004;
+const CONFIG_EXTENDED_DIAGNOSTICS_IMPLIES_STRICT_TEMPLATES = 4003;
+const CONFIG_EXTENDED_DIAGNOSTICS_UNKNOWN_CATEGORY_LABEL = 4004;
+const CONFIG_EXTENDED_DIAGNOSTICS_UNKNOWN_CHECK = 4005;
 const CONFIG_EMIT_DECLARATION_ONLY_UNSUPPORTED = 4006;
 
 /**
- * Validates the compiler options up front, the way `NgCompiler`'s constructor does
- * (`constructionDiagnostics`). These diagnostics have no file: they describe the tsconfig, not a
- * source location. ngtsc reports them before any other diagnostic and, if any is an error, skips
- * the rest of the compilation, so callers should check them first.
- * https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/core/src/compiler.ts#L1800-L1874
+ * Validates `extendedDiagnostics` compiler options, mirroring `verifyCompatibleTypeCheckOptions`
+ * in `ngtsc/core/src/compiler.ts`.
  */
-export function verifyCompilerOptions(options: NgpCompilerOptions): NgDiagnostic[] {
+export function verifyExtendedDiagnosticsOptions(options: NgpCompilerOptions): NgDiagnostic[] {
+  if (!options.extendedDiagnostics) {
+    return [];
+  }
   const diagnostics: NgDiagnostic[] = [];
   const configError = (code: number, messageText: string) =>
     diagnostics.push({category: 1, code, messageText});
 
-  // `verifyCompatibleTypeCheckOptions`
-  if (options.extendedDiagnostics && options.strictTemplates === false) {
+  if (options.strictTemplates === false) {
     configError(
       CONFIG_EXTENDED_DIAGNOSTICS_IMPLIES_STRICT_TEMPLATES,
       `
@@ -146,8 +168,8 @@ One of the following actions is required:
     );
   }
 
-  const defaultCategory = options.extendedDiagnostics?.defaultCategory;
-  if (defaultCategory && !DIAGNOSTIC_CATEGORY_LABELS.includes(defaultCategory)) {
+  const defaultCategory = options.extendedDiagnostics.defaultCategory;
+  if (defaultCategory !== undefined && !DIAGNOSTIC_CATEGORY_LABELS.includes(defaultCategory)) {
     configError(
       CONFIG_EXTENDED_DIAGNOSTICS_UNKNOWN_CATEGORY_LABEL,
       `
@@ -159,8 +181,8 @@ ${DIAGNOSTIC_CATEGORY_LABELS.join('\n')}
     );
   }
 
-  for (const [checkName, category] of Object.entries(options.extendedDiagnostics?.checks ?? {})) {
-    if (!SUPPORTED_DIAGNOSTIC_NAMES.has(checkName)) {
+  for (const [checkName, category] of Object.entries(options.extendedDiagnostics.checks ?? {})) {
+    if (!(SUPPORTED_DIAGNOSTIC_NAMES as ReadonlySet<string>).has(checkName)) {
       configError(
         CONFIG_EXTENDED_DIAGNOSTICS_UNKNOWN_CHECK,
         `
@@ -185,12 +207,26 @@ ${DIAGNOSTIC_CATEGORY_LABELS.join('\n')}
     }
   }
 
+  return diagnostics;
+}
+
+/**
+ * Validates the compiler options up front, the way `NgCompiler`'s constructor does
+ * (`constructionDiagnostics`). These diagnostics have no file: they describe the tsconfig, not a
+ * source location. ngtsc reports them before any other diagnostic and, if any is an error, skips
+ * the rest of the compilation, so callers should check them first.
+ * https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/core/src/compiler.ts#L1800-L1874
+ */
+export function verifyCompilerOptions(options: NgpCompilerOptions): NgDiagnostic[] {
+  const diagnostics = verifyExtendedDiagnosticsOptions(options);
+
   // `verifyEmitDeclarationOnly`
   if (options.emitDeclarationOnly && !options._experimentalAllowEmitDeclarationOnly) {
-    configError(
-      CONFIG_EMIT_DECLARATION_ONLY_UNSUPPORTED,
-      'TS compiler option "emitDeclarationOnly" is not supported.',
-    );
+    diagnostics.push({
+      category: 1,
+      code: CONFIG_EMIT_DECLARATION_ONLY_UNSUPPORTED,
+      messageText: 'TS compiler option "emitDeclarationOnly" is not supported.',
+    });
   }
 
   return diagnostics;

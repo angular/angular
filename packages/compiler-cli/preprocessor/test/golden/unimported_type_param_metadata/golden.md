@@ -226,7 +226,17 @@ export class AmbientNamespaceInjectService {
       "span": {
         "start": 181,
         "end": 187
-      }
+      },
+      "relatedInformation": [
+        {
+          "filePath": "/component.ts",
+          "span": {
+            "start": 189,
+            "end": 212
+          },
+          "messageText": "This type does not have a value, so it cannot be used as injection token."
+        }
+      ]
     }
   ]
 }

@@ -156,6 +156,16 @@ export interface CompilationChunk {
   staticEdges?: Record<string, Array<FileId>>;
 }
 
+export interface ComponentImportEntryMetadata {
+  name: string;
+  filePath?: string;
+  declarationType: string;
+  pipeName?: string;
+  isStandalone?: boolean;
+  isPotentialShared: boolean;
+  usageSpan?: SpanMetadata;
+}
+
 export interface ComponentMetadata {
   decoratorName?: string;
   selector?: string;
@@ -186,8 +196,15 @@ export interface ComponentMetadata {
   exportAs?: Array<string>;
   schemas?: Array<string>;
   rawImportsSpan?: SpanMetadata;
+  /** Span of the `imports` property key in `@Component({ imports: ... })`. */
+  importsKeySpan?: SpanMetadata;
   /** Preserved `@Component.imports` expression span for local compilation mode. */
   importsFactorySpan?: SpanMetadata;
+  /**
+   * Resolved entries of `@Component.imports` (prior to NgModule export expansion), used by
+   * `unusedStandaloneImports` (`NG8113`) validation.
+   */
+  resolvedImportEntries?: Array<ComponentImportEntryMetadata>;
   resolvedDeclarations?: Array<DeclarationMetadata>;
   /** The component's own `hostDirectives`, resolved in its own frame for the type-check block. */
   resolvedHostDirectives?: Array<ResolvedHostDirectiveMetadata>;

@@ -17,6 +17,7 @@ import * as fsSync from 'node:fs';
 import * as fs from 'node:fs/promises';
 import * as path from 'path';
 import {makeClassKey} from './compiler-utils.js';
+import {verifyExtendedDiagnosticsOptions} from './compiler_options.js';
 import {DependencyTemplates} from './dependency_templates.js';
 import {flattenNgDiagnosticMessage, withErrorGuide} from './diagnostic.js';
 import {ChunkContext, FileAnalysis, getOrCreateFileAnalysis} from './file_analysis.js';
@@ -69,6 +70,9 @@ export function serializeDiagnostics(
           code: d.code,
           messageText: flattenNgDiagnosticMessage(d),
           span: d.span,
+          ...(d.relatedInformation && d.relatedInformation.length > 0
+            ? {relatedInformation: d.relatedInformation}
+            : {}),
         })),
       },
       null,
@@ -155,7 +159,7 @@ export class HybridCompiler {
   readonly tsconfigPath?: string;
   readonly diagnosticsMap = new Map<string, nga.NgDiagnostic[]>();
   readonly virtualFiles?: Record<string, string>;
-  readonly tcbConfig: NgpTypeCheckingConfig;
+  tcbConfig: NgpTypeCheckingConfig;
   readonly templateParseOptions: Partial<ParseTemplateOptions>;
   readonly legacyOptionalChaining: boolean;
   readonly isClosureCompilerEnabled: boolean;
@@ -204,6 +208,22 @@ export class HybridCompiler {
       throw new Error(
         'JIT mode support ("supportJitMode" option) cannot be disabled when forbidOrphanComponents is set to true',
       );
+    }
+    if (this.tcbConfig.extendedDiagnostics) {
+      const configErrors = verifyExtendedDiagnosticsOptions({
+        strictTemplates: this.tcbConfig.checkTemplateBodies,
+        extendedDiagnostics: this.tcbConfig.extendedDiagnostics,
+      });
+      if (configErrors.length > 0) {
+        this.diagnosticsMap.set(this.tsconfigPath ?? '', configErrors);
+        this.tcbConfig = {
+          ...this.tcbConfig,
+          controlFlowPreventingContentProjection: 'suppress',
+          unusedStandaloneImports: 'suppress',
+          extendedDiagnostics: {defaultCategory: 'suppress'},
+          disabledExtendedDiagnostics: true,
+        };
+      }
     }
     this.rootDir = options.rootDir;
     this.complianceMode = options.complianceMode ?? false;

@@ -27,9 +27,10 @@ import {
   TypeCheckingConfig,
   TypeCtorMetadata,
 } from '@angular/compiler';
-import type {NgpCompilerOptions} from './compiler_options.js';
+import type {ExtendedDiagnosticsOptions, NgpCompilerOptions} from './compiler_options.js';
 import {Diagnostic} from './diagnostic.js';
 import {RegistryDomSchemaChecker} from './dom_schema_checker.js';
+import {runExtendedDiagnostics} from './extended_diagnostics.js';
 
 import MagicString from 'magic-string';
 
@@ -155,6 +156,8 @@ export interface PipeMeta {
 export interface NgpTypeCheckingConfig extends TypeCheckingConfig {
   typeCheckHostBindings?: boolean;
   usePoisonedData?: boolean;
+  extendedDiagnostics?: ExtendedDiagnosticsOptions;
+  disabledExtendedDiagnostics?: boolean;
 }
 
 export function buildTypeCheckingConfig(
@@ -192,6 +195,7 @@ export function buildTypeCheckingConfig(
         options.extendedDiagnostics?.defaultCategory ??
         'warning',
       unusedStandaloneImports:
+        options.unusedStandaloneImports ??
         options.extendedDiagnostics?.checks?.unusedStandaloneImports ??
         options.extendedDiagnostics?.defaultCategory ??
         'warning',
@@ -229,6 +233,7 @@ export function buildTypeCheckingConfig(
         options.extendedDiagnostics?.defaultCategory ??
         'warning',
       unusedStandaloneImports:
+        options.unusedStandaloneImports ??
         options.extendedDiagnostics?.checks?.unusedStandaloneImports ??
         options.extendedDiagnostics?.defaultCategory ??
         'warning',
@@ -276,6 +281,7 @@ export function buildTypeCheckingConfig(
   typeCheckingConfig.typeCheckHostBindings = options.typeCheckHostBindings ?? true;
   typeCheckingConfig.usePoisonedData =
     usePoisonedData || Boolean(options._compilePoisonedComponents);
+  typeCheckingConfig.extendedDiagnostics = options.extendedDiagnostics;
 
   return typeCheckingConfig;
 }
@@ -610,7 +616,7 @@ export function prepareTcbTargets(
 export function generateTcbCode(
   filePath: string,
   preparedData: PreparedTcbData,
-  config: TypeCheckingConfig,
+  config: NgpTypeCheckingConfig,
 ): TcbResult | null {
   const {targets, requiresInline} = preparedData;
   if (targets.length === 0) return null;
@@ -619,6 +625,7 @@ export function generateTcbCode(
   const oobRecorder = new OutOfBandDiagnosticRecorderImpl();
   const domSchemaChecker = new RegistryDomSchemaChecker();
   const semanticsDiagnostics: Diagnostic[] = [];
+  const extendedDiagnostics: Diagnostic[] = [];
 
   let code = '';
   let functionStrings = '';
@@ -638,10 +645,6 @@ export function generateTcbCode(
       ? {...targetMeta, typeParameters: targetTypeParams}
       : targetMeta;
 
-    semanticsDiagnostics.push(
-      ...getTemplateSemanticsDiagnostics(typeCheckId, comp.templateNodes, tcbMeta.boundTarget),
-    );
-
     let tcbString = '';
     try {
       tcbString = generateTypeCheckBlock(
@@ -659,6 +662,24 @@ export function generateTcbCode(
         {start: comp.classMeta.span.start, end: comp.classMeta.span.end},
       );
       continue;
+    }
+
+    if (!config.disabledExtendedDiagnostics) {
+      semanticsDiagnostics.push(
+        ...getTemplateSemanticsDiagnostics(typeCheckId, comp.templateNodes, tcbMeta.boundTarget),
+      );
+      extendedDiagnostics.push(
+        ...runExtendedDiagnostics(
+          typeCheckId,
+          comp,
+          tcbMeta.boundTarget,
+          filePath,
+          config.extendedDiagnostics,
+          undefined,
+          config.checkTemplateBodies,
+          config.unusedStandaloneImports,
+        ),
+      );
     }
 
     functionStrings += tcbString + '\n\n';
@@ -689,6 +710,7 @@ export function generateTcbCode(
       ...domSchemaChecker.diagnostics,
       ...oobRecorder.diagnostics,
       ...semanticsDiagnostics,
+      ...extendedDiagnostics,
     ],
     isInline: requiresInline,
   };

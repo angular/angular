@@ -244,6 +244,7 @@ function _tcb5(this: i0.AppByName) {
  - (790, 797) 'Child' is not a known element:
 1. If 'Child' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
 2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.
+ - (759, 766) All imports are unused
 */
 
 ```
@@ -569,6 +570,16 @@ export class AppByName {
 {
   "tsconfigPath": "/tsconfig.json",
   "diagnostics": [
+    {
+      "filePath": "/standalone.ts",
+      "category": "warning",
+      "code": 8113,
+      "messageText": "All imports are unused",
+      "span": {
+        "start": 759,
+        "end": 766
+      }
+    },
     {
       "filePath": "/standalone.ts",
       "category": "error",

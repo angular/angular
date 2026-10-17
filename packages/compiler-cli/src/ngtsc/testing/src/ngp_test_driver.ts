@@ -9,6 +9,7 @@
 import {decode, encode, SourceMapMappings, SourceMapSegment} from '@jridgewell/sourcemap-codec';
 import {AbstractBoundTemplate, ParseTemplateOptions} from '@angular/compiler';
 import * as fsSync from 'node:fs';
+import {createRequire} from 'node:module';
 import * as path from 'node:path';
 import ts from 'typescript';
 
@@ -28,7 +29,6 @@ import {
   type WasmHostFs,
   type WasmInner,
 } from '../../../../preprocessor/api';
-import {createRequire} from 'node:module';
 import {exitCodeFromResult} from '../../../perform_compile';
 import {verifySupportedTypeScriptVersion} from '../../../typescript_support';
 import {CompilerOptions, CustomTransformers, UNKNOWN_ERROR_CODE} from '../../../transformers/api';
@@ -514,7 +514,7 @@ export function performNgpCompilationSync(params: {
     if (sf) {
       return sf;
     }
-    if (!fs.exists(fsPath)) {
+    if (!fs.exists(fsPath) || fs.lstat(fsPath).isDirectory()) {
       return undefined;
     }
     const content = fs.readFile(fsPath);
@@ -677,7 +677,10 @@ export function performNgpCompilationSync(params: {
   );
   for (const [diagPosixPath, ngDiags] of hasOptionErrors ? [] : sortedDiagEntries) {
     for (const ngDiag of ngDiags) {
-      const origSf = getOriginalSourceFile(fromPosixPath(fs, ngDiag.filePath ?? diagPosixPath));
+      const targetPosixPath = ngDiag.filePath || diagPosixPath;
+      const origSf = targetPosixPath
+        ? getOriginalSourceFile(fromPosixPath(fs, targetPosixPath))
+        : undefined;
       allDiagnostics.push(
         convertNgDiagnosticToTs(ngDiag, origSf, (relatedPosixPath) =>
           getOriginalSourceFile(fromPosixPath(fs, relatedPosixPath)),

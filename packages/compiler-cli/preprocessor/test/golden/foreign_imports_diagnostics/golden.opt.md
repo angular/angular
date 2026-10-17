@@ -238,7 +238,17 @@ export class LegacyComponent {
       "span": {
         "start": 196,
         "end": 210
-      }
+      },
+      "relatedInformation": [
+        {
+          "filePath": "/legacy.component.ts",
+          "span": {
+            "start": 228,
+            "end": 243
+          },
+          "messageText": "Did you forget to add 'standalone: true' to this @Component?"
+        }
+      ]
     }
   ]
 }

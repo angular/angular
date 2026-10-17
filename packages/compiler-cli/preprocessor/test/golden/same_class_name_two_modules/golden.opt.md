@@ -13,6 +13,10 @@ function _tcb1(this: i0.AppComponent) {
   }
 }
 
+/* Diagnostics:
+ - (318, 325) Widget is not used within the template of AppComponent
+*/
+
 ```
 
 # /out/app.component.ts
@@ -359,5 +363,25 @@ export class Widget {
   (typeof ngDevMode === 'undefined' || ngDevMode) &&
     i0.ɵsetClassDebugInfo(Widget, { className: 'Widget', filePath: 'widget-c.ts', lineNumber: 7 });
 })();
+
+```
+
+# /tsconfig.ngdiag.json
+```json
+{
+  "tsconfigPath": "/tsconfig.json",
+  "diagnostics": [
+    {
+      "filePath": "/app.component.ts",
+      "category": "warning",
+      "code": 8113,
+      "messageText": "Widget is not used within the template of AppComponent",
+      "span": {
+        "start": 318,
+        "end": 325
+      }
+    }
+  ]
+}
 
 ```

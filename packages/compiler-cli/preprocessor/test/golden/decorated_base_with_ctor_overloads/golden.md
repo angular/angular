@@ -118,7 +118,17 @@ export class Child extends Base {
       "span": {
         "start": 554,
         "end": 559
-      }
+      },
+      "relatedInformation": [
+        {
+          "filePath": "/app.ts",
+          "span": {
+            "start": 562,
+            "end": 569
+          },
+          "messageText": "This type is not supported as injection token."
+        }
+      ]
     }
   ]
 }

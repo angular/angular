@@ -37,6 +37,11 @@ function _tcb5(this: i0.CmpLocalTransitive) {
   }
 }
 
+/* Diagnostics:
+ - (244, 249) SaDir is not used within the template of CmpNested
+ - (211, 216) SaDir is not used within the template of CmpNoProv
+*/
+
 ```
 
 # /out/app.module.ts
@@ -489,6 +494,36 @@ export class ProvModule {
         null,
       );
   }
+}
+
+```
+
+# /tsconfig.ngdiag.json
+```json
+{
+  "tsconfigPath": "/tsconfig.json",
+  "diagnostics": [
+    {
+      "filePath": "/app.module.ts",
+      "category": "warning",
+      "code": 8113,
+      "messageText": "SaDir is not used within the template of CmpNoProv",
+      "span": {
+        "start": 211,
+        "end": 216
+      }
+    },
+    {
+      "filePath": "/app.module.ts",
+      "category": "warning",
+      "code": 8113,
+      "messageText": "SaDir is not used within the template of CmpNested",
+      "span": {
+        "start": 244,
+        "end": 249
+      }
+    }
+  ]
 }
 
 ```
