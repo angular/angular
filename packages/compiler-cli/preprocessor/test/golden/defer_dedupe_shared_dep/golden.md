@@ -40,27 +40,29 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['ng-component']],
-    decls: 9,
-    vars: 0,
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomTemplate(0, AppComponent_Defer_0_Template, 1, 0);
-        i0.ɵɵdefer(1, 0);
-        i0.ɵɵdeferOnIdle();
-        i0.ɵɵdomTemplate(3, AppComponent_Defer_3_Template, 1, 0);
-        i0.ɵɵdefer(4, 3);
-        i0.ɵɵdeferOnIdle();
-        i0.ɵɵdomTemplate(6, AppComponent_Defer_6_Template, 1, 0);
-        i0.ɵɵdefer(7, 6);
-        i0.ɵɵdeferOnIdle();
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [SharedDep, OtherDep]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['ng-component']],
+      decls: 9,
+      vars: 0,
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomTemplate(0, AppComponent_Defer_0_Template, 1, 0);
+          i0.ɵɵdefer(1, 0);
+          i0.ɵɵdeferOnIdle();
+          i0.ɵɵdomTemplate(3, AppComponent_Defer_3_Template, 1, 0);
+          i0.ɵɵdefer(4, 3);
+          i0.ɵɵdeferOnIdle();
+          i0.ɵɵdomTemplate(6, AppComponent_Defer_6_Template, 1, 0);
+          i0.ɵɵdefer(7, 6);
+          i0.ɵɵdeferOnIdle();
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [SharedDep, OtherDep]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -129,18 +131,20 @@ export class OtherDep {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: OtherDep,
-    selectors: [['other-dep']],
-    decls: 1,
-    vars: 0,
-    template: function OtherDep_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0, 'Other');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: OtherDep,
+      selectors: [['other-dep']],
+      decls: 1,
+      vars: 0,
+      template: function OtherDep_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0, 'Other');
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -197,18 +201,20 @@ export class SharedDep {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: SharedDep,
-    selectors: [['shared-dep']],
-    decls: 1,
-    vars: 0,
-    template: function SharedDep_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0, 'Shared');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: SharedDep,
+      selectors: [['shared-dep']],
+      decls: 1,
+      vars: 0,
+      template: function SharedDep_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0, 'Shared');
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

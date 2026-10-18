@@ -12,9 +12,9 @@ import * as i1 from './my-module';
 function _tcb1(this: i0.AppComponent) {
   if (true) {
     var _t1 /*T:DIR:0*/ /*190,220*/ = null! as i1.MyDtsDirective; /*T:VAE*/
-    _t1.myProp /*203,209*/ = 'test' /*212,218*/ /*202,219*/;
+    _t1.myProp /*203,209*/ = 'test' /*212,218*/; /*202,219*/
     var _t2 /*T:DIR:0*/ /*231,257*/ = null! as i1.MyDtsComponent; /*T:VAE*/
-    _t2.myProp /*240,246*/ = 'test' /*249,255*/ /*239,256*/;
+    _t2.myProp /*240,246*/ = 'test' /*249,255*/; /*239,256*/
   }
 }
 
@@ -47,28 +47,30 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 2,
-    vars: 2,
-    consts: [
-      ['my-dir', '', 3, 'myProp'],
-      [3, 'myProp'],
-    ],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'div', 0)(1, 'my-cmp', 1);
-      }
-      if (rf & 2) {
-        i0.ɵɵproperty('myProp', 'test');
-        i0.ɵɵadvance();
-        i0.ɵɵproperty('myProp', 'test');
-      }
-    },
-    dependencies: [MyNestedModule, i1.MyDtsDirective, i1.MyDtsComponent],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 2,
+      vars: 2,
+      consts: [
+        ['my-dir', '', 3, 'myProp'],
+        [3, 'myProp'],
+      ],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'div', 0)(1, 'my-cmp', 1);
+        }
+        if (rf & 2) {
+          i0.ɵɵproperty('myProp', 'test');
+          i0.ɵɵadvance();
+          i0.ɵɵproperty('myProp', 'test');
+        }
+      },
+      dependencies: [MyNestedModule, i1.MyDtsDirective, i1.MyDtsComponent],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

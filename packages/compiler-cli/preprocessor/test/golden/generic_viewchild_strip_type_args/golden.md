@@ -22,20 +22,22 @@ export class ChildComponent<T> {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ChildComponent,
-    selectors: [['child-comp']],
-    decls: 2,
-    vars: 0,
-    template: function ChildComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1, 'Child');
-        i0.ɵɵelementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ChildComponent,
+      selectors: [['child-comp']],
+      decls: 2,
+      vars: 0,
+      template: function ChildComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'Child');
+          i0.ɵɵelementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -83,29 +85,31 @@ export class ParentComponent<T> {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ParentComponent,
-    selectors: [['parent-comp']],
-    viewQuery: function ParentComponent_Query(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵviewQuery(ChildComponent, 5);
-      }
-      if (rf & 2) {
-        let _t: any;
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.child = _t.first);
-      }
-    },
-    decls: 2,
-    vars: 0,
-    template: function ParentComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1, 'Parent');
-        i0.ɵɵelementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ParentComponent,
+      selectors: [['parent-comp']],
+      viewQuery: function ParentComponent_Query(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵviewQuery(ChildComponent, 5);
+        }
+        if (rf & 2) {
+          let _t: any;
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.child = _t.first);
+        }
+      },
+      decls: 2,
+      vars: 0,
+      template: function ParentComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'Parent');
+          i0.ɵɵelementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

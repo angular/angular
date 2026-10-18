@@ -15,6 +15,7 @@ export class ImportedStateTextPipe implements PipeTransform {
     };
   // @ts-ignore
   static ɵpipe: i0.ɵɵPipeDeclaration<ImportedStateTextPipe, 'stateText', false> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefinePipe({
       name: 'stateText',
       type: ImportedStateTextPipe,
@@ -49,13 +50,13 @@ export class ImportedSharedModule {
       return new (__ngFactoryType__ || ImportedSharedModule)();
     };
   // @ts-ignore
-  static ɵmod: ImportedSharedModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({
-    type: ImportedSharedModule,
-  });
+  static ɵmod: ImportedSharedModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: ImportedSharedModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<ImportedSharedModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [ImportedStateTextPipe],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<ImportedSharedModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [ImportedStateTextPipe] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -97,6 +98,7 @@ export class LocalStateTextPipe implements PipeTransform {
     };
   // @ts-ignore
   static ɵpipe: i0.ɵɵPipeDeclaration<LocalStateTextPipe, 'stateText', false> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefinePipe({
       name: 'stateText',
       type: LocalStateTextPipe,
@@ -142,27 +144,29 @@ export class ReproPipeShadowingComponent {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ReproPipeShadowingComponent,
-    selectors: [['repro-pipe-shadowing']],
-    standalone: false,
-    decls: 3,
-    vars: 3,
-    template: function ReproPipeShadowingComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1);
-        i0.ɵɵpipe(2, 'stateText');
-        i0.ɵɵelementEnd();
-      }
-      if (rf & 2) {
-        i0.ɵɵadvance();
-        i0.ɵɵtextInterpolate(i0.ɵɵpipeBind1(2, 1, ctx.status));
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(ReproPipeShadowingComponent),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ReproPipeShadowingComponent,
+      selectors: [['repro-pipe-shadowing']],
+      standalone: false,
+      decls: 3,
+      vars: 3,
+      template: function ReproPipeShadowingComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1);
+          i0.ɵɵpipe(2, 'stateText');
+          i0.ɵɵelementEnd();
+        }
+        if (rf & 2) {
+          i0.ɵɵadvance();
+          i0.ɵɵtextInterpolate(i0.ɵɵpipeBind1(2, 1, ctx.status));
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(ReproPipeShadowingComponent),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -200,11 +204,12 @@ export class ReproPipeShadowingModule {
       return new (__ngFactoryType__ || ReproPipeShadowingModule)();
     };
   // @ts-ignore
-  static ɵmod: ReproPipeShadowingModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({
-    type: ReproPipeShadowingModule,
-  });
+  static ɵmod: ReproPipeShadowingModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: ReproPipeShadowingModule });
   // @ts-ignore
   static ɵinj: i0.ɵɵInjectorDeclaration<ReproPipeShadowingModule> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineInjector({
       imports: [ImportedSharedModule, ReproPipeShadowingComponent],
     });

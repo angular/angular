@@ -17,6 +17,7 @@ export class Foo {
   };
   // @ts-ignore
   static ɵcmp: i0.ɵɵComponentDeclaration<Foo, 'app-foo', never, {}, {}, never, never, true, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineComponent({
       type: Foo,
       selectors: [['app-foo']],

@@ -53,27 +53,29 @@ export class ListComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ListComponent,
-    selectors: [['ng-component']],
-    decls: 4,
-    vars: 0,
-    consts: [[4, 'ngFor', 'ngForOf']],
-    template: function ListComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomTemplate(0, ListComponent_Defer_0_Template, 1, 1)(
-          1,
-          ListComponent_DeferPlaceholder_1_Template,
-          2,
-          0,
-        );
-        i0.ɵɵdefer(2, 0, null, null, 1);
-        i0.ɵɵdeferOnInteraction(0, -1);
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(ListComponent, [NgFor]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ListComponent,
+      selectors: [['ng-component']],
+      decls: 4,
+      vars: 0,
+      consts: [[4, 'ngFor', 'ngForOf']],
+      template: function ListComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomTemplate(0, ListComponent_Defer_0_Template, 1, 1)(
+            1,
+            ListComponent_DeferPlaceholder_1_Template,
+            2,
+            0,
+          );
+          i0.ɵɵdefer(2, 0, null, null, 1);
+          i0.ɵɵdeferOnInteraction(0, -1);
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(ListComponent, [NgFor]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -136,11 +138,13 @@ export class NgForOf {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: NgForOf,
-    selectors: [['', 'ngFor', '', 'ngForOf', '']],
-    inputs: { ngForOf: 'ngForOf' },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: NgForOf,
+      selectors: [['', 'ngFor', '', 'ngForOf', '']],
+      inputs: { ngForOf: 'ngForOf' },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

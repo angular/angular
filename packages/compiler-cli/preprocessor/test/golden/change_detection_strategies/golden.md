@@ -22,21 +22,23 @@ export class OnPushCmp {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: OnPushCmp,
-    selectors: [['on-push-cmp']],
-    decls: 2,
-    vars: 0,
-    template: function OnPushCmp_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1, 'On Push Component');
-        i0.ɵɵelementEnd();
-      }
-    },
-    encapsulation: 2,
-    changeDetection: ChangeDetectionStrategy.OnPush,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: OnPushCmp,
+      selectors: [['on-push-cmp']],
+      decls: 2,
+      vars: 0,
+      template: function OnPushCmp_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'On Push Component');
+          i0.ɵɵelementEnd();
+        }
+      },
+      encapsulation: 2,
+      changeDetection: ChangeDetectionStrategy.OnPush,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -85,21 +87,23 @@ export class DefaultCmp {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: DefaultCmp,
-    selectors: [['default-cmp']],
-    decls: 2,
-    vars: 0,
-    template: function DefaultCmp_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1, 'Default Component');
-        i0.ɵɵelementEnd();
-      }
-    },
-    encapsulation: 2,
-    changeDetection: ChangeDetectionStrategy.Default,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: DefaultCmp,
+      selectors: [['default-cmp']],
+      decls: 2,
+      vars: 0,
+      template: function DefaultCmp_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'Default Component');
+          i0.ɵɵelementEnd();
+        }
+      },
+      encapsulation: 2,
+      changeDetection: ChangeDetectionStrategy.Default,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -148,21 +152,23 @@ export class EagerCmp {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: EagerCmp,
-    selectors: [['eager-cmp']],
-    decls: 2,
-    vars: 0,
-    template: function EagerCmp_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1, 'Eager Component');
-        i0.ɵɵelementEnd();
-      }
-    },
-    encapsulation: 2,
-    changeDetection: ChangeDetectionStrategy.Eager,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: EagerCmp,
+      selectors: [['eager-cmp']],
+      decls: 2,
+      vars: 0,
+      template: function EagerCmp_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'Eager Component');
+          i0.ɵɵelementEnd();
+        }
+      },
+      encapsulation: 2,
+      changeDetection: ChangeDetectionStrategy.Eager,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -213,20 +219,22 @@ export class OmittedCmp {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: OmittedCmp,
-    selectors: [['omitted-cmp']],
-    decls: 2,
-    vars: 0,
-    template: function OmittedCmp_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1, 'Omitted Component');
-        i0.ɵɵelementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: OmittedCmp,
+      selectors: [['omitted-cmp']],
+      decls: 2,
+      vars: 0,
+      template: function OmittedCmp_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'Omitted Component');
+          i0.ɵɵelementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

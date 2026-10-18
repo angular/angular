@@ -67,33 +67,35 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 6,
-    vars: 3,
-    consts: [
-      ['eagerDir', ''],
-      ['deferredDir', ''],
-    ],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div', 0);
-        i0.ɵɵtext(1);
-        i0.ɵɵpipe(2, 'eagerPipe');
-        i0.ɵɵelementEnd();
-        i0.ɵɵdomTemplate(3, AppComponent_Defer_3_Template, 3, 3);
-        i0.ɵɵdefer(4, 3, AppComponent_Defer_4_DepsFn);
-        i0.ɵɵdeferOnIdle();
-      }
-      if (rf & 2) {
-        i0.ɵɵadvance();
-        i0.ɵɵtextInterpolate(i0.ɵɵpipeBind1(2, 1, 1));
-      }
-    },
-    dependencies: [EagerDirective, EagerPipe],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 6,
+      vars: 3,
+      consts: [
+        ['eagerDir', ''],
+        ['deferredDir', ''],
+      ],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div', 0);
+          i0.ɵɵtext(1);
+          i0.ɵɵpipe(2, 'eagerPipe');
+          i0.ɵɵelementEnd();
+          i0.ɵɵdomTemplate(3, AppComponent_Defer_3_Template, 3, 3);
+          i0.ɵɵdefer(4, 3, AppComponent_Defer_4_DepsFn);
+          i0.ɵɵdeferOnIdle();
+        }
+        if (rf & 2) {
+          i0.ɵɵadvance();
+          i0.ɵɵtextInterpolate(i0.ɵɵpipeBind1(2, 1, 1));
+        }
+      },
+      dependencies: [EagerDirective, EagerPipe],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadataAsync(
@@ -165,10 +167,12 @@ export class DeferredDirective {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: DeferredDirective,
-    selectors: [['', 'deferredDir', '']],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: DeferredDirective,
+      selectors: [['', 'deferredDir', '']],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -201,6 +205,7 @@ export class DeferredPipe implements PipeTransform {
   };
   // @ts-ignore
   static ɵpipe: i0.ɵɵPipeDeclaration<DeferredPipe, 'deferredPipe', true> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefinePipe({ name: 'deferredPipe', type: DeferredPipe, pure: true });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
@@ -248,10 +253,9 @@ export class EagerDirective {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: EagerDirective,
-    selectors: [['', 'eagerDir', '']],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({ type: EagerDirective, selectors: [['', 'eagerDir', '']] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -283,11 +287,9 @@ export class EagerPipe implements PipeTransform {
     return new (__ngFactoryType__ || EagerPipe)();
   };
   // @ts-ignore
-  static ɵpipe: i0.ɵɵPipeDeclaration<EagerPipe, 'eagerPipe', true> = /*@__PURE__*/ i0.ɵɵdefinePipe({
-    name: 'eagerPipe',
-    type: EagerPipe,
-    pure: true,
-  });
+  static ɵpipe: i0.ɵɵPipeDeclaration<EagerPipe, 'eagerPipe', true> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefinePipe({ name: 'eagerPipe', type: EagerPipe, pure: true });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

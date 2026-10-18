@@ -55,33 +55,35 @@ export class AppComponent {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    standalone: false,
-    decls: 4,
-    vars: 6,
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1);
-        i0.ɵɵpipe(2, 'transit');
-        i0.ɵɵpipe(3, 'sub');
-        i0.ɵɵelementEnd();
-      }
-      if (rf & 2) {
-        i0.ɵɵadvance();
-        i0.ɵɵtextInterpolate2(
-          '',
-          i0.ɵɵpipeBind1(2, 2, 'hello'),
-          ' | ',
-          i0.ɵɵpipeBind1(3, 4, 'world'),
-        );
-      }
-    },
-    dependencies: [i1.TransitPipe, i2.SubPipe],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      standalone: false,
+      decls: 4,
+      vars: 6,
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1);
+          i0.ɵɵpipe(2, 'transit');
+          i0.ɵɵpipe(3, 'sub');
+          i0.ɵɵelementEnd();
+        }
+        if (rf & 2) {
+          i0.ɵɵadvance();
+          i0.ɵɵtextInterpolate2(
+            '',
+            i0.ɵɵpipeBind1(2, 2, 'hello'),
+            ' | ',
+            i0.ɵɵpipeBind1(3, 4, 'world'),
+          );
+        }
+      },
+      dependencies: [i1.TransitPipe, i2.SubPipe],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -125,11 +127,13 @@ export class AppModule {
     [typeof AppComponent],
     [typeof FirstModule, typeof SecondModule, typeof SubModule],
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [FirstModule, SecondModule, SubModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [FirstModule, SecondModule, SubModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -177,9 +181,14 @@ export class TransitPipe implements PipeTransform {
     return new (__ngFactoryType__ || TransitPipe)();
   };
   // @ts-ignore
-  static ɵpipe: i0.ɵɵPipeDeclaration<TransitPipe, 'transit', false> = /*@__PURE__*/ i0.ɵɵdefinePipe(
-    { name: 'transit', type: TransitPipe, pure: true, standalone: false },
-  );
+  static ɵpipe: i0.ɵɵPipeDeclaration<TransitPipe, 'transit', false> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefinePipe({
+      name: 'transit',
+      type: TransitPipe,
+      pure: true,
+      standalone: false,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -214,9 +223,13 @@ export class FirstModule {
     [typeof TransitPipe],
     never,
     [typeof TransitPipe]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: FirstModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: FirstModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<FirstModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<FirstModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -264,11 +277,13 @@ export class SecondModule {
     never,
     [typeof FirstModule],
     [typeof FirstModule]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: SecondModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: SecondModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<SecondModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [FirstModule, FirstModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<SecondModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [FirstModule, FirstModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -312,9 +327,12 @@ export class SubModule {
   };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<SubModule, [typeof SubPipe], never, [typeof SubPipe]> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: SubModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<SubModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<SubModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -359,12 +377,9 @@ export class SubPipe implements PipeTransform {
     return new (__ngFactoryType__ || SubPipe)();
   };
   // @ts-ignore
-  static ɵpipe: i0.ɵɵPipeDeclaration<SubPipe, 'sub', false> = /*@__PURE__*/ i0.ɵɵdefinePipe({
-    name: 'sub',
-    type: SubPipe,
-    pure: true,
-    standalone: false,
-  });
+  static ɵpipe: i0.ɵɵPipeDeclaration<SubPipe, 'sub', false> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefinePipe({ name: 'sub', type: SubPipe, pure: true, standalone: false });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

@@ -48,29 +48,31 @@ export class App {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: App,
-    selectors: [['app-root']],
-    decls: 3,
-    vars: 6,
-    template: function App_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0);
-        i0.ɵɵpipe(1, 'shout');
-        i0.ɵɵpipe(2, 'whisper');
-      }
-      if (rf & 2) {
-        i0.ɵɵtextInterpolate2(
-          '',
-          i0.ɵɵpipeBind1(1, 2, ctx.greeting),
-          ' ',
-          i0.ɵɵpipeBind1(2, 4, ctx.greeting),
-        );
-      }
-    },
-    dependencies: [ShoutPipe, WhisperPipe],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: App,
+      selectors: [['app-root']],
+      decls: 3,
+      vars: 6,
+      template: function App_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0);
+          i0.ɵɵpipe(1, 'shout');
+          i0.ɵɵpipe(2, 'whisper');
+        }
+        if (rf & 2) {
+          i0.ɵɵtextInterpolate2(
+            '',
+            i0.ɵɵpipeBind1(1, 2, ctx.greeting),
+            ' ',
+            i0.ɵɵpipeBind1(2, 4, ctx.greeting),
+          );
+        }
+      },
+      dependencies: [ShoutPipe, WhisperPipe],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -118,11 +120,9 @@ export class ShoutPipe implements PipeTransform {
     return new (__ngFactoryType__ || ShoutPipe)();
   };
   // @ts-ignore
-  static ɵpipe: i0.ɵɵPipeDeclaration<ShoutPipe, 'shout', true> = /*@__PURE__*/ i0.ɵɵdefinePipe({
-    name: 'shout',
-    type: ShoutPipe,
-    pure: true,
-  });
+  static ɵpipe: i0.ɵɵPipeDeclaration<ShoutPipe, 'shout', true> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefinePipe({ name: 'shout', type: ShoutPipe, pure: true });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(ShoutPipe, [{ type: Pipe, args: [{ name: PIPE_NAME }] }], null, null);
@@ -141,11 +141,9 @@ export class WhisperPipe implements PipeTransform {
     return new (__ngFactoryType__ || WhisperPipe)();
   };
   // @ts-ignore
-  static ɵpipe: i0.ɵɵPipeDeclaration<WhisperPipe, 'whisper', true> = /*@__PURE__*/ i0.ɵɵdefinePipe({
-    name: 'whisper',
-    type: WhisperPipe,
-    pure: true,
-  });
+  static ɵpipe: i0.ɵɵPipeDeclaration<WhisperPipe, 'whisper', true> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefinePipe({ name: 'whisper', type: WhisperPipe, pure: true });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

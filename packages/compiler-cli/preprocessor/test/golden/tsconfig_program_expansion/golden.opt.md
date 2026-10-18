@@ -41,19 +41,21 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 2,
-    vars: 0,
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'imported-comp')(1, 'excluded-but-imported-comp');
-      }
-    },
-    dependencies: [ImportedComponent, ExcludedButImportedComponent],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 2,
+      vars: 0,
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'imported-comp')(1, 'excluded-but-imported-comp');
+        }
+      },
+      dependencies: [ImportedComponent, ExcludedButImportedComponent],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -128,18 +130,20 @@ export class ExcludedButImportedComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ExcludedButImportedComponent,
-    selectors: [['excluded-but-imported-comp']],
-    decls: 1,
-    vars: 0,
-    template: function ExcludedButImportedComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0, 'excluded but imported');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ExcludedButImportedComponent,
+      selectors: [['excluded-but-imported-comp']],
+      decls: 1,
+      vars: 0,
+      template: function ExcludedButImportedComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0, 'excluded but imported');
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -212,18 +216,20 @@ export class ImportedComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ImportedComponent,
-    selectors: [['imported-comp']],
-    decls: 1,
-    vars: 0,
-    template: function ImportedComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0, 'imported');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ImportedComponent,
+      selectors: [['imported-comp']],
+      decls: 1,
+      vars: 0,
+      template: function ImportedComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0, 'imported');
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

@@ -68,20 +68,22 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 1,
-    vars: 0,
-    consts: [[4, 'fullDir']],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtemplate(0, AppComponent_div_0_Template, 1, 0, 'div', 0);
-      }
-    },
-    dependencies: [FullDir],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 1,
+      vars: 0,
+      consts: [[4, 'fullDir']],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtemplate(0, AppComponent_div_0_Template, 1, 0, 'div', 0);
+        }
+      },
+      dependencies: [FullDir],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

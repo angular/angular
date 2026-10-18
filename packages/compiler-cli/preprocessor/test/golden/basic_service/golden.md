@@ -12,10 +12,9 @@ export class GenericService<T> {
       return new (__ngFactoryType__ || GenericService)();
     };
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineService({
-    token: GenericService,
-    factory: GenericService.ɵfac,
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineService({ token: GenericService, factory: GenericService.ɵfac });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(GenericService, [{ type: Service }], null, null);
@@ -41,10 +40,9 @@ export class MyService {
     return new (__ngFactoryType__ || MyService)();
   };
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineService({
-    token: MyService,
-    factory: MyService.ɵfac,
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineService({ token: MyService, factory: MyService.ɵfac });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(MyService, [{ type: Service }], null, null);

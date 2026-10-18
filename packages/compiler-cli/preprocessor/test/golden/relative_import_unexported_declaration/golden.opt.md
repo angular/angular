@@ -22,11 +22,13 @@ class DirectiveA {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: DirectiveA,
-    selectors: [['', 'dirA', '']],
-    standalone: false,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: DirectiveA,
+      selectors: [['', 'dirA', '']],
+      standalone: false,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -61,9 +63,13 @@ export class UpstreamModule {
     [typeof DirectiveA],
     never,
     [typeof DirectiveA]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: UpstreamModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: UpstreamModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<UpstreamModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<UpstreamModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

@@ -30,57 +30,61 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 10,
-    vars: 5,
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1);
-        i0.ɵɵelementEnd();
-        i0.ɵɵelementStart(2, 'div');
-        i0.ɵɵtext(3);
-        i0.ɵɵelementEnd();
-        i0.ɵɵelementStart(4, 'div');
-        i0.ɵɵtext(5);
-        i0.ɵɵelementEnd();
-        i0.ɵɵelementStart(6, 'div');
-        i0.ɵɵtext(7);
-        i0.ɵɵelementEnd();
-        i0.ɵɵelementStart(8, 'div');
-        i0.ɵɵtext(9);
-        i0.ɵɵelementEnd();
-      }
-      if (rf & 2) {
-        let tmp_2_0;
-        i0.ɵɵadvance();
-        i0.ɵɵtextInterpolate(ctx.obj == null ? null : ctx.obj.foo == null ? null : ctx.obj.foo.bar);
-        i0.ɵɵadvance(2);
-        i0.ɵɵtextInterpolate(
-          ctx.arr == null ? null : ctx.arr[ctx.index] == null ? null : ctx.arr[ctx.index].name,
-        );
-        i0.ɵɵadvance(2);
-        i0.ɵɵtextInterpolate(
-          ctx.svc == null ? null : (tmp_2_0 = ctx.svc.lookup()) == null ? null : tmp_2_0.value,
-        );
-        i0.ɵɵadvance(2);
-        i0.ɵɵtextInterpolate(
-          (ctx.obj == null ? null : ctx.obj.foo == null ? null : ctx.obj.foo.bar) ?? ctx.fallback,
-        );
-        i0.ɵɵadvance(2);
-        i0.ɵɵtextInterpolate(
-          ctx.matrix == null
-            ? null
-            : ctx.matrix[ctx.row] == null
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 10,
+      vars: 5,
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1);
+          i0.ɵɵelementEnd();
+          i0.ɵɵelementStart(2, 'div');
+          i0.ɵɵtext(3);
+          i0.ɵɵelementEnd();
+          i0.ɵɵelementStart(4, 'div');
+          i0.ɵɵtext(5);
+          i0.ɵɵelementEnd();
+          i0.ɵɵelementStart(6, 'div');
+          i0.ɵɵtext(7);
+          i0.ɵɵelementEnd();
+          i0.ɵɵelementStart(8, 'div');
+          i0.ɵɵtext(9);
+          i0.ɵɵelementEnd();
+        }
+        if (rf & 2) {
+          let tmp_2_0;
+          i0.ɵɵadvance();
+          i0.ɵɵtextInterpolate(
+            ctx.obj == null ? null : ctx.obj.foo == null ? null : ctx.obj.foo.bar,
+          );
+          i0.ɵɵadvance(2);
+          i0.ɵɵtextInterpolate(
+            ctx.arr == null ? null : ctx.arr[ctx.index] == null ? null : ctx.arr[ctx.index].name,
+          );
+          i0.ɵɵadvance(2);
+          i0.ɵɵtextInterpolate(
+            ctx.svc == null ? null : (tmp_2_0 = ctx.svc.lookup()) == null ? null : tmp_2_0.value,
+          );
+          i0.ɵɵadvance(2);
+          i0.ɵɵtextInterpolate(
+            (ctx.obj == null ? null : ctx.obj.foo == null ? null : ctx.obj.foo.bar) ?? ctx.fallback,
+          );
+          i0.ɵɵadvance(2);
+          i0.ɵɵtextInterpolate(
+            ctx.matrix == null
               ? null
-              : ctx.matrix[ctx.row][ctx.col],
-        );
-      }
-    },
-    encapsulation: 2,
-  });
+              : ctx.matrix[ctx.row] == null
+                ? null
+                : ctx.matrix[ctx.row][ctx.col],
+          );
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

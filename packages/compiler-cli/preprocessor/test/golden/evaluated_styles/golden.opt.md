@@ -74,24 +74,26 @@ export class LocalSpread {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: LocalSpread,
-    selectors: [['local-spread']],
-    decls: 2,
-    vars: 0,
-    consts: [[1, 'local']],
-    template: function LocalSpread_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomElementStart(0, 'div', 0);
-        i0.ɵɵtext(1, 'local');
-        i0.ɵɵdomElementEnd();
-      }
-    },
-    styles: [
-      '.local[_ngcontent-%COMP%] { color: blue; }',
-      '.extra[_ngcontent-%COMP%] { margin: 0; }',
-    ],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: LocalSpread,
+      selectors: [['local-spread']],
+      decls: 2,
+      vars: 0,
+      consts: [[1, 'local']],
+      template: function LocalSpread_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomElementStart(0, 'div', 0);
+          i0.ɵɵtext(1, 'local');
+          i0.ɵɵdomElementEnd();
+        }
+      },
+      styles: [
+        '.local[_ngcontent-%COMP%] { color: blue; }',
+        '.extra[_ngcontent-%COMP%] { margin: 0; }',
+      ],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -141,21 +143,23 @@ export class ImportedArray {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ImportedArray,
-    selectors: [['imported-array']],
-    decls: 2,
-    vars: 0,
-    consts: [[1, 'shared']],
-    template: function ImportedArray_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomElementStart(0, 'div', 0);
-        i0.ɵɵtext(1, 'shared');
-        i0.ɵɵdomElementEnd();
-      }
-    },
-    styles: ['.shared[_ngcontent-%COMP%] { color: red; }'],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ImportedArray,
+      selectors: [['imported-array']],
+      decls: 2,
+      vars: 0,
+      consts: [[1, 'shared']],
+      template: function ImportedArray_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomElementStart(0, 'div', 0);
+          i0.ɵɵtext(1, 'shared');
+          i0.ɵɵdomElementEnd();
+        }
+      },
+      styles: ['.shared[_ngcontent-%COMP%] { color: red; }'],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -205,21 +209,26 @@ export class ImportedMixed {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ImportedMixed,
-    selectors: [['imported-mixed']],
-    decls: 2,
-    vars: 0,
-    consts: [[1, 'shared']],
-    template: function ImportedMixed_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomElementStart(0, 'div', 0);
-        i0.ɵɵtext(1, 'mixed');
-        i0.ɵɵdomElementEnd();
-      }
-    },
-    styles: ['[_nghost-%COMP%] { display: block; }', '.shared[_ngcontent-%COMP%] { color: red; }'],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ImportedMixed,
+      selectors: [['imported-mixed']],
+      decls: 2,
+      vars: 0,
+      consts: [[1, 'shared']],
+      template: function ImportedMixed_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomElementStart(0, 'div', 0);
+          i0.ɵɵtext(1, 'mixed');
+          i0.ɵɵdomElementEnd();
+        }
+      },
+      styles: [
+        '[_nghost-%COMP%] { display: block; }',
+        '.shared[_ngcontent-%COMP%] { color: red; }',
+      ],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -269,21 +278,23 @@ export class ImportedStyleUrl {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ImportedStyleUrl,
-    selectors: [['imported-style-url']],
-    decls: 2,
-    vars: 0,
-    consts: [[1, 'panel']],
-    template: function ImportedStyleUrl_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomElementStart(0, 'div', 0);
-        i0.ɵɵtext(1, 'panel');
-        i0.ɵɵdomElementEnd();
-      }
-    },
-    styles: ['.panel[_ngcontent-%COMP%] { padding: 4px; }'],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ImportedStyleUrl,
+      selectors: [['imported-style-url']],
+      decls: 2,
+      vars: 0,
+      consts: [[1, 'panel']],
+      template: function ImportedStyleUrl_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomElementStart(0, 'div', 0);
+          i0.ɵɵtext(1, 'panel');
+          i0.ɵɵdomElementEnd();
+        }
+      },
+      styles: ['.panel[_ngcontent-%COMP%] { padding: 4px; }'],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -332,24 +343,26 @@ export class ImportedStyleUrls {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ImportedStyleUrls,
-    selectors: [['imported-style-urls']],
-    decls: 2,
-    vars: 0,
-    consts: [[1, 'theme']],
-    template: function ImportedStyleUrls_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomElementStart(0, 'div', 0);
-        i0.ɵɵtext(1, 'theme');
-        i0.ɵɵdomElementEnd();
-      }
-    },
-    styles: [
-      '.theme[_ngcontent-%COMP%] { color: green; }',
-      '.panel[_ngcontent-%COMP%] { padding: 4px; }',
-    ],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ImportedStyleUrls,
+      selectors: [['imported-style-urls']],
+      decls: 2,
+      vars: 0,
+      consts: [[1, 'theme']],
+      template: function ImportedStyleUrls_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomElementStart(0, 'div', 0);
+          i0.ɵɵtext(1, 'theme');
+          i0.ɵɵdomElementEnd();
+        }
+      },
+      styles: [
+        '.theme[_ngcontent-%COMP%] { color: green; }',
+        '.panel[_ngcontent-%COMP%] { padding: 4px; }',
+      ],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -399,24 +412,26 @@ export class MixedStyleUrls {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: MixedStyleUrls,
-    selectors: [['mixed-style-urls']],
-    decls: 2,
-    vars: 0,
-    consts: [[1, 'theme', 'panel']],
-    template: function MixedStyleUrls_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomElementStart(0, 'div', 0);
-        i0.ɵɵtext(1, 'both');
-        i0.ɵɵdomElementEnd();
-      }
-    },
-    styles: [
-      '.theme[_ngcontent-%COMP%] { color: green; }',
-      '.panel[_ngcontent-%COMP%] { padding: 4px; }',
-    ],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: MixedStyleUrls,
+      selectors: [['mixed-style-urls']],
+      decls: 2,
+      vars: 0,
+      consts: [[1, 'theme', 'panel']],
+      template: function MixedStyleUrls_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomElementStart(0, 'div', 0);
+          i0.ɵɵtext(1, 'both');
+          i0.ɵɵdomElementEnd();
+        }
+      },
+      styles: [
+        '.theme[_ngcontent-%COMP%] { color: green; }',
+        '.panel[_ngcontent-%COMP%] { padding: 4px; }',
+      ],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

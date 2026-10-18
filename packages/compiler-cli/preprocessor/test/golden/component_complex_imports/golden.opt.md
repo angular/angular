@@ -51,10 +51,12 @@ export class LocalDirective {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: LocalDirective,
-    selectors: [['', 'appLocalDir', '']],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: LocalDirective,
+      selectors: [['', 'appLocalDir', '']],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -97,34 +99,36 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 7,
-    vars: 0,
-    consts: [['appLocalDir', '']],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'app-button', 0);
-        i0.ɵɵtext(1, 'Click');
-        i0.ɵɵelementEnd();
-        i0.ɵɵelementStart(2, 'app-card');
-        i0.ɵɵtext(3, 'Card');
-        i0.ɵɵelementEnd();
-        i0.ɵɵelement(4, 'app-icon')(5, 'app-barrel-item')(6, 'app-feature-inner');
-      }
-    },
-    dependencies: [
-      i1.ButtonComponent,
-      i2.CardComponent,
-      LocalDirective,
-      FeatureModule,
-      i3.FeatureInnerComponent,
-      i4.IconComponent,
-      BarrelItemComponent,
-    ],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 7,
+      vars: 0,
+      consts: [['appLocalDir', '']],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'app-button', 0);
+          i0.ɵɵtext(1, 'Click');
+          i0.ɵɵelementEnd();
+          i0.ɵɵelementStart(2, 'app-card');
+          i0.ɵɵtext(3, 'Card');
+          i0.ɵɵelementEnd();
+          i0.ɵɵelement(4, 'app-icon')(5, 'app-barrel-item')(6, 'app-feature-inner');
+        }
+      },
+      dependencies: [
+        i1.ButtonComponent,
+        i2.CardComponent,
+        LocalDirective,
+        FeatureModule,
+        i3.FeatureInnerComponent,
+        i4.IconComponent,
+        BarrelItemComponent,
+      ],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -211,20 +215,22 @@ export class BarrelItemComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: BarrelItemComponent,
-    selectors: [['app-barrel-item']],
-    decls: 2,
-    vars: 0,
-    template: function BarrelItemComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomElementStart(0, 'span');
-        i0.ɵɵtext(1, 'Barrel');
-        i0.ɵɵdomElementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: BarrelItemComponent,
+      selectors: [['app-barrel-item']],
+      decls: 2,
+      vars: 0,
+      template: function BarrelItemComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomElementStart(0, 'span');
+          i0.ɵɵtext(1, 'Barrel');
+          i0.ɵɵdomElementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -300,22 +306,24 @@ export class ButtonComponent {
     ['*'],
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ButtonComponent,
-    selectors: [['app-button']],
-    ngContentSelectors: _c0,
-    decls: 2,
-    vars: 0,
-    template: function ButtonComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵprojectionDef();
-        i0.ɵɵdomElementStart(0, 'button');
-        i0.ɵɵprojection(1);
-        i0.ɵɵdomElementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ButtonComponent,
+      selectors: [['app-button']],
+      ngContentSelectors: _c0,
+      decls: 2,
+      vars: 0,
+      template: function ButtonComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵprojectionDef();
+          i0.ɵɵdomElementStart(0, 'button');
+          i0.ɵɵprojection(1);
+          i0.ɵɵdomElementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -391,22 +399,24 @@ export class CardComponent {
     ['*'],
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: CardComponent,
-    selectors: [['app-card']],
-    ngContentSelectors: _c0,
-    decls: 2,
-    vars: 0,
-    template: function CardComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵprojectionDef();
-        i0.ɵɵdomElementStart(0, 'div');
-        i0.ɵɵprojection(1);
-        i0.ɵɵdomElementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: CardComponent,
+      selectors: [['app-card']],
+      ngContentSelectors: _c0,
+      decls: 2,
+      vars: 0,
+      template: function CardComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵprojectionDef();
+          i0.ɵɵdomElementStart(0, 'div');
+          i0.ɵɵprojection(1);
+          i0.ɵɵdomElementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -479,20 +489,22 @@ export class FeatureInnerComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: FeatureInnerComponent,
-    selectors: [['app-feature-inner']],
-    decls: 2,
-    vars: 0,
-    template: function FeatureInnerComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomElementStart(0, 'p');
-        i0.ɵɵtext(1, 'Feature Inner');
-        i0.ɵɵdomElementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: FeatureInnerComponent,
+      selectors: [['app-feature-inner']],
+      decls: 2,
+      vars: 0,
+      template: function FeatureInnerComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomElementStart(0, 'p');
+          i0.ɵɵtext(1, 'Feature Inner');
+          i0.ɵɵdomElementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -535,9 +547,13 @@ export class FeatureModule {
     [typeof FeatureInnerComponent],
     never,
     [typeof FeatureInnerComponent]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: FeatureModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: FeatureModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<FeatureModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<FeatureModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -609,20 +625,22 @@ export class IconComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: IconComponent,
-    selectors: [['app-icon']],
-    decls: 2,
-    vars: 0,
-    template: function IconComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomElementStart(0, 'i');
-        i0.ɵɵtext(1, 'icon');
-        i0.ɵɵdomElementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: IconComponent,
+      selectors: [['app-icon']],
+      decls: 2,
+      vars: 0,
+      template: function IconComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomElementStart(0, 'i');
+          i0.ɵɵtext(1, 'icon');
+          i0.ɵɵdomElementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -695,14 +713,16 @@ export class OtherUnusedComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: OtherUnusedComponent,
-    selectors: [['other-unused']],
-    decls: 0,
-    vars: 0,
-    template: function OtherUnusedComponent_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: OtherUnusedComponent,
+      selectors: [['other-unused']],
+      decls: 0,
+      vars: 0,
+      template: function OtherUnusedComponent_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

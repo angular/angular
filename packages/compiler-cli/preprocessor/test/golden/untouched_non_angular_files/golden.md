@@ -22,14 +22,16 @@ export class MyComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: MyComponent,
-    selectors: [['my-cmp']],
-    decls: 0,
-    vars: 0,
-    template: function MyComponent_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: MyComponent,
+      selectors: [['my-cmp']],
+      decls: 0,
+      vars: 0,
+      template: function MyComponent_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

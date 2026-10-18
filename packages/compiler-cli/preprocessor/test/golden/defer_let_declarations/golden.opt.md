@@ -75,25 +75,27 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 4,
-    vars: 0,
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomTemplate(0, AppComponent_Defer_0_Template, 5, 3)(
-          1,
-          AppComponent_DeferPlaceholder_1_Template,
-          1,
-          0,
-        );
-        i0.ɵɵdefer(2, 0, AppComponent_Defer_2_DepsFn, null, 1);
-        i0.ɵɵdeferOnIdle();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 4,
+      vars: 0,
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomTemplate(0, AppComponent_Defer_0_Template, 5, 3)(
+            1,
+            AppComponent_DeferPlaceholder_1_Template,
+            1,
+            0,
+          );
+          i0.ɵɵdefer(2, 0, AppComponent_Defer_2_DepsFn, null, 1);
+          i0.ɵɵdeferOnIdle();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadataAsync(
@@ -186,18 +188,20 @@ export class DeferredComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: DeferredComponent,
-    selectors: [['app-deferred']],
-    decls: 1,
-    vars: 0,
-    template: function DeferredComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0, 'Deferred content');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: DeferredComponent,
+      selectors: [['app-deferred']],
+      decls: 1,
+      vars: 0,
+      template: function DeferredComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0, 'Deferred content');
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -247,11 +251,9 @@ export class TestPipe implements PipeTransform {
     return new (__ngFactoryType__ || TestPipe)();
   };
   // @ts-ignore
-  static ɵpipe: i0.ɵɵPipeDeclaration<TestPipe, 'testPipe', true> = /*@__PURE__*/ i0.ɵɵdefinePipe({
-    name: 'testPipe',
-    type: TestPipe,
-    pure: true,
-  });
+  static ɵpipe: i0.ɵɵPipeDeclaration<TestPipe, 'testPipe', true> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefinePipe({ name: 'testPipe', type: TestPipe, pure: true });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

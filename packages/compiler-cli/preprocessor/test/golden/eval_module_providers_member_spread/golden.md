@@ -13,11 +13,13 @@ export class AppModule {
     return new (__ngFactoryType__ || AppModule)();
   };
   // @ts-ignore
-  static ɵmod: AppModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
+  static ɵmod: AppModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    providers: [...SharedConfig.PROVIDERS],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ providers: [...SharedConfig.PROVIDERS] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -54,11 +56,13 @@ export class SharedService {
     return new (__ngFactoryType__ || SharedService)();
   };
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineInjectable({
-    token: SharedService,
-    factory: SharedService.ɵfac,
-    providedIn: 'root',
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjectable({
+      token: SharedService,
+      factory: SharedService.ɵfac,
+      providedIn: 'root',
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

@@ -22,21 +22,23 @@ export class AliasedCmp {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AliasedCmp,
-    selectors: [['aliased-cmp']],
-    decls: 2,
-    vars: 0,
-    template: function AliasedCmp_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1, 'Aliased');
-        i0.ɵɵelementEnd();
-      }
-    },
-    styles: ['div[_ngcontent-%COMP%] { color: red; }'],
-    changeDetection: CD.Default,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AliasedCmp,
+      selectors: [['aliased-cmp']],
+      decls: 2,
+      vars: 0,
+      template: function AliasedCmp_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'Aliased');
+          i0.ɵɵelementEnd();
+        }
+      },
+      styles: ['div[_ngcontent-%COMP%] { color: red; }'],
+      changeDetection: CD.Default,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

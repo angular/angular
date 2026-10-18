@@ -35,20 +35,22 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 3,
-    vars: 0,
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomTemplate(0, AppComponent_Defer_0_Template, 2, 0);
-        i0.ɵɵdefer(1, 0, AppComponent_Defer_1_DepsFn);
-        i0.ɵɵdeferOnIdle();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 3,
+      vars: 0,
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomTemplate(0, AppComponent_Defer_0_Template, 2, 0);
+          i0.ɵɵdefer(1, 0, AppComponent_Defer_1_DepsFn);
+          i0.ɵɵdeferOnIdle();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadataAsync(
@@ -123,18 +125,20 @@ export default class DefCompA {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: DefCompA,
-    selectors: [['deferred-a']],
-    decls: 1,
-    vars: 0,
-    template: function DefCompA_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0, 'A');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: DefCompA,
+      selectors: [['deferred-a']],
+      decls: 1,
+      vars: 0,
+      template: function DefCompA_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0, 'A');
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -190,18 +194,20 @@ export default class DefCompB {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: DefCompB,
-    selectors: [['deferred-b']],
-    decls: 1,
-    vars: 0,
-    template: function DefCompB_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0, 'B');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: DefCompB,
+      selectors: [['deferred-b']],
+      decls: 1,
+      vars: 0,
+      template: function DefCompB_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0, 'B');
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

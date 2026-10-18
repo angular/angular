@@ -24,20 +24,22 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 1,
-    vars: 0,
-    consts: [['appTooltip', '']],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'app-dialog', 0);
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [DialogComponent, TooltipDirective]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 1,
+      vars: 0,
+      consts: [['appTooltip', '']],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'app-dialog', 0);
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [DialogComponent, TooltipDirective]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -95,20 +97,22 @@ export class DialogComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: DialogComponent,
-    selectors: [['app-dialog']],
-    decls: 2,
-    vars: 0,
-    template: function DialogComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'p');
-        i0.ɵɵtext(1, 'Dialog');
-        i0.ɵɵelementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: DialogComponent,
+      selectors: [['app-dialog']],
+      decls: 2,
+      vars: 0,
+      template: function DialogComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'p');
+          i0.ɵɵtext(1, 'Dialog');
+          i0.ɵɵelementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -165,22 +169,24 @@ export class LegacyWidget {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: LegacyWidget,
-    selectors: [['legacy-widget']],
-    standalone: false,
-    decls: 2,
-    vars: 0,
-    template: function LegacyWidget_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'span');
-        i0.ɵɵtext(1, 'Legacy');
-        i0.ɵɵelementEnd();
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(LegacyWidget),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: LegacyWidget,
+      selectors: [['legacy-widget']],
+      standalone: false,
+      decls: 2,
+      vars: 0,
+      template: function LegacyWidget_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'span');
+          i0.ɵɵtext(1, 'Legacy');
+          i0.ɵɵelementEnd();
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(LegacyWidget),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -229,20 +235,22 @@ export class LegacyHost {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: LegacyHost,
-    selectors: [['legacy-host']],
-    standalone: false,
-    decls: 1,
-    vars: 0,
-    template: function LegacyHost_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'legacy-widget');
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(LegacyHost),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: LegacyHost,
+      selectors: [['legacy-host']],
+      standalone: false,
+      decls: 1,
+      vars: 0,
+      template: function LegacyHost_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'legacy-widget');
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(LegacyHost),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -290,9 +298,13 @@ export class LegacyModule {
     return new (__ngFactoryType__ || LegacyModule)();
   };
   // @ts-ignore
-  static ɵmod: LegacyModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: LegacyModule });
+  static ɵmod: LegacyModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: LegacyModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<LegacyModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<LegacyModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -344,10 +356,12 @@ export class TooltipDirective {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: TooltipDirective,
-    selectors: [['', 'appTooltip', '']],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: TooltipDirective,
+      selectors: [['', 'appTooltip', '']],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

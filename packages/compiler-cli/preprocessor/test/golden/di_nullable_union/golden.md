@@ -12,11 +12,13 @@ export class Logger {
     return new (__ngFactoryType__ || Logger)();
   };
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineInjectable({
-    token: Logger,
-    factory: Logger.ɵfac,
-    providedIn: 'root',
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjectable({
+      token: Logger,
+      factory: Logger.ɵfac,
+      providedIn: 'root',
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -47,7 +49,9 @@ export class TestDirective {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({ type: TestDirective, selectors: [['', 'test', '']] });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({ type: TestDirective, selectors: [['', 'test', '']] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

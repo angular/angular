@@ -3045,21 +3045,19 @@ function createStaticField(
   if (!pure) {
     return `  ${nocollapse}${tsignore}\n  static ${name}${typeSuffix} = ${value};\n`;
   }
-  if (!isClosureCompilerEnabled) {
-    return `  ${nocollapse}${tsignore}\n  static ${name}${typeSuffix} = /*@__PURE__*/ ${value};\n`;
-  }
-  // ngtsc attaches the Closure annotation as a synthetic comment during its own emit, so it
-  // always lands right in front of the call. This output is compiled by a downstream `tsc`,
-  // whose emitter drops a comment sitting between `=` and the initializer whenever it rewrites
-  // the property (stripping the type annotation, or downleveling the static field to
+  const pureComment = isClosureCompilerEnabled ? '/** @pureOrBreakMyCode */' : '/*@__PURE__*/';
+  // ngtsc attaches the pure annotation as a synthetic comment during its own emit, so it always
+  // lands right in front of the call. This output is compiled by a downstream `tsc`, whose
+  // emitter drops a comment sitting between `=` and the initializer whenever it rewrites the
+  // property (stripping the type annotation, or downleveling the static field to
   // `Class.ɵcmp = ...`), but preserves it as leading trivia of an initializer that starts on its
-  // own line. The initializer line gets its own `// @ts-ignore`, since the one above `static`
-  // no longer reaches it.
+  // own line. The initializer line gets its own `// @ts-ignore`, since the one above `static` no
+  // longer reaches it.
   return (
     `  ${nocollapse}${tsignore}\n` +
     `  static ${name}${typeSuffix} =\n` +
     `    ${tsignore}\n` +
-    `    /** @pureOrBreakMyCode */ ${value};\n`
+    `    ${pureComment} ${value};\n`
   );
 }
 

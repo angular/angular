@@ -22,11 +22,13 @@ export class MyDirective {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: MyDirective,
-    selectors: [['', 'my-dir', '']],
-    standalone: false,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: MyDirective,
+      selectors: [['', 'my-dir', '']],
+      standalone: false,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -56,11 +58,13 @@ export class MyModule {
     return new (__ngFactoryType__ || MyModule)();
   };
   // @ts-ignore
-  static ɵmod: MyModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
+  static ɵmod: MyModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<MyModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [MyDirective],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<MyModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [MyDirective] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -104,20 +108,22 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 1,
-    vars: 0,
-    consts: [['my-dir', '']],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'div', 0);
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [MyModule]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 1,
+      vars: 0,
+      consts: [['my-dir', '']],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'div', 0);
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [MyModule]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

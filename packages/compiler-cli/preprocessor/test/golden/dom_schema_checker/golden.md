@@ -22,23 +22,25 @@ export class MyComp {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: MyComp,
-    selectors: [['my-comp']],
-    decls: 2,
-    vars: 1,
-    consts: [[3, 'unknown-property']],
-    template: function MyComp_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'unknown-element')(1, 'div', 0);
-      }
-      if (rf & 2) {
-        i0.ɵɵadvance();
-        i0.ɵɵproperty('unknown-property', true);
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: MyComp,
+      selectors: [['my-comp']],
+      decls: 2,
+      vars: 1,
+      consts: [[3, 'unknown-property']],
+      template: function MyComp_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'unknown-element')(1, 'div', 0);
+        }
+        if (rf & 2) {
+          i0.ɵɵadvance();
+          i0.ɵɵproperty('unknown-property', true);
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -89,23 +91,25 @@ export class MyCompNoErrors {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: MyCompNoErrors,
-    selectors: [['my-comp-no-errors']],
-    decls: 2,
-    vars: 1,
-    consts: [[3, 'unknown-property']],
-    template: function MyCompNoErrors_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'unknown-element')(1, 'div', 0);
-      }
-      if (rf & 2) {
-        i0.ɵɵadvance();
-        i0.ɵɵproperty('unknown-property', true);
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: MyCompNoErrors,
+      selectors: [['my-comp-no-errors']],
+      decls: 2,
+      vars: 1,
+      consts: [[3, 'unknown-property']],
+      template: function MyCompNoErrors_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'unknown-element')(1, 'div', 0);
+        }
+        if (rf & 2) {
+          i0.ɵɵadvance();
+          i0.ɵɵproperty('unknown-property', true);
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

@@ -12,7 +12,7 @@ function _tcb1(this: i0.BadExpressionDirective) {
   if (true) {
   }
   if (true /*hostBindingsBlockGuard*/) {
-    ('button') /*141,149*/;
+    ('button'); /*141,149*/
   }
 }
 
@@ -42,10 +42,12 @@ export class BadExpressionDirective {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: BadExpressionDirective,
-    selectors: [['', 'appBadExpression', '']],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: BadExpressionDirective,
+      selectors: [['', 'appBadExpression', '']],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -115,20 +117,22 @@ export class DynamicListenerComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: DynamicListenerComponent,
-    selectors: [['app-dynamic-listener']],
-    decls: 2,
-    vars: 0,
-    template: function DynamicListenerComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomElementStart(0, 'div');
-        i0.ɵɵtext(1, 'Hello');
-        i0.ɵɵdomElementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: DynamicListenerComponent,
+      selectors: [['app-dynamic-listener']],
+      decls: 2,
+      vars: 0,
+      template: function DynamicListenerComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomElementStart(0, 'div');
+          i0.ɵɵtext(1, 'Hello');
+          i0.ɵɵdomElementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

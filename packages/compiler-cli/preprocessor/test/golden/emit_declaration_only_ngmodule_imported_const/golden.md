@@ -15,12 +15,14 @@ export class GreetPipe implements PipeTransform {
     return new (__ngFactoryType__ || GreetPipe)();
   };
   // @ts-ignore
-  static ɵpipe: i0.ɵɵPipeDeclaration<GreetPipe, 'greet', false> = /*@__PURE__*/ i0.ɵɵdefinePipe({
-    name: 'greet',
-    type: GreetPipe,
-    pure: true,
-    standalone: false,
-  });
+  static ɵpipe: i0.ɵɵPipeDeclaration<GreetPipe, 'greet', false> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefinePipe({
+      name: 'greet',
+      type: GreetPipe,
+      pure: true,
+      standalone: false,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -52,9 +54,12 @@ export class SharedModule {
   };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<SharedModule, never, never, [typeof i1.GreetPipe]> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: SharedModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<SharedModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<SharedModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
 }
 
 ```

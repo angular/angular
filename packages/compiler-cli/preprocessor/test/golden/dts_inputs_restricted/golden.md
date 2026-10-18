@@ -23,23 +23,25 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 1,
-    vars: 3,
-    consts: [[3, 'privateInput', 'protectedInput', 'readonlyInput']],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'test-cmp', 0);
-      }
-      if (rf & 2) {
-        i0.ɵɵproperty('privateInput', 'val1')('protectedInput', 'val2')('readonlyInput', 'val3');
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [TestComponent]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 1,
+      vars: 3,
+      consts: [[3, 'privateInput', 'protectedInput', 'readonlyInput']],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'test-cmp', 0);
+        }
+        if (rf & 2) {
+          i0.ɵɵproperty('privateInput', 'val1')('protectedInput', 'val2')('readonlyInput', 'val3');
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [TestComponent]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

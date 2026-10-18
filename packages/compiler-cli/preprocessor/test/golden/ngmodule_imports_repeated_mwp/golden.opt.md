@@ -41,23 +41,25 @@ export class AppComponent {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    standalone: false,
-    decls: 2,
-    vars: 0,
-    consts: [['shared', '']],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'span', 0);
-        i0.ɵɵtext(1, 'Hello');
-        i0.ɵɵelementEnd();
-      }
-    },
-    dependencies: [i1.SharedDirective],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      standalone: false,
+      decls: 2,
+      vars: 0,
+      consts: [['shared', '']],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'span', 0);
+          i0.ɵɵtext(1, 'Hello');
+          i0.ɵɵelementEnd();
+        }
+      },
+      dependencies: [i1.SharedDirective],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -118,11 +120,13 @@ export class AppModule {
     [typeof AppComponent],
     [typeof i1.SharedModule, typeof i1.SharedModule],
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [SharedModule.forRoot(), MORE],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [SharedModule.forRoot(), MORE] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -177,11 +181,13 @@ export class SharedDirective {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: SharedDirective,
-    selectors: [['', 'shared', '']],
-    standalone: false,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: SharedDirective,
+      selectors: [['', 'shared', '']],
+      standalone: false,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -219,9 +225,13 @@ export class SharedModule {
     [typeof SharedDirective],
     never,
     [typeof SharedDirective]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: SharedModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: SharedModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<SharedModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<SharedModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

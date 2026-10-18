@@ -22,21 +22,23 @@ export class MixedComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: MixedComponent,
-    selectors: [['app-mixed']],
-    decls: 2,
-    vars: 0,
-    template: function MixedComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1, 'Mixed');
-        i0.ɵɵelementEnd();
-      }
-    },
-    styles: ['.url { color: blue; }', '.mixed { color: red; }'],
-    encapsulation: 3,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: MixedComponent,
+      selectors: [['app-mixed']],
+      decls: 2,
+      vars: 0,
+      template: function MixedComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'Mixed');
+          i0.ɵɵelementEnd();
+        }
+      },
+      styles: ['.url { color: blue; }', '.mixed { color: red; }'],
+      encapsulation: 3,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -87,20 +89,22 @@ export class UrlsComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: UrlsComponent,
-    selectors: [['app-urls']],
-    decls: 2,
-    vars: 0,
-    template: function UrlsComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1, 'Urls');
-        i0.ɵɵelementEnd();
-      }
-    },
-    styles: ['.more[_ngcontent-%COMP%] { color: green; }'],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: UrlsComponent,
+      selectors: [['app-urls']],
+      decls: 2,
+      vars: 0,
+      template: function UrlsComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'Urls');
+          i0.ɵɵelementEnd();
+        }
+      },
+      styles: ['.more[_ngcontent-%COMP%] { color: green; }'],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -151,23 +155,25 @@ export class ErrorComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ErrorComponent,
-    selectors: [['app-error']],
-    decls: 2,
-    vars: 0,
-    template: function ErrorComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1, 'Error');
-        i0.ɵɵelementEnd();
-      }
-    },
-    styles: [
-      '.url[_ngcontent-%COMP%] { color: blue; }',
-      '.more[_ngcontent-%COMP%] { color: green; }',
-    ],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ErrorComponent,
+      selectors: [['app-error']],
+      decls: 2,
+      vars: 0,
+      template: function ErrorComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'Error');
+          i0.ɵɵelementEnd();
+        }
+      },
+      styles: [
+        '.url[_ngcontent-%COMP%] { color: blue; }',
+        '.more[_ngcontent-%COMP%] { color: green; }',
+      ],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -216,20 +222,22 @@ export class StringStylesComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: StringStylesComponent,
-    selectors: [['app-string-styles']],
-    decls: 2,
-    vars: 0,
-    template: function StringStylesComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1, 'String Styles');
-        i0.ɵɵelementEnd();
-      }
-    },
-    styles: ['.string[_ngcontent-%COMP%] { color: green; }'],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: StringStylesComponent,
+      selectors: [['app-string-styles']],
+      decls: 2,
+      vars: 0,
+      template: function StringStylesComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'String Styles');
+          i0.ɵɵelementEnd();
+        }
+      },
+      styles: ['.string[_ngcontent-%COMP%] { color: green; }'],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -278,20 +286,24 @@ export class TemplateStylesComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: TemplateStylesComponent,
-    selectors: [['app-template-styles']],
-    decls: 2,
-    vars: 0,
-    template: function TemplateStylesComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1, 'Template Styles');
-        i0.ɵɵelementEnd();
-      }
-    },
-    styles: ['.template[_ngcontent-%COMP%] {\n      color: purple;\n      content: "\\n";\n    }'],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: TemplateStylesComponent,
+      selectors: [['app-template-styles']],
+      decls: 2,
+      vars: 0,
+      template: function TemplateStylesComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'Template Styles');
+          i0.ɵɵelementEnd();
+        }
+      },
+      styles: [
+        '.template[_ngcontent-%COMP%] {\n      color: purple;\n      content: "\\n";\n    }',
+      ],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -342,25 +354,27 @@ export class AllStylesComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AllStylesComponent,
-    selectors: [['app-all-styles']],
-    decls: 2,
-    vars: 0,
-    template: function AllStylesComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1, 'All');
-        i0.ɵɵelementEnd();
-      }
-    },
-    styles: [
-      '.url[_ngcontent-%COMP%] { color: blue; }',
-      '.more[_ngcontent-%COMP%] { color: green; }',
-      '.decorator[_ngcontent-%COMP%] { color: purple; }',
-      '.template[_ngcontent-%COMP%] { color: yellow; }',
-    ],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AllStylesComponent,
+      selectors: [['app-all-styles']],
+      decls: 2,
+      vars: 0,
+      template: function AllStylesComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'All');
+          i0.ɵɵelementEnd();
+        }
+      },
+      styles: [
+        '.url[_ngcontent-%COMP%] { color: blue; }',
+        '.more[_ngcontent-%COMP%] { color: green; }',
+        '.decorator[_ngcontent-%COMP%] { color: purple; }',
+        '.template[_ngcontent-%COMP%] { color: yellow; }',
+      ],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -415,22 +429,24 @@ export class IsolatedShadowDomComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: IsolatedShadowDomComponent,
-    selectors: [['app-isolated-shadow-dom']],
-    decls: 2,
-    vars: 0,
-    consts: [[1, 'isolated']],
-    template: function IsolatedShadowDomComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div', 0);
-        i0.ɵɵtext(1, 'isolated');
-        i0.ɵɵelementEnd();
-      }
-    },
-    styles: ['.url { color: blue; }', '.isolated { color: red; }'],
-    encapsulation: 4,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: IsolatedShadowDomComponent,
+      selectors: [['app-isolated-shadow-dom']],
+      decls: 2,
+      vars: 0,
+      consts: [[1, 'isolated']],
+      template: function IsolatedShadowDomComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div', 0);
+          i0.ɵɵtext(1, 'isolated');
+          i0.ɵɵelementEnd();
+        }
+      },
+      styles: ['.url { color: blue; }', '.isolated { color: red; }'],
+      encapsulation: 4,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

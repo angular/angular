@@ -17,16 +17,16 @@ function _tcb1(this: i0.App) {
     _t1.addEventListener(/*173,178*/ 'click', ($event /*T:EP*/): any => {
       _t2 /*181,182*/
         .show /*183,187*/
-        () /*181,189*/;
-    }) /*172,190*/;
+        (); /*181,189*/
+    }); /*172,190*/
     var _t4 /*206,251*/ = document.createElement('span'); /*206,251*/ /*206,251*/
     var _t6 /*T:DIR:0*/ /*206,251*/ = null! as i1.Multi; /*T:VAE*/
     var _t5 /*219,220*/ = _t6; /*218,229*/
     _t4.addEventListener(/*231,236*/ 'click', ($event /*T:EP*/): any => {
       _t5 /*239,240*/
         .toggle /*241,247*/
-        () /*239,249*/;
-    }) /*230,250*/;
+        (); /*239,249*/
+    }); /*230,250*/
   }
 }
 
@@ -57,41 +57,43 @@ export class App {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: App,
-    selectors: [['app-root']],
-    decls: 6,
-    vars: 0,
-    consts: [
-      ['t', 'tooltip'],
-      ['m', 'second'],
-      ['tooltip', '', 3, 'click'],
-      ['multi', '', 3, 'click'],
-    ],
-    template: function App_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        const _r1: any = i0.ɵɵgetCurrentView();
-        i0.ɵɵelementStart(0, 'button', 2, 0);
-        i0.ɵɵlistener('click', function App_Template_button_click_0_listener(): any {
-          i0.ɵɵrestoreView(_r1);
-          const t_r2: any = i0.ɵɵreference(1);
-          return i0.ɵɵresetView(t_r2.show());
-        });
-        i0.ɵɵtext(2, 'a');
-        i0.ɵɵelementEnd();
-        i0.ɵɵelementStart(3, 'span', 3, 1);
-        i0.ɵɵlistener('click', function App_Template_span_click_3_listener(): any {
-          i0.ɵɵrestoreView(_r1);
-          const m_r3: any = i0.ɵɵreference(4);
-          return i0.ɵɵresetView(m_r3.toggle());
-        });
-        i0.ɵɵtext(5, 'b');
-        i0.ɵɵelementEnd();
-      }
-    },
-    dependencies: [Tooltip, Multi],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: App,
+      selectors: [['app-root']],
+      decls: 6,
+      vars: 0,
+      consts: [
+        ['t', 'tooltip'],
+        ['m', 'second'],
+        ['tooltip', '', 3, 'click'],
+        ['multi', '', 3, 'click'],
+      ],
+      template: function App_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          const _r1: any = i0.ɵɵgetCurrentView();
+          i0.ɵɵelementStart(0, 'button', 2, 0);
+          i0.ɵɵlistener('click', function App_Template_button_click_0_listener(): any {
+            i0.ɵɵrestoreView(_r1);
+            const t_r2: any = i0.ɵɵreference(1);
+            return i0.ɵɵresetView(t_r2.show());
+          });
+          i0.ɵɵtext(2, 'a');
+          i0.ɵɵelementEnd();
+          i0.ɵɵelementStart(3, 'span', 3, 1);
+          i0.ɵɵlistener('click', function App_Template_span_click_3_listener(): any {
+            i0.ɵɵrestoreView(_r1);
+            const m_r3: any = i0.ɵɵreference(4);
+            return i0.ɵɵresetView(m_r3.toggle());
+          });
+          i0.ɵɵtext(5, 'b');
+          i0.ɵɵelementEnd();
+        }
+      },
+      dependencies: [Tooltip, Multi],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -149,11 +151,13 @@ export class Tooltip {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: Tooltip,
-    selectors: [['', 'tooltip', '']],
-    exportAs: ['tooltip'],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: Tooltip,
+      selectors: [['', 'tooltip', '']],
+      exportAs: ['tooltip'],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -185,11 +189,13 @@ export class Multi {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: Multi,
-    selectors: [['', 'multi', '']],
-    exportAs: ['first', 'second'],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: Multi,
+      selectors: [['', 'multi', '']],
+      exportAs: ['first', 'second'],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

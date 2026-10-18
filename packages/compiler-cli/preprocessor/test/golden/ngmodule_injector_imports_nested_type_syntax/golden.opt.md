@@ -37,11 +37,13 @@ export class AppModule {
     never,
     [typeof AModule, typeof BModule, typeof i1.AModule, typeof i1.BModule, typeof ADirective],
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [[AModule as any, BModule], SHARED],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [[AModule as any, BModule], SHARED] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -94,7 +96,9 @@ export class ADirective {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({ type: ADirective, selectors: [['', 'a', '']] });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({ type: ADirective, selectors: [['', 'a', '']] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -115,9 +119,12 @@ export class AModule {
   };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<AModule, never, never, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<AModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<AModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(AModule, [{ type: NgModule, args: [{}] }], null, null);
@@ -132,9 +139,12 @@ export class BModule {
   };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<BModule, never, never, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: BModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<BModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<BModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(BModule, [{ type: NgModule, args: [{}] }], null, null);

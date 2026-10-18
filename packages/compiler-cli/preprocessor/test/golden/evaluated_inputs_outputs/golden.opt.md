@@ -12,22 +12,22 @@ import * as i1 from './field';
 function _tcb1(this: i0.App) {
   if (true) {
     var _t1 /*T:DIR:0*/ /*132,368*/ = null! as i1.Field; /*T:VAE*/
-    _t1.value /*156,161*/ = this.text /*164,168*/ /*164,168*/ /*155,169*/;
-    _t1.size /*177,186*/ = 2 /*189,190*/ /*176,191*/;
-    _t1.local /*199,209*/ = this.text /*212,216*/ /*212,216*/ /*198,217*/;
-    _t1.extra /*225,235*/ = this.text /*238,242*/ /*238,242*/ /*224,243*/;
-    _t1.label /*251,261*/ = this.text /*264,268*/ /*264,268*/ /*250,269*/;
-    _t1.hint /*277,286*/ = this.text /*289,293*/ /*289,293*/ /*276,294*/;
+    _t1.value /*156,161*/ = this.text /*164,168*/ /*164,168*/; /*155,169*/
+    _t1.size /*177,186*/ = 2 /*189,190*/; /*176,191*/
+    _t1.local /*199,209*/ = this.text /*212,216*/ /*212,216*/; /*198,217*/
+    _t1.extra /*225,235*/ = this.text /*238,242*/ /*238,242*/; /*224,243*/
+    _t1.label /*251,261*/ = this.text /*264,268*/ /*264,268*/; /*250,269*/
+    _t1.hint /*277,286*/ = this.text /*289,293*/ /*289,293*/; /*276,294*/
     _t1['changed'] /*302,313*/
       .subscribe(($event /*T:EP*/): any => {
-        this.onChange(/*316,324*/ $event /*325,331*/) /*316,332*/;
-      }) /*301,333*/;
+        this.onChange(/*316,324*/ $event /*325,331*/); /*316,332*/
+      }); /*301,333*/
     _t1['done'] /*341,350*/
       .subscribe(($event /*T:EP*/): any => {
         this
           .onDone /*353,359*/
-          () /*353,361*/;
-      }) /*340,362*/;
+          (); /*353,361*/
+      }); /*340,362*/
   }
 }
 
@@ -61,49 +61,51 @@ export class App {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: App,
-    selectors: [['app-root']],
-    decls: 1,
-    vars: 6,
-    consts: [
-      [
-        'field',
-        '',
-        3,
-        'valueChange',
-        'doneAlias',
-        'value',
-        'sizeAlias',
-        'localAlias',
-        'extraAlias',
-        'labelAlias',
-        'hintAlias',
-      ],
-    ],
-    template: function App_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div', 0);
-        i0.ɵɵlistener(
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: App,
+      selectors: [['app-root']],
+      decls: 1,
+      vars: 6,
+      consts: [
+        [
+          'field',
+          '',
+          3,
           'valueChange',
-          function App_Template_div_valueChange_0_listener($event: any): any {
-            return ctx.onChange($event);
-          },
-        )('doneAlias', function App_Template_div_doneAlias_0_listener(): any {
-          return ctx.onDone();
-        });
-        i0.ɵɵelementEnd();
-      }
-      if (rf & 2) {
-        i0.ɵɵproperty('value', ctx.text)('sizeAlias', 2)('localAlias', ctx.text)(
+          'doneAlias',
+          'value',
+          'sizeAlias',
+          'localAlias',
           'extraAlias',
-          ctx.text,
-        )('labelAlias', ctx.text)('hintAlias', ctx.text);
-      }
-    },
-    dependencies: [Field],
-    encapsulation: 2,
-  });
+          'labelAlias',
+          'hintAlias',
+        ],
+      ],
+      template: function App_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div', 0);
+          i0.ɵɵlistener(
+            'valueChange',
+            function App_Template_div_valueChange_0_listener($event: any): any {
+              return ctx.onChange($event);
+            },
+          )('doneAlias', function App_Template_div_doneAlias_0_listener(): any {
+            return ctx.onDone();
+          });
+          i0.ɵɵelementEnd();
+        }
+        if (rf & 2) {
+          i0.ɵɵproperty('value', ctx.text)('sizeAlias', 2)('localAlias', ctx.text)(
+            'extraAlias',
+            ctx.text,
+          )('labelAlias', ctx.text)('hintAlias', ctx.text);
+        }
+      },
+      dependencies: [Field],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -195,19 +197,21 @@ export class Field {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: Field,
-    selectors: [['', 'field', '']],
-    inputs: {
-      value: 'value',
-      size: [0, 'sizeAlias', 'size'],
-      local: [0, 'localAlias', 'local'],
-      extra: [0, 'extraAlias', 'extra'],
-      label: [0, 'labelAlias', 'label'],
-      hint: [0, 'hintAlias', 'hint'],
-    },
-    outputs: { changed: 'valueChange', done: 'doneAlias' },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: Field,
+      selectors: [['', 'field', '']],
+      inputs: {
+        value: 'value',
+        size: [0, 'sizeAlias', 'size'],
+        local: [0, 'localAlias', 'local'],
+        extra: [0, 'extraAlias', 'extra'],
+        label: [0, 'labelAlias', 'label'],
+        hint: [0, 'hintAlias', 'hint'],
+      },
+      outputs: { changed: 'valueChange', done: 'doneAlias' },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

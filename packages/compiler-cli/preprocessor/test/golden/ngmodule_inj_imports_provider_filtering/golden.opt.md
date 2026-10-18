@@ -58,15 +58,17 @@ export class CmpNoProv {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: CmpNoProv,
-    selectors: [['c1']],
-    decls: 0,
-    vars: 0,
-    template: function CmpNoProv_Template(rf: number, ctx: any): any {},
-    dependencies: [NoProvModule],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: CmpNoProv,
+      selectors: [['c1']],
+      decls: 0,
+      vars: 0,
+      template: function CmpNoProv_Template(rf: number, ctx: any): any {},
+      dependencies: [NoProvModule],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -95,6 +97,7 @@ export class CmpProv {
   };
   // @ts-ignore
   static ɵcmp: i0.ɵɵComponentDeclaration<CmpProv, 'c2', never, {}, {}, never, never, true, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineComponent({
       type: CmpProv,
       selectors: [['c2']],
@@ -132,6 +135,7 @@ export class CmpTrans {
   };
   // @ts-ignore
   static ɵcmp: i0.ɵɵComponentDeclaration<CmpTrans, 'c3', never, {}, {}, never, never, true, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineComponent({
       type: CmpTrans,
       selectors: [['c3']],
@@ -174,6 +178,7 @@ export class CmpPlain {
   };
   // @ts-ignore
   static ɵcmp: i0.ɵɵComponentDeclaration<CmpPlain, 'c4', never, {}, {}, never, never, true, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineComponent({
       type: CmpPlain,
       selectors: [['c4']],
@@ -234,11 +239,13 @@ export class AppModule {
       typeof SaPipe,
     ],
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [CmpProv, CmpTrans, PlainModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [CmpProv, CmpTrans, PlainModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -281,10 +288,9 @@ export class Svc {
     return new (__ngFactoryType__ || Svc)();
   };
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineInjectable({
-    token: Svc,
-    factory: Svc.ɵfac,
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjectable({ token: Svc, factory: Svc.ɵfac });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(Svc, [{ type: Injectable }], null, null);
@@ -300,6 +306,7 @@ export class SaDir {
   };
   // @ts-ignore
   static ɵdir: i0.ɵɵDirectiveDeclaration<SaDir, '[sa]', never, {}, {}, never, never, true, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineDirective({ type: SaDir, selectors: [['', 'sa', '']] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
@@ -323,11 +330,9 @@ export class SaPipe {
     return new (__ngFactoryType__ || SaPipe)();
   };
   // @ts-ignore
-  static ɵpipe: i0.ɵɵPipeDeclaration<SaPipe, 'sp', true> = /*@__PURE__*/ i0.ɵɵdefinePipe({
-    name: 'sp',
-    type: SaPipe,
-    pure: true,
-  });
+  static ɵpipe: i0.ɵɵPipeDeclaration<SaPipe, 'sp', true> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefinePipe({ name: 'sp', type: SaPipe, pure: true });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -349,9 +354,12 @@ export class NoProvModule {
   };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<NoProvModule, never, [typeof SaDir], [typeof SaDir]> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: NoProvModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<NoProvModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<NoProvModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -376,11 +384,12 @@ export class ProvModule {
   };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<ProvModule, never, never, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: ProvModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<ProvModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    providers: [Svc],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<ProvModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ providers: [Svc] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -402,11 +411,12 @@ export class TransitiveModule {
   };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<TransitiveModule, never, [typeof ProvModule], never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: TransitiveModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<TransitiveModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [ProvModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<TransitiveModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [ProvModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -431,9 +441,12 @@ export class PlainModule {
   };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<PlainModule, never, never, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: PlainModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<PlainModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<PlainModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(PlainModule, [{ type: NgModule, args: [{}] }], null, null);

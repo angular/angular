@@ -42,20 +42,22 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 2,
-    vars: 0,
-    consts: [['lib-dir', '']],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'div', 0)(1, 'lib-cmp');
-      }
-    },
-    dependencies: [LibModule, i1.LibComponent, i1.LibDirective],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 2,
+      vars: 0,
+      consts: [['lib-dir', '']],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'div', 0)(1, 'lib-cmp');
+        }
+      },
+      dependencies: [LibModule, i1.LibComponent, i1.LibDirective],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

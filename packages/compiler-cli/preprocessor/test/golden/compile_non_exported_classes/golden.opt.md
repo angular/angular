@@ -57,20 +57,22 @@ class StandaloneLocal {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: StandaloneLocal,
-    selectors: [['standalone-local']],
-    decls: 2,
-    vars: 0,
-    template: function StandaloneLocal_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomElementStart(0, 'span');
-        i0.ɵɵtext(1, 'hi');
-        i0.ɵɵdomElementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: StandaloneLocal,
+      selectors: [['standalone-local']],
+      decls: 2,
+      vars: 0,
+      template: function StandaloneLocal_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomElementStart(0, 'span');
+          i0.ɵɵtext(1, 'hi');
+          i0.ɵɵdomElementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -113,11 +115,13 @@ export class ExportedDir {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: ExportedDir,
-    selectors: [['', 'exported', '']],
-    standalone: false,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: ExportedDir,
+      selectors: [['', 'exported', '']],
+      standalone: false,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

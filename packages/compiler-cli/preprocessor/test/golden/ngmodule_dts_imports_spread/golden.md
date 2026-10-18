@@ -22,21 +22,23 @@ export class AppComponent {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    standalone: false,
-    decls: 1,
-    vars: 0,
-    consts: [['dirC', '', 'dirD', '']],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'div', 0);
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      standalone: false,
+      decls: 1,
+      vars: 0,
+      consts: [['dirC', '', 'dirD', '']],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'div', 0);
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -85,11 +87,13 @@ export class AppModule {
     return new (__ngFactoryType__ || AppModule)();
   };
   // @ts-ignore
-  static ɵmod: AppModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
+  static ɵmod: AppModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [...EXTRA_MODULES],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [...EXTRA_MODULES] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -141,11 +145,13 @@ export class DirC {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: DirC,
-    selectors: [['', 'dirC', '']],
-    standalone: false,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: DirC,
+      selectors: [['', 'dirC', '']],
+      standalone: false,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -175,11 +181,13 @@ export class ModuleC {
     return new (__ngFactoryType__ || ModuleC)();
   };
   // @ts-ignore
-  static ɵmod: ModuleC = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: ModuleC });
+  static ɵmod: ModuleC =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: ModuleC });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<ModuleC> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [DirC],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<ModuleC> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [DirC] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -223,11 +231,13 @@ export class DirD {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: DirD,
-    selectors: [['', 'dirD', '']],
-    standalone: false,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: DirD,
+      selectors: [['', 'dirD', '']],
+      standalone: false,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -257,11 +267,13 @@ export class ModuleD {
     return new (__ngFactoryType__ || ModuleD)();
   };
   // @ts-ignore
-  static ɵmod: ModuleD = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: ModuleD });
+  static ɵmod: ModuleD =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: ModuleD });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<ModuleD> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [DirD],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<ModuleD> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [DirD] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

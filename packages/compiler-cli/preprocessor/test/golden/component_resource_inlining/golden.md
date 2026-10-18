@@ -25,26 +25,28 @@ export class StyledComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: StyledComponent,
-    selectors: [['styled-cmp']],
-    decls: 2,
-    vars: 0,
-    template: function StyledComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1, 'Hello');
-        i0.ɵɵelementEnd();
-      }
-    },
-    styles: [
-      '.from-style-urls[_ngcontent-%COMP%] { color: blue; }',
-      '.from-style-urls-extra[_ngcontent-%COMP%] { color: green; }',
-      '.from-template-link[_ngcontent-%COMP%] { color: red; }',
-      '.from-inline[_ngcontent-%COMP%] { color: orange; }',
-      '.from-template-style[_ngcontent-%COMP%] { color: purple; }',
-    ],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: StyledComponent,
+      selectors: [['styled-cmp']],
+      decls: 2,
+      vars: 0,
+      template: function StyledComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'Hello');
+          i0.ɵɵelementEnd();
+        }
+      },
+      styles: [
+        '.from-style-urls[_ngcontent-%COMP%] { color: blue; }',
+        '.from-style-urls-extra[_ngcontent-%COMP%] { color: green; }',
+        '.from-template-link[_ngcontent-%COMP%] { color: red; }',
+        '.from-inline[_ngcontent-%COMP%] { color: orange; }',
+        '.from-template-style[_ngcontent-%COMP%] { color: purple; }',
+      ],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -103,20 +105,22 @@ export class EmptyStyleUrlsComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: EmptyStyleUrlsComponent,
-    selectors: [['empty-styleurls-cmp']],
-    decls: 2,
-    vars: 0,
-    template: function EmptyStyleUrlsComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1, 'Hello');
-        i0.ɵɵelementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: EmptyStyleUrlsComponent,
+      selectors: [['empty-styleurls-cmp']],
+      decls: 2,
+      vars: 0,
+      template: function EmptyStyleUrlsComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'Hello');
+          i0.ɵɵelementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

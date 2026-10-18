@@ -18,9 +18,13 @@ export class ForwardRefModule {
     [typeof ForwardRefPanel, typeof ForwardRefPipe],
     never,
     [typeof ForwardRefPanel]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: ForwardRefModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: ForwardRefModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<ForwardRefModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<ForwardRefModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -96,27 +100,29 @@ export class ForwardRefPanel {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ForwardRefPanel,
-    selectors: [['forward-ref-panel']],
-    standalone: false,
-    decls: 3,
-    vars: 3,
-    template: function ForwardRefPanel_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1);
-        i0.ɵɵpipe(2, 'forwardRefPipe');
-        i0.ɵɵelementEnd();
-      }
-      if (rf & 2) {
-        i0.ɵɵadvance();
-        i0.ɵɵtextInterpolate(i0.ɵɵpipeBind1(2, 1, 'test'));
-      }
-    },
-    dependencies: (): any => [ForwardRefPipe],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ForwardRefPanel,
+      selectors: [['forward-ref-panel']],
+      standalone: false,
+      decls: 3,
+      vars: 3,
+      template: function ForwardRefPanel_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1);
+          i0.ɵɵpipe(2, 'forwardRefPipe');
+          i0.ɵɵelementEnd();
+        }
+        if (rf & 2) {
+          i0.ɵɵadvance();
+          i0.ɵɵtextInterpolate(i0.ɵɵpipeBind1(2, 1, 'test'));
+        }
+      },
+      dependencies: (): any => [ForwardRefPipe],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -159,6 +165,7 @@ export class ForwardRefPipe implements PipeTransform {
   };
   // @ts-ignore
   static ɵpipe: i0.ɵɵPipeDeclaration<ForwardRefPipe, 'forwardRefPipe', false> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefinePipe({
       name: 'forwardRefPipe',
       type: ForwardRefPipe,

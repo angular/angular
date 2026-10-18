@@ -26,11 +26,13 @@ export class FormField {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: FormField,
-    selectors: [['', 'formField', '']],
-    inputs: { formField: 'formField' },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: FormField,
+      selectors: [['', 'formField', '']],
+      inputs: { formField: 'formField' },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -71,10 +73,12 @@ export class MyOtherDirective {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: MyOtherDirective,
-    selectors: [['', 'myOtherDir', '']],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: MyOtherDirective,
+      selectors: [['', 'myOtherDir', '']],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -115,26 +119,28 @@ export class MyComp {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: MyComp,
-    selectors: [['my-comp']],
-    decls: 1,
-    vars: 1,
-    consts: [['myOtherDir', '', 3, 'formField']],
-    template: function MyComp_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'input', 0);
-        i0.ɵɵcontrolCreate();
-        i0.ɵɵelementEnd();
-      }
-      if (rf & 2) {
-        i0.ɵɵproperty('formField', ctx.myField);
-        i0.ɵɵcontrol();
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(MyComp, [FormField, MyOtherDirective]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: MyComp,
+      selectors: [['my-comp']],
+      decls: 1,
+      vars: 1,
+      consts: [['myOtherDir', '', 3, 'formField']],
+      template: function MyComp_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'input', 0);
+          i0.ɵɵcontrolCreate();
+          i0.ɵɵelementEnd();
+        }
+        if (rf & 2) {
+          i0.ɵɵproperty('formField', ctx.myField);
+          i0.ɵɵcontrol();
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(MyComp, [FormField, MyOtherDirective]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

@@ -22,22 +22,24 @@ export class ModuleChild {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ModuleChild,
-    selectors: [['ng-component']],
-    standalone: false,
-    decls: 2,
-    vars: 0,
-    template: function ModuleChild_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'i');
-        i0.ɵɵtext(1, 'module child');
-        i0.ɵɵelementEnd();
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(ModuleChild),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ModuleChild,
+      selectors: [['ng-component']],
+      standalone: false,
+      decls: 2,
+      vars: 0,
+      template: function ModuleChild_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'i');
+          i0.ɵɵtext(1, 'module child');
+          i0.ɵɵelementEnd();
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(ModuleChild),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -85,20 +87,22 @@ export class ModuleParent {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ModuleParent,
-    selectors: [['module-parent']],
-    standalone: false,
-    decls: 1,
-    vars: 0,
-    template: function ModuleParent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'ng-component');
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(ModuleParent),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ModuleParent,
+      selectors: [['module-parent']],
+      standalone: false,
+      decls: 1,
+      vars: 0,
+      template: function ModuleParent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'ng-component');
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(ModuleParent),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -137,9 +141,13 @@ export class ChildModule {
     return new (__ngFactoryType__ || ChildModule)();
   };
   // @ts-ignore
-  static ɵmod: ChildModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: ChildModule });
+  static ɵmod: ChildModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: ChildModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<ChildModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<ChildModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -191,20 +199,22 @@ export class Child {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: Child,
-    selectors: [['ng-component']],
-    decls: 2,
-    vars: 0,
-    template: function Child_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'span');
-        i0.ɵɵtext(1, 'child');
-        i0.ɵɵelementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: Child,
+      selectors: [['ng-component']],
+      decls: 2,
+      vars: 0,
+      template: function Child_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'span');
+          i0.ɵɵtext(1, 'child');
+          i0.ɵɵelementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -248,20 +258,22 @@ export class EmptySelector {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: EmptySelector,
-    selectors: [['ng-component']],
-    decls: 2,
-    vars: 0,
-    template: function EmptySelector_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'b');
-        i0.ɵɵtext(1, 'empty');
-        i0.ɵɵelementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: EmptySelector,
+      selectors: [['ng-component']],
+      decls: 2,
+      vars: 0,
+      template: function EmptySelector_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'b');
+          i0.ɵɵtext(1, 'empty');
+          i0.ɵɵelementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -309,19 +321,21 @@ export class App {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: App,
-    selectors: [['app-root']],
-    decls: 1,
-    vars: 0,
-    template: function App_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'ng-component');
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(App, [Child]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: App,
+      selectors: [['app-root']],
+      decls: 1,
+      vars: 0,
+      template: function App_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'ng-component');
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(App, [Child]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -366,19 +380,21 @@ export class AppEmpty {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppEmpty,
-    selectors: [['app-empty']],
-    decls: 1,
-    vars: 0,
-    template: function AppEmpty_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'ng-component');
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(AppEmpty, [EmptySelector]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppEmpty,
+      selectors: [['app-empty']],
+      decls: 1,
+      vars: 0,
+      template: function AppEmpty_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'ng-component');
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(AppEmpty, [EmptySelector]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -428,19 +444,21 @@ export class AppByName {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppByName,
-    selectors: [['app-by-name']],
-    decls: 1,
-    vars: 0,
-    template: function AppByName_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'Child');
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(AppByName, [Child]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppByName,
+      selectors: [['app-by-name']],
+      decls: 1,
+      vars: 0,
+      template: function AppByName_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'Child');
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(AppByName, [Child]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

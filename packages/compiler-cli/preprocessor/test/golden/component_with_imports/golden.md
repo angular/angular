@@ -22,20 +22,22 @@ export class HelloComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: HelloComponent,
-    selectors: [['app-hello']],
-    decls: 2,
-    vars: 0,
-    template: function HelloComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'span');
-        i0.ɵɵtext(1, 'Hello');
-        i0.ɵɵelementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: HelloComponent,
+      selectors: [['app-hello']],
+      decls: 2,
+      vars: 0,
+      template: function HelloComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'span');
+          i0.ɵɵtext(1, 'Hello');
+          i0.ɵɵelementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -91,10 +93,12 @@ export class HighlightDirective {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: HighlightDirective,
-    selectors: [['', 'appHighlight', '']],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: HighlightDirective,
+      selectors: [['', 'appHighlight', '']],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -146,31 +150,33 @@ export class ParentComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ParentComponent,
-    selectors: [['app-parent']],
-    decls: 3,
-    vars: 3,
-    consts: [['appHighlight', '']],
-    template: function ParentComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'app-hello', 0);
-        i0.ɵɵtext(1);
-        i0.ɵɵpipe(2, 'upcase');
-        i0.ɵɵelementEnd();
-      }
-      if (rf & 2) {
-        i0.ɵɵadvance();
-        i0.ɵɵtextInterpolate(i0.ɵɵpipeBind1(2, 1, 'test'));
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(ParentComponent, [
-      HelloComponent,
-      HighlightDirective,
-      UpcasePipe,
-    ]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ParentComponent,
+      selectors: [['app-parent']],
+      decls: 3,
+      vars: 3,
+      consts: [['appHighlight', '']],
+      template: function ParentComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'app-hello', 0);
+          i0.ɵɵtext(1);
+          i0.ɵɵpipe(2, 'upcase');
+          i0.ɵɵelementEnd();
+        }
+        if (rf & 2) {
+          i0.ɵɵadvance();
+          i0.ɵɵtextInterpolate(i0.ɵɵpipeBind1(2, 1, 'test'));
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(ParentComponent, [
+        HelloComponent,
+        HighlightDirective,
+        UpcasePipe,
+      ]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -219,21 +225,23 @@ export class ForwardRefComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ForwardRefComponent,
-    selectors: [['test-forward-ref']],
-    decls: 1,
-    vars: 0,
-    template: function ForwardRefComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'app-forward-ref-target');
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(ForwardRefComponent, [
-      forwardRef(() => ForwardRefTargetComponent),
-    ]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ForwardRefComponent,
+      selectors: [['test-forward-ref']],
+      decls: 1,
+      vars: 0,
+      template: function ForwardRefComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'app-forward-ref-target');
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(ForwardRefComponent, [
+        forwardRef(() => ForwardRefTargetComponent),
+      ]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -282,20 +290,22 @@ export class ForwardRefTargetComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ForwardRefTargetComponent,
-    selectors: [['app-forward-ref-target']],
-    decls: 2,
-    vars: 0,
-    template: function ForwardRefTargetComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'span');
-        i0.ɵɵtext(1, 'Target');
-        i0.ɵɵelementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ForwardRefTargetComponent,
+      selectors: [['app-forward-ref-target']],
+      decls: 2,
+      vars: 0,
+      template: function ForwardRefTargetComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'span');
+          i0.ɵɵtext(1, 'Target');
+          i0.ɵɵelementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -345,11 +355,9 @@ export class UpcasePipe implements PipeTransform {
     return new (__ngFactoryType__ || UpcasePipe)();
   };
   // @ts-ignore
-  static ɵpipe: i0.ɵɵPipeDeclaration<UpcasePipe, 'upcase', true> = /*@__PURE__*/ i0.ɵɵdefinePipe({
-    name: 'upcase',
-    type: UpcasePipe,
-    pure: true,
-  });
+  static ɵpipe: i0.ɵɵPipeDeclaration<UpcasePipe, 'upcase', true> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefinePipe({ name: 'upcase', type: UpcasePipe, pure: true });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

@@ -13,6 +13,7 @@ export class Dir {
   };
   // @ts-ignore
   static ɵdir: i0.ɵɵDirectiveDeclaration<Dir, '[dir]', never, {}, {}, never, never, false, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineDirective({
       type: Dir,
       selectors: [['', 'dir', '']],
@@ -57,7 +58,9 @@ export class StandaloneDir {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({ type: StandaloneDir, selectors: [['', 'sdir', '']] });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({ type: StandaloneDir, selectors: [['', 'sdir', '']] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -91,9 +94,12 @@ export class SharedModule {
   };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<SharedModule, [typeof Dir], never, [typeof Dir]> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: SharedModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<SharedModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<SharedModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -128,9 +134,12 @@ export class OtherModule {
   };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<OtherModule, never, never, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: OtherModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<OtherModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<OtherModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(OtherModule, [{ type: NgModule, args: [{}] }], null, null);
@@ -151,11 +160,13 @@ export class NestedFilteredModule {
     never,
     [typeof SharedModule, typeof StandaloneDir, typeof SharedModule],
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: NestedFilteredModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: NestedFilteredModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<NestedFilteredModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [SharedModule, SharedModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<NestedFilteredModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [SharedModule, SharedModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -195,11 +206,13 @@ export class NestedAllKeptModule {
     never,
     [typeof SharedModule, typeof OtherModule],
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: NestedAllKeptModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: NestedAllKeptModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<NestedAllKeptModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [[SharedModule, OtherModule]],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<NestedAllKeptModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [[SharedModule, OtherModule]] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -238,11 +251,13 @@ export class NestedExportsModule {
     never,
     never,
     [typeof SharedModule, typeof OtherModule]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: NestedExportsModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: NestedExportsModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<NestedExportsModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [SharedModule, OtherModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<NestedExportsModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [SharedModule, OtherModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -282,11 +297,13 @@ export class DeepNestedModule {
     never,
     [typeof SharedModule, typeof OtherModule, typeof StandaloneDir, typeof SharedModule],
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: DeepNestedModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: DeepNestedModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<DeepNestedModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [SharedModule, OtherModule, SharedModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<DeepNestedModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [SharedModule, OtherModule, SharedModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -328,11 +345,13 @@ export class NestedMwpModule {
     never,
     [typeof SharedModule, typeof StandaloneDir],
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: NestedMwpModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: NestedMwpModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<NestedMwpModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [[SharedModule.forRoot(), StandaloneDir]],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<NestedMwpModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [[SharedModule.forRoot(), StandaloneDir]] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -370,9 +389,12 @@ export class DeepNestedExportsModule {
     never,
     never,
     [typeof SharedModule, typeof OtherModule, typeof SharedModule]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: DeepNestedExportsModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: DeepNestedExportsModule });
   // @ts-ignore
   static ɵinj: i0.ɵɵInjectorDeclaration<DeepNestedExportsModule> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [SharedModule, OtherModule, SharedModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
@@ -414,11 +436,13 @@ export class NestedBothModule {
     never,
     [typeof StandaloneDir, typeof SharedModule],
     [typeof OtherModule]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: NestedBothModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: NestedBothModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<NestedBothModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [SharedModule, OtherModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<NestedBothModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [SharedModule, OtherModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -456,11 +480,12 @@ export class EmptyNestedModule {
     };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<EmptyNestedModule, never, never, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: EmptyNestedModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<EmptyNestedModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [[]],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<EmptyNestedModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [[]] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -494,9 +519,12 @@ export class AllFilteredNestedModule {
     never,
     [typeof StandaloneDir],
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AllFilteredNestedModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AllFilteredNestedModule });
   // @ts-ignore
   static ɵinj: i0.ɵɵInjectorDeclaration<AllFilteredNestedModule> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
@@ -542,11 +570,15 @@ export class NestedBeforeMwpModule {
       typeof OtherModule,
     ],
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: NestedBeforeMwpModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: NestedBeforeMwpModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<NestedBeforeMwpModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [SharedModule, SharedModule, SharedModule.forRoot(), OtherModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<NestedBeforeMwpModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({
+      imports: [SharedModule, SharedModule, SharedModule.forRoot(), OtherModule],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -591,9 +623,12 @@ export class EmptyNestedBeforeMwpModule {
     never,
     [typeof StandaloneDir, typeof SharedModule],
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: EmptyNestedBeforeMwpModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: EmptyNestedBeforeMwpModule });
   // @ts-ignore
   static ɵinj: i0.ɵɵInjectorDeclaration<EmptyNestedBeforeMwpModule> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [SharedModule.forRoot()] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
@@ -633,9 +668,12 @@ export class NestedExportsFilteredModule {
     never,
     [typeof SharedModule],
     [typeof Dir, typeof OtherModule]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: NestedExportsFilteredModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: NestedExportsFilteredModule });
   // @ts-ignore
   static ɵinj: i0.ɵɵInjectorDeclaration<NestedExportsFilteredModule> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [SharedModule, OtherModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
@@ -675,11 +713,12 @@ export class DeepMwpModule {
   };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<DeepMwpModule, never, [typeof SharedModule], never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: DeepMwpModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<DeepMwpModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [[[SharedModule.forRoot()]]],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<DeepMwpModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [[[SharedModule.forRoot()]]] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -717,11 +756,13 @@ export class InnerAllFilteredModule {
     never,
     [typeof SharedModule, typeof StandaloneDir],
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: InnerAllFilteredModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: InnerAllFilteredModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<InnerAllFilteredModule> = /*@__PURE__*/ i0.ɵɵdefineInjector(
-    { imports: [SharedModule] },
-  );
+  static ɵinj: i0.ɵɵInjectorDeclaration<InnerAllFilteredModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [SharedModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -755,9 +796,11 @@ export class EmptyNestedExportsModule {
     };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<EmptyNestedExportsModule, never, never, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: EmptyNestedExportsModule });
   // @ts-ignore
   static ɵinj: i0.ɵɵInjectorDeclaration<EmptyNestedExportsModule> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
@@ -792,9 +835,12 @@ export class VerbatimImportsNestedExportsModule {
     never,
     [typeof SharedModule, typeof OtherModule],
     [typeof OtherModule]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: VerbatimImportsNestedExportsModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: VerbatimImportsNestedExportsModule });
   // @ts-ignore
   static ɵinj: i0.ɵɵInjectorDeclaration<VerbatimImportsNestedExportsModule> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [[SharedModule, OtherModule], OtherModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&

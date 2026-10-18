@@ -30,6 +30,7 @@ export class C {
   };
   // @ts-ignore
   static ɵcmp: i0.ɵɵComponentDeclaration<C, 'c', never, {}, {}, never, never, false, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineComponent({
       type: C,
       selectors: [['c']],
@@ -81,6 +82,7 @@ export class D {
   };
   // @ts-ignore
   static ɵdir: i0.ɵɵDirectiveDeclaration<D, '[d]', never, {}, {}, never, never, false, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineDirective({ type: D, selectors: [['', 'd', '']], standalone: false });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
@@ -112,9 +114,12 @@ export class M1Module {
   };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<M1Module, [typeof C, typeof D], never, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: M1Module });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<M1Module> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<M1Module> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -149,9 +154,12 @@ export class M2Module {
   };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<M2Module, [typeof C, typeof D], never, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: M2Module });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<M2Module> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<M2Module> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

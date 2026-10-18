@@ -25,30 +25,32 @@ export class AppCmp {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppCmp,
-    selectors: [['app-cmp']],
-    decls: 1,
-    vars: 1,
-    consts: [['myDir', '', 3, 'myDirAliasedOut', 'myDirAliasedInp']],
-    template: function AppCmp_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div', 0);
-        i0.ɵɵlistener(
-          'myDirAliasedOut',
-          function AppCmp_Template_div_myDirAliasedOut_0_listener($event: any): any {
-            return ctx.onEvent($event);
-          },
-        );
-        i0.ɵɵelementEnd();
-      }
-      if (rf & 2) {
-        i0.ɵɵproperty('myDirAliasedInp', ctx.text);
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(AppCmp, [MyDir]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppCmp,
+      selectors: [['app-cmp']],
+      decls: 1,
+      vars: 1,
+      consts: [['myDir', '', 3, 'myDirAliasedOut', 'myDirAliasedInp']],
+      template: function AppCmp_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div', 0);
+          i0.ɵɵlistener(
+            'myDirAliasedOut',
+            function AppCmp_Template_div_myDirAliasedOut_0_listener($event: any): any {
+              return ctx.onEvent($event);
+            },
+          );
+          i0.ɵɵelementEnd();
+        }
+        if (rf & 2) {
+          i0.ɵɵproperty('myDirAliasedInp', ctx.text);
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(AppCmp, [MyDir]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -114,19 +116,21 @@ export class MyDir {
         outputs: { 'hostOut': 'myDirAliasedOut' };
       },
     ]
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: MyDir,
-    selectors: [['', 'myDir', '']],
-    features: [
-      i0.ɵɵHostDirectivesFeature([
-        {
-          directive: HostDir,
-          inputs: ['hostInp', 'myDirAliasedInp'],
-          outputs: ['hostOut', 'myDirAliasedOut'],
-        },
-      ]),
-    ],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: MyDir,
+      selectors: [['', 'myDir', '']],
+      features: [
+        i0.ɵɵHostDirectivesFeature([
+          {
+            directive: HostDir,
+            inputs: ['hostInp', 'myDirAliasedInp'],
+            outputs: ['hostOut', 'myDirAliasedOut'],
+          },
+        ]),
+      ],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -183,11 +187,13 @@ export class HostDir {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: HostDir,
-    inputs: { hostInp: 'hostInp' },
-    outputs: { hostOut: 'hostOut' },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: HostDir,
+      inputs: { hostInp: 'hostInp' },
+      outputs: { hostOut: 'hostOut' },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

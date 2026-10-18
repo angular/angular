@@ -22,11 +22,13 @@ export class GenericDirective<T> {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: GenericDirective,
-    selectors: [['', 'appGeneric', '']],
-    inputs: { value: 'value' },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: GenericDirective,
+      selectors: [['', 'appGeneric', '']],
+      inputs: { value: 'value' },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -77,10 +79,12 @@ export class HighlightDirective {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: HighlightDirective,
-    selectors: [['', 'appHighlight', '']],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: HighlightDirective,
+      selectors: [['', 'appHighlight', '']],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

@@ -18,9 +18,9 @@ function _tcb1(this: i0.MyComponent) {
 function _tcb2(this: i0.AppRoot) {
   if (true) {
     var _t1 /*T:DIR:0*/ /*793,824*/ = null! as i0.MyComponent; /*T:VAE*/
-    _t1.compInput /*803,812*/ = 'hello' /*815,822*/ /*802,823*/;
+    _t1.compInput /*803,812*/ = 'hello' /*815,822*/; /*802,823*/
     var _t2 /*T:DIR:0*/ /*843,875*/ = null! as i0.MyDirective; /*T:VAE*/
-    _t2.dirInput /*855,863*/ = 'world' /*866,873*/ /*854,874*/;
+    _t2.dirInput /*855,863*/ = 'world' /*866,873*/; /*854,874*/
   }
 }
 
@@ -51,12 +51,14 @@ export class MyDirective {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: MyDirective,
-    selectors: [['', 'myDir', '']],
-    inputs: { dirInput: 'dirInput' },
-    standalone: false,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: MyDirective,
+      selectors: [['', 'myDir', '']],
+      inputs: { dirInput: 'dirInput' },
+      standalone: false,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -97,26 +99,28 @@ export class MyComponent {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: MyComponent,
-    selectors: [['my-comp']],
-    inputs: { compInput: 'compInput' },
-    standalone: false,
-    decls: 2,
-    vars: 1,
-    template: function MyComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1);
-        i0.ɵɵelementEnd();
-      }
-      if (rf & 2) {
-        i0.ɵɵadvance();
-        i0.ɵɵtextInterpolate(ctx.compInput);
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: MyComponent,
+      selectors: [['my-comp']],
+      inputs: { compInput: 'compInput' },
+      standalone: false,
+      decls: 2,
+      vars: 1,
+      template: function MyComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1);
+          i0.ɵɵelementEnd();
+        }
+        if (rf & 2) {
+          i0.ɵɵadvance();
+          i0.ɵɵtextInterpolate(ctx.compInput);
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -160,13 +164,17 @@ export class MyModule {
     [typeof MyDirective, typeof MyComponent],
     never,
     [typeof MyDirective, typeof MyComponent]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({
-    type: MyModule,
-    bootstrap: [MyComponent],
-    id: 'MyModuleId',
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({
+      type: MyModule,
+      bootstrap: [MyComponent],
+      id: 'MyModuleId',
+    });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<MyModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<MyModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -211,9 +219,12 @@ export class ModuleWithDeps {
   };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<ModuleWithDeps, never, never, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: ModuleWithDeps });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<ModuleWithDeps> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<ModuleWithDeps> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -243,28 +254,30 @@ export class AppRoot {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppRoot,
-    selectors: [['app-root']],
-    decls: 2,
-    vars: 2,
-    consts: [
-      [3, 'compInput'],
-      ['myDir', '', 3, 'dirInput'],
-    ],
-    template: function AppRoot_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'my-comp', 0)(1, 'div', 1);
-      }
-      if (rf & 2) {
-        i0.ɵɵproperty('compInput', 'hello');
-        i0.ɵɵadvance();
-        i0.ɵɵproperty('dirInput', 'world');
-      }
-    },
-    dependencies: [MyModule, MyDirective, MyComponent],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppRoot,
+      selectors: [['app-root']],
+      decls: 2,
+      vars: 2,
+      consts: [
+        [3, 'compInput'],
+        ['myDir', '', 3, 'dirInput'],
+      ],
+      template: function AppRoot_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'my-comp', 0)(1, 'div', 1);
+        }
+        if (rf & 2) {
+          i0.ɵɵproperty('compInput', 'hello');
+          i0.ɵɵadvance();
+          i0.ɵɵproperty('dirInput', 'world');
+        }
+      },
+      dependencies: [MyModule, MyDirective, MyComponent],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

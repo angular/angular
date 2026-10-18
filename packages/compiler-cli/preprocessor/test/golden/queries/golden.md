@@ -90,66 +90,68 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    contentQueries: function AppComponent_ContentQueries(
-      rf: number,
-      ctx: any,
-      dirIndex: number,
-    ): any {
-      if (rf & 1) {
-        i0.ɵɵcontentQuerySignal(dirIndex, ctx.signalContent, _c0, 5)(
-          dirIndex,
-          ctx.signalContentItems,
-          _c1,
-          4,
-        );
-        i0.ɵɵcontentQuery(dirIndex, _c0, 5)(
-          dirIndex,
-          SomeModule.SomeDirective,
-          5,
-          core.TemplateRef,
-        )(dirIndex, _c1, 4);
-      }
-      if (rf & 2) {
-        i0.ɵɵqueryAdvance(2);
-        let _t: any;
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.content = _t.first);
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.complexComponent = _t.first);
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.contentItems = _t);
-      }
-    },
-    viewQuery: function AppComponent_Query(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵviewQuerySignal(ctx.signalDiv, _c2, 5)(ctx.signalTpl, _c3, 5, TemplateRef)(
-          ctx.signalItems,
-          _c4,
-          5,
-        )(ctx.reqSignalDiv, _c2, 5)(ctx.namespacedView, _c5, 5)(ctx.namespacedReqView, _c6, 5);
-        i0.ɵɵviewQuery(_c2, 5)(_c3, 7, TemplateRef)(SomeComponent, 5)(_c7, 5)(_c4, 1);
-      }
-      if (rf & 2) {
-        i0.ɵɵqueryAdvance(6);
-        let _t: any;
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.div = _t.first);
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.tpl = _t.first);
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.forwardComponent = _t.first);
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.setterQuery = _t.first);
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.items = _t);
-      }
-    },
-    decls: 2,
-    vars: 0,
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵelement(1, 'slot');
-        i0.ɵɵelementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      contentQueries: function AppComponent_ContentQueries(
+        rf: number,
+        ctx: any,
+        dirIndex: number,
+      ): any {
+        if (rf & 1) {
+          i0.ɵɵcontentQuerySignal(dirIndex, ctx.signalContent, _c0, 5)(
+            dirIndex,
+            ctx.signalContentItems,
+            _c1,
+            4,
+          );
+          i0.ɵɵcontentQuery(dirIndex, _c0, 5)(
+            dirIndex,
+            SomeModule.SomeDirective,
+            5,
+            core.TemplateRef,
+          )(dirIndex, _c1, 4);
+        }
+        if (rf & 2) {
+          i0.ɵɵqueryAdvance(2);
+          let _t: any;
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.content = _t.first);
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.complexComponent = _t.first);
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.contentItems = _t);
+        }
+      },
+      viewQuery: function AppComponent_Query(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵviewQuerySignal(ctx.signalDiv, _c2, 5)(ctx.signalTpl, _c3, 5, TemplateRef)(
+            ctx.signalItems,
+            _c4,
+            5,
+          )(ctx.reqSignalDiv, _c2, 5)(ctx.namespacedView, _c5, 5)(ctx.namespacedReqView, _c6, 5);
+          i0.ɵɵviewQuery(_c2, 5)(_c3, 7, TemplateRef)(SomeComponent, 5)(_c7, 5)(_c4, 1);
+        }
+        if (rf & 2) {
+          i0.ɵɵqueryAdvance(6);
+          let _t: any;
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.div = _t.first);
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.tpl = _t.first);
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.forwardComponent = _t.first);
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.setterQuery = _t.first);
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.items = _t);
+        }
+      },
+      decls: 2,
+      vars: 0,
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵelement(1, 'slot');
+          i0.ɵɵelementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

@@ -29,7 +29,7 @@ export class AppComponent {
 function _tcb1(this: AppComponent) {
   if (true) {
     var _t1 /*T:DIR:0*/ /*227,253*/ = null! as LocalDir; /*T:VAE*/
-    _t1.localDir /*233,241*/ = this.message /*244,251*/ /*244,251*/ /*232,252*/;
+    _t1.localDir /*233,241*/ = this.message /*244,251*/ /*244,251*/; /*232,252*/
   }
 }
 
@@ -60,11 +60,13 @@ class LocalDir {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: LocalDir,
-    selectors: [['', 'localDir', '']],
-    inputs: { localDir: 'localDir' },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: LocalDir,
+      selectors: [['', 'localDir', '']],
+      inputs: { localDir: 'localDir' },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -105,23 +107,25 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 1,
-    vars: 1,
-    consts: [[3, 'localDir']],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'div', 0);
-      }
-      if (rf & 2) {
-        i0.ɵɵproperty('localDir', ctx.message);
-      }
-    },
-    dependencies: [LocalDir],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 1,
+      vars: 1,
+      consts: [[3, 'localDir']],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'div', 0);
+        }
+        if (rf & 2) {
+          i0.ɵɵproperty('localDir', ctx.message);
+        }
+      },
+      dependencies: [LocalDir],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

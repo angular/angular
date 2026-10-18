@@ -51,22 +51,24 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 4,
-    vars: 0,
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'widget-a');
-        i0.ɵɵdomTemplate(1, AppComponent_Defer_1_Template, 1, 0);
-        i0.ɵɵdefer(2, 1, AppComponent_Defer_2_DepsFn);
-        i0.ɵɵdeferOnIdle();
-      }
-    },
-    dependencies: [Widget],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 4,
+      vars: 0,
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'widget-a');
+          i0.ɵɵdomTemplate(1, AppComponent_Defer_1_Template, 1, 0);
+          i0.ɵɵdefer(2, 1, AppComponent_Defer_2_DepsFn);
+          i0.ɵɵdeferOnIdle();
+        }
+      },
+      dependencies: [Widget],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadataAsync(
@@ -155,18 +157,20 @@ export class Widget {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: Widget,
-    selectors: [['widget-a']],
-    decls: 1,
-    vars: 0,
-    template: function Widget_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0, 'A');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: Widget,
+      selectors: [['widget-a']],
+      decls: 1,
+      vars: 0,
+      template: function Widget_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0, 'A');
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -235,18 +239,20 @@ export class Widget {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: Widget,
-    selectors: [['widget-b']],
-    decls: 1,
-    vars: 0,
-    template: function Widget_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0, 'B');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: Widget,
+      selectors: [['widget-b']],
+      decls: 1,
+      vars: 0,
+      template: function Widget_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0, 'B');
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -315,18 +321,20 @@ export class Widget {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: Widget,
-    selectors: [['widget-c']],
-    decls: 1,
-    vars: 0,
-    template: function Widget_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0, 'C');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: Widget,
+      selectors: [['widget-c']],
+      decls: 1,
+      vars: 0,
+      template: function Widget_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0, 'C');
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

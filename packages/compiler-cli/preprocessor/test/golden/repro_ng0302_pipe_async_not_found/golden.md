@@ -31,27 +31,29 @@ export class LabelsPanel {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: LabelsPanel,
-    selectors: [['labels-panel']],
-    standalone: false,
-    decls: 3,
-    vars: 3,
-    template: function LabelsPanel_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1);
-        i0.ɵɵpipe(2, 'async');
-        i0.ɵɵelementEnd();
-      }
-      if (rf & 2) {
-        i0.ɵɵadvance();
-        i0.ɵɵtextInterpolate(i0.ɵɵpipeBind1(2, 1, ctx.data));
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(LabelsPanel),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: LabelsPanel,
+      selectors: [['labels-panel']],
+      standalone: false,
+      decls: 3,
+      vars: 3,
+      template: function LabelsPanel_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1);
+          i0.ɵɵpipe(2, 'async');
+          i0.ɵɵelementEnd();
+        }
+        if (rf & 2) {
+          i0.ɵɵadvance();
+          i0.ɵɵtextInterpolate(i0.ɵɵpipeBind1(2, 1, ctx.data));
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(LabelsPanel),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -89,11 +91,13 @@ export class LabelsPanelModule {
       return new (__ngFactoryType__ || LabelsPanelModule)();
     };
   // @ts-ignore
-  static ɵmod: LabelsPanelModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: LabelsPanelModule });
+  static ɵmod: LabelsPanelModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: LabelsPanelModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<LabelsPanelModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [PipeModule, ExternalModule, LabelsPanel],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<LabelsPanelModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [PipeModule, ExternalModule, LabelsPanel] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -143,12 +147,14 @@ export class AsyncPipe implements PipeTransform {
     return new (__ngFactoryType__ || AsyncPipe)();
   };
   // @ts-ignore
-  static ɵpipe: i0.ɵɵPipeDeclaration<AsyncPipe, 'async', false> = /*@__PURE__*/ i0.ɵɵdefinePipe({
-    name: 'async',
-    type: AsyncPipe,
-    pure: true,
-    standalone: false,
-  });
+  static ɵpipe: i0.ɵɵPipeDeclaration<AsyncPipe, 'async', false> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefinePipe({
+      name: 'async',
+      type: AsyncPipe,
+      pure: true,
+      standalone: false,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -178,11 +184,13 @@ export class PipeModule {
     return new (__ngFactoryType__ || PipeModule)();
   };
   // @ts-ignore
-  static ɵmod: PipeModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: PipeModule });
+  static ɵmod: PipeModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: PipeModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<PipeModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [AsyncPipe],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<PipeModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [AsyncPipe] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

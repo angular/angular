@@ -22,20 +22,22 @@ export class AppComponent {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    standalone: false,
-    decls: 1,
-    vars: 0,
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'lib-widget');
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      standalone: false,
+      decls: 1,
+      vars: 0,
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'lib-widget');
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -84,11 +86,13 @@ export class AppModule {
     return new (__ngFactoryType__ || AppModule)();
   };
   // @ts-ignore
-  static ɵmod: AppModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
+  static ɵmod: AppModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [WidgetProviders.forRoot()],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [WidgetProviders.forRoot()] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -143,22 +147,24 @@ export class WidgetComponent {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: WidgetComponent,
-    selectors: [['lib-widget']],
-    standalone: false,
-    decls: 2,
-    vars: 0,
-    template: function WidgetComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'span');
-        i0.ɵɵtext(1, 'Widget');
-        i0.ɵɵelementEnd();
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(WidgetComponent),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: WidgetComponent,
+      selectors: [['lib-widget']],
+      standalone: false,
+      decls: 2,
+      vars: 0,
+      template: function WidgetComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'span');
+          i0.ɵɵtext(1, 'Widget');
+          i0.ɵɵelementEnd();
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(WidgetComponent),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -206,11 +212,13 @@ export class WidgetModule {
     return new (__ngFactoryType__ || WidgetModule)();
   };
   // @ts-ignore
-  static ɵmod: WidgetModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: WidgetModule });
+  static ɵmod: WidgetModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: WidgetModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<WidgetModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [WidgetComponent],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<WidgetModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [WidgetComponent] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

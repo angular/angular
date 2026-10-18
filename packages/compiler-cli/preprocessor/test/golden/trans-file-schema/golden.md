@@ -13,9 +13,13 @@ export class AppModule {
     return new (__ngFactoryType__ || AppModule)();
   };
   // @ts-ignore
-  static ɵmod: AppModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
+  static ɵmod: AppModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -67,25 +71,27 @@ export class MyComp {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: MyComp,
-    selectors: [['my-comp']],
-    standalone: false,
-    decls: 2,
-    vars: 1,
-    consts: [[3, 'unknown-property']],
-    template: function MyComp_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'unknown-element')(1, 'div', 0);
-      }
-      if (rf & 2) {
-        i0.ɵɵadvance();
-        i0.ɵɵproperty('unknown-property', true);
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(MyComp),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: MyComp,
+      selectors: [['my-comp']],
+      standalone: false,
+      decls: 2,
+      vars: 1,
+      consts: [[3, 'unknown-property']],
+      template: function MyComp_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'unknown-element')(1, 'div', 0);
+        }
+        if (rf & 2) {
+          i0.ɵɵadvance();
+          i0.ɵɵproperty('unknown-property', true);
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(MyComp),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

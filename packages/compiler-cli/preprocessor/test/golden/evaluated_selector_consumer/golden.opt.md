@@ -12,7 +12,7 @@ import * as i1 from './highlight';
 function _tcb1(this: i0.App) {
   if (true) {
     var _t1 /*T:DIR:1*/ /*513,542*/ = null! as i1.Highlight; /*T:VAE*/
-    _t1.highlight /*517,526*/ = this.color /*529,534*/ /*529,534*/ /*516,535*/;
+    _t1.highlight /*517,526*/ = this.color /*529,534*/ /*529,534*/; /*516,535*/
   }
 }
 
@@ -46,7 +46,9 @@ export class Badge {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({ type: Badge, selectors: [['', 'badge', '']] });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({ type: Badge, selectors: [['', 'badge', '']] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -79,26 +81,28 @@ export class App {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: App,
-    selectors: [['app-root']],
-    decls: 3,
-    vars: 1,
-    consts: [['badge', '', 3, 'highlight']],
-    template: function App_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'app-card')(1, 'p', 0);
-        i0.ɵɵtext(2, 'hi');
-        i0.ɵɵelementEnd()();
-      }
-      if (rf & 2) {
-        i0.ɵɵadvance();
-        i0.ɵɵproperty('highlight', ctx.color);
-      }
-    },
-    dependencies: [Card, Highlight, Badge],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: App,
+      selectors: [['app-root']],
+      decls: 3,
+      vars: 1,
+      consts: [['badge', '', 3, 'highlight']],
+      template: function App_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'app-card')(1, 'p', 0);
+          i0.ɵɵtext(2, 'hi');
+          i0.ɵɵelementEnd()();
+        }
+        if (rf & 2) {
+          i0.ɵɵadvance();
+          i0.ɵɵproperty('highlight', ctx.color);
+        }
+      },
+      dependencies: [Card, Highlight, Badge],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -171,20 +175,22 @@ export class Card {
     ['*'],
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: Card,
-    selectors: [['app-card']],
-    ngContentSelectors: _c0,
-    decls: 1,
-    vars: 0,
-    template: function Card_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵprojectionDef();
-        i0.ɵɵprojection(0);
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: Card,
+      selectors: [['app-card']],
+      ngContentSelectors: _c0,
+      decls: 1,
+      vars: 0,
+      template: function Card_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵprojectionDef();
+          i0.ɵɵprojection(0);
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -228,11 +234,13 @@ export class Highlight {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: Highlight,
-    selectors: [['', 'highlight', '']],
-    inputs: { highlight: 'highlight' },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: Highlight,
+      selectors: [['', 'highlight', '']],
+      inputs: { highlight: 'highlight' },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -295,19 +303,21 @@ export class LegacyItem {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: LegacyItem,
-    selectors: [['legacy-item']],
-    standalone: false,
-    decls: 1,
-    vars: 0,
-    template: function LegacyItem_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0, 'item');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: LegacyItem,
+      selectors: [['legacy-item']],
+      standalone: false,
+      decls: 1,
+      vars: 0,
+      template: function LegacyItem_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0, 'item');
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -350,20 +360,22 @@ export class LegacyList {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: LegacyList,
-    selectors: [['legacy-list']],
-    standalone: false,
-    decls: 1,
-    vars: 0,
-    template: function LegacyList_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'legacy-item');
-      }
-    },
-    dependencies: [LegacyItem],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: LegacyList,
+      selectors: [['legacy-list']],
+      standalone: false,
+      decls: 1,
+      vars: 0,
+      template: function LegacyList_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'legacy-item');
+        }
+      },
+      dependencies: [LegacyItem],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -401,9 +413,13 @@ export class LegacyModule {
     [typeof LegacyItem, typeof LegacyList],
     never,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: LegacyModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: LegacyModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<LegacyModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<LegacyModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

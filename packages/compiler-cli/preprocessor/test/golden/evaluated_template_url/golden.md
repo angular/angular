@@ -23,20 +23,22 @@ export class FooterComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: FooterComponent,
-    selectors: [['app-footer']],
-    decls: 2,
-    vars: 0,
-    template: function FooterComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'footer');
-        i0.ɵɵtext(1, 'footer');
-        i0.ɵɵelementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: FooterComponent,
+      selectors: [['app-footer']],
+      decls: 2,
+      vars: 0,
+      template: function FooterComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'footer');
+          i0.ɵɵtext(1, 'footer');
+          i0.ɵɵelementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -83,14 +85,16 @@ export class BadFooterComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: BadFooterComponent,
-    selectors: [['app-bad-footer']],
-    decls: 0,
-    vars: 0,
-    template: function BadFooterComponent_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: BadFooterComponent,
+      selectors: [['app-bad-footer']],
+      decls: 0,
+      vars: 0,
+      template: function BadFooterComponent_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -147,20 +151,22 @@ export class HeaderComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: HeaderComponent,
-    selectors: [['app-header']],
-    decls: 2,
-    vars: 0,
-    template: function HeaderComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'header');
-        i0.ɵɵtext(1, 'default header');
-        i0.ɵɵelementEnd();
-      }
-    },
-    styles: ['header[_ngcontent-%COMP%] { color: red; }'],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: HeaderComponent,
+      selectors: [['app-header']],
+      decls: 2,
+      vars: 0,
+      template: function HeaderComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'header');
+          i0.ɵɵtext(1, 'default header');
+          i0.ɵɵelementEnd();
+        }
+      },
+      styles: ['header[_ngcontent-%COMP%] { color: red; }'],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

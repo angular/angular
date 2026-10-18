@@ -13,11 +13,13 @@ export class InjectableWithUseClass {
       return new (__ngFactoryType__ || InjectableWithUseClass)();
     };
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineInjectable({
-    token: InjectableWithUseClass,
-    factory: (__ngFactoryType__: any): any => SomeClass.ɵfac(__ngFactoryType__),
-    providedIn: 'root',
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjectable({
+      token: InjectableWithUseClass,
+      factory: (__ngFactoryType__: any): any => SomeClass.ɵfac(__ngFactoryType__),
+      providedIn: 'root',
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -46,19 +48,21 @@ export class InjectableWithUseExisting {
       return new (__ngFactoryType__ || InjectableWithUseExisting)();
     };
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineInjectable({
-    token: InjectableWithUseExisting,
-    factory: function InjectableWithUseExisting_Factory(__ngFactoryType__: any): any {
-      let __ngConditionalFactory__: any = null;
-      if (__ngFactoryType__) {
-        __ngConditionalFactory__ = new (__ngFactoryType__ || InjectableWithUseExisting)();
-      } else {
-        /* @ts-ignore */
-        __ngConditionalFactory__ = i0.ɵɵinject(SomeClass);
-      }
-      return __ngConditionalFactory__;
-    },
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjectable({
+      token: InjectableWithUseExisting,
+      factory: function InjectableWithUseExisting_Factory(__ngFactoryType__: any): any {
+        let __ngConditionalFactory__: any = null;
+        if (__ngFactoryType__) {
+          __ngConditionalFactory__ = new (__ngFactoryType__ || InjectableWithUseExisting)();
+        } else {
+          /* @ts-ignore */
+          __ngConditionalFactory__ = i0.ɵɵinject(SomeClass);
+        }
+        return __ngConditionalFactory__;
+      },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -86,10 +90,12 @@ export class InjectableWithUseFactory {
       return new (__ngFactoryType__ || InjectableWithUseFactory)();
     };
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineInjectable({
-    token: InjectableWithUseFactory,
-    factory: (): any => (() => new SomeClass())(),
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjectable({
+      token: InjectableWithUseFactory,
+      factory: (): any => (() => new SomeClass())(),
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -117,19 +123,21 @@ export class InjectableWithUseValue {
       return new (__ngFactoryType__ || InjectableWithUseValue)();
     };
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineInjectable({
-    token: InjectableWithUseValue,
-    factory: function InjectableWithUseValue_Factory(__ngFactoryType__: any): any {
-      let __ngConditionalFactory__: any = null;
-      if (__ngFactoryType__) {
-        __ngConditionalFactory__ = new (__ngFactoryType__ || InjectableWithUseValue)();
-      } else {
-        /* @ts-ignore */
-        __ngConditionalFactory__ = { api: 'test' };
-      }
-      return __ngConditionalFactory__;
-    },
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjectable({
+      token: InjectableWithUseValue,
+      factory: function InjectableWithUseValue_Factory(__ngFactoryType__: any): any {
+        let __ngConditionalFactory__: any = null;
+        if (__ngFactoryType__) {
+          __ngConditionalFactory__ = new (__ngFactoryType__ || InjectableWithUseValue)();
+        } else {
+          /* @ts-ignore */
+          __ngConditionalFactory__ = { api: 'test' };
+        }
+        return __ngConditionalFactory__;
+      },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -157,19 +165,21 @@ export class PrecedenceUseValue {
       return new (__ngFactoryType__ || PrecedenceUseValue)();
     };
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineInjectable({
-    token: PrecedenceUseValue,
-    factory: function PrecedenceUseValue_Factory(__ngFactoryType__: any): any {
-      let __ngConditionalFactory__: any = null;
-      if (__ngFactoryType__) {
-        __ngConditionalFactory__ = new (__ngFactoryType__ || PrecedenceUseValue)();
-      } else {
-        /* @ts-ignore */
-        __ngConditionalFactory__ = { api: 'value_wins' };
-      }
-      return __ngConditionalFactory__;
-    },
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjectable({
+      token: PrecedenceUseValue,
+      factory: function PrecedenceUseValue_Factory(__ngFactoryType__: any): any {
+        let __ngConditionalFactory__: any = null;
+        if (__ngFactoryType__) {
+          __ngConditionalFactory__ = new (__ngFactoryType__ || PrecedenceUseValue)();
+        } else {
+          /* @ts-ignore */
+          __ngConditionalFactory__ = { api: 'value_wins' };
+        }
+        return __ngConditionalFactory__;
+      },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -200,19 +210,21 @@ export class PrecedenceUseExisting {
       return new (__ngFactoryType__ || PrecedenceUseExisting)();
     };
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineInjectable({
-    token: PrecedenceUseExisting,
-    factory: function PrecedenceUseExisting_Factory(__ngFactoryType__: any): any {
-      let __ngConditionalFactory__: any = null;
-      if (__ngFactoryType__) {
-        __ngConditionalFactory__ = new (__ngFactoryType__ || PrecedenceUseExisting)();
-      } else {
-        /* @ts-ignore */
-        __ngConditionalFactory__ = i0.ɵɵinject(SomeClass);
-      }
-      return __ngConditionalFactory__;
-    },
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjectable({
+      token: PrecedenceUseExisting,
+      factory: function PrecedenceUseExisting_Factory(__ngFactoryType__: any): any {
+        let __ngConditionalFactory__: any = null;
+        if (__ngFactoryType__) {
+          __ngConditionalFactory__ = new (__ngFactoryType__ || PrecedenceUseExisting)();
+        } else {
+          /* @ts-ignore */
+          __ngConditionalFactory__ = i0.ɵɵinject(SomeClass);
+        }
+        return __ngConditionalFactory__;
+      },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -242,10 +254,12 @@ export class PrecedenceUseClass {
       return new (__ngFactoryType__ || PrecedenceUseClass)();
     };
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineInjectable({
-    token: PrecedenceUseClass,
-    factory: (__ngFactoryType__: any): any => SomeClass.ɵfac(__ngFactoryType__),
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjectable({
+      token: PrecedenceUseClass,
+      factory: (__ngFactoryType__: any): any => SomeClass.ɵfac(__ngFactoryType__),
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

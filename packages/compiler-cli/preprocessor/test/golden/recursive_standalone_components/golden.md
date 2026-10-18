@@ -22,20 +22,22 @@ export class SameNameComp {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: SameNameComp,
-    selectors: [['other-tree']],
-    decls: 2,
-    vars: 0,
-    template: function SameNameComp_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'span');
-        i0.ɵɵtext(1, 'other');
-        i0.ɵɵelementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: SameNameComp,
+      selectors: [['other-tree']],
+      decls: 2,
+      vars: 0,
+      template: function SameNameComp_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'span');
+          i0.ɵɵtext(1, 'other');
+          i0.ɵɵelementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -102,6 +104,7 @@ export class DirA {
   };
   // @ts-ignore
   static ɵdir: i0.ɵɵDirectiveDeclaration<DirA, '[dirA]', never, {}, {}, never, never, true, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineDirective({ type: DirA, selectors: [['', 'dirA', '']] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
@@ -142,24 +145,26 @@ export class TreeComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: TreeComponent,
-    selectors: [['app-tree']],
-    inputs: { child: 'child' },
-    decls: 1,
-    vars: 1,
-    consts: [['dirA', '', 3, 'child']],
-    template: function TreeComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵconditionalCreate(0, TreeComponent_Conditional_0_Template, 1, 1, 'app-tree', 0);
-      }
-      if (rf & 2) {
-        i0.ɵɵconditional(ctx.child ? 0 : -1);
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(TreeComponent, [DirA, TreeComponent]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: TreeComponent,
+      selectors: [['app-tree']],
+      inputs: { child: 'child' },
+      decls: 1,
+      vars: 1,
+      consts: [['dirA', '', 3, 'child']],
+      template: function TreeComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵconditionalCreate(0, TreeComponent_Conditional_0_Template, 1, 1, 'app-tree', 0);
+        }
+        if (rf & 2) {
+          i0.ɵɵconditional(ctx.child ? 0 : -1);
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(TreeComponent, [DirA, TreeComponent]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -212,34 +217,36 @@ export class ForwardTreeComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ForwardTreeComponent,
-    selectors: [['app-forward-tree']],
-    inputs: { child: 'child' },
-    decls: 1,
-    vars: 1,
-    consts: [['dirA', '', 3, 'child']],
-    template: function ForwardTreeComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵconditionalCreate(
-          0,
-          ForwardTreeComponent_Conditional_0_Template,
-          1,
-          1,
-          'app-forward-tree',
-          0,
-        );
-      }
-      if (rf & 2) {
-        i0.ɵɵconditional(ctx.child ? 0 : -1);
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(ForwardTreeComponent, [
-      DirA,
-      forwardRef(() => ForwardTreeComponent),
-    ]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ForwardTreeComponent,
+      selectors: [['app-forward-tree']],
+      inputs: { child: 'child' },
+      decls: 1,
+      vars: 1,
+      consts: [['dirA', '', 3, 'child']],
+      template: function ForwardTreeComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵconditionalCreate(
+            0,
+            ForwardTreeComponent_Conditional_0_Template,
+            1,
+            1,
+            'app-forward-tree',
+            0,
+          );
+        }
+        if (rf & 2) {
+          i0.ɵɵconditional(ctx.child ? 0 : -1);
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(ForwardTreeComponent, [
+        DirA,
+        forwardRef(() => ForwardTreeComponent),
+      ]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -292,19 +299,21 @@ export class SameNameComp {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: SameNameComp,
-    selectors: [['local-tree']],
-    decls: 2,
-    vars: 0,
-    template: function SameNameComp_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'other-tree')(1, 'local-tree');
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(SameNameComp, [OtherSameNameComp]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: SameNameComp,
+      selectors: [['local-tree']],
+      decls: 2,
+      vars: 0,
+      template: function SameNameComp_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'other-tree')(1, 'local-tree');
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(SameNameComp, [OtherSameNameComp]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

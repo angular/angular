@@ -24,11 +24,13 @@ export class TestDirective {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: TestDirective,
-    selectors: [['', 'appDir', '']],
-    features: [i0.ɵɵProvidersFeature([Service])],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: TestDirective,
+      selectors: [['', 'appDir', '']],
+      features: [i0.ɵɵProvidersFeature([Service])],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -69,19 +71,21 @@ export class TestComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: TestComponent,
-    selectors: [['app-test']],
-    features: [i0.ɵɵProvidersFeature([Service], [Service])],
-    decls: 1,
-    vars: 0,
-    template: function TestComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'div');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: TestComponent,
+      selectors: [['app-test']],
+      features: [i0.ɵɵProvidersFeature([Service], [Service])],
+      decls: 1,
+      vars: 0,
+      template: function TestComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'div');
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

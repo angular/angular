@@ -51,35 +51,37 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 2,
-    vars: 3,
-    consts: [
-      [4, 'myIf', 'myIfInvocation'],
-      [4, 'invalidGuards'],
-    ],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtemplate(0, AppComponent_div_0_Template, 2, 1, 'div', 0)(
-          1,
-          AppComponent_div_1_Template,
-          2,
-          1,
-          'div',
-          1,
-        );
-      }
-      if (rf & 2) {
-        i0.ɵɵproperty('myIf', ctx.authService.user)('myIfInvocation', ctx.authService.user);
-        i0.ɵɵadvance();
-        i0.ɵɵproperty('invalidGuards', ctx.authService.user);
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [MyIf, MyDirWithInvalidGuards]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 2,
+      vars: 3,
+      consts: [
+        [4, 'myIf', 'myIfInvocation'],
+        [4, 'invalidGuards'],
+      ],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtemplate(0, AppComponent_div_0_Template, 2, 1, 'div', 0)(
+            1,
+            AppComponent_div_1_Template,
+            2,
+            1,
+            'div',
+            1,
+          );
+        }
+        if (rf & 2) {
+          i0.ɵɵproperty('myIf', ctx.authService.user)('myIfInvocation', ctx.authService.user);
+          i0.ɵɵadvance();
+          i0.ɵɵproperty('invalidGuards', ctx.authService.user);
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [MyIf, MyDirWithInvalidGuards]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

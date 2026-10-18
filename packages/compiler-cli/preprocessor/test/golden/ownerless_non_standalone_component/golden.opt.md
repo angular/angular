@@ -42,21 +42,23 @@ export class OwnerlessComponent {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: OwnerlessComponent,
-    selectors: [['app-ownerless']],
-    standalone: false,
-    decls: 2,
-    vars: 0,
-    template: function OwnerlessComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1, 'Ownerless');
-        i0.ɵɵelementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: OwnerlessComponent,
+      selectors: [['app-ownerless']],
+      standalone: false,
+      decls: 2,
+      vars: 0,
+      template: function OwnerlessComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'Ownerless');
+          i0.ɵɵelementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

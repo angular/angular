@@ -54,18 +54,20 @@ export class LifecycleComp {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: LifecycleComp,
-    selectors: [['lifecycle-comp']],
-    inputs: { nameMin: [0, 'name', 'nameMin'] },
-    standalone: false,
-    features: [i0.ɵɵNgOnChangesFeature],
-    decls: 0,
-    vars: 0,
-    template: function LifecycleComp_Template(rf: number, ctx: any): any {},
-    dependencies: i0.ɵɵgetComponentDepsFactory(LifecycleComp),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: LifecycleComp,
+      selectors: [['lifecycle-comp']],
+      inputs: { nameMin: [0, 'name', 'nameMin'] },
+      standalone: false,
+      features: [i0.ɵɵNgOnChangesFeature],
+      decls: 0,
+      vars: 0,
+      template: function LifecycleComp_Template(rf: number, ctx: any): any {},
+      dependencies: i0.ɵɵgetComponentDepsFactory(LifecycleComp),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -116,26 +118,28 @@ export class SimpleLayout {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: SimpleLayout,
-    selectors: [['simple-layout']],
-    standalone: false,
-    decls: 2,
-    vars: 2,
-    consts: [[3, 'name']],
-    template: function SimpleLayout_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'lifecycle-comp', 0)(1, 'lifecycle-comp', 0);
-      }
-      if (rf & 2) {
-        i0.ɵɵproperty('name', ctx.name1);
-        i0.ɵɵadvance();
-        i0.ɵɵproperty('name', ctx.name2);
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(SimpleLayout),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: SimpleLayout,
+      selectors: [['simple-layout']],
+      standalone: false,
+      decls: 2,
+      vars: 2,
+      consts: [[3, 'name']],
+      template: function SimpleLayout_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'lifecycle-comp', 0)(1, 'lifecycle-comp', 0);
+        }
+        if (rf & 2) {
+          i0.ɵɵproperty('name', ctx.name1);
+          i0.ɵɵadvance();
+          i0.ɵɵproperty('name', ctx.name2);
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(SimpleLayout),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -177,9 +181,13 @@ export class LifecycleModule {
     return new (__ngFactoryType__ || LifecycleModule)();
   };
   // @ts-ignore
-  static ɵmod: LifecycleModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: LifecycleModule });
+  static ɵmod: LifecycleModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: LifecycleModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<LifecycleModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<LifecycleModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

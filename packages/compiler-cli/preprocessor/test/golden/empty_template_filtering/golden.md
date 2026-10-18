@@ -22,7 +22,9 @@ export class UnusedDir {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({ type: UnusedDir, selectors: [['', 'unusedDir', '']] });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({ type: UnusedDir, selectors: [['', 'unusedDir', '']] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -62,15 +64,17 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 0,
-    vars: 0,
-    template: function AppComponent_Template(rf: number, ctx: any): any {},
-    dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [UnusedDir]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 0,
+      vars: 0,
+      template: function AppComponent_Template(rf: number, ctx: any): any {},
+      dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [UnusedDir]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

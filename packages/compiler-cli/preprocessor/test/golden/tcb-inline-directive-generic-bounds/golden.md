@@ -27,16 +27,18 @@ export class AppDirective<T extends LocalInterface> {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: AppDirective,
-    selectors: [['', 'appRoot', '']],
-    hostVars: 1,
-    hostBindings: function AppDirective_HostBindings(rf: number, ctx: any): any {
-      if (rf & 2) {
-        i0.ɵɵattribute('foo', ctx.prop.foo);
-      }
-    },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: AppDirective,
+      selectors: [['', 'appRoot', '']],
+      hostVars: 1,
+      hostBindings: function AppDirective_HostBindings(rf: number, ctx: any): any {
+        if (rf & 2) {
+          i0.ɵɵattribute('foo', ctx.prop.foo);
+        }
+      },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

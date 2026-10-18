@@ -209,18 +209,10 @@ export function normalizeNgpEmitForComparison(code: string, ellipsisToken = '\u2
     canonicalizeStringQuotes(normalized, ellipsisToken)
       .replace(/^[ \t]*\/\/\s*@ts-ignore[^\n]*\r?\n/gm, '')
       .replace(/\/\*\s*@ts-ignore\s*\*\/\s*/g, '')
-      // NGP emits `/*@__PURE__*/` on `.ng.ts` static definitions (`static ɵcmp: Type = /*@__PURE__*/ ...`),
-      // but TypeScript's emitter drops leading comments between `=` and the initializer expression when
-      // downleveling typed static class fields or when `removeComments: true` is active (whereas ngtsc
-      // attaches synthetic comments in an AST transformer during emit).
-      .replace(
-        /static\s+(ɵ(?:cmp|dir|pipe|mod|inj|prov|fac))\s*=\s*(?!\/\*\s*@__PURE__\s*\*\/)(i0\.ɵɵdefine|\(\(\)\s*=>)/g,
-        'static $1 = /*@__PURE__*/ $2',
-      )
-      // Under `annotateForClosureCompiler` NGP puts `/** @pureOrBreakMyCode */` on the line after
-      // `=` (the only placement `tsc` carries through to the downleveled assignment); ngtsc emits
-      // it on the same line.
-      .replace(/=\s*\n\s*(\/\*\* @pureOrBreakMyCode \*\/)/g, '= $1')
+      // NGP puts `/*@__PURE__*/` and `/** @pureOrBreakMyCode */` on the line after `=` (the only
+      // placement `tsc` preserves when stripping static field types or downleveling static fields);
+      // ngtsc emits them on the same line.
+      .replace(/=\s*\n\s*(\/\*(?:\* @pureOrBreakMyCode |@__PURE__)\*\/)/g, '= $1')
       .replace(
         /\(\(\(typeof\s+(ngDevMode|ngJitMode)\s*===\s*(['"])undefined\2\)\s*\|\|\s*\1\)/g,
         '((typeof $1 === $2undefined$2 || $1)',
@@ -245,12 +237,8 @@ export function normalizeNgpOutputFile(content: string): string {
   const normalized = content
     .replace(/^[ \t]*\/\/[ \t]*@ts-ignore[^\n]*\r?\n/gm, '')
     .replace(/\/\*\s*@ts-ignore\s*\*\/\s*/g, '')
-    .replace(
-      /(\.(?:ɵcmp|ɵdir|ɵpipe|ɵmod|ɵinj|ɵprov)\s*=\s*)(?!\/\*\s*@__PURE__\s*\*\/)([A-Za-z0-9_$ɵ]+\.ɵɵdefine)/g,
-      '$1/*@__PURE__*/ $2',
-    )
-    // See `normalizeNgpEmitForComparison`: the Closure pure marker lands on the line after `=`.
-    .replace(/=\s*\n\s*(\/\*\* @pureOrBreakMyCode \*\/)/g, '= $1')
+    // See `normalizeNgpEmitForComparison`: pure markers land on the line after `=`.
+    .replace(/=\s*\n\s*(\/\*(?:\* @pureOrBreakMyCode |@__PURE__)\*\/)/g, '= $1')
     .replace(
       /(\.ɵfac\s*=\s*function\s+[A-Za-z0-9_$]+\(__ngFactoryType__\)\s*\{)\s*\n\s*(return\s+new\s+\(__ngFactoryType__\s*\|\|\s*[A-Za-z0-9_$]+\)\([^;\n]*\);)\s*\n\s*\};/g,
       '$1 $2 };',

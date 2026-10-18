@@ -23,28 +23,30 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 2,
-    vars: 2,
-    consts: [
-      ['my-dir', '', 3, 'myProp'],
-      [3, 'myProp'],
-    ],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'div', 0)(1, 'my-cmp', 1);
-      }
-      if (rf & 2) {
-        i0.ɵɵproperty('myProp', 'test');
-        i0.ɵɵadvance();
-        i0.ɵɵproperty('myProp', 'test');
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [MyNestedModule]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 2,
+      vars: 2,
+      consts: [
+        ['my-dir', '', 3, 'myProp'],
+        [3, 'myProp'],
+      ],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'div', 0)(1, 'my-cmp', 1);
+        }
+        if (rf & 2) {
+          i0.ɵɵproperty('myProp', 'test');
+          i0.ɵɵadvance();
+          i0.ɵɵproperty('myProp', 'test');
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [MyNestedModule]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

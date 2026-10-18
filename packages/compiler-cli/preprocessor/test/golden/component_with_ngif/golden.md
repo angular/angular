@@ -37,23 +37,25 @@ export class HelloComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: HelloComponent,
-    selectors: [['app-hello']],
-    decls: 1,
-    vars: 1,
-    consts: [[4, 'ngIf']],
-    template: function HelloComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtemplate(0, HelloComponent_div_0_Template, 2, 1, 'div', 0);
-      }
-      if (rf & 2) {
-        i0.ɵɵproperty('ngIf', ctx.name);
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(HelloComponent, [CommonModule]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: HelloComponent,
+      selectors: [['app-hello']],
+      decls: 1,
+      vars: 1,
+      consts: [[4, 'ngIf']],
+      template: function HelloComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtemplate(0, HelloComponent_div_0_Template, 2, 1, 'div', 0);
+        }
+        if (rf & 2) {
+          i0.ɵɵproperty('ngIf', ctx.name);
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(HelloComponent, [CommonModule]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

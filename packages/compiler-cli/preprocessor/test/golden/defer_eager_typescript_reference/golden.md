@@ -44,41 +44,43 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    viewQuery: function AppComponent_Query(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵviewQuery(QueriedComponent, 5);
-      }
-      if (rf & 2) {
-        let _t: any;
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.queried = _t.first);
-      }
-    },
-    decls: 5,
-    vars: 0,
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'app-eager-twin');
-        i0.ɵɵdomTemplate(1, AppComponent_Defer_1_Template, 3, 0)(
-          2,
-          AppComponent_DeferPlaceholder_2_Template,
-          1,
-          0,
-        );
-        i0.ɵɵdefer(3, 1, null, null, 2);
-        i0.ɵɵdeferOnIdle();
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [
-      DeferredComponent,
-      QueriedComponent,
-      DeferredTwin,
-      EagerTwin,
-    ]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      viewQuery: function AppComponent_Query(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵviewQuery(QueriedComponent, 5);
+        }
+        if (rf & 2) {
+          let _t: any;
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.queried = _t.first);
+        }
+      },
+      decls: 5,
+      vars: 0,
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'app-eager-twin');
+          i0.ɵɵdomTemplate(1, AppComponent_Defer_1_Template, 3, 0)(
+            2,
+            AppComponent_DeferPlaceholder_2_Template,
+            1,
+            0,
+          );
+          i0.ɵɵdefer(3, 1, null, null, 2);
+          i0.ɵɵdeferOnIdle();
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [
+        DeferredComponent,
+        QueriedComponent,
+        DeferredTwin,
+        EagerTwin,
+      ]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -144,18 +146,20 @@ export class DeferredComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: DeferredComponent,
-    selectors: [['app-deferred']],
-    decls: 1,
-    vars: 0,
-    template: function DeferredComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0, 'Deferred content');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: DeferredComponent,
+      selectors: [['app-deferred']],
+      decls: 1,
+      vars: 0,
+      template: function DeferredComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0, 'Deferred content');
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -212,18 +216,20 @@ export class QueriedComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: QueriedComponent,
-    selectors: [['app-queried']],
-    decls: 1,
-    vars: 0,
-    template: function QueriedComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0, 'Queried content');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: QueriedComponent,
+      selectors: [['app-queried']],
+      decls: 1,
+      vars: 0,
+      template: function QueriedComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0, 'Queried content');
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -280,18 +286,20 @@ export class DeferredTwin {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: DeferredTwin,
-    selectors: [['app-deferred-twin']],
-    decls: 1,
-    vars: 0,
-    template: function DeferredTwin_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0, 'Deferred twin');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: DeferredTwin,
+      selectors: [['app-deferred-twin']],
+      decls: 1,
+      vars: 0,
+      template: function DeferredTwin_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0, 'Deferred twin');
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -340,18 +348,20 @@ export class EagerTwin {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: EagerTwin,
-    selectors: [['app-eager-twin']],
-    decls: 1,
-    vars: 0,
-    template: function EagerTwin_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0, 'Eager twin');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: EagerTwin,
+      selectors: [['app-eager-twin']],
+      decls: 1,
+      vars: 0,
+      template: function EagerTwin_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0, 'Eager twin');
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

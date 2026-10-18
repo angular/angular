@@ -136,16 +136,18 @@ export class AmbiguousUrlDir {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: AmbiguousUrlDir,
-    selectors: [['a', 'ambiguousUrlDir', '']],
-    hostVars: 1,
-    hostBindings: function AmbiguousUrlDir_HostBindings(rf: number, ctx: any): any {
-      if (rf & 2) {
-        i0.ɵɵdomProperty('href', ctx.evil, i0.ɵɵsanitizeUrlOrResourceUrl);
-      }
-    },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: AmbiguousUrlDir,
+      selectors: [['a', 'ambiguousUrlDir', '']],
+      hostVars: 1,
+      hostBindings: function AmbiguousUrlDir_HostBindings(rf: number, ctx: any): any {
+        if (rf & 2) {
+          i0.ɵɵdomProperty('href', ctx.evil, i0.ɵɵsanitizeUrlOrResourceUrl);
+        }
+      },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -188,16 +190,18 @@ export class AmbiguousResourceUrlDir {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: AmbiguousResourceUrlDir,
-    selectors: [['iframe', 'ambiguousResourceUrlDir', '']],
-    hostVars: 1,
-    hostBindings: function AmbiguousResourceUrlDir_HostBindings(rf: number, ctx: any): any {
-      if (rf & 2) {
-        i0.ɵɵdomProperty('src', ctx.evil, i0.ɵɵsanitizeUrlOrResourceUrl);
-      }
-    },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: AmbiguousResourceUrlDir,
+      selectors: [['iframe', 'ambiguousResourceUrlDir', '']],
+      hostVars: 1,
+      hostBindings: function AmbiguousResourceUrlDir_HostBindings(rf: number, ctx: any): any {
+        if (rf & 2) {
+          i0.ɵɵdomProperty('src', ctx.evil, i0.ɵɵsanitizeUrlOrResourceUrl);
+        }
+      },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -242,16 +246,18 @@ export class AmbiguousAttributeDir {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: AmbiguousAttributeDir,
-    selectors: [['safe-data-carrier']],
-    hostVars: 1,
-    hostBindings: function AmbiguousAttributeDir_HostBindings(rf: number, ctx: any): any {
-      if (rf & 2) {
-        i0.ɵɵattribute('data', ctx.evil, i0.ɵɵsanitizeUrlOrResourceUrl);
-      }
-    },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: AmbiguousAttributeDir,
+      selectors: [['safe-data-carrier']],
+      hostVars: 1,
+      hostBindings: function AmbiguousAttributeDir_HostBindings(rf: number, ctx: any): any {
+        if (rf & 2) {
+          i0.ɵɵattribute('data', ctx.evil, i0.ɵɵsanitizeUrlOrResourceUrl);
+        }
+      },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -297,21 +303,23 @@ export class UnambiguousDir {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: UnambiguousDir,
-    selectors: [['safe-srcdoc-carrier']],
-    hostVars: 3,
-    hostBindings: function UnambiguousDir_HostBindings(rf: number, ctx: any): any {
-      if (rf & 2) {
-        i0.ɵɵdomProperty('innerHTML', ctx.evil, i0.ɵɵsanitizeHtml);
-        i0.ɵɵattribute('srcdoc', ctx.evil, i0.ɵɵsanitizeHtml)(
-          'style',
-          ctx.evil,
-          i0.ɵɵsanitizeStyle,
-        );
-      }
-    },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: UnambiguousDir,
+      selectors: [['safe-srcdoc-carrier']],
+      hostVars: 3,
+      hostBindings: function UnambiguousDir_HostBindings(rf: number, ctx: any): any {
+        if (rf & 2) {
+          i0.ɵɵdomProperty('innerHTML', ctx.evil, i0.ɵɵsanitizeHtml);
+          i0.ɵɵattribute('srcdoc', ctx.evil, i0.ɵɵsanitizeHtml)(
+            'style',
+            ctx.evil,
+            i0.ɵɵsanitizeStyle,
+          );
+        }
+      },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -357,16 +365,18 @@ export class AmbiguousXlinkDir {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: AmbiguousXlinkDir,
-    selectors: [['safe-xlink-carrier']],
-    hostVars: 1,
-    hostBindings: function AmbiguousXlinkDir_HostBindings(rf: number, ctx: any): any {
-      if (rf & 2) {
-        i0.ɵɵattribute('xlink:href', ctx.evil, i0.ɵɵsanitizeUrlOrResourceUrl);
-      }
-    },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: AmbiguousXlinkDir,
+      selectors: [['safe-xlink-carrier']],
+      hostVars: 1,
+      hostBindings: function AmbiguousXlinkDir_HostBindings(rf: number, ctx: any): any {
+        if (rf & 2) {
+          i0.ɵɵattribute('xlink:href', ctx.evil, i0.ɵɵsanitizeUrlOrResourceUrl);
+        }
+      },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -411,16 +421,18 @@ export class UnambiguousUrlDir {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: UnambiguousUrlDir,
-    selectors: [['', 'unambiguousUrlDir', '']],
-    hostVars: 1,
-    hostBindings: function UnambiguousUrlDir_HostBindings(rf: number, ctx: any): any {
-      if (rf & 2) {
-        i0.ɵɵdomProperty('formAction', ctx.evil, i0.ɵɵsanitizeUrl);
-      }
-    },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: UnambiguousUrlDir,
+      selectors: [['', 'unambiguousUrlDir', '']],
+      hostVars: 1,
+      hostBindings: function UnambiguousUrlDir_HostBindings(rf: number, ctx: any): any {
+        if (rf & 2) {
+          i0.ɵɵdomProperty('formAction', ctx.evil, i0.ɵɵsanitizeUrl);
+        }
+      },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -468,17 +480,19 @@ export class DecoratedHostBindingDir {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: DecoratedHostBindingDir,
-    selectors: [['', 'decoratedDir', '']],
-    hostVars: 2,
-    hostBindings: function DecoratedHostBindingDir_HostBindings(rf: number, ctx: any): any {
-      if (rf & 2) {
-        i0.ɵɵdomProperty('src', ctx.srcBinding, i0.ɵɵsanitizeUrlOrResourceUrl);
-        i0.ɵɵattribute('href', ctx.evil, i0.ɵɵsanitizeUrlOrResourceUrl);
-      }
-    },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: DecoratedHostBindingDir,
+      selectors: [['', 'decoratedDir', '']],
+      hostVars: 2,
+      hostBindings: function DecoratedHostBindingDir_HostBindings(rf: number, ctx: any): any {
+        if (rf & 2) {
+          i0.ɵɵdomProperty('src', ctx.srcBinding, i0.ɵɵsanitizeUrlOrResourceUrl);
+          i0.ɵɵattribute('href', ctx.evil, i0.ɵɵsanitizeUrlOrResourceUrl);
+        }
+      },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -523,16 +537,18 @@ export class ValidatedAttributeDir {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: ValidatedAttributeDir,
-    selectors: [['safe-animation-carrier']],
-    hostVars: 1,
-    hostBindings: function ValidatedAttributeDir_HostBindings(rf: number, ctx: any): any {
-      if (rf & 2) {
-        i0.ɵɵattribute('attributeName', ctx.evil, i0.ɵɵvalidateAttribute);
-      }
-    },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: ValidatedAttributeDir,
+      selectors: [['safe-animation-carrier']],
+      hostVars: 1,
+      hostBindings: function ValidatedAttributeDir_HostBindings(rf: number, ctx: any): any {
+        if (rf & 2) {
+          i0.ɵɵattribute('attributeName', ctx.evil, i0.ɵɵvalidateAttribute);
+        }
+      },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -576,16 +592,18 @@ export class PlainDir {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: PlainDir,
-    selectors: [['', 'plainDir', '']],
-    hostVars: 1,
-    hostBindings: function PlainDir_HostBindings(rf: number, ctx: any): any {
-      if (rf & 2) {
-        i0.ɵɵdomProperty('title', ctx.safe);
-      }
-    },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: PlainDir,
+      selectors: [['', 'plainDir', '']],
+      hostVars: 1,
+      hostBindings: function PlainDir_HostBindings(rf: number, ctx: any): any {
+        if (rf & 2) {
+          i0.ɵɵdomProperty('title', ctx.safe);
+        }
+      },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -631,24 +649,26 @@ export class TemplateBindingsCmp {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: TemplateBindingsCmp,
-    selectors: [['template-bindings']],
-    decls: 2,
-    vars: 2,
-    consts: [[3, 'href']],
-    template: function TemplateBindingsCmp_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomElement(0, 'a', 0)(1, 'div');
-      }
-      if (rf & 2) {
-        i0.ɵɵdomProperty('href', ctx.evil, i0.ɵɵsanitizeUrl);
-        i0.ɵɵadvance();
-        i0.ɵɵattribute('sandbox', ctx.evil);
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: TemplateBindingsCmp,
+      selectors: [['template-bindings']],
+      decls: 2,
+      vars: 2,
+      consts: [[3, 'href']],
+      template: function TemplateBindingsCmp_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomElement(0, 'a', 0)(1, 'div');
+        }
+        if (rf & 2) {
+          i0.ɵɵdomProperty('href', ctx.evil, i0.ɵɵsanitizeUrl);
+          i0.ɵɵadvance();
+          i0.ɵɵattribute('sandbox', ctx.evil);
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

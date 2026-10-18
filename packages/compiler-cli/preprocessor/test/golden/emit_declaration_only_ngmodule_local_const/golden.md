@@ -15,12 +15,14 @@ export class GreetPipe implements PipeTransform {
     return new (__ngFactoryType__ || GreetPipe)();
   };
   // @ts-ignore
-  static ɵpipe: i0.ɵɵPipeDeclaration<GreetPipe, 'greet', false> = /*@__PURE__*/ i0.ɵɵdefinePipe({
-    name: 'greet',
-    type: GreetPipe,
-    pure: true,
-    standalone: false,
-  });
+  static ɵpipe: i0.ɵɵPipeDeclaration<GreetPipe, 'greet', false> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefinePipe({
+      name: 'greet',
+      type: GreetPipe,
+      pure: true,
+      standalone: false,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -57,9 +59,13 @@ export class SharedModule {
     never,
     never,
     [typeof GreetPipe, typeof SharedWidget]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: SharedModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: SharedModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<SharedModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<SharedModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
 }
 
 ```
@@ -88,16 +94,18 @@ export class SharedWidget {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: SharedWidget,
-    selectors: [['shared-widget']],
-    standalone: false,
-    decls: 0,
-    vars: 0,
-    template: function SharedWidget_Template(rf: number, ctx: any): any {},
-    dependencies: i0.ɵɵgetComponentDepsFactory(SharedWidget),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: SharedWidget,
+      selectors: [['shared-widget']],
+      standalone: false,
+      decls: 0,
+      vars: 0,
+      template: function SharedWidget_Template(rf: number, ctx: any): any {},
+      dependencies: i0.ɵɵgetComponentDepsFactory(SharedWidget),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

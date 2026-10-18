@@ -22,18 +22,20 @@ export class CompA {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: CompA,
-    selectors: [['comp-a']],
-    decls: 1,
-    vars: 0,
-    template: function CompA_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0, 'Component A');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: CompA,
+      selectors: [['comp-a']],
+      decls: 1,
+      vars: 0,
+      template: function CompA_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0, 'Component A');
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -85,18 +87,20 @@ export class CompB {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: CompB,
-    selectors: [['comp-b']],
-    decls: 1,
-    vars: 0,
-    template: function CompB_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0, 'Component B');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: CompB,
+      selectors: [['comp-b']],
+      decls: 1,
+      vars: 0,
+      template: function CompB_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0, 'Component B');
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -159,20 +163,22 @@ export class ExplicitComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ExplicitComponent,
-    selectors: [['explicit-comp']],
-    decls: 3,
-    vars: 0,
-    template: function ExplicitComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomTemplate(0, ExplicitComponent_Defer_0_Template, 1, 0);
-        i0.ɵɵdefer(1, 0, ExplicitComponent_Defer_1_DepsFn);
-        i0.ɵɵdeferOnIdle();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ExplicitComponent,
+      selectors: [['explicit-comp']],
+      decls: 3,
+      vars: 0,
+      template: function ExplicitComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomTemplate(0, ExplicitComponent_Defer_0_Template, 1, 0);
+          i0.ɵɵdefer(1, 0, ExplicitComponent_Defer_1_DepsFn);
+          i0.ɵɵdeferOnIdle();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadataAsync(
@@ -253,21 +259,23 @@ export class ImplicitComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ImplicitComponent,
-    selectors: [['implicit-comp']],
-    decls: 3,
-    vars: 0,
-    template: function ImplicitComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomTemplate(0, ImplicitComponent_Defer_0_Template, 1, 0);
-        i0.ɵɵdefer(1, 0);
-        i0.ɵɵdeferOnIdle();
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(ImplicitComponent, [CompA]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ImplicitComponent,
+      selectors: [['implicit-comp']],
+      decls: 3,
+      vars: 0,
+      template: function ImplicitComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomTemplate(0, ImplicitComponent_Defer_0_Template, 1, 0);
+          i0.ɵɵdefer(1, 0);
+          i0.ɵɵdeferOnIdle();
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(ImplicitComponent, [CompA]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

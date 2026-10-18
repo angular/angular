@@ -23,21 +23,23 @@ export class DummyComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: DummyComponent,
-    selectors: [['dummy-cmp']],
-    decls: 2,
-    vars: 0,
-    template: function DummyComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1, 'Dummy');
-        i0.ɵɵelementEnd();
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(DummyComponent, [CdkScrollable]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: DummyComponent,
+      selectors: [['dummy-cmp']],
+      decls: 2,
+      vars: 0,
+      template: function DummyComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'Dummy');
+          i0.ɵɵelementEnd();
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(DummyComponent, [CdkScrollable]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -87,22 +89,24 @@ export class AppComponent {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    standalone: false,
-    decls: 2,
-    vars: 0,
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1, 'Hello');
-        i0.ɵɵelementEnd();
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      standalone: false,
+      decls: 2,
+      vars: 0,
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'Hello');
+          i0.ɵɵelementEnd();
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -141,11 +145,13 @@ export class TestModule {
     return new (__ngFactoryType__ || TestModule)();
   };
   // @ts-ignore
-  static ɵmod: TestModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: TestModule });
+  static ɵmod: TestModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: TestModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<TestModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [DragDropModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<TestModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [DragDropModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -193,11 +199,13 @@ export declare class DragDropModule {
     return new (__ngFactoryType__ || DragDropModule)();
   };
   // @ts-ignore
-  static ɵmod: DragDropModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: DragDropModule });
+  static ɵmod: DragDropModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: DragDropModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<DragDropModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [i1.CdkScrollable],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<DragDropModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [i1.CdkScrollable] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(DragDropModule, [{ type: NgModule }], null, null);
@@ -246,11 +254,13 @@ export declare class CdkScrollable {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: CdkScrollable,
-    selectors: [['', 'cdkScrollable', '']],
-    standalone: false,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: CdkScrollable,
+      selectors: [['', 'cdkScrollable', '']],
+      standalone: false,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(CdkScrollable, [{ type: Directive }], null, null);

@@ -29,50 +29,52 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 6,
-    vars: 6,
-    consts: [
-      [3, 'value'],
-      [3, 'filterDir'],
-      [3, 'item'],
-      [3, 'tree'],
-      [3, 'legacyValue'],
-    ],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'mat-selection-list', 0)(1, 'div', 1)(2, 'local-item-comp', 2)(
-          3,
-          'tree-comp',
-          3,
-        )(4, 'legacy-generic-comp', 4)(5, 'mat-dts-list', 0);
-      }
-      if (rf & 2) {
-        i0.ɵɵproperty('value', ctx.selection);
-        i0.ɵɵadvance();
-        i0.ɵɵproperty('filterDir', ctx.selection);
-        i0.ɵɵadvance();
-        i0.ɵɵproperty('item', ctx.selection);
-        i0.ɵɵadvance();
-        i0.ɵɵproperty('tree', ctx.selection);
-        i0.ɵɵadvance();
-        i0.ɵɵproperty('legacyValue', ctx.selection);
-        i0.ɵɵadvance();
-        i0.ɵɵproperty('value', ctx.selection);
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [
-      MatSelectionList,
-      FilterDirective,
-      LocalItemComponent,
-      TreeComponent,
-      LegacyModule,
-      MatDtsList,
-    ]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 6,
+      vars: 6,
+      consts: [
+        [3, 'value'],
+        [3, 'filterDir'],
+        [3, 'item'],
+        [3, 'tree'],
+        [3, 'legacyValue'],
+      ],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'mat-selection-list', 0)(1, 'div', 1)(2, 'local-item-comp', 2)(
+            3,
+            'tree-comp',
+            3,
+          )(4, 'legacy-generic-comp', 4)(5, 'mat-dts-list', 0);
+        }
+        if (rf & 2) {
+          i0.ɵɵproperty('value', ctx.selection);
+          i0.ɵɵadvance();
+          i0.ɵɵproperty('filterDir', ctx.selection);
+          i0.ɵɵadvance();
+          i0.ɵɵproperty('item', ctx.selection);
+          i0.ɵɵadvance();
+          i0.ɵɵproperty('tree', ctx.selection);
+          i0.ɵɵadvance();
+          i0.ɵɵproperty('legacyValue', ctx.selection);
+          i0.ɵɵadvance();
+          i0.ɵɵproperty('value', ctx.selection);
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [
+        MatSelectionList,
+        FilterDirective,
+        LocalItemComponent,
+        TreeComponent,
+        LegacyModule,
+        MatDtsList,
+      ]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -158,15 +160,17 @@ export declare class MatDtsList<
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: MatDtsList,
-    selectors: [['mat-dts-list']],
-    inputs: { value: 'value' },
-    decls: 0,
-    vars: 0,
-    template: function MatDtsList_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: MatDtsList,
+      selectors: [['mat-dts-list']],
+      inputs: { value: 'value' },
+      decls: 0,
+      vars: 0,
+      template: function MatDtsList_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(MatDtsList, [{ type: Component }], null, null);
@@ -208,11 +212,13 @@ export class FilterDirective<T extends SelectionModel<U>, U extends DefaultItem 
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: FilterDirective,
-    selectors: [['', 'filterDir', '']],
-    inputs: { filterData: [0, 'filterDir', 'filterData'] },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: FilterDirective,
+      selectors: [['', 'filterDir', '']],
+      inputs: { filterData: [0, 'filterDir', 'filterData'] },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -263,17 +269,19 @@ export class LegacyGenericComponent<
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: LegacyGenericComponent,
-    selectors: [['legacy-generic-comp']],
-    inputs: { legacyValue: 'legacyValue' },
-    standalone: false,
-    decls: 0,
-    vars: 0,
-    template: function LegacyGenericComponent_Template(rf: number, ctx: any): any {},
-    dependencies: i0.ɵɵgetComponentDepsFactory(LegacyGenericComponent),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: LegacyGenericComponent,
+      selectors: [['legacy-generic-comp']],
+      inputs: { legacyValue: 'legacyValue' },
+      standalone: false,
+      decls: 0,
+      vars: 0,
+      template: function LegacyGenericComponent_Template(rf: number, ctx: any): any {},
+      dependencies: i0.ɵɵgetComponentDepsFactory(LegacyGenericComponent),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -312,11 +320,13 @@ export class LegacyModule {
     return new (__ngFactoryType__ || LegacyModule)();
   };
   // @ts-ignore
-  static ɵmod: LegacyModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: LegacyModule });
+  static ɵmod: LegacyModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: LegacyModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<LegacyModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [LegacyGenericComponent],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<LegacyModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [LegacyGenericComponent] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -372,15 +382,17 @@ export class MatSelectionList<T extends SelectionModel<unknown> = SelectionModel
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: MatSelectionList,
-    selectors: [['mat-selection-list']],
-    inputs: { value: 'value' },
-    decls: 0,
-    vars: 0,
-    template: function MatSelectionList_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: MatSelectionList,
+      selectors: [['mat-selection-list']],
+      inputs: { value: 'value' },
+      decls: 0,
+      vars: 0,
+      template: function MatSelectionList_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -441,15 +453,17 @@ export class LocalItemComponent<T extends LocalItemType = LocalItemType> {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: LocalItemComponent,
-    selectors: [['local-item-comp']],
-    inputs: { item: 'item' },
-    decls: 0,
-    vars: 0,
-    template: function LocalItemComponent_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: LocalItemComponent,
+      selectors: [['local-item-comp']],
+      inputs: { item: 'item' },
+      decls: 0,
+      vars: 0,
+      template: function LocalItemComponent_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -508,15 +522,17 @@ export class TreeComponent<T extends TreeNode<DefaultNodeData> = TreeNode<Defaul
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: TreeComponent,
-    selectors: [['tree-comp']],
-    inputs: { tree: 'tree' },
-    decls: 0,
-    vars: 0,
-    template: function TreeComponent_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: TreeComponent,
+      selectors: [['tree-comp']],
+      inputs: { tree: 'tree' },
+      decls: 0,
+      vars: 0,
+      template: function TreeComponent_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

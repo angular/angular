@@ -12,7 +12,7 @@ import * as i1 from './tooltip';
 function _tcb1(this: i0.App) {
   if (true) {
     var _t1 /*T:HOSTDIR:1*/ /*278,301*/ = null! as i1.Tooltip; /*T:VAE*/
-    _t1.tooltip /*288,291*/ = this.label /*294,299*/ /*294,299*/ /*287,300*/;
+    _t1.tooltip /*288,291*/ = this.label /*294,299*/ /*294,299*/; /*287,300*/
   }
 }
 
@@ -45,28 +45,30 @@ export class App {
     never,
     true,
     [{ directive: typeof FocusRing; inputs: {}; outputs: {} }]
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: App,
-    selectors: [['app-root']],
-    features: [i0.ɵɵHostDirectivesFeature([FocusRing])],
-    decls: 2,
-    vars: 1,
-    consts: [
-      ['tooltip', 'x', 'ripple', '', 'focusRing', ''],
-      [3, 'tip'],
-    ],
-    template: function App_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'span', 0)(1, 'menu-el', 1);
-      }
-      if (rf & 2) {
-        i0.ɵɵadvance();
-        i0.ɵɵproperty('tip', ctx.label);
-      }
-    },
-    dependencies: [Menu],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: App,
+      selectors: [['app-root']],
+      features: [i0.ɵɵHostDirectivesFeature([FocusRing])],
+      decls: 2,
+      vars: 1,
+      consts: [
+        ['tooltip', 'x', 'ripple', '', 'focusRing', ''],
+        [3, 'tip'],
+      ],
+      template: function App_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'span', 0)(1, 'menu-el', 1);
+        }
+        if (rf & 2) {
+          i0.ɵɵadvance();
+          i0.ɵɵproperty('tip', ctx.label);
+        }
+      },
+      dependencies: [Menu],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -122,7 +124,9 @@ export class FocusRing {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({ type: FocusRing, selectors: [['', 'focusRing', '']] });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({ type: FocusRing, selectors: [['', 'focusRing', '']] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -163,9 +167,12 @@ export class LegacyModule {
   };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<LegacyModule, [typeof LegacyApp], [typeof Menu], never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: LegacyModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<LegacyModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<LegacyModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -207,7 +214,7 @@ import * as i1 from './tooltip';
 function _tcb1(this: i0.LegacyApp) {
   if (true) {
     var _t1 /*T:HOSTDIR:1*/ /*149,166*/ = null! as i1.Tooltip; /*T:VAE*/
-    _t1.tooltip /*158,161*/ = 'z' /*158,165*/;
+    _t1.tooltip /*158,161*/ = 'z'; /*158,165*/
   }
 }
 
@@ -239,24 +246,26 @@ export class LegacyApp {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: LegacyApp,
-    selectors: [['legacy-app']],
-    standalone: false,
-    decls: 2,
-    vars: 0,
-    consts: [
-      ['tooltip', 'y', 'ripple', ''],
-      ['tip', 'z'],
-    ],
-    template: function LegacyApp_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'span', 0)(1, 'menu-el', 1);
-      }
-    },
-    dependencies: [i1.Menu],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: LegacyApp,
+      selectors: [['legacy-app']],
+      standalone: false,
+      decls: 2,
+      vars: 0,
+      consts: [
+        ['tooltip', 'y', 'ripple', ''],
+        ['tip', 'z'],
+      ],
+      template: function LegacyApp_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'span', 0)(1, 'menu-el', 1);
+        }
+      },
+      dependencies: [i1.Menu],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -333,21 +342,23 @@ export class Menu {
     ['*'],
     true,
     [{ directive: typeof Tooltip; inputs: { 'tooltip': 'tip' }; outputs: {} }]
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: Menu,
-    selectors: [['menu-el']],
-    features: [i0.ɵɵHostDirectivesFeature([{ directive: Tooltip, inputs: ['tooltip', 'tip'] }])],
-    ngContentSelectors: _c0,
-    decls: 1,
-    vars: 0,
-    template: function Menu_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵprojectionDef();
-        i0.ɵɵprojection(0);
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: Menu,
+      selectors: [['menu-el']],
+      features: [i0.ɵɵHostDirectivesFeature([{ directive: Tooltip, inputs: ['tooltip', 'tip'] }])],
+      ngContentSelectors: _c0,
+      decls: 1,
+      vars: 0,
+      template: function Menu_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵprojectionDef();
+          i0.ɵɵprojection(0);
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -402,11 +413,13 @@ export class Ripple {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: Ripple,
-    selectors: [['', 'ripple', '']],
-    inputs: { rippleColor: 'rippleColor' },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: Ripple,
+      selectors: [['', 'ripple', '']],
+      inputs: { rippleColor: 'rippleColor' },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -456,14 +469,16 @@ export class Tooltip {
     never,
     true,
     [{ directive: typeof Ripple; inputs: { 'rippleColor': 'rippleColor' }; outputs: {} }]
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: Tooltip,
-    selectors: [['', 'tooltip', '']],
-    inputs: { tooltip: 'tooltip' },
-    features: [
-      i0.ɵɵHostDirectivesFeature([{ directive: Ripple, inputs: ['rippleColor', 'rippleColor'] }]),
-    ],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: Tooltip,
+      selectors: [['', 'tooltip', '']],
+      inputs: { tooltip: 'tooltip' },
+      features: [
+        i0.ɵɵHostDirectivesFeature([{ directive: Ripple, inputs: ['rippleColor', 'rippleColor'] }]),
+      ],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

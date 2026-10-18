@@ -25,28 +25,30 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 2,
-    vars: 2,
-    consts: [
-      [3, 'value'],
-      [3, 'fireTeleportalOutlet'],
-    ],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'proto-box', 0)(1, 'div', 1);
-      }
-      if (rf & 2) {
-        i0.ɵɵproperty('value', 'test');
-        i0.ɵɵadvance();
-        i0.ɵɵproperty('fireTeleportalOutlet', ctx.myPortal);
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [ProtoBox, FireTeleportalOutlet]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 2,
+      vars: 2,
+      consts: [
+        [3, 'value'],
+        [3, 'fireTeleportalOutlet'],
+      ],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'proto-box', 0)(1, 'div', 1);
+        }
+        if (rf & 2) {
+          i0.ɵɵproperty('value', 'test');
+          i0.ɵɵadvance();
+          i0.ɵɵproperty('fireTeleportalOutlet', ctx.myPortal);
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [ProtoBox, FireTeleportalOutlet]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -116,15 +118,17 @@ export class ProtoBox<
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ProtoBox,
-    selectors: [['proto-box']],
-    inputs: { format: 'format', value: 'value' },
-    decls: 0,
-    vars: 0,
-    template: function ProtoBox_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ProtoBox,
+      selectors: [['proto-box']],
+      inputs: { format: 'format', value: 'value' },
+      decls: 0,
+      vars: 0,
+      template: function ProtoBox_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -193,11 +197,13 @@ export declare class FireTeleportalOutlet<C extends PortalComponentType = any, D
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: FireTeleportalOutlet,
-    selectors: [['', 'fireTeleportalOutlet', '']],
-    inputs: { portal: [0, 'fireTeleportalOutlet', 'portal'] },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: FireTeleportalOutlet,
+      selectors: [['', 'fireTeleportalOutlet', '']],
+      inputs: { portal: [0, 'fireTeleportalOutlet', 'portal'] },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(FireTeleportalOutlet, [{ type: Directive }], null, null);

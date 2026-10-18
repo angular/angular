@@ -25,20 +25,22 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 2,
-    vars: 0,
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1, 'Hello');
-        i0.ɵɵelementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 2,
+      vars: 0,
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'Hello');
+          i0.ɵɵelementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -100,11 +102,13 @@ export class InvalidDepsService {
       return new (__ngFactoryType__ || InvalidDepsService)(i0.ɵɵinject(LoggerConfig));
     };
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineInjectable({
-    token: InvalidDepsService,
-    factory: InvalidDepsService.ɵfac,
-    providedIn: 'root',
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjectable({
+      token: InvalidDepsService,
+      factory: InvalidDepsService.ɵfac,
+      providedIn: 'root',
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -131,11 +135,13 @@ export class InjectOverrideService {
       return new (__ngFactoryType__ || InjectOverrideService)(i0.ɵɵinject(LOGGER_CONFIG));
     };
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineInjectable({
-    token: InjectOverrideService,
-    factory: InjectOverrideService.ɵfac,
-    providedIn: 'root',
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjectable({
+      token: InjectOverrideService,
+      factory: InjectOverrideService.ɵfac,
+      providedIn: 'root',
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -158,11 +164,13 @@ export class ValidDepsService {
     return new (__ngFactoryType__ || ValidDepsService)(i0.ɵɵinject(Logger));
   };
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineInjectable({
-    token: ValidDepsService,
-    factory: ValidDepsService.ɵfac,
-    providedIn: 'root',
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjectable({
+      token: ValidDepsService,
+      factory: ValidDepsService.ɵfac,
+      providedIn: 'root',
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -188,11 +196,13 @@ export class LocalInterfaceService {
       i0.ɵɵinvalidFactory();
     };
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineInjectable({
-    token: LocalInterfaceService,
-    factory: LocalInterfaceService.ɵfac,
-    providedIn: 'root',
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjectable({
+      token: LocalInterfaceService,
+      factory: LocalInterfaceService.ɵfac,
+      providedIn: 'root',
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -218,11 +228,13 @@ export class MixedDepsService {
     return new (__ngFactoryType__ || MixedDepsService)(i0.ɵɵinject(Logger), i0.ɵɵinject(LogFormat));
   };
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineInjectable({
-    token: MixedDepsService,
-    factory: MixedDepsService.ɵfac,
-    providedIn: 'root',
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjectable({
+      token: MixedDepsService,
+      factory: MixedDepsService.ɵfac,
+      providedIn: 'root',
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

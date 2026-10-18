@@ -21,14 +21,16 @@ export class DynamicTemplateUrlComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: DynamicTemplateUrlComponent,
-    selectors: [['app-dynamic-template-url']],
-    decls: 0,
-    vars: 0,
-    template: function DynamicTemplateUrlComponent_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: DynamicTemplateUrlComponent,
+      selectors: [['app-dynamic-template-url']],
+      decls: 0,
+      vars: 0,
+      template: function DynamicTemplateUrlComponent_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -84,14 +86,16 @@ export class DynamicTemplateComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: DynamicTemplateComponent,
-    selectors: [['app-dynamic-template']],
-    decls: 0,
-    vars: 0,
-    template: function DynamicTemplateComponent_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: DynamicTemplateComponent,
+      selectors: [['app-dynamic-template']],
+      decls: 0,
+      vars: 0,
+      template: function DynamicTemplateComponent_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -149,23 +153,25 @@ export class MissingLinkStylesheetTemplateLiteralComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: MissingLinkStylesheetTemplateLiteralComponent,
-    selectors: [['app-missing-link-stylesheet-template-literal']],
-    decls: 2,
-    vars: 0,
-    template: function MissingLinkStylesheetTemplateLiteralComponent_Template(
-      rf: number,
-      ctx: any,
-    ): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1, 'Hello');
-        i0.ɵɵelementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: MissingLinkStylesheetTemplateLiteralComponent,
+      selectors: [['app-missing-link-stylesheet-template-literal']],
+      decls: 2,
+      vars: 0,
+      template: function MissingLinkStylesheetTemplateLiteralComponent_Template(
+        rf: number,
+        ctx: any,
+      ): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'Hello');
+          i0.ɵɵelementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -221,20 +227,22 @@ export class MissingLinkStylesheetComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: MissingLinkStylesheetComponent,
-    selectors: [['app-missing-link-stylesheet']],
-    decls: 2,
-    vars: 0,
-    template: function MissingLinkStylesheetComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1, 'Hello');
-        i0.ɵɵelementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: MissingLinkStylesheetComponent,
+      selectors: [['app-missing-link-stylesheet']],
+      decls: 2,
+      vars: 0,
+      template: function MissingLinkStylesheetComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'Hello');
+          i0.ɵɵelementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -290,14 +298,16 @@ export class MissingTemplateComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: MissingTemplateComponent,
-    selectors: [['app-missing-template']],
-    decls: 0,
-    vars: 0,
-    template: function MissingTemplateComponent_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: MissingTemplateComponent,
+      selectors: [['app-missing-template']],
+      decls: 0,
+      vars: 0,
+      template: function MissingTemplateComponent_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

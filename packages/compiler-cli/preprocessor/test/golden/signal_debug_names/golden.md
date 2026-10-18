@@ -43,22 +43,26 @@ export class MyService {
     return new (__ngFactoryType__ || MyService)(i0.ɵɵinject(Object), i0.ɵɵinject(Object));
   };
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineInjectable({
-    token: MyService,
-    factory: (): any =>
-      (() => {
-        const factoryState = signal(
-          'from-injectable',
-          ...((ngDevMode ? [{ debugName: 'factoryState' }] : /* istanbul ignore next */ []) as []),
-        );
-        const factoryWithOpts = signal(0, {
-          ...(ngDevMode ? { debugName: 'factoryWithOpts' } : /* istanbul ignore next */ {}),
-          equal: (a, b) => a === b,
-        });
-        return new MyService(factoryState, factoryWithOpts);
-      })(),
-    providedIn: 'root',
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjectable({
+      token: MyService,
+      factory: (): any =>
+        (() => {
+          const factoryState = signal(
+            'from-injectable',
+            ...((ngDevMode
+              ? [{ debugName: 'factoryState' }]
+              : /* istanbul ignore next */ []) as []),
+          );
+          const factoryWithOpts = signal(0, {
+            ...(ngDevMode ? { debugName: 'factoryWithOpts' } : /* istanbul ignore next */ {}),
+            equal: (a, b) => a === b,
+          });
+          return new MyService(factoryState, factoryWithOpts);
+        })(),
+      providedIn: 'root',
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -223,82 +227,86 @@ export class SignalDebugNamesComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: SignalDebugNamesComponent,
-    selectors: [['signal-debug-names']],
-    contentQueries: function SignalDebugNamesComponent_ContentQueries(
-      rf: number,
-      ctx: any,
-      dirIndex: number,
-    ): any {
-      if (rf & 1) {
-        i0.ɵɵcontentQuerySignal(dirIndex, ctx.projected, _c0, 5);
-      }
-      if (rf & 2) {
-        i0.ɵɵqueryAdvance();
-      }
-    },
-    viewQuery: function SignalDebugNamesComponent_Query(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵviewQuerySignal(ctx.el, _c1, 5);
-      }
-      if (rf & 2) {
-        i0.ɵɵqueryAdvance();
-      }
-    },
-    inputs: {
-      val: [
-        2,
-        'val',
-        'val',
-        (v: string) => {
-          const transformed = signal(
-            v,
-            ...((ngDevMode ? [{ debugName: 'transformed' }] : /* istanbul ignore next */ []) as []),
-          );
-          return transformed();
-        },
-      ],
-      noInitial: [1, 'noInitial'],
-      typedNoInitial: [1, 'typedNoInitial'],
-      twoWay: [1, 'twoWay'],
-      required: [1, 'required'],
-      aliased: [1, 'renamed', 'aliased'],
-      requiredWithOptions: [1, 'req', 'requiredWithOptions'],
-    },
-    outputs: { twoWay: 'twoWayChange', requiredWithOptions: 'reqChange' },
-    features: [
-      i0.ɵɵProvidersFeature([
-        {
-          provide: TOKEN,
-          useFactory: () => {
-            const providerSignal = signal(
-              42,
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: SignalDebugNamesComponent,
+      selectors: [['signal-debug-names']],
+      contentQueries: function SignalDebugNamesComponent_ContentQueries(
+        rf: number,
+        ctx: any,
+        dirIndex: number,
+      ): any {
+        if (rf & 1) {
+          i0.ɵɵcontentQuerySignal(dirIndex, ctx.projected, _c0, 5);
+        }
+        if (rf & 2) {
+          i0.ɵɵqueryAdvance();
+        }
+      },
+      viewQuery: function SignalDebugNamesComponent_Query(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵviewQuerySignal(ctx.el, _c1, 5);
+        }
+        if (rf & 2) {
+          i0.ɵɵqueryAdvance();
+        }
+      },
+      inputs: {
+        val: [
+          2,
+          'val',
+          'val',
+          (v: string) => {
+            const transformed = signal(
+              v,
               ...((ngDevMode
-                ? [{ debugName: 'providerSignal' }]
+                ? [{ debugName: 'transformed' }]
                 : /* istanbul ignore next */ []) as []),
             );
-            return { s: providerSignal };
+            return transformed();
           },
-        },
-      ]),
-    ],
-    decls: 3,
-    vars: 1,
-    consts: [['el', '']],
-    template: function SignalDebugNamesComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div', null, 0);
-        i0.ɵɵtext(2);
-        i0.ɵɵelementEnd();
-      }
-      if (rf & 2) {
-        i0.ɵɵadvance(2);
-        i0.ɵɵtextInterpolate(ctx.count());
-      }
-    },
-    encapsulation: 2,
-  });
+        ],
+        noInitial: [1, 'noInitial'],
+        typedNoInitial: [1, 'typedNoInitial'],
+        twoWay: [1, 'twoWay'],
+        required: [1, 'required'],
+        aliased: [1, 'renamed', 'aliased'],
+        requiredWithOptions: [1, 'req', 'requiredWithOptions'],
+      },
+      outputs: { twoWay: 'twoWayChange', requiredWithOptions: 'reqChange' },
+      features: [
+        i0.ɵɵProvidersFeature([
+          {
+            provide: TOKEN,
+            useFactory: () => {
+              const providerSignal = signal(
+                42,
+                ...((ngDevMode
+                  ? [{ debugName: 'providerSignal' }]
+                  : /* istanbul ignore next */ []) as []),
+              );
+              return { s: providerSignal };
+            },
+          },
+        ]),
+      ],
+      decls: 3,
+      vars: 1,
+      consts: [['el', '']],
+      template: function SignalDebugNamesComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div', null, 0);
+          i0.ɵɵtext(2);
+          i0.ɵɵelementEnd();
+        }
+        if (rf & 2) {
+          i0.ɵɵadvance(2);
+          i0.ɵɵtextInterpolate(ctx.count());
+        }
+      },
+      encapsulation: 2,
+    });
   // @ts-ignore
   declare static ngAcceptInputType_val: string;
   static {
@@ -398,24 +406,28 @@ export class AppModule {
     return new (__ngFactoryType__ || AppModule)();
   };
   // @ts-ignore
-  static ɵmod: AppModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
+  static ɵmod: AppModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    providers: [
-      {
-        provide: TOKEN,
-        useFactory: () => {
-          const moduleSignal = signal(
-            true,
-            ...((ngDevMode
-              ? [{ debugName: 'moduleSignal' }]
-              : /* istanbul ignore next */ []) as []),
-          );
-          return { s: moduleSignal };
+  static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({
+      providers: [
+        {
+          provide: TOKEN,
+          useFactory: () => {
+            const moduleSignal = signal(
+              true,
+              ...((ngDevMode
+                ? [{ debugName: 'moduleSignal' }]
+                : /* istanbul ignore next */ []) as []),
+            );
+            return { s: moduleSignal };
+          },
         },
-      },
-    ],
-  });
+      ],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

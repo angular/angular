@@ -22,20 +22,22 @@ export class ConsumerComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ConsumerComponent,
-    selectors: [['consumer-cmp']],
-    decls: 1,
-    vars: 0,
-    consts: [['dirA', '']],
-    template: function ConsumerComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'div', 0);
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(ConsumerComponent, [UpstreamModule]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ConsumerComponent,
+      selectors: [['consumer-cmp']],
+      decls: 1,
+      vars: 0,
+      consts: [['dirA', '']],
+      template: function ConsumerComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'div', 0);
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(ConsumerComponent, [UpstreamModule]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -93,11 +95,13 @@ class DirectiveA {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: DirectiveA,
-    selectors: [['', 'dirA', '']],
-    standalone: false,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: DirectiveA,
+      selectors: [['', 'dirA', '']],
+      standalone: false,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -127,11 +131,13 @@ export class UpstreamModule {
     return new (__ngFactoryType__ || UpstreamModule)();
   };
   // @ts-ignore
-  static ɵmod: UpstreamModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: UpstreamModule });
+  static ɵmod: UpstreamModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: UpstreamModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<UpstreamModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [DirectiveA],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<UpstreamModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [DirectiveA] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

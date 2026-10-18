@@ -33,27 +33,29 @@ export class MyComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: MyComponent,
-    selectors: [['my-comp']],
-    decls: 3,
-    vars: 3,
-    consts: [['myDir', '']],
-    template: function MyComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div', 0);
-        i0.ɵɵtext(1);
-        i0.ɵɵpipe(2, 'myPipe');
-        i0.ɵɵelementEnd();
-      }
-      if (rf & 2) {
-        i0.ɵɵadvance();
-        i0.ɵɵtextInterpolate(i0.ɵɵpipeBind1(2, 1, 'test'));
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(MyComponent, [MyDirective, MyPipe]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: MyComponent,
+      selectors: [['my-comp']],
+      decls: 3,
+      vars: 3,
+      consts: [['myDir', '']],
+      template: function MyComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div', 0);
+          i0.ɵɵtext(1);
+          i0.ɵɵpipe(2, 'myPipe');
+          i0.ɵɵelementEnd();
+        }
+        if (rf & 2) {
+          i0.ɵɵadvance();
+          i0.ɵɵtextInterpolate(i0.ɵɵpipeBind1(2, 1, 'test'));
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(MyComponent, [MyDirective, MyPipe]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -134,23 +136,25 @@ export class MyDirective {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: MyDirective,
-    selectors: [['', 'myDir', '']],
-    hostVars: 2,
-    hostBindings: function MyDirective_HostBindings(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵlistener('click', function MyDirective_click_HostBindingHandler($event: any): any {
-          return ctx.onClick($event);
-        });
-      }
-      if (rf & 2) {
-        i0.ɵɵclassProp('active', ctx.isActive);
-      }
-    },
-    inputs: { declaredInput: [0, 'dirInput', 'declaredInput'], boundInput: 'boundInput' },
-    outputs: { declaredOutput: 'dirOutput', boundOutput: 'boundOutput' },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: MyDirective,
+      selectors: [['', 'myDir', '']],
+      hostVars: 2,
+      hostBindings: function MyDirective_HostBindings(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵlistener('click', function MyDirective_click_HostBindingHandler($event: any): any {
+            return ctx.onClick($event);
+          });
+        }
+        if (rf & 2) {
+          i0.ɵɵclassProp('active', ctx.isActive);
+        }
+      },
+      inputs: { declaredInput: [0, 'dirInput', 'declaredInput'], boundInput: 'boundInput' },
+      outputs: { declaredOutput: 'dirOutput', boundOutput: 'boundOutput' },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -203,10 +207,9 @@ export class MyInjectable {
       return new (__ngFactoryType__ || MyInjectable)(i0.ɵɵinject(DEP_TOKEN, 8));
     };
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineInjectable({
-    token: MyInjectable,
-    factory: MyInjectable.ɵfac,
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjectable({ token: MyInjectable, factory: MyInjectable.ɵfac });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -242,10 +245,12 @@ export class NamespacedService {
       return new (__ngFactoryType__ || NamespacedService)(i0.ɵɵinject(NAMESPACED_TOKEN, 8));
     };
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineInjectable({
-    token: NamespacedService,
-    factory: NamespacedService.ɵfac,
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjectable({
+      token: NamespacedService,
+      factory: NamespacedService.ɵfac,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -283,23 +288,25 @@ export class NamespacedDirective {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: NamespacedDirective,
-    selectors: [['', 'namespacedDir', '']],
-    hostVars: 1,
-    hostBindings: function NamespacedDirective_HostBindings(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵlistener('focus', function NamespacedDirective_focus_HostBindingHandler(): any {
-          return ctx.onFocus();
-        });
-      }
-      if (rf & 2) {
-        i0.ɵɵattribute('role', ctx.role);
-      }
-    },
-    inputs: { prop: 'prop' },
-    outputs: { done: 'done' },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: NamespacedDirective,
+      selectors: [['', 'namespacedDir', '']],
+      hostVars: 1,
+      hostBindings: function NamespacedDirective_HostBindings(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵlistener('focus', function NamespacedDirective_focus_HostBindingHandler(): any {
+            return ctx.onFocus();
+          });
+        }
+        if (rf & 2) {
+          i0.ɵɵattribute('role', ctx.role);
+        }
+      },
+      inputs: { prop: 'prop' },
+      outputs: { done: 'done' },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -342,9 +349,13 @@ export class MyNgModule {
     return new (__ngFactoryType__ || MyNgModule)();
   };
   // @ts-ignore
-  static ɵmod: MyNgModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyNgModule });
+  static ɵmod: MyNgModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyNgModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<MyNgModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<MyNgModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(MyNgModule, [{ type: AngularNgModule, args: [{}] }], null, null);
@@ -367,11 +378,9 @@ export class MyPipe {
     return new (__ngFactoryType__ || MyPipe)();
   };
   // @ts-ignore
-  static ɵpipe: i0.ɵɵPipeDeclaration<MyPipe, 'myPipe', true> = /*@__PURE__*/ i0.ɵɵdefinePipe({
-    name: 'myPipe',
-    type: MyPipe,
-    pure: true,
-  });
+  static ɵpipe: i0.ɵɵPipeDeclaration<MyPipe, 'myPipe', true> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefinePipe({ name: 'myPipe', type: MyPipe, pure: true });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -412,10 +421,9 @@ export class ParentService {
     return new (__ngFactoryType__ || ParentService)();
   };
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineService({
-    token: ParentService,
-    factory: ParentService.ɵfac,
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineService({ token: ParentService, factory: ParentService.ɵfac });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(ParentService, [{ type: AngularService }], null, null);
@@ -424,20 +432,21 @@ export class ParentService {
 
 export class ChildService extends ParentService {
   // @ts-ignore
-  static ɵfac: i0.ɵɵFactoryDeclaration<ChildService, never> = /*@__PURE__*/ ((): any => {
-    let ɵChildService_BaseFactory: any;
-    return function ChildService_Factory(__ngFactoryType__: any): any {
-      return (
-        ɵChildService_BaseFactory ||
-        (ɵChildService_BaseFactory = i0.ɵɵgetInheritedFactory(ChildService))
-      )(__ngFactoryType__ || ChildService);
-    };
-  })();
+  static ɵfac: i0.ɵɵFactoryDeclaration<ChildService, never> =
+    // @ts-ignore
+    /*@__PURE__*/ ((): any => {
+      let ɵChildService_BaseFactory: any;
+      return function ChildService_Factory(__ngFactoryType__: any): any {
+        return (
+          ɵChildService_BaseFactory ||
+          (ɵChildService_BaseFactory = i0.ɵɵgetInheritedFactory(ChildService))
+        )(__ngFactoryType__ || ChildService);
+      };
+    })();
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineInjectable({
-    token: ChildService,
-    factory: ChildService.ɵfac,
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjectable({ token: ChildService, factory: ChildService.ɵfac });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(ChildService, [{ type: Injectable }], null, null);

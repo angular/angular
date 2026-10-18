@@ -22,11 +22,13 @@ export class SomeDirective {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: SomeDirective,
-    selectors: [['', 'someDir', '']],
-    standalone: false,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: SomeDirective,
+      selectors: [['', 'someDir', '']],
+      standalone: false,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -79,31 +81,33 @@ export class ViewQueryComponent {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ViewQueryComponent,
-    selectors: [['view-query-component']],
-    viewQuery: function ViewQueryComponent_Query(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵviewQuery(SomeDirective, 7)(_c0, 5);
-      }
-      if (rf & 2) {
-        let _t: any;
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.someDir = _t.first);
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.foo = _t.first);
-      }
-    },
-    standalone: false,
-    decls: 1,
-    vars: 0,
-    consts: [['someDir', '']],
-    template: function ViewQueryComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'div', 0);
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(ViewQueryComponent),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ViewQueryComponent,
+      selectors: [['view-query-component']],
+      viewQuery: function ViewQueryComponent_Query(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵviewQuery(SomeDirective, 7)(_c0, 5);
+        }
+        if (rf & 2) {
+          let _t: any;
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.someDir = _t.first);
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.foo = _t.first);
+        }
+      },
+      standalone: false,
+      decls: 1,
+      vars: 0,
+      consts: [['someDir', '']],
+      template: function ViewQueryComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'div', 0);
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(ViewQueryComponent),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -147,9 +151,13 @@ export class MyModule {
     return new (__ngFactoryType__ || MyModule)();
   };
   // @ts-ignore
-  static ɵmod: MyModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
+  static ɵmod: MyModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<MyModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<MyModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

@@ -65,7 +65,9 @@ export class Marker {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({ type: Marker, selectors: [['', 'marker', '']] });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({ type: Marker, selectors: [['', 'marker', '']] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -134,51 +136,57 @@ export class TestComp {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: TestComp,
-    selectors: [['test-comp']],
-    contentQueries: function TestComp_ContentQueries(rf: number, ctx: any, dirIndex: number): any {
-      if (rf & 1) {
-        i0.ɵɵcontentQuerySignal(dirIndex, ctx.signalEscaped, _c0, 5);
-        i0.ɵɵcontentQuery(dirIndex, _c1, 5)(dirIndex, Marker, 5);
-      }
-      if (rf & 2) {
-        i0.ɵɵqueryAdvance();
-        let _t: any;
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.escaped = _t.first);
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.byForwardRef = _t);
-      }
-    },
-    viewQuery: function TestComp_Query(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵviewQuerySignal(ctx.signalString, _c2, 5)(ctx.signalTemplate, `${PREFIX}Sig`, 5)(
-          ctx.signalNoSubstitution,
-          _c3,
-          5,
-        )(ctx.signalByType, Marker, 5);
-        i0.ɵɵviewQuery(_c4, 5)(_c5, 5)(_c6, 7, ElementRef)(Marker, 5)(_c7, 5)(_c8, 5);
-      }
-      if (rf & 2) {
-        i0.ɵɵqueryAdvance(4);
-        let _t: any;
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.templated = _t.first);
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.imported = _t.first);
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.plain = _t.first);
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.byType = _t.first);
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.arrayWithComma = _t);
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.commaString = _t);
-      }
-    },
-    decls: 5,
-    vars: 0,
-    consts: [['myRef', '', 'x', '', 'y', '', 'z', '']],
-    template: function TestComp_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomElement(0, 'div', null, 0);
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: TestComp,
+      selectors: [['test-comp']],
+      contentQueries: function TestComp_ContentQueries(
+        rf: number,
+        ctx: any,
+        dirIndex: number,
+      ): any {
+        if (rf & 1) {
+          i0.ɵɵcontentQuerySignal(dirIndex, ctx.signalEscaped, _c0, 5);
+          i0.ɵɵcontentQuery(dirIndex, _c1, 5)(dirIndex, Marker, 5);
+        }
+        if (rf & 2) {
+          i0.ɵɵqueryAdvance();
+          let _t: any;
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.escaped = _t.first);
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.byForwardRef = _t);
+        }
+      },
+      viewQuery: function TestComp_Query(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵviewQuerySignal(ctx.signalString, _c2, 5)(ctx.signalTemplate, `${PREFIX}Sig`, 5)(
+            ctx.signalNoSubstitution,
+            _c3,
+            5,
+          )(ctx.signalByType, Marker, 5);
+          i0.ɵɵviewQuery(_c4, 5)(_c5, 5)(_c6, 7, ElementRef)(Marker, 5)(_c7, 5)(_c8, 5);
+        }
+        if (rf & 2) {
+          i0.ɵɵqueryAdvance(4);
+          let _t: any;
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.templated = _t.first);
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.imported = _t.first);
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.plain = _t.first);
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.byType = _t.first);
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.arrayWithComma = _t);
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.commaString = _t);
+        }
+      },
+      decls: 5,
+      vars: 0,
+      consts: [['myRef', '', 'x', '', 'y', '', 'z', '']],
+      template: function TestComp_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomElement(0, 'div', null, 0);
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -246,19 +254,21 @@ export class LegacyQueries {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: LegacyQueries,
-    selectors: [['', 'legacy', '']],
-    viewQuery: function LegacyQueries_Query(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵviewQuery(_c9, 5);
-      }
-      if (rf & 2) {
-        let _t: any;
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.legacy = _t);
-      }
-    },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: LegacyQueries,
+      selectors: [['', 'legacy', '']],
+      viewQuery: function LegacyQueries_Query(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵviewQuery(_c9, 5);
+        }
+        if (rf & 2) {
+          let _t: any;
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.legacy = _t);
+        }
+      },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

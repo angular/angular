@@ -12,7 +12,7 @@ import * as i1 from './ng_for_of';
 function _tcb1(this: i0.NetworkActivityComponent) {
   if (true) {
     var _t1 /*T:DIR:0*/ /*217,249*/ = null! as i1.NgForOf; /*T:VAE*/
-    _t1.ngForOf /*239,241*/ = this.items /*242,247*/ /*242,247*/ /*239,247*/;
+    _t1.ngForOf /*239,241*/ = this.items /*242,247*/ /*242,247*/; /*239,247*/
     var _t2 = null! as any; /*T:VAE*/
     {
       var _t3 /*234,238*/ = _t2.$implicit; /*230,239*/
@@ -80,26 +80,28 @@ export class NetworkActivityComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: NetworkActivityComponent,
-    selectors: [['app-network-activity']],
-    decls: 4,
-    vars: 0,
-    consts: [[4, 'ngFor', 'ngForOf']],
-    template: function NetworkActivityComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomTemplate(0, NetworkActivityComponent_Defer_0_Template, 1, 1)(
-          1,
-          NetworkActivityComponent_DeferPlaceholder_1_Template,
-          2,
-          0,
-        );
-        i0.ɵɵdefer(2, 0, NetworkActivityComponent_Defer_2_DepsFn, null, 1);
-        i0.ɵɵdeferOnInteraction(0, -1);
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: NetworkActivityComponent,
+      selectors: [['app-network-activity']],
+      decls: 4,
+      vars: 0,
+      consts: [[4, 'ngFor', 'ngForOf']],
+      template: function NetworkActivityComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomTemplate(0, NetworkActivityComponent_Defer_0_Template, 1, 1)(
+            1,
+            NetworkActivityComponent_DeferPlaceholder_1_Template,
+            2,
+            0,
+          );
+          i0.ɵɵdefer(2, 0, NetworkActivityComponent_Defer_2_DepsFn, null, 1);
+          i0.ɵɵdeferOnInteraction(0, -1);
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadataAsync(
@@ -173,11 +175,13 @@ export class NgForOf {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: NgForOf,
-    selectors: [['', 'ngFor', '', 'ngForOf', '']],
-    inputs: { ngForOf: 'ngForOf' },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: NgForOf,
+      selectors: [['', 'ngFor', '', 'ngForOf', '']],
+      inputs: { ngForOf: 'ngForOf' },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

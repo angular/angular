@@ -78,11 +78,13 @@ export class FormField {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: FormField,
-    selectors: [['', 'formField', '']],
-    inputs: { formField: 'formField' },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: FormField,
+      selectors: [['', 'formField', '']],
+      inputs: { formField: 'formField' },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -125,11 +127,13 @@ export class CustomCvaDirective {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: CustomCvaDirective,
-    selectors: [['input', 'customCva', '']],
-    inputs: { max: 'max' },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: CustomCvaDirective,
+      selectors: [['input', 'customCva', '']],
+      inputs: { max: 'max' },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -169,10 +173,12 @@ export class PartialCvaDirective {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: PartialCvaDirective,
-    selectors: [['input', 'partialCva', '']],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: PartialCvaDirective,
+      selectors: [['input', 'partialCva', '']],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -214,10 +220,12 @@ export class PrivateCvaDirective {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: PrivateCvaDirective,
-    selectors: [['input', 'privateCva', '']],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: PrivateCvaDirective,
+      selectors: [['input', 'privateCva', '']],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -258,42 +266,44 @@ export class MyComp {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: MyComp,
-    selectors: [['my-comp']],
-    decls: 3,
-    vars: 4,
-    consts: [
-      ['customCva', '', 3, 'formField', 'max'],
-      ['partialCva', '', 3, 'formField'],
-      ['privateCva', '', 3, 'formField'],
-    ],
-    template: function MyComp_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'input', 0);
-        i0.ɵɵcontrolCreate();
-        i0.ɵɵelementEnd();
-        i0.ɵɵelementStart(1, 'input', 1);
-        i0.ɵɵcontrolCreate();
-        i0.ɵɵelementEnd();
-        i0.ɵɵelementStart(2, 'input', 2);
-        i0.ɵɵcontrolCreate();
-        i0.ɵɵelementEnd();
-      }
-      if (rf & 2) {
-        i0.ɵɵproperty('formField', ctx.itemField)('max', ctx.maxValue);
-        i0.ɵɵcontrol();
-        i0.ɵɵadvance();
-        i0.ɵɵproperty('formField', ctx.itemField);
-        i0.ɵɵcontrol();
-        i0.ɵɵadvance();
-        i0.ɵɵproperty('formField', ctx.itemField);
-        i0.ɵɵcontrol();
-      }
-    },
-    dependencies: [FormField, CustomCvaDirective, PartialCvaDirective, PrivateCvaDirective],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: MyComp,
+      selectors: [['my-comp']],
+      decls: 3,
+      vars: 4,
+      consts: [
+        ['customCva', '', 3, 'formField', 'max'],
+        ['partialCva', '', 3, 'formField'],
+        ['privateCva', '', 3, 'formField'],
+      ],
+      template: function MyComp_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'input', 0);
+          i0.ɵɵcontrolCreate();
+          i0.ɵɵelementEnd();
+          i0.ɵɵelementStart(1, 'input', 1);
+          i0.ɵɵcontrolCreate();
+          i0.ɵɵelementEnd();
+          i0.ɵɵelementStart(2, 'input', 2);
+          i0.ɵɵcontrolCreate();
+          i0.ɵɵelementEnd();
+        }
+        if (rf & 2) {
+          i0.ɵɵproperty('formField', ctx.itemField)('max', ctx.maxValue);
+          i0.ɵɵcontrol();
+          i0.ɵɵadvance();
+          i0.ɵɵproperty('formField', ctx.itemField);
+          i0.ɵɵcontrol();
+          i0.ɵɵadvance();
+          i0.ɵɵproperty('formField', ctx.itemField);
+          i0.ɵɵcontrol();
+        }
+      },
+      dependencies: [FormField, CustomCvaDirective, PartialCvaDirective, PrivateCvaDirective],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

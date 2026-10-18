@@ -21,18 +21,20 @@ export class StandaloneComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: StandaloneComponent,
-    selectors: [['standalone-comp']],
-    decls: 1,
-    vars: 0,
-    template: function StandaloneComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0, 'Standalone');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: StandaloneComponent,
+      selectors: [['standalone-comp']],
+      decls: 1,
+      vars: 0,
+      template: function StandaloneComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0, 'Standalone');
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -80,10 +82,12 @@ export class StandaloneDirective {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: StandaloneDirective,
-    selectors: [['', 'standalone-dir', '']],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: StandaloneDirective,
+      selectors: [['', 'standalone-dir', '']],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -114,6 +118,7 @@ export class StandalonePipe {
   };
   // @ts-ignore
   static ɵpipe: i0.ɵɵPipeDeclaration<StandalonePipe, 'standalone-pipe', true> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefinePipe({ name: 'standalone-pipe', type: StandalonePipe, pure: true });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
@@ -144,9 +149,13 @@ export class OtherModule {
     return new (__ngFactoryType__ || OtherModule)();
   };
   // @ts-ignore
-  static ɵmod: OtherModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: OtherModule });
+  static ɵmod: OtherModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: OtherModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<OtherModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<OtherModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(OtherModule, [{ type: NgModule, args: [{}] }], null, null);
@@ -161,11 +170,15 @@ export class AppModule {
     return new (__ngFactoryType__ || AppModule)();
   };
   // @ts-ignore
-  static ɵmod: AppModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
+  static ɵmod: AppModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [StandaloneComponent, StandaloneDirective, StandalonePipe, OtherModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({
+      imports: [StandaloneComponent, StandaloneDirective, StandalonePipe, OtherModule],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

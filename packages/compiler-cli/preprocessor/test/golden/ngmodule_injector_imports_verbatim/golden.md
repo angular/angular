@@ -23,11 +23,13 @@ export class LocalAliasModule {
     return new (__ngFactoryType__ || LocalAliasModule)();
   };
   // @ts-ignore
-  static ɵmod: LocalAliasModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: LocalAliasModule });
+  static ɵmod: LocalAliasModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: LocalAliasModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<LocalAliasModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [LOCAL_ALIAS],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<LocalAliasModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [LOCAL_ALIAS] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -61,13 +63,13 @@ export class ExternalAliasModule {
       return new (__ngFactoryType__ || ExternalAliasModule)();
     };
   // @ts-ignore
-  static ɵmod: ExternalAliasModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({
-    type: ExternalAliasModule,
-  });
+  static ɵmod: ExternalAliasModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: ExternalAliasModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<ExternalAliasModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [EXTERNAL_ALIAS],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<ExternalAliasModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [EXTERNAL_ALIAS] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -103,11 +105,13 @@ export class MwpAliasModule {
     return new (__ngFactoryType__ || MwpAliasModule)();
   };
   // @ts-ignore
-  static ɵmod: MwpAliasModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MwpAliasModule });
+  static ɵmod: MwpAliasModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MwpAliasModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<MwpAliasModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [MWP_ALIAS],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<MwpAliasModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [MWP_ALIAS] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -143,11 +147,13 @@ export class TernaryModule {
     return new (__ngFactoryType__ || TernaryModule)();
   };
   // @ts-ignore
-  static ɵmod: TernaryModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: TernaryModule });
+  static ɵmod: TernaryModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: TernaryModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<TernaryModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [USE_SHARED ? SharedModule : OtherModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<TernaryModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [USE_SHARED ? SharedModule : OtherModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -182,11 +188,13 @@ export class SpreadModule {
     return new (__ngFactoryType__ || SpreadModule)();
   };
   // @ts-ignore
-  static ɵmod: SpreadModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: SpreadModule });
+  static ɵmod: SpreadModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: SpreadModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<SpreadModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [...LOCAL_ALIAS],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<SpreadModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [...LOCAL_ALIAS] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -220,13 +228,13 @@ export class SpreadWithMwpModule {
       return new (__ngFactoryType__ || SpreadWithMwpModule)();
     };
   // @ts-ignore
-  static ɵmod: SpreadWithMwpModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({
-    type: SpreadWithMwpModule,
-  });
+  static ɵmod: SpreadWithMwpModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: SpreadWithMwpModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<SpreadWithMwpModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [...LOCAL_ALIAS, SharedModule.forRoot()],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<SpreadWithMwpModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [...LOCAL_ALIAS, SharedModule.forRoot()] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -262,11 +270,13 @@ export class NonArrayModule {
     return new (__ngFactoryType__ || NonArrayModule)();
   };
   // @ts-ignore
-  static ɵmod: NonArrayModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: NonArrayModule });
+  static ɵmod: NonArrayModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: NonArrayModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<NonArrayModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [LOCAL_ALIAS],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<NonArrayModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [LOCAL_ALIAS] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -300,13 +310,13 @@ export class FilteredAliasModule {
       return new (__ngFactoryType__ || FilteredAliasModule)();
     };
   // @ts-ignore
-  static ɵmod: FilteredAliasModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({
-    type: FilteredAliasModule,
-  });
+  static ɵmod: FilteredAliasModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: FilteredAliasModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<FilteredAliasModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [MIXED_ALIAS],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<FilteredAliasModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [MIXED_ALIAS] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -340,11 +350,12 @@ export class FilteredAliasBeforeMwpModule {
       return new (__ngFactoryType__ || FilteredAliasBeforeMwpModule)();
     };
   // @ts-ignore
-  static ɵmod: FilteredAliasBeforeMwpModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({
-    type: FilteredAliasBeforeMwpModule,
-  });
+  static ɵmod: FilteredAliasBeforeMwpModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: FilteredAliasBeforeMwpModule });
   // @ts-ignore
   static ɵinj: i0.ɵɵInjectorDeclaration<FilteredAliasBeforeMwpModule> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineInjector({
       imports: [MIXED_ALIAS, SharedModule.forRoot(), OtherModule],
     });
@@ -382,11 +393,12 @@ export class FilteredSpreadBeforeMwpModule {
       return new (__ngFactoryType__ || FilteredSpreadBeforeMwpModule)();
     };
   // @ts-ignore
-  static ɵmod: FilteredSpreadBeforeMwpModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({
-    type: FilteredSpreadBeforeMwpModule,
-  });
+  static ɵmod: FilteredSpreadBeforeMwpModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: FilteredSpreadBeforeMwpModule });
   // @ts-ignore
   static ɵinj: i0.ɵɵInjectorDeclaration<FilteredSpreadBeforeMwpModule> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [...MIXED_ALIAS, SharedModule.forRoot()] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
@@ -424,11 +436,13 @@ export class ForwardRefModule {
     return new (__ngFactoryType__ || ForwardRefModule)();
   };
   // @ts-ignore
-  static ɵmod: ForwardRefModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: ForwardRefModule });
+  static ɵmod: ForwardRefModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: ForwardRefModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<ForwardRefModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [forwardRef(() => OtherModule)],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<ForwardRefModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [forwardRef(() => OtherModule)] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -462,13 +476,13 @@ export class TypeAssertionModule {
       return new (__ngFactoryType__ || TypeAssertionModule)();
     };
   // @ts-ignore
-  static ɵmod: TypeAssertionModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({
-    type: TypeAssertionModule,
-  });
+  static ɵmod: TypeAssertionModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: TypeAssertionModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<TypeAssertionModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [SharedModule, OtherModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<TypeAssertionModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [SharedModule, OtherModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -506,11 +520,12 @@ export class ObjectLiteralNgModuleArrayModule {
       return new (__ngFactoryType__ || ObjectLiteralNgModuleArrayModule)();
     };
   // @ts-ignore
-  static ɵmod: ObjectLiteralNgModuleArrayModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({
-    type: ObjectLiteralNgModuleArrayModule,
-  });
+  static ɵmod: ObjectLiteralNgModuleArrayModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: ObjectLiteralNgModuleArrayModule });
   // @ts-ignore
   static ɵinj: i0.ɵɵInjectorDeclaration<ObjectLiteralNgModuleArrayModule> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineInjector({
       imports: [{ ngModule: [SharedModule, OtherModule] }, SharedModule.forRoot()],
     });
@@ -550,15 +565,19 @@ export class DeepNestedModule {
     return new (__ngFactoryType__ || DeepNestedModule)();
   };
   // @ts-ignore
-  static ɵmod: DeepNestedModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: DeepNestedModule });
+  static ɵmod: DeepNestedModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: DeepNestedModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<DeepNestedModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [
-      [SharedModule, [OtherModule]],
-      [[StandaloneDir, SharedModule]],
-      SharedModule.forRoot(),
-    ],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<DeepNestedModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({
+      imports: [
+        [SharedModule, [OtherModule]],
+        [[StandaloneDir, SharedModule]],
+        SharedModule.forRoot(),
+      ],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -619,7 +638,9 @@ export class StandaloneDir {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({ type: StandaloneDir, selectors: [['', 'sdir', '']] });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({ type: StandaloneDir, selectors: [['', 'sdir', '']] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -652,9 +673,13 @@ export class SharedModule {
     return new (__ngFactoryType__ || SharedModule)();
   };
   // @ts-ignore
-  static ɵmod: SharedModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: SharedModule });
+  static ɵmod: SharedModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: SharedModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<SharedModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<SharedModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(SharedModule, [{ type: NgModule, args: [{}] }], null, null);
@@ -669,9 +694,13 @@ export class OtherModule {
     return new (__ngFactoryType__ || OtherModule)();
   };
   // @ts-ignore
-  static ɵmod: OtherModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: OtherModule });
+  static ɵmod: OtherModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: OtherModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<OtherModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<OtherModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(OtherModule, [{ type: NgModule, args: [{}] }], null, null);

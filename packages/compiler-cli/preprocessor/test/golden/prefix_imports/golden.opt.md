@@ -15,11 +15,9 @@ export class FormatPipe implements PipeTransform {
     return new (__ngFactoryType__ || FormatPipe)();
   };
   // @ts-ignore
-  static ɵpipe: i0.ɵɵPipeDeclaration<FormatPipe, 'format', true> = /*@__PURE__*/ i0.ɵɵdefinePipe({
-    name: 'format',
-    type: FormatPipe,
-    pure: true,
-  });
+  static ɵpipe: i0.ɵɵPipeDeclaration<FormatPipe, 'format', true> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefinePipe({ name: 'format', type: FormatPipe, pure: true });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -84,20 +82,22 @@ export class ButtonComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ButtonComponent,
-    selectors: [['btn']],
-    decls: 2,
-    vars: 0,
-    template: function ButtonComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomElementStart(0, 'button');
-        i0.ɵɵtext(1, 'Click');
-        i0.ɵɵdomElementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ButtonComponent,
+      selectors: [['btn']],
+      decls: 2,
+      vars: 0,
+      template: function ButtonComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomElementStart(0, 'button');
+          i0.ɵɵtext(1, 'Click');
+          i0.ɵɵdomElementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -177,27 +177,29 @@ export class ParentComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ParentComponent,
-    selectors: [['parent-comp']],
-    decls: 4,
-    vars: 3,
-    template: function ParentComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'btn');
-        i0.ɵɵelementStart(1, 'span');
-        i0.ɵɵtext(2);
-        i0.ɵɵpipe(3, 'format');
-        i0.ɵɵelementEnd();
-      }
-      if (rf & 2) {
-        i0.ɵɵadvance(2);
-        i0.ɵɵtextInterpolate(i0.ɵɵpipeBind1(3, 1, 'hello'));
-      }
-    },
-    dependencies: [ButtonComponent, FormatPipe],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ParentComponent,
+      selectors: [['parent-comp']],
+      decls: 4,
+      vars: 3,
+      template: function ParentComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'btn');
+          i0.ɵɵelementStart(1, 'span');
+          i0.ɵɵtext(2);
+          i0.ɵɵpipe(3, 'format');
+          i0.ɵɵelementEnd();
+        }
+        if (rf & 2) {
+          i0.ɵɵadvance(2);
+          i0.ɵɵtextInterpolate(i0.ɵɵpipeBind1(3, 1, 'hello'));
+        }
+      },
+      dependencies: [ButtonComponent, FormatPipe],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

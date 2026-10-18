@@ -44,20 +44,22 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 1,
-    vars: 0,
-    consts: [['libBar', '']],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'lib-foo', 0);
-      }
-    },
-    dependencies: [i1.FooComponent, i2.BarDirective],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 1,
+      vars: 0,
+      consts: [['libBar', '']],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'lib-foo', 0);
+        }
+      },
+      dependencies: [i1.FooComponent, i2.BarDirective],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -115,7 +117,9 @@ export class BarDirective {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({ type: BarDirective, selectors: [['', 'libBar', '']] });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({ type: BarDirective, selectors: [['', 'libBar', '']] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -180,20 +184,22 @@ export class BazComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: BazComponent,
-    selectors: [['lib-baz']],
-    decls: 2,
-    vars: 0,
-    template: function BazComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomElementStart(0, 'span');
-        i0.ɵɵtext(1, 'Baz');
-        i0.ɵɵdomElementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: BazComponent,
+      selectors: [['lib-baz']],
+      decls: 2,
+      vars: 0,
+      template: function BazComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomElementStart(0, 'span');
+          i0.ɵɵtext(1, 'Baz');
+          i0.ɵɵdomElementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -267,20 +273,22 @@ export class FooComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: FooComponent,
-    selectors: [['lib-foo']],
-    decls: 2,
-    vars: 0,
-    template: function FooComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomElementStart(0, 'span');
-        i0.ɵɵtext(1, 'Foo');
-        i0.ɵɵdomElementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: FooComponent,
+      selectors: [['lib-foo']],
+      decls: 2,
+      vars: 0,
+      template: function FooComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomElementStart(0, 'span');
+          i0.ɵɵtext(1, 'Foo');
+          i0.ɵɵdomElementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

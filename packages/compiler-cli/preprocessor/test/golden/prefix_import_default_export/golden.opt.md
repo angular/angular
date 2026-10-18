@@ -41,20 +41,22 @@ export class ConsumerComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ConsumerComponent,
-    selectors: [['consumer-cmp']],
-    decls: 1,
-    vars: 0,
-    consts: [['dirA', '']],
-    template: function ConsumerComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'div', 0);
-      }
-    },
-    dependencies: [UpstreamModule, i1.default],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ConsumerComponent,
+      selectors: [['consumer-cmp']],
+      decls: 1,
+      vars: 0,
+      consts: [['dirA', '']],
+      template: function ConsumerComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'div', 0);
+        }
+      },
+      dependencies: [UpstreamModule, i1.default],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -112,11 +114,13 @@ export default class DirectiveA {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: DirectiveA,
-    selectors: [['', 'dirA', '']],
-    standalone: false,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: DirectiveA,
+      selectors: [['', 'dirA', '']],
+      standalone: false,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -160,9 +164,13 @@ export class UpstreamModule {
     [typeof DirectiveA],
     never,
     [typeof DirectiveA]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: UpstreamModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: UpstreamModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<UpstreamModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<UpstreamModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

@@ -19,9 +19,12 @@ export class EnumIdModule {
   };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<EnumIdModule, never, never, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: EnumIdModule, id: ChunkId.LAZY_THING });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<EnumIdModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<EnumIdModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -52,9 +55,12 @@ export class ConstIdModule {
   };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<ConstIdModule, never, never, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: ConstIdModule, id: LOCAL_ID });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<ConstIdModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<ConstIdModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -85,9 +91,12 @@ export class LiteralIdModule {
   };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<LiteralIdModule, never, never, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: LiteralIdModule, id: 'literal_id' });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<LiteralIdModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<LiteralIdModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -118,9 +127,12 @@ export class ModuleIdModule {
   };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<ModuleIdModule, never, never, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: ModuleIdModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<ModuleIdModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<ModuleIdModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -149,9 +161,11 @@ export class OptionalChainModuleIdModule {
     };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<OptionalChainModuleIdModule, never, never, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: OptionalChainModuleIdModule });
   // @ts-ignore
   static ɵinj: i0.ɵɵInjectorDeclaration<OptionalChainModuleIdModule> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
@@ -181,9 +195,11 @@ export class ParenthesizedModuleIdModule {
     };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<ParenthesizedModuleIdModule, never, never, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: ParenthesizedModuleIdModule, id: module.id });
   // @ts-ignore
   static ɵinj: i0.ɵɵInjectorDeclaration<ParenthesizedModuleIdModule> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
@@ -214,9 +230,12 @@ export class CastModuleIdModule {
     };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<CastModuleIdModule, never, never, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: CastModuleIdModule, id: module.id });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<CastModuleIdModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<CastModuleIdModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -246,11 +265,12 @@ export class NonNullModuleIdModule {
     };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<NonNullModuleIdModule, never, never, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: NonNullModuleIdModule, id: module.id });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<NonNullModuleIdModule> = /*@__PURE__*/ i0.ɵɵdefineInjector(
-    {},
-  );
+  static ɵinj: i0.ɵɵInjectorDeclaration<NonNullModuleIdModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

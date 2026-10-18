@@ -27,24 +27,26 @@ export class TestComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: TestComponent,
-    selectors: [['test-cmp']],
-    decls: 1,
-    vars: 0,
-    consts: [[1, 'box']],
-    template: function TestComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'div', 0);
-      }
-    },
-    styles: [
-      '[_nghost-%COMP%] {\n      display: block;\n      height: 1000px;\n      width: 1000px;\n      border: 2px solid black;\n    }',
-      '.box[_ngcontent-%COMP%] {\n      height: 100px;\n      width: 100px;\n      position: absolute;\n      top: 450px;\n      left: 450px;\n    }',
-      '.a[_ngcontent-%COMP%] { margin: 0; }',
-      '.b[_ngcontent-%COMP%] { gap: 8px; }',
-    ],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: TestComponent,
+      selectors: [['test-cmp']],
+      decls: 1,
+      vars: 0,
+      consts: [[1, 'box']],
+      template: function TestComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'div', 0);
+        }
+      },
+      styles: [
+        '[_nghost-%COMP%] {\n      display: block;\n      height: 1000px;\n      width: 1000px;\n      border: 2px solid black;\n    }',
+        '.box[_ngcontent-%COMP%] {\n      height: 100px;\n      width: 100px;\n      position: absolute;\n      top: 450px;\n      left: 450px;\n    }',
+        '.a[_ngcontent-%COMP%] { margin: 0; }',
+        '.b[_ngcontent-%COMP%] { gap: 8px; }',
+      ],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

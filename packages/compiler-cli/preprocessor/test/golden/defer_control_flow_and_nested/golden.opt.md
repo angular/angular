@@ -22,7 +22,7 @@ function _tcb1(this: i0.AppComponent) {
     for (const _t1 /*390,394*/ of _pipe2.transform(
       /*406,411*/ this.items /*398,403*/ /*398,403*/,
     ) /*398,411*/! /*398,411*/) {
-      _t1 /*419,423*/;
+      _t1; /*419,423*/
     }
     '' + _pipe3.transform(/*516,526*/ 'inner' /*506,513*/) /*506,526*/;
   }
@@ -122,20 +122,22 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 3,
-    vars: 0,
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomTemplate(0, AppComponent_Defer_0_Template, 8, 5);
-        i0.ɵɵdefer(1, 0, AppComponent_Defer_1_DepsFn);
-        i0.ɵɵdeferOnIdle();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 3,
+      vars: 0,
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomTemplate(0, AppComponent_Defer_0_Template, 8, 5);
+          i0.ɵɵdefer(1, 0, AppComponent_Defer_1_DepsFn);
+          i0.ɵɵdeferOnIdle();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadataAsync(
@@ -233,6 +235,7 @@ export class CmpA {
   };
   // @ts-ignore
   static ɵcmp: i0.ɵɵComponentDeclaration<CmpA, 'cmp-a', never, {}, {}, never, never, true, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineComponent({
       type: CmpA,
       selectors: [['cmp-a']],
@@ -305,6 +308,7 @@ export class CmpB {
   };
   // @ts-ignore
   static ɵcmp: i0.ɵɵComponentDeclaration<CmpB, 'cmp-b', never, {}, {}, never, never, true, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineComponent({
       type: CmpB,
       selectors: [['cmp-b']],
@@ -386,18 +390,20 @@ export class CmpNested {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: CmpNested,
-    selectors: [['cmp-nested']],
-    decls: 1,
-    vars: 0,
-    template: function CmpNested_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0, 'Nested');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: CmpNested,
+      selectors: [['cmp-nested']],
+      decls: 1,
+      vars: 0,
+      template: function CmpNested_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0, 'Nested');
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -447,11 +453,9 @@ export class PipeA implements PipeTransform {
     return new (__ngFactoryType__ || PipeA)();
   };
   // @ts-ignore
-  static ɵpipe: i0.ɵɵPipeDeclaration<PipeA, 'pipeA', true> = /*@__PURE__*/ i0.ɵɵdefinePipe({
-    name: 'pipeA',
-    type: PipeA,
-    pure: true,
-  });
+  static ɵpipe: i0.ɵɵPipeDeclaration<PipeA, 'pipeA', true> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefinePipe({ name: 'pipeA', type: PipeA, pure: true });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -492,11 +496,9 @@ export class PipeB implements PipeTransform {
     return new (__ngFactoryType__ || PipeB)();
   };
   // @ts-ignore
-  static ɵpipe: i0.ɵɵPipeDeclaration<PipeB, 'pipeB', true> = /*@__PURE__*/ i0.ɵɵdefinePipe({
-    name: 'pipeB',
-    type: PipeB,
-    pure: true,
-  });
+  static ɵpipe: i0.ɵɵPipeDeclaration<PipeB, 'pipeB', true> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefinePipe({ name: 'pipeB', type: PipeB, pure: true });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -538,6 +540,7 @@ export class PipeNested implements PipeTransform {
   };
   // @ts-ignore
   static ɵpipe: i0.ɵɵPipeDeclaration<PipeNested, 'pipeNested', true> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefinePipe({ name: 'pipeNested', type: PipeNested, pure: true });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
