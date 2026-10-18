@@ -10,10 +10,7 @@ import MagicString, {SourceMap, type SourceMapOptions} from 'magic-string';
 import type {ExpressionPrinter, PrintedSnippet} from './output_ast_printer.js';
 
 /** Options for `OutputSourceMapBuilder.generateMap`, a subset of MagicString's. */
-export type OutputSourceMapOptions = Pick<
-  SourceMapOptions,
-  'file' | 'source' | 'includeContent' | 'hires'
->;
+export type OutputSourceMapOptions = Pick<SourceMapOptions, 'file' | 'source' | 'includeContent'>;
 
 /** A piece of compiled text spliced into the output, with the printed snippets it contains. */
 interface Insertion {
@@ -58,9 +55,11 @@ export class OutputSourceMapBuilder {
   generateMap(options: OutputSourceMapOptions = {}): SourceMap {
     const output = this.s.toString();
     const sourceName = options.source ?? this.filePath;
-    // A high-resolution map has a segment for every character of the original text, so a
-    // position in the output can be resolved exactly rather than relative to a line start.
-    const decoded = this.s.generateDecodedMap({...options, hires: options.hires ?? true});
+    const decoded = this.s.generateDecodedMap({
+      ...options,
+      // Disable high resolution source maps, because they use a lot of memory.
+      hires: 'boundary',
+    });
     const sources = [...decoded.sources];
     const sourcesContent: Array<string | null> | undefined =
       decoded.sourcesContent === undefined ? undefined : [...decoded.sourcesContent];
