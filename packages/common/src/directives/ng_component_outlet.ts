@@ -101,7 +101,7 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
   /** Component that should be rendered in the outlet. */
   @Input() ngComponentOutlet: Type<T> | null = null;
 
-  @Input() ngComponentOutletInputs?: Record<string, unknown>;
+  @Input() ngComponentOutletInputs?: { [K in string]?: unknown };
   @Input() ngComponentOutletInjector?: Injector;
   @Input() ngComponentOutletEnvironmentInjector?: EnvironmentInjector;
   @Input() ngComponentOutletContent?: Node[][];
