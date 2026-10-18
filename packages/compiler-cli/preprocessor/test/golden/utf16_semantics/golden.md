@@ -24,7 +24,7 @@ export class Utf16Component {
     never,
     {
       'jose': { 'alias': 'jose'; 'required': false };
-      'aliased': { 'alias': 'aliased😊'; 'required': false };
+      'aliased': { 'alias': 'aliased\uD83D\uDE0A'; 'required': false };
     },
     {},
     never,
@@ -36,13 +36,13 @@ export class Utf16Component {
     /*@__PURE__*/ i0.ɵɵdefineComponent({
       type: Utf16Component,
       selectors: [['app-root']],
-      inputs: { jose: 'jose', aliased: [0, 'aliased😊', 'aliased'] },
+      inputs: { jose: 'jose', aliased: [0, 'aliased\uD83D\uDE0A', 'aliased'] },
       decls: 2,
       vars: 0,
       template: function Utf16Component_Template(rf: number, ctx: any): any {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'div');
-          i0.ɵɵtext(1, 'José & 😊');
+          i0.ɵɵtext(1, 'Jos\u00E9 & \uD83D\uDE0A');
           i0.ɵɵelementEnd();
         }
       },

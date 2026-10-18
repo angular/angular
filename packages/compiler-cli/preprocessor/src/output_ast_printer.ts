@@ -504,6 +504,10 @@ class EmitterVisitor extends AbstractEmitterVisitor {
     withSpan(ctx, ast.sourceSpan, () => super.visitLiteralMapExpr(ast, ctx));
   }
 
+  protected override escapeStringOrIdentifier(input: string, alwaysQuote: boolean = true): string {
+    return super.escapeStringOrIdentifier(input, alwaysQuote, true);
+  }
+
   override visitSpreadElementExpr(ast: o.SpreadElementExpr, ctx: EmitterVisitorContext): void {
     withSpan(ctx, ast.sourceSpan, () => super.visitSpreadElementExpr(ast, ctx));
   }
