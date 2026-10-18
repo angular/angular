@@ -186,14 +186,20 @@ export class AppComponent {
           ],
           setterQuery: [{ type: ViewChild, args: ['setterQuery'] }],
           signalContent: [
-            { type: i0.ContentChild, args: ['content', { isSignal: true, descendants: true }] },
+            {
+              type: i0.ContentChild,
+              args: ['content', { ...{ descendants: true }, isSignal: true }],
+            },
           ],
           signalContentItems: [
-            { type: i0.ContentChildren, args: ['contentItem', { isSignal: true }] },
+            {
+              type: i0.ContentChildren,
+              args: ['contentItem', { ...{ descendants: false }, isSignal: true }],
+            },
           ],
           signalDiv: [{ type: i0.ViewChild, args: ['myDiv', { isSignal: true }] }],
           signalTpl: [
-            { type: i0.ViewChild, args: ['myTpl', { isSignal: true, read: TemplateRef }] },
+            { type: i0.ViewChild, args: ['myTpl', { ...{ read: TemplateRef }, isSignal: true }] },
           ],
           signalItems: [{ type: i0.ViewChildren, args: ['item', { isSignal: true }] }],
           reqSignalDiv: [{ type: i0.ViewChild, args: ['myDiv', { isSignal: true }] }],

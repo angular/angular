@@ -534,6 +534,8 @@ pub struct QueryMetadata {
     pub emit_distinct_changes_only: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub read_span: Option<SpanMetadata>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub options_span: Option<SpanMetadata>,
     pub is_static: bool,
     pub is_signal: bool,
     #[serde(skip_serializing_if = "Option::is_none")]

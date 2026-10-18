@@ -107,6 +107,7 @@ pub struct QueryData {
     pub descendants: bool,
     pub emit_distinct_changes_only: bool,
     pub read_span: Option<oxc_span::Span>,
+    pub options_span: Option<oxc_span::Span>,
     pub is_static: bool,
     pub is_signal: bool,
     pub decorator_span: Option<oxc_span::Span>,
@@ -2736,6 +2737,9 @@ impl QueryData {
             emit_distinct_changes_only: self.emit_distinct_changes_only,
             read_span: self
                 .read_span
+                .map(|s| crate::types::metadata::SpanMetadata::new(s, converter)),
+            options_span: self
+                .options_span
                 .map(|s| crate::types::metadata::SpanMetadata::new(s, converter)),
             is_static: self.is_static,
             is_signal: self.is_signal,

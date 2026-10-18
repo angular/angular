@@ -197,9 +197,7 @@ export class TestComp {
           byForwardRef: [
             { type: ContentChildren, args: [forwardRef(() => Marker), { descendants: true }] },
           ],
-          signalEscaped: [
-            { type: i0.ContentChild, args: ["sig's", { isSignal: true, descendants: true }] },
-          ],
+          signalEscaped: [{ type: i0.ContentChild, args: ["sig's", { isSignal: true }] }],
           signalString: [{ type: i0.ViewChild, args: ['sig', { isSignal: true }] }],
           signalTemplate: [
             { type: i0.ViewChild, args: [i0.forwardRef(() => `${PREFIX}Sig`), { isSignal: true }] },

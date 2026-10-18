@@ -94,7 +94,7 @@ export class TestComp {
               type: i0.ContentChildren,
               args: [
                 i0.forwardRef(() => nonAnalyzableRefersToString),
-                { isSignal: true, descendants: true },
+                { ...{ descendants: true }, isSignal: true },
               ],
             },
           ],
