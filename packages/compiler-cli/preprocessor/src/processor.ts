@@ -162,7 +162,12 @@ export interface ProcessedFile {
 function unprocessedFile(s: MagicString): ProcessedFile {
   return {
     magicString: s,
-    generateSourceMap: (options = {}) => s.generateMap({hires: true, ...options}),
+    generateSourceMap: (options = {}) =>
+      s.generateMap({
+        ...options,
+        // Disable high resolution source maps, because they use a lot of memory.
+        hires: 'boundary',
+      }),
   };
 }
 
