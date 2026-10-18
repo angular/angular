@@ -18,10 +18,9 @@ export class SharedService {
     return new (__ngFactoryType__ || SharedService)();
   };
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineInjectable({
-    token: SharedService,
-    factory: SharedService.ɵfac,
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjectable({ token: SharedService, factory: SharedService.ɵfac });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(SharedService, [{ type: Injectable }], null, null);
@@ -37,6 +36,7 @@ export class Dir {
   };
   // @ts-ignore
   static ɵdir: i0.ɵɵDirectiveDeclaration<Dir, '[dir]', never, {}, {}, never, never, false, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineDirective({
       type: Dir,
       selectors: [['', 'dir', '']],
@@ -78,11 +78,12 @@ export class SharedModule {
   };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<SharedModule, [typeof Dir], never, [typeof Dir]> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: SharedModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<SharedModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    providers: [SharedService],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<SharedModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ providers: [SharedService] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -118,9 +119,12 @@ export class OtherModule {
   };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<OtherModule, never, never, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: OtherModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<OtherModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<OtherModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(OtherModule, [{ type: NgModule, args: [{}] }], null, null);
@@ -138,11 +142,12 @@ export class MwpExportModule {
   };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<MwpExportModule, never, never, [typeof SharedModule]> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MwpExportModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<MwpExportModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [SharedModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<MwpExportModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [SharedModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -178,11 +183,12 @@ export class MwpAliasExportModule {
     };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<MwpAliasExportModule, never, never, [typeof SharedModule]> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MwpAliasExportModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<MwpAliasExportModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [SharedModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<MwpAliasExportModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [SharedModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -221,9 +227,12 @@ export class MwpCrossFileExportModule {
     never,
     never,
     [typeof i1.CrossModule]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MwpCrossFileExportModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MwpCrossFileExportModule });
   // @ts-ignore
   static ɵinj: i0.ɵɵInjectorDeclaration<MwpCrossFileExportModule> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [i1.CrossModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
@@ -262,11 +271,13 @@ export class MwpNestedExportModule {
     never,
     never,
     [typeof SharedModule]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MwpNestedExportModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MwpNestedExportModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<MwpNestedExportModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [SharedModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<MwpNestedExportModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [SharedModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -304,11 +315,13 @@ export class MwpExportOrderModule {
     never,
     never,
     [typeof OtherModule, typeof SharedModule, typeof OtherModule]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MwpExportOrderModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MwpExportOrderModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<MwpExportOrderModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [OtherModule, SharedModule, OtherModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<MwpExportOrderModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [OtherModule, SharedModule, OtherModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -348,9 +361,12 @@ export class MwpImportAndExportModule {
     never,
     [typeof OtherModule],
     [typeof SharedModule]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MwpImportAndExportModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MwpImportAndExportModule });
   // @ts-ignore
   static ɵinj: i0.ɵɵInjectorDeclaration<MwpImportAndExportModule> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [OtherModule, SharedModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
@@ -393,11 +409,13 @@ export class MwpLiteralExportModule {
     never,
     never,
     [typeof SharedModule]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MwpLiteralExportModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MwpLiteralExportModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<MwpLiteralExportModule> = /*@__PURE__*/ i0.ɵɵdefineInjector(
-    { imports: [SharedModule] },
-  );
+  static ɵinj: i0.ɵɵInjectorDeclaration<MwpLiteralExportModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [SharedModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -436,9 +454,12 @@ export class MwpArrayNgModuleExportModule {
     never,
     never,
     [typeof SharedModule, typeof OtherModule]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MwpArrayNgModuleExportModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MwpArrayNgModuleExportModule });
   // @ts-ignore
   static ɵinj: i0.ɵɵInjectorDeclaration<MwpArrayNgModuleExportModule> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [SharedModule, OtherModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
@@ -474,11 +495,12 @@ export class MwpDtsExportModule {
     };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<MwpDtsExportModule, never, never, [typeof i2.DtsModule]> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MwpDtsExportModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<MwpDtsExportModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [i2.DtsModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<MwpDtsExportModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [i2.DtsModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -517,11 +539,13 @@ export class MwpImportModule {
     never,
     [typeof SharedModule],
     [typeof OtherModule]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MwpImportModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MwpImportModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<MwpImportModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [SharedModule.forRoot(), OtherModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<MwpImportModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [SharedModule.forRoot(), OtherModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -561,9 +585,12 @@ export class MwpTrailingVerbatimModule {
     never,
     [typeof OtherModule, typeof SharedModule],
     [typeof SharedModule]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MwpTrailingVerbatimModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MwpTrailingVerbatimModule });
   // @ts-ignore
   static ɵinj: i0.ɵɵInjectorDeclaration<MwpTrailingVerbatimModule> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineInjector({
       imports: [OtherModule, SharedModule.forRoot(), SharedModule],
     });
@@ -609,9 +636,12 @@ export class MwpNestedThenVerbatimModule {
     never,
     [typeof OtherModule, typeof OtherModule, typeof SharedModule],
     [typeof SharedModule]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MwpNestedThenVerbatimModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MwpNestedThenVerbatimModule });
   // @ts-ignore
   static ɵinj: i0.ɵɵInjectorDeclaration<MwpNestedThenVerbatimModule> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineInjector({
       imports: [[OtherModule, OtherModule], SharedModule.forRoot(), SharedModule],
     });
@@ -659,10 +689,9 @@ export class CrossService {
     return new (__ngFactoryType__ || CrossService)();
   };
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineInjectable({
-    token: CrossService,
-    factory: CrossService.ɵfac,
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjectable({ token: CrossService, factory: CrossService.ɵfac });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(CrossService, [{ type: Injectable }], null, null);
@@ -687,11 +716,13 @@ export class CrossDir {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: CrossDir,
-    selectors: [['', 'crossDir', '']],
-    standalone: false,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: CrossDir,
+      selectors: [['', 'crossDir', '']],
+      standalone: false,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -725,11 +756,12 @@ export class CrossModule {
   };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<CrossModule, [typeof CrossDir], never, [typeof CrossDir]> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: CrossModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<CrossModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    providers: [CrossService],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<CrossModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ providers: [CrossService] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -778,9 +810,12 @@ export declare class DtsModule {
   };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<DtsModule, never, never, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: DtsModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<DtsModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<DtsModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(DtsModule, [{ type: NgModule }], null, null);

@@ -102,11 +102,13 @@ export class NumAttr {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: NumAttr,
-    selectors: [['', 'numAttr', '']],
-    hostAttrs: ['data-num', '42'],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: NumAttr,
+      selectors: [['', 'numAttr', '']],
+      hostAttrs: ['data-num', '42'],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -137,20 +139,22 @@ export class Folded {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: Folded,
-    selectors: [['', 'folded', '']],
-    hostAttrs: [
-      'data-concat',
-      'foobar',
-      'data-tmpl',
-      'foo-bar',
-      'data-const',
-      'foo',
-      'data-enum',
-      'enum-value',
-    ],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: Folded,
+      selectors: [['', 'folded', '']],
+      hostAttrs: [
+        'data-concat',
+        'foobar',
+        'data-tmpl',
+        'foo-bar',
+        'data-const',
+        'foo',
+        'data-enum',
+        'enum-value',
+      ],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -196,11 +200,13 @@ export class ComputedKey {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: ComputedKey,
-    selectors: [['', 'computedKey', '']],
-    hostAttrs: ['data-key', 'v'],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: ComputedKey,
+      selectors: [['', 'computedKey', '']],
+      hostAttrs: ['data-key', 'v'],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -232,17 +238,19 @@ export class WholeObject {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: WholeObject,
-    selectors: [['', 'wholeObject', '']],
-    hostAttrs: ['data-whole', 'whole-value'],
-    hostVars: 1,
-    hostBindings: function WholeObject_HostBindings(rf: number, ctx: any): any {
-      if (rf & 2) {
-        i0.ɵɵattribute('x', ctx.title);
-      }
-    },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: WholeObject,
+      selectors: [['', 'wholeObject', '']],
+      hostAttrs: ['data-whole', 'whole-value'],
+      hostVars: 1,
+      hostBindings: function WholeObject_HostBindings(rf: number, ctx: any): any {
+        if (rf & 2) {
+          i0.ɵɵattribute('x', ctx.title);
+        }
+      },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -276,21 +284,23 @@ export class FoldedExpr {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: FoldedExpr,
-    selectors: [['', 'foldedExpr', '']],
-    hostVars: 1,
-    hostBindings: function FoldedExpr_HostBindings(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵlistener('click', function FoldedExpr_click_HostBindingHandler(): any {
-          return ctx.foo();
-        });
-      }
-      if (rf & 2) {
-        i0.ɵɵattribute('b', ctx.title);
-      }
-    },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: FoldedExpr,
+      selectors: [['', 'foldedExpr', '']],
+      hostVars: 1,
+      hostBindings: function FoldedExpr_HostBindings(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵlistener('click', function FoldedExpr_click_HostBindingHandler(): any {
+            return ctx.foo();
+          });
+        }
+        if (rf & 2) {
+          i0.ɵɵattribute('b', ctx.title);
+        }
+      },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -327,11 +337,13 @@ export class DynamicValue {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: DynamicValue,
-    selectors: [['', 'dynamicValue', '']],
-    hostAttrs: ['data-dyn', dyn.thing],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: DynamicValue,
+      selectors: [['', 'dynamicValue', '']],
+      hostAttrs: ['data-dyn', dyn.thing],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -370,11 +382,13 @@ export class LocalDynamicConst {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: LocalDynamicConst,
-    selectors: [['', 'localDynamicConst', '']],
-    hostAttrs: ['data-l', LOCAL_DYN],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: LocalDynamicConst,
+      selectors: [['', 'localDynamicConst', '']],
+      hostAttrs: ['data-l', LOCAL_DYN],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -413,11 +427,13 @@ export class CrossFile {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: CrossFile,
-    selectors: [['', 'crossFile', '']],
-    hostAttrs: ['data-x', 'pre-suffix'],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: CrossFile,
+      selectors: [['', 'crossFile', '']],
+      hostAttrs: ['data-x', 'pre-suffix'],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -453,17 +469,19 @@ export class CrossFileObject {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: CrossFileObject,
-    selectors: [['', 'crossFileObject', '']],
-    hostAttrs: ['data-shared', 'shared'],
-    hostVars: 1,
-    hostBindings: function CrossFileObject_HostBindings(rf: number, ctx: any): any {
-      if (rf & 2) {
-        i0.ɵɵattribute('t', ctx.title);
-      }
-    },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: CrossFileObject,
+      selectors: [['', 'crossFileObject', '']],
+      hostAttrs: ['data-shared', 'shared'],
+      hostVars: 1,
+      hostBindings: function CrossFileObject_HostBindings(rf: number, ctx: any): any {
+        if (rf & 2) {
+          i0.ɵɵattribute('t', ctx.title);
+        }
+      },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -496,11 +514,13 @@ export class CrossFileDynamic {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: CrossFileDynamic,
-    selectors: [['', 'crossFileDynamic', '']],
-    hostAttrs: ['data-g', FOREIGN_DYN],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: CrossFileDynamic,
+      selectors: [['', 'crossFileDynamic', '']],
+      hostAttrs: ['data-g', FOREIGN_DYN],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -536,21 +556,23 @@ export class CmpHost {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: CmpHost,
-    selectors: [['cmp-host']],
-    hostAttrs: ['data-c', 'foobar'],
-    hostVars: 1,
-    hostBindings: function CmpHost_HostBindings(rf: number, ctx: any): any {
-      if (rf & 2) {
-        i0.ɵɵattribute('a', ctx.title);
-      }
-    },
-    decls: 0,
-    vars: 0,
-    template: function CmpHost_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: CmpHost,
+      selectors: [['cmp-host']],
+      hostAttrs: ['data-c', 'foobar'],
+      hostVars: 1,
+      hostBindings: function CmpHost_HostBindings(rf: number, ctx: any): any {
+        if (rf & 2) {
+          i0.ɵɵattribute('a', ctx.title);
+        }
+      },
+      decls: 0,
+      vars: 0,
+      template: function CmpHost_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

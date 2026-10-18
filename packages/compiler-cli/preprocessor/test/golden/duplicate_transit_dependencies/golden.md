@@ -24,27 +24,29 @@ export class AppComponent {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    standalone: false,
-    decls: 3,
-    vars: 3,
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1);
-        i0.ɵɵpipe(2, 'transit');
-        i0.ɵɵelementEnd();
-      }
-      if (rf & 2) {
-        i0.ɵɵadvance();
-        i0.ɵɵtextInterpolate(i0.ɵɵpipeBind1(2, 1, 'hello'));
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      standalone: false,
+      decls: 3,
+      vars: 3,
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1);
+          i0.ɵɵpipe(2, 'transit');
+          i0.ɵɵelementEnd();
+        }
+        if (rf & 2) {
+          i0.ɵɵadvance();
+          i0.ɵɵtextInterpolate(i0.ɵɵpipeBind1(2, 1, 'hello'));
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -83,11 +85,13 @@ export class AppModule {
     return new (__ngFactoryType__ || AppModule)();
   };
   // @ts-ignore
-  static ɵmod: AppModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
+  static ɵmod: AppModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [FirstModule, SecondModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [FirstModule, SecondModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -135,9 +139,14 @@ export class TransitPipe implements PipeTransform {
     return new (__ngFactoryType__ || TransitPipe)();
   };
   // @ts-ignore
-  static ɵpipe: i0.ɵɵPipeDeclaration<TransitPipe, 'transit', false> = /*@__PURE__*/ i0.ɵɵdefinePipe(
-    { name: 'transit', type: TransitPipe, pure: true, standalone: false },
-  );
+  static ɵpipe: i0.ɵɵPipeDeclaration<TransitPipe, 'transit', false> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefinePipe({
+      name: 'transit',
+      type: TransitPipe,
+      pure: true,
+      standalone: false,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -167,11 +176,13 @@ export class FirstModule {
     return new (__ngFactoryType__ || FirstModule)();
   };
   // @ts-ignore
-  static ɵmod: FirstModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: FirstModule });
+  static ɵmod: FirstModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: FirstModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<FirstModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [TransitPipe],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<FirstModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [TransitPipe] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -214,11 +225,13 @@ export class SecondModule {
     return new (__ngFactoryType__ || SecondModule)();
   };
   // @ts-ignore
-  static ɵmod: SecondModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: SecondModule });
+  static ɵmod: SecondModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: SecondModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<SecondModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [FirstModule, FirstModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<SecondModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [FirstModule, FirstModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

@@ -20,11 +20,13 @@ export class AppModule {
     [typeof PublicDir, typeof AliasedPipe],
     never,
     [typeof PublicDir, typeof ReexportedPipe, typeof SharedModule]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [SharedModule, SharedModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [SharedModule, SharedModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -65,11 +67,12 @@ export class InternalModule {
   };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<InternalModule, never, never, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: InternalModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<InternalModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [SharedModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<InternalModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [SharedModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -112,9 +115,12 @@ export class SharedModule {
   };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<SharedModule, never, never, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: SharedModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<SharedModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<SharedModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(SharedModule, [{ type: NgModule, args: [{}] }], null, null);
@@ -170,11 +176,13 @@ export class PublicDir {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: PublicDir,
-    selectors: [['', 'publicDir', '']],
-    standalone: false,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: PublicDir,
+      selectors: [['', 'publicDir', '']],
+      standalone: false,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -204,15 +212,17 @@ export class PrivateCmp {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: PrivateCmp,
-    selectors: [['private-cmp']],
-    standalone: false,
-    decls: 0,
-    vars: 0,
-    template: function PrivateCmp_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: PrivateCmp,
+      selectors: [['private-cmp']],
+      standalone: false,
+      decls: 0,
+      vars: 0,
+      template: function PrivateCmp_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -250,15 +260,17 @@ export class InternalCmp {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: InternalCmp,
-    selectors: [['internal-cmp']],
-    standalone: false,
-    decls: 0,
-    vars: 0,
-    template: function InternalCmp_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: InternalCmp,
+      selectors: [['internal-cmp']],
+      standalone: false,
+      decls: 0,
+      vars: 0,
+      template: function InternalCmp_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -294,9 +306,14 @@ export class AliasedPipe {
     return new (__ngFactoryType__ || AliasedPipe)();
   };
   // @ts-ignore
-  static ɵpipe: i0.ɵɵPipeDeclaration<AliasedPipe, 'aliased', false> = /*@__PURE__*/ i0.ɵɵdefinePipe(
-    { name: 'aliased', type: AliasedPipe, pure: true, standalone: false },
-  );
+  static ɵpipe: i0.ɵɵPipeDeclaration<AliasedPipe, 'aliased', false> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefinePipe({
+      name: 'aliased',
+      type: AliasedPipe,
+      pure: true,
+      standalone: false,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

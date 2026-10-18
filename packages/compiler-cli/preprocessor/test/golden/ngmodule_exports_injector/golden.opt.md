@@ -30,9 +30,12 @@ export class ImportedModule {
   };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<ImportedModule, never, never, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: ImportedModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<ImportedModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<ImportedModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(ImportedModule, [{ type: NgModule, args: [{}] }], null, null);
@@ -48,9 +51,12 @@ export class ExportedModule {
   };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<ExportedModule, never, never, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: ExportedModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<ExportedModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<ExportedModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(ExportedModule, [{ type: NgModule, args: [{}] }], null, null);
@@ -75,15 +81,17 @@ export class MyComponent {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: MyComponent,
-    selectors: [['my-comp']],
-    standalone: false,
-    decls: 0,
-    vars: 0,
-    template: function MyComponent_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: MyComponent,
+      selectors: [['my-comp']],
+      standalone: false,
+      decls: 0,
+      vars: 0,
+      template: function MyComponent_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -127,11 +135,13 @@ export class MyModule {
     [typeof MyComponent],
     [typeof ImportedModule],
     [typeof ExportedModule, typeof MyComponent]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<MyModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [ImportedModule, ExportedModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<MyModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [ImportedModule, ExportedModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

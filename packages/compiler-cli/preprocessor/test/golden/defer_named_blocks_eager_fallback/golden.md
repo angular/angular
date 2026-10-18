@@ -29,21 +29,23 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-comp']],
-    decls: 3,
-    vars: 0,
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomTemplate(0, AppComponent_Defer_0_Template, 1, 0);
-        i0.ɵɵdefer(1, 0);
-        i0.ɵɵdeferOnIdle();
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [EagerCmp]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-comp']],
+      decls: 3,
+      vars: 0,
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomTemplate(0, AppComponent_Defer_0_Template, 1, 0);
+          i0.ɵɵdefer(1, 0);
+          i0.ɵɵdeferOnIdle();
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [EagerCmp]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -108,18 +110,20 @@ export class EagerCmp {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: EagerCmp,
-    selectors: [['eager-cmp']],
-    decls: 1,
-    vars: 0,
-    template: function EagerCmp_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0, 'Eager');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: EagerCmp,
+      selectors: [['eager-cmp']],
+      decls: 1,
+      vars: 0,
+      template: function EagerCmp_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0, 'Eager');
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

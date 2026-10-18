@@ -24,23 +24,25 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 1,
-    vars: 0,
-    consts: [['mat-ripple', '', 'local-dir', '']],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'div', 0);
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [
-      MatLegacyRippleModule,
-      AliasedLocalModule,
-    ]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 1,
+      vars: 0,
+      consts: [['mat-ripple', '', 'local-dir', '']],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'div', 0);
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [
+        MatLegacyRippleModule,
+        AliasedLocalModule,
+      ]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -88,13 +90,13 @@ export class InternalLocalModule {
       return new (__ngFactoryType__ || InternalLocalModule)();
     };
   // @ts-ignore
-  static ɵmod: InternalLocalModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({
-    type: InternalLocalModule,
-  });
+  static ɵmod: InternalLocalModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: InternalLocalModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<InternalLocalModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [LocalDir],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<InternalLocalModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [LocalDir] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -146,7 +148,9 @@ export class LocalDir {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({ type: LocalDir, selectors: [['', 'local-dir', '']] });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({ type: LocalDir, selectors: [['', 'local-dir', '']] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

@@ -17,13 +17,13 @@ function _tcb1(this: i0.SelectorlessComp) {
 function _tcb2(this: i0.AppComponent) {
   if (true) {
     var _t1 /*T:DIR:0*/ /*518,587*/ = null! as i0.SelectorlessComp; /*T:VAE*/
-    _t1.heroName /*537,545*/ = this.hello /*548,553*/ /*548,553*/ /*536,554*/;
+    _t1.heroName /*537,545*/ = this.hello /*548,553*/ /*548,553*/; /*536,554*/
     _t1['heroSelect'] /*556,566*/
       .subscribe(($event /*T:EP*/): any => {
-        this.onSelect(/*569,577*/ $event /*578,584*/) /*569,585*/;
-      }) /*555,586*/;
+        this.onSelect(/*569,577*/ $event /*578,584*/); /*569,585*/
+      }); /*555,586*/
     var _t2 /*T:DIR:0*/ /*616,633*/ = null! as i0.SelectorlessDir; /*T:VAE*/
-    _t2.dirInput /*633,641*/ = 'hello' /*633,649*/;
+    _t2.dirInput /*633,641*/ = 'hello'; /*633,649*/
   }
 }
 
@@ -55,22 +55,24 @@ export class SelectorlessComp {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: SelectorlessComp,
-    selectors: [['ng-component']],
-    inputs: { heroName: 'heroName' },
-    outputs: { heroSelect: 'heroSelect' },
-    decls: 2,
-    vars: 0,
-    template: function SelectorlessComp_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomElementStart(0, 'div');
-        i0.ɵɵtext(1, 'Selectorless Component');
-        i0.ɵɵdomElementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: SelectorlessComp,
+      selectors: [['ng-component']],
+      inputs: { heroName: 'heroName' },
+      outputs: { heroSelect: 'heroSelect' },
+      decls: 2,
+      vars: 0,
+      template: function SelectorlessComp_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomElementStart(0, 'div');
+          i0.ɵɵtext(1, 'Selectorless Component');
+          i0.ɵɵdomElementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -119,10 +121,9 @@ export class SelectorlessDir {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: SelectorlessDir,
-    inputs: { dirInput: 'dirInput' },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({ type: SelectorlessDir, inputs: { dirInput: 'dirInput' } });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -163,18 +164,20 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 1,
-    vars: 0,
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomElement(0, 'div');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 1,
+      vars: 0,
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomElement(0, 'div');
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

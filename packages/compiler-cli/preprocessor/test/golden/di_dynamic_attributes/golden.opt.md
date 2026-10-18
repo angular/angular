@@ -52,20 +52,22 @@ export class TestComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: TestComponent,
-    selectors: [['app-test']],
-    decls: 2,
-    vars: 0,
-    template: function TestComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomElementStart(0, 'div');
-        i0.ɵɵtext(1, 'Test');
-        i0.ɵɵdomElementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: TestComponent,
+      selectors: [['app-test']],
+      decls: 2,
+      vars: 0,
+      template: function TestComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomElementStart(0, 'div');
+          i0.ɵɵtext(1, 'Test');
+          i0.ɵɵdomElementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

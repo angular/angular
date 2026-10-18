@@ -12,11 +12,13 @@ export class TestService {
     return new (__ngFactoryType__ || TestService)();
   };
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineInjectable({
-    token: TestService,
-    factory: TestService.ɵfac,
-    providedIn: 'root',
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjectable({
+      token: TestService,
+      factory: TestService.ɵfac,
+      providedIn: 'root',
+    });
 }
 
 export class TestComponent {
@@ -41,25 +43,27 @@ export class TestComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: TestComponent,
-    selectors: [['test-comp']],
-    inputs: { name: 'name' },
-    decls: 2,
-    vars: 1,
-    template: function TestComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'span');
-        i0.ɵɵtext(1);
-        i0.ɵɵelementEnd();
-      }
-      if (rf & 2) {
-        i0.ɵɵadvance();
-        i0.ɵɵtextInterpolate(ctx.name);
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: TestComponent,
+      selectors: [['test-comp']],
+      inputs: { name: 'name' },
+      decls: 2,
+      vars: 1,
+      template: function TestComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'span');
+          i0.ɵɵtext(1);
+          i0.ɵɵelementEnd();
+        }
+        if (rf & 2) {
+          i0.ɵɵadvance();
+          i0.ɵɵtextInterpolate(ctx.name);
+        }
+      },
+      encapsulation: 2,
+    });
 }
 ((): any => {
   (typeof ngDevMode === 'undefined' || ngDevMode) &&

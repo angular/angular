@@ -45,19 +45,21 @@ export class DeclaredCmp {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: DeclaredCmp,
-    selectors: [['declared-cmp']],
-    standalone: false,
-    decls: 1,
-    vars: 0,
-    template: function DeclaredCmp_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0, '...');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: DeclaredCmp,
+      selectors: [['declared-cmp']],
+      standalone: false,
+      decls: 1,
+      vars: 0,
+      template: function DeclaredCmp_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0, '...');
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -92,9 +94,12 @@ export class DeclaringModule {
   };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<DeclaringModule, [typeof DeclaredCmp], never, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: DeclaringModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<DeclaringModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<DeclaringModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -128,18 +133,20 @@ export class StandaloneCmp {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: StandaloneCmp,
-    selectors: [['standalone-cmp']],
-    decls: 1,
-    vars: 0,
-    template: function StandaloneCmp_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0, '...');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: StandaloneCmp,
+      selectors: [['standalone-cmp']],
+      decls: 1,
+      vars: 0,
+      template: function StandaloneCmp_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0, '...');
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

@@ -33,20 +33,22 @@ export class ParentCmp {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ParentCmp,
-    selectors: [['parent-cmp']],
-    decls: 3,
-    vars: 0,
-    template: function ParentCmp_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomTemplate(0, ParentCmp_Defer_0_Template, 1, 0);
-        i0.ɵɵdefer(1, 0, ParentCmp_Defer_1_DepsFn);
-        i0.ɵɵdeferOnIdle();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ParentCmp,
+      selectors: [['parent-cmp']],
+      decls: 3,
+      vars: 0,
+      template: function ParentCmp_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomTemplate(0, ParentCmp_Defer_0_Template, 1, 0);
+          i0.ɵɵdefer(1, 0, ParentCmp_Defer_1_DepsFn);
+          i0.ɵɵdeferOnIdle();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadataAsync(
@@ -110,19 +112,21 @@ export class HelperCmp {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: HelperCmp,
-    selectors: [['helper-cmp']],
-    decls: 1,
-    vars: 0,
-    template: function HelperCmp_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'shared-dep');
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(HelperCmp, [SharedDep]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: HelperCmp,
+      selectors: [['helper-cmp']],
+      decls: 1,
+      vars: 0,
+      template: function HelperCmp_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'shared-dep');
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(HelperCmp, [SharedDep]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -179,18 +183,20 @@ export class SharedDep {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: SharedDep,
-    selectors: [['shared-dep']],
-    decls: 1,
-    vars: 0,
-    template: function SharedDep_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0, 'Shared');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: SharedDep,
+      selectors: [['shared-dep']],
+      decls: 1,
+      vars: 0,
+      template: function SharedDep_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0, 'Shared');
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

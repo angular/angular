@@ -25,12 +25,14 @@ export class SignalDir {
     false,
     never,
     true
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: SignalDir,
-    selectors: [['', 'signalDir', '']],
-    standalone: false,
-    signals: true,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: SignalDir,
+      selectors: [['', 'signalDir', '']],
+      standalone: false,
+      signals: true,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -89,31 +91,33 @@ export class SignalComp {
     false,
     never,
     true
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: SignalComp,
-    selectors: [['signal-comp']],
-    inputs: { val: [1, 'val'], custom: [1, 'customAlias', 'custom'] },
-    outputs: {
-      val: 'valChange',
-      custom: 'customAliasChange',
-      submit: 'submit',
-      obs: 'obs',
-      obsCustom: 'obsAlias',
-    },
-    standalone: false,
-    signals: true,
-    decls: 2,
-    vars: 0,
-    template: function SignalComp_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1, 'Signal Component');
-        i0.ɵɵelementEnd();
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(SignalComp),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: SignalComp,
+      selectors: [['signal-comp']],
+      inputs: { val: [1, 'val'], custom: [1, 'customAlias', 'custom'] },
+      outputs: {
+        val: 'valChange',
+        custom: 'customAliasChange',
+        submit: 'submit',
+        obs: 'obs',
+        obsCustom: 'obsAlias',
+      },
+      standalone: false,
+      signals: true,
+      decls: 2,
+      vars: 0,
+      template: function SignalComp_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'Signal Component');
+          i0.ɵɵelementEnd();
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(SignalComp),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -175,21 +179,23 @@ export class StandaloneSignalComp {
     true,
     never,
     true
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: StandaloneSignalComp,
-    selectors: [['standalone-signal-comp']],
-    signals: true,
-    decls: 2,
-    vars: 0,
-    template: function StandaloneSignalComp_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1, 'Standalone Signal Component');
-        i0.ɵɵelementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: StandaloneSignalComp,
+      selectors: [['standalone-signal-comp']],
+      signals: true,
+      decls: 2,
+      vars: 0,
+      template: function StandaloneSignalComp_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'Standalone Signal Component');
+          i0.ɵɵelementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

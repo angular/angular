@@ -72,24 +72,26 @@ export class MyCompCustomElements {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: MyCompCustomElements,
-    selectors: [['my-comp-custom-elements']],
-    standalone: false,
-    decls: 2,
-    vars: 1,
-    consts: [[3, 'unknown-property']],
-    template: function MyCompCustomElements_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'unknown-element')(1, 'div', 0);
-      }
-      if (rf & 2) {
-        i0.ɵɵadvance();
-        i0.ɵɵproperty('unknown-property', true);
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: MyCompCustomElements,
+      selectors: [['my-comp-custom-elements']],
+      standalone: false,
+      decls: 2,
+      vars: 1,
+      consts: [[3, 'unknown-property']],
+      template: function MyCompCustomElements_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'unknown-element')(1, 'div', 0);
+        }
+        if (rf & 2) {
+          i0.ɵɵadvance();
+          i0.ɵɵproperty('unknown-property', true);
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -135,11 +137,13 @@ export class MyCustomElementsModule {
     [typeof MyCompCustomElements],
     never,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyCustomElementsModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyCustomElementsModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<MyCustomElementsModule> = /*@__PURE__*/ i0.ɵɵdefineInjector(
-    {},
-  );
+  static ɵinj: i0.ɵɵInjectorDeclaration<MyCustomElementsModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -183,24 +187,26 @@ export class MyCompNoErrors {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: MyCompNoErrors,
-    selectors: [['my-comp-no-errors']],
-    standalone: false,
-    decls: 2,
-    vars: 1,
-    consts: [[3, 'unknown-property']],
-    template: function MyCompNoErrors_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'unknown-element')(1, 'div', 0);
-      }
-      if (rf & 2) {
-        i0.ɵɵadvance();
-        i0.ɵɵproperty('unknown-property', true);
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: MyCompNoErrors,
+      selectors: [['my-comp-no-errors']],
+      standalone: false,
+      decls: 2,
+      vars: 1,
+      consts: [[3, 'unknown-property']],
+      template: function MyCompNoErrors_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'unknown-element')(1, 'div', 0);
+        }
+        if (rf & 2) {
+          i0.ɵɵadvance();
+          i0.ɵɵproperty('unknown-property', true);
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -243,9 +249,12 @@ export class MyNoErrorsModule {
   };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<MyNoErrorsModule, [typeof MyCompNoErrors], never, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyNoErrorsModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<MyNoErrorsModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<MyNoErrorsModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -288,24 +297,26 @@ export class MyCompStandaloneImportingModule {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: MyCompStandaloneImportingModule,
-    selectors: [['my-comp-standalone-importing-module']],
-    decls: 2,
-    vars: 1,
-    consts: [[3, 'unknown-property']],
-    template: function MyCompStandaloneImportingModule_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomElement(0, 'unknown-element')(1, 'div', 0);
-      }
-      if (rf & 2) {
-        i0.ɵɵadvance();
-        i0.ɵɵdomProperty('unknown-property', true);
-      }
-    },
-    dependencies: [MyNoErrorsModule],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: MyCompStandaloneImportingModule,
+      selectors: [['my-comp-standalone-importing-module']],
+      decls: 2,
+      vars: 1,
+      consts: [[3, 'unknown-property']],
+      template: function MyCompStandaloneImportingModule_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomElement(0, 'unknown-element')(1, 'div', 0);
+        }
+        if (rf & 2) {
+          i0.ɵɵadvance();
+          i0.ɵɵdomProperty('unknown-property', true);
+        }
+      },
+      dependencies: [MyNoErrorsModule],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -358,24 +369,26 @@ export class MyCompNoSchemas {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: MyCompNoSchemas,
-    selectors: [['my-comp-no-schemas']],
-    standalone: false,
-    decls: 2,
-    vars: 1,
-    consts: [[3, 'unknown-property']],
-    template: function MyCompNoSchemas_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'unknown-element')(1, 'div', 0);
-      }
-      if (rf & 2) {
-        i0.ɵɵadvance();
-        i0.ɵɵproperty('unknown-property', true);
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: MyCompNoSchemas,
+      selectors: [['my-comp-no-schemas']],
+      standalone: false,
+      decls: 2,
+      vars: 1,
+      consts: [[3, 'unknown-property']],
+      template: function MyCompNoSchemas_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'unknown-element')(1, 'div', 0);
+        }
+        if (rf & 2) {
+          i0.ɵɵadvance();
+          i0.ɵɵproperty('unknown-property', true);
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -417,9 +430,12 @@ export class MyNoSchemasModule {
     };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<MyNoSchemasModule, [typeof MyCompNoSchemas], never, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyNoSchemasModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<MyNoSchemasModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<MyNoSchemasModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

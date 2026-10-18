@@ -18,20 +18,20 @@ function _tcb1(this: i0.TestCoercedComponent) {
 function _tcb2(this: i0.AppComponent) {
   if (true) {
     var _t1 = null! as typeof i0.TestCoercedComponent.ngAcceptInputType_coercedByStatic; /*T:VAE*/
-    _t1 /*1226,1241*/ = 'test' /*1244,1250*/ /*1225,1251*/;
+    _t1 /*1226,1241*/ = 'test' /*1244,1250*/; /*1225,1251*/
     var _t2 = null! as string | null; /*T:VAE*/
-    _t2 /*1259,1277*/ = 'test' /*1280,1286*/ /*1258,1287*/;
+    _t2 /*1259,1277*/ = 'test' /*1280,1286*/; /*1258,1287*/
     var _t3 /*T:DIR:0*/ /*1205,1482*/ = null! as i0.TestCoercedComponent; /*T:VAE*/
     var _t4 = null! as (typeof _t3)['privateInput']; /*T:VAE*/
-    _t4 /*1295,1307*/ = 'test' /*1310,1316*/ /*1294,1317*/;
+    _t4 /*1295,1307*/ = 'test' /*1310,1316*/; /*1294,1317*/
     var _t5 = null! as (typeof _t3)['protectedInput']; /*T:VAE*/
-    _t5 /*1325,1339*/ = 'test' /*1342,1348*/ /*1324,1349*/;
+    _t5 /*1325,1339*/ = 'test' /*1342,1348*/; /*1324,1349*/
     var _t6 = null! as (typeof _t3)['readonlyInput']; /*T:VAE*/
-    _t6 /*1357,1370*/ = 'test' /*1373,1379*/ /*1356,1380*/;
-    _t3['literalInput'] /*1388,1400*/ = 'test' /*1403,1409*/ /*1387,1410*/;
+    _t6 /*1357,1370*/ = 'test' /*1373,1379*/; /*1356,1380*/
+    _t3['literalInput'] /*1388,1400*/ = 'test' /*1403,1409*/; /*1387,1410*/
     _t3.signalWithTransform[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] /*1418,1437*/ =
-      'test' /*1440,1446*/ /*1417,1447*/;
-    _t3.normalInput /*1455,1466*/ = 'test' /*1469,1475*/ /*1454,1476*/;
+      'test' /*1440,1446*/; /*1417,1447*/
+    _t3.normalInput /*1455,1466*/ = 'test' /*1469,1475*/; /*1454,1476*/
   }
 }
 
@@ -100,33 +100,35 @@ export class TestCoercedComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: TestCoercedComponent,
-    selectors: [['test-coerced']],
-    inputs: {
-      coercedByStatic: 'coercedByStatic',
-      coercedByTransform: [
-        2,
-        'coercedByTransform',
-        'coercedByTransform',
-        (v: string | null) => v || 'default',
-      ],
-      privateInput: 'privateInput',
-      protectedInput: 'protectedInput',
-      readonlyInput: 'readonlyInput',
-      literalInput: 'literalInput',
-      signalWithTransform: [1, 'signalWithTransform'],
-      normalInput: 'normalInput',
-    },
-    decls: 1,
-    vars: 0,
-    template: function TestCoercedComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomElement(0, 'div');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: TestCoercedComponent,
+      selectors: [['test-coerced']],
+      inputs: {
+        coercedByStatic: 'coercedByStatic',
+        coercedByTransform: [
+          2,
+          'coercedByTransform',
+          'coercedByTransform',
+          (v: string | null) => v || 'default',
+        ],
+        privateInput: 'privateInput',
+        protectedInput: 'protectedInput',
+        readonlyInput: 'readonlyInput',
+        literalInput: 'literalInput',
+        signalWithTransform: [1, 'signalWithTransform'],
+        normalInput: 'normalInput',
+      },
+      decls: 1,
+      vars: 0,
+      template: function TestCoercedComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomElement(0, 'div');
+        }
+      },
+      encapsulation: 2,
+    });
   // @ts-ignore
   declare static ngAcceptInputType_coercedByTransform: string | null;
   static {
@@ -193,41 +195,43 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 1,
-    vars: 8,
-    consts: [
-      [
-        3,
-        'coercedByStatic',
-        'coercedByTransform',
-        'privateInput',
-        'protectedInput',
-        'readonlyInput',
-        'literalInput',
-        'signalWithTransform',
-        'normalInput',
-      ],
-    ],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'test-coerced', 0);
-      }
-      if (rf & 2) {
-        i0.ɵɵproperty('coercedByStatic', 'test')('coercedByTransform', 'test')(
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 1,
+      vars: 8,
+      consts: [
+        [
+          3,
+          'coercedByStatic',
+          'coercedByTransform',
           'privateInput',
-          'test',
-        )('protectedInput', 'test')('readonlyInput', 'test')('literalInput', 'test')(
+          'protectedInput',
+          'readonlyInput',
+          'literalInput',
           'signalWithTransform',
-          'test',
-        )('normalInput', 'test');
-      }
-    },
-    dependencies: [TestCoercedComponent],
-    encapsulation: 2,
-  });
+          'normalInput',
+        ],
+      ],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'test-coerced', 0);
+        }
+        if (rf & 2) {
+          i0.ɵɵproperty('coercedByStatic', 'test')('coercedByTransform', 'test')(
+            'privateInput',
+            'test',
+          )('protectedInput', 'test')('readonlyInput', 'test')('literalInput', 'test')(
+            'signalWithTransform',
+            'test',
+          )('normalInput', 'test');
+        }
+      },
+      dependencies: [TestCoercedComponent],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

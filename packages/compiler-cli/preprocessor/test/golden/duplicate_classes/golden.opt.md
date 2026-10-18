@@ -69,20 +69,22 @@ export function runTest() {
       never,
       true,
       never
-    > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-      type: TestComponent,
-      selectors: [['test-cmp']],
-      decls: 2,
-      vars: 0,
-      template: function TestComponent_Template(rf: number, ctx: any): any {
-        if (rf & 1) {
-          i0.ɵɵdomElementStart(0, 'div');
-          i0.ɵɵtext(1, 'Class 1');
-          i0.ɵɵdomElementEnd();
-        }
-      },
-      encapsulation: 2,
-    });
+    > =
+      // @ts-ignore
+      /*@__PURE__*/ i0.ɵɵdefineComponent({
+        type: TestComponent,
+        selectors: [['test-cmp']],
+        decls: 2,
+        vars: 0,
+        template: function TestComponent_Template(rf: number, ctx: any): any {
+          if (rf & 1) {
+            i0.ɵɵdomElementStart(0, 'div');
+            i0.ɵɵtext(1, 'Class 1');
+            i0.ɵɵdomElementEnd();
+          }
+        },
+        encapsulation: 2,
+      });
     static {
       (typeof ngDevMode === 'undefined' || ngDevMode) &&
         i0.ɵsetClassMetadata(
@@ -134,20 +136,22 @@ export function runTest2() {
       never,
       true,
       never
-    > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-      type: TestComponent,
-      selectors: [['test-cmp']],
-      decls: 2,
-      vars: 0,
-      template: function TestComponent_Template1(rf: number, ctx: any): any {
-        if (rf & 1) {
-          i0.ɵɵdomElementStart(0, 'div');
-          i0.ɵɵtext(1, 'Class 1');
-          i0.ɵɵdomElementEnd();
-        }
-      },
-      encapsulation: 2,
-    });
+    > =
+      // @ts-ignore
+      /*@__PURE__*/ i0.ɵɵdefineComponent({
+        type: TestComponent,
+        selectors: [['test-cmp']],
+        decls: 2,
+        vars: 0,
+        template: function TestComponent_Template1(rf: number, ctx: any): any {
+          if (rf & 1) {
+            i0.ɵɵdomElementStart(0, 'div');
+            i0.ɵɵtext(1, 'Class 1');
+            i0.ɵɵdomElementEnd();
+          }
+        },
+        encapsulation: 2,
+      });
     static {
       (typeof ngDevMode === 'undefined' || ngDevMode) &&
         i0.ɵsetClassMetadata(

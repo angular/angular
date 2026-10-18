@@ -23,11 +23,13 @@ export class MyDir {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: MyDir,
-    selectors: [['', 'myDir', '']],
-    exportAs: ['myDirAlias'],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: MyDir,
+      selectors: [['', 'myDir', '']],
+      exportAs: ['myDirAlias'],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -68,30 +70,32 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 3,
-    vars: 1,
-    consts: [
-      ['dir', 'myDirAlias'],
-      ['myDir', ''],
-    ],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div', 1, 0);
-        i0.ɵɵtext(2);
-        i0.ɵɵelementEnd();
-      }
-      if (rf & 2) {
-        const dir_r1: any = i0.ɵɵreference(1);
-        i0.ɵɵadvance(2);
-        i0.ɵɵtextInterpolate(dir_r1.value);
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [MyDir]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 3,
+      vars: 1,
+      consts: [
+        ['dir', 'myDirAlias'],
+        ['myDir', ''],
+      ],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div', 1, 0);
+          i0.ɵɵtext(2);
+          i0.ɵɵelementEnd();
+        }
+        if (rf & 2) {
+          const dir_r1: any = i0.ɵɵreference(1);
+          i0.ɵɵadvance(2);
+          i0.ɵɵtextInterpolate(dir_r1.value);
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [MyDir]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

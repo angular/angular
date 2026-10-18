@@ -11,10 +11,10 @@ import * as i1 from 'material-lib';
 /*tcb1*/
 function _tcb1(this: i0.AppComponent) {
   if (true) {
-    true /*172,176*/ /*160,177*/;
-    ('primary') /*187,196*/ /*178,197*/;
+    true; /*172,176*/ /*160,177*/
+    ('primary'); /*187,196*/ /*178,197*/
     var _t1 /*T:DIR:0*/ /*141,222*/ = null! as i1.MatButton; /*T:VAE*/
-    _t1.disableRipple /*199,212*/ = false /*215,220*/ /*198,221*/;
+    _t1.disableRipple /*199,212*/ = false /*215,220*/; /*198,221*/
   }
 }
 
@@ -45,25 +45,27 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 2,
-    vars: 3,
-    consts: [['mat-button', '', 3, 'disabled', 'color', 'disableRipple']],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'button', 0);
-        i0.ɵɵtext(1, 'Click');
-        i0.ɵɵelementEnd();
-      }
-      if (rf & 2) {
-        i0.ɵɵproperty('disabled', true)('color', 'primary')('disableRipple', false);
-      }
-    },
-    dependencies: [MatButton],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 2,
+      vars: 3,
+      consts: [['mat-button', '', 3, 'disabled', 'color', 'disableRipple']],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'button', 0);
+          i0.ɵɵtext(1, 'Click');
+          i0.ɵɵelementEnd();
+        }
+        if (rf & 2) {
+          i0.ɵɵproperty('disabled', true)('color', 'primary')('disableRipple', false);
+        }
+      },
+      dependencies: [MatButton],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

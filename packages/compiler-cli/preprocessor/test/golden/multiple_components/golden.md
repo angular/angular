@@ -26,25 +26,27 @@ export class ComponentOne {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ComponentOne,
-    selectors: [['app-one']],
-    decls: 2,
-    vars: 2,
-    consts: [[3, 'ngClass']],
-    template: function ComponentOne_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div', 0);
-        i0.ɵɵtext(1, 'Component One');
-        i0.ɵɵelementEnd();
-      }
-      if (rf & 2) {
-        i0.ɵɵproperty('ngClass', i0.ɵɵpureFunction0(1, _c0));
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(ComponentOne, [CommonModule]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ComponentOne,
+      selectors: [['app-one']],
+      decls: 2,
+      vars: 2,
+      consts: [[3, 'ngClass']],
+      template: function ComponentOne_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div', 0);
+          i0.ɵɵtext(1, 'Component One');
+          i0.ɵɵelementEnd();
+        }
+        if (rf & 2) {
+          i0.ɵɵproperty('ngClass', i0.ɵɵpureFunction0(1, _c0));
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(ComponentOne, [CommonModule]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -94,25 +96,27 @@ export class ComponentTwo {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ComponentTwo,
-    selectors: [['app-two']],
-    decls: 2,
-    vars: 2,
-    consts: [[3, 'ngClass']],
-    template: function ComponentTwo_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div', 0);
-        i0.ɵɵtext(1, 'Component Two');
-        i0.ɵɵelementEnd();
-      }
-      if (rf & 2) {
-        i0.ɵɵproperty('ngClass', i0.ɵɵpureFunction0(1, _c1));
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(ComponentTwo, [CommonModule]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ComponentTwo,
+      selectors: [['app-two']],
+      decls: 2,
+      vars: 2,
+      consts: [[3, 'ngClass']],
+      template: function ComponentTwo_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div', 0);
+          i0.ɵɵtext(1, 'Component Two');
+          i0.ɵɵelementEnd();
+        }
+        if (rf & 2) {
+          i0.ɵɵproperty('ngClass', i0.ɵɵpureFunction0(1, _c1));
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(ComponentTwo, [CommonModule]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

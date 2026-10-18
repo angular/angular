@@ -32,19 +32,19 @@ function _tcb1(this: i0.DashboardComponent) {
     var _t1 /*T:DIR:0*/ /*497,527*/ = _ctor1({
       'config': this.config /*519,525*/ /*519,525*/ /*509,526*/,
     }); /*D:ignore*/
-    _t1.config /*510,516*/ = this.config /*519,525*/ /*519,525*/ /*509,526*/;
+    _t1.config /*510,516*/ = this.config /*519,525*/ /*519,525*/; /*509,526*/
     var _t2 /*T:DIR:0*/ /*545,571*/ = _ctor2({
       'filterCfg': this.config /*563,569*/ /*563,569*/ /*550,570*/,
     }); /*D:ignore*/
-    _t2.filterCfg /*551,560*/ = this.config /*563,569*/ /*563,569*/ /*550,570*/;
+    _t2.filterCfg /*551,560*/ = this.config /*563,569*/ /*563,569*/; /*550,570*/
     var _t3 /*T:DIR:0*/ /*582,619*/ = _ctor3({
       'config': this.config /*611,617*/ /*611,617*/ /*601,618*/,
     }); /*D:ignore*/
-    _t3.config /*602,608*/ = this.config /*611,617*/ /*611,617*/ /*601,618*/;
+    _t3.config /*602,608*/ = this.config /*611,617*/ /*611,617*/; /*601,618*/
     var _t4 /*T:DIR:0*/ /*644,677*/ = _ctor4({
       'viewData': this.config /*669,675*/ /*669,675*/ /*657,676*/,
     }); /*D:ignore*/
-    _t4.viewData /*658,666*/ = this.config /*669,675*/ /*669,675*/ /*657,676*/;
+    _t4.viewData /*658,666*/ = this.config /*669,675*/ /*669,675*/; /*657,676*/
   }
 }
 
@@ -78,37 +78,44 @@ export class DashboardComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: DashboardComponent,
-    selectors: [['dashboard-app']],
-    decls: 4,
-    vars: 4,
-    consts: [
-      [3, 'config'],
-      [3, 'filterDir'],
-      [3, 'viewData'],
-    ],
-    template: function DashboardComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'filter-bar', 0)(1, 'div', 1)(2, 'local-config-comp', 0)(
-          3,
-          'nested-view',
-          2,
-        );
-      }
-      if (rf & 2) {
-        i0.ɵɵproperty('config', ctx.config);
-        i0.ɵɵadvance();
-        i0.ɵɵproperty('filterDir', ctx.config);
-        i0.ɵɵadvance();
-        i0.ɵɵproperty('config', ctx.config);
-        i0.ɵɵadvance();
-        i0.ɵɵproperty('viewData', ctx.config);
-      }
-    },
-    dependencies: [FilterBarComponent, FilterDirective, LocalConfigComponent, NestedViewComponent],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: DashboardComponent,
+      selectors: [['dashboard-app']],
+      decls: 4,
+      vars: 4,
+      consts: [
+        [3, 'config'],
+        [3, 'filterDir'],
+        [3, 'viewData'],
+      ],
+      template: function DashboardComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'filter-bar', 0)(1, 'div', 1)(2, 'local-config-comp', 0)(
+            3,
+            'nested-view',
+            2,
+          );
+        }
+        if (rf & 2) {
+          i0.ɵɵproperty('config', ctx.config);
+          i0.ɵɵadvance();
+          i0.ɵɵproperty('filterDir', ctx.config);
+          i0.ɵɵadvance();
+          i0.ɵɵproperty('config', ctx.config);
+          i0.ɵɵadvance();
+          i0.ɵɵproperty('viewData', ctx.config);
+        }
+      },
+      dependencies: [
+        FilterBarComponent,
+        FilterDirective,
+        LocalConfigComponent,
+        NestedViewComponent,
+      ],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -197,15 +204,17 @@ export class FilterBarComponent<T, P extends FilterConfig<T> = FilterConfig<T>> 
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: FilterBarComponent,
-    selectors: [['filter-bar']],
-    inputs: { config: 'config' },
-    decls: 0,
-    vars: 0,
-    template: function FilterBarComponent_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: FilterBarComponent,
+      selectors: [['filter-bar']],
+      inputs: { config: 'config' },
+      decls: 0,
+      vars: 0,
+      template: function FilterBarComponent_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -263,11 +272,13 @@ export class FilterDirective<T, P extends FilterConfig<T> = FilterConfig<T>> {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: FilterDirective,
-    selectors: [['', 'filterDir', '']],
-    inputs: { filterCfg: [0, 'filterDir', 'filterCfg'] },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: FilterDirective,
+      selectors: [['', 'filterDir', '']],
+      inputs: { filterCfg: [0, 'filterDir', 'filterCfg'] },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -336,15 +347,17 @@ export class LocalConfigComponent<T extends LocalConfig = LocalConfig> {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: LocalConfigComponent,
-    selectors: [['local-config-comp']],
-    inputs: { config: 'config' },
-    decls: 0,
-    vars: 0,
-    template: function LocalConfigComponent_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: LocalConfigComponent,
+      selectors: [['local-config-comp']],
+      inputs: { config: 'config' },
+      decls: 0,
+      vars: 0,
+      template: function LocalConfigComponent_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -422,15 +435,17 @@ export class NestedViewComponent<T extends NestedData<string> = NestedData<strin
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: NestedViewComponent,
-    selectors: [['nested-view']],
-    inputs: { viewData: 'viewData' },
-    decls: 0,
-    vars: 0,
-    template: function NestedViewComponent_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: NestedViewComponent,
+      selectors: [['nested-view']],
+      inputs: { viewData: 'viewData' },
+      decls: 0,
+      vars: 0,
+      template: function NestedViewComponent_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

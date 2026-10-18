@@ -42,19 +42,21 @@ export class MyDir {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: MyDir,
-    selectors: [['', 'myDir', '']],
-    hostBindings: function MyDir_HostBindings(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵlistener('click', function MyDir_click_HostBindingHandler(): any {
-          return ctx.click();
-        })('focus', function MyDir_focus_HostBindingHandler(): any {
-          return ctx.focus();
-        });
-      }
-    },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: MyDir,
+      selectors: [['', 'myDir', '']],
+      hostBindings: function MyDir_HostBindings(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵlistener('click', function MyDir_click_HostBindingHandler(): any {
+            return ctx.click();
+          })('focus', function MyDir_focus_HostBindingHandler(): any {
+            return ctx.focus();
+          });
+        }
+      },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(MyDir, [{ type: Directive, args: [{ selector: '[myDir]' }] }], null, {

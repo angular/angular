@@ -30,25 +30,27 @@ export class MyApp {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: MyApp,
-    selectors: [['my-app']],
-    decls: 2,
-    vars: 1,
-    template: function MyApp_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'has-content');
-        i0.ɵɵconditionalCreate(1, MyApp_Conditional_1_Template, 2, 0);
-        i0.ɵɵelementEnd();
-      }
-      if (rf & 2) {
-        i0.ɵɵadvance();
-        i0.ɵɵconditional(ctx.show ? 1 : -1);
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(MyApp, [HasContent]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: MyApp,
+      selectors: [['my-app']],
+      decls: 2,
+      vars: 1,
+      template: function MyApp_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'has-content');
+          i0.ɵɵconditionalCreate(1, MyApp_Conditional_1_Template, 2, 0);
+          i0.ɵɵelementEnd();
+        }
+        if (rf & 2) {
+          i0.ɵɵadvance();
+          i0.ɵɵconditional(ctx.show ? 1 : -1);
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(MyApp, [HasContent]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

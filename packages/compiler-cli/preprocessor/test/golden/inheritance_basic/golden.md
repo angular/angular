@@ -24,7 +24,9 @@ export class BaseDir {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({ type: BaseDir, selectors: [['', 'base', '']] });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({ type: BaseDir, selectors: [['', 'base', '']] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -54,14 +56,16 @@ export class BaseDir {
 export class ChildDir extends BaseDir {
   // Inherits constructor from BaseDir. Should delegate factory to BaseDir's factory.
   // @ts-ignore
-  static ɵfac: i0.ɵɵFactoryDeclaration<ChildDir, never> = /*@__PURE__*/ ((): any => {
-    let ɵChildDir_BaseFactory: any;
-    return function ChildDir_Factory(__ngFactoryType__: any): any {
-      return (
-        ɵChildDir_BaseFactory || (ɵChildDir_BaseFactory = i0.ɵɵgetInheritedFactory(ChildDir))
-      )(__ngFactoryType__ || ChildDir);
-    };
-  })();
+  static ɵfac: i0.ɵɵFactoryDeclaration<ChildDir, never> =
+    // @ts-ignore
+    /*@__PURE__*/ ((): any => {
+      let ɵChildDir_BaseFactory: any;
+      return function ChildDir_Factory(__ngFactoryType__: any): any {
+        return (
+          ɵChildDir_BaseFactory || (ɵChildDir_BaseFactory = i0.ɵɵgetInheritedFactory(ChildDir))
+        )(__ngFactoryType__ || ChildDir);
+      };
+    })();
   // @ts-ignore
   static ɵdir: i0.ɵɵDirectiveDeclaration<
     ChildDir,
@@ -73,11 +77,13 @@ export class ChildDir extends BaseDir {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: ChildDir,
-    selectors: [['', 'child', '']],
-    features: [i0.ɵɵInheritDefinitionFeature],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: ChildDir,
+      selectors: [['', 'child', '']],
+      features: [i0.ɵɵInheritDefinitionFeature],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -122,11 +128,13 @@ export class ChildWithCtorDir extends BaseDir {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: ChildWithCtorDir,
-    selectors: [['', 'childWithCtor', '']],
-    features: [i0.ɵɵInheritDefinitionFeature],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: ChildWithCtorDir,
+      selectors: [['', 'childWithCtor', '']],
+      features: [i0.ɵɵInheritDefinitionFeature],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

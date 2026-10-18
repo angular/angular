@@ -46,27 +46,29 @@ export class AppComponent {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    standalone: false,
-    decls: 3,
-    vars: 3,
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1);
-        i0.ɵɵpipe(2, 'translate');
-        i0.ɵɵelementEnd();
-      }
-      if (rf & 2) {
-        i0.ɵɵadvance();
-        i0.ɵɵtextInterpolate(i0.ɵɵpipeBind1(2, 1, 'hello'));
-      }
-    },
-    dependencies: [i1.SharedTranslatePipe],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      standalone: false,
+      decls: 3,
+      vars: 3,
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1);
+          i0.ɵɵpipe(2, 'translate');
+          i0.ɵɵelementEnd();
+        }
+        if (rf & 2) {
+          i0.ɵɵadvance();
+          i0.ɵɵtextInterpolate(i0.ɵɵpipeBind1(2, 1, 'hello'));
+        }
+      },
+      dependencies: [i1.SharedTranslatePipe],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -110,11 +112,13 @@ export class AppModule {
     [typeof AppComponent],
     [typeof LocalModule],
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [LocalModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [LocalModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -160,6 +164,7 @@ export class LocalTranslatePipe implements PipeTransform {
     };
   // @ts-ignore
   static ɵpipe: i0.ɵɵPipeDeclaration<LocalTranslatePipe, 'translate', false> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefinePipe({
       name: 'translate',
       type: LocalTranslatePipe,
@@ -200,11 +205,13 @@ export class LocalModule {
     [typeof LocalTranslatePipe],
     [typeof SharedModule],
     [typeof LocalTranslatePipe, typeof SharedModule]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: LocalModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: LocalModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<LocalModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [SharedModule, SharedModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<LocalModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [SharedModule, SharedModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -254,6 +261,7 @@ export class SharedTranslatePipe implements PipeTransform {
     };
   // @ts-ignore
   static ɵpipe: i0.ɵɵPipeDeclaration<SharedTranslatePipe, 'translate', false> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefinePipe({
       name: 'translate',
       type: SharedTranslatePipe,
@@ -294,9 +302,13 @@ export class SharedModule {
     [typeof SharedTranslatePipe],
     never,
     [typeof SharedTranslatePipe]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: SharedModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: SharedModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<SharedModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<SharedModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

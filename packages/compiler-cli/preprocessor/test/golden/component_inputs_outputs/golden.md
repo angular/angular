@@ -31,90 +31,94 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 1,
-    vars: 9,
-    consts: [
-      [
-        3,
-        'clicked',
-        'valueChanged',
-        'submitted',
-        'onCancel',
-        'valueChange',
-        'isCheckedChange',
-        'selectedIdChange',
-        'count',
-        'userName',
-        'title',
-        'name',
-        'greetingText',
-        'id',
-        'value',
-        'isChecked',
-        'selectedId',
-      ],
-    ],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'app-greeting', 0);
-        i0.ɵɵlistener(
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 1,
+      vars: 9,
+      consts: [
+        [
+          3,
           'clicked',
-          function AppComponent_Template_app_greeting_clicked_0_listener(): any {
-            return ctx.handleClick();
-          },
-        )(
           'valueChanged',
-          function AppComponent_Template_app_greeting_valueChanged_0_listener($event: any): any {
-            return ctx.handleChange($event);
-          },
-        )(
           'submitted',
-          function AppComponent_Template_app_greeting_submitted_0_listener($event: any): any {
-            return ctx.handleSubmit($event);
-          },
-        )('onCancel', function AppComponent_Template_app_greeting_onCancel_0_listener(): any {
-          return ctx.handleCancel();
-        });
-        i0.ɵɵtwoWayListener(
+          'onCancel',
           'valueChange',
-          function AppComponent_Template_app_greeting_valueChange_0_listener($event: any): any {
-            i0.ɵɵtwoWayBindingSet(ctx.value, $event) || (ctx.value = $event);
-            return $event;
-          },
-        )(
           'isCheckedChange',
-          function AppComponent_Template_app_greeting_isCheckedChange_0_listener($event: any): any {
-            i0.ɵɵtwoWayBindingSet(ctx.isChecked, $event) || (ctx.isChecked = $event);
-            return $event;
-          },
-        )(
           'selectedIdChange',
-          function AppComponent_Template_app_greeting_selectedIdChange_0_listener(
-            $event: any,
-          ): any {
-            i0.ɵɵtwoWayBindingSet(ctx.selectedId, $event) || (ctx.selectedId = $event);
-            return $event;
-          },
-        );
-        i0.ɵɵelementEnd();
-      }
-      if (rf & 2) {
-        i0.ɵɵproperty('count', 1)('userName', 'User')('title', 'Hello')('name', 'Signal')(
+          'count',
+          'userName',
+          'title',
+          'name',
           'greetingText',
-          'Hi',
-        )('id', 123);
-        i0.ɵɵtwoWayProperty('value', ctx.value)('isChecked', ctx.isChecked)(
+          'id',
+          'value',
+          'isChecked',
           'selectedId',
-          ctx.selectedId,
-        );
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [GreetingComponent]),
-    encapsulation: 2,
-  });
+        ],
+      ],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'app-greeting', 0);
+          i0.ɵɵlistener(
+            'clicked',
+            function AppComponent_Template_app_greeting_clicked_0_listener(): any {
+              return ctx.handleClick();
+            },
+          )(
+            'valueChanged',
+            function AppComponent_Template_app_greeting_valueChanged_0_listener($event: any): any {
+              return ctx.handleChange($event);
+            },
+          )(
+            'submitted',
+            function AppComponent_Template_app_greeting_submitted_0_listener($event: any): any {
+              return ctx.handleSubmit($event);
+            },
+          )('onCancel', function AppComponent_Template_app_greeting_onCancel_0_listener(): any {
+            return ctx.handleCancel();
+          });
+          i0.ɵɵtwoWayListener(
+            'valueChange',
+            function AppComponent_Template_app_greeting_valueChange_0_listener($event: any): any {
+              i0.ɵɵtwoWayBindingSet(ctx.value, $event) || (ctx.value = $event);
+              return $event;
+            },
+          )(
+            'isCheckedChange',
+            function AppComponent_Template_app_greeting_isCheckedChange_0_listener(
+              $event: any,
+            ): any {
+              i0.ɵɵtwoWayBindingSet(ctx.isChecked, $event) || (ctx.isChecked = $event);
+              return $event;
+            },
+          )(
+            'selectedIdChange',
+            function AppComponent_Template_app_greeting_selectedIdChange_0_listener(
+              $event: any,
+            ): any {
+              i0.ɵɵtwoWayBindingSet(ctx.selectedId, $event) || (ctx.selectedId = $event);
+              return $event;
+            },
+          );
+          i0.ɵɵelementEnd();
+        }
+        if (rf & 2) {
+          i0.ɵɵproperty('count', 1)('userName', 'User')('title', 'Hello')('name', 'Signal')(
+            'greetingText',
+            'Hi',
+          )('id', 123);
+          i0.ɵɵtwoWayProperty('value', ctx.value)('isChecked', ctx.isChecked)(
+            'selectedId',
+            ctx.selectedId,
+          );
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [GreetingComponent]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -259,44 +263,46 @@ export class GreetingComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: GreetingComponent,
-    selectors: [['app-greeting']],
-    inputs: {
-      count: 'count',
-      displayName: [0, 'userName', 'displayName'],
-      title: 'title',
-      name: [1, 'name'],
-      greeting: [1, 'greetingText', 'greeting'],
-      id: [1, 'id'],
-      value: [1, 'value'],
-      checked: [1, 'isChecked', 'checked'],
-      selectedId: [1, 'selectedId'],
-    },
-    outputs: {
-      clicked: 'clicked',
-      change: 'valueChanged',
-      submitted: 'submitted',
-      cancelled: 'onCancel',
-      value: 'valueChange',
-      checked: 'isCheckedChange',
-      selectedId: 'selectedIdChange',
-    },
-    decls: 2,
-    vars: 2,
-    template: function GreetingComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1);
-        i0.ɵɵelementEnd();
-      }
-      if (rf & 2) {
-        i0.ɵɵadvance();
-        i0.ɵɵtextInterpolate2('Hello, ', ctx.name(), '! Count: ', ctx.count);
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: GreetingComponent,
+      selectors: [['app-greeting']],
+      inputs: {
+        count: 'count',
+        displayName: [0, 'userName', 'displayName'],
+        title: 'title',
+        name: [1, 'name'],
+        greeting: [1, 'greetingText', 'greeting'],
+        id: [1, 'id'],
+        value: [1, 'value'],
+        checked: [1, 'isChecked', 'checked'],
+        selectedId: [1, 'selectedId'],
+      },
+      outputs: {
+        clicked: 'clicked',
+        change: 'valueChanged',
+        submitted: 'submitted',
+        cancelled: 'onCancel',
+        value: 'valueChange',
+        checked: 'isCheckedChange',
+        selectedId: 'selectedIdChange',
+      },
+      decls: 2,
+      vars: 2,
+      template: function GreetingComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1);
+          i0.ɵɵelementEnd();
+        }
+        if (rf & 2) {
+          i0.ɵɵadvance();
+          i0.ɵɵtextInterpolate2('Hello, ', ctx.name(), '! Count: ', ctx.count);
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

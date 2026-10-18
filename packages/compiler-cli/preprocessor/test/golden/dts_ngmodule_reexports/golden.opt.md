@@ -12,7 +12,7 @@ import * as i1 from './feature-component';
 function _tcb1(this: i0.AppComponent) {
   if (true) {
     var _t1 /*T:DIR:0*/ /*197,229*/ = null! as i1.MyFeatureComponent; /*T:VAE*/
-    _t1.myProp /*211,217*/ = 'hello' /*220,227*/ /*210,228*/;
+    _t1.myProp /*211,217*/ = 'hello' /*220,227*/; /*210,228*/
   }
 }
 
@@ -45,23 +45,25 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 1,
-    vars: 1,
-    consts: [[3, 'myProp']],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'feature-cmp', 0);
-      }
-      if (rf & 2) {
-        i0.ɵɵproperty('myProp', 'hello');
-      }
-    },
-    dependencies: [MyFeatureModule, i1.MyFeatureComponent],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 1,
+      vars: 1,
+      consts: [[3, 'myProp']],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'feature-cmp', 0);
+        }
+        if (rf & 2) {
+          i0.ɵɵproperty('myProp', 'hello');
+        }
+      },
+      dependencies: [MyFeatureModule, i1.MyFeatureComponent],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

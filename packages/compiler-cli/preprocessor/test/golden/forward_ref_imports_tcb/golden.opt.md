@@ -11,7 +11,7 @@ import * as i0 from './host.component';
 function _tcb1(this: i0.HostComponent) {
   if (true) {
     var _t1 /*T:DIR:0*/ /*181,206*/ = null! as i0.TargetComponent; /*T:VAE*/
-    _t1.value /*194,199*/ = 42 /*202,204*/ /*193,205*/;
+    _t1.value /*194,199*/ = 42 /*202,204*/; /*193,205*/
   }
 }
 
@@ -47,23 +47,25 @@ export class HostComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: HostComponent,
-    selectors: [['app-host']],
-    decls: 1,
-    vars: 1,
-    consts: [[3, 'value']],
-    template: function HostComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'app-target', 0);
-      }
-      if (rf & 2) {
-        i0.ɵɵproperty('value', 42);
-      }
-    },
-    dependencies: (): any => [TargetComponent],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: HostComponent,
+      selectors: [['app-host']],
+      decls: 1,
+      vars: 1,
+      consts: [[3, 'value']],
+      template: function HostComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'app-target', 0);
+        }
+        if (rf & 2) {
+          i0.ɵɵproperty('value', 42);
+        }
+      },
+      dependencies: (): any => [TargetComponent],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -114,21 +116,23 @@ export class TargetComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: TargetComponent,
-    selectors: [['app-target']],
-    inputs: { value: 'value' },
-    decls: 2,
-    vars: 0,
-    template: function TargetComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomElementStart(0, 'span');
-        i0.ɵɵtext(1, 'Target');
-        i0.ɵɵdomElementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: TargetComponent,
+      selectors: [['app-target']],
+      inputs: { value: 'value' },
+      decls: 2,
+      vars: 0,
+      template: function TargetComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomElementStart(0, 'span');
+          i0.ɵɵtext(1, 'Target');
+          i0.ɵɵdomElementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

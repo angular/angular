@@ -10,24 +10,24 @@ import * as i0 from './app.component';
 /*tcb1*/
 function _tcb1(this: i0.AppComponent) {
   if (true) {
-    undefined /*162,171*/;
-    undefined /*173,182*/;
-    undefined /*188,197*/;
+    undefined; /*162,171*/
+    undefined; /*173,182*/
+    undefined; /*188,197*/
   }
 }
 
 /*tcb2*/
 function _tcb2(this: i0.VarComponent) {
   if (true) {
-    undefined /*484,493*/;
+    undefined; /*484,493*/
   }
 }
 
 /*tcb3*/
 function _tcb3(this: i0.BoundAndInvalidComponent) {
   if (true) {
-    this.ctxValue /*670,678*/ /*670,678*/;
-    undefined /*680,689*/;
+    this.ctxValue; /*670,678*/ /*670,678*/
+    undefined; /*680,689*/
   }
 }
 
@@ -59,27 +59,29 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 1,
-    vars: 3,
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomElement(0, 'div');
-      }
-      if (rf & 2) {
-        i0.ɵɵproperty('@myTrigger', undefined)('@nestedTrigger', undefined)(
-          '@spreadTrigger',
-          undefined,
-        );
-      }
-    },
-    encapsulation: 2,
-    data: {
-      animation: [trigger('myTrigger', []), [trigger('nestedTrigger', [])], ...myAnimations],
-    },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 1,
+      vars: 3,
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomElement(0, 'div');
+        }
+        if (rf & 2) {
+          i0.ɵɵproperty('@myTrigger', undefined)('@nestedTrigger', undefined)(
+            '@spreadTrigger',
+            undefined,
+          );
+        }
+      },
+      encapsulation: 2,
+      data: {
+        animation: [trigger('myTrigger', []), [trigger('nestedTrigger', [])], ...myAnimations],
+      },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -135,22 +137,24 @@ export class VarComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: VarComponent,
-    selectors: [['app-var']],
-    decls: 1,
-    vars: 1,
-    template: function VarComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomElement(0, 'div');
-      }
-      if (rf & 2) {
-        i0.ɵɵproperty('@varTrigger', undefined);
-      }
-    },
-    encapsulation: 2,
-    data: { animation: variableAnimations },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: VarComponent,
+      selectors: [['app-var']],
+      decls: 1,
+      vars: 1,
+      template: function VarComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomElement(0, 'div');
+        }
+        if (rf & 2) {
+          i0.ɵɵproperty('@varTrigger', undefined);
+        }
+      },
+      encapsulation: 2,
+      data: { animation: variableAnimations },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -200,22 +204,24 @@ export class BoundAndInvalidComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: BoundAndInvalidComponent,
-    selectors: [['app-bound-invalid']],
-    decls: 1,
-    vars: 2,
-    template: function BoundAndInvalidComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomElement(0, 'div');
-      }
-      if (rf & 2) {
-        i0.ɵɵproperty('@myTrigger', ctx.ctxValue)('@invalidTrigger', undefined);
-      }
-    },
-    encapsulation: 2,
-    data: { animation: [trigger('myTrigger', [])] },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: BoundAndInvalidComponent,
+      selectors: [['app-bound-invalid']],
+      decls: 1,
+      vars: 2,
+      template: function BoundAndInvalidComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomElement(0, 'div');
+        }
+        if (rf & 2) {
+          i0.ɵɵproperty('@myTrigger', ctx.ctxValue)('@invalidTrigger', undefined);
+        }
+      },
+      encapsulation: 2,
+      data: { animation: [trigger('myTrigger', [])] },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

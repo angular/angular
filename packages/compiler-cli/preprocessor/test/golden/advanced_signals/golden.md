@@ -80,70 +80,72 @@ export class AdvancedComp {
     true,
     never,
     true
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AdvancedComp,
-    selectors: [['advanced-comp']],
-    contentQueries: function AdvancedComp_ContentQueries(
-      rf: number,
-      ctx: any,
-      dirIndex: number,
-    ): any {
-      if (rf & 1) {
-        i0.ɵɵcontentQuerySignal(dirIndex, ctx.directContentChild, _c0, 5)(
-          dirIndex,
-          ctx.directRequiredContentChild,
-          _c0,
-          5,
-        )(dirIndex, ctx.directContentChildren, _c0, 4);
-      }
-      if (rf & 2) {
-        i0.ɵɵqueryAdvance(3);
-      }
-    },
-    viewQuery: function AdvancedComp_Query(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵviewQuerySignal(ctx.directViewChild, _c0, 5)(ctx.directRequiredViewChild, _c0, 5)(
-          ctx.directViewChildren,
-          _c0,
-          5,
-        );
-      }
-      if (rf & 2) {
-        i0.ɵɵqueryAdvance(3);
-      }
-    },
-    inputs: {
-      directInput: [1, 'directInput'],
-      directRequiredInput: [1, 'directRequiredInput'],
-      directModel: [1, 'directModel'],
-      directRequiredModel: [1, 'directRequiredModel'],
-      nsInput: [1, 'nsInput'],
-      nsRequiredInput: [1, 'nsRequiredInput'],
-      nsModel: [1, 'nsModel'],
-      nsRequiredModel: [1, 'nsRequiredModel'],
-    },
-    outputs: {
-      directModel: 'directModelChange',
-      directRequiredModel: 'directRequiredModelChange',
-      directOutput: 'directOutput',
-      directOutputObs: 'directOutputObs',
-      nsModel: 'nsModelChange',
-      nsRequiredModel: 'nsRequiredModelChange',
-      nsOutput: 'nsOutput',
-      nsOutputObs: 'nsOutputObs',
-    },
-    signals: true,
-    decls: 2,
-    vars: 0,
-    template: function AdvancedComp_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1, 'Advanced Component');
-        i0.ɵɵelementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AdvancedComp,
+      selectors: [['advanced-comp']],
+      contentQueries: function AdvancedComp_ContentQueries(
+        rf: number,
+        ctx: any,
+        dirIndex: number,
+      ): any {
+        if (rf & 1) {
+          i0.ɵɵcontentQuerySignal(dirIndex, ctx.directContentChild, _c0, 5)(
+            dirIndex,
+            ctx.directRequiredContentChild,
+            _c0,
+            5,
+          )(dirIndex, ctx.directContentChildren, _c0, 4);
+        }
+        if (rf & 2) {
+          i0.ɵɵqueryAdvance(3);
+        }
+      },
+      viewQuery: function AdvancedComp_Query(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵviewQuerySignal(ctx.directViewChild, _c0, 5)(ctx.directRequiredViewChild, _c0, 5)(
+            ctx.directViewChildren,
+            _c0,
+            5,
+          );
+        }
+        if (rf & 2) {
+          i0.ɵɵqueryAdvance(3);
+        }
+      },
+      inputs: {
+        directInput: [1, 'directInput'],
+        directRequiredInput: [1, 'directRequiredInput'],
+        directModel: [1, 'directModel'],
+        directRequiredModel: [1, 'directRequiredModel'],
+        nsInput: [1, 'nsInput'],
+        nsRequiredInput: [1, 'nsRequiredInput'],
+        nsModel: [1, 'nsModel'],
+        nsRequiredModel: [1, 'nsRequiredModel'],
+      },
+      outputs: {
+        directModel: 'directModelChange',
+        directRequiredModel: 'directRequiredModelChange',
+        directOutput: 'directOutput',
+        directOutputObs: 'directOutputObs',
+        nsModel: 'nsModelChange',
+        nsRequiredModel: 'nsRequiredModelChange',
+        nsOutput: 'nsOutput',
+        nsOutputObs: 'nsOutputObs',
+      },
+      signals: true,
+      decls: 2,
+      vars: 0,
+      template: function AdvancedComp_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'Advanced Component');
+          i0.ɵɵelementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

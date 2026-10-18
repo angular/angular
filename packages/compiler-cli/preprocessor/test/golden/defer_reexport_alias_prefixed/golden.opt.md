@@ -12,7 +12,7 @@ import * as i1 from 'google3/my/common/ng_for_of';
 function _tcb1(this: i0.ListComponent) {
   if (true) {
     var _t1 /*T:DIR:0*/ /*176,208*/ = null! as i1.NgForOf; /*T:VAE*/
-    _t1.ngForOf /*198,200*/ = this.items /*201,206*/ /*201,206*/ /*198,206*/;
+    _t1.ngForOf /*198,200*/ = this.items /*201,206*/ /*201,206*/; /*198,206*/
     var _t2 = null! as any; /*T:VAE*/
     {
       var _t3 /*193,197*/ = _t2.$implicit; /*189,198*/
@@ -81,26 +81,28 @@ export class ListComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ListComponent,
-    selectors: [['ng-component']],
-    decls: 4,
-    vars: 0,
-    consts: [[4, 'ngFor', 'ngForOf']],
-    template: function ListComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomTemplate(0, ListComponent_Defer_0_Template, 1, 1)(
-          1,
-          ListComponent_DeferPlaceholder_1_Template,
-          2,
-          0,
-        );
-        i0.ɵɵdefer(2, 0, ListComponent_Defer_2_DepsFn, null, 1);
-        i0.ɵɵdeferOnInteraction(0, -1);
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ListComponent,
+      selectors: [['ng-component']],
+      decls: 4,
+      vars: 0,
+      consts: [[4, 'ngFor', 'ngForOf']],
+      template: function ListComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomTemplate(0, ListComponent_Defer_0_Template, 1, 1)(
+            1,
+            ListComponent_DeferPlaceholder_1_Template,
+            2,
+            0,
+          );
+          i0.ɵɵdefer(2, 0, ListComponent_Defer_2_DepsFn, null, 1);
+          i0.ɵɵdeferOnInteraction(0, -1);
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadataAsync(
@@ -172,11 +174,13 @@ export class NgForOf {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: NgForOf,
-    selectors: [['', 'ngFor', '', 'ngForOf', '']],
-    inputs: { ngForOf: 'ngForOf' },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: NgForOf,
+      selectors: [['', 'ngFor', '', 'ngForOf', '']],
+      inputs: { ngForOf: 'ngForOf' },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

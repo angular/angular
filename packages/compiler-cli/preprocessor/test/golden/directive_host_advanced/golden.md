@@ -59,47 +59,49 @@ export class ResizeObserverDirective {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: ResizeObserverDirective,
-    selectors: [['', 'appResizeObserver', '']],
-    hostVars: 14,
-    hostBindings: function ResizeObserverDirective_HostBindings(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵlistener(
-          'resize',
-          function ResizeObserverDirective_resize_HostBindingHandler($event: any): any {
-            return ctx.onWindowResize($event.target.innerWidth, $event.target.innerHeight);
-          },
-          i0.ɵɵresolveWindow,
-        )(
-          'keydown.escape',
-          function ResizeObserverDirective_keydown_escape_HostBindingHandler(): any {
-            return ctx.onEscape();
-          },
-          i0.ɵɵresolveDocument,
-        )('mousedown', function ResizeObserverDirective_mousedown_HostBindingHandler(): any {
-          return ctx.onMouseDown();
-        })(
-          'mouseup',
-          function ResizeObserverDirective_mouseup_HostBindingHandler(): any {
-            return ctx.onMouseUp();
-          },
-          i0.ɵɵresolveDocument,
-        );
-      }
-      if (rf & 2) {
-        i0.ɵɵstyleProp('min-width', ctx.minWidth, 'px')('min-height', ctx.minHeight, 'px')(
-          'width',
-          ctx.widthPx,
-          'px',
-        )('height', ctx.heightPx, 'px');
-        i0.ɵɵclassProp('resizing', ctx.isResizing)('landscape', ctx.isLandscape)(
-          'portrait',
-          ctx.isPortrait,
-        );
-      }
-    },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: ResizeObserverDirective,
+      selectors: [['', 'appResizeObserver', '']],
+      hostVars: 14,
+      hostBindings: function ResizeObserverDirective_HostBindings(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵlistener(
+            'resize',
+            function ResizeObserverDirective_resize_HostBindingHandler($event: any): any {
+              return ctx.onWindowResize($event.target.innerWidth, $event.target.innerHeight);
+            },
+            i0.ɵɵresolveWindow,
+          )(
+            'keydown.escape',
+            function ResizeObserverDirective_keydown_escape_HostBindingHandler(): any {
+              return ctx.onEscape();
+            },
+            i0.ɵɵresolveDocument,
+          )('mousedown', function ResizeObserverDirective_mousedown_HostBindingHandler(): any {
+            return ctx.onMouseDown();
+          })(
+            'mouseup',
+            function ResizeObserverDirective_mouseup_HostBindingHandler(): any {
+              return ctx.onMouseUp();
+            },
+            i0.ɵɵresolveDocument,
+          );
+        }
+        if (rf & 2) {
+          i0.ɵɵstyleProp('min-width', ctx.minWidth, 'px')('min-height', ctx.minHeight, 'px')(
+            'width',
+            ctx.widthPx,
+            'px',
+          )('height', ctx.heightPx, 'px');
+          i0.ɵɵclassProp('resizing', ctx.isResizing)('landscape', ctx.isLandscape)(
+            'portrait',
+            ctx.isPortrait,
+          );
+        }
+      },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

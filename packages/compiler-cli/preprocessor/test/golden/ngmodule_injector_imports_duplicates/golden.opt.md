@@ -13,6 +13,7 @@ export class Dir {
   };
   // @ts-ignore
   static ɵdir: i0.ɵɵDirectiveDeclaration<Dir, '[dir]', never, {}, {}, never, never, false, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineDirective({
       type: Dir,
       selectors: [['', 'dir', '']],
@@ -51,9 +52,12 @@ export class SharedModule {
   };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<SharedModule, [typeof Dir], never, [typeof Dir]> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: SharedModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<SharedModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<SharedModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -88,9 +92,12 @@ export class OtherModule {
   };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<OtherModule, never, never, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: OtherModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<OtherModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<OtherModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(OtherModule, [{ type: NgModule, args: [{}] }], null, null);
@@ -110,11 +117,13 @@ export class DupImportsModule {
     never,
     [typeof SharedModule, typeof SharedModule],
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: DupImportsModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: DupImportsModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<DupImportsModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [SharedModule, SharedModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<DupImportsModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [SharedModule, SharedModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -151,11 +160,13 @@ export class ImportAndExportModule {
     never,
     [typeof SharedModule],
     [typeof SharedModule]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: ImportAndExportModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: ImportAndExportModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<ImportAndExportModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [SharedModule, SharedModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<ImportAndExportModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [SharedModule, SharedModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -197,11 +208,13 @@ export class DupExportsModule {
     never,
     never,
     [typeof SharedModule, typeof SharedModule]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: DupExportsModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: DupExportsModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<DupExportsModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [SharedModule, SharedModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<DupExportsModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [SharedModule, SharedModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -239,11 +252,15 @@ export class DupBothModule {
     never,
     [typeof SharedModule, typeof SharedModule, typeof OtherModule],
     [typeof SharedModule, typeof OtherModule]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: DupBothModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: DupBothModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<DupBothModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [SharedModule, SharedModule, OtherModule, SharedModule, OtherModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<DupBothModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({
+      imports: [SharedModule, SharedModule, OtherModule, SharedModule, OtherModule],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -284,11 +301,13 @@ export class NestedVerbatimModule {
     never,
     [typeof SharedModule, typeof SharedModule],
     [typeof SharedModule]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: NestedVerbatimModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: NestedVerbatimModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<NestedVerbatimModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [[SharedModule, SharedModule], SharedModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<NestedVerbatimModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [[SharedModule, SharedModule], SharedModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -330,11 +349,15 @@ export class DupMwpModule {
     never,
     [typeof SharedModule, typeof SharedModule],
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: DupMwpModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: DupMwpModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<DupMwpModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [SharedModule.forRoot(), SharedModule.forRoot()],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<DupMwpModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({
+      imports: [SharedModule.forRoot(), SharedModule.forRoot()],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -373,11 +396,15 @@ export class DupBeforeMwpModule {
     never,
     [typeof SharedModule, typeof SharedModule, typeof SharedModule, typeof OtherModule],
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: DupBeforeMwpModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: DupBeforeMwpModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<DupBeforeMwpModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [SharedModule, SharedModule, SharedModule.forRoot(), OtherModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<DupBeforeMwpModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({
+      imports: [SharedModule, SharedModule, SharedModule.forRoot(), OtherModule],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

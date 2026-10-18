@@ -23,23 +23,25 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 1,
-    vars: 1,
-    consts: [[3, 'value']],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'app-generic', 0);
-      }
-      if (rf & 2) {
-        i0.ɵɵproperty('value', 'string');
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [GenericComponent]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 1,
+      vars: 1,
+      consts: [[3, 'value']],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'app-generic', 0);
+        }
+        if (rf & 2) {
+          i0.ɵɵproperty('value', 'string');
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [GenericComponent]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -99,22 +101,24 @@ export class GenericComponent<T> {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: GenericComponent,
-    selectors: [['app-generic']],
-    inputs: { value: 'value' },
-    decls: 1,
-    vars: 1,
-    template: function GenericComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0);
-      }
-      if (rf & 2) {
-        i0.ɵɵtextInterpolate(ctx.value);
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: GenericComponent,
+      selectors: [['app-generic']],
+      inputs: { value: 'value' },
+      decls: 1,
+      vars: 1,
+      template: function GenericComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0);
+        }
+        if (rf & 2) {
+          i0.ɵɵtextInterpolate(ctx.value);
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

@@ -15,11 +15,13 @@ export class MyService {
     return new (__ngFactoryType__ || MyService)();
   };
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineService({
-    token: MyService,
-    factory: MyService.ɵfac,
-    autoProvided: false,
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineService({
+      token: MyService,
+      factory: MyService.ɵfac,
+      autoProvided: false,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

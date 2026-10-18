@@ -29,16 +29,18 @@ export class DisableWhenBusyDirective {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: DisableWhenBusyDirective,
-    selectors: [['', 'appDisableWhenBusy', '']],
-    hostVars: 1,
-    hostBindings: function DisableWhenBusyDirective_HostBindings(rf: number, ctx: any): any {
-      if (rf & 2) {
-        i0.ɵɵdomProperty('disabled', ctx.isDisabled);
-      }
-    },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: DisableWhenBusyDirective,
+      selectors: [['', 'appDisableWhenBusy', '']],
+      hostVars: 1,
+      hostBindings: function DisableWhenBusyDirective_HostBindings(rf: number, ctx: any): any {
+        if (rf & 2) {
+          i0.ɵɵdomProperty('disabled', ctx.isDisabled);
+        }
+      },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -85,16 +87,18 @@ export class ValueDirective {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: ValueDirective,
-    selectors: [['', 'appValue', '']],
-    hostVars: 1,
-    hostBindings: function ValueDirective_HostBindings(rf: number, ctx: any): any {
-      if (rf & 2) {
-        i0.ɵɵdomProperty('value', ctx.value);
-      }
-    },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: ValueDirective,
+      selectors: [['', 'appValue', '']],
+      hostVars: 1,
+      hostBindings: function ValueDirective_HostBindings(rf: number, ctx: any): any {
+        if (rf & 2) {
+          i0.ɵɵdomProperty('value', ctx.value);
+        }
+      },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -133,16 +137,18 @@ export class DisabledPropertyDirective {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: DisabledPropertyDirective,
-    selectors: [['', 'appDisabledProperty', '']],
-    hostVars: 1,
-    hostBindings: function DisabledPropertyDirective_HostBindings(rf: number, ctx: any): any {
-      if (rf & 2) {
-        i0.ɵɵdomProperty('disabled', ctx.isDisabled);
-      }
-    },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: DisabledPropertyDirective,
+      selectors: [['', 'appDisabledProperty', '']],
+      hostVars: 1,
+      hostBindings: function DisabledPropertyDirective_HostBindings(rf: number, ctx: any): any {
+        if (rf & 2) {
+          i0.ɵɵdomProperty('disabled', ctx.isDisabled);
+        }
+      },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

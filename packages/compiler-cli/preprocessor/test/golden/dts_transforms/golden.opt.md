@@ -12,9 +12,9 @@ import * as i1 from 'test-lib';
 function _tcb1(this: i0.AppComponent) {
   if (true) {
     var _t1 = null! as typeof i1.TestComponent.ngAcceptInputType_width; /*T:VAE*/
-    _t1 /*158,163*/ = '100' /*158,169*/;
+    _t1 /*158,163*/ = '100'; /*158,169*/
     var _t2 = null! as typeof i1.TestComponent.ngAcceptInputType_height; /*T:VAE*/
-    _t2 /*177,183*/ = '200' /*177,189*/;
+    _t2 /*177,183*/ = '200'; /*177,189*/
   }
 }
 
@@ -45,20 +45,22 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 1,
-    vars: 0,
-    consts: [['width', '100', 'height', '200']],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'test-cmp', 0);
-      }
-    },
-    dependencies: [TestComponent],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 1,
+      vars: 0,
+      consts: [['width', '100', 'height', '200']],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'test-cmp', 0);
+        }
+      },
+      dependencies: [TestComponent],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

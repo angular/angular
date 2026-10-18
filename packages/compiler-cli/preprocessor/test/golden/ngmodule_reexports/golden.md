@@ -22,20 +22,22 @@ export class FeatureComponent {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: FeatureComponent,
-    selectors: [['feature-cmp']],
-    standalone: false,
-    decls: 1,
-    vars: 0,
-    template: function FeatureComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0, 'Feature');
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(FeatureComponent),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: FeatureComponent,
+      selectors: [['feature-cmp']],
+      standalone: false,
+      decls: 1,
+      vars: 0,
+      template: function FeatureComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0, 'Feature');
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(FeatureComponent),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -74,11 +76,13 @@ export class FeatureModule {
     return new (__ngFactoryType__ || FeatureModule)();
   };
   // @ts-ignore
-  static ɵmod: FeatureModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: FeatureModule });
+  static ɵmod: FeatureModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: FeatureModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<FeatureModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [FeatureComponent],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<FeatureModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [FeatureComponent] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -134,20 +138,22 @@ export class AppComponent {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    standalone: false,
-    decls: 1,
-    vars: 0,
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'feature-cmp');
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      standalone: false,
+      decls: 1,
+      vars: 0,
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'feature-cmp');
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -186,11 +192,13 @@ export class AppModule {
     return new (__ngFactoryType__ || AppModule)();
   };
   // @ts-ignore
-  static ɵmod: AppModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
+  static ɵmod: AppModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [FinalFeatureModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [FinalFeatureModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -236,21 +244,23 @@ export class AppForwardComponent {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppForwardComponent,
-    selectors: [['app-forward']],
-    standalone: false,
-    decls: 1,
-    vars: 0,
-    consts: [['laterDir', '']],
-    template: function AppForwardComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'feature-cmp', 0);
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(AppForwardComponent),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppForwardComponent,
+      selectors: [['app-forward']],
+      standalone: false,
+      decls: 1,
+      vars: 0,
+      consts: [['laterDir', '']],
+      template: function AppForwardComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'feature-cmp', 0);
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(AppForwardComponent),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -299,11 +309,13 @@ export class LaterDirective {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: LaterDirective,
-    selectors: [['', 'laterDir', '']],
-    standalone: false,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: LaterDirective,
+      selectors: [['', 'laterDir', '']],
+      standalone: false,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -333,11 +345,13 @@ export class AppForwardModule {
     return new (__ngFactoryType__ || AppForwardModule)();
   };
   // @ts-ignore
-  static ɵmod: AppForwardModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppForwardModule });
+  static ɵmod: AppForwardModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppForwardModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<AppForwardModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [FinalFeatureModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<AppForwardModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [FinalFeatureModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

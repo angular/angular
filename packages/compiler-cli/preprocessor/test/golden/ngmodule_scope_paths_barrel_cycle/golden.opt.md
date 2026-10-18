@@ -30,6 +30,7 @@ export class A {
   };
   // @ts-ignore
   static ɵcmp: i0.ɵɵComponentDeclaration<A, 'a-cmp', never, {}, {}, never, never, false, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineComponent({
       type: A,
       selectors: [['a-cmp']],
@@ -89,11 +90,12 @@ export class AModule {
   };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<AModule, [typeof A], [typeof SharedModule], never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<AModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [SharedModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<AModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [SharedModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -151,6 +153,7 @@ export class B {
   };
   // @ts-ignore
   static ɵcmp: i0.ɵɵComponentDeclaration<B, 'b-cmp', never, {}, {}, never, never, false, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineComponent({
       type: B,
       selectors: [['b-cmp']],
@@ -208,9 +211,12 @@ export class SharedModule {
   };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<SharedModule, [typeof B], never, [typeof B]> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: SharedModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<SharedModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<SharedModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

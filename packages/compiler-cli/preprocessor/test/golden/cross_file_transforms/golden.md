@@ -47,31 +47,33 @@ export class TestTransformsComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: TestTransformsComponent,
-    selectors: [['test-transforms']],
-    inputs: {
-      decoratorInput: [2, 'decoratorInput', 'decoratorInput', myBooleanTransform],
-      aliasedInput: [2, 'aliasedInput', 'aliasedInput', aliasedTransform],
-      signalInput: [1, 'signalInput'],
-      aliasedSignal: [1, 'aliasedSignal'],
-      inlineTransform: [
-        2,
-        'inlineTransform',
-        'inlineTransform',
-        (v: string | null) => v || 'default',
-      ],
-      externalTypeInput: [2, 'externalTypeInput', 'externalTypeInput', externalToNumberTransform],
-    },
-    decls: 1,
-    vars: 0,
-    template: function TestTransformsComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'div');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: TestTransformsComponent,
+      selectors: [['test-transforms']],
+      inputs: {
+        decoratorInput: [2, 'decoratorInput', 'decoratorInput', myBooleanTransform],
+        aliasedInput: [2, 'aliasedInput', 'aliasedInput', aliasedTransform],
+        signalInput: [1, 'signalInput'],
+        aliasedSignal: [1, 'aliasedSignal'],
+        inlineTransform: [
+          2,
+          'inlineTransform',
+          'inlineTransform',
+          (v: string | null) => v || 'default',
+        ],
+        externalTypeInput: [2, 'externalTypeInput', 'externalTypeInput', externalToNumberTransform],
+      },
+      decls: 1,
+      vars: 0,
+      template: function TestTransformsComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'div');
+        }
+      },
+      encapsulation: 2,
+    });
   // @ts-ignore
   declare static ngAcceptInputType_decoratorInput: Parameters<typeof myBooleanTransform>[0];
   // @ts-ignore
@@ -143,36 +145,38 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 1,
-    vars: 6,
-    consts: [
-      [
-        3,
-        'decoratorInput',
-        'aliasedInput',
-        'signalInput',
-        'aliasedSignal',
-        'inlineTransform',
-        'externalTypeInput',
-      ],
-    ],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'test-transforms', 0);
-      }
-      if (rf & 2) {
-        i0.ɵɵproperty('decoratorInput', 'true')('aliasedInput', 123)('signalInput', 'false')(
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 1,
+      vars: 6,
+      consts: [
+        [
+          3,
+          'decoratorInput',
+          'aliasedInput',
+          'signalInput',
           'aliasedSignal',
-          'hello',
-        )('inlineTransform', null)('externalTypeInput', true);
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [TestTransformsComponent]),
-    encapsulation: 2,
-  });
+          'inlineTransform',
+          'externalTypeInput',
+        ],
+      ],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'test-transforms', 0);
+        }
+        if (rf & 2) {
+          i0.ɵɵproperty('decoratorInput', 'true')('aliasedInput', 123)('signalInput', 'false')(
+            'aliasedSignal',
+            'hello',
+          )('inlineTransform', null)('externalTypeInput', true);
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [TestTransformsComponent]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

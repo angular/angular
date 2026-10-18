@@ -30,20 +30,22 @@ export class MetaComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: MetaComponent,
-    selectors: [['meta-comp']],
-    decls: 2,
-    vars: 0,
-    template: function MetaComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1, 'Metadata');
-        i0.ɵɵelementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: MetaComponent,
+      selectors: [['meta-comp']],
+      decls: 2,
+      vars: 0,
+      template: function MetaComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'Metadata');
+          i0.ɵɵelementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -92,7 +94,9 @@ export class MetaDirective {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({ type: MetaDirective, selectors: [['', 'metaDir', '']] });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({ type: MetaDirective, selectors: [['', 'metaDir', '']] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -122,11 +126,13 @@ export class MetaService {
     return new (__ngFactoryType__ || MetaService)();
   };
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineInjectable({
-    token: MetaService,
-    factory: MetaService.ɵfac,
-    providedIn: 'root',
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjectable({
+      token: MetaService,
+      factory: MetaService.ɵfac,
+      providedIn: 'root',
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -158,11 +164,9 @@ export class MetaPipe implements PipeTransform {
     return new (__ngFactoryType__ || MetaPipe)();
   };
   // @ts-ignore
-  static ɵpipe: i0.ɵɵPipeDeclaration<MetaPipe, 'metaPipe', true> = /*@__PURE__*/ i0.ɵɵdefinePipe({
-    name: 'metaPipe',
-    type: MetaPipe,
-    pure: true,
-  });
+  static ɵpipe: i0.ɵɵPipeDeclaration<MetaPipe, 'metaPipe', true> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefinePipe({ name: 'metaPipe', type: MetaPipe, pure: true });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -193,10 +197,9 @@ export class NoArgDecorator {
     return new (__ngFactoryType__ || NoArgDecorator)();
   };
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineService({
-    token: NoArgDecorator,
-    factory: NoArgDecorator.ɵfac,
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineService({ token: NoArgDecorator, factory: NoArgDecorator.ɵfac });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(NoArgDecorator, [{ type: Service }], null, null);
@@ -220,25 +223,29 @@ export class MultiMetaComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: MultiMetaComponent,
-    selectors: [['multi-meta']],
-    decls: 2,
-    vars: 0,
-    template: function MultiMetaComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1, 'Multi');
-        i0.ɵɵelementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: MultiMetaComponent,
+      selectors: [['multi-meta']],
+      decls: 2,
+      vars: 0,
+      template: function MultiMetaComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'Multi');
+          i0.ɵɵelementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineInjectable({
-    token: MultiMetaComponent,
-    factory: MultiMetaComponent.ɵfac,
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjectable({
+      token: MultiMetaComponent,
+      factory: MultiMetaComponent.ɵfac,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -278,14 +285,13 @@ export class MetaNgModule {
     return new (__ngFactoryType__ || MetaNgModule)();
   };
   // @ts-ignore
-  static ɵmod: MetaNgModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({
-    type: MetaNgModule,
-    id: 'MetaNgModuleId',
-  });
+  static ɵmod: MetaNgModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MetaNgModule, id: 'MetaNgModuleId' });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<MetaNgModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [MetaDirective],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<MetaNgModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [MetaDirective] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

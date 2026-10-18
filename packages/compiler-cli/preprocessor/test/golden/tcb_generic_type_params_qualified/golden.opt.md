@@ -31,19 +31,19 @@ function _tcb1(this: i0.AppComponent) {
     var _t1 /*T:DIR:0*/ /*371,411*/ = _ctor1({
       'value': this.selection /*400,409*/ /*400,409*/ /*391,410*/,
     }); /*D:ignore*/
-    _t1.value /*392,397*/ = this.selection /*400,409*/ /*400,409*/ /*391,410*/;
+    _t1.value /*392,397*/ = this.selection /*400,409*/ /*400,409*/; /*391,410*/
     var _t2 /*T:DIR:0*/ /*437,473*/ = _ctor2({
       'value': this.selection /*462,471*/ /*462,471*/ /*453,472*/,
     }); /*D:ignore*/
-    _t2.value /*454,459*/ = this.selection /*462,471*/ /*462,471*/ /*453,472*/;
+    _t2.value /*454,459*/ = this.selection /*462,471*/ /*462,471*/; /*453,472*/
     var _t3 /*T:DIR:0*/ /*495,525*/ = _ctor3({
       'data': this.selection /*514,523*/ /*514,523*/ /*500,524*/,
     }); /*D:ignore*/
-    _t3.data /*501,511*/ = this.selection /*514,523*/ /*514,523*/ /*500,524*/;
+    _t3.data /*501,511*/ = this.selection /*514,523*/ /*514,523*/; /*500,524*/
     var _t4 /*T:DIR:0*/ /*536,570*/ = _ctor4({
       'value': this.selection /*559,568*/ /*559,568*/ /*550,569*/,
     }); /*D:ignore*/
-    _t4.value /*551,556*/ = this.selection /*559,568*/ /*559,568*/ /*550,569*/;
+    _t4.value /*551,556*/ = this.selection /*559,568*/ /*559,568*/; /*550,569*/
   }
 }
 
@@ -78,36 +78,38 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 4,
-    vars: 4,
-    consts: [
-      [3, 'value'],
-      [3, 'genericDir'],
-    ],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'mat-selection-list', 0)(1, 'mat-local-list', 0)(2, 'div', 1)(
-          3,
-          'mat-dts-list',
-          0,
-        );
-      }
-      if (rf & 2) {
-        i0.ɵɵproperty('value', ctx.selection);
-        i0.ɵɵadvance();
-        i0.ɵɵproperty('value', ctx.selection);
-        i0.ɵɵadvance();
-        i0.ɵɵproperty('genericDir', ctx.selection);
-        i0.ɵɵadvance();
-        i0.ɵɵproperty('value', ctx.selection);
-      }
-    },
-    dependencies: [MatSelectionList, MatLocalList, GenericDir, MatDtsList],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 4,
+      vars: 4,
+      consts: [
+        [3, 'value'],
+        [3, 'genericDir'],
+      ],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'mat-selection-list', 0)(1, 'mat-local-list', 0)(2, 'div', 1)(
+            3,
+            'mat-dts-list',
+            0,
+          );
+        }
+        if (rf & 2) {
+          i0.ɵɵproperty('value', ctx.selection);
+          i0.ɵɵadvance();
+          i0.ɵɵproperty('value', ctx.selection);
+          i0.ɵɵadvance();
+          i0.ɵɵproperty('genericDir', ctx.selection);
+          i0.ɵɵadvance();
+          i0.ɵɵproperty('value', ctx.selection);
+        }
+      },
+      dependencies: [MatSelectionList, MatLocalList, GenericDir, MatDtsList],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -204,15 +206,17 @@ export declare class MatDtsList<
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: MatDtsList,
-    selectors: [['mat-dts-list']],
-    inputs: { value: 'value' },
-    decls: 0,
-    vars: 0,
-    template: function MatDtsList_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: MatDtsList,
+      selectors: [['mat-dts-list']],
+      inputs: { value: 'value' },
+      decls: 0,
+      vars: 0,
+      template: function MatDtsList_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(MatDtsList, [{ type: Component }], null, null);
@@ -255,11 +259,13 @@ export class GenericDir<T extends CustomModel<U>, U extends DefaultItem = Defaul
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: GenericDir,
-    selectors: [['', 'genericDir', '']],
-    inputs: { data: [0, 'genericDir', 'data'] },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: GenericDir,
+      selectors: [['', 'genericDir', '']],
+      inputs: { data: [0, 'genericDir', 'data'] },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -328,15 +334,17 @@ export class MatSelectionList<T extends SelectionModel<unknown> = SelectionModel
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: MatSelectionList,
-    selectors: [['mat-selection-list']],
-    inputs: { value: 'value' },
-    decls: 0,
-    vars: 0,
-    template: function MatSelectionList_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: MatSelectionList,
+      selectors: [['mat-selection-list']],
+      inputs: { value: 'value' },
+      decls: 0,
+      vars: 0,
+      template: function MatSelectionList_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -415,15 +423,17 @@ export class MatLocalList<T extends LocalModel = LocalModel> {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: MatLocalList,
-    selectors: [['mat-local-list']],
-    inputs: { value: 'value' },
-    decls: 0,
-    vars: 0,
-    template: function MatLocalList_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: MatLocalList,
+      selectors: [['mat-local-list']],
+      inputs: { value: 'value' },
+      decls: 0,
+      vars: 0,
+      template: function MatLocalList_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

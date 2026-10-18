@@ -276,18 +276,7 @@ function getAdjacentAssetsSync(baseDir: string, currentDir: string = baseDir): T
   return results;
 }
 
-/**
- * Ensures embedded `=` characters in selector strings (like `["span[title=toFirst]"]`) don't
- * prematurely terminate the type match.
- */
-const STATIC_MEMBER_TYPE_ANNOTATION_REGEX =
-  /(static\s+ɵ\w+)\s*:\s*(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|[^"'`=])*=\s*/g;
-
 async function compileTsToJs(tsContent: string, target?: string): Promise<string> {
-  // Strip type annotations from preprocessed static fields to prevent the TypeScript transpiler
-  // from dropping /*@__PURE__*/ comments during type stripping.
-  const cleanTsContent = tsContent.replace(STATIC_MEMBER_TYPE_ANNOTATION_REGEX, '$1 = ');
-
   // Honor the test case's `target` so ES5 fixtures get downleveled (tagged templates ->
   // `__makeTemplateObject`, classes -> functions), matching ngtsc's compliance goldens.
   const scriptTarget =
@@ -295,7 +284,7 @@ async function compileTsToJs(tsContent: string, target?: string): Promise<string
       ? (ts.ScriptTarget as unknown as Record<string, ts.ScriptTarget>)[target.toUpperCase()]
       : undefined) ?? ts.ScriptTarget.ES2022;
 
-  const result = ts.transpileModule(cleanTsContent, {
+  const result = ts.transpileModule(tsContent, {
     compilerOptions: {
       target: scriptTarget,
       module: ts.ModuleKind.ES2015,

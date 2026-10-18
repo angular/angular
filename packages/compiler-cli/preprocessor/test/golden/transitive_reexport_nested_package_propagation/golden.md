@@ -23,20 +23,22 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 1,
-    vars: 0,
-    consts: [['gm2-button', '']],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'button', 0);
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [AModule]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 1,
+      vars: 0,
+      consts: [['gm2-button', '']],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'button', 0);
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [AModule]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -85,11 +87,13 @@ export class AModule {
     return new (__ngFactoryType__ || AModule)();
   };
   // @ts-ignore
-  static ɵmod: AModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AModule });
+  static ɵmod: AModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<AModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [BModule, BModule],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<AModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [BModule, BModule] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -132,11 +136,13 @@ export class BModule {
     return new (__ngFactoryType__ || BModule)();
   };
   // @ts-ignore
-  static ɵmod: BModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: BModule });
+  static ɵmod: BModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: BModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<BModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [MatButton],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<BModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [MatButton] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -190,20 +196,22 @@ export class MatButton {
     ['*'],
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: MatButton,
-    selectors: [['button', 'gm2-button', '']],
-    ngContentSelectors: _c0,
-    decls: 1,
-    vars: 0,
-    template: function MatButton_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵprojectionDef();
-        i0.ɵɵprojection(0);
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: MatButton,
+      selectors: [['button', 'gm2-button', '']],
+      ngContentSelectors: _c0,
+      decls: 1,
+      vars: 0,
+      template: function MatButton_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵprojectionDef();
+          i0.ɵɵprojection(0);
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

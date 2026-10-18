@@ -20,7 +20,7 @@ function _tcb1(this: i0.AppComponent) {
       'myIf': this.authService /*227,238*/ /*227,238*/.user /*239,243*/ /*227,243*/ /*221,244*/,
     }); /*D:ignore*/
     _t1.myIf /*221,225*/ =
-      this.authService /*227,238*/ /*227,238*/.user /*239,243*/ /*227,243*/ /*221,244*/;
+      this.authService /*227,238*/ /*227,238*/.user /*239,243*/ /*227,243*/; /*221,244*/
     var _t2 = null! as any; /*T:VAE*/
     if (
       i1.MyIf.ngTemplateContextGuard(_t1, _t2) /*D:ignore*/ /*215,314*/ &&
@@ -38,7 +38,7 @@ function _tcb1(this: i0.AppComponent) {
         this.authService /*340,351*/ /*340,351*/.user /*352,356*/ /*340,356*/ /*325,357*/,
     }); /*D:ignore*/
     _t4.invalidGuards /*325,338*/ =
-      this.authService /*340,351*/ /*340,351*/.user /*352,356*/ /*340,356*/ /*325,357*/;
+      this.authService /*340,351*/ /*340,351*/.user /*352,356*/ /*340,356*/; /*325,357*/
     var _t5 = null! as any; /*T:VAE*/
     {
       var _t6 /*360,364*/ = _t5.invalidGuards /*325,338*/; /*325,364*/
@@ -102,35 +102,37 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 2,
-    vars: 3,
-    consts: [
-      [4, 'myIf', 'myIfInvocation'],
-      [4, 'invalidGuards'],
-    ],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtemplate(0, AppComponent_div_0_Template, 2, 1, 'div', 0)(
-          1,
-          AppComponent_div_1_Template,
-          2,
-          1,
-          'div',
-          1,
-        );
-      }
-      if (rf & 2) {
-        i0.ɵɵproperty('myIf', ctx.authService.user)('myIfInvocation', ctx.authService.user);
-        i0.ɵɵadvance();
-        i0.ɵɵproperty('invalidGuards', ctx.authService.user);
-      }
-    },
-    dependencies: [MyIf, MyDirWithInvalidGuards],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 2,
+      vars: 3,
+      consts: [
+        [4, 'myIf', 'myIfInvocation'],
+        [4, 'invalidGuards'],
+      ],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtemplate(0, AppComponent_div_0_Template, 2, 1, 'div', 0)(
+            1,
+            AppComponent_div_1_Template,
+            2,
+            1,
+            'div',
+            1,
+          );
+        }
+        if (rf & 2) {
+          i0.ɵɵproperty('myIf', ctx.authService.user)('myIfInvocation', ctx.authService.user);
+          i0.ɵɵadvance();
+          i0.ɵɵproperty('invalidGuards', ctx.authService.user);
+        }
+      },
+      dependencies: [MyIf, MyDirWithInvalidGuards],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

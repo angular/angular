@@ -15,7 +15,7 @@ function _tcb1(this: i0.ReexportFirstComponent) {
     _t1.ngClass /*195,202*/ = {
       'a' /*206,207*/: true /*209,213*/,
       'b' /*215,216*/: false /*218,223*/,
-    } /*205,224*/ /*194,225*/;
+    } /*205,224*/; /*194,225*/
   }
 }
 
@@ -52,23 +52,25 @@ export class ReexportFirstComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ReexportFirstComponent,
-    selectors: [['app-reexport-first']],
-    decls: 1,
-    vars: 2,
-    consts: [[3, 'ngClass']],
-    template: function ReexportFirstComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'div', 0);
-      }
-      if (rf & 2) {
-        i0.ɵɵproperty('ngClass', i0.ɵɵpureFunction0(1, _c0));
-      }
-    },
-    dependencies: [CommonModule, i1.NgClass],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ReexportFirstComponent,
+      selectors: [['app-reexport-first']],
+      decls: 1,
+      vars: 2,
+      consts: [[3, 'ngClass']],
+      template: function ReexportFirstComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'div', 0);
+        }
+        if (rf & 2) {
+          i0.ɵɵproperty('ngClass', i0.ɵɵpureFunction0(1, _c0));
+        }
+      },
+      dependencies: [CommonModule, i1.NgClass],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -142,14 +144,16 @@ export class ImportFirstComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ImportFirstComponent,
-    selectors: [['app-import-first']],
-    decls: 0,
-    vars: 0,
-    template: function ImportFirstComponent_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ImportFirstComponent,
+      selectors: [['app-import-first']],
+      decls: 0,
+      vars: 0,
+      template: function ImportFirstComponent_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -221,14 +225,16 @@ export class EnumFirstComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: EnumFirstComponent,
-    selectors: [['app-enum-first']],
-    decls: 0,
-    vars: 0,
-    template: function EnumFirstComponent_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: EnumFirstComponent,
+      selectors: [['app-enum-first']],
+      decls: 0,
+      vars: 0,
+      template: function EnumFirstComponent_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -293,14 +299,16 @@ export class ReferenceFirstComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ReferenceFirstComponent,
-    selectors: [['app-reference-first']],
-    decls: 0,
-    vars: 0,
-    template: function ReferenceFirstComponent_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ReferenceFirstComponent,
+      selectors: [['app-reference-first']],
+      decls: 0,
+      vars: 0,
+      template: function ReferenceFirstComponent_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -336,7 +344,7 @@ import * as i1 from '@angular/common';
 function _tcb1(this: i0.TrailingImportComponent) {
   if (true) {
     var _t1 /*T:DIR:0*/ /*164,191*/ = null! as i1.NgClass; /*T:VAE*/
-    _t1.ngClass /*170,177*/ = this.someValue /*180,189*/ /*180,189*/ /*169,190*/;
+    _t1.ngClass /*170,177*/ = this.someValue /*180,189*/ /*180,189*/; /*169,190*/
   }
 }
 
@@ -371,23 +379,25 @@ export class TrailingImportComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: TrailingImportComponent,
-    selectors: [['app-trailing-import']],
-    decls: 1,
-    vars: 1,
-    consts: [[3, 'ngClass']],
-    template: function TrailingImportComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'div', 0);
-      }
-      if (rf & 2) {
-        i0.ɵɵproperty('ngClass', ctx.someValue);
-      }
-    },
-    dependencies: [CommonModule, i1.NgClass],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: TrailingImportComponent,
+      selectors: [['app-trailing-import']],
+      decls: 1,
+      vars: 1,
+      consts: [[3, 'ngClass']],
+      template: function TrailingImportComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'div', 0);
+        }
+        if (rf & 2) {
+          i0.ɵɵproperty('ngClass', ctx.someValue);
+        }
+      },
+      dependencies: [CommonModule, i1.NgClass],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

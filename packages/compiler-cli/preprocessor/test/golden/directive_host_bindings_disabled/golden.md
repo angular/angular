@@ -27,33 +27,35 @@ export class TestComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: TestComponent,
-    selectors: [['test-comp']],
-    hostAttrs: ['role', 'button'],
-    hostVars: 3,
-    hostBindings: function TestComponent_HostBindings(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵlistener('click', function TestComponent_click_HostBindingHandler(): any {
-          return ctx.onClick();
-        });
-      }
-      if (rf & 2) {
-        i0.ɵɵdomProperty('id', ctx.myId);
-        i0.ɵɵclassProp('active', ctx.isActive);
-      }
-    },
-    decls: 2,
-    vars: 0,
-    template: function TestComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'span');
-        i0.ɵɵtext(1, 'hello');
-        i0.ɵɵelementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: TestComponent,
+      selectors: [['test-comp']],
+      hostAttrs: ['role', 'button'],
+      hostVars: 3,
+      hostBindings: function TestComponent_HostBindings(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵlistener('click', function TestComponent_click_HostBindingHandler(): any {
+            return ctx.onClick();
+          });
+        }
+        if (rf & 2) {
+          i0.ɵɵdomProperty('id', ctx.myId);
+          i0.ɵɵclassProp('active', ctx.isActive);
+        }
+      },
+      decls: 2,
+      vars: 0,
+      template: function TestComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'span');
+          i0.ɵɵtext(1, 'hello');
+          i0.ɵɵelementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -135,31 +137,33 @@ export class TooltipDirective {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: TooltipDirective,
-    selectors: [['', 'appTooltip', '']],
-    hostAttrs: ['role', 'tooltip'],
-    hostVars: 4,
-    hostBindings: function TooltipDirective_HostBindings(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵlistener(
-          'click',
-          function TooltipDirective_click_HostBindingHandler($event: any): any {
-            return ctx.onClick($event);
-          },
-        )('mouseenter', function TooltipDirective_mouseenter_HostBindingHandler(): any {
-          return ctx.onMouseEnter();
-        })('input', function TooltipDirective_input_HostBindingHandler($event: any): any {
-          return ctx.onInput($event.target.value, 'test');
-        });
-      }
-      if (rf & 2) {
-        i0.ɵɵdomProperty('id', ctx.tooltipId);
-        i0.ɵɵattribute('aria-hidden', ctx.isHidden);
-        i0.ɵɵclassProp('active', ctx.activeClass);
-      }
-    },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: TooltipDirective,
+      selectors: [['', 'appTooltip', '']],
+      hostAttrs: ['role', 'tooltip'],
+      hostVars: 4,
+      hostBindings: function TooltipDirective_HostBindings(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵlistener(
+            'click',
+            function TooltipDirective_click_HostBindingHandler($event: any): any {
+              return ctx.onClick($event);
+            },
+          )('mouseenter', function TooltipDirective_mouseenter_HostBindingHandler(): any {
+            return ctx.onMouseEnter();
+          })('input', function TooltipDirective_input_HostBindingHandler($event: any): any {
+            return ctx.onInput($event.target.value, 'test');
+          });
+        }
+        if (rf & 2) {
+          i0.ɵɵdomProperty('id', ctx.tooltipId);
+          i0.ɵɵattribute('aria-hidden', ctx.isHidden);
+          i0.ɵɵclassProp('active', ctx.activeClass);
+        }
+      },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

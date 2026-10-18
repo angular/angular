@@ -16,6 +16,7 @@ export class GenericPipe<T> implements PipeTransform {
   };
   // @ts-ignore
   static ɵpipe: i0.ɵɵPipeDeclaration<GenericPipe<any>, 'generic', true> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefinePipe({ name: 'generic', type: GenericPipe, pure: true });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
@@ -58,11 +59,9 @@ export class UpcasePipe implements PipeTransform {
     return new (__ngFactoryType__ || UpcasePipe)();
   };
   // @ts-ignore
-  static ɵpipe: i0.ɵɵPipeDeclaration<UpcasePipe, 'upcase', true> = /*@__PURE__*/ i0.ɵɵdefinePipe({
-    name: 'upcase',
-    type: UpcasePipe,
-    pure: true,
-  });
+  static ɵpipe: i0.ɵɵPipeDeclaration<UpcasePipe, 'upcase', true> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefinePipe({ name: 'upcase', type: UpcasePipe, pure: true });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

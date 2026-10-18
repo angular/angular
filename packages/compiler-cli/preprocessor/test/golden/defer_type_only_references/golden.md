@@ -48,39 +48,41 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-comp']],
-    viewQuery: function AppComponent_Query(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵviewQuery(_c0, 5)(_c1, 5)(_c2, 5);
-      }
-      if (rf & 2) {
-        let _t: any;
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.compA = _t.first);
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.compB = _t.first);
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.compD = _t.first);
-      }
-    },
-    decls: 3,
-    vars: 1,
-    consts: [
-      ['compA', ''],
-      ['compB', ''],
-      ['compD', ''],
-    ],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomTemplate(0, AppComponent_Defer_0_Template, 7, 0);
-        i0.ɵɵdefer(1, 0, AppComponent_Defer_1_DepsFn);
-      }
-      if (rf & 2) {
-        i0.ɵɵadvance();
-        i0.ɵɵdeferWhen(ctx.isReady);
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-comp']],
+      viewQuery: function AppComponent_Query(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵviewQuery(_c0, 5)(_c1, 5)(_c2, 5);
+        }
+        if (rf & 2) {
+          let _t: any;
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.compA = _t.first);
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.compB = _t.first);
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.compD = _t.first);
+        }
+      },
+      decls: 3,
+      vars: 1,
+      consts: [
+        ['compA', ''],
+        ['compB', ''],
+        ['compD', ''],
+      ],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomTemplate(0, AppComponent_Defer_0_Template, 7, 0);
+          i0.ɵɵdefer(1, 0, AppComponent_Defer_1_DepsFn);
+        }
+        if (rf & 2) {
+          i0.ɵɵadvance();
+          i0.ɵɵdeferWhen(ctx.isReady);
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadataAsync(
@@ -165,18 +167,20 @@ export class CompA {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: CompA,
-    selectors: [['comp-a']],
-    decls: 1,
-    vars: 0,
-    template: function CompA_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0, 'Component A');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: CompA,
+      selectors: [['comp-a']],
+      decls: 1,
+      vars: 0,
+      template: function CompA_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0, 'Component A');
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -228,18 +232,20 @@ export class CompB {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: CompB,
-    selectors: [['comp-b']],
-    decls: 1,
-    vars: 0,
-    template: function CompB_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0, 'Component B');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: CompB,
+      selectors: [['comp-b']],
+      decls: 1,
+      vars: 0,
+      template: function CompB_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0, 'Component B');
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -291,18 +297,20 @@ export class CompC {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: CompC,
-    selectors: [['comp-c']],
-    decls: 1,
-    vars: 0,
-    template: function CompC_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0, 'Component C');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: CompC,
+      selectors: [['comp-c']],
+      decls: 1,
+      vars: 0,
+      template: function CompC_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0, 'Component C');
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -354,18 +362,20 @@ export default class CompD {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: CompD,
-    selectors: [['comp-d']],
-    decls: 1,
-    vars: 0,
-    template: function CompD_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0, 'Component D');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: CompD,
+      selectors: [['comp-d']],
+      decls: 1,
+      vars: 0,
+      template: function CompD_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0, 'Component D');
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

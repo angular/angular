@@ -29,23 +29,25 @@ export class PermissionsChecker {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: PermissionsChecker,
-    selectors: [['permissions-checker']],
-    outputs: { stateChange: 'stateChange' },
-    standalone: false,
-    decls: 2,
-    vars: 0,
-    template: function PermissionsChecker_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1, 'Permissions');
-        i0.ɵɵelementEnd();
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(PermissionsChecker),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: PermissionsChecker,
+      selectors: [['permissions-checker']],
+      outputs: { stateChange: 'stateChange' },
+      standalone: false,
+      decls: 2,
+      vars: 0,
+      template: function PermissionsChecker_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'Permissions');
+          i0.ɵɵelementEnd();
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(PermissionsChecker),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -84,9 +86,12 @@ export class LocalHelperModule {
     };
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<LocalHelperModule, never, never, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: LocalHelperModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<LocalHelperModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<LocalHelperModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
 }
 
 function getLocalImports() {
@@ -107,9 +112,12 @@ export class PermissionsCheckerModule {
     never,
     never,
     [typeof PermissionsChecker]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: PermissionsCheckerModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: PermissionsCheckerModule });
   // @ts-ignore
   static ɵinj: i0.ɵɵInjectorDeclaration<PermissionsCheckerModule> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineInjector({});
 }
 

@@ -37,23 +37,25 @@ export class TestComponent {
     ['*', '[foo]'],
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: TestComponent,
-    selectors: [['test']],
-    ngContentSelectors: _c1,
-    decls: 4,
-    vars: 0,
-    template: function TestComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵprojectionDef(_c0);
-        i0.ɵɵtext(0, 'Main: ');
-        i0.ɵɵprojection(1);
-        i0.ɵɵtext(2, ' Slot: ');
-        i0.ɵɵprojection(3, 1);
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: TestComponent,
+      selectors: [['test']],
+      ngContentSelectors: _c1,
+      decls: 4,
+      vars: 0,
+      template: function TestComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵprojectionDef(_c0);
+          i0.ɵɵtext(0, 'Main: ');
+          i0.ɵɵprojection(1);
+          i0.ɵɵtext(2, ' Slot: ');
+          i0.ɵɵprojection(3, 1);
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -102,36 +104,38 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 5,
-    vars: 0,
-    consts: [['foo', '']],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'test');
-        i0.ɵɵtext(1, 'Before ');
-        i0.ɵɵrepeaterCreate(
-          2,
-          AppComponent_For_3_Template,
-          2,
-          1,
-          'span',
-          0,
-          i0.ɵɵrepeaterTrackByIndex,
-        );
-        i0.ɵɵtext(4, ' After');
-        i0.ɵɵelementEnd();
-      }
-      if (rf & 2) {
-        i0.ɵɵadvance(2);
-        i0.ɵɵrepeater(ctx.items);
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [TestComponent]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 5,
+      vars: 0,
+      consts: [['foo', '']],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'test');
+          i0.ɵɵtext(1, 'Before ');
+          i0.ɵɵrepeaterCreate(
+            2,
+            AppComponent_For_3_Template,
+            2,
+            1,
+            'span',
+            0,
+            i0.ɵɵrepeaterTrackByIndex,
+          );
+          i0.ɵɵtext(4, ' After');
+          i0.ɵɵelementEnd();
+        }
+        if (rf & 2) {
+          i0.ɵɵadvance(2);
+          i0.ɵɵrepeater(ctx.items);
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [TestComponent]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

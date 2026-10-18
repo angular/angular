@@ -24,11 +24,13 @@ class LocalDir {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: LocalDir,
-    selectors: [['', 'localDir', '']],
-    inputs: { localDir: 'localDir' },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: LocalDir,
+      selectors: [['', 'localDir', '']],
+      inputs: { localDir: 'localDir' },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -69,23 +71,25 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 1,
-    vars: 2,
-    consts: [[3, 'localDir', 'extDir']],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'div', 0);
-      }
-      if (rf & 2) {
-        i0.ɵɵproperty('localDir', ctx.message)('extDir', ctx.message);
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [LocalDir, ExternalDir]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 1,
+      vars: 2,
+      consts: [[3, 'localDir', 'extDir']],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'div', 0);
+        }
+        if (rf & 2) {
+          i0.ɵɵproperty('localDir', ctx.message)('extDir', ctx.message);
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [LocalDir, ExternalDir]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -144,11 +148,13 @@ export class ExternalDir {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: ExternalDir,
-    selectors: [['', 'extDir', '']],
-    inputs: { extDir: 'extDir' },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: ExternalDir,
+      selectors: [['', 'extDir', '']],
+      inputs: { extDir: 'extDir' },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

@@ -14,8 +14,8 @@ function _tcb1(this: i0.AppComponent) {
     var _t1 /*T:HOSTDIR:0*/ /*226,292*/ = null! as i1.TestHostDirective; /*T:VAE*/
     _t1['customChange'] /*249,263*/
       .subscribe(($event /*T:EP*/): any => {
-        this.onDisabledChange(/*266,282*/ $event /*283,289*/) /*266,290*/;
-      }) /*248,291*/;
+        this.onDisabledChange(/*266,282*/ $event /*283,289*/); /*266,290*/
+      }); /*248,291*/
   }
 }
 
@@ -47,27 +47,29 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 1,
-    vars: 0,
-    consts: [['testHostConsumer', '', 3, 'disabledChange']],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div', 0);
-        i0.ɵɵlistener(
-          'disabledChange',
-          function AppComponent_Template_div_disabledChange_0_listener($event: any): any {
-            return ctx.onDisabledChange($event);
-          },
-        );
-        i0.ɵɵelementEnd();
-      }
-    },
-    dependencies: [TestHostConsumerDirective],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 1,
+      vars: 0,
+      consts: [['testHostConsumer', '', 3, 'disabledChange']],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div', 0);
+          i0.ɵɵlistener(
+            'disabledChange',
+            function AppComponent_Template_div_disabledChange_0_listener($event: any): any {
+              return ctx.onDisabledChange($event);
+            },
+          );
+          i0.ɵɵelementEnd();
+        }
+      },
+      dependencies: [TestHostConsumerDirective],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -150,15 +152,17 @@ export declare class TestHostConsumerDirective {
         outputs: { 'customChange': 'disabledChange' };
       },
     ]
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: TestHostConsumerDirective,
-    selectors: [['', 'testHostConsumer', '']],
-    features: [
-      i0.ɵɵHostDirectivesFeature([
-        { directive: i1.TestHostDirective, outputs: ['customChange', 'disabledChange'] },
-      ]),
-    ],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: TestHostConsumerDirective,
+      selectors: [['', 'testHostConsumer', '']],
+      features: [
+        i0.ɵɵHostDirectivesFeature([
+          { directive: i1.TestHostDirective, outputs: ['customChange', 'disabledChange'] },
+        ]),
+      ],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(TestHostConsumerDirective, [{ type: Directive }], null, null);
@@ -200,10 +204,12 @@ export declare class TestHostDirective {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: TestHostDirective,
-    outputs: { customChange: 'customChange' },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: TestHostDirective,
+      outputs: { customChange: 'customChange' },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(TestHostDirective, [{ type: Directive }], null, null);

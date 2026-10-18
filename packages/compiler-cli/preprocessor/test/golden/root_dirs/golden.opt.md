@@ -41,21 +41,23 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 2,
-    vars: 0,
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomElementStart(0, 'div');
-        i0.ɵɵtext(1, 'Hello from extra rootDir!');
-        i0.ɵɵdomElementEnd();
-        i0.ɵɵattachSourceLocations('app/app.component.html', [[0, 0, 0, 0]]);
-      }
-    },
-    styles: ['div[_ngcontent-%COMP%] { color: red }'],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 2,
+      vars: 0,
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomElementStart(0, 'div');
+          i0.ɵɵtext(1, 'Hello from extra rootDir!');
+          i0.ɵɵdomElementEnd();
+          i0.ɵɵattachSourceLocations('app/app.component.html', [[0, 0, 0, 0]]);
+        }
+      },
+      styles: ['div[_ngcontent-%COMP%] { color: red }'],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

@@ -23,10 +23,12 @@ export class DynamicStandaloneDirective {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: DynamicStandaloneDirective,
-    selectors: [['', 'appDynamicStandalone', '']],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: DynamicStandaloneDirective,
+      selectors: [['', 'appDynamicStandalone', '']],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -71,6 +73,7 @@ export class DynamicPipe implements PipeTransform {
   };
   // @ts-ignore
   static ɵpipe: i0.ɵɵPipeDeclaration<DynamicPipe, 'DynamicPipe', true> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefinePipe({ name: 'DynamicPipe', type: DynamicPipe, pure: true });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
@@ -118,20 +121,22 @@ export class ShadowWidgetComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ShadowWidgetComponent,
-    selectors: [['widget']],
-    decls: 2,
-    vars: 0,
-    template: function ShadowWidgetComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1, 'Shadow');
-        i0.ɵɵelementEnd();
-      }
-    },
-    encapsulation: 3,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ShadowWidgetComponent,
+      selectors: [['widget']],
+      decls: 2,
+      vars: 0,
+      template: function ShadowWidgetComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'Shadow');
+          i0.ɵɵelementEnd();
+        }
+      },
+      encapsulation: 3,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

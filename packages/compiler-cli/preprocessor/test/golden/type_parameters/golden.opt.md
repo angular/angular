@@ -20,13 +20,13 @@ function _tcb1(this: i0.AppComponent) {
     var _t1 /*T:DIR:0*/ /*180,212*/ = _ctor1({
       'value': 'string' /*202,210*/ /*193,211*/,
     }); /*D:ignore*/
-    _t1.value /*194,199*/ = 'string' /*202,210*/ /*193,211*/;
+    _t1.value /*194,199*/ = 'string' /*202,210*/; /*193,211*/
     var _t2 /*T:DIR:0*/ /*231,258*/ = _ctor1({ 'value': 123 /*253,256*/ /*244,257*/ }); /*D:ignore*/
-    _t2.value /*245,250*/ = 123 /*253,256*/ /*244,257*/;
+    _t2.value /*245,250*/ = 123 /*253,256*/; /*244,257*/
     var _t3 /*T:DIR:0*/ /*277,315*/ = _ctor2({
       'value': { 'a' /*308,309*/: 1 /*311,312*/ } /*307,313*/ /*298,314*/,
     }); /*D:ignore*/
-    _t3.value /*299,304*/ = { 'a' /*308,309*/: 1 /*311,312*/ } /*307,313*/ /*298,314*/;
+    _t3.value /*299,304*/ = { 'a' /*308,309*/: 1 /*311,312*/ } /*307,313*/; /*298,314*/
   }
 }
 
@@ -59,27 +59,29 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 3,
-    vars: 4,
-    consts: [[3, 'value']],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'app-generic', 0)(1, 'app-generic', 0)(2, 'app-default-generic', 0);
-      }
-      if (rf & 2) {
-        i0.ɵɵproperty('value', 'string');
-        i0.ɵɵadvance();
-        i0.ɵɵproperty('value', 123);
-        i0.ɵɵadvance();
-        i0.ɵɵproperty('value', i0.ɵɵpureFunction0(3, _c0));
-      }
-    },
-    dependencies: [GenericComponent, DefaultGenericComponent],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 3,
+      vars: 4,
+      consts: [[3, 'value']],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'app-generic', 0)(1, 'app-generic', 0)(2, 'app-default-generic', 0);
+        }
+        if (rf & 2) {
+          i0.ɵɵproperty('value', 'string');
+          i0.ɵɵadvance();
+          i0.ɵɵproperty('value', 123);
+          i0.ɵɵadvance();
+          i0.ɵɵproperty('value', i0.ɵɵpureFunction0(3, _c0));
+        }
+      },
+      dependencies: [GenericComponent, DefaultGenericComponent],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -167,22 +169,24 @@ export class GenericComponent<T> {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: GenericComponent,
-    selectors: [['app-generic']],
-    inputs: { value: 'value' },
-    decls: 1,
-    vars: 1,
-    template: function GenericComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0);
-      }
-      if (rf & 2) {
-        i0.ɵɵtextInterpolate(ctx.value);
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: GenericComponent,
+      selectors: [['app-generic']],
+      inputs: { value: 'value' },
+      decls: 1,
+      vars: 1,
+      template: function GenericComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0);
+        }
+        if (rf & 2) {
+          i0.ɵɵtextInterpolate(ctx.value);
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -231,22 +235,24 @@ export class DefaultGenericComponent<T extends object = {}> {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: DefaultGenericComponent,
-    selectors: [['app-default-generic']],
-    inputs: { value: 'value' },
-    decls: 1,
-    vars: 1,
-    template: function DefaultGenericComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0);
-      }
-      if (rf & 2) {
-        i0.ɵɵtextInterpolate(ctx.value);
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: DefaultGenericComponent,
+      selectors: [['app-default-generic']],
+      inputs: { value: 'value' },
+      decls: 1,
+      vars: 1,
+      template: function DefaultGenericComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0);
+        }
+        if (rf & 2) {
+          i0.ɵɵtextInterpolate(ctx.value);
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

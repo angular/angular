@@ -23,11 +23,13 @@ export class DepA {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: DepA,
-    selectors: [['', 'dep-a', '']],
-    inputs: { aIn: [0, 'a', 'aIn'] },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: DepA,
+      selectors: [['', 'dep-a', '']],
+      inputs: { aIn: [0, 'a', 'aIn'] },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -68,15 +70,17 @@ export class NsComp {
     never,
     true,
     [{ directive: typeof i1.DepA; inputs: {}; outputs: {} }]
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: NsComp,
-    selectors: [['nsc']],
-    features: [i0.ɵɵHostDirectivesFeature([i1.DepA])],
-    decls: 0,
-    vars: 0,
-    template: function NsComp_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: NsComp,
+      selectors: [['nsc']],
+      features: [i0.ɵɵHostDirectivesFeature([i1.DepA])],
+      decls: 0,
+      vars: 0,
+      template: function NsComp_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -110,15 +114,17 @@ export class NsComp2 {
     never,
     true,
     [{ directive: typeof i1.DepA; inputs: { 'a': 'b' }; outputs: {} }]
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: NsComp2,
-    selectors: [['nsc2']],
-    features: [i0.ɵɵHostDirectivesFeature([{ directive: i1.DepA, inputs: ['a', 'b'] }])],
-    decls: 0,
-    vars: 0,
-    template: function NsComp2_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: NsComp2,
+      selectors: [['nsc2']],
+      features: [i0.ɵɵHostDirectivesFeature([{ directive: i1.DepA, inputs: ['a', 'b'] }])],
+      decls: 0,
+      vars: 0,
+      template: function NsComp2_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

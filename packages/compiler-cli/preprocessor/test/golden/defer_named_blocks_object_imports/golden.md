@@ -44,24 +44,26 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-comp']],
-    decls: 6,
-    vars: 0,
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomTemplate(0, AppComponent_Defer_0_Template, 1, 0);
-        i0.ɵɵdefer(1, 0, AppComponent_Defer_1_DepsFn);
-        i0.ɵɵdeferOnIdle();
-        i0.ɵɵdomTemplate(3, AppComponent_Defer_3_Template, 3, 3);
-        i0.ɵɵdefer(4, 3, AppComponent_Defer_4_DepsFn);
-        i0.ɵɵdeferOnIdle();
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [CompA, CompB, PipeA]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-comp']],
+      decls: 6,
+      vars: 0,
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomTemplate(0, AppComponent_Defer_0_Template, 1, 0);
+          i0.ɵɵdefer(1, 0, AppComponent_Defer_1_DepsFn);
+          i0.ɵɵdeferOnIdle();
+          i0.ɵɵdomTemplate(3, AppComponent_Defer_3_Template, 3, 3);
+          i0.ɵɵdefer(4, 3, AppComponent_Defer_4_DepsFn);
+          i0.ɵɵdeferOnIdle();
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [CompA, CompB, PipeA]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -131,18 +133,20 @@ export class CompA {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: CompA,
-    selectors: [['comp-a']],
-    decls: 1,
-    vars: 0,
-    template: function CompA_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0, 'Component A');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: CompA,
+      selectors: [['comp-a']],
+      decls: 1,
+      vars: 0,
+      template: function CompA_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0, 'Component A');
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -195,18 +199,20 @@ export class CompB {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: CompB,
-    selectors: [['comp-b']],
-    decls: 1,
-    vars: 0,
-    template: function CompB_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0, 'Component B');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: CompB,
+      selectors: [['comp-b']],
+      decls: 1,
+      vars: 0,
+      template: function CompB_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0, 'Component B');
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -252,11 +258,9 @@ export class PipeA implements PipeTransform {
     return new (__ngFactoryType__ || PipeA)();
   };
   // @ts-ignore
-  static ɵpipe: i0.ɵɵPipeDeclaration<PipeA, 'pipeA', true> = /*@__PURE__*/ i0.ɵɵdefinePipe({
-    name: 'pipeA',
-    type: PipeA,
-    pure: true,
-  });
+  static ɵpipe: i0.ɵɵPipeDeclaration<PipeA, 'pipeA', true> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefinePipe({ name: 'pipeA', type: PipeA, pure: true });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

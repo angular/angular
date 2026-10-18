@@ -29,21 +29,23 @@ export class AppComponent {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    standalone: false,
-    decls: 1,
-    vars: 0,
-    consts: [['myDir', '']],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'div', 0);
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      standalone: false,
+      decls: 1,
+      vars: 0,
+      consts: [['myDir', '']],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'div', 0);
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -82,11 +84,13 @@ export class AppModule {
     return new (__ngFactoryType__ || AppModule)();
   };
   // @ts-ignore
-  static ɵmod: AppModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
+  static ɵmod: AppModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [LocalModule, ...DYNAMIC_MODULES],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [LocalModule, ...DYNAMIC_MODULES] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -122,11 +126,12 @@ export class ConditionalExportsModule {
       return new (__ngFactoryType__ || ConditionalExportsModule)();
     };
   // @ts-ignore
-  static ɵmod: ConditionalExportsModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({
-    type: ConditionalExportsModule,
-  });
+  static ɵmod: ConditionalExportsModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: ConditionalExportsModule });
   // @ts-ignore
   static ɵinj: i0.ɵɵInjectorDeclaration<ConditionalExportsModule> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [...directiveExports, ...moduleExports] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
@@ -180,11 +185,13 @@ export class MyDirective {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: MyDirective,
-    selectors: [['', 'myDir', '']],
-    standalone: false,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: MyDirective,
+      selectors: [['', 'myDir', '']],
+      standalone: false,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -214,11 +221,13 @@ export class LocalModule {
     return new (__ngFactoryType__ || LocalModule)();
   };
   // @ts-ignore
-  static ɵmod: LocalModule = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: LocalModule });
+  static ɵmod: LocalModule =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: LocalModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<LocalModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({
-    imports: [MyDirective],
-  });
+  static ɵinj: i0.ɵɵInjectorDeclaration<LocalModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [MyDirective] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

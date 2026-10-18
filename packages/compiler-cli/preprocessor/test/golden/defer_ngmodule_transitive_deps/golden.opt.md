@@ -63,22 +63,24 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 3,
-    vars: 0,
-    consts: [['matButton', '']],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomTemplate(0, AppComponent_Defer_0_Template, 3, 3);
-        i0.ɵɵdefer(1, 0, AppComponent_Defer_1_DepsFn);
-        i0.ɵɵdeferOnImmediate();
-      }
-    },
-    dependencies: [MatButtonModule, TrimPipeModule],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 3,
+      vars: 0,
+      consts: [['matButton', '']],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomTemplate(0, AppComponent_Defer_0_Template, 3, 3);
+          i0.ɵɵdefer(1, 0, AppComponent_Defer_1_DepsFn);
+          i0.ɵɵdeferOnImmediate();
+        }
+      },
+      dependencies: [MatButtonModule, TrimPipeModule],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -136,9 +138,13 @@ export class MatButtonModule {
     [typeof MatButton],
     never,
     [typeof MatButton]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MatButtonModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MatButtonModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<MatButtonModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<MatButtonModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -190,11 +196,13 @@ export class MatButton {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: MatButton,
-    selectors: [['', 'matButton', '']],
-    standalone: false,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: MatButton,
+      selectors: [['', 'matButton', '']],
+      standalone: false,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -238,9 +246,13 @@ export class TrimPipeModule {
     [typeof TrimPipe],
     never,
     [typeof TrimPipe]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: TrimPipeModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: TrimPipeModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<TrimPipeModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<TrimPipeModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -285,12 +297,9 @@ export class TrimPipe implements PipeTransform {
     return new (__ngFactoryType__ || TrimPipe)();
   };
   // @ts-ignore
-  static ɵpipe: i0.ɵɵPipeDeclaration<TrimPipe, 'trim', false> = /*@__PURE__*/ i0.ɵɵdefinePipe({
-    name: 'trim',
-    type: TrimPipe,
-    pure: true,
-    standalone: false,
-  });
+  static ɵpipe: i0.ɵɵPipeDeclaration<TrimPipe, 'trim', false> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefinePipe({ name: 'trim', type: TrimPipe, pure: true, standalone: false });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

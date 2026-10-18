@@ -22,24 +22,26 @@ export class ExternalCmp {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ExternalCmp,
-    selectors: [['external-cmp']],
-    decls: 3,
-    vars: 0,
-    template: function ExternalCmp_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div')(1, 'span');
-        i0.ɵɵtext(2, 'external');
-        i0.ɵɵelementEnd()();
-        i0.ɵɵattachSourceLocations('external.component.html', [
-          [0, 0, 0, 0],
-          [1, 8, 1, 2],
-        ]);
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ExternalCmp,
+      selectors: [['external-cmp']],
+      decls: 3,
+      vars: 0,
+      template: function ExternalCmp_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div')(1, 'span');
+          i0.ɵɵtext(2, 'external');
+          i0.ɵɵelementEnd()();
+          i0.ɵɵattachSourceLocations('external.component.html', [
+            [0, 0, 0, 0],
+            [1, 8, 1, 2],
+          ]);
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -105,36 +107,38 @@ export class InlineCmp {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: InlineCmp,
-    selectors: [['inline-cmp']],
-    decls: 8,
-    vars: 1,
-    template: function InlineCmp_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'section')(1, 'h1');
-        i0.ɵɵtext(2, 'Title');
-        i0.ɵɵelementEnd();
-        i0.ɵɵelementStart(3, 'p');
-        i0.ɵɵtext(4, 'Body ');
-        i0.ɵɵelementStart(5, 'span');
-        i0.ɵɵtext(6, 'text');
-        i0.ɵɵelementEnd()()();
-        i0.ɵɵconditionalCreate(7, InlineCmp_Conditional_7_Template, 2, 0, 'button');
-        i0.ɵɵattachSourceLocations('inline.component.ts', [
-          [0, 101, 5, 4],
-          [1, 117, 6, 6],
-          [3, 138, 7, 6],
-          [5, 146, 7, 14],
-        ]);
-      }
-      if (rf & 2) {
-        i0.ɵɵadvance(7);
-        i0.ɵɵconditional(ctx.show ? 7 : -1);
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: InlineCmp,
+      selectors: [['inline-cmp']],
+      decls: 8,
+      vars: 1,
+      template: function InlineCmp_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'section')(1, 'h1');
+          i0.ɵɵtext(2, 'Title');
+          i0.ɵɵelementEnd();
+          i0.ɵɵelementStart(3, 'p');
+          i0.ɵɵtext(4, 'Body ');
+          i0.ɵɵelementStart(5, 'span');
+          i0.ɵɵtext(6, 'text');
+          i0.ɵɵelementEnd()()();
+          i0.ɵɵconditionalCreate(7, InlineCmp_Conditional_7_Template, 2, 0, 'button');
+          i0.ɵɵattachSourceLocations('inline.component.ts', [
+            [0, 101, 5, 4],
+            [1, 117, 6, 6],
+            [3, 138, 7, 6],
+            [5, 146, 7, 14],
+          ]);
+        }
+        if (rf & 2) {
+          i0.ɵɵadvance(7);
+          i0.ɵɵconditional(ctx.show ? 7 : -1);
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

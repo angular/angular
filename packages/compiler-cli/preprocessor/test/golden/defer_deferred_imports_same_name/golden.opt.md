@@ -39,18 +39,20 @@ export class Widget {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: Widget,
-    selectors: [['widget-a']],
-    decls: 1,
-    vars: 0,
-    template: function Widget_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0, 'Widget A');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: Widget,
+      selectors: [['widget-a']],
+      decls: 1,
+      vars: 0,
+      template: function Widget_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0, 'Widget A');
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -138,27 +140,29 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 5,
-    vars: 0,
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'widget-a');
-        i0.ɵɵdomTemplate(1, AppComponent_Defer_1_Template, 1, 0)(
-          2,
-          AppComponent_DeferPlaceholder_2_Template,
-          1,
-          0,
-        );
-        i0.ɵɵdefer(3, 1, AppComponent_Defer_3_DepsFn, null, 2);
-        i0.ɵɵdeferOnIdle();
-      }
-    },
-    dependencies: [Widget],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 5,
+      vars: 0,
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'widget-a');
+          i0.ɵɵdomTemplate(1, AppComponent_Defer_1_Template, 1, 0)(
+            2,
+            AppComponent_DeferPlaceholder_2_Template,
+            1,
+            0,
+          );
+          i0.ɵɵdefer(3, 1, AppComponent_Defer_3_DepsFn, null, 2);
+          i0.ɵɵdeferOnIdle();
+        }
+      },
+      dependencies: [Widget],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadataAsync(
@@ -250,18 +254,20 @@ export class Widget {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: Widget,
-    selectors: [['widget-b']],
-    decls: 1,
-    vars: 0,
-    template: function Widget_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtext(0, 'Widget B');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: Widget,
+      selectors: [['widget-b']],
+      decls: 1,
+      vars: 0,
+      template: function Widget_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtext(0, 'Widget B');
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -349,27 +355,29 @@ export class MixedComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: MixedComponent,
-    selectors: [['app-mixed']],
-    decls: 5,
-    vars: 0,
-    template: function MixedComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'widget-a');
-        i0.ɵɵdomTemplate(1, MixedComponent_Defer_1_Template, 1, 0)(
-          2,
-          MixedComponent_DeferPlaceholder_2_Template,
-          1,
-          0,
-        );
-        i0.ɵɵdefer(3, 1, MixedComponent_Defer_3_DepsFn, null, 2);
-        i0.ɵɵdeferOnIdle();
-      }
-    },
-    dependencies: [Widget],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: MixedComponent,
+      selectors: [['app-mixed']],
+      decls: 5,
+      vars: 0,
+      template: function MixedComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'widget-a');
+          i0.ɵɵdomTemplate(1, MixedComponent_Defer_1_Template, 1, 0)(
+            2,
+            MixedComponent_DeferPlaceholder_2_Template,
+            1,
+            0,
+          );
+          i0.ɵɵdefer(3, 1, MixedComponent_Defer_3_DepsFn, null, 2);
+          i0.ɵɵdeferOnIdle();
+        }
+      },
+      dependencies: [Widget],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadataAsync(
@@ -484,23 +492,25 @@ export class SplitComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: SplitComponent,
-    selectors: [['app-split']],
-    decls: 6,
-    vars: 0,
-    template: function SplitComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomTemplate(0, SplitComponent_Defer_0_Template, 1, 0);
-        i0.ɵɵdefer(1, 0, SplitComponent_Defer_1_DepsFn);
-        i0.ɵɵdeferOnIdle();
-        i0.ɵɵdomTemplate(3, SplitComponent_Defer_3_Template, 1, 0);
-        i0.ɵɵdefer(4, 3, SplitComponent_Defer_4_DepsFn);
-        i0.ɵɵdeferOnIdle();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: SplitComponent,
+      selectors: [['app-split']],
+      decls: 6,
+      vars: 0,
+      template: function SplitComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomTemplate(0, SplitComponent_Defer_0_Template, 1, 0);
+          i0.ɵɵdefer(1, 0, SplitComponent_Defer_1_DepsFn);
+          i0.ɵɵdeferOnIdle();
+          i0.ɵɵdomTemplate(3, SplitComponent_Defer_3_Template, 1, 0);
+          i0.ɵɵdefer(4, 3, SplitComponent_Defer_4_DepsFn);
+          i0.ɵɵdeferOnIdle();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadataAsync(

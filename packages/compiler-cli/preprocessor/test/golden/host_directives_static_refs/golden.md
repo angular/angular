@@ -24,12 +24,14 @@ export class DepA {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: DepA,
-    selectors: [['', 'dep-a', '']],
-    inputs: { aIn: [0, 'a', 'aIn'] },
-    outputs: { cOut: 'c' },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: DepA,
+      selectors: [['', 'dep-a', '']],
+      inputs: { aIn: [0, 'a', 'aIn'] },
+      outputs: { cOut: 'c' },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -60,11 +62,13 @@ export class DepB {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: DepB,
-    selectors: [['', 'dep-b', '']],
-    inputs: { xIn: [0, 'x', 'xIn'] },
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: DepB,
+      selectors: [['', 'dep-b', '']],
+      inputs: { xIn: [0, 'x', 'xIn'] },
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -110,15 +114,17 @@ export class C1 {
     never,
     true,
     [{ directive: typeof DepA; inputs: {}; outputs: {} }]
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: C1,
-    selectors: [['c1']],
-    features: [i0.ɵɵHostDirectivesFeature([DepA])],
-    decls: 0,
-    vars: 0,
-    template: function C1_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: C1,
+      selectors: [['c1']],
+      features: [i0.ɵɵHostDirectivesFeature([DepA])],
+      decls: 0,
+      vars: 0,
+      template: function C1_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -156,15 +162,17 @@ export class C2 {
       { directive: typeof DepA; inputs: {}; outputs: {} },
       { directive: typeof DepB; inputs: {}; outputs: {} },
     ]
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: C2,
-    selectors: [['c2']],
-    features: [i0.ɵɵHostDirectivesFeature([DepA, DepB])],
-    decls: 0,
-    vars: 0,
-    template: function C2_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: C2,
+      selectors: [['c2']],
+      features: [i0.ɵɵHostDirectivesFeature([DepA, DepB])],
+      decls: 0,
+      vars: 0,
+      template: function C2_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -194,6 +202,7 @@ export class C3 {
   };
   // @ts-ignore
   static ɵcmp: i0.ɵɵComponentDeclaration<C3, 'c3', never, {}, {}, never, never, true, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineComponent({
       type: C3,
       selectors: [['c3']],
@@ -241,19 +250,21 @@ export class C4 {
     never,
     true,
     [{ directive: typeof LateDir; inputs: {}; outputs: {} }]
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: C4,
-    selectors: [['c4']],
-    features: [
-      i0.ɵɵHostDirectivesFeature(function (): any {
-        return [LateDir];
-      }),
-    ],
-    decls: 0,
-    vars: 0,
-    template: function C4_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: C4,
+      selectors: [['c4']],
+      features: [
+        i0.ɵɵHostDirectivesFeature(function (): any {
+          return [LateDir];
+        }),
+      ],
+      decls: 0,
+      vars: 0,
+      template: function C4_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -294,17 +305,19 @@ export class C6 {
     never,
     true,
     [{ directive: typeof DepA; inputs: { 'a': 'b' }; outputs: { 'c': 'd' } }]
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: C6,
-    selectors: [['c6']],
-    features: [
-      i0.ɵɵHostDirectivesFeature([{ directive: DepA, inputs: ['a', 'b'], outputs: ['c', 'd'] }]),
-    ],
-    decls: 0,
-    vars: 0,
-    template: function C6_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: C6,
+      selectors: [['c6']],
+      features: [
+        i0.ɵɵHostDirectivesFeature([{ directive: DepA, inputs: ['a', 'b'], outputs: ['c', 'd'] }]),
+      ],
+      decls: 0,
+      vars: 0,
+      template: function C6_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -353,15 +366,17 @@ export class C7 {
       { directive: typeof DepA; inputs: {}; outputs: {} },
       { directive: typeof DepB; inputs: {}; outputs: {} },
     ]
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: C7,
-    selectors: [['c7']],
-    features: [i0.ɵɵHostDirectivesFeature([DepA, DepB])],
-    decls: 0,
-    vars: 0,
-    template: function C7_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: C7,
+      selectors: [['c7']],
+      features: [i0.ɵɵHostDirectivesFeature([DepA, DepB])],
+      decls: 0,
+      vars: 0,
+      template: function C7_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -401,15 +416,17 @@ export class C8 {
     never,
     true,
     [{ directive: typeof DepA; inputs: {}; outputs: {} }]
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: C8,
-    selectors: [['c8']],
-    features: [i0.ɵɵHostDirectivesFeature([DepA])],
-    decls: 0,
-    vars: 0,
-    template: function C8_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: C8,
+      selectors: [['c8']],
+      features: [i0.ɵɵHostDirectivesFeature([DepA])],
+      decls: 0,
+      vars: 0,
+      template: function C8_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -448,15 +465,17 @@ export class C10 {
     never,
     true,
     [{ directive: typeof i1.DepA; inputs: {}; outputs: {} }]
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: C10,
-    selectors: [['c10']],
-    features: [i0.ɵɵHostDirectivesFeature([i1.DepA])],
-    decls: 0,
-    vars: 0,
-    template: function C10_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: C10,
+      selectors: [['c10']],
+      features: [i0.ɵɵHostDirectivesFeature([i1.DepA])],
+      decls: 0,
+      vars: 0,
+      template: function C10_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -490,15 +509,17 @@ export class C11 {
     never,
     true,
     [{ directive: typeof i1.DepB; inputs: { 'x': 'q' }; outputs: {} }]
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: C11,
-    selectors: [['c11']],
-    features: [i0.ɵɵHostDirectivesFeature([{ directive: i1.DepB, inputs: ['x', 'q'] }])],
-    decls: 0,
-    vars: 0,
-    template: function C11_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: C11,
+      selectors: [['c11']],
+      features: [i0.ɵɵHostDirectivesFeature([{ directive: i1.DepB, inputs: ['x', 'q'] }])],
+      decls: 0,
+      vars: 0,
+      template: function C11_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -545,19 +566,21 @@ export class C12 {
     never,
     true,
     [{ directive: typeof DepA; inputs: {}; outputs: {} }]
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: C12,
-    selectors: [['c12']],
-    features: [
-      i0.ɵɵHostDirectivesFeature(function (): any {
-        return [DepA];
-      }),
-    ],
-    decls: 0,
-    vars: 0,
-    template: function C12_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: C12,
+      selectors: [['c12']],
+      features: [
+        i0.ɵɵHostDirectivesFeature(function (): any {
+          return [DepA];
+        }),
+      ],
+      decls: 0,
+      vars: 0,
+      template: function C12_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -596,19 +619,21 @@ export class C13 {
     never,
     true,
     [{ directive: typeof DepB; inputs: { 'x': 'y' }; outputs: {} }]
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: C13,
-    selectors: [['c13']],
-    features: [
-      i0.ɵɵHostDirectivesFeature(function (): any {
-        return [{ directive: DepB, inputs: ['x', 'y'] }];
-      }),
-    ],
-    decls: 0,
-    vars: 0,
-    template: function C13_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: C13,
+      selectors: [['c13']],
+      features: [
+        i0.ɵɵHostDirectivesFeature(function (): any {
+          return [{ directive: DepB, inputs: ['x', 'y'] }];
+        }),
+      ],
+      decls: 0,
+      vars: 0,
+      template: function C13_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -654,15 +679,17 @@ export class C14 {
     never,
     true,
     [{ directive: typeof DepA; inputs: {}; outputs: {} }]
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: C14,
-    selectors: [['c14']],
-    features: [i0.ɵɵHostDirectivesFeature([{ directive: DepA }])],
-    decls: 0,
-    vars: 0,
-    template: function C14_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: C14,
+      selectors: [['c14']],
+      features: [i0.ɵɵHostDirectivesFeature([{ directive: DepA }])],
+      decls: 0,
+      vars: 0,
+      template: function C14_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -704,15 +731,17 @@ export class C15 {
     never,
     true,
     [{ directive: typeof DepA; inputs: { 'a': 'b' }; outputs: {} }]
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: C15,
-    selectors: [['c15']],
-    features: [i0.ɵɵHostDirectivesFeature([{ directive: DepA, inputs: ['a', 'b'] }])],
-    decls: 0,
-    vars: 0,
-    template: function C15_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: C15,
+      selectors: [['c15']],
+      features: [i0.ɵɵHostDirectivesFeature([{ directive: DepA, inputs: ['a', 'b'] }])],
+      decls: 0,
+      vars: 0,
+      template: function C15_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -757,7 +786,9 @@ export class LateDir {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({ type: LateDir, selectors: [['', 'late', '']] });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({ type: LateDir, selectors: [['', 'late', '']] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

@@ -164,13 +164,8 @@ describe('emitted @ts-ignore suppressions', () => {
     expect(emitted).toContain('static ɵfac');
   });
 
-  it('starts every generated definition initializer on the guarded line', () => {
+  it('starts every generated definition initializer on a guarded line', () => {
     const lines = emitted.split('\n');
-
-    // A break after `=` puts the declaration between `// @ts-ignore` and the initializer, which
-    // ends TypeScript's backward walk and strands the guard. ngtsc starts the initializer on the
-    // assignment line too: `static ɵdir = /*@__PURE__*/ i0.ɵɵdefineDirective({…});`
-    expect(lines.filter((line) => /^\s*static\s+\S+.*=\s*$/.test(line))).toEqual([]);
 
     // Both emitted guard forms are matched: a full-line `// @ts-ignore`, and the trailing form
     // (`export class Foo {  // @ts-ignore`) produced when the insertion point is the class brace.
@@ -179,9 +174,12 @@ describe('emitted @ts-ignore suppressions', () => {
       if (!/\/\/\s*@ts-ignore\s*$/.test(lines[i])) {
         continue;
       }
-      // A blank line here would be harmless (the walk skips blanks), but a line ending in `=`
-      // would not be: the initializer would sit a further line down, out of reach.
-      expect(lines[i + 1]).not.toMatch(/=\s*$/);
+      // If a pure static field breaks after `=` so `tsc` keeps `/*@__PURE__*/` as leading trivia
+      // of the initializer, the initializer line immediately below must carry its own
+      // `// @ts-ignore`.
+      if (/=\s*$/.test(lines[i + 1])) {
+        expect(lines[i + 2]).toMatch(/^\s*\/\/\s*@ts-ignore\s*$/);
+      }
     }
   });
 
@@ -241,5 +239,39 @@ export class MyComp {}
     expect(output).not.toContain('static {\n    (((typeof ngDevMode');
     expect(output).toMatch(/\(\(\)(?:: any)? => \{\s*\(\(\(typeof ngDevMode/);
     expect(output).toContain('i0.ɵsetClassMetadata(MyComp');
+  });
+});
+
+describe('emitted /*@__PURE__*/ annotations', () => {
+  let emitted: string;
+
+  beforeAll(async () => {
+    emitted = await emitUnformatted(DIRECTIVE);
+  });
+
+  it('survives tsc type stripping at ES2022', () => {
+    const js = ts.transpileModule(emitted, {
+      compilerOptions: {
+        target: ts.ScriptTarget.ES2022,
+        module: ts.ModuleKind.ESNext,
+      },
+    }).outputText;
+
+    expect(js).toMatch(
+      /static\s+ɵdir\s*=\s*(?:\/\/\s*@ts-ignore\s*)?\/\*@__PURE__\*\/\s*i0\.ɵɵdefineDirective\(/,
+    );
+  });
+
+  it('survives tsc static field downleveling at ES2015', () => {
+    const js = ts.transpileModule(emitted, {
+      compilerOptions: {
+        target: ts.ScriptTarget.ES2015,
+        module: ts.ModuleKind.ESNext,
+      },
+    }).outputText;
+
+    expect(js).toMatch(
+      /MyDirective\.ɵdir\s*=\s*(?:\/\/\s*@ts-ignore\s*)?\/\*@__PURE__\*\/\s*i0\.ɵɵdefineDirective\(/,
+    );
   });
 });

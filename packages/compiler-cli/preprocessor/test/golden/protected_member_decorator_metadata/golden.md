@@ -20,15 +20,17 @@ export class ProtectedComponent extends BaseComponent {
 
   value = 'test';
   // @ts-ignore
-  static ɵfac: i0.ɵɵFactoryDeclaration<ProtectedComponent, never> = /*@__PURE__*/ ((): any => {
-    let ɵProtectedComponent_BaseFactory: any;
-    return function ProtectedComponent_Factory(__ngFactoryType__: any): any {
-      return (
-        ɵProtectedComponent_BaseFactory ||
-        (ɵProtectedComponent_BaseFactory = i0.ɵɵgetInheritedFactory(ProtectedComponent))
-      )(__ngFactoryType__ || ProtectedComponent);
-    };
-  })();
+  static ɵfac: i0.ɵɵFactoryDeclaration<ProtectedComponent, never> =
+    // @ts-ignore
+    /*@__PURE__*/ ((): any => {
+      let ɵProtectedComponent_BaseFactory: any;
+      return function ProtectedComponent_Factory(__ngFactoryType__: any): any {
+        return (
+          ɵProtectedComponent_BaseFactory ||
+          (ɵProtectedComponent_BaseFactory = i0.ɵɵgetInheritedFactory(ProtectedComponent))
+        )(__ngFactoryType__ || ProtectedComponent);
+      };
+    })();
   // @ts-ignore
   static ɵcmp: i0.ɵɵComponentDeclaration<
     ProtectedComponent,
@@ -40,31 +42,33 @@ export class ProtectedComponent extends BaseComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ProtectedComponent,
-    selectors: [['app-protected']],
-    features: [
-      i0.ɵɵProvidersFeature([
-        ProtectedComponent.getProtectedProvider(),
-        BaseComponent.getBaseConfig(),
-      ]),
-      i0.ɵɵInheritDefinitionFeature,
-    ],
-    decls: 2,
-    vars: 1,
-    template: function ProtectedComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1);
-        i0.ɵɵelementEnd();
-      }
-      if (rf & 2) {
-        i0.ɵɵadvance();
-        i0.ɵɵtextInterpolate(ctx.value);
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ProtectedComponent,
+      selectors: [['app-protected']],
+      features: [
+        i0.ɵɵProvidersFeature([
+          ProtectedComponent.getProtectedProvider(),
+          BaseComponent.getBaseConfig(),
+        ]),
+        i0.ɵɵInheritDefinitionFeature,
+      ],
+      decls: 2,
+      vars: 1,
+      template: function ProtectedComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1);
+          i0.ɵɵelementEnd();
+        }
+        if (rf & 2) {
+          i0.ɵɵadvance();
+          i0.ɵɵtextInterpolate(ctx.value);
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -121,11 +125,13 @@ export class ProtectedDirective {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: ProtectedDirective,
-    selectors: [['', 'appProtectedDir', '']],
-    features: [i0.ɵɵProvidersFeature([ProtectedDirective.getDirectiveProvider()])],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: ProtectedDirective,
+      selectors: [['', 'appProtectedDir', '']],
+      features: [i0.ɵɵProvidersFeature([ProtectedDirective.getDirectiveProvider()])],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

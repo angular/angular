@@ -30,6 +30,7 @@ export abstract class Base {
     };
   // @ts-ignore
   static ɵdir: i0.ɵɵDirectiveDeclaration<Base, '[base]', never, {}, {}, never, never, true, never> =
+    // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineDirective({ type: Base, selectors: [['', 'base', '']] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
@@ -59,14 +60,16 @@ export abstract class Base {
 export class Child extends Base {
   // Inherits constructor from Base.
   // @ts-ignore
-  static ɵfac: i0.ɵɵFactoryDeclaration<Child, never> = /*@__PURE__*/ ((): any => {
-    let ɵChild_BaseFactory: any;
-    return function Child_Factory(__ngFactoryType__: any): any {
-      return (ɵChild_BaseFactory || (ɵChild_BaseFactory = i0.ɵɵgetInheritedFactory(Child)))(
-        __ngFactoryType__ || Child,
-      );
-    };
-  })();
+  static ɵfac: i0.ɵɵFactoryDeclaration<Child, never> =
+    // @ts-ignore
+    /*@__PURE__*/ ((): any => {
+      let ɵChild_BaseFactory: any;
+      return function Child_Factory(__ngFactoryType__: any): any {
+        return (ɵChild_BaseFactory || (ɵChild_BaseFactory = i0.ɵɵgetInheritedFactory(Child)))(
+          __ngFactoryType__ || Child,
+        );
+      };
+    })();
   // @ts-ignore
   static ɵdir: i0.ɵɵDirectiveDeclaration<
     Child,
@@ -78,11 +81,13 @@ export class Child extends Base {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: Child,
-    selectors: [['', 'child', '']],
-    features: [i0.ɵɵInheritDefinitionFeature],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: Child,
+      selectors: [['', 'child', '']],
+      features: [i0.ɵɵInheritDefinitionFeature],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

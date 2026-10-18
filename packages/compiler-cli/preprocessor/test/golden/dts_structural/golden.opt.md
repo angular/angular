@@ -16,7 +16,7 @@ function _tcb1(this: i0.AppComponent) {
     var _t1 /*T:DIR:0*/ /*171,191*/ = _ctor1({
       'myNgIf': true /*185,189*/ /*177,189*/,
     }); /*D:ignore*/
-    _t1.myNgIf /*177,183*/ = true /*185,189*/ /*177,189*/;
+    _t1.myNgIf /*177,183*/ = true /*185,189*/; /*177,189*/
   }
 }
 
@@ -53,23 +53,25 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 1,
-    vars: 1,
-    consts: [[4, 'myNgIf']],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵtemplate(0, AppComponent_div_0_Template, 1, 0, 'div', 0);
-      }
-      if (rf & 2) {
-        i0.ɵɵproperty('myNgIf', true);
-      }
-    },
-    dependencies: [MyNgIf],
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 1,
+      vars: 1,
+      consts: [[4, 'myNgIf']],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtemplate(0, AppComponent_div_0_Template, 1, 0, 'div', 0);
+        }
+        if (rf & 2) {
+          i0.ɵɵproperty('myNgIf', true);
+        }
+      },
+      dependencies: [MyNgIf],
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

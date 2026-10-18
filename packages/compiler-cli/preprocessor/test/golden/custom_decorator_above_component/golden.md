@@ -28,20 +28,22 @@ export class AboveComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AboveComponent,
-    selectors: [['above-cmp']],
-    decls: 2,
-    vars: 0,
-    template: function AboveComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1, 'Above');
-        i0.ɵɵelementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AboveComponent,
+      selectors: [['above-cmp']],
+      decls: 2,
+      vars: 0,
+      template: function AboveComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'Above');
+          i0.ɵɵelementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -90,20 +92,22 @@ export class BelowComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: BelowComponent,
-    selectors: [['below-cmp']],
-    decls: 2,
-    vars: 0,
-    template: function BelowComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1, 'Below');
-        i0.ɵɵelementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: BelowComponent,
+      selectors: [['below-cmp']],
+      decls: 2,
+      vars: 0,
+      template: function BelowComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'Below');
+          i0.ɵɵelementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -151,20 +155,22 @@ export class BareDecoratorComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: BareDecoratorComponent,
-    selectors: [['bare-cmp']],
-    decls: 2,
-    vars: 0,
-    template: function BareDecoratorComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1, 'Bare');
-        i0.ɵɵelementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: BareDecoratorComponent,
+      selectors: [['bare-cmp']],
+      decls: 2,
+      vars: 0,
+      template: function BareDecoratorComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'Bare');
+          i0.ɵɵelementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -213,20 +219,22 @@ export class SandwichComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: SandwichComponent,
-    selectors: [['sandwich-cmp']],
-    decls: 2,
-    vars: 0,
-    template: function SandwichComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1, 'Sandwich');
-        i0.ɵɵelementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: SandwichComponent,
+      selectors: [['sandwich-cmp']],
+      decls: 2,
+      vars: 0,
+      template: function SandwichComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'Sandwich');
+          i0.ɵɵelementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -275,31 +283,33 @@ export class ConstPoolComponent {
     ['header'],
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ConstPoolComponent,
-    selectors: [['const-pool-cmp']],
-    viewQuery: function ConstPoolComponent_Query(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵviewQuery(_c0, 5);
-      }
-      if (rf & 2) {
-        let _t: any;
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.el = _t.first);
-      }
-    },
-    ngContentSelectors: _c2,
-    decls: 3,
-    vars: 0,
-    consts: [['el', '']],
-    template: function ConstPoolComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵprojectionDef(_c1);
-        i0.ɵɵprojection(0);
-        i0.ɵɵelement(1, 'div', null, 0);
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ConstPoolComponent,
+      selectors: [['const-pool-cmp']],
+      viewQuery: function ConstPoolComponent_Query(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵviewQuery(_c0, 5);
+        }
+        if (rf & 2) {
+          let _t: any;
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.el = _t.first);
+        }
+      },
+      ngContentSelectors: _c2,
+      decls: 3,
+      vars: 0,
+      consts: [['el', '']],
+      template: function ConstPoolComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵprojectionDef(_c1);
+          i0.ɵɵprojection(0);
+          i0.ɵɵelement(1, 'div', null, 0);
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -347,31 +357,33 @@ export class ConstPoolPlainComponent {
     ['header'],
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ConstPoolPlainComponent,
-    selectors: [['const-pool-plain-cmp']],
-    viewQuery: function ConstPoolPlainComponent_Query(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵviewQuery(_c0, 5);
-      }
-      if (rf & 2) {
-        let _t: any;
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.el = _t.first);
-      }
-    },
-    ngContentSelectors: _c2,
-    decls: 3,
-    vars: 0,
-    consts: [['el', '']],
-    template: function ConstPoolPlainComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵprojectionDef(_c1);
-        i0.ɵɵprojection(0);
-        i0.ɵɵelement(1, 'div', null, 0);
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ConstPoolPlainComponent,
+      selectors: [['const-pool-plain-cmp']],
+      viewQuery: function ConstPoolPlainComponent_Query(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵviewQuery(_c0, 5);
+        }
+        if (rf & 2) {
+          let _t: any;
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.el = _t.first);
+        }
+      },
+      ngContentSelectors: _c2,
+      decls: 3,
+      vars: 0,
+      consts: [['el', '']],
+      template: function ConstPoolPlainComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵprojectionDef(_c1);
+          i0.ɵɵprojection(0);
+          i0.ɵɵelement(1, 'div', null, 0);
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

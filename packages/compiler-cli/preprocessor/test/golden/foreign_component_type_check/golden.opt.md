@@ -50,19 +50,21 @@ export class ForeignHostComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ForeignHostComponent,
-    selectors: [['app-foreign-host']],
-    decls: 1,
-    vars: 0,
-    consts: [frameworkImport(Widget)],
-    template: function ForeignHostComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵforeignComponent(0, 0, (): any => ({ size: ctx.size, label: ctx.label }));
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ForeignHostComponent,
+      selectors: [['app-foreign-host']],
+      decls: 1,
+      vars: 0,
+      consts: [frameworkImport(Widget)],
+      template: function ForeignHostComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵforeignComponent(0, 0, (): any => ({ size: ctx.size, label: ctx.label }));
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -182,22 +184,24 @@ export class MissingForeignImportsComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: MissingForeignImportsComponent,
-    selectors: [['app-missing-foreign-imports']],
-    decls: 1,
-    vars: 1,
-    consts: [[3, 'size']],
-    template: function MissingForeignImportsComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵdomElement(0, 'Widget', 0);
-      }
-      if (rf & 2) {
-        i0.ɵɵdomProperty('size', ctx.size);
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: MissingForeignImportsComponent,
+      selectors: [['app-missing-foreign-imports']],
+      decls: 1,
+      vars: 1,
+      consts: [[3, 'size']],
+      template: function MissingForeignImportsComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomElement(0, 'Widget', 0);
+        }
+        if (rf & 2) {
+          i0.ɵɵdomProperty('size', ctx.size);
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

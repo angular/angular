@@ -20,9 +20,13 @@ export class AppModule {
     [typeof CompA, typeof CompB, typeof DirWithHost],
     never,
     [typeof CompA, typeof CompB, typeof DirWithHost]
-  > = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
   // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+  static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({});
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -95,22 +99,24 @@ export class CompA {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: CompA,
-    selectors: [['comp-a']],
-    standalone: false,
-    decls: 2,
-    vars: 0,
-    consts: [['dirWithHost', '']],
-    template: function CompA_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div', 0);
-        i0.ɵɵelement(1, 'comp-b');
-        i0.ɵɵelementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: CompA,
+      selectors: [['comp-a']],
+      standalone: false,
+      decls: 2,
+      vars: 0,
+      consts: [['dirWithHost', '']],
+      template: function CompA_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div', 0);
+          i0.ɵɵelement(1, 'comp-b');
+          i0.ɵɵelementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -186,21 +192,23 @@ export class CompB {
     never,
     false,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: CompB,
-    selectors: [['comp-b']],
-    standalone: false,
-    decls: 2,
-    vars: 0,
-    template: function CompB_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'div');
-        i0.ɵɵtext(1, 'CompB');
-        i0.ɵɵelementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: CompB,
+      selectors: [['comp-b']],
+      standalone: false,
+      decls: 2,
+      vars: 0,
+      template: function CompB_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'CompB');
+          i0.ɵɵelementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -258,12 +266,14 @@ export class DirWithHost {
     never,
     false,
     [{ directive: typeof HostDir; inputs: {}; outputs: {} }]
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
-    type: DirWithHost,
-    selectors: [['', 'dirWithHost', '']],
-    standalone: false,
-    features: [i0.ɵɵHostDirectivesFeature([HostDir])],
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: DirWithHost,
+      selectors: [['', 'dirWithHost', '']],
+      standalone: false,
+      features: [i0.ɵɵHostDirectivesFeature([HostDir])],
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -316,7 +326,9 @@ export class HostDir {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({ type: HostDir, selectors: [['', 'hostDir', '']] });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({ type: HostDir, selectors: [['', 'hostDir', '']] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

@@ -20,20 +20,22 @@ export class CustomService {
     return new (__ngFactoryType__ || CustomService)(i0.ɵɵinject(Dep));
   };
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineInjectable({
-    token: CustomService,
-    factory: function CustomService_Factory(__ngFactoryType__: any): any {
-      let __ngConditionalFactory__: any = null;
-      if (__ngFactoryType__) {
-        __ngConditionalFactory__ = new __ngFactoryType__();
-      } else {
-        /* @ts-ignore */
-        __ngConditionalFactory__ = factory(i0.ɵɵinject(Dep, 8), i0.ɵɵinject(Dep));
-      }
-      return __ngConditionalFactory__;
-    },
-    providedIn: 'root',
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjectable({
+      token: CustomService,
+      factory: function CustomService_Factory(__ngFactoryType__: any): any {
+        let __ngConditionalFactory__: any = null;
+        if (__ngFactoryType__) {
+          __ngConditionalFactory__ = new __ngFactoryType__();
+        } else {
+          /* @ts-ignore */
+          __ngConditionalFactory__ = factory(i0.ɵɵinject(Dep, 8), i0.ɵɵinject(Dep));
+        }
+        return __ngConditionalFactory__;
+      },
+      providedIn: 'root',
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -78,11 +80,13 @@ export class DataService {
     return new (__ngFactoryType__ || DataService)(i0.ɵɵinject(LoggerService));
   };
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineInjectable({
-    token: DataService,
-    factory: DataService.ɵfac,
-    providedIn: 'root',
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjectable({
+      token: DataService,
+      factory: DataService.ɵfac,
+      providedIn: 'root',
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -118,11 +122,13 @@ export class LoggerService {
     return new (__ngFactoryType__ || LoggerService)();
   };
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineInjectable({
-    token: LoggerService,
-    factory: LoggerService.ɵfac,
-    providedIn: 'root',
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjectable({
+      token: LoggerService,
+      factory: LoggerService.ɵfac,
+      providedIn: 'root',
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -149,11 +155,13 @@ export abstract class UrlHandlingStrategy {
       return new (__ngFactoryType__ || UrlHandlingStrategy)();
     };
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineInjectable({
-    token: UrlHandlingStrategy,
-    factory: (): any => (() => inject(DefaultUrlHandlingStrategy))(),
-    providedIn: 'root',
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjectable({
+      token: UrlHandlingStrategy,
+      factory: (): any => (() => inject(DefaultUrlHandlingStrategy))(),
+      providedIn: 'root',
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -177,11 +185,13 @@ export class DefaultUrlHandlingStrategy {
       return new (__ngFactoryType__ || DefaultUrlHandlingStrategy)();
     };
   // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> = /*@__PURE__*/ i0.ɵɵdefineInjectable({
-    token: DefaultUrlHandlingStrategy,
-    factory: DefaultUrlHandlingStrategy.ɵfac,
-    providedIn: 'root',
-  });
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjectable({
+      token: DefaultUrlHandlingStrategy,
+      factory: DefaultUrlHandlingStrategy.ɵfac,
+      providedIn: 'root',
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

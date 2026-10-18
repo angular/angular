@@ -28,32 +28,34 @@ export class AppComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: AppComponent,
-    selectors: [['app-root']],
-    decls: 4,
-    vars: 0,
-    consts: [[3, 'click']],
-    template: function AppComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelementStart(0, 'button', 0);
-        i0.ɵɵlistener('click', function AppComponent_Template_button_click_0_listener(): any {
-          ctx.a();
-          return ctx.b();
-        });
-        i0.ɵɵtext(1, 'Chain');
-        i0.ɵɵelementEnd();
-        i0.ɵɵelementStart(2, 'button', 0);
-        i0.ɵɵlistener('click', function AppComponent_Template_button_click_2_listener(): any {
-          ctx.sig.set(true);
-          return ctx.a();
-        });
-        i0.ɵɵtext(3, 'Signal Chain');
-        i0.ɵɵelementEnd();
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 4,
+      vars: 0,
+      consts: [[3, 'click']],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'button', 0);
+          i0.ɵɵlistener('click', function AppComponent_Template_button_click_0_listener(): any {
+            ctx.a();
+            return ctx.b();
+          });
+          i0.ɵɵtext(1, 'Chain');
+          i0.ɵɵelementEnd();
+          i0.ɵɵelementStart(2, 'button', 0);
+          i0.ɵɵlistener('click', function AppComponent_Template_button_click_2_listener(): any {
+            ctx.sig.set(true);
+            return ctx.a();
+          });
+          i0.ɵɵtext(3, 'Signal Chain');
+          i0.ɵɵelementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

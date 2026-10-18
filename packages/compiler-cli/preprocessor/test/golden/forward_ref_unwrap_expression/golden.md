@@ -44,55 +44,57 @@ export class HostComponent {
     never,
     true,
     [{ directive: typeof DepDirective; inputs: {}; outputs: {} }]
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: HostComponent,
-    selectors: [['app-host']],
-    viewQuery: function HostComponent_Query(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵviewQuery(DepDirective, 5)(DepDirective, 5)(DepDirective, 5)(DepDirective, 5)(
-          DepDirective,
-          5,
-        )(
-          forwardRef(() => DepDirective),
-          5,
-        )(
-          forwardRef(() => DepDirective),
-          5,
-        )(
-          forwardRef(() => DepDirective),
-          5,
-        )(forwardRef((() => DepDirective)!), 5)(
-          forwardRef(() => {
-            return DepDirective;
-            log(1);
-          }),
-          5,
-        );
-      }
-      if (rf & 2) {
-        let _t: any;
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.plain = _t.first);
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.asCast = _t.first);
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.parenthesized = _t.first);
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.parenthesizedArg = _t.first);
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.asCastArg = _t.first);
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.nonNull = _t.first);
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.typeAssertion = _t.first);
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.satisfiesCast = _t.first);
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.nonNullArg = _t.first);
-        i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.returnFirst = _t.first);
-      }
-    },
-    features: [
-      i0.ɵɵHostDirectivesFeature(function (): any {
-        return [DepDirective];
-      }),
-    ],
-    decls: 0,
-    vars: 0,
-    template: function HostComponent_Template(rf: number, ctx: any): any {},
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: HostComponent,
+      selectors: [['app-host']],
+      viewQuery: function HostComponent_Query(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵviewQuery(DepDirective, 5)(DepDirective, 5)(DepDirective, 5)(DepDirective, 5)(
+            DepDirective,
+            5,
+          )(
+            forwardRef(() => DepDirective),
+            5,
+          )(
+            forwardRef(() => DepDirective),
+            5,
+          )(
+            forwardRef(() => DepDirective),
+            5,
+          )(forwardRef((() => DepDirective)!), 5)(
+            forwardRef(() => {
+              return DepDirective;
+              log(1);
+            }),
+            5,
+          );
+        }
+        if (rf & 2) {
+          let _t: any;
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.plain = _t.first);
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.asCast = _t.first);
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.parenthesized = _t.first);
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.parenthesizedArg = _t.first);
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.asCastArg = _t.first);
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.nonNull = _t.first);
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.typeAssertion = _t.first);
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.satisfiesCast = _t.first);
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.nonNullArg = _t.first);
+          i0.ɵɵqueryRefresh((_t = i0.ɵɵloadQuery())) && (ctx.returnFirst = _t.first);
+        }
+      },
+      features: [
+        i0.ɵɵHostDirectivesFeature(function (): any {
+          return [DepDirective];
+        }),
+      ],
+      decls: 0,
+      vars: 0,
+      template: function HostComponent_Template(rf: number, ctx: any): any {},
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -169,25 +171,27 @@ export class ImportsComponent {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: ImportsComponent,
-    selectors: [['app-imports']],
-    decls: 1,
-    vars: 0,
-    consts: [['dep', '']],
-    template: function ImportsComponent_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'div', 0);
-      }
-    },
-    dependencies: i0.ɵɵgetComponentDepsFactory(ImportsComponent, [
-      forwardRef(() => DepDirective)!,
-      forwardRef(() => DepDirective) as any,
-      forwardRef(() => DepDirective),
-      forwardRef(() => DepDirective),
-    ]),
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: ImportsComponent,
+      selectors: [['app-imports']],
+      decls: 1,
+      vars: 0,
+      consts: [['dep', '']],
+      template: function ImportsComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'div', 0);
+        }
+      },
+      dependencies: i0.ɵɵgetComponentDepsFactory(ImportsComponent, [
+        forwardRef(() => DepDirective)!,
+        forwardRef(() => DepDirective) as any,
+        forwardRef(() => DepDirective),
+        forwardRef(() => DepDirective),
+      ]),
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -242,7 +246,9 @@ export class DepDirective {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineDirective({ type: DepDirective, selectors: [['', 'dep', '']] });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({ type: DepDirective, selectors: [['', 'dep', '']] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

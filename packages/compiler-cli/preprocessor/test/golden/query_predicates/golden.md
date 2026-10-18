@@ -37,34 +37,40 @@ export class TestComp {
     never,
     true,
     never
-  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
-    type: TestComp,
-    selectors: [['test-comp']],
-    contentQueries: function TestComp_ContentQueries(rf: number, ctx: any, dirIndex: number): any {
-      if (rf & 1) {
-        i0.ɵɵcontentQuerySignal(dirIndex, ctx.constantQuery, nonAnalyzableRefersToString, 5);
-      }
-      if (rf & 2) {
-        i0.ɵɵqueryAdvance();
-      }
-    },
-    viewQuery: function TestComp_Query(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵviewQuerySignal(ctx.stringQuery, _c0, 5);
-      }
-      if (rf & 2) {
-        i0.ɵɵqueryAdvance();
-      }
-    },
-    decls: 1,
-    vars: 0,
-    template: function TestComp_Template(rf: number, ctx: any): any {
-      if (rf & 1) {
-        i0.ɵɵelement(0, 'div');
-      }
-    },
-    encapsulation: 2,
-  });
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: TestComp,
+      selectors: [['test-comp']],
+      contentQueries: function TestComp_ContentQueries(
+        rf: number,
+        ctx: any,
+        dirIndex: number,
+      ): any {
+        if (rf & 1) {
+          i0.ɵɵcontentQuerySignal(dirIndex, ctx.constantQuery, nonAnalyzableRefersToString, 5);
+        }
+        if (rf & 2) {
+          i0.ɵɵqueryAdvance();
+        }
+      },
+      viewQuery: function TestComp_Query(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵviewQuerySignal(ctx.stringQuery, _c0, 5);
+        }
+        if (rf & 2) {
+          i0.ɵɵqueryAdvance();
+        }
+      },
+      decls: 1,
+      vars: 0,
+      template: function TestComp_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelement(0, 'div');
+        }
+      },
+      encapsulation: 2,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
