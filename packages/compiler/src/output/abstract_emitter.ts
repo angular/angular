@@ -13,6 +13,13 @@ import {SourceMapGenerator} from './source_map';
 
 const SINGLE_QUOTE_ESCAPE_STRING_RE = /'|\\|\n|\r/g;
 const LEGAL_IDENTIFIER_RE = /^[$A-Z_][0-9A-Z_$]*$/i;
+const NON_ASCII_OR_CONTROL_CHAR_RE = /[\u0000-\u001f\u0080-\uffff]/g;
+const CONTROL_CHAR_ESCAPES = new Map<string, string>([
+  ['\t', '\\t'],
+  ['\v', '\\v'],
+  ['\f', '\\f'],
+  ['\b', '\\b'],
+]);
 const INDENT_WITH = '  ';
 
 class EmittedLine {
@@ -379,7 +386,7 @@ export abstract class AbstractEmitterVisitor
     this.printLeadingComments(ast, ctx);
     const value = ast.value;
     if (typeof value === 'string') {
-      ctx.print(ast, escapeIdentifier(value)!);
+      ctx.print(ast, this.escapeStringOrIdentifier(value));
     } else {
       ctx.print(ast, `${value}`);
     }
@@ -421,7 +428,7 @@ export abstract class AbstractEmitterVisitor
     ctx.print(ast, `import(`);
 
     if (typeof ast.url === 'string') {
-      ctx.print(ast, escapeIdentifier(ast.url, true)!);
+      ctx.print(ast, this.escapeStringOrIdentifier(ast.url, true));
     } else {
       ast.url.visitExpression(this, ctx);
     }
@@ -582,7 +589,7 @@ export abstract class AbstractEmitterVisitor
           ctx.println(ast);
         }
         this.printLeadingComments(entry, ctx);
-        ctx.print(ast, `${escapeIdentifier(entry.key, entry.quoted)}: `);
+        ctx.print(ast, `${this.escapeStringOrIdentifier(entry.key, entry.quoted)}: `);
         entry.value.visitExpression(this, ctx);
       }
     }
@@ -780,14 +787,25 @@ export abstract class AbstractEmitterVisitor
       }
     }
   }
+  protected escapeStringOrIdentifier(
+    input: string,
+    alwaysQuote: boolean = true,
+    escapeNonAscii: boolean = false,
+  ): string {
+    return escapeIdentifier(input, alwaysQuote, escapeNonAscii)!;
+  }
 }
 
-export function escapeIdentifier(input: string, alwaysQuote: boolean = true): string | null {
+export function escapeIdentifier(
+  input: string,
+  alwaysQuote: boolean = true,
+  escapeNonAscii: boolean = false,
+): string | null {
   if (input == null) {
     return null;
   }
 
-  const body = input.replace(SINGLE_QUOTE_ESCAPE_STRING_RE, (...match: string[]) => {
+  let body = input.replace(SINGLE_QUOTE_ESCAPE_STRING_RE, (...match: string[]) => {
     if (match[0] == '\n') {
       return '\\n';
     } else if (match[0] == '\r') {
@@ -798,5 +816,22 @@ export function escapeIdentifier(input: string, alwaysQuote: boolean = true): st
   });
 
   const requiresQuotes = alwaysQuote || !LEGAL_IDENTIFIER_RE.test(body);
-  return requiresQuotes ? `'${body}'` : body;
+  if (!requiresQuotes) {
+    return body;
+  }
+
+  if (escapeNonAscii) {
+    body = body.replace(NON_ASCII_OR_CONTROL_CHAR_RE, (c, offset, str) => {
+      const code = c.charCodeAt(0);
+      if (code === 0) {
+        const next = str.charCodeAt(offset + 1);
+        return next >= 48 /* '0' */ && next <= 57 /* '9' */ ? '\\x00' : '\\0';
+      }
+      return (
+        CONTROL_CHAR_ESCAPES.get(c) ?? '\\u' + code.toString(16).toUpperCase().padStart(4, '0')
+      );
+    });
+  }
+
+  return `'${body}'`;
 }

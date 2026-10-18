@@ -50,6 +50,17 @@ describe('AbstractEmitter', () => {
     it('does not escape class (but it probably should)', () => {
       expect(escapeIdentifier('class', false)).toEqual('class');
     });
+    it('should escape non-ascii and control characters when escapeNonAscii is true', () => {
+      expect(escapeIdentifier('Jos\u00e9 & \ud83d\ude0a', true, true)).toEqual(
+        `'Jos\\u00E9 & \\uD83D\\uDE0A'`,
+      );
+      expect(escapeIdentifier('\ufffd0\ufffd', true, true)).toEqual(`'\\uFFFD0\\uFFFD'`);
+      expect(escapeIdentifier('a\tb\0c\x009', true, true)).toEqual(`'a\\tb\\0c\\x009'`);
+    });
+    it('should not escape unquoted legal identifiers when escapeNonAscii is true', () => {
+      expect(escapeIdentifier('fooBar', false, true)).toEqual('fooBar');
+      expect(escapeIdentifier('foo-bar\u00e9', false, true)).toEqual(`'foo-bar\\u00E9'`);
+    });
   });
 
   describe('visitLiteralMapExpr', () => {

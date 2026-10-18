@@ -42,16 +42,12 @@ export function canonicalizeStringQuotes(code: string, ellipsisToken = '\u2026')
  * ngtsc-emitted code, e.g. the generated side of a source-map segment.
  *
  * NGP's printer quotes strings, parenthesizes and breaks lines differently from ngtsc's
- * TypeScript emit, which also escapes non-ASCII characters. `normalizeNgpEmitForComparison`
- * handles whole files with a parser, which can't run on a fragment, so this is a text-only
- * approximation: quotes are canonicalized, `\uXXXX` escapes decoded, and parentheses and
- * whitespace runs dropped.
+ * TypeScript emit. `normalizeNgpEmitForComparison` handles whole files with a parser, which can't
+ * run on a fragment, so this is a text-only approximation: quotes are canonicalized, and
+ * parentheses and whitespace runs dropped.
  */
 export function normalizeNgpSourceMapSegment(code: string): string {
-  return canonicalizeStringQuotes(code)
-    .replace(/\\u([0-9a-fA-F]{4})/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
-    .replace(/[()]/g, '')
-    .replace(/\s+/g, ' ');
+  return canonicalizeStringQuotes(code).replace(/[()]/g, '').replace(/\s+/g, ' ');
 }
 
 function transformOutsideStringLikeTokens(
@@ -220,9 +216,6 @@ export function normalizeNgpEmitForComparison(code: string, ellipsisToken = '\u2
       .replace(/\(([A-Za-z_$][A-Za-z0-9_$]*)\)\s*=>/g, '$1 =>')
       .replace(/\\\\n/g, '\\n')
       .replace(/\\\\r/g, '\\r')
-      .replace(/\\u([0-9a-fA-F]{4})/g, (_, hex) => {
-        return String.fromCharCode(parseInt(hex, 16));
-      })
       .replace(/ɵɵqueryRefresh\(\(([^)]+)\)\)/g, 'ɵɵqueryRefresh($1)')
       .replace(/,(\s*[\]})])/g, '$1')
       .replace(/^(\s*)\(("(?:[^"\\]|\\.)*")\);$/gm, '$1$2;')
