@@ -77,7 +77,7 @@ export class JitComponent {
     ...((ngDevMode ? [{ debugName: 'sigViewChildren' }] : /* istanbul ignore next */ []) as []),
   );
 
-  @i0.ContentChild('contentEl', { isSignal: true, descendants: true } as any) sigContentChild =
+  @i0.ContentChild('contentEl', { isSignal: true } as any) sigContentChild =
     contentChild<ElementRef>(
       'contentEl',
       ...((ngDevMode ? [{ debugName: 'sigContentChild' }] : /* istanbul ignore next */ []) as []),

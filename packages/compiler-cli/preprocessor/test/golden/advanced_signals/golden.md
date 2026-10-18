@@ -207,11 +207,9 @@ export class AdvancedComp {
           directOutputObs: [{ type: i0.Output, args: ['directOutputObs'] }],
           nsOutput: [{ type: i0.Output, args: ['nsOutput'] }],
           nsOutputObs: [{ type: i0.Output, args: ['nsOutputObs'] }],
-          directContentChild: [
-            { type: i0.ContentChild, args: ['tpl', { isSignal: true, descendants: true }] },
-          ],
+          directContentChild: [{ type: i0.ContentChild, args: ['tpl', { isSignal: true }] }],
           directRequiredContentChild: [
-            { type: i0.ContentChild, args: ['tpl', { isSignal: true, descendants: true }] },
+            { type: i0.ContentChild, args: ['tpl', { isSignal: true }] },
           ],
           directContentChildren: [{ type: i0.ContentChildren, args: ['tpl', { isSignal: true }] }],
           directViewChild: [{ type: i0.ViewChild, args: ['tpl', { isSignal: true }] }],

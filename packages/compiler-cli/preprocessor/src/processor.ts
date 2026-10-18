@@ -479,14 +479,11 @@ export function processFileSync(
         const predicateStr = query.predicateSelectors
           ? rawPred
           : `${coreNamespace}.forwardRef(() => ${rawPred})`;
-        const optionsObj: string[] = ['isSignal: true'];
-        if (query.readSpan) {
-          const readStr = s.original.slice(query.readSpan.start, query.readSpan.end);
-          optionsObj.push(`read: ${readStr}`);
+        const optionsObj: string[] = [];
+        if (query.optionsSpan) {
+          optionsObj.push(`...${s.original.slice(query.optionsSpan.start, query.optionsSpan.end)}`);
         }
-        if (!query.isView && query.descendants) {
-          optionsObj.push('descendants: true');
-        }
+        optionsObj.push('isSignal: true');
         const optionsStr = `({${optionsObj.join(', ')}} as any)`;
         s.appendLeft(
           query.propertySpan!.start,
@@ -2178,34 +2175,28 @@ function buildPropDecoratorsExpr(
       ]);
     }
 
-    const queryOptionsProps: {key: string; value: o.Expression; quoted: boolean}[] = [
-      {key: 'isSignal', value: o.literal(true), quoted: false},
-    ];
-    if (query.readSpan) {
+    const queryOptionsEntries: o.LiteralMapEntry[] = [];
+    if (query.optionsSpan) {
       // TODO(cleanup): `laterDeclarationReferences` only covers decorator arguments, so a signal
-      // query's `read` naming a later declaration is unguarded and fails `tsc` inside the static
+      // query's options naming a later declaration is unguarded and fails `tsc` inside the static
       // block.
-      const readStr = s.original.slice(query.readSpan.start, query.readSpan.end);
-      queryOptionsProps.push({
-        key: 'read',
-        value: new o.WrappedNodeExpr(new RawSource(readStr, [query.readSpan])),
-        quoted: false,
-      });
+      const optionsStr = s.original.slice(query.optionsSpan.start, query.optionsSpan.end);
+      queryOptionsEntries.push(
+        new o.LiteralMapSpreadAssignment(
+          new o.WrappedNodeExpr(new RawSource(optionsStr, [query.optionsSpan])),
+        ),
+      );
     }
-    if (!query.isView && query.descendants) {
-      queryOptionsProps.push({
-        key: 'descendants',
-        value: o.literal(true),
-        quoted: false,
-      });
-    }
+    queryOptionsEntries.push(
+      new o.LiteralMapPropertyAssignment('isSignal', o.literal(true), false),
+    );
 
     entry.decorators.push(
       o.literalMap([
         {key: 'type', value: new o.ExternalExpr(queryIdentifier), quoted: false},
         {
           key: 'args',
-          value: o.literalArr([predicateExpr, o.literalMap(queryOptionsProps)]),
+          value: o.literalArr([predicateExpr, new o.LiteralMapExpr(queryOptionsEntries)]),
           quoted: false,
         },
       ]),

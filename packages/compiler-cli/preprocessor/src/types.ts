@@ -722,6 +722,7 @@ export interface QueryMetadata {
   descendants: boolean;
   emitDistinctChangesOnly: boolean;
   readSpan?: SpanMetadata;
+  optionsSpan?: SpanMetadata;
   isStatic: boolean;
   isSignal: boolean;
   decoratorSpan?: SpanMetadata;

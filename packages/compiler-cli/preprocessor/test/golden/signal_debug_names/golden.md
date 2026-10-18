@@ -373,9 +373,7 @@ export class SignalDebugNamesComponent {
             { type: i0.Input, args: [{ isSignal: true, alias: 'req', required: true }] },
             { type: i0.Output, args: ['reqChange'] },
           ],
-          projected: [
-            { type: i0.ContentChild, args: ['x', { isSignal: true, descendants: true }] },
-          ],
+          projected: [{ type: i0.ContentChild, args: ['x', { isSignal: true }] }],
           el: [{ type: i0.ViewChild, args: ['el', { isSignal: true }] }],
         },
       );

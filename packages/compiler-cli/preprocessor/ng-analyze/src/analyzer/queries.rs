@@ -223,6 +223,7 @@ pub fn extract_queries<'a>(
                 descendants,
                 emit_distinct_changes_only,
                 read_span,
+                options_span: None,
                 is_static,
                 is_signal: false,
                 decorator_span: Some(decorator.span),
@@ -263,6 +264,11 @@ pub fn extract_queries<'a>(
         let predicate = extract_predicate(&call.arguments[0], PredicateKind::Signal, eval);
         let (descendants, emit_distinct_changes_only, read_span, is_static) =
             extract_query_options(&call.arguments, default_descendants, semantic);
+        let options_span = call
+            .arguments
+            .get(1)
+            .and_then(|arg| arg.as_expression())
+            .map(GetSpan::span);
         if let Some(reads) = top_level_reads.as_deref_mut() {
             super::collect_argument_references(
                 &call.arguments,
@@ -282,6 +288,7 @@ pub fn extract_queries<'a>(
             descendants,
             emit_distinct_changes_only,
             read_span,
+            options_span,
             is_static,
             is_signal: true,
             decorator_span: None,
@@ -341,6 +348,7 @@ pub(crate) fn parse_legacy_query<'a>(
         descendants,
         emit_distinct_changes_only,
         read_span,
+        options_span: None,
         is_static,
         is_signal: false,
         decorator_span: Some(expr.span()),
@@ -367,6 +375,7 @@ mod tests {
         descendants: bool,
         emit_distinct_changes_only: bool,
         read: Option<String>,
+        options: Option<String>,
         is_static: bool,
         is_signal: bool,
     }
@@ -419,6 +428,9 @@ mod tests {
                             vec![q.predicate_span.source_text(source_text).to_string()]
                         });
                         let read = q.read_span.map(|s| s.source_text(source_text).to_string());
+                        let options = q
+                            .options_span
+                            .map(|s| s.source_text(source_text).to_string());
 
                         let res = QueryTestResult {
                             property_name: q.property_name,
@@ -429,6 +441,7 @@ mod tests {
                             descendants: q.descendants,
                             emit_distinct_changes_only: q.emit_distinct_changes_only,
                             read,
+                            options,
                             is_static: q.is_static,
                             is_signal: q.is_signal,
                         };
@@ -564,20 +577,33 @@ mod tests {
         assert!(queries[0].is_signal);
         assert!(queries[0].descendants);
         assert!(queries[0].emit_distinct_changes_only);
+        assert_eq!(
+            queries[0].options.as_deref(),
+            Some("{ descendants: true }")
+        );
 
         assert_eq!(queries[1].property_name, "signalContentItems");
         assert!(!queries[1].first);
         assert!(queries[1].is_signal);
         assert!(!queries[1].descendants);
+        assert_eq!(
+            queries[1].options.as_deref(),
+            Some("{ descendants: false }")
+        );
 
         assert_eq!(queries[2].property_name, "signalContentItemsDefault");
         assert!(!queries[2].first);
         assert!(!queries[2].descendants);
         assert!(queries[2].emit_distinct_changes_only);
+        assert_eq!(queries[2].options, None);
 
         assert_eq!(queries[3].property_name, "signalContentItemsNoDistinct");
         assert!(!queries[3].first);
         assert!(!queries[3].emit_distinct_changes_only);
+        assert_eq!(
+            queries[3].options.as_deref(),
+            Some("{ emitDistinctChangesOnly: false }")
+        );
 
         assert_eq!(view_queries.len(), 6);
 
@@ -586,10 +612,15 @@ mod tests {
         assert!(view_queries[0].is_signal);
         assert!(view_queries[0].descendants);
         assert!(view_queries[0].emit_distinct_changes_only);
+        assert_eq!(view_queries[0].options, None);
 
         assert_eq!(view_queries[1].property_name, "signalTpl");
         assert!(view_queries[1].first);
         assert_eq!(view_queries[1].read.as_deref(), Some("TemplateRef"));
+        assert_eq!(
+            view_queries[1].options.as_deref(),
+            Some("{ read: TemplateRef }")
+        );
 
         assert_eq!(view_queries[2].property_name, "signalItems");
         assert!(!view_queries[2].first);
