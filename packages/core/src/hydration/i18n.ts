@@ -453,7 +453,7 @@ function prepareI18nBlockForHydrationImpl(
 
   const disconnectedNodes = initDisconnectedNodes(hydrationInfo) ?? new Set();
   const i18nNodes = (hydrationInfo.i18nNodes ??= new Map<number, RNode | null>());
-  const caseQueue = hydrationInfo.data[I18N_DATA]?.[index - HEADER_OFFSET] ?? [];
+  const caseQueue = [...(hydrationInfo.data[I18N_DATA]?.[index - HEADER_OFFSET] ?? [])];
   const dehydratedIcuData = (hydrationInfo.dehydratedIcuData ??= new Map<
     number,
     DehydratedIcuData

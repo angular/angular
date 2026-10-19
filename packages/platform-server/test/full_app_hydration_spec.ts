@@ -2432,6 +2432,48 @@ describe('platform-server full application hydration integration', () => {
           expect(clientRootNode.querySelector('#four').textContent).toBe(' two-two ');
         });
 
+        it('should hydrate ICUs in components that share serialized hydration data', async () => {
+          @Component({
+            selector: 'simple-component',
+            template: `<div i18n>
+              {count, plural, =1 {one item} other {{{ count }} items}}
+            </div>`,
+          })
+          class SimpleComponent {
+            @Input() count!: number;
+          }
+
+          @Component({
+            imports: [SimpleComponent],
+            selector: 'app',
+            template: `
+              <simple-component id="one" [count]="21" />
+              <simple-component id="two" [count]="19" />
+            `,
+          })
+          class AppComponent {}
+
+          const hydrationFeatures = () => [withI18nSupport()];
+          const html = await ssr(AppComponent, {hydrationFeatures});
+          const ssrContents = getAppContents(html);
+          expect(ssrContents).toContain('<app ngh');
+
+          resetTViewsFor(AppComponent);
+
+          const appRef = await prepareEnvironmentAndHydrate(doc, html, AppComponent, {
+            hydrationFeatures,
+          });
+          const compRef = getComponentRef<AppComponent>(appRef);
+          appRef.tick();
+
+          const clientRootNode = compRef.location.nativeElement;
+          verifyAllNodesClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+
+          expect(clientRootNode.querySelector('#one').textContent).toBe(' 21 items ');
+          expect(clientRootNode.querySelector('#two').textContent).toBe(' 19 items ');
+        });
+
         it('should hydrate containers', async () => {
           @Component({
             selector: 'app',
