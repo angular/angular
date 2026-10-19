@@ -6,16 +6,24 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ParsedTemplate} from '@angular/compiler';
+import {ParsedTemplate, TmplAstNode} from '@angular/compiler';
 
 import {PreparedTcbData} from './tcb.js';
 import {AnalysisResult, DeclarationMetadata} from './types.js';
+
+export interface ParsedComponentTemplate extends ParsedTemplate {
+  /**
+   * Nodes of the template parsed with whitespace, line endings, and leading trivia preserved,
+   * for accurate source spans in type-checking, diagnostics, and indexing.
+   */
+  diagNodes: TmplAstNode[];
+}
 
 export interface FileAnalysis {
   filePath: string;
   tcb?: string | null;
   // maps keyed by className
-  parsedTemplates?: Map<string, ParsedTemplate>;
+  parsedTemplates?: Map<string, ParsedComponentTemplate>;
   preparedTcbData?: PreparedTcbData | null;
 }
 

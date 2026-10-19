@@ -195,7 +195,7 @@ function indexFileComponents(
       }
     }
     const visitor = new IndexerVisitor<ClassEntity>(new IndexerBoundTemplate(boundTarget, pipeMap));
-    parsedTemplate.nodes.forEach((node: TmplAstNode) => node.visit(visitor));
+    parsedTemplate.diagNodes.forEach((node: TmplAstNode) => node.visit(visitor));
 
     const identifiers = new Set<TopLevelIdentifier>();
 

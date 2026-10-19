@@ -13,7 +13,7 @@ var _pipe1 = null! as i1.DeferredPipe;
 /*tcb1*/
 function _tcb1(this: i0.AppComponent) {
   if (true) {
-    '' + _pipe1.transform(/*306,318*/ 'hello' /*296,303*/) /*296,318*/;
+    '' + _pipe1.transform(/*312,324*/ 'hello' /*302,309*/) /*302,324*/;
   }
 }
 

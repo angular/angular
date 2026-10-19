@@ -13,7 +13,7 @@ var _pipe1 = null! as i1.TrimPipe;
 /*tcb1*/
 function _tcb1(this: i0.AppComponent) {
   if (true) {
-    '' + _pipe1.transform(/*327,331*/ ' hello ' /*315,324*/) /*315,331*/;
+    '' + _pipe1.transform(/*329,333*/ '  hello  ' /*315,326*/) /*315,333*/;
   }
 }
 

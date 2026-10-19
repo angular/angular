@@ -13,7 +13,7 @@ var _pipe1 = null! as i1.TestPipe;
 /*tcb1*/
 function _tcb1(this: i0.AppComponent) {
   if (true) {
-    '' + _pipe1.transform(/*235,243*/ 'hello' /*225,232*/) /*225,243*/;
+    '' + _pipe1.transform(/*241,249*/ 'hello' /*231,238*/) /*231,249*/;
   }
 }
 
