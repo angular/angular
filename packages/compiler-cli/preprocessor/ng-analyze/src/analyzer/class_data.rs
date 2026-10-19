@@ -591,6 +591,46 @@ impl ValueIssue {
         )
     }
 
+    /// `VALUE_NOT_LITERAL` (`NG1011`).
+    pub fn not_literal(span: oxc_span::Span, message: impl Into<String>) -> Self {
+        Self::new("1011", span, message)
+    }
+
+    /// `INITIALIZER_API_WITH_DISALLOWED_DECORATOR` (`NG1050`).
+    pub fn disallowed_decorator(span: oxc_span::Span, message: impl Into<String>) -> Self {
+        Self::new("1050", span, message)
+    }
+
+    /// `INITIALIZER_API_DECORATOR_METADATA_COLLISION` (`NG1051`).
+    pub fn metadata_collision(span: oxc_span::Span, message: impl Into<String>) -> Self {
+        Self::new("1051", span, message)
+    }
+
+    /// `INITIALIZER_API_NO_REQUIRED_FUNCTION` (`NG1052`).
+    pub fn no_required_function(span: oxc_span::Span, message: impl Into<String>) -> Self {
+        Self::new("1052", span, message)
+    }
+
+    /// `INITIALIZER_API_DISALLOWED_MEMBER_VISIBILITY` (`NG1053`).
+    pub fn disallowed_member_visibility(
+        span: oxc_span::Span,
+        function_name: &str,
+        level: MemberAccessLevel,
+        allowed: &[MemberAccessLevel],
+    ) -> Self {
+        let allowed: Vec<&str> = allowed.iter().map(|level| level.as_str()).collect();
+        Self::new(
+            "1053",
+            span,
+            format!(
+                "Cannot use \"{function_name}\" on a class member that is declared as {}.\n  \
+                 Update the class field to be either: {}",
+                level.as_str(),
+                allowed.join(", ")
+            ),
+        )
+    }
+
     /// `INCORRECTLY_DECLARED_ON_STATIC_MEMBER` (`NG1100`).
     pub fn declared_on_static_member(span: oxc_span::Span, message: impl Into<String>) -> Self {
         Self::new("1100", span, message)
@@ -601,6 +641,22 @@ impl ValueIssue {
         Self::new("6009", span, message)
     }
 
+    /// `UNSUPPORTED_INITIALIZER_API_USAGE` (`NG8110`).
+    pub fn unsupported_initializer_api_usage(
+        span: oxc_span::Span,
+        message: impl Into<String>,
+    ) -> Self {
+        Self::new("8110", span, message)
+    }
+
+    /// `FORBIDDEN_REQUIRED_INITIALIZER_INVOCATION` (`NG8118`).
+    pub fn forbidden_required_initializer_invocation(
+        span: oxc_span::Span,
+        message: impl Into<String>,
+    ) -> Self {
+        Self::new("8118", span, message)
+    }
+
     fn new(code: &'static str, span: oxc_span::Span, message: impl Into<String>) -> Self {
         Self {
             code,
@@ -608,6 +664,73 @@ impl ValueIssue {
             message: message.into(),
         }
     }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum MemberAccessLevel {
+    PublicWritable,
+    PublicReadonly,
+    Protected,
+    Private,
+    EcmaScriptPrivate,
+}
+
+impl MemberAccessLevel {
+    pub fn of(
+        key: &oxc_ast::ast::PropertyKey<'_>,
+        accessibility: Option<oxc_ast::ast::TSAccessibility>,
+        readonly: bool,
+    ) -> Self {
+        use oxc_ast::ast::TSAccessibility;
+        if matches!(key, oxc_ast::ast::PropertyKey::PrivateIdentifier(_)) {
+            return Self::EcmaScriptPrivate;
+        }
+        match accessibility {
+            Some(TSAccessibility::Private) => Self::Private,
+            Some(TSAccessibility::Protected) => Self::Protected,
+            _ if readonly => Self::PublicReadonly,
+            _ => Self::PublicWritable,
+        }
+    }
+
+    /// ngtsc's `classMemberAccessLevelToString`.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::PublicWritable => "public",
+            Self::PublicReadonly => "public readonly",
+            Self::Protected => "protected",
+            Self::Private => "private",
+            Self::EcmaScriptPrivate => "ES private",
+        }
+    }
+}
+
+/// The `NG1051` ngtsc reports when a class member declared through an initializer API is also
+/// named by the class decorator's `inputs`/`outputs` metadata.
+/// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L1480-L1487
+/// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L1957-L1968
+pub(crate) fn initializer_metadata_collision(
+    member_field: &AngularField,
+    decorator_name: &str,
+) -> Option<ValueIssue> {
+    let (span, message) = match member_field {
+        AngularField::Input(input) if input.is_signal => (
+            input.property_span?,
+            format!(
+                "Input \"{}\" is also declared as non-signal in @{decorator_name}.",
+                input.name
+            ),
+        ),
+        AngularField::Output(output) if output.is_signal => (
+            output.property_span?,
+            format!(
+                "Output \"{}\" is unexpectedly declared in @{decorator_name} as well.",
+                output.name
+            ),
+        ),
+        _ => return None,
+    };
+    Some(ValueIssue::metadata_collision(span, message))
 }
 
 /// The `templateUrl` expression, as ngtsc's `parseTemplateDeclaration` evaluates it: must

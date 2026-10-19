@@ -1,7 +1,9 @@
 use oxc_ast::ast::{Argument, Expression, ObjectPropertyKind};
 use oxc_span::GetSpan;
 
-use crate::analyzer::class_data::{AngularField, InputData, OutputData, TransformData, ValueIssue};
+use crate::analyzer::class_data::{
+    AngularField, InputData, MemberAccessLevel, OutputData, TransformData, ValueIssue,
+};
 use crate::analyzer::evaluated_io::{
     read_input_options, read_output_alias, ClassMemberFacts, IoKind, MemberIoOptions, Read,
 };
@@ -191,38 +193,77 @@ pub fn parse_output_decorator<'a>(
     })
 }
 /// Check if property is initialized with input(), output() or model()
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum SignalMember {
+    Input,
+    Model,
+    Output,
+}
+
+/// The access levels `input()`, `model()`, `output()` and `outputFromObservable()` accept.
+const IO_ALLOWED_ACCESS_LEVELS: [MemberAccessLevel; 3] = [
+    MemberAccessLevel::PublicWritable,
+    MemberAccessLevel::PublicReadonly,
+    MemberAccessLevel::Protected,
+];
+
+/// Check if property is initialized with input(), output() or model(), recording the field.
+/// Returns which API it was, or `None` when the initializer is not one (or was rejected).
 fn parse_signal_input_output(
     prop: &oxc_ast::ast::PropertyDefinition,
     ctx: &ExtractContext<'_, '_>,
     out: &mut MemberIo,
-) -> bool {
-    let Some(init) = prop.value.as_ref() else {
-        return false;
+) -> Option<SignalMember> {
+    let init = prop.value.as_ref()?;
+    let Expression::CallExpression(call) = init.get_inner_expression() else {
+        return None;
+    };
+    let prop_name = super::utils::class_member_name(&prop.key)?.into_owned();
+    let resolved_call = resolve_angular_call(call, ctx.semantic, ctx.angular_imports)?;
+
+    let (kind, is_required, options_arg) = match resolved_call {
+        ResolvedAngularCall::Input { is_required } => (
+            SignalMember::Input,
+            is_required,
+            call.arguments.get(usize::from(!is_required)),
+        ),
+        ResolvedAngularCall::Model { is_required } => (
+            SignalMember::Model,
+            is_required,
+            call.arguments.get(usize::from(!is_required)),
+        ),
+        ResolvedAngularCall::Output { is_required } => {
+            (SignalMember::Output, is_required, call.arguments.first())
+        }
+        ResolvedAngularCall::OutputFromObservable { is_required } => {
+            (SignalMember::Output, is_required, call.arguments.get(1))
+        }
+        _ => return None,
     };
 
-    let call = match init.get_inner_expression() {
-        Expression::CallExpression(c) => c,
-        _ => return false,
-    };
+    if kind == SignalMember::Output && is_required {
+        out.issues.push(ValueIssue::no_required_function(
+            call.span,
+            "Output does not support \".required()\".",
+        ));
+        return None;
+    }
 
-    let Some(prop_name_cow) = extract_property_key(&prop.key) else {
-        return false;
-    };
-    let prop_name = prop_name_cow.into_owned();
+    let access_level = MemberAccessLevel::of(&prop.key, prop.accessibility, prop.readonly);
+    if !IO_ALLOWED_ACCESS_LEVELS.contains(&access_level) {
+        out.issues.push(ValueIssue::disallowed_member_visibility(
+            call.span,
+            resolved_call.function_name(),
+            access_level,
+            &IO_ALLOWED_ACCESS_LEVELS,
+        ));
+        return None;
+    }
 
-    let Some(resolved_call) = resolve_angular_call(call, ctx.semantic, ctx.angular_imports) else {
-        return false;
-    };
-
-    match resolved_call {
-        ResolvedAngularCall::Input { is_required } => {
-            let options_arg = if is_required {
-                call.arguments.first()
-            } else {
-                call.arguments.get(1)
-            };
-            let options = signal_options(options_arg, out);
-            let input = InputData {
+    let options = signal_options(options_arg, out)?;
+    match kind {
+        SignalMember::Input => {
+            out.fields.push(AngularField::Input(InputData {
                 name: prop_name,
                 alias: options.alias,
                 required: is_required,
@@ -232,20 +273,16 @@ fn parse_signal_input_output(
                 transform: options.transform,
                 is_restricted: false,
                 is_literal: false,
-            };
-            out.fields.push(AngularField::Input(input));
-            true
+            }));
         }
-        ResolvedAngularCall::Model { is_required } => {
-            let options_arg = if is_required {
-                call.arguments.first()
-            } else {
-                call.arguments.get(1)
-            };
-            let options = signal_options(options_arg, out);
-            let input = InputData {
+        SignalMember::Model => {
+            let output_alias = Some(format!(
+                "{}Change",
+                options.alias.as_deref().unwrap_or(&prop_name)
+            ));
+            out.fields.push(AngularField::Input(InputData {
                 name: prop_name.clone(),
-                alias: options.alias.clone(),
+                alias: options.alias,
                 required: is_required,
                 is_signal: true,
                 decorator_span: None,
@@ -253,64 +290,42 @@ fn parse_signal_input_output(
                 transform: None,
                 is_restricted: false,
                 is_literal: false,
-            };
-            let output_alias = Some(format!(
-                "{}Change",
-                options.alias.as_ref().unwrap_or(&prop_name)
-            ));
-            let output = OutputData {
+            }));
+            out.fields.push(AngularField::Output(OutputData {
                 name: prop_name,
                 alias: output_alias,
                 decorator_span: None,
                 property_span: Some(prop.span),
                 is_signal: true,
-            };
-            out.fields.push(AngularField::Input(input));
-            out.fields.push(AngularField::Output(output));
-            true
+            }));
         }
-        ResolvedAngularCall::Output => {
-            let options = signal_options(call.arguments.first(), out);
-            let output = OutputData {
+        SignalMember::Output => {
+            out.fields.push(AngularField::Output(OutputData {
                 name: prop_name,
                 alias: options.alias,
                 is_signal: true,
                 decorator_span: None,
                 property_span: Some(prop.span),
-            };
-            out.fields.push(AngularField::Output(output));
-            false
+            }));
         }
-        ResolvedAngularCall::OutputFromObservable => {
-            let options = signal_options(call.arguments.get(1), out);
-            let output = OutputData {
-                name: prop_name,
-                alias: options.alias,
-                is_signal: true,
-                decorator_span: None,
-                property_span: Some(prop.span),
-            };
-            out.fields.push(AngularField::Output(output));
-            false
-        }
-        _ => false,
     }
+    Some(kind)
 }
 
 /// The options argument of `input()`, `model()`, `output()` or `outputFromObservable()`, read
 /// the way ngtsc's `parseAndValidateInputAndOutputOptions` reads it: *not* evaluated. The
 /// argument must be an object literal and its `alias` a string literal; anything else is
-/// reported rather than followed through a constant.
-fn signal_options(arg: Option<&Argument>, out: &mut MemberIo) -> InputOptions {
+/// reported rather than followed through a constant, and `None` says so.
+fn signal_options(arg: Option<&Argument>, out: &mut MemberIo) -> Option<InputOptions> {
     let Some(arg) = arg.and_then(Argument::as_expression) else {
-        return InputOptions::default();
+        return Some(InputOptions::default());
     };
     let Expression::ObjectExpression(obj) = arg else {
         out.issues.push(ValueIssue::wrong_type(
             arg.span(),
             "Argument needs to be an object literal that is statically analyzable.",
         ));
-        return InputOptions::default();
+        return None;
     };
 
     let mut alias = None;
@@ -327,14 +342,15 @@ fn signal_options(arg: Option<&Argument>, out: &mut MemberIo) -> InputOptions {
                 p.value.span(),
                 "Alias needs to be a string that is statically analyzable.",
             ));
+            return None;
         }
     }
 
-    InputOptions {
+    Some(InputOptions {
         alias,
         required: false,
         transform: object_literal_transform(obj),
-    }
+    })
 }
 
 /// The `transform` of an input options object written as a literal: emitted from its source
@@ -364,6 +380,18 @@ pub(crate) fn object_literal_transform(
     })
 }
 
+fn disallowed_decorator_message(decorator: &str, signal: SignalMember) -> Option<&'static str> {
+    match (decorator, signal) {
+        ("Input", SignalMember::Input) => Some("Using @Input with a signal input is not allowed."),
+        ("Input", SignalMember::Model) => Some("Using @Input with a model input is not allowed."),
+        ("Output", SignalMember::Output) => {
+            Some("Using \"@Output\" with \"output()\" is not allowed.")
+        }
+        ("Output", SignalMember::Model) => Some("Using @Output with a model input is not allowed."),
+        _ => None,
+    }
+}
+
 #[allow(clippy::too_many_arguments)]
 fn process_decorators<'a>(
     decorators: &'a [oxc_ast::ast::Decorator<'a>],
@@ -371,14 +399,27 @@ fn process_decorators<'a>(
     key: &'a oxc_ast::ast::PropertyKey<'a>,
     accessibility: Option<oxc_ast::ast::TSAccessibility>,
     readonly: bool,
-    is_signal: bool,
+    signal: Option<SignalMember>,
     property_span: Option<oxc_span::Span>,
     ctx: &ExtractContext<'_, '_>,
     out: &mut MemberIo,
 ) {
-    let mut is_input = is_signal;
+    let mut is_input = matches!(signal, Some(SignalMember::Input | SignalMember::Model));
 
     for decorator in decorators {
+        let collision = signal.and_then(|signal| {
+            ["Input", "Output"]
+                .into_iter()
+                .find(|name| {
+                    is_angular_decorator_named(decorator, name, ctx.semantic, ctx.angular_imports)
+                })
+                .and_then(|name| disallowed_decorator_message(name, signal))
+        });
+        if let Some(message) = collision {
+            out.issues
+                .push(ValueIssue::disallowed_decorator(decorator.span, message));
+            continue;
+        }
         if let Some((input, _transform)) =
             parse_input_decorator(decorator, prop_name, property_span, ctx, out)
         {
@@ -436,7 +477,8 @@ pub fn extract_inputs_outputs<'a>(
     for element in &class.body.body {
         let (prop_name, is_static, declaration_span) = match element {
             oxc_ast::ast::ClassElement::PropertyDefinition(prop) => {
-                let Some(prop_name) = extract_property_key(&prop.key).map(|n| n.into_owned())
+                let Some(prop_name) =
+                    super::utils::class_member_name(&prop.key).map(|n| n.into_owned())
                 else {
                     continue;
                 };
@@ -445,7 +487,7 @@ pub fn extract_inputs_outputs<'a>(
                     static_coerced.push(prop_name["ngAcceptInputType_".len()..].to_string());
                 }
 
-                let is_signal = parse_signal_input_output(prop, &ctx, &mut out);
+                let signal = parse_signal_input_output(prop, &ctx, &mut out);
 
                 process_decorators(
                     &prop.decorators,
@@ -453,7 +495,7 @@ pub fn extract_inputs_outputs<'a>(
                     &prop.key,
                     prop.accessibility,
                     prop.readonly,
-                    is_signal,
+                    signal,
                     Some(prop.span),
                     &ctx,
                     &mut out,
@@ -473,7 +515,7 @@ pub fn extract_inputs_outputs<'a>(
                     &method.key,
                     method.accessibility,
                     false,
-                    false,
+                    None,
                     Some(method.span),
                     &ctx,
                     &mut out,
@@ -491,7 +533,7 @@ pub fn extract_inputs_outputs<'a>(
                     &acc.key,
                     acc.accessibility,
                     false,
-                    false,
+                    None,
                     Some(acc.span),
                     &ctx,
                     &mut out,
@@ -1254,8 +1296,7 @@ mod tests {
         "#;
 
         let ext = parse_class(source);
-        assert_eq!(ext.inputs[0].alias, None);
-        assert_eq!(ext.inputs[1].alias, None);
+        assert!(ext.inputs.is_empty(), "{:?}", ext.inputs);
         assert_eq!(ext.outputs[0].alias.as_deref(), Some("literalAlias"));
 
         let messages: Vec<&str> = ext.issues.iter().map(|i| i.message.as_str()).collect();

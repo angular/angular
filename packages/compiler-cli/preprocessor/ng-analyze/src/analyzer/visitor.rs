@@ -215,6 +215,26 @@ fn find_matching_field_mut<'a>(
     }
 }
 
+fn query_metadata_collision(
+    existing: &AngularField,
+    member: &AngularField,
+    decorator_name: &str,
+) -> Option<ValueIssue> {
+    let (AngularField::Query(metadata), AngularField::Query(member)) = (existing, member) else {
+        return None;
+    };
+    if !member.is_signal || metadata.property_span.is_some() {
+        return None;
+    }
+    Some(ValueIssue::metadata_collision(
+        metadata.decorator_span?,
+        format!(
+            "Query is declared multiple times. \"@{decorator_name}\" declares a query for the \
+             same property."
+        ),
+    ))
+}
+
 fn populate_directive_members(
     d: &mut DirectiveData,
     members: ParsedMembers,
@@ -223,6 +243,11 @@ fn populate_directive_members(
 ) {
     for member_field in members.fields {
         if let Some(existing) = find_matching_field_mut(&mut d.fields, &member_field) {
+            let decorator_name = d.decorator_name.as_deref().unwrap_or("Directive");
+            d.io_issues.extend(
+                super::class_data::initializer_metadata_collision(&member_field, decorator_name)
+                    .or_else(|| query_metadata_collision(existing, &member_field, decorator_name)),
+            );
             *existing = member_field;
         } else {
             d.fields.push(member_field);
@@ -788,7 +813,14 @@ pub fn analyze_parsed<Fs: ResourceResolverFs>(
     }
 
     let file_exports = extract_file_exports(module_record);
-    let output = visitor.into_results(file_exports);
+    let mut output = visitor.into_results(file_exports);
+    for issue in super::initializer_api_usage::initializer_api_usage_issues(
+        semantic,
+        &angular_imports,
+        source_text,
+    ) {
+        super::class_data::push_issue(&mut output.diagnostics, path, converter, &issue);
+    }
 
     let import_declarations = super::imports::collect_import_declarations(
         program,

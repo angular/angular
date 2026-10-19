@@ -385,11 +385,17 @@ impl DirectiveData {
         let mut folded: Vec<AngularField> = Vec::with_capacity(entries.len() + self.fields.len());
         for entry in entries {
             let mut field = entry_field(array, entry);
-            if self
+            if let Some(existing) = self
                 .fields
                 .iter()
-                .any(|existing| same_field(existing, &field))
+                .find(|existing| same_field(existing, &field))
             {
+                let decorator_name = self.decorator_name.as_deref().unwrap_or("Directive");
+                self.io_issues
+                    .extend(crate::analyzer::class_data::initializer_metadata_collision(
+                        existing,
+                        decorator_name,
+                    ));
                 continue;
             }
             bind_to_member(&mut field, members);

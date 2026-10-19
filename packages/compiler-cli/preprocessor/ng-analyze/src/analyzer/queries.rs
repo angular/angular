@@ -9,7 +9,16 @@ use super::utils::{
     get_canonical_decorator_name, get_decorator_args, resolve_angular_call,
     resolve_expression_symbol, resolve_local_expression, unwrap_forward_ref, ResolvedAngularCall,
 };
-use crate::analyzer::class_data::{AngularField, QueryData, QueryPredicate, ValueIssue};
+use crate::analyzer::class_data::{
+    AngularField, MemberAccessLevel, QueryData, QueryPredicate, ValueIssue,
+};
+
+const QUERY_ALLOWED_ACCESS_LEVELS: [MemberAccessLevel; 4] = [
+    MemberAccessLevel::PublicWritable,
+    MemberAccessLevel::PublicReadonly,
+    MemberAccessLevel::Protected,
+    MemberAccessLevel::Private,
+];
 
 fn get_runtime_expression<'a>(
     expr: &'a oxc_ast::ast::Expression<'a>,
@@ -400,18 +409,34 @@ pub fn extract_queries<'a>(
     let mut fields = Vec::new();
 
     for element in &class.body.body {
-        let (decorators, key, value) = match element {
-            ClassElement::PropertyDefinition(prop) => {
-                (&prop.decorators, &prop.key, prop.value.as_ref())
-            }
-            ClassElement::MethodDefinition(method) => (&method.decorators, &method.key, None),
-            ClassElement::AccessorProperty(accessor) => (&accessor.decorators, &accessor.key, None),
+        let (decorators, key, value, is_static, access_level) = match element {
+            ClassElement::PropertyDefinition(prop) => (
+                &prop.decorators,
+                &prop.key,
+                prop.value.as_ref(),
+                prop.r#static,
+                MemberAccessLevel::of(&prop.key, prop.accessibility, prop.readonly),
+            ),
+            ClassElement::MethodDefinition(method) => (
+                &method.decorators,
+                &method.key,
+                None,
+                method.r#static,
+                MemberAccessLevel::of(&method.key, method.accessibility, false),
+            ),
+            ClassElement::AccessorProperty(accessor) => (
+                &accessor.decorators,
+                &accessor.key,
+                None,
+                accessor.r#static,
+                MemberAccessLevel::of(&accessor.key, accessor.accessibility, false),
+            ),
             _ => continue,
         };
 
         // ngtsc's `reflectClassMember` only reflects members with an identifier, string or
         // private-identifier name; computed and numeric keys are not members to it.
-        let Some(prop_name_cow) = crate::analyzer::utils::extract_property_key(key) else {
+        let Some(prop_name_cow) = crate::analyzer::utils::class_member_name(key) else {
             continue;
         };
 
@@ -422,6 +447,48 @@ pub fn extract_queries<'a>(
                 continue;
             }
         };
+
+        let signal_call = value
+            .map(Expression::get_inner_expression)
+            .and_then(|expr| match expr {
+                Expression::CallExpression(call) => Some(call),
+                _ => None,
+            })
+            .and_then(|call| {
+                let resolved = resolve_angular_call(call, semantic, angular_imports)?;
+                let (is_view, first, default_descendants) = match resolved {
+                    ResolvedAngularCall::ViewChild { .. } => (true, true, true),
+                    ResolvedAngularCall::ViewChildren => (true, false, true),
+                    ResolvedAngularCall::ContentChild { .. } => (false, true, true),
+                    ResolvedAngularCall::ContentChildren => (false, false, false),
+                    _ => return None,
+                };
+                Some((call, resolved, is_view, first, default_descendants))
+            });
+
+        if let (Some(found), Some(_)) = (&found, &signal_call) {
+            issues.push(ValueIssue::disallowed_decorator(
+                found.decorator.span,
+                format!(
+                    "Using @{} with a signal-based query is not allowed.",
+                    found.name
+                ),
+            ));
+            continue;
+        }
+        let query_node_span = match (&found, &signal_call) {
+            (Some(found), _) => Some(found.decorator.span),
+            (None, Some((call, ..))) => Some(call.span),
+            (None, None) => None,
+        };
+        if let (Some(span), true) = (query_node_span, is_static) {
+            issues.push(ValueIssue::declared_on_static_member(
+                span,
+                "Query is incorrectly declared on a static class member.",
+            ));
+            continue;
+        }
+
         if let Some(found) = found {
             let args: &[Argument<'a>] =
                 get_decorator_args(found.decorator).map_or(&[], |args| args);
@@ -443,24 +510,21 @@ pub fn extract_queries<'a>(
             continue;
         }
 
-        let Some(Expression::CallExpression(call)) = value.map(Expression::get_inner_expression)
-        else {
+        let Some((call, resolved_call, is_view, first, default_descendants)) = signal_call else {
             continue;
         };
 
-        let Some(resolved_call) = resolve_angular_call(call, semantic, angular_imports) else {
+        if !QUERY_ALLOWED_ACCESS_LEVELS.contains(&access_level) {
+            issues.push(ValueIssue::disallowed_member_visibility(
+                call.span,
+                resolved_call.function_name(),
+                access_level,
+                &QUERY_ALLOWED_ACCESS_LEVELS,
+            ));
             continue;
-        };
-
-        let (is_view, first, default_descendants) = match resolved_call {
-            ResolvedAngularCall::ViewChild { .. } => (true, true, true),
-            ResolvedAngularCall::ViewChildren => (true, false, true),
-            ResolvedAngularCall::ContentChild { .. } => (false, true, true),
-            ResolvedAngularCall::ContentChildren => (false, false, false),
-            _ => continue,
-        };
-
-        if call.arguments.is_empty() {
+        }
+        if let Some(issue) = signal_query_argument_issue(call) {
+            issues.push(issue);
             continue;
         }
 
@@ -502,6 +566,57 @@ pub fn extract_queries<'a>(
         fields.push(AngularField::Query(meta));
     }
     fields
+}
+
+fn signal_query_argument_issue(call: &oxc_ast::ast::CallExpression<'_>) -> Option<ValueIssue> {
+    if call.arguments.is_empty() {
+        return Some(ValueIssue::wrong_type(call.span, "No locator specified."));
+    }
+    let options = call.arguments.get(1)?;
+    let Some(Expression::ObjectExpression(options)) = options.as_expression() else {
+        return Some(ValueIssue::wrong_type(
+            options.span(),
+            "Argument needs to be an object literal.",
+        ));
+    };
+    for prop in &options.properties {
+        let ObjectPropertyKind::ObjectProperty(prop) = prop else {
+            continue;
+        };
+        match extract_property_key(&prop.key).as_deref() {
+            Some("read") if !is_literal_class_reference(&prop.value) => {
+                return Some(ValueIssue::not_literal(
+                    prop.value.span(),
+                    "Query \"read\" option expected a literal class reference.",
+                ));
+            }
+            Some("descendants") if !matches!(prop.value, Expression::BooleanLiteral(_)) => {
+                return Some(ValueIssue::wrong_type(
+                    prop.value.span(),
+                    "Expected \"descendants\" option to be a boolean literal.",
+                ));
+            }
+            _ => {}
+        }
+    }
+    None
+}
+
+/// ngtsc's `parseReadOption` acceptance: `X`, `ns.X`, or either behind parentheses, `as` or
+/// type arguments.
+fn is_literal_class_reference(value: &Expression<'_>) -> bool {
+    match value {
+        Expression::ParenthesizedExpression(inner) => is_literal_class_reference(&inner.expression),
+        Expression::TSAsExpression(inner) => is_literal_class_reference(&inner.expression),
+        Expression::TSInstantiationExpression(inner) => {
+            is_literal_class_reference(&inner.expression)
+        }
+        Expression::Identifier(_) => true,
+        Expression::StaticMemberExpression(member) => {
+            matches!(member.object, Expression::Identifier(_))
+        }
+        _ => false,
+    }
 }
 
 pub(crate) fn validate_decorator_query_predicate(query: &QueryData) -> Option<ValueIssue> {
