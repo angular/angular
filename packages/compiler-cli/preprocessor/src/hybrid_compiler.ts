@@ -10,7 +10,6 @@ import {
   BoundTarget,
   LEGACY_OPTIONAL_CHAINING_DEFAULT,
   MatchSource,
-  ParsedTemplate,
   ParseTemplateOptions,
   TcbDirectiveMetadata,
 } from '@angular/compiler';
@@ -19,7 +18,12 @@ import * as fs from 'node:fs/promises';
 import * as path from 'path';
 import {makeClassKey} from './compiler-utils.js';
 import {withErrorGuide} from './diagnostic.js';
-import {ChunkContext, FileAnalysis, getOrCreateFileAnalysis} from './file_analysis.js';
+import {
+  ChunkContext,
+  FileAnalysis,
+  ParsedComponentTemplate,
+  getOrCreateFileAnalysis,
+} from './file_analysis.js';
 import {IndexedComponent} from './indexer_api.js';
 import {getIndexedComponents, getIndexedComponentsSync} from './indexing/indexer.js';
 import {buildTcbTargets, processFile, processFileSync, type ProcessedFile} from './processor.js';
@@ -599,7 +603,7 @@ export class HybridCompiler {
   ): FileAnalysis {
     let templatesByClass = fileAnalysis.parsedTemplates;
     if (!templatesByClass) {
-      templatesByClass = new Map<string, ParsedTemplate>();
+      templatesByClass = new Map<string, ParsedComponentTemplate>();
       fileAnalysis.parsedTemplates = templatesByClass;
     }
 
@@ -669,7 +673,8 @@ export class HybridCompiler {
   }
 
   getParsedTemplate(filePath: string, classKey: string): any | null {
-    return this.ensureBoundSync(filePath).parsedTemplates?.get(classKey) ?? null;
+    const parsed = this.ensureBoundSync(filePath).parsedTemplates?.get(classKey);
+    return parsed ? {...parsed, nodes: parsed.diagNodes} : null;
   }
 
   getHostElement(filePath: string, classKey: string): any | null {

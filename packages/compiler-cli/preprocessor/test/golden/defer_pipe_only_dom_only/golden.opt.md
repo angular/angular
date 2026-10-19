@@ -46,7 +46,7 @@ class AppComponent {}
 function _tcb1(this: AppComponent) {
   if (true) {
     var _pipe1 = null! as MyPipe;
-    '' + _pipe1.transform(/*1041,1047*/ 'hello' /*1031,1038*/) /*1031,1047*/;
+    '' + _pipe1.transform(/*1049,1055*/ 'hello' /*1039,1046*/) /*1039,1055*/;
   }
 }
 
