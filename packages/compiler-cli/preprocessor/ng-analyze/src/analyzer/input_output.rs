@@ -399,8 +399,10 @@ fn process_decorators<'a>(
     key: &'a oxc_ast::ast::PropertyKey<'a>,
     accessibility: Option<oxc_ast::ast::TSAccessibility>,
     readonly: bool,
+    is_static: bool,
     signal: Option<SignalMember>,
     property_span: Option<oxc_span::Span>,
+    fields_start: usize,
     ctx: &ExtractContext<'_, '_>,
     out: &mut MemberIo,
 ) {
@@ -436,19 +438,21 @@ fn process_decorators<'a>(
         || accessibility == Some(oxc_ast::ast::TSAccessibility::Protected)
         || readonly;
     let is_literal = matches!(key, oxc_ast::ast::PropertyKey::StringLiteral(_));
-    if let Some(span) = property_span {
-        out.members.push(ClassMemberFacts {
-            name: prop_name.to_string(),
-            span,
-            is_restricted,
-            is_literal,
-        });
+    if !is_static {
+        if let Some(span) = property_span {
+            out.members.push(ClassMemberFacts {
+                name: prop_name.to_string(),
+                span,
+                is_restricted,
+                is_literal,
+            });
+        }
     }
 
     if !is_input {
         return;
     }
-    let input = out.fields.iter_mut().find_map(|f| match f {
+    let input = out.fields[fields_start..].iter_mut().find_map(|f| match f {
         AngularField::Input(i) if i.name == prop_name => Some(i),
         _ => None,
     });
@@ -475,6 +479,8 @@ pub fn extract_inputs_outputs<'a>(
     let class_name = class.id.as_ref().map(|id| id.name.as_str());
 
     for element in &class.body.body {
+        let fields_start = out.fields.len();
+        let pending_start = out.pending_options.len();
         let (prop_name, is_static, declaration_span) = match element {
             oxc_ast::ast::ClassElement::PropertyDefinition(prop) => {
                 let Some(prop_name) =
@@ -495,8 +501,10 @@ pub fn extract_inputs_outputs<'a>(
                     &prop.key,
                     prop.accessibility,
                     prop.readonly,
+                    prop.r#static,
                     signal,
                     Some(prop.span),
+                    fields_start,
                     &ctx,
                     &mut out,
                 );
@@ -515,8 +523,10 @@ pub fn extract_inputs_outputs<'a>(
                     &method.key,
                     method.accessibility,
                     false,
+                    method.r#static,
                     None,
                     Some(method.span),
+                    fields_start,
                     &ctx,
                     &mut out,
                 );
@@ -533,8 +543,10 @@ pub fn extract_inputs_outputs<'a>(
                     &acc.key,
                     acc.accessibility,
                     false,
+                    acc.r#static,
                     None,
                     Some(acc.span),
+                    fields_start,
                     &ctx,
                     &mut out,
                 );
@@ -549,6 +561,8 @@ pub fn extract_inputs_outputs<'a>(
                 class_name,
                 element.span(),
                 declaration_span,
+                fields_start,
+                pending_start,
                 &mut out,
             );
         }
@@ -565,21 +579,24 @@ fn reject_static_member_io(
     class_name: Option<&str>,
     member_span: oxc_span::Span,
     declaration_span: oxc_span::Span,
+    fields_start: usize,
+    pending_start: usize,
     out: &mut MemberIo,
 ) {
     let mut declares_input = false;
     let mut output_anchor = None;
-    out.fields.retain(|field| match field {
-        AngularField::Input(input) if input.name == prop_name => {
-            declares_input = true;
-            false
+    for field in out.fields.drain(fields_start..) {
+        match field {
+            AngularField::Input(_) => {
+                declares_input = true;
+            }
+            AngularField::Output(output) => {
+                output_anchor = Some(output.decorator_span.unwrap_or(declaration_span));
+            }
+            _ => {}
         }
-        AngularField::Output(output) if output.name == prop_name => {
-            output_anchor = Some(output.decorator_span.unwrap_or(declaration_span));
-            false
-        }
-        _ => true,
-    });
+    }
+    out.pending_options.truncate(pending_start);
 
     if declares_input {
         let class_name = class_name.unwrap_or_default();
