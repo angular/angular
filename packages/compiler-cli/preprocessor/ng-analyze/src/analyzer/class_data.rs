@@ -141,6 +141,9 @@ pub struct ClassData {
     pub constructor_params: Option<Vec<ConstructorParamMetadata>>,
     /// Constructor parameter decorators ngtsc rejects outright; see [`UnexpectedParamDecorator`].
     pub unexpected_param_decorators: Vec<UnexpectedParamDecorator>,
+    /// The class decorators' argument-shape problems (arity, non-literal argument, bare
+    /// decorator), which every ngtsc handler reports before reading any metadata.
+    pub decorator_issues: Vec<ValueIssue>,
     pub member_decorators: Vec<crate::DecoratedMemberMetadata>,
     pub later_declaration_references: Vec<oxc_span::Span>,
     pub top_level_references: Option<Vec<super::TopLevelReference>>,
@@ -534,12 +537,72 @@ impl ComponentData {
         )
     }
 }
-/// A decorator value that evaluated to the wrong shape: ngtsc's `VALUE_HAS_WRONG_TYPE`
-/// (`NG1010`), reported by `validate()` on `span` with ngtsc's message.
+/// A decorator or member that failed one of ngtsc's analysis-time checks, reported by
+/// `validate()` on `span` with ngtsc's code and message.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ValueIssue {
+    pub code: &'static str,
     pub span: oxc_span::Span,
     pub message: String,
+}
+
+impl ValueIssue {
+    /// `DECORATOR_ARG_NOT_LITERAL` (`NG1001`).
+    pub fn arg_not_literal(span: oxc_span::Span, message: impl Into<String>) -> Self {
+        Self::new("1001", span, message)
+    }
+
+    /// `DECORATOR_ARITY_WRONG` (`NG1002`).
+    pub fn arity_wrong(span: oxc_span::Span, message: impl Into<String>) -> Self {
+        Self::new("1002", span, message)
+    }
+
+    /// `DECORATOR_NOT_CALLED` (`NG1003`).
+    pub fn decorator_not_called(span: oxc_span::Span, message: impl Into<String>) -> Self {
+        Self::new("1003", span, message)
+    }
+
+    /// `DECORATOR_UNEXPECTED` (`NG1005`).
+    pub fn decorator_unexpected(span: oxc_span::Span, message: impl Into<String>) -> Self {
+        Self::new("1005", span, message)
+    }
+
+    /// `DECORATOR_COLLISION` (`NG1006`).
+    pub fn decorator_collision(span: oxc_span::Span, message: impl Into<String>) -> Self {
+        Self::new("1006", span, message)
+    }
+
+    /// `VALUE_HAS_WRONG_TYPE` (`NG1010`) whose message already carries any detail.
+    pub fn wrong_type(span: oxc_span::Span, message: impl Into<String>) -> Self {
+        Self::new("1010", span, message)
+    }
+
+    /// `VALUE_HAS_WRONG_TYPE` (`NG1010`) for `value`, with the detail ngtsc's
+    /// `createValueHasWrongTypeError` chains under the message.
+    pub fn wrong_type_of(
+        span: oxc_span::Span,
+        value: &crate::evaluator::ResolvedValue,
+        message: &str,
+    ) -> Self {
+        Self::new(
+            "1010",
+            span,
+            crate::evaluator::wrong_type_message(message, value),
+        )
+    }
+
+    /// `INCORRECTLY_DECLARED_ON_STATIC_MEMBER` (`NG1100`).
+    pub fn declared_on_static_member(span: oxc_span::Span, message: impl Into<String>) -> Self {
+        Self::new("1100", span, message)
+    }
+
+    fn new(code: &'static str, span: oxc_span::Span, message: impl Into<String>) -> Self {
+        Self {
+            code,
+            span,
+            message: message.into(),
+        }
+    }
 }
 
 /// The `templateUrl` expression, as ngtsc's `parseTemplateDeclaration` evaluates it: must
@@ -1498,6 +1561,16 @@ impl ClassData {
         converter: &crate::utils::Utf8ToUtf16,
         diagnostics: &mut Vec<crate::NgDiagnostic>,
     ) {
+        for issue in &self.decorator_issues {
+            push_error(
+                diagnostics,
+                file_path,
+                converter,
+                issue.code,
+                issue.span,
+                issue.message.clone(),
+            );
+        }
         if self.directive_part().is_some_and(|d| d.is_jit) {
             return;
         }
@@ -1653,12 +1726,30 @@ impl ClassData {
             }
         }
 
-        for issue in d.io_issues.iter().chain(&d.unresolved_io_issues()) {
+        let unresolved_io_issues = d.unresolved_io_issues();
+        let query_predicate_issues: Vec<ValueIssue> = d
+            .fields
+            .iter()
+            .filter_map(|field| match field {
+                AngularField::Query(query) => {
+                    super::queries::validate_decorator_query_predicate(query)
+                }
+                _ => None,
+            })
+            .collect();
+        let host_issues = host_metadata_issues(d);
+        for issue in d
+            .io_issues
+            .iter()
+            .chain(&unresolved_io_issues)
+            .chain(&query_predicate_issues)
+            .chain(&host_issues)
+        {
             push_error(
                 diagnostics,
                 file_path,
                 converter,
-                "1010",
+                issue.code,
                 issue.span,
                 issue.message.clone(),
             );
@@ -2119,6 +2210,43 @@ impl ClassData {
             );
         }
     }
+}
+
+fn host_metadata_issues(d: &DirectiveData) -> Vec<ValueIssue> {
+    use crate::evaluator::ResolvedValue;
+
+    let (Some(host), Some(span)) = (&d.host_expr, d.host_span) else {
+        return Vec::new();
+    };
+    let value = host.raw();
+    // A value still waiting on another file is checked once Stage 2 completes it.
+    if value.contains_incomplete() {
+        return Vec::new();
+    }
+    let ResolvedValue::Map(map) = value.unwrap_named() else {
+        return vec![ValueIssue::wrong_type_of(
+            span,
+            value,
+            "Decorator host metadata must be an object",
+        )];
+    };
+    // Keys are always strings here: the evaluator only builds a map from string-keyed
+    // properties, so ngtsc's "unparseable key" case cannot arise.
+    for (_, entry) in map.iter() {
+        let entry = match entry.unwrap_named() {
+            ResolvedValue::EnumValue(member) => member.resolved.unwrap_named(),
+            other => other,
+        };
+        if matches!(entry, ResolvedValue::String(_) | ResolvedValue::Dynamic(_)) {
+            continue;
+        }
+        return vec![ValueIssue::wrong_type_of(
+            span,
+            entry,
+            "Decorator host metadata must be a string -> string object, but found unparseable value",
+        )];
+    }
+    Vec::new()
 }
 
 /// Checks whether a selector is a valid custom element tag name, returning the reference's
@@ -2634,6 +2762,9 @@ fn prepare_members(
                 prepared.outputs.push(o.to_wire(source_text, converter));
             }
             AngularField::Query(q) => {
+                if super::queries::validate_decorator_query_predicate(q).is_some() {
+                    continue;
+                }
                 let wire = q.to_wire(source_text, converter);
                 if q.is_view {
                     prepared.view_queries.push(wire);
@@ -2996,6 +3127,7 @@ impl ClassData {
                 .map(|m| {
                     m.host_bindings
                         .iter()
+                        .filter(|b| b.arguments.len() <= 1)
                         .map(|b| {
                             let host_property_name = self.read_optional_field(
                                 b.host_property_name.as_ref(),

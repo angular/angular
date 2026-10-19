@@ -15,9 +15,28 @@ pub struct ExtractContext<'a, 'e> {
 }
 
 use super::utils::{
-    extract_literal_string, extract_property_key, get_decorator_args, is_angular_decorator_named,
-    resolve_angular_call, ResolvedAngularCall,
+    decorator_local_name, extract_literal_string, extract_property_key, get_decorator_args,
+    is_angular_decorator_named, resolve_angular_call, ResolvedAngularCall,
 };
+
+fn check_io_decorator_arity<'a, 'b>(
+    decorator: &'b oxc_ast::ast::Decorator<'a>,
+    name: &str,
+    out: &mut MemberIo,
+) -> Result<&'b [Argument<'a>], ()> {
+    let args: &[Argument<'a>] = get_decorator_args(decorator).map_or(&[], |args| args);
+    if args.len() <= 1 {
+        return Ok(args);
+    }
+    out.issues.push(ValueIssue::arity_wrong(
+        decorator.span,
+        format!(
+            "@{name} can have at most one argument, got {} argument(s)",
+            args.len()
+        ),
+    ));
+    Err(())
+}
 
 /// Member-level input/output extraction results, including class member facts for binding
 /// decorator metadata arrays, pending cross-file `@Input`/`@Output` arguments, and diagnostics.
@@ -60,10 +79,8 @@ fn evaluate_member_argument<T>(
             None
         }
         Read::Invalid(message) => {
-            out.issues.push(ValueIssue {
-                span: decorator_span,
-                message,
-            });
+            out.issues
+                .push(ValueIssue::wrong_type(decorator_span, message));
             None
         }
     }
@@ -72,15 +89,13 @@ fn evaluate_member_argument<T>(
 /// `@Input('alias')` or `@Input({alias, required, transform})`. ngtsc evaluates the argument;
 /// a transform is emitted from its source text, so it is read from an object literal only.
 fn decorator_input_options(
-    decorator: &oxc_ast::ast::Decorator<'_>,
+    args: &[Argument<'_>],
     member: &str,
+    decorator_span: oxc_span::Span,
     ctx: &ExtractContext<'_, '_>,
     out: &mut MemberIo,
 ) -> InputOptions {
-    let Some(first) = get_decorator_args(decorator).and_then(|args| args.first()) else {
-        return InputOptions::default();
-    };
-    let Some(arg) = first.as_expression() else {
+    let Some(arg) = args.first().and_then(Argument::as_expression) else {
         return InputOptions::default();
     };
     let transform = match arg.get_inner_expression() {
@@ -91,7 +106,7 @@ fn decorator_input_options(
         IoKind::Input,
         arg,
         member,
-        decorator.span,
+        decorator_span,
         read_input_options,
         ctx,
         out,
@@ -119,7 +134,10 @@ pub fn parse_input_decorator(
     if !is_angular_decorator_named(decorator, "Input", ctx.semantic, ctx.angular_imports) {
         return None;
     }
-    let options = decorator_input_options(decorator, prop_name, ctx, out);
+    // ngtsc names the decorator as written (`decorator.name`), e.g. an import alias.
+    let written_name = decorator_local_name(decorator).unwrap_or("Input");
+    let args = check_io_decorator_arity(decorator, written_name, out).ok()?;
+    let options = decorator_input_options(args, prop_name, decorator.span, ctx, out);
 
     let has_transform = options.transform.is_some();
     Some((
@@ -148,8 +166,9 @@ pub fn parse_output_decorator<'a>(
     if !is_angular_decorator_named(decorator, "Output", ctx.semantic, ctx.angular_imports) {
         return None;
     }
-    let alias = get_decorator_args(decorator)
-        .and_then(|args| args.first())
+    let args = check_io_decorator_arity(decorator, "Output", out).ok()?;
+    let alias = args
+        .first()
         .and_then(Argument::as_expression)
         .and_then(|arg| {
             evaluate_member_argument(
@@ -287,11 +306,10 @@ fn signal_options(arg: Option<&Argument>, out: &mut MemberIo) -> InputOptions {
         return InputOptions::default();
     };
     let Expression::ObjectExpression(obj) = arg else {
-        out.issues.push(ValueIssue {
-            span: arg.span(),
-            message: "Argument needs to be an object literal that is statically analyzable."
-                .to_string(),
-        });
+        out.issues.push(ValueIssue::wrong_type(
+            arg.span(),
+            "Argument needs to be an object literal that is statically analyzable.",
+        ));
         return InputOptions::default();
     };
 
@@ -305,10 +323,10 @@ fn signal_options(arg: Option<&Argument>, out: &mut MemberIo) -> InputOptions {
         }
         alias = extract_literal_string(&p.value);
         if alias.is_none() {
-            out.issues.push(ValueIssue {
-                span: p.value.span(),
-                message: "Alias needs to be a string that is statically analyzable.".to_string(),
-            });
+            out.issues.push(ValueIssue::wrong_type(
+                p.value.span(),
+                "Alias needs to be a string that is statically analyzable.",
+            ));
         }
     }
 
@@ -413,9 +431,10 @@ pub fn extract_inputs_outputs<'a>(
     };
     let mut out = MemberIo::default();
     let mut static_coerced = Vec::new();
+    let class_name = class.id.as_ref().map(|id| id.name.as_str());
 
     for element in &class.body.body {
-        match element {
+        let (prop_name, is_static, declaration_span) = match element {
             oxc_ast::ast::ClassElement::PropertyDefinition(prop) => {
                 let Some(prop_name) = extract_property_key(&prop.key).map(|n| n.into_owned())
                 else {
@@ -439,6 +458,8 @@ pub fn extract_inputs_outputs<'a>(
                     &ctx,
                     &mut out,
                 );
+                let declaration_span = prop.value.as_ref().map_or(prop.span, GetSpan::span);
+                (prop_name, prop.r#static, declaration_span)
             }
             oxc_ast::ast::ClassElement::MethodDefinition(method) => {
                 let Some(prop_name) = extract_property_key(&method.key).map(|n| n.into_owned())
@@ -457,6 +478,7 @@ pub fn extract_inputs_outputs<'a>(
                     &ctx,
                     &mut out,
                 );
+                (prop_name, method.r#static, method.span)
             }
             oxc_ast::ast::ClassElement::AccessorProperty(acc) => {
                 let Some(prop_name) = extract_property_key(&acc.key).map(|n| n.into_owned()) else {
@@ -474,8 +496,19 @@ pub fn extract_inputs_outputs<'a>(
                     &ctx,
                     &mut out,
                 );
+                (prop_name, acc.r#static, acc.span)
             }
-            _ => {}
+            _ => continue,
+        };
+
+        if is_static {
+            reject_static_member_io(
+                &prop_name,
+                class_name,
+                element.span(),
+                declaration_span,
+                &mut out,
+            );
         }
     }
 
@@ -483,6 +516,43 @@ pub fn extract_inputs_outputs<'a>(
         out.fields.push(AngularField::InputCoercion(field));
     }
     out
+}
+
+fn reject_static_member_io(
+    prop_name: &str,
+    class_name: Option<&str>,
+    member_span: oxc_span::Span,
+    declaration_span: oxc_span::Span,
+    out: &mut MemberIo,
+) {
+    let mut declares_input = false;
+    let mut output_anchor = None;
+    out.fields.retain(|field| match field {
+        AngularField::Input(input) if input.name == prop_name => {
+            declares_input = true;
+            false
+        }
+        AngularField::Output(output) if output.name == prop_name => {
+            output_anchor = Some(output.decorator_span.unwrap_or(declaration_span));
+            false
+        }
+        _ => true,
+    });
+
+    if declares_input {
+        let class_name = class_name.unwrap_or_default();
+        out.issues.push(ValueIssue::declared_on_static_member(
+            member_span,
+            format!(
+                "Input \"{prop_name}\" is incorrectly declared as static member of \"{class_name}\"."
+            ),
+        ));
+    } else if let Some(anchor) = output_anchor {
+        out.issues.push(ValueIssue::declared_on_static_member(
+            anchor,
+            "Output is incorrectly declared on a static class member.",
+        ));
+    }
 }
 
 #[cfg(test)]
@@ -1047,7 +1117,125 @@ mod tests {
         let messages: Vec<&str> = ext.issues.iter().map(|i| i.message.as_str()).collect();
         assert_eq!(
             messages,
-            vec!["@Input decorator argument must resolve to a string or an object literal"]
+            vec!["@Input decorator argument must resolve to a string or an object literal\n  Value is of type 'number'."]
+        );
+    }
+
+    #[test]
+    fn test_io_decorator_arity_issues() {
+        let source = r#"import {Input, Output, Input as NgInput} from '@angular/core';
+        class TestComponent {
+            @Input('name', 'invalid-extra-arg') tooManyInput: string;
+            @NgInput('a', 'b', 'c') aliased: string;
+            @Output('name', 'invalid-extra-arg') tooManyOutput = new EventEmitter();
+            @Input('ok') fine: string;
+        }
+        "#;
+
+        let ext = parse_class(source);
+        assert_eq!(
+            ext.inputs
+                .iter()
+                .map(|i| i.name.as_str())
+                .collect::<Vec<_>>(),
+            vec!["fine"]
+        );
+        assert!(ext.outputs.is_empty());
+        let issues: Vec<(&str, &str, &str)> = ext
+            .issues
+            .iter()
+            .map(|i| {
+                (
+                    i.code,
+                    i.message.as_str(),
+                    &source[i.span.start as usize..i.span.end as usize],
+                )
+            })
+            .collect();
+        assert_eq!(
+            issues,
+            vec![
+                (
+                    "1002",
+                    "@Input can have at most one argument, got 2 argument(s)",
+                    "@Input('name', 'invalid-extra-arg')"
+                ),
+                (
+                    "1002",
+                    "@NgInput can have at most one argument, got 3 argument(s)",
+                    "@NgInput('a', 'b', 'c')"
+                ),
+                (
+                    "1002",
+                    "@Output can have at most one argument, got 2 argument(s)",
+                    "@Output('name', 'invalid-extra-arg')"
+                ),
+            ]
+        );
+    }
+
+    #[test]
+    fn test_static_member_io_issues() {
+        let source = r#"import {Input, Output, input, output, model} from '@angular/core';
+        class TestDir {
+            @Input() static someInput: string = '';
+            static signalInput = input<string>();
+            @Output() static someOutput = new EventEmitter();
+            static signalOutput = output<string>();
+            static someModel = model(0);
+            @Input() fine: string;
+        }
+        "#;
+
+        let ext = parse_class(source);
+        assert_eq!(
+            ext.inputs
+                .iter()
+                .map(|i| i.name.as_str())
+                .collect::<Vec<_>>(),
+            vec!["fine"]
+        );
+        assert!(ext.outputs.is_empty());
+        let issues: Vec<(&str, &str, &str)> = ext
+            .issues
+            .iter()
+            .map(|i| {
+                (
+                    i.code,
+                    i.message.as_str(),
+                    &source[i.span.start as usize..i.span.end as usize],
+                )
+            })
+            .collect();
+        assert_eq!(
+            issues,
+            vec![
+                (
+                    "1100",
+                    "Input \"someInput\" is incorrectly declared as static member of \"TestDir\".",
+                    "@Input() static someInput: string = '';"
+                ),
+                (
+                    "1100",
+                    "Input \"signalInput\" is incorrectly declared as static member of \"TestDir\".",
+                    "static signalInput = input<string>();"
+                ),
+                (
+                    "1100",
+                    "Output is incorrectly declared on a static class member.",
+                    "@Output()"
+                ),
+                (
+                    "1100",
+                    "Output is incorrectly declared on a static class member.",
+                    "output<string>()"
+                ),
+                (
+                    "1100",
+                    "Input \"someModel\" is incorrectly declared as static member of \"TestDir\".",
+                    "static someModel = model(0);"
+                ),
+            ]
         );
     }
 

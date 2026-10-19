@@ -5436,3 +5436,170 @@ fn test_same_file_ngmodule_after_component_only_marks_later_same_file_decls_forw
         "later same-file declaration must be marked is_forward_ref"
     );
 }
+
+#[test]
+fn test_directive_metadata_shape_diagnostics() {
+    let cases: Vec<(&str, &str, u32, &str, &str)> = vec![
+        (
+            "/project/host-type.ts",
+            r#"
+            import { Directive } from '@angular/core';
+            @Directive({ selector: 'test-dir', host: 'invalid-host-type' })
+            export class TestDir {}
+            "#,
+            1010,
+            "Decorator host metadata must be an object\n  Value is of type 'string'.",
+            "'invalid-host-type'",
+        ),
+        (
+            "/project/host-value.ts",
+            r#"
+            import { Directive } from '@angular/core';
+            @Directive({ selector: 'test-dir', host: {'key': ['invalid-host-value']} })
+            export class TestDir {}
+            "#,
+            1010,
+            "Decorator host metadata must be a string -> string object, but found unparseable value\n  Value is of type '[string]'.",
+            "{'key': ['invalid-host-value']}",
+        ),
+        (
+            "/project/queries-type.ts",
+            r#"
+            import { Directive } from '@angular/core';
+            @Directive({ selector: 'test-dir', queries: 'invalid-queries-type' })
+            export class TestDir {}
+            "#,
+            1010,
+            "Decorator queries metadata must be an object literal",
+            "'invalid-queries-type'",
+        ),
+        (
+            "/project/queries-value.ts",
+            r#"
+            import { Directive, Input } from '@angular/core';
+            @Directive({ selector: 'test-dir', queries: { myViewQuery: new Input() } })
+            export class TestDir {}
+            "#,
+            1010,
+            "Decorator query metadata must be an instance of a query type",
+            "{ myViewQuery: new Input() }",
+        ),
+        (
+            "/project/predicate.ts",
+            r#"
+            import { Component, ContentChild } from '@angular/core';
+            @Component({ selector: 'test-cmp', template: '...' })
+            export class TestCmp {
+                @ContentChild({'invalid-predicate-type': true}) foo: any;
+            }
+            "#,
+            1010,
+            "@ContentChild predicate cannot be interpreted\n  Value is of type '{ 'invalid-predicate-type': boolean }'.",
+            "{'invalid-predicate-type': true}",
+        ),
+        (
+            "/project/host-binding-arity.ts",
+            r#"
+            import { Component, HostBinding } from '@angular/core';
+            @Component({ selector: 'test-cmp', template: '...' })
+            export class TestCmp {
+                @HostBinding('name', 'invalid-extra-arg') foo: any;
+            }
+            "#,
+            1002,
+            "@HostBinding can have at most one argument, got 2 argument(s)",
+            "@HostBinding('name', 'invalid-extra-arg')",
+        ),
+        (
+            "/project/ng-module-arg.ts",
+            r#"
+            import { NgModule } from '@angular/core';
+            @NgModule('invalidNgModuleArgumentType')
+            export class MyModule {}
+            "#,
+            1001,
+            "@NgModule argument must be an object literal",
+            "'invalidNgModuleArgumentType'",
+        ),
+        (
+            "/project/injectable-arg.ts",
+            r#"
+            import { Injectable } from '@angular/core';
+            @Injectable('invalid')
+            export class TestProvider {}
+            "#,
+            1001,
+            "@Injectable argument must be an object literal",
+            "'invalid'",
+        ),
+        (
+            "/project/injectable-bare.ts",
+            r#"
+            import { Injectable } from '@angular/core';
+            @Injectable
+            export class TestProvider {}
+            "#,
+            1003,
+            "@Injectable must be called",
+            "@Injectable",
+        ),
+        (
+            "/project/component-arity.ts",
+            r#"
+            import { Component as Cmp } from '@angular/core';
+            @Cmp({ selector: 'test-cmp', template: '...' }, {})
+            export class TestCmp {}
+            "#,
+            1002,
+            "Incorrect number of arguments to @Cmp decorator",
+            "@Cmp({ selector: 'test-cmp', template: '...' }, {})",
+        ),
+        (
+            "/project/pipe-arg.ts",
+            r#"
+            import { Pipe } from '@angular/core';
+            @Pipe(('name' as any))
+            export class TestPipe {}
+            "#,
+            1001,
+            "@Pipe must have a literal argument",
+            "'name'",
+        ),
+    ];
+
+    let mut virtual_files: HashMap<String, String> = cases
+        .iter()
+        .map(|(path, source, ..)| (path.to_string(), source.to_string()))
+        .collect();
+    let files: Vec<String> = cases
+        .iter()
+        .map(|(path, ..)| format!("\"{}\"", path.trim_start_matches("/project/")))
+        .collect();
+    virtual_files.insert(
+        "/project/tsconfig.json".to_string(),
+        format!(r#"{{"files": [{}]}}"#, files.join(", ")),
+    );
+    let analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: "/project/tsconfig.json".to_string(),
+        optimize: Some(true),
+        virtual_files: Some(virtual_files.clone()),
+        ..Default::default()
+    })
+    .unwrap();
+
+    for (path, source, code, message, node_text) in cases {
+        let meta = analyzer
+            .get_metadata_for_file(path.to_string())
+            .unwrap_or_else(|| panic!("{path} metadata"));
+        assert_eq!(meta.diagnostics.len(), 1, "{path}: {:?}", meta.diagnostics);
+        let diag = &meta.diagnostics[0];
+        assert_eq!(diag.code, code, "{path}");
+        assert_eq!(diag.message_text, message, "{path}");
+        let span = diag.span.as_ref().expect("diagnostic span");
+        assert_eq!(
+            &source[span.start as usize..span.end as usize],
+            node_text,
+            "{path}"
+        );
+    }
+}
