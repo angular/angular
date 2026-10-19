@@ -58,6 +58,10 @@ export function setupAndRunResources(
 
       traverse(targetRouterState._root);
 
+      if (resourceSetupPromises.length === 0 && blockingResourcePromises.length === 0) {
+        return;
+      }
+
       return Promise.all(resourceSetupPromises).then(() => Promise.all(blockingResourcePromises));
     }),
   );

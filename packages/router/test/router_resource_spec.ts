@@ -36,7 +36,7 @@ import {
 import {RouterTestingHarness} from '../testing';
 import {timeout, useAutoTick} from '../../private/testing/src/utils';
 import {rxResource} from '@angular/core/rxjs-interop';
-import {of} from 'rxjs';
+import {of, Subject} from 'rxjs';
 import {delay} from 'rxjs/operators';
 
 async function setupRouter(routes: Route[], ...features: RouterFeatures[]) {
@@ -339,6 +339,27 @@ describe('Router resources integration', () => {
       await expectAsync(harness.navigateByUrl('/test')).toBeRejectedWithError(
         /Invalid resource returned for key "data"/,
       );
+    });
+
+    it('should complete navigation synchronously after guards and resolvers when no route has resources', async () => {
+      const resolver$ = new Subject<string>();
+
+      const {router} = await setupRouter([
+        {
+          path: 'test',
+          component: TargetCmp,
+          resolve: {data: () => resolver$},
+        },
+      ]);
+
+      router.navigateByUrl('/test');
+      await timeout();
+      expect(router.url).toBe('/');
+
+      resolver$.next('resolved');
+      resolver$.complete();
+
+      expect(router.url).toBe('/test');
     });
   });
 
