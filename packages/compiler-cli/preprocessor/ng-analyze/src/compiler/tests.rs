@@ -6250,3 +6250,91 @@ fn test_dependency_injection_diagnostics() {
         ]
     );
 }
+
+#[test]
+fn test_instance_io_not_clobbered_by_same_named_static_member() {
+    let mut virtual_files = HashMap::new();
+    virtual_files.insert(
+        "/project/remote.ts".to_string(),
+        "export const REMOTE_OPTS = { alias: 'staticAlias', required: true };".to_string(),
+    );
+    virtual_files.insert(
+        "/project/app.ts".to_string(),
+        r#"
+        import { Directive, Input, Output, input, output } from '@angular/core';
+        import { REMOTE_OPTS } from './remote';
+        @Directive({ selector: '[dir]', inputs: ['metaInput'] })
+        export class Dir {
+            static readonly metaInput = 1;
+            metaInput = 2;
+
+            @Input() foo = 1;
+            static foo = 2;
+
+            @Output() bar: any;
+            static bar() {}
+
+            @Input(REMOTE_OPTS) static baz = 'unrelated';
+            baz = input(1);
+
+            qux = output();
+            static qux = 'unrelated';
+        }
+        "#
+        .to_string(),
+    );
+    virtual_files.insert(
+        "/project/tsconfig.json".to_string(),
+        r#"{"files": ["app.ts", "remote.ts"]}"#.to_string(),
+    );
+
+    let analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: "/project/tsconfig.json".to_string(),
+        optimize: Some(true),
+        virtual_files: Some(virtual_files),
+        ..Default::default()
+    })
+    .unwrap();
+
+    let meta = analyzer
+        .get_metadata_for_file("/project/app.ts".to_string())
+        .unwrap();
+
+    // Only the static @Input on `static baz` should be rejected (NG1100).
+    let diag_codes: Vec<u32> = meta.diagnostics.iter().map(|d| d.code).collect();
+    assert_eq!(
+        diag_codes,
+        vec![1100],
+        "unexpected diagnostics: {:?}",
+        meta.diagnostics
+    );
+
+    assert_eq!(meta.classes.len(), 1);
+    let inputs: Vec<(&str, Option<&str>, bool, bool)> = meta.classes[0]
+        .inputs
+        .iter()
+        .map(|i| {
+            (
+                i.name.as_str(),
+                i.alias.as_deref(),
+                i.required,
+                i.is_restricted,
+            )
+        })
+        .collect();
+    assert_eq!(
+        inputs,
+        vec![
+            ("metaInput", None, false, false),
+            ("foo", None, false, false),
+            ("baz", None, false, false),
+        ]
+    );
+
+    let outputs: Vec<&str> = meta.classes[0]
+        .outputs
+        .iter()
+        .map(|o| o.name.as_str())
+        .collect();
+    assert_eq!(outputs, vec!["bar", "qux"]);
+}
