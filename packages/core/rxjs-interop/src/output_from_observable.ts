@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {Observable} from 'rxjs';
 import {
   assertInInjectionContext,
   DestroyRef,
@@ -16,7 +17,6 @@ import {
   ɵRuntimeError,
   ɵRuntimeErrorCode,
 } from '../../src/core';
-import {Observable} from 'rxjs';
 
 import {takeUntilDestroyed} from './take_until_destroyed';
 
@@ -81,6 +81,7 @@ class OutputFromObservableRef<T> implements OutputRef<T> {
  * ```
  * @see [RxJS interop with component and directive outputs](ecosystem/rxjs-interop/output-interop)
  *
+ * @initializerApiFunction
  * @publicApi 19.0
  */
 export function outputFromObservable<T>(
