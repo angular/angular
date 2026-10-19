@@ -213,7 +213,6 @@ export interface HttpResourceFn {
  * such as `httpResource.text`.
  *
  * @publicApi 22.0
- * @initializerApiFunction
  */
 export const httpResource: HttpResourceFn = (() => {
   const jsonFn = makeHttpResourceFn<unknown>('json') as HttpResourceFn;
