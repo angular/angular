@@ -14,6 +14,12 @@ const STRING_LIKE_TOKEN =
 function canonicalizeSegmentQuotes(segment: string): string {
   return segment.replace(STRING_LIKE_TOKEN, (match) => {
     const quote = match[0];
+    if (quote === '`') {
+      return match.replace(
+        /\$\{([^}]*)\}/g,
+        (_, expr: string) => `\${${canonicalizeSegmentQuotes(expr)}}`,
+      );
+    }
     if (quote !== '"' && quote !== "'") {
       return match;
     }
@@ -41,10 +47,9 @@ export function canonicalizeStringQuotes(code: string, ellipsisToken = '\u2026')
  * Normalizes a fragment of NGP-emitted code for comparison against the corresponding fragment of
  * ngtsc-emitted code, e.g. the generated side of a source-map segment.
  *
- * NGP's printer quotes strings, parenthesizes and breaks lines differently from ngtsc's
- * TypeScript emit. `normalizeNgpEmitForComparison` handles whole files with a parser, which can't
- * run on a fragment, so this is a text-only approximation: quotes are canonicalized, and
- * parentheses and whitespace runs dropped.
+ * NGP's printer quotes strings with single quotes whereas ngtsc's TypeScript emit uses double
+ * quotes. `normalizeNgpEmitForComparison` handles whole files, so this is a fragment-safe
+ * normalization: quotes are canonicalized, and parentheses and whitespace runs dropped.
  */
 export function normalizeNgpSourceMapSegment(code: string): string {
   return canonicalizeStringQuotes(code).replace(/[()]/g, '').replace(/\s+/g, ' ');
@@ -213,6 +218,9 @@ export function normalizeNgpEmitForComparison(code: string, ellipsisToken = '\u2
         /\(\(\(typeof\s+(ngDevMode|ngJitMode)\s*===\s*(['"])undefined\2\)\s*\|\|\s*\1\)/g,
         '((typeof $1 === $2undefined$2 || $1)',
       )
+      // NGP emits `(a0: any): any =>` in `.ng.ts` to satisfy `noImplicitAny`; `tsc` strips the
+      // type annotations but preserves the parameter parens (`(a0) =>`), whereas `ngtsc`'s TS AST
+      // printer omits parens around a single untyped parameter (`a0 =>`).
       .replace(/\(([A-Za-z_$][A-Za-z0-9_$]*)\)\s*=>/g, '$1 =>')
       .replace(/\\\\n/g, '\\n')
       .replace(/\\\\r/g, '\\r')
