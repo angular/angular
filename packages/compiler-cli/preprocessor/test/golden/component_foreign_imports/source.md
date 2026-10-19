@@ -24,7 +24,6 @@ function frameworkImport(component: {}): Function {
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   template: '<FancyButton [label]="title" />',
   // @ts-ignore: @angular/core does not expose the `foreignImports` property.
   foreignImports: [

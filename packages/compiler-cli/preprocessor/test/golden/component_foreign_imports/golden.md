@@ -55,7 +55,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 template: '<FancyButton [label]="title" />',
                 // @ts-ignore: @angular/core does not expose the `foreignImports` property.
                 foreignImports: [
@@ -76,7 +75,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 20,
+      lineNumber: 19,
     });
 })();
 

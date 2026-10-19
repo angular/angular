@@ -65,7 +65,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 imports: [MatButtonModule, TrimPipeModule],
                 template: `
         @defer (on immediate) {
@@ -86,7 +85,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.ts',
-      lineNumber: 15,
+      lineNumber: 14,
     });
 })();
 

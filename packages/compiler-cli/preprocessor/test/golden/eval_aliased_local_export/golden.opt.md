@@ -71,7 +71,6 @@ export class AppComponent {
               {
                 selector: 'app-root',
                 template: '<lib-foo libBar></lib-foo>',
-                standalone: true,
                 imports: SHARED,
               },
             ],
@@ -87,7 +86,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 10,
+      lineNumber: 9,
     });
 })();
 
@@ -130,7 +129,6 @@ export class BarDirective {
             args: [
               {
                 selector: '[libBar]',
-                standalone: true,
               },
             ],
           },
@@ -211,7 +209,6 @@ export class BazComponent {
               {
                 selector: 'lib-baz',
                 template: '<span>Baz</span>',
-                standalone: true,
               },
             ],
           },
@@ -226,7 +223,7 @@ export class BazComponent {
     i0.ɵsetClassDebugInfo(BazComponent, {
       className: 'BazComponent',
       filePath: 'baz.component.ts',
-      lineNumber: 8,
+      lineNumber: 7,
     });
 })();
 
@@ -300,7 +297,6 @@ export class FooComponent {
               {
                 selector: 'lib-foo',
                 template: '<span>Foo</span>',
-                standalone: true,
               },
             ],
           },
@@ -315,7 +311,7 @@ export class FooComponent {
     i0.ɵsetClassDebugInfo(FooComponent, {
       className: 'FooComponent',
       filePath: 'foo.component.ts',
-      lineNumber: 8,
+      lineNumber: 7,
     });
 })();
 

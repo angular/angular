@@ -39,7 +39,6 @@ export class Marker {}
 @Component({
   selector: 'test-comp',
   template: '<div #myRef #x #y #z></div>',
-  standalone: true,
 })
 export class TestComp {
   // A template literal with a substitution is evaluated: ngc emits ["myRef"].
@@ -68,7 +67,6 @@ export class TestComp {
 
 @Directive({
   selector: '[legacy]',
-  standalone: true,
   // The `queries` metadata property evaluates its predicates like the decorators do.
   queries: {legacy: new ViewChildren(['p,q', `${PREFIX}Legacy`] as any)},
 })

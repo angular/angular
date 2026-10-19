@@ -29,7 +29,6 @@ import {MyDtsPipe} from './my-pipe';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [MyDtsPipe],
   template: '{{ "hello" | dtsPipe }}'
 })

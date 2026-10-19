@@ -107,7 +107,6 @@ export class AppComponent {
               {
                 selector: 'app-root',
                 template: '<div myDir #dir="myDirAlias">{{ dir.value }}</div>',
-                standalone: true,
                 imports: [MyDir],
               },
             ],
@@ -123,7 +122,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'test.ts',
-      lineNumber: 18,
+      lineNumber: 17,
     });
 })();
 

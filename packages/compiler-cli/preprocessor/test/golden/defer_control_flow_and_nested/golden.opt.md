@@ -179,7 +179,6 @@ export class AppComponent {
           }
         }
       `,
-                    standalone: true,
                     imports: [CmpA, CmpB, CmpNested, PipeA, PipeB, PipeNested],
                   },
                 ],
@@ -197,7 +196,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 28,
+      lineNumber: 27,
     });
 })();
 

@@ -39,7 +39,6 @@ export class GenericDirective<T> {
             args: [
               {
                 selector: '[appGeneric]',
-                standalone: true,
               },
             ],
           },
@@ -95,7 +94,6 @@ export class HighlightDirective {
             args: [
               {
                 selector: '[appHighlight]',
-                standalone: true,
               },
             ],
           },

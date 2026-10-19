@@ -10,11 +10,11 @@ import * as i0 from './condition_group_builder';
 /*tcb1*/
 function _tcb1(this: i0.ConditionGroupBuilder) {
   if (true) {
-    var _t1 /*T:DIR:0*/ /*207,274*/ = null! as i0.ConditionGroupBuilder; /*T:VAE*/
-    _t1['onCelCodeUpdated'] /*233,249*/
+    var _t1 /*T:DIR:0*/ /*187,254*/ = null! as i0.ConditionGroupBuilder; /*T:VAE*/
+    _t1['onCelCodeUpdated'] /*213,229*/
       .subscribe(($event /*T:EP*/): any => {
-        this.handleUpdate(/*252,264*/ $event /*265,271*/); /*252,272*/
-      }); /*232,273*/
+        this.handleUpdate(/*232,244*/ $event /*245,251*/); /*232,252*/
+      }); /*212,253*/
   }
 }
 
@@ -87,7 +87,6 @@ export class ConditionGroupBuilder extends CommonConditionGroupBuilder {
             type: Component,
             args: [
               {
-                standalone: true,
                 selector: 'condition-group-builder',
                 template: `
         <condition-group-builder (onCelCodeUpdated)="handleUpdate($event)">
@@ -107,7 +106,7 @@ export class ConditionGroupBuilder extends CommonConditionGroupBuilder {
     i0.ɵsetClassDebugInfo(ConditionGroupBuilder, {
       className: 'ConditionGroupBuilder',
       filePath: 'src/builders/condition_group_builder.ts',
-      lineNumber: 12,
+      lineNumber: 11,
     });
 })();
 

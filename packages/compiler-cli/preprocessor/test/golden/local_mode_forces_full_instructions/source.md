@@ -21,7 +21,6 @@ import { Component } from '@angular/core';
 // https://github.com/angular/angular/blob/e3ac727/packages/compiler/src/render3/view/compiler.ts#L201-L203
 @Component({
   selector: 'app-root',
-  standalone: true,
   template: `<div><span>hi</span></div>`,
 })
 export class AppComponent {}

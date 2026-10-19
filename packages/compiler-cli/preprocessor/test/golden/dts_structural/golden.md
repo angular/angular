@@ -58,7 +58,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 imports: [MyNgIf],
                 template: `
         <div *myNgIf="true"></div>
@@ -77,7 +76,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.ts',
-      lineNumber: 12,
+      lineNumber: 11,
     });
 })();
 

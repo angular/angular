@@ -16,7 +16,6 @@ const DYNAMIC_SELECTOR = 'app-' + Math.random();
 @Component({
   selector: DYNAMIC_SELECTOR,
   template: '<div>Hello World</div>',
-  standalone: true,
 })
 export class BadComponent {}
 ```

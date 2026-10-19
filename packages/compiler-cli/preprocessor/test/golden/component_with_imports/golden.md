@@ -49,7 +49,6 @@ export class HelloComponent {
               {
                 selector: 'app-hello',
                 template: '<span>Hello</span>',
-                standalone: true,
               },
             ],
           },
@@ -64,7 +63,7 @@ export class HelloComponent {
     i0.ɵsetClassDebugInfo(HelloComponent, {
       className: 'HelloComponent',
       filePath: 'hello.component.ts',
-      lineNumber: 8,
+      lineNumber: 7,
     });
 })();
 
@@ -109,7 +108,6 @@ export class HighlightDirective {
             args: [
               {
                 selector: '[appHighlight]',
-                standalone: true,
               },
             ],
           },
@@ -188,7 +186,6 @@ export class ParentComponent {
               {
                 selector: 'app-parent',
                 template: '<app-hello appHighlight>{{ "test" | upcase }}</app-hello>',
-                standalone: true,
                 imports: [HelloComponent, HighlightDirective, UpcasePipe],
               },
             ],
@@ -204,7 +201,7 @@ export class ParentComponent {
     i0.ɵsetClassDebugInfo(ParentComponent, {
       className: 'ParentComponent',
       filePath: 'parent.component.ts',
-      lineNumber: 12,
+      lineNumber: 11,
     });
 })();
 
@@ -252,7 +249,6 @@ export class ForwardRefComponent {
             args: [
               {
                 selector: 'test-forward-ref',
-                standalone: true,
                 imports: [forwardRef(() => ForwardRefTargetComponent)],
                 template: '<app-forward-ref-target></app-forward-ref-target>',
               },
@@ -269,7 +265,7 @@ export class ForwardRefComponent {
     i0.ɵsetClassDebugInfo(ForwardRefComponent, {
       className: 'ForwardRefComponent',
       filePath: 'parent.component.ts',
-      lineNumber: 22,
+      lineNumber: 20,
     });
 })();
 
@@ -316,7 +312,6 @@ export class ForwardRefTargetComponent {
             args: [
               {
                 selector: 'app-forward-ref-target',
-                standalone: true,
                 template: '<span>Target</span>',
               },
             ],
@@ -332,7 +327,7 @@ export class ForwardRefTargetComponent {
     i0.ɵsetClassDebugInfo(ForwardRefTargetComponent, {
       className: 'ForwardRefTargetComponent',
       filePath: 'parent.component.ts',
-      lineNumber: 29,
+      lineNumber: 26,
     });
 })();
 
@@ -368,7 +363,6 @@ export class UpcasePipe implements PipeTransform {
             args: [
               {
                 name: 'upcase',
-                standalone: true,
               },
             ],
           },

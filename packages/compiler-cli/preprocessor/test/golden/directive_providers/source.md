@@ -19,7 +19,6 @@ export class Service {}
 
 @Directive({
   selector: '[appDir]',
-  standalone: true,
   providers: [Service]
 })
 export class TestDirective {}
@@ -27,7 +26,6 @@ export class TestDirective {}
 @Component({
   selector: 'app-test',
   template: '<div></div>',
-  standalone: true,
   providers: [Service],
   viewProviders: [Service]
 })

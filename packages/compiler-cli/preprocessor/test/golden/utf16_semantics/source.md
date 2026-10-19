@@ -23,7 +23,6 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
   template: `
     <div>José & 😊</div>
   `,
-  standalone: true,
 })
 export class Utf16Component {
   // "José" has 'é' (2 bytes, 1 char)

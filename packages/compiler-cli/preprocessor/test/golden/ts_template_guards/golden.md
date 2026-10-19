@@ -92,7 +92,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 imports: [MyIf, MyDirWithInvalidGuards],
                 template: `
         <div *myIf="authService.user as user; invocation: authService.user">
@@ -116,7 +115,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.ts',
-      lineNumber: 17,
+      lineNumber: 16,
     });
 })();
 

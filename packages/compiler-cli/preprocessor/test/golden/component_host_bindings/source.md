@@ -14,7 +14,6 @@ import { Component, HostBinding, HostListener } from '@angular/core';
 
 @Component({
   selector: 'app-button',
-  standalone: true,
   template: `<ng-content></ng-content>`,
   host: {
     'role': 'button',

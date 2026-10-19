@@ -6,24 +6,24 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {IndexerVisitor} from '@angular/compiler';
 import {join} from 'path';
+import {createAnalyzer} from '../api.js';
+import {HybridCompiler} from '../src/hybrid_compiler.js';
 import {
-  IdentifierKind,
-  ElementIdentifier,
-  ReferenceIdentifier,
-  VariableIdentifier,
-  PropertyIdentifier,
-  DirectiveHostIdentifier,
-  TopLevelIdentifier,
   BoundAttributeIdentifier,
+  DirectiveHostIdentifier,
+  ElementIdentifier,
+  IdentifierKind,
   IndexedComponent,
   PipeIdentifier,
+  PropertyIdentifier,
+  ReferenceIdentifier,
+  TopLevelIdentifier,
+  VariableIdentifier,
 } from '../src/indexer_api.js';
-import {HybridCompiler} from '../src/hybrid_compiler.js';
-import {buildTypeCheckingConfig} from '../src/tcb.js';
-import {IndexerVisitor} from '@angular/compiler';
 import {getIndexedComponents, IndexerBoundTemplate} from '../src/indexing/indexer.js';
-import {createAnalyzer} from '../api.js';
+import {buildTypeCheckingConfig} from '../src/tcb.js';
 import {resolveWasmBinding} from './utils.js';
 
 async function setupCompiler(content: string, options?: {strictTemplates?: boolean}) {
@@ -629,7 +629,6 @@ describe('Indexer', () => {
 
           @Component({
             template: '<span>dep comp</span>',
-            standalone: true,
           })
           export class DepComp {}
         `,
@@ -638,7 +637,6 @@ describe('Indexer', () => {
 
           @Component({
             template: '<span>other comp</span>',
-            standalone: true,
           })
           export class OtherComp {}
         `,
@@ -649,7 +647,6 @@ describe('Indexer', () => {
 
           @Component({
             template: '<DepComp #compRef /><OtherComp #otherRef />',
-            standalone: true,
             imports: [DepComp, OtherComp],
           })
           export class TestComp {}

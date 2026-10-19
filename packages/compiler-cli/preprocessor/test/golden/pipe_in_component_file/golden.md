@@ -28,7 +28,6 @@ export class MyPipe implements PipeTransform {
             args: [
               {
                 name: 'myPipe',
-                standalone: true,
               },
             ],
           },
@@ -86,7 +85,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 imports: [MyPipe],
                 template: '{{ "hello" | myPipe }}',
               },
@@ -103,7 +101,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.ts',
-      lineNumber: 17,
+      lineNumber: 15,
     });
 })();
 

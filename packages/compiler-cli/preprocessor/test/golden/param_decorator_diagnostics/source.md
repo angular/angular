@@ -27,7 +27,6 @@ export class Dep {}
 
 @Component({
   selector: 'unexpected-core',
-  standalone: true,
   template: '<div>Unexpected</div>',
 })
 export class UnexpectedCoreComponent {
@@ -45,7 +44,6 @@ export class Dep {}
 
 @Directive({
   selector: '[appForeignParam]',
-  standalone: true,
 })
 export class ForeignParamDirective {
   constructor(@Logged() dep: Dep) {}

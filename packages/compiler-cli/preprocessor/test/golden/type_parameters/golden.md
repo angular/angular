@@ -66,7 +66,6 @@ export class AppComponent {
         <app-generic [value]="123"></app-generic>
         <app-default-generic [value]="{a: 1}"></app-default-generic>
       `,
-                standalone: true,
                 imports: [GenericComponent, DefaultGenericComponent],
               },
             ],
@@ -82,7 +81,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 14,
+      lineNumber: 13,
     });
 })();
 

@@ -67,7 +67,6 @@ import {MyIf, MyDirWithInvalidGuards} from './my-dir';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [MyIf, MyDirWithInvalidGuards],
   template: `
     <div *myIf="authService.user as user; invocation: authService.user">

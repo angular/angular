@@ -20,7 +20,6 @@ import { Component } from '@angular/core';
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrl: './app.styles.css',
-  standalone: true,
 })
 export class AppComponent {}
 ```

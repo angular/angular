@@ -30,7 +30,6 @@ import {arrowTransform as aliasedTransform} from './transforms';
 
 @Component({
   selector: 'test-transforms',
-  standalone: true,
   template: `<div></div>`,
 })
 export class TestTransformsComponent {
@@ -49,7 +48,6 @@ export class TestTransformsComponent {
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [TestTransformsComponent],
   template: `
     <test-transforms

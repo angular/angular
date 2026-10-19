@@ -68,7 +68,6 @@ export class AppComponent {
                 selector: 'app-root',
                 template:
                   '<imported-comp></imported-comp><excluded-but-imported-comp></excluded-but-imported-comp>',
-                standalone: true,
                 imports: [ImportedComponent, ExcludedButImportedComponent],
               },
             ],
@@ -84,7 +83,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 11,
+      lineNumber: 10,
     });
 })();
 

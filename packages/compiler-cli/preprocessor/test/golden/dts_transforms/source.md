@@ -59,7 +59,6 @@ import { TestComponent } from 'test-lib';
       height="200"
     ></test-cmp>
   `,
-  standalone: true,
   imports: [TestComponent],
 })
 export class AppComponent {

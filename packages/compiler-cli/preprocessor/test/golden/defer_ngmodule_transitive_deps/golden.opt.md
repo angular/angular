@@ -13,7 +13,7 @@ var _pipe1 = null! as i1.TrimPipe;
 /*tcb1*/
 function _tcb1(this: i0.AppComponent) {
   if (true) {
-    '' + _pipe1.transform(/*329,333*/ '  hello  ' /*315,326*/) /*315,333*/;
+    '' + _pipe1.transform(/*309,313*/ '  hello  ' /*295,306*/) /*295,313*/;
   }
 }
 
@@ -91,7 +91,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 imports: [MatButtonModule, TrimPipeModule],
                 template: `
         @defer (on immediate) {
@@ -112,7 +111,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.ts',
-      lineNumber: 15,
+      lineNumber: 14,
     });
 })();
 

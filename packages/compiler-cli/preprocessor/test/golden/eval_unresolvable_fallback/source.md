@@ -16,7 +16,6 @@ import { EXTERNAL_IMPORTS } from '@not-installed/components';
 @Component({
   selector: 'app-root',
   template: '<div></div>',
-  standalone: true,
   imports: EXTERNAL_IMPORTS,
 })
 export class AppComponent {}

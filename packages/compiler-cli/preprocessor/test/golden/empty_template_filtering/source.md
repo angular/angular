@@ -21,7 +21,6 @@ export class UnusedDir {}
 @Component({
   selector: 'app-root',
   template: '',
-  standalone: true,
   imports: [UnusedDir]
 })
 export class AppComponent {}

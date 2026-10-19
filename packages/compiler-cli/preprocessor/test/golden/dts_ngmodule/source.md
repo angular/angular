@@ -45,7 +45,6 @@ import {MyNestedModule} from './my-module';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [MyNestedModule],
   template: `
     <div my-dir [myProp]="'test'"></div>

@@ -30,7 +30,6 @@ import {MyNgIf} from './my-dir';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [MyNgIf],
   template: `
     <div *myNgIf="true"></div>

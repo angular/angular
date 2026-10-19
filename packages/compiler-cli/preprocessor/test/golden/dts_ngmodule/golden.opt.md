@@ -11,10 +11,10 @@ import * as i1 from './my-module';
 /*tcb1*/
 function _tcb1(this: i0.AppComponent) {
   if (true) {
-    var _t1 /*T:DIR:0*/ /*190,220*/ = null! as i1.MyDtsDirective; /*T:VAE*/
-    _t1.myProp /*203,209*/ = 'test' /*212,218*/; /*202,219*/
-    var _t2 /*T:DIR:0*/ /*231,257*/ = null! as i1.MyDtsComponent; /*T:VAE*/
-    _t2.myProp /*240,246*/ = 'test' /*249,255*/; /*239,256*/
+    var _t1 /*T:DIR:0*/ /*170,200*/ = null! as i1.MyDtsDirective; /*T:VAE*/
+    _t1.myProp /*183,189*/ = 'test' /*192,198*/; /*182,199*/
+    var _t2 /*T:DIR:0*/ /*211,237*/ = null! as i1.MyDtsComponent; /*T:VAE*/
+    _t2.myProp /*220,226*/ = 'test' /*229,235*/; /*219,236*/
   }
 }
 
@@ -81,7 +81,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 imports: [MyNestedModule],
                 template: `
         <div my-dir [myProp]="'test'"></div>
@@ -101,7 +100,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.ts',
-      lineNumber: 13,
+      lineNumber: 12,
     });
 })();
 

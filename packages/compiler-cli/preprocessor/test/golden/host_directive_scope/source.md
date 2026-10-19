@@ -22,7 +22,6 @@ import { Directive, Input } from '@angular/core';
 
 @Directive({
   selector: '[ripple]',
-  standalone: true,
 })
 export class Ripple {
   @Input() rippleColor: string = '';
@@ -36,7 +35,6 @@ import { Ripple } from './ripple';
 
 @Directive({
   selector: '[tooltip]',
-  standalone: true,
   hostDirectives: [{ directive: Ripple, inputs: ['rippleColor'] }],
 })
 export class Tooltip {
@@ -51,7 +49,6 @@ import { Tooltip } from './tooltip';
 
 @Component({
   selector: 'menu-el',
-  standalone: true,
   template: '<ng-content></ng-content>',
   hostDirectives: [{ directive: Tooltip, inputs: ['tooltip: tip'] }],
 })
@@ -64,7 +61,6 @@ import { Directive } from '@angular/core';
 
 @Directive({
   selector: '[focusRing]',
-  standalone: true,
 })
 export class FocusRing {}
 ```
@@ -77,7 +73,6 @@ import { Menu } from './menu';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [Menu],
   hostDirectives: [FocusRing],
   template:

@@ -16,14 +16,14 @@ function _tcb1(this: i0.SelectorlessComp) {
 /*tcb2*/
 function _tcb2(this: i0.AppComponent) {
   if (true) {
-    var _t1 /*T:DIR:0*/ /*518,587*/ = null! as i0.SelectorlessComp; /*T:VAE*/
-    _t1.heroName /*537,545*/ = this.hello /*548,553*/ /*548,553*/; /*536,554*/
-    _t1['heroSelect'] /*556,566*/
+    var _t1 /*T:DIR:0*/ /*458,527*/ = null! as i0.SelectorlessComp; /*T:VAE*/
+    _t1.heroName /*477,485*/ = this.hello /*488,493*/ /*488,493*/; /*476,494*/
+    _t1['heroSelect'] /*496,506*/
       .subscribe(($event /*T:EP*/): any => {
-        this.onSelect(/*569,577*/ $event /*578,584*/); /*569,585*/
-      }); /*555,586*/
-    var _t2 /*T:DIR:0*/ /*616,633*/ = null! as i0.SelectorlessDir; /*T:VAE*/
-    _t2.dirInput /*633,641*/ = 'hello'; /*633,649*/
+        this.onSelect(/*509,517*/ $event /*518,524*/); /*509,525*/
+      }); /*495,526*/
+    var _t2 /*T:DIR:0*/ /*556,573*/ = null! as i0.SelectorlessDir; /*T:VAE*/
+    _t2.dirInput /*573,581*/ = 'hello'; /*573,589*/
   }
 }
 
@@ -82,7 +82,6 @@ export class SelectorlessComp {
             type: Component,
             args: [
               {
-                standalone: true,
                 template: '<div>Selectorless Component</div>',
               },
             ],
@@ -98,7 +97,7 @@ export class SelectorlessComp {
     i0.ɵsetClassDebugInfo(SelectorlessComp, {
       className: 'SelectorlessComp',
       filePath: 'app.ts',
-      lineNumber: 7,
+      lineNumber: 6,
     });
 })();
 
@@ -126,21 +125,9 @@ export class SelectorlessDir {
     /*@__PURE__*/ i0.ɵɵdefineDirective({ type: SelectorlessDir, inputs: { dirInput: 'dirInput' } });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
-      i0.ɵsetClassMetadata(
-        SelectorlessDir,
-        [
-          {
-            type: Directive,
-            args: [
-              {
-                standalone: true,
-              },
-            ],
-          },
-        ],
-        null,
-        { dirInput: [{ type: Input }] },
-      );
+      i0.ɵsetClassMetadata(SelectorlessDir, [{ type: Directive, args: [{}] }], null, {
+        dirInput: [{ type: Input }],
+      });
   }
 }
 
@@ -188,7 +175,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 imports: [SelectorlessComp, SelectorlessDir],
                 template: `
         <SelectorlessComp [heroName]="hello" (heroSelect)="onSelect($event)"></SelectorlessComp>
@@ -208,7 +194,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.ts',
-      lineNumber: 28,
+      lineNumber: 25,
     });
 })();
 

@@ -95,7 +95,6 @@ export class AppComponent {
         ></test-cmp>
         <div test-dir [dirInput]="'test'" [signal]="'sig'"></div>
       `,
-                standalone: true,
                 imports: [TestComponent, TestDirective],
               },
             ],
@@ -111,7 +110,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 20,
+      lineNumber: 19,
     });
 })();
 

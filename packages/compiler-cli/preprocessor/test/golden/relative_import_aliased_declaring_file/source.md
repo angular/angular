@@ -50,7 +50,6 @@ import { UpstreamModule } from './upstream-module';
   selector: 'consumer-cmp',
   template: '<div dirA></div>',
   imports: [UpstreamModule],
-  standalone: true,
 })
 export class ConsumerComponent {}
 ```

@@ -17,7 +17,6 @@
 import { Directive, Input, Output, EventEmitter } from '@angular/core';
 
 @Directive({
-  standalone: true,
 })
 export class HostDir {
   @Input() hostInp: string = '';
@@ -32,7 +31,6 @@ import { HostDir } from './nested/host_dir';
 
 @Directive({
   selector: '[myDir]',
-  standalone: true,
   hostDirectives: [
     {
       directive: HostDir,
@@ -51,7 +49,6 @@ import { MyDir } from '../directives/dir';
 
 @Component({
   selector: 'app-cmp',
-  standalone: true,
   imports: [MyDir],
   template: '<div myDir [myDirAliasedInp]="text" (myDirAliasedOut)="onEvent($event)"></div>',
 })

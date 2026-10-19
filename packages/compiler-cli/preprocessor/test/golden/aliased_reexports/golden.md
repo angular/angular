@@ -50,7 +50,6 @@ export class ConsumerComponent {
                 selector: 'consumer-cmp',
                 template: '<div dirA></div>',
                 imports: [UpstreamModule],
-                standalone: true,
               },
             ],
           },
@@ -65,7 +64,7 @@ export class ConsumerComponent {
     i0.ɵsetClassDebugInfo(ConsumerComponent, {
       className: 'ConsumerComponent',
       filePath: 'consumer.ts',
-      lineNumber: 10,
+      lineNumber: 9,
     });
 })();
 

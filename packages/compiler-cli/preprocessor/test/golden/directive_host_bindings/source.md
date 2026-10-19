@@ -14,7 +14,6 @@ import { Directive, HostBinding, HostListener } from '@angular/core';
 
 @Directive({
   selector: '[appTooltip]',
-  standalone: true,
   host: {
     'role': 'tooltip',
     '[attr.aria-hidden]': 'isHidden',

@@ -35,7 +35,6 @@ import {READONLY_DEPS, DirA, DirB} from './directives';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [...READONLY_DEPS],
   template: '<div dirA dirB><h1>Hello</h1></div>',
 })

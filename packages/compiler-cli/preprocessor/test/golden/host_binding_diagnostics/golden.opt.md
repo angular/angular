@@ -12,7 +12,7 @@ function _tcb1(this: i0.BadExpressionDirective) {
   if (true) {
   }
   if (true /*hostBindingsBlockGuard*/) {
-    ('button'); /*141,149*/
+    ('button'); /*121,129*/
   }
 }
 
@@ -58,7 +58,6 @@ export class BadExpressionDirective {
             args: [
               {
                 selector: '[appBadExpression]',
-                standalone: true,
                 host: {
                   '[attr.role]': "'button'",
                   '(click)': 'handle((',
@@ -143,7 +142,6 @@ export class DynamicListenerComponent {
             args: [
               {
                 selector: 'app-dynamic-listener',
-                standalone: true,
                 template: '<div>Hello</div>',
                 host: {
                   '(mouseover)': HANDLER,
@@ -162,7 +160,7 @@ export class DynamicListenerComponent {
     i0.ɵsetClassDebugInfo(DynamicListenerComponent, {
       className: 'DynamicListenerComponent',
       filePath: 'dynamic-listener.component.ts',
-      lineNumber: 13,
+      lineNumber: 12,
     });
 })();
 
@@ -179,8 +177,8 @@ export class DynamicListenerComponent {
       "code": 5001,
       "messageText": "Parser Error: Unexpected end of expression: handle(( at the end of the expression [handle((] in /bad-expression.directive.ts@0:0\nParser Error: Missing closing parentheses at the end of the expression [handle((] in /bad-expression.directive.ts@0:0\nParser Error: Missing expected ) at the end of the expression [handle((] in /bad-expression.directive.ts@0:0",
       "span": {
-        "start": 168,
-        "end": 176
+        "start": 148,
+        "end": 156
       }
     },
     {
@@ -189,8 +187,8 @@ export class DynamicListenerComponent {
       "code": 5001,
       "messageText": "Event binding must be string",
       "span": {
-        "start": 180,
-        "end": 213
+        "start": 160,
+        "end": 193
       }
     }
   ]

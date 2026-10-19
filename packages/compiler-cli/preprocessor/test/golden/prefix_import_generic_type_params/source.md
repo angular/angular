@@ -39,7 +39,6 @@ import { FilterConfig } from './filter_model';
 @Component({
   selector: 'filter-bar',
   template: '',
-  standalone: true,
 })
 export class FilterBarComponent<T, P extends FilterConfig<T> = FilterConfig<T>> {
   @Input() config!: P;
@@ -53,7 +52,6 @@ import { FilterConfig } from './filter_model';
 
 @Directive({
   selector: '[filterDir]',
-  standalone: true,
 })
 export class FilterDirective<T, P extends FilterConfig<T> = FilterConfig<T>> {
   @Input('filterDir') filterCfg!: P;
@@ -71,7 +69,6 @@ export interface LocalConfig {
 @Component({
   selector: 'local-config-comp',
   template: '',
-  standalone: true,
 })
 export class LocalConfigComponent<T extends LocalConfig = LocalConfig> {
   @Input() config!: T;
@@ -93,7 +90,6 @@ import { NestedData } from './nested/index';
 @Component({
   selector: 'nested-view',
   template: '',
-  standalone: true,
 })
 export class NestedViewComponent<T extends NestedData<string> = NestedData<string>> {
   @Input() viewData!: T;
@@ -122,7 +118,6 @@ import { NestedViewComponent } from '../widgets/nested_view.component';
     <local-config-comp [config]="config"></local-config-comp>
     <nested-view [viewData]="config"></nested-view>
   `,
-  standalone: true,
 })
 export class DashboardComponent {
   config: any;

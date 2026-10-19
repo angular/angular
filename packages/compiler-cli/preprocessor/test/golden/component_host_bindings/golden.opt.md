@@ -12,40 +12,40 @@ function _tcb1(this: i0.ButtonComponent) {
   if (true) {
   }
   if (true /*hostBindingsBlockGuard*/) {
-    this.isPressed; /*248,257*/ /*248,257*/
-    this.disabled /*284,292*/ /*284,292*/ ? 0.5 /*295,298*/ : 1 /*301,302*/; /*284,302*/
-    this.disabled; /*334,342*/ /*334,342*/
-    var _t1 = document.createElement('app-button'); /*394,409*/
-    _t1.addEventListener(/*350,357*/ 'focus', ($event /*T:EP*/): any => {
+    this.isPressed; /*228,237*/ /*228,237*/
+    this.disabled /*264,272*/ /*264,272*/ ? 0.5 /*275,278*/ : 1 /*281,282*/; /*264,282*/
+    this.disabled; /*314,322*/ /*314,322*/
+    var _t1 = document.createElement('app-button'); /*374,389*/
+    _t1.addEventListener(/*330,337*/ 'focus', ($event /*T:EP*/): any => {
       this
-        .onFocus /*361,368*/
-        (); /*361,370*/
-    }); /*350,370*/
-    _t1.addEventListener(/*686,699*/ 'keydown.enter', ($event /*T:EP*/): any => {
+        .onFocus /*341,348*/
+        (); /*341,350*/
+    }); /*330,350*/
+    _t1.addEventListener(/*666,679*/ 'keydown.enter', ($event /*T:EP*/): any => {
       this
-        .onActivate /*737,747*/
-        (); /*737,747*/
-    }); /*671,701*/
-    _t1.addEventListener(/*719,732*/ 'keydown.space', ($event /*T:EP*/): any => {
+        .onActivate /*717,727*/
+        (); /*717,727*/
+    }); /*651,681*/
+    _t1.addEventListener(/*699,712*/ 'keydown.space', ($event /*T:EP*/): any => {
       this
-        .onActivate /*737,747*/
-        (); /*737,747*/
-    }); /*704,734*/
-    _t1.addEventListener(/*835,846*/ 'keyup.enter', ($event /*T:EP*/): any => {
+        .onActivate /*717,727*/
+        (); /*717,727*/
+    }); /*684,714*/
+    _t1.addEventListener(/*815,826*/ 'keyup.enter', ($event /*T:EP*/): any => {
       this
-        .onDeactivate /*882,894*/
-        (); /*882,894*/
-    }); /*820,848*/
-    _t1.addEventListener(/*866,877*/ 'keyup.space', ($event /*T:EP*/): any => {
+        .onDeactivate /*862,874*/
+        (); /*862,874*/
+    }); /*800,828*/
+    _t1.addEventListener(/*846,857*/ 'keyup.space', ($event /*T:EP*/): any => {
       this
-        .onDeactivate /*882,894*/
-        (); /*882,894*/
-    }); /*851,879*/
-    _t1.addEventListener(/*995,999*/ 'blur', ($event /*T:EP*/): any => {
+        .onDeactivate /*862,874*/
+        (); /*862,874*/
+    }); /*831,859*/
+    _t1.addEventListener(/*975,979*/ 'blur', ($event /*T:EP*/): any => {
       this
-        .onBlur /*1004,1010*/
-        (); /*1004,1010*/
-    }); /*980,1001*/
+        .onBlur /*984,990*/
+        (); /*984,990*/
+    }); /*960,981*/
   }
 }
 
@@ -156,7 +156,6 @@ export class ButtonComponent {
             args: [
               {
                 selector: 'app-button',
-                standalone: true,
                 template: `<ng-content></ng-content>`,
                 host: {
                   'role': 'button',
@@ -192,7 +191,7 @@ export class ButtonComponent {
     i0.ɵsetClassDebugInfo(ButtonComponent, {
       className: 'ButtonComponent',
       filePath: 'button.component.ts',
-      lineNumber: 16,
+      lineNumber: 15,
     });
 })();
 

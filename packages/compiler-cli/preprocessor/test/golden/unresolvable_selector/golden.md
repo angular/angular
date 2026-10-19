@@ -51,7 +51,6 @@ export class BadComponent {
               {
                 selector: DYNAMIC_SELECTOR,
                 template: '<div>Hello World</div>',
-                standalone: true,
               },
             ],
           },
@@ -66,7 +65,7 @@ export class BadComponent {
     i0.ɵsetClassDebugInfo(BadComponent, {
       className: 'BadComponent',
       filePath: 'app.component.ts',
-      lineNumber: 9,
+      lineNumber: 8,
     });
 })();
 

@@ -77,7 +77,6 @@ export class TooltipDirective {
             args: [
               {
                 selector: '[appTooltip]',
-                standalone: true,
                 host: {
                   'role': 'tooltip',
                   '[attr.aria-hidden]': 'isHidden',

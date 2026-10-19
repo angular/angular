@@ -11,8 +11,8 @@ import * as i1 from './feature-component';
 /*tcb1*/
 function _tcb1(this: i0.AppComponent) {
   if (true) {
-    var _t1 /*T:DIR:0*/ /*197,229*/ = null! as i1.MyFeatureComponent; /*T:VAE*/
-    _t1.myProp /*211,217*/ = 'hello' /*220,227*/; /*210,228*/
+    var _t1 /*T:DIR:0*/ /*177,209*/ = null! as i1.MyFeatureComponent; /*T:VAE*/
+    _t1.myProp /*191,197*/ = 'hello' /*200,207*/; /*190,208*/
   }
 }
 
@@ -74,7 +74,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 imports: [MyFeatureModule],
                 template: `
         <feature-cmp [myProp]="'hello'"></feature-cmp>
@@ -93,7 +92,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.ts',
-      lineNumber: 12,
+      lineNumber: 11,
     });
 })();
 

@@ -17,7 +17,6 @@ const myAnimations = [trigger('spreadTrigger', [])];
 @Component({
   selector: 'app-root',
   template: '<div @myTrigger @nestedTrigger @spreadTrigger></div>',
-  standalone: true,
   animations: [
     trigger('myTrigger', []),
     [trigger('nestedTrigger', [])],
@@ -31,7 +30,6 @@ const variableAnimations = [trigger('varTrigger', [])];
 @Component({
   selector: 'app-var',
   template: '<div @varTrigger></div>',
-  standalone: true,
   animations: variableAnimations,
 })
 export class VarComponent {}
@@ -39,7 +37,6 @@ export class VarComponent {}
 @Component({
   selector: 'app-bound-invalid',
   template: '<div [@myTrigger]="ctxValue" @invalidTrigger></div>',
-  standalone: true,
   animations: [trigger('myTrigger', [])],
 })
 export class BoundAndInvalidComponent {

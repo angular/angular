@@ -14,7 +14,6 @@ import { Directive, HostBinding, HostListener } from '@angular/core';
 
 @Directive({
   selector: '[appResizeObserver]',
-  standalone: true,
   host: {
     '[class.resizing]': 'isResizing',
     '[style.min-width.px]': 'minWidth',

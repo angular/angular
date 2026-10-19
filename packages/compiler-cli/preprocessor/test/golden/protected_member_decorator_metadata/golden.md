@@ -80,7 +80,6 @@ export class ProtectedComponent extends BaseComponent {
               {
                 selector: 'app-protected',
                 template: '<div>{{ value }}</div>',
-                standalone: true,
                 providers: [
                   ProtectedComponent.getProtectedProvider(),
                   BaseComponent.getBaseConfig(),
@@ -99,7 +98,7 @@ export class ProtectedComponent extends BaseComponent {
     i0.ɵsetClassDebugInfo(ProtectedComponent, {
       className: 'ProtectedComponent',
       filePath: 'app.component.ts',
-      lineNumber: 19,
+      lineNumber: 18,
     });
 })();
 
@@ -142,7 +141,6 @@ export class ProtectedDirective {
             args: [
               {
                 selector: '[appProtectedDir]',
-                standalone: true,
                 providers: [ProtectedDirective.getDirectiveProvider()],
               },
             ],

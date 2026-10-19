@@ -58,7 +58,6 @@ export class ComponentOne {
               {
                 selector: 'app-one',
                 template: '<div [ngClass]="{a: true, b: false}">Component One</div>',
-                standalone: true,
                 imports: [CommonModule],
               },
             ],
@@ -74,7 +73,7 @@ export class ComponentOne {
     i0.ɵsetClassDebugInfo(ComponentOne, {
       className: 'ComponentOne',
       filePath: 'app.component.ts',
-      lineNumber: 10,
+      lineNumber: 9,
     });
 })();
 
@@ -128,7 +127,6 @@ export class ComponentTwo {
               {
                 selector: 'app-two',
                 template: '<div [ngClass]="{c: true, d: false}">Component Two</div>',
-                standalone: true,
                 imports: [CommonModule],
               },
             ],
@@ -144,7 +142,7 @@ export class ComponentTwo {
     i0.ɵsetClassDebugInfo(ComponentTwo, {
       className: 'ComponentTwo',
       filePath: 'app.component.ts',
-      lineNumber: 18,
+      lineNumber: 16,
     });
 })();
 

@@ -52,7 +52,6 @@ export class TestCase {
               {
                 selector: 'app-test',
                 template: '<div>Test</div>',
-                standalone: true,
               },
             ],
           },
@@ -64,7 +63,7 @@ export class TestCase {
 }
 ((): any => {
   (typeof ngDevMode === 'undefined' || ngDevMode) &&
-    i0.ɵsetClassDebugInfo(TestCase, { className: 'TestCase', filePath: 'test.ts', lineNumber: 9 });
+    i0.ɵsetClassDebugInfo(TestCase, { className: 'TestCase', filePath: 'test.ts', lineNumber: 8 });
 })();
 
 ```

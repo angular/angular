@@ -10,14 +10,14 @@ import * as i0 from './bindings.component';
 /*tcb1*/
 function _tcb1(this: i0.BindingsComponent) {
   if (true) {
-    this.role; /*362,366*/ /*362,366*/
-    this.custom; /*380,386*/ /*380,386*/
-    var _t1 /*311,388*/ = document.createElement('FancyButton'); /*311,388*/ /*311,388*/
-    _t1.addEventListener(/*325,330*/ 'click', ($event /*T:EP*/): any => {
+    this.role; /*342,346*/ /*342,346*/
+    this.custom; /*360,366*/ /*360,366*/
+    var _t1 /*291,368*/ = document.createElement('FancyButton'); /*291,368*/ /*291,368*/
+    _t1.addEventListener(/*305,310*/ 'click', ($event /*T:EP*/): any => {
       this
-        .onClick /*333,340*/
-        (); /*333,342*/
-    }); /*324,343*/
+        .onClick /*313,320*/
+        (); /*313,322*/
+    }); /*304,323*/
   }
 }
 
@@ -54,7 +54,7 @@ import * as i0 from './content-blocks.component';
 /*tcb1*/
 function _tcb1(this: i0.ContentBlocksComponent) {
   if (true) {
-    this.title; /*336,341*/ /*336,341*/
+    this.title; /*316,321*/ /*316,321*/
   }
 }
 
@@ -88,8 +88,8 @@ export class ContentBlocksComponent {
       "code": 8025,
       "messageText": "Foreign components do not support event bindings.",
       "span": {
-        "start": 311,
-        "end": 411
+        "start": 291,
+        "end": 391
       }
     },
     {
@@ -98,8 +98,8 @@ export class ContentBlocksComponent {
       "code": 8025,
       "messageText": "Foreign components do not support references.",
       "span": {
-        "start": 311,
-        "end": 411
+        "start": 291,
+        "end": 391
       }
     },
     {
@@ -108,8 +108,8 @@ export class ContentBlocksComponent {
       "code": 8025,
       "messageText": "Foreign components only support static attributes and property bindings.",
       "span": {
-        "start": 311,
-        "end": 411
+        "start": 291,
+        "end": 391
       }
     },
     {
@@ -118,8 +118,8 @@ export class ContentBlocksComponent {
       "code": 8029,
       "messageText": "A foreign component cannot have both a 'children' property and child nodes.",
       "span": {
-        "start": 368,
-        "end": 387
+        "start": 348,
+        "end": 367
       }
     },
     {
@@ -128,8 +128,8 @@ export class ContentBlocksComponent {
       "code": 8028,
       "messageText": "A @content block with the name 'header' has already been defined for this component.",
       "span": {
-        "start": 389,
-        "end": 422
+        "start": 369,
+        "end": 402
       }
     },
     {
@@ -138,8 +138,8 @@ export class ContentBlocksComponent {
       "code": 8029,
       "messageText": "A @content block with the name 'label' conflicts with a property on the parent component.",
       "span": {
-        "start": 429,
-        "end": 481
+        "start": 409,
+        "end": 461
       }
     },
     {
@@ -148,8 +148,8 @@ export class ContentBlocksComponent {
       "code": 8027,
       "messageText": "Defining a @content (children) block with no parameters is unnecessary. Pass children as direct nested content of the foreign component instead.",
       "span": {
-        "start": 488,
-        "end": 534
+        "start": 468,
+        "end": 514
       }
     },
     {
@@ -158,8 +158,8 @@ export class ContentBlocksComponent {
       "code": 8026,
       "messageText": "@content blocks are only valid as direct children of foreign components.",
       "span": {
-        "start": 561,
-        "end": 603
+        "start": 541,
+        "end": 583
       }
     }
   ]

@@ -57,7 +57,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 imports: [TestHostConsumerDirective],
                 template:
                   '<div testHostConsumer (disabledChange)="onDisabledChange($event)"></div>',
@@ -75,7 +74,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'src/app/app.component.ts',
-      lineNumber: 10,
+      lineNumber: 9,
     });
 })();
 

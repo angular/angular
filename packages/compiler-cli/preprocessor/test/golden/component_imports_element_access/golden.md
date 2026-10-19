@@ -46,7 +46,6 @@ export class AComponent {
             args: [
               {
                 selector: 'a-cmp',
-                standalone: true,
                 template: 'a',
               },
             ],
@@ -62,7 +61,7 @@ export class AComponent {
     i0.ɵsetClassDebugInfo(AComponent, {
       className: 'AComponent',
       filePath: 'a.component.ts',
-      lineNumber: 8,
+      lineNumber: 7,
     });
 })();
 
@@ -119,7 +118,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 imports: [LIST[0]],
                 template: '<a-cmp></a-cmp><div bDir></div>',
               },
@@ -136,7 +134,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 10,
+      lineNumber: 9,
     });
 })();
 
@@ -179,7 +177,6 @@ export class BDirective {
             args: [
               {
                 selector: '[bDir]',
-                standalone: true,
               },
             ],
           },

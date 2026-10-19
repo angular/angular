@@ -13,7 +13,6 @@
 import { Component, Directive, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
-  standalone: true,
   template: '<div>Selectorless Component</div>',
 })
 export class SelectorlessComp {
@@ -22,7 +21,6 @@ export class SelectorlessComp {
 }
 
 @Directive({
-  standalone: true,
 })
 export class SelectorlessDir {
   @Input() dirInput: string = '';
@@ -30,7 +28,6 @@ export class SelectorlessDir {
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [SelectorlessComp, SelectorlessDir],
   template: `
     <SelectorlessComp [heroName]="hello" (heroSelect)="onSelect($event)"></SelectorlessComp>

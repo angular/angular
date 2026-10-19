@@ -10,8 +10,8 @@ import * as i0 from './host.component';
 /*tcb1*/
 function _tcb1(this: i0.HostComponent) {
   if (true) {
-    var _t1 /*T:DIR:0*/ /*181,206*/ = null! as i0.TargetComponent; /*T:VAE*/
-    _t1.value /*194,199*/ = 42 /*202,204*/; /*193,205*/
+    var _t1 /*T:DIR:0*/ /*161,186*/ = null! as i0.TargetComponent; /*T:VAE*/
+    _t1.value /*174,179*/ = 42 /*182,184*/; /*173,185*/
   }
 }
 
@@ -76,7 +76,6 @@ export class HostComponent {
             args: [
               {
                 selector: 'app-host',
-                standalone: true,
                 imports: [forwardRef(() => TargetComponent)],
                 template: '<app-target [value]="42"></app-target>',
               },
@@ -93,7 +92,7 @@ export class HostComponent {
     i0.ɵsetClassDebugInfo(HostComponent, {
       className: 'HostComponent',
       filePath: 'host.component.ts',
-      lineNumber: 9,
+      lineNumber: 8,
     });
 })();
 
@@ -143,7 +142,6 @@ export class TargetComponent {
             args: [
               {
                 selector: 'app-target',
-                standalone: true,
                 template: '<span>Target</span>',
               },
             ],
@@ -159,7 +157,7 @@ export class TargetComponent {
     i0.ɵsetClassDebugInfo(TargetComponent, {
       className: 'TargetComponent',
       filePath: 'host.component.ts',
-      lineNumber: 16,
+      lineNumber: 14,
     });
 })();
 

@@ -82,7 +82,6 @@ export class TestComp {
               {
                 selector: 'test-comp',
                 template: '<div></div>',
-                standalone: true,
               },
             ],
           },
@@ -105,7 +104,7 @@ export class TestComp {
 }
 ((): any => {
   (typeof ngDevMode === 'undefined' || ngDevMode) &&
-    i0.ɵsetClassDebugInfo(TestComp, { className: 'TestComp', filePath: 'test.ts', lineNumber: 10 });
+    i0.ɵsetClassDebugInfo(TestComp, { className: 'TestComp', filePath: 'test.ts', lineNumber: 9 });
 })();
 
 ```

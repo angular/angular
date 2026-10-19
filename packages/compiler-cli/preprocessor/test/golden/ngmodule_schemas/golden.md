@@ -279,7 +279,6 @@ export class MyCompStandaloneImportingModule {
         <unknown-element></unknown-element>
         <div [unknown-property]="true"></div>
       `,
-                standalone: true,
                 imports: [MyNoErrorsModule],
               },
             ],
@@ -295,7 +294,7 @@ export class MyCompStandaloneImportingModule {
     i0.ɵsetClassDebugInfo(MyCompStandaloneImportingModule, {
       className: 'MyCompStandaloneImportingModule',
       filePath: 'ngmodule_schemas.ts',
-      lineNumber: 44,
+      lineNumber: 43,
     });
 })();
 
@@ -367,7 +366,7 @@ export class MyCompNoSchemas {
     i0.ɵsetClassDebugInfo(MyCompNoSchemas, {
       className: 'MyCompNoSchemas',
       filePath: 'ngmodule_schemas.ts',
-      lineNumber: 54,
+      lineNumber: 53,
     });
 })();
 

@@ -15,7 +15,6 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'lib-foo',
   template: '<span>Foo</span>',
-  standalone: true,
 })
 export class FooComponent {}
 ```
@@ -26,7 +25,6 @@ import { Directive } from '@angular/core';
 
 @Directive({
   selector: '[libBar]',
-  standalone: true,
 })
 export class BarDirective {}
 ```
@@ -47,7 +45,6 @@ import { SHARED } from './shared';
 @Component({
   selector: 'app-root',
   template: '<lib-foo libBar></lib-foo>',
-  standalone: true,
   imports: SHARED,
 })
 export class AppComponent {}

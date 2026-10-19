@@ -266,7 +266,6 @@ import { Component } from '@angular/core';
 @Component({
     selector: 'app-root',
     template: '<div>Hello World</div>',
-    standalone: true,
 })
 export class AppComponent {}
 "#,
@@ -345,7 +344,6 @@ import { Component, trigger } from '@angular/core';
 @Component({
     selector: 'app-root',
     template: '<div></div>',
-    standalone: true,
     animations: [
         trigger('myTrigger', []),
         trigger('otherTrigger', []),
@@ -388,7 +386,6 @@ import { Component, trigger } from '@angular/core';
 @Component({
     selector: 'app-root',
     template: '<div></div>',
-    standalone: true,
     animations: [
         trigger('myTrigger', []),
         trigger('otherTrigger', []),
@@ -430,7 +427,6 @@ const ANIMATIONS = 'invalid';
 @Component({
     selector: 'app-root',
     template: '<div></div>',
-    standalone: true,
     animations: ANIMATIONS,
 })
 export class AppComponent {}
@@ -466,7 +462,6 @@ const MY_ANIMATIONS = [trigger('myTrigger', [])];
 @Component({
     selector: 'app-root',
     template: '<div></div>',
-    standalone: true,
     animations: MY_ANIMATIONS,
 })
 export class AppComponent {}
@@ -502,7 +497,6 @@ const MY_ANIMATIONS = [trigger('myTrigger', [])] as const;
 @Component({
     selector: 'app-root',
     template: '<div></div>',
-    standalone: true,
     animations: MY_ANIMATIONS,
 })
 export class AppComponent {}
@@ -539,7 +533,6 @@ const MY_ANIMATIONS = ANIM_INTERNAL;
 @Component({
     selector: 'app-root',
     template: '<div></div>',
-    standalone: true,
     animations: MY_ANIMATIONS,
 })
 export class AppComponent {}
@@ -573,7 +566,6 @@ import { Component, trigger } from '@angular/core';
 @Component({
     selector: 'app-root',
     template: '<div></div>',
-    standalone: true,
     animations: [
         trigger('rootTrigger', []),
         [
@@ -624,7 +616,6 @@ import { Component, trigger } from '@angular/core';
 @Component({
     selector: 'app-root',
     template: '<div></div>',
-    standalone: true,
     animations: [
         someDynamicAnimation(),
         trigger('myTrigger', []),
@@ -660,7 +651,6 @@ import { Directive } from '@angular/core';
 
 @Directive({
     selector: '[appHighlight]',
-    standalone: true,
 })
 export class HighlightDirective {}
 "#,
@@ -693,7 +683,6 @@ import { Pipe } from '@angular/core';
 @Pipe({
     name: 'upcase',
     pure: true,
-    standalone: true,
 })
 export class UpcasePipe {}
 "#,
@@ -708,7 +697,6 @@ export class UpcasePipe {}
         let pipe = class.pipe.as_ref().unwrap();
         assert_eq!(pipe.name, "upcase");
         assert_eq!(pipe.pure, Some(true));
-        assert_eq!(pipe.standalone, Some(true));
     }
 
     #[test]
@@ -726,7 +714,6 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 @Component({
     selector: 'app-button',
     template: '<button (click)="onClick.emit()">{{label}}</button>',
-    standalone: true,
 })
 export class ButtonComponent {
     @Input() label: string = '';
@@ -787,7 +774,6 @@ import {
 @Component({
     selector: 'app-prep',
     template: '<span></span>',
-    standalone: true,
 })
 export class PrepComponent {
     @ContentChildren('items') items: any;
@@ -912,7 +898,6 @@ import {
 @Component({
     selector: 'app-order',
     template: '<span></span>',
-    standalone: true,
 })
 export class OrderComponent {
     @ContentChildren('a') qa: any;
@@ -1332,7 +1317,6 @@ import { Component, input, output, model } from '@angular/core';
 @Component({
     selector: 'app-counter',
     template: '<span>{{count()}}</span>',
-    standalone: true,
 })
 export class CounterComponent {
     count = input(0);
@@ -2045,7 +2029,6 @@ import { ButtonComponent } from './button.component';
 @Component({
     selector: 'app-root',
     template: '<app-button></app-button>',
-    standalone: true,
     imports: [ButtonComponent],
 })
 export class AppComponent {}
@@ -2059,7 +2042,6 @@ import { Component } from '@angular/core';
 @Component({
     selector: 'app-button',
     template: '<button>Click me</button>',
-    standalone: true,
 })
 export class ButtonComponent {}
 "#,
@@ -2114,7 +2096,6 @@ import { Component } from '@angular/core';
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
-    standalone: true,
 })
 export class AppComponent {}
 "#,
@@ -2156,7 +2137,6 @@ import { APP_TEMPLATE_URL } from '../shared/paths';
 @Component({
     selector: 'app-root',
     templateUrl: APP_TEMPLATE_URL,
-    standalone: true,
 })
 export class AppComponent {}
 "#,
@@ -2207,7 +2187,6 @@ import { Component } from '@angular/core';
         Hello World
       </div>
     `,
-    standalone: true,
 })
 export class AppComponent {}
 "#,
@@ -2255,7 +2234,6 @@ export function make(attr: string) {
     @Component({
         selector: 'app-root',
         template: `<iframe src="x" [${attr}]="''"></iframe>`,
-        standalone: true,
     })
     class AppComponent {}
     return AppComponent;
@@ -2298,7 +2276,6 @@ const myTemplate = `<div>${greeting}</div>`;
 @Component({
     selector: 'app-root',
     template: myTemplate,
-    standalone: true,
 })
 export class AppComponent {}
 "#,
@@ -2399,7 +2376,6 @@ import { GREETING } from './constants';
 @Component({
     selector: 'app-root',
     template: `<p>${GREETING}</p>`,
-    standalone: true,
 })
 export class AppComponent {}
 "#,
@@ -2435,7 +2411,6 @@ import { Component } from '@angular/core';
 @Component({
     selector: 'app-root',
     template: 123 as any,
-    standalone: true,
 })
 export class AppComponent {}
 "#,
@@ -2518,7 +2493,6 @@ import { Component, Input } from '@angular/core';
 @Component({
     selector: 'app-generic',
     template: '',
-    standalone: true,
 })
 export class GenericComponent<T, U = string> {
     @Input() value: T | null = null;
@@ -2567,7 +2541,6 @@ import { Component } from '@angular/core';
 @Component({
     selector: 'app-constrained',
     template: '',
-    standalone: true,
 })
 export class ConstrainedComponent<T extends object, U extends T = T> {}
 "#,
@@ -2612,7 +2585,6 @@ import { Component } from '@angular/core';
 @Component({
     selector: 'app-complex',
     template: '',
-    standalone: true,
 })
 export class ComplexComponent<
     T /* foobar */ extends Record<string, any> = {},
@@ -2671,7 +2643,6 @@ import { SelectionModel, DefaultItem } from './models';
 @Component({
     selector: 'app-root',
     template: '',
-    standalone: true,
 })
 export class SelectionComponent<T extends SelectionModel<unknown> = DefaultItem> {}
 "#,
@@ -2735,7 +2706,6 @@ export interface LocalType {}
 @Component({
     selector: 'app-root',
     template: '',
-    standalone: true,
 })
 export class ComplexSelectionComponent<
     T extends CustomModel<unknown> = models.SelectionModel<DefaultFallback>,
@@ -2924,7 +2894,6 @@ import { myBooleanTransform } from './transforms';
 @Component({
     selector: 'app-root',
     template: '',
-    standalone: true,
 })
 export class AppComponent {
     @Input({ transform: myBooleanTransform }) decoratorInput: boolean = false;
@@ -2946,7 +2915,7 @@ export function myBooleanTransform(value: string | boolean): boolean {
 
         let class = find_class(&results, "AppComponent").expect("AppComponent should exist");
 
-        let app_source = "\nimport { Component, Input, input } from '@angular/core';\nimport { myBooleanTransform } from './transforms';\n\n@Component({\n    selector: 'app-root',\n    template: '',\n    standalone: true,\n})\nexport class AppComponent {\n    @Input({ transform: myBooleanTransform }) decoratorInput: boolean = false;\n    signalInput = input(false, { transform: myBooleanTransform });\n}\n";
+        let app_source = "\nimport { Component, Input, input } from '@angular/core';\nimport { myBooleanTransform } from './transforms';\n\n@Component({\n    selector: 'app-root',\n    template: '',\n})\nexport class AppComponent {\n    @Input({ transform: myBooleanTransform }) decoratorInput: boolean = false;\n    signalInput = input(false, { transform: myBooleanTransform });\n}\n";
 
         // Assert decorator input
         let dec_in = class
@@ -2994,7 +2963,6 @@ import { funcExprTransform } from './transforms';
 @Component({
     selector: 'app-root',
     template: '',
-    standalone: true,
 })
 export class AppComponent {
     @Input({ transform: aliasedTransform }) aliasedInput: unknown;
@@ -3018,7 +2986,7 @@ export const funcExprTransform = function(val: boolean | null) { return val; };
 
         let class = find_class(&results, "AppComponent").expect("AppComponent should exist");
 
-        let app_source = "\nimport { Component, Input, input } from '@angular/core';\n// Aliased import\nimport { arrowTransform as aliasedTransform } from './transforms';\n// Regular import for function expression\nimport { funcExprTransform } from './transforms';\n\n@Component({\n    selector: 'app-root',\n    template: '',\n    standalone: true,\n})\nexport class AppComponent {\n    @Input({ transform: aliasedTransform }) aliasedInput: unknown;\n    signalInput = input(0, { transform: funcExprTransform });\n}\n";
+        let app_source = "\nimport { Component, Input, input } from '@angular/core';\n// Aliased import\nimport { arrowTransform as aliasedTransform } from './transforms';\n// Regular import for function expression\nimport { funcExprTransform } from './transforms';\n\n@Component({\n    selector: 'app-root',\n    template: '',\n})\nexport class AppComponent {\n    @Input({ transform: aliasedTransform }) aliasedInput: unknown;\n    signalInput = input(0, { transform: funcExprTransform });\n}\n";
 
         let aliased = class
             .inputs
@@ -3061,7 +3029,6 @@ import { qualifiedTransform } from './transforms';
 @Component({
     selector: 'app-root',
     template: '',
-    standalone: true,
 })
 export class AppComponent {
     @Input({ transform: qualifiedTransform }) myInput: unknown;
@@ -3084,7 +3051,7 @@ export function qualifiedTransform(val: MyLib.SpecialType<string>): string {
 
         let results = run_analyzer(fs, "/test/tsconfig.json", false);
         let class = find_class(&results, "AppComponent").expect("AppComponent should exist");
-        let app_source = "\nimport { Component, Input, input } from '@angular/core';\nimport { qualifiedTransform } from './transforms';\n\n@Component({\n    selector: 'app-root',\n    template: '',\n    standalone: true,\n})\nexport class AppComponent {\n    @Input({ transform: qualifiedTransform }) myInput: unknown;\n}\n";
+        let app_source = "\nimport { Component, Input, input } from '@angular/core';\nimport { qualifiedTransform } from './transforms';\n\n@Component({\n    selector: 'app-root',\n    template: '',\n})\nexport class AppComponent {\n    @Input({ transform: qualifiedTransform }) myInput: unknown;\n}\n";
 
         let my_in = class.inputs.iter().find(|i| i.name == "myInput").unwrap();
         let my_t = my_in.transform.as_ref().unwrap();
@@ -3109,7 +3076,6 @@ import { Component } from '@angular/core';
 @Component({
     selector: 'app-root',
     template: '<div>Test Name Span</div>',
-    standalone: true,
 })
 export class AppComponent {}
 "#,
@@ -3154,7 +3120,6 @@ import { DialogComponent } from '@components';
 @Component({
     selector: 'app-root',
     template: '<app-dialog></app-dialog>',
-    standalone: true,
     imports: [DialogComponent],
 })
 export class AppComponent {}
@@ -3168,7 +3133,6 @@ import { Component } from '@angular/core';
 @Component({
     selector: 'app-dialog',
     template: '<div>Dialog</div>',
-    standalone: true,
 })
 export class DialogComponent {}
 "#,
@@ -3207,14 +3171,12 @@ export class DialogComponent {}
 import { Component } from '@angular/core';
 
 @Component({
-  standalone: true,
   template: '',
 })
 export class TestComponent {}
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   template: '<TestComponent></TestComponent>',
   imports: [TestComponent],
 })
@@ -3279,7 +3241,6 @@ import { GafeMatIcon } from './icons';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   template: '<mat-icon></mat-icon>',
   imports: [GafeMatIcon],
 })
@@ -3457,7 +3418,6 @@ import { ChildModule } from './child.module';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   template: '<app-child></app-child>',
   imports: [ChildModule],
 })
@@ -3562,7 +3522,6 @@ import { MainModule } from './main.module';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   template: '<sub-comp></sub-comp>',
   imports: [MainModule],
 })
@@ -3679,7 +3638,6 @@ export class ParentDirective {
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   template: '<child-dir></child-dir>',
   imports: [ChildDirective],
 })
@@ -3687,7 +3645,6 @@ export class AppComponent {}
 
 @Directive({
   selector: '[child-dir]',
-  standalone: true,
 })
 export class ChildDirective extends ParentDirective {
   @Input() childInput!: string;
@@ -3754,7 +3711,6 @@ import { ParentDirective } from './parent.directive';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   template: '<child-dir></child-dir>',
   imports: [ChildDirective],
 })
@@ -3762,7 +3718,6 @@ export class AppComponent {}
 
 @Directive({
   selector: '[child-dir]',
-  standalone: true,
 })
 export class ChildDirective extends ParentDirective {
   @Input() childInput!: string;
@@ -4061,7 +4016,6 @@ export class BDirective extends ADirective {
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   template: '<b-dir></b-dir>',
   imports: [BDirective],
 })
@@ -4186,7 +4140,6 @@ export class MyModule {}
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [MyModule],
   template: '<div my-dir></div>',
 })
@@ -4618,7 +4571,6 @@ import { BrokenType, BrokenDtsDirective } from './broken';
 
 @Component({
   selector: 'app-comp',
-  standalone: true,
   imports: [BrokenDtsDirective],
   template: '<div brokenDir>Hello</div>',
 })
@@ -4662,7 +4614,6 @@ export class AppComponent {
 import { Component } from '@angular/core';
 @Component({
   selector: 'deferred-comp',
-  standalone: true,
   template: '<div>Deferred</div>',
 })
 export class DeferredComp {}
@@ -4676,7 +4627,6 @@ import { DeferredComp } from './deferred';
 
 @Component({
   selector: 'app-comp',
-  standalone: true,
   deferredImports: [DeferredComp],
   template: '@defer { <deferred-comp /> }',
 })
@@ -4719,7 +4669,6 @@ export class AppComponent {}
 import { Component } from '@angular/core';
 @Component({
   selector: 'deferred-a',
-  standalone: true,
   template: '<div>A</div>',
 })
 export class DeferredA {}
@@ -4731,7 +4680,6 @@ export class DeferredA {}
 import { Component } from '@angular/core';
 @Component({
   selector: 'deferred-b',
-  standalone: true,
   template: '<div>B</div>',
 })
 export class DeferredB {}
@@ -4746,7 +4694,6 @@ import { DeferredB } from './deferred-b';
 
 @Component({
   selector: 'app-comp',
-  standalone: true,
   deferredImports: {
     blockA: [DeferredA],
     blockB: [DeferredB, DeferredA],
@@ -4801,7 +4748,7 @@ export class AppComponent {}
             format!(
                 r#"
 import {{ Component }} from '@angular/core';
-@Component({{ selector: '{selector}', standalone: true, template: '' }})
+@Component({{ selector: '{selector}', template: '' }})
 export class Widget {{}}
 "#
             )
@@ -4832,7 +4779,6 @@ import { Widget as WidgetB } from './b';
 
 @Component({
   selector: 'app-mixed',
-  standalone: true,
   imports: [Widget],
   deferredImports: [WidgetB],
   template: '<widget-a /> @defer { <widget-b /> }',
@@ -4849,7 +4795,6 @@ import { Widget as WidgetB } from './b';
 
 @Component({
   selector: 'app-split',
-  standalone: true,
   deferredImports: {
     first: [Widget],
     second: [WidgetB],
@@ -4928,7 +4873,7 @@ export class SplitComponent {}
                 "/test/eager.ts",
                 r#"
 import { Component } from '@angular/core';
-@Component({ selector: 'eager-comp', standalone: true, template: '' })
+@Component({ selector: 'eager-comp', template: '' })
 export class EagerComp {}
 "#,
             ),
@@ -4936,7 +4881,7 @@ export class EagerComp {}
                 "/test/deferred.ts",
                 r#"
 import { Component } from '@angular/core';
-@Component({ selector: 'aliased-deferred', standalone: true, template: '' })
+@Component({ selector: 'aliased-deferred', template: '' })
 export class DeferredComp {}
 "#,
             ),
@@ -4944,7 +4889,7 @@ export class DeferredComp {}
                 "/test/direct.ts",
                 r#"
 import { Component } from '@angular/core';
-@Component({ selector: 'direct-deferred', standalone: true, template: '' })
+@Component({ selector: 'direct-deferred', template: '' })
 export class DirectDeferred {}
 "#,
             ),
@@ -4963,7 +4908,6 @@ import { DirectDeferred } from './direct';
 
 @Component({
   selector: 'app-comp',
-  standalone: true,
   imports: [AliasedEager],
   deferredImports: [AliasedDeferred, DirectDeferred],
   template: '@defer { <aliased-deferred /><direct-deferred /> }',
@@ -5018,7 +4962,6 @@ import { DirectDeferred } from './direct';
 
 @Component({
   selector: 'app-comp',
-  standalone: true,
   deferredImports: {
     blockA: [AliasedDeferred],
     blockB: [AliasedDeferred, DirectDeferred],
@@ -5090,7 +5033,6 @@ export class AppComponent {}
 import { Component } from '@angular/core';
 @Component({
   selector: 'deferred-comp',
-  standalone: true,
   template: '<div>Deferred</div>',
 })
 export class DeferredComp {}

@@ -93,8 +93,8 @@ function _tcb9(this: i0.PlainDir) {
 /*tcb10*/
 function _tcb10(this: i0.TemplateBindingsCmp) {
   if (true) {
-    this.evil; /*3895,3899*/ /*3895,3899*/
-    this.evil; /*3926,3930*/ /*3926,3930*/
+    this.evil; /*3875,3879*/ /*3875,3879*/
+    this.evil; /*3906,3910*/ /*3906,3910*/
   }
 }
 
@@ -679,7 +679,6 @@ export class TemplateBindingsCmp {
             args: [
               {
                 selector: 'template-bindings',
-                standalone: true,
                 template: `<a [href]="evil"></a><div [attr.sandbox]="evil"></div>`,
               },
             ],
@@ -695,7 +694,7 @@ export class TemplateBindingsCmp {
     i0.ɵsetClassDebugInfo(TemplateBindingsCmp, {
       className: 'TemplateBindingsCmp',
       filePath: 'host_binding_sanitizers.ts',
-      lineNumber: 134,
+      lineNumber: 133,
     });
 })();
 

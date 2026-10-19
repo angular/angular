@@ -666,7 +666,6 @@ mod tests {
         import { SHARED } from './shared';
         @Component({
             selector: 'app',
-            standalone: true,
             imports: SHARED,
             template: '<lib-foo></lib-foo>'
         })
@@ -681,7 +680,7 @@ mod tests {
 
     const FOO_COMPONENT: &str = r#"
         import { Component } from '@angular/core';
-        @Component({ selector: 'lib-foo', standalone: true, template: '' })
+        @Component({ selector: 'lib-foo',template: '' })
         export class FooComponent {}
     "#;
 
@@ -749,7 +748,6 @@ mod tests {
             import { BazComponent } from './baz.component';
             @Component({
                 selector: 'app',
-                standalone: true,
                 imports: [SHARED, BazComponent],
                 template: ''
             })
@@ -757,7 +755,7 @@ mod tests {
         "#;
         let baz = r#"
             import { Component } from '@angular/core';
-            @Component({ selector: 'baz', standalone: true, template: '' })
+            @Component({ selector: 'baz', template: '' })
             export class BazComponent {}
         "#;
         let engine = build_engine(
@@ -802,7 +800,6 @@ mod tests {
             const MWP = { ngModule: FooModule, providers: [] };
             @Component({
                 selector: 'app',
-                standalone: true,
                 imports: [MWP],
                 template: ''
             })
@@ -841,18 +838,17 @@ mod tests {
     fn spread_local_const_array_in_imports() {
         let app = r#"
             import { Component, Directive } from '@angular/core';
-            @Component({ selector: 'foo', standalone: true, template: '' })
+            @Component({ selector: 'foo', template: '' })
             export class FooComponent {}
             @Directive({ selector: '[bar]', standalone: true })
             export class BarDirective {}
-            @Component({ selector: 'baz', standalone: true, template: '' })
+            @Component({ selector: 'baz', template: '' })
             export class BazComponent {}
 
             const LOCAL = [FooComponent, BarDirective] as const;
 
             @Component({
                 selector: 'app',
-                standalone: true,
                 imports: [...LOCAL, BazComponent],
                 template: ''
             })
@@ -889,7 +885,6 @@ mod tests {
             import * as shared from './shared';
             @Component({
                 selector: 'app',
-                standalone: true,
                 imports: [shared.FooComponent],
                 template: ''
             })
@@ -897,7 +892,7 @@ mod tests {
         "#;
         let shared = r#"
             import { Component } from '@angular/core';
-            @Component({ selector: 'foo', standalone: true, template: '' })
+            @Component({ selector: 'foo', template: '' })
             export class FooComponent {}
         "#;
         let engine = build_engine(
@@ -928,7 +923,6 @@ mod tests {
             import { MyComponent } from './barrel';
             @Component({
                 selector: 'app',
-                standalone: true,
                 imports: [MyComponent],
                 template: ''
             })
@@ -937,12 +931,12 @@ mod tests {
         let barrel = r#"
             export * from './other';
             import { Component } from '@angular/core';
-            @Component({ selector: 'my-comp', standalone: true, template: '' })
+            @Component({ selector: 'my-comp', template: '' })
             export class MyComponent {}
         "#;
         let other = r#"
             import { Component } from '@angular/core';
-            @Component({ selector: 'other-comp', standalone: true, template: '' })
+            @Component({ selector: 'other-comp', template: '' })
             export class OtherComponent {}
         "#;
         let engine = build_engine(
@@ -978,7 +972,6 @@ mod tests {
             import { BazComponent } from './baz.component';
             @Component({
                 selector: 'app',
-                standalone: true,
                 imports: [...SHARED, BazComponent],
                 template: ''
             })
@@ -986,7 +979,7 @@ mod tests {
         "#;
         let baz = r#"
             import { Component } from '@angular/core';
-            @Component({ selector: 'baz', standalone: true, template: '' })
+            @Component({ selector: 'baz', template: '' })
             export class BazComponent {}
         "#;
         let engine = build_engine(
@@ -1038,7 +1031,6 @@ mod tests {
             import { BazComponent } from './baz.component';
             @Component({
                 selector: 'app',
-                standalone: true,
                 imports: [SHARED[0], BazComponent],
                 template: '<lib-foo></lib-foo>'
             })
@@ -1046,7 +1038,7 @@ mod tests {
         "#;
         let baz = r#"
             import { Component } from '@angular/core';
-            @Component({ selector: 'baz', standalone: true, template: '' })
+            @Component({ selector: 'baz', template: '' })
             export class BazComponent {}
         "#;
         let engine = build_engine(
@@ -1142,7 +1134,7 @@ mod tests {
         let user = r#"
             import { Component } from '@angular/core';
             import { Something as Thing } from './somewhere';
-            @Component({ selector: 'app', standalone: true, imports: [Thing], template: '' })
+            @Component({ selector: 'app',imports: [Thing], template: '' })
             export class MyCmp {}
         "#;
         // `Something` is imported *and* re-exported here, so this file binds it too — unlike a
@@ -1200,7 +1192,7 @@ mod tests {
         let app = r#"
             import { Component } from '@angular/core';
             import { PublicDir } from 'lib';
-            @Component({ selector: 'app', standalone: true, imports: [PublicDir], template: '' })
+            @Component({ selector: 'app',imports: [PublicDir], template: '' })
             export class AppComponent {}
         "#;
         let engine = build_engine(
@@ -1263,7 +1255,7 @@ mod tests {
         let app = r#"
             import { Component } from '@angular/core';
             import { LibModule } from 'lib';
-            @Component({ selector: 'app', standalone: true, imports: [LibModule], template: '' })
+            @Component({ selector: 'app',imports: [LibModule], template: '' })
             export class AppComponent {}
         "#;
         let engine = build_engine(
@@ -1322,7 +1314,7 @@ mod tests {
         let app = r#"
             import { Component } from '@angular/core';
             import { LibModule } from 'lib';
-            @Component({ selector: 'app', standalone: true, imports: [LibModule], template: '' })
+            @Component({ selector: 'app',imports: [LibModule], template: '' })
             export class AppComponent {}
         "#;
         let engine = build_engine(
@@ -1373,7 +1365,7 @@ mod tests {
         let user = r#"
             import { Component } from '@angular/core';
             import { Something } from './barrel';
-            @Component({ selector: 'app', standalone: true, imports: [Something], template: '' })
+            @Component({ selector: 'app',imports: [Something], template: '' })
             export class MyCmp {}
         "#;
         let engine = build_engine(
@@ -1415,7 +1407,7 @@ mod tests {
         let app = r#"
             import { Component } from '@angular/core';
             import { SHARED } from './barrel';
-            @Component({ selector: 'app', standalone: true, imports: SHARED, template: '' })
+            @Component({ selector: 'app',imports: SHARED, template: '' })
             export class AppComponent {}
         "#;
         let engine = build_engine(
@@ -1459,7 +1451,7 @@ mod tests {
         let app = r#"
             import { Component } from '@angular/core';
             import { A } from './a';
-            @Component({ selector: 'app', standalone: true, imports: A, template: '' })
+            @Component({ selector: 'app',imports: A, template: '' })
             export class AppComponent {}
         "#;
         let engine = build_engine(
@@ -2149,7 +2141,7 @@ mod tests {
         let app = r#"
             import { Component } from '@angular/core';
             import { THINGS } from 'not-installed-pkg';
-            @Component({ selector: 'app', standalone: true, imports: THINGS, template: '' })
+            @Component({ selector: 'app',imports: THINGS, template: '' })
             export class AppComponent {}
         "#;
         let engine = build_engine(
@@ -2176,7 +2168,7 @@ mod tests {
             r#"
                 import { Component } from '@angular/core';
                 import { SHARED } from './hop0';
-                @Component({ selector: 'app', standalone: true, imports: SHARED, template: '' })
+                @Component({ selector: 'app',imports: SHARED, template: '' })
                 export class AppComponent {}
             "#
             .to_string(),
@@ -2289,7 +2281,7 @@ mod tests {
 
     const BAZ_COMPONENT: &str = r#"
         import { Component } from '@angular/core';
-        @Component({ selector: 'baz', standalone: true, template: '' })
+        @Component({ selector: 'baz',template: '' })
         export class BazComponent {}
     "#;
 
@@ -2301,7 +2293,7 @@ mod tests {
             r#"
             import {{ Component }} from '@angular/core';
             {app_import}
-            @Component({{ selector: 'app', standalone: true, imports: SHARED, template: '' }})
+            @Component({{ selector: 'app',imports: SHARED, template: '' }})
             export class AppComponent {{}}
         "#
         );
@@ -2452,7 +2444,7 @@ mod tests {
 
     const DEFAULT_A: &str = r#"
         import { Component } from '@angular/core';
-        @Component({ selector: 'a-cmp', standalone: true, template: '' })
+        @Component({ selector: 'a-cmp',template: '' })
         export class A {}
     "#;
 
@@ -2621,7 +2613,7 @@ mod tests {
         let app = r#"
             import { Component } from '@angular/core';
             import SHARED from './shared';
-            @Component({ selector: 'app', standalone: true, imports: SHARED, template: '' })
+            @Component({ selector: 'app',imports: SHARED, template: '' })
             export class AppComponent {}
         "#;
         let engine = build_engine(

@@ -64,7 +64,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 imports: [MyDtsDirective, MyDtsComponent],
                 template: `
         <div my-dir #ref1="myDir1" [myProp]="'test'"></div>
@@ -85,7 +84,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.ts',
-      lineNumber: 14,
+      lineNumber: 13,
     });
 })();
 

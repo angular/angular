@@ -58,7 +58,6 @@ export class AppComponent {
               {
                 selector: 'app-root',
                 template: '<div @myTrigger @nestedTrigger @spreadTrigger></div>',
-                standalone: true,
                 animations: [
                   trigger('myTrigger', []),
                   [trigger('nestedTrigger', [])],
@@ -78,7 +77,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 15,
+      lineNumber: 14,
     });
 })();
 
@@ -131,7 +130,6 @@ export class VarComponent {
               {
                 selector: 'app-var',
                 template: '<div @varTrigger></div>',
-                standalone: true,
                 animations: variableAnimations,
               },
             ],
@@ -147,7 +145,7 @@ export class VarComponent {
     i0.ɵsetClassDebugInfo(VarComponent, {
       className: 'VarComponent',
       filePath: 'app.component.ts',
-      lineNumber: 25,
+      lineNumber: 23,
     });
 })();
 
@@ -198,7 +196,6 @@ export class BoundAndInvalidComponent {
               {
                 selector: 'app-bound-invalid',
                 template: '<div [@myTrigger]="ctxValue" @invalidTrigger></div>',
-                standalone: true,
                 animations: [trigger('myTrigger', [])],
               },
             ],
@@ -214,7 +211,7 @@ export class BoundAndInvalidComponent {
     i0.ɵsetClassDebugInfo(BoundAndInvalidComponent, {
       className: 'BoundAndInvalidComponent',
       filePath: 'app.component.ts',
-      lineNumber: 33,
+      lineNumber: 30,
     });
 })();
 

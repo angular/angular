@@ -22,7 +22,6 @@ export function dynamic(template: string) {
 @Component({
   selector: 'app-root',
   template: '<div>Static</div>',
-  standalone: true,
 })
 export class AppComponent {}
 ```

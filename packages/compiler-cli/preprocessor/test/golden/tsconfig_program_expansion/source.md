@@ -26,7 +26,6 @@ import { ExcludedButImportedComponent } from './excluded_but_imported';
 @Component({
   selector: 'app-root',
   template: '<imported-comp></imported-comp><excluded-but-imported-comp></excluded-but-imported-comp>',
-  standalone: true,
   imports: [ImportedComponent, ExcludedButImportedComponent]
 })
 export class AppComponent {}

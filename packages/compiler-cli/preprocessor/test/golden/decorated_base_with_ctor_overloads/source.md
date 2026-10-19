@@ -20,7 +20,6 @@ export interface MyInterface {
 
 @Directive({
   selector: '[base]',
-  standalone: true,
 })
 export abstract class Base {
   constructor(scrollStrategy: any, parentMenu: MyInterface);
@@ -34,7 +33,6 @@ export abstract class Base {
 
 @Directive({
   selector: '[child]',
-  standalone: true,
 })
 export class Child extends Base {
   // Inherits constructor from Base.

@@ -12,13 +12,13 @@ function _tcb1(this: i0.TestComponent) {
   if (true) {
   }
   if (true /*hostBindingsBlockGuard*/) {
-    this.isActive; /*428,440*/ /*428,440*/
-    var _t1 = document.createElement('test-cmp'); /*176,189*/
-    _t1.addEventListener(/*480,487*/ 'keydown', ($event /*T:EP*/): any => {
+    this.isActive; /*408,420*/ /*408,420*/
+    var _t1 = document.createElement('test-cmp'); /*156,169*/
+    _t1.addEventListener(/*460,467*/ 'keydown', ($event /*T:EP*/): any => {
       this
-        .onKeyDown /*492,501*/
-        (); /*492,501*/
-    }); /*465,489*/
+        .onKeyDown /*472,481*/
+        (); /*472,481*/
+    }); /*445,469*/
   }
 }
 
@@ -99,7 +99,6 @@ export class TestComponent {
             args: [
               {
                 selector: 'test-cmp',
-                standalone: true,
                 template: '<div>Hello</div>',
               },
             ],
@@ -118,7 +117,7 @@ export class TestComponent {
     i0.ɵsetClassDebugInfo(TestComponent, {
       className: 'TestComponent',
       filePath: 'test.component.ts',
-      lineNumber: 8,
+      lineNumber: 7,
     });
 })();
 

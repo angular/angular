@@ -42,7 +42,6 @@ export class LocalDirective {
             args: [
               {
                 selector: '[appLocalDir]',
-                standalone: true,
               },
             ],
           },
@@ -112,7 +111,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 imports: [
                   SHARED_COMPONENTS,
                   ...LOCAL_DIRECTIVES,
@@ -141,7 +139,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 34,
+      lineNumber: 32,
     });
 })();
 
@@ -197,7 +195,6 @@ export class BarrelItemComponent {
             args: [
               {
                 selector: 'app-barrel-item',
-                standalone: true,
                 template: '<span>Barrel</span>',
               },
             ],
@@ -213,7 +210,7 @@ export class BarrelItemComponent {
     i0.ɵsetClassDebugInfo(BarrelItemComponent, {
       className: 'BarrelItemComponent',
       filePath: 'barrel.ts',
-      lineNumber: 9,
+      lineNumber: 8,
     });
 })();
 
@@ -273,7 +270,6 @@ export class ButtonComponent {
             args: [
               {
                 selector: 'app-button',
-                standalone: true,
                 template: '<button><ng-content></ng-content></button>',
               },
             ],
@@ -289,7 +285,7 @@ export class ButtonComponent {
     i0.ɵsetClassDebugInfo(ButtonComponent, {
       className: 'ButtonComponent',
       filePath: 'button.component.ts',
-      lineNumber: 8,
+      lineNumber: 7,
     });
 })();
 
@@ -349,7 +345,6 @@ export class CardComponent {
             args: [
               {
                 selector: 'app-card',
-                standalone: true,
                 template: '<div><ng-content></ng-content></div>',
               },
             ],
@@ -365,7 +360,7 @@ export class CardComponent {
     i0.ɵsetClassDebugInfo(CardComponent, {
       className: 'CardComponent',
       filePath: 'card.component.ts',
-      lineNumber: 8,
+      lineNumber: 7,
     });
 })();
 
@@ -534,7 +529,6 @@ export class IconComponent {
             args: [
               {
                 selector: 'app-icon',
-                standalone: true,
                 template: '<i>icon</i>',
               },
             ],
@@ -550,7 +544,7 @@ export class IconComponent {
     i0.ɵsetClassDebugInfo(IconComponent, {
       className: 'IconComponent',
       filePath: 'icons.ts',
-      lineNumber: 8,
+      lineNumber: 7,
     });
 })();
 
@@ -599,7 +593,6 @@ export class OtherUnusedComponent {
             args: [
               {
                 selector: 'other-unused',
-                standalone: true,
                 template: '',
               },
             ],
@@ -615,7 +608,7 @@ export class OtherUnusedComponent {
     i0.ɵsetClassDebugInfo(OtherUnusedComponent, {
       className: 'OtherUnusedComponent',
       filePath: 'other.ts',
-      lineNumber: 8,
+      lineNumber: 7,
     });
 })();
 

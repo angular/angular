@@ -18,7 +18,6 @@ interface LocalInterface {
 
 @Directive({
   selector: '[appRoot]',
-  standalone: true,
   host: {
     '[attr.foo]': 'prop.foo'
   }

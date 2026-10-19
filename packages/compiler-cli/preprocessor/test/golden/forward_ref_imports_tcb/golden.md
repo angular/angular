@@ -53,7 +53,6 @@ export class HostComponent {
             args: [
               {
                 selector: 'app-host',
-                standalone: true,
                 imports: [forwardRef(() => TargetComponent)],
                 template: '<app-target [value]="42"></app-target>',
               },
@@ -70,7 +69,7 @@ export class HostComponent {
     i0.ɵsetClassDebugInfo(HostComponent, {
       className: 'HostComponent',
       filePath: 'host.component.ts',
-      lineNumber: 9,
+      lineNumber: 8,
     });
 })();
 
@@ -120,7 +119,6 @@ export class TargetComponent {
             args: [
               {
                 selector: 'app-target',
-                standalone: true,
                 template: '<span>Target</span>',
               },
             ],
@@ -136,7 +134,7 @@ export class TargetComponent {
     i0.ɵsetClassDebugInfo(TargetComponent, {
       className: 'TargetComponent',
       filePath: 'host.component.ts',
-      lineNumber: 16,
+      lineNumber: 14,
     });
 })();
 

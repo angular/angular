@@ -14,7 +14,6 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'a-cmp',
-  standalone: true,
   template: 'a',
 })
 export class AComponent {}
@@ -26,7 +25,6 @@ import { Directive } from '@angular/core';
 
 @Directive({
   selector: '[bDir]',
-  standalone: true,
 })
 export class BDirective {}
 ```
@@ -46,7 +44,6 @@ import { LIST } from './list';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [LIST[0]],
   template: '<a-cmp></a-cmp><div bDir></div>',
 })

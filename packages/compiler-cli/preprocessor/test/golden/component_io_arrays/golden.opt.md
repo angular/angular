@@ -11,19 +11,19 @@ import * as i1 from './io_array.component';
 /*tcb1*/
 function _tcb1(this: i0.AppComponent) {
   if (true) {
-    var _t1 /*T:DIR:0*/ /*207,370*/ = null! as i1.IoArrayComponent; /*T:VAE*/
-    _t1.name /*228,232*/ = 'TestName' /*235,245*/; /*227,246*/
-    _t1.aliasInput /*254,264*/ = 'TestAlias' /*267,278*/; /*253,279*/
-    _t1['emitter'] /*287,294*/
+    var _t1 /*T:DIR:0*/ /*187,350*/ = null! as i1.IoArrayComponent; /*T:VAE*/
+    _t1.name /*208,212*/ = 'TestName' /*215,225*/; /*207,226*/
+    _t1.aliasInput /*234,244*/ = 'TestAlias' /*247,258*/; /*233,259*/
+    _t1['emitter'] /*267,274*/
       .subscribe(($event /*T:EP*/): any => {
         this
-          .handleEmitter /*297,310*/
-          (); /*297,312*/
-      }); /*286,313*/
-    _t1['aliasOutput'] /*321,334*/
+          .handleEmitter /*277,290*/
+          (); /*277,292*/
+      }); /*266,293*/
+    _t1['aliasOutput'] /*301,314*/
       .subscribe(($event /*T:EP*/): any => {
-        this.handleAliasEmitter(/*337,355*/ $event /*356,362*/); /*337,363*/
-      }); /*320,364*/
+        this.handleAliasEmitter(/*317,335*/ $event /*336,342*/); /*317,343*/
+      }); /*300,344*/
   }
 }
 
@@ -97,7 +97,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 imports: [IoArrayComponent],
                 template: `
         <app-io-array
@@ -121,7 +120,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 17,
+      lineNumber: 16,
     });
 })();
 

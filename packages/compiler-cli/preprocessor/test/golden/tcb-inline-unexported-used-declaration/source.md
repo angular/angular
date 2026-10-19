@@ -23,7 +23,6 @@ class LocalPipe implements PipeTransform {
 @Component({
   selector: 'app-root',
   template: '<div>{{ "hello" | localPipe }}</div>',
-  standalone: true,
   imports: [LocalPipe]
 })
 export class AppComponent {}

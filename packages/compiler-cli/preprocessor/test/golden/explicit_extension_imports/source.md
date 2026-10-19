@@ -27,7 +27,6 @@ export class TestService {
 
 @Component({
   selector: 'test-component',
-  standalone: true,
   template: `<div></div>`,
 })
 export class TestComponent {

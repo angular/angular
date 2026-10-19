@@ -57,7 +57,6 @@ export class AppComponent {
                 template: `
         <button mat-button [disabled]="true" [color]="'primary'" [disableRipple]="false">Click</button>
       `,
-                standalone: true,
                 imports: [MatButton],
               },
             ],
@@ -73,7 +72,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 12,
+      lineNumber: 11,
     });
 })();
 

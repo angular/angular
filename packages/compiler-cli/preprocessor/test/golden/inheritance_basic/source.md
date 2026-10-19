@@ -14,7 +14,6 @@ import { Directive, ElementRef } from '@angular/core';
 
 @Directive({
   selector: '[base]',
-  standalone: true,
 })
 export class BaseDir {
   constructor(public el: ElementRef) {}
@@ -22,7 +21,6 @@ export class BaseDir {
 
 @Directive({
   selector: '[child]',
-  standalone: true,
 })
 export class ChildDir extends BaseDir {
   // Inherits constructor from BaseDir. Should delegate factory to BaseDir's factory.
@@ -30,7 +28,6 @@ export class ChildDir extends BaseDir {
 
 @Directive({
   selector: '[childWithCtor]',
-  standalone: true,
 })
 export class ChildWithCtorDir extends BaseDir {
   // Declares its own constructor. Should generate own ctor deps.

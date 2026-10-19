@@ -52,7 +52,6 @@ import { OtherDep } from './other.cmp';
       <other-dep/>
     }
   `,
-  standalone: true,
   imports: [SharedDep, OtherDep]
 })
 export class AppComponent {}

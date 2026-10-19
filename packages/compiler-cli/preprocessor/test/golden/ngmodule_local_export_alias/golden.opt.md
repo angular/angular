@@ -71,7 +71,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 template: '<div mat-ripple local-dir></div>',
                 imports: [MatLegacyRippleModule, AliasedLocalModule],
               },
@@ -88,7 +87,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 11,
+      lineNumber: 10,
     });
 })();
 

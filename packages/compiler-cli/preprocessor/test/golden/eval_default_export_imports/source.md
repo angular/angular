@@ -22,7 +22,6 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'lib-a',
   template: '<span>A</span>',
-  standalone: true,
 })
 export class AComponent {}
 ```
@@ -66,7 +65,6 @@ import SHARED from './shared';
 @Component({
   selector: 'app-root',
   template: '<lib-a libB></lib-a>',
-  standalone: true,
   imports: SHARED,
 })
 export class AppComponent {}

@@ -57,7 +57,6 @@ export class AppComp {
                 selector: 'app-comp',
                 template: '<div broken-dir [brokenInput]="\'test\'">DTS Tolerance</div>',
                 imports: [BrokenDtsDirective],
-                standalone: true,
               },
             ],
           },
@@ -69,7 +68,7 @@ export class AppComp {
 }
 ((): any => {
   (typeof ngDevMode === 'undefined' || ngDevMode) &&
-    i0.ɵsetClassDebugInfo(AppComp, { className: 'AppComp', filePath: 'app.ts', lineNumber: 10 });
+    i0.ɵsetClassDebugInfo(AppComp, { className: 'AppComp', filePath: 'app.ts', lineNumber: 9 });
 })();
 
 ```

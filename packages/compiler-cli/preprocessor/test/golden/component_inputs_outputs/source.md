@@ -15,7 +15,6 @@ import { Component, Input, Output, EventEmitter, input, output, model } from '@a
 @Component({
   selector: 'app-greeting',
   template: '<div>Hello, {{name()}}! Count: {{count}}</div>',
-  standalone: true,
 })
 export class GreetingComponent {
   // Decorator-based input
@@ -66,7 +65,6 @@ import { GreetingComponent } from './greeting.component';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [GreetingComponent],
   template: `
     <app-greeting

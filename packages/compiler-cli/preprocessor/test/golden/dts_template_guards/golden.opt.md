@@ -16,33 +16,33 @@ const _ctor2: <T = unknown>(
 /*tcb1*/
 function _tcb1(this: i0.AppComponent) {
   if (true) {
-    var _t1 /*T:DIR:0*/ /*215,283*/ = _ctor1({
-      'myIf': this.authService /*227,238*/ /*227,238*/.user /*239,243*/ /*227,243*/ /*221,244*/,
+    var _t1 /*T:DIR:0*/ /*195,263*/ = _ctor1({
+      'myIf': this.authService /*207,218*/ /*207,218*/.user /*219,223*/ /*207,223*/ /*201,224*/,
     }); /*D:ignore*/
-    _t1.myIf /*221,225*/ =
-      this.authService /*227,238*/ /*227,238*/.user /*239,243*/ /*227,243*/; /*221,244*/
+    _t1.myIf /*201,205*/ =
+      this.authService /*207,218*/ /*207,218*/.user /*219,223*/ /*207,223*/; /*201,224*/
     var _t2 = null! as any; /*T:VAE*/
     if (
-      i1.MyIf.ngTemplateContextGuard(_t1, _t2) /*D:ignore*/ /*215,314*/ &&
-      this.authService /*227,238*/ /*227,238*/.user /*239,243*/ /*D:ignore*/ /*227,243*/ &&
+      i1.MyIf.ngTemplateContextGuard(_t1, _t2) /*D:ignore*/ /*195,294*/ &&
+      this.authService /*207,218*/ /*207,218*/.user /*219,223*/ /*D:ignore*/ /*207,223*/ &&
       i1.MyIf.ngTemplateGuard_myIfInvocation(
         _t1,
-        this.authService /*265,276*/ /*265,276*/.user /*277,281*/ /*D:ignore*/ /*265,281*/,
-      ) /*265,281*/
+        this.authService /*245,256*/ /*245,256*/.user /*257,261*/ /*D:ignore*/ /*245,261*/,
+      ) /*245,261*/
     ) {
-      var _t3 /*247,251*/ = _t2.myIf /*221,225*/; /*221,253*/
-      '' + _t3 /*292,296*/.name /*297,301*/ /*292,301*/;
+      var _t3 /*227,231*/ = _t2.myIf /*201,205*/; /*201,233*/
+      '' + _t3 /*272,276*/.name /*277,281*/ /*272,281*/;
     }
-    var _t4 /*T:DIR:0*/ /*319,366*/ = _ctor2({
+    var _t4 /*T:DIR:0*/ /*299,346*/ = _ctor2({
       'invalidGuards':
-        this.authService /*340,351*/ /*340,351*/.user /*352,356*/ /*340,356*/ /*325,357*/,
+        this.authService /*320,331*/ /*320,331*/.user /*332,336*/ /*320,336*/ /*305,337*/,
     }); /*D:ignore*/
-    _t4.invalidGuards /*325,338*/ =
-      this.authService /*340,351*/ /*340,351*/.user /*352,356*/ /*340,356*/; /*325,357*/
+    _t4.invalidGuards /*305,318*/ =
+      this.authService /*320,331*/ /*320,331*/.user /*332,336*/ /*320,336*/; /*305,337*/
     var _t5 = null! as any; /*T:VAE*/
     {
-      var _t6 /*360,364*/ = _t5.invalidGuards /*325,338*/; /*325,364*/
-      '' + _t6 /*375,379*/.name /*380,384*/ /*375,384*/;
+      var _t6 /*340,344*/ = _t5.invalidGuards /*305,318*/; /*305,344*/
+      '' + _t6 /*355,359*/.name /*360,364*/ /*355,364*/;
     }
   }
 }
@@ -143,7 +143,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 imports: [MyIf, MyDirWithInvalidGuards],
                 template: `
         <div *myIf="authService.user as user; invocation: authService.user">
@@ -167,7 +166,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.ts',
-      lineNumber: 17,
+      lineNumber: 16,
     });
 })();
 

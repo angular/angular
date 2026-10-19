@@ -16,7 +16,6 @@ import { Directive, Input } from '@angular/core';
 
 @Directive({
   selector: '[ngFor][ngForOf]',
-  standalone: true,
 })
 export class NgForOf {
   @Input() ngForOf: string[] = [];
@@ -37,7 +36,6 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-network-activity',
-  standalone: true,
   imports: [NgFor],
   template: `
     @defer (on interaction) {

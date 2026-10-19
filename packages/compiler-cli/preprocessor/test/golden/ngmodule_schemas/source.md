@@ -60,7 +60,6 @@ export class MyNoErrorsModule {}
     <unknown-element></unknown-element>
     <div [unknown-property]="true"></div>
   `,
-  standalone: true,
   imports: [MyNoErrorsModule],
 })
 export class MyCompStandaloneImportingModule {}

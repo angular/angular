@@ -11,11 +11,11 @@ import * as i1 from '../directives/host_dir';
 /*tcb1*/
 function _tcb1(this: i0.AppComponent) {
   if (true) {
-    var _t1 /*T:HOSTDIR:0*/ /*226,292*/ = null! as i1.TestHostDirective; /*T:VAE*/
-    _t1['customChange'] /*249,263*/
+    var _t1 /*T:HOSTDIR:0*/ /*206,272*/ = null! as i1.TestHostDirective; /*T:VAE*/
+    _t1['customChange'] /*229,243*/
       .subscribe(($event /*T:EP*/): any => {
-        this.onDisabledChange(/*266,282*/ $event /*283,289*/); /*266,290*/
-      }); /*248,291*/
+        this.onDisabledChange(/*246,262*/ $event /*263,269*/); /*246,270*/
+      }); /*228,271*/
   }
 }
 
@@ -80,7 +80,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 imports: [TestHostConsumerDirective],
                 template:
                   '<div testHostConsumer (disabledChange)="onDisabledChange($event)"></div>',
@@ -98,7 +97,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'src/app/app.component.ts',
-      lineNumber: 10,
+      lineNumber: 9,
     });
 })();
 

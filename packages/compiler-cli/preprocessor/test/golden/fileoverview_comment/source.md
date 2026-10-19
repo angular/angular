@@ -30,7 +30,6 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'app-root',
   template: '<div>Fileoverview Test</div>',
-  standalone: true,
 })
 export class AppComponent {}
 ```

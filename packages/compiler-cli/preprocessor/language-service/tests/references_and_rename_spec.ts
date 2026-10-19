@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {TsGoFacade} from '../src/facade';
-import * as path from 'path';
 import * as fs from 'node:fs/promises';
-import * as rpc from 'vscode-jsonrpc/node';
 import {fileURLToPath} from 'node:url';
+import * as path from 'path';
+import * as rpc from 'vscode-jsonrpc/node';
 import {Location} from 'vscode-languageserver';
+import {TsGoFacade} from '../src/facade';
 
-import {TestEnv, getTestWorkspacePath, startTestServer} from './test_helpers';
-import {TestFileManager} from './test_file_manager';
 import {positionToOffset} from '../../src/tcb_ls_util.js';
+import {TestFileManager} from './test_file_manager';
+import {TestEnv, getTestWorkspacePath, startTestServer} from './test_helpers';
 
 function assertFileNames(locations: Location[] | null, expectedFileNames: string[]) {
   expect(locations).not.toBeNull();
@@ -79,7 +79,6 @@ describe('References and Rename with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           templateUrl: './app.html',
-          standalone: true,
         })
         export class AppCmp {
           myP¦rop!: string;
@@ -103,7 +102,6 @@ describe('References and Rename with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           templateUrl: './app.html',
-          standalone: true,
         })
         export class AppCmp {
           myP¦rop!: string;
@@ -128,7 +126,6 @@ describe('References and Rename with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           templateUrl: './app.html',
-          standalone: true,
         })
         export class AppCmp {
           myProp = '';
@@ -153,7 +150,6 @@ describe('References and Rename with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           templateUrl: './app.html',
-          standalone: true,
         })
         export class AppCmp {
           myProp = '';
@@ -180,7 +176,6 @@ describe('References and Rename with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '{{myP¦rop}}',
-          standalone: true,
         })
         export class AppCmp {
           myProp = '';
@@ -209,7 +204,6 @@ describe('References and Rename with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '{{myFn¦(val)}}',
-          standalone: true,
         })
         export class AppCmp {
           val = 1;
@@ -239,7 +233,6 @@ describe('References and Rename with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<button (click)="handle¦Click($event)">Click</button>',
-          standalone: true,
         })
         export class AppCmp {
           handleClick(e: any) {}
@@ -270,7 +263,6 @@ describe('References and Rename with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '{{myObj["myP¦rop"]}}',
-          standalone: true,
         })
         export class AppCmp {
           myObj = {myProp: 'hello'};
@@ -299,7 +291,6 @@ describe('References and Rename with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<input #my¦Input /> {{myInput.value}}',
-          standalone: true,
         })
         export class AppCmp {}
       `;
@@ -324,7 +315,6 @@ describe('References and Rename with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<input #myInput /> {{myI¦nput.value}}',
-          standalone: true,
         })
         export class AppCmp {}
       `;
@@ -351,7 +341,6 @@ describe('References and Rename with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '@let my¦Var = 10; {{myVar + 1}}',
-          standalone: true,
         })
         export class AppCmp {}
       `;
@@ -376,7 +365,6 @@ describe('References and Rename with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '@let myVar = 10; {{myV¦ar + 1}}',
-          standalone: true,
         })
         export class AppCmp {}
       `;
@@ -402,7 +390,6 @@ describe('References and Rename with TS 7 binary', () => {
 
         @Pipe({
           name: 'myPipe',
-          standalone: true,
         })
         export class MyPipe implements PipeTransform {
           transform(value: string): string {
@@ -419,7 +406,6 @@ describe('References and Rename with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '{{"hello" | myP¦ipe}}',
-          standalone: true,
           imports: [MyPipe],
         })
         export class AppCmp {}
@@ -446,7 +432,6 @@ describe('References and Rename with TS 7 binary', () => {
 
         @Pipe({
           name: 'myP¦ipe',
-          standalone: true,
         })
         export class MyPipe implements PipeTransform {
           transform(value: string): string {
@@ -457,7 +442,6 @@ describe('References and Rename with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '{{"hello" | myPipe}}',
-          standalone: true,
           imports: [MyPipe],
         })
         export class AppCmp {}
@@ -484,7 +468,6 @@ describe('References and Rename with TS 7 binary', () => {
 
         @Directive({
           selector: '[myInpDir]',
-          standalone: true,
         })
         export class MyInpDir {
           @Input() myInp: string = '';
@@ -499,7 +482,6 @@ describe('References and Rename with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div myInpDir [myI¦np]="val"></div>',
-          standalone: true,
           imports: [MyInpDir],
         })
         export class AppCmp {
@@ -528,7 +510,6 @@ describe('References and Rename with TS 7 binary', () => {
 
         @Directive({
           selector: '[myOutDir]',
-          standalone: true,
         })
         export class MyOutDir {
           @Output() myOut = new EventEmitter<string>();
@@ -543,7 +524,6 @@ describe('References and Rename with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div myOutDir (myO¦ut)="val = $event"></div>',
-          standalone: true,
           imports: [MyOutDir],
         })
         export class AppCmp {
@@ -573,7 +553,6 @@ describe('References and Rename with TS 7 binary', () => {
         import {Directive, Input} from '@angular/core';
 
         @Directive({
-          standalone: true,
         })
         export class HostDir {
           @Input() hostInp: string = '';
@@ -587,7 +566,6 @@ describe('References and Rename with TS 7 binary', () => {
 
         @Directive({
           selector: '[myDir]',
-          standalone: true,
           hostDirectives: [{
             directive: HostDir,
             inputs: ['hostInp'],
@@ -604,7 +582,6 @@ describe('References and Rename with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div myDir [hostI¦np]="val"></div>',
-          standalone: true,
           imports: [MyDir],
         })
         export class AppCmp {
@@ -632,7 +609,6 @@ describe('References and Rename with TS 7 binary', () => {
         import {Directive, Input} from '@angular/core';
 
         @Directive({
-          standalone: true,
         })
         export class HostDir {
           @Input() originalInp: string = '';
@@ -646,7 +622,6 @@ describe('References and Rename with TS 7 binary', () => {
 
         @Directive({
           selector: '[myDir]',
-          standalone: true,
           hostDirectives: [{
             directive: HostDir,
             inputs: ['originalInp: customAlias'],
@@ -663,7 +638,6 @@ describe('References and Rename with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div myDir [customA¦lias]="val"></div>',
-          standalone: true,
           imports: [MyDir],
         })
         export class AppCmp {
@@ -696,7 +670,6 @@ describe('References and Rename with TS 7 binary', () => {
         import {Directive, Output, EventEmitter} from '@angular/core';
 
         @Directive({
-          standalone: true,
         })
         export class HostDir {
           @Output() hostOut = new EventEmitter<string>();
@@ -710,7 +683,6 @@ describe('References and Rename with TS 7 binary', () => {
 
         @Directive({
           selector: '[myDir]',
-          standalone: true,
           hostDirectives: [{
             directive: HostDir,
             outputs: ['hostOut'],
@@ -727,7 +699,6 @@ describe('References and Rename with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div myDir (hostO¦ut)="val = $event"></div>',
-          standalone: true,
           imports: [MyDir],
         })
         export class AppCmp {
@@ -755,7 +726,6 @@ describe('References and Rename with TS 7 binary', () => {
         import {Directive, Input} from '@angular/core';
 
         @Directive({
-          standalone: true,
         })
         export class NestedHostDir {
           @Input() nestedInp: string = '';
@@ -769,7 +739,6 @@ describe('References and Rename with TS 7 binary', () => {
 
         @Directive({
           selector: '[wrapperDir]',
-          standalone: true,
           hostDirectives: [{
             directive: NestedHostDir,
             inputs: ['nestedInp: aliasedNestedInp'],
@@ -786,7 +755,6 @@ describe('References and Rename with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div wrapperDir [aliasedNe¦stedInp]="val"></div>',
-          standalone: true,
           imports: [WrapperDir],
         })
         export class AppCmp {
@@ -822,7 +790,6 @@ describe('References and Rename with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '{{myP¦rop}}',
-          standalone: true,
         })
         export class AppCmp {
           myProp = '';
@@ -844,7 +811,6 @@ describe('References and Rename with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div>¦</div>',
-          standalone: true,
         })
         export class AppCmp {}
       `;

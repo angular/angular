@@ -573,7 +573,6 @@ export class TemplateBindingsCmp {
             args: [
               {
                 selector: 'template-bindings',
-                standalone: true,
                 template: `<a [href]="evil"></a><div [attr.sandbox]="evil"></div>`,
               },
             ],
@@ -589,7 +588,7 @@ export class TemplateBindingsCmp {
     i0.ɵsetClassDebugInfo(TemplateBindingsCmp, {
       className: 'TemplateBindingsCmp',
       filePath: 'host_binding_sanitizers.ts',
-      lineNumber: 134,
+      lineNumber: 133,
     });
 })();
 

@@ -27,7 +27,6 @@ import { EagerCmp } from './eager-cmp';
 
 @Component({
   selector: 'app-comp',
-  standalone: true,
   imports: [EagerCmp],
   deferredImports: {
     blockA: [],

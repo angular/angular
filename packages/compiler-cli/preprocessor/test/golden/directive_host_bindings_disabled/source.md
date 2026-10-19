@@ -17,7 +17,6 @@ import { Directive, HostBinding, HostListener } from '@angular/core';
 
 @Directive({
   selector: '[appTooltip]',
-  standalone: true,
   host: {
     'role': 'tooltip',
     '[attr.aria-hidden]': 'isHidden',
@@ -57,7 +56,6 @@ import { Component, HostBinding, HostListener } from '@angular/core';
 @Component({
   selector: 'test-comp',
   template: '<span>hello</span>',
-  standalone: true,
   host: {
     'role': 'button',
     '[id]': 'myId',

@@ -27,7 +27,6 @@ export const Namespace = {
 @Component({
   selector: 'app-test',
   template: '',
-  standalone: true,
 })
 export class TestComponent {
   constructor(

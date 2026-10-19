@@ -102,7 +102,6 @@ export class TestCoercedComponent {
             args: [
               {
                 selector: 'test-coerced',
-                standalone: true,
                 template: `<div></div>`,
               },
             ],
@@ -134,7 +133,7 @@ export class TestCoercedComponent {
     i0.ɵsetClassDebugInfo(TestCoercedComponent, {
       className: 'TestCoercedComponent',
       filePath: 'app.ts',
-      lineNumber: 8,
+      lineNumber: 7,
     });
 })();
 
@@ -203,7 +202,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 imports: [TestCoercedComponent],
                 template: `
         <test-coerced
@@ -231,7 +229,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.ts',
-      lineNumber: 52,
+      lineNumber: 50,
     });
 })();
 

@@ -27,7 +27,6 @@ import { SharedDep } from './shared-dep';
 
 @Component({
   selector: 'app-comp',
-  standalone: true,
   imports: [SharedDep],
   deferredImports: {
     blockA: [SharedDep],

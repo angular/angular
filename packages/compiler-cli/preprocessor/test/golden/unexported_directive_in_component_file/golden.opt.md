@@ -9,7 +9,6 @@ import { Component, Directive, Input } from '@angular/core';
 
 @Directive({
   selector: '[localDir]',
-  standalone: true,
 })
 class LocalDir {
   @Input() localDir: string = '';
@@ -18,7 +17,6 @@ class LocalDir {
 @Component({
   selector: 'app-root',
   template: '<div [localDir]="message"></div>',
-  standalone: true,
   imports: [LocalDir],
 })
 export class AppComponent {
@@ -28,8 +26,8 @@ export class AppComponent {
 /*tcb1*/
 function _tcb1(this: AppComponent) {
   if (true) {
-    var _t1 /*T:DIR:0*/ /*228,254*/ = null! as LocalDir; /*T:VAE*/
-    _t1.localDir /*234,242*/ = this.message /*245,252*/ /*245,252*/; /*233,253*/
+    var _t1 /*T:DIR:0*/ /*208,234*/ = null! as LocalDir; /*T:VAE*/
+    _t1.localDir /*214,222*/ = this.message /*225,232*/ /*225,232*/; /*213,233*/
   }
 }
 
@@ -77,7 +75,6 @@ class LocalDir {
             args: [
               {
                 selector: '[localDir]',
-                standalone: true,
               },
             ],
           },
@@ -137,7 +134,6 @@ export class AppComponent {
               {
                 selector: 'app-root',
                 template: '<div [localDir]="message"></div>',
-                standalone: true,
                 imports: [LocalDir],
               },
             ],
@@ -153,7 +149,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 17,
+      lineNumber: 15,
     });
 })();
 

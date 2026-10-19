@@ -75,7 +75,6 @@ export class MyComponent {
               {
                 selector: 'my-component',
                 template: '<div></div>',
-                standalone: true,
               },
             ],
           },
@@ -94,7 +93,7 @@ export class MyComponent {
     i0.ɵsetClassDebugInfo(MyComponent, {
       className: 'MyComponent',
       filePath: 'test.ts',
-      lineNumber: 9,
+      lineNumber: 8,
     });
 })();
 

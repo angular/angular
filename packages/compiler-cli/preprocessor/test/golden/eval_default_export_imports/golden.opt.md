@@ -66,7 +66,6 @@ export class AComponent {
               {
                 selector: 'lib-a',
                 template: '<span>A</span>',
-                standalone: true,
               },
             ],
           },
@@ -81,7 +80,7 @@ export class AComponent {
     i0.ɵsetClassDebugInfo(AComponent, {
       className: 'AComponent',
       filePath: 'a.component.ts',
-      lineNumber: 8,
+      lineNumber: 7,
     });
 })();
 
@@ -162,7 +161,6 @@ export class AppComponent {
               {
                 selector: 'app-root',
                 template: '<lib-a libB></lib-a>',
-                standalone: true,
                 imports: SHARED,
               },
             ],
@@ -178,7 +176,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 10,
+      lineNumber: 9,
     });
 })();
 

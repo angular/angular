@@ -157,7 +157,6 @@ export class AdvancedComp {
               {
                 selector: 'advanced-comp',
                 template: '<div>Advanced Component</div>',
-                standalone: true,
                 signals: true,
               },
             ],
@@ -226,7 +225,7 @@ export class AdvancedComp {
     i0.ɵsetClassDebugInfo(AdvancedComp, {
       className: 'AdvancedComp',
       filePath: 'test.ts',
-      lineNumber: 13,
+      lineNumber: 12,
     });
 })();
 

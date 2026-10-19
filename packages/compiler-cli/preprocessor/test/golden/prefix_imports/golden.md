@@ -28,7 +28,6 @@ export class FormatPipe implements PipeTransform {
             args: [
               {
                 name: 'format',
-                standalone: true,
               },
             ],
           },
@@ -92,7 +91,6 @@ export class ButtonComponent {
               {
                 selector: 'btn',
                 template: '<button>Click</button>',
-                standalone: true,
               },
             ],
           },
@@ -107,7 +105,7 @@ export class ButtonComponent {
     i0.ɵsetClassDebugInfo(ButtonComponent, {
       className: 'ButtonComponent',
       filePath: 'button.component.ts',
-      lineNumber: 8,
+      lineNumber: 7,
     });
 })();
 
@@ -174,7 +172,6 @@ export class ParentComponent {
                 selector: 'parent-comp',
                 imports: [ButtonComponent, FormatPipe],
                 template: '<btn></btn><span>{{ "hello" | format }}</span>',
-                standalone: true,
               },
             ],
           },
@@ -189,7 +186,7 @@ export class ParentComponent {
     i0.ɵsetClassDebugInfo(ParentComponent, {
       className: 'ParentComponent',
       filePath: 'app/parent.component.ts',
-      lineNumber: 11,
+      lineNumber: 10,
     });
 })();
 

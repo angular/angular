@@ -57,7 +57,6 @@ export class MetaComponent {
               {
                 selector: 'meta-comp',
                 template: '<div>Metadata</div>',
-                standalone: true,
               },
             ],
           },
@@ -72,7 +71,7 @@ export class MetaComponent {
     i0.ɵsetClassDebugInfo(MetaComponent, {
       className: 'MetaComponent',
       filePath: 'app.ts',
-      lineNumber: 8,
+      lineNumber: 7,
     });
 })();
 
@@ -107,7 +106,6 @@ export class MetaDirective {
             args: [
               {
                 selector: '[metaDir]',
-                standalone: true,
               },
             ],
           },
@@ -178,7 +176,6 @@ export class MetaPipe implements PipeTransform {
               {
                 name: 'metaPipe',
                 pure: true,
-                standalone: true,
               },
             ],
           },
@@ -257,7 +254,6 @@ export class MultiMetaComponent {
               {
                 selector: 'multi-meta',
                 template: '<div>Multi</div>',
-                standalone: true,
               },
             ],
           },
@@ -273,7 +269,7 @@ export class MultiMetaComponent {
     i0.ɵsetClassDebugInfo(MultiMetaComponent, {
       className: 'MultiMetaComponent',
       filePath: 'app.ts',
-      lineNumber: 41,
+      lineNumber: 37,
     });
 })();
 

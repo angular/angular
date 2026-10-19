@@ -19,7 +19,6 @@ export class BaseClass {
 @Component({
   selector: 'app-child',
   template: '<div></div>',
-  standalone: true,
 })
 export class ChildComp extends BaseClass {
   // Declares its own constructor. Should generate own ctor deps.
@@ -31,7 +30,6 @@ export class ChildComp extends BaseClass {
 @Component({
   selector: 'app-child-zero',
   template: '<div></div>',
-  standalone: true,
 })
 export class ChildZeroComp extends BaseClass {
   // Declares its own 0-argument constructor. Should generate normal factory.

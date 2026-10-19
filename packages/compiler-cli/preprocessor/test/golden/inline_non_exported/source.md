@@ -23,7 +23,6 @@ export class MyPipe implements PipeTransform {
 @Component({
   selector: 'app-root',
   template: '<div>{{ "hello" | myPipe }}</div>',
-  standalone: true,
   imports: [MyPipe]
 })
 class AppComponent {}
@@ -31,7 +30,6 @@ class AppComponent {}
 @Component({
   selector: 'app-root',
   template: '<div>{{ "hello" | myPipe }}</div>',
-  standalone: true,
   imports: [MyPipe]
 })
 export class ExportedAppComponent {}
@@ -52,7 +50,6 @@ export class MyPipe implements PipeTransform {
 @Component({
   selector: 'app-root',
   template: '<div>{{ "hello" | myPipe }}</div>',
-  standalone: true,
   imports: [MyPipe]
 })
 class ExportedAppComponent {}

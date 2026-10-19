@@ -16,7 +16,6 @@ import { Component } from "@angular/core";
 @Component({
   selector: "my-component",
   template: "<div></div>",
-  standalone: true,
 })
 export class MyComponent {
   constructor(

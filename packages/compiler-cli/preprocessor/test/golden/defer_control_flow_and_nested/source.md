@@ -117,7 +117,6 @@ import { PipeNested } from './pipe-nested';
       }
     }
   `,
-  standalone: true,
   imports: [CmpA, CmpB, CmpNested, PipeA, PipeB, PipeNested]
 })
 export class AppComponent {

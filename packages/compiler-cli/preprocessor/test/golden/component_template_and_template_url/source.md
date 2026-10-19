@@ -21,7 +21,6 @@ import { Component } from '@angular/core';
   selector: 'app-comp',
   template: '',
   templateUrl: './app.ng.html',
-  standalone: true,
 })
 export class AppComp {}
 ```

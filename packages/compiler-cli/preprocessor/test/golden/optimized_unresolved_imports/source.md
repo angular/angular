@@ -15,7 +15,6 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'app-local',
   template: '<span>Local</span>',
-  standalone: true,
 })
 export class LocalComponent {}
 ```
@@ -29,7 +28,6 @@ import { ExternalComponent } from '@third-party/components';
 @Component({
   selector: 'app-root',
   template: '<app-local></app-local><app-external></app-external>',
-  standalone: true,
   imports: [LocalComponent, ExternalComponent],
 })
 export class AppComponent {}

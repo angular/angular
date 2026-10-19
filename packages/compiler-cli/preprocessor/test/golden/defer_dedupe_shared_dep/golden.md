@@ -85,7 +85,6 @@ export class AppComponent {
           <other-dep/>
         }
       `,
-                standalone: true,
                 imports: [SharedDep, OtherDep],
               },
             ],
@@ -101,7 +100,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 22,
+      lineNumber: 21,
     });
 })();
 

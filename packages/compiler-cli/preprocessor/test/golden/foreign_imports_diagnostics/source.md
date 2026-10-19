@@ -25,7 +25,6 @@ function frameworkImport(component: {}, ...rest: unknown[]): Function {
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   template: '<div>Hello</div>',
   // @ts-ignore: @angular/core does not expose the `foreignImports` property.
   foreignImports: [

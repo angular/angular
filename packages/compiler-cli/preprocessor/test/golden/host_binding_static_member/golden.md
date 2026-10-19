@@ -73,7 +73,6 @@ export class TestComponent {
             args: [
               {
                 selector: 'test-cmp',
-                standalone: true,
                 template: '<div>Hello</div>',
               },
             ],
@@ -92,7 +91,7 @@ export class TestComponent {
     i0.ɵsetClassDebugInfo(TestComponent, {
       className: 'TestComponent',
       filePath: 'test.component.ts',
-      lineNumber: 8,
+      lineNumber: 7,
     });
 })();
 

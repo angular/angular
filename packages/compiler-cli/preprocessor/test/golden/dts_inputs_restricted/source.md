@@ -60,7 +60,6 @@ import { TestComponent } from 'test-lib';
       [readonlyInput]="'val3'"
     ></test-cmp>
   `,
-  standalone: true,
   imports: [TestComponent],
 })
 export class AppComponent {}

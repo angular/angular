@@ -41,7 +41,6 @@ export class DynamicTemplateUrlComponent {
             args: [
               {
                 selector: 'app-dynamic-template-url',
-                standalone: true,
                 templateUrl: './app-' + Math.random() + '.html',
               },
             ],
@@ -57,7 +56,7 @@ export class DynamicTemplateUrlComponent {
     i0.ɵsetClassDebugInfo(DynamicTemplateUrlComponent, {
       className: 'DynamicTemplateUrlComponent',
       filePath: 'dynamic-template-url.component.ts',
-      lineNumber: 8,
+      lineNumber: 7,
     });
 })();
 
@@ -106,7 +105,6 @@ export class DynamicTemplateComponent {
             args: [
               {
                 selector: 'app-dynamic-template',
-                standalone: true,
                 template: '<div>' + Math.random() + '</div>',
               },
             ],
@@ -122,7 +120,7 @@ export class DynamicTemplateComponent {
     i0.ɵsetClassDebugInfo(DynamicTemplateComponent, {
       className: 'DynamicTemplateComponent',
       filePath: 'dynamic-template.component.ts',
-      lineNumber: 8,
+      lineNumber: 7,
     });
 })();
 
@@ -182,7 +180,6 @@ export class MissingLinkStylesheetTemplateLiteralComponent {
             args: [
               {
                 selector: 'app-missing-link-stylesheet-template-literal',
-                standalone: true,
                 template: '<link rel="stylesheet" href="./missing.css"><div>Hello</div>',
               },
             ],
@@ -198,7 +195,7 @@ export class MissingLinkStylesheetTemplateLiteralComponent {
     i0.ɵsetClassDebugInfo(MissingLinkStylesheetTemplateLiteralComponent, {
       className: 'MissingLinkStylesheetTemplateLiteralComponent',
       filePath: 'missing-link-stylesheet-template-literal.component.ts',
-      lineNumber: 10,
+      lineNumber: 9,
     });
 })();
 
@@ -253,7 +250,6 @@ export class MissingLinkStylesheetComponent {
             args: [
               {
                 selector: 'app-missing-link-stylesheet',
-                standalone: true,
                 template: '<link rel="stylesheet" href="./missing.css"><div>Hello</div>',
               },
             ],
@@ -269,7 +265,7 @@ export class MissingLinkStylesheetComponent {
     i0.ɵsetClassDebugInfo(MissingLinkStylesheetComponent, {
       className: 'MissingLinkStylesheetComponent',
       filePath: 'missing-link-stylesheet.component.ts',
-      lineNumber: 8,
+      lineNumber: 7,
     });
 })();
 
@@ -318,7 +314,6 @@ export class MissingTemplateComponent {
             args: [
               {
                 selector: 'app-missing-template',
-                standalone: true,
               },
             ],
           },
@@ -333,7 +328,7 @@ export class MissingTemplateComponent {
     i0.ɵsetClassDebugInfo(MissingTemplateComponent, {
       className: 'MissingTemplateComponent',
       filePath: 'missing-template.component.ts',
-      lineNumber: 7,
+      lineNumber: 6,
     });
 })();
 
@@ -350,8 +345,8 @@ export class MissingTemplateComponent {
       "code": 1010,
       "messageText": "templateUrl must be a string",
       "span": {
-        "start": 132,
-        "end": 166
+        "start": 112,
+        "end": 146
       }
     },
     {
@@ -360,8 +355,8 @@ export class MissingTemplateComponent {
       "code": 1010,
       "messageText": "template must be a string",
       "span": {
-        "start": 125,
-        "end": 159
+        "start": 105,
+        "end": 139
       }
     },
     {
@@ -370,8 +365,8 @@ export class MissingTemplateComponent {
       "code": 2008,
       "messageText": "Could not find stylesheet file './missing.css' linked from the template.",
       "span": {
-        "start": 333,
-        "end": 392
+        "start": 313,
+        "end": 372
       }
     },
     {
@@ -380,8 +375,8 @@ export class MissingTemplateComponent {
       "code": 2008,
       "messageText": "Could not find stylesheet file './missing.css' linked from the template.",
       "span": {
-        "start": 132,
-        "end": 194
+        "start": 112,
+        "end": 174
       }
     },
     {
@@ -391,7 +386,7 @@ export class MissingTemplateComponent {
       "messageText": "@Component is missing a template. Add either a `template` or `templateUrl`",
       "span": {
         "start": 44,
-        "end": 115
+        "end": 95
       }
     }
   ]

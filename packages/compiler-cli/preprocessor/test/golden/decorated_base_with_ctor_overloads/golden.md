@@ -42,7 +42,6 @@ export abstract class Base {
             args: [
               {
                 selector: '[base]',
-                standalone: true,
               },
             ],
           },
@@ -98,7 +97,6 @@ export class Child extends Base {
             args: [
               {
                 selector: '[child]',
-                standalone: true,
               },
             ],
           },

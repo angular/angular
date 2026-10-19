@@ -20,7 +20,6 @@ export class MyPipe implements PipeTransform {
 @Component({
   selector: 'app-root',
   template: '<div>{{ "hello" | myPipe }}</div>',
-  standalone: true,
   imports: [MyPipe],
 })
 class AppComponent {}
@@ -36,7 +35,6 @@ function _tcb1(this: AppComponent) {
 @Component({
   selector: 'app-root',
   template: '<div>{{ "hello" | myPipe }}</div>',
-  standalone: true,
   imports: [MyPipe],
 })
 export class ExportedAppComponent {}
@@ -45,7 +43,7 @@ export class ExportedAppComponent {}
 function _tcb2(this: ExportedAppComponent) {
   if (true) {
     var _pipe1 = null! as MyPipe;
-    '' + _pipe1.transform(/*436,442*/ 'hello' /*426,433*/) /*426,442*/;
+    '' + _pipe1.transform(/*416,422*/ 'hello' /*406,413*/) /*406,422*/;
   }
 }
 
@@ -143,7 +141,6 @@ class AppComponent {
               {
                 selector: 'app-root',
                 template: '<div>{{ "hello" | myPipe }}</div>',
-                standalone: true,
                 imports: [MyPipe],
               },
             ],
@@ -159,7 +156,7 @@ class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 17,
+      lineNumber: 16,
     });
 })();
 
@@ -213,7 +210,6 @@ export class ExportedAppComponent {
               {
                 selector: 'app-root',
                 template: '<div>{{ "hello" | myPipe }}</div>',
-                standalone: true,
                 imports: [MyPipe],
               },
             ],
@@ -229,7 +225,7 @@ export class ExportedAppComponent {
     i0.ɵsetClassDebugInfo(ExportedAppComponent, {
       className: 'ExportedAppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 25,
+      lineNumber: 23,
     });
 })();
 
@@ -346,7 +342,6 @@ class ExportedAppComponent {
               {
                 selector: 'app-root',
                 template: '<div>{{ "hello" | myPipe }}</div>',
-                standalone: true,
                 imports: [MyPipe],
               },
             ],
@@ -362,7 +357,7 @@ class ExportedAppComponent {
     i0.ɵsetClassDebugInfo(ExportedAppComponent, {
       className: 'ExportedAppComponent',
       filePath: 'app.exported-later.ts',
-      lineNumber: 17,
+      lineNumber: 16,
     });
 })();
 

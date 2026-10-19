@@ -42,7 +42,6 @@ export class ForeignParamDirective {
             args: [
               {
                 selector: '[appForeignParam]',
-                standalone: true,
               },
             ],
           },
@@ -128,7 +127,6 @@ export class UnexpectedCoreComponent {
             args: [
               {
                 selector: 'unexpected-core',
-                standalone: true,
                 template: '<div>Unexpected</div>',
               },
             ],
@@ -144,7 +142,7 @@ export class UnexpectedCoreComponent {
     i0.ɵsetClassDebugInfo(UnexpectedCoreComponent, {
       className: 'UnexpectedCoreComponent',
       filePath: 'unexpected-core.component.ts',
-      lineNumber: 10,
+      lineNumber: 9,
     });
 })();
 
@@ -161,8 +159,8 @@ export class UnexpectedCoreComponent {
       "code": 1005,
       "messageText": "Unexpected decorator Injectable on parameter.",
       "span": {
-        "start": 244,
-        "end": 257
+        "start": 224,
+        "end": 237
       }
     }
   ]

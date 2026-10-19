@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {TsGoFacade} from '../src/facade';
 import * as fs from 'node:fs/promises';
 import * as rpc from 'vscode-jsonrpc/node';
+import {TsGoFacade} from '../src/facade';
 
-import {TestEnv, getTestWorkspacePath, startTestServer} from './test_helpers';
 import {TestFileManager} from './test_file_manager';
+import {TestEnv, getTestWorkspacePath, startTestServer} from './test_helpers';
 
 describe('QuickInfo with TS 7 binary', () => {
   let connection: rpc.MessageConnection;
@@ -49,7 +49,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-elements-test',
           template: '<button></button>',
-          standalone: true,
         })
         export class A¦ppElementsTestComponent {}
       `;
@@ -66,7 +65,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-elements-test',
           template: '<¦button></button>',
-          standalone: true,
         })
         export class AppElementsTestComponent {}
       `;
@@ -82,7 +80,6 @@ describe('QuickInfo with TS 7 binary', () => {
 
         @Directive({
           selector: 'button[custom-button][compound]',
-          standalone: true,
         })
         export class CompoundCustomButtonDirective {
           @Input() config?: {color?: string};
@@ -91,7 +88,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-elements-dir-test',
           template: '<¦button compound custom-button></button>',
-          standalone: true,
           imports: [CompoundCustomButtonDirective],
         })
         export class AppElementsDirTestComponent {}
@@ -109,7 +105,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-templates-test',
           template: '<¦ng-template></ng-template>',
-          standalone: true,
         })
         export class AppTemplatesTestComponent {}
       `;
@@ -129,7 +124,6 @@ describe('QuickInfo with TS 7 binary', () => {
 
         @Directive({
           selector: '[string-model]',
-          standalone: true,
         })
         export class StringModel {
           model!: string;
@@ -138,7 +132,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div ¦string-model></div>',
-          standalone: true,
           imports: [StringModel],
         })
         export class AppCmp {
@@ -160,7 +153,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'test-comp',
           template: '<div></div>',
-          standalone: true,
         })
         export class TestComponent {
           name!: string;
@@ -169,7 +161,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<¦test-comp></test-comp>',
-          standalone: true,
           imports: [TestComponent],
         })
         export class AppCmp {
@@ -195,7 +186,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'test-comp',
           template: '<div></div>',
-          standalone: true,
         })
         export class TestComponent {
           name!: string;
@@ -204,7 +194,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<¦test-comp [attr.id]="\\'1\\' + \\'2\\'" [attr.name]="\\'myName\\'"></test-comp>',
-          standalone: true,
           imports: [TestComponent],
         })
         export class AppCmp {
@@ -225,7 +214,6 @@ describe('QuickInfo with TS 7 binary', () => {
 
         @Directive({
           selector: '[ngFor][ngForOf]',
-          standalone: true,
         })
         export class NgForOf<T, U> {
           @Input() ngForOf!: U;
@@ -234,7 +222,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div *¦ngFor="let item of heroes"></div>',
-          standalone: true,
           imports: [NgForOf],
         })
         export class AppCmp {
@@ -254,7 +241,6 @@ describe('QuickInfo with TS 7 binary', () => {
 
         @Directive({
           selector: 'button[custom]',
-          standalone: true,
         })
         export class CompoundCustomButtonDirective {
           config?: {color?: string};
@@ -263,7 +249,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<button ¦custom></button>',
-          standalone: true,
           imports: [CompoundCustomButtonDirective],
         })
         export class AppCmp {
@@ -285,14 +270,12 @@ describe('QuickInfo with TS 7 binary', () => {
          */
         @Directive({
           selector: '[deprecated]',
-          standalone: true,
         })
         export class DeprecatedDirective {}
 
         @Component({
           selector: 'app-cmp',
           template: '<div ¦deprecated></div>',
-          standalone: true,
           imports: [DeprecatedDirective],
         })
         export class AppCmp {
@@ -317,7 +300,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'test-comp',
           template: '<div>Testing: {{name}}</div>',
-          standalone: true,
         })
         export class TestComponent {
           @Input('tcName') name!: string;
@@ -326,7 +308,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<test-comp [¦tcName]="name"></test-comp>',
-          standalone: true,
           imports: [TestComponent],
         })
         export class AppCmp {
@@ -346,7 +327,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'test-comp',
           template: '<div></div>',
-          standalone: true,
         })
         export class TestComponent {
           @Input('tcName') name!: string;
@@ -355,7 +335,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<test-comp bind-¦tcName="name"></test-comp>',
-          standalone: true,
           imports: [TestComponent],
         })
         export class AppCmp {
@@ -375,7 +354,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'test-comp',
           template: '<div></div>',
-          standalone: true,
         })
         export class TestComponent {
           @Output() test = new EventEmitter<void>();
@@ -384,7 +362,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<test-comp on-¦test="myClick()"></test-comp>',
-          standalone: true,
           imports: [TestComponent],
         })
         export class AppCmp {
@@ -404,7 +381,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'test-comp',
           template: '<div></div>',
-          standalone: true,
         })
         export class TestComponent {
           signalModel = model<string>('');
@@ -413,7 +389,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<test-comp [(sig¦nalModel)]="signalValue"></test-comp>',
-          standalone: true,
           imports: [TestComponent],
         })
         export class AppCmp {
@@ -433,7 +408,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div (click)="myClick($ev¦ent)"></div>',
-          standalone: true,
         })
         export class AppCmp {
           myClick(event: MouseEvent) {}
@@ -452,7 +426,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div (cli¦ck)="myClick($event)"></div>',
-          standalone: true,
         })
         export class AppCmp {
           myClick(event: MouseEvent) {}
@@ -470,7 +443,6 @@ describe('QuickInfo with TS 7 binary', () => {
 
         @Directive({
           selector: '[ngFor][ngForOf]',
-          standalone: true,
         })
         export class NgForOf<T, U> {
           @Input() ngForOf!: U;
@@ -479,7 +451,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div *ngFor="let item ¦of heroes"></div>',
-          standalone: true,
           imports: [NgForOf],
         })
         export class AppCmp {
@@ -498,7 +469,6 @@ describe('QuickInfo with TS 7 binary', () => {
 
         @Directive({
           selector: '[string-model]',
-          standalone: true,
         })
         export class StringModel {
           @Input() model!: string;
@@ -508,7 +478,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div string-model [(¦model)]="title"></div>',
-          standalone: true,
           imports: [StringModel],
         })
         export class AppCmp {
@@ -528,7 +497,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'test-comp',
           template: '<div></div>',
-          standalone: true,
         })
         export class TestComponent {
           @Output('test') testEvent = new EventEmitter<string>();
@@ -537,7 +505,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<test-comp (¦test)="myClick($event)"></test-comp>',
-          standalone: true,
           imports: [TestComponent],
         })
         export class AppCmp {
@@ -556,7 +523,6 @@ describe('QuickInfo with TS 7 binary', () => {
 
         @Directive({
           selector: '[string-model]',
-          standalone: true,
         })
         export class StringModel {
           @Output() modelChange = new EventEmitter<string>();
@@ -565,7 +531,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div string-model (modelChange)="myClick(¦$event)"></div>',
-          standalone: true,
           imports: [StringModel],
         })
         export class AppCmp {
@@ -586,7 +551,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div #¦chart></div>',
-          standalone: true,
         })
         export class AppCmp {
         }
@@ -604,7 +568,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Directive({
           selector: '[string-model]',
           exportAs: 'stringModel',
-          standalone: true,
         })
         export class StringModel {
           model!: string;
@@ -613,7 +576,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div string-model #¦dirRef="stringModel"></div>',
-          standalone: true,
           imports: [StringModel],
         })
         export class AppCmp {
@@ -632,7 +594,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div ref-¦chart></div>',
-          standalone: true,
         })
         export class AppCmp {
         }
@@ -656,7 +617,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '@let hero = heroes[0]; {{¦hero}}',
-          standalone: true,
         })
         export class AppCmp {
           heroes!: Hero[];
@@ -680,7 +640,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '@let hero = heroProp; {{¦hero}}',
-          standalone: true,
         })
         export class AppCmp {
           heroProp!: Readonly<Hero>;
@@ -699,7 +658,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '@let name = constObj.name; {{¦name}}',
-          standalone: true,
         })
         export class AppCmp {
           constObj = { name: "name" } as const;
@@ -718,7 +676,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '@let keyedRead = constNamesOptional?.[0]; {{¦keyedRead}}',
-          standalone: true,
         })
         export class AppCmp {
           constNamesOptional?: [{readonly name: 'name'}];
@@ -737,7 +694,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '@let name = constObj.name; {{ \`Hello \${¦name}\` }}',
-          standalone: true,
         })
         export class AppCmp {
           constObj = { name: 'name' } as const;
@@ -756,7 +712,6 @@ describe('QuickInfo with TS 7 binary', () => {
 
         @Pipe({
           name: 'myDate',
-          standalone: true,
         })
         export class MyDatePipe implements PipeTransform {
           transform(value: any, format: string): any { return null; }
@@ -765,7 +720,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div>{{ birthday | ¦myDate:"MM/dd/yy" }}</div>',
-          standalone: true,
           imports: [MyDatePipe],
         })
         export class AppCmp {
@@ -786,7 +740,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '{{¦title}}',
-          standalone: true,
         })
         export class AppCmp {
           title: string = 'hello';
@@ -805,7 +758,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div title="{{ti¦tle}}"></div>',
-          standalone: true,
         })
         export class AppCmp {
           title: string = 'hello';
@@ -824,7 +776,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'test-comp',
           template: '<div></div>',
-          standalone: true,
         })
         export class TestComponent {
           @Input('tcName') name!: string;
@@ -833,7 +784,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<test-comp [tcName]="ti¦tle"></test-comp>',
-          standalone: true,
           imports: [TestComponent],
         })
         export class AppCmp {
@@ -853,7 +803,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div (click)="ti¦tle=$event"></div>',
-          standalone: true,
         })
         export class AppCmp {
           title: any;
@@ -872,7 +821,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '{{something?.va¦lue()}}',
-          standalone: true,
         })
         export class AppCmp {
           something?: { value: () => string } = { value: signal('hello') };
@@ -891,7 +839,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div (click)="he¦ro.id = 2"></div>',
-          standalone: true,
         })
         export class AppCmp {
           hero = { id: 1 };
@@ -910,7 +857,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div (click)="setTitle(he¦ro.name)"></div>',
-          standalone: true,
         })
         export class AppCmp {
           hero = { name: 'Angular' };
@@ -930,7 +876,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'test-comp',
           template: '<div></div>',
-          standalone: true,
         })
         export class TestComponent {
           @Input() model!: string;
@@ -940,7 +885,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<test-comp [(model)]="ti¦tle"></test-comp>',
-          standalone: true,
           imports: [TestComponent],
         })
         export class AppCmp {
@@ -960,7 +904,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '{{ "key" in her¦oes }}',
-          standalone: true,
         })
         export class AppCmp {
           heroes = { key: 'Angular' };
@@ -979,7 +922,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '{{ (-any¦Value) ** 2 }}',
-          standalone: true,
         })
         export class AppCmp {
           anyValue = 2;
@@ -998,7 +940,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '{{ { ti¦tle } }}',
-          standalone: true,
         })
         export class AppCmp {
           title = 'hello';
@@ -1017,7 +958,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '{{title.¦length}}',
-          standalone: true,
         })
         export class AppCmp {
           title: string = 'hello';
@@ -1036,7 +976,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '{{someObject.¦someMethod()}}',
-          standalone: true,
         })
         export class AppCmp {
           someObject = {
@@ -1057,7 +996,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '{{someObject.nested.¦helloWorld().nestedMethod()}}',
-          standalone: true,
         })
         export class AppCmp {
           someObject = {
@@ -1082,7 +1020,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'test-comp',
           template: '',
-          standalone: true,
         })
         export class TestComponent {
           @Input() name!: string;
@@ -1091,7 +1028,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<test-comp ¦name="hello"></test-comp>',
-          standalone: true,
           imports: [TestComponent],
         })
         export class AppCmp {}
@@ -1109,7 +1045,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '{{¦setTitle("title")}}',
-          standalone: true,
         })
         export class AppCmp {
           setTitle(newTitle: string) {}
@@ -1128,7 +1063,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '{{something?.¦myFunc()}}',
-          standalone: true,
         })
         export class AppCmp {
           something?: { myFunc: () => void };
@@ -1147,7 +1081,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '{{something.¦value()}}',
-          standalone: true,
         })
         export class AppCmp {
           something = {
@@ -1168,7 +1101,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '{{¦$any(title)}}',
-          standalone: true,
         })
         export class AppCmp {
           title: string = 'hello';
@@ -1187,7 +1119,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div (click)="¦myClick(null)"></div>',
-          standalone: true,
         })
         export class AppCmp {
           myClick(event: any) {}
@@ -1206,7 +1137,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div>{{ some¦Tag\`text\` }}</div>',
-          standalone: true,
         })
         export class AppCmp {
           someTag = (strings: TemplateStringsArray, ...args: any[]) => '';
@@ -1226,7 +1156,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '@de¦fer { } @placeholder { <input /> }',
-          standalone: true,
         })
         export class AppCmp {}
       `;
@@ -1243,7 +1172,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '@defer (wh¦en condition) { }',
-          standalone: true,
         })
         export class AppCmp {
           condition = true;
@@ -1262,7 +1190,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '@defer (on id¦le; prefetch on idle) { }',
-          standalone: true,
         })
         export class AppCmp {}
       `;
@@ -1279,7 +1206,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '@defer (on idle; pref¦etch on idle) { }',
-          standalone: true,
         })
         export class AppCmp {}
       `;
@@ -1296,7 +1222,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '@for (item of items; track item; let i = $index, ¦e = $even) {}',
-          standalone: true,
         })
         export class AppCmp {
           items = [];
@@ -1315,7 +1240,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '@if (user(); as u¦ser) { {{user.name}} }',
-          standalone: true,
         })
         export class AppCmp {
           user = () => ({ name: 'Angular' }) as { name: string } | null;
@@ -1334,7 +1258,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '@if (get¦User(); as user) { }',
-          standalone: true,
         })
         export class AppCmp {
           getUser() { return { name: 'Angular' }; }
@@ -1353,7 +1276,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '@if (false) { } @else if (user(); as u¦ser) { }',
-          standalone: true,
         })
         export class AppCmp {
           user = () => ({ name: 'Angular' });
@@ -1372,7 +1294,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '@defer { } @pla¦ceholder { <input /> }',
-          standalone: true,
         })
         export class AppCmp {}
       `;
@@ -1389,7 +1310,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '@defer { } @load¦ing { <input /> }',
-          standalone: true,
         })
         export class AppCmp {}
       `;
@@ -1406,7 +1326,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '@defer { } @err¦or { <input /> }',
-          standalone: true,
         })
         export class AppCmp {}
       `;
@@ -1423,7 +1342,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '@defer (on vie¦wport(x)) { } <div #x></div>',
-          standalone: true,
         })
         export class AppCmp {}
       `;
@@ -1440,7 +1358,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '@defer (on imme¦diate) {}',
-          standalone: true,
         })
         export class AppCmp {}
       `;
@@ -1457,7 +1374,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '@defer (on i¦dle) { }',
-          standalone: true,
         })
         export class AppCmp {}
       `;
@@ -1474,7 +1390,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '@defer (on hov¦er(x)) { } <div #x></div>',
-          standalone: true,
         })
         export class AppCmp {}
       `;
@@ -1491,7 +1406,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '@defer (on tim¦er(100)) { }',
-          standalone: true,
         })
         export class AppCmp {}
       `;
@@ -1508,7 +1422,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '@defer (on interactio¦n(x)) { } <div #x></div>',
-          standalone: true,
         })
         export class AppCmp {}
       `;
@@ -1525,7 +1438,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '@defer (whe¦n title) { }',
-          standalone: true,
         })
         export class AppCmp {
           title = true;
@@ -1544,7 +1456,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '@for (item of items; track item) {} @em¦pty {}',
-          standalone: true,
         })
         export class AppCmp {
           items = [];
@@ -1563,7 +1474,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '@for (item of items; tr¦ack item) {}',
-          standalone: true,
         })
         export class AppCmp {
           items = [];
@@ -1586,7 +1496,6 @@ describe('QuickInfo with TS 7 binary', () => {
               {{¦i}}
             }
           \`,
-          standalone: true,
         })
         export class AppCmp {
           items = ['a', 'b'];
@@ -1609,7 +1518,6 @@ describe('QuickInfo with TS 7 binary', () => {
               {{u[0].name}}
             }
           \`,
-          standalone: true,
         })
         export class AppCmp {
           users: [{readonly name: 'name'}] = [{name: 'name'}];
@@ -1628,7 +1536,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-let',
           template: '@let name = "Frodo"; {{¦name}}',
-          standalone: true,
         })
         export class AppLetComponent {}
       `;
@@ -1644,7 +1551,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-let-narrowed',
           template: '@if (value !== undefined) { @let name = value; {{¦name}} }',
-          standalone: true,
         })
         export class AppLetNarrowedComponent {
           @Input() value: string | undefined;
@@ -1727,7 +1633,6 @@ describe('QuickInfo with TS 7 binary', () => {
           host: {
             '[title]': '¦myTitle'
           },
-          standalone: true,
         })
         export class MyDir {
           myTitle = 'hello';
@@ -1735,7 +1640,6 @@ describe('QuickInfo with TS 7 binary', () => {
 
         @Component({
           template: '<div myDir></div>',
-          standalone: true,
           imports: [MyDir],
         })
         export class AppCmp {}
@@ -1753,7 +1657,6 @@ describe('QuickInfo with TS 7 binary', () => {
 
         @Directive({
           selector: '[generic-dir]',
-          standalone: true,
         })
         export class GenericDir<T> {
           @Input() input!: T;
@@ -1762,7 +1665,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div generic-dir [¦input]="name"></div>',
-          standalone: true,
           imports: [GenericDir],
         })
         export class AppCmp {
@@ -1782,7 +1684,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'generic-cmp',
           template: '<div></div>',
-          standalone: true,
         })
         export class GenericCmp<T> {
           @Input() data!: T;
@@ -1791,7 +1692,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<generic-cmp [¦data]="age"></generic-cmp>',
-          standalone: true,
           imports: [GenericCmp],
         })
         export class AppCmp {
@@ -1812,7 +1712,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'test-comp',
           template: '<div></div>',
-          standalone: true,
         })
         export class TestComponent {
           @Input() name!: string;
@@ -1821,7 +1720,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<test-comp ¦name="title"></test-comp>',
-          standalone: true,
           imports: [TestComponent],
         })
         export class AppCmp {}
@@ -1844,7 +1742,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'test-comp',
           template: '<div></div>',
-          standalone: true,
         })
         export class TestComponent {
           @Output() testEvent = new EventEmitter<string>();
@@ -1853,7 +1750,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<test-comp (¦testEvent)="myClick($event)"></test-comp>',
-          standalone: true,
           imports: [TestComponent],
         })
         export class AppCmp {
@@ -1877,7 +1773,6 @@ describe('QuickInfo with TS 7 binary', () => {
 
         @Pipe({
           name: 'date',
-          standalone: true,
         })
         export class DatePipe implements PipeTransform {
           transform(value: any, ...args: any[]): any { return null; }
@@ -1886,7 +1781,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div>{{ birthday | ¦date:"MM/dd/yy" }}</div>',
-          standalone: true,
           imports: [DatePipe],
         })
         export class AppCmp {
@@ -1911,7 +1805,6 @@ describe('QuickInfo with TS 7 binary', () => {
 
         @Component({
           template: '',
-          standalone: true,
         })
         export class TestComponent {
           name!: string;
@@ -1920,7 +1813,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-root',
           template: '<Test¦Component></TestComponent>',
-          standalone: true,
           imports: [TestComponent],
         })
         export class AppComponent {}
@@ -1940,7 +1832,6 @@ describe('QuickInfo with TS 7 binary', () => {
         import { Directive, Component } from '@angular/core';
 
         @Directive({
-          standalone: true,
         })
         export class TestDirective {
           value!: number;
@@ -1949,7 +1840,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-root',
           template: '<div @Test¦Directive></div>',
-          standalone: true,
           imports: [TestDirective],
         })
         export class AppComponent {}
@@ -1970,7 +1860,6 @@ describe('QuickInfo with TS 7 binary', () => {
 
         @Component({
           template: '<div></div>',
-          standalone: true,
         })
         export class TestComponent {
           @Input('heroName') heroName!: string;
@@ -1979,7 +1868,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-root',
           template: '<TestComponent [¦heroName]="hello"></TestComponent>',
-          standalone: true,
           imports: [TestComponent],
         })
         export class AppComponent {
@@ -2002,7 +1890,6 @@ describe('QuickInfo with TS 7 binary', () => {
 
         @Component({
           template: '',
-          standalone: true,
         })
         export class TestComponent {
           @Output() testEvent = new EventEmitter<string>();
@@ -2011,7 +1898,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-root',
           template: '<TestComponent (¦testEvent)="onEvent()"></TestComponent>',
-          standalone: true,
           imports: [TestComponent],
         })
         export class AppComponent {
@@ -2033,7 +1919,6 @@ describe('QuickInfo with TS 7 binary', () => {
         import { Directive, Component, Input } from '@angular/core';
 
         @Directive({
-          standalone: true,
         })
         export class TestDirective {
           @Input() value!: number;
@@ -2042,7 +1927,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-root',
           template: '<div @TestDirective([¦value]="123")></div>',
-          standalone: true,
           imports: [TestDirective],
         })
         export class AppComponent {}
@@ -2062,7 +1946,6 @@ describe('QuickInfo with TS 7 binary', () => {
         import { Directive, Component, Output, EventEmitter } from '@angular/core';
 
         @Directive({
-          standalone: true,
         })
         export class TestDirective {
           @Output() dirEvent = new EventEmitter<number>();
@@ -2071,7 +1954,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-root',
           template: '<div @TestDirective((¦dirEvent)="onEvent()")></div>',
-          standalone: true,
           imports: [TestDirective],
         })
         export class AppComponent {
@@ -2094,7 +1976,6 @@ describe('QuickInfo with TS 7 binary', () => {
 
         @Component({
           template: '',
-          standalone: true,
         })
         export class TestComponent {
           name!: string;
@@ -2103,7 +1984,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-root',
           template: '<TestComponent #¦myRef></TestComponent>',
-          standalone: true,
           imports: [TestComponent],
         })
         export class AppComponent {}
@@ -2124,7 +2004,6 @@ describe('QuickInfo with TS 7 binary', () => {
 
         @Directive({
           exportAs: 'myDir',
-          standalone: true,
         })
         export class TestDirective {
           value!: number;
@@ -2133,7 +2012,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-root',
           template: '<div @TestDirective(#¦myRef)></div>',
-          standalone: true,
           imports: [TestDirective],
         })
         export class AppComponent {}
@@ -2157,7 +2035,6 @@ describe('QuickInfo with TS 7 binary', () => {
           @Component({
             selector: 'test-cmp',
             template: '<div>{{f¦oo}}</div>',
-            standalone: true,
           })
           class TestComponent {
             foo = 'foo_val';
@@ -2168,7 +2045,6 @@ describe('QuickInfo with TS 7 binary', () => {
           @Component({
             selector: 'test-cmp',
             template: '<div>{{bar}}</div>',
-            standalone: true,
           })
           class TestComponent {
             bar = 'bar_val';
@@ -2192,7 +2068,6 @@ describe('QuickInfo with TS 7 binary', () => {
         import {Component, Directive, Input} from '@angular/core';
 
         @Directive({
-          standalone: true,
         })
         export class HostDir {
           @Input() hostInput = 'hello';
@@ -2204,14 +2079,12 @@ describe('QuickInfo with TS 7 binary', () => {
             directive: HostDir,
             inputs: ['hostInput']
           }],
-          standalone: true,
         })
         export class Dir {}
 
         @Component({
           selector: 'app-cmp',
           template: '<div dir [hostI¦nput]="val"></div>',
-          standalone: true,
           imports: [Dir],
         })
         export class AppCmp {
@@ -2229,7 +2102,6 @@ describe('QuickInfo with TS 7 binary', () => {
         import {Component, Directive, Input} from '@angular/core';
 
         @Directive({
-          standalone: true,
         })
         export class HostDir {
           @Input() originalInput = 'hello';
@@ -2241,14 +2113,12 @@ describe('QuickInfo with TS 7 binary', () => {
             directive: HostDir,
             inputs: ['originalInput: customAlias']
           }],
-          standalone: true,
         })
         export class Dir {}
 
         @Component({
           selector: 'app-cmp',
           template: '<div dir [customA¦lias]="val"></div>',
-          standalone: true,
           imports: [Dir],
         })
         export class AppCmp {
@@ -2266,7 +2136,6 @@ describe('QuickInfo with TS 7 binary', () => {
         import {Component, Directive, Output, EventEmitter} from '@angular/core';
 
         @Directive({
-          standalone: true,
         })
         export class HostDir {
           @Output() hostOutput = new EventEmitter<string>();
@@ -2278,14 +2147,12 @@ describe('QuickInfo with TS 7 binary', () => {
             directive: HostDir,
             outputs: ['hostOutput']
           }],
-          standalone: true,
         })
         export class Dir {}
 
         @Component({
           selector: 'app-cmp',
           template: '<div dir (hostO¦utput)="handleClick($event)"></div>',
-          standalone: true,
           imports: [Dir],
         })
         export class AppCmp {
@@ -2305,7 +2172,6 @@ describe('QuickInfo with TS 7 binary', () => {
         import {Directive, Input} from '@angular/core';
 
         @Directive({
-          standalone: true,
         })
         export class InnerHostDir {
           @Input() innerCount: number = 0;
@@ -2323,7 +2189,6 @@ describe('QuickInfo with TS 7 binary', () => {
             directive: InnerHostDir,
             inputs: ['innerCount: chainedCount']
           }],
-          standalone: true,
         })
         export class WrapperDir {}
       `;
@@ -2336,7 +2201,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div wrapperDir [chainedC¦ount]="num"></div>',
-          standalone: true,
           imports: [WrapperDir],
         })
         export class AppCmp {
@@ -2354,7 +2218,6 @@ describe('QuickInfo with TS 7 binary', () => {
         import {Directive, Input} from '@angular/core';
 
         @Directive({
-          standalone: true,
         })
         export class TooltipHostDir {
           @Input() tooltipText: string = '';
@@ -2369,7 +2232,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'custom-btn',
           template: '<button><ng-content></ng-content></button>',
-          standalone: true,
           hostDirectives: [{
             directive: TooltipHostDir,
             inputs: ['tooltipText: btnTooltip']
@@ -2380,7 +2242,6 @@ describe('QuickInfo with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<custom-btn [btnToo¦ltip]="msg">Click</custom-btn>',
-          standalone: true,
           imports: [CustomBtn],
         })
         export class AppCmp {

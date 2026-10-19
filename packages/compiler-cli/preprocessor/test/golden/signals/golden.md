@@ -207,7 +207,6 @@ export class StandaloneSignalComp {
               {
                 selector: 'standalone-signal-comp',
                 template: '<div>Standalone Signal Component</div>',
-                standalone: true,
                 signals: true,
               },
             ],
@@ -223,7 +222,7 @@ export class StandaloneSignalComp {
     i0.ɵsetClassDebugInfo(StandaloneSignalComp, {
       className: 'StandaloneSignalComp',
       filePath: 'test.ts',
-      lineNumber: 32,
+      lineNumber: 31,
     });
 })();
 

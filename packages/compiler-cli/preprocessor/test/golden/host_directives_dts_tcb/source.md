@@ -69,7 +69,6 @@ import { TestHostConsumerDirective } from '../directives/consumer_dir';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [TestHostConsumerDirective],
   template: '<div testHostConsumer (disabledChange)="onDisabledChange($event)"></div>',
 })

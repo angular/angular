@@ -34,7 +34,6 @@ import { GenericComponent } from './generic.component';
   template: `
     <app-generic [value]="'string'"></app-generic>
   `,
-  standalone: true,
   imports: [GenericComponent],
 })
 export class AppComponent {

@@ -12,54 +12,54 @@ import * as i2 from '@angular/core';
 /*tcb1*/
 function _tcb1(this: i0.AppComponent) {
   if (true) {
-    var _t1 /*T:DIR:0*/ /*209,606*/ = null! as i1.GreetingComponent; /*T:VAE*/
-    _t1.count /*230,235*/ = 1 /*238,239*/; /*229,240*/
-    _t1.displayName /*248,256*/ = 'User' /*259,265*/; /*247,266*/
-    _t1.title /*274,279*/ = 'Hello' /*282,289*/; /*273,290*/
-    _t1.name[i2.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] /*298,302*/ = 'Signal' /*305,313*/; /*297,314*/
-    _t1.greeting[i2.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] /*322,334*/ = 'Hi' /*337,341*/; /*321,342*/
-    _t1.id[i2.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] /*350,352*/ = 123 /*355,358*/; /*349,359*/
-    _t1.value[i2.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] /*519,524*/ = i2.ɵunwrapWritableSignal(
-      this.value /*528,533*/ /*528,533*/,
-    ); /*517,534*/
-    _t1.checked[i2.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] /*543,552*/ = i2.ɵunwrapWritableSignal(
-      this.isChecked /*556,565*/ /*556,565*/,
-    ); /*541,566*/
-    _t1.selectedId[i2.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] /*575,585*/ = i2.ɵunwrapWritableSignal(
-      this.selectedId /*589,599*/ /*589,599*/,
-    ); /*573,600*/
-    _t1['clicked'] /*367,374*/
+    var _t1 /*T:DIR:0*/ /*189,586*/ = null! as i1.GreetingComponent; /*T:VAE*/
+    _t1.count /*210,215*/ = 1 /*218,219*/; /*209,220*/
+    _t1.displayName /*228,236*/ = 'User' /*239,245*/; /*227,246*/
+    _t1.title /*254,259*/ = 'Hello' /*262,269*/; /*253,270*/
+    _t1.name[i2.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] /*278,282*/ = 'Signal' /*285,293*/; /*277,294*/
+    _t1.greeting[i2.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] /*302,314*/ = 'Hi' /*317,321*/; /*301,322*/
+    _t1.id[i2.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] /*330,332*/ = 123 /*335,338*/; /*329,339*/
+    _t1.value[i2.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] /*499,504*/ = i2.ɵunwrapWritableSignal(
+      this.value /*508,513*/ /*508,513*/,
+    ); /*497,514*/
+    _t1.checked[i2.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] /*523,532*/ = i2.ɵunwrapWritableSignal(
+      this.isChecked /*536,545*/ /*536,545*/,
+    ); /*521,546*/
+    _t1.selectedId[i2.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] /*555,565*/ = i2.ɵunwrapWritableSignal(
+      this.selectedId /*569,579*/ /*569,579*/,
+    ); /*553,580*/
+    _t1['clicked'] /*347,354*/
       .subscribe(($event /*T:EP*/): any => {
         this
-          .handleClick /*377,388*/
-          (); /*377,390*/
-      }); /*366,391*/
-    _t1['change'] /*399,411*/
+          .handleClick /*357,368*/
+          (); /*357,370*/
+      }); /*346,371*/
+    _t1['change'] /*379,391*/
       .subscribe(($event /*T:EP*/): any => {
-        this.handleChange(/*414,426*/ $event /*427,433*/); /*414,434*/
-      }); /*398,435*/
-    _t1['submitted'] /*443,452*/
+        this.handleChange(/*394,406*/ $event /*407,413*/); /*394,414*/
+      }); /*378,415*/
+    _t1['submitted'] /*423,432*/
       .subscribe(($event /*T:EP*/): any => {
-        this.handleSubmit(/*455,467*/ $event /*468,474*/); /*455,475*/
-      }); /*442,476*/
-    _t1['cancelled'] /*484,492*/
+        this.handleSubmit(/*435,447*/ $event /*448,454*/); /*435,455*/
+      }); /*422,456*/
+    _t1['cancelled'] /*464,472*/
       .subscribe(($event /*T:EP*/): any => {
         this
-          .handleCancel /*495,507*/
-          (); /*495,509*/
-      }); /*483,510*/
-    _t1['value'] /*519,524*/
+          .handleCancel /*475,487*/
+          (); /*475,489*/
+      }); /*463,490*/
+    _t1['value'] /*499,504*/
       .subscribe(($event /*T:EP*/): any => {
-        this.value; /*528,533*/ /*528,533*/
-      }); /*517,534*/
-    _t1['checked'] /*543,552*/
+        this.value; /*508,513*/ /*508,513*/
+      }); /*497,514*/
+    _t1['checked'] /*523,532*/
       .subscribe(($event /*T:EP*/): any => {
-        this.isChecked; /*556,565*/ /*556,565*/
-      }); /*541,566*/
-    _t1['selectedId'] /*575,585*/
+        this.isChecked; /*536,545*/ /*536,545*/
+      }); /*521,546*/
+    _t1['selectedId'] /*555,565*/
       .subscribe(($event /*T:EP*/): any => {
-        this.selectedId; /*589,599*/ /*589,599*/
-      }); /*573,600*/
+        this.selectedId; /*569,579*/ /*569,579*/
+      }); /*553,580*/
   }
 }
 
@@ -196,7 +196,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 imports: [GreetingComponent],
                 template: `
         <app-greeting
@@ -229,7 +228,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 26,
+      lineNumber: 25,
     });
 })();
 
@@ -403,7 +402,6 @@ export class GreetingComponent {
               {
                 selector: 'app-greeting',
                 template: '<div>Hello, {{name()}}! Count: {{count}}</div>',
-                standalone: true,
               },
             ],
           },
@@ -443,7 +441,7 @@ export class GreetingComponent {
     i0.ɵsetClassDebugInfo(GreetingComponent, {
       className: 'GreetingComponent',
       filePath: 'greeting.component.ts',
-      lineNumber: 8,
+      lineNumber: 7,
     });
 })();
 

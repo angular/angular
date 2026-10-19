@@ -16,7 +16,6 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-one',
   template: '<div [ngClass]="{a: true, b: false}">Component One</div>',
-  standalone: true,
   imports: [CommonModule]
 })
 export class ComponentOne {}
@@ -24,7 +23,6 @@ export class ComponentOne {}
 @Component({
   selector: 'app-two',
   template: '<div [ngClass]="{c: true, d: false}">Component Two</div>',
-  standalone: true,
   imports: [CommonModule]
 })
 export class ComponentTwo {}

@@ -22,7 +22,6 @@ export class BaseComponent {
 @Component({
   selector: 'app-protected',
   template: '<div>{{ value }}</div>',
-  standalone: true,
   providers: [
     ProtectedComponent.getProtectedProvider(),
     BaseComponent.getBaseConfig(),
@@ -40,7 +39,6 @@ export class ProtectedComponent extends BaseComponent {
 
 @Directive({
   selector: '[appProtectedDir]',
-  standalone: true,
   providers: [ProtectedDirective.getDirectiveProvider()],
 })
 export class ProtectedDirective {

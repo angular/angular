@@ -67,7 +67,6 @@ export class RecordComponent {
               {
                 selector: 'app-record',
                 template: '<div>Record Component</div>',
-                standalone: true,
               },
             ],
           },
@@ -82,7 +81,7 @@ export class RecordComponent {
     i0.ɵsetClassDebugInfo(RecordComponent, {
       className: 'RecordComponent',
       filePath: 'component.ts',
-      lineNumber: 8,
+      lineNumber: 7,
     });
 })();
 

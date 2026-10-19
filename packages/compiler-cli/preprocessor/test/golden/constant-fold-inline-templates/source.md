@@ -18,7 +18,6 @@ const AUDIENCE = 'World';
 @Component({
   selector: 'app-root',
   template: `<div>` + GREETING + ` <span>${AUDIENCE}</span></div>`,
-  standalone: true,
 })
 export class AppComponent {}
 ```

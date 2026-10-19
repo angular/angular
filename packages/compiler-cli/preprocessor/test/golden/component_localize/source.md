@@ -28,7 +28,6 @@ export class LocalizeSimpleCmp {}
     <div i18n="greeting|Greeting to user@@greetUser">Hello, {{ name }}!</div>
     <div i18n>You have {{ count }} new notifications.</div>
   `,
-  standalone: true,
 })
 export class LocalizeInterpolationCmp {
   name = 'Angular';

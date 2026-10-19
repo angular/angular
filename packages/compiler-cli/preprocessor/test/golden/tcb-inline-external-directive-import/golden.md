@@ -101,7 +101,6 @@ export class AppComponent {
               {
                 selector: 'app-root',
                 template: '<div [localDir]="message" [extDir]="message"></div>',
-                standalone: true,
                 imports: [LocalDir, ExternalDir],
               },
             ],
@@ -117,7 +116,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 18,
+      lineNumber: 17,
     });
 })();
 

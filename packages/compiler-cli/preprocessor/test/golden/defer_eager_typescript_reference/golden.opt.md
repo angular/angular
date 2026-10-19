@@ -125,7 +125,6 @@ export class AppComponent {
           Placeholder
         }
       `,
-                    standalone: true,
                     imports: [DeferredComponent, QueriedComponent, DeferredTwin, EagerTwin],
                   },
                 ],
@@ -143,7 +142,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 25,
+      lineNumber: 24,
     });
 })();
 
@@ -214,7 +213,6 @@ export class DeferredComponent {
               {
                 selector: 'app-deferred',
                 template: 'Deferred content',
-                standalone: true,
               },
             ],
           },
@@ -229,7 +227,7 @@ export class DeferredComponent {
     i0.ɵsetClassDebugInfo(DeferredComponent, {
       className: 'DeferredComponent',
       filePath: 'deferred.cmp.ts',
-      lineNumber: 8,
+      lineNumber: 7,
     });
 })();
 
@@ -301,7 +299,6 @@ export class QueriedComponent {
               {
                 selector: 'app-queried',
                 template: 'Queried content',
-                standalone: true,
               },
             ],
           },
@@ -316,7 +313,7 @@ export class QueriedComponent {
     i0.ɵsetClassDebugInfo(QueriedComponent, {
       className: 'QueriedComponent',
       filePath: 'queried.cmp.ts',
-      lineNumber: 8,
+      lineNumber: 7,
     });
 })();
 
@@ -394,7 +391,6 @@ export class DeferredTwin {
               {
                 selector: 'app-deferred-twin',
                 template: 'Deferred twin',
-                standalone: true,
               },
             ],
           },
@@ -409,7 +405,7 @@ export class DeferredTwin {
     i0.ɵsetClassDebugInfo(DeferredTwin, {
       className: 'DeferredTwin',
       filePath: 'twins.cmp.ts',
-      lineNumber: 8,
+      lineNumber: 7,
     });
 })();
 
@@ -456,7 +452,6 @@ export class EagerTwin {
               {
                 selector: 'app-eager-twin',
                 template: 'Eager twin',
-                standalone: true,
               },
             ],
           },
@@ -471,7 +466,7 @@ export class EagerTwin {
     i0.ɵsetClassDebugInfo(EagerTwin, {
       className: 'EagerTwin',
       filePath: 'twins.cmp.ts',
-      lineNumber: 15,
+      lineNumber: 13,
     });
 })();
 

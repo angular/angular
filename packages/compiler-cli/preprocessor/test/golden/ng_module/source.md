@@ -50,7 +50,6 @@ export class ModuleWithDeps {
         <my-comp [compInput]="'hello'"></my-comp>
         <div myDir [dirInput]="'world'"></div>
     `,
-    standalone: true,
     imports: [MyModule]
 })
 export class AppRoot {

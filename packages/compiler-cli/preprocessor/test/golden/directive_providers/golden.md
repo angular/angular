@@ -41,7 +41,6 @@ export class TestDirective {
             args: [
               {
                 selector: '[appDir]',
-                standalone: true,
                 providers: [Service],
               },
             ],
@@ -97,7 +96,6 @@ export class TestComponent {
               {
                 selector: 'app-test',
                 template: '<div></div>',
-                standalone: true,
                 providers: [Service],
                 viewProviders: [Service],
               },
@@ -114,7 +112,7 @@ export class TestComponent {
     i0.ɵsetClassDebugInfo(TestComponent, {
       className: 'TestComponent',
       filePath: 'test.ts',
-      lineNumber: 19,
+      lineNumber: 17,
     });
 })();
 

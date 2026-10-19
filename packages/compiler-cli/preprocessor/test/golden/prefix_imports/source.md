@@ -30,7 +30,6 @@ import { FormatPipe } from '../../extra/pipes/format.pipe';
   selector: 'parent-comp',
   imports: [ButtonComponent, FormatPipe],
   template: '<btn></btn><span>{{ "hello" | format }}</span>',
-  standalone: true,
 })
 export class ParentComponent {}
 ```
@@ -42,7 +41,6 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'btn',
   template: '<button>Click</button>',
-  standalone: true,
 })
 export class ButtonComponent {}
 ```
@@ -53,7 +51,6 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'format',
-  standalone: true,
 })
 export class FormatPipe implements PipeTransform {
   transform(value: string): string {

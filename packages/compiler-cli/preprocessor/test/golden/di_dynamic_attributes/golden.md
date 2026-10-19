@@ -62,7 +62,6 @@ export class TestComponent {
               {
                 selector: 'app-test',
                 template: '<div>Test</div>',
-                standalone: true,
               },
             ],
           },
@@ -80,7 +79,7 @@ export class TestComponent {
     i0.ɵsetClassDebugInfo(TestComponent, {
       className: 'TestComponent',
       filePath: 'app.ts',
-      lineNumber: 12,
+      lineNumber: 11,
     });
 })();
 

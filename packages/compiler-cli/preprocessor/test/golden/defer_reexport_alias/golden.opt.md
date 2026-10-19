@@ -11,12 +11,12 @@ import * as i1 from './ng_for_of';
 /*tcb1*/
 function _tcb1(this: i0.NetworkActivityComponent) {
   if (true) {
-    var _t1 /*T:DIR:0*/ /*217,249*/ = null! as i1.NgForOf; /*T:VAE*/
-    _t1.ngForOf /*239,241*/ = this.items /*242,247*/ /*242,247*/; /*239,247*/
+    var _t1 /*T:DIR:0*/ /*197,229*/ = null! as i1.NgForOf; /*T:VAE*/
+    _t1.ngForOf /*219,221*/ = this.items /*222,227*/ /*222,227*/; /*219,227*/
     var _t2 = null! as any; /*T:VAE*/
     {
-      var _t3 /*234,238*/ = _t2.$implicit; /*230,239*/
-      '' + _t3 /*252,256*/;
+      var _t3 /*214,218*/ = _t2.$implicit; /*210,219*/
+      '' + _t3 /*232,236*/;
     }
   }
 }
@@ -119,7 +119,6 @@ export class NetworkActivityComponent {
                 args: [
                   {
                     selector: 'app-network-activity',
-                    standalone: true,
                     imports: [NgFor],
                     template: `
         @defer (on interaction) {
@@ -144,7 +143,7 @@ export class NetworkActivityComponent {
     i0.ɵsetClassDebugInfo(NetworkActivityComponent, {
       className: 'NetworkActivityComponent',
       filePath: 'network_activity.ts',
-      lineNumber: 16,
+      lineNumber: 15,
     });
 })();
 
@@ -192,7 +191,6 @@ export class NgForOf {
             args: [
               {
                 selector: '[ngFor][ngForOf]',
-                standalone: true,
               },
             ],
           },

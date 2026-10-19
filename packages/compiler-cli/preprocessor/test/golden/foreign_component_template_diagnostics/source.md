@@ -21,7 +21,6 @@ function frameworkImport(component: {}): Function {
 
 @Component({
   selector: 'app-bindings',
-  standalone: true,
   template:
     '<FancyButton (click)="onClick()" #ref [attr.role]="role" [children]="custom">projected</FancyButton>',
   // @ts-ignore: @angular/core does not expose the `foreignImports` property.
@@ -47,7 +46,6 @@ function frameworkImport(component: {}): Function {
 
 @Component({
   selector: 'app-content-blocks',
-  standalone: true,
   template: `
     <FancyCard [label]="title">
       @content (header) {<b>First</b>}

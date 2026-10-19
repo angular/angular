@@ -50,7 +50,6 @@ export class AppComponent {
               {
                 selector: 'app-root',
                 template: '<app-local></app-local><app-external></app-external>',
-                standalone: true,
                 imports: [LocalComponent, ExternalComponent],
               },
             ],
@@ -66,7 +65,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 11,
+      lineNumber: 10,
     });
 })();
 
@@ -123,7 +122,6 @@ export class LocalComponent {
               {
                 selector: 'app-local',
                 template: '<span>Local</span>',
-                standalone: true,
               },
             ],
           },
@@ -138,7 +136,7 @@ export class LocalComponent {
     i0.ɵsetClassDebugInfo(LocalComponent, {
       className: 'LocalComponent',
       filePath: 'local.component.ts',
-      lineNumber: 8,
+      lineNumber: 7,
     });
 })();
 

@@ -72,7 +72,6 @@ import { TrimPipeModule } from './pipe_module';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [MatButtonModule, TrimPipeModule],
   template: `
     @defer (on immediate) {

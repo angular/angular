@@ -63,7 +63,6 @@ export class ChildComp extends BaseClass {
               {
                 selector: 'app-child',
                 template: '<div></div>',
-                standalone: true,
               },
             ],
           },
@@ -78,7 +77,7 @@ export class ChildComp extends BaseClass {
     i0.ɵsetClassDebugInfo(ChildComp, {
       className: 'ChildComp',
       filePath: 'app.ts',
-      lineNumber: 12,
+      lineNumber: 11,
     });
 })();
 
@@ -130,7 +129,6 @@ export class ChildZeroComp extends BaseClass {
               {
                 selector: 'app-child-zero',
                 template: '<div></div>',
-                standalone: true,
               },
             ],
           },
@@ -145,7 +143,7 @@ export class ChildZeroComp extends BaseClass {
     i0.ɵsetClassDebugInfo(ChildZeroComp, {
       className: 'ChildZeroComp',
       filePath: 'app.ts',
-      lineNumber: 24,
+      lineNumber: 22,
     });
 })();
 

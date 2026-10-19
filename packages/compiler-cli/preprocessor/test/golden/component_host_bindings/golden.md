@@ -103,7 +103,6 @@ export class ButtonComponent {
             args: [
               {
                 selector: 'app-button',
-                standalone: true,
                 template: `<ng-content></ng-content>`,
                 host: {
                   'role': 'button',
@@ -139,7 +138,7 @@ export class ButtonComponent {
     i0.ɵsetClassDebugInfo(ButtonComponent, {
       className: 'ButtonComponent',
       filePath: 'button.component.ts',
-      lineNumber: 16,
+      lineNumber: 15,
     });
 })();
 

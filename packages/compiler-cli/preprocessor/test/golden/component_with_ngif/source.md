@@ -16,7 +16,6 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-hello',
   template: '<div *ngIf="name">Hello, {{name}}!</div>',
-  standalone: true,
   imports: [CommonModule],
 })
 export class HelloComponent {
