@@ -44,6 +44,7 @@ pub struct ClassVisitor<'a, Fs: ResourceResolverFs> {
     enable_hmr: bool,
     results: Vec<ClassData>,
     registrations: Vec<RegistrationInfo>,
+    di_facts: Vec<super::di_facts::ClassDiFacts>,
     fallback_symbol_id: usize,
     diagnostics: Vec<crate::NgDiagnostic>,
 }
@@ -79,6 +80,7 @@ impl<'a, Fs: ResourceResolverFs> ClassVisitor<'a, Fs> {
             enable_hmr,
             results: Vec::new(),
             registrations: Vec::new(),
+            di_facts: Vec::new(),
             fallback_symbol_id: 1000000,
             diagnostics: Vec::new(),
         }
@@ -90,6 +92,7 @@ impl<'a, Fs: ResourceResolverFs> ClassVisitor<'a, Fs> {
         ClassVisitorOutput {
             classes: self.results,
             registrations: self.registrations,
+            di_facts: self.di_facts,
             file_exports,
             diagnostics: self.diagnostics,
         }
@@ -119,6 +122,46 @@ impl<'a, Fs: ResourceResolverFs> ClassVisitor<'a, Fs> {
             foreign: crate::analyzer::resolvers::angular_foreign_resolvers(),
         };
 
+        let has_real_symbol = class
+            .id
+            .as_ref()
+            .and_then(|id| id.symbol_id.get())
+            .is_some();
+        let symbol_id = class
+            .id
+            .as_ref()
+            .and_then(|id| id.symbol_id.get())
+            .unwrap_or_else(|| {
+                self.fallback_symbol_id += 1;
+                oxc_semantic::SymbolId::from(self.fallback_symbol_id)
+            });
+
+        let reference_id = ReferenceId::new(self.file_id, symbol_id);
+        let super_class = evaluate_super_class(class, &eval);
+        self.di_facts.extend(super::di_facts::ts_class_di_facts(
+            class,
+            reference_id,
+            self.semantic,
+            self.angular_imports,
+            super_class.clone(),
+        ));
+
+        if class.decorators.is_empty() {
+            if !self.angular_imports.is_core
+                && class.is_declaration()
+                && uses_angular_features(class, self.semantic, self.angular_imports)
+            {
+                let span = class.id.as_ref().map(|id| id.span).unwrap_or(class.span);
+                super::class_data::push_issue(
+                    &mut self.diagnostics,
+                    self.file_path,
+                    self.converter,
+                    &ValueIssue::undecorated_class_using_angular_features(span),
+                );
+            }
+            return;
+        }
+
         let Some(parsed) = process_class_common(
             class,
             node_id,
@@ -132,6 +175,7 @@ impl<'a, Fs: ResourceResolverFs> ClassVisitor<'a, Fs> {
             self.local_exported_names,
             &eval,
             self.enable_hmr,
+            super_class,
         ) else {
             return;
         };
@@ -153,22 +197,6 @@ impl<'a, Fs: ResourceResolverFs> ClassVisitor<'a, Fs> {
             self.semantic.nodes().parent_kind(node_id),
             oxc_ast::AstKind::ExportDeclaration(_) | oxc_ast::AstKind::ExportDefaultDeclaration(_)
         );
-
-        let has_real_symbol = class
-            .id
-            .as_ref()
-            .and_then(|id| id.symbol_id.get())
-            .is_some();
-        let symbol_id = class
-            .id
-            .as_ref()
-            .and_then(|id| id.symbol_id.get())
-            .unwrap_or_else(|| {
-                self.fallback_symbol_id += 1;
-                oxc_semantic::SymbolId::from(self.fallback_symbol_id)
-            });
-
-        let reference_id = ReferenceId::new(self.file_id, symbol_id);
         let class_data = classify(reference_id, parsed, has_real_symbol);
 
         // TODO(parity): ngtsc's `isStaticallyExported` also counts export lists
@@ -327,6 +355,7 @@ fn classify(reference_id: ReferenceId, parsed: ParsedClass, has_real_symbol: boo
         constructor_params: common.constructor_params,
         unexpected_param_decorators: common.unexpected_param_decorators,
         decorator_issues: common.decorator_issues,
+        di_issues: Vec::new(),
         member_decorators: common.member_decorators,
         later_declaration_references: common.later_declaration_references,
         top_level_references: common.top_level_references,
@@ -482,6 +511,7 @@ fn process_class_common<'a, Fs: ResourceResolverFs>(
     local_exported_names: &HashSet<&'a str>,
     eval: &crate::evaluator::EvalInput<'a, '_>,
     enable_hmr: bool,
+    super_class: Option<crate::DeclarationTuple>,
 ) -> Option<ParsedClass> {
     let class_name = class.id.as_ref().map(|id| id.name.to_string());
     let name_span = class.id.as_ref().map(|id| id.span);
@@ -638,10 +668,6 @@ fn process_class_common<'a, Fs: ResourceResolverFs>(
 
     let type_check_meta = extract_class_body_type_check_meta(class);
 
-    let super_class = class.heritage.as_ref().and_then(|heritage| {
-        let evaluated = crate::evaluator::evaluate_expression(&heritage.expression, eval);
-        super::imports::resolved_value_to_super_class(&evaluated)
-    });
     let uses_inheritance = class.heritage.is_some();
     let uses_on_changes = class.body.body.iter().any(|member| {
         if let ClassElement::MethodDefinition(method) = member {
@@ -715,6 +741,70 @@ fn process_class_common<'a, Fs: ResourceResolverFs>(
     })
 }
 
+/// The `extends` clause as a declaration to resolve, when it names a class.
+fn evaluate_super_class<'a>(
+    class: &Class<'a>,
+    eval: &crate::evaluator::EvalInput<'a, '_>,
+) -> Option<crate::DeclarationTuple> {
+    let heritage = class.heritage.as_ref()?;
+    let evaluated = crate::evaluator::evaluate_expression(&heritage.expression, eval);
+    super::imports::resolved_value_to_super_class(&evaluated)
+}
+
+/// Member decorators and lifecycle hooks by which ngtsc's directive handler recognizes an
+/// undecorated class as using Angular features (`findClassFieldWithAngularFeatures`).
+/// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/directive/src/handler.ts#L100-L119
+const FIELD_DECORATORS: [&str; 8] = [
+    "Input",
+    "Output",
+    "ViewChild",
+    "ViewChildren",
+    "ContentChild",
+    "ContentChildren",
+    "HostBinding",
+    "HostListener",
+];
+const LIFECYCLE_HOOKS: [&str; 8] = [
+    "ngOnChanges",
+    "ngOnInit",
+    "ngOnDestroy",
+    "ngDoCheck",
+    "ngAfterViewInit",
+    "ngAfterViewChecked",
+    "ngAfterContentInit",
+    "ngAfterContentChecked",
+];
+
+/// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/directive/src/handler.ts#L536-L554
+fn uses_angular_features<'a>(
+    class: &Class<'a>,
+    semantic: &Semantic<'a>,
+    angular_imports: &crate::analyzer::imports::AngularImports,
+) -> bool {
+    class.body.body.iter().any(|member| {
+        // Decorators on static members count too: ngtsc's `isStatic` guards only the hook arm.
+        let decorators = match member {
+            ClassElement::MethodDefinition(method) => {
+                if !method.r#static
+                    && method.kind == oxc_ast::ast::MethodDefinitionKind::Method
+                    && extract_property_key(&method.key)
+                        .is_some_and(|name| LIFECYCLE_HOOKS.contains(&name.as_ref()))
+                {
+                    return true;
+                }
+                &method.decorators
+            }
+            ClassElement::PropertyDefinition(prop) => &prop.decorators,
+            ClassElement::AccessorProperty(accessor) => &accessor.decorators,
+            _ => return false,
+        };
+        decorators.iter().any(|decorator| {
+            super::utils::get_canonical_decorator_name(decorator, semantic, angular_imports)
+                .is_some_and(|name| FIELD_DECORATORS.contains(&name))
+        })
+    })
+}
+
 /// Where the statement declaring `class` begins: the earliest of its first decorator (Angular or
 /// not), its `class` keyword, and an enclosing `export` / `export default` keyword.
 fn declaration_statement_start(
@@ -740,6 +830,8 @@ fn declaration_statement_start(
 pub struct ParsedFileAnalysis {
     pub classes: Vec<ClassData>,
     pub registrations: Vec<RegistrationInfo>,
+    /// Constructor facts for every class in the file, decorated or not.
+    pub di_facts: Vec<super::di_facts::ClassDiFacts>,
     pub file_exports: FileExportInfo,
     pub imports_end: u32,
     /// The file's static `import` declarations, in source order. Drives import removal for
@@ -768,6 +860,7 @@ pub struct ParsedFileAnalysis {
 struct ClassVisitorOutput {
     classes: Vec<ClassData>,
     registrations: Vec<RegistrationInfo>,
+    di_facts: Vec<super::di_facts::ClassDiFacts>,
     file_exports: FileExportInfo,
     diagnostics: Vec<crate::NgDiagnostic>,
 }
@@ -838,6 +931,7 @@ pub fn analyze_parsed<Fs: ResourceResolverFs>(
     ParsedFileAnalysis {
         classes: output.classes,
         registrations: output.registrations,
+        di_facts: output.di_facts,
         file_exports: output.file_exports,
         imports_end,
         import_declarations,

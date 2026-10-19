@@ -144,6 +144,10 @@ pub struct ClassData {
     /// The class decorators' argument-shape problems (arity, non-literal argument, bare
     /// decorator), which every ngtsc handler reports before reading any metadata.
     pub decorator_issues: Vec<ValueIssue>,
+    /// Dependency-injection problems that need other files' classes (an inherited constructor,
+    /// an undecorated provider), found by Stage 2. Empty in local compilation, where ngtsc
+    /// skips these checks too.
+    pub di_issues: Vec<ValueIssue>,
     pub member_decorators: Vec<crate::DecoratedMemberMetadata>,
     pub later_declaration_references: Vec<oxc_span::Span>,
     pub top_level_references: Option<Vec<super::TopLevelReference>>,
@@ -269,6 +273,9 @@ pub struct DirectiveData {
     /// [`ComponentData::resolved_host_directives`].
     pub resolved_host_directives: Option<Vec<ResolvedHostDirective>>,
     pub providers_span: Option<oxc_span::Span>,
+    /// `providers` as the partial evaluator sees it, for the undecorated-provider check only
+    /// (the field itself is emitted verbatim from `providers_span`).
+    pub providers: Option<super::di_facts::ProvidersData>,
     pub args_span: Option<oxc_span::Span>,
     pub preserved_decorator_properties: Option<Vec<oxc_span::Span>>,
 
@@ -352,6 +359,9 @@ impl DirectiveData {
         }
         if let Some(host_directives) = &mut self.host_directives {
             host_directives.demote();
+        }
+        if let Some(providers) = &mut self.providers {
+            providers.resolved.demote();
         }
         for predicate in self.evaluated_query_predicates_mut() {
             predicate.demote();
@@ -448,6 +458,7 @@ impl Default for DirectiveData {
             host_directives: None,
             resolved_host_directives: None,
             providers_span: None,
+            providers: None,
             args_span: None,
             preserved_decorator_properties: None,
             fields: Vec::new(),
@@ -634,6 +645,72 @@ impl ValueIssue {
     /// `INCORRECTLY_DECLARED_ON_STATIC_MEMBER` (`NG1100`).
     pub fn declared_on_static_member(span: oxc_span::Span, message: impl Into<String>) -> Self {
         Self::new("1100", span, message)
+    }
+
+    /// `UNDECORATED_PROVIDER` (`NG2005`), ngtsc's `getProviderDiagnostics`.
+    /// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/common/src/diagnostics.ts#L130-L160
+    // TODO(parity): ngtsc attaches a related-information entry pointing at the class declaration.
+    pub fn undecorated_provider(span: oxc_span::Span, class_name: &str) -> Self {
+        Self::new(
+            "2005",
+            span,
+            format!(
+                "The class '{class_name}' cannot be created via dependency injection, as it does \
+                 not have an Angular decorator. This will result in an error at runtime.\n\n\
+                 Either add the @Injectable() decorator to '{class_name}', or configure a \
+                 different provider (such as a provider with 'useFactory').\n"
+            ),
+        )
+    }
+
+    /// `DIRECTIVE_INHERITS_UNDECORATED_CTOR` (`NG2006`), ngtsc's
+    /// `getInheritedUndecoratedCtorDiagnostic`. `kind` is the handler's word for the class.
+    /// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/common/src/diagnostics.ts#L474-L491
+    pub fn inherits_undecorated_ctor(
+        span: oxc_span::Span,
+        class_name: &str,
+        base_class_name: &str,
+        kind: &str,
+    ) -> Self {
+        let base_needs_decorator = if matches!(kind, "Component" | "Directive") {
+            "Directive"
+        } else {
+            "Injectable"
+        };
+        Self::new(
+            "2006",
+            span,
+            format!(
+                "The {} {class_name} inherits its constructor from {base_class_name}, but the \
+                 latter does not have an Angular decorator of its own. Dependency injection will \
+                 not be able to resolve the parameters of {base_class_name}'s constructor. Either \
+                 add a @{base_needs_decorator} decorator to {base_class_name}, or add an explicit \
+                 constructor to {class_name}.",
+                kind.to_lowercase()
+            ),
+        )
+    }
+
+    /// `UNDECORATED_CLASS_USING_ANGULAR_FEATURES` (`NG2007`).
+    /// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/common/src/diagnostics.ts#L349-L358
+    pub fn undecorated_class_using_angular_features(span: oxc_span::Span) -> Self {
+        Self::new(
+            "2007",
+            span,
+            "Class is using Angular features but is not decorated. Please add an explicit \
+             Angular decorator.",
+        )
+    }
+
+    /// `SERVICE_CONSTRUCTOR_DI` (`NG2028`).
+    /// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/src/service.ts#L312-L318
+    pub fn service_constructor_di(span: oxc_span::Span) -> Self {
+        Self::new(
+            "2028",
+            span,
+            "@Service class cannot use constructor dependency injection. Use the `inject` \
+             function instead.",
+        )
     }
 
     /// `NGMODULE_BOOTSTRAP_IS_STANDALONE` (`NG6009`).
@@ -863,6 +940,8 @@ pub struct ComponentData {
     /// `@NgModule` in another file. `None` everywhere else, including in optimized mode.
     pub local_compilation_extra_imports: Option<Vec<String>>,
     pub view_providers_span: Option<oxc_span::Span>,
+    /// `viewProviders` as the partial evaluator sees it; see [`DirectiveData::providers`].
+    pub view_providers: Option<super::di_facts::ProvidersData>,
     pub change_detection_span: Option<oxc_span::Span>,
     pub change_detection: Option<Resolved<crate::evaluator::ChangeDetectionStrategyValue>>,
     pub preserve_whitespaces: Option<bool>,
@@ -1117,6 +1196,8 @@ pub struct NgModuleData {
     pub exports: Option<Resolved<Vec<Reference>>>,
     pub bootstrap: Option<Resolved<Vec<Reference>>>,
     pub providers_span: Option<oxc_span::Span>,
+    /// `providers` as the partial evaluator sees it; see [`DirectiveData::providers`].
+    pub providers: Option<super::di_facts::ProvidersData>,
     pub id_span: Option<oxc_span::Span>,
     pub module_id_span: Option<oxc_span::Span>,
     pub schemas: Option<Vec<String>>,
@@ -1463,7 +1544,7 @@ impl ClassData {
     /// The `@Service` data, classification or weak. (A weak `@Service` on an
     /// `@Injectable`-only class is dropped — both are weak, Injectable outranks, and the
     /// combination has no meaning.)
-    fn service_data(&self) -> Option<&ServiceData> {
+    pub(crate) fn service_data(&self) -> Option<&ServiceData> {
         match &self.decorator {
             DecoratorData::Service(s) => Some(s),
             DecoratorData::Component(c) => c.directive.service.as_ref(),
@@ -1587,11 +1668,20 @@ impl ClassData {
                 if let Some(change_detection) = &mut c.change_detection {
                     change_detection.complete_with(ctx, foreign).await;
                 }
+                if let Some(providers) = &mut c.directive.providers {
+                    providers.resolved.complete_with(ctx, foreign).await;
+                }
+                if let Some(view_providers) = &mut c.view_providers {
+                    view_providers.resolved.complete_with(ctx, foreign).await;
+                }
                 complete_style_urls(c, reference_id, ctx, foreign).await;
             }
             DecoratorData::Directive(d) => {
                 if let Some(host) = &mut d.host_expr {
                     host.complete_with(ctx, foreign).await;
+                }
+                if let Some(providers) = &mut d.providers {
+                    providers.resolved.complete_with(ctx, foreign).await;
                 }
                 for predicate in d.evaluated_query_predicates_mut() {
                     predicate.complete_with(ctx, foreign).await;
@@ -1623,6 +1713,9 @@ impl ClassData {
                 }
                 if let Some(bootstrap) = &mut m.bootstrap {
                     bootstrap.complete_with(ctx, foreign).await;
+                }
+                if let Some(providers) = &mut m.providers {
+                    providers.resolved.complete_with(ctx, foreign).await;
                 }
             }
             _ => {}
@@ -1657,6 +1750,9 @@ impl ClassData {
                 if let Some(change_detection) = &mut c.change_detection {
                     change_detection.demote();
                 }
+                if let Some(view_providers) = &mut c.view_providers {
+                    view_providers.resolved.demote();
+                }
             }
             DecoratorData::Directive(d) => d.demote_resolved(),
             DecoratorData::Pipe(p) => {
@@ -1679,6 +1775,9 @@ impl ClassData {
                 .flatten()
                 {
                     slot.demote();
+                }
+                if let Some(providers) = &mut m.providers {
+                    providers.resolved.demote();
                 }
                 for tuple in [&mut m.isolated_imports, &mut m.isolated_exports]
                     .into_iter()
@@ -1708,6 +1807,9 @@ impl ClassData {
         }
         if self.directive_part().is_some_and(|d| d.is_jit) {
             return;
+        }
+        for issue in &self.di_issues {
+            push_issue(diagnostics, file_path, converter, issue);
         }
         self.validate_constructor_param_decorators(file_path, converter, diagnostics);
         self.validate_service_constructor_di(file_path, converter, diagnostics);
@@ -1933,15 +2035,11 @@ impl ClassData {
         {
             return;
         }
-        push_error(
+        push_issue(
             diagnostics,
             file_path,
             converter,
-            "2028",
-            name_span,
-            "@Service class cannot use constructor dependency injection. Use the `inject` \
-             function instead."
-                .to_string(),
+            &ValueIssue::service_constructor_di(name_span),
         );
     }
 

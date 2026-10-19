@@ -26,6 +26,7 @@ pub struct DtsClassAnalysis {
 pub struct DtsAnalysisResult {
     pub classes: Vec<ClassData>,
     pub registrations: Vec<RegistrationInfo>,
+    pub di_facts: Vec<crate::analyzer::di_facts::ClassDiFacts>,
     pub exports: FileExportInfo,
     /// The file's static `import` declarations. A `.d.ts` has no component decorators, so no
     /// reference is excused and every binding reports as eagerly referenced — which is right:
@@ -45,6 +46,7 @@ pub fn analyze_dts(
 ) -> DtsAnalysisResult {
     let mut classes = Vec::new();
     let mut registrations = Vec::new();
+    let mut di_facts = Vec::new();
     let mut named_exports = Vec::new();
     let mut wildcards = Vec::new();
     let mut local_aliases = Vec::new();
@@ -85,6 +87,7 @@ pub fn analyze_dts(
                         });
                     let reference_id = ReferenceId::new(file_id, symbol_id);
 
+                    di_facts.extend(class_di_facts(class, reference_id, &eval));
                     if let Some(analysis) = extract_class_metadata(
                         class,
                         source_text,
@@ -153,6 +156,7 @@ pub fn analyze_dts(
                             oxc_semantic::SymbolId::from(fallback_symbol_id)
                         });
                         let reference_id = ReferenceId::new(file_id, symbol_id);
+                        di_facts.extend(class_di_facts(class, reference_id, &eval));
                         if let Some(analysis) = extract_class_metadata(
                             class,
                             source_text,
@@ -189,6 +193,7 @@ pub fn analyze_dts(
                     });
                 let reference_id = ReferenceId::new(file_id, symbol_id);
 
+                di_facts.extend(class_di_facts(class, reference_id, &eval));
                 if let Some(analysis) = extract_class_metadata(
                     class,
                     source_text,
@@ -208,6 +213,7 @@ pub fn analyze_dts(
     DtsAnalysisResult {
         classes,
         registrations,
+        di_facts,
         exports: FileExportInfo {
             named: named_exports,
             wildcards,
@@ -231,6 +237,27 @@ fn class_name_span(class: &Class, converter: &Utf8ToUtf16) -> SpanMetadata {
     SpanMetadata::new(id.span, converter)
 }
 
+fn evaluate_super_class(
+    class: &Class,
+    eval: &EvalInput<'_, '_>,
+) -> Option<crate::DeclarationTuple> {
+    let heritage = class.heritage.as_ref()?;
+    let evaluated = crate::evaluator::evaluate_expression(&heritage.expression, eval);
+    crate::analyzer::imports::resolved_value_to_super_class(&evaluated)
+}
+
+fn class_di_facts(
+    class: &Class,
+    reference_id: ReferenceId,
+    eval: &EvalInput<'_, '_>,
+) -> Option<crate::analyzer::di_facts::ClassDiFacts> {
+    crate::analyzer::di_facts::dts_class_di_facts(
+        class,
+        reference_id,
+        evaluate_super_class(class, eval),
+    )
+}
+
 fn extract_class_metadata(
     class: &Class,
     source_text: &str,
@@ -241,10 +268,7 @@ fn extract_class_metadata(
 ) -> Option<DtsClassAnalysis> {
     let class_name = class.id.as_ref()?.name.to_string();
 
-    let super_class = class.heritage.as_ref().and_then(|heritage| {
-        let evaluated = crate::evaluator::evaluate_expression(&heritage.expression, eval);
-        crate::analyzer::imports::resolved_value_to_super_class(&evaluated)
-    });
+    let super_class = evaluate_super_class(class, eval);
     let uses_inheritance = class.heritage.is_some();
     let raw_type_parameters = extract_type_parameters(
         &class.type_parameters,
@@ -416,6 +440,7 @@ fn extract_class_metadata(
             exports,
             bootstrap: None,
             providers_span: None,
+            providers: None,
             id_span: None,
             module_id_span: None,
             schemas: None,
@@ -447,6 +472,7 @@ fn extract_class_metadata(
             constructor_params: None,
             unexpected_param_decorators: Vec::new(),
             decorator_issues: Vec::new(),
+            di_issues: Vec::new(),
             member_decorators: Vec::new(),
             later_declaration_references: Vec::new(),
             top_level_references: None,
@@ -642,6 +668,7 @@ fn extract_class_metadata(
             constructor_params: None,
             unexpected_param_decorators: Vec::new(),
             decorator_issues: Vec::new(),
+            di_issues: Vec::new(),
             member_decorators: Vec::new(),
             later_declaration_references: Vec::new(),
             top_level_references: None,

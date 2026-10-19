@@ -9,6 +9,7 @@ use oxc_ast_visit::utf8_to_utf16::Utf8ToUtf16;
 pub mod class_data;
 mod closure_nocollapse;
 mod component;
+pub(crate) mod di_facts;
 mod directive;
 mod dts;
 pub(crate) mod evaluated_io;
@@ -459,16 +460,11 @@ pub struct ConstructorParams {
     pub unexpected_decorators: Vec<crate::analyzer::UnexpectedParamDecorator>,
 }
 
-/// Extract constructor parameter types from a class. Angular decorators on the parameters feed
-/// `top_level_reads` (their arguments are re-emitted in `ɵfac` and `ɵsetClassMetadata`).
-pub fn get_constructor_params<'a>(
-    class: &oxc_ast::ast::Class<'a>,
-    semantic: &oxc_semantic::Semantic<'a>,
-    converter: &Utf8ToUtf16,
-    import_map: &std::collections::HashMap<String, ImportedSymbol>,
-    angular_imports: &crate::analyzer::imports::AngularImports,
-    mut top_level_reads: Option<&mut TopLevelReads<'_, 'a, '_>>,
-) -> Option<ConstructorParams> {
+/// The constructor ngtsc's `getConstructorParameters` reads: the implementation (the one with a
+/// body), else the first overload signature; `None` when the class declares no constructor.
+pub(crate) fn constructor_method<'c, 'a>(
+    class: &'c oxc_ast::ast::Class<'a>,
+) -> Option<&'c oxc_ast::ast::MethodDefinition<'a>> {
     let mut target_method = None;
 
     for element in &class.body.body {
@@ -479,8 +475,7 @@ pub fn get_constructor_params<'a>(
             continue;
         }
         if method.value.body.is_some() {
-            target_method = Some(method);
-            break;
+            return Some(method);
         }
         if target_method.is_none() {
             // Fallback to the first overload signature if no implementation constructor is found.
@@ -488,7 +483,23 @@ pub fn get_constructor_params<'a>(
         }
     }
 
-    let target_method = target_method?;
+    target_method.map(|method| &**method)
+}
+
+pub(crate) fn constructor_param_count(class: &oxc_ast::ast::Class<'_>) -> Option<usize> {
+    let params = &constructor_method(class)?.value.params;
+    Some(params.items.len() + usize::from(params.rest.is_some()))
+}
+
+pub fn get_constructor_params<'a>(
+    class: &oxc_ast::ast::Class<'a>,
+    semantic: &oxc_semantic::Semantic<'a>,
+    converter: &Utf8ToUtf16,
+    import_map: &std::collections::HashMap<String, ImportedSymbol>,
+    angular_imports: &crate::analyzer::imports::AngularImports,
+    mut top_level_reads: Option<&mut TopLevelReads<'_, 'a, '_>>,
+) -> Option<ConstructorParams> {
+    let target_method = constructor_method(class)?;
 
     let mut params = Vec::new();
     let mut unexpected_decorators = Vec::new();

@@ -317,6 +317,34 @@ mod tests {
     }
 
     #[test]
+    fn checks_output_from_observable_without_core_initializer_imports() {
+        let found = issues(
+            "import {outputFromObservable} from '@angular/core/rxjs-interop';\n\
+             function a() { return outputFromObservable({} as any); }\n\
+             export class Plain { out = outputFromObservable({} as any); }",
+        );
+        assert_eq!(
+            found,
+            [
+                (
+                    "8110",
+                    format!(
+                        "Unsupported call to the outputFromObservable function. {NOT_INITIALIZER}"
+                    ),
+                    "outputFromObservable({} as any)".to_string(),
+                ),
+                (
+                    "8110",
+                    format!(
+                        "Unsupported call to the outputFromObservable function. {NOT_DIRECTIVE}"
+                    ),
+                    "outputFromObservable({} as any)".to_string(),
+                ),
+            ]
+        );
+    }
+
+    #[test]
     fn wrapped_calls_are_not_checked() {
         assert!(issues(
             "import {Component, input} from '@angular/core';\n\

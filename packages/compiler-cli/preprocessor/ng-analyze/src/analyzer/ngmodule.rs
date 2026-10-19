@@ -58,6 +58,7 @@ fn parse_ng_module_args<'a>(
     let mut exports = None;
     let mut bootstrap = None;
     let mut providers_span = None;
+    let mut providers = None;
     let mut schemas = None;
     let mut id_span = None;
     let mut module_id_span = None;
@@ -138,6 +139,11 @@ fn parse_ng_module_args<'a>(
                                 if !is_empty_array {
                                     providers_span = Some(p.value.span());
                                 }
+                                providers = Some(
+                                    crate::analyzer::di_facts::ProvidersData::from_expression(
+                                        &p.value, eval,
+                                    ),
+                                );
                             }
                             "jit" => {
                                 // https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L352-L356
@@ -173,6 +179,7 @@ fn parse_ng_module_args<'a>(
         exports,
         bootstrap,
         providers_span,
+        providers,
         id_span,
         module_id_span,
         schemas,
