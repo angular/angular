@@ -227,6 +227,7 @@ impl Analyzer {
             resolved_config.generate_extra_imports_in_local_mode,
             resolved_config.compile_non_exported_classes,
             options.enable_hmr.unwrap_or(resolved_config.enable_hmr),
+            resolved_config.strict_standalone,
         );
 
         let analyzer = Analyzer {
@@ -788,7 +789,8 @@ impl Analyzer {
                             .populate_local_compilation_extra_imports(&mut syntax_res, &ctx)
                             .await;
                     }
-                    syntax_res.validate();
+                    syntax_res
+                        .validate(engine.validation_context(crate::analyzer::WireMode::Syntax));
                     // Local mode normally streams 1-file chunks, but under `generateExtraImportsInLocalMode`
                     // it groups by NgModule because template cycle detection across sibling declarations
                     // requires the whole module in one chunk.

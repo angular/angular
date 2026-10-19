@@ -181,6 +181,7 @@ fn parse_ng_module_args<'a>(
         imports_span,
         exports_span,
         bootstrap_span,
+        bootstrap_issues: Vec::new(),
         local_imports_element_spans,
         local_exports_element_spans,
         isolated_imports,

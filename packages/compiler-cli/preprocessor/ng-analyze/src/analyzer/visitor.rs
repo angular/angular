@@ -13,6 +13,7 @@ use crate::{query::ReferenceId, ConstructorParamMetadata, TemplateGuardMetadata}
 use super::class_data::{
     AngularField, ClassData, ComponentData, DecoratorData, DirectiveData, HostBindingData,
     HostListenerData, InjectableData, NgModuleData, PipeData, ServiceData, TypeParameterData,
+    ValueIssue,
 };
 use super::imports::{
     FileExportInfo, ImportDeclarationInfo, ImportedSymbol, LocalExportAlias, ReexportInfo,
@@ -135,6 +136,19 @@ impl<'a, Fs: ResourceResolverFs> ClassVisitor<'a, Fs> {
             return;
         };
 
+        if parsed.primary_decorator_count() > 1 {
+            super::class_data::push_issue(
+                &mut self.diagnostics,
+                self.file_path,
+                self.converter,
+                &ValueIssue::decorator_collision(
+                    parsed.common.decorated_span,
+                    "Two incompatible decorators on class",
+                ),
+            );
+            return;
+        }
+
         let has_export_keyword = matches!(
             self.semantic.nodes().parent_kind(node_id),
             oxc_ast::AstKind::ExportDeclaration(_) | oxc_ast::AstKind::ExportDefaultDeclaration(_)
@@ -227,12 +241,10 @@ fn populate_directive_members(
     d.service = service;
 }
 
-/// Classify a parsed class by primary-decorator priority (`Component > Directive > Pipe > NgModule`)
-/// and assemble its [`ClassData`]. Weak decorators (`@Injectable`, `@Service`) nest inside the
-/// primary classification's data.
-///
-/// TODO(parity): ngtsc errors on colliding primary Angular decorators; we keep the highest-priority
-/// classification and drop the rest.
+/// Classify a parsed class by its primary decorator and assemble its [`ClassData`]. Weak
+/// decorators (`@Injectable`, `@Service`) nest inside the primary classification's data. A
+/// class with more than one primary decorator never gets here (`process_class` drops it with
+/// `DECORATOR_COLLISION`), so the `if` chain is a selection, not a priority.
 fn classify(reference_id: ReferenceId, parsed: ParsedClass, has_real_symbol: bool) -> ClassData {
     let ParsedClass {
         common,
@@ -415,6 +427,22 @@ struct ParsedClass {
     ng_module: Option<NgModuleData>,
 }
 
+impl ParsedClass {
+    /// How many of ngtsc's `HandlerPrecedence.PRIMARY` decorators (`@Component`, `@Directive`,
+    /// `@Pipe`, `@NgModule`) matched. `@Injectable` is WEAK and `@Service` SHARED.
+    fn primary_decorator_count(&self) -> usize {
+        [
+            self.component.is_some(),
+            self.directive.is_some(),
+            self.pipe.is_some(),
+            self.ng_module.is_some(),
+        ]
+        .into_iter()
+        .filter(|matched| *matched)
+        .count()
+    }
+}
+
 #[allow(clippy::too_many_arguments)]
 fn process_class_common<'a, Fs: ResourceResolverFs>(
     class: &Class<'a>,
@@ -518,6 +546,20 @@ fn process_class_common<'a, Fs: ResourceResolverFs>(
 
     if ng_decorator_spans.is_empty() {
         return None;
+    }
+
+    if service.is_some() && !angular_imports.is_core {
+        let other_core_decorator = class.decorators.iter().find(|decorator| {
+            super::utils::is_angular_decorator(decorator, semantic, angular_imports)
+                && super::utils::get_canonical_decorator_name(decorator, semantic, angular_imports)
+                    != Some("Service")
+        });
+        if let Some(other) = other_core_decorator {
+            decorator_issues.push(ValueIssue::decorator_collision(
+                other.span,
+                "Cannot apply more than one Angular decorator on an @Service class.",
+            ));
+        }
     }
 
     // Class decorators lead the removal list, followed by the member decorators.
@@ -3028,7 +3070,15 @@ export class MyService {
         ]);
 
         let results = run_analyzer(fs, "/test/tsconfig.json", false);
-        assert_eq!(diagnostics(&results), Vec::new());
+        assert_eq!(
+            diagnostics(&results),
+            vec![(
+                2028,
+                "@Service class cannot use constructor dependency injection. Use the `inject` \
+                 function instead."
+                    .to_string()
+            )]
+        );
     }
 
     #[test]

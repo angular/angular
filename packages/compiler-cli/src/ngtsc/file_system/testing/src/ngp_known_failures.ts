@@ -287,9 +287,7 @@ const NGP_POTENTIAL_BREAKING_CHANGES: ReadonlySet<string> = new Set([
  * Xi18n, ComponentIndex, and diagnostic/TCB gaps #673-#696).
  */
 const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
-  '@Service decorator should report if an @Service class has another Angular decorator',
   '@Service decorator should report if an @Service class uses constructor-based DI from an inherited constructor',
-  '@Service decorator should report if an @Service class uses constructor-based DI from its own constructor',
   'Debug Info Typescript tranformation afterRenderEffect should not override an explicit debugName',
   'Debug Info Typescript tranformation contentChild .required should insert debug info into .required',
   'Debug Info Typescript tranformation contentChild .required should insert debug info into .required with existing options',
@@ -493,8 +491,6 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'ngtsc behavioral tests animate.enter should compile animate.enter bindings with a class string',
   'ngtsc behavioral tests animate.enter should compile animate.enter bindings with a string array',
   'ngtsc behavioral tests animate.enter should compile animate.enter event bindings with a function call',
-  'ngtsc behavioral tests animate.enter should throw an error when legacy animations are used with animate.enter',
-  'ngtsc behavioral tests animate.enter should throw an error when legacy animations are used with animate.leave',
   'ngtsc behavioral tests animate.leave should compile animate.leave bindings with a class string',
   'ngtsc behavioral tests animate.leave should compile animate.leave bindings with a string array',
   'ngtsc behavioral tests animate.leave should compile animate.leave event bindings with a function call',
@@ -528,7 +524,6 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'ngtsc behavioral tests cycle detection should not consider type-only import clauses during cycle detection',
   'ngtsc behavioral tests disableTypeScriptVersionCheck produces an error when not supported and version check is enabled',
   'ngtsc behavioral tests disableTypeScriptVersionCheck produces an error when not supported using default configuration',
-  'ngtsc behavioral tests empty and missing selectors should not allow directives with no selector that are in NgModules',
   'ngtsc behavioral tests error handling should produce a diagnostic if the transform value in the inputs array is not a function',
   'ngtsc behavioral tests error handling should produce a diagnostic if the transform value is not a function',
   'ngtsc behavioral tests error handling should produce a diangostic if a generic parameter of the transform function cannot be referenced from the source file',
@@ -571,7 +566,6 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'ngtsc behavioral tests input transforms should compile an input with using an ambient type in the transform function',
   'ngtsc behavioral tests input transforms should treat an input transform function only with a `this` parameter as unknown',
   'ngtsc behavioral tests multiple decorators on classes should leave decorators present on jit: true directives',
-  'ngtsc behavioral tests multiple decorators on classes should not compile a component and a directive annotation on the same class',
   'ngtsc behavioral tests namespace support should error for a namespace import as parameter type used for DI',
   'ngtsc behavioral tests namespace support should generate correct imports for type references to namespaced symbols using a namespace import',
   'ngtsc behavioral tests namespace support should generate correct imports for type references to namespaced symbols using named imports',
@@ -607,8 +601,6 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'ngtsc behavioral tests should not emit setNgModuleScope calls for NgModules when supportJitMode is false',
   'ngtsc behavioral tests should not throw, but issue a diagnostic when an `NgModule` from `d.ts` references non-existent classes',
   'ngtsc behavioral tests should preserve the types of non-const enums in setClassMetadata',
-  'ngtsc behavioral tests should produce an error when standalone component is used in @NgModule.bootstrap',
-  'ngtsc behavioral tests should produce an error when standalone component wrapped in `forwardRef` is used in @NgModule.bootstrap',
   'ngtsc behavioral tests should provide error location for invalid host properties',
   'ngtsc behavioral tests should render custom id and legacy ids if `enableI18nLegacyMessageIdFormat` is not false',
   'ngtsc behavioral tests should render legacy ids when `enableI18nLegacyMessageIdFormat` is not false',
@@ -618,8 +610,6 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'ngtsc behavioral tests should run JIT transform for components marked as `jit: true`',
   'ngtsc behavioral tests should support bindings with Object builtin names',
   'ngtsc behavioral tests should take preserveWhitespaces config option into account',
-  'ngtsc behavioral tests should throw if `changeDetection` contains invalid value',
-  'ngtsc behavioral tests should throw if `encapsulation` contains invalid value',
   'ngtsc behavioral tests should throw in case pipes are used in host bindings (defined as `value | pipe`)',
   'ngtsc behavioral tests should unwrap a ModuleWithProviders-like function if a matching literal type is provided for it',
   'ngtsc behavioral tests should unwrap a namespace imported ModuleWithProviders function if a generic type is provided for it',
@@ -904,10 +894,6 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'signal-based queries diagnostics should wrap reference in query as a forwardRef in the setClassMetadata call',
   'signal-based queries should support viewChild with `read` pointing to a parenthesized expression',
   'signal-based queries should support viewChild with `read` pointing to an expression with a generic',
-  'strictStandalone flag should not allow a non-standalone component',
-  'strictStandalone flag should not allow a non-standalone directive',
-  'strictStandalone flag should not allow a non-standalone pipe',
-  'strictStandalone flag should retain metadata for non-standalone declarations',
   'type checking of host bindings should check host bindings on a directive',
 ]);
 

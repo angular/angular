@@ -1,4 +1,4 @@
-use crate::analyzer::{resolve_declaration_async, NgModuleData};
+use crate::analyzer::{resolve_declaration_async, NgModuleData, ValueIssue};
 use crate::evaluator::value::SyntheticValue;
 use crate::evaluator::{Resolved, ResolvedValue};
 use crate::query::{QueryCtx, ReferenceId};
@@ -21,6 +21,9 @@ pub async fn optimize_ng_module<Fs: ResourceResolverFs + Clone + 'static>(
     }
     if let Some(bootstrap_resolved) = &mut ng_module.bootstrap {
         bootstrap_resolved.complete_with(ctx, foreign).await;
+        ng_module.bootstrap_issues =
+            standalone_bootstrap_issues(bootstrap_resolved.raw(), ng_module.bootstrap_span, ctx)
+                .await;
     }
 
     if ng_module.imports.is_none() && ng_module.exports.is_none() {
@@ -119,6 +122,62 @@ pub async fn optimize_ng_module<Fs: ResourceResolverFs + Clone + 'static>(
     injector_imports.set_value(ResolvedValue::Array(filtered_items));
 
     ng_module.injector_imports = Some(injector_imports);
+}
+
+async fn standalone_bootstrap_issues<Fs: ResourceResolverFs + Clone + 'static>(
+    bootstrap: &ResolvedValue,
+    bootstrap_span: Option<oxc_span::Span>,
+    ctx: &QueryCtx<Fs>,
+) -> Vec<ValueIssue> {
+    let mut entries = Vec::new();
+    collect_bootstrap_entries(bootstrap, None, &mut entries);
+
+    let mut issues = Vec::new();
+    for (reference_id, identifier_span) in entries {
+        let syntax_file = ctx.analyze_file_syntax(reference_id.file).await;
+        let Some(class_info) = syntax_file.symbol_index.get(&reference_id) else {
+            continue;
+        };
+        if class_info.class_type != ClassType::Component || class_info.is_standalone != Some(true) {
+            continue;
+        }
+        let Some(span) = identifier_span.or(bootstrap_span) else {
+            continue;
+        };
+        issues.push(ValueIssue::bootstrap_is_standalone(
+            span,
+            format!(
+                "The `{}` class is a standalone component, which can not be used in the \
+                 `@NgModule.bootstrap` array. Use the `bootstrapApplication` function for \
+                 bootstrap instead.",
+                class_info.class_name
+            ),
+        ));
+    }
+    issues
+}
+
+fn collect_bootstrap_entries(
+    value: &ResolvedValue,
+    named_span: Option<oxc_span::Span>,
+    out: &mut Vec<(ReferenceId, Option<oxc_span::Span>)>,
+) {
+    match value {
+        ResolvedValue::Named { span, value, .. } => {
+            collect_bootstrap_entries(value, Some(*span), out);
+        }
+        ResolvedValue::Array(items) => {
+            for item in items {
+                collect_bootstrap_entries(item, None, out);
+            }
+        }
+        ResolvedValue::Reference(reference) => {
+            if let Some(reference_id) = reference.reference_id {
+                out.push((reference_id, named_span));
+            }
+        }
+        _ => {}
+    }
 }
 
 /// Whether `item` is flagged as `hasModuleWithProviders` by ngtsc's `resolveTypeList`: either the
