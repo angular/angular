@@ -59,6 +59,24 @@ pub fn run_analyzer(
     })
 }
 
+/// Analyze `file_path` through `Analyzer::get_metadata_for_file`, the on-demand path the
+/// language service uses. Declaration files are not compilation roots, so this is how their
+/// metadata is inspected.
+pub fn analyze_file_metadata(
+    fs: OverlayFileSystem,
+    tsconfig_path: &str,
+    file_path: &str,
+) -> AnalysisResult {
+    let options = crate::AnalyzerOptions {
+        tsconfig_path: tsconfig_path.to_string(),
+        ..Default::default()
+    };
+    let analyzer = crate::Analyzer::new_core_with_fs(options, fs).unwrap();
+    analyzer
+        .get_metadata_for_file(file_path.to_string())
+        .unwrap_or_else(|| panic!("Expected metadata for {file_path}"))
+}
+
 /// Assert that a class with the given name exists in the results
 pub fn assert_class_exists(results: &[AnalysisResult], class_name: &str) {
     let found = results.iter().any(|r| {
@@ -2822,9 +2840,9 @@ export declare class FireTeleportalOutlet<C extends PortalComponentType, D> {
             ),
         ]);
 
-        let results = run_analyzer(fs, "/test/tsconfig.json", false);
+        let result = analyze_file_metadata(fs, "/test/tsconfig.json", "/test/teleport.d.ts");
 
-        let class_meta = find_class(&results, "FireTeleportalOutlet")
+        let class_meta = find_class(std::slice::from_ref(&result), "FireTeleportalOutlet")
             .expect("FireTeleportalOutlet should exist");
         assert!(class_meta.has_non_exported_bounds);
         let params = class_meta.type_parameters.as_ref().unwrap();
@@ -2854,9 +2872,9 @@ export declare class FireTeleportalOutlet<C extends PortalComponentType, D> {
             ),
         ]);
 
-        let results = run_analyzer(fs, "/test/tsconfig.json", false);
+        let result = analyze_file_metadata(fs, "/test/tsconfig.json", "/test/teleport.d.ts");
 
-        let class_meta = find_class(&results, "FireTeleportalOutlet")
+        let class_meta = find_class(std::slice::from_ref(&result), "FireTeleportalOutlet")
             .expect("FireTeleportalOutlet should exist");
         assert!(!class_meta.has_non_exported_bounds);
     }
@@ -2883,9 +2901,9 @@ export declare class FireTeleportalOutlet<C extends PortalComponentType, D> {
             ),
         ]);
 
-        let results = run_analyzer(fs, "/test/tsconfig.json", false);
+        let result = analyze_file_metadata(fs, "/test/tsconfig.json", "/test/teleport.d.ts");
 
-        let class_meta = find_class(&results, "FireTeleportalOutlet")
+        let class_meta = find_class(std::slice::from_ref(&result), "FireTeleportalOutlet")
             .expect("FireTeleportalOutlet should exist");
         assert!(!class_meta.has_non_exported_bounds);
     }

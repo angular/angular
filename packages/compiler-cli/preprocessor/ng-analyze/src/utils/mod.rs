@@ -152,5 +152,16 @@ pub(crate) fn is_ts_file(path: &Path) -> bool {
     }
 }
 
+/// Whether `path` is a root of the compilation: a TS/JS file that is not a declaration file.
+///
+/// A tsconfig's `files` can list declaration files (Bazel-style rules list every dependency's).
+/// They are inputs to the program, and their metadata is read on demand when a source references
+/// a declaration in them (see `analyze_dts`), but ngtsc never analyzes or emits them
+/// (`TraitCompiler.analyzeSync` returns early for `isDeclarationFile`), so they are neither part
+/// of the compilation unit nor streamed to the host.
+pub(crate) fn is_compilation_root(path: &Path) -> bool {
+    is_ts_file(path) && !is_dts(path)
+}
+
 #[cfg(test)]
 mod tests;

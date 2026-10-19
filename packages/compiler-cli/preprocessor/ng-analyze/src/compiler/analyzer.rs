@@ -3,7 +3,7 @@ use crate::query::{FileId, QueryContext};
 use crate::resource_loader::ResourceResolverFs;
 use crate::resource_registry::ResourceRegistry;
 use crate::tsconfig_resolution;
-use crate::utils::{create_resolver_with_fs, is_ts_file, is_ts_source};
+use crate::utils::{create_resolver_with_fs, is_compilation_root, is_ts_file, is_ts_source};
 use crate::{
     AnalysisResult, AnalyzerOptions, CompilationChunk, FileData, FileInvalidation, FileUpdate,
 };
@@ -180,7 +180,7 @@ impl Analyzer {
             .files
             .into_iter()
             .map(|p| fs.canonicalize(&p).unwrap_or(p))
-            .filter(|p| is_ts_file(p))
+            .filter(|p| is_compilation_root(p))
             .collect();
 
         let entrypoints_lock = Arc::new(RwLock::new(entrypoints));
@@ -481,7 +481,7 @@ impl Analyzer {
                 .files
                 .into_iter()
                 .map(|p| self.fs.canonicalize(&p).unwrap_or(p))
-                .filter(|p| is_ts_file(p))
+                .filter(|p| is_compilation_root(p))
                 .collect();
             *self.entrypoints.write().unwrap() = entrypoints;
         }
@@ -952,7 +952,7 @@ async fn run_coordinator<S, LA, FutLA, P, FutP, Fs>(
         if cancel_token.is_cancelled() {
             break;
         }
-        if !is_ts_file(&entry) {
+        if !is_compilation_root(&entry) {
             continue;
         }
         // Dedupe on the case-folded path, but keep the caller's spelling.

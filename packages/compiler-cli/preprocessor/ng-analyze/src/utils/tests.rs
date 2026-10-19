@@ -47,3 +47,17 @@ fn test_is_ts_file() {
     assert!(!super::is_ts_file(Path::new("foo.html")));
     assert!(!super::is_ts_file(Path::new("foo.ng.html")));
 }
+
+#[test]
+fn test_is_compilation_root() {
+    use std::path::Path;
+    assert!(super::is_compilation_root(Path::new("foo.ts")));
+    assert!(super::is_compilation_root(Path::new("foo.tsx")));
+    assert!(super::is_compilation_root(Path::new("foo.js")));
+    assert!(!super::is_compilation_root(Path::new("foo.d.ts")));
+    assert!(!super::is_compilation_root(Path::new(
+        "node_modules/@angular/core/index.d.ts"
+    )));
+    assert!(!super::is_compilation_root(Path::new("foo.html")));
+    assert!(!super::is_compilation_root(Path::new("foo.css")));
+}
