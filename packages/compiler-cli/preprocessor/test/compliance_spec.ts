@@ -23,6 +23,10 @@ import {
   verifyUniqueConsts,
 } from '../../test/compliance/test_helpers/i18n_checks.js';
 import {stripAndCheckMappings} from '../../test/compliance/test_helpers/sourcemap_helpers.js';
+import {
+  normalizeNgpEmitForComparison,
+  stripRedundantClarifyingParens,
+} from '../../src/ngtsc/testing/index.js';
 import {runPipeline, pathExists, TestFile} from './utils.js';
 
 function resolveComplianceDir(): string {
@@ -83,179 +87,12 @@ function monkeyPatchContent(content: string): string {
   );
 }
 
-// Matches, in priority order: line comment, block comment, template literal, then
-// double- or single-quoted string. The first three are consumed as opaque units so a
-// quote inside them (e.g. `${"x"}` or a URL) is never mistaken for a string delimiter.
-const STRING_LIKE_TOKEN =
-  /\/\/[^\n]*|\/\*[\s\S]*?\*\/|`(?:\\[\s\S]|[^\\`])*`|"(?:\\[\s\S]|[^\\"])*"|'(?:\\[\s\S]|[^\\'])*'/g;
-
-// expectEmit's SKIP marker: `…` hides arbitrary output, so a golden is not always valid
-// TS (a class may be left unclosed, or a string's closing quote may sit on the far side
-// of a `…`). See ELLIPSIS in expect_emit.ts.
-const ELLIPSIS = '…';
-
-function canonicalizeSegmentQuotes(segment: string): string {
-  return segment.replace(STRING_LIKE_TOKEN, (match) => {
-    const quote = match[0];
-    if (quote !== '"' && quote !== "'") {
-      return match; // comment or template literal: opaque
-    }
-    const body = match.slice(1, -1);
-    // Decode only the quote escapes (\' and \"), preserving every other backslash
-    // sequence (\\, \n, \uXXXX, ...) verbatim, then re-escape bare double quotes.
-    let raw = '';
-    for (let i = 0; i < body.length; i++) {
-      if (body[i] === '\\') {
-        const next = body[i + 1];
-        raw += next === "'" || next === '"' ? next : '\\' + next;
-        i++;
-      } else {
-        raw += body[i];
-      }
-    }
-    return '"' + raw.replace(/"/g, '\\"') + '"';
-  });
-}
-
-/**
- * Canonicalize every plain string literal to a double-quoted form, leaving template
- * literals and comments untouched.
- *
- * Our pipeline transpiles the preprocessor output and runs it through prettier, which
- * picks a single quote style (and minimizes escaping). The reference goldens, by
- * contrast, mix quote styles: compiler-generated code is double-quoted (printed via the
- * TS printer), user source is preserved verbatim (single-quoted in these fixtures), and
- * i18n `original_code` maps are expanded by `replaceMacros` to double-quoted-and-escaped.
- * No single prettier setting can match all three, so we normalize quote style on *both*
- * sides before token comparison. Quote style carries no semantic meaning in the emitted
- * JS, so this only removes a formatting artifact of our transpile+prettier step.
- *
- * Each `…`-delimited segment is normalized independently so a quote is never paired
- * across a SKIP boundary: if a closing quote is hidden behind a `…`, the dangling open
- * quote stays unmatched in its own segment instead of swallowing the code that follows.
- * This mirrors expectEmit's own assumption that `…` falls on a token boundary. Our
- * compiled output contains no `…`, so the split is a no-op on that side.
- */
-function canonicalizeStringQuotes(code: string): string {
-  return code.split(ELLIPSIS).map(canonicalizeSegmentQuotes).join(ELLIPSIS);
-}
-
-/**
- * Strip the redundant "clarifying" parentheses that prettier adds (and that the TypeScript
- * printer used by ngtsc does not) around assignment / compound-assignment / conditional
- * (ternary) expressions in positions where the grammar already permits an
- * `AssignmentExpression`: a `return` value, an arrow-function concise body, and call/new
- * arguments. In those positions such parens are redundant by operator precedence, so removing
- * them never changes semantics.
- */
-function stripRedundantClarifyingParens(code: string): string {
-  const sf = ts.createSourceFile(
-    '__cmp__.ts',
-    code,
-    ts.ScriptTarget.Latest,
-    true,
-    ts.ScriptKind.TS,
-  );
-
-  const isAssignmentOp = (kind: ts.SyntaxKind): boolean =>
-    kind >= ts.SyntaxKind.FirstAssignment && kind <= ts.SyntaxKind.LastAssignment;
-
-  // Only assignment / compound-assignment and conditional expressions need no wrapping parens
-  // in an AssignmentExpression position; everything else is left alone.
-  const isAssignmentPositionRedundant = (e: ts.Expression): boolean =>
-    (ts.isBinaryExpression(e) && isAssignmentOp(e.operatorToken.kind)) ||
-    ts.isConditionalExpression(e) ||
-    (ts.isBinaryExpression(e) && e.operatorToken.kind === ts.SyntaxKind.QuestionQuestionToken);
-
-  // Probe TypeScript's factory parenthesizer: rebuild the parent binary with the unwrapped
-  // operand and see whether the factory re-inserts a `ParenthesizedExpression`. If not, the
-  // original parens were redundant.
-  const probeId = ts.factory.createIdentifier('__probe__');
-  const isBinaryOperandRedundant = (p: ts.ParenthesizedExpression): boolean => {
-    const parent = p.parent;
-    if (!ts.isBinaryExpression(parent)) {
-      return false;
-    }
-    const op = parent.operatorToken;
-    if (parent.left === p) {
-      // The left operand of `**` essentially always needs its parens (e.g. `(-1) ** 3`,
-      // `(a * b) ** c`), and TS's parenthesizer under-parenthesizes that spot, so never strip it.
-      if (op.kind === ts.SyntaxKind.AsteriskAsteriskToken) {
-        return false;
-      }
-      return !ts.isParenthesizedExpression(
-        ts.factory.createBinaryExpression(p.expression, op, probeId).left,
-      );
-    }
-    if (parent.right === p) {
-      return !ts.isParenthesizedExpression(
-        ts.factory.createBinaryExpression(probeId, op, p.expression).right,
-      );
-    }
-    return false;
-  };
-
-  const targets: ts.ParenthesizedExpression[] = [];
-  const consider = (e: ts.Expression | undefined): void => {
-    if (e && ts.isParenthesizedExpression(e) && isAssignmentPositionRedundant(e.expression)) {
-      targets.push(e);
-    }
-  };
-
-  const visit = (node: ts.Node): void => {
-    if (ts.isReturnStatement(node)) {
-      consider(node.expression);
-    } else if (ts.isArrowFunction(node) && !ts.isBlock(node.body)) {
-      consider(node.body);
-    } else if (ts.isCallExpression(node)) {
-      node.arguments.forEach(consider);
-    } else if (ts.isNewExpression(node) && node.arguments) {
-      node.arguments.forEach(consider);
-    } else if (ts.isParenthesizedExpression(node) && isBinaryOperandRedundant(node)) {
-      targets.push(node);
-    }
-    ts.forEachChild(node, visit);
-  };
-  visit(sf);
-
-  if (targets.length === 0) {
-    return code;
-  }
-
-  // Remove each node's outer `(` (at its start) and `)` (at end - 1). Apply right-to-left so
-  // earlier offsets stay valid.
-  const cuts: number[] = [];
-  for (const p of targets) {
-    cuts.push(p.getStart(sf), p.getEnd() - 1);
-  }
-  cuts.sort((a, b) => b - a);
-  let out = code;
-  for (const pos of cuts) {
-    out = out.slice(0, pos) + out.slice(pos + 1);
-  }
-  return out;
-}
-
 function normalizeJsForComparison(code: string): string {
   // The reference compliance harness roots its mock file-system at `/`, whereas this harness
   // mounts every test file under `/virtual_project`. Absolute resource paths that ngtsc emits
   // verbatim (e.g. `ɵɵExternalStylesFeature(["/style-A.css"])`) therefore differ only by this
   // mount prefix; strip it so the comparison is root-agnostic.
-  return (
-    canonicalizeStringQuotes(code)
-      .replace(/\/virtual_project\//g, '/')
-      .replace(/^[ \t]*\/\/ @ts-ignore\r?\n/gm, '')
-      .replace(/\\\\n/g, '\\n')
-      .replace(/\\\\r/g, '\\r')
-      .replace(/\\u([0-9a-fA-F]{4})/g, (_, hex) => {
-        return String.fromCharCode(parseInt(hex, 16));
-      })
-      .replace(/ɵɵqueryRefresh\(\(([^)]+)\)\)/g, 'ɵɵqueryRefresh($1)')
-      // Prettier formats without trailing commas while ngtsc preserves them in metadata; drop both for comparison.
-      .replace(/,(\s*[\]})])/g, '$1')
-      // Prettier wraps bare string literals in parentheses (to avoid directive prologues); TS printer does not.
-      .replace(/^(\s*)\(("(?:[^"\\]|\\.)*")\);$/gm, '$1$2;')
-  );
+  return normalizeNgpEmitForComparison(code).replace(/\/virtual_project\//g, '/');
 }
 
 function getAdjacentAssetsSync(baseDir: string, currentDir: string = baseDir): TestFile[] {
@@ -531,7 +368,6 @@ describe('Angular Compliance Tests', () => {
                     ngFs.resolve(expectedPath),
                     true, // skipMappingCheck
                   );
-                  expectedContent = expectedContent.replace(/\\uFFFD/g, '\uFFFD');
 
                   // When ngp preserves an existing named import (e.g. `import { SomeService } from "./external"`)
                   // instead of emitting a synthetic `import * as i1` namespace import in local mode,
