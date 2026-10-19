@@ -179,8 +179,8 @@ impl Analyzer {
         let entrypoints: Vec<PathBuf> = resolved_config
             .files
             .into_iter()
-            .map(|p| fs.canonicalize(&p).unwrap_or(p))
             .filter(|p| is_compilation_root(p))
+            .map(|p| fs.canonicalize(&p).unwrap_or(p))
             .collect();
 
         let entrypoints_lock = Arc::new(RwLock::new(entrypoints));
@@ -481,8 +481,8 @@ impl Analyzer {
             let entrypoints: Vec<PathBuf> = resolved_config
                 .files
                 .into_iter()
-                .map(|p| self.fs.canonicalize(&p).unwrap_or(p))
                 .filter(|p| is_compilation_root(p))
+                .map(|p| self.fs.canonicalize(&p).unwrap_or(p))
                 .collect();
             *self.entrypoints.write().unwrap() = entrypoints;
         }
