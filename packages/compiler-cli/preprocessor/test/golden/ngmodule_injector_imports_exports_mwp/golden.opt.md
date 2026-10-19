@@ -791,35 +791,3 @@ export class CrossModule {
 export const CROSS_FILE_MWP = CrossModule.forRoot();
 
 ```
-
-# /out/dts-module.d.ts
-```ts
-import * as i0 from '@angular/core';
-import { ModuleWithProviders } from '@angular/core';
-
-export declare class DtsModule {
-  static forRoot(): ModuleWithProviders<DtsModule>;
-  static ɵfac: i0.ɵɵFactoryDeclaration<DtsModule, never>;
-  static ɵmod: i0.ɵɵNgModuleDeclaration<DtsModule, never, never, never>;
-  static ɵinj: i0.ɵɵInjectorDeclaration<DtsModule>;
-  // @ts-ignore
-  static ɵfac: i0.ɵɵFactoryDeclaration<DtsModule, never> = function DtsModule_Factory(
-    __ngFactoryType__: any,
-  ): any {
-    return new (__ngFactoryType__ || DtsModule)();
-  };
-  // @ts-ignore
-  static ɵmod: i0.ɵɵNgModuleDeclaration<DtsModule, never, never, never> =
-    // @ts-ignore
-    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: DtsModule });
-  // @ts-ignore
-  static ɵinj: i0.ɵɵInjectorDeclaration<DtsModule> =
-    // @ts-ignore
-    /*@__PURE__*/ i0.ɵɵdefineInjector({});
-  static {
-    (typeof ngDevMode === 'undefined' || ngDevMode) &&
-      i0.ɵsetClassMetadata(DtsModule, [{ type: NgModule }], null, null);
-  }
-}
-
-```

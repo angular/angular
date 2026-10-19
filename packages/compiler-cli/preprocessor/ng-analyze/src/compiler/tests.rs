@@ -1391,6 +1391,77 @@ fn test_allowed_sources_allows_dts() {
     assert_eq!(importable.specifier, "./router");
 }
 
+/// Declaration files listed in `files` (as Bazel-style rules do for every dependency) are program
+/// inputs, not compilation roots: they are never streamed to the host, but their metadata is still
+/// read on demand when a source references them.
+#[test]
+fn test_dts_root_files_are_not_compiled() {
+    let mut virtual_files = HashMap::new();
+    virtual_files.insert(
+        "/project/tsconfig.json".to_string(),
+        r#"{"files": ["app.ts", "router.d.ts"]}"#.to_string(),
+    );
+    virtual_files.insert(
+        "/project/app.ts".to_string(),
+        r#"
+            import {NgModule} from '@angular/core';
+            import {RouterModule} from './router';
+
+            @NgModule({imports: [RouterModule]})
+            export class AppModule {}
+        "#
+        .to_string(),
+    );
+    virtual_files.insert(
+        "/project/router.d.ts".to_string(),
+        r#"
+            import * as i0 from '@angular/core';
+            export declare class RouterModule {
+                static ɵmod: i0.ɵɵNgModuleDeclaration<RouterModule, never, never, never>;
+            }
+        "#
+        .to_string(),
+    );
+
+    for optimize in [false, true] {
+        let options = AnalyzerOptions {
+            tsconfig_path: "/project/tsconfig.json".to_string(),
+            optimize: Some(optimize),
+            virtual_files: Some(virtual_files.clone()),
+            ..Default::default()
+        };
+        let analyzer = Analyzer::new(options).unwrap();
+        let iterator = if optimize {
+            analyzer.analyze_optimized().unwrap()
+        } else {
+            analyzer.analyze().unwrap()
+        };
+        let mut results = Vec::new();
+        while let Some(chunk) = futures::executor::block_on(iterator.next()).unwrap() {
+            results.extend(chunk.files);
+        }
+
+        let paths: Vec<&str> = results.iter().map(|r| r.file_path.as_str()).collect();
+        assert_eq!(paths, vec!["/project/app.ts"], "optimize={optimize}");
+
+        if optimize {
+            let imports = results[0]
+                .classes
+                .iter()
+                .find(|c| c.class_name.as_deref() == Some("AppModule"))
+                .and_then(|c| c.ng_module.as_ref())
+                .and_then(|m| m.imports.as_ref())
+                .expect("AppModule imports");
+            let importable = imports[0]
+                .typecheck_import
+                .as_ref()
+                .expect("RouterModule is read on demand from router.d.ts");
+            assert_eq!(importable.symbol, "RouterModule");
+            assert_eq!(importable.specifier, "./router");
+        }
+    }
+}
+
 #[test]
 fn test_resource_files_in_entrypoints_and_metadata() {
     let mut virtual_files = HashMap::new();

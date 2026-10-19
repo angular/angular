@@ -53,6 +53,11 @@ async function processFile(
 ) {
   const {filePath} = file;
 
+  // Declaration files are program inputs, not compilation outputs, so avoid emitting them.
+  if (filePath.endsWith('.d.ts')) {
+    return;
+  }
+
   const content = await fs.readFile(filePath, 'utf-8');
   const processed = await compiler.processFile(filePath, content, file, chunkContext);
   const s = processed.magicString;
