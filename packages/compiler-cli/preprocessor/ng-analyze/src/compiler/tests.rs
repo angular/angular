@@ -5832,6 +5832,34 @@ fn test_directive_metadata_shape_diagnostics() {
             "No locator specified.",
             "viewChild()",
         ),
+        (
+            "/project/query-options-spread.ts",
+            r#"
+            import { Component, ViewChild } from '@angular/core';
+            declare const opts: any;
+            @Component({ selector: 'test-cmp', template: '' })
+            export class TestCmp {
+                @ViewChild('foo', ...opts) el: any;
+            }
+            "#,
+            1001,
+            "@ViewChild options must be an object literal",
+            "...opts",
+        ),
+        (
+            "/project/signal-input-options-spread.ts",
+            r#"
+            import { Directive, input } from '@angular/core';
+            declare const opts: any;
+            @Directive({ selector: 'test' })
+            export class TestDir {
+                val = input(0, ...opts);
+            }
+            "#,
+            1010,
+            "Argument needs to be an object literal that is statically analyzable.",
+            "...opts",
+        ),
     ];
 
     let mut virtual_files: HashMap<String, String> = cases

@@ -317,10 +317,10 @@ fn parse_signal_input_output(
 /// argument must be an object literal and its `alias` a string literal; anything else is
 /// reported rather than followed through a constant, and `None` says so.
 fn signal_options(arg: Option<&Argument>, out: &mut MemberIo) -> Option<InputOptions> {
-    let Some(arg) = arg.and_then(Argument::as_expression) else {
+    let Some(arg) = arg else {
         return Some(InputOptions::default());
     };
-    let Expression::ObjectExpression(obj) = arg else {
+    let Some(Expression::ObjectExpression(obj)) = arg.as_expression() else {
         out.issues.push(ValueIssue::wrong_type(
             arg.span(),
             "Argument needs to be an object literal that is statically analyzable.",
