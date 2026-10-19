@@ -1565,6 +1565,64 @@ fn test_ngmodule_non_class_reference_from_source_reports_ng1010() {
 }
 
 #[test]
+fn test_dts_root_files_are_not_canonicalized_during_entrypoint_discovery() {
+    use crate::physical_fs::{DirEntry, PhysicalFs};
+    use oxc_resolver::FileMetadata;
+    use std::io::Result;
+    use std::path::{Path, PathBuf};
+
+    struct NoPhysicalFs;
+    impl PhysicalFs for NoPhysicalFs {
+        fn read(&self, _: &Path) -> Result<Vec<u8>> {
+            Err(std::io::ErrorKind::NotFound.into())
+        }
+        fn read_to_string(&self, _: &Path) -> Result<String> {
+            Err(std::io::ErrorKind::NotFound.into())
+        }
+        fn metadata(&self, _: &Path) -> Result<FileMetadata> {
+            Err(std::io::ErrorKind::NotFound.into())
+        }
+        fn symlink_metadata(&self, _: &Path) -> Result<FileMetadata> {
+            Err(std::io::ErrorKind::NotFound.into())
+        }
+        fn read_link(&self, _: &Path) -> Result<PathBuf> {
+            Err(std::io::ErrorKind::NotFound.into())
+        }
+        fn read_dir(&self, _: &Path) -> Result<Vec<DirEntry>> {
+            Err(std::io::ErrorKind::NotFound.into())
+        }
+        fn canonicalize(&self, path: &Path) -> Result<PathBuf> {
+            panic!("unexpected canonicalize of {}", path.display());
+        }
+    }
+
+    let virtual_files = HashMap::from([
+        ("/project/app.ts".into(), "export class App {}".into()),
+        (
+            "/project/tsconfig.json".into(),
+            r#"{"files": ["app.ts", "unused.d.ts"]}"#.into(),
+        ),
+    ]);
+
+    let analyzer = Analyzer::new_core_with_physical_fs(
+        AnalyzerOptions {
+            tsconfig_path: "/project/tsconfig.json".into(),
+            virtual_files: Some(virtual_files),
+            ..Default::default()
+        },
+        Arc::new(NoPhysicalFs),
+    )
+    .unwrap();
+
+    analyzer
+        .invalidate_files(vec![FileInvalidation {
+            file_path: "/project/app.ts".into(),
+            update_type: FileUpdateType::Changed,
+        }])
+        .unwrap();
+}
+
+#[test]
 fn test_resource_files_in_entrypoints_and_metadata() {
     let mut virtual_files = HashMap::new();
     virtual_files.insert(
