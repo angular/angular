@@ -14,10 +14,6 @@ pub fn parse_decorator<'a>(
     angular_imports: &crate::analyzer::imports::AngularImports,
     eval: &EvalInput<'a, '_>,
 ) -> Option<PipeData> {
-    let Expression::CallExpression(call_expr) = &decorator.expression else {
-        return None;
-    };
-
     if !crate::analyzer::utils::is_angular_decorator_named(
         decorator,
         "Pipe",
@@ -27,12 +23,16 @@ pub fn parse_decorator<'a>(
         return None;
     }
 
-    Some(parse_pipe_args(
-        call_expr,
-        crate::analyzer::utils::extract_decorator_name(decorator),
-        semantic,
-        eval,
-    ))
+    let decorator_name = crate::analyzer::utils::extract_decorator_name(decorator);
+    Some(match &decorator.expression {
+        Expression::CallExpression(call_expr) => {
+            parse_pipe_args(call_expr, decorator_name, semantic, eval)
+        }
+        _ => PipeData {
+            decorator_name,
+            ..Default::default()
+        },
+    })
 }
 
 /// Mirrors the metadata half of ngtsc's `PipeDecoratorHandler.analyze`: `name` and `pure` go

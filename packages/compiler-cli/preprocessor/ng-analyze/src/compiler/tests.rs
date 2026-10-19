@@ -5542,6 +5542,39 @@ fn test_directive_metadata_shape_diagnostics() {
             "'name'",
         ),
         (
+            "/project/pipe-bare.ts",
+            r#"
+            import { Pipe } from '@angular/core';
+            @Pipe
+            export class TestPipe {}
+            "#,
+            1003,
+            "@Pipe must be called",
+            "@Pipe",
+        ),
+        (
+            "/project/ng-module-bare.ts",
+            r#"
+            import { NgModule } from '@angular/core';
+            @NgModule
+            export class TestModule {}
+            "#,
+            1002,
+            "Incorrect number of arguments to @NgModule decorator",
+            "@NgModule",
+        ),
+        (
+            "/project/ng-module-arity.ts",
+            r#"
+            import { NgModule } from '@angular/core';
+            @NgModule({}, {})
+            export class TestModule {}
+            "#,
+            1002,
+            "Incorrect number of arguments to @NgModule decorator",
+            "@NgModule({}, {})",
+        ),
+        (
             "/project/encapsulation.ts",
             r#"
             import { Component } from '@angular/core';

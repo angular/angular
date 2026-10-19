@@ -1177,7 +1177,7 @@ pub struct TopLevelImport {
     pub resolved: Resolved<Vec<Reference>>,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct NgModuleData {
     pub declarations: Option<Resolved<Vec<Reference>>>,
     pub imports: Option<Resolved<Vec<Reference>>>,
