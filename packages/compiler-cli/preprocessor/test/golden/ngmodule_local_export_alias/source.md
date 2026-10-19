@@ -23,7 +23,6 @@ import { AliasedLocalModule } from './local_alias';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   template: '<div mat-ripple local-dir></div>',
   imports: [MatLegacyRippleModule, AliasedLocalModule],
 })

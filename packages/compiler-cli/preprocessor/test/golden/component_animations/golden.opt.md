@@ -19,15 +19,15 @@ function _tcb1(this: i0.AppComponent) {
 /*tcb2*/
 function _tcb2(this: i0.VarComponent) {
   if (true) {
-    undefined; /*484,493*/
+    undefined; /*464,473*/
   }
 }
 
 /*tcb3*/
 function _tcb3(this: i0.BoundAndInvalidComponent) {
   if (true) {
-    this.ctxValue; /*670,678*/ /*670,678*/
-    undefined; /*680,689*/
+    this.ctxValue; /*630,638*/ /*630,638*/
+    undefined; /*640,649*/
   }
 }
 
@@ -93,7 +93,6 @@ export class AppComponent {
               {
                 selector: 'app-root',
                 template: '<div @myTrigger @nestedTrigger @spreadTrigger></div>',
-                standalone: true,
                 animations: [
                   trigger('myTrigger', []),
                   [trigger('nestedTrigger', [])],
@@ -113,7 +112,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 15,
+      lineNumber: 14,
     });
 })();
 
@@ -166,7 +165,6 @@ export class VarComponent {
               {
                 selector: 'app-var',
                 template: '<div @varTrigger></div>',
-                standalone: true,
                 animations: variableAnimations,
               },
             ],
@@ -182,7 +180,7 @@ export class VarComponent {
     i0.ɵsetClassDebugInfo(VarComponent, {
       className: 'VarComponent',
       filePath: 'app.component.ts',
-      lineNumber: 25,
+      lineNumber: 23,
     });
 })();
 
@@ -233,7 +231,6 @@ export class BoundAndInvalidComponent {
               {
                 selector: 'app-bound-invalid',
                 template: '<div [@myTrigger]="ctxValue" @invalidTrigger></div>',
-                standalone: true,
                 animations: [trigger('myTrigger', [])],
               },
             ],
@@ -249,7 +246,7 @@ export class BoundAndInvalidComponent {
     i0.ɵsetClassDebugInfo(BoundAndInvalidComponent, {
       className: 'BoundAndInvalidComponent',
       filePath: 'app.component.ts',
-      lineNumber: 33,
+      lineNumber: 30,
     });
 })();
 

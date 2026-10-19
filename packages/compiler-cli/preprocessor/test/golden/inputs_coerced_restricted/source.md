@@ -14,7 +14,6 @@ import {Component, Input, input, booleanAttribute} from '@angular/core';
 
 @Component({
   selector: 'test-coerced',
-  standalone: true,
   template: `<div></div>`,
 })
 export class TestCoercedComponent {
@@ -46,7 +45,6 @@ export class TestCoercedComponent {
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [TestCoercedComponent],
   template: `
     <test-coerced

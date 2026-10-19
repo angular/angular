@@ -14,10 +14,10 @@ function _tcb1(this: i0.MyComp) {
       | { (): string; set: (v: string) => void }
       | { (): number | null; set: (v: number | null) => void }; /*T:VAE*/
     _t1 = this
-      .myField /*469,476*/ /*469,476*/
-      () /*D:ignore*/.value; /*469,476*/
-    var _t2 /*T:DIR:1*/ /*449,489*/ = null! as i0.FormField; /*T:VAE*/
-    _t2.formField /*457,466*/ = this.myField /*469,476*/ /*469,476*/; /*456,477*/
+      .myField /*409,416*/ /*409,416*/
+      () /*D:ignore*/.value; /*409,416*/
+    var _t2 /*T:DIR:1*/ /*389,429*/ = null! as i0.FormField; /*T:VAE*/
+    _t2.formField /*397,406*/ = this.myField /*409,416*/ /*409,416*/; /*396,417*/
   }
 }
 
@@ -68,7 +68,6 @@ export class FormField {
             args: [
               {
                 selector: '[formField]',
-                standalone: true,
               },
             ],
           },
@@ -114,7 +113,6 @@ export class MyOtherDirective {
             args: [
               {
                 selector: '[myOtherDir]',
-                standalone: true,
               },
             ],
           },
@@ -176,7 +174,6 @@ export class MyComp {
             args: [
               {
                 selector: 'my-comp',
-                standalone: true,
                 template: `
         <input [formField]="myField" myOtherDir>
       `,
@@ -192,7 +189,7 @@ export class MyComp {
 }
 ((): any => {
   (typeof ngDevMode === 'undefined' || ngDevMode) &&
-    i0.ɵsetClassDebugInfo(MyComp, { className: 'MyComp', filePath: 'test.ts', lineNumber: 30 });
+    i0.ɵsetClassDebugInfo(MyComp, { className: 'MyComp', filePath: 'test.ts', lineNumber: 27 });
 })();
 
 ```

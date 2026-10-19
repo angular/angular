@@ -14,7 +14,6 @@ import { Component, Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'myPipe',
-  standalone: true,
 })
 export class MyPipe implements PipeTransform {
   transform(value: any) { return value + ' filtered'; }
@@ -22,7 +21,6 @@ export class MyPipe implements PipeTransform {
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [MyPipe],
   template: '{{ "hello" | myPipe }}',
 })

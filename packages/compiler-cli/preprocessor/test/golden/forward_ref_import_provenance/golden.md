@@ -67,7 +67,6 @@ export class HostComponent {
             args: [
               {
                 selector: 'app-host',
-                standalone: true,
                 template: '',
                 hostDirectives: [ngForwardRef(() => DepDirective)],
               },
@@ -87,7 +86,7 @@ export class HostComponent {
     i0.ɵsetClassDebugInfo(HostComponent, {
       className: 'HostComponent',
       filePath: 'test.ts',
-      lineNumber: 14,
+      lineNumber: 13,
     });
 })();
 

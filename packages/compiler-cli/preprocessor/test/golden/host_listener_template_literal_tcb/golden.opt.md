@@ -12,9 +12,9 @@ function _tcb1(this: i0.ContainerComponent) {
   if (true) {
   }
   if (true /*hostBindingsBlockGuard*/) {
-    window.addEventListener(/*255,268*/ 'resize', ($event /*T:EP*/): any => {
-      this.onResize(/*331,339*/ 0 /*272,326*/ as any /*272,326*/); /*331,339*/
-    }); /*240,328*/
+    window.addEventListener(/*235,248*/ 'resize', ($event /*T:EP*/): any => {
+      this.onResize(/*311,319*/ 0 /*252,306*/ as any /*252,306*/); /*311,319*/
+    }); /*220,308*/
   }
 }
 
@@ -82,7 +82,6 @@ export class ContainerComponent {
             type: Component,
             args: [
               {
-                standalone: true,
                 selector: 'app-container',
                 template: '<div>Container</div>',
               },
@@ -106,7 +105,7 @@ export class ContainerComponent {
     i0.ɵsetClassDebugInfo(ContainerComponent, {
       className: 'ContainerComponent',
       filePath: 'src/components/container.ts',
-      lineNumber: 10,
+      lineNumber: 9,
     });
 })();
 

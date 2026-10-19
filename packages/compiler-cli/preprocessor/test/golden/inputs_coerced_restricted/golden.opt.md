@@ -18,20 +18,20 @@ function _tcb1(this: i0.TestCoercedComponent) {
 function _tcb2(this: i0.AppComponent) {
   if (true) {
     var _t1 = null! as typeof i0.TestCoercedComponent.ngAcceptInputType_coercedByStatic; /*T:VAE*/
-    _t1 /*1226,1241*/ = 'test' /*1244,1250*/; /*1225,1251*/
+    _t1 /*1186,1201*/ = 'test' /*1204,1210*/; /*1185,1211*/
     var _t2 = null! as string | null; /*T:VAE*/
-    _t2 /*1259,1277*/ = 'test' /*1280,1286*/; /*1258,1287*/
-    var _t3 /*T:DIR:0*/ /*1205,1482*/ = null! as i0.TestCoercedComponent; /*T:VAE*/
+    _t2 /*1219,1237*/ = 'test' /*1240,1246*/; /*1218,1247*/
+    var _t3 /*T:DIR:0*/ /*1165,1442*/ = null! as i0.TestCoercedComponent; /*T:VAE*/
     var _t4 = null! as (typeof _t3)['privateInput']; /*T:VAE*/
-    _t4 /*1295,1307*/ = 'test' /*1310,1316*/; /*1294,1317*/
+    _t4 /*1255,1267*/ = 'test' /*1270,1276*/; /*1254,1277*/
     var _t5 = null! as (typeof _t3)['protectedInput']; /*T:VAE*/
-    _t5 /*1325,1339*/ = 'test' /*1342,1348*/; /*1324,1349*/
+    _t5 /*1285,1299*/ = 'test' /*1302,1308*/; /*1284,1309*/
     var _t6 = null! as (typeof _t3)['readonlyInput']; /*T:VAE*/
-    _t6 /*1357,1370*/ = 'test' /*1373,1379*/; /*1356,1380*/
-    _t3['literalInput'] /*1388,1400*/ = 'test' /*1403,1409*/; /*1387,1410*/
-    _t3.signalWithTransform[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] /*1418,1437*/ =
-      'test' /*1440,1446*/; /*1417,1447*/
-    _t3.normalInput /*1455,1466*/ = 'test' /*1469,1475*/; /*1454,1476*/
+    _t6 /*1317,1330*/ = 'test' /*1333,1339*/; /*1316,1340*/
+    _t3['literalInput'] /*1348,1360*/ = 'test' /*1363,1369*/; /*1347,1370*/
+    _t3.signalWithTransform[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] /*1378,1397*/ =
+      'test' /*1400,1406*/; /*1377,1407*/
+    _t3.normalInput /*1415,1426*/ = 'test' /*1429,1435*/; /*1414,1436*/
   }
 }
 
@@ -141,7 +141,6 @@ export class TestCoercedComponent {
             args: [
               {
                 selector: 'test-coerced',
-                standalone: true,
                 template: `<div></div>`,
               },
             ],
@@ -173,7 +172,7 @@ export class TestCoercedComponent {
     i0.ɵsetClassDebugInfo(TestCoercedComponent, {
       className: 'TestCoercedComponent',
       filePath: 'app.ts',
-      lineNumber: 8,
+      lineNumber: 7,
     });
 })();
 
@@ -242,7 +241,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 imports: [TestCoercedComponent],
                 template: `
         <test-coerced
@@ -270,7 +268,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.ts',
-      lineNumber: 52,
+      lineNumber: 50,
     });
 })();
 

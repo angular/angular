@@ -172,7 +172,6 @@ export class AppComponent {
         <legacy-generic-comp [legacyValue]="selection"></legacy-generic-comp>
         <mat-dts-list [value]="selection"></mat-dts-list>
       `,
-                standalone: true,
               },
             ],
           },
@@ -187,7 +186,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'src/app/app.component.ts',
-      lineNumber: 29,
+      lineNumber: 28,
     });
 })();
 
@@ -235,7 +234,6 @@ export class FilterDirective<T extends SelectionModel<U>, U extends DefaultItem 
             args: [
               {
                 selector: '[filterDir]',
-                standalone: true,
               },
             ],
           },
@@ -454,7 +452,6 @@ export class MatSelectionList<T extends SelectionModel<unknown> = SelectionModel
               {
                 selector: 'mat-selection-list',
                 template: '',
-                standalone: true,
               },
             ],
           },
@@ -469,7 +466,7 @@ export class MatSelectionList<T extends SelectionModel<unknown> = SelectionModel
     i0.ɵsetClassDebugInfo(MatSelectionList, {
       className: 'MatSelectionList',
       filePath: 'src/components/list.component.ts',
-      lineNumber: 9,
+      lineNumber: 8,
     });
 })();
 
@@ -542,7 +539,6 @@ export class LocalItemComponent<T extends LocalItemType = LocalItemType> {
               {
                 selector: 'local-item-comp',
                 template: '',
-                standalone: true,
               },
             ],
           },
@@ -557,7 +553,7 @@ export class LocalItemComponent<T extends LocalItemType = LocalItemType> {
     i0.ɵsetClassDebugInfo(LocalItemComponent, {
       className: 'LocalItemComponent',
       filePath: 'src/components/local_item.component.ts',
-      lineNumber: 12,
+      lineNumber: 11,
     });
 })();
 
@@ -631,7 +627,6 @@ export class TreeComponent<T extends TreeNode<DefaultNodeData> = TreeNode<Defaul
               {
                 selector: 'tree-comp',
                 template: '',
-                standalone: true,
               },
             ],
           },
@@ -646,7 +641,7 @@ export class TreeComponent<T extends TreeNode<DefaultNodeData> = TreeNode<Defaul
     i0.ɵsetClassDebugInfo(TreeComponent, {
       className: 'TreeComponent',
       filePath: 'src/components/tree.component.ts',
-      lineNumber: 9,
+      lineNumber: 8,
     });
 })();
 

@@ -49,7 +49,6 @@ export class AppDirective<T extends LocalInterface> {
             args: [
               {
                 selector: '[appRoot]',
-                standalone: true,
                 host: {
                   '[attr.foo]': 'prop.foo',
                 },

@@ -23,7 +23,6 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-button',
-  standalone: true,
   template: '<button><ng-content></ng-content></button>',
 })
 export class ButtonComponent {}
@@ -35,7 +34,6 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-card',
-  standalone: true,
   template: '<div><ng-content></ng-content></div>',
 })
 export class CardComponent {}
@@ -47,7 +45,6 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-icon',
-  standalone: true,
   template: '<i>icon</i>',
 })
 export class IconComponent {}
@@ -67,7 +64,6 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'other-unused',
-  standalone: true,
   template: '',
 })
 export class OtherUnusedComponent {}
@@ -80,7 +76,6 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-barrel-item',
-  standalone: true,
   template: '<span>Barrel</span>',
 })
 export class BarrelItemComponent {}
@@ -113,7 +108,6 @@ import { FeatureModule } from './feature.module';
 
 @Directive({
   selector: '[appLocalDir]',
-  standalone: true,
 })
 export class LocalDirective {}
 
@@ -122,7 +116,6 @@ const MWP = { ngModule: FeatureModule, providers: [] };
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [
     SHARED_COMPONENTS,
     ...LOCAL_DIRECTIVES,

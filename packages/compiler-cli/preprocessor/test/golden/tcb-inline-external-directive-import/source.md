@@ -37,7 +37,6 @@ class LocalDir {
 @Component({
   selector: 'app-root',
   template: '<div [localDir]="message" [extDir]="message"></div>',
-  standalone: true,
   imports: [LocalDir, ExternalDir]
 })
 export class AppComponent {

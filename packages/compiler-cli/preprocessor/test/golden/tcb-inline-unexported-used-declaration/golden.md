@@ -90,7 +90,6 @@ export class AppComponent {
               {
                 selector: 'app-root',
                 template: '<div>{{ "hello" | localPipe }}</div>',
-                standalone: true,
                 imports: [LocalPipe],
               },
             ],
@@ -106,7 +105,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 17,
+      lineNumber: 16,
     });
 })();
 

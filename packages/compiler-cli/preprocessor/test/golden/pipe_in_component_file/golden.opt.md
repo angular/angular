@@ -12,7 +12,7 @@ var _pipe1 = null! as i0.MyPipe;
 /*tcb1*/
 function _tcb1(this: i0.AppComponent) {
   if (true) {
-    '' + _pipe1.transform(/*324,330*/ 'hello' /*314,321*/) /*314,330*/;
+    '' + _pipe1.transform(/*284,290*/ 'hello' /*274,281*/) /*274,290*/;
   }
 }
 
@@ -48,7 +48,6 @@ export class MyPipe implements PipeTransform {
             args: [
               {
                 name: 'myPipe',
-                standalone: true,
               },
             ],
           },
@@ -106,7 +105,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 imports: [MyPipe],
                 template: '{{ "hello" | myPipe }}',
               },
@@ -123,7 +121,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.ts',
-      lineNumber: 17,
+      lineNumber: 15,
     });
 })();
 

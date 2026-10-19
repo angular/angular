@@ -22,7 +22,6 @@ import { Component, HostListener } from '@angular/core';
 export const MIN_LARGE_SCREEN_WIDTH = 1000;
 
 @Component({
-  standalone: true,
   selector: 'app-container',
   template: '<div>Container</div>',
 })

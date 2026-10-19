@@ -24,7 +24,6 @@ export class MyDir {
 @Component({
   selector: 'app-root',
   template: '<div myDir #dir="myDirAlias">{{ dir.value }}</div>',
-  standalone: true,
   imports: [MyDir]
 })
 export class AppComponent {}

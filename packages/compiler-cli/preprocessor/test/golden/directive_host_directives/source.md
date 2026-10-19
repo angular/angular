@@ -31,7 +31,6 @@ export class MyOtherDir {
 
 @Component({
     selector: 'my-comp',
-    standalone: true,
     template: '<div>Hello</div>',
     hostDirectives: [
         {

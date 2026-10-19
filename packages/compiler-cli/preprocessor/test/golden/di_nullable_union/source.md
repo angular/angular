@@ -17,7 +17,6 @@ export class Logger {}
 
 @Directive({
   selector: '[test]',
-  standalone: true,
 })
 export class TestDirective {
   constructor(

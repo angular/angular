@@ -90,7 +90,6 @@ class AppComponent {
               {
                 selector: 'app-root',
                 template: '<div>{{ "hello" | myPipe }}</div>',
-                standalone: true,
                 imports: [MyPipe],
               },
             ],
@@ -106,7 +105,7 @@ class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 17,
+      lineNumber: 16,
     });
 })();
 
@@ -160,7 +159,6 @@ export class ExportedAppComponent {
               {
                 selector: 'app-root',
                 template: '<div>{{ "hello" | myPipe }}</div>',
-                standalone: true,
                 imports: [MyPipe],
               },
             ],
@@ -176,7 +174,7 @@ export class ExportedAppComponent {
     i0.ɵsetClassDebugInfo(ExportedAppComponent, {
       className: 'ExportedAppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 25,
+      lineNumber: 23,
     });
 })();
 
@@ -273,7 +271,6 @@ class ExportedAppComponent {
               {
                 selector: 'app-root',
                 template: '<div>{{ "hello" | myPipe }}</div>',
-                standalone: true,
                 imports: [MyPipe],
               },
             ],
@@ -289,7 +286,7 @@ class ExportedAppComponent {
     i0.ɵsetClassDebugInfo(ExportedAppComponent, {
       className: 'ExportedAppComponent',
       filePath: 'app.exported-later.ts',
-      lineNumber: 17,
+      lineNumber: 16,
     });
 })();
 

@@ -13,7 +13,6 @@ interface LocalInterface {
 
 @Directive({
   selector: '[appRoot]',
-  standalone: true,
   host: {
     '[attr.foo]': 'prop.foo',
   },
@@ -27,7 +26,7 @@ function _tcb1<T extends LocalInterface>(this: AppDirective<T>) {
   if (true) {
   }
   if (true /*hostBindingsBlockGuard*/) {
-    this.prop /*176,180*/ /*176,180*/.foo; /*181,184*/ /*176,184*/
+    this.prop /*156,160*/ /*156,160*/.foo; /*161,164*/ /*156,164*/
   }
 }
 
@@ -84,7 +83,6 @@ export class AppDirective<T extends LocalInterface> {
             args: [
               {
                 selector: '[appRoot]',
-                standalone: true,
                 host: {
                   '[attr.foo]': 'prop.foo',
                 },

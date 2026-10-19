@@ -142,7 +142,6 @@ export class PlainDir {
 // these two lines would change.
 @Component({
   selector: 'template-bindings',
-  standalone: true,
   template: `<a [href]="evil"></a><div [attr.sandbox]="evil"></div>`,
 })
 export class TemplateBindingsCmp {

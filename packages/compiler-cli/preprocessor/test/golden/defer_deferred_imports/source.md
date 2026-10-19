@@ -65,7 +65,6 @@ import { EagerComponent } from './eager.cmp';
       Placeholder
     }
   `,
-  standalone: true,
   imports: [EagerComponent],
   deferredImports: [DeferredComponent, DeferredPipe]
 })

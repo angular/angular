@@ -1189,7 +1189,6 @@ mod tests {
                 import { ChildComponent } from './child.component';
                 @Component({
                     selector: 'app',
-                    standalone: true,
                     imports: [ChildComponent],
                     template: ''
                 })
@@ -1202,7 +1201,6 @@ mod tests {
                 import { Component } from '@angular/core';
                 @Component({
                     selector: 'child',
-                    standalone: true,
                     template: ''
                 })
                 export class ChildComponent {}
@@ -1252,7 +1250,6 @@ mod tests {
                 import { LeafComponent } from './middle.component';
                 @Component({
                     selector: 'root',
-                    standalone: true,
                     imports: [LeafComponent],
                     template: ''
                 })
@@ -1266,7 +1263,6 @@ mod tests {
                 export { LeafComponent } from './leaf.component';
                 @Component({
                     selector: 'middle',
-                    standalone: true,
                     template: ''
                 })
                 export class MiddleComponent {}
@@ -1278,7 +1274,6 @@ mod tests {
                 import { Component } from '@angular/core';
                 @Component({
                     selector: 'leaf',
-                    standalone: true,
                     template: ''
                 })
                 export class LeafComponent {}
@@ -1341,7 +1336,6 @@ mod tests {
                 import { SharedChildComponent } from './shared_child.component';
                 @Component({
                     selector: 'parent',
-                    standalone: true,
                     imports: [SharedChildComponent],
                     template: ''
                 })
@@ -1355,7 +1349,6 @@ mod tests {
                 import { SharedChildComponent } from './shared_child.component';
                 @Component({
                     selector: 'other-parent',
-                    standalone: true,
                     imports: [SharedChildComponent],
                     template: ''
                 })
@@ -1368,7 +1361,6 @@ mod tests {
                 import { Component } from '@angular/core';
                 @Component({
                     selector: 'independent',
-                    standalone: true,
                     template: ''
                 })
                 export class IndependentComponent {}
@@ -1380,7 +1372,6 @@ mod tests {
                 import { Component } from '@angular/core';
                 @Component({
                     selector: 'shared-child',
-                    standalone: true,
                     template: ''
                 })
                 export class SharedChildComponent {}
@@ -1461,7 +1452,6 @@ mod tests {
                     import {{ Comp{} }} from './comp_{}';
                     @Component({{
                         selector: 'comp-{}',
-                        standalone: true,
                         imports: [Comp{}],
                         template: ''
                     }})
@@ -1478,7 +1468,6 @@ mod tests {
                 import { Component } from '@angular/core';
                 @Component({
                     selector: 'comp-0',
-                    standalone: true,
                     template: ''
                 })
                 export class Comp0 {}
@@ -1558,7 +1547,6 @@ mod tests {
                 import { ChildComponent } from './child.component';
                 @Component({
                     selector: 'parent',
-                    standalone: true,
                     imports: [ChildComponent],
                     template: ''
                 })
@@ -1571,7 +1559,6 @@ mod tests {
                 import { Component } from '@angular/core';
                 @Component({
                     selector: 'child',
-                    standalone: true,
                     template: ''
                 })
                 export class ChildComponent {}
@@ -1662,7 +1649,6 @@ mod tests {
                 import { Component } from '@angular/core';
                 @Component({
                     selector: 'isolated-a',
-                    standalone: true,
                     template: ''
                 })
                 export class IsolatedAComponent {}
@@ -1674,7 +1660,6 @@ mod tests {
                 import { Component } from '@angular/core';
                 @Component({
                     selector: 'isolated-b',
-                    standalone: true,
                     template: ''
                 })
                 export class IsolatedBComponent {}

@@ -106,7 +106,6 @@ export class MyApp {
           }
         </has-content>
       `,
-                standalone: true,
               },
             ],
           },
@@ -121,7 +120,7 @@ export class MyApp {
     i0.ɵsetClassDebugInfo(MyApp, {
       className: 'MyApp',
       filePath: 'ng_content_selectors_diagnostics.ts',
-      lineNumber: 17,
+      lineNumber: 16,
     });
 })();
 

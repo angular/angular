@@ -33,7 +33,6 @@ import { SelectionModel, DefaultItem } from './models';
 @Component({
   selector: 'mat-selection-list',
   template: '',
-  standalone: true,
 })
 export class MatSelectionList<T extends SelectionModel<unknown> = SelectionModel<DefaultItem>> {
   @Input() value!: T;
@@ -51,7 +50,6 @@ export interface LocalModel {
 @Component({
   selector: 'mat-local-list',
   template: '',
-  standalone: true,
 })
 export class MatLocalList<T extends LocalModel = LocalModel> {
   @Input() value!: T;
@@ -65,7 +63,6 @@ import { SelectionModel as CustomModel, DefaultItem } from './models';
 
 @Directive({
   selector: '[genericDir]',
-  standalone: true,
 })
 export class GenericDir<T extends CustomModel<U>, U extends DefaultItem = DefaultItem> {
   @Input('genericDir') data!: T;
@@ -111,7 +108,6 @@ import { MatDtsList } from './dts-list';
     <div [genericDir]="selection"></div>
     <mat-dts-list [value]="selection"></mat-dts-list>
   `,
-  standalone: true,
 })
 export class AppComponent {
   selection: any;

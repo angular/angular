@@ -64,7 +64,6 @@ export class AppComponent {
         <proto-box [value]="'test'"></proto-box>
         <div [fireTeleportalOutlet]="myPortal"></div>
       `,
-                standalone: true,
               },
             ],
           },
@@ -79,7 +78,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 14,
+      lineNumber: 13,
     });
 })();
 
@@ -140,7 +139,6 @@ export class ProtoBox<
               {
                 selector: 'proto-box',
                 template: '',
-                standalone: true,
               },
             ],
           },
@@ -155,7 +153,7 @@ export class ProtoBox<
     i0.ɵsetClassDebugInfo(ProtoBox, {
       className: 'ProtoBox',
       filePath: 'proto.component.ts',
-      lineNumber: 9,
+      lineNumber: 8,
     });
 })();
 

@@ -61,7 +61,6 @@ export class AppCmp {
             args: [
               {
                 selector: 'app-cmp',
-                standalone: true,
                 imports: [MyDir],
                 template:
                   '<div myDir [myDirAliasedInp]="text" (myDirAliasedOut)="onEvent($event)"></div>',
@@ -79,7 +78,7 @@ export class AppCmp {
     i0.ɵsetClassDebugInfo(AppCmp, {
       className: 'AppCmp',
       filePath: 'src/app/app.component.ts',
-      lineNumber: 10,
+      lineNumber: 9,
     });
 })();
 
@@ -141,7 +140,6 @@ export class MyDir {
             args: [
               {
                 selector: '[myDir]',
-                standalone: true,
                 hostDirectives: [
                   {
                     directive: HostDir,
@@ -196,21 +194,10 @@ export class HostDir {
     });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
-      i0.ɵsetClassMetadata(
-        HostDir,
-        [
-          {
-            type: Directive,
-            args: [
-              {
-                standalone: true,
-              },
-            ],
-          },
-        ],
-        null,
-        { hostInp: [{ type: Input }], hostOut: [{ type: Output }] },
-      );
+      i0.ɵsetClassMetadata(HostDir, [{ type: Directive, args: [{}] }], null, {
+        hostInp: [{ type: Input }],
+        hostOut: [{ type: Output }],
+      });
   }
 }
 

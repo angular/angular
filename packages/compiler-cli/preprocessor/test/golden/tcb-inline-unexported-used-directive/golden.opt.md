@@ -18,7 +18,6 @@ class LocalDir {
 @Component({
   selector: 'app-root',
   template: '<div [localDir]="message"></div>',
-  standalone: true,
   imports: [LocalDir],
 })
 export class AppComponent {
@@ -137,7 +136,6 @@ export class AppComponent {
               {
                 selector: 'app-root',
                 template: '<div [localDir]="message"></div>',
-                standalone: true,
                 imports: [LocalDir],
               },
             ],
@@ -153,7 +151,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 17,
+      lineNumber: 16,
     });
 })();
 

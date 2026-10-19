@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {TsGoFacade} from '../src/facade';
-import * as path from 'path';
 import * as fs from 'node:fs/promises';
+import * as path from 'path';
 import * as rpc from 'vscode-jsonrpc/node';
+import {TsGoFacade} from '../src/facade';
 
-import {TestEnv, getTestWorkspacePath, startTestServer} from './test_helpers';
 import {TestFileManager} from './test_file_manager';
+import {TestEnv, getTestWorkspacePath, startTestServer} from './test_helpers';
 
 describe('Signature Help with TS 7 binary', () => {
   let connection: rpc.MessageConnection;
@@ -51,7 +51,6 @@ describe('Signature Help with TS 7 binary', () => {
       @Component({
         selector: 'main-cmp',
         template: '{{ foo() }}',
-        standalone: true,
       })
       export class MainCmp {
         foo(alpha: string, beta: number): string {
@@ -82,7 +81,6 @@ describe('Signature Help with TS 7 binary', () => {
       @Component({
         selector: 'main-cmp',
         template: '{{ foo("test"¦) }}',
-        standalone: true,
       })
       export class MainCmp {
         foo(alpha: string, beta: number): string {
@@ -107,7 +105,6 @@ describe('Signature Help with TS 7 binary', () => {
       @Component({
         selector: 'main-cmp',
         template: '{{ foo("te¦st", 3) }}',
-        standalone: true,
       })
       export class MainCmp {
         foo(alpha: string, beta: number): string {
@@ -132,7 +129,6 @@ describe('Signature Help with TS 7 binary', () => {
       @Component({
         selector: 'main-cmp',
         template: '{{ foo("test", 1 +¦ 2) }}',
-        standalone: true,
       })
       export class MainCmp {
         foo(alpha: string, beta: number): string {
@@ -157,7 +153,6 @@ describe('Signature Help with TS 7 binary', () => {
       @Component({
         selector: 'main-cmp',
         template: '{{ foo("test", ¦) }}',
-        standalone: true,
       })
       export class MainCmp {
         foo(alpha: string, beta: number): string {
@@ -182,7 +177,6 @@ describe('Signature Help with TS 7 binary', () => {
       @Component({
         selector: 'main-cmp',
         template: '{{ someObj.foo("test"¦) }}',
-        standalone: true,
       })
       export class MainCmp {
         someObj = {
@@ -210,7 +204,6 @@ describe('Signature Help with TS 7 binary', () => {
       @Component({
         selector: 'main-cmp',
         templateUrl: './sig_external.html',
-        standalone: true,
       })
       export class MainCmp {
         foo(alpha: string, beta: number): string {
@@ -237,7 +230,6 @@ describe('Signature Help with TS 7 binary', () => {
       @Component({
         selector: 'main-cmp',
         template: '<button (click)="handleClick($event, ¦)">Click</button>',
-        standalone: true,
       })
       export class MainCmp {
         handleClick(evt: MouseEvent, extra: number): void {}
@@ -260,7 +252,6 @@ describe('Signature Help with TS 7 binary', () => {
       @Component({
         selector: 'main-cmp',
         template: '{{ overloadFn(123, ¦) }}',
-        standalone: true,
       })
       export class MainCmp {
         overloadFn(val: string): string;
@@ -285,7 +276,6 @@ describe('Signature Help with TS 7 binary', () => {
       @Component({
         selector: 'main-cmp',
         template: '{{ someObj?.foo("hello"¦) }}',
-        standalone: true,
       })
       export class MainCmp {
         someObj?: {
@@ -310,7 +300,6 @@ describe('Signature Help with TS 7 binary', () => {
       @Component({
         selector: 'main-cmp',
         template: '{{ myP¦rop }}',
-        standalone: true,
       })
       export class MainCmp {
         myProp = 'hello';
@@ -330,7 +319,6 @@ describe('Signature Help with TS 7 binary', () => {
       @Component({
         selector: 'main-cmp',
         template: '<d¦iv>Hello</div>',
-        standalone: true,
       })
       export class MainCmp {}
     `;
@@ -348,7 +336,6 @@ describe('Signature Help with TS 7 binary', () => {
       @Component({
         selector: 'main-cmp',
         template: '{{ outer(inner(¦)) }}',
-        standalone: true,
       })
       export class MainCmp {
         outer(val: number): string {
@@ -378,7 +365,6 @@ describe('Signature Help with TS 7 binary', () => {
       @Component({
         selector: 'main-cmp',
         template: '{{ processData(¦) }}',
-        standalone: true,
       })
       export class MainCmp {
         processData(data: CustomData): CustomData {

@@ -65,7 +65,6 @@ function app(imports: string, template: string, modules: string[]): TestFile[] {
 
         @Component({
           selector: 'app-root',
-          standalone: true,
           imports: [${modules.map((_, i) => `Dep${i}`).join(', ')}],
           template: \`${template}\`,
         })

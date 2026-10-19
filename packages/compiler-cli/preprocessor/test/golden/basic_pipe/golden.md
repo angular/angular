@@ -29,7 +29,6 @@ export class GenericPipe<T> implements PipeTransform {
               {
                 name: 'generic',
                 pure: true,
-                standalone: true,
               },
             ],
           },
@@ -73,7 +72,6 @@ export class UpcasePipe implements PipeTransform {
               {
                 name: 'upcase',
                 pure: true,
-                standalone: true,
               },
             ],
           },

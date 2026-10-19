@@ -22,7 +22,6 @@ import { Gm2ButtonModule } from '@fake-package/button';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   template: '<button gm2-button></button>',
   imports: [Gm2ButtonModule],
 })

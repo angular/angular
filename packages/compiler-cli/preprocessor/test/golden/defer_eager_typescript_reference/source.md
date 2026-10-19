@@ -15,7 +15,6 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'app-deferred',
   template: 'Deferred content',
-  standalone: true,
 })
 export class DeferredComponent {}
 ```
@@ -27,7 +26,6 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'app-queried',
   template: 'Queried content',
-  standalone: true,
 })
 export class QueriedComponent {}
 ```
@@ -39,14 +37,12 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'app-deferred-twin',
   template: 'Deferred twin',
-  standalone: true,
 })
 export class DeferredTwin {}
 
 @Component({
   selector: 'app-eager-twin',
   template: 'Eager twin',
-  standalone: true,
 })
 export class EagerTwin {}
 ```
@@ -74,7 +70,6 @@ import { DeferredTwin, EagerTwin } from './twins.cmp';
       Placeholder
     }
   `,
-  standalone: true,
   imports: [DeferredComponent, QueriedComponent, DeferredTwin, EagerTwin],
 })
 export class AppComponent {

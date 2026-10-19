@@ -69,7 +69,6 @@ export class TestComponent {
               {
                 selector: 'test-cmp',
                 template: `<p>${GREETING}</p>`,
-                standalone: true,
               },
             ],
           },
@@ -84,7 +83,7 @@ export class TestComponent {
     i0.ɵsetClassDebugInfo(TestComponent, {
       className: 'TestComponent',
       filePath: 'app.component.ts',
-      lineNumber: 9,
+      lineNumber: 8,
     });
 })();
 

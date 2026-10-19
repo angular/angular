@@ -27,7 +27,6 @@ export class ChildComponent {}
 @Component({
   selector: 'jit-cmp',
   template: '<div>JIT</div>',
-  standalone: true,
   jit: true,
 })
 export class JitComponent {
@@ -93,7 +92,6 @@ export class JitComponent {
 
 @Directive({
   selector: '[jitDir]',
-  standalone: true,
   jit: true,
 })
 export class JitDirective {

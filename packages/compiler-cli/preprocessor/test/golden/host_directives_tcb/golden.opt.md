@@ -11,12 +11,12 @@ import * as i1 from '../directives/nested/host_dir';
 /*tcb1*/
 function _tcb1(this: i0.AppCmp) {
   if (true) {
-    var _t1 /*T:HOSTDIR:0*/ /*176,248*/ = null! as i1.HostDir; /*T:VAE*/
-    _t1.hostInp /*188,203*/ = this.text /*206,210*/ /*206,210*/; /*187,211*/
-    _t1['hostOut'] /*213,228*/
+    var _t1 /*T:HOSTDIR:0*/ /*156,228*/ = null! as i1.HostDir; /*T:VAE*/
+    _t1.hostInp /*168,183*/ = this.text /*186,190*/ /*186,190*/; /*167,191*/
+    _t1['hostOut'] /*193,208*/
       .subscribe(($event /*T:EP*/): any => {
-        this.onEvent(/*231,238*/ $event /*239,245*/); /*231,246*/
-      }); /*212,247*/
+        this.onEvent(/*211,218*/ $event /*219,225*/); /*211,226*/
+      }); /*192,227*/
   }
 }
 
@@ -85,7 +85,6 @@ export class AppCmp {
             args: [
               {
                 selector: 'app-cmp',
-                standalone: true,
                 imports: [MyDir],
                 template:
                   '<div myDir [myDirAliasedInp]="text" (myDirAliasedOut)="onEvent($event)"></div>',
@@ -103,7 +102,7 @@ export class AppCmp {
     i0.ɵsetClassDebugInfo(AppCmp, {
       className: 'AppCmp',
       filePath: 'src/app/app.component.ts',
-      lineNumber: 10,
+      lineNumber: 9,
     });
 })();
 
@@ -165,7 +164,6 @@ export class MyDir {
             args: [
               {
                 selector: '[myDir]',
-                standalone: true,
                 hostDirectives: [
                   {
                     directive: HostDir,
@@ -220,21 +218,10 @@ export class HostDir {
     });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
-      i0.ɵsetClassMetadata(
-        HostDir,
-        [
-          {
-            type: Directive,
-            args: [
-              {
-                standalone: true,
-              },
-            ],
-          },
-        ],
-        null,
-        { hostInp: [{ type: Input }], hostOut: [{ type: Output }] },
-      );
+      i0.ɵsetClassMetadata(HostDir, [{ type: Directive, args: [{}] }], null, {
+        hostInp: [{ type: Input }],
+        hostOut: [{ type: Output }],
+      });
   }
 }
 

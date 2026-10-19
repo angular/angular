@@ -25,7 +25,6 @@ import { TypeOnlySymbol, DI_TOKEN } from './some_file';
 @Component({
   selector: 'app-test',
   template: '<div>Test</div>',
-  standalone: true,
 })
 export class TestCase {
   constructor(@Inject(DI_TOKEN) private injected: TypeOnlySymbol) {}

@@ -50,7 +50,6 @@ export class DummyComponent {
             args: [
               {
                 selector: 'dummy-cmp',
-                standalone: true,
                 imports: [CdkScrollable],
                 template: '<div>Dummy</div>',
               },
@@ -67,7 +66,7 @@ export class DummyComponent {
     i0.ɵsetClassDebugInfo(DummyComponent, {
       className: 'DummyComponent',
       filePath: 'minimap.ts',
-      lineNumber: 10,
+      lineNumber: 9,
     });
 })();
 
@@ -133,7 +132,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'minimap.ts',
-      lineNumber: 17,
+      lineNumber: 16,
     });
 })();
 

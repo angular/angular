@@ -116,7 +116,6 @@ export class TestComponent {
               {
                 selector: 'app-test',
                 template: '',
-                standalone: true,
               },
             ],
           },
@@ -143,7 +142,7 @@ export class TestComponent {
     i0.ɵsetClassDebugInfo(TestComponent, {
       className: 'TestComponent',
       filePath: 'test.ts',
-      lineNumber: 18,
+      lineNumber: 17,
     });
 })();
 

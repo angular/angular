@@ -81,7 +81,6 @@ export class AppComponent {
         <div [genericDir]="selection"></div>
         <mat-dts-list [value]="selection"></mat-dts-list>
       `,
-                standalone: true,
               },
             ],
           },
@@ -96,7 +95,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 18,
+      lineNumber: 17,
     });
 })();
 
@@ -145,7 +144,6 @@ export class GenericDir<T extends CustomModel<U>, U extends DefaultItem = Defaul
             args: [
               {
                 selector: '[genericDir]',
-                standalone: true,
               },
             ],
           },
@@ -205,7 +203,6 @@ export class MatSelectionList<T extends SelectionModel<unknown> = SelectionModel
               {
                 selector: 'mat-selection-list',
                 template: '',
-                standalone: true,
               },
             ],
           },
@@ -220,7 +217,7 @@ export class MatSelectionList<T extends SelectionModel<unknown> = SelectionModel
     i0.ɵsetClassDebugInfo(MatSelectionList, {
       className: 'MatSelectionList',
       filePath: 'list.component.ts',
-      lineNumber: 9,
+      lineNumber: 8,
     });
 })();
 
@@ -277,7 +274,6 @@ export class MatLocalList<T extends LocalModel = LocalModel> {
               {
                 selector: 'mat-local-list',
                 template: '',
-                standalone: true,
               },
             ],
           },
@@ -292,7 +288,7 @@ export class MatLocalList<T extends LocalModel = LocalModel> {
     i0.ɵsetClassDebugInfo(MatLocalList, {
       className: 'MatLocalList',
       filePath: 'local-list.component.ts',
-      lineNumber: 12,
+      lineNumber: 11,
     });
 })();
 

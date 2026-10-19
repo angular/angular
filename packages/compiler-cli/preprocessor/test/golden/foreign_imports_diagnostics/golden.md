@@ -59,7 +59,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 template: '<div>Hello</div>',
                 // @ts-ignore: @angular/core does not expose the `foreignImports` property.
                 foreignImports: [
@@ -88,7 +87,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 32,
+      lineNumber: 31,
     });
 })();
 
@@ -181,8 +180,8 @@ export class LegacyComponent {
       "code": 1010,
       "messageText": "Each foreign import must be a call expression, e.g. 'myImport(MyComponent)'.",
       "span": {
-        "start": 637,
-        "end": 648
+        "start": 617,
+        "end": 628
       }
     },
     {
@@ -191,8 +190,8 @@ export class LegacyComponent {
       "code": 1010,
       "messageText": "Foreign import calls must receive exactly one argument, e.g. 'myImport(MyComponent)'.",
       "span": {
-        "start": 674,
-        "end": 709
+        "start": 654,
+        "end": 689
       }
     },
     {
@@ -201,8 +200,8 @@ export class LegacyComponent {
       "code": 1010,
       "messageText": "The foreign import function must be a simple identifier, e.g. 'myImport(MyComponent)'.",
       "span": {
-        "start": 757,
-        "end": 773
+        "start": 737,
+        "end": 753
       }
     },
     {
@@ -211,8 +210,8 @@ export class LegacyComponent {
       "code": 1010,
       "messageText": "The component reference passed to the foreign import must be a simple identifier, e.g. 'myImport(MyComponent)'.",
       "span": {
-        "start": 852,
-        "end": 861
+        "start": 832,
+        "end": 841
       }
     },
     {

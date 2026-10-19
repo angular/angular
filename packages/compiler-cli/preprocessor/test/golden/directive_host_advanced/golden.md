@@ -112,7 +112,6 @@ export class ResizeObserverDirective {
             args: [
               {
                 selector: '[appResizeObserver]',
-                standalone: true,
                 host: {
                   '[class.resizing]': 'isResizing',
                   '[style.min-width.px]': 'minWidth',

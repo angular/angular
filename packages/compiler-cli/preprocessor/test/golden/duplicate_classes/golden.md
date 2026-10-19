@@ -51,7 +51,6 @@ export function runTest() {
                 {
                   selector: 'test-cmp',
                   template: `<div>Class 1</div>`,
-                  standalone: true,
                 },
               ],
             },
@@ -66,7 +65,7 @@ export function runTest() {
       i0.ɵsetClassDebugInfo(TestComponent, {
         className: 'TestComponent',
         filePath: 'app.ts',
-        lineNumber: 9,
+        lineNumber: 8,
       });
   })();
 }
@@ -118,7 +117,6 @@ export function runTest2() {
                 {
                   selector: 'test-cmp',
                   template: `<div>Class 1</div>`,
-                  standalone: true,
                 },
               ],
             },
@@ -133,7 +131,7 @@ export function runTest2() {
       i0.ɵsetClassDebugInfo(TestComponent, {
         className: 'TestComponent',
         filePath: 'app.ts',
-        lineNumber: 20,
+        lineNumber: 18,
       });
   })();
 }

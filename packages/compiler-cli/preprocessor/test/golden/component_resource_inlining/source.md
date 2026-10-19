@@ -23,7 +23,6 @@ import { Component } from '@angular/core';
   templateUrl: './styled.html',
   styleUrls: ['./styled.css', './styled-extra.css'],
   styles: ['.from-inline { color: orange; }'],
-  standalone: true,
 })
 export class StyledComponent {}
 
@@ -34,7 +33,6 @@ export class StyledComponent {}
   selector: 'empty-styleurls-cmp',
   template: '<div>Hello</div>',
   styleUrls: [],
-  standalone: true,
 })
 export class EmptyStyleUrlsComponent {}
 ```

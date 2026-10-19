@@ -61,7 +61,6 @@ import {
 
 @AngularDirective({
   selector: '[myDir]',
-  standalone: true,
   inputs: ['declaredInput: dirInput'],
   outputs: ['declaredOutput: dirOutput'],
 })
@@ -80,7 +79,6 @@ import { Pipe as AngularPipe } from '@angular/core';
 
 @AngularPipe({
   name: 'myPipe',
-  standalone: true,
 })
 export class MyPipe {}
 ```
@@ -101,7 +99,6 @@ export const MY_TOKEN = new InjectionToken<string>('MY_TOKEN');
 
 @AngularComponent({
   selector: 'my-comp',
-  standalone: true,
   imports: [MyDirective, MyPipe],
   template: '<div myDir>{{ "test" | myPipe }}</div>',
 })
@@ -133,7 +130,6 @@ export class NamespacedService {
 
 @core.Directive({
   selector: '[namespacedDir]',
-  standalone: true,
 })
 export class NamespacedDirective {
   @core.Input() prop: string = '';

@@ -46,7 +46,6 @@ import { GenericComponent, DefaultGenericComponent } from './generic.component';
     <app-generic [value]="123"></app-generic>
     <app-default-generic [value]="{a: 1}"></app-default-generic>
   `,
-  standalone: true,
   imports: [GenericComponent, DefaultGenericComponent]
 })
 export class AppComponent {}

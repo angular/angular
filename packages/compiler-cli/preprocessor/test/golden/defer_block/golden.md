@@ -81,7 +81,6 @@ export class AppComponent {
           Placeholder
         }
       `,
-                standalone: true,
                 imports: [DeferredComponent, TestPipe],
               },
             ],
@@ -97,7 +96,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 18,
+      lineNumber: 17,
     });
 })();
 

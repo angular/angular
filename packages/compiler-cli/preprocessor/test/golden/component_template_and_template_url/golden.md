@@ -48,7 +48,6 @@ export class AppComp {
             args: [
               {
                 selector: 'app-comp',
-                standalone: true,
                 template: '<div>External Template Content</div>',
               },
             ],
@@ -61,7 +60,7 @@ export class AppComp {
 }
 ((): any => {
   (typeof ngDevMode === 'undefined' || ngDevMode) &&
-    i0.ɵsetClassDebugInfo(AppComp, { className: 'AppComp', filePath: 'app.ts', lineNumber: 9 });
+    i0.ɵsetClassDebugInfo(AppComp, { className: 'AppComp', filePath: 'app.ts', lineNumber: 8 });
 })();
 
 ```

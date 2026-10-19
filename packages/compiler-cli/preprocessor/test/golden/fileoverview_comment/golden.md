@@ -53,7 +53,6 @@ export class AppComponent {
               {
                 selector: 'app-root',
                 template: '<div>Fileoverview Test</div>',
-                standalone: true,
               },
             ],
           },
@@ -68,7 +67,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 12,
+      lineNumber: 11,
     });
 })();
 

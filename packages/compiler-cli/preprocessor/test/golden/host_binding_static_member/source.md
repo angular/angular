@@ -14,7 +14,6 @@ import { Component, HostBinding, HostListener } from '@angular/core';
 
 @Component({
   selector: 'test-cmp',
-  standalone: true,
   template: '<div>Hello</div>',
 })
 export class TestComponent {

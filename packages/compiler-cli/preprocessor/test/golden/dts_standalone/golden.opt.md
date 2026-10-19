@@ -11,15 +11,15 @@ import * as i1 from './my-dir';
 /*tcb1*/
 function _tcb1(this: i0.AppComponent) {
   if (true) {
-    var _t1 /*T:DIR:0*/ /*219,264*/ = null! as i1.MyDtsDirective; /*T:VAE*/
-    _t1.myProp /*247,253*/ = 'test' /*256,262*/; /*246,263*/
-    var _t2 /*T:DIR:0*/ /*275,315*/ = null! as i1.MyDtsComponent; /*T:VAE*/
-    _t2.myProp /*298,304*/ = 'test' /*307,313*/; /*297,314*/
-    var _t3 /*232,236*/ = _t1; /*231,245*/
-    var _t4 /*284,288*/ = _t2; /*283,296*/
+    var _t1 /*T:DIR:0*/ /*199,244*/ = null! as i1.MyDtsDirective; /*T:VAE*/
+    _t1.myProp /*227,233*/ = 'test' /*236,242*/; /*226,243*/
+    var _t2 /*T:DIR:0*/ /*255,295*/ = null! as i1.MyDtsComponent; /*T:VAE*/
+    _t2.myProp /*278,284*/ = 'test' /*287,293*/; /*277,294*/
+    var _t3 /*212,216*/ = _t1; /*211,225*/
+    var _t4 /*264,268*/ = _t2; /*263,276*/
     '' +
-      _t3 /*331,335*/.myProp /*336,342*/ /*331,342*/ +
-      _t4 /*349,353*/.myProp /*354,360*/ /*349,360*/;
+      _t3 /*311,315*/.myProp /*316,322*/ /*311,322*/ +
+      _t4 /*329,333*/.myProp /*334,340*/ /*329,340*/;
   }
 }
 
@@ -91,7 +91,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 imports: [MyDtsDirective, MyDtsComponent],
                 template: `
         <div my-dir #ref1="myDir1" [myProp]="'test'"></div>
@@ -112,7 +111,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.ts',
-      lineNumber: 14,
+      lineNumber: 13,
     });
 })();
 

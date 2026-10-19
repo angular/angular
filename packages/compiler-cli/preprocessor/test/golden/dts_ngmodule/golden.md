@@ -57,7 +57,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 imports: [MyNestedModule],
                 template: `
         <div my-dir [myProp]="'test'"></div>
@@ -77,7 +76,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.ts',
-      lineNumber: 13,
+      lineNumber: 12,
     });
 })();
 

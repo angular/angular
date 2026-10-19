@@ -10,7 +10,7 @@ import * as i0 from './test';
 /*tcb1*/
 function _tcb1(this: i0.AppComponent) {
   if (true) {
-    var _t1 /*T:DIR:0*/ /*440,454*/ = null! as i0.FullDir; /*T:VAE*/
+    var _t1 /*T:DIR:0*/ /*420,434*/ = null! as i0.FullDir; /*T:VAE*/
   }
 }
 
@@ -32,7 +32,6 @@ class BaseDir {}
 
 @Directive({
   selector: '[fullDir]',
-  standalone: true,
   jit: false,
 })
 export class FullDir extends BaseDir {
@@ -95,7 +94,6 @@ export class AppComponent {
               {
                 selector: 'app-root',
                 template: '<div *fullDir></div>',
-                standalone: true,
                 imports: [FullDir],
               },
             ],
@@ -111,7 +109,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'test.ts',
-      lineNumber: 31,
+      lineNumber: 29,
     });
 })();
 

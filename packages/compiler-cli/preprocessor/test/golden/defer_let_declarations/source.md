@@ -52,7 +52,6 @@ import { TestPipe } from './test.pipe';
       Placeholder
     }
   `,
-  standalone: true,
   imports: [DeferredComponent, TestPipe]
 })
 export class AppComponent {

@@ -17,7 +17,6 @@ const nonAnalyzableRefersToString = "mySelector";
 @Component({
   selector: 'test-comp',
   template: '<div></div>',
-  standalone: true,
 })
 export class TestComp {
   // String literal predicate: should compile to a string array

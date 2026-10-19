@@ -16,7 +16,6 @@ class BaseDir {}
 
 @Directive({
   selector: '[fullDir]',
-  standalone: true,
   jit: false
 })
 export class FullDir extends BaseDir {
@@ -37,7 +36,6 @@ export class JitDir {}
 @Component({
   selector: 'app-root',
   template: '<div *fullDir></div>',
-  standalone: true,
   imports: [FullDir]
 })
 export class AppComponent {}

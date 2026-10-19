@@ -66,7 +66,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 imports: [IoArrayComponent],
                 template: `
         <app-io-array
@@ -90,7 +89,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 17,
+      lineNumber: 16,
     });
 })();
 

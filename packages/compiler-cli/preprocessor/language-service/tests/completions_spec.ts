@@ -6,23 +6,23 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {TsGoFacade} from '../src/facade';
 import * as fs from 'node:fs/promises';
 import * as rpc from 'vscode-jsonrpc/node';
 import {CompletionItemKind} from 'vscode-languageserver';
+import {TsGoFacade} from '../src/facade';
 
+import {TestFileManager} from './test_file_manager';
 import {
   TestEnv,
+  expectAll,
+  expectContain,
+  expectContainInsertTextWithSnippet,
+  expectDoesNotContain,
+  expectDoesNotContainInsertTextWithSnippet,
   getTestWorkspacePath,
   startTestServer,
-  expectContain,
-  expectAll,
-  expectDoesNotContain,
-  expectContainInsertTextWithSnippet,
-  expectDoesNotContainInsertTextWithSnippet,
   toText,
 } from './test_helpers';
-import {TestFileManager} from './test_file_manager';
 
 describe('Completions with TS 7 binary', () => {
   let connection: rpc.MessageConnection;
@@ -58,7 +58,6 @@ describe('Completions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '{{ti¦}}',
-          standalone: true,
         })
         export class AppCmp {
           title = 'App';
@@ -79,7 +78,6 @@ describe('Completions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '{{ ¦ }}',
-          standalone: true,
         })
         export class AppCmp {
           title = 'App';
@@ -100,7 +98,6 @@ describe('Completions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<h1 [title]="ti¦"></h1>',
-          standalone: true,
         })
         export class AppCmp {
           title = 'App';
@@ -121,7 +118,6 @@ describe('Completions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<h1 [title]="¦"></h1>',
-          standalone: true,
         })
         export class AppCmp {
           title = 'App';
@@ -142,7 +138,6 @@ describe('Completions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '{{ti¦}}',
-          standalone: true,
         })
         export class AppCmp {
           /** This is the title of AppCmp */
@@ -165,7 +160,6 @@ describe('Completions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div #todo></div>{{t¦}}',
-          standalone: true,
         })
         export class AppCmp {
           title = 'App';
@@ -185,7 +179,6 @@ describe('Completions with TS 7 binary', () => {
 
         @Directive({
           selector: '[ngFor][ngForOf]',
-          standalone: true,
         })
         export class NgForOf<T> {
           @Input() ngForOf!: T[];
@@ -197,7 +190,6 @@ describe('Completions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div *ngFor="let hero of heroes">{{h¦}}</div>',
-          standalone: true,
           imports: [NgForOf],
         })
         export class AppCmp {
@@ -218,7 +210,6 @@ describe('Completions with TS 7 binary', () => {
 
         @Directive({
           selector: '[ngFor][ngForOf]',
-          standalone: true,
         })
         export class NgForOf<T> {
           @Input() ngForOf!: T[];
@@ -226,7 +217,6 @@ describe('Completions with TS 7 binary', () => {
 
         @Directive({
           selector: '[ngIf]',
-          standalone: true,
         })
         export class NgIf {
           @Input() ngIf!: any;
@@ -235,7 +225,6 @@ describe('Completions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div *ngFor="let hero of heroes"><div *ngIf="showDetails">{{h¦}}</div></div>',
-          standalone: true,
           imports: [NgForOf, NgIf],
         })
         export class AppCmp {
@@ -257,7 +246,6 @@ describe('Completions with TS 7 binary', () => {
 
         @Directive({
           selector: '[ngIf]',
-          standalone: true,
         })
         export class NgIf {
           @Input() ngIf!: any;
@@ -266,7 +254,6 @@ describe('Completions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div *ngIf="true">@for (item of items; track item) { {{it¦}} }</div>',
-          standalone: true,
           imports: [NgIf],
         })
         export class AppCmp {
@@ -288,7 +275,6 @@ describe('Completions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<button (click)="t¦"></button>',
-          standalone: true,
         })
         export class AppCmp {
           title = 'App';
@@ -308,7 +294,6 @@ describe('Completions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<button (click)="¦"></button>',
-          standalone: true,
         })
         export class AppCmp {
           title = 'App';
@@ -327,7 +312,6 @@ describe('Completions with TS 7 binary', () => {
 
         @Directive({
           selector: '[model]',
-          standalone: true,
         })
         export class ModelDir {
           @Input() model: any;
@@ -337,7 +321,6 @@ describe('Completions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<h1 [(model)]="t¦"></h1>',
-          standalone: true,
           imports: [ModelDir],
         })
         export class AppCmp {
@@ -357,7 +340,6 @@ describe('Completions with TS 7 binary', () => {
 
         @Directive({
           selector: '[model]',
-          standalone: true,
         })
         export class ModelDir {
           @Input() model: any;
@@ -367,7 +349,6 @@ describe('Completions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<h1 [(model)]="title.¦"></h1>',
-          standalone: true,
           imports: [ModelDir],
         })
         export class AppCmp {
@@ -387,7 +368,6 @@ describe('Completions with TS 7 binary', () => {
 
         @Directive({
           selector: '[model]',
-          standalone: true,
         })
         export class ModelDir {
           @Input() model: any;
@@ -397,7 +377,6 @@ describe('Completions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<h1 [(model)]="¦"></h1>',
-          standalone: true,
           imports: [ModelDir],
         })
         export class AppCmp {
@@ -419,7 +398,6 @@ describe('Completions with TS 7 binary', () => {
 
         @Directive({
           selector: '[dir]',
-          standalone: true,
         })
         export class Dir {
           @Input() myInput!: 'foo' | 42 | null | undefined;
@@ -428,7 +406,6 @@ describe('Completions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<input dir [myInput]="¦">',
-          standalone: true,
           imports: [Dir],
         })
         export class AppCmp {}
@@ -449,7 +426,6 @@ describe('Completions with TS 7 binary', () => {
 
         @Directive({
           selector: '[dir]',
-          standalone: true,
         })
         export class Dir {
           @Input() myInput!: 'foo' | 42 | null | undefined;
@@ -458,7 +434,6 @@ describe('Completions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<input dir [myInput]="a¦">',
-          standalone: true,
           imports: [Dir],
         })
         export class AppCmp {}
@@ -477,7 +452,6 @@ describe('Completions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '{{() => ti¦}}',
-          standalone: true,
         })
         export class AppCmp {
           title = 'App';
@@ -498,7 +472,6 @@ describe('Completions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '{{((value) => value.¦)(foo)}}',
-          standalone: true,
         })
         export class AppCmp {
           foo = {a: 1, b: 'test'};
@@ -519,7 +492,6 @@ describe('Completions with TS 7 binary', () => {
 
         @Directive({
           selector: '[dir]',
-          standalone: true,
         })
         export class Dir {
           myInput = input<'foo' | 42 | null>();
@@ -528,7 +500,6 @@ describe('Completions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: \`<input dir [myInput]="'foo'.¦">\`,
-          standalone: true,
           imports: [Dir],
         })
         export class AppCmp {}
@@ -548,7 +519,6 @@ describe('Completions with TS 7 binary', () => {
 
         @Directive({
           selector: '[dir]',
-          standalone: true,
         })
         export class Dir {
           myInput = input<'foo' | 42 | null>();
@@ -557,7 +527,6 @@ describe('Completions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<input dir [myInput]="¦">',
-          standalone: true,
           imports: [Dir],
         })
         export class AppCmp {}
@@ -578,7 +547,6 @@ describe('Completions with TS 7 binary', () => {
 
         @Directive({
           selector: '[dir]',
-          standalone: true,
         })
         export class Dir {
           myInput = input<'foo' | 42 | null>();
@@ -587,7 +555,6 @@ describe('Completions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<input dir [myInput]="a¦">',
-          standalone: true,
           imports: [Dir],
         })
         export class AppCmp {}
@@ -605,7 +572,6 @@ describe('Completions with TS 7 binary', () => {
 
         @Directive({
           selector: '[dir]',
-          standalone: true,
         })
         export class Dir {
           myInput = input<'foo' | 'bar'>();
@@ -614,7 +580,6 @@ describe('Completions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<input dir myInput="foo¦">',
-          standalone: true,
           imports: [Dir],
         })
         export class AppCmp {}
@@ -634,7 +599,6 @@ describe('Completions with TS 7 binary', () => {
 
         @Directive({
           selector: '[dir]',
-          standalone: true,
         })
         export class Dir {
           bla = output<string>();
@@ -643,7 +607,6 @@ describe('Completions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<button dir ¦></button>',
-          standalone: true,
           imports: [Dir],
         })
         export class AppCmp {}
@@ -661,7 +624,6 @@ describe('Completions with TS 7 binary', () => {
 
         @Directive({
           selector: '[dir]',
-          standalone: true,
         })
         export class Dir {
           bla = output<string>();
@@ -670,7 +632,6 @@ describe('Completions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: \`<input dir (bla)="'foo'.¦">\`,
-          standalone: true,
           imports: [Dir],
         })
         export class AppCmp {}
@@ -688,7 +649,6 @@ describe('Completions with TS 7 binary', () => {
 
         @Directive({
           selector: '[dir]',
-          standalone: true,
         })
         export class Dir {
           bla = output<string>();
@@ -697,7 +657,6 @@ describe('Completions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<input dir (bla)="$event.¦">',
-          standalone: true,
           imports: [Dir],
         })
         export class AppCmp {}
@@ -719,7 +678,6 @@ describe('Completions with TS 7 binary', () => {
 
         @Directive({
           selector: '[dir]',
-          standalone: true,
         })
         export class Dir {
           bla = outputFromObservable(new Subject<string>());
@@ -728,7 +686,6 @@ describe('Completions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<button dir ¦></button>',
-          standalone: true,
           imports: [Dir],
         })
         export class AppCmp {}
@@ -748,7 +705,6 @@ describe('Completions with TS 7 binary', () => {
 
         @Directive({
           selector: '[dir]',
-          standalone: true,
         })
         export class Dir {
           bla = outputFromObservable(new Subject<string>());
@@ -757,7 +713,6 @@ describe('Completions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: \`<input dir (bla)="'foo'.¦">\`,
-          standalone: true,
           imports: [Dir],
         })
         export class AppCmp {}
@@ -779,7 +734,6 @@ describe('Completions with TS 7 binary', () => {
 
         @Directive({
           selector: '[dir]',
-          standalone: true,
         })
         export class Dir {
           bla = outputFromObservable(new Subject<string>());
@@ -788,7 +742,6 @@ describe('Completions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<input dir (bla)="$event.¦">',
-          standalone: true,
           imports: [Dir],
         })
         export class AppCmp {}
@@ -808,7 +761,6 @@ describe('Completions with TS 7 binary', () => {
 
         @Directive({
           selector: '[dir]',
-          standalone: true,
         })
         export class Dir {
           twoWayValue = model<string>();
@@ -817,7 +769,6 @@ describe('Completions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<button dir ¦></button>',
-          standalone: true,
           imports: [Dir],
         })
         export class AppCmp {}
@@ -837,7 +788,6 @@ describe('Completions with TS 7 binary', () => {
 
         @Directive({
           selector: '[dir]',
-          standalone: true,
         })
         export class Dir {
           twoWayValue = model<string>();
@@ -846,7 +796,6 @@ describe('Completions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: \`<input dir [twoWayValue]="'foo'.¦">\`,
-          standalone: true,
           imports: [Dir],
         })
         export class AppCmp {}
@@ -864,7 +813,6 @@ describe('Completions with TS 7 binary', () => {
 
         @Directive({
           selector: '[dir]',
-          standalone: true,
         })
         export class Dir {
           twoWayValue = model<string>();
@@ -873,7 +821,6 @@ describe('Completions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: \`<input dir (twoWayValueChange)="'foo'.¦">\`,
-          standalone: true,
           imports: [Dir],
         })
         export class AppCmp {}
@@ -891,7 +838,6 @@ describe('Completions with TS 7 binary', () => {
 
         @Directive({
           selector: '[dir]',
-          standalone: true,
         })
         export class Dir {
           twoWayValue = model<string>();
@@ -900,7 +846,6 @@ describe('Completions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: \`<input dir [(twoWayValue)]="'foo'.¦">\`,
-          standalone: true,
           imports: [Dir],
         })
         export class AppCmp {}
@@ -918,7 +863,6 @@ describe('Completions with TS 7 binary', () => {
 
         @Directive({
           selector: '[dir]',
-          standalone: true,
         })
         export class Dir {
           twoWayValue = model<string>();
@@ -927,7 +871,6 @@ describe('Completions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<input dir (twoWayValueChange)="$event.¦">',
-          standalone: true,
           imports: [Dir],
         })
         export class AppCmp {}
@@ -952,7 +895,6 @@ describe('Completions with TS 7 binary', () => {
             @Component({
               selector: 'app-cmp',
               template: '${prefix}¦',
-              standalone: true,
             })
             export class AppCmp {}
           `;
@@ -974,7 +916,6 @@ describe('Completions with TS 7 binary', () => {
             @Component({
               selector: 'app-cmp',
               template: 'foo ${prefix}¦',
-              standalone: true,
             })
             export class AppCmp {}
           `;
@@ -996,7 +937,6 @@ describe('Completions with TS 7 binary', () => {
             @Component({
               selector: 'app-cmp',
               template: '${prefix}¦ foo',
-              standalone: true,
             })
             export class AppCmp {}
           `;
@@ -1019,7 +959,6 @@ describe('Completions with TS 7 binary', () => {
               selector: 'app-cmp',
               template: \`foo
 ${prefix}¦\`,
-              standalone: true,
             })
             export class AppCmp {}
           `;
@@ -1042,7 +981,6 @@ ${prefix}¦\`,
               selector: 'app-cmp',
               template: \`${prefix}¦
 foo\`,
-              standalone: true,
             })
             export class AppCmp {}
           `;
@@ -1066,7 +1004,6 @@ foo\`,
               template: \`<div></div>
   ${prefix}¦
 <span></span>\`,
-              standalone: true,
             })
             export class AppCmp {}
           `;
@@ -1090,7 +1027,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '@if (1) { @s¦ }',
-          standalone: true,
         })
         export class AppCmp {}
       `;
@@ -1108,7 +1044,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '@switch (1) { @c¦ }',
-          standalone: true,
         })
         export class AppCmp {}
       `;
@@ -1126,7 +1061,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '@for (route of routes; track $index) { {{rou¦}} }',
-          standalone: true,
         })
         export class AppCmp {
           routes: string[] = [];
@@ -1147,7 +1081,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '@if (userProfile; as user) { {{us¦}} }',
-          standalone: true,
         })
         export class AppCmp {
           userProfile = {name: 'Angular'};
@@ -1168,7 +1101,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '@for (route of routes; track $index) { {{route}} } @empty { {{rou¦}} }',
-          standalone: true,
         })
         export class AppCmp {
           routes: string[] = [];
@@ -1191,7 +1123,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '{{name.f¦}}',
-          standalone: true,
         })
         export class AppCmp {
           name = {first: 'John', last: 'Doe'};
@@ -1214,7 +1145,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '{{name.¦}}',
-          standalone: true,
         })
         export class AppCmp {
           name = {first: 'John', last: 'Doe'};
@@ -1237,7 +1167,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: \`<button (click)="name.fi¦ = 'test'"></button>\`,
-          standalone: true,
         })
         export class AppCmp {
           name = {first: 'John', last: 'Doe'};
@@ -1260,7 +1189,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '{{name.f¦()}}',
-          standalone: true,
         })
         export class AppCmp {
           name = {
@@ -1286,7 +1214,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '{{name.¦()}}',
-          standalone: true,
         })
         export class AppCmp {
           name = {
@@ -1312,7 +1239,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '{{name?.f¦}}',
-          standalone: true,
         })
         export class AppCmp {
           name?: {first: string; last: string};
@@ -1335,7 +1261,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '{{name?.¦}}',
-          standalone: true,
         })
         export class AppCmp {
           name?: {first: string; last: string};
@@ -1358,7 +1283,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '{{name?.f¦()}}',
-          standalone: true,
         })
         export class AppCmp {
           name?: {
@@ -1386,7 +1310,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '<div¦>',
-          standalone: true,
         })
         export class AppCmp {}
       `;
@@ -1404,14 +1327,12 @@ foo\`,
         /** This is another directive. */
         @Directive({
           selector: 'other-dir',
-          standalone: true,
         })
         export class OtherDir {}
 
         @Component({
           selector: 'app-cmp',
           template: '<div¦>',
-          standalone: true,
           imports: [OtherDir],
         })
         export class AppCmp {}
@@ -1430,14 +1351,12 @@ foo\`,
         @Component({
           selector: 'other-cmp',
           template: '<div>Hello</div>',
-          standalone: true,
         })
         export class OtherCmp {}
 
         @Component({
           selector: 'app-cmp',
           template: '<div¦>',
-          standalone: true,
           imports: [OtherCmp],
         })
         export class AppCmp {}
@@ -1461,14 +1380,12 @@ foo\`,
         @Component({
           selector: 'other-cmp',
           template: 'unimportant',
-          standalone: true,
         })
         export class OtherCmp {}
 
         @Component({
           selector: 'app-cmp',
           template: '<other¦',
-          standalone: true,
           imports: [OtherCmp],
         })
         export class AppCmp {}
@@ -1487,14 +1404,12 @@ foo\`,
         @Component({
           selector: 'other-cmp',
           template: 'unimportant',
-          standalone: true,
         })
         export class OtherCmp {}
 
         @Component({
           selector: 'app-cmp',
           template: '<¦',
-          standalone: true,
           imports: [OtherCmp],
         })
         export class AppCmp {}
@@ -1513,14 +1428,12 @@ foo\`,
         @Component({
           selector: 'other-cmp',
           template: 'unimportant',
-          standalone: true,
         })
         export class OtherCmp {}
 
         @Component({
           selector: 'app-cmp',
           template: 'a <¦',
-          standalone: true,
           imports: [OtherCmp],
         })
         export class AppCmp {}
@@ -1539,14 +1452,12 @@ foo\`,
         @Component({
           selector: 'other-cmp',
           template: 'unimportant',
-          standalone: true,
         })
         export class OtherCmp {}
 
         @Component({
           selector: 'app-cmp',
           template: '<  ¦       ',
-          standalone: true,
           imports: [OtherCmp],
         })
         export class AppCmp {}
@@ -1568,7 +1479,6 @@ foo\`,
           @Component({
             selector: 'app-cmp',
             template: '<input ¦>',
-            standalone: true,
           })
           export class AppCmp {}
         `;
@@ -1587,7 +1497,6 @@ foo\`,
           @Component({
             selector: 'app-cmp',
             template: '<button ¦></button>',
-            standalone: true,
           })
           export class AppCmp {}
         `;
@@ -1605,7 +1514,6 @@ foo\`,
           @Component({
             selector: 'app-cmp',
             template: '<br ¦ />',
-            standalone: true,
           })
           export class AppCmp {}
         `;
@@ -1623,7 +1531,6 @@ foo\`,
           @Component({
             selector: 'app-cmp',
             template: '<button ></¦button>',
-            standalone: true,
           })
           export class AppCmp {}
         `;
@@ -1641,7 +1548,6 @@ foo\`,
           @Component({
             selector: 'app-cmp',
             template: '<button>¦</button>',
-            standalone: true,
           })
           export class AppCmp {}
         `;
@@ -1659,7 +1565,6 @@ foo\`,
           @Component({
             selector: 'app-cmp',
             template: '<button (¦)></button>',
-            standalone: true,
           })
           export class AppCmp {}
         `;
@@ -1677,7 +1582,6 @@ foo\`,
           @Component({
             selector: 'app-cmp',
             template: '<input val¦>',
-            standalone: true,
           })
           export class AppCmp {}
         `;
@@ -1696,7 +1600,6 @@ foo\`,
           @Component({
             selector: 'app-cmp',
             template: '<input [val¦]>',
-            standalone: true,
           })
           export class AppCmp {}
         `;
@@ -1714,7 +1617,6 @@ foo\`,
           @Component({
             selector: 'app-cmp',
             template: \`<button (cl¦)=''></button>\`,
-            standalone: true,
           })
           export class AppCmp {}
         `;
@@ -1733,7 +1635,6 @@ foo\`,
 
           @Directive({
             selector: '[dir]',
-            standalone: true,
           })
           export class Dir {
             @Input() myInput!: string;
@@ -1743,7 +1644,6 @@ foo\`,
           @Component({
             selector: 'app-cmp',
             template: '<input dir ¦>',
-            standalone: true,
             imports: [Dir],
           })
           export class AppCmp {}
@@ -1763,7 +1663,6 @@ foo\`,
 
           @Directive({
             selector: '[dir]',
-            standalone: true,
           })
           export class Dir {
             @Input() myInput!: string;
@@ -1772,7 +1671,6 @@ foo\`,
           @Component({
             selector: 'app-cmp',
             template: '<input dir my¦>',
-            standalone: true,
             imports: [Dir],
           })
           export class AppCmp {}
@@ -1791,7 +1689,6 @@ foo\`,
 
           @Directive({
             selector: '[dir]',
-            standalone: true,
           })
           export class Dir {
             @Input() myInput!: string;
@@ -1800,7 +1697,6 @@ foo\`,
           @Component({
             selector: 'app-cmp',
             template: '<input dir [my¦]>',
-            standalone: true,
             imports: [Dir],
           })
           export class AppCmp {}
@@ -1817,7 +1713,6 @@ foo\`,
           import {Component, Directive, Input} from '@angular/core';
 
           @Directive({
-            standalone: true,
           })
           export class HostDir {
             @Input() myInput = 'foo';
@@ -1829,14 +1724,12 @@ foo\`,
               directive: HostDir,
               inputs: ['myInput']
             }],
-            standalone: true,
           })
           export class Dir {}
 
           @Component({
             selector: 'app-cmp',
             template: '<input dir my¦>',
-            standalone: true,
             imports: [Dir],
           })
           export class AppCmp {}
@@ -1853,7 +1746,6 @@ foo\`,
           import {Component, Directive, Input} from '@angular/core';
 
           @Directive({
-            standalone: true,
           })
           export class HostDir {
             @Input() myInput = 'foo';
@@ -1862,14 +1754,12 @@ foo\`,
           @Directive({
             selector: '[dir]',
             hostDirectives: [HostDir],
-            standalone: true,
           })
           export class Dir {}
 
           @Component({
             selector: 'app-cmp',
             template: '<input dir my¦>',
-            standalone: true,
             imports: [Dir],
           })
           export class AppCmp {}
@@ -1886,7 +1776,6 @@ foo\`,
           import {Component, Directive, Input} from '@angular/core';
 
           @Directive({
-            standalone: true,
           })
           export class HostDir {
             @Input() myInput = 'foo';
@@ -1898,14 +1787,12 @@ foo\`,
               directive: HostDir,
               inputs: ['myInput: alias']
             }],
-            standalone: true,
           })
           export class Dir {}
 
           @Component({
             selector: 'app-cmp',
             template: '<input dir ali¦>',
-            standalone: true,
             imports: [Dir],
           })
           export class AppCmp {}
@@ -1922,7 +1809,6 @@ foo\`,
           import {Component, Directive, Input} from '@angular/core';
 
           @Directive({
-            standalone: true,
           })
           export class HostDir {
             @Input('myPublicInput') myInput = 'foo';
@@ -1934,14 +1820,12 @@ foo\`,
               directive: HostDir,
               inputs: ['myPublicInput: alias']
             }],
-            standalone: true,
           })
           export class Dir {}
 
           @Component({
             selector: 'app-cmp',
             template: '<input dir ali¦>',
-            standalone: true,
             imports: [Dir],
           })
           export class AppCmp {}
@@ -1958,7 +1842,6 @@ foo\`,
           import {Component, Directive, Input} from '@angular/core';
 
           @Directive({
-            standalone: true,
           })
           export class InnerHostDir {
             @Input() innerInput = 'val';
@@ -1969,7 +1852,6 @@ foo\`,
               directive: InnerHostDir,
               inputs: ['innerInput: innerAlias']
             }],
-            standalone: true,
           })
           export class MiddleHostDir {
             @Input() middleInput = 'val2';
@@ -1981,14 +1863,12 @@ foo\`,
               directive: MiddleHostDir,
               inputs: ['middleInput: middleAlias']
             }],
-            standalone: true,
           })
           export class Dir {}
 
           @Component({
             selector: 'app-cmp',
             template: '<input dir inn¦>',
-            standalone: true,
             imports: [Dir],
           })
           export class AppCmp {}
@@ -2008,7 +1888,6 @@ foo\`,
 
           @Directive({
             selector: '[ngFor][ngForOf]',
-            standalone: true,
           })
           export class NgForOf<T> {
             constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef<any>) {}
@@ -2018,7 +1897,6 @@ foo\`,
           @Component({
             selector: 'app-cmp',
             template: '<div ¦></div>',
-            standalone: true,
             imports: [NgForOf],
           })
           export class AppCmp {
@@ -2038,7 +1916,6 @@ foo\`,
 
           @Directive({
             selector: '[ngFor][ngForOf]',
-            standalone: true,
           })
           export class NgForOf<T> {
             constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef<any>) {}
@@ -2048,7 +1925,6 @@ foo\`,
           @Component({
             selector: 'app-cmp',
             template: '<li ng¦></li>',
-            standalone: true,
             imports: [NgForOf],
           })
           export class AppCmp {}
@@ -2066,7 +1942,6 @@ foo\`,
 
           @Directive({
             selector: '[ngFor][ngForOf]',
-            standalone: true,
           })
           export class NgForOf<T> {
             constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef<any>) {}
@@ -2076,7 +1951,6 @@ foo\`,
           @Component({
             selector: 'app-cmp',
             template: '<li *ng¦></li>',
-            standalone: true,
             imports: [NgForOf],
           })
           export class AppCmp {}
@@ -2094,7 +1968,6 @@ foo\`,
 
           @Directive({
             selector: '[ngFor][ngForOf]',
-            standalone: true,
           })
           export class NgForOf<T> {
             constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef<any>) {}
@@ -2104,7 +1977,6 @@ foo\`,
           @Component({
             selector: 'app-cmp',
             template: '<li *¦></li>',
-            standalone: true,
             imports: [NgForOf],
           })
           export class AppCmp {}
@@ -2124,7 +1996,6 @@ foo\`,
 
           @Directive({
             selector: '[myInput]',
-            standalone: true,
           })
           export class Dir {
             @Input() myInput!: string;
@@ -2133,7 +2004,6 @@ foo\`,
           @Component({
             selector: 'app-cmp',
             template: '<input ¦>',
-            standalone: true,
             imports: [Dir],
           })
           export class AppCmp {}
@@ -2152,7 +2022,6 @@ foo\`,
 
           @Directive({
             selector: '[myInput]',
-            standalone: true,
           })
           export class Dir {
             @Input() myInput!: string;
@@ -2161,7 +2030,6 @@ foo\`,
           @Component({
             selector: 'app-cmp',
             template: '<input my¦>',
-            standalone: true,
             imports: [Dir],
           })
           export class AppCmp {}
@@ -2180,7 +2048,6 @@ foo\`,
 
           @Directive({
             selector: '[myInput]',
-            standalone: true,
           })
           export class Dir {
             @Input() myInput!: string;
@@ -2189,7 +2056,6 @@ foo\`,
           @Component({
             selector: 'app-cmp',
             template: '<input [my¦]>',
-            standalone: true,
             imports: [Dir],
           })
           export class AppCmp {}
@@ -2209,7 +2075,6 @@ foo\`,
 
           @Directive({
             selector: '[dir]',
-            standalone: true,
           })
           export class Dir {
             @Output() myOutput = new EventEmitter<any>();
@@ -2218,7 +2083,6 @@ foo\`,
           @Component({
             selector: 'app-cmp',
             template: '<input dir ¦>',
-            standalone: true,
             imports: [Dir],
           })
           export class AppCmp {}
@@ -2236,7 +2100,6 @@ foo\`,
 
           @Directive({
             selector: '[dir]',
-            standalone: true,
           })
           export class Dir {
             @Output() myOutput = new EventEmitter<any>();
@@ -2245,7 +2108,6 @@ foo\`,
           @Component({
             selector: 'app-cmp',
             template: '<input dir (my¦)>',
-            standalone: true,
             imports: [Dir],
           })
           export class AppCmp {}
@@ -2263,7 +2125,6 @@ foo\`,
 
           @Directive({
             selector: '[dir]',
-            standalone: true,
           })
           export class Dir {
             @Input() model: any;
@@ -2275,7 +2136,6 @@ foo\`,
           @Component({
             selector: 'app-cmp',
             template: '<h1 dir [(mod¦)]></h1>',
-            standalone: true,
             imports: [Dir],
           })
           export class AppCmp {}
@@ -2296,7 +2156,6 @@ foo\`,
 
           @Directive({
             selector: '[dir]',
-            standalone: true,
           })
           export class Dir {
             @Input('customModel') model: any;
@@ -2306,7 +2165,6 @@ foo\`,
           @Component({
             selector: 'app-cmp',
             template: '<h1 dir [customModel¦]></h1>',
-            standalone: true,
             imports: [Dir],
           })
           export class AppCmp {}
@@ -2324,7 +2182,6 @@ foo\`,
 
           @Directive({
             selector: '[dir]',
-            standalone: true,
           })
           export class Dir {
             @Input('customModel') model: any;
@@ -2334,7 +2191,6 @@ foo\`,
           @Component({
             selector: 'app-cmp',
             template: '<h1 dir (customModel¦)></h1>',
-            standalone: true,
             imports: [Dir],
           })
           export class AppCmp {}
@@ -2351,7 +2207,6 @@ foo\`,
           import {Component, Directive, Output, EventEmitter} from '@angular/core';
 
           @Directive({
-            standalone: true,
           })
           export class HostDir {
             @Output() myOutput = new EventEmitter<any>();
@@ -2363,14 +2218,12 @@ foo\`,
               directive: HostDir,
               outputs: ['myOutput']
             }],
-            standalone: true,
           })
           export class Dir {}
 
           @Component({
             selector: 'app-cmp',
             template: '<input dir (my¦)>',
-            standalone: true,
             imports: [Dir],
           })
           export class AppCmp {}
@@ -2387,7 +2240,6 @@ foo\`,
           import {Component, Directive, Output, EventEmitter} from '@angular/core';
 
           @Directive({
-            standalone: true,
           })
           export class HostDir {
             @Output() myOutput = new EventEmitter<any>();
@@ -2396,14 +2248,12 @@ foo\`,
           @Directive({
             selector: '[dir]',
             hostDirectives: [HostDir],
-            standalone: true,
           })
           export class Dir {}
 
           @Component({
             selector: 'app-cmp',
             template: '<input dir (my¦)>',
-            standalone: true,
             imports: [Dir],
           })
           export class AppCmp {}
@@ -2420,7 +2270,6 @@ foo\`,
           import {Component, Directive, Output, EventEmitter} from '@angular/core';
 
           @Directive({
-            standalone: true,
           })
           export class HostDir {
             @Output('myPublicOutput') myOutput = new EventEmitter<any>();
@@ -2432,14 +2281,12 @@ foo\`,
               directive: HostDir,
               outputs: ['myPublicOutput: alias']
             }],
-            standalone: true,
           })
           export class Dir {}
 
           @Component({
             selector: 'app-cmp',
             template: '<input dir (ali¦)>',
-            standalone: true,
             imports: [Dir],
           })
           export class AppCmp {}
@@ -2456,7 +2303,6 @@ foo\`,
           import {Component, Directive, Output, EventEmitter} from '@angular/core';
 
           @Directive({
-            standalone: true,
           })
           export class InnerHostDir {
             @Output() innerOutput = new EventEmitter<any>();
@@ -2467,7 +2313,6 @@ foo\`,
               directive: InnerHostDir,
               outputs: ['innerOutput: innerAlias']
             }],
-            standalone: true,
           })
           export class MiddleHostDir {
             @Output() middleOutput = new EventEmitter<any>();
@@ -2479,14 +2324,12 @@ foo\`,
               directive: MiddleHostDir,
               outputs: ['middleOutput: middleAlias']
             }],
-            standalone: true,
           })
           export class Dir {}
 
           @Component({
             selector: 'app-cmp',
             template: '<input dir (inn¦)>',
-            standalone: true,
             imports: [Dir],
           })
           export class AppCmp {}
@@ -2515,7 +2358,6 @@ foo\`,
 
         @Pipe({
           name: 'somePipe',
-          standalone: true,
         })
         export class SomePipe implements PipeTransform {
           transform(value: any) { return value; }
@@ -2524,7 +2366,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '{{ foo | some¦ }}',
-          standalone: true,
           imports: [SomePipe],
         })
         export class AppCmp {
@@ -2544,7 +2385,6 @@ foo\`,
 
         @Pipe({
           name: 'somePipe',
-          standalone: true,
         })
         export class SomePipe implements PipeTransform {
           transform(value: any) { return value; }
@@ -2553,7 +2393,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '{{ foo | ¦ }}',
-          standalone: true,
           imports: [SomePipe],
         })
         export class AppCmp {
@@ -2574,7 +2413,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '{{ foo | some¦ }}',
-          standalone: true,
         })
         export class AppCmp {
           foo = 'test';
@@ -2595,7 +2433,6 @@ foo\`,
 
         @Directive({
           selector: '[dir]',
-          standalone: true,
         })
         export class Dir {
           @Input() myInput!: 'foo' | 'bar';
@@ -2604,7 +2441,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: \`<input dir [myInput]="'foo¦'">\`,
-          standalone: true,
           imports: [Dir],
         })
         export class AppCmp {}
@@ -2622,7 +2458,6 @@ foo\`,
 
         @Directive({
           selector: '[dir]',
-          standalone: true,
         })
         export class Dir {
           @Input() myInput!: 'foo' | 'bar';
@@ -2631,7 +2466,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '<input dir myInput="foo¦">',
-          standalone: true,
           imports: [Dir],
         })
         export class AppCmp {}
@@ -2649,7 +2483,6 @@ foo\`,
 
         @Directive({
           selector: '[dir]',
-          standalone: true,
         })
         export class Dir {
           @Input() myInput!: 'foo' | 'bar';
@@ -2658,7 +2491,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '<input dir myInput="¦foo">',
-          standalone: true,
           imports: [Dir],
         })
         export class AppCmp {}
@@ -2676,7 +2508,6 @@ foo\`,
 
         @Pipe({
           name: 'unionTypePipe',
-          standalone: true,
         })
         export class UnionTypePipe implements PipeTransform {
           transform(value: string, config: 'foo' | 'bar'): string {
@@ -2687,7 +2518,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: \`<input [title]="'foo' | unionTypePipe:'bar¦'">\`,
-          standalone: true,
           imports: [UnionTypePipe],
         })
         export class AppCmp {}
@@ -2705,7 +2535,6 @@ foo\`,
 
         @Directive({
           selector: '[dir]',
-          standalone: true,
         })
         export class Dir {
           @Input() myInput!: 42 | 100;
@@ -2714,7 +2543,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '<input dir [myInput]="42¦">',
-          standalone: true,
           imports: [Dir],
         })
         export class AppCmp {}
@@ -2738,7 +2566,6 @@ foo\`,
 
         @Directive({
           selector: '[dir]',
-          standalone: true,
         })
         export class Dir {
           @Input() myInput!: string;
@@ -2747,7 +2574,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '<button dir ¦></button>',
-          standalone: true,
           imports: [Dir],
         })
         export class AppCmp {}
@@ -2767,7 +2593,6 @@ foo\`,
 
         @Directive({
           selector: '[dir]',
-          standalone: true,
         })
         export class Dir {
           @Output() myOutput = new EventEmitter<string>();
@@ -2776,7 +2601,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '<input dir ¦>',
-          standalone: true,
           imports: [Dir],
         })
         export class AppCmp {}
@@ -2796,7 +2620,6 @@ foo\`,
 
         @Directive({
           selector: '[dir]',
-          standalone: true,
         })
         export class Dir {
           @Output() myOutput = new EventEmitter<string>();
@@ -2805,7 +2628,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '<input dir my¦>',
-          standalone: true,
           imports: [Dir],
         })
         export class AppCmp {}
@@ -2825,7 +2647,6 @@ foo\`,
 
         @Directive({
           selector: '[dir]',
-          standalone: true,
         })
         export class Dir {
           @Output() myOutput = new EventEmitter<string>();
@@ -2834,7 +2655,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '<input dir (¦)="">',
-          standalone: true,
           imports: [Dir],
         })
         export class AppCmp {}
@@ -2854,7 +2674,6 @@ foo\`,
 
         @Directive({
           selector: '[dir]',
-          standalone: true,
         })
         export class Dir {
           @Output() myOutput = new EventEmitter<string>();
@@ -2863,7 +2682,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '<input dir (¦)>',
-          standalone: true,
           imports: [Dir],
         })
         export class AppCmp {}
@@ -2884,7 +2702,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '<input (cli¦)>',
-          standalone: true,
         })
         export class AppCmp {}
       `;
@@ -2901,7 +2718,6 @@ foo\`,
 
         @Directive({
           selector: '[myInput]',
-          standalone: true,
         })
         export class Dir {
           @Input() myInput!: string;
@@ -2910,7 +2726,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '<input [my¦]="">',
-          standalone: true,
           imports: [Dir],
         })
         export class AppCmp {}
@@ -2930,7 +2745,6 @@ foo\`,
 
         @Directive({
           selector: '[myInput]',
-          standalone: true,
         })
         export class Dir {
           @Input() myInput!: string;
@@ -2939,7 +2753,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '<input [my¦]>',
-          standalone: true,
           imports: [Dir],
         })
         export class AppCmp {}
@@ -2960,7 +2773,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '<input [val¦]>',
-          standalone: true,
         })
         export class AppCmp {}
       `;
@@ -2979,7 +2791,6 @@ foo\`,
 
         @Directive({
           selector: '[dir]',
-          standalone: true,
         })
         export class Dir {
           @Input() model: any;
@@ -2989,7 +2800,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '<h1 dir [(mod¦)]=""></h1>',
-          standalone: true,
           imports: [Dir],
         })
         export class AppCmp {}
@@ -3009,7 +2819,6 @@ foo\`,
 
         @Directive({
           selector: '[dir]',
-          standalone: true,
         })
         export class Dir {
           @Input() model: any;
@@ -3019,7 +2828,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '<h1 dir [(mod¦)]></h1>',
-          standalone: true,
           imports: [Dir],
         })
         export class AppCmp {}
@@ -3039,7 +2847,6 @@ foo\`,
 
         @Directive({
           selector: '[ngFor][ngForOf]',
-          standalone: true,
         })
         export class NgForOf<T> {
           constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef<any>) {}
@@ -3049,7 +2856,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '<input dir *ngFor¦>',
-          standalone: true,
           imports: [NgForOf],
         })
         export class AppCmp {}
@@ -3067,7 +2873,6 @@ foo\`,
 
         @Directive({
           selector: '[myInput]',
-          standalone: true,
         })
         export class Dir {
           @Input() myInput!: string;
@@ -3076,7 +2881,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '<input dir myInput¦="1">',
-          standalone: true,
           imports: [Dir],
         })
         export class AppCmp {}
@@ -3097,7 +2901,6 @@ foo\`,
 
         @Directive({
           selector: 'button[mat-button]',
-          standalone: true,
         })
         export class MatButton {
           @Input() color!: string;
@@ -3106,7 +2909,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '<button mat-¦></button>',
-          standalone: true,
           imports: [MatButton],
         })
         export class AppCmp {}
@@ -3128,7 +2930,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '@¦',
-          standalone: true,
         })
         export class AppCmp {}
       `;
@@ -3150,7 +2951,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: \`@let message = 'hello'; {{mess¦}}\`,
-          standalone: true,
         })
         export class AppCmp {}
       `;
@@ -3168,7 +2968,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '@let foo = ¦;',
-          standalone: true,
         })
         export class AppCmp {
           title = 'App';
@@ -3189,7 +2988,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: '@let foo = ¦',
-          standalone: true,
         })
         export class AppCmp {
           title = 'App';
@@ -3210,7 +3008,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: \`@let hobbit = {name: 'Frodo', age: 53}; {{hobbit.¦}}\`,
-          standalone: true,
         })
         export class AppCmp {}
       `;
@@ -3228,7 +3025,6 @@ foo\`,
         @Component({
           selector: 'app-cmp',
           template: \`@let hobbit = {name: 'Frodo', age: 53}; @if (true) { @let hobbit = {hasRing: true, size: 'small'}; {{hobbit.¦}} }\`,
-          standalone: true,
         })
         export class AppCmp {}
       `;
@@ -3251,7 +3047,6 @@ foo\`,
           host: {
             '[attr.id]': 'ti¦',
           },
-          standalone: true,
         })
         export class AppCmp {
           title = 'App';
@@ -3275,7 +3070,6 @@ foo\`,
           host: {
             '(click)': 't¦',
           },
-          standalone: true,
         })
         export class AppCmp {
           title = 'App';
@@ -3298,7 +3092,6 @@ foo\`,
           host: {
             '[title]': 'ti¦',
           },
-          standalone: true,
         })
         export class Dir {
           title = 'App';

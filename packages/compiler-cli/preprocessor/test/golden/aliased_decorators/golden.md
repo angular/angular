@@ -66,7 +66,6 @@ export class MyComponent {
             args: [
               {
                 selector: 'my-comp',
-                standalone: true,
                 imports: [MyDirective, MyPipe],
                 template: '<div myDir>{{ "test" | myPipe }}</div>',
               },
@@ -92,7 +91,7 @@ export class MyComponent {
     i0.ɵsetClassDebugInfo(MyComponent, {
       className: 'MyComponent',
       filePath: 'component.ts',
-      lineNumber: 19,
+      lineNumber: 18,
     });
 })();
 
@@ -165,7 +164,6 @@ export class MyDirective {
             args: [
               {
                 selector: '[myDir]',
-                standalone: true,
                 inputs: ['declaredInput: dirInput'],
                 outputs: ['declaredOutput: dirOutput'],
               },
@@ -317,7 +315,6 @@ export class NamespacedDirective {
             args: [
               {
                 selector: '[namespacedDir]',
-                standalone: true,
               },
             ],
           },
@@ -391,7 +388,6 @@ export class MyPipe {
             args: [
               {
                 name: 'myPipe',
-                standalone: true,
               },
             ],
           },

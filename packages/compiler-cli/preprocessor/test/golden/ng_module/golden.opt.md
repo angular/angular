@@ -292,7 +292,6 @@ export class AppRoot {
             <my-comp [compInput]="'hello'"></my-comp>
             <div myDir [dirInput]="'world'"></div>
         `,
-                standalone: true,
                 imports: [MyModule],
               },
             ],
@@ -308,7 +307,7 @@ export class AppRoot {
     i0.ɵsetClassDebugInfo(AppRoot, {
       className: 'AppRoot',
       filePath: 'app.module.ts',
-      lineNumber: 44,
+      lineNumber: 43,
     });
 })();
 

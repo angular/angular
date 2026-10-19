@@ -14,7 +14,6 @@ class BaseDir {}
 
 @Directive({
   selector: '[fullDir]',
-  standalone: true,
   jit: false,
 })
 export class FullDir extends BaseDir {
@@ -77,7 +76,6 @@ export class AppComponent {
               {
                 selector: 'app-root',
                 template: '<div *fullDir></div>',
-                standalone: true,
                 imports: [FullDir],
               },
             ],
@@ -93,7 +91,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'test.ts',
-      lineNumber: 31,
+      lineNumber: 29,
     });
 })();
 

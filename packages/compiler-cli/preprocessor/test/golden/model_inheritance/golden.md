@@ -80,7 +80,6 @@ export class AppComponent {
         <child-cmp [(counter)]="myCount" />
         <setting-cmp [(value)]="myValue" />
       `,
-                standalone: true,
                 imports: [ChildComponent, SettingComponent],
               },
             ],
@@ -96,7 +95,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 13,
+      lineNumber: 12,
     });
 })();
 
@@ -148,7 +147,6 @@ export class BaseDir {
             args: [
               {
                 selector: '[baseDir]',
-                standalone: true,
               },
             ],
           },
@@ -226,7 +224,6 @@ export class ChildComponent extends BaseDir {
               {
                 selector: 'child-cmp',
                 template: '<span>Child</span>',
-                standalone: true,
               },
             ],
           },
@@ -241,7 +238,7 @@ export class ChildComponent extends BaseDir {
     i0.ɵsetClassDebugInfo(ChildComponent, {
       className: 'ChildComponent',
       filePath: 'child.component.ts',
-      lineNumber: 10,
+      lineNumber: 9,
     });
 })();
 
@@ -297,7 +294,6 @@ export class SettingComponent extends BaseSetting<string> {
               {
                 selector: 'setting-cmp',
                 template: '<span>Setting</span>',
-                standalone: true,
               },
             ],
           },
@@ -312,7 +308,7 @@ export class SettingComponent extends BaseSetting<string> {
     i0.ɵsetClassDebugInfo(SettingComponent, {
       className: 'SettingComponent',
       filePath: 'child.component.ts',
-      lineNumber: 17,
+      lineNumber: 15,
     });
 })();
 

@@ -51,7 +51,6 @@ export class SelectorlessComp {
             type: Component,
             args: [
               {
-                standalone: true,
                 template: '<div>Selectorless Component</div>',
               },
             ],
@@ -67,7 +66,7 @@ export class SelectorlessComp {
     i0.ɵsetClassDebugInfo(SelectorlessComp, {
       className: 'SelectorlessComp',
       filePath: 'app.ts',
-      lineNumber: 7,
+      lineNumber: 6,
     });
 })();
 
@@ -95,21 +94,9 @@ export class SelectorlessDir {
     /*@__PURE__*/ i0.ɵɵdefineDirective({ type: SelectorlessDir, inputs: { dirInput: 'dirInput' } });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
-      i0.ɵsetClassMetadata(
-        SelectorlessDir,
-        [
-          {
-            type: Directive,
-            args: [
-              {
-                standalone: true,
-              },
-            ],
-          },
-        ],
-        null,
-        { dirInput: [{ type: Input }] },
-      );
+      i0.ɵsetClassMetadata(SelectorlessDir, [{ type: Directive, args: [{}] }], null, {
+        dirInput: [{ type: Input }],
+      });
   }
 }
 
@@ -158,7 +145,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 imports: [SelectorlessComp, SelectorlessDir],
                 template: `
         <SelectorlessComp [heroName]="hello" (heroSelect)="onSelect($event)"></SelectorlessComp>
@@ -178,7 +164,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.ts',
-      lineNumber: 28,
+      lineNumber: 25,
     });
 })();
 

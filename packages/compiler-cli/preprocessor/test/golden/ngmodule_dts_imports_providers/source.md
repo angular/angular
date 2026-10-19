@@ -46,7 +46,6 @@ import { MockSnackBarModule } from 'mock_snack_bar';
 @Component({
   selector: 'standalone-btn',
   template: '<button>Click</button>',
-  standalone: true,
   imports: [MockSnackBarModule],
 })
 export class StandaloneBtn {}

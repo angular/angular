@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {TsGoFacade} from '../src/facade';
-import * as path from 'path';
 import * as fs from 'node:fs/promises';
+import * as path from 'path';
 import * as rpc from 'vscode-jsonrpc/node';
-import {TextDocument} from 'vscode-languageserver-textdocument';
 import {DiagnosticSeverity} from 'vscode-languageserver';
+import {TextDocument} from 'vscode-languageserver-textdocument';
+import {TsGoFacade} from '../src/facade';
 
-import {TestEnv, getTestWorkspacePath, startTestServer} from './test_helpers';
 import {TestFileManager} from './test_file_manager';
+import {TestEnv, getTestWorkspacePath, startTestServer} from './test_helpers';
 
 describe('Diagnostics Mapping', () => {
   let connection: rpc.MessageConnection;
@@ -43,7 +43,6 @@ describe('Diagnostics Mapping', () => {
       @Component({
         selector: 'app-cmp',
         template: '<div>{{ nonExistent }}</div>',
-        standalone: true,
       })
       export class AppCmp {
       }
@@ -109,7 +108,6 @@ describe('Diagnostics Mapping', () => {
       @Component({
         selector: 'app-cmp',
         templateUrl: './app.html',
-        standalone: true,
       })
       export class AppCmp {
       }
@@ -182,7 +180,6 @@ describe('Diagnostics Mapping', () => {
       @Component({
         selector: 'app-cmp',
         template: '<div>{{ nonExistent }}</div>',
-        standalone: true,
       })
       export class AppCmp {
       }
@@ -258,7 +255,6 @@ describe('Diagnostics Mapping', () => {
       @Component({
         selector: 'app-cmp',
         template: '<div test width="100"></div>',
-        standalone: true,
         imports: [TestDir],
       })
       export class AppCmp {
@@ -289,7 +285,6 @@ describe('Diagnostics Mapping', () => {
       @Component({
         selector: 'app-cmp',
         template: '<div>{{ nonExistent }}</div>',
-        standalone: true,
       })
       export class AppCmp {
       }
@@ -339,7 +334,6 @@ describe('Diagnostics Mapping', () => {
       import {Component, Directive, Input, Output, EventEmitter} from '@angular/core';
 
       @Directive({
-        standalone: true,
       })
       export class HostDir {
         @Input() hostInput = 'default';
@@ -353,14 +347,12 @@ describe('Diagnostics Mapping', () => {
           inputs: ['hostInput'],
           outputs: ['hostOutput']
         }],
-        standalone: true,
       })
       export class Dir {}
 
       @Component({
         selector: 'app-cmp',
         template: '<div dir [hostInput]="message" (hostOutput)="onMessage($event)"></div>',
-        standalone: true,
         imports: [Dir],
       })
       export class AppCmp {

@@ -34,7 +34,6 @@ import { IoArrayComponent } from './io_array.component';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [IoArrayComponent],
   template: `
     <app-io-array

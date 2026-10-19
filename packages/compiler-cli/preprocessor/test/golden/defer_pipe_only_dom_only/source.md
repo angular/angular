@@ -40,7 +40,6 @@ export class MyPipe implements PipeTransform {
       }
     </div>
   `,
-  standalone: true,
   imports: [MyPipe]
 })
 class AppComponent {}

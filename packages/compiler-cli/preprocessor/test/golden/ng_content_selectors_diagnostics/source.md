@@ -68,7 +68,6 @@ import { HasContent } from 'test-lib';
       }
     </has-content>
   `,
-  standalone: true,
 })
 export class MyApp {
   show = true;

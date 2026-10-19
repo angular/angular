@@ -54,7 +54,6 @@ import { PipeA } from './pipe-a';
 
 @Component({
   selector: 'app-comp',
-  standalone: true,
   imports: [CompA, CompB, PipeA],
   deferredImports: {
     blockA: [CompA],

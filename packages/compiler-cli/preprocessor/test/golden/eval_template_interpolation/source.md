@@ -21,7 +21,6 @@ import { GREETING } from './constants';
 @Component({
   selector: 'test-cmp',
   template: `<p>${GREETING}</p>`,
-  standalone: true,
 })
 export class TestComponent {}
 ```

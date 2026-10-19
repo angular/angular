@@ -10,8 +10,8 @@ import * as i0 from './app.component';
 /*tcb1*/
 function _tcb1(this: i0.AppComponent) {
   if (true) {
-    var _t1 /*T:DIR:0*/ /*235,261*/ = null! as i0.LocalDir; /*T:VAE*/
-    _t1.localDir /*241,249*/ = this.message /*252,259*/ /*252,259*/; /*240,260*/
+    var _t1 /*T:DIR:0*/ /*215,241*/ = null! as i0.LocalDir; /*T:VAE*/
+    _t1.localDir /*221,229*/ = this.message /*232,239*/ /*232,239*/; /*220,240*/
   }
 }
 
@@ -59,7 +59,6 @@ export class LocalDir {
             args: [
               {
                 selector: '[localDir]',
-                standalone: true,
               },
             ],
           },
@@ -119,7 +118,6 @@ export class AppComponent {
               {
                 selector: 'app-root',
                 template: '<div [localDir]="message"></div>',
-                standalone: true,
                 imports: [LocalDir],
               },
             ],
@@ -135,7 +133,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 17,
+      lineNumber: 15,
     });
 })();
 

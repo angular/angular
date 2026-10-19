@@ -13,7 +13,7 @@ var _pipe1 = null! as i1.MyDtsPipe;
 /*tcb1*/
 function _tcb1(this: i0.AppComponent) {
   if (true) {
-    '' + _pipe1.transform(/*186,193*/ 'hello' /*176,183*/) /*176,193*/;
+    '' + _pipe1.transform(/*166,173*/ 'hello' /*156,163*/) /*156,173*/;
   }
 }
 
@@ -73,7 +73,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 imports: [MyDtsPipe],
                 template: '{{ "hello" | dtsPipe }}',
               },
@@ -90,7 +89,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.ts',
-      lineNumber: 10,
+      lineNumber: 9,
     });
 })();
 

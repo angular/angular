@@ -61,7 +61,6 @@ export class Utf16Component {
                 template: `
         <div>José & 😊</div>
       `,
-                standalone: true,
               },
             ],
           },
@@ -76,7 +75,7 @@ export class Utf16Component {
     i0.ɵsetClassDebugInfo(Utf16Component, {
       className: 'Utf16Component',
       filePath: 'utf16-semantics.ts',
-      lineNumber: 11,
+      lineNumber: 10,
     });
 })();
 

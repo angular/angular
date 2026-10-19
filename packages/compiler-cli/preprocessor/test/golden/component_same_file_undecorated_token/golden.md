@@ -43,7 +43,6 @@ export class Foo {
               {
                 selector: 'app-foo',
                 template: '<div>Foo</div>',
-                standalone: true,
               },
             ],
           },
@@ -55,7 +54,7 @@ export class Foo {
 }
 ((): any => {
   (typeof ngDevMode === 'undefined' || ngDevMode) &&
-    i0.ɵsetClassDebugInfo(Foo, { className: 'Foo', filePath: 'test.ts', lineNumber: 10 });
+    i0.ɵsetClassDebugInfo(Foo, { className: 'Foo', filePath: 'test.ts', lineNumber: 9 });
 })();
 
 ```

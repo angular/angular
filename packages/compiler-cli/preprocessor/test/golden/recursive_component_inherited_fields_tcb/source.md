@@ -32,7 +32,6 @@ import { Component } from '@angular/core';
 import { CommonConditionGroupBuilder } from 'app/common/common_builder';
 
 @Component({
-  standalone: true,
   selector: 'condition-group-builder',
   template: `
     <condition-group-builder (onCelCodeUpdated)="handleUpdate($event)">

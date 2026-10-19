@@ -26,7 +26,6 @@ export class MyModule {}
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [MyModule],
   template: '<div my-dir></div>',
 })

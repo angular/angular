@@ -188,7 +188,6 @@ export class AppComponent {
           Placeholder
         }
       `,
-                    standalone: true,
                     imports: [Widget],
                     deferredImports: [WidgetB],
                   },
@@ -207,7 +206,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 20,
+      lineNumber: 19,
     });
 })();
 
@@ -403,7 +402,6 @@ export class MixedComponent {
           Placeholder
         }
       `,
-                    standalone: true,
                     imports: [Widget],
                     deferredImports: {
                       lazy: [WidgetB],
@@ -424,7 +422,7 @@ export class MixedComponent {
     i0.ɵsetClassDebugInfo(MixedComponent, {
       className: 'MixedComponent',
       filePath: 'named.component.ts',
-      lineNumber: 22,
+      lineNumber: 21,
     });
 })();
 
@@ -536,7 +534,6 @@ export class SplitComponent {
           <widget-b/>
         }
       `,
-                    standalone: true,
                     deferredImports: {
                       first: [Widget],
                       second: [WidgetB],
@@ -557,7 +554,7 @@ export class SplitComponent {
     i0.ɵsetClassDebugInfo(SplitComponent, {
       className: 'SplitComponent',
       filePath: 'split.component.ts',
-      lineNumber: 22,
+      lineNumber: 21,
     });
 })();
 

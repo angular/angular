@@ -14,7 +14,6 @@ import { Component, ViewEncapsulation } from '@angular/core';
 
 @Component({
   selector: 'widget',
-  standalone: true,
   template: '<div>Shadow</div>',
   encapsulation: ViewEncapsulation.ShadowDom,
 })

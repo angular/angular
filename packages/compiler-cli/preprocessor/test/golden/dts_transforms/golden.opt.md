@@ -77,7 +77,6 @@ export class AppComponent {
           height="200"
         ></test-cmp>
       `,
-                standalone: true,
                 imports: [TestComponent],
               },
             ],
@@ -93,7 +92,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 15,
+      lineNumber: 14,
     });
 })();
 

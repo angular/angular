@@ -16,7 +16,6 @@ const ɵNgFieldDirective = Symbol();
 
 @Directive({
   selector: '[formField]',
-  standalone: true,
 })
 export class FormField {
   @Input() formField: any;
@@ -25,7 +24,6 @@ export class FormField {
 
 @Directive({
   selector: '[myOtherDir]',
-  standalone: true,
 })
 export class MyOtherDirective {
   // Missing ɵNgFieldDirective
@@ -33,7 +31,6 @@ export class MyOtherDirective {
 
 @Component({
   selector: 'my-comp',
-  standalone: true,
   template: `
     <input [formField]="myField" myOtherDir>
   `,

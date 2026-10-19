@@ -14,7 +14,6 @@ import { Component, Directive } from '@angular/core';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [MyLocalDirective],
   template: `<div myLocal></div>`
 })

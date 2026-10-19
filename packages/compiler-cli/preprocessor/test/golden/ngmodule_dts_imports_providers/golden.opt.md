@@ -68,7 +68,6 @@ export class StandaloneBtn {
               {
                 selector: 'standalone-btn',
                 template: '<button>Click</button>',
-                standalone: true,
                 imports: [MockSnackBarModule],
               },
             ],
@@ -84,7 +83,7 @@ export class StandaloneBtn {
     i0.ɵsetClassDebugInfo(StandaloneBtn, {
       className: 'StandaloneBtn',
       filePath: 'src/components/standalone-btn.component.ts',
-      lineNumber: 10,
+      lineNumber: 9,
     });
 })();
 

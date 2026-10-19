@@ -52,7 +52,6 @@ import { CdkScrollable, DragDropModule } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'dummy-cmp',
-  standalone: true,
   imports: [CdkScrollable],
   template: '<div>Dummy</div>',
 })

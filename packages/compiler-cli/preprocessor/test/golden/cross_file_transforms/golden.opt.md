@@ -18,19 +18,19 @@ function _tcb1(this: i0.TestTransformsComponent) {
 function _tcb2(this: i0.AppComponent) {
   if (true) {
     var _t1 = null! as typeof i0.TestTransformsComponent.ngAcceptInputType_decoratorInput; /*T:VAE*/
-    _t1 /*992,1006*/ = 'true' /*1009,1015*/; /*991,1016*/
+    _t1 /*952,966*/ = 'true' /*969,975*/; /*951,976*/
     var _t2 = null! as typeof i0.TestTransformsComponent.ngAcceptInputType_aliasedInput; /*T:VAE*/
-    _t2 /*1024,1036*/ = 123 /*1039,1042*/; /*1023,1043*/
-    var _t3 /*T:DIR:0*/ /*968,1175*/ = null! as i0.TestTransformsComponent; /*T:VAE*/
-    _t3.signalInput[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] /*1051,1062*/ =
-      'false' /*1065,1072*/; /*1050,1073*/
-    _t3.aliasedSignal[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] /*1081,1094*/ =
-      'hello' /*1097,1104*/; /*1080,1105*/
+    _t2 /*984,996*/ = 123 /*999,1002*/; /*983,1003*/
+    var _t3 /*T:DIR:0*/ /*928,1135*/ = null! as i0.TestTransformsComponent; /*T:VAE*/
+    _t3.signalInput[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] /*1011,1022*/ =
+      'false' /*1025,1032*/; /*1010,1033*/
+    _t3.aliasedSignal[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] /*1041,1054*/ =
+      'hello' /*1057,1064*/; /*1040,1065*/
     var _t4 = null! as string | null; /*T:VAE*/
-    _t4 /*1113,1128*/ = null /*1131,1135*/; /*1112,1136*/
+    _t4 /*1073,1088*/ = null /*1091,1095*/; /*1072,1096*/
     var _t5 =
       null! as typeof i0.TestTransformsComponent.ngAcceptInputType_externalTypeInput; /*T:VAE*/
-    _t5 /*1144,1161*/ = true /*1164,1168*/; /*1143,1169*/
+    _t5 /*1104,1121*/ = true /*1124,1128*/; /*1103,1129*/
   }
 }
 
@@ -132,7 +132,6 @@ export class TestTransformsComponent {
             args: [
               {
                 selector: 'test-transforms',
-                standalone: true,
                 template: `<div></div>`,
               },
             ],
@@ -161,7 +160,7 @@ export class TestTransformsComponent {
     i0.ɵsetClassDebugInfo(TestTransformsComponent, {
       className: 'TestTransformsComponent',
       filePath: 'app.ts',
-      lineNumber: 10,
+      lineNumber: 9,
     });
 })();
 
@@ -225,7 +224,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 imports: [TestTransformsComponent],
                 template: `
         <test-transforms
@@ -251,7 +249,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.ts',
-      lineNumber: 39,
+      lineNumber: 37,
     });
 })();
 

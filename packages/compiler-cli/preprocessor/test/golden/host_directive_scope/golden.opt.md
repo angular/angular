@@ -11,8 +11,8 @@ import * as i1 from './tooltip';
 /*tcb1*/
 function _tcb1(this: i0.App) {
   if (true) {
-    var _t1 /*T:HOSTDIR:1*/ /*278,301*/ = null! as i1.Tooltip; /*T:VAE*/
-    _t1.tooltip /*288,291*/ = this.label /*294,299*/ /*294,299*/; /*287,300*/
+    var _t1 /*T:HOSTDIR:1*/ /*258,281*/ = null! as i1.Tooltip; /*T:VAE*/
+    _t1.tooltip /*268,271*/ = this.label /*274,279*/ /*274,279*/; /*267,280*/
   }
 }
 
@@ -79,7 +79,6 @@ export class App {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 imports: [Menu],
                 hostDirectives: [FocusRing],
                 template:
@@ -95,7 +94,7 @@ export class App {
 }
 ((): any => {
   (typeof ngDevMode === 'undefined' || ngDevMode) &&
-    i0.ɵsetClassDebugInfo(App, { className: 'App', filePath: 'src/app.ts', lineNumber: 13 });
+    i0.ɵsetClassDebugInfo(App, { className: 'App', filePath: 'src/app.ts', lineNumber: 12 });
 })();
 
 ```
@@ -137,7 +136,6 @@ export class FocusRing {
             args: [
               {
                 selector: '[focusRing]',
-                standalone: true,
               },
             ],
           },
@@ -369,7 +367,6 @@ export class Menu {
             args: [
               {
                 selector: 'menu-el',
-                standalone: true,
                 template: '<ng-content></ng-content>',
                 hostDirectives: [{ directive: Tooltip, inputs: ['tooltip: tip'] }],
               },
@@ -383,7 +380,7 @@ export class Menu {
 }
 ((): any => {
   (typeof ngDevMode === 'undefined' || ngDevMode) &&
-    i0.ɵsetClassDebugInfo(Menu, { className: 'Menu', filePath: 'src/menu.ts', lineNumber: 10 });
+    i0.ɵsetClassDebugInfo(Menu, { className: 'Menu', filePath: 'src/menu.ts', lineNumber: 9 });
 })();
 
 ```
@@ -430,7 +427,6 @@ export class Ripple {
             args: [
               {
                 selector: '[ripple]',
-                standalone: true,
               },
             ],
           },
@@ -489,7 +485,6 @@ export class Tooltip {
             args: [
               {
                 selector: '[tooltip]',
-                standalone: true,
                 hostDirectives: [{ directive: Ripple, inputs: ['rippleColor'] }],
               },
             ],

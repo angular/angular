@@ -49,7 +49,6 @@ import { Widget as WidgetB } from './b';
       Placeholder
     }
   `,
-  standalone: true,
   imports: [Widget],
   deferredImports: [WidgetB]
 })
@@ -73,7 +72,6 @@ import { Widget as WidgetB } from './b';
       Placeholder
     }
   `,
-  standalone: true,
   imports: [Widget],
   deferredImports: {
     lazy: [WidgetB],
@@ -99,7 +97,6 @@ import { Widget as WidgetB } from './b';
       <widget-b/>
     }
   `,
-  standalone: true,
   deferredImports: {
     first: [Widget],
     second: [WidgetB],

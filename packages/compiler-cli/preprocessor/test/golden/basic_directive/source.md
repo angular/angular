@@ -14,7 +14,6 @@ import { Directive, ElementRef } from '@angular/core';
 
 @Directive({
   selector: '[appHighlight]',
-  standalone: true,
 })
 export class HighlightDirective {
   constructor(private el: ElementRef) {
@@ -29,7 +28,6 @@ import { Directive, Input } from '@angular/core';
 
 @Directive({
   selector: '[appGeneric]',
-  standalone: true,
 })
 export class GenericDirective<T> {
   @Input() value: T | null = null;

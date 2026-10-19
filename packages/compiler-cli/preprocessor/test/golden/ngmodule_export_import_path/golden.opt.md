@@ -68,7 +68,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 template: '<button gm2-button></button>',
                 imports: [Gm2ButtonModule],
               },
@@ -85,7 +84,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 10,
+      lineNumber: 9,
     });
 })();
 

@@ -56,7 +56,6 @@ import { MatButton } from 'material-lib';
   template: `
     <button mat-button [disabled]="true" [color]="'primary'" [disableRipple]="false">Click</button>
   `,
-  standalone: true,
   imports: [MatButton],
 })
 export class AppComponent {}

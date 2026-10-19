@@ -301,7 +301,6 @@ export class HostDir {
             args: [
               {
                 selector: '[hostDir]',
-                standalone: true,
               },
             ],
           },

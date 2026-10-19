@@ -34,7 +34,6 @@ describe('Named Defer Blocks and Object deferredImports Diagnostics', () => {
 
           @Component({
             selector: 'app-comp',
-            standalone: true,
             imports: [CompA],
             deferredImports: {
               blockA: [CompA],
@@ -83,7 +82,6 @@ describe('Named Defer Blocks and Object deferredImports Diagnostics', () => {
 
           @Component({
             selector: 'app-comp',
-            standalone: true,
             imports: [CompA],
             deferredImports: {
               blockA: [CompA],
@@ -132,7 +130,6 @@ describe('Named Defer Blocks and Object deferredImports Diagnostics', () => {
 
           @Component({
             selector: 'app-comp',
-            standalone: true,
             imports: [CompA],
             template: \`
               @defer (name blockA) {
@@ -235,7 +232,6 @@ describe('Named Defer Blocks and Object deferredImports Diagnostics', () => {
 
           @Component({
             selector: 'app-comp',
-            standalone: true,
             deferredImports: {
               blockA: [CompA],
               blockB: [PipeB],
@@ -294,7 +290,6 @@ describe('Named Defer Blocks and Object deferredImports Diagnostics', () => {
 
           @Component({
             selector: 'app-comp',
-            standalone: true,
             deferredImports: {
               blockA: [DirA],
               blockB: [DirB],
@@ -345,7 +340,6 @@ describe('Named Defer Blocks and Object deferredImports Diagnostics', () => {
 
           @Component({
             selector: 'app-comp',
-            standalone: true,
             deferredImports: {
               blockA: [PipeA],
             },
@@ -391,7 +385,6 @@ describe('Named Defer Blocks and Object deferredImports Diagnostics', () => {
 
           @Component({
             selector: 'app-comp',
-            standalone: true,
             deferredImports: {
               blockA: [CmpA],
             },
@@ -448,7 +441,6 @@ describe('Named Defer Blocks and Object deferredImports Diagnostics', () => {
 
           @Component({
             selector: 'app-comp',
-            standalone: true,
             deferredImports: {
               blockA: [CompA],
               blockB: [PipeB],

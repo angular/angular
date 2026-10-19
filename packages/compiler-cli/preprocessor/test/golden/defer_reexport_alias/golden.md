@@ -85,7 +85,6 @@ export class NetworkActivityComponent {
             args: [
               {
                 selector: 'app-network-activity',
-                standalone: true,
                 imports: [NgFor],
                 template: `
         @defer (on interaction) {
@@ -108,7 +107,7 @@ export class NetworkActivityComponent {
     i0.ɵsetClassDebugInfo(NetworkActivityComponent, {
       className: 'NetworkActivityComponent',
       filePath: 'network_activity.ts',
-      lineNumber: 16,
+      lineNumber: 15,
     });
 })();
 
@@ -156,7 +155,6 @@ export class NgForOf {
             args: [
               {
                 selector: '[ngFor][ngForOf]',
-                standalone: true,
               },
             ],
           },

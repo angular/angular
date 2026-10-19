@@ -67,7 +67,6 @@ export class HelloComponent {
               {
                 selector: 'app-hello',
                 template: '<div *ngIf="name">Hello, {{name}}!</div>',
-                standalone: true,
                 imports: [CommonModule],
               },
             ],
@@ -83,7 +82,7 @@ export class HelloComponent {
     i0.ɵsetClassDebugInfo(HelloComponent, {
       className: 'HelloComponent',
       filePath: 'hello.component.ts',
-      lineNumber: 10,
+      lineNumber: 9,
     });
 })();
 

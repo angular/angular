@@ -23,7 +23,6 @@ class LocalDir {
 @Component({
   selector: 'app-root',
   template: '<div [localDir]="message"></div>',
-  standalone: true,
   imports: [LocalDir]
 })
 export class AppComponent {

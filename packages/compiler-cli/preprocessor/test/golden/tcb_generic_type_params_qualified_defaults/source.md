@@ -34,7 +34,6 @@ import { ProtoFormat, ProtoFormatType } from "./models";
 @Component({
   selector: "proto-box",
   template: "",
-  standalone: true,
 })
 export class ProtoBox<
   T extends ProtoFormatType[TFormat] = any,
@@ -81,7 +80,6 @@ import { FireTeleportalOutlet } from "./teleport";
     <proto-box [value]="'test'"></proto-box>
     <div [fireTeleportalOutlet]="myPortal"></div>
   `,
-  standalone: true,
 })
 export class AppComponent {
   myPortal: any;

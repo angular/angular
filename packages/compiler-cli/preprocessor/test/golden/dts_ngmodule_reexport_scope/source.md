@@ -54,7 +54,6 @@ import {LibModule} from 'my-lib';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [LibModule],
   template: `
     <div lib-dir></div>

@@ -20,7 +20,6 @@ import { Directive } from '@angular/core';
 
 @Directive({
   selector: '[hostDir]',
-  standalone: true,
 })
 export class HostDir {}
 ```

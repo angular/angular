@@ -43,7 +43,6 @@ export class FormField {
             args: [
               {
                 selector: '[formField]',
-                standalone: true,
               },
             ],
           },
@@ -89,7 +88,6 @@ export class MyOtherDirective {
             args: [
               {
                 selector: '[myOtherDir]',
-                standalone: true,
               },
             ],
           },
@@ -151,7 +149,6 @@ export class MyComp {
             args: [
               {
                 selector: 'my-comp',
-                standalone: true,
                 template: `
         <input [formField]="myField" myOtherDir>
       `,
@@ -167,7 +164,7 @@ export class MyComp {
 }
 ((): any => {
   (typeof ngDevMode === 'undefined' || ngDevMode) &&
-    i0.ɵsetClassDebugInfo(MyComp, { className: 'MyComp', filePath: 'test.ts', lineNumber: 30 });
+    i0.ɵsetClassDebugInfo(MyComp, { className: 'MyComp', filePath: 'test.ts', lineNumber: 27 });
 })();
 
 ```

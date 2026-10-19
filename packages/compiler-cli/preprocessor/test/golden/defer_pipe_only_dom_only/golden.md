@@ -124,7 +124,6 @@ class AppComponent {
           }
         </div>
       `,
-                standalone: true,
                 imports: [MyPipe],
               },
             ],
@@ -140,7 +139,7 @@ class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 34,
+      lineNumber: 33,
     });
 })();
 

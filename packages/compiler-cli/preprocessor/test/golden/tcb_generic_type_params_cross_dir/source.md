@@ -36,7 +36,6 @@ import { SelectionModel, DefaultItem } from './models';
 @Component({
   selector: 'mat-selection-list',
   template: '',
-  standalone: true,
 })
 export class MatSelectionList<T extends SelectionModel<unknown> = SelectionModel<DefaultItem>> {
   @Input() value!: T;
@@ -50,7 +49,6 @@ import { SelectionModel, DefaultItem } from './models';
 
 @Directive({
   selector: '[filterDir]',
-  standalone: true,
 })
 export class FilterDirective<T extends SelectionModel<U>, U extends DefaultItem = DefaultItem> {
   @Input('filterDir') filterData!: T;
@@ -68,7 +66,6 @@ export interface LocalItemType {
 @Component({
   selector: 'local-item-comp',
   template: '',
-  standalone: true,
 })
 export class LocalItemComponent<T extends LocalItemType = LocalItemType> {
   @Input() item!: T;
@@ -93,7 +90,6 @@ import { TreeNode, DefaultNodeData } from './tree/index';
 @Component({
   selector: 'tree-comp',
   template: '',
-  standalone: true,
 })
 export class TreeComponent<T extends TreeNode<DefaultNodeData> = TreeNode<DefaultNodeData>> {
   @Input() tree!: T;
@@ -171,7 +167,6 @@ import { MatDtsList } from '../components/dts_list';
     <legacy-generic-comp [legacyValue]="selection"></legacy-generic-comp>
     <mat-dts-list [value]="selection"></mat-dts-list>
   `,
-  standalone: true,
 })
 export class AppComponent {
   selection: any;

@@ -15,7 +15,6 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'lib-foo',
   template: '<span>Foo</span>',
-  standalone: true,
 })
 export class FooComponent {}
 ```
@@ -45,7 +44,6 @@ import { SHARED_IMPORTS } from './barrel';
 @Component({
   selector: 'app-root',
   template: '<lib-foo></lib-foo>',
-  standalone: true,
   imports: [...SHARED_IMPORTS],
 })
 export class AppComponent {}

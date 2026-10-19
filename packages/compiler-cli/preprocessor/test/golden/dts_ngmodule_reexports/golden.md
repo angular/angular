@@ -52,7 +52,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 imports: [MyFeatureModule],
                 template: `
         <feature-cmp [myProp]="'hello'"></feature-cmp>
@@ -71,7 +70,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.ts',
-      lineNumber: 12,
+      lineNumber: 11,
     });
 })();
 

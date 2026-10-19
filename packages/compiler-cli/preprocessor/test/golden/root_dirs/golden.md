@@ -49,7 +49,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 template: '<div>Hello from extra rootDir!</div>',
                 styles: ['div { color: red }'],
               },
@@ -66,7 +65,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app/app.component.ts',
-      lineNumber: 9,
+      lineNumber: 8,
     });
 })();
 

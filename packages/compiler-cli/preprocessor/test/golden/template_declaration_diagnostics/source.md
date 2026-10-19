@@ -20,7 +20,6 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-dynamic-template',
-  standalone: true,
   template: '<div>' + Math.random() + '</div>',
 })
 export class DynamicTemplateComponent {}
@@ -32,7 +31,6 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-missing-template',
-  standalone: true,
 })
 export class MissingTemplateComponent {}
 ```
@@ -43,7 +41,6 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-dynamic-template-url',
-  standalone: true,
   templateUrl: './app-' + Math.random() + '.html',
 })
 export class DynamicTemplateUrlComponent {}
@@ -55,7 +52,6 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-missing-link-stylesheet',
-  standalone: true,
   template: '<link rel="stylesheet" href="./missing.css"><div>Hello</div>',
 })
 export class MissingLinkStylesheetComponent {}
@@ -69,7 +65,6 @@ import { Component } from '@angular/core';
 // from the external template is anchored on the `templateUrl` expression, as in ngtsc.
 @Component({
   selector: 'app-missing-link-stylesheet-template-literal',
-  standalone: true,
   templateUrl: `./missing-link-stylesheet-template-literal.component.html`,
 })
 export class MissingLinkStylesheetTemplateLiteralComponent {}

@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {TsGoFacade} from '../src/facade';
-import * as path from 'path';
 import * as fs from 'node:fs/promises';
+import * as path from 'path';
 import * as rpc from 'vscode-jsonrpc/node';
 import {TextDocument} from 'vscode-languageserver-textdocument';
+import {TsGoFacade} from '../src/facade';
 
-import {TestEnv, getTestWorkspacePath, startTestServer} from './test_helpers';
 import {TestFileManager} from './test_file_manager';
+import {TestEnv, getTestWorkspacePath, startTestServer} from './test_helpers';
 
 describe('Definitions with TS 7 binary', () => {
   let connection: rpc.MessageConnection;
@@ -48,14 +48,12 @@ describe('Definitions with TS 7 binary', () => {
       @Component({
         selector: 'test-comp',
         template: '<div></div>',
-        standalone: true,
       })
       export class TestComponent {}
 
       @Component({
         selector: 'app-cmp',
         template: '<¦test-comp></test-comp>',
-        standalone: true,
         imports: [TestComponent],
       })
       export class AppCmp {}
@@ -74,7 +72,6 @@ describe('Definitions with TS 7 binary', () => {
       @Component({
         selector: 'app-cmp',
         template: '@let foo = {value: 123}; {{fo¦o.value}}',
-        standalone: true,
       })
       export class AppCmp {}
     `;
@@ -93,7 +90,6 @@ describe('Definitions with TS 7 binary', () => {
       @Component({
         selector: 'app-cmp',
         templateUrl: './app.html',
-        standalone: true,
       })
       export class AppCmp {}
     `;
@@ -113,7 +109,6 @@ describe('Definitions with TS 7 binary', () => {
 
       @Pipe({
         name: 'myPipe',
-        standalone: true,
       })
       export class MyPipe implements PipeTransform {
         transform(value: string): string {
@@ -124,7 +119,6 @@ describe('Definitions with TS 7 binary', () => {
       @Component({
         selector: 'app-cmp',
         templateUrl: './pipe_test.html',
-        standalone: true,
         imports: [MyPipe],
       })
       export class AppCmp {}
@@ -154,7 +148,6 @@ describe('Definitions with TS 7 binary', () => {
       @Component({
         selector: 'app-cmp',
         templateUrl: './app.html',
-        standalone: true,
         imports: [MyDir, MyDir2],
       })
       export class AppCmp {}
@@ -165,7 +158,6 @@ describe('Definitions with TS 7 binary', () => {
 
       @Directive({
         selector: '[dir]',
-        standalone: true,
       })
       export class MyDir {
         @Input() inputA!: any;
@@ -177,7 +169,6 @@ describe('Definitions with TS 7 binary', () => {
 
       @Directive({
         selector: '[dir]',
-        standalone: true,
       })
       export class MyDir2 {
         @Input() inputA!: any;
@@ -219,7 +210,6 @@ describe('Definitions with TS 7 binary', () => {
       @Component({
         selector: 'app-cmp',
         templateUrl: './app.html',
-        standalone: true,
         imports: [MyDir, MyDir2],
       })
       export class AppCmp {}
@@ -230,7 +220,6 @@ describe('Definitions with TS 7 binary', () => {
 
       @Directive({
         selector: '[dir]',
-        standalone: true,
       })
       export class MyDir {
         inputA = input<any>();
@@ -242,7 +231,6 @@ describe('Definitions with TS 7 binary', () => {
 
       @Directive({
         selector: '[dir]',
-        standalone: true,
       })
       export class MyDir2 {
         inputA = input<any>();
@@ -289,7 +277,6 @@ describe('Definitions with TS 7 binary', () => {
       @Component({
         selector: 'app-cmp',
         templateUrl: './app.html',
-        standalone: true,
         imports: [CommonModule],
       })
       export class AppCmp {
@@ -313,7 +300,6 @@ describe('Definitions with TS 7 binary', () => {
       @Component({
         selector: 'app-cmp',
         templateUrl: './app.html',
-        standalone: true,
       })
       export class AppCmp {
         componentProp = 123;
@@ -337,7 +323,6 @@ describe('Definitions with TS 7 binary', () => {
       @Component({
         selector: 'app-cmp',
         templateUrl: './app.html',
-        standalone: true,
       })
       export class AppCmp {}
     `;
@@ -358,7 +343,6 @@ describe('Definitions with TS 7 binary', () => {
         @Component({
           selector: 'dollar-cmp',
           template: '',
-          standalone: true,
         })
         export class DollarCmp {
           @Input() obs$!: string;
@@ -367,7 +351,6 @@ describe('Definitions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<dollar-cmp [ob¦s$]="greeting"></dollar-cmp>',
-          standalone: true,
           imports: [DollarCmp],
         })
         export class AppCmp {
@@ -388,7 +371,6 @@ describe('Definitions with TS 7 binary', () => {
         @Component({
           selector: 'dollar-cmp',
           template: '',
-          standalone: true,
         })
         export class DollarCmp {
           @Input() obs$!: string;
@@ -397,7 +379,6 @@ describe('Definitions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<dollar-cm¦p [obs$]="greeting"></dollar-cmp>',
-          standalone: true,
           imports: [DollarCmp],
         })
         export class AppCmp {
@@ -419,7 +400,6 @@ describe('Definitions with TS 7 binary', () => {
 
         @Directive({
           selector: '[dollar\\\\$]',
-          standalone: true,
         })
         export class DollarDir {
           @Input() dollar$!: string;
@@ -428,7 +408,6 @@ describe('Definitions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div [dollar¦$]="greeting"></div>',
-          standalone: true,
           imports: [DollarDir],
         })
         export class AppCmp {
@@ -451,7 +430,6 @@ describe('Definitions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div></div>',
-          standalone: true,
           host: {
             '[title]': 'tit¦le'
           }
@@ -474,7 +452,6 @@ describe('Definitions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div></div>',
-          standalone: true,
           host: {
             '(click)': 'handleC¦lick()'
           }
@@ -501,7 +478,6 @@ describe('Definitions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           templateUrl: './app.html',
-          standalone: true,
           imports: [Dep],
         })
         export class AppCmp {}
@@ -512,7 +488,6 @@ describe('Definitions with TS 7 binary', () => {
 
         @Component({
           template: '',
-          standalone: true,
         })
         export class Dep {}
       `;
@@ -540,7 +515,6 @@ describe('Definitions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           templateUrl: './app.html',
-          standalone: true,
           imports: [Dep],
         })
         export class AppCmp {}
@@ -550,7 +524,6 @@ describe('Definitions with TS 7 binary', () => {
         import {Directive} from '@angular/core';
 
         @Directive({
-          standalone: true,
         })
         export class Dep {}
       `;
@@ -575,7 +548,6 @@ describe('Definitions with TS 7 binary', () => {
 
         @Component({
           template: '',
-          standalone: true,
         })
         export class Dep {
           @Input() someInput: any;
@@ -584,7 +556,6 @@ describe('Definitions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<Dep [someInpu¦t]="123"/>',
-          standalone: true,
           imports: [Dep],
         })
         export class AppCmp {}
@@ -606,7 +577,6 @@ describe('Definitions with TS 7 binary', () => {
         import {Component, Directive, Input} from '@angular/core';
 
         @Directive({
-          standalone: true,
         })
         export class Dep {
           @Input() someInput: any;
@@ -615,7 +585,6 @@ describe('Definitions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div @Dep([someInpu¦t]="123")></div>',
-          standalone: true,
           imports: [Dep],
         })
         export class AppCmp {}
@@ -638,7 +607,6 @@ describe('Definitions with TS 7 binary', () => {
 
         @Component({
           template: '',
-          standalone: true,
         })
         export class Dep {
           @Output() someEvent = new EventEmitter<void>();
@@ -647,7 +615,6 @@ describe('Definitions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<Dep (someEv¦ent)="handler()"/>',
-          standalone: true,
           imports: [Dep],
         })
         export class AppCmp {
@@ -671,7 +638,6 @@ describe('Definitions with TS 7 binary', () => {
         import {Component, Directive, Output, EventEmitter} from '@angular/core';
 
         @Directive({
-          standalone: true,
         })
         export class Dep {
           @Output() someEvent = new EventEmitter<void>();
@@ -680,7 +646,6 @@ describe('Definitions with TS 7 binary', () => {
         @Component({
           selector: 'app-cmp',
           template: '<div @Dep((someEv¦ent)="handler()")></div>',
-          standalone: true,
           imports: [Dep],
         })
         export class AppCmp {
@@ -708,7 +673,6 @@ describe('Definitions with TS 7 binary', () => {
         selector: 'app-cmp',
         template: '',
         styleUrls: ['./style.sc¦ss'],
-        standalone: true,
       })
       export class AppCmp {}
     `;
@@ -728,7 +692,6 @@ describe('Definitions with TS 7 binary', () => {
       @Component({
         selector: 'app-cmp',
         templateUrl: './app.ht¦ml',
-        standalone: true,
       })
       export class AppCmp {
         name = 'Bob';
@@ -776,7 +739,6 @@ describe('Definitions with TS 7 binary', () => {
       @Component({
         selector: 'app-cmp',
         templateUrl: './app.html',
-        standalone: true,
         imports: [MyDir, MyDir2],
       })
       export class AppCmp {
@@ -789,7 +751,6 @@ describe('Definitions with TS 7 binary', () => {
 
       @Directive({
         selector: '[dir]',
-        standalone: true,
       })
       export class MyDir {
         @Output() someEvent = new EventEmitter<void>();
@@ -801,7 +762,6 @@ describe('Definitions with TS 7 binary', () => {
 
       @Directive({
         selector: '[dir]',
-        standalone: true,
       })
       export class MyDir2 {
         @Output() someEvent = new EventEmitter<void>();
@@ -838,7 +798,6 @@ describe('Definitions with TS 7 binary', () => {
 
       @Directive({
         selector: '[dir]',
-        standalone: true,
       })
       export class MyDir {
         inputA = model('');
@@ -846,7 +805,6 @@ describe('Definitions with TS 7 binary', () => {
 
       @Directive({
         selector: '[dir]',
-        standalone: true,
       })
       export class MyDir2 {
         inputA = model('');
@@ -855,7 +813,6 @@ describe('Definitions with TS 7 binary', () => {
       @Component({
         selector: 'app-cmp',
         template: '<div dir inpu¦tA="abc"></div>',
-        standalone: true,
         imports: [MyDir, MyDir2],
       })
       export class AppCmp {}
@@ -884,7 +841,6 @@ describe('Definitions with TS 7 binary', () => {
 
       @Directive({
         selector: '[dir]',
-        standalone: true,
       })
       export class MyDir {
         inputA = model('');
@@ -892,7 +848,6 @@ describe('Definitions with TS 7 binary', () => {
 
       @Directive({
         selector: '[dir]',
-        standalone: true,
       })
       export class MyDir2 {
         inputA = model('');
@@ -901,7 +856,6 @@ describe('Definitions with TS 7 binary', () => {
       @Component({
         selector: 'app-cmp',
         template: '<div dir [(inpu¦tA)]="abc"></div>',
-        standalone: true,
         imports: [MyDir, MyDir2],
       })
       export class AppCmp {
@@ -934,7 +888,6 @@ describe('Definitions with TS 7 binary', () => {
       @Component({
         selector: 'app-cmp',
         templateUrl: './app.html',
-        standalone: true,
       })
       export class AppCmp {
         doSomething() {}
@@ -958,7 +911,6 @@ describe('Definitions with TS 7 binary', () => {
       @Component({
         selector: 'app-cmp',
         templateUrl: './app.html',
-        standalone: true,
       })
       export class AppCmp {
         name = 'Bob';
@@ -983,7 +935,6 @@ describe('Definitions with TS 7 binary', () => {
       @Component({
         selector: 'app-cmp',
         templateUrl: './app.html',
-        standalone: true,
       })
       export class AppCmp {
         name = 'Bob';
@@ -1006,7 +957,6 @@ describe('Definitions with TS 7 binary', () => {
 
       @Directive({
         selector: '[my-dir]',
-        standalone: true,
         host: {
           '[title]': 'myT¦itle',
         }
@@ -1030,7 +980,6 @@ describe('Definitions with TS 7 binary', () => {
       @Component({
         selector: 'app-cmp',
         templateUrl: './app.html',
-        standalone: true,
       })
       export class AppCmp {
         myObj: {foo: string} = {foo: 'bar'};
@@ -1051,7 +1000,6 @@ describe('Definitions with TS 7 binary', () => {
       import {Component, Directive, Input} from '@angular/core';
 
       @Directive({
-        standalone: true,
       })
       export class HostDir {
         @Input() hostInput = 'hello';
@@ -1063,14 +1011,12 @@ describe('Definitions with TS 7 binary', () => {
           directive: HostDir,
           inputs: ['hostInput']
         }],
-        standalone: true,
       })
       export class Dir {}
 
       @Component({
         selector: 'app-cmp',
         template: '<div dir [hostI¦nput]="val"></div>',
-        standalone: true,
         imports: [Dir],
       })
       export class AppCmp {
@@ -1089,7 +1035,6 @@ describe('Definitions with TS 7 binary', () => {
       import {Component, Directive, Input} from '@angular/core';
 
       @Directive({
-        standalone: true,
       })
       export class HostDir {
         @Input() originalInput = 'hello';
@@ -1101,14 +1046,12 @@ describe('Definitions with TS 7 binary', () => {
           directive: HostDir,
           inputs: ['originalInput: customAlias']
         }],
-        standalone: true,
       })
       export class Dir {}
 
       @Component({
         selector: 'app-cmp',
         template: '<div dir [customA¦lias]="val"></div>',
-        standalone: true,
         imports: [Dir],
       })
       export class AppCmp {
@@ -1127,7 +1070,6 @@ describe('Definitions with TS 7 binary', () => {
       import {Component, Directive, Output, EventEmitter} from '@angular/core';
 
       @Directive({
-        standalone: true,
       })
       export class HostDir {
         @Output() hostOutput = new EventEmitter<string>();
@@ -1139,14 +1081,12 @@ describe('Definitions with TS 7 binary', () => {
           directive: HostDir,
           outputs: ['hostOutput']
         }],
-        standalone: true,
       })
       export class Dir {}
 
       @Component({
         selector: 'app-cmp',
         template: '<div dir (hostO¦utput)="handleClick($event)"></div>',
-        standalone: true,
         imports: [Dir],
       })
       export class AppCmp {
@@ -1165,7 +1105,6 @@ describe('Definitions with TS 7 binary', () => {
       import {Directive, Input} from '@angular/core';
 
       @Directive({
-        standalone: true,
       })
       export class InnerHostDir {
         @Input() innerInput = 'inner';
@@ -1183,7 +1122,6 @@ describe('Definitions with TS 7 binary', () => {
           directive: InnerHostDir,
           inputs: ['innerInput: chainedAlias']
         }],
-        standalone: true,
       })
       export class WrapperDir {}
     `;
@@ -1196,7 +1134,6 @@ describe('Definitions with TS 7 binary', () => {
       @Component({
         selector: 'app-cmp',
         template: '<div wrapperDir [chainedA¦lias]="val"></div>',
-        standalone: true,
         imports: [WrapperDir],
       })
       export class AppCmp {
@@ -1215,7 +1152,6 @@ describe('Definitions with TS 7 binary', () => {
       import {Directive, Input} from '@angular/core';
 
       @Directive({
-        standalone: true,
       })
       export class SelfHostDir {
         @Input() selfHostInput = 'self';
@@ -1230,7 +1166,6 @@ describe('Definitions with TS 7 binary', () => {
       @Component({
         selector: 'app-cmp',
         template: '<div>Hello</div>',
-        standalone: true,
         hostDirectives: [{
           directive: SelfHostDir,
           inputs: ['selfHostInput']
@@ -1241,7 +1176,6 @@ describe('Definitions with TS 7 binary', () => {
       @Component({
         selector: 'parent-cmp',
         template: '<app-cmp [selfHostI¦nput]="val"></app-cmp>',
-        standalone: true,
         imports: [AppCmp],
       })
       export class ParentCmp {

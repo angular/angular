@@ -16,7 +16,6 @@ import * as core from '@angular/core';
 @Component({
   selector: 'app-root',
   template: '<div><slot></slot></div>',
-  standalone: true,
 })
 export class AppComponent {
   // Decorator queries

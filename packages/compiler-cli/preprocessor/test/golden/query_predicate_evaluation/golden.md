@@ -180,7 +180,6 @@ export class TestComp {
               {
                 selector: 'test-comp',
                 template: '<div #myRef #x #y #z></div>',
-                standalone: true,
               },
             ],
           },
@@ -212,7 +211,7 @@ export class TestComp {
 }
 ((): any => {
   (typeof ngDevMode === 'undefined' || ngDevMode) &&
-    i0.ɵsetClassDebugInfo(TestComp, { className: 'TestComp', filePath: 'test.ts', lineNumber: 26 });
+    i0.ɵsetClassDebugInfo(TestComp, { className: 'TestComp', filePath: 'test.ts', lineNumber: 25 });
 })();
 
 export class LegacyQueries {
@@ -259,7 +258,6 @@ export class LegacyQueries {
             args: [
               {
                 selector: '[legacy]',
-                standalone: true,
                 // The `queries` metadata property evaluates its predicates like the decorators do.
                 queries: { legacy: new ViewChildren(['p,q', `${PREFIX}Legacy`] as any) },
               },

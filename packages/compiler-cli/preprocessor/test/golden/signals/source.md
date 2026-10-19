@@ -38,7 +38,6 @@ export class SignalComp {
 @Component({
   selector: 'standalone-signal-comp',
   template: '<div>Standalone Signal Component</div>',
-  standalone: true,
   signals: true
 })
 export class StandaloneSignalComp {}

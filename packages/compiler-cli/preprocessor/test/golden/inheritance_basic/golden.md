@@ -37,7 +37,6 @@ export class BaseDir {
             args: [
               {
                 selector: '[base]',
-                standalone: true,
               },
             ],
           },
@@ -94,7 +93,6 @@ export class ChildDir extends BaseDir {
             args: [
               {
                 selector: '[child]',
-                standalone: true,
               },
             ],
           },
@@ -145,7 +143,6 @@ export class ChildWithCtorDir extends BaseDir {
             args: [
               {
                 selector: '[childWithCtor]',
-                standalone: true,
               },
             ],
           },

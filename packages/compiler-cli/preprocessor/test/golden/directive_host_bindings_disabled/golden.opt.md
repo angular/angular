@@ -84,7 +84,6 @@ export class TestComponent {
               {
                 selector: 'test-comp',
                 template: '<span>hello</span>',
-                standalone: true,
                 host: {
                   'role': 'button',
                   '[id]': 'myId',
@@ -106,7 +105,7 @@ export class TestComponent {
     i0.ɵsetClassDebugInfo(TestComponent, {
       className: 'TestComponent',
       filePath: 'test.component.ts',
-      lineNumber: 12,
+      lineNumber: 11,
     });
 })();
 
@@ -191,7 +190,6 @@ export class TooltipDirective {
             args: [
               {
                 selector: '[appTooltip]',
-                standalone: true,
                 host: {
                   'role': 'tooltip',
                   '[attr.aria-hidden]': 'isHidden',

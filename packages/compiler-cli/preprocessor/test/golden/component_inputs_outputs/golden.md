@@ -129,7 +129,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 imports: [GreetingComponent],
                 template: `
         <app-greeting
@@ -162,7 +161,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 26,
+      lineNumber: 25,
     });
 })();
 
@@ -314,7 +313,6 @@ export class GreetingComponent {
               {
                 selector: 'app-greeting',
                 template: '<div>Hello, {{name()}}! Count: {{count}}</div>',
-                standalone: true,
               },
             ],
           },
@@ -354,7 +352,7 @@ export class GreetingComponent {
     i0.ɵsetClassDebugInfo(GreetingComponent, {
       className: 'GreetingComponent',
       filePath: 'greeting.component.ts',
-      lineNumber: 8,
+      lineNumber: 7,
     });
 })();
 

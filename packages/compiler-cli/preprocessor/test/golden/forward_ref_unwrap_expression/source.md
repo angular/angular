@@ -22,7 +22,6 @@ declare const log: (value: unknown) => void;
 // emitted as the original `forwardRef(...)` call rather than as `DepDirective`.
 @Component({
   selector: 'app-host',
-  standalone: true,
   template: '',
   // `!` is stripped by the partial evaluator, so this one still resolves.
   hostDirectives: [{ directive: forwardRef(() => DepDirective)! }],
@@ -57,7 +56,6 @@ export class HostComponent {
 // `DepDirective` -- narrowing the syntactic helper must not reach this path.
 @Component({
   selector: 'app-imports',
-  standalone: true,
   template: '<div dep></div>',
   imports: [
     forwardRef(() => DepDirective)!,

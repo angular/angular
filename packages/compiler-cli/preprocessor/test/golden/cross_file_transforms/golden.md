@@ -94,7 +94,6 @@ export class TestTransformsComponent {
             args: [
               {
                 selector: 'test-transforms',
-                standalone: true,
                 template: `<div></div>`,
               },
             ],
@@ -123,7 +122,7 @@ export class TestTransformsComponent {
     i0.ɵsetClassDebugInfo(TestTransformsComponent, {
       className: 'TestTransformsComponent',
       filePath: 'app.ts',
-      lineNumber: 10,
+      lineNumber: 9,
     });
 })();
 
@@ -187,7 +186,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 imports: [TestTransformsComponent],
                 template: `
         <test-transforms
@@ -213,7 +211,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.ts',
-      lineNumber: 39,
+      lineNumber: 37,
     });
 })();
 

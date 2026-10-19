@@ -161,7 +161,6 @@ export class MyComp {
             args: [
               {
                 selector: 'my-comp',
-                standalone: true,
                 template: '<div>Hello</div>',
                 hostDirectives: [
                   {
@@ -182,7 +181,7 @@ export class MyComp {
 }
 ((): any => {
   (typeof ngDevMode === 'undefined' || ngDevMode) &&
-    i0.ɵsetClassDebugInfo(MyComp, { className: 'MyComp', filePath: 'test.ts', lineNumber: 33 });
+    i0.ɵsetClassDebugInfo(MyComp, { className: 'MyComp', filePath: 'test.ts', lineNumber: 32 });
 })();
 
 ```

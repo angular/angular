@@ -1639,7 +1639,6 @@ fn test_ngmodule_array_spread_imports_resolution() {
             @Component({
                 selector: 'my-comp',
                 template: '<div>Test</div>',
-                standalone: true,
             })
             export class MyComponent {}
 
@@ -1736,7 +1735,6 @@ fn test_ngmodule_dts_tuple_typeof_array_spread() {
             @Component({
                 selector: 'my-comp',
                 template: '<div>Test</div>',
-                standalone: true,
             })
             export class MyComponent {}
 
@@ -1828,7 +1826,6 @@ fn test_component_dts_readonly_tuple_typeof_array_spread() {
             @Component({
                 selector: 'my-comp',
                 template: '<div dirA dirB>Test</div>',
-                standalone: true,
                 imports: [
                     ...READONLY_DEPS,
                 ],
@@ -1974,7 +1971,6 @@ fn test_unresolvable_selector_diagnostic() {
             @Component({
                 selector: DYNAMIC_SELECTOR,
                 template: '<div></div>',
-                standalone: true,
             })
             export class BadComponent {}
         "#
@@ -2015,7 +2011,6 @@ fn test_invalid_style_urls_diagnostic_ng2021() {
                 template: '<div></div>',
                 styleUrl: './single.css',
                 styleUrls: ['./multiple.css'],
-                standalone: true,
             })
             export class BadStylesComponent {}
         "#
@@ -2065,7 +2060,6 @@ fn test_missing_template_resource_diagnostic_ng2008() {
             @Component({
                 selector: 'app-missing-template',
                 templateUrl: './nonexistent.html',
-                standalone: true,
             })
             export class MissingTemplateComponent {}
         "#
@@ -2107,7 +2101,6 @@ fn test_missing_style_resource_diagnostic_ng2008() {
                 selector: 'app-missing-style',
                 template: '<div></div>',
                 styleUrl: './nonexistent.css',
-                standalone: true,
             })
             export class MissingStyleComponent {}
         "#
@@ -2337,7 +2330,6 @@ fn test_cross_file_selector_in_optimized_mode() {
             @Component({
                 selector: SELECTOR,
                 template: '<div></div>',
-                standalone: true,
             })
             export class CustomComponent {}
         "#
@@ -2381,7 +2373,6 @@ fn test_cross_file_selector_in_non_optimized_mode() {
             @Component({
                 selector: SELECTOR,
                 template: '<div></div>',
-                standalone: true,
             })
             export class CustomComponent {}
         "#
@@ -2660,7 +2651,6 @@ fn test_cross_file_invalid_selector_in_optimized_mode() {
             @Component({
                 selector: SELECTOR,
                 template: '<div></div>',
-                standalone: true,
             })
             export class BadCustomComponent {}
         "#
@@ -2743,7 +2733,6 @@ fn test_shadow_dom_selector_diagnostics_ng2009() {
                 selector: 'widget',
                 template: '<div></div>',
                 encapsulation: ViewEncapsulation.ShadowDom,
-                standalone: true,
             })
             export class NoHyphenComponent {}
         "#
@@ -2758,7 +2747,6 @@ fn test_shadow_dom_selector_diagnostics_ng2009() {
                 selector: 'appWidget',
                 template: '<div></div>',
                 encapsulation: ViewEncapsulation.ShadowDom,
-                standalone: true,
             })
             export class UpperCaseComponent {}
         "#
@@ -2773,7 +2761,6 @@ fn test_shadow_dom_selector_diagnostics_ng2009() {
                 selector: 'widget[foo]',
                 template: '<div></div>',
                 encapsulation: ViewEncapsulation.ShadowDom,
-                standalone: true,
             })
             export class AttrSelectorComponent {}
         "#
@@ -2966,7 +2953,6 @@ fn test_dynamic_host_listener_args_diagnostic_ng1010() {
 
             @Directive({
                 selector: '[appBad]',
-                standalone: true,
             })
             export class BadDirective {
                 @HostListener('click', [getArg()])
@@ -3011,7 +2997,6 @@ fn test_non_array_host_listener_args_diagnostic_ng1010() {
 
             @Directive({
                 selector: '[appBad]',
-                standalone: true,
             })
             export class BadDirective {
                 @HostListener('click', 'notAnArray' as any)
@@ -3054,7 +3039,6 @@ fn test_missing_template_diagnostic_ng2001() {
 
             @Component({
                 selector: 'app-root',
-                standalone: true,
             })
             export class AppComponent {}
         "#
@@ -3096,7 +3080,6 @@ fn test_dynamic_template_diagnostic_ng1010() {
             @Component({
                 selector: 'app-root',
                 template: '<div>' + Math.random() + '</div>',
-                standalone: true,
             })
             export class AppComponent {}
         "#
@@ -3135,7 +3118,6 @@ fn test_dynamic_template_url_diagnostic_ng1010() {
             @Component({
                 selector: 'app-root',
                 templateUrl: './app-' + Math.random() + '.html',
-                standalone: true,
             })
             export class AppComponent {}
         "#
@@ -3175,7 +3157,6 @@ fn test_template_url_takes_precedence_over_dynamic_template() {
                 selector: 'app-root',
                 templateUrl: './app.component.html',
                 template: '<div>' + Math.random() + '</div>',
-                standalone: true,
             })
             export class AppComponent {}
         "#
@@ -3348,7 +3329,6 @@ fn test_template_url_from_same_file_constant_resolves() {
             @Component({
                 selector: 'app-root',
                 templateUrl: TEMPLATE_URL,
-                standalone: true,
             })
             export class AppComponent {}
         "#
@@ -3407,7 +3387,6 @@ fn test_foreign_imports_shape_diagnostics_ng1010() {
             @Component({
                 selector: 'app-root',
                 template: '<div></div>',
-                standalone: true,
                 foreignImports: [bad, two(A, B), obj.member(C), fn(x.y), ok(Kept)],
             })
             export class AppComponent {}
@@ -3469,7 +3448,6 @@ fn test_foreign_imports_non_array_diagnostic_ng1010() {
             @Component({
                 selector: 'app-root',
                 template: '<div></div>',
-                standalone: true,
                 foreignImports: SHARED_IMPORTS,
             })
             export class AppComponent {}
@@ -3512,7 +3490,6 @@ fn test_imports_on_non_standalone_component_ng2010() {
             @Component({
                 selector: 'app-other',
                 template: '<span></span>',
-                standalone: true,
             })
             export class OtherComponent {}
 
@@ -4107,7 +4084,6 @@ fn test_host_directives_resolved_declarations_cross_file_and_chained() {
         r#"
             import {Directive, Input} from '@angular/core';
             @Directive({
-                standalone: true,
             })
             export class HostDirC {
                 @Input() inputC: string = '';
@@ -4121,7 +4097,6 @@ fn test_host_directives_resolved_declarations_cross_file_and_chained() {
             import {Directive, Input} from '@angular/core';
             import {HostDirC} from './nested/host_c';
             @Directive({
-                standalone: true,
                 hostDirectives: [{
                     directive: HostDirC,
                     inputs: ['inputC: aliasC'],
@@ -4140,7 +4115,6 @@ fn test_host_directives_resolved_declarations_cross_file_and_chained() {
             import {HostDirB} from './host_b';
             @Directive({
                 selector: '[dirA]',
-                standalone: true,
                 hostDirectives: [{
                     directive: HostDirB,
                     inputs: ['inputB', 'aliasC: finalAliasC'],
@@ -4158,7 +4132,6 @@ fn test_host_directives_resolved_declarations_cross_file_and_chained() {
             @Component({
                 selector: 'app-cmp',
                 template: '<div dirA [inputB]="val" [finalAliasC]="val"></div>',
-                standalone: true,
                 imports: [DirA],
             })
             export class AppCmp {
@@ -4243,7 +4216,6 @@ fn test_host_directives_on_component_itself() {
         r#"
             import {Directive, Input} from '@angular/core';
             @Directive({
-                standalone: true,
             })
             export class HostDir {
                 @Input() hostInp: string = '';
@@ -4259,7 +4231,6 @@ fn test_host_directives_on_component_itself() {
             @Component({
                 selector: 'app-cmp',
                 template: '<div>Test</div>',
-                standalone: true,
                 hostDirectives: [{
                     directive: HostDir,
                     inputs: ['hostInp'],
@@ -4331,7 +4302,6 @@ fn test_host_directives_cycle_prevention() {
             import {DirB} from './dir_b';
             @Directive({
                 selector: '[dirA]',
-                standalone: true,
                 hostDirectives: [DirB],
             })
             export class DirA {}
@@ -4345,7 +4315,6 @@ fn test_host_directives_cycle_prevention() {
             import {DirA} from './dir_a';
             @Directive({
                 selector: '[dirB]',
-                standalone: true,
                 hostDirectives: [DirA],
             })
             export class DirB {}
@@ -4360,7 +4329,6 @@ fn test_host_directives_cycle_prevention() {
             @Component({
                 selector: 'app-cmp',
                 template: '<div dirA></div>',
-                standalone: true,
                 imports: [DirA],
             })
             export class AppCmp {}
@@ -4456,7 +4424,6 @@ fn test_inherited_input_and_output_same_name() {
             @Component({
                 selector: 'app-cmp',
                 template: '<child-ctrl></child-ctrl>',
-                standalone: true,
                 imports: [ChildControl],
             })
             export class AppCmp {}
@@ -4552,7 +4519,6 @@ fn test_inherited_model() {
             @Component({
                 selector: 'child-cmp',
                 template: '',
-                standalone: true,
             })
             export class ChildComponent extends BaseDirective {}
         "#
@@ -4566,7 +4532,6 @@ fn test_inherited_model() {
             @Component({
                 selector: 'app-cmp',
                 template: '<child-cmp></child-cmp>',
-                standalone: true,
                 imports: [ChildComponent],
             })
             export class AppCmp {}
@@ -4749,7 +4714,6 @@ const LIB_CONSUMER_APP: &str = r#"
     @Component({
         selector: 'app-cmp',
         template: '<div libOld libNew></div>',
-        standalone: true,
         imports: [LibDir],
     })
     export class AppCmp {}

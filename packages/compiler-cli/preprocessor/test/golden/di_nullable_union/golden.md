@@ -62,7 +62,6 @@ export class TestDirective {
             args: [
               {
                 selector: '[test]',
-                standalone: true,
               },
             ],
           },

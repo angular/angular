@@ -8,8 +8,8 @@
 
 import * as path from 'path';
 import * as rpc from 'vscode-jsonrpc/node';
-import {TestEnv, getTestWorkspacePath, startTestServer} from './test_helpers';
 import {TestFileManager} from './test_file_manager';
+import {TestEnv, getTestWorkspacePath, startTestServer} from './test_helpers';
 
 import {TsGoFacade} from '../src/facade';
 
@@ -43,7 +43,6 @@ describe('Incremental Analysis', () => {
       @Component({
         selector: 'app-inc-test',
         template: '<div [title]="¦name"></div>',
-        standalone: true,
       })
       export class AppIncTestComponent {
         name!: string;
@@ -73,7 +72,6 @@ describe('Incremental Analysis', () => {
       @Component({
         selector: 'app-add-test',
         template: '{{¦val}}',
-        standalone: true,
       })
       export class AppAddTestComponent {
         readonly val = value;

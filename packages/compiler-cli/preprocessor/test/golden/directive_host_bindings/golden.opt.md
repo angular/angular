@@ -12,23 +12,23 @@ function _tcb1(this: i0.TooltipDirective) {
   if (true) {
   }
   if (true /*hostBindingsBlockGuard*/) {
-    this.isHidden; /*192,200*/ /*192,200*/
-    this.tooltipId; /*383,385*/ /*383,385*/
-    var _t1 = document.createElement('ng-directive'); /*224,240*/
-    _t1.addEventListener(/*433,438*/ 'click', ($event /*T:EP*/): any => {
-      this.onClick(/*455,462*/ $event /*443,449*/); /*455,462*/
-    }); /*418,452*/
-    _t1.addEventListener(/*542,552*/ 'mouseenter', ($event /*T:EP*/): any => {
+    this.isHidden; /*172,180*/ /*172,180*/
+    this.tooltipId; /*363,365*/ /*363,365*/
+    var _t1 = document.createElement('ng-directive'); /*204,220*/
+    _t1.addEventListener(/*413,418*/ 'click', ($event /*T:EP*/): any => {
+      this.onClick(/*435,442*/ $event /*423,429*/); /*435,442*/
+    }); /*398,432*/
+    _t1.addEventListener(/*522,532*/ 'mouseenter', ($event /*T:EP*/): any => {
       this
-        .onMouseEnter /*557,569*/
-        (); /*557,569*/
-    }); /*527,554*/
-    _t1.addEventListener(/*623,628*/ 'input', ($event /*T:EP*/): any => {
+        .onMouseEnter /*537,549*/
+        (); /*537,549*/
+    }); /*507,534*/
+    _t1.addEventListener(/*603,608*/ 'input', ($event /*T:EP*/): any => {
       this.onInput(
-        /*668,675*/ $event /*633,639*/.target /*640,646*/ /*633,646*/.value /*647,652*/ /*633,652*/,
-        'test' /*656,662*/,
-      ); /*668,675*/
-    }); /*608,665*/
+        /*648,655*/ $event /*613,619*/.target /*620,626*/ /*613,626*/.value /*627,632*/ /*613,632*/,
+        'test' /*636,642*/,
+      ); /*648,655*/
+    }); /*588,645*/
   }
 }
 
@@ -113,7 +113,6 @@ export class TooltipDirective {
             args: [
               {
                 selector: '[appTooltip]',
-                standalone: true,
                 host: {
                   'role': 'tooltip',
                   '[attr.aria-hidden]': 'isHidden',

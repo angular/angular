@@ -1421,14 +1421,12 @@ import { Component } from '@angular/core';
 @Component({
     selector: 'local-dir',
     template: '',
-    standalone: true,
 })
 class LocalDir {} // NOT exported
 
 @Component({
     selector: 'app-comp',
     template: '<local-dir></local-dir>',
-    standalone: true,
     imports: [LocalDir],
 })
 export class AppComp {}
@@ -1465,14 +1463,12 @@ import { Component } from '@angular/core';
 @Component({
     selector: 'local-dir',
     template: '',
-    standalone: true,
 })
 export class LocalDir {} // IS exported
 
 @Component({
     selector: 'app-comp',
     template: '<local-dir></local-dir>',
-    standalone: true,
     imports: [LocalDir],
 })
 export class AppComp {}
@@ -1506,7 +1502,6 @@ import { Component } from '@angular/core';
 @Component({
     selector: 'app-comp',
     template: '',
-    standalone: true,
 })
 export default class AppComp {}
 "#,
@@ -1537,7 +1532,7 @@ import { Component } from '@angular/core';
 @Component({
     selector: 'app-comp',
     template: '',
-    standalone: true,
+    
 })
 class AppComp {}
 
@@ -1641,7 +1636,6 @@ import { Directive } from '@angular/core';
 
 @Directive({
     selector: '[local-dir]',
-    standalone: true,
 })
 class LocalDir {} // NOT exported
 "#,
@@ -1671,7 +1665,6 @@ import { Pipe } from '@angular/core';
 
 @Pipe({
     name: 'local-pipe',
-    standalone: true,
 })
 class LocalPipe {} // NOT exported
 "#,
@@ -1990,7 +1983,6 @@ import {
 @NgComp({
     selector: 'my-comp',
     template: '<div></div>',
-    standalone: true,
     inputs: ['declaredInput'],
 })
 export class MyComponent {
@@ -2086,7 +2078,6 @@ import * as core from '@angular/core';
 @core.Component({
     selector: 'my-comp',
     template: '<div></div>',
-    standalone: true,
 })
 export class MyComponent {
     @core.Input() boundInput: string = '';
@@ -2148,7 +2139,6 @@ import { Input, Output, HostBinding, HostListener, Inject } from 'not-angular';
 @Component({
     selector: 'my-comp',
     template: '<div></div>',
-    standalone: true,
 })
 export class MyComponent {
     @Input() fakeInput: string = '';

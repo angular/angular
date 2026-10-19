@@ -79,7 +79,6 @@ import { MyType } from './types';
 @Component({
   selector: 'app-root',
   template: '<div>Hello</div>',
-  standalone: true,
 })
 export class AppComponent {
   constructor(private myType: MyType) {}

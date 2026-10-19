@@ -45,7 +45,6 @@ import { Directive, model } from '@angular/core';
 
 @Directive({
   selector: '[baseDir]',
-  standalone: true,
 })
 export class BaseDir {
   counter = model(0);
@@ -61,14 +60,12 @@ import { BaseSetting } from 'external-lib';
 @Component({
   selector: 'child-cmp',
   template: '<span>Child</span>',
-  standalone: true,
 })
 export class ChildComponent extends BaseDir {}
 
 @Component({
   selector: 'setting-cmp',
   template: '<span>Setting</span>',
-  standalone: true,
 })
 export class SettingComponent extends BaseSetting<string> {}
 ```
@@ -84,7 +81,6 @@ import { ChildComponent, SettingComponent } from './child.component';
     <child-cmp [(counter)]="myCount" />
     <setting-cmp [(value)]="myValue" />
   `,
-  standalone: true,
   imports: [ChildComponent, SettingComponent],
 })
 export class AppComponent {

@@ -13,10 +13,10 @@ const _ctor1: <T = any>(init: Pick<i1.MyNgIf<T>, 'myNgIf'>) => i1.MyNgIf<T> = nu
 /*tcb1*/
 function _tcb1(this: i0.AppComponent) {
   if (true) {
-    var _t1 /*T:DIR:0*/ /*171,191*/ = _ctor1({
-      'myNgIf': true /*185,189*/ /*177,189*/,
+    var _t1 /*T:DIR:0*/ /*151,171*/ = _ctor1({
+      'myNgIf': true /*165,169*/ /*157,169*/,
     }); /*D:ignore*/
-    _t1.myNgIf /*177,183*/ = true /*185,189*/; /*177,189*/
+    _t1.myNgIf /*157,163*/ = true /*165,169*/; /*157,169*/
   }
 }
 
@@ -82,7 +82,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 imports: [MyNgIf],
                 template: `
         <div *myNgIf="true"></div>
@@ -101,7 +100,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.ts',
-      lineNumber: 12,
+      lineNumber: 11,
     });
 })();
 

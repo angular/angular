@@ -147,7 +147,6 @@ export class ShadowWidgetComponent {
             args: [
               {
                 selector: 'widget',
-                standalone: true,
                 template: '<div>Shadow</div>',
                 encapsulation: ViewEncapsulation.ShadowDom,
               },
@@ -164,7 +163,7 @@ export class ShadowWidgetComponent {
     i0.ɵsetClassDebugInfo(ShadowWidgetComponent, {
       className: 'ShadowWidgetComponent',
       filePath: 'shadow-widget.component.ts',
-      lineNumber: 9,
+      lineNumber: 8,
     });
 })();
 

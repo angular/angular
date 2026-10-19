@@ -15,13 +15,11 @@ import { Component, Directive, Injectable, Pipe, PipeTransform, Service, NgModul
 @Component({
   selector: 'meta-comp',
   template: '<div>Metadata</div>',
-  standalone: true,
 })
 export class MetaComponent {}
 
 @Directive({
   selector: '[metaDir]',
-  standalone: true,
 })
 export class MetaDirective {}
 
@@ -33,7 +31,6 @@ export class MetaService {}
 @Pipe({
   name: 'metaPipe',
   pure: true,
-  standalone: true,
 })
 export class MetaPipe implements PipeTransform {
   transform(value: any) {
@@ -47,7 +44,6 @@ export class NoArgDecorator {}
 @Component({
   selector: 'multi-meta',
   template: '<div>Multi</div>',
-  standalone: true,
 })
 @Injectable()
 export class MultiMetaComponent {}

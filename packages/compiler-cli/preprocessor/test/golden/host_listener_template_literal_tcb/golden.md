@@ -60,7 +60,6 @@ export class ContainerComponent {
             type: Component,
             args: [
               {
-                standalone: true,
                 selector: 'app-container',
                 template: '<div>Container</div>',
               },
@@ -84,7 +83,7 @@ export class ContainerComponent {
     i0.ɵsetClassDebugInfo(ContainerComponent, {
       className: 'ContainerComponent',
       filePath: 'src/components/container.ts',
-      lineNumber: 10,
+      lineNumber: 9,
     });
 })();
 

@@ -37,7 +37,6 @@ import {MyDtsDirective, MyDtsComponent} from './my-dir';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [MyDtsDirective, MyDtsComponent],
   template: `
     <div my-dir #ref1="myDir1" [myProp]="'test'"></div>

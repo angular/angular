@@ -47,7 +47,6 @@ import { BrokenType, BrokenDtsDirective } from './broken';
   selector: 'app-comp',
   template: '<div broken-dir [brokenInput]="\'test\'">DTS Tolerance</div>',
   imports: [BrokenDtsDirective],
-  standalone: true,
 })
 export class AppComp {
   item?: BrokenType;

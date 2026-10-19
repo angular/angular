@@ -128,7 +128,6 @@ export class HostComponent {
             args: [
               {
                 selector: 'app-host',
-                standalone: true,
                 template: '',
                 // `!` is stripped by the partial evaluator, so this one still resolves.
                 hostDirectives: [{ directive: forwardRef(() => DepDirective)! }],
@@ -169,7 +168,7 @@ export class HostComponent {
     i0.ɵsetClassDebugInfo(HostComponent, {
       className: 'HostComponent',
       filePath: 'test.ts',
-      lineNumber: 16,
+      lineNumber: 15,
     });
 })();
 
@@ -220,7 +219,6 @@ export class ImportsComponent {
             args: [
               {
                 selector: 'app-imports',
-                standalone: true,
                 template: '<div dep></div>',
                 imports: [
                   forwardRef(() => DepDirective)!,
@@ -242,7 +240,7 @@ export class ImportsComponent {
     i0.ɵsetClassDebugInfo(ImportsComponent, {
       className: 'ImportsComponent',
       filePath: 'test.ts',
-      lineNumber: 55,
+      lineNumber: 53,
     });
 })();
 

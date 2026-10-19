@@ -82,7 +82,6 @@ import { TestComponent, TestDirective } from 'test-lib';
     ></test-cmp>
     <div test-dir [dirInput]="'test'" [signal]="'sig'"></div>
   `,
-  standalone: true,
   imports: [TestComponent, TestDirective],
 })
 export class AppComponent {

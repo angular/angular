@@ -57,7 +57,6 @@ export class StyledComponent {
             args: [
               {
                 selector: 'styled-cmp',
-                standalone: true,
                 template:
                   '<link rel="stylesheet" href="./styled-link.css" />\n<style>.from-template-style { color: purple; }</style>\n<div>Hello</div>',
                 styles: [
@@ -81,7 +80,7 @@ export class StyledComponent {
     i0.ɵsetClassDebugInfo(StyledComponent, {
       className: 'StyledComponent',
       filePath: 'app.component.ts',
-      lineNumber: 13,
+      lineNumber: 12,
     });
 })();
 
@@ -132,7 +131,6 @@ export class EmptyStyleUrlsComponent {
               {
                 selector: 'empty-styleurls-cmp',
                 template: '<div>Hello</div>',
-                standalone: true,
               },
             ],
           },
@@ -147,7 +145,7 @@ export class EmptyStyleUrlsComponent {
     i0.ɵsetClassDebugInfo(EmptyStyleUrlsComponent, {
       className: 'EmptyStyleUrlsComponent',
       filePath: 'app.component.ts',
-      lineNumber: 24,
+      lineNumber: 22,
     });
 })();
 

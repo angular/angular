@@ -64,7 +64,6 @@ export class ConditionGroupBuilder extends CommonConditionGroupBuilder {
             type: Component,
             args: [
               {
-                standalone: true,
                 selector: 'condition-group-builder',
                 template: `
         <condition-group-builder (onCelCodeUpdated)="handleUpdate($event)">
@@ -84,7 +83,7 @@ export class ConditionGroupBuilder extends CommonConditionGroupBuilder {
     i0.ɵsetClassDebugInfo(ConditionGroupBuilder, {
       className: 'ConditionGroupBuilder',
       filePath: 'src/builders/condition_group_builder.ts',
-      lineNumber: 12,
+      lineNumber: 11,
     });
 })();
 

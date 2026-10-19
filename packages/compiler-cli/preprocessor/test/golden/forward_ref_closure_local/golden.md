@@ -51,7 +51,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-root',
-                standalone: true,
                 imports: [
                   // @ts-ignore
                   MyLocalDirective,
@@ -71,7 +70,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 9,
+      lineNumber: 8,
     });
 })();
 

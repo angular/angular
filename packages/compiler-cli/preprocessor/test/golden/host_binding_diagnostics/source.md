@@ -14,7 +14,6 @@ import { Directive } from '@angular/core';
 
 @Directive({
   selector: '[appBadExpression]',
-  standalone: true,
   host: {
     '[attr.role]': "'button'",
     '(click)': 'handle((',
@@ -33,7 +32,6 @@ const HANDLER = () => {};
 
 @Component({
   selector: 'app-dynamic-listener',
-  standalone: true,
   template: '<div>Hello</div>',
   host: {
     '(mouseover)': HANDLER,

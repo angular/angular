@@ -19,7 +19,6 @@ function getAttrName() {
 @Component({
   selector: 'app-test',
   template: '<div>Test</div>',
-  standalone: true,
 })
 export class TestComponent {
   constructor(

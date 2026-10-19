@@ -19,7 +19,6 @@ function forwardRef<T>(fn: () => T): T {
 
 @Component({
   selector: 'app-host',
-  standalone: true,
   template: '',
   hostDirectives: [ngForwardRef(() => DepDirective)],
 })

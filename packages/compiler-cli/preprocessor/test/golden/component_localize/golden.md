@@ -201,7 +201,6 @@ export class LocalizeInterpolationCmp {
         <div i18n="greeting|Greeting to user@@greetUser">Hello, {{ name }}!</div>
         <div i18n>You have {{ count }} new notifications.</div>
       `,
-                standalone: true,
               },
             ],
           },
@@ -216,7 +215,7 @@ export class LocalizeInterpolationCmp {
     i0.ɵsetClassDebugInfo(LocalizeInterpolationCmp, {
       className: 'LocalizeInterpolationCmp',
       filePath: 'app.component.ts',
-      lineNumber: 21,
+      lineNumber: 20,
     });
 })();
 
@@ -296,7 +295,7 @@ export class LocalizeAttributesCmp {
     i0.ɵsetClassDebugInfo(LocalizeAttributesCmp, {
       className: 'LocalizeAttributesCmp',
       filePath: 'app.component.ts',
-      lineNumber: 33,
+      lineNumber: 32,
     });
 })();
 

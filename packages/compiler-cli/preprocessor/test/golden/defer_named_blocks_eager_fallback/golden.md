@@ -56,7 +56,6 @@ export class AppComponent {
             args: [
               {
                 selector: 'app-comp',
-                standalone: true,
                 imports: [EagerCmp],
                 deferredImports: {
                   blockA: [],
@@ -80,7 +79,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 17,
+      lineNumber: 16,
     });
 })();
 

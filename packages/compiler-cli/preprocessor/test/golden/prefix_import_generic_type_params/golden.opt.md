@@ -138,7 +138,6 @@ export class DashboardComponent {
         <local-config-comp [config]="config"></local-config-comp>
         <nested-view [viewData]="config"></nested-view>
       `,
-                standalone: true,
               },
             ],
           },
@@ -153,7 +152,7 @@ export class DashboardComponent {
     i0.ɵsetClassDebugInfo(DashboardComponent, {
       className: 'DashboardComponent',
       filePath: 'apps/dashboard.component.ts',
-      lineNumber: 23,
+      lineNumber: 22,
     });
 })();
 
@@ -226,7 +225,6 @@ export class FilterBarComponent<T, P extends FilterConfig<T> = FilterConfig<T>> 
               {
                 selector: 'filter-bar',
                 template: '',
-                standalone: true,
               },
             ],
           },
@@ -241,7 +239,7 @@ export class FilterBarComponent<T, P extends FilterConfig<T> = FilterConfig<T>> 
     i0.ɵsetClassDebugInfo(FilterBarComponent, {
       className: 'FilterBarComponent',
       filePath: 'widgets/filter_bar.component.ts',
-      lineNumber: 9,
+      lineNumber: 8,
     });
 })();
 
@@ -289,7 +287,6 @@ export class FilterDirective<T, P extends FilterConfig<T> = FilterConfig<T>> {
             args: [
               {
                 selector: '[filterDir]',
-                standalone: true,
               },
             ],
           },
@@ -369,7 +366,6 @@ export class LocalConfigComponent<T extends LocalConfig = LocalConfig> {
               {
                 selector: 'local-config-comp',
                 template: '',
-                standalone: true,
               },
             ],
           },
@@ -384,7 +380,7 @@ export class LocalConfigComponent<T extends LocalConfig = LocalConfig> {
     i0.ɵsetClassDebugInfo(LocalConfigComponent, {
       className: 'LocalConfigComponent',
       filePath: 'widgets/local_config.component.ts',
-      lineNumber: 12,
+      lineNumber: 11,
     });
 })();
 
@@ -457,7 +453,6 @@ export class NestedViewComponent<T extends NestedData<string> = NestedData<strin
               {
                 selector: 'nested-view',
                 template: '',
-                standalone: true,
               },
             ],
           },
@@ -472,7 +467,7 @@ export class NestedViewComponent<T extends NestedData<string> = NestedData<strin
     i0.ɵsetClassDebugInfo(NestedViewComponent, {
       className: 'NestedViewComponent',
       filePath: 'widgets/nested_view.component.ts',
-      lineNumber: 9,
+      lineNumber: 8,
     });
 })();
 

@@ -38,7 +38,6 @@ import {MyFeatureModule} from './feature-module';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [MyFeatureModule],
   template: `
     <feature-cmp [myProp]="'hello'"></feature-cmp>
