@@ -13,7 +13,7 @@ use oxc_span::Span;
 use crate::analyzer::class_data::{
     AngularField, DirectiveData, InputData, OutputData, TransformData, ValueIssue,
 };
-use crate::evaluator::{Resolved, ResolvedValue};
+use crate::evaluator::{wrong_type_message, Resolved, ResolvedValue};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum IoKind {
@@ -148,7 +148,12 @@ pub fn read_inputs_array(value: &ResolvedValue) -> Read<Vec<IoEntry>> {
     let items = match value.unwrap_named() {
         ResolvedValue::Array(items) => items,
         other if other.contains_incomplete() => return Read::Pending,
-        _ => return Read::Invalid("Failed to resolve @Directive.inputs to an array".to_string()),
+        _ => {
+            return Read::Invalid(wrong_type_message(
+                "Failed to resolve @Directive.inputs to an array",
+                value,
+            ))
+        }
     };
     let mut entries = Vec::with_capacity(items.len());
     for (position, item) in items.iter().enumerate() {
@@ -174,9 +179,10 @@ fn read_inputs_entry(item: &ResolvedValue, position: usize) -> Read<IoEntry> {
         if item.contains_incomplete() {
             return Read::Pending;
         }
-        return Read::Invalid(
-            "@Directive.inputs array can only contain strings or object literals".to_string(),
-        );
+        return Read::Invalid(wrong_type_message(
+            "@Directive.inputs array can only contain strings or object literals",
+            item,
+        ));
     };
 
     // Only `name`, `alias` and `required` are read here, so a hole elsewhere in the entry (a
@@ -192,8 +198,11 @@ fn read_inputs_entry(item: &ResolvedValue, position: usize) -> Read<IoEntry> {
         return Read::Pending;
     }
     let Some(name) = name.and_then(as_str) else {
-        return Read::Invalid(format!(
-            "Value at position {position} of @Directive.inputs array must have a \"name\" property"
+        return Read::Invalid(wrong_type_message(
+            &format!(
+                "Value at position {position} of @Directive.inputs array must have a \"name\" property"
+            ),
+            name.unwrap_or(&ResolvedValue::Undefined),
         ));
     };
     Read::Ready(IoEntry {
@@ -212,9 +221,10 @@ pub fn read_outputs_array(value: &ResolvedValue) -> Read<Vec<IoEntry>> {
         ResolvedValue::Array(items) => items,
         other if other.contains_incomplete() => return Read::Pending,
         _ => {
-            return Read::Invalid(
-                "Failed to resolve @Directive.outputs to a string array".to_string(),
-            )
+            return Read::Invalid(wrong_type_message(
+                "Failed to resolve @Directive.outputs to a string array",
+                value,
+            ))
         }
     };
     let mut entries = Vec::with_capacity(items.len());
@@ -223,8 +233,9 @@ pub fn read_outputs_array(value: &ResolvedValue) -> Read<Vec<IoEntry>> {
             if item.contains_incomplete() {
                 return Read::Pending;
             }
-            return Read::Invalid(format!(
-                "Failed to resolve outputs at position {position} to a string"
+            return Read::Invalid(wrong_type_message(
+                &format!("Failed to resolve outputs at position {position} to a string"),
+                item,
             ));
         };
         let (class_property, binding) = parse_mapping_string(mapping);
@@ -250,9 +261,10 @@ pub fn read_input_options(value: &ResolvedValue) -> Read<InputOptionsValue> {
         if value.contains_incomplete() {
             return Read::Pending;
         }
-        return Read::Invalid(
-            "@Input decorator argument must resolve to a string or an object literal".to_string(),
-        );
+        return Read::Invalid(wrong_type_message(
+            "@Input decorator argument must resolve to a string or an object literal",
+            value,
+        ));
     };
     let alias = options.get("alias");
     let required = options.get("required");
@@ -280,7 +292,10 @@ pub fn read_output_alias(value: &ResolvedValue) -> Read<String> {
     if value.contains_incomplete() {
         return Read::Pending;
     }
-    Read::Invalid("@Output decorator argument must resolve to a string".to_string())
+    Read::Invalid(wrong_type_message(
+        "@Output decorator argument must resolve to a string",
+        value,
+    ))
 }
 
 /// Bind a metadata-declared field to the class member it names, the way a field declared on
@@ -361,10 +376,8 @@ impl DirectiveData {
             Read::Ready(entries) => entries,
             Read::Pending => return false,
             Read::Invalid(message) => {
-                self.io_issues.push(ValueIssue {
-                    span: array.span,
-                    message,
-                });
+                self.io_issues
+                    .push(ValueIssue::wrong_type(array.span, message));
                 return true;
             }
         };
@@ -427,10 +440,8 @@ impl DirectiveData {
                 Read::Invalid(message) => message,
             },
         };
-        self.io_issues.push(ValueIssue {
-            span: options.decorator_span,
-            message: issue,
-        });
+        self.io_issues
+            .push(ValueIssue::wrong_type(options.decorator_span, issue));
         true
     }
 
@@ -565,14 +576,14 @@ mod tests {
     fn inputs_array_reports_ngtsc_messages() {
         assert_eq!(
             invalid(read_inputs_array(&ResolvedValue::String("a".into()))),
-            "Failed to resolve @Directive.inputs to an array"
+            "Failed to resolve @Directive.inputs to an array\n  Value is of type 'string'."
         );
         assert_eq!(
             invalid(read_inputs_array(&ResolvedValue::Array(vec![
                 ResolvedValue::String("a".into()),
                 ResolvedValue::Number(1.0),
             ]))),
-            "@Directive.inputs array can only contain strings or object literals"
+            "@Directive.inputs array can only contain strings or object literals\n  Value is of type 'number'."
         );
         let mut nameless = crate::evaluator::ValueMap::new();
         nameless.insert("alias".to_string(), ResolvedValue::String("y".into()));
@@ -580,7 +591,7 @@ mod tests {
             invalid(read_inputs_array(&ResolvedValue::Array(vec![
                 ResolvedValue::Map(nameless)
             ]))),
-            "Value at position 0 of @Directive.inputs array must have a \"name\" property"
+            "Value at position 0 of @Directive.inputs array must have a \"name\" property\n  Value is of type 'undefined'."
         );
     }
 
@@ -598,7 +609,7 @@ mod tests {
                 ResolvedValue::String("a".into()),
                 ResolvedValue::Boolean(true),
             ]))),
-            "Failed to resolve outputs at position 1 to a string"
+            "Failed to resolve outputs at position 1 to a string\n  Value is of type 'boolean'."
         );
     }
 
@@ -610,11 +621,11 @@ mod tests {
         assert_eq!(options.alias.as_deref(), Some("a"));
         assert_eq!(
             invalid(read_input_options(&ResolvedValue::Number(1.0))),
-            "@Input decorator argument must resolve to a string or an object literal"
+            "@Input decorator argument must resolve to a string or an object literal\n  Value is of type 'number'."
         );
         assert_eq!(
             invalid(read_output_alias(&ResolvedValue::Number(1.0))),
-            "@Output decorator argument must resolve to a string"
+            "@Output decorator argument must resolve to a string\n  Value is of type 'number'."
         );
     }
 

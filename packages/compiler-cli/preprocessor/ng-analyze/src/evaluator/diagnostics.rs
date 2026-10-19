@@ -1,12 +1,87 @@
 //! Human-readable rendering of evaluation failures.
-// TODO(parity): Port upstream `diagnostics.ts` (`describeResolvedType`, `traceDynamicValue` with
-// related-information spans) once the evaluator feeds a diagnostics channel.
+// TODO(parity): Port upstream `traceDynamicValue` (related-information spans) once
+// `NgDiagnostic` can carry related information.
 
 use crate::analyzer::ImportKind;
 use crate::evaluator::value::{
-    DynamicReason, DynamicValue, HoleKey, IncompleteDep, IncompleteValue, UnresolvedReference,
+    DynamicReason, DynamicValue, HoleKey, IncompleteDep, IncompleteValue, ResolvedValue,
+    UnresolvedReference,
 };
 use std::fmt;
+
+pub fn describe_resolved_type(value: &ResolvedValue) -> String {
+    describe_resolved_type_at(value, 1)
+}
+
+fn describe_resolved_type_at(value: &ResolvedValue, max_depth: usize) -> String {
+    match value {
+        ResolvedValue::Null => "null".to_string(),
+        ResolvedValue::Undefined => "undefined".to_string(),
+        ResolvedValue::Number(_) => "number".to_string(),
+        ResolvedValue::Boolean(_) => "boolean".to_string(),
+        ResolvedValue::String(_) => "string".to_string(),
+        ResolvedValue::Map(map) => {
+            if max_depth == 0 {
+                return "object".to_string();
+            }
+            if map.is_empty() {
+                return "{}".to_string();
+            }
+            let entries: Vec<String> = map
+                .iter()
+                .map(|(key, entry)| {
+                    format!(
+                        "{}: {}",
+                        quote_key(key),
+                        describe_resolved_type_at(entry, max_depth - 1)
+                    )
+                })
+                .collect();
+            format!("{{ {} }}", entries.join("; "))
+        }
+        ResolvedValue::EnumValue(member) => member.enum_ref.name.clone(),
+        ResolvedValue::Reference(reference) => reference.name.clone(),
+        ResolvedValue::Array(items) => {
+            if max_depth == 0 {
+                return "Array".to_string();
+            }
+            let items: Vec<String> = items
+                .iter()
+                .map(|item| describe_resolved_type_at(item, max_depth - 1))
+                .collect();
+            format!("[{}]", items.join(", "))
+        }
+        ResolvedValue::Dynamic(_) | ResolvedValue::Incomplete(_) => {
+            "(not statically analyzable)".to_string()
+        }
+        ResolvedValue::KnownFn(_) => "Function".to_string(),
+        ResolvedValue::Synthetic(_) => "unknown".to_string(),
+        ResolvedValue::Named { value, .. } => describe_resolved_type_at(value, max_depth),
+    }
+}
+
+fn quote_key(key: &str) -> String {
+    if !key.is_empty() && key.chars().all(|c| c.is_ascii_alphanumeric() || c == '_') {
+        return key.to_string();
+    }
+    format!("'{}'", key.replace('\'', "\\'"))
+}
+
+pub fn wrong_type_detail(value: &ResolvedValue) -> String {
+    match value.unwrap_named() {
+        ResolvedValue::Dynamic(_) | ResolvedValue::Incomplete(_) => {
+            "Value could not be determined statically.".to_string()
+        }
+        ResolvedValue::Reference(reference) => {
+            format!("Value is a reference to '{}'.", reference.name)
+        }
+        other => format!("Value is of type '{}'.", describe_resolved_type(other)),
+    }
+}
+
+pub fn wrong_type_message(message: &str, value: &ResolvedValue) -> String {
+    format!("{message}\n  {}", wrong_type_detail(value))
+}
 
 impl fmt::Display for UnresolvedReference {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {

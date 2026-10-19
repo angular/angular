@@ -995,7 +995,7 @@ pub fn get_canonical_decorator_name<'a>(
 /// The decorator's local name as written (`Cmp` for `@Cmp()`, `Component` for `@core.Component()`),
 /// mirroring ngtsc's `Decorator.name`.
 /// https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/reflection/src/typescript.ts#L446-L450
-fn decorator_local_name<'a>(decorator: &'a Decorator<'a>) -> Option<&'a str> {
+pub(crate) fn decorator_local_name<'a>(decorator: &'a Decorator<'a>) -> Option<&'a str> {
     let callee = match decorator.expression.get_inner_expression() {
         Expression::CallExpression(call) => call.callee.get_inner_expression(),
         Expression::NewExpression(new_expr) => new_expr.callee.get_inner_expression(),
@@ -1086,6 +1086,93 @@ pub fn is_angular_decorator_named<'a>(
     angular_imports: &crate::analyzer::imports::AngularImports,
 ) -> bool {
     get_canonical_decorator_name(decorator, semantic, angular_imports) == Some(name)
+}
+
+pub(crate) fn class_decorator_argument_issue<'a>(
+    decorator: &'a Decorator<'a>,
+    canonical_name: &str,
+) -> Option<crate::analyzer::class_data::ValueIssue> {
+    use crate::analyzer::class_data::ValueIssue;
+
+    // `decorator.args` is `null` for a decorator that is not a call.
+    let args: Option<&[Argument<'a>]> = get_decorator_args(decorator).map(|args| &args[..]);
+    let written_name = decorator_local_name(decorator).unwrap_or(canonical_name);
+    match canonical_name {
+        "Component" | "Directive" => {
+            let args = args.unwrap_or(&[]);
+            match args {
+                [] => None,
+                [meta] => object_literal_argument_issue(
+                    meta,
+                    format!("@{written_name} argument must be an object literal"),
+                ),
+                _ => Some(ValueIssue::arity_wrong(
+                    decorator.span,
+                    format!("Incorrect number of arguments to @{written_name} decorator"),
+                )),
+            }
+        }
+        "NgModule" => match args {
+            Some([]) => None,
+            Some([meta]) => object_literal_argument_issue(
+                meta,
+                "@NgModule argument must be an object literal".to_string(),
+            ),
+            _ => Some(ValueIssue::arity_wrong(
+                decorator.span,
+                "Incorrect number of arguments to @NgModule decorator",
+            )),
+        },
+        "Injectable" => match args {
+            None => Some(ValueIssue::decorator_not_called(
+                decorator.span,
+                "@Injectable must be called",
+            )),
+            Some([]) => None,
+            // Checked as written, without `unwrapExpression`.
+            Some([meta]) => (!matches!(meta, Argument::ObjectExpression(_))).then(|| {
+                ValueIssue::arg_not_literal(
+                    meta.span(),
+                    "@Injectable argument must be an object literal",
+                )
+            }),
+            Some(args) => Some(ValueIssue::arity_wrong(
+                args.get(2).map_or(decorator.span, GetSpan::span),
+                "Too many arguments to @Injectable",
+            )),
+        },
+        "Pipe" => {
+            let Some(args) = args else {
+                return Some(ValueIssue::decorator_not_called(
+                    decorator.span,
+                    "@Pipe must be called",
+                ));
+            };
+            let meta = args.first()?;
+            // `@Pipe(null!)` is tolerated while the public API still requires a name.
+            if let Argument::TSNonNullExpression(non_null) = meta {
+                if matches!(non_null.expression, Expression::NullLiteral(_)) {
+                    return None;
+                }
+            }
+            object_literal_argument_issue(meta, "@Pipe must have a literal argument".to_string())
+        }
+        _ => None,
+    }
+}
+
+fn object_literal_argument_issue(
+    meta: &Argument<'_>,
+    message: String,
+) -> Option<crate::analyzer::class_data::ValueIssue> {
+    let unwrapped = meta.as_expression().map(unwrap_expression);
+    if matches!(unwrapped, Some(Expression::ObjectExpression(_))) {
+        return None;
+    }
+    let span = unwrapped.map_or(meta.span(), GetSpan::span);
+    Some(crate::analyzer::class_data::ValueIssue::arg_not_literal(
+        span, message,
+    ))
 }
 
 /// An initializer-API callee decomposed into its import-binding identifier, optional namespace property,

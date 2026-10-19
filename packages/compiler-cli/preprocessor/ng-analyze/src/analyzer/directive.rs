@@ -9,7 +9,7 @@ use crate::evaluator::{evaluate_expression, EvalInput, Resolved};
 
 use super::evaluated_io::{IoKind, IoMetadataArray};
 use super::input_output::object_literal_transform;
-use super::queries::parse_legacy_query;
+use super::queries::parse_queries_metadata;
 use super::utils::{extract_bool, extract_literal_string, extract_property_key, extract_string};
 
 /// Parse a @Directive decorator
@@ -183,27 +183,18 @@ pub fn extract_directive_metadata<'a>(
                 fold_or_defer_io_array(&mut data, array);
             }
             "queries" => {
-                if let Expression::ObjectExpression(queries_obj) = p.value.get_inner_expression() {
-                    for prop in &queries_obj.properties {
-                        let ObjectPropertyKind::ObjectProperty(qp) = prop else {
-                            continue;
-                        };
-                        let Some(prop_name) = extract_property_key(&qp.key).map(|n| n.into_owned())
-                        else {
-                            continue;
-                        };
-                        if let Some(query) = parse_legacy_query(
-                            prop_name,
-                            &qp.value,
-                            angular_imports,
-                            semantic,
-                            eval,
-                        ) {
-                            data.fields
-                                .push(crate::analyzer::class_data::AngularField::Query(query));
-                        }
-                    }
-                }
+                let queries = parse_queries_metadata(
+                    &p.value,
+                    angular_imports,
+                    semantic,
+                    eval,
+                    &mut data.io_issues,
+                );
+                data.fields.extend(
+                    queries
+                        .into_iter()
+                        .map(crate::analyzer::class_data::AngularField::Query),
+                );
             }
             _ => {}
         }

@@ -289,6 +289,7 @@ fn classify(reference_id: ReferenceId, parsed: ParsedClass, has_real_symbol: boo
         class_name: common.class_name,
         constructor_params: common.constructor_params,
         unexpected_param_decorators: common.unexpected_param_decorators,
+        decorator_issues: common.decorator_issues,
         member_decorators: common.member_decorators,
         later_declaration_references: common.later_declaration_references,
         top_level_references: common.top_level_references,
@@ -373,6 +374,7 @@ struct ParsedCommon {
     class_name: Option<String>,
     constructor_params: Option<Vec<ConstructorParamMetadata>>,
     unexpected_param_decorators: Vec<crate::analyzer::UnexpectedParamDecorator>,
+    decorator_issues: Vec<crate::analyzer::class_data::ValueIssue>,
     member_decorators: Vec<crate::DecoratedMemberMetadata>,
     later_declaration_references: Vec<oxc_span::Span>,
     top_level_references: Option<Vec<super::TopLevelReference>>,
@@ -466,8 +468,16 @@ fn process_class_common<'a, Fs: ResourceResolverFs>(
     let mut pipe_facts: Option<PipeData> = None;
     let mut ng_module: Option<NgModuleData> = None;
     let mut ng_decorator_spans: Vec<oxc_span::Span> = Vec::new();
+    let mut decorator_issues = Vec::new();
 
     for decorator in &class.decorators {
+        if let Some(name) =
+            super::utils::get_canonical_decorator_name(decorator, semantic, angular_imports)
+        {
+            decorator_issues.extend(super::utils::class_decorator_argument_issue(
+                decorator, name,
+            ));
+        }
         if let Some(facts) = injectable::parse_decorator(decorator, semantic, angular_imports) {
             injectable = Some(facts);
             ng_decorator_spans.push(decorator.span);
@@ -498,13 +508,9 @@ fn process_class_common<'a, Fs: ResourceResolverFs>(
             pipe_facts = Some(facts);
             ng_decorator_spans.push(decorator.span);
         }
-        if let Some(facts) = super::ngmodule::parse_decorator(
-            decorator,
-            semantic,
-            import_map,
-            eval,
-            angular_imports,
-        ) {
+        if let Some(facts) =
+            super::ngmodule::parse_decorator(decorator, semantic, import_map, eval, angular_imports)
+        {
             ng_module = Some(facts);
             ng_decorator_spans.push(decorator.span);
         }
@@ -538,14 +544,16 @@ fn process_class_common<'a, Fs: ResourceResolverFs>(
         semantic,
     );
 
-    let member_io = input_output::extract_inputs_outputs(class, angular_imports, semantic, eval);
-    let mut fields = member_io.fields;
+    let mut member_io =
+        input_output::extract_inputs_outputs(class, angular_imports, semantic, eval);
+    let mut fields = std::mem::take(&mut member_io.fields);
     fields.extend(queries::extract_queries(
         class,
         angular_imports,
         semantic,
         eval,
         top_level_reads.as_mut(),
+        &mut member_io.issues,
     ));
     let (host_bindings, host_listeners) =
         host_binding::extract_host_bindings_listeners(class, eval, angular_imports);
@@ -608,6 +616,7 @@ fn process_class_common<'a, Fs: ResourceResolverFs>(
             class_name,
             constructor_params,
             unexpected_param_decorators,
+            decorator_issues,
             member_decorators,
             later_declaration_references,
             top_level_references: top_level_reads.map(|reads| reads.out),

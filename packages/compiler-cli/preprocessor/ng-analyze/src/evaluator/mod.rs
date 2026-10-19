@@ -35,6 +35,7 @@ mod tests;
 pub use crate::analyzer::{ImportKind, ImportedSymbol};
 pub use crate::types::analysis::Reference;
 pub use crate::types::metadata::ReferenceMetadata;
+pub use diagnostics::{describe_resolved_type, wrong_type_detail, wrong_type_message};
 pub use driver::evaluate_value_completely;
 pub use foreign::{
     strip_dts_alias_suffix, ForeignFunctionResolver, FunctionTarget, ResolveExpr, ResolveTypeName,
@@ -47,8 +48,8 @@ pub use interpreter::{
 pub use resolved::{
     is_enum_member_value, ChangeDetectionStrategyValue, ComponentStyles, ComponentStylesError,
     ConstEnumLiteral, ConstEnumMember, ConstEnumResolution, ExportAsNames, FromResolved,
-    HostMetadata, HostMetadataValue, QuerySelectors, Resolved, ScopeReferences,
-    StillIncomplete, StringList, UnresolvedCause, ViewEncapsulationValue,
+    HostMetadata, HostMetadataValue, QuerySelectors, Resolved, ScopeReferences, StillIncomplete,
+    StringList, UnresolvedCause, ViewEncapsulationValue,
 };
 pub use value::{
     collect_holes, demote_incomplete_to_dynamic, fingerprint, fingerprint_args, is_truthy,
