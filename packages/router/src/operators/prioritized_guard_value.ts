@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {combineLatest, Observable, of, OperatorFunction, throwError} from 'rxjs';
+import {combineLatest, Observable, of, OperatorFunction} from 'rxjs';
 import {catchError, filter, map, startWith, switchMap, take} from 'rxjs/operators';
 
 import {GuardResult, RedirectCommand} from '../models';
@@ -22,7 +22,12 @@ export function prioritizedGuardValue(): OperatorFunction<Observable<GuardResult
         o.pipe(
           take(1),
           // A thrown `RedirectCommand` is a result, so it must respect the guard order too.
-          catchError((e) => (e instanceof RedirectCommand ? of(e) : throwError(() => e))),
+          catchError((e) => {
+            if (e instanceof RedirectCommand) {
+              return of(e);
+            }
+            throw e;
+          }),
           startWith(INITIAL_VALUE as INTERIM_VALUES),
         ),
       ),
