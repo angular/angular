@@ -205,13 +205,13 @@ fn decorator_query_options<'a>(
     eval: &EvalInput<'a, '_>,
     issues: &mut Vec<ValueIssue>,
 ) -> Option<DecoratorQueryOptions> {
-    let options_expr = options_arg
+    let unwrapped = options_arg
         .as_expression()
-        .map(super::utils::unwrap_expression)
-        .unwrap_or_else(|| unreachable!("a spread is not an expression"));
-    let Expression::ObjectExpression(obj) = options_expr else {
+        .map(super::utils::unwrap_expression);
+    let Some(Expression::ObjectExpression(obj)) = unwrapped else {
+        let span = unwrapped.map_or_else(|| options_arg.span(), GetSpan::span);
         issues.push(ValueIssue::arg_not_literal(
-            options_expr.span(),
+            span,
             format!("@{name} options must be an object literal"),
         ));
         return None;
