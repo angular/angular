@@ -517,7 +517,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
   }
 
   private abortInProgressLoad(): void {
-    untracked(() => this.pendingController?.abort());
+    untracked(() => this.pendingController?.abort(getAbortReason()));
     this.pendingController = undefined;
 
     // Once the load is aborted, we no longer want to block stability on its resolution.
@@ -534,6 +534,16 @@ function saveToTransferState<R, T>(
   if (transferCacheKey && transferState && result && isResolved(result)) {
     transferState.set(transferCacheKey, result.value);
   }
+}
+
+let abortReason: DOMException | undefined;
+
+/**
+ * Returns a shared `AbortError` reason, since `abort()` without a reason creates a new one (with a
+ * stack trace) on every call.
+ */
+function getAbortReason(): DOMException {
+  return (abortReason ??= new DOMException('The operation was aborted.', 'AbortError'));
 }
 
 /**

@@ -527,6 +527,31 @@ describe('resource', () => {
     expect(aborted).toEqual([{counter: 0}]);
   });
 
+  it('should reuse the same abort reason when destroying resources', async () => {
+    const signals: AbortSignal[] = [];
+    const injector = createEnvironmentInjector([], TestBed.inject(EnvironmentInjector));
+    const resources = [0, 1].map((id) =>
+      resource({
+        params: () => id,
+        loader: async ({params, abortSignal}) => {
+          signals.push(abortSignal);
+          return params;
+        },
+        injector,
+      }),
+    );
+
+    TestBed.tick();
+    await flushMicrotasks();
+
+    resources.forEach((res) => res.destroy());
+
+    expect(signals.length).toBe(2);
+    expect(signals[0].reason).toEqual(jasmine.any(DOMException));
+    expect(signals[0].reason.name).toBe('AbortError');
+    expect(signals[1].reason).toBe(signals[0].reason);
+  });
+
   it('should not respond to reactive state changes in a loader', async () => {
     const unrelated = signal('a');
     const backend = new MockResponseCountingBackend();
