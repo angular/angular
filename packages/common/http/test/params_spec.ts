@@ -33,6 +33,26 @@ describe('HttpUrlEncodedParams', () => {
       expect(body.getAll('c')).toEqual(['d']);
       expect(body.getAll('?e')).toEqual(['f']);
     });
+
+    it('should keep raw values when percent-encoding is malformed', () => {
+      const body = new HttpParams({fromString: 'a=%ZZ&b=%&c=%2&d=ok'});
+      expect(body.getAll('a')).toEqual(['%ZZ']);
+      expect(body.getAll('b')).toEqual(['%']);
+      expect(body.getAll('c')).toEqual(['%2']);
+      expect(body.getAll('d')).toEqual(['ok']);
+    });
+
+    it('should keep raw keys when percent-encoding is malformed', () => {
+      const body = new HttpParams({fromString: '%ZZ=1&ok=2'});
+      expect(body.getAll('%ZZ')).toEqual(['1']);
+      expect(body.getAll('ok')).toEqual(['2']);
+    });
+
+    it('should decode valid percent-encoding while keeping malformed entries raw', () => {
+      const body = new HttpParams({fromString: '?a=%20&b=%ZZ'});
+      expect(body.getAll('a')).toEqual([' ']);
+      expect(body.getAll('b')).toEqual(['%ZZ']);
+    });
   });
 
   describe('lazy mutation', () => {

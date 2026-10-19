@@ -84,10 +84,22 @@ function paramParser(rawParams: string, codec: HttpParameterCodec): Map<string, 
     const params: string[] = rawParams.replace(/^\?/, '').split('&');
     params.forEach((param: string) => {
       const eqIdx = param.indexOf('=');
-      const [key, val]: string[] =
-        eqIdx == -1
-          ? [codec.decodeKey(param), '']
-          : [codec.decodeKey(param.slice(0, eqIdx)), codec.decodeValue(param.slice(eqIdx + 1))];
+      const rawKey = eqIdx == -1 ? param : param.slice(0, eqIdx);
+      const rawVal = eqIdx == -1 ? '' : param.slice(eqIdx + 1);
+      let key = rawKey;
+      let val = rawVal;
+      try {
+        key = codec.decodeKey(rawKey);
+      } catch {
+        // Fall back to raw value if decoding fails (e.g. malformed percent-encoding).
+      }
+      if (eqIdx !== -1) {
+        try {
+          val = codec.decodeValue(rawVal);
+        } catch {
+          // Fall back to raw value if decoding fails (e.g. malformed percent-encoding).
+        }
+      }
       const list = map.get(key) || [];
       list.push(val);
       map.set(key, list);
