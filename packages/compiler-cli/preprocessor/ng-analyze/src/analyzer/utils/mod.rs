@@ -111,6 +111,13 @@ pub fn extract_property_key<'a>(key: &'a PropertyKey<'a>) -> Option<std::borrow:
     }
 }
 
+pub fn class_member_name<'a>(key: &'a PropertyKey<'a>) -> Option<std::borrow::Cow<'a, str>> {
+    if let PropertyKey::PrivateIdentifier(ident) = key {
+        return Some(std::borrow::Cow::Owned(format!("#{}", ident.name)));
+    }
+    extract_property_key(key)
+}
+
 /// Extract a literal string value from a StringLiteral or no-substitution TemplateLiteral expression
 /// without performing partial evaluation.
 pub fn extract_literal_string(expr: &Expression<'_>) -> Option<String> {
@@ -873,16 +880,50 @@ pub fn get_type_only_exports(
     type_only
 }
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ResolvedAngularCall {
     Input { is_required: bool },
     Model { is_required: bool },
-    Output,
-    OutputFromObservable,
+    Output { is_required: bool },
+    OutputFromObservable { is_required: bool },
     ViewChild { is_required: bool },
     ViewChildren,
     ContentChild { is_required: bool },
     ContentChildren,
+}
+
+impl ResolvedAngularCall {
+    pub fn function_name(self) -> &'static str {
+        match self {
+            Self::Input { .. } => "input",
+            Self::Model { .. } => "model",
+            Self::Output { .. } => "output",
+            Self::OutputFromObservable { .. } => "outputFromObservable",
+            Self::ViewChild { .. } => "viewChild",
+            Self::ViewChildren => "viewChildren",
+            Self::ContentChild { .. } => "contentChild",
+            Self::ContentChildren => "contentChildren",
+        }
+    }
+
+    pub fn is_required(self) -> bool {
+        match self {
+            Self::Input { is_required }
+            | Self::Model { is_required }
+            | Self::Output { is_required }
+            | Self::OutputFromObservable { is_required }
+            | Self::ViewChild { is_required }
+            | Self::ContentChild { is_required } => is_required,
+            Self::ViewChildren | Self::ContentChildren => false,
+        }
+    }
+
+    pub fn is_required_initializer_candidate(self) -> bool {
+        !matches!(
+            self,
+            Self::Output { .. } | Self::OutputFromObservable { .. }
+        )
+    }
 }
 
 /// Resolve an initializer-API call such as `input()`, `input.required()` or `core.viewChild()` to
@@ -916,9 +957,9 @@ pub fn resolve_angular_call(
     match matched_symbol {
         AngularImportSymbol::InputFn => Some(ResolvedAngularCall::Input { is_required }),
         AngularImportSymbol::ModelFn => Some(ResolvedAngularCall::Model { is_required }),
-        AngularImportSymbol::OutputFn => Some(ResolvedAngularCall::Output),
+        AngularImportSymbol::OutputFn => Some(ResolvedAngularCall::Output { is_required }),
         AngularImportSymbol::OutputFromObservableFn => {
-            Some(ResolvedAngularCall::OutputFromObservable)
+            Some(ResolvedAngularCall::OutputFromObservable { is_required })
         }
         AngularImportSymbol::ViewChildFn => Some(ResolvedAngularCall::ViewChild { is_required }),
         AngularImportSymbol::ViewChildrenFn => Some(ResolvedAngularCall::ViewChildren),

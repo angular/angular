@@ -15,6 +15,7 @@ pub(crate) mod evaluated_io;
 mod host_binding;
 pub mod import_emit;
 mod imports;
+mod initializer_api_usage;
 mod injectable;
 mod input_output;
 mod ngmodule;

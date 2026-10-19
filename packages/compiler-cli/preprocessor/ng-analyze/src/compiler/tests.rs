@@ -5662,6 +5662,176 @@ fn test_directive_metadata_shape_diagnostics() {
             "Directive BaseDir has no selector, please add it!",
             "@Directive({ standalone: false })\n            export class BaseDir {}",
         ),
+        (
+            "/project/input-decorator-on-signal.ts",
+            r#"
+            import { Directive, Input, input } from '@angular/core';
+            @Directive()
+            export class TestDir {
+                @Input() data = input('test');
+            }
+            "#,
+            1050,
+            "Using @Input with a signal input is not allowed.",
+            "@Input()",
+        ),
+        (
+            "/project/output-decorator-on-model.ts",
+            r#"
+            import { Directive, Output, model } from '@angular/core';
+            @Directive()
+            export class TestDir {
+                @Output() data = model(0);
+            }
+            "#,
+            1050,
+            "Using @Output with a model input is not allowed.",
+            "@Output()",
+        ),
+        (
+            "/project/output-decorator-on-output.ts",
+            r#"
+            import { Directive, Output, output } from '@angular/core';
+            @Directive()
+            export class TestDir {
+                @Output() click = output();
+            }
+            "#,
+            1050,
+            "Using \"@Output\" with \"output()\" is not allowed.",
+            "@Output()",
+        ),
+        (
+            "/project/signal-input-in-inputs.ts",
+            r#"
+            import { Directive, input } from '@angular/core';
+            @Directive({ inputs: ['data'] })
+            export class TestDir {
+                data = input('test');
+            }
+            "#,
+            1051,
+            "Input \"data\" is also declared as non-signal in @Directive.",
+            "data = input('test');",
+        ),
+        (
+            "/project/output-in-outputs.ts",
+            r#"
+            import { Component, output } from '@angular/core';
+            @Component({ selector: 'test', template: '', outputs: ['click'] })
+            export class TestCmp {
+                click = output();
+            }
+            "#,
+            1051,
+            "Output \"click\" is unexpectedly declared in @Component as well.",
+            "click = output();",
+        ),
+        (
+            "/project/output-required.ts",
+            r#"
+            import { Directive, output } from '@angular/core';
+            @Directive()
+            export class TestDir {
+                click = output.required();
+            }
+            "#,
+            1052,
+            "Output does not support \".required()\".",
+            "output.required()",
+        ),
+        (
+            "/project/private-input.ts",
+            r#"
+            import { Directive, input } from '@angular/core';
+            @Directive({ selector: '[dir]' })
+            export class TestDir {
+                private data = input.required<boolean>();
+            }
+            "#,
+            1053,
+            "Cannot use \"input\" on a class member that is declared as private.\n  Update the class field to be either: public, public readonly, protected",
+            "input.required<boolean>()",
+        ),
+        (
+            "/project/es-private-query.ts",
+            r#"
+            import { Directive, viewChild } from '@angular/core';
+            @Directive({ selector: '[dir]' })
+            export class TestDir {
+                #el = viewChild('myLocator');
+            }
+            "#,
+            1053,
+            "Cannot use \"viewChild\" on a class member that is declared as ES private.\n  Update the class field to be either: public, public readonly, protected, private",
+            "viewChild('myLocator')",
+        ),
+        (
+            "/project/query-decorator-on-signal.ts",
+            r#"
+            import { Component, viewChild, ViewChild } from '@angular/core';
+            @Component({ selector: 'test', template: '' })
+            export class TestCmp {
+                @ViewChild('myLocator') el = viewChild('myLocator');
+            }
+            "#,
+            1050,
+            "Using @ViewChild with a signal-based query is not allowed.",
+            "@ViewChild('myLocator')",
+        ),
+        (
+            "/project/static-signal-query.ts",
+            r#"
+            import { Component, viewChild } from '@angular/core';
+            @Component({ selector: 'test', template: '' })
+            export class TestCmp {
+                static el = viewChild('myLocator');
+            }
+            "#,
+            1100,
+            "Query is incorrectly declared on a static class member.",
+            "viewChild('myLocator')",
+        ),
+        (
+            "/project/signal-query-in-queries.ts",
+            r#"
+            import { Directive, ViewChild, viewChild } from '@angular/core';
+            @Directive({ selector: 'test', queries: { el: new ViewChild('myLocator') } })
+            export class TestDir {
+                el = viewChild('myLocator');
+            }
+            "#,
+            1051,
+            "Query is declared multiple times. \"@Directive\" declares a query for the same property.",
+            "new ViewChild('myLocator')",
+        ),
+        (
+            "/project/complex-read.ts",
+            r#"
+            import { Directive, viewChild } from '@angular/core';
+            @Directive({ selector: 'test' })
+            export class TestDir {
+                something = null!;
+                el = viewChild('myLocator', { read: this.something });
+            }
+            "#,
+            1011,
+            "Query \"read\" option expected a literal class reference.",
+            "this.something",
+        ),
+        (
+            "/project/no-locator.ts",
+            r#"
+            import { Directive, viewChild } from '@angular/core';
+            @Directive({ selector: 'test' })
+            export class TestDir {
+                el = viewChild();
+            }
+            "#,
+            1010,
+            "No locator specified.",
+            "viewChild()",
+        ),
     ];
 
     let mut virtual_files: HashMap<String, String> = cases

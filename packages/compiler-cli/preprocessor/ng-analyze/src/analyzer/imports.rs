@@ -856,6 +856,11 @@ impl AngularImportSymbol {
             .iter()
             .any(|(_, symbol, kind)| *symbol == self && *kind == AngularApiKind::InitializerFn)
     }
+
+    /// Whether this is the binding of an `import * as ns` of an Angular package.
+    pub fn is_namespace(self) -> bool {
+        matches!(self, Self::CoreNamespace | Self::RxjsInteropNamespace)
+    }
 }
 
 #[derive(Clone, Default, Debug)]
