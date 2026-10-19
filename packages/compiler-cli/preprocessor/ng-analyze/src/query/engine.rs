@@ -51,6 +51,7 @@ pub struct QueryEngine<Fs: ResourceResolverFs + Clone + 'static> {
     pub generate_extra_imports_in_local_mode: bool,
     pub compile_non_exported_classes: bool,
     pub enable_hmr: bool,
+    pub strict_standalone: bool,
 }
 
 impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
@@ -70,6 +71,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             false,
             true,
             false,
+            false,
         )
     }
 
@@ -83,6 +85,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         generate_extra_imports_in_local_mode: bool,
         compile_non_exported_classes: bool,
         enable_hmr: bool,
+        strict_standalone: bool,
     ) -> Arc<Self> {
         Arc::new(Self {
             fs,
@@ -97,6 +100,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             generate_extra_imports_in_local_mode,
             compile_non_exported_classes,
             enable_hmr,
+            strict_standalone,
         })
     }
 
@@ -117,6 +121,16 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
 
     pub fn intern_path(&self, path: impl AsRef<Path>) -> FileId {
         self.interner.intern_path(path)
+    }
+
+    pub fn validation_context(
+        &self,
+        mode: crate::analyzer::WireMode,
+    ) -> crate::analyzer::ValidationContext {
+        crate::analyzer::ValidationContext {
+            mode,
+            strict_standalone: self.strict_standalone,
+        }
     }
 
     pub fn lookup_path(&self, id: FileId) -> PathBuf {
@@ -865,7 +879,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             class.demote_resolved();
         }
 
-        local_result.validate();
+        local_result.validate(self.validation_context(crate::analyzer::WireMode::Semantic));
 
         Arc::new(local_result)
     }

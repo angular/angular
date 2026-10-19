@@ -424,6 +424,7 @@ fn extract_class_metadata(
             imports_span: None,
             exports_span: None,
             bootstrap_span: None,
+            bootstrap_issues: Vec::new(),
             local_imports_element_spans: None,
             local_exports_element_spans: None,
             isolated_imports: None,

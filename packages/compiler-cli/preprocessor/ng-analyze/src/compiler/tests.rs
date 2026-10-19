@@ -2735,6 +2735,18 @@ fn test_shadow_dom_selector_diagnostics_ng2009() {
         r#"{"files": ["no-hyphen.component.ts", "upper-case.component.ts", "attr-selector.component.ts"]}"#.to_string(),
     );
     virtual_files.insert(
+        "/project/node_modules/@angular/core/package.json".to_string(),
+        r#"{"name": "@angular/core", "types": "./index.d.ts"}"#.to_string(),
+    );
+    virtual_files.insert(
+        "/project/node_modules/@angular/core/index.d.ts".to_string(),
+        r#"
+            export declare enum ViewEncapsulation { Emulated = 0, None = 2, ShadowDom = 3 }
+            export declare const Component: any;
+        "#
+        .to_string(),
+    );
+    virtual_files.insert(
         "/project/no-hyphen.component.ts".to_string(),
         r#"
             import { Component, ViewEncapsulation } from '@angular/core';
@@ -5565,6 +5577,127 @@ fn test_directive_metadata_shape_diagnostics() {
             "@Pipe must have a literal argument",
             "'name'",
         ),
+        (
+            "/project/encapsulation.ts",
+            r#"
+            import { Component } from '@angular/core';
+            @Component({ selector: 'test-cmp', template: '...', encapsulation: 'invalid-value' })
+            export class TestCmp {}
+            "#,
+            1010,
+            "encapsulation must be a member of ViewEncapsulation enum from @angular/core\n  Value is of type 'string'.",
+            "'invalid-value'",
+        ),
+        (
+            "/project/change-detection.ts",
+            r#"
+            import { Component } from '@angular/core';
+            @Component({ selector: 'test-cmp', template: '...', changeDetection: 1 })
+            export class TestCmp {}
+            "#,
+            1010,
+            "changeDetection must be a member of ChangeDetectionStrategy enum from @angular/core\n  Value is of type 'number'.",
+            "1",
+        ),
+        (
+            "/project/two-primary.ts",
+            r#"
+            import { Component, Directive } from '@angular/core';
+            @Component({ selector: 'test', template: 'test' })
+            @Directive({ selector: 'test' })
+            export class ShouldNotCompile {}
+            "#,
+            1006,
+            "Two incompatible decorators on class",
+            "@Component({ selector: 'test', template: 'test' })\n            @Directive({ selector: 'test' })\n            export class ShouldNotCompile {}",
+        ),
+        (
+            "/project/service-collision.ts",
+            r#"
+            import { Service, Pipe } from '@angular/core';
+            @Service()
+            @Pipe({ name: 'foo' })
+            export class TestService {}
+            "#,
+            1006,
+            "Cannot apply more than one Angular decorator on an @Service class.",
+            "@Pipe({ name: 'foo' })",
+        ),
+        (
+            "/project/service-ctor.ts",
+            r#"
+            import { Service } from '@angular/core';
+            class Dep {}
+            @Service()
+            export class TestService {
+                constructor(dep: Dep) {}
+            }
+            "#,
+            2028,
+            "@Service class cannot use constructor dependency injection. Use the `inject` function instead.",
+            "TestService",
+        ),
+        (
+            "/project/service-bare.ts",
+            r#"
+            import { Service } from '@angular/core';
+            @Service
+            export class TestService {}
+            "#,
+            1003,
+            "@Service must be called",
+            "@Service",
+        ),
+        (
+            "/project/service-auto-provided.ts",
+            r#"
+            import { Service } from '@angular/core';
+            @Service({ autoProvided: 1 })
+            export class TestService {}
+            "#,
+            1010,
+            "`autoProvided` property must be a boolean literal",
+            "{ autoProvided: 1 }",
+        ),
+        (
+            "/project/bootstrap-standalone.ts",
+            r#"
+            import { Component, NgModule } from '@angular/core';
+            @Component({ selector: 'standalone-component', template: '...' })
+            class StandaloneComponent {}
+            @NgModule({ bootstrap: [StandaloneComponent] })
+            class BootstrapModule {}
+            "#,
+            6009,
+            "The `StandaloneComponent` class is a standalone component, which can not be used in the `@NgModule.bootstrap` array. Use the `bootstrapApplication` function for bootstrap instead.",
+            "[StandaloneComponent]",
+        ),
+        (
+            "/project/bootstrap-forward-ref.ts",
+            r#"
+            import { Component, NgModule, forwardRef } from '@angular/core';
+            @NgModule({ bootstrap: [forwardRef(() => StandaloneComponent)] })
+            class BootstrapModule {}
+            @Component({ selector: 'standalone-component', template: '...' })
+            class StandaloneComponent {}
+            "#,
+            6009,
+            "The `StandaloneComponent` class is a standalone component, which can not be used in the `@NgModule.bootstrap` array. Use the `bootstrapApplication` function for bootstrap instead.",
+            "[forwardRef(() => StandaloneComponent)]",
+        ),
+        (
+            "/project/declared-no-selector.ts",
+            r#"
+            import { Directive, NgModule } from '@angular/core';
+            @Directive({ standalone: false })
+            export class BaseDir {}
+            @NgModule({ declarations: [BaseDir] })
+            export class MyModule {}
+            "#,
+            2004,
+            "Directive BaseDir has no selector, please add it!",
+            "@Directive({ standalone: false })\n            export class BaseDir {}",
+        ),
     ];
 
     let mut virtual_files: HashMap<String, String> = cases
@@ -5600,6 +5733,86 @@ fn test_directive_metadata_shape_diagnostics() {
             &source[span.start as usize..span.end as usize],
             node_text,
             "{path}"
+        );
+    }
+}
+
+#[test]
+fn test_strict_standalone_diagnostics() {
+    let source = r#"
+        import { Component, Directive, Pipe } from '@angular/core';
+        @Component({ selector: 'legacy-cmp', standalone: false, template: '' })
+        export class LegacyCmp {}
+        @Directive({ selector: '[legacy]', standalone: false })
+        export class LegacyDir {}
+        @Pipe({ name: 'legacy', standalone: false })
+        export class LegacyPipe {}
+        @Directive()
+        export class ModernDir {}
+    "#;
+    let analyzer_for = |strict_standalone: bool, optimize: bool| {
+        let mut virtual_files = HashMap::new();
+        virtual_files.insert("/project/app.ts".to_string(), source.to_string());
+        virtual_files.insert(
+            "/project/tsconfig.json".to_string(),
+            format!(
+                r#"{{"files": ["app.ts"], "angularCompilerOptions": {{"strictStandalone": {strict_standalone}}}}}"#
+            ),
+        );
+        Analyzer::new(AnalyzerOptions {
+            tsconfig_path: "/project/tsconfig.json".to_string(),
+            optimize: Some(optimize),
+            virtual_files: Some(virtual_files),
+            ..Default::default()
+        })
+        .unwrap()
+    };
+
+    let analyzer = analyzer_for(false, true);
+    let meta = analyzer
+        .get_metadata_for_file("/project/app.ts".to_string())
+        .expect("app.ts metadata");
+    assert!(meta.diagnostics.is_empty(), "{:?}", meta.diagnostics);
+
+    for optimize in [true, false] {
+        let analyzer = analyzer_for(true, optimize);
+        let meta = if optimize {
+            analyzer
+                .get_metadata_for_file("/project/app.ts".to_string())
+                .expect("app.ts metadata")
+        } else {
+            let iterator = analyzer.analyze().unwrap();
+            let chunk = futures::executor::block_on(iterator.next())
+                .unwrap()
+                .expect("one chunk");
+            chunk.files.into_iter().next().expect("app.ts result")
+        };
+        let found: Vec<(u32, &str, &str)> = meta
+            .diagnostics
+            .iter()
+            .map(|diag| {
+                let span = diag.span.as_ref().expect("diagnostic span");
+                (
+                    diag.code,
+                    diag.message_text.as_str(),
+                    &source[span.start as usize..span.end as usize],
+                )
+            })
+            .collect();
+        let directives = "Only standalone components/directives are allowed when \
+                          'strictStandalone' is enabled.";
+        assert_eq!(
+            found,
+            vec![
+                (2023, directives, "false"),
+                (2023, directives, "false"),
+                (
+                    2023,
+                    "Only standalone pipes are allowed when 'strictStandalone' is enabled.",
+                    "false"
+                ),
+            ],
+            "optimize={optimize}"
         );
     }
 }

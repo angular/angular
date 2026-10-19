@@ -85,3 +85,23 @@ export class HostLiteralsComponent {
 })();
 
 ```
+
+# /tsconfig.ngdiag.json
+```json
+{
+  "tsconfigPath": "/tsconfig.json",
+  "diagnostics": [
+    {
+      "filePath": "/test.ts",
+      "category": "error",
+      "code": 1010,
+      "messageText": "Decorator host metadata must be a string -> string object, but found unparseable value\n  Value is of type 'number'.",
+      "span": {
+        "start": 843,
+        "end": 956
+      }
+    }
+  ]
+}
+
+```

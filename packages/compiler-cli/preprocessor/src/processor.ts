@@ -78,6 +78,7 @@ import {
   ParsedComponentTemplate,
   getOrCreateFileAnalysis,
 } from './file_analysis.js';
+import {hasAnimations} from './animations.js';
 import {analyzeForeignComponentFeatures} from './foreign_component.js';
 import {extractHmrMetadata, getHmrUpdateDeclaration} from './hmr.js';
 import type {IAnalyzer} from './hybrid_compiler.js';
@@ -679,6 +680,18 @@ export function processFileSync(
               : diagnostic,
           );
         }
+        continue;
+      }
+
+      // TODO: we implement this check in TS, because it depends on the template AST.
+      if (component.animationsSpan && hasAnimations(parsed.nodes)) {
+        fileDiagnostics.push({
+          category: 1,
+          code: 2027,
+          messageText: `A component cannot have both the '@Component.animations' property (legacy animations) and use 'animate.enter' or 'animate.leave' in the template.`,
+          filePath,
+          span: {start: component.animationsSpan.start, end: component.animationsSpan.end},
+        });
         continue;
       }
 

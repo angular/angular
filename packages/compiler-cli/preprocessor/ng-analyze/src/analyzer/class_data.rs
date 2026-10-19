@@ -596,6 +596,11 @@ impl ValueIssue {
         Self::new("1100", span, message)
     }
 
+    /// `NGMODULE_BOOTSTRAP_IS_STANDALONE` (`NG6009`).
+    pub fn bootstrap_is_standalone(span: oxc_span::Span, message: impl Into<String>) -> Self {
+        Self::new("6009", span, message)
+    }
+
     fn new(code: &'static str, span: oxc_span::Span, message: impl Into<String>) -> Self {
         Self {
             code,
@@ -1003,6 +1008,9 @@ pub struct NgModuleData {
     pub imports_span: Option<oxc_span::Span>,
     pub exports_span: Option<oxc_span::Span>,
     pub bootstrap_span: Option<oxc_span::Span>,
+    /// Standalone components listed in `bootstrap` (`NG6009`), found by Stage 2 once the
+    /// entries resolve to classes. Empty in local compilation, which never resolves them.
+    pub bootstrap_issues: Vec<ValueIssue>,
     /// Raw source spans of the top-level elements of the `imports`/`exports` arrays (each
     /// element verbatim, spreads kept). When the value is not an array literal, a single span
     /// covering the whole expression. Used by LOCAL mode to emit `ɵinj.imports` as the raw
@@ -1170,6 +1178,14 @@ impl std::error::Error for WireError {}
 pub enum WireMode {
     Syntax,
     Semantic,
+}
+
+/// What [`ClassData::validate`] needs to know about the compilation it serves.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct ValidationContext {
+    pub mode: WireMode,
+    /// `angularCompilerOptions.strictStandalone`.
+    pub strict_standalone: bool,
 }
 
 /// Pure data object holding the context needed for wire serialization.
@@ -1555,30 +1571,30 @@ impl ClassData {
     }
 
     /// Validates metadata values (selector, resources, enums, etc.) against Angular rules.
+    /// `cx` selects the compilation mode's rule set (ngtsc skips some checks in local
+    /// compilation) and carries the options that enable further checks.
     pub fn validate(
         &self,
+        cx: ValidationContext,
         file_path: &std::path::Path,
         converter: &crate::utils::Utf8ToUtf16,
         diagnostics: &mut Vec<crate::NgDiagnostic>,
     ) {
         for issue in &self.decorator_issues {
-            push_error(
-                diagnostics,
-                file_path,
-                converter,
-                issue.code,
-                issue.span,
-                issue.message.clone(),
-            );
+            push_issue(diagnostics, file_path, converter, issue);
         }
         if self.directive_part().is_some_and(|d| d.is_jit) {
             return;
         }
         self.validate_constructor_param_decorators(file_path, converter, diagnostics);
+        self.validate_service_constructor_di(file_path, converter, diagnostics);
+        if cx.strict_standalone {
+            self.validate_strict_standalone(file_path, converter, diagnostics);
+        }
         match &self.decorator {
             DecoratorData::Component(c) => {
                 self.validate_directive(&c.directive, false, file_path, converter, diagnostics);
-                self.validate_component(c, file_path, converter, diagnostics);
+                self.validate_component(c, cx.mode, file_path, converter, diagnostics);
                 self.validate_unique_declaration(
                     "Component",
                     &c.directive.duplicate_declaring_ng_modules,
@@ -1589,6 +1605,13 @@ impl ClassData {
             }
             DecoratorData::Directive(d) => {
                 self.validate_directive(d, true, file_path, converter, diagnostics);
+                self.validate_declared_directive_selector(
+                    d,
+                    cx.mode,
+                    file_path,
+                    converter,
+                    diagnostics,
+                );
                 self.validate_unique_declaration(
                     "Directive",
                     &d.duplicate_declaring_ng_modules,
@@ -1612,6 +1635,77 @@ impl ClassData {
             }
             _ => {}
         }
+    }
+
+    /// Under `strictStandalone`, a declaration whose `standalone` flag is written as `false` is
+    /// `NG2023` on that flag.
+    fn validate_strict_standalone(
+        &self,
+        file_path: &std::path::Path,
+        converter: &crate::utils::Utf8ToUtf16,
+        diagnostics: &mut Vec<crate::NgDiagnostic>,
+    ) {
+        let (span, message) = match &self.decorator {
+            DecoratorData::Component(ComponentData { directive: d, .. })
+            | DecoratorData::Directive(d) => {
+                let Some(span) = d.standalone_span else {
+                    return;
+                };
+                if d.standalone_dynamic || d.standalone {
+                    return;
+                }
+                (
+                    span,
+                    "Only standalone components/directives are allowed when 'strictStandalone' \
+                     is enabled.",
+                )
+            }
+            DecoratorData::Pipe(p) => {
+                let (Some(span), Some(false)) = (p.standalone_span, p.standalone) else {
+                    return;
+                };
+                (
+                    span,
+                    "Only standalone pipes are allowed when 'strictStandalone' is enabled.",
+                )
+            }
+            _ => return,
+        };
+        push_error(
+            diagnostics,
+            file_path,
+            converter,
+            "2023",
+            span,
+            message.to_string(),
+        );
+    }
+
+    /// A directive declared in an NgModule must have a selector (`NG2004`), which ngtsc's
+    /// NgModule handler reports on the directive's class declaration while resolving the module
+    /// (an empty-string selector is caught earlier, in `validate_directive`).
+    fn validate_declared_directive_selector(
+        &self,
+        d: &DirectiveData,
+        mode: WireMode,
+        file_path: &std::path::Path,
+        converter: &crate::utils::Utf8ToUtf16,
+        diagnostics: &mut Vec<crate::NgDiagnostic>,
+    ) {
+        if mode != WireMode::Semantic || d.declaring_ng_module.is_none() || d.selector.is_some() {
+            return;
+        }
+        let Some(class_name) = self.class_name.as_deref() else {
+            return;
+        };
+        push_error(
+            diagnostics,
+            file_path,
+            converter,
+            "2004",
+            self.decorated_span,
+            format!("Directive {class_name} has no selector, please add it!"),
+        );
     }
 
     /// Report a class declared by more than one NgModule (NG6007) on its name, matching ngtsc's
@@ -1647,7 +1741,8 @@ impl ClassData {
         );
     }
 
-    /// Report the `id: module.id` anti-pattern (NG6100).
+    /// Report the `id: module.id` anti-pattern (NG6100) and the standalone `bootstrap`
+    /// entries Stage 2 found (NG6009).
     fn validate_ng_module(
         &self,
         m: &NgModuleData,
@@ -1655,6 +1750,9 @@ impl ClassData {
         converter: &crate::utils::Utf8ToUtf16,
         diagnostics: &mut Vec<crate::NgDiagnostic>,
     ) {
+        for issue in &m.bootstrap_issues {
+            push_issue(diagnostics, file_path, converter, issue);
+        }
         let Some(span) = m.module_id_span else {
             return;
         };
@@ -1691,6 +1789,37 @@ impl ClassData {
                 format!("Unexpected decorator {} on parameter.", decorator.name),
             );
         }
+    }
+
+    fn validate_service_constructor_di(
+        &self,
+        file_path: &std::path::Path,
+        converter: &crate::utils::Utf8ToUtf16,
+        diagnostics: &mut Vec<crate::NgDiagnostic>,
+    ) {
+        if self.service_data().is_none() {
+            return;
+        }
+        let Some(name_span) = self.name_span else {
+            return;
+        };
+        if !self
+            .constructor_params
+            .as_ref()
+            .is_some_and(|params| !params.is_empty())
+        {
+            return;
+        }
+        push_error(
+            diagnostics,
+            file_path,
+            converter,
+            "2028",
+            name_span,
+            "@Service class cannot use constructor dependency injection. Use the `inject` \
+             function instead."
+                .to_string(),
+        );
     }
 
     fn validate_directive(
@@ -1874,11 +2003,18 @@ impl ClassData {
     fn validate_component(
         &self,
         c: &ComponentData,
+        mode: WireMode,
         file_path: &std::path::Path,
         converter: &crate::utils::Utf8ToUtf16,
         diagnostics: &mut Vec<crate::NgDiagnostic>,
     ) {
         let default_span = c.directive.args_span.unwrap_or(self.span);
+
+        if mode == WireMode::Semantic {
+            for issue in core_enum_field_issues(c) {
+                push_issue(diagnostics, file_path, converter, &issue);
+            }
+        }
 
         if let Some(span) = c.style_conflict_span {
             push_error(
@@ -2212,6 +2348,38 @@ impl ClassData {
     }
 }
 
+fn core_enum_field_issues(c: &ComponentData) -> Vec<ValueIssue> {
+    fn issue<T: crate::evaluator::FromResolved>(
+        resolved: Option<&Resolved<T>>,
+        span: Option<oxc_span::Span>,
+        message: &str,
+    ) -> Option<ValueIssue> {
+        let (Some(resolved), Some(span)) = (resolved, span) else {
+            return None;
+        };
+        if resolved.get_optional().is_some() {
+            return None;
+        }
+        Some(ValueIssue::wrong_type_of(span, resolved.raw(), message))
+    }
+
+    [
+        issue(
+            c.encapsulation.as_ref(),
+            c.encapsulation_span,
+            "encapsulation must be a member of ViewEncapsulation enum from @angular/core",
+        ),
+        issue(
+            c.change_detection.as_ref(),
+            c.change_detection_span,
+            "changeDetection must be a member of ChangeDetectionStrategy enum from @angular/core",
+        ),
+    ]
+    .into_iter()
+    .flatten()
+    .collect()
+}
+
 fn host_metadata_issues(d: &DirectiveData) -> Vec<ValueIssue> {
     use crate::evaluator::ResolvedValue;
 
@@ -2297,6 +2465,23 @@ fn push_error(
         oxc_diagnostics::OxcDiagnostic::error(message),
         code,
         span,
+    );
+}
+
+/// [`push_error`] for a recorded [`ValueIssue`].
+pub(crate) fn push_issue(
+    diagnostics: &mut Vec<crate::NgDiagnostic>,
+    file_path: &std::path::Path,
+    converter: &crate::utils::Utf8ToUtf16,
+    issue: &ValueIssue,
+) {
+    push_error(
+        diagnostics,
+        file_path,
+        converter,
+        issue.code,
+        issue.span,
+        issue.message.clone(),
     );
 }
 

@@ -678,9 +678,9 @@ impl FileData {
     }
 
     /// Validates metadata values across all classes in this file.
-    pub fn validate(&mut self) {
+    pub fn validate(&mut self, cx: crate::analyzer::ValidationContext) {
         for class in &self.classes {
-            class.validate(&self.file_path, &self.converter, &mut self.diagnostics);
+            class.validate(cx, &self.file_path, &self.converter, &mut self.diagnostics);
         }
     }
 }

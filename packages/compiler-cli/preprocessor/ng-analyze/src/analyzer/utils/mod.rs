@@ -1157,8 +1157,42 @@ pub(crate) fn class_decorator_argument_issue<'a>(
             }
             object_literal_argument_issue(meta, "@Pipe must have a literal argument".to_string())
         }
+        "Service" => match args {
+            None => Some(ValueIssue::decorator_not_called(
+                decorator.span,
+                "@Service must be called",
+            )),
+            Some([]) => None,
+            Some([Argument::ObjectExpression(meta)]) => service_auto_provided_issue(meta),
+            Some([meta]) => Some(ValueIssue::arg_not_literal(
+                meta.span(),
+                "@Service argument must be an object literal",
+            )),
+            Some(args) => Some(ValueIssue::arity_wrong(
+                args.get(2).map_or(decorator.span, GetSpan::span),
+                "Too many arguments to @Service",
+            )),
+        },
         _ => None,
     }
+}
+
+fn service_auto_provided_issue(
+    meta: &oxc_ast::ast::ObjectExpression<'_>,
+) -> Option<crate::analyzer::class_data::ValueIssue> {
+    let value = meta.properties.iter().find_map(|prop| {
+        let oxc_ast::ast::ObjectPropertyKind::ObjectProperty(prop) = prop else {
+            return None;
+        };
+        (extract_property_key(&prop.key)? == "autoProvided").then_some(&prop.value)
+    })?;
+    if matches!(value, Expression::BooleanLiteral(_)) {
+        return None;
+    }
+    Some(crate::analyzer::class_data::ValueIssue::wrong_type(
+        meta.span,
+        "`autoProvided` property must be a boolean literal",
+    ))
 }
 
 fn object_literal_argument_issue(
