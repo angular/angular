@@ -548,6 +548,8 @@ pub struct FileData {
     pub(crate) class_index: Arc<HashMap<String, ClassInfo>>,
     /// Declared classes keyed by `ReferenceId` (same Stage 1 selector caveat as `class_index`).
     pub(crate) symbol_index: Arc<HashMap<ReferenceId, ClassInfo>>,
+    /// Constructor facts for every class in the file, decorated or not, keyed by name.
+    pub(crate) di_facts: Arc<HashMap<String, crate::analyzer::di_facts::ClassDiFacts>>,
     /// Re-export table (`export … from …`).
     pub(crate) file_exports: Arc<crate::analyzer::FileExportInfo>,
     pub(crate) errors: Vec<String>,

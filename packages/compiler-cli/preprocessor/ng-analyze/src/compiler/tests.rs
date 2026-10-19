@@ -5986,3 +5986,303 @@ fn test_strict_standalone_diagnostics() {
         );
     }
 }
+
+#[test]
+fn test_dependency_injection_diagnostics() {
+    let files: Vec<(&str, &str)> = vec![
+        (
+            "/project/local.ts",
+            r#"
+            import { Directive, ElementRef } from '@angular/core';
+            export class BasePlain {}
+            export class BasePlainWithBlankConstructor {
+                constructor() {}
+            }
+            export class BasePlainWithConstructorParameters {
+                constructor(elementRef: ElementRef) {}
+            }
+            @Directive({ selector: '[base]' })
+            export class BaseDir {
+                constructor(elementRef: ElementRef) {}
+            }
+            "#,
+        ),
+        (
+            "/project/lib.d.ts",
+            r#"
+            import { ɵɵDirectiveDeclaration, ɵɵFactoryDeclaration, ElementRef } from '@angular/core';
+            export declare class DtsPlainWithConstructorParameters {
+                constructor(elementRef: ElementRef);
+            }
+            export declare class DtsDir {
+                constructor(elementRef: ElementRef);
+                static ɵdir: ɵɵDirectiveDeclaration<DtsDir, '[base]', never, never, never, never>;
+            }
+            export declare class DtsInjectable {
+                constructor(elementRef: ElementRef);
+                static ɵfac: ɵɵFactoryDeclaration<DtsInjectable, never>;
+            }
+            "#,
+        ),
+        (
+            "/project/inherited.ts",
+            r#"
+            import { Component, Directive, Injectable, Service } from '@angular/core';
+            import { BasePlain, BasePlainWithBlankConstructor, BasePlainWithConstructorParameters, BaseDir } from './local';
+            import { DtsPlainWithConstructorParameters, DtsDir, DtsInjectable } from './lib';
+
+            class Parent extends BasePlainWithConstructorParameters {}
+            class GrandParent extends Parent {}
+
+            @Directive({ selector: '[a]' })
+            export class DirFromPlain extends BasePlain {}
+            @Directive({ selector: '[b]' })
+            export class DirFromBlankCtor extends BasePlainWithBlankConstructor {}
+            @Directive({ selector: '[c]' })
+            export class DirFromDecorated extends BaseDir {}
+            @Directive({ selector: '[d]' })
+            export class DirFromParams extends BasePlainWithConstructorParameters {}
+            @Component({ selector: 'e', template: '' })
+            export class CmpFromGrandParent extends GrandParent {}
+            @Directive({ selector: '[f]' })
+            export class DirWithOwnCtor extends BasePlainWithConstructorParameters {
+                constructor() { super(null!); }
+            }
+            @Directive({ selector: '[g]' })
+            export class DirFromDts extends DtsPlainWithConstructorParameters {}
+            @Directive({ selector: '[h]' })
+            export class DirFromDtsDir extends DtsDir {}
+            @Directive({ selector: '[i]' })
+            export class DirFromDtsInjectable extends DtsInjectable {}
+            @Injectable()
+            export class ServiceFromParams extends BasePlainWithConstructorParameters {}
+            @Injectable({ providedIn: 'root', useFactory: () => null })
+            export class FactoryServiceFromParams extends BasePlainWithConstructorParameters {}
+            @Service()
+            export class ModernServiceFromParams extends BasePlainWithConstructorParameters {}
+            @Service()
+            export class ModernServiceFromDecorated extends BaseDir {}
+            "#,
+        ),
+        (
+            "/project/providers.ts",
+            r#"
+            import { Component, Directive, Injectable, NgModule, NgZone, Pipe } from '@angular/core';
+            import { DtsPlainWithConstructorParameters } from './lib';
+
+            @Injectable({ providedIn: 'root' })
+            class Service {}
+            class NotAService {
+                constructor(ngZone: NgZone) {}
+            }
+            class TrivialClass {}
+            @Pipe({ name: 'p', standalone: false })
+            class SomePipe {}
+            @NgModule({})
+            class ProvidedModule {
+                constructor(dep: Service) {}
+            }
+
+            @NgModule({
+                providers: [
+                    NotAService,
+                    {provide: Service, useClass: NotAService},
+                    {provide: Service, useClass: NotAService, deps: [NgZone]},
+                    [Service, [NotAService]],
+                    TrivialClass,
+                    SomePipe,
+                    ProvidedModule,
+                    DtsPlainWithConstructorParameters,
+                ],
+            })
+            export class SomeModule {}
+
+            @Directive({ selector: '[dir]', providers: [NotAService] })
+            export class SomeDirective {}
+
+            @Component({ selector: 'cmp', template: '', viewProviders: [NotAService] })
+            export class SomeComponent {}
+            "#,
+        ),
+        (
+            "/project/undecorated.ts",
+            r#"
+            import { Input, HostListener, Injectable } from '@angular/core';
+            export class WithInput {
+                @Input() someMember: any;
+            }
+            export class WithHook {
+                ngOnInit() {}
+            }
+            export class WithStaticHook {
+                static ngOnInit() {}
+            }
+            function custom(): any {}
+            @custom
+            export class CustomDecorated {
+                ngOnDestroy() {}
+            }
+            export class Plain {
+                @HostListener('click') onClick() {}
+            }
+            export default class {
+                ngOnInit() {}
+            }
+            "#,
+        ),
+    ];
+
+    let mut virtual_files: HashMap<String, String> = files
+        .iter()
+        .map(|(path, source)| (path.to_string(), source.to_string()))
+        .collect();
+    virtual_files.insert(
+        "/project/tsconfig.json".to_string(),
+        r#"{"files": ["inherited.ts", "providers.ts", "undecorated.ts"]}"#.to_string(),
+    );
+    let analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: "/project/tsconfig.json".to_string(),
+        optimize: Some(true),
+        virtual_files: Some(virtual_files),
+        ..Default::default()
+    })
+    .unwrap();
+
+    let diagnostics_of = |path: &str| -> Vec<(u32, String, String)> {
+        let source = files.iter().find(|(p, _)| *p == path).unwrap().1;
+        let meta = analyzer
+            .get_metadata_for_file(path.to_string())
+            .unwrap_or_else(|| panic!("{path} metadata"));
+        meta.diagnostics
+            .iter()
+            .map(|diag| {
+                let span = diag.span.as_ref().expect("diagnostic span");
+                (
+                    diag.code,
+                    diag.message_text.clone(),
+                    source[span.start as usize..span.end as usize].to_string(),
+                )
+            })
+            .collect()
+    };
+
+    let inherits = |kind: &str, class: &str, base: &str| {
+        let decorator = if kind == "injectable" {
+            "Injectable"
+        } else {
+            "Directive"
+        };
+        format!(
+            "The {kind} {class} inherits its constructor from {base}, but the latter does not \
+             have an Angular decorator of its own. Dependency injection will not be able to \
+             resolve the parameters of {base}'s constructor. Either add a @{decorator} decorator \
+             to {base}, or add an explicit constructor to {class}."
+        )
+    };
+    let service_di = "@Service class cannot use constructor dependency injection. Use the \
+                      `inject` function instead."
+        .to_string();
+    assert_eq!(
+        diagnostics_of("/project/inherited.ts"),
+        vec![
+            (
+                2006,
+                inherits(
+                    "directive",
+                    "DirFromParams",
+                    "BasePlainWithConstructorParameters"
+                ),
+                "DirFromParams".to_string()
+            ),
+            (
+                2006,
+                inherits(
+                    "component",
+                    "CmpFromGrandParent",
+                    "BasePlainWithConstructorParameters"
+                ),
+                "CmpFromGrandParent".to_string()
+            ),
+            (
+                2006,
+                inherits(
+                    "directive",
+                    "DirFromDts",
+                    "DtsPlainWithConstructorParameters"
+                ),
+                "DirFromDts".to_string()
+            ),
+            // ngtsc only knows a `.d.ts` class as injectable through `ɵprov`/`ɵfac`.
+            (
+                2006,
+                inherits("directive", "DirFromDtsDir", "DtsDir"),
+                "DirFromDtsDir".to_string()
+            ),
+            (
+                2006,
+                inherits(
+                    "injectable",
+                    "ServiceFromParams",
+                    "BasePlainWithConstructorParameters"
+                ),
+                "ServiceFromParams".to_string()
+            ),
+            (
+                2028,
+                service_di.clone(),
+                "ModernServiceFromParams".to_string()
+            ),
+            (2028, service_di, "ModernServiceFromDecorated".to_string()),
+        ]
+    );
+
+    let undecorated_provider = "The class 'NotAService' cannot be created via dependency \
+                                injection, as it does not have an Angular decorator. This will \
+                                result in an error at runtime.\n\nEither add the @Injectable() \
+                                decorator to 'NotAService', or configure a different provider \
+                                (such as a provider with 'useFactory').\n"
+        .to_string();
+    assert_eq!(
+        diagnostics_of("/project/providers.ts"),
+        vec![
+            (
+                2005,
+                undecorated_provider.clone(),
+                "NotAService".to_string()
+            ),
+            (
+                2005,
+                undecorated_provider.clone(),
+                "NotAService".to_string()
+            ),
+            (
+                2005,
+                undecorated_provider.clone(),
+                "NotAService".to_string()
+            ),
+            (
+                2005,
+                undecorated_provider.clone(),
+                "NotAService".to_string()
+            ),
+            (2005, undecorated_provider, "NotAService".to_string()),
+        ]
+    );
+
+    let undecorated_class = "Class is using Angular features but is not decorated. Please add an \
+                             explicit Angular decorator."
+        .to_string();
+    assert_eq!(
+        diagnostics_of("/project/undecorated.ts"),
+        vec![
+            (2007, undecorated_class.clone(), "WithInput".to_string()),
+            (2007, undecorated_class.clone(), "WithHook".to_string()),
+            (2007, undecorated_class.clone(), "Plain".to_string()),
+            (
+                2007,
+                undecorated_class,
+                "class {\n                ngOnInit() {}\n            }".to_string(),
+            ),
+        ]
+    );
+}

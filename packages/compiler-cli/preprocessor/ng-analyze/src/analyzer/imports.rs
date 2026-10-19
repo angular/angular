@@ -852,9 +852,10 @@ impl AngularImportSymbol {
 
     /// Whether this symbol is an initializer function such as `input()` rather than a decorator.
     pub fn is_initializer_fn(self) -> bool {
-        CORE_EXPORTS
-            .iter()
-            .any(|(_, symbol, kind)| *symbol == self && *kind == AngularApiKind::InitializerFn)
+        self == Self::OutputFromObservableFn
+            || CORE_EXPORTS
+                .iter()
+                .any(|(_, symbol, kind)| *symbol == self && *kind == AngularApiKind::InitializerFn)
     }
 
     /// Whether this is the binding of an `import * as ns` of an Angular package.

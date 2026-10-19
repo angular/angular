@@ -297,7 +297,12 @@ fn parse_component_metadata<'a, Fs: ResourceResolverFs>(
                 data.foreign_imports = entries;
                 data.foreign_import_issues = issues;
             }
-            "viewProviders" => data.view_providers_span = Some(p.value.span()),
+            "viewProviders" => {
+                data.view_providers_span = Some(p.value.span());
+                data.view_providers = Some(
+                    crate::analyzer::di_facts::ProvidersData::from_expression(&p.value, eval),
+                );
+            }
             "changeDetection" => {
                 data.change_detection_span = Some(p.value.span());
                 data.change_detection = Some(Resolved::from_syntax(

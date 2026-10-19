@@ -160,6 +160,9 @@ pub fn extract_directive_metadata<'a>(
             }
             "providers" => {
                 data.providers_span = Some(p.value.span());
+                data.providers = Some(crate::analyzer::di_facts::ProvidersData::from_expression(
+                    &p.value, eval,
+                ));
             }
             // ngtsc evaluates the whole field, so the array may be reached through a
             // constant or assembled from spreads and `concat`:
