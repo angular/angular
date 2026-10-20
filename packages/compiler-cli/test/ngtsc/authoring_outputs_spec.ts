@@ -39,7 +39,7 @@ runInEachFileSystem(() => {
       env.driveMain();
 
       const js = env.getContents('test.js');
-      const dts = env.getContents('test.d.ts');
+      const dts = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(js).toContain(`outputs: { click: "click" }`);
       expect(dts).toContain('{ "click": "click"; ');
@@ -61,7 +61,7 @@ runInEachFileSystem(() => {
       env.driveMain();
 
       const js = env.getContents('test.js');
-      const dts = env.getContents('test.d.ts');
+      const dts = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(js).toContain(`outputs: { click: "click" }`);
       expect(dts).toContain('{ "click": "click"; ');
@@ -82,7 +82,7 @@ runInEachFileSystem(() => {
       env.driveMain();
 
       const js = env.getContents('test.js');
-      const dts = env.getContents('test.d.ts');
+      const dts = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(js).toContain(`outputs: { click: "publicClick" }`);
       expect(dts).toContain('{ "click": "publicClick"; ');
@@ -105,7 +105,7 @@ runInEachFileSystem(() => {
       env.driveMain();
 
       const js = env.getContents('test.js');
-      const dts = env.getContents('test.d.ts');
+      const dts = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(js).toContain(`outputs: { click: "publicClick" }`);
       expect(dts).toContain('{ "click": "publicClick"; ');

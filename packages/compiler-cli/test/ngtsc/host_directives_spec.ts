@@ -53,7 +53,7 @@ runInEachFileSystem(() => {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      const dtsContents = env.getContents('test.d.ts');
+      const dtsContents = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(jsContents).toContain('ɵɵdefineDirective({ type: DirectiveA');
       expect(jsContents).toContain('ɵɵdefineDirective({ type: DirectiveB');
@@ -98,7 +98,7 @@ runInEachFileSystem(() => {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      const dtsContents = env.getContents('test.d.ts');
+      const dtsContents = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(jsContents).toContain('ɵɵdefineDirective({ type: HostDir');
       expect(jsContents).toContain(
@@ -145,7 +145,7 @@ runInEachFileSystem(() => {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      const dtsContents = env.getContents('test.d.ts');
+      const dtsContents = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(jsContents).toContain('ɵɵdefineDirective({ type: HostDir');
       expect(jsContents).toContain(
@@ -193,7 +193,7 @@ runInEachFileSystem(() => {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      const dtsContents = env.getContents('test.d.ts');
+      const dtsContents = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(jsContents).toContain('ɵɵdefineDirective({ type: DirectiveA });');
       expect(jsContents).toContain(

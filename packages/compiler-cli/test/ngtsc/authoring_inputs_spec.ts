@@ -207,9 +207,10 @@ runInEachFileSystem(() => {
       `,
       );
       env.driveMain();
+      const dts = env.getContents('test.d.ts').replace(/\s+/g, ' ');
       expect(env.getContents('test.js')).toContain(`inputs: { data: [1, "data"] }`);
-      expect(env.getContents('test.d.ts')).toContain('"required": true; "isSignal": true;');
-      expect(env.getContents('test.d.ts'))
+      expect(dts).toContain('"required": true; "isSignal": true;');
+      expect(dts)
         .withContext(
           'Expected no coercion member as input signal captures the write type of the transform',
         )
