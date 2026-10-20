@@ -176,13 +176,12 @@ impl Analyzer {
             abs_dirs.push(base_dir.to_path_buf());
         }
         fs.set_root_dirs(abs_dirs.clone());
-        let mut entrypoints: Vec<PathBuf> = resolved_config
+        let entrypoints: Vec<PathBuf> = resolved_config
             .files
             .into_iter()
             .map(|p| fs.canonicalize(&p).unwrap_or(p))
             .filter(|p| is_compilation_root(p))
             .collect();
-        entrypoints.sort();
 
         let entrypoints_lock = Arc::new(RwLock::new(entrypoints));
 
@@ -483,13 +482,12 @@ impl Analyzer {
         if let Ok(resolved_config) =
             tsconfig_resolution::load_and_resolve_tsconfig(&self.tsconfig_path, &self.fs)
         {
-            let mut entrypoints: Vec<PathBuf> = resolved_config
+            let entrypoints: Vec<PathBuf> = resolved_config
                 .files
                 .into_iter()
                 .map(|p| self.fs.canonicalize(&p).unwrap_or(p))
                 .filter(|p| is_compilation_root(p))
                 .collect();
-            entrypoints.sort();
             *self.entrypoints.write().unwrap() = entrypoints;
         }
     }
@@ -956,17 +954,25 @@ async fn run_coordinator<S, LA, FutLA, P, FutP, Fs>(
             .unwrap()
     };
 
+    let mut valid_entrypoints = Vec::new();
     for entry in entrypoints {
-        if cancel_token.is_cancelled() {
-            break;
-        }
         if !is_compilation_root(&entry) {
             continue;
         }
         // Dedupe on the case-folded path, but keep the caller's spelling.
         if seen.insert(crate::fs::normalize_path(&entry).into_owned()) {
-            pending_tasks.push(spawn_file_task(entry));
+            // Intern `FileId`s synchronously in entrypoint order before spawning async workers so
+            // `FileId` ordering is deterministic and reflects `tsconfig` root order.
+            engine.intern_path(&entry);
+            valid_entrypoints.push(entry);
         }
+    }
+
+    for entry in valid_entrypoints {
+        if cancel_token.is_cancelled() {
+            break;
+        }
+        pending_tasks.push(spawn_file_task(entry));
     }
 
     let mut event_receiver = event_receiver.fuse();
@@ -991,6 +997,7 @@ async fn run_coordinator<S, LA, FutLA, P, FutP, Fs>(
                             if !seen.insert(crate::fs::normalize_path(&dep).into_owned()) {
                                 continue;
                             }
+                            engine.intern_path(&dep);
                             pending_tasks.push(spawn_file_task(dep));
                             spawned_any = true;
                         }
@@ -1029,6 +1036,7 @@ async fn run_coordinator<S, LA, FutLA, P, FutP, Fs>(
                             if !seen.insert(crate::fs::normalize_path(&dep).into_owned()) {
                                 continue;
                             }
+                            engine.intern_path(&dep);
                             pending_tasks.push(spawn_file_task(dep));
                         }
                     }
@@ -1351,8 +1359,9 @@ fn handle_completed_file<Fs: FileSystem + Clone + 'static + ResourceResolverFs>(
         let Some(mut state) = uf.states.remove(&root) else {
             return;
         };
-        let files: Vec<_> = state
-            .members
+        let mut sorted_members: Vec<FileId> = state.members.into_iter().collect();
+        sorted_members.sort();
+        let files: Vec<_> = sorted_members
             .iter()
             .filter_map(|f| state.completed.remove(f))
             .collect();

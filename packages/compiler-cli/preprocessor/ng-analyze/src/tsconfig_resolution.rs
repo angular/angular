@@ -6,7 +6,7 @@ use std::path::{Path, PathBuf};
 
 #[derive(Debug, Clone)]
 pub struct ResolvedTsConfig {
-    pub files: HashSet<PathBuf>,
+    pub files: Vec<PathBuf>,
     pub compiler_options: CompilerOptions,
     pub preserve_symlinks: bool,
     pub workspace_name: Option<String>,
@@ -54,14 +54,15 @@ pub fn load_and_resolve_tsconfig(
     let extended_options = resolve_extended_options_recursive(path, fs, &resolver, &mut visited)?;
     resolved_compiler_options.root_dirs = extended_options.root_dirs;
 
-    // Resolve files
-    let mut files = HashSet::new();
+    // Resolve files (preserving tsconfig `files` order, then sorted `include` expansion)
+    let mut files = Vec::new();
+    let mut seen_files = HashSet::new();
     let base_dir = path.parent().unwrap_or(Path::new("."));
 
     // 1. files
     for f in resolved_files {
-        if fs.metadata(&f).is_ok() {
-            files.insert(f);
+        if fs.metadata(&f).is_ok() && seen_files.insert(f.clone()) {
+            files.push(f);
         }
     }
 
@@ -69,8 +70,16 @@ pub fn load_and_resolve_tsconfig(
     let allow_js = resolved_compiler_options.allow_js.unwrap_or(false);
 
     if !resolved_include.is_empty() {
-        let expanded = expand_globs(base_dir, &resolved_include, &resolved_exclude, allow_js, fs);
-        files.extend(expanded);
+        let mut expanded: Vec<PathBuf> =
+            expand_globs(base_dir, &resolved_include, &resolved_exclude, allow_js, fs)
+                .into_iter()
+                .collect();
+        expanded.sort();
+        for f in expanded {
+            if seen_files.insert(f.clone()) {
+                files.push(f);
+            }
+        }
     }
 
     Ok(ResolvedTsConfig {
