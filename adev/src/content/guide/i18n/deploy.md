@@ -5,7 +5,8 @@ For example, your French version is located in the `myapp/fr` directory and the 
 
 The HTML `base` tag with the `href` attribute specifies the base URI, or URL, for relative links.
 If you set the `"localize"` option in [`angular.json`][GuideWorkspaceConfig] workspace build configuration file to `true` or to an array of locale IDs, the CLI adjusts the base `href` for each version of the application.
-To adjust the base `href` for each version of the application, the CLI adds the locale to the configured `"subPath"`.
+To adjust the base `href` for each version of the application, the CLI uses the configured `"subPath"` as the URL segment for the locale.
+If you don't set `"subPath"`, it defaults to the locale ID.
 Specify the `"subPath"` for each locale in your [`angular.json`][GuideWorkspaceConfig] workspace build configuration file.
 The following example displays `"subPath"` set to an empty string.
 
