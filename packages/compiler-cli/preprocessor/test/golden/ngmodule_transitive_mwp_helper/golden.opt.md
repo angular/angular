@@ -19,7 +19,7 @@ export class AppModule {
   // @ts-ignore
   static ɵinj: i0.ɵɵInjectorDeclaration<AppModule> =
     // @ts-ignore
-    /*@__PURE__*/ i0.ɵɵdefineInjector({});
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [MiddleComp] });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
