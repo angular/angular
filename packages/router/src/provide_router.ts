@@ -791,7 +791,7 @@ export type ComponentInputBindingFeature =
  * @see {@link withViewTransitions}
  * @see {@link provideRouter}
  *
- * @publicApi
+ * @publicApi 22.3
  */
 export type ViewTransitionsFeature = RouterFeature<RouterFeatureKind.ViewTransitionsFeature>;
 
@@ -887,7 +887,7 @@ export function withComponentInputBinding(
  * @see [View Transitions on MDN](https://developer.chrome.com/docs/web-platform/view-transitions/)
  * @see [View Transitions API on MDN](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API)
  * @see [Route transition animations](guide/routing/route-transition-animations)
- * @developerPreview 19.0
+ * @publicApi 22.3
  */
 export function withViewTransitions(
   options?: ViewTransitionsFeatureOptions,
