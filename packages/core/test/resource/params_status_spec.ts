@@ -120,7 +120,7 @@ describe('resource with ResourceParamsStatus', () => {
 
   it('should propagate a different error thrown from params', async () => {
     const s = signal<string | Error>('foo');
-    const res = await actAsync(() =>
+    const res = await act(() =>
       resource({
         params: throwStatusAndErrors(s),
         loader: async ({params}) => params as string,
@@ -128,11 +128,11 @@ describe('resource with ResourceParamsStatus', () => {
       }),
     );
 
-    await actAsync(() => s.set(new Error('first')));
+    await act(() => s.set(new Error('first')));
     expect(res.status()).toBe('error');
     expect(res.error()).toEqual(new Error('first'));
 
-    await actAsync(() => s.set(new Error('second')));
+    await act(() => s.set(new Error('second')));
     expect(res.status()).toBe('error');
     expect(res.error()).toEqual(new Error('second'));
   });
@@ -142,7 +142,7 @@ describe('resource with ResourceParamsStatus', () => {
     const s = signal<string | ResourceParamsStatus>(ResourceParamsStatus.LOADING);
     let paramsCount = 0;
     let loadCount = 0;
-    const res = await actAsync(() =>
+    const res = await act(() =>
       resource({
         params: () => {
           paramsCount++;
@@ -160,13 +160,13 @@ describe('resource with ResourceParamsStatus', () => {
     expect(res.status()).toBe('loading');
     expect(paramsCount).toBe(1);
 
-    await actAsync(() => unrelated.set(1));
+    await act(() => unrelated.set(1));
 
     expect(paramsCount).toBe(2);
     expect(res.status()).toBe('loading');
     expect(loadCount).toBe(0);
 
-    await actAsync(() => s.set('foo'));
+    await act(() => s.set('foo'));
     expect(res.status()).toBe('resolved');
     expect(loadCount).toBe(1);
   });
@@ -175,7 +175,7 @@ describe('resource with ResourceParamsStatus', () => {
     const throwIt = signal(false);
     let loads = 0;
 
-    const res = await actAsync(() =>
+    const res = await act(() =>
       resource({
         params: () => {
           if (throwIt()) {
@@ -194,7 +194,7 @@ describe('resource with ResourceParamsStatus', () => {
     expect(res.status()).toBe('idle');
     expect(loads).toBe(0);
 
-    await actAsync(() => throwIt.set(true));
+    await act(() => throwIt.set(true));
 
     expect(res.status()).toBe('error');
     expect(loads).toBe(0);
