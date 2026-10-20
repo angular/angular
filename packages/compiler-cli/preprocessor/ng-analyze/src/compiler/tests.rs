@@ -6525,3 +6525,224 @@ fn test_use_poisoned_data_populates_poisoned_component_scope_and_schemas() {
     assert_eq!(standalone_decls, vec!["ValidStandaloneDir", "ValidDir"]);
 }
 
+#[test]
+fn test_constructor_dependency_diagnostics() {
+    let types = r#"
+        export class TypeOnly {}
+        export interface Shape {}
+    "#;
+    let source = r#"
+        import { Component, Directive, Inject, Injectable } from '@angular/core';
+        import type { TypeOnly } from './types';
+        import * as Ns from './types';
+        import { Shape } from './types';
+
+        export interface Iface {}
+
+        @Injectable()
+        export class Primitive {
+            constructor(private notInjectable: string) {}
+        }
+        @Injectable({ providedIn: 'root' })
+        export class Interface {
+            constructor(param: Iface) {}
+        }
+        @Injectable()
+        export class TypeOnlyImport {
+            constructor(param: TypeOnly) {}
+        }
+        @Injectable()
+        export class Namespace {
+            constructor(param: Ns) {}
+        }
+        @Injectable()
+        export class Untyped {
+            constructor(param) {}
+        }
+        @Injectable()
+        export class ImportedInterface {
+            constructor(param: Shape) {}
+        }
+        @Injectable()
+        export class ExplicitToken {
+            constructor(@Inject('token') param: string) {}
+        }
+        @Injectable()
+        export abstract class AbstractService {
+            constructor(param: string) {}
+        }
+        @Injectable({ providedIn: 'root', useValue: 1 })
+        export class UseValue {
+            constructor(param: string) {}
+        }
+        @Component({ selector: 'cmp', template: '' })
+        export class Cmp {
+            constructor(param: string) {}
+        }
+        @Directive()
+        export abstract class ParentDir {
+            constructor(param: string) {}
+        }
+        @Directive()
+        export abstract class AbstractChildDir extends ParentDir {}
+        @Directive()
+        export class ChildDir extends AbstractChildDir {}
+    "#;
+    type Found = (u32, String, String, Vec<String>, Vec<(String, String)>);
+    let diagnostics_for = |strict: bool| -> Vec<Found> {
+        let mut virtual_files = HashMap::new();
+        virtual_files.insert("/project/app.ts".to_string(), source.to_string());
+        virtual_files.insert("/project/types.ts".to_string(), types.to_string());
+        virtual_files.insert(
+            "/project/tsconfig.json".to_string(),
+            format!(
+                r#"{{"files": ["app.ts"], "angularCompilerOptions": {{"strictInjectionParameters": {strict}}}}}"#
+            ),
+        );
+        let analyzer = Analyzer::new(AnalyzerOptions {
+            tsconfig_path: "/project/tsconfig.json".to_string(),
+            optimize: Some(true),
+            virtual_files: Some(virtual_files),
+            ..Default::default()
+        })
+        .unwrap();
+        let meta = analyzer
+            .get_metadata_for_file("/project/app.ts".to_string())
+            .expect("app.ts metadata");
+        let text = |span: &crate::SpanMetadata| {
+            source[span.start as usize..span.end as usize].to_string()
+        };
+        meta.diagnostics
+            .iter()
+            .map(|diag| {
+                (
+                    diag.code,
+                    diag.message_text.clone(),
+                    text(diag.span.as_ref().expect("span")),
+                    diag.next.clone(),
+                    diag.related_information
+                        .iter()
+                        .map(|info| (info.message_text.clone(), text(&info.span)))
+                        .collect(),
+                )
+            })
+            .collect()
+    };
+    let missing = |class: &str, param: &str| {
+        format!("No suitable injection token for parameter '{param}' of class '{class}'.")
+    };
+    let use_inject =
+        vec!["Consider using the @Inject decorator to specify an injection token.".to_string()];
+    let unsupported = |ty: &str| {
+        vec![(
+            "This type is not supported as injection token.".to_string(),
+            ty.to_string(),
+        )]
+    };
+    let no_value = "This type does not have a value, so it cannot be used as injection token.";
+
+    let cmp = (
+        2003,
+        missing("Cmp", "param"),
+        "param".to_string(),
+        use_inject.clone(),
+        unsupported("string"),
+    );
+    assert_eq!(diagnostics_for(false), vec![cmp.clone()]);
+
+    assert_eq!(
+        diagnostics_for(true),
+        vec![
+            (
+                2003,
+                missing("Primitive", "notInjectable"),
+                "notInjectable".to_string(),
+                use_inject.clone(),
+                unsupported("string"),
+            ),
+            (
+                2003,
+                missing("Interface", "param"),
+                "param".to_string(),
+                use_inject.clone(),
+                vec![
+                    (no_value.to_string(), "Iface".to_string()),
+                    (
+                        "The type is declared here.".to_string(),
+                        "interface Iface {}".to_string()
+                    ),
+                ],
+            ),
+            (
+                2003,
+                missing("TypeOnlyImport", "param"),
+                "param".to_string(),
+                vec![
+                    "Consider changing the type-only import to a regular import, or use the \
+                     @Inject decorator to specify an injection token."
+                        .to_string()
+                ],
+                vec![
+                    (
+                        "This type is imported using a type-only import, which prevents it from \
+                         being usable as an injection token."
+                            .to_string(),
+                        "TypeOnly".to_string()
+                    ),
+                    (
+                        "The type-only import occurs here.".to_string(),
+                        "import type { TypeOnly } from './types';".to_string()
+                    ),
+                ],
+            ),
+            (
+                2003,
+                missing("Namespace", "param"),
+                "param".to_string(),
+                use_inject.clone(),
+                vec![
+                    (
+                        "This type corresponds with a namespace, which cannot be used as \
+                         injection token."
+                            .to_string(),
+                        "Ns".to_string()
+                    ),
+                    (
+                        "The namespace import occurs here.".to_string(),
+                        "* as Ns".to_string()
+                    ),
+                ],
+            ),
+            (
+                2003,
+                missing("Untyped", "param"),
+                "param".to_string(),
+                vec![
+                    "Consider adding a type to the parameter or use the @Inject decorator to \
+                     specify an injection token."
+                        .to_string()
+                ],
+                vec![],
+            ),
+            (
+                2003,
+                missing("ImportedInterface", "param"),
+                "param".to_string(),
+                use_inject.clone(),
+                vec![(no_value.to_string(), "Shape".to_string())],
+            ),
+            cmp,
+            (
+                2016,
+                "The directive ChildDir inherits its constructor from ParentDir, but the latter \
+                 has a constructor parameter that is not compatible with dependency injection. \
+                 Either add an explicit constructor to ChildDir or change ParentDir's constructor \
+                 to use parameters that are valid for DI."
+                    .to_string(),
+                "ChildDir".to_string(),
+                vec![],
+                vec![],
+            ),
+        ]
+    );
+}

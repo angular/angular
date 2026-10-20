@@ -168,3 +168,23 @@ export class ThirdPartyService {
 }
 
 ```
+
+# /tsconfig.ngdiag.json
+```json
+{
+  "tsconfigPath": "/tsconfig.json",
+  "diagnostics": [
+    {
+      "filePath": "/test.ts",
+      "category": "error",
+      "code": 2003,
+      "messageText": "No suitable injection token for parameter 'readonlyMap' of class 'HybridComponent'. Find more at https://next.angular.dev/errors/NG2003\n  Consider using the @Inject decorator to specify an injection token.",
+      "span": {
+        "start": 668,
+        "end": 679
+      }
+    }
+  ]
+}
+
+```

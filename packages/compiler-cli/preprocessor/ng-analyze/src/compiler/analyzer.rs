@@ -232,6 +232,7 @@ impl Analyzer {
             options
                 .use_poisoned_data
                 .unwrap_or(resolved_config.compile_poisoned_components),
+            resolved_config.strict_injection_parameters,
         );
 
         let analyzer = Analyzer {

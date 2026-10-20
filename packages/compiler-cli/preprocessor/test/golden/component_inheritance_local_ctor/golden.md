@@ -20,11 +20,7 @@ export class ChildComp extends BaseClass {
   static ɵfac: i0.ɵɵFactoryDeclaration<ChildComp, never> = function ChildComp_Factory(
     __ngFactoryType__: any,
   ): any {
-    /* @ts-ignore */
-    return new (__ngFactoryType__ || ChildComp)(
-      i0.ɵɵdirectiveInject(Object),
-      i0.ɵɵdirectiveInject(Object),
-    );
+    i0.ɵɵinvalidFactory();
   };
   // @ts-ignore
   static ɵcmp: i0.ɵɵComponentDeclaration<
@@ -146,5 +142,25 @@ export class ChildZeroComp extends BaseClass {
       lineNumber: 22,
     });
 })();
+
+```
+
+# /tsconfig.ngdiag.json
+```json
+{
+  "tsconfigPath": "/tsconfig.json",
+  "diagnostics": [
+    {
+      "filePath": "/app.ts",
+      "category": "error",
+      "code": 2003,
+      "messageText": "No suitable injection token for parameter 'arg' of class 'ChildComp'. Find more at https://next.angular.dev/errors/NG2003\n  Consider using the @Inject decorator to specify an injection token.",
+      "span": {
+        "start": 300,
+        "end": 303
+      }
+    }
+  ]
+}
 
 ```

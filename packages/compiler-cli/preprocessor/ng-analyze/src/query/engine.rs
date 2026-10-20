@@ -53,6 +53,7 @@ pub struct QueryEngine<Fs: ResourceResolverFs + Clone + 'static> {
     pub enable_hmr: bool,
     pub strict_standalone: bool,
     pub use_poisoned_data: bool,
+    pub strict_injection_parameters: bool,
 }
 
 impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
@@ -74,6 +75,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             false,
             false,
             false,
+            false,
         )
     }
 
@@ -89,6 +91,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         enable_hmr: bool,
         strict_standalone: bool,
         use_poisoned_data: bool,
+        strict_injection_parameters: bool,
     ) -> Arc<Self> {
         Arc::new(Self {
             fs,
@@ -105,6 +108,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             enable_hmr,
             strict_standalone,
             use_poisoned_data,
+            strict_injection_parameters,
         })
     }
 
@@ -134,6 +138,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         crate::analyzer::ValidationContext {
             mode,
             strict_standalone: self.strict_standalone,
+            strict_injection_parameters: self.strict_injection_parameters,
         }
     }
 
@@ -826,7 +831,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             class.di_issues.extend(provider_issues);
 
             if let Some(ref mut params) = class.constructor_params {
-                for param in params {
+                for (index, param) in params.iter_mut().enumerate() {
                     // Skip parameters already classified by the in-file pass; re-chasing is wrong:
                     // `import type {X}` has no runtime value even if X is a class, and the chase
                     // checks exports before root bindings (`export { Foo } from './iface'; class
@@ -844,7 +849,16 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                         )
                         .await
                         {
-                            SymbolValueKind::TypeOnly => param.is_type_only = true,
+                            SymbolValueKind::TypeOnly => {
+                                param.is_type_only = true;
+                                if let Some(di) = class.ctor_params_di.get_mut(index) {
+                                    di.type_info = crate::analyzer::TypeRefInfo::unavailable(
+                                        crate::analyzer::UnavailableValue::NoValueDeclaration {
+                                            decl: None,
+                                        },
+                                    );
+                                }
+                            }
                             SymbolValueKind::Value => param.is_value_verified = true,
                             // Emit optimistically with `@ts-ignore`.
                             SymbolValueKind::Unresolved => {}

@@ -227,3 +227,23 @@ export class DefaultGenericComponent<T extends object = {}> {
 })();
 
 ```
+
+# /tsconfig.ngdiag.json
+```json
+{
+  "tsconfigPath": "/tsconfig.json",
+  "diagnostics": [
+    {
+      "filePath": "/generic.component.ts",
+      "category": "error",
+      "code": 2003,
+      "messageText": "No suitable injection token for parameter 'val' of class 'GenericComponent'. Find more at https://next.angular.dev/errors/NG2003\n  Consider using the @Inject decorator to specify an injection token.",
+      "span": {
+        "start": 231,
+        "end": 234
+      }
+    }
+  ]
+}
+
+```

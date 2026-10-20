@@ -959,19 +959,32 @@ export function convertNgDiagnosticToTs(
     rawCode > 0 && rawCode < 90000 ? ngErrorCode(rawCode as unknown as ErrorCode) : rawCode;
   const start = ngDiag.span?.start;
   const length = ngDiag.span ? Math.max(0, ngDiag.span.end - ngDiag.span.start) : undefined;
-
+  const next = ngDiag.next ?? [];
+  const messageText: string | ts.DiagnosticMessageChain =
+    next.length === 0
+      ? ngDiag.messageText
+      : {
+          messageText: ngDiag.messageText,
+          category,
+          code: 0,
+          next: next.map((messageText) => ({
+            messageText,
+            category: ts.DiagnosticCategory.Message,
+            code: 0,
+          })),
+        };
   const diagnostic: ts.Diagnostic = {
     file: sourceFile,
     start,
     length,
-    messageText: ngDiag.messageText,
+    messageText,
     category,
     code,
     source: 'ngtsc',
   };
   if (ngDiag.relatedInformation !== undefined && ngDiag.relatedInformation.length > 0) {
     diagnostic.relatedInformation = ngDiag.relatedInformation.map((related) => ({
-      file: getRelatedSourceFile?.(related.filePath),
+      file: related.filePath ? (getRelatedSourceFile?.(related.filePath) ?? sourceFile) : sourceFile,
       start: related.span.start,
       length: Math.max(0, related.span.end - related.span.start),
       messageText: related.messageText,

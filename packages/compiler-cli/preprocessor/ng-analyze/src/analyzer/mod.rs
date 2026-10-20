@@ -491,8 +491,71 @@ pub(crate) fn constructor_param_count(class: &oxc_ast::ast::Class<'_>) -> Option
     Some(params.items.len() + usize::from(params.rest.is_some()))
 }
 
+/// What dependency injection needs to know about a constructor parameter: ngtsc's
+/// `CtorParameter` with its `typeValueReference`.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct CtorParamDi {
+    pub name: Option<String>,
+    pub name_span: oxc_span::Span,
+    pub type_span: Option<oxc_span::Span>,
+    pub type_name: Option<String>,
+    pub type_info: TypeRefInfo,
+    pub has_explicit_token: bool,
+}
+
+impl CtorParamDi {
+    /// Why the parameter has no DI token (ngtsc's `ConstructorDepError`), if it has none.
+    pub fn missing_token(&self) -> Option<UnavailableValue> {
+        if self.has_explicit_token {
+            return None;
+        }
+        self.type_info.unavailable
+    }
+}
+
+/// The DI view of the parameters of the constructor ngtsc reads; `None` when the class declares
+/// no constructor.
+pub(crate) fn constructor_params_di<'a>(
+    class: &oxc_ast::ast::Class<'a>,
+    semantic: &oxc_semantic::Semantic<'a>,
+    import_map: &std::collections::HashMap<String, ImportedSymbol>,
+    angular_imports: &crate::analyzer::imports::AngularImports,
+) -> Option<Vec<CtorParamDi>> {
+    use oxc_span::GetSpan;
+
+    let method = constructor_method(class)?;
+    let params = method.value.params.items.iter().map(|param| {
+        let (type_name, type_info) = match extract_type_info(param, semantic, import_map) {
+            Ok((name, info)) => (Some(name), info),
+            Err(reason) => (None, TypeRefInfo::unavailable(reason)),
+        };
+        let has_explicit_token = param.decorators.iter().any(|decorator| {
+            matches!(
+                get_canonical_decorator_name(decorator, semantic, angular_imports),
+                Some("Inject" | "Attribute")
+            )
+        });
+        CtorParamDi {
+            name: param
+                .pattern
+                .get_binding_identifier()
+                .map(|id| id.name.to_string()),
+            name_span: param.pattern.span(),
+            type_span: param
+                .type_annotation
+                .as_ref()
+                .map(|annotation| unwrap_union_type(&annotation.type_annotation).span()),
+            type_name,
+            type_info,
+            has_explicit_token,
+        }
+    });
+    Some(params.collect())
+}
+
 pub fn get_constructor_params<'a>(
     class: &oxc_ast::ast::Class<'a>,
+    params_di: &[CtorParamDi],
     semantic: &oxc_semantic::Semantic<'a>,
     converter: &Utf8ToUtf16,
     import_map: &std::collections::HashMap<String, ImportedSymbol>,
@@ -503,17 +566,12 @@ pub fn get_constructor_params<'a>(
 
     let mut params = Vec::new();
     let mut unexpected_decorators = Vec::new();
-    for param in &target_method.value.params.items {
-        let type_info = extract_type_info(param, semantic, import_map);
-        let mut is_type_only = type_info
-            .as_ref()
-            .is_some_and(|(_, info)| info.is_type_only);
-        let is_value_verified = type_info
-            .as_ref()
-            .is_some_and(|(_, info)| info.is_value_verified);
+    for (param, di) in target_method.value.params.items.iter().zip(params_di) {
+        let mut is_type_only = di.type_name.is_some() && di.type_info.is_type_only();
+        let is_value_verified = di.type_info.is_value_verified;
         // `None` when the parameter has no runtime-referenceable type (primitive, inline type, or
         // untyped), emitted as `type: undefined` in `ɵsetClassMetadata`.
-        let type_name = type_info.map(|(name, _)| name);
+        let type_name = di.type_name.clone();
         let mut decorators = Vec::new();
 
         // Non-aliased named imports record their source module for namespaced DI token emission
@@ -704,12 +762,27 @@ pub fn get_member_decorators<'a>(
     members
 }
 
+/// Why a constructor parameter's type cannot be used as a DI token.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum UnavailableValue {
+    /// Not a reference to a named type (a primitive, a union, a literal type etc).
+    Unsupported,
+    /// The type has no runtime value.
+    NoValueDeclaration { decl: Option<oxc_span::Span> },
+    /// The type comes from a type-only `import`, whose span is `import`.
+    TypeOnlyImport { import: oxc_span::Span },
+    /// The type names a namespace import (`import * as ns`), whose span is `import`.
+    Namespace { import: oxc_span::Span },
+    /// The parameter has no type.
+    MissingType,
+}
+
 /// What the analyzer was able to work out about a constructor parameter's type reference.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct TypeRefInfo {
-    /// The reference has no runtime value, so it must be emitted as `undefined` and cannot be a
-    /// DI token.
-    pub is_type_only: bool,
+    /// Why the reference has no runtime value, which means it must be emitted as `undefined`
+    /// and cannot be a DI token.
+    pub unavailable: Option<UnavailableValue>,
     /// The reference was resolved to a declaration that has a runtime value. The in-file pass can
     /// only establish this for a class declared in the same file; the cross-file pass in
     /// `query::engine` upgrades imported references that it manages to chase to a declaration.
@@ -722,21 +795,27 @@ impl TypeRefInfo {
     /// whereas withholding one from a real class breaks injection outright, so we emit it and let
     /// the compiler guard the metadata entry with `@ts-ignore`.
     const UNVERIFIED_VALUE: Self = Self {
-        is_type_only: false,
+        unavailable: None,
         is_value_verified: false,
     };
 
     /// Resolved to a declaration in this file that has a runtime value.
     const VERIFIED_VALUE: Self = Self {
-        is_type_only: false,
+        unavailable: None,
         is_value_verified: true,
     };
 
     /// No runtime value: `undefined` in the metadata, `ɵɵinvalidFactory()` in the factory.
-    const TYPE_ONLY: Self = Self {
-        is_type_only: true,
-        is_value_verified: false,
-    };
+    pub(crate) const fn unavailable(reason: UnavailableValue) -> Self {
+        Self {
+            unavailable: Some(reason),
+            is_value_verified: false,
+        }
+    }
+
+    pub fn is_type_only(&self) -> bool {
+        self.unavailable.is_some()
+    }
 }
 
 /// Extract the type name and what we know about the reference from a parameter.
@@ -744,12 +823,14 @@ fn extract_type_info(
     param: &oxc_ast::ast::FormalParameter,
     semantic: &oxc_semantic::Semantic,
     import_map: &std::collections::HashMap<String, ImportedSymbol>,
-) -> Option<(String, TypeRefInfo)> {
-    let type_annotation = param.type_annotation.as_ref()?;
+) -> Result<(String, TypeRefInfo), UnavailableValue> {
+    let Some(type_annotation) = param.type_annotation.as_ref() else {
+        return Err(UnavailableValue::MissingType);
+    };
     let unwrapped_type = unwrap_union_type(&type_annotation.type_annotation);
 
     let oxc_ast::ast::TSType::TSTypeReference(type_ref) = unwrapped_type else {
-        return None;
+        return Err(UnavailableValue::Unsupported);
     };
 
     let (name, leftmost_ident, is_qualified) = match &type_ref.type_name {
@@ -761,14 +842,14 @@ fn extract_type_info(
             let leftmost = self::utils::get_leftmost_identifier_in_qualified(qualified);
             (name, leftmost, true)
         }
-        _ => return None,
+        _ => return Err(UnavailableValue::Unsupported),
     };
 
     let info = leftmost_ident.map_or(TypeRefInfo::UNVERIFIED_VALUE, |ident| {
         get_type_reference_info(ident, &name, semantic, import_map, is_qualified)
     });
 
-    Some((name, info))
+    Ok((name, info))
 }
 
 fn unwrap_union_type<'a>(ts_type: &'a oxc_ast::ast::TSType<'a>) -> &'a oxc_ast::ast::TSType<'a> {
@@ -906,6 +987,10 @@ fn get_type_reference_info<'a>(
     import_map: &std::collections::HashMap<String, ImportedSymbol>,
     is_qualified: bool,
 ) -> TypeRefInfo {
+    use oxc_span::GetSpan;
+
+    let no_value_declaration =
+        |decl| TypeRefInfo::unavailable(UnavailableValue::NoValueDeclaration { decl });
     let symbol_id = ref_ident
         .reference_id
         .get()
@@ -917,14 +1002,15 @@ fn get_type_reference_info<'a>(
         // Some qualified refs do exist at runtime (`google.maps`), but single-file analysis can't
         // tell, and losing a DI token beats a `ReferenceError` from `ɵfac` in production.
         if is_qualified && !import_map.contains_key(ref_ident.name.as_str()) {
-            return TypeRefInfo::TYPE_ONLY;
+            return no_value_declaration(None);
         }
         if TS_BUILTIN_UTILITY_TYPES.contains(&ref_ident.name.as_str()) {
-            return TypeRefInfo::TYPE_ONLY;
+            return no_value_declaration(None);
         }
         return TypeRefInfo::UNVERIFIED_VALUE;
     };
     let flags = semantic.scoping().symbol_flags(symbol_id);
+    let declaration = semantic.symbol_declaration(symbol_id);
 
     // Locally declared interface, type alias, type parameter, or type-only namespace module.
     if (flags.contains(oxc_syntax::symbol::SymbolFlags::Interface)
@@ -933,20 +1019,30 @@ fn get_type_reference_info<'a>(
         || flags.contains(oxc_syntax::symbol::SymbolFlags::NamespaceModule))
         && !flags.intersects(oxc_syntax::symbol::SymbolFlags::Value)
     {
-        return TypeRefInfo::TYPE_ONLY;
+        return no_value_declaration(Some(declaration.kind().span()));
     }
 
-    // Type-only import (`import type { X }` or `import type * as X`).
+    // Type-only import (`import type { X }`, `import { type X }` or `import type * as X`).
+    // TODO(parity): ngtsc reports a type-only import of a symbol without a value (an interface)
+    // as NO_VALUE_DECLARATION, which needs the imported declaration.
     // https://github.com/angular/angular/blob/50e599e/packages/compiler-cli/src/ngtsc/reflection/src/type_to_value.ts#L106-L110
     if flags.contains(oxc_syntax::symbol::SymbolFlags::TypeImport) {
-        return TypeRefInfo::TYPE_ONLY;
+        return TypeRefInfo::unavailable(UnavailableValue::TypeOnlyImport {
+            import: type_only_import_span(declaration, semantic),
+        });
     }
 
     if let Some(sym) = import_map.get(ref_ident.name.as_str()) {
+        // The namespace object of `import * as ns` is not a class.
+        if matches!(sym.kind, ImportKind::Namespace) && !is_qualified {
+            return TypeRefInfo::unavailable(UnavailableValue::Namespace {
+                import: declaration.kind().span(),
+            });
+        }
         let member =
             angular_core_member(sym, ref_ident.name.as_str(), full_type_name, is_qualified);
         if member.is_some_and(|m| ANGULAR_CORE_TYPE_ONLY_EXPORTS.binary_search(&m).is_ok()) {
-            return TypeRefInfo::TYPE_ONLY;
+            return no_value_declaration(None);
         }
     }
 
@@ -954,7 +1050,7 @@ fn get_type_reference_info<'a>(
         && !import_map.contains_key(ref_ident.name.as_str())
         && !flags.intersects(oxc_syntax::symbol::SymbolFlags::Value)
     {
-        return TypeRefInfo::TYPE_ONLY;
+        return no_value_declaration(None);
     }
 
     // Unqualified class declared in the same file is guaranteed to exist at runtime.
@@ -971,6 +1067,22 @@ fn get_type_reference_info<'a>(
     // (emitted under `@ts-ignore`), since misclassifying a class as type-only would emit
     // `ɵɵinject(null)` and break injection; `query::engine` verifies them in optimize mode.
     TypeRefInfo::UNVERIFIED_VALUE
+}
+
+/// The node ngtsc blames for a type-only import: the specifier when it carries the `type`
+/// modifier itself, else the import declaration (ngtsc points at its import clause).
+fn type_only_import_span(
+    specifier: &oxc_semantic::AstNode<'_>,
+    semantic: &oxc_semantic::Semantic<'_>,
+) -> oxc_span::Span {
+    use oxc_span::GetSpan;
+
+    if let oxc_ast::AstKind::ImportSpecifier(specifier) = specifier.kind() {
+        if specifier.import_kind.is_type() {
+            return specifier.span;
+        }
+    }
+    semantic.nodes().parent_node(specifier.id()).kind().span()
 }
 
 fn extract_decorator_args<'a>(

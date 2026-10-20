@@ -139,6 +139,8 @@ pub struct ClassData {
     pub name_span: Option<oxc_span::Span>,
     pub class_name: Option<String>,
     pub constructor_params: Option<Vec<ConstructorParamMetadata>>,
+    pub ctor_params_di: Vec<super::CtorParamDi>,
+    pub is_abstract: bool,
     /// Constructor parameter decorators ngtsc rejects outright; see [`UnexpectedParamDecorator`].
     pub unexpected_param_decorators: Vec<UnexpectedParamDecorator>,
     /// The class decorators' argument-shape problems (arity, non-literal argument, bare
@@ -557,6 +559,8 @@ pub struct ValueIssue {
     pub code: &'static str,
     pub span: oxc_span::Span,
     pub message: String,
+    pub next: Vec<String>,
+    pub related: Vec<(oxc_span::Span, String)>,
 }
 
 impl ValueIssue {
@@ -665,6 +669,95 @@ impl ValueIssue {
         )
     }
 
+    /// `PARAM_MISSING_TOKEN` (`NG2003`), ngtsc's `createUnsuitableInjectionTokenError`.
+    /// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/common/src/di.ts#L191-L264
+    pub fn param_missing_token(
+        class_name: &str,
+        index: usize,
+        param: &super::CtorParamDi,
+        reason: super::UnavailableValue,
+    ) -> Self {
+        use super::UnavailableValue;
+
+        let param_name = param.name.clone().unwrap_or_else(|| index.to_string());
+        let mut issue = Self::new(
+            "2003",
+            param.name_span,
+            format!(
+                "No suitable injection token for parameter '{param_name}' of class '{class_name}'."
+            ),
+        );
+        let mut related = |span: Option<oxc_span::Span>, message: &str| {
+            if let Some(span) = span {
+                issue.related.push((span, message.to_string()));
+            }
+        };
+        let hint = match reason {
+            UnavailableValue::Unsupported => {
+                related(
+                    param.type_span,
+                    "This type is not supported as injection token.",
+                );
+                "Consider using the @Inject decorator to specify an injection token."
+            }
+            UnavailableValue::NoValueDeclaration { decl } => {
+                related(
+                    param.type_span,
+                    "This type does not have a value, so it cannot be used as injection token.",
+                );
+                related(decl, "The type is declared here.");
+                "Consider using the @Inject decorator to specify an injection token."
+            }
+            UnavailableValue::TypeOnlyImport { import } => {
+                related(
+                    param.type_span,
+                    "This type is imported using a type-only import, which prevents it from \
+                     being usable as an injection token.",
+                );
+                related(Some(import), "The type-only import occurs here.");
+                "Consider changing the type-only import to a regular import, or use the @Inject \
+                 decorator to specify an injection token."
+            }
+            UnavailableValue::Namespace { import } => {
+                related(
+                    param.type_span,
+                    "This type corresponds with a namespace, which cannot be used as injection \
+                     token.",
+                );
+                related(Some(import), "The namespace import occurs here.");
+                "Consider using the @Inject decorator to specify an injection token."
+            }
+            UnavailableValue::MissingType => {
+                "Consider adding a type to the parameter or use the @Inject decorator to specify \
+                 an injection token."
+            }
+        };
+        issue.next.push(hint.to_string());
+        issue
+    }
+
+    /// `INJECTABLE_INHERITS_INVALID_CONSTRUCTOR` (`NG2016`), ngtsc's
+    /// `getInheritedInvalidCtorDiagnostic`. `kind` is the handler's word for the class.
+    /// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/common/src/diagnostics.ts#L457-L472
+    pub fn inherits_invalid_ctor(
+        span: oxc_span::Span,
+        class_name: &str,
+        base_class_name: &str,
+        kind: &str,
+    ) -> Self {
+        Self::new(
+            "2016",
+            span,
+            format!(
+                "The {} {class_name} inherits its constructor from {base_class_name}, but the \
+                 latter has a constructor parameter that is not compatible with dependency \
+                 injection. Either add an explicit constructor to {class_name} or change \
+                 {base_class_name}'s constructor to use parameters that are valid for DI.",
+                kind.to_lowercase()
+            ),
+        )
+    }
+
     /// `DIRECTIVE_INHERITS_UNDECORATED_CTOR` (`NG2006`), ngtsc's
     /// `getInheritedUndecoratedCtorDiagnostic`. `kind` is the handler's word for the class.
     /// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/common/src/diagnostics.ts#L474-L491
@@ -741,6 +834,8 @@ impl ValueIssue {
             code,
             span,
             message: message.into(),
+            next: Vec::new(),
+            related: Vec::new(),
         }
     }
 }
@@ -1407,6 +1502,8 @@ pub struct ValidationContext {
     pub mode: WireMode,
     /// `angularCompilerOptions.strictStandalone`.
     pub strict_standalone: bool,
+    /// `angularCompilerOptions.strictInjectionParameters`.
+    pub strict_injection_parameters: bool,
 }
 
 /// Pure data object holding the context needed for wire serialization.
@@ -1829,6 +1926,7 @@ impl ClassData {
             push_issue(diagnostics, file_path, converter, issue);
         }
         self.validate_constructor_param_decorators(file_path, converter, diagnostics);
+        self.validate_constructor_dependencies(cx, file_path, converter, diagnostics);
         self.validate_service_constructor_di(file_path, converter, diagnostics);
         if cx.strict_standalone {
             self.validate_strict_standalone(file_path, converter, diagnostics);
@@ -2036,6 +2134,48 @@ impl ClassData {
                 format!("Unexpected decorator {} on parameter.", decorator.name),
             );
         }
+    }
+
+    /// Report the first constructor parameter without a DI token (`NG2003`) when the handler
+    /// validates the constructor dependencies (`validateConstructorDependencies`) instead of
+    /// generating a factory that throws (`unwrapConstructorDependencies`).
+    fn validate_constructor_dependencies(
+        &self,
+        cx: ValidationContext,
+        file_path: &std::path::Path,
+        converter: &crate::utils::Utf8ToUtf16,
+        diagnostics: &mut Vec<crate::NgDiagnostic>,
+    ) {
+        let validates = match &self.decorator {
+            DecoratorData::Component(_) | DecoratorData::Pipe(_) | DecoratorData::NgModule(_) => {
+                true
+            }
+            DecoratorData::Directive(d) => d.selector.is_some(),
+            DecoratorData::Injectable(i) => {
+                cx.strict_injection_parameters && !self.is_abstract && i.requires_valid_ctor()
+            }
+            DecoratorData::Service(_) => false,
+        };
+        if !validates {
+            return;
+        }
+        let Some(class_name) = self.class_name.as_deref() else {
+            return;
+        };
+        let Some((index, param, reason)) = self
+            .ctor_params_di
+            .iter()
+            .enumerate()
+            .find_map(|(index, param)| Some((index, param, param.missing_token()?)))
+        else {
+            return;
+        };
+        push_issue(
+            diagnostics,
+            file_path,
+            converter,
+            &ValueIssue::param_missing_token(class_name, index, param, reason),
+        );
     }
 
     fn validate_service_constructor_di(
@@ -2753,6 +2893,23 @@ pub(crate) fn push_issue(
         issue.span,
         issue.message.clone(),
     );
+    let Some(diagnostic) = diagnostics.last_mut() else {
+        return;
+    };
+    diagnostic.next = issue.next.clone();
+    let file_path_str = diagnostic
+        .file_path
+        .clone()
+        .unwrap_or_else(|| file_path.to_string_lossy().into_owned());
+    diagnostic.related_information = issue
+        .related
+        .iter()
+        .map(|(span, message)| crate::NgRelatedInformation {
+            file_path: file_path_str.clone(),
+            span: crate::SpanMetadata::new(*span, converter),
+            message_text: message.clone(),
+        })
+        .collect();
 }
 
 /// [`push_error`] for the codes ngtsc reports as warnings rather than errors, which compile
@@ -2936,6 +3093,15 @@ impl CoreEnum {
 }
 
 impl InjectableData {
+    /// No `use*` field supplies the instance, so the class's own constructor is invoked.
+    /// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/src/injectable.ts#L418-L425
+    pub fn requires_valid_ctor(&self) -> bool {
+        self.use_value.is_none()
+            && self.use_existing.is_none()
+            && self.use_class.is_none()
+            && self.use_factory.is_none()
+    }
+
     fn to_wire(
         &self,
         source_text: &str,

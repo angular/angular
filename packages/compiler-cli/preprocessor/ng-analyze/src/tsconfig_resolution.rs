@@ -15,6 +15,7 @@ pub struct ResolvedTsConfig {
     pub enable_hmr: bool,
     pub strict_standalone: bool,
     pub compile_poisoned_components: bool,
+    pub strict_injection_parameters: bool,
 }
 
 pub fn load_and_resolve_tsconfig(
@@ -87,6 +88,9 @@ pub fn load_and_resolve_tsconfig(
         strict_standalone: extended_options.strict_standalone.unwrap_or(false),
         compile_poisoned_components: extended_options
             .compile_poisoned_components
+            .unwrap_or(false),
+        strict_injection_parameters: extended_options
+            .strict_injection_parameters
             .unwrap_or(false),
     })
 }
@@ -261,6 +265,7 @@ struct ExtendedOptions {
     enable_hmr: Option<bool>,
     strict_standalone: Option<bool>,
     compile_poisoned_components: Option<bool>,
+    strict_injection_parameters: Option<bool>,
 }
 
 fn resolve_extended_options_recursive(
@@ -336,6 +341,11 @@ fn resolve_extended_options_recursive(
             .and_then(|v| v.as_bool())
     });
 
+    let mut current_strict_injection_parameters = parsed_json.as_ref().ok().and_then(|json| {
+        json.pointer("/angularCompilerOptions/strictInjectionParameters")
+            .and_then(|v| v.as_bool())
+    });
+
     let base_dir = abs_path.parent().unwrap_or(Path::new("."));
 
     let mut current_root_dirs = tsconfig.compiler_options.root_dirs.clone().map(|dirs| {
@@ -355,6 +365,7 @@ fn resolve_extended_options_recursive(
         && current_enable_hmr.is_some()
         && current_strict_standalone.is_some()
         && current_compile_poisoned_components.is_some()
+        && current_strict_injection_parameters.is_some()
     {
         visited.remove(&canonical);
         return Ok(ExtendedOptions {
@@ -366,6 +377,7 @@ fn resolve_extended_options_recursive(
             enable_hmr: current_enable_hmr,
             strict_standalone: current_strict_standalone,
             compile_poisoned_components: current_compile_poisoned_components,
+            strict_injection_parameters: current_strict_injection_parameters,
         });
     }
 
@@ -380,6 +392,7 @@ fn resolve_extended_options_recursive(
             enable_hmr: current_enable_hmr,
             strict_standalone: current_strict_standalone,
             compile_poisoned_components: current_compile_poisoned_components,
+            strict_injection_parameters: current_strict_injection_parameters,
         });
     };
 
@@ -432,6 +445,9 @@ fn resolve_extended_options_recursive(
         if let Some(compile_poisoned_components) = res.compile_poisoned_components {
             inherited.compile_poisoned_components = Some(compile_poisoned_components);
         }
+        if let Some(strict_injection_parameters) = res.strict_injection_parameters {
+            inherited.strict_injection_parameters = Some(strict_injection_parameters);
+        }
     }
     if current_root_dirs.is_none() {
         current_root_dirs = inherited.root_dirs;
@@ -457,6 +473,9 @@ fn resolve_extended_options_recursive(
     if current_compile_poisoned_components.is_none() {
         current_compile_poisoned_components = inherited.compile_poisoned_components;
     }
+    if current_strict_injection_parameters.is_none() {
+        current_strict_injection_parameters = inherited.strict_injection_parameters;
+    }
 
     visited.remove(&canonical);
     Ok(ExtendedOptions {
@@ -468,6 +487,7 @@ fn resolve_extended_options_recursive(
         enable_hmr: current_enable_hmr,
         strict_standalone: current_strict_standalone,
         compile_poisoned_components: current_compile_poisoned_components,
+        strict_injection_parameters: current_strict_injection_parameters,
     })
 }
 

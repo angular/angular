@@ -396,15 +396,13 @@ export function buildDeps(
 
   const deps = constructorParams.map((param) => {
     // Equivalent to ngtsc's valueReferenceToExpression(param.typeValueReference):
-    // returns null when the type has no runtime value (UNAVAILABLE).
-    const isTypeOnly = param.isTypeOnly;
-    // The Rust extractor leaves `typeName` undefined for parameters without a runtime-referenceable
-    // type (primitives, inline types, no annotation); fall back to `Object` as the DI token, which
-    // is what this layer historically relied on for factory generation.
-    const effectiveTypeName = param.typeName ?? 'Object';
-    let tokenResolved = !isTypeOnly;
+    // returns null when the type has no runtime value (UNAVAILABLE). The Rust extractor leaves
+    // `typeName` undefined for parameters without a runtime-referenceable type (primitives,
+    // unions, inline types, no annotation), which ngtsc also treats as UNAVAILABLE.
+    const typeName = param.isTypeOnly ? null : (param.typeName ?? null);
+    let tokenResolved = typeName !== null;
     let token: outputAst.Expression;
-    if (tokenResolved) {
+    if (typeName !== null) {
       // ngtsc's valueReferenceToExpression() emits a named-import type reference as an
       // `ExternalExpr` (kind IMPORTED), which the import manager prints through the module's
       // namespace import — e.g. `i0.ElementRef` for a token imported from `@angular/core`.
@@ -413,9 +411,9 @@ export function buildDeps(
       // user import is preserved in the emitted file.
       // https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L71-L82
       token =
-        param.typeModule === '@angular/core' && param.typeName != null
-          ? o.importExpr(new o.ExternalReference(param.typeModule, param.typeName))
-          : o.variable(effectiveTypeName);
+        param.typeModule === '@angular/core'
+          ? o.importExpr(new o.ExternalReference(param.typeModule, typeName))
+          : o.variable(typeName);
     } else {
       token = o.literal(null);
     }

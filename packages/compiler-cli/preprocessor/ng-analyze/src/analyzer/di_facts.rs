@@ -5,7 +5,7 @@ use oxc_ast_visit::Visit;
 use oxc_semantic::Semantic;
 use oxc_span::Span;
 
-use super::class_data::{ClassData, DecoratorData, ValueIssue};
+use super::class_data::{ClassData, DecoratorData, InjectableData, ValueIssue};
 use super::imports::AngularImports;
 use super::utils::{extract_property_key, get_canonical_decorator_name};
 use crate::evaluator::value::{DeclKind, ValueReference};
@@ -68,6 +68,7 @@ pub struct ClassDiFacts {
     pub class_name: String,
     pub is_injectable: bool,
     pub ctor_param_count: Option<usize>,
+    pub ctor_deps_invalid: bool,
     pub super_class: Option<DeclarationTuple>,
 }
 
@@ -78,6 +79,7 @@ pub(crate) fn ts_class_di_facts<'a>(
     semantic: &Semantic<'a>,
     angular_imports: &AngularImports,
     super_class: Option<DeclarationTuple>,
+    ctor_params_di: Option<&[super::CtorParamDi]>,
 ) -> Option<ClassDiFacts> {
     let class_name = class.id.as_ref()?.name.to_string();
     let is_injectable = class.decorators.iter().any(|decorator| {
@@ -89,6 +91,8 @@ pub(crate) fn ts_class_di_facts<'a>(
         class_name,
         is_injectable,
         ctor_param_count: super::constructor_param_count(class),
+        ctor_deps_invalid: ctor_params_di
+            .is_some_and(|params| params.iter().any(|param| param.missing_token().is_some())),
         super_class,
     })
 }
@@ -114,6 +118,8 @@ pub(crate) fn dts_class_di_facts(
         class_name,
         is_injectable,
         ctor_param_count: super::constructor_param_count(class),
+        // `.d.ts` constructors lack the `@Inject()` metadata to tell, so ngtsc accepts them.
+        ctor_deps_invalid: false,
         super_class,
     })
 }
@@ -223,24 +229,18 @@ impl ClassData {
             DecoratorData::Injectable(i) => Some(i),
             DecoratorData::Service(_) => None,
         };
-        if injectable.is_some_and(|i| {
-            i.use_value.is_none()
-                && i.use_existing.is_none()
-                && i.use_class.is_none()
-                && i.use_factory.is_none()
-        }) {
+        if injectable.is_some_and(InjectableData::requires_valid_ctor) {
             kinds.push("Injectable");
         }
         kinds
     }
 
     /// Stage 2: the diagnostics for the constructor this class inherits — NG2006 when it comes
-    /// from an undecorated class (`checkInheritanceOfInjectable`) and NG2028 when an `@Service`
-    /// class inherits constructor parameters (`getDependencyInjectionDiagnostics`).
+    /// from an undecorated class and NG2016 when its parameters are not valid for DI
+    /// (`checkInheritanceOfInjectable`), and NG2028 when an `@Service` class inherits
+    /// constructor parameters (`getDependencyInjectionDiagnostics`).
     /// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/common/src/diagnostics.ts#L360-L397
     /// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/src/service.ts#L278-L309
-    // TODO(parity): the decorated-base half, NG2016 under `strictInjectionParameters`, needs the
-    // base's constructor dependencies validated, which the analyzer does not do yet.
     pub(crate) async fn inherited_ctor_issues<Fs: ResourceResolverFs + Clone + 'static>(
         &self,
         facts: Option<&ClassDiFacts>,
@@ -266,15 +266,19 @@ impl ClassData {
         if is_service {
             issues.push(ValueIssue::service_constructor_di(name_span));
         }
-        if !inherited.base.is_injectable {
-            for kind in kinds {
-                issues.push(ValueIssue::inherits_undecorated_ctor(
-                    name_span,
-                    class_name,
-                    &inherited.base.class_name,
-                    kind,
-                ));
-            }
+        let base = &inherited.base;
+        let issue: fn(Span, &str, &str, &str) -> ValueIssue = if !base.is_injectable {
+            ValueIssue::inherits_undecorated_ctor
+        } else if base.ctor_deps_invalid
+            && ctx.engine.strict_injection_parameters
+            && !self.is_abstract
+        {
+            ValueIssue::inherits_invalid_ctor
+        } else {
+            return issues;
+        };
+        for kind in kinds {
+            issues.push(issue(name_span, class_name, &base.class_name, kind));
         }
         issues
     }

@@ -636,10 +636,13 @@ export interface NgRelatedInformation {
 export interface NgDiagnostic {
   category: number;
   code: number;
+  /** The head of the message; the details of a message chain are in `next`. */
   messageText: string;
   filePath?: string;
   span?: SpanMetadata;
-  relatedInformation?: Array<NgRelatedInformation>;
+  /** The messages chained under `messageText` (`ts.DiagnosticMessageChain.next`). */
+  next?: string[];
+  relatedInformation?: NgRelatedInformation[];
 }
 
 export interface NgModuleMetadata {
