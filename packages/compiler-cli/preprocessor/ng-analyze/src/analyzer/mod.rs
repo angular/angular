@@ -461,33 +461,27 @@ pub struct ConstructorParams {
 }
 
 /// The constructor ngtsc's `getConstructorParameters` reads: the implementation (the one with a
-/// body), else the first overload signature; `None` when the class declares no constructor.
+/// body) or, in a declaration file, the first one; `None` when the class declares no such
+/// constructor.
 pub(crate) fn constructor_method<'c, 'a>(
     class: &'c oxc_ast::ast::Class<'a>,
+    in_declaration_file: bool,
 ) -> Option<&'c oxc_ast::ast::MethodDefinition<'a>> {
-    let mut target_method = None;
-
-    for element in &class.body.body {
+    class.body.body.iter().find_map(|element| {
         let oxc_ast::ast::ClassElement::MethodDefinition(method) = element else {
-            continue;
+            return None;
         };
-        if method.kind != oxc_ast::ast::MethodDefinitionKind::Constructor {
-            continue;
-        }
-        if method.value.body.is_some() {
-            return Some(method);
-        }
-        if target_method.is_none() {
-            // Fallback to the first overload signature if no implementation constructor is found.
-            target_method = Some(method);
-        }
-    }
-
-    target_method.map(|method| &**method)
+        (method.kind == oxc_ast::ast::MethodDefinitionKind::Constructor
+            && (in_declaration_file || method.value.body.is_some()))
+        .then_some(&**method)
+    })
 }
 
-pub(crate) fn constructor_param_count(class: &oxc_ast::ast::Class<'_>) -> Option<usize> {
-    let params = &constructor_method(class)?.value.params;
+pub(crate) fn constructor_param_count(
+    class: &oxc_ast::ast::Class<'_>,
+    in_declaration_file: bool,
+) -> Option<usize> {
+    let params = &constructor_method(class, in_declaration_file)?.value.params;
     Some(params.items.len() + usize::from(params.rest.is_some()))
 }
 
@@ -523,7 +517,7 @@ pub(crate) fn constructor_params_di<'a>(
 ) -> Option<Vec<CtorParamDi>> {
     use oxc_span::GetSpan;
 
-    let method = constructor_method(class)?;
+    let method = constructor_method(class, false)?;
     let params = method.value.params.items.iter().map(|param| {
         let (type_name, type_info) = match extract_type_info(param, semantic, import_map) {
             Ok((name, info)) => (Some(name), info),
@@ -562,7 +556,7 @@ pub fn get_constructor_params<'a>(
     angular_imports: &crate::analyzer::imports::AngularImports,
     mut top_level_reads: Option<&mut TopLevelReads<'_, 'a, '_>>,
 ) -> Option<ConstructorParams> {
-    let target_method = constructor_method(class)?;
+    let target_method = constructor_method(class, false)?;
 
     let mut params = Vec::new();
     let mut unexpected_decorators = Vec::new();

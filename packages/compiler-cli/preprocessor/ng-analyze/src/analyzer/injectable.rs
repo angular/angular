@@ -1,10 +1,10 @@
-use oxc_ast::ast::{Decorator, Expression, ObjectPropertyKind};
+use oxc_ast::ast::{Decorator, Expression};
 use oxc_semantic::Semantic;
 use oxc_span::GetSpan;
 
 use crate::analyzer::class_data::{DependencyData, InjectableData};
 
-use super::utils::{extract_property_key, extract_provider_span_with_forward_ref};
+use super::utils::{extract_provider_span_with_forward_ref, reflect_object_literal};
 
 pub fn parse_decorator<'a>(
     decorator: &'a Decorator<'a>,
@@ -58,21 +58,17 @@ fn parse_injectable_args<'a>(
 
     if let Some(oxc_ast::ast::Argument::ObjectExpression(obj)) = call_expr.arguments.first() {
         args_span = Some(obj.span());
-        for prop in &obj.properties {
-            if let ObjectPropertyKind::ObjectProperty(p) = prop {
-                if let Some(key_name) = extract_property_key(&p.key) {
-                    match key_name.as_ref() {
-                        "providedIn" => provided_in = extract_field(&p.value),
-                        "useClass" => use_class = extract_field(&p.value),
-                        "useExisting" => use_existing = extract_field(&p.value),
-                        "useFactory" => use_factory = extract_field(&p.value),
-                        "useValue" => use_value = extract_field(&p.value),
-                        "deps" => {
-                            deps = parse_deps(&p.value, semantic, angular_imports);
-                        }
-                        _ => {}
-                    }
+        for (key, value) in reflect_object_literal(obj) {
+            match key.as_ref() {
+                "providedIn" => provided_in = extract_field(value),
+                "useClass" => use_class = extract_field(value),
+                "useExisting" => use_existing = extract_field(value),
+                "useFactory" => use_factory = extract_field(value),
+                "useValue" => use_value = extract_field(value),
+                "deps" => {
+                    deps = parse_deps(value, semantic, angular_imports);
                 }
+                _ => {}
             }
         }
     }

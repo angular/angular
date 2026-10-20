@@ -100,6 +100,20 @@ pub fn get_decorator_args<'a, 'b>(
     }
 }
 
+pub fn reflect_object_literal<'o, 'a>(
+    obj: &'o oxc_ast::ast::ObjectExpression<'a>,
+) -> impl Iterator<Item = (std::borrow::Cow<'o, str>, &'o Expression<'a>)> {
+    obj.properties.iter().filter_map(|prop| {
+        let oxc_ast::ast::ObjectPropertyKind::ObjectProperty(p) = prop else {
+            return None;
+        };
+        if p.computed || p.method || p.kind != oxc_ast::ast::PropertyKind::Init {
+            return None;
+        }
+        Some((extract_property_key(&p.key)?, &p.value))
+    })
+}
+
 /// Extract a string value from a PropertyKey expression.
 pub fn extract_property_key<'a>(key: &'a PropertyKey<'a>) -> Option<std::borrow::Cow<'a, str>> {
     if let Some(name) = key.static_name() {
