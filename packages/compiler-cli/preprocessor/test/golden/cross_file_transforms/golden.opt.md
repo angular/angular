@@ -115,7 +115,7 @@ export class TestTransformsComponent {
   // @ts-ignore
   declare static ngAcceptInputType_decoratorInput: Parameters<typeof myBooleanTransform>[0];
   // @ts-ignore
-  declare static ngAcceptInputType_aliasedInput: Parameters<typeof aliasedTransform>[0];
+  declare static ngAcceptInputType_aliasedInput: unknown;
   // @ts-ignore
   declare static ngAcceptInputType_inlineTransform: string | null;
   // @ts-ignore
@@ -252,5 +252,25 @@ export class AppComponent {
       lineNumber: 37,
     });
 })();
+
+```
+
+# /tsconfig.ngdiag.json
+```json
+{
+  "tsconfigPath": "/tsconfig.json",
+  "diagnostics": [
+    {
+      "filePath": "/app.ts",
+      "category": "error",
+      "code": 1010,
+      "messageText": "Input transform must be a function\n  Value could not be determined statically.",
+      "span": {
+        "start": 399,
+        "end": 415
+      }
+    }
+  ]
+}
 
 ```

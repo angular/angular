@@ -288,6 +288,9 @@ pub struct DirectiveData {
     pub evaluated_io: Option<Box<crate::analyzer::evaluated_io::EvaluatedIo>>,
     /// Input/output declarations that did not evaluate to the shape ngtsc requires.
     pub io_issues: Vec<ValueIssue>,
+    /// The `transform` of every decorator input written in place, for the checks needing the
+    /// transform function's definition.
+    pub input_transforms: Vec<super::transforms::InputTransformSite>,
     pub host_bindings: Vec<HostBindingData>,
     pub host_listeners: Vec<HostListenerData>,
 
@@ -467,6 +470,7 @@ impl Default for DirectiveData {
             fields: Vec::new(),
             evaluated_io: None,
             io_issues: Vec::new(),
+            input_transforms: Vec::new(),
             host_bindings: Vec::new(),
             host_listeners: Vec::new(),
 
@@ -606,6 +610,45 @@ impl ValueIssue {
             span,
             crate::evaluator::wrong_type_message(message, value),
         )
+    }
+
+    /// `VALUE_HAS_WRONG_TYPE` (`NG1010`) with the detail of `createValueHasWrongTypeError`
+    /// chained under the message.
+    pub fn wrong_type_with_detail(span: oxc_span::Span, message: &str, detail: &str) -> Self {
+        let mut issue = Self::new("1010", span, message);
+        issue.next.push(detail.to_string());
+        issue
+    }
+
+    /// `CONFLICTING_INPUT_TRANSFORM` (`NG2020`).
+    pub fn conflicting_input_transform(span: oxc_span::Span, input: &str) -> Self {
+        Self::new(
+            "2020",
+            span,
+            format!(
+                "Class cannot have both a transform function on Input {input} and a static \
+                 member called ngAcceptInputType_{input}"
+            ),
+        )
+    }
+
+    /// `SYMBOL_NOT_EXPORTED` (`NG3001`) for the type of an input transform's parameter.
+    pub fn symbol_not_exported(span: oxc_span::Span, decl_span: oxc_span::Span) -> Self {
+        let mut issue = Self::new(
+            "3001",
+            span,
+            "Symbol must be exported in order to be used as the type of an Input transform \
+             function",
+        );
+        issue
+            .related
+            .push((decl_span, "The symbol is declared here.".to_string()));
+        issue
+    }
+
+    /// `IMPORT_GENERATION_FAILURE` (`NG3004`) for a type that cannot be imported.
+    pub fn import_generation_failure(span: oxc_span::Span, name: &str) -> Self {
+        Self::new("3004", span, format!("Unable to import type {name}."))
     }
 
     /// `VALUE_NOT_LITERAL` (`NG1011`).
@@ -1566,7 +1609,7 @@ impl ClassData {
         }
     }
 
-    fn directive_part_mut(&mut self) -> Option<&mut DirectiveData> {
+    pub(crate) fn directive_part_mut(&mut self) -> Option<&mut DirectiveData> {
         match &mut self.decorator {
             DecoratorData::Component(c) => Some(&mut c.directive),
             DecoratorData::Directive(d) => Some(d),
@@ -2250,21 +2293,19 @@ impl ClassData {
             })
             .collect();
         let host_issues = host_metadata_issues(d);
+        let transform_issues = d
+            .input_transforms
+            .iter()
+            .filter_map(|site| site.issue.as_ref());
         for issue in d
             .io_issues
             .iter()
             .chain(&unresolved_io_issues)
             .chain(&query_predicate_issues)
             .chain(&host_issues)
+            .chain(transform_issues)
         {
-            push_error(
-                diagnostics,
-                file_path,
-                converter,
-                issue.code,
-                issue.span,
-                issue.message.clone(),
-            );
+            push_issue(diagnostics, file_path, converter, issue);
         }
 
         // ngtsc evaluates `exportAs` and rejects anything that is not statically a string.
@@ -3354,6 +3395,23 @@ fn prepare_members(
                 // locate, which would splice a malformed `: ;` member.
                 if !i.is_signal {
                     use std::fmt::Write;
+                    let invalid_site = d
+                        .input_transforms
+                        .iter()
+                        .find(|site| site.input == i.name && site.is_invalid());
+                    if let Some(site) = invalid_site {
+                        if !site.conflicting_coercion {
+                            let _ = writeln!(
+                                prepared.coercion_members,
+                                "{NG_ACCEPT_INPUT_TYPE_PREFIX}{}: unknown;",
+                                i.name
+                            );
+                        }
+                        prepared
+                            .inputs
+                            .push(i.to_wire(source_text, converter, false));
+                        continue;
+                    }
                     match &i.transform {
                         Some(TransformData::Type { type_span, .. }) if !type_span.is_empty() => {
                             let type_str =

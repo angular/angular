@@ -3,12 +3,13 @@ use oxc_semantic::Semantic;
 use oxc_span::GetSpan;
 
 use crate::analyzer::class_data::{
-    DirectiveData, ExpressionValueData, ExpressionValueKind, HostPropertyData,
+    DirectiveData, ExpressionValueData, ExpressionValueKind, HostPropertyData, ValueIssue,
 };
+use crate::analyzer::transforms::InputTransformSite;
 use crate::evaluator::{evaluate_expression, EvalInput, Resolved};
 
 use super::evaluated_io::{IoKind, IoMetadataArray};
-use super::input_output::object_literal_transform;
+use super::input_output::{object_literal_transform, transform_property};
 use super::queries::parse_queries_metadata;
 use super::utils::{extract_bool, extract_literal_string, extract_property_key, extract_string};
 
@@ -172,7 +173,7 @@ pub fn extract_directive_metadata<'a>(
                     kind: IoKind::Input,
                     value: Resolved::from_syntax(evaluate_expression(&p.value, eval), eval.file),
                     span: p.value.span(),
-                    transforms: inline_input_transforms(&p.value, semantic),
+                    transforms: inline_input_transforms(&p.value, semantic, eval, &mut data),
                 };
                 fold_or_defer_io_array(&mut data, array);
             }
@@ -223,10 +224,14 @@ fn fold_or_defer_io_array(data: &mut DirectiveData, array: IoMetadataArray) {
 
 /// The transforms of the `inputs` entries written in place as object literals, keyed by the
 /// class property each names. The entries themselves are read through the evaluator; a
-/// transform is emitted from its source text, so it is taken from the syntax.
+/// transform is emitted from its source text, so it is taken from the syntax. Each transform
+/// is also recorded on `data` for validation, and reported when ngtsc's `parseInputsArray`
+/// rejects it in every compilation mode.
 fn inline_input_transforms<'a>(
     inputs: &'a Expression<'a>,
     semantic: &Semantic<'a>,
+    eval: &EvalInput<'a, '_>,
+    data: &mut DirectiveData,
 ) -> Vec<(String, crate::analyzer::class_data::TransformData)> {
     let expr = inputs.get_inner_expression();
     let arr = match expr {
@@ -253,25 +258,43 @@ fn inline_input_transforms<'a>(
     let Some(arr) = arr else {
         return Vec::new();
     };
-    arr.elements
-        .iter()
-        .filter_map(|element| {
-            let Expression::ObjectExpression(obj) = element.as_expression()?.get_inner_expression()
-            else {
+    let mut transforms = Vec::new();
+    for (index, element) in arr.elements.iter().enumerate() {
+        let Some(Expression::ObjectExpression(obj)) = element
+            .as_expression()
+            .map(Expression::get_inner_expression)
+        else {
+            continue;
+        };
+        let Some(value) = transform_property(obj) else {
+            continue;
+        };
+        let Some(name) = obj.properties.iter().find_map(|prop| {
+            let ObjectPropertyKind::ObjectProperty(p) = prop else {
                 return None;
             };
-            let transform = object_literal_transform(obj)?;
-            let name = obj.properties.iter().find_map(|prop| {
-                let ObjectPropertyKind::ObjectProperty(p) = prop else {
-                    return None;
-                };
-                (extract_property_key(&p.key).as_deref() == Some("name"))
-                    .then(|| extract_string(&p.value, semantic))
-                    .flatten()
-            })?;
-            Some((name, transform))
-        })
-        .collect()
+            (extract_property_key(&p.key).as_deref() == Some("name"))
+                .then(|| extract_string(&p.value, semantic))
+                .flatten()
+        }) else {
+            continue;
+        };
+        match InputTransformSite::new(&name, value, eval) {
+            Ok(site) => data.input_transforms.push(site),
+            Err(detail) => data.io_issues.push(ValueIssue::wrong_type_with_detail(
+                inputs.span(),
+                &format!(
+                    "Transform of value at position {index} of @Directive.inputs array must be a \
+                     function"
+                ),
+                &detail,
+            )),
+        }
+        if let Some(transform) = object_literal_transform(obj) {
+            transforms.push((name, transform));
+        }
+    }
+    transforms
 }
 
 /// Extract the *syntax* of a `host` object literal, for the type-check block.

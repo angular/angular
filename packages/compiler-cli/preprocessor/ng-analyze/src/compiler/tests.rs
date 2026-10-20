@@ -6746,3 +6746,195 @@ fn test_constructor_dependency_diagnostics() {
         ]
     );
 }
+
+#[test]
+fn test_input_transform_diagnostics() {
+    let util = r#"
+        interface InternalType { foo: boolean; }
+        export interface PublicType { foo: boolean; }
+        export function internalParam(val: InternalType) { return 1; }
+        export function nestedInternalParam(val: {value: InternalType}) { return 1; }
+        export function publicParam(val: PublicType) { return 1; }
+        export const constArrow = (val: string) => 1;
+    "#;
+    let source = r#"
+        import { Directive, Input } from '@angular/core';
+        import { internalParam, nestedInternalParam, publicParam, constArrow } from './util';
+        import { publicParam as aliasedPublicParam, internalParam as aliasedInternalParam } from './util';
+
+        const NOT_A_FUNCTION: any = null!;
+        interface Hidden { foo: boolean; }
+        export interface Shown { foo: boolean; }
+        interface Aliased { foo: boolean; }
+        export { Aliased as PublicAlias };
+        function overloaded(value: boolean): number;
+        function overloaded(value: string): number;
+        function overloaded(value: boolean | string) { return 1; }
+        function spread(...value: string[]) { return 1; }
+        function noParams() { return 1; }
+        function createTransform(outer: number) { return (inner: string) => outer; }
+
+        @Directive({
+            selector: '[dir]',
+            inputs: [{ name: 'fromArray', transform: NOT_A_FUNCTION }],
+        })
+        export class Dir {
+            fromArray!: number;
+            @Input({transform: NOT_A_FUNCTION}) literal!: number;
+            @Input({transform: (val) => 1}) untyped!: number;
+            @Input({transform: <T>(val: T) => 1}) generic!: number;
+            @Input({transform: (val: Hidden) => 1}) hidden!: number;
+            @Input({transform: (val: Shown) => 1}) shown!: number;
+            @Input({transform: (val: Aliased) => 1}) aliased!: number;
+            @Input({transform: overloaded}) overloads!: number;
+            @Input({transform: spread}) rest!: number;
+            @Input({transform: noParams}) none!: number;
+            @Input({transform: parseInt}) global!: number;
+            @Input({transform: createTransform(1)}) call!: number;
+            @Input({transform: internalParam}) imported!: number;
+            @Input({transform: nestedInternalParam}) nested!: number;
+            @Input({transform: publicParam}) importedPublic!: number;
+            @Input({transform: aliasedPublicParam}) aliasedPublic!: number;
+            @Input({transform: aliasedInternalParam}) aliasedInternal!: number;
+            @Input({transform: constArrow}) arrowConst!: number;
+            @Input({transform: (val: string) => 1}) conflicting!: number;
+            static ngAcceptInputType_conflicting: boolean;
+        }
+    "#;
+    type Found = (u32, String, String);
+    let diagnostics_for = |optimize: bool| -> Vec<Found> {
+        let mut virtual_files = HashMap::new();
+        virtual_files.insert("/project/app.ts".to_string(), source.to_string());
+        virtual_files.insert("/project/util.ts".to_string(), util.to_string());
+        virtual_files.insert(
+            "/project/tsconfig.json".to_string(),
+            r#"{"files": ["app.ts"]}"#.to_string(),
+        );
+        let analyzer = Analyzer::new(AnalyzerOptions {
+            tsconfig_path: "/project/tsconfig.json".to_string(),
+            optimize: Some(optimize),
+            virtual_files: Some(virtual_files),
+            ..Default::default()
+        })
+        .unwrap();
+        let meta = if optimize {
+            analyzer
+                .get_metadata_for_file("/project/app.ts".to_string())
+                .expect("app.ts metadata")
+        } else {
+            let iterator = analyzer.analyze().unwrap();
+            let chunk = futures::executor::block_on(iterator.next())
+                .unwrap()
+                .expect("one chunk");
+            chunk
+                .files
+                .into_iter()
+                .find(|file| file.file_path.ends_with("app.ts"))
+                .expect("app.ts result")
+        };
+        meta.diagnostics
+            .iter()
+            .map(|diag| {
+                let span = diag.span.as_ref().expect("span");
+                let text = [diag.message_text.clone()]
+                    .into_iter()
+                    .chain(diag.next.iter().cloned())
+                    .collect::<Vec<_>>()
+                    .join("\n  ");
+                (
+                    diag.code,
+                    text,
+                    source[span.start as usize..span.end as usize].to_string(),
+                )
+            })
+            .collect()
+    };
+    let not_literal = |message: &str, span: &str| {
+        (
+            1010,
+            format!("{message}\n  Value is of type 'null'."),
+            span.to_string(),
+        )
+    };
+    let array = not_literal(
+        "Transform of value at position 0 of @Directive.inputs array must be a function",
+        "[{ name: 'fromArray', transform: NOT_A_FUNCTION }]",
+    );
+    let decorator = not_literal(
+        "Input transform must be a function",
+        "{transform: NOT_A_FUNCTION}",
+    );
+
+    // Local compilation only rejects transforms that are not even references.
+    assert_eq!(
+        diagnostics_for(false),
+        vec![array.clone(), decorator.clone()]
+    );
+
+    let wrong_type = |message: &str, detail: &str, span: &str| {
+        (1010, format!("{message}\n  {detail}"), span.to_string())
+    };
+    let dynamic = "Value could not be determined statically.";
+    assert_eq!(
+        diagnostics_for(true),
+        vec![
+            array,
+            decorator,
+            wrong_type(
+                "Input transform function first parameter must have a type",
+                dynamic,
+                "(val) => 1"
+            ),
+            wrong_type(
+                "Input transform function cannot be generic",
+                dynamic,
+                "<T>(val: T) => 1"
+            ),
+            (
+                3001,
+                "Symbol must be exported in order to be used as the type of an Input transform \
+                 function"
+                    .to_string(),
+                "Hidden".to_string()
+            ),
+            wrong_type(
+                "Input transform function cannot have multiple signatures",
+                "Value is a reference to 'overloaded'.",
+                "overloaded"
+            ),
+            wrong_type(
+                "Input transform function first parameter cannot be a spread parameter",
+                "Value is a reference to 'spread'.",
+                "spread"
+            ),
+            wrong_type(
+                "Input transform must be a function",
+                dynamic,
+                "createTransform(1)"
+            ),
+            (
+                3004,
+                "Unable to import type InternalType.".to_string(),
+                "internalParam".to_string()
+            ),
+            (
+                3004,
+                "Unable to import type InternalType.".to_string(),
+                "nestedInternalParam".to_string()
+            ),
+            (
+                3004,
+                "Unable to import type InternalType.".to_string(),
+                "aliasedInternalParam".to_string()
+            ),
+            wrong_type("Input transform must be a function", dynamic, "constArrow"),
+            (
+                2020,
+                "Class cannot have both a transform function on Input conflicting and a static \
+                 member called ngAcceptInputType_conflicting"
+                    .to_string(),
+                "(val: string) => 1".to_string()
+            ),
+        ]
+    );
+}

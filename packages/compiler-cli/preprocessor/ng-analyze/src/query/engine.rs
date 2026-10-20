@@ -433,6 +433,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                 class_index: Arc::new(class_index),
                 symbol_index: Arc::new(symbol_index),
                 di_facts: Arc::new(crate::analyzer::di_facts::index_di_facts(result.di_facts)),
+                function_facts: Arc::new(result.function_facts),
                 file_exports: Arc::new(result.exports),
                 errors: dep.errors.clone(),
                 diagnostics: Vec::new(),
@@ -496,6 +497,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             class_index: Arc::new(class_index),
             symbol_index: Arc::new(symbol_index),
             di_facts: Arc::new(crate::analyzer::di_facts::index_di_facts(analysis.di_facts)),
+            function_facts: Arc::new(analysis.function_facts),
             file_exports: Arc::new(analysis.file_exports),
             errors: dep.errors.clone(),
             diagnostics: analysis.diagnostics,
@@ -809,6 +811,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         mut local_result: FileData,
         ctx: &QueryContext<Fs>,
     ) -> Arc<FileData> {
+        let function_facts = local_result.function_facts.clone();
         for class in &mut local_result.classes {
             let reference_id = class.reference_id;
             let class_name = class.class_name.clone();
@@ -829,6 +832,11 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             class.di_issues = class.inherited_ctor_issues(own_facts, ctx).await;
             let provider_issues = class.undecorated_provider_issues(ctx).await;
             class.di_issues.extend(provider_issues);
+            if let Some(directive) = class.directive_part_mut() {
+                for site in &mut directive.input_transforms {
+                    site.resolve_issue(&function_facts, &file_path, ctx).await;
+                }
+            }
 
             if let Some(ref mut params) = class.constructor_params {
                 for (index, param) in params.iter_mut().enumerate() {
