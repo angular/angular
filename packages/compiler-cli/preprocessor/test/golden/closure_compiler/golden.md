@@ -65,9 +65,7 @@ export class MyApp {
           i0.ɵɵelementEnd();
         }
       },
-      styles: [
-        'div[_ngcontent-%COMP%] { color: red; --%NS%long-prop: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"; }',
-      ],
+      styles: [_c0()],
     });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&

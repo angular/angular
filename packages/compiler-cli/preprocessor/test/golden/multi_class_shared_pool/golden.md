@@ -40,9 +40,7 @@ export class FirstComp {
           i0.ɵɵelementEnd();
         }
       },
-      styles: [
-        '.shared-box[_ngcontent-%COMP%] { display: flex; align-items: center; justify-content: space-between; }',
-      ],
+      styles: [_c0],
     });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
