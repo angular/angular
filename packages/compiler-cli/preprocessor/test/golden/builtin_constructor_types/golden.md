@@ -9,12 +9,7 @@ export class BuiltinCtorService {
   // @ts-ignore
   static ɵfac: i0.ɵɵFactoryDeclaration<BuiltinCtorService, never> =
     function BuiltinCtorService_Factory(__ngFactoryType__: any): any {
-      /* @ts-ignore */
-      return new (__ngFactoryType__ || BuiltinCtorService)(
-        i0.ɵɵinject(ErrorConstructor),
-        i0.ɵɵinject(Int32ArrayConstructor),
-        i0.ɵɵinject(MethodDecorator),
-      );
+      i0.ɵɵinvalidFactory();
     };
   // @ts-ignore
   static ɵprov: i0.ɵɵInjectableDeclaration<any> =
@@ -28,20 +23,7 @@ export class BuiltinCtorService {
       i0.ɵsetClassMetadata(
         BuiltinCtorService,
         [{ type: Injectable }],
-        (): any => [
-          {
-            /* @ts-ignore */
-            type: ErrorConstructor,
-          },
-          {
-            /* @ts-ignore */
-            type: Int32ArrayConstructor,
-          },
-          {
-            /* @ts-ignore */
-            type: MethodDecorator,
-          },
-        ],
+        (): any => [{ type: undefined }, { type: undefined }, { type: undefined }],
         null,
       );
   }
