@@ -41,6 +41,7 @@ export class JitComponent {
   sigInput = input('default');
   reqInput = input.required<string>();
   aliasedInput = input('val', {alias: 'publicName'});
+  transformedInput = input('', {transform: (v: string) => v.trim()});
 
   sigOutput = output<string>();
   aliasedOutput = output({alias: 'customEvent'});
