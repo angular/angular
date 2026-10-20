@@ -949,8 +949,10 @@ pub fn analyze_parsed<Fs: ResourceResolverFs>(
         &dependency_array_references(&output.classes),
     );
     let type_only_exports = get_type_only_exports(module_record, semantic);
-    let static_dependencies = super::imports::extract_imports(module_record);
-    let dynamic_dependencies = super::imports::extract_dynamic_imports(semantic);
+    let (static_dependencies, type_only_static_dependencies) =
+        super::imports::extract_imports(module_record, program);
+    let mut dynamic_dependencies = type_only_static_dependencies;
+    dynamic_dependencies.extend(super::imports::extract_dynamic_imports(semantic));
     let signal_debug_names =
         super::signal_debug_name::collect_signal_debug_names(program, semantic, source_text);
     let top_level_value_bindings = enable_hmr.then(|| super::top_level_value_bindings(semantic));

@@ -20,6 +20,8 @@ function _tcb1(this: i0.CompA) {
 import { Component } from '@angular/core';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './b';
 
 export class CompA {
   // @ts-ignore
@@ -52,6 +54,7 @@ export class CompA {
           i0.ɵɵelement(0, 'comp-b');
         }
       },
+      dependencies: [i1.CompB],
       encapsulation: 2,
     });
   static {
@@ -188,6 +191,8 @@ function _tcb1(this: i0.CompC) {
 import { Component } from '@angular/core';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './d';
 
 export class CompC {
   // @ts-ignore
@@ -220,6 +225,7 @@ export class CompC {
           i0.ɵɵelement(0, 'comp-d');
         }
       },
+      dependencies: [i1.CompD],
       encapsulation: 2,
     });
   static {
@@ -391,8 +397,6 @@ export class AppModule {
   (typeof ngJitMode === 'undefined' || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(AppModule, { declarations: [CompA, CompB, CompC, CompD] });
 })();
-i0.ɵɵsetComponentScope(CompA, [CompB], []);
 i0.ɵɵsetComponentScope(CompB, [CompA], []);
-i0.ɵɵsetComponentScope(CompC, [CompD], []);
 
 ```

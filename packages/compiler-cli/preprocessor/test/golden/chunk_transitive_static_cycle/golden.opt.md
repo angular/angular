@@ -20,6 +20,8 @@ function _tcb1(this: i0.CompA) {
 import { Component } from '@angular/core';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './b.component';
 
 export const CONST_A = 'data-from-a';
 
@@ -54,6 +56,7 @@ export class CompA {
           i0.ɵɵelement(0, 'comp-b');
         }
       },
+      dependencies: [i1.CompB],
       encapsulation: 2,
     });
   static {
@@ -144,9 +147,7 @@ export class AppModule {
       exports: [CompA, CompB, CompC],
     });
 })();
-i0.ɵɵsetComponentScope(CompA, [CompB], []);
 i0.ɵɵsetComponentScope(CompB, [CompC], []);
-i0.ɵɵsetComponentScope(CompC, [], []);
 
 ```
 
