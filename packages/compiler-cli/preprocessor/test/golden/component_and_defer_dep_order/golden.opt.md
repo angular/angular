@@ -28,9 +28,9 @@ import * as i0 from '@angular/core';
 
 const AppComp_Defer_1_DepsFn = (): any => [
   /* @ts-ignore */
-  import('./lazy').then((m: any): any => m.DirB),
-  /* @ts-ignore */
   import('./lazy').then((m: any): any => m.DirA),
+  /* @ts-ignore */
+  import('./lazy').then((m: any): any => m.DirB),
   /* @ts-ignore */
   import('./lazy').then((m: any): any => m.MyPipe),
 ];
@@ -88,13 +88,13 @@ export class AppComp {
         AppComp,
         (): any => [
           /* @ts-ignore */
-          import('./lazy').then((m: any): any => m.DirB),
-          /* @ts-ignore */
           import('./lazy').then((m: any): any => m.DirA),
+          /* @ts-ignore */
+          import('./lazy').then((m: any): any => m.DirB),
           /* @ts-ignore */
           import('./lazy').then((m: any): any => m.MyPipe),
         ],
-        (DirB: any, DirA: any, MyPipe: any): any => {
+        (DirA: any, DirB: any, MyPipe: any): any => {
           i0.ɵsetClassMetadata(
             AppComp,
             [
