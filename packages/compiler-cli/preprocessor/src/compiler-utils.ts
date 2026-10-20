@@ -530,6 +530,23 @@ export function refToExpression(ref: nga.ReferenceMetadata): o.Expression {
 }
 
 /**
+ * Converts a `ReferenceMetadata` to an expression suitable for `.d.ts` type parameter emission
+ * (such as `ɵɵNgModuleDeclaration` type arguments). When a symbol was imported under a local alias
+ * (e.g., `import { Foo as LocalFoo } from './foo'`) or resolved to an underlying class declaration
+ * behind a re-exported `const` alias, emits an external module reference (`i<N>.Foo`) so the
+ * generated `.d.ts` references the exported symbol rather than an unexported local alias.
+ */
+export function refToTypeExpression(ref: nga.ReferenceMetadata): o.Expression {
+  if (ref.typecheckImport && ref.localAlias && ref.localAlias !== ref.typecheckImport.symbol) {
+    return o.importExpr({
+      moduleName: ref.typecheckImport.specifier,
+      name: ref.typecheckImport.symbol,
+    });
+  }
+  return refToExpression(ref);
+}
+
+/**
  * Builds the hostDirectives metadata for the compiler from the raw AST expression string.
  * Extracts `directive`, `inputs` and `outputs` properties.
  */

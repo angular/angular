@@ -33,6 +33,8 @@ import { NgModule } from '@angular/core';
 import { AliasedModule } from './alias';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './actual';
 
 export class AppModule {
   // @ts-ignore
@@ -45,8 +47,8 @@ export class AppModule {
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     AppModule,
     never,
-    [typeof AliasedModule],
-    [typeof AliasedModule]
+    [typeof i1.ActualModule],
+    [typeof i1.ActualModule]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });

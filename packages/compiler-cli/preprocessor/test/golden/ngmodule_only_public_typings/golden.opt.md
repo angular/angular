@@ -6,6 +6,8 @@ import { PublicDir, PrivateCmp, AliasedPipe, InternalCmp } from './widgets';
 import { AliasedPipe as ReexportedPipe } from './widgets';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './widgets';
 
 export class AppModule {
   // @ts-ignore
@@ -19,7 +21,7 @@ export class AppModule {
     AppModule,
     [typeof PublicDir, typeof AliasedPipe],
     never,
-    [typeof PublicDir, typeof ReexportedPipe, typeof SharedModule]
+    [typeof PublicDir, typeof i1.AliasedPipe, typeof SharedModule]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });

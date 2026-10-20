@@ -69,6 +69,7 @@ import {
   parseDirectInlineTemplate,
   refName,
   refToExpression,
+  refToTypeExpression,
   stripIife,
   type MinimalDirectiveMeta,
 } from './compiler-utils.js';
@@ -1038,17 +1039,20 @@ export function processFileSync(
       }
 
       if (isLocalCompilation && component.localCompilationExtraImports) {
-        for (const spec of component.localCompilationExtraImports) {
-          printer.addSideEffectImport(spec);
-        }
+        if (!ctx.emitDeclarationOnly) {
+          for (const spec of component.localCompilationExtraImports) {
+            printer.addSideEffectImport(spec);
+          }
 
-        const isRemotelyScoped = ctx.remoteScopedClasses?.has(`${filePath}#${className}`) ?? false;
-        const hasCycle = isRemotelyScoped || filteredDeclarations.some((d) => d.cycleProne);
-        if (!hasCycle) {
-          for (const decl of filteredDeclarations) {
-            const spec = decl.ref.consumerImport?.specifier;
-            if (spec) {
-              printer.addSideEffectImport(spec);
+          const isRemotelyScoped =
+            ctx.remoteScopedClasses?.has(`${filePath}#${className}`) ?? false;
+          const hasCycle = isRemotelyScoped || filteredDeclarations.some((d) => d.cycleProne);
+          if (!hasCycle) {
+            for (const decl of filteredDeclarations) {
+              const spec = decl.ref.consumerImport?.specifier;
+              if (spec) {
+                printer.addSideEffectImport(spec);
+              }
             }
           }
         }
@@ -2534,7 +2538,7 @@ function compileNgModuleDef(
     names
       ? names.map((ref) => ({
           value: refToExpression(ref),
-          type: refToExpression(ref),
+          type: refToTypeExpression(ref),
         }))
       : [];
 
@@ -2689,7 +2693,7 @@ function compileNgModuleDef(
           // https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L583-L592
           includeImportTypes: !ctx.onlyPublishPublicTypingsForNgModules,
           publicDeclarationTypes: ctx.onlyPublishPublicTypingsForNgModules
-            ? (ngModule.publicDeclarations ?? []).map((ref) => refToExpression(ref))
+            ? (ngModule.publicDeclarations ?? []).map((ref) => refToTypeExpression(ref))
             : null,
         }
       : {
