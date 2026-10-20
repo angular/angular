@@ -13,9 +13,9 @@ import {
   NgZone,
   provideZoneChangeDetection,
 } from '@angular/core';
-import {fakeAsync, flush, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {timeout} from '@angular/private/testing';
 import {UpgradeModule} from '../../../static';
 
 import * as angular from '../../../src/common/src/angular1';
@@ -33,7 +33,7 @@ withEachNg1Version(() => {
       ngDoBootstrap() {}
     }
 
-    it('should handle deferred bootstrap', fakeAsync(() => {
+    it('should handle deferred bootstrap', async () => {
       let applicationRunning = false;
       let stayedInTheZone: boolean = undefined!;
       const ng1Module = angular.module_('ng1', []).run(() => {
@@ -44,19 +44,19 @@ withEachNg1Version(() => {
       const element = html('<div></div>');
       window.name = 'NG_DEFER_BOOTSTRAP!' + window.name;
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
 
       setTimeout(() => {
         (<any>window).angular.resumeBootstrap();
-      }, 100);
+      }, 10);
 
       expect(applicationRunning).toEqual(false);
-      tick(100);
+      await timeout(10);
       expect(applicationRunning).toEqual(true);
       expect(stayedInTheZone).toEqual(true);
-    }));
+    });
 
-    it('should propagate return value of resumeBootstrap', fakeAsync(() => {
+    it('should propagate return value of resumeBootstrap', async () => {
       const ng1Module = angular.module_('ng1', []);
       let a1Injector: angular.IInjectorService | undefined;
       ng1Module.run([
@@ -68,85 +68,81 @@ withEachNg1Version(() => {
       const element = html('<div></div>');
       window.name = 'NG_DEFER_BOOTSTRAP!' + window.name;
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
-
-      tick(100);
+      await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
 
       const value = (<any>window).angular.resumeBootstrap();
       expect(value).toBe(a1Injector);
 
-      flush();
-    }));
+      await timeout();
+    });
 
-    it('should wait for ng2 testability', fakeAsync(() => {
+    it('should wait for ng2 testability', async () => {
       const ng1Module = angular.module_('ng1', []);
       const element = html('<div></div>');
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
-        const zone = upgrade.injector.get(NgZone);
-        let ng2Stable = false;
-        let ng1Stable = false;
+      const upgrade = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      const zone = upgrade.injector.get(NgZone);
+      let ng2Stable = false;
+      let ng1Stable = false;
 
-        zone.run(() => {
-          setTimeout(() => {
-            ng2Stable = true;
-          }, 100);
-        });
-
-        angular.getTestability(element).whenStable(() => {
-          ng1Stable = true;
-        });
-
-        expect(ng1Stable).toEqual(false);
-        expect(ng2Stable).toEqual(false);
-        tick(100);
-        expect(ng1Stable).toEqual(true);
-        expect(ng2Stable).toEqual(true);
-      });
-    }));
-
-    it('should not wait for $interval', fakeAsync(() => {
-      const ng1Module = angular.module_('ng1', []);
-      const element = html('<div></div>');
-
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
-        const ng2Testability: Testability = upgrade.injector.get(Testability);
-        const $interval: angular.IIntervalService = upgrade.$injector.get('$interval');
-
-        let ng2Stable = false;
-        let intervalDone = false;
-
-        const id = $interval(
-          (arg: string) => {
-            // should only be called once
-            expect(intervalDone).toEqual(false);
-
-            intervalDone = true;
-            expect(NgZone.isInAngularZone()).toEqual(true);
-            expect(arg).toEqual('passed argument');
-          },
-          200,
-          0,
-          true,
-          'passed argument',
-        );
-
-        ng2Testability.whenStable(() => {
+      zone.run(() => {
+        setTimeout(() => {
           ng2Stable = true;
-        });
-
-        tick(100);
-
-        expect(intervalDone).toEqual(false);
-        expect(ng2Stable).toEqual(true);
-
-        tick(200);
-        expect(intervalDone).toEqual(true);
-        expect($interval.cancel(id)).toEqual(true);
-
-        // Interval should not fire after cancel
-        tick(200);
+        }, 10);
       });
-    }));
+
+      angular.getTestability(element).whenStable(() => {
+        ng1Stable = true;
+      });
+
+      expect(ng1Stable).toEqual(false);
+      expect(ng2Stable).toEqual(false);
+      await timeout(10);
+      expect(ng1Stable).toEqual(true);
+      expect(ng2Stable).toEqual(true);
+    });
+
+    it('should not wait for $interval', async () => {
+      const ng1Module = angular.module_('ng1', []);
+      const element = html('<div></div>');
+
+      const upgrade = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      const ng2Testability: Testability = upgrade.injector.get(Testability);
+      const $interval: angular.IIntervalService = upgrade.$injector.get('$interval');
+
+      let ng2Stable = false;
+      let intervalDone = false;
+
+      const id = $interval(
+        (arg: string) => {
+          // should only be called once
+          expect(intervalDone).toEqual(false);
+
+          intervalDone = true;
+          expect(NgZone.isInAngularZone()).toEqual(true);
+          expect(arg).toEqual('passed argument');
+        },
+        20,
+        0,
+        true,
+        'passed argument',
+      );
+
+      ng2Testability.whenStable(() => {
+        ng2Stable = true;
+      });
+
+      await timeout(10);
+
+      expect(intervalDone).toEqual(false);
+      expect(ng2Stable).toEqual(true);
+
+      await timeout(20);
+      expect(intervalDone).toEqual(true);
+      expect($interval.cancel(id)).toEqual(true);
+
+      // Interval should not fire after cancel
+      await timeout(20);
+    });
   });
 });

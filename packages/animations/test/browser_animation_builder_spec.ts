@@ -14,7 +14,7 @@ import {
   RendererFactory2,
   ViewChild,
 } from '@angular/core';
-import {fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {ɵAsyncAnimationRendererFactory as AsyncAnimationRendererFactory} from '@angular/platform-browser/animations/async';
@@ -62,7 +62,7 @@ describe('BrowserAnimationBuilder', () => {
     expect(cmp.builder instanceof BrowserAnimationBuilder).toBeTruthy();
   });
 
-  it("should listen on start and done on the animation builder's player after it has been reset", fakeAsync(() => {
+  it("should listen on start and done on the animation builder's player after it has been reset", async () => {
     @Component({
       template: '...',
     })
@@ -83,7 +83,7 @@ describe('BrowserAnimationBuilder', () => {
 
     const fixture = TestBed.createComponent(Cmp);
     const cmp = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const player = cmp.build();
 
@@ -94,42 +94,42 @@ describe('BrowserAnimationBuilder', () => {
     player.onDone(() => finishedCount++);
 
     player.init();
-    flushMicrotasks();
+    await Promise.resolve();
     expect(startedCount).toEqual(0);
     expect(finishedCount).toEqual(0);
 
     player.play();
-    flushMicrotasks();
+    await Promise.resolve();
     expect(startedCount).toEqual(1);
     expect(finishedCount).toEqual(0);
 
     player.finish();
-    flushMicrotasks();
+    await Promise.resolve();
     expect(startedCount).toEqual(1);
     expect(finishedCount).toEqual(1);
 
     player.play();
     player.finish();
-    flushMicrotasks();
+    await Promise.resolve();
     expect(startedCount).toEqual(1);
     expect(finishedCount).toEqual(1);
 
-    [0, 1, 2, 3].forEach((i) => {
+    for (const i of [0, 1, 2, 3]) {
       player.reset();
 
       player.play();
-      flushMicrotasks();
+      await Promise.resolve();
       expect(startedCount).toEqual(i + 2);
       expect(finishedCount).toEqual(i + 1);
 
       player.finish();
-      flushMicrotasks();
+      await Promise.resolve();
       expect(startedCount).toEqual(i + 2);
       expect(finishedCount).toEqual(i + 2);
-    });
-  }));
+    }
+  });
 
-  it("should listen on start and done on the animation builder's player", fakeAsync(() => {
+  it("should listen on start and done on the animation builder's player", async () => {
     @Component({
       template: '...',
     })
@@ -150,7 +150,7 @@ describe('BrowserAnimationBuilder', () => {
 
     const fixture = TestBed.createComponent(Cmp);
     const cmp = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const player = cmp.build();
 
@@ -164,31 +164,31 @@ describe('BrowserAnimationBuilder', () => {
     player.onDestroy(() => (destroyed = true));
 
     player.init();
-    flushMicrotasks();
+    await Promise.resolve();
     expect(started).toBeFalsy();
     expect(finished).toBeFalsy();
     expect(destroyed).toBeFalsy();
 
     player.play();
-    flushMicrotasks();
+    await Promise.resolve();
     expect(started).toBeTruthy();
     expect(finished).toBeFalsy();
     expect(destroyed).toBeFalsy();
 
     player.finish();
-    flushMicrotasks();
+    await Promise.resolve();
     expect(started).toBeTruthy();
     expect(finished).toBeTruthy();
     expect(destroyed).toBeFalsy();
 
     player.destroy();
-    flushMicrotasks();
+    await Promise.resolve();
     expect(started).toBeTruthy();
     expect(finished).toBeTruthy();
     expect(destroyed).toBeTruthy();
-  }));
+  });
 
-  it('should update `hasStarted()` on `play()` and `reset()`', fakeAsync(() => {
+  it('should update `hasStarted()` on `play()` and `reset()`', async () => {
     @Component({
       template: '...',
     })
@@ -209,21 +209,21 @@ describe('BrowserAnimationBuilder', () => {
 
     const fixture = TestBed.createComponent(CmpAnother);
     const cmp = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const player = cmp.build();
 
     expect(player.hasStarted()).toBeFalsy();
-    flushMicrotasks();
+    await Promise.resolve();
 
     player.play();
-    flushMicrotasks();
+    await Promise.resolve();
     expect(player.hasStarted()).toBeTruthy();
 
     player.reset();
-    flushMicrotasks();
+    await Promise.resolve();
     expect(player.hasStarted()).toBeFalsy();
-  }));
+  });
 
   describe('without Animations enabled', () => {
     beforeEach(() => {

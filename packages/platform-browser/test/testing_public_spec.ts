@@ -141,6 +141,16 @@ class SomeLibModule {}
 const aTok = new InjectionToken<string>('a');
 const bTok = new InjectionToken<string>('b');
 
+const {withProxyZone: _withProxyZone} = (Zone as any)[Zone.__symbol__('fakeAsyncTest')];
+const withProxyZone = <T extends Function>(fn: T): T => {
+  const proxied = _withProxyZone(fn);
+  return (fn.length
+    ? function (this: unknown, done: DoneFn) {
+        return proxied.call(this, done);
+      }
+    : proxied) as unknown as T;
+};
+
 describe('public testing API', () => {
   describe('using the async helper with context passing', () => {
     type TestContext = {actuallyDone: boolean};
@@ -164,14 +174,24 @@ describe('public testing API', () => {
       }, 0);
     });
 
-    it('should run async tests with tasks', waitForAsync(function (this: TestContext) {
-      setTimeout(() => (this.actuallyDone = true), 0);
-    }));
+    it(
+      'should run async tests with tasks',
+      withProxyZone(
+        waitForAsync(function (this: TestContext) {
+          setTimeout(() => (this.actuallyDone = true), 0);
+        }),
+      ),
+    );
 
-    it('should run async tests with promises', waitForAsync(function (this: TestContext) {
-      const p = new Promise((resolve, reject) => setTimeout(resolve, 10));
-      p.then(() => (this.actuallyDone = true));
-    }));
+    it(
+      'should run async tests with promises',
+      withProxyZone(
+        waitForAsync(function (this: TestContext) {
+          const p = new Promise((resolve, reject) => setTimeout(resolve, 10));
+          p.then(() => (this.actuallyDone = true));
+        }),
+      ),
+    );
   });
 
   describe('basic context passing to inject, fakeAsync and withModule helpers', () => {
@@ -193,9 +213,14 @@ describe('public testing API', () => {
       this.contextModified = true;
     }));
 
-    it('should pass context to fakeAsync helper', fakeAsync(function (this: TestContext) {
-      this.contextModified = true;
-    }));
+    it(
+      'should pass context to fakeAsync helper',
+      withProxyZone(
+        fakeAsync(function (this: TestContext) {
+          this.contextModified = true;
+        }),
+      ),
+    );
 
     it(
       'should pass context to withModule helper - simple',
@@ -215,18 +240,28 @@ describe('public testing API', () => {
       ),
     );
 
-    it('should preserve context when async and inject helpers are combined', waitForAsync(
-      inject([], function (this: TestContext) {
-        setTimeout(() => (this.contextModified = true), 0);
-      }),
-    ));
+    it(
+      'should preserve context when async and inject helpers are combined',
+      withProxyZone(
+        waitForAsync(
+          inject([], function (this: TestContext) {
+            setTimeout(() => (this.contextModified = true), 0);
+          }),
+        ),
+      ),
+    );
 
-    it('should preserve context when fakeAsync and inject helpers are combined', fakeAsync(
-      inject([], function (this: TestContext) {
-        setTimeout(() => (this.contextModified = true), 0);
-        tick(1);
-      }),
-    ));
+    it(
+      'should preserve context when fakeAsync and inject helpers are combined',
+      withProxyZone(
+        fakeAsync(
+          inject([], function (this: TestContext) {
+            setTimeout(() => (this.contextModified = true), 0);
+            tick(1);
+          }),
+        ),
+      ),
+    );
   });
 
   describe('using the test injector with the inject helper', () => {
@@ -241,21 +276,31 @@ describe('public testing API', () => {
         expect(service.value).toEqual('real value');
       }));
 
-      it('should wait until returned promises', waitForAsync(
-        inject([FancyService], (service: FancyService) => {
-          service.getAsyncValue().then((value) => expect(value).toEqual('async value'));
-          service.getTimeoutValue().then((value) => expect(value).toEqual('timeout value'));
-        }),
-      ));
+      it(
+        'should wait until returned promises',
+        withProxyZone(
+          waitForAsync(
+            inject([FancyService], (service: FancyService) => {
+              service.getAsyncValue().then((value) => expect(value).toEqual('async value'));
+              service.getTimeoutValue().then((value) => expect(value).toEqual('timeout value'));
+            }),
+          ),
+        ),
+      );
 
-      it('should allow the use of fakeAsync', fakeAsync(
-        inject([FancyService], (service: FancyService) => {
-          let value: string = undefined!;
-          service.getAsyncValue().then((val) => (value = val));
-          tick();
-          expect(value).toEqual('async value');
-        }),
-      ));
+      it(
+        'should allow the use of fakeAsync',
+        withProxyZone(
+          fakeAsync(
+            inject([FancyService], (service: FancyService) => {
+              let value: string = undefined!;
+              service.getAsyncValue().then((val) => (value = val));
+              tick();
+              expect(value).toEqual('async value');
+            }),
+          ),
+        ),
+      );
 
       it('should allow use of "done"', (done) => {
         inject([FancyService], (service: FancyService) => {
@@ -281,11 +326,15 @@ describe('public testing API', () => {
       });
 
       describe('using async beforeEach', () => {
-        beforeEach(waitForAsync(
-          inject([FancyService], (service: FancyService) => {
-            service.getAsyncValue().then((value) => (service.value = value));
-          }),
-        ));
+        beforeEach(
+          withProxyZone(
+            waitForAsync(
+              inject([FancyService], (service: FancyService) => {
+                service.getAsyncValue().then((value) => (service.value = value));
+              }),
+            ),
+          ),
+        );
 
         it('should use asynchronously modified value', inject(
           [FancyService],
@@ -877,7 +926,7 @@ describe('public testing API', () => {
     describe('setting up the compiler', () => {
       describe('providers', () => {
         // TODO(alxhub): disable while we figure out how this should work
-        xit('should use set up providers', fakeAsync(() => {
+        xit('should use set up providers', async () => {
           // Keeping this component inside the test is needed to make sure it's not resolved
           // prior to this test, thus having ɵcmp and a reference in resource
           // resolution queue. This is done to check external resoution logic in isolation by
@@ -895,43 +944,37 @@ describe('public testing API', () => {
             providers: [{provide: ResourceLoader, useValue: {get: resourceLoaderGet}}],
           });
 
-          tick();
           const compFixture = TestBed.createComponent(InternalCompWithUrlTemplate);
+          await compFixture.whenStable();
           expect(compFixture.nativeElement).toHaveText('Hello world!');
-        }));
+        });
       });
     });
   });
 
   describe('errors', () => {
-    let originalJasmineIt: (description: string, func: () => void) => jasmine.Spec;
-
-    const patchJasmineIt = () => {
+    const runAsyncTestFn = (fn: (done: DoneFn) => void) => {
       const {promise, resolve, reject} = Promise.withResolvers<any>();
-      const jasmineEnv = jasmine.getEnv() as any;
-      originalJasmineIt = jasmineEnv.it;
-      jasmineEnv.it = (description: string, fn: (done: DoneFn) => void): any => {
-        const done = <DoneFn>(() => resolve(null));
-        done.fail = (err) => reject(err);
-        fn(done);
-        return null;
-      };
+      const done = <DoneFn>(() => resolve(null));
+      done.fail = (err) => reject(err);
+      fn(done);
       return promise;
     };
 
-    const restoreJasmineIt = () => ((jasmine.getEnv() as any).it = originalJasmineIt);
-
     it('should fail when an asynchronous error is thrown', (done) => {
-      const itPromise = patchJasmineIt();
       const barError = new Error('bar');
 
-      it('throws an async error', waitForAsync(
-        inject([], () =>
-          setTimeout(() => {
-            throw barError;
-          }, 0),
+      const itPromise = runAsyncTestFn(
+        withProxyZone(
+          waitForAsync(
+            inject([], () =>
+              setTimeout(() => {
+                throw barError;
+              }, 0),
+            ),
+          ),
         ),
-      ));
+      );
 
       itPromise.then(
         () => done.fail('Expected test to fail, but it did not'),
@@ -940,21 +983,22 @@ describe('public testing API', () => {
           done();
         },
       );
-      restoreJasmineIt();
     });
 
     it('should fail when a returned promise is rejected', (done) => {
-      const itPromise = patchJasmineIt();
+      const itPromise = runAsyncTestFn(
+        withProxyZone(
+          waitForAsync(
+            inject([], () => {
+              const {promise, reject} = Promise.withResolvers();
+              const p = promise.then(() => expect(1).toEqual(2));
 
-      it('should fail with an error from a promise', waitForAsync(
-        inject([], () => {
-          const {promise, reject} = Promise.withResolvers();
-          const p = promise.then(() => expect(1).toEqual(2));
-
-          reject('baz');
-          return p;
-        }),
-      ));
+              reject('baz');
+              return p;
+            }),
+          ),
+        ),
+      );
 
       itPromise.then(
         () => done.fail('Expected test to fail, but it did not'),
@@ -963,7 +1007,6 @@ describe('public testing API', () => {
           done();
         },
       );
-      restoreJasmineIt();
     });
 
     describe('components', () => {
@@ -1008,14 +1051,14 @@ Did you run and wait for 'resolveComponentResources()'?`);
   describe('creating components', () => {
     beforeEach(() => {});
 
-    it('should instantiate a component with valid DOM', waitForAsync(async () => {
+    it('should instantiate a component with valid DOM', async () => {
       const fixture = TestBed.createComponent(ChildComp);
       await fixture.whenStable();
 
       expect(fixture.nativeElement).toHaveText('Original Child');
-    }));
+    });
 
-    it('should allow changing members of the component', waitForAsync(async () => {
+    it('should allow changing members of the component', async () => {
       const componentFixture = TestBed.createComponent(MyIfComp);
       await componentFixture.whenStable();
       expect(componentFixture.nativeElement).toHaveText('MyIf()');
@@ -1023,25 +1066,25 @@ Did you run and wait for 'resolveComponentResources()'?`);
       componentFixture.componentInstance.showMore.set(true);
       await componentFixture.whenStable();
       expect(componentFixture.nativeElement).toHaveText('MyIf(More)');
-    }));
+    });
 
-    it('should override a template', waitForAsync(async () => {
+    it('should override a template', async () => {
       TestBed.overrideComponent(ChildComp, {set: {template: '<span>Mock</span>'}});
       const componentFixture = TestBed.createComponent(ChildComp);
       await componentFixture.whenStable();
       expect(componentFixture.nativeElement).toHaveText('Mock');
-    }));
+    });
 
-    it('should override a provider', waitForAsync(async () => {
+    it('should override a provider', async () => {
       TestBed.overrideComponent(TestProvidersComp, {
         set: {providers: [{provide: FancyService, useClass: MockFancyService}]},
       });
       const componentFixture = TestBed.createComponent(TestProvidersComp);
       await componentFixture.whenStable();
       expect(componentFixture.nativeElement).toHaveText('injected value: mocked out value');
-    }));
+    });
 
-    it('should override a viewProvider', waitForAsync(async () => {
+    it('should override a viewProvider', async () => {
       TestBed.overrideComponent(TestViewProvidersComp, {
         set: {viewProviders: [{provide: FancyService, useClass: MockFancyService}]},
       });
@@ -1049,7 +1092,7 @@ Did you run and wait for 'resolveComponentResources()'?`);
       const componentFixture = TestBed.createComponent(TestViewProvidersComp);
       await componentFixture.whenStable();
       expect(componentFixture.nativeElement).toHaveText('injected value: mocked out value');
-    }));
+    });
 
     describe('getLastFixture', () => {
       it('should return the last created fixture', () => {
@@ -1077,12 +1120,12 @@ Did you run and wait for 'resolveComponentResources()'?`);
   describe('using alternate components', () => {
     beforeEach(() => {});
 
-    it('should override component dependencies', waitForAsync(() => {
+    it('should override component dependencies', async () => {
       TestBed.overrideComponent(ParentComp, {set: {imports: [MockChildComp]}});
       const componentFixture = TestBed.createComponent(ParentComp);
-      componentFixture.detectChanges();
+      await componentFixture.whenStable();
       expect(componentFixture.nativeElement).toHaveText('Parent(Mock)');
-    }));
+    });
   });
 
   describe('calling override methods after TestBed initialization', () => {

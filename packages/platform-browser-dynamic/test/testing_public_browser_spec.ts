@@ -14,7 +14,7 @@ import {
   NgModule,
   provideZonelessChangeDetection,
 } from '@angular/core';
-import {fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {BrowserTestingModule, platformBrowserTesting} from '@angular/platform-browser/testing';
 import {isBrowser} from '@angular/private/testing';
@@ -79,15 +79,14 @@ if (isBrowser) {
           expect(resourceLoader instanceof ResourceLoaderImpl).toBeTruthy();
         });
 
-        it('should allow the use of fakeAsync', fakeAsync(() => {
+        it('should allow the use of async/await', async () => {
           const service = TestBed.inject(FancyService);
           let value: string | undefined;
-          service.getAsyncValue().then(function (val: string) {
+          await service.getAsyncValue().then(function (val: string) {
             value = val;
           });
-          tick();
           expect(value).toEqual('async value');
-        }));
+        });
 
         afterEach(() => {
           getPlatform()?.destroy();
