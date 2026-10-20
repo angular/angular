@@ -13,7 +13,7 @@ export class RestService {
   static ɵfac: i0.ɵɵFactoryDeclaration<RestService, never> = function RestService_Factory(
     __ngFactoryType__: any,
   ): any {
-    return new (__ngFactoryType__ || RestService)();
+    i0.ɵɵinvalidFactory();
   };
   // @ts-ignore
   static ɵprov: i0.ɵɵInjectableDeclaration<any> =
@@ -21,7 +21,12 @@ export class RestService {
     /*@__PURE__*/ i0.ɵɵdefineInjectable({ token: RestService, factory: RestService.ɵfac });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
-      i0.ɵsetClassMetadata(RestService, [{ type: Injectable }], (): any => [], null);
+      i0.ɵsetClassMetadata(
+        RestService,
+        [{ type: Injectable }],
+        (): any => [{ type: undefined }],
+        null,
+      );
   }
 }
 
@@ -43,7 +48,7 @@ export class InjectedService {
       i0.ɵsetClassMetadata(
         InjectedService,
         [{ type: Injectable }],
-        (): any => [{ type: undefined, decorators: [{ type: Inject, args: [TOKEN] }] }],
+        (): any => [{ type: DepService, decorators: [{ type: Inject, args: [TOKEN] }] }],
         null,
       );
   }

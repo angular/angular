@@ -34,7 +34,9 @@ pub struct DeclaredSymbol {
 
 impl DeclaredSymbol {
     pub fn is_type_only(&self) -> bool {
-        self.flags.intersects(SymbolFlags::Type) && !self.flags.intersects(SymbolFlags::Value)
+        self.flags.intersects(SymbolFlags::ConstEnum)
+            || (self.flags.intersects(SymbolFlags::Type)
+                && !self.flags.intersects(SymbolFlags::Value))
     }
 }
 
