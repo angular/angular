@@ -31,15 +31,12 @@ import { Component, HostBinding, HostListener } from '@angular/core';
 import * as i0 from '@angular/core';
 
 export class TestComponent {
-  @HostBinding('class')
   static readonly className = 'themeable';
 
-  @HostBinding('attr.aria-hidden')
   static get isHidden(): boolean {
     return true;
   }
 
-  @HostListener('click')
   static onStaticClick(): void {}
 
   isActive = true;

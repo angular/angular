@@ -733,11 +733,23 @@ pub fn get_member_decorators<'a>(
             ClassElement::AccessorProperty(a) => (&a.decorators, a.r#static, &a.key),
             _ => continue,
         };
-        // ES-private (`#field`) members are not supported in the metadata emit.
-        if is_static || decorators.is_empty() || matches!(key, PropertyKey::PrivateIdentifier(_)) {
+        if decorators.is_empty() {
             continue;
         }
-        let Some(property_name) = self::utils::extract_property_key(key) else {
+        // Static, ES-private (`#field`), and computed-key members are not supported in the
+        // metadata emit, but `ngtsc`'s `IvyTransformationVisitor._stripAngularDecorators` still
+        // strips any Angular decorators from them.
+        let property_name = if is_static || matches!(key, PropertyKey::PrivateIdentifier(_)) {
+            None
+        } else {
+            self::utils::extract_property_key(key)
+        };
+        let Some(property_name) = property_name else {
+            for decorator in decorators {
+                if is_angular_decorator(decorator, semantic, angular_imports) {
+                    removal_spans.push(self::utils::decorator_removal_span(decorator, source_text));
+                }
+            }
             continue;
         };
 
