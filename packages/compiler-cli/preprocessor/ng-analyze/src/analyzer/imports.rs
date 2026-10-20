@@ -523,10 +523,15 @@ pub fn find_imports_end(program: &Program<'_>, source_text: &str) -> u32 {
     let mut imports_end: u32 = 0;
 
     for stmt in &program.body {
-        let Statement::ImportDeclaration(decl) = stmt else {
-            break;
-        };
-        imports_end = decl.span.end;
+        match stmt {
+            Statement::ImportDeclaration(decl) => {
+                imports_end = decl.span.end;
+            }
+            Statement::TSImportEqualsDeclaration(decl) => {
+                imports_end = decl.span.end;
+            }
+            _ => break,
+        }
     }
 
     if imports_end > 0 {
