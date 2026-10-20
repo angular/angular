@@ -518,33 +518,64 @@ pub(crate) fn constructor_params_di<'a>(
     use oxc_span::GetSpan;
 
     let method = constructor_method(class, false)?;
-    let params = method.value.params.items.iter().map(|param| {
-        let (type_name, type_info) = match extract_type_info(param, semantic, import_map) {
+    let build_di = |name: Option<String>,
+                    name_span: oxc_span::Span,
+                    type_annotation: Option<&oxc_ast::ast::TSTypeAnnotation<'a>>,
+                    decorators: &[oxc_ast::ast::Decorator<'a>]| {
+        let (type_name, type_info) = match extract_type_info(type_annotation, semantic, import_map)
+        {
             Ok((name, info)) => (Some(name), info),
             Err(reason) => (None, TypeRefInfo::unavailable(reason)),
         };
-        let has_explicit_token = param.decorators.iter().any(|decorator| {
+        let has_explicit_token = decorators.iter().any(|decorator| {
             matches!(
                 get_canonical_decorator_name(decorator, semantic, angular_imports),
                 Some("Inject" | "Attribute")
             )
         });
         CtorParamDi {
-            name: param
-                .pattern
-                .get_binding_identifier()
-                .map(|id| id.name.to_string()),
-            name_span: param.pattern.span(),
-            type_span: param
-                .type_annotation
-                .as_ref()
+            name,
+            name_span,
+            type_span: type_annotation
                 .map(|annotation| unwrap_union_type(&annotation.type_annotation).span()),
             type_name,
             type_info,
             has_explicit_token,
         }
-    });
-    Some(params.collect())
+    };
+
+    let mut params: Vec<CtorParamDi> = method
+        .value
+        .params
+        .items
+        .iter()
+        .map(|param| {
+            build_di(
+                param
+                    .pattern
+                    .get_binding_identifier()
+                    .map(|id| id.name.to_string()),
+                param.pattern.span(),
+                param.type_annotation.as_deref(),
+                &param.decorators,
+            )
+        })
+        .collect();
+
+    if let Some(rest_param) = &method.value.params.rest {
+        params.push(build_di(
+            rest_param
+                .rest
+                .argument
+                .get_binding_identifier()
+                .map(|id| id.name.to_string()),
+            rest_param.span,
+            rest_param.type_annotation.as_deref(),
+            &rest_param.decorators,
+        ));
+    }
+
+    Some(params)
 }
 
 pub fn get_constructor_params<'a>(
@@ -560,7 +591,22 @@ pub fn get_constructor_params<'a>(
 
     let mut params = Vec::new();
     let mut unexpected_decorators = Vec::new();
-    for (param, di) in target_method.value.params.items.iter().zip(params_di) {
+    let all_param_decorators = target_method
+        .value
+        .params
+        .items
+        .iter()
+        .map(|p| p.decorators.as_slice())
+        .chain(
+            target_method
+                .value
+                .params
+                .rest
+                .iter()
+                .map(|r| r.decorators.as_slice()),
+        );
+
+    for (ast_decorators, di) in all_param_decorators.zip(params_di) {
         let mut is_type_only = di.type_name.is_some() && di.type_info.is_type_only();
         let is_value_verified = di.type_info.is_value_verified;
         // `None` when the parameter has no runtime-referenceable type (primitive, inline type, or
@@ -579,7 +625,7 @@ pub fn get_constructor_params<'a>(
             })
         });
 
-        for decorator in &param.decorators {
+        for decorator in ast_decorators {
             let Some(name) = extract_decorator_name(decorator) else {
                 continue;
             };
@@ -614,18 +660,12 @@ pub fn get_constructor_params<'a>(
                 }
             }
 
-            // KNOWN DEVIATION (#533): ngtsc derives `ɵsetClassMetadata` parameter `type:` purely
-            // from `param.typeValueReference` regardless of `@Inject`:
+            // In single-file (local) mode, an unverified imported type on an `@Inject` parameter is
+            // frequently an interface (which is why `@Inject` was needed), so default `is_type_only`
+            // to `true` when `!is_value_verified`. Verified value types (same-file classes, or
+            // cross-file classes resolved in Stage 2) keep `is_type_only = false` to match ngtsc:
             // https://github.com/angular/angular/blob/16fe27b/packages/compiler-cli/src/ngtsc/annotations/common/src/metadata.ts#L160-L181
-            //
-            // Historically we set `is_type_only` on `@Inject` parameters to avoid TS2693 when the
-            // declared type was an imported interface. `@angular/compiler` now guards unverified
-            // parameter types with `@ts-ignore`, so this override is only kept until #533 updates
-            // the goldens. Until then it also overrides same-file classes, leaving `is_type_only`
-            // and `is_value_verified` both set. `@Attribute` needs no override: `buildDeps`
-            // resolves the DI token from the decorator for both (`getConstructorDependency`):
-            // https://github.com/angular/angular/blob/16fe27b/packages/compiler-cli/src/ngtsc/annotations/common/src/di.ts#L67-L100
-            if canonical_name == Some("Inject") {
+            if canonical_name == Some("Inject") && !is_value_verified {
                 is_type_only = true;
             }
 
@@ -812,13 +852,13 @@ impl TypeRefInfo {
     }
 }
 
-/// Extract the type name and what we know about the reference from a parameter.
+/// Extract the type name and what we know about the reference from a parameter's type annotation.
 fn extract_type_info(
-    param: &oxc_ast::ast::FormalParameter,
+    type_annotation: Option<&oxc_ast::ast::TSTypeAnnotation>,
     semantic: &oxc_semantic::Semantic,
     import_map: &std::collections::HashMap<String, ImportedSymbol>,
 ) -> Result<(String, TypeRefInfo), UnavailableValue> {
-    let Some(type_annotation) = param.type_annotation.as_ref() else {
+    let Some(type_annotation) = type_annotation else {
         return Err(UnavailableValue::MissingType);
     };
     let unwrapped_type = unwrap_union_type(&type_annotation.type_annotation);
@@ -1006,12 +1046,13 @@ fn get_type_reference_info<'a>(
     let flags = semantic.scoping().symbol_flags(symbol_id);
     let declaration = semantic.symbol_declaration(symbol_id);
 
-    // Locally declared interface, type alias, type parameter, or type-only namespace module.
-    if (flags.contains(oxc_syntax::symbol::SymbolFlags::Interface)
-        || flags.contains(oxc_syntax::symbol::SymbolFlags::TypeAlias)
-        || flags.contains(oxc_syntax::symbol::SymbolFlags::TypeParameter)
-        || flags.contains(oxc_syntax::symbol::SymbolFlags::NamespaceModule))
-        && !flags.intersects(oxc_syntax::symbol::SymbolFlags::Value)
+    // Locally declared interface, type alias, type parameter, const enum, or type-only namespace module.
+    if flags.contains(oxc_syntax::symbol::SymbolFlags::ConstEnum)
+        || ((flags.contains(oxc_syntax::symbol::SymbolFlags::Interface)
+            || flags.contains(oxc_syntax::symbol::SymbolFlags::TypeAlias)
+            || flags.contains(oxc_syntax::symbol::SymbolFlags::TypeParameter)
+            || flags.contains(oxc_syntax::symbol::SymbolFlags::NamespaceModule))
+            && !flags.intersects(oxc_syntax::symbol::SymbolFlags::Value))
     {
         return no_value_declaration(Some(declaration.kind().span()));
     }

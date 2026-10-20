@@ -844,7 +844,11 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                     // `import type {X}` has no runtime value even if X is a class, and the chase
                     // checks exports before root bindings (`export { Foo } from './iface'; class
                     // Foo {}` would resolve to the interface).
-                    if param.is_type_only || param.is_value_verified {
+                    let di_is_type_only = class
+                        .ctor_params_di
+                        .get(index)
+                        .is_some_and(|di| di.type_info.is_type_only());
+                    if di_is_type_only || param.is_value_verified {
                         continue;
                     }
                     if let Some(ref type_name) = param.type_name {
@@ -867,7 +871,10 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                                     );
                                 }
                             }
-                            SymbolValueKind::Value => param.is_value_verified = true,
+                            SymbolValueKind::Value => {
+                                param.is_type_only = false;
+                                param.is_value_verified = true;
+                            }
                             // Emit optimistically with `@ts-ignore`.
                             SymbolValueKind::Unresolved => {}
                         }
@@ -1342,7 +1349,13 @@ async fn resolve_export_equals_namespace_member<Fs: ResourceResolverFs + Clone +
     let scoping = dep.semantic.scoping();
     for ns_path in candidate_ns_paths {
         let mut scopes = Vec::new();
-        collect_namespace_scopes(&dep.program.body, &ns_path, &mut scopes);
+        let mut has_import_equals = false;
+        collect_namespace_scopes(
+            &dep.program.body,
+            &ns_path,
+            &mut scopes,
+            &mut has_import_equals,
+        );
         let mut combined_flags = SymbolFlags::empty();
         let mut found_any = false;
         for scope_id in scopes {
@@ -1357,13 +1370,14 @@ async fn resolve_export_equals_namespace_member<Fs: ResourceResolverFs + Clone +
             {
                 return Some(SymbolValueKind::Value);
             }
-            if combined_flags.intersects(
-                SymbolFlags::Interface
-                    | SymbolFlags::TypeAlias
-                    | SymbolFlags::TypeParameter
-                    | SymbolFlags::NamespaceModule
-                    | SymbolFlags::ConstEnum,
-            ) {
+            if !has_import_equals
+                && combined_flags.intersects(
+                    SymbolFlags::Interface
+                        | SymbolFlags::TypeAlias
+                        | SymbolFlags::TypeParameter
+                        | SymbolFlags::ConstEnum,
+                )
+            {
                 return Some(SymbolValueKind::TypeOnly);
             }
         }
@@ -1375,6 +1389,7 @@ fn collect_namespace_scopes<'a>(
     stmts: &'a [oxc_ast::ast::Statement<'a>],
     path: &[&str],
     out: &mut Vec<oxc_syntax::scope::ScopeId>,
+    has_import_equals: &mut bool,
 ) {
     let Some((&first, rest)) = path.split_first() else {
         return;
@@ -1392,7 +1407,7 @@ fn collect_namespace_scopes<'a>(
             }
             _ => continue,
         };
-        collect_from_namespace_decl(decl, first, rest, out);
+        collect_from_namespace_decl(decl, first, rest, out, has_import_equals);
     }
 }
 
@@ -1401,24 +1416,40 @@ fn collect_from_namespace_decl<'a>(
     expected_name: &str,
     rest: &[&str],
     out: &mut Vec<oxc_syntax::scope::ScopeId>,
+    has_import_equals: &mut bool,
 ) {
     if decl.id.name.as_str() != expected_name {
         return;
     }
     match (&decl.body, rest.split_first()) {
-        (_, None) => {
+        (body, None) => {
             if let Some(scope_id) = decl.scope_id.get() {
                 out.push(scope_id);
+            }
+            if let oxc_ast::ast::TSNamespaceDeclarationBody::TSModuleBlock(block) = body {
+                if block.body.iter().any(|stmt| {
+                    matches!(stmt, oxc_ast::ast::Statement::TSImportEqualsDeclaration(_))
+                        || matches!(
+                            stmt,
+                            oxc_ast::ast::Statement::ExportDeclaration(export)
+                                if matches!(
+                                    export.declaration,
+                                    oxc_ast::ast::Declaration::TSImportEqualsDeclaration(_)
+                                )
+                        )
+                }) {
+                    *has_import_equals = true;
+                }
             }
         }
         (
             oxc_ast::ast::TSNamespaceDeclarationBody::TSNamespaceDeclaration(inner),
             Some((&next, tail)),
         ) => {
-            collect_from_namespace_decl(inner, next, tail, out);
+            collect_from_namespace_decl(inner, next, tail, out, has_import_equals);
         }
         (oxc_ast::ast::TSNamespaceDeclarationBody::TSModuleBlock(block), Some(_)) => {
-            collect_namespace_scopes(&block.body, rest, out);
+            collect_namespace_scopes(&block.body, rest, out, has_import_equals);
         }
     }
 }
