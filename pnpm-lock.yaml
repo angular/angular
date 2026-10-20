@@ -944,7 +944,7 @@ importers:
         specifier: 8.0.1
         version: 8.0.1
       '@jridgewell/sourcemap-codec':
-        specifier: ^1.4.14
+        specifier: ^1.6.0
         version: 1.6.0
       chokidar:
         specifier: ^5.0.0
