@@ -11,8 +11,7 @@ export class UsesInterface {
   static ɵfac: i0.ɵɵFactoryDeclaration<UsesInterface, never> = function UsesInterface_Factory(
     __ngFactoryType__: any,
   ): any {
-    /* @ts-ignore */
-    return new (__ngFactoryType__ || UsesInterface)(i0.ɵɵinject(myLib.IService));
+    i0.ɵɵinvalidFactory();
   };
   // @ts-ignore
   static ɵprov: i0.ɵɵInjectableDeclaration<any> =
@@ -23,12 +22,7 @@ export class UsesInterface {
       i0.ɵsetClassMetadata(
         UsesInterface,
         [{ type: Injectable }],
-        (): any => [
-          {
-            /* @ts-ignore */
-            type: myLib.IService,
-          },
-        ],
+        (): any => [{ type: undefined }],
         null,
       );
   }
@@ -52,12 +46,7 @@ export class UsesClass {
       i0.ɵsetClassMetadata(
         UsesClass,
         [{ type: Injectable }],
-        (): any => [
-          {
-            /* @ts-ignore */
-            type: myLib.RealService,
-          },
-        ],
+        (): any => [{ type: myLib.RealService }],
         null,
       );
   }

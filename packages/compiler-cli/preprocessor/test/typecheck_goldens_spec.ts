@@ -34,18 +34,6 @@ import {getOrCreateSyntheticNodeModules, pathExists, runPipeline} from './utils.
 const TCB_SUFFIX = '.ngtypecheck.ts';
 
 /**
- * Shared by the standard and optimize variants of `multiline_param_decorator_arg`, which emit the
- * same factory.
- */
-const MULTILINE_PARAM_DECORATOR_ARG_REASON =
-  "the fixture's multi-line `@Inject({...})` argument is spliced into `ɵfac` verbatim, pushing " +
-  '`i0.ɵɵinject(angular.ITimeoutService)` onto a continuation line past the reach of the ' +
-  "factory's single `/* @ts-ignore */`. That guard is attached to the whole return statement by " +
-  '`@angular/compiler` itself, so closing this needs a fix upstream in `r3_factory.ts`; the ' +
-  '`ɵsetClassMetadata` half, which this fixture exists to pin, is clean because its guard sits ' +
-  'on each parameter `type` property assignment.';
-
-/**
  * Cases that report diagnostics the differencing below cannot clear, each with the reason. A case
  * is named as reported (`<golden>` or `<golden> (optimized)`). An entry whose case starts passing
  * is itself reported as a failure, so the list cannot quietly go stale.
@@ -87,8 +75,15 @@ const KNOWN_FAILURES = new Map<string, string>([
       'still reads `WidgetB`. Aliasing is unavoidable in this fixture: all three declarations ' +
       'export the name `Widget`, which is the collision it exists to pin.',
   ],
-  ['multiline_param_decorator_arg', MULTILINE_PARAM_DECORATOR_ARG_REASON],
-  ['multiline_param_decorator_arg (optimized)', MULTILINE_PARAM_DECORATOR_ARG_REASON],
+  [
+    'multiline_param_decorator_arg',
+    "the fixture's multi-line `@Inject({...})` argument is spliced into `ɵfac` verbatim, pushing " +
+      '`i0.ɵɵinject(angular.ITimeoutService)` onto a continuation line past the reach of the ' +
+      "factory's single `/* @ts-ignore */`. That guard is attached to the whole return statement by " +
+      '`@angular/compiler` itself, so closing this needs a fix upstream in `r3_factory.ts`; the ' +
+      '`ɵsetClassMetadata` half, which this fixture exists to pin, is clean because its guard sits ' +
+      'on each parameter `type` property assignment.',
+  ],
 ]);
 
 /**
