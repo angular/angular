@@ -772,7 +772,7 @@ describe('pipe', () => {
       expect(fixture.nativeElement.textContent).toBe('anything');
     });
 
-    describe('pure pipe error handling with multiple arguments', async () => {
+    describe('pure pipe error handling with multiple arguments', () => {
       const args: string[] = new Array(10).fill(':0');
       for (let numberOfPipeArgs = 0; numberOfPipeArgs < args.length; numberOfPipeArgs++) {
         it(`should not invoke ${numberOfPipeArgs} argument pure pipe second time if it throws unless input changes`, () => {

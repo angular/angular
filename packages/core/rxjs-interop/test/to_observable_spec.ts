@@ -19,7 +19,7 @@ import {toObservable} from '../src';
 import {ComponentFixture, TestBed} from '../../testing';
 import {take, toArray} from 'rxjs/operators';
 
-describe('toObservable()', async () => {
+describe('toObservable()', () => {
   let fixture!: ComponentFixture<unknown>;
   let injector!: EnvironmentInjector;
 

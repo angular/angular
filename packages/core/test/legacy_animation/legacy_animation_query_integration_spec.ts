@@ -39,7 +39,7 @@ import {
   provideZoneChangeDetection,
   ViewChild,
 } from '../../src/core';
-import {fakeAsync, flushMicrotasks, TestBed} from '../../testing';
+import {TestBed} from '../../testing';
 
 import {HostListener} from '../../src/metadata/directives';
 
@@ -1278,7 +1278,7 @@ import {HostListener} from '../../src/metadata/directives';
         expect(ancestorElm.contains(parentElm)).toBe(false);
       });
 
-      it('should only retain a to-be-removed node if the inner queried items are apart of an animation issued by an ancestor', fakeAsync(() => {
+      it('should only retain a to-be-removed node if the inner queried items are apart of an animation issued by an ancestor', async () => {
         @Component({
           selector: 'ani-cmp',
           template: `
@@ -1340,7 +1340,7 @@ import {HostListener} from '../../src/metadata/directives';
         let childPlayerComplete = false;
         childPlayer.onDone(() => (childPlayerComplete = true));
         resetLog();
-        flushMicrotasks();
+        await Promise.resolve();
 
         expect(childPlayerComplete).toBe(false);
 
@@ -1353,7 +1353,7 @@ import {HostListener} from '../../src/metadata/directives';
         expect(twoPlayers.length).toEqual(1); // the header element
         expect(ancestorElm.contains(parentElm)).toBe(false);
         expect(childPlayerComplete).toBe(true);
-      }));
+      });
 
       it('should finish queried players in an animation when the next animation takes over', () => {
         @Component({
@@ -2349,7 +2349,7 @@ import {HostListener} from '../../src/metadata/directives';
         expect(p1cp.element.classList.contains('child')).toBeTruthy();
       });
 
-      it('should emulate a leave animation on the nearest sub host elements when a parent is removed', fakeAsync(() => {
+      it('should emulate a leave animation on the nearest sub host elements when a parent is removed', async () => {
         @Component({
           selector: 'ani-cmp',
           template: `
@@ -2409,13 +2409,13 @@ import {HostListener} from '../../src/metadata/directives';
 
         cmp.exp = false;
         fixture.detectChanges();
-        flushMicrotasks();
+        await Promise.resolve();
 
         expect(cmp.childEvent.toState).toEqual('void');
         expect(cmp.childEvent.totalTime).toEqual(1000);
         expect(childCmp.childEvent.toState).toEqual('void');
         expect(childCmp.childEvent.totalTime).toEqual(1000);
-      }));
+      });
 
       it("should emulate a leave animation on a sub component's inner elements when a parent leave animation occurs with animateChild", () => {
         @Component({
@@ -2563,7 +2563,7 @@ import {HostListener} from '../../src/metadata/directives';
         ]);
       });
 
-      it('should not cause a removal of inner @trigger DOM nodes when a parent animation occurs', fakeAsync(() => {
+      it('should not cause a removal of inner @trigger DOM nodes when a parent animation occurs', async () => {
         @Component({
           selector: 'ani-cmp',
           template: `
@@ -2597,18 +2597,18 @@ import {HostListener} from '../../src/metadata/directives';
 
         cmp.exp = true;
         fixture.detectChanges();
-        flushMicrotasks();
+        await Promise.resolve();
 
         cmp.exp = false;
         fixture.detectChanges();
-        flushMicrotasks();
+        await Promise.resolve();
 
         const players = getLog();
         expect(players.length).toEqual(1);
 
         const element = players[0].element;
         expect(element.innerText.trim()).toMatch(/this\s+child/gm);
-      }));
+      });
 
       it('should only mark outermost *directive nodes :enter and :leave when inserts and removals occur', () => {
         @Component({
@@ -2787,7 +2787,7 @@ import {HostListener} from '../../src/metadata/directives';
         expect(p3.element.classList.contains('page2')).toBe(true);
       });
 
-      it('should emulate leave animation callbacks for all sub elements that have leave triggers within the component', fakeAsync(() => {
+      it('should emulate leave animation callbacks for all sub elements that have leave triggers within the component', async () => {
         @Component({
           selector: 'ani-cmp',
           animations: [
@@ -2845,12 +2845,12 @@ import {HostListener} from '../../src/metadata/directives';
 
         cmp.exp = true;
         fixture.detectChanges();
-        flushMicrotasks();
+        await Promise.resolve();
         cmp.log = [];
 
         cmp.exp = false;
         fixture.detectChanges();
-        flushMicrotasks();
+        await Promise.resolve();
         expect(cmp.log).toEqual([
           'c1-start',
           'c1-done',
@@ -2861,7 +2861,7 @@ import {HostListener} from '../../src/metadata/directives';
           'c3-done',
           'p-done',
         ]);
-      }));
+      });
 
       it('should build, but not run sub triggers when a parent animation is scheduled', () => {
         @Component({
@@ -2917,7 +2917,7 @@ import {HostListener} from '../../src/metadata/directives';
         expect((engine.players[0] as TransitionAnimationPlayer).getRealPlayer()).toBe(players[1]);
       });
 
-      it('should fire and synchronize the start/done callbacks on sub triggers even if they are not allowed to animate within the animation', fakeAsync(() => {
+      it('should fire and synchronize the start/done callbacks on sub triggers even if they are not allowed to animate within the animation', async () => {
         @Component({
           selector: 'parent-cmp',
           animations: [
@@ -2981,7 +2981,7 @@ import {HostListener} from '../../src/metadata/directives';
         const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(ParentCmp);
         fixture.detectChanges();
-        flushMicrotasks();
+        await Promise.resolve();
 
         const cmp = fixture.componentInstance;
         const child = cmp.childCmp;
@@ -2994,7 +2994,7 @@ import {HostListener} from '../../src/metadata/directives';
         cmp.exp = 'go';
         cmp.childCmp.exp = 'go';
         fixture.detectChanges();
-        flushMicrotasks();
+        await Promise.resolve();
 
         expect(cmp.log).toEqual(['parent-start']);
         expect(child.log).toEqual(['child-start']);
@@ -3010,13 +3010,13 @@ import {HostListener} from '../../src/metadata/directives';
         child.log = [];
         cmp.remove = true;
         fixture.detectChanges();
-        flushMicrotasks();
+        await Promise.resolve();
 
         expect(cmp.log).toEqual(['parent-start', 'parent-done']);
         expect(child.log).toEqual(['child-start', 'child-done']);
-      }));
+      });
 
-      it('should fire and synchronize the start/done callbacks on multiple blocked sub triggers', fakeAsync(() => {
+      it('should fire and synchronize the start/done callbacks on multiple blocked sub triggers', async () => {
         @Component({
           selector: 'cmp',
           animations: [
@@ -3079,7 +3079,7 @@ import {HostListener} from '../../src/metadata/directives';
         const engine = TestBed.inject(ɵAnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         fixture.detectChanges();
-        flushMicrotasks();
+        await Promise.resolve();
 
         const cmp = fixture.componentInstance;
         cmp.log = [];
@@ -3088,7 +3088,7 @@ import {HostListener} from '../../src/metadata/directives';
         cmp.child1Exp = 'go';
         cmp.child2Exp = 'go';
         fixture.detectChanges();
-        flushMicrotasks();
+        await Promise.resolve();
 
         expect(cmp.log).toEqual(['parent1-start', 'parent2-start', 'child1-start', 'child2-start']);
 
@@ -3097,8 +3097,8 @@ import {HostListener} from '../../src/metadata/directives';
         cmp.child1Exp = 'go-again';
         cmp.child2Exp = 'go-again';
         fixture.detectChanges();
-        flushMicrotasks();
-      }));
+        await Promise.resolve();
+      });
 
       it('should stretch the starting keyframe of a child animation queries are issued by the parent', () => {
         @Component({
@@ -3402,7 +3402,7 @@ import {HostListener} from '../../src/metadata/directives';
         expect(pcp.element.classList.contains('item')).toBeTruthy();
       });
 
-      it('should correctly remove a leaving element queried/animated by a parent queried via animateChild', fakeAsync(() => {
+      it('should correctly remove a leaving element queried/animated by a parent queried via animateChild', async () => {
         @Component({
           selector: 'cmp',
           template: `
@@ -3442,13 +3442,13 @@ import {HostListener} from '../../src/metadata/directives';
 
         cmp.childPresent = false;
         fixture.detectChanges();
-        flushMicrotasks();
+        await Promise.resolve();
 
         engine.players.forEach((player) => player.finish());
 
         children = fixture.debugElement.nativeElement.querySelectorAll('.child');
         expect(children.length).toEqual(0);
-      }));
+      });
 
       it('should correctly animate state styles of the root element applied via animate inside a group (independently of the order)', () => {
         @Component({

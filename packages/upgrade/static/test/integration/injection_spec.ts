@@ -7,7 +7,6 @@
  */
 
 import {destroyPlatform, InjectionToken, Injector, NgModule} from '@angular/core';
-import {waitForAsync} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
@@ -28,7 +27,7 @@ withEachNg1Version(() => {
     beforeEach(() => destroyPlatform());
     afterEach(() => destroyPlatform());
 
-    it('should downgrade ng2 service to ng1', waitForAsync(() => {
+    it('should downgrade ng2 service to ng1', async () => {
       // Tokens used in ng2 to identify services
       const Ng2Service = new InjectionToken('ng2-service');
 
@@ -46,13 +45,17 @@ withEachNg1Version(() => {
         .module_('ng1Module', [])
         .factory('ng2Service', downgradeInjectable(Ng2Service));
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, html('<div>'), ng1Module).then((upgrade) => {
-        const ng1Injector = upgrade.$injector;
-        expect(ng1Injector.get('ng2Service')).toBe('ng2 service value');
-      });
-    }));
+      const upgrade = await bootstrap(
+        platformBrowserDynamic(),
+        Ng2Module,
+        html('<div>'),
+        ng1Module,
+      );
+      const ng1Injector = upgrade.$injector;
+      expect(ng1Injector.get('ng2Service')).toBe('ng2 service value');
+    });
 
-    it('should upgrade ng1 service to ng2', waitForAsync(() => {
+    it('should upgrade ng1 service to ng2', async () => {
       // Tokens used in ng2 to identify services
       const Ng1Service = new InjectionToken('ng1-service');
 
@@ -75,13 +78,17 @@ withEachNg1Version(() => {
       // create the ng1 module that will import an ng2 service
       const ng1Module = angular.module_('ng1Module', []).value('ng1Service', 'ng1 service value');
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, html('<div>'), ng1Module).then((upgrade) => {
-        const ng2Injector = upgrade.injector;
-        expect(ng2Injector.get(Ng1Service)).toBe('ng1 service value');
-      });
-    }));
+      const upgrade = await bootstrap(
+        platformBrowserDynamic(),
+        Ng2Module,
+        html('<div>'),
+        ng1Module,
+      );
+      const ng2Injector = upgrade.injector;
+      expect(ng2Injector.get(Ng1Service)).toBe('ng1 service value');
+    });
 
-    it('should initialize the upgraded injector before application run blocks are executed', waitForAsync(() => {
+    it('should initialize the upgraded injector before application run blocks are executed', async () => {
       let runBlockTriggered = false;
 
       const ng1Module = angular.module_('ng1Module', []).run([
@@ -97,12 +104,11 @@ withEachNg1Version(() => {
         ngDoBootstrap() {}
       }
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, html('<div>'), ng1Module).then(() => {
-        expect(runBlockTriggered).toBeTruthy();
-      });
-    }));
+      await bootstrap(platformBrowserDynamic(), Ng2Module, html('<div>'), ng1Module);
+      expect(runBlockTriggered).toBeTruthy();
+    });
 
-    it('should allow resetting angular at runtime', waitForAsync(() => {
+    it('should allow resetting angular at runtime', async () => {
       let wrappedBootstrapCalled = false;
 
       const n: any = getAngularJSGlobal();
@@ -126,9 +132,9 @@ withEachNg1Version(() => {
 
       const ng1Module = angular.module_('ng1Module', []);
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, html('<div>'), ng1Module)
-        .then((upgrade) => expect(wrappedBootstrapCalled).toBe(true))
-        .then(() => setAngularJSGlobal(n)); // Reset the AngularJS global.
-    }));
+      await bootstrap(platformBrowserDynamic(), Ng2Module, html('<div>'), ng1Module);
+      expect(wrappedBootstrapCalled).toBe(true);
+      setAngularJSGlobal(n); // Reset the AngularJS global.
+    });
   });
 });
