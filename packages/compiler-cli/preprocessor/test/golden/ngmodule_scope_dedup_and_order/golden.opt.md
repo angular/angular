@@ -59,7 +59,7 @@ export class AppComp {
           i0.ɵɵelement(0, 'div', 0);
         }
       },
-      dependencies: [i1.DirB, i1.DirX, i1.InternalDir],
+      dependencies: [i1.DirX, i1.DirB, i2.PublicDir],
       encapsulation: 2,
     });
   static {

@@ -114,7 +114,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                 }
             }
 
-            resolved_declarations
+            deduplicate_ngmodule_scope(resolved_declarations)
         }
         .boxed()
     }
@@ -198,7 +198,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         }
 
         Arc::new(crate::query::keys::NgModuleImportsScopeData {
-            declarations: resolved_declarations,
+            declarations: deduplicate_ngmodule_scope(resolved_declarations),
             is_complete,
         })
     }
@@ -281,6 +281,25 @@ fn find_ng_module(
         .find(|cs| cs.reference_id == reference_id)?;
 
     class.as_ng_module()
+}
+
+/// Deduplicates scope declarations with JavaScript `Map::set` semantics: the first occurrence of a
+/// `ReferenceId` determines its position in the scope, while later occurrences overwrite the entry
+/// at that position (updating `reference` / `owning_reference` to the latest re-export or local
+/// declaration, matching ngtsc's `LocalModuleScopeRegistry.getExportedScope` / `compilationDirectives`).
+fn deduplicate_ngmodule_scope(declarations: Vec<DeclarationData>) -> Vec<DeclarationData> {
+    let mut index_by_id: HashMap<DeclKey, usize> = HashMap::with_capacity(declarations.len());
+    let mut result: Vec<DeclarationData> = Vec::with_capacity(declarations.len());
+    for decl in declarations {
+        let key = (decl.reference.file, decl.reference.name.clone());
+        if let Some(&idx) = index_by_id.get(&key) {
+            result[idx] = decl;
+        } else {
+            index_by_id.insert(key, result.len());
+            result.push(decl);
+        }
+    }
+    result
 }
 
 /// `(declaring file, declared name)` stand-in for upstream's declaration-node key.
