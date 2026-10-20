@@ -649,14 +649,14 @@ export class RequiredValidationError extends BaseNgValidationError {
 // @public
 export interface RootFieldContext<TValue> {
     readonly fieldTree: ReadonlyFieldTree<TValue>;
-    fieldTreeOf<PModel>(p: SchemaPathTree<PModel>): [PModel] extends [any] ? ReadonlyFieldTree<PModel> : never;
+    fieldTreeOf<PModel>(this: void, p: SchemaPathTree<PModel>): [PModel] extends [any] ? ReadonlyFieldTree<PModel> : never;
     readonly pathKeys: Signal<readonly string[]>;
     readonly state: ReadonlyFieldState<TValue>;
-    stateOf<PControl extends AbstractControl>(p: CompatSchemaPath<PControl>): [PControl] extends [any] ? ReadonlyCompatFieldState<PControl> : never;
+    stateOf<PControl extends AbstractControl>(this: void, p: CompatSchemaPath<PControl>): [PControl] extends [any] ? ReadonlyCompatFieldState<PControl> : never;
     // (undocumented)
-    stateOf<PValue>(p: SchemaPath<PValue, SchemaPathRules>): [PValue] extends [any] ? ReadonlyFieldState<PValue> : never;
+    stateOf<PValue>(this: void, p: SchemaPath<PValue, SchemaPathRules>): [PValue] extends [any] ? ReadonlyFieldState<PValue> : never;
     readonly value: Signal<TValue>;
-    valueOf<PValue>(p: SchemaPath<PValue, SchemaPathRules>): PValue;
+    valueOf<PValue>(this: void, p: SchemaPath<PValue, SchemaPathRules>): PValue;
 }
 
 // @public
