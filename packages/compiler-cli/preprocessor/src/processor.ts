@@ -31,6 +31,7 @@ import {
   compileClassDebugInfo,
   compileComponentClassMetadata,
   compileComponentFromMetadata,
+  compileCtorParameters,
   compileDeferResolverFunction,
   compileDirectiveFromMetadata,
   compileFactoryFunction,
@@ -517,6 +518,24 @@ export function processFileSync(
           query.propertySpan!.start,
           `@${coreNamespace}.${decoratorName}(${predicateStr}, ${optionsStr}) `,
         );
+      }
+
+      if (!ctx.emitDeclarationOnly && constructorParams && constructorParams.length > 0) {
+        const ctorParams = buildCtorParametersExpr(
+          constructorParams,
+          s,
+          /* omitEmptyDecorators */ true,
+        );
+        if (ctorParams) {
+          const ctorExpr = compileCtorParameters(ctorParams, /* allowSuppressions */ true);
+          const jsdoc = ctx.isClosureCompilerEnabled
+            ? '/** @internal @nocollapse */'
+            : '/** @internal */';
+          s.appendLeft(
+            span.end - 1,
+            `\n  ${jsdoc}\n  static ctorParameters = ${printer.print(ctorExpr)};\n`,
+          );
+        }
       }
 
       continue;
@@ -2119,6 +2138,7 @@ function buildDecoratorMetadataExpr(
 function buildCtorParametersExpr(
   constructorParams: nga.ConstructorParamMetadata[] | undefined,
   s: MagicString,
+  omitEmptyDecorators = false,
 ): R3ClassMetadataCtorParameter[] | null {
   if (constructorParams == null) {
     return null;
@@ -2130,7 +2150,9 @@ function buildCtorParametersExpr(
       const ngDecorators = param.decorators
         .filter((d) => d.isAngular)
         .map((d) => buildDecoratorMetadataExpr(d.name, d.argsSpan, d.argsString, s, []));
-      decorators = o.literalArr(ngDecorators);
+      if (!omitEmptyDecorators || ngDecorators.length > 0) {
+        decorators = o.literalArr(ngDecorators);
+      }
     }
     return {
       type: typeName == null ? null : o.variable(typeName),

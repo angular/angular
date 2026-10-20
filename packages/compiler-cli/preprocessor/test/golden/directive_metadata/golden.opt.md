@@ -40,6 +40,9 @@ export class FullDir extends BaseDir {
   }
 
   ngOnChanges() {}
+
+  /** @internal */
+  static ctorParameters = (): any => [{ type: TemplateRef }];
 }
 
 @Directive({
