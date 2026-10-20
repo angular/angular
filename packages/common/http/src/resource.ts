@@ -210,7 +210,7 @@ export interface HttpResourceFn {
  *
  * @publicApi 22.0
  */
-export const httpResource: HttpResourceFn = (() => {
+export const httpResource: HttpResourceFn = /* @__PURE__ */ (() => {
   const jsonFn = makeHttpResourceFn<unknown>('json') as HttpResourceFn;
   jsonFn.arrayBuffer = makeHttpResourceFn<ArrayBuffer>('arraybuffer');
   jsonFn.blob = makeHttpResourceFn('blob');
