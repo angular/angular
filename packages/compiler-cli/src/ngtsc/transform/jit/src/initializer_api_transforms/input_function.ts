@@ -52,14 +52,13 @@ export const signalInputsTransform: PropertyTransform = (
     return member.node;
   }
 
-  const fields: Record<keyof Required<core.Input>, ts.Expression> = {
+  // For signal inputs, transforms are captured by the input signal. The runtime will
+  // determine whether a transform needs to be run via the input signal, so the `transform`
+  // option is omitted.
+  const fields: Record<Exclude<keyof core.Input, 'transform'>, ts.Expression> = {
     'isSignal': factory.createTrue(),
     'alias': factory.createStringLiteral(inputMapping.bindingPropertyName),
     'required': inputMapping.required ? factory.createTrue() : factory.createFalse(),
-    // For signal inputs, transforms are captured by the input signal. The runtime will
-    // determine whether a transform needs to be run via the input signal, so the `transform`
-    // option is always `undefined`.
-    'transform': factory.createIdentifier('undefined'),
   };
 
   const newDecorator = factory.createDecorator(
@@ -91,7 +90,7 @@ export const signalInputsTransform: PropertyTransform = (
   return factory.updatePropertyDeclaration(
     member.node,
     [newDecorator, ...(member.node.modifiers ?? [])],
-    member.name,
+    member.node.name,
     member.node.questionToken,
     member.node.type,
     member.node.initializer,
