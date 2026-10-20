@@ -1740,157 +1740,72 @@ describe('Router resources integration', () => {
         expect(ordersRoute.resources!['orders'].value()).toEqual(['orders-for-maintainer']);
       });
 
-      it('should update inherited ActivatedRoute.resources dictionary when a route is reused under a new parent', async () => {
-        // Validates that the component-facing `ActivatedRoute.resources` and `snapshot.resources`
-        // dictionaries reflect the active parent when a route is re-attached under a new parent.
-        // (Note: Reactive dependency chaining via `chain(ctx.resources()[...])` across destroyed
-        // ancestor injectors is intentionally not supported.)
-        class ReusableStrategy implements RouteReuseStrategy {
-          private handles = new Map<string, DetachedRouteHandle>();
-
-          shouldDetach(route: ActivatedRouteSnapshot): boolean {
-            return !!route.routeConfig?.data?.['reusable'];
-          }
-          store(route: ActivatedRouteSnapshot, handle: DetachedRouteHandle | null): void {
-            if (route.routeConfig?.path && handle) {
-              this.handles.set(route.routeConfig.path, handle);
-            } else if (route.routeConfig?.path) {
-              this.handles.delete(route.routeConfig.path);
-            }
-          }
-          shouldAttach(route: ActivatedRouteSnapshot): boolean {
-            return !!(route.routeConfig?.path && this.handles.has(route.routeConfig.path));
-          }
-          retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle | null {
-            return (route.routeConfig?.path && this.handles.get(route.routeConfig.path)) ?? null;
-          }
-          shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean {
-            return future.routeConfig === curr.routeConfig;
-          }
-        }
-
-        const childRouteConfig: Route = {
-          path: 'child',
-          component: TargetCmp,
-          data: {reusable: true},
-          resources: () => ({
-            childRes: resource({loader: async () => 'child-data'}),
-          }),
-        };
+      it('should maintain stable ActivatedRoute.resources reference across route reuse while updating underlying signals', async () => {
+        let userDeferred = promiseWithResolvers<{id: string; role: string}>();
 
         const {harness, router} = await setupRouter([
           {
-            path: 'parent1',
-            component: ShellCmp,
-            resources: () => ({
-              parent1Res: resource({loader: async () => 'parent1-data'}),
-            }),
-            children: [childRouteConfig],
-          },
-          {
-            path: 'parent2',
-            component: ShellCmp,
-            resources: () => ({
-              parent2Res: resource({loader: async () => 'parent2-data'}),
-            }),
-            children: [childRouteConfig],
-          },
-          {
-            path: 'other',
+            path: 'user/:id',
             component: TargetCmp,
+            resources: (ctx) => ({
+              user: resource({
+                params: () => ctx.params()['id'],
+                loader: () => userDeferred.promise,
+              }),
+            }),
+            children: [
+              {
+                path: 'details',
+                component: TargetCmp,
+                resources: (ctx) => ({
+                  details: resource({
+                    params: ({chain}) => (chain(ctx.resources()['user']) as any).role,
+                    loader: async ({params: role}) => `${role}-details`,
+                  }),
+                }),
+              },
+            ],
           },
         ]);
-        router.routeReuseStrategy = new ReusableStrategy();
 
-        // 1. Initial navigation to /parent1/child
-        await harness.navigateByUrl('/parent1/child');
-        const initialChild = router.routerState.root.firstChild!.firstChild!;
-        expect(initialChild.resources?.['parent1Res']?.value()).toBe('parent1-data');
-        expect(initialChild.resources?.['childRes']?.value()).toBe('child-data');
-        expect(initialChild.resources?.['parent2Res']).toBeUndefined();
+        // 1. Initial navigation to /user/1/details
+        userDeferred.resolve({id: '1', role: 'admin'});
+        await harness.navigateByUrl('/user/1/details');
 
-        // 2. Navigate away to /other, causing child to be detached & stored
-        await harness.navigateByUrl('/other');
+        const parentRoute = router.routerState.root.firstChild!;
+        const childRoute = parentRoute.firstChild!;
 
-        // 3. Navigate to /parent2/child, re-attaching the stored child under parent2
-        await harness.navigateByUrl('/parent2/child');
-        const reattachedChild = router.routerState.root.firstChild!.firstChild!;
-        expect(reattachedChild).toBe(initialChild);
+        const initialParentResources = parentRoute.resources;
+        const initialChildResources = childRoute.resources;
+        const initialUserResource = childRoute.resources!['user'];
+        const initialDetailsResource = childRoute.resources!['details'];
 
-        // Inherited resources must be updated to parent2's resources (and no longer retain parent1's)
-        expect(reattachedChild.resources?.['parent2Res']?.value()).toBe('parent2-data');
-        expect(reattachedChild.resources?.['parent1Res']).toBeUndefined();
-        expect(reattachedChild.resources?.['childRes']?.value()).toBe('child-data');
-        expect(reattachedChild.snapshot.resources?.['parent2Res']?.value()).toBe('parent2-data');
-        expect(reattachedChild.snapshot.resources?.['parent1Res']).toBeUndefined();
-      });
+        expect(initialUserResource.value()).toEqual({id: '1', role: 'admin'});
+        expect(initialDetailsResource.value()).toBe('admin-details');
 
-      it('should update inherited ActivatedRoute.resources when a route without own resources is reused under a new parent', async () => {
-        class ReusableStrategy implements RouteReuseStrategy {
-          private handles = new Map<string, DetachedRouteHandle>();
+        // 2. Re-navigate to /user/2/details (reusing both parent and child routes)
+        userDeferred = promiseWithResolvers<{id: string; role: string}>();
+        const nav = harness.navigateByUrl('/user/2/details');
+        userDeferred.resolve({id: '2', role: 'viewer'});
+        await nav;
 
-          shouldDetach(route: ActivatedRouteSnapshot): boolean {
-            return !!route.routeConfig?.data?.['reusable'];
-          }
-          store(route: ActivatedRouteSnapshot, handle: DetachedRouteHandle | null): void {
-            if (route.routeConfig?.path && handle) {
-              this.handles.set(route.routeConfig.path, handle);
-            } else if (route.routeConfig?.path) {
-              this.handles.delete(route.routeConfig.path);
-            }
-          }
-          shouldAttach(route: ActivatedRouteSnapshot): boolean {
-            return !!(route.routeConfig?.path && this.handles.has(route.routeConfig.path));
-          }
-          retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle | null {
-            return (route.routeConfig?.path && this.handles.get(route.routeConfig.path)) ?? null;
-          }
-          shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean {
-            return future.routeConfig === curr.routeConfig;
-          }
-        }
+        expect(router.url).toBe('/user/2/details');
 
-        const sharedChild: Route = {
-          path: 'detail',
-          component: TargetCmp,
-          data: {reusable: true},
-        };
+        // Verify that ActivatedRoute.resources dictionary reference is strictly preserved
+        expect(parentRoute.resources).toBe(initialParentResources);
+        expect(childRoute.resources).toBe(initialChildResources);
 
-        const {harness, router} = await setupRouter([
-          {
-            path: 'section-a',
-            component: ShellCmp,
-            resources: () => ({
-              sectionData: resource({loader: async () => 'data-from-a'}),
-            }),
-            children: [sharedChild],
-          },
-          {
-            path: 'section-b',
-            component: ShellCmp,
-            resources: () => ({
-              sectionData: resource({loader: async () => 'data-from-b'}),
-            }),
-            children: [sharedChild],
-          },
-          {
-            path: 'other',
-            component: TargetCmp,
-          },
-        ]);
-        router.routeReuseStrategy = new ReusableStrategy();
+        // Verify that the Resource instances inside the dictionary are identical references
+        expect(childRoute.resources!['user']).toBe(initialUserResource);
+        expect(childRoute.resources!['details']).toBe(initialDetailsResource);
 
-        await harness.navigateByUrl('/section-a/detail');
-        const detailRouteA = router.routerState.root.firstChild!.firstChild!;
-        expect(detailRouteA.resources?.['sectionData']?.value()).toBe('data-from-a');
+        // Verify that the underlying resource signals updated reactively in-place
+        expect(childRoute.resources!['user'].value()).toEqual({id: '2', role: 'viewer'});
+        expect(childRoute.resources!['details'].value()).toBe('viewer-details');
 
-        await harness.navigateByUrl('/other');
-
-        await harness.navigateByUrl('/section-b/detail');
-        const detailRouteB = router.routerState.root.firstChild!.firstChild!;
-        expect(detailRouteB).toBe(detailRouteA);
-        expect(detailRouteB.resources?.['sectionData']?.value()).toBe('data-from-b');
-        expect(detailRouteB.snapshot.resources?.['sectionData']?.value()).toBe('data-from-b');
+        // Verify that any component or consumer that captured the dictionary initially sees the updates
+        expect(initialChildResources!['user'].value()).toEqual({id: '2', role: 'viewer'});
+        expect(initialChildResources!['details'].value()).toBe('viewer-details');
       });
     });
 

@@ -41,22 +41,22 @@ import {switchTap} from './switch_tap';
  * is still pending.
  */
 function initializeRouteResources(route: ActivatedRoute): void {
-  // Note: Inherited resources on `ActivatedRoute.resources` are updated top-down at navigation
-  // finalization time. However, if a custom `RouteReuseStrategy` detaches a child route while an
-  // ancestor route with `resources` is deactivated, the ancestor's `_localInjector` (and its resources)
-  // will be destroyed on deactivation. Reactive dependency chaining (`chain(ctx.resources()[...])`)
-  // across a destroyed ancestor is not supported when reattaching the child under a new parent.
-  if (!route.routeConfig?.resources) {
-    route._resourceContextSignal = route.parent?._resourceContextSignal;
+  if (route._resourceContextSignal !== undefined) {
     return;
   }
-  if (route._resourceContextSignal !== undefined) {
+  // Note: Inherited resources are bound to the parent `ActivatedRoute` at activation time.
+  // If a custom `RouteReuseStrategy` detaches a child route while an ancestor route with
+  // `resources` is deactivated, the ancestor's `_localInjector` (and its resources) will be
+  // destroyed on deactivation, which is not supported when reattaching the child under a new parent.
+  const parentContextSignal = route.parent?._resourceContextSignal;
+  if (!route.routeConfig?.resources) {
+    route._resourceContextSignal = parentContextSignal;
     return;
   }
   const ownRawResources = signal<ResourceResult | undefined>(undefined);
   route._ownRawResourcesSignal = ownRawResources;
   route._resourceContextSignal = computed(() => {
-    const parentResources = route.parent?._resourceContextSignal?.();
+    const parentResources = parentContextSignal?.();
     const ownResources = ownRawResources();
     if (ownResources === undefined) {
       if (isInParamsFunction()) {
@@ -129,7 +129,7 @@ function finalizeResources(
 ): void {
   const route = stateNode.value;
   if (route && route._resourceContextSignal) {
-    route.resources = {
+    route.resources ??= {
       ...route.parent?.resources,
       ...route._ownResources,
     };
