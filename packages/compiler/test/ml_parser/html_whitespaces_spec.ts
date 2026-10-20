@@ -15,11 +15,15 @@ import {TokenizeOptions} from '../../src/ml_parser/lexer';
 import {humanizeDom} from './ast_spec_utils';
 
 describe('removeWhitespaces', () => {
-  function parseAndRemoveWS(template: string, options?: TokenizeOptions): any[] {
+  function parseAndRemoveWS(
+    template: string,
+    options?: TokenizeOptions,
+    preserveSignificantWhitespace = true,
+  ): any[] {
     return humanizeDom(
       removeWhitespaces(
         new HtmlParser().parse(template, 'TestComp', options),
-        true /* preserveSignificantWhitespace */,
+        preserveSignificantWhitespace,
       ),
     );
   }
@@ -100,6 +104,55 @@ describe('removeWhitespaces', () => {
         ['\u00a0', '&nbsp;'],
         [''],
         ['\u00a0', '&nbsp;'],
+        [''],
+      ],
+    ]);
+  });
+
+  it('should not replace non-ASCII spaces produced by HTML entities', () => {
+    expect(parseAndRemoveWS('&emsp;&ensp;&thinsp;')).toEqual([
+      [
+        html.Text,
+        '\u2003\u2002\u2009',
+        0,
+        [''],
+        ['\u2003', '&emsp;'],
+        [''],
+        ['\u2002', '&ensp;'],
+        [''],
+        ['\u2009', '&thinsp;'],
+        [''],
+      ],
+    ]);
+  });
+
+  it('should preserve non-ASCII spaces between elements', () => {
+    expect(parseAndRemoveWS('<span>foo</span>&emsp;<span>bar</span>')).toEqual([
+      [html.Element, 'span', 0],
+      [html.Text, 'foo', 1, ['foo']],
+      [html.Text, '\u2003', 0, [''], ['\u2003', '&emsp;'], ['']],
+      [html.Element, 'span', 0],
+      [html.Text, 'bar', 1, ['bar']],
+    ]);
+  });
+
+  it('should preserve non-ASCII spaces when significant whitespace is not preserved', () => {
+    expect(
+      parseAndRemoveWS(
+        '<div>&emsp;foo&emsp;</div>',
+        undefined,
+        false /* preserveSignificantWhitespace */,
+      ),
+    ).toEqual([
+      [html.Element, 'div', 0],
+      [
+        html.Text,
+        '\u2003foo\u2003',
+        1,
+        [''],
+        ['\u2003', '&emsp;'],
+        ['foo'],
+        ['\u2003', '&emsp;'],
         [''],
       ],
     ]);

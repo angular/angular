@@ -15,11 +15,14 @@ export const PRESERVE_WS_ATTR_NAME = 'ngPreserveWhitespaces';
 
 const SKIP_WS_TRIM_TAGS = new Set(['pre', 'template', 'textarea', 'script', 'style']);
 
-// Equivalent to \s with \u00a0 (non-breaking space) excluded.
-// Based on https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp
-const WS_CHARS = ' \f\n\r\t\v\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff';
+// Whitespace characters that are safe to collapse and trim when processing templates.
+// Unicode space characters (e.g. the ones produced by `&ensp;`, `&emsp;`, `&thinsp;`
+// or `&nbsp;`) are significant content and are intentionally excluded.
+const WS_CHARS = ' \f\n\r\t\v\u180e\u2028\u2029\ufeff';
 const NO_WS_REGEXP = new RegExp(`[^${WS_CHARS}]`);
 const WS_REPLACE_REGEXP = new RegExp(`[${WS_CHARS}]{2,}`, 'g');
+const TRIM_START_REGEXP = new RegExp(`^[${WS_CHARS}]+`);
+const TRIM_END_REGEXP = new RegExp(`[${WS_CHARS}]+$`);
 
 function hasPreserveWhitespacesAttr(attrs: html.Attribute[]): boolean {
   return attrs.some((attr: html.Attribute) => attr.name === PRESERVE_WS_ATTR_NAME);
@@ -281,7 +284,7 @@ function trimLeadingWhitespace(
   const isFirstTokenInTag = !context?.prev;
   if (!isFirstTokenInTag) return token;
 
-  return transformTextToken(token, (text) => text.trimStart());
+  return transformTextToken(token, (text) => text.replace(TRIM_START_REGEXP, ''));
 }
 
 function trimTrailingWhitespace(
@@ -293,7 +296,7 @@ function trimTrailingWhitespace(
   const isLastTokenInTag = !context?.next;
   if (!isLastTokenInTag) return token;
 
-  return transformTextToken(token, (text) => text.trimEnd());
+  return transformTextToken(token, (text) => text.replace(TRIM_END_REGEXP, ''));
 }
 
 function trimLeadingAndTrailingWhitespace(
@@ -303,8 +306,10 @@ function trimLeadingAndTrailingWhitespace(
   const isFirstTokenInTag = !context?.prev;
   const isLastTokenInTag = !context?.next;
 
-  const maybeTrimmedStart = isFirstTokenInTag ? text.trimStart() : text;
-  const maybeTrimmed = isLastTokenInTag ? maybeTrimmedStart.trimEnd() : maybeTrimmedStart;
+  const maybeTrimmedStart = isFirstTokenInTag ? text.replace(TRIM_START_REGEXP, '') : text;
+  const maybeTrimmed = isLastTokenInTag
+    ? maybeTrimmedStart.replace(TRIM_END_REGEXP, '')
+    : maybeTrimmedStart;
   return maybeTrimmed;
 }
 
