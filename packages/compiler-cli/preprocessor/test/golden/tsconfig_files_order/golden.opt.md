@@ -20,8 +20,6 @@ function _tcb1(this: i0.ASecondComp) {
 import { Component } from '@angular/core';
 // @ts-ignore
 import * as i0 from '@angular/core';
-// @ts-ignore
-import * as i1 from './z_first';
 
 export class ASecondComp {
   // @ts-ignore
@@ -54,7 +52,6 @@ export class ASecondComp {
           i0.ɵɵelement(0, 'z-first');
         }
       },
-      dependencies: [i1.ZFirstComp],
       encapsulation: 2,
     });
   static {
@@ -140,7 +137,7 @@ export class AppModule {
   (typeof ngJitMode === 'undefined' || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(AppModule, { declarations: [ZFirstComp, ASecondComp] });
 })();
-i0.ɵɵsetComponentScope(ZFirstComp, [ASecondComp], []);
+i0.ɵɵsetComponentScope(ASecondComp, [ZFirstComp], []);
 
 ```
 
@@ -166,6 +163,8 @@ function _tcb1(this: i0.ZFirstComp) {
 import { Component } from '@angular/core';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './a_second';
 
 export class ZFirstComp {
   // @ts-ignore
@@ -198,6 +197,7 @@ export class ZFirstComp {
           i0.ɵɵelement(0, 'a-second');
         }
       },
+      dependencies: [i1.ASecondComp],
       encapsulation: 2,
     });
   static {
