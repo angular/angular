@@ -463,6 +463,15 @@ describe('R3 template transform', () => {
         ['BoundAttribute', BindingType.Class, `data-[size='large']:p-8`, 'expr3'],
       ]);
     });
+
+    it('should not attach i18n metadata for bound properties named after Object.prototype members', () => {
+      const {nodes} = parse('<div [valueOf]="v" [constructor]="c" *toString="s"></div>');
+      const template = nodes[0] as t.Template;
+      expect(template.templateAttrs[0].i18n).toBeUndefined();
+      const element = template.children[0] as t.Element;
+      expect(element.inputs[0].i18n).toBeUndefined();
+      expect(element.inputs[1].i18n).toBeUndefined();
+    });
   });
 
   describe('animation bindings', () => {
