@@ -90,7 +90,7 @@ pub(crate) fn ts_class_di_facts<'a>(
         reference_id,
         class_name,
         is_injectable,
-        ctor_param_count: super::constructor_param_count(class),
+        ctor_param_count: super::constructor_param_count(class, false),
         ctor_deps_invalid: ctor_params_di
             .is_some_and(|params| params.iter().any(|param| param.missing_token().is_some())),
         super_class,
@@ -117,7 +117,7 @@ pub(crate) fn dts_class_di_facts(
         reference_id,
         class_name,
         is_injectable,
-        ctor_param_count: super::constructor_param_count(class),
+        ctor_param_count: super::constructor_param_count(class, true),
         // `.d.ts` constructors lack the `@Inject()` metadata to tell, so ngtsc accepts them.
         ctor_deps_invalid: false,
         super_class,

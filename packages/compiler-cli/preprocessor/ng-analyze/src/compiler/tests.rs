@@ -6938,3 +6938,99 @@ fn test_input_transform_diagnostics() {
         ]
     );
 }
+
+#[test]
+fn test_ambient_constructors_and_injectable_options() {
+    let source = r#"
+        import { Directive, ElementRef, Injectable } from '@angular/core';
+
+        declare class AmbientBase {
+            constructor(dep: string);
+        }
+        export class WithParams {
+            constructor(elementRef: ElementRef) {}
+        }
+        declare class AmbientMiddle extends WithParams {
+            constructor(dep: string);
+        }
+
+        @Directive({ selector: '[a]' })
+        export class FromAmbient extends AmbientBase {}
+        @Directive({ selector: '[b]' })
+        export class ThroughAmbient extends AmbientMiddle {}
+
+        const useValue = 1;
+        @Injectable({ providedIn: 'root', useFactory() { return 1; } })
+        export class MethodFactory {
+            constructor(dep: string) {}
+        }
+        @Injectable({ providedIn: 'root', get useValue() { return 1; } })
+        export class GetterValue {
+            constructor(dep: string) {}
+        }
+        @Injectable({ providedIn: 'root', ['useValue']: 1 })
+        export class ComputedValue {
+            constructor(dep: string) {}
+        }
+        @Injectable({ providedIn: 'root', useValue })
+        export class ShorthandValue {
+            constructor(dep: string) {}
+        }
+    "#;
+    let mut virtual_files = HashMap::new();
+    virtual_files.insert("/project/app.ts".to_string(), source.to_string());
+    virtual_files.insert(
+        "/project/tsconfig.json".to_string(),
+        r#"{"files": ["app.ts"], "angularCompilerOptions": {"strictInjectionParameters": true}}"#
+            .to_string(),
+    );
+    let analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: "/project/tsconfig.json".to_string(),
+        optimize: Some(true),
+        virtual_files: Some(virtual_files),
+        ..Default::default()
+    })
+    .unwrap();
+    let meta = analyzer
+        .get_metadata_for_file("/project/app.ts".to_string())
+        .expect("app.ts metadata");
+    let found: Vec<(u32, String, &str)> = meta
+        .diagnostics
+        .iter()
+        .map(|diag| {
+            let span = diag.span.as_ref().expect("span");
+            (
+                diag.code,
+                diag.message_text.clone(),
+                &source[span.start as usize..span.end as usize],
+            )
+        })
+        .collect();
+    let missing = |class: &str| {
+        (
+            2003,
+            format!("No suitable injection token for parameter 'dep' of class '{class}'."),
+            "dep",
+        )
+    };
+    // A body-less constructor outside a declaration file is not a constructor for ngtsc, so the
+    // walk skips ambient classes; and only `key: value`/shorthand options are read.
+    assert_eq!(
+        found,
+        vec![
+            (
+                2006,
+                "The directive ThroughAmbient inherits its constructor from WithParams, but the \
+                 latter does not have an Angular decorator of its own. Dependency injection will \
+                 not be able to resolve the parameters of WithParams's constructor. Either add a \
+                 @Directive decorator to WithParams, or add an explicit constructor to \
+                 ThroughAmbient."
+                    .to_string(),
+                "ThroughAmbient"
+            ),
+            missing("MethodFactory"),
+            missing("GetterValue"),
+            missing("ComputedValue"),
+        ]
+    );
+}
