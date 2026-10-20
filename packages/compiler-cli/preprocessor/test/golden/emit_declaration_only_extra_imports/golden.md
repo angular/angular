@@ -71,8 +71,6 @@ export class ChildComp {
 import { Component } from '@angular/core';
 // @ts-ignore
 import * as i0 from '@angular/core';
-// @ts-ignore
-import './child';
 
 export class MyComp {
   // @ts-ignore

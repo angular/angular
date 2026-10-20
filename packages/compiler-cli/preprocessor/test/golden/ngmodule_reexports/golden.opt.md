@@ -241,7 +241,7 @@ export class AppModule {
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     AppModule,
     [typeof AppComponent],
-    [typeof FinalFeatureModule],
+    [typeof i1.FeatureModule],
     never
   > =
     // @ts-ignore
@@ -399,7 +399,7 @@ export class AppForwardModule {
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     AppForwardModule,
     [typeof AppForwardComponent, typeof LaterDirective],
-    [typeof FinalFeatureModule],
+    [typeof i1.FeatureModule],
     never
   > =
     // @ts-ignore
