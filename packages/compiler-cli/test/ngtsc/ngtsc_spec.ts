@@ -953,7 +953,7 @@ runInEachFileSystem((os: string) => {
       expect(trim(env.getContents('test.js'))).toContain(
         trim(`
         MyTestComponent.propDecorators = {
-          name: [{ type: i0.Input, args: [{ isSignal: true, alias: "name", required: false, transform: undefined },] }]
+          name: [{ type: i0.Input, args: [{ isSignal: true, alias: "name", required: false },] }]
         };
       `),
       );
