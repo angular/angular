@@ -352,6 +352,10 @@ export class HybridCompiler {
         const eagerDecls = [...eagerDirDecls, ...eagerPipeDecls];
         eagerlyUsedDeclarations.set(`${file.filePath}#${className}`, eagerDecls);
 
+        if (classMeta.component.standalone) {
+          continue;
+        }
+
         // Check if any eagerly used dependency is statically cycleProne
         let hasStaticCycle = false;
         for (const decl of eagerDecls) {
@@ -366,7 +370,24 @@ export class HybridCompiler {
           continue;
         }
 
-        // Add eager dependencies to local dynamic graph
+        let createsCycle = false;
+        for (const decl of eagerDecls) {
+          if (
+            chunkFileIds.has(decl.fileId) &&
+            decl.fileId !== file.fileId &&
+            hasGraphPath(dynamicGraph, decl.fileId, file.fileId)
+          ) {
+            createsCycle = true;
+            break;
+          }
+        }
+
+        if (createsCycle) {
+          remoteScopedClasses.add(`${file.filePath}#${className}`);
+          continue;
+        }
+
+        // Add eager dependencies to local dynamic graph only when not remote-scoped
         let edges = dynamicGraph.get(file.fileId);
         if (!edges) {
           edges = new Set<number>();
@@ -375,18 +396,6 @@ export class HybridCompiler {
         for (const decl of eagerDecls) {
           if (chunkFileIds.has(decl.fileId) && decl.fileId !== file.fileId) {
             edges.add(decl.fileId);
-          }
-        }
-      }
-    }
-
-    // Detect cycles in the local dynamic graph
-    const cyclicFiles = findCyclicNodes(dynamicGraph);
-    for (const file of chunk.files) {
-      if (cyclicFiles.has(file.fileId)) {
-        for (const classMeta of file.classes) {
-          if (classMeta.component && classMeta.className) {
-            remoteScopedClasses.add(`${file.filePath}#${classMeta.className}`);
           }
         }
       }
@@ -811,6 +820,29 @@ export class HybridCompiler {
 /** Uncached empty analysis for a file the analyzer has no metadata for. */
 function unanalyzedFile(filePath: string): FileAnalysis {
   return {filePath, parsedTemplates: new Map(), preparedTcbData: null};
+}
+
+export function hasGraphPath(
+  graph: ReadonlyMap<number, ReadonlySet<number>>,
+  start: number,
+  target: number,
+): boolean {
+  if (start === target) return true;
+  const visited = new Set<number>([start]);
+  const stack = [start];
+  while (stack.length > 0) {
+    const current = stack.pop()!;
+    const neighbors = graph.get(current);
+    if (!neighbors) continue;
+    for (const neighbor of neighbors) {
+      if (neighbor === target) return true;
+      if (!visited.has(neighbor)) {
+        visited.add(neighbor);
+        stack.push(neighbor);
+      }
+    }
+  }
+  return false;
 }
 
 export function findCyclicNodes(graph: ReadonlyMap<number, ReadonlySet<number>>): Set<number> {

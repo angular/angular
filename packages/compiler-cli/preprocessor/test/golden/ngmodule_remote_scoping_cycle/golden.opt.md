@@ -50,7 +50,6 @@ export class AppModule {
   (typeof ngJitMode === 'undefined' || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(AppModule, { declarations: [CompA, CompB], exports: [CompA, CompB] });
 })();
-i0.ɵɵsetComponentScope(CompA, [CompB], []);
 i0.ɵɵsetComponentScope(CompB, [CompA], []);
 
 ```
@@ -77,6 +76,8 @@ function _tcb1(this: i0.CompA) {
 import { Component } from '@angular/core';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './comp-b.component';
 
 export class CompA {
   // @ts-ignore
@@ -112,6 +113,7 @@ export class CompA {
           i0.ɵɵelementEnd();
         }
       },
+      dependencies: [i1.CompB],
       encapsulation: 2,
     });
   static {

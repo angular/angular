@@ -12,11 +12,15 @@ describe('generateExtraImportsInLocalMode with template-induced cycles', () => {
   it('should not emit side-effect imports that close a template cycle', async () => {
     const out = await compile();
 
-    for (const path of ['/out/rich_text_view.ts', '/out/text_view.ts', '/out/tooltip_view.ts']) {
-      expect(sideEffectImports(out.get(path)!))
-        .withContext(path)
-        .toEqual([]);
-    }
+    expect(sideEffectImports(out.get('/out/rich_text_view.ts')!))
+      .withContext('/out/rich_text_view.ts')
+      .toEqual(['./text_view', './tooltip_view', './plain_view']);
+    expect(sideEffectImports(out.get('/out/text_view.ts')!))
+      .withContext('/out/text_view.ts')
+      .toEqual(['./tooltip_view']);
+    expect(sideEffectImports(out.get('/out/tooltip_view.ts')!))
+      .withContext('/out/tooltip_view.ts')
+      .toEqual([]);
   });
 
   it('should still emit side-effect imports for a declaration outside the cycle', async () => {

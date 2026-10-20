@@ -71,15 +71,80 @@ pub struct ImportedSymbol {
     pub kind: ImportKind,
 }
 
-/// Extracts import specifiers from a module record.
-/// Returns Vec of import paths (e.g., ["@angular/core", "./services/data.service"])
-/// Also includes sources from re-exports (export { X } from './y' and export * from './z')
-pub fn extract_imports(module_record: &ModuleRecord<'_>) -> Vec<String> {
-    module_record
-        .requested_modules
-        .keys()
-        .map(|atom| atom.to_string())
-        .collect()
+/// Whether an `ImportDeclaration` has a type-only import clause (`import type ...` or
+/// `import { type a, type b } from '...'`), matching ngtsc's `isTypeOnlyImportClause`.
+/// Type-only imports are elided by TypeScript and do not contribute to runtime import cycles.
+/// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/cycles/src/imports.ts#L129-L145
+fn is_type_only_import_declaration(decl: &ImportDeclaration<'_>) -> bool {
+    if decl.import_kind.is_type() {
+        return true;
+    }
+    let Some(specifiers) = &decl.specifiers else {
+        return false;
+    };
+    if specifiers.is_empty() {
+        return true;
+    }
+    let mut has_named_specifier = false;
+    for spec in specifiers {
+        match spec {
+            ImportDeclarationSpecifier::ImportSpecifier(named) => {
+                has_named_specifier = true;
+                if !named.import_kind.is_type() {
+                    return false;
+                }
+            }
+            ImportDeclarationSpecifier::ImportDefaultSpecifier(_)
+            | ImportDeclarationSpecifier::ImportNamespaceSpecifier(_) => {}
+        }
+    }
+    has_named_specifier
+}
+
+/// Extracts static import specifiers from a module record and program, partitioned into
+/// `(value_static_imports, type_only_static_imports)`.
+///
+/// Mirrors ngtsc's `ImportGraph.scanImports`: a module specifier is an edge of the static import
+/// graph iff at least one runtime `export ... from` declaration or non-type-only `import`
+/// declaration requests it. Purely type-only `import` declarations still bring the target file into
+/// the program closure, so they are returned in the second vector.
+pub fn extract_imports(
+    module_record: &ModuleRecord<'_>,
+    program: &Program<'_>,
+) -> (Vec<String>, Vec<String>) {
+    let mut runtime_specifiers = HashSet::new();
+    for stmt in &program.body {
+        match stmt {
+            Statement::ImportDeclaration(decl) => {
+                if !is_type_only_import_declaration(decl) {
+                    runtime_specifiers.insert(decl.source.value.as_str());
+                }
+            }
+            Statement::ExportFromDeclaration(decl) if !decl.export_kind.is_type() => {
+                let has_runtime_export = decl.specifiers.is_empty()
+                    || decl.specifiers.iter().any(|s| !s.export_kind.is_type());
+                if has_runtime_export {
+                    runtime_specifiers.insert(decl.source.value.as_str());
+                }
+            }
+            Statement::ExportAllDeclaration(decl) if !decl.export_kind.is_type() => {
+                runtime_specifiers.insert(decl.source.value.as_str());
+            }
+            _ => {}
+        }
+    }
+
+    let mut static_imports = Vec::new();
+    let mut type_only_imports = Vec::new();
+    for atom in module_record.requested_modules.keys() {
+        let s = atom.as_str();
+        if runtime_specifiers.contains(s) {
+            static_imports.push(s.to_string());
+        } else {
+            type_only_imports.push(s.to_string());
+        }
+    }
+    (static_imports, type_only_imports)
 }
 
 /// The module specifiers of the file's dynamic imports, in source order: `import()` calls and
