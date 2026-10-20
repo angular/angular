@@ -7,6 +7,7 @@ use crate::analyzer::class_data::{
 use crate::analyzer::evaluated_io::{
     read_input_options, read_output_alias, ClassMemberFacts, IoKind, MemberIoOptions, Read,
 };
+use crate::analyzer::transforms::InputTransformSite;
 use crate::evaluator::{evaluate_expression, EvalInput, Resolved};
 use oxc_semantic::Semantic;
 
@@ -48,6 +49,9 @@ pub struct MemberIo {
     pub members: Vec<ClassMemberFacts>,
     pub pending_options: Vec<MemberIoOptions>,
     pub issues: Vec<ValueIssue>,
+    pub transform_sites: Vec<InputTransformSite>,
+    /// The names of the class's static members.
+    pub static_members: Vec<String>,
 }
 
 #[derive(Default)]
@@ -101,7 +105,10 @@ fn decorator_input_options(
         return InputOptions::default();
     };
     let transform = match arg.get_inner_expression() {
-        Expression::ObjectExpression(obj) => object_literal_transform(obj),
+        Expression::ObjectExpression(obj) => {
+            record_transform_site(obj, member, arg.span(), ctx, out);
+            object_literal_transform(obj)
+        }
         _ => None,
     };
     let options = evaluate_member_argument(
@@ -353,31 +360,54 @@ fn signal_options(arg: Option<&Argument>, out: &mut MemberIo) -> Option<InputOpt
     })
 }
 
-/// The `transform` of an input options object written as a literal: emitted from its source
-/// text, so only its syntax is read.
-pub(crate) fn object_literal_transform(
-    obj: &oxc_ast::ast::ObjectExpression<'_>,
-) -> Option<TransformData> {
+/// The `transform` property value of an input options object written as a literal.
+pub(crate) fn transform_property<'o, 'a>(
+    obj: &'o oxc_ast::ast::ObjectExpression<'a>,
+) -> Option<&'o Expression<'a>> {
     obj.properties.iter().find_map(|prop| {
         let ObjectPropertyKind::ObjectProperty(p) = prop else {
             return None;
         };
-        if extract_property_key(&p.key).as_deref() != Some("transform") {
-            return None;
-        }
-        let t_type = crate::analyzer::transforms::extract_transform_type(&p.value)?;
-        Some(match t_type {
-            crate::analyzer::transforms::ExtractedTransformType::Type(type_span) => {
-                TransformData::Type {
-                    type_span,
-                    value_span: p.value.span(),
-                }
-            }
-            crate::analyzer::transforms::ExtractedTransformType::Expression(span) => {
-                TransformData::Expression(span)
-            }
-        })
+        (extract_property_key(&p.key).as_deref() == Some("transform")).then_some(&p.value)
     })
+}
+
+pub(crate) fn object_literal_transform(
+    obj: &oxc_ast::ast::ObjectExpression<'_>,
+) -> Option<TransformData> {
+    let value = transform_property(obj)?;
+    let t_type = crate::analyzer::transforms::extract_transform_type(value)?;
+    Some(match t_type {
+        crate::analyzer::transforms::ExtractedTransformType::Type(type_span) => {
+            TransformData::Type {
+                type_span,
+                value_span: value.span(),
+            }
+        }
+        crate::analyzer::transforms::ExtractedTransformType::Expression(span) => {
+            TransformData::Expression(span)
+        }
+    })
+}
+
+fn record_transform_site(
+    obj: &oxc_ast::ast::ObjectExpression<'_>,
+    member: &str,
+    options_span: oxc_span::Span,
+    ctx: &ExtractContext<'_, '_>,
+    out: &mut MemberIo,
+) {
+    let Some(value) = transform_property(obj) else {
+        return;
+    };
+    match InputTransformSite::new(member, value, ctx.eval) {
+        Ok(site) => out.transform_sites.push(site),
+        Err(detail) => out.issues.push(ValueIssue::wrong_type_with_detail(
+            options_span,
+            "Input transform must be a function",
+            &detail,
+        )),
+    }
 }
 
 fn disallowed_decorator_message(decorator: &str, signal: SignalMember) -> Option<&'static str> {
@@ -556,6 +586,7 @@ pub fn extract_inputs_outputs<'a>(
         };
 
         if is_static {
+            out.static_members.push(prop_name.clone());
             reject_static_member_io(
                 &prop_name,
                 class_name,

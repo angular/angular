@@ -291,6 +291,11 @@ fn populate_directive_members(
     }
     d.bind_metadata_fields_to_members(&members.members);
     d.io_issues.extend(members.io_issues);
+    d.input_transforms.extend(members.transform_sites);
+    for site in &mut d.input_transforms {
+        let coercion_member = format!("ngAcceptInputType_{}", site.input);
+        site.conflicting_coercion = members.static_members.contains(&coercion_member);
+    }
     if !members.pending_options.is_empty() || d.evaluated_io.is_some() {
         let pending = d.evaluated_io.get_or_insert_with(Default::default);
         pending.member_options = members.pending_options;
@@ -472,6 +477,8 @@ struct ParsedCommon {
 /// classifications, matching the internal data model).
 struct ParsedMembers {
     fields: Vec<AngularField>,
+    transform_sites: Vec<super::transforms::InputTransformSite>,
+    static_members: Vec<String>,
     /// The class members an `inputs`/`outputs` entry may bind to.
     members: Vec<crate::analyzer::evaluated_io::ClassMemberFacts>,
     /// `@Input`/`@Output` arguments still waiting on constants from other files.
@@ -745,6 +752,8 @@ fn process_class_common<'a, Fs: ResourceResolverFs>(
             members: member_io.members,
             pending_options: member_io.pending_options,
             io_issues: member_io.issues,
+            transform_sites: member_io.transform_sites,
+            static_members: member_io.static_members,
             host_bindings,
             host_listeners,
         },
@@ -848,6 +857,8 @@ pub struct ParsedFileAnalysis {
     pub registrations: Vec<RegistrationInfo>,
     /// Constructor facts for every class in the file, decorated or not.
     pub di_facts: Vec<super::di_facts::ClassDiFacts>,
+    /// Facts for the top-level function declarations, by name.
+    pub function_facts: std::collections::HashMap<String, super::transforms::FunctionFacts>,
     pub file_exports: FileExportInfo,
     pub imports_end: u32,
     /// The file's static `import` declarations, in source order. Drives import removal for
@@ -948,6 +959,7 @@ pub fn analyze_parsed<Fs: ResourceResolverFs>(
         classes: output.classes,
         registrations: output.registrations,
         di_facts: output.di_facts,
+        function_facts: super::transforms::collect_function_facts(program, semantic),
         file_exports: output.file_exports,
         imports_end,
         import_declarations,

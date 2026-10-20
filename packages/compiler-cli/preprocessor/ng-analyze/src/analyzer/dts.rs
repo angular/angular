@@ -27,6 +27,8 @@ pub struct DtsAnalysisResult {
     pub classes: Vec<ClassData>,
     pub registrations: Vec<RegistrationInfo>,
     pub di_facts: Vec<crate::analyzer::di_facts::ClassDiFacts>,
+    pub function_facts:
+        std::collections::HashMap<String, crate::analyzer::transforms::FunctionFacts>,
     pub exports: FileExportInfo,
     /// The file's static `import` declarations. A `.d.ts` has no component decorators, so no
     /// reference is excused and every binding reports as eagerly referenced — which is right:
@@ -234,6 +236,7 @@ pub fn analyze_dts(
         classes,
         registrations,
         di_facts,
+        function_facts: crate::analyzer::transforms::collect_function_facts(program, semantic),
         exports: FileExportInfo {
             named: named_exports,
             wildcards,
