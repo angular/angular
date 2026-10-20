@@ -824,7 +824,6 @@ describe('resource', () => {
 
   it('should allow stream from input()', async () => {
     @Component({
-      selector: 'test',
       template: `{{ res.value() }}`,
     })
     class TestComponent {
@@ -1045,29 +1044,29 @@ describe('resource', () => {
       injector: TestBed.inject(Injector),
     });
 
-    await flushMicrotasks();
+    await timeout();
     expect(loadCount).toBe(1);
     expect(userResource.value()).toBe('user-1-1');
 
     // Updating `routeParams` with a new object that has the same `id` should not re-run the loader
     routeParams.set({id: '1', tab: 'orders'});
-    await flushMicrotasks();
+    await timeout();
     expect(loadCount).toBe(1);
     expect(userResource.value()).toBe('user-1-1');
 
     // Even after a manual reload(), a subsequent signal update with the same `id` should not trigger another reload
     userResource.reload();
-    await flushMicrotasks();
+    await timeout();
     expect(loadCount).toBe(2);
     expect(userResource.value()).toBe('user-1-2');
 
     routeParams.set({id: '1', tab: 'settings'});
-    await flushMicrotasks();
+    await timeout();
     expect(loadCount).toBe(2);
     expect(userResource.value()).toBe('user-1-2');
 
     routeParams.set({id: '2', tab: 'settings'});
-    await flushMicrotasks();
+    await timeout();
     expect(loadCount).toBe(3);
     expect(userResource.value()).toBe('user-2-3');
   });
