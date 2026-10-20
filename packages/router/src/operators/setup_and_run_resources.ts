@@ -30,7 +30,7 @@ export function setupAndRunResources(
   abortSignal: AbortSignal,
 ): OperatorFunction<NavigationTransition, NavigationTransition> {
   return pipe(
-    switchTap(({newlyCreatedRoutes, targetRouterState}) => {
+    switchTap(async ({newlyCreatedRoutes, targetRouterState}) => {
       if (!newlyCreatedRoutes || !targetRouterState || abortSignal.aborted) {
         return;
       }
@@ -58,7 +58,8 @@ export function setupAndRunResources(
 
       traverse(targetRouterState._root);
 
-      return Promise.all(resourceSetupPromises).then(() => Promise.all(blockingResourcePromises));
+      await Promise.all(resourceSetupPromises);
+      await Promise.all(blockingResourcePromises);
     }),
   );
 }
