@@ -3376,7 +3376,31 @@ struct PreparedMembers {
 /// `useDefineForClassFields`) while preserving them in the `.d.ts`. The `@ts-ignore` guards
 /// against `noImplicitOverride` when the class extends another component.
 /// https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/annotations/common/src/input_transforms.ts#L14-L36
-const NG_ACCEPT_INPUT_TYPE_PREFIX: &str = "  // @ts-ignore\n  declare static ngAcceptInputType_";
+const NG_ACCEPT_INPUT_TYPE_PREFIX: &str = "  // @ts-ignore\n  declare static ";
+
+/// The property key of the coercion member for the input declared on `class_property_name`,
+/// quoted when it is not a valid identifier (e.g. `'aria-label'`).
+fn coercion_member_key(class_property_name: &str) -> String {
+    let name = format!("ngAcceptInputType_{class_property_name}");
+    if oxc_syntax::identifier::is_identifier_name(&name) {
+        return name;
+    }
+    let mut quoted = String::with_capacity(name.len() + 2);
+    quoted.push('"');
+    for c in name.chars() {
+        match c {
+            '"' => quoted.push_str("\\\""),
+            '\\' => quoted.push_str("\\\\"),
+            '\n' => quoted.push_str("\\n"),
+            '\r' => quoted.push_str("\\r"),
+            '\u{2028}' => quoted.push_str("\\u2028"),
+            '\u{2029}' => quoted.push_str("\\u2029"),
+            c => quoted.push(c),
+        }
+    }
+    quoted.push('"');
+    quoted
+}
 
 fn prepare_members(
     d: &DirectiveData,
@@ -3404,7 +3428,7 @@ fn prepare_members(
                             let _ = writeln!(
                                 prepared.coercion_members,
                                 "{NG_ACCEPT_INPUT_TYPE_PREFIX}{}: unknown;",
-                                i.name
+                                coercion_member_key(&i.name)
                             );
                         }
                         prepared
@@ -3419,7 +3443,7 @@ fn prepare_members(
                             let _ = writeln!(
                                 prepared.coercion_members,
                                 "{NG_ACCEPT_INPUT_TYPE_PREFIX}{}: {type_str};",
-                                i.name
+                                coercion_member_key(&i.name)
                             );
                         }
                         Some(TransformData::Expression(span)) if !span.is_empty() => {
@@ -3427,7 +3451,7 @@ fn prepare_members(
                             let _ = writeln!(
                                 prepared.coercion_members,
                                 "{NG_ACCEPT_INPUT_TYPE_PREFIX}{}: Parameters<typeof {expr_str}>[0];",
-                                i.name
+                                coercion_member_key(&i.name)
                             );
                         }
                         _ => {}

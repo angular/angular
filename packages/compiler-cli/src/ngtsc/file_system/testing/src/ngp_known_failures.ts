@@ -299,6 +299,21 @@ const NGP_POTENTIAL_BREAKING_CHANGES: ReadonlySet<string> = new Set([
   'Debug Info Typescript tranformation viewChild should tree-shake away debug info if in prod mode',
   'Debug Info Typescript tranformation viewChildren should not tree-shake away debug info if in dev mode',
   'Debug Info Typescript tranformation viewChildren should tree-shake away debug info if in prod mode',
+
+  // Design difference, not a bug: ngtsc writes the transform's resolved first parameter type into
+  // `static ngAcceptInputType_<input>` (e.g. `boolean | string`, `unknown` for a `this`-only
+  // function, and `i1.Foo` with a matching `import * as i1` in the `.d.ts`). ngp has no type
+  // checker when it analyzes the file, so it emits `Parameters<typeof transformFn>[0]` instead.
+  'ngtsc behavioral tests input transforms should compile a component input with a transform function',
+  'ngtsc behavioral tests input transforms should compile a directive input with a transform function',
+  'ngtsc behavioral tests input transforms should compile a directive input with a transform function with a `this` typing',
+  'ngtsc behavioral tests input transforms should compile an input referencing an imported function with literal types',
+  'ngtsc behavioral tests input transforms should compile an input with a transform function that contains a generic parameter',
+  'ngtsc behavioral tests input transforms should compile an input with a transform function that contains nested generic parameters',
+  'ngtsc behavioral tests input transforms should compile an input with an external transform function',
+  'ngtsc behavioral tests input transforms should compile an input with an inline transform function',
+  'ngtsc behavioral tests input transforms should compile an input with using an ambient type in the transform function',
+  'ngtsc behavioral tests input transforms should treat an input transform function only with a `this` parameter as unknown',
 ]);
 
 /**
@@ -478,17 +493,6 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'ngtsc behavioral tests inherited directives should emit `declare` fields without runtime initialization in decorated classes',
   'ngtsc behavioral tests inline resources large strings are wrapped in a function for Closure',
   'ngtsc behavioral tests inline resources should share same styles declared in different components in the same file',
-  'ngtsc behavioral tests input transforms should compile a component input with a transform function',
-  'ngtsc behavioral tests input transforms should compile a directive input with a transform function',
-  'ngtsc behavioral tests input transforms should compile a directive input with a transform function with a `this` typing',
-  'ngtsc behavioral tests input transforms should compile an input referencing an imported function with literal types',
-  'ngtsc behavioral tests input transforms should compile an input with a transform function and whose name needs to be quoted',
-  'ngtsc behavioral tests input transforms should compile an input with a transform function that contains a generic parameter',
-  'ngtsc behavioral tests input transforms should compile an input with a transform function that contains nested generic parameters',
-  'ngtsc behavioral tests input transforms should compile an input with an external transform function',
-  'ngtsc behavioral tests input transforms should compile an input with an inline transform function',
-  'ngtsc behavioral tests input transforms should compile an input with using an ambient type in the transform function',
-  'ngtsc behavioral tests input transforms should treat an input transform function only with a `this` parameter as unknown',
   'ngtsc behavioral tests multiple decorators on classes should leave decorators present on jit: true directives',
   'ngtsc behavioral tests namespace support should generate correct imports for type references to namespaced symbols using a namespace import',
   'ngtsc behavioral tests namespace support should generate correct imports for type references to namespaced symbols using named imports',

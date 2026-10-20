@@ -874,6 +874,43 @@ export class PrepComponent {
         );
     }
 
+    /// An input whose class property name is not an identifier gets a quoted coercion member
+    /// key, as ngtsc emits it (`static "ngAcceptInputType_aria-label": string;`).
+    #[test]
+    fn test_coercion_member_with_quoted_property_name() {
+        let fs = create_test_fs(&[
+            (
+                "/test/tsconfig.json",
+                r#"{"compilerOptions": {}, "files": ["dir.ts"]}"#,
+            ),
+            (
+                "/test/dir.ts",
+                r#"
+import { Directive, Input } from '@angular/core';
+
+declare function toNumber(value: string | number): number;
+
+@Directive({ selector: '[dir]' })
+export class Dir {
+    @Input({ transform: (value: string) => value }) 'aria-label': string = '';
+    @Input({ transform: toNumber }) "data-value": number = 0;
+    @Input({ transform: toNumber }) 'plain': number = 0;
+}
+"#,
+            ),
+        ]);
+
+        let results = run_analyzer(fs, "/test/tsconfig.json", false);
+        let class = find_class(&results, "Dir").expect("Dir should exist");
+
+        assert_eq!(
+            class.coercion_members,
+            "  // @ts-ignore\n  declare static \"ngAcceptInputType_aria-label\": string;\n\
+             \x20 // @ts-ignore\n  declare static \"ngAcceptInputType_data-value\": Parameters<typeof toNumber>[0];\n\
+             \x20 // @ts-ignore\n  declare static ngAcceptInputType_plain: Parameters<typeof toNumber>[0];\n"
+        );
+    }
+
     /// Order guarantees of the prepared member surface that a single-entry-per-bucket
     /// fixture cannot see: stability *within* each query sort bucket, the exact
     /// removal-span concatenation order (class decorators, then inputs, outputs, queries,
