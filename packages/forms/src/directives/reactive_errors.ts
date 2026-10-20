@@ -81,8 +81,11 @@ export function arrayParentException(): Error {
   );
 }
 
-export const disabledAttrWarning = `
-  It looks like you're using the disabled attribute with a reactive form directive. If you set disabled to true
+export function disabledAttrWarning(controlName?: string | number | null): string {
+  const controlContext =
+    controlName != null ? ` for the control with name "${controlName}"` : '';
+  return `
+  It looks like you're using the disabled attribute with a reactive form directive${controlContext}. If you set disabled to true
   when you set up this control in your component class, the disabled attribute will actually be set in the DOM for
   you. We recommend using this approach to avoid 'changed after checked' errors.
 
@@ -97,6 +100,7 @@ export const disabledAttrWarning = `
   form.get('first')?.enable();
   form.get('last')?.disable();
 `;
+}
 
 export const asyncValidatorsDroppedWithOptsWarning = `
   It looks like you're constructing using a FormControl with both an options argument and an

@@ -616,6 +616,14 @@ describe('Form Directives', () => {
 
       expect(control.valid).toBe(false);
     });
+
+    it('should warn when the disabled attribute is used', () => {
+      const warn = spyOn(console, 'warn');
+
+      controlDir.isDisabled = true;
+
+      expect(warn).toHaveBeenCalled();
+    });
   });
 
   describe('NgModel', () => {
@@ -768,6 +776,14 @@ describe('Form Directives', () => {
       formModel.setErrors({required: true});
       expect(controlNameDir.hasError('required')).toBe(formModel.hasError('required'));
       expect(controlNameDir.getError('required')).toBe(formModel.getError('required'));
+    });
+
+    it('should include the control name in the disabled attribute warning', () => {
+      const warn = spyOn(console, 'warn');
+
+      controlNameDir.isDisabled = true;
+
+      expect(warn).toHaveBeenCalledWith(jasmine.stringMatching(/control with name "name"/));
     });
   });
 });

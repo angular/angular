@@ -100,7 +100,7 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
   @Input('disabled')
   set isDisabled(isDisabled: boolean) {
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
-      console.warn(disabledAttrWarning);
+      console.warn(disabledAttrWarning());
     }
   }
 
