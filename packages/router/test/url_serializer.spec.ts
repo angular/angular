@@ -569,6 +569,64 @@ describe('url serializer', () => {
       );
     });
   });
+
+  describe('colon in non-root primary segment with sibling named outlet', () => {
+    it('should preserve encoded colon on round-trip when a primary child segment has a sibling named outlet', () => {
+      // 1. Parse URL with percent-encoded colon (%3A) in the primary segment of a parenthesized group
+      const initialTree = url.parse('/x/(admin%3Ay//aux:z)');
+      const parentGroup = initialTree.root.children[PRIMARY_OUTLET];
+
+      expect(parentGroup.segments.map((s) => s.path)).toEqual(['x']);
+      expect(parentGroup.children[PRIMARY_OUTLET]).toBeDefined();
+      expect(parentGroup.children[PRIMARY_OUTLET].segments.map((s) => s.path)).toEqual(['admin:y']);
+      expect(parentGroup.children['admin']).toBeUndefined();
+      expect(parentGroup.children['aux'].segments.map((s) => s.path)).toEqual(['z']);
+
+      // 2. Serialize back to a URL string: the first segment of the unprefixed primary child
+      // inside parentheses keeps its colon percent-encoded so it is not confused with an outlet prefix
+      const serialized = url.serialize(initialTree);
+      expect(serialized).toBe('/x/(admin%3Ay//aux:z)');
+
+      // 3. Re-parse the serialized URL
+      const reparsedTree = url.parse(serialized);
+      const reparsedParentGroup = reparsedTree.root.children[PRIMARY_OUTLET];
+
+      expect(reparsedParentGroup.children[PRIMARY_OUTLET]).toBeDefined();
+      expect(reparsedParentGroup.children[PRIMARY_OUTLET].segments.map((s) => s.path)).toEqual([
+        'admin:y',
+      ]);
+      expect(reparsedParentGroup.children['admin']).toBeUndefined();
+      expect(reparsedParentGroup.children['aux'].segments.map((s) => s.path)).toEqual(['z']);
+    });
+
+    it('should not encode colons in unambiguous path segments, matrix params, or named outlets', () => {
+      const simpleTree = url.parse('/users/id:123/time:12:30');
+      expect(url.serialize(simpleTree)).toBe('/users/id:123/time:12:30');
+
+      const matrixTree = url.parse('/search;filter:key=type:book');
+      expect(url.serialize(matrixTree)).toBe('/search;filter:key=type:book');
+      expect(matrixTree.root.children[PRIMARY_OUTLET].segments[0].parameters).toEqual({
+        'filter:key': 'type:book',
+      });
+
+      const rootWithAuxTree = url.parse('/admin:y(aux:z:1)');
+      expect(url.serialize(rootWithAuxTree)).toBe('/admin:y(aux:z:1)');
+      expect(rootWithAuxTree.root.children[PRIMARY_OUTLET].segments.map((s) => s.path)).toEqual([
+        'admin:y',
+      ]);
+      expect(rootWithAuxTree.root.children['aux'].segments.map((s) => s.path)).toEqual(['z:1']);
+
+      const scopedTree = url.parse('/x:0/(first/admin:y;k=v:2//aux:z:3)');
+      expect(url.serialize(scopedTree)).toBe('/x:0/(first/admin:y;k=v:2//aux:z:3)');
+      const scopedParent = scopedTree.root.children[PRIMARY_OUTLET];
+      expect(scopedParent.children[PRIMARY_OUTLET].segments.map((s) => s.path)).toEqual([
+        'first',
+        'admin:y',
+      ]);
+      expect(scopedParent.children[PRIMARY_OUTLET].segments[1].parameters).toEqual({k: 'v:2'});
+      expect(scopedParent.children['aux'].segments.map((s) => s.path)).toEqual(['z:3']);
+    });
+  });
 });
 
 function expectSegment(
