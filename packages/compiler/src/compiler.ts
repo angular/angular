@@ -199,6 +199,7 @@ export {
   compileClassMetadata,
   CompileClassMetadataFn,
   compileComponentClassMetadata,
+  compileCtorParameters,
   compileOpaqueAsyncClassMetadata,
   R3ClassMetadata,
   R3ClassMetadataCtorParameter,
