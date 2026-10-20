@@ -13,7 +13,7 @@ use crate::evaluator::interpreter::EvalInput;
 use crate::evaluator::value::{ResolvedValue, ValueReference};
 use oxc_ast::ast::{
     ArrowFunctionExpression, CallExpression, Expression, FormalParameters, Function,
-    IdentifierReference, Statement, TSQualifiedName, TSTypeAnnotation, TSTypeName,
+    IdentifierReference, Statement, TSImportType, TSQualifiedName, TSTypeAnnotation, TSTypeName,
 };
 use oxc_span::Span;
 
@@ -32,6 +32,7 @@ pub type ResolveTypeName<'r, 'a> = &'r mut dyn for<'x> FnMut(TypeNameRef<'x, 'a>
 pub enum TypeNameRef<'r, 'a> {
     Ident(&'r IdentifierReference<'a>),
     Qualified(&'r TSQualifiedName<'a>),
+    Import(&'r TSImportType<'a>),
 }
 
 impl<'r, 'a> TypeNameRef<'r, 'a> {
@@ -48,6 +49,7 @@ impl<'r, 'a> TypeNameRef<'r, 'a> {
         match self {
             TypeNameRef::Ident(ident) => ident.name.as_str(),
             TypeNameRef::Qualified(qualified) => qualified.right.name.as_str(),
+            TypeNameRef::Import(_) => "",
         }
     }
 }

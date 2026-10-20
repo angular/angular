@@ -44,6 +44,7 @@ export interface LoadAnalyzerOptions {
   workspaceName?: string;
   rootDirs?: string[];
   enableHmr?: boolean;
+  usePoisonedData?: boolean;
 
   /**
    * Force a specific engine. When set, only that engine is attempted — a failure
@@ -257,6 +258,7 @@ async function constructNative(
       workspaceName: options.workspaceName,
       rootDirs: options.rootDirs,
       enableHmr: options.enableHmr,
+      usePoisonedData: options.usePoisonedData,
     }),
   );
 }
@@ -295,6 +297,7 @@ async function constructWasm(
       workspaceName: options.workspaceName,
       rootDirs: options.rootDirs,
       enableHmr: options.enableHmr,
+      usePoisonedData: options.usePoisonedData,
     }),
     hostFs,
   );

@@ -18,7 +18,7 @@ import * as i0 from '@angular/core';
 export declare class MyDtsPipe {
   transform(value: string): string;
   static ɵfac: i0.ɵɵFactoryDeclaration<MyDtsPipe, never>;
-  static ɵpipe: i0.ɵɵPipeDeclaration<MyDtsPipe, "dtsPipe", false>;
+  static ɵpipe: i0.ɵɵPipeDeclaration<MyDtsPipe, "dtsPipe", true>;
 }
 ```
 

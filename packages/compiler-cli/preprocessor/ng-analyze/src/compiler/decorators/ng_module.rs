@@ -11,10 +11,31 @@ use std::path::Path;
 pub async fn optimize_ng_module<Fs: ResourceResolverFs + Clone + 'static>(
     ctx: &QueryCtx<Fs>,
     _file_path: &Path,
-    _reference_id: ReferenceId,
+    reference_id: ReferenceId,
     _class_name: Option<&str>,
     ng_module: &mut NgModuleData,
 ) {
+    // Scope validation is a whole-program question so it is answered once by the
+    // `NgModuleScopeRegistry` singleton and read back here. Like `ComponentMapping`
+    // for directives/pipes, this makes every NgModule's semantic query wait for one program-wide
+    // pass. See the `TODO(parity)` on `ComponentMapping` in `invalidate_file_id`.
+    let registry = ctx.ngmodule_scope_registry().await;
+    if let Some(outcome) = registry.outcome(reference_id) {
+        ng_module.scope_diagnostics = outcome.diagnostics.clone();
+        if outcome.failed {
+            ng_module.declarations = None;
+            ng_module.declarations_span = None;
+            ng_module.imports = None;
+            ng_module.imports_span = None;
+            ng_module.exports = None;
+            ng_module.exports_span = None;
+            ng_module.top_level_imports = None;
+            ng_module.injector_imports = None;
+            ng_module.injector_import_raws = None;
+            return;
+        }
+    }
+
     let foreign = crate::analyzer::resolvers::angular_foreign_resolvers();
     if let Some(declarations_resolved) = &mut ng_module.declarations {
         declarations_resolved.complete_with(ctx, foreign).await;

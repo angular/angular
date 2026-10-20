@@ -379,6 +379,8 @@ pub struct ComponentMetadata {
     pub foreign_imports: Option<Vec<ForeignImportMetadata>>,
     #[serde(default)]
     pub is_jit: bool,
+    #[serde(default)]
+    pub is_poisoned: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub deferred_imports: Option<Vec<ReferenceMetadata>>,
     #[serde(skip_serializing_if = "Option::is_none")]

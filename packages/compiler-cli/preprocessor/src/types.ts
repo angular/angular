@@ -79,6 +79,7 @@ export interface AnalyzerOptions {
   /** Root directories used by `PrefixImportStrategy` to strip prefixes. */
   rootDirs?: Array<string>;
   enableHmr?: boolean;
+  usePoisonedData?: boolean;
 }
 
 export interface AngularFieldMetadata {
@@ -228,6 +229,7 @@ export interface ComponentMetadata {
   declaringNgModule?: DeclaringNgModule;
   foreignImports?: Array<ForeignImportMetadata>;
   isJit: boolean;
+  isPoisoned: boolean;
   deferredImports?: Array<ReferenceMetadata>;
   deferredImportsByBlock?: Record<string, Array<ReferenceMetadata>>;
   deferredImportsSpan?: SpanMetadata;
@@ -625,12 +627,19 @@ export interface LegacyAnimationTriggerNames {
   includesDynamicAnimations: boolean;
 }
 
+export interface NgRelatedInformation {
+  filePath: string;
+  span: SpanMetadata;
+  messageText: string;
+}
+
 export interface NgDiagnostic {
   category: number;
   code: number;
   messageText: string;
   filePath?: string;
   span?: SpanMetadata;
+  relatedInformation?: Array<NgRelatedInformation>;
 }
 
 export interface NgModuleMetadata {
@@ -824,6 +833,8 @@ export interface TestAnalyzerOptions {
   workspaceName?: string;
   /** Root directories for `PrefixImportStrategy` */
   rootDirs?: Array<string>;
+  enableHmr?: boolean;
+  usePoisonedData?: boolean;
 }
 
 /** Text to splice into the source at `position`, a UTF-16 offset. */

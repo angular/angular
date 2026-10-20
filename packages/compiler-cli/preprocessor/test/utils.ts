@@ -425,6 +425,14 @@ export async function runPipeline(
     virtualFileMap.set('/' + withoutSlash, f.content);
   }
 
+  const tcbConfig = buildTypeCheckingConfig({
+    strictTemplates: true,
+    checkTypeOfDomBindings: false,
+    ...tsconfigOptions,
+    useContextGenericType:
+      tsconfigOptions.strictContextGenerics ?? tsconfigOptions.useContextGenericType,
+  });
+
   let analyzer;
   if (options.sidecar) {
     const {SidecarAnalyzer} = await import('../api.js');
@@ -432,6 +440,7 @@ export async function runPipeline(
     await sidecar.initialize(tsconfigFile.path, options.optimize, virtualFiles, nodeModulesPath, {
       workspaceName,
       rootDirs,
+      usePoisonedData: tcbConfig.usePoisonedData,
     });
     analyzer = sidecar;
   } else {
@@ -444,6 +453,7 @@ export async function runPipeline(
       nodeModulesPathOverride: nodeModulesPath,
       workspaceName,
       rootDirs,
+      usePoisonedData: tcbConfig.usePoisonedData,
     });
   }
 
@@ -451,13 +461,7 @@ export async function runPipeline(
     optimize: options.optimize,
     tsconfigPath: tsconfigFile.path,
     virtualFiles,
-    tcbConfig: buildTypeCheckingConfig({
-      strictTemplates: true,
-      checkTypeOfDomBindings: false,
-      ...tsconfigOptions,
-      useContextGenericType:
-        tsconfigOptions.strictContextGenerics ?? tsconfigOptions.useContextGenericType,
-    }),
+    tcbConfig,
     templateParseOptions: {
       enableSelectorless: options.enableSelectorless,
       ...options.templateParseOptions,

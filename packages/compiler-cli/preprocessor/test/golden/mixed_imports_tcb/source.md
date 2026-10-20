@@ -21,9 +21,9 @@ export class LocalComp {}
 
 # /external.ts
 ```ts
-// No Angular decorators, just a regular class.
-// This simulates an external component or a non-Angular dependency.
-export class ExternalComp {}
+// Simulates a dynamic/external import that cannot be statically resolved.
+declare function getExternalComp(): any;
+export const ExternalComp = getExternalComp();
 ```
 
 # /app.component.ts

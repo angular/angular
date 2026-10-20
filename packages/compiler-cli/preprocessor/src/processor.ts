@@ -189,10 +189,15 @@ export function buildTcbTargets(
 
   for (const cls of classes) {
     const {className, component, directive, hostBindings, hostListeners} = cls;
-    if (!className) continue;
+    if (!className) {
+      continue;
+    }
 
     if (component) {
-      if (component.isJit) continue;
+      if (component.isJit || (component.isPoisoned && !tcbConfig.usePoisonedData)) {
+        continue;
+      }
+
       // 1. Parse template (or reuse if already parsed in processFile)
       const classKey = makeClassKey(cls.className, cls.span.start);
       let parsed = templatesByClass.get(classKey);
@@ -774,12 +779,14 @@ export function processFileSync(
             : undefined,
       });
 
-      // 2. Filter declarations to only those used in template (optimize mode)
-      let filteredDeclarations: nga.DeclarationMetadata[] = [...(resolvedDeclarations || [])];
+      const skipPoisonedScope = Boolean(component.isPoisoned && !ctx.tcbConfig?.usePoisonedData);
+      let filteredDeclarations: nga.DeclarationMetadata[] = skipPoisonedScope
+        ? []
+        : [...(resolvedDeclarations || [])];
 
       // Calculate hasUnresolvedImports BEFORE adding self-reference, so a self-reference alone
       // doesn't trigger "resolved mode" and wipe out rawImports.
-      const hasUnresolvedImports = rawImports !== undefined;
+      const hasUnresolvedImports = !skipPoisonedScope && rawImports !== undefined;
 
       // The non-optimized pipeline (and declaration-only emission) backs Angular's local
       // compilation mode (`CompilationMode.LOCAL`, see `ngtsc/core/src/compiler.ts:1328-1330`).
@@ -790,9 +797,11 @@ export function processFileSync(
       // `standaloneImportMayBeForwardDeclared` (`analysis.resolvedImports.some(ref => ref.synthetic)`):
       // https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L2040-L2041
       const standaloneImportMayBeForwardDeclared =
-        standalone && (resolvedDeclarations ?? []).some((d) => !!d.isForwardRef);
+        standalone &&
+        !skipPoisonedScope &&
+        (resolvedDeclarations ?? []).some((d) => !!d.isForwardRef);
 
-      if (standalone) {
+      if (standalone && !skipPoisonedScope) {
         // Standalone components always have themselves at the head of their template scope:
         // `StandaloneComponentScopeReader` seeds `dependencies` and `seen` with the component
         // before walking `imports`, so an explicit self-import is deduplicated in favor of index 0.

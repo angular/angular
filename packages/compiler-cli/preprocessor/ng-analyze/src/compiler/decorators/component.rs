@@ -259,22 +259,6 @@ fn collect_declaration_tuples(
             });
             Ok(())
         }
-        crate::evaluator::ResolvedValue::Synthetic(
-            crate::evaluator::value::SyntheticValue::ModuleWithProviders { ng_module, .. },
-        ) => {
-            out.push(EvaluatedDeclaration {
-                reference: crate::types::analysis::Reference::from_value_reference(ng_module),
-                synthetic: ng_module.synthetic,
-            });
-            Ok(())
-        }
-        // The structural ModuleWithProviders shape: a map with an `ngModule` reference.
-        crate::evaluator::ResolvedValue::Map(map) => {
-            let Some(ng_module) = map.get("ngModule") else {
-                return Err(crate::evaluator::DynamicReason::InvalidExpressionType);
-            };
-            collect_declaration_tuples(ng_module, out)
-        }
         crate::evaluator::ResolvedValue::Dynamic(dynamic) => Err(dynamic.reason.clone()),
         _ => Err(crate::evaluator::DynamicReason::InvalidExpressionType),
     }
@@ -386,6 +370,13 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
     let comp_span_start = comp_class.map(|c| c.span.start).unwrap_or(0);
 
     if !component.directive.standalone {
+        if component.imports_factory_span.is_some()
+            || component.deferred_imports_span.is_some()
+            || component.foreign_imports_span.is_some()
+        {
+            component.is_poisoned = true;
+        }
+
         let mapping = ctx.component_mapping().await;
 
         // An anonymous component (no class name) can't be keyed into the module mapping; it is
@@ -393,6 +384,14 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
         // ngtsc's `getScopeForComponent` gives it no scope, and validation reports NG6007.
         let (module_entry, duplicates) =
             mapping.declaring_ng_modules(reference_id.file, class_name);
+        component.directive.duplicate_declaration_context =
+            crate::query::module_scope::duplicate_declaration_context(
+                ctx,
+                reference_id.file,
+                class_name.unwrap_or_default(),
+                &duplicates,
+            )
+            .await;
         component.directive.duplicate_declaring_ng_modules = duplicates;
 
         let Some(module_ref) = module_entry else {
@@ -403,6 +402,15 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
 
         let module_meta = ctx.analyze_file_syntax(module_ref.file).await;
         component.directive.declaring_ng_module = Some(module_ref);
+
+        if ctx.ngmodule_scope_registry().await.is_poisoned(module_ref) {
+            component.is_poisoned = true;
+        }
+        if component.is_poisoned && !ctx.engine.use_poisoned_data {
+            component.resolved_declarations = Some(Vec::new());
+            component.raw_imports_span = None;
+            return;
+        }
 
         let schemas_to_apply = module_meta
             .symbol_index
@@ -449,138 +457,177 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
         .await;
         component.resolved_declarations = Some(resolved_declarations);
         component.raw_imports_span = None;
-    } else if component.imports.is_some() || !component.parsed_imports.is_empty() {
-        // Prefer Stage-1 partial evaluation (`component.imports`), which handles imported constant
-        // arrays/tuples, spreads, and `ModuleWithProviders` calls. Fall back to identifier-rooted
-        // `parsed_imports` if evaluation hits a dynamic entry (e.g. unwrapping `X.forRoot()` syntactically).
-        enum Entry {
-            Evaluated(crate::types::analysis::Reference),
-            Parsed(DeclarationTuple),
-        }
-
-        let mut entries: Option<Vec<(Entry, bool)>> = None;
-        if let Some(imports_eval) = &mut component.imports {
-            imports_eval
-                .complete_with(ctx, crate::analyzer::resolvers::angular_foreign_resolvers())
-                .await;
-            let mut evaluated = Vec::new();
-            if collect_declaration_tuples(imports_eval.raw(), &mut evaluated).is_ok() {
-                entries = Some(
-                    evaluated
-                        .into_iter()
-                        .map(|decl| (Entry::Evaluated(decl.reference), decl.synthetic))
-                        .collect(),
-                );
-            }
-        }
-        let used_evaluated_entries = entries.is_some();
-        let entries = entries.unwrap_or_else(|| {
-            component
-                .parsed_imports
-                .iter()
-                .map(|i| (Entry::Parsed(i.to_declaration_tuple()), i.is_forward_ref))
-                .collect()
-        });
-
-        let mut resolved_declarations = Vec::new();
-        // The legacy path with nothing to resolve (slot evaluation failed and no
-        // identifier-rooted imports survived extraction) must keep the runtime fallback.
-        let mut all_resolved = used_evaluated_entries || !entries.is_empty();
-
-        let resolve_futures = entries.iter().map(|(entry, _)| {
-            let ctx = ctx.clone();
-            async move {
-                match entry {
-                    Entry::Evaluated(r) => crate::query::resolve_reference_async(r, &ctx).await,
-                    Entry::Parsed(tuple) => resolve_declaration_async(tuple, file_path, &ctx).await,
+    } else {
+        if syntax_file
+            .classes
+            .iter()
+            .any(|c| c.as_ng_module().is_some())
+        {
+            let mapping = ctx.component_mapping().await;
+            let (module_entry, _) = mapping.declaring_ng_modules(reference_id.file, class_name);
+            if let Some(module_ref) = module_entry {
+                if ctx.ngmodule_scope_registry().await.is_poisoned(module_ref) {
+                    component.is_poisoned = true;
                 }
             }
-        });
-        let results = futures::future::join_all(resolve_futures).await;
+        }
+        if component.imports.is_some() || !component.parsed_imports.is_empty() {
+            // Prefer Stage-1 partial evaluation (`component.imports`), which handles imported constant
+            // arrays/tuples, spreads, and `ModuleWithProviders` calls. Fall back to identifier-rooted
+            // `parsed_imports` if evaluation hits a dynamic entry (e.g. unwrapping `X.forRoot()` syntactically).
+            enum Entry {
+                Evaluated(crate::types::analysis::Reference),
+                Parsed(DeclarationTuple),
+            }
 
-        for ((entry, is_forward_ref), resolved_info) in entries.iter().zip(results) {
-            let Some(class_info) = resolved_info else {
-                all_resolved = false;
-                continue;
-            };
-
-            let flattened = flatten_class_info(class_info.clone(), ctx).await;
-
-            let reference = match entry {
-                Entry::Evaluated(r) => r.clone(),
-                Entry::Parsed(tuple) => {
-                    legacy_import_reference(tuple, &class_info, reference_id.file)
-                }
-            };
-
-            let same_file = reference.file == reference_id.file;
-
-            let decl_class = syntax_file
-                .classes
-                .iter()
-                .find(|c| c.class_name.as_deref() == Some(&reference.name));
-            let decl_span_start = decl_class.map(|c| c.span.start).unwrap_or(0);
-            let is_fw = *is_forward_ref || (same_file && decl_span_start > comp_span_start);
-
-            if class_info.class_type == ClassType::NgModule {
-                if let Some(decl) = DeclarationData::from_class_info(
-                    reference.clone(),
-                    &class_info,
-                    &flattened,
-                    is_fw,
-                ) {
-                    let contextual_decl =
-                        contextualize_declaration(ctx, &decl, reference_id.file, file_path).await;
-                    resolved_declarations.push(contextual_decl);
-                }
-                let scope = ctx.ngmodule_exports_scope(class_info.reference_id).await;
-                let propagated_scope = crate::query::propagate_owning_reference_validated(
+            let mut entries: Option<Vec<(Entry, bool)>> = None;
+            if let Some(imports_eval) = &mut component.imports {
+                imports_eval
+                    .complete_with(ctx, crate::analyzer::resolvers::angular_foreign_resolvers())
+                    .await;
+                let validation = crate::query::module_scope::validate_standalone_imports(
                     ctx,
-                    &scope,
-                    &reference.owning_reference,
-                    class_info.reference_id.file,
-                )
-                .await;
-                for sub_decl in propagated_scope {
-                    let mut contextual_sub_decl =
-                        contextualize_declaration(ctx, &sub_decl, reference_id.file, file_path)
-                            .await;
-                    contextual_sub_decl.resolved_host_directives =
-                        resolve_host_directives_for_declaration(
-                            ctx,
-                            &sub_decl,
-                            reference_id.file,
-                            file_path,
-                        )
-                        .await;
-                    resolved_declarations.push(contextual_sub_decl);
-                }
-            } else if let Some(decl) =
-                DeclarationData::from_class_info(reference, &class_info, &flattened, is_fw)
-            {
-                let mut contextual_decl =
-                    contextualize_declaration(ctx, &decl, reference_id.file, file_path).await;
-                contextual_decl.resolved_host_directives = resolve_host_directives_for_class(
-                    ctx,
-                    &class_info,
                     reference_id.file,
-                    file_path,
-                    &mut Vec::new(),
+                    imports_eval.raw(),
+                    component.imports_factory_span,
                 )
                 .await;
-                resolved_declarations.push(contextual_decl);
-            } else {
-                all_resolved = false;
+                component.import_diagnostics = validation.diagnostics;
+                if validation.is_poisoned {
+                    component.is_poisoned = true;
+                }
+                if component.is_poisoned && !ctx.engine.use_poisoned_data {
+                    component.resolved_declarations = Some(Vec::new());
+                    component.raw_imports_span = None;
+                    return;
+                }
+                let mut evaluated = Vec::new();
+                if collect_declaration_tuples(imports_eval.raw(), &mut evaluated).is_ok() {
+                    entries = Some(
+                        evaluated
+                            .into_iter()
+                            .map(|decl| (Entry::Evaluated(decl.reference), decl.synthetic))
+                            .collect(),
+                    );
+                }
             }
-        }
+            if component.is_poisoned && !ctx.engine.use_poisoned_data {
+                component.resolved_declarations = Some(Vec::new());
+                component.raw_imports_span = None;
+                return;
+            }
+            let used_evaluated_entries = entries.is_some();
+            let entries = entries.unwrap_or_else(|| {
+                component
+                    .parsed_imports
+                    .iter()
+                    .map(|i| (Entry::Parsed(i.to_declaration_tuple()), i.is_forward_ref))
+                    .collect()
+            });
 
-        component.resolved_declarations = Some(resolved_declarations);
+            let mut resolved_declarations = Vec::new();
+            // The legacy path with nothing to resolve (slot evaluation failed and no
+            // identifier-rooted imports survived extraction) must keep the runtime fallback.
+            let mut all_resolved = used_evaluated_entries || !entries.is_empty();
 
-        // When any import could not be resolved statically, keep `raw_imports_span` so the
-        // emitter falls back to the raw source expression (runtime resolution). This is a
-        // supported path (the norm in local mode), not an error, so it is deliberately silent.
-        if all_resolved {
-            component.raw_imports_span = None;
+            let resolve_futures = entries.iter().map(|(entry, _)| {
+                let ctx = ctx.clone();
+                async move {
+                    match entry {
+                        Entry::Evaluated(r) => crate::query::resolve_reference_async(r, &ctx).await,
+                        Entry::Parsed(tuple) => {
+                            resolve_declaration_async(tuple, file_path, &ctx).await
+                        }
+                    }
+                }
+            });
+            let results = futures::future::join_all(resolve_futures).await;
+
+            for ((entry, is_forward_ref), resolved_info) in entries.iter().zip(results) {
+                let Some(class_info) = resolved_info else {
+                    all_resolved = false;
+                    continue;
+                };
+
+                let flattened = flatten_class_info(class_info.clone(), ctx).await;
+
+                let reference = match entry {
+                    Entry::Evaluated(r) => r.clone(),
+                    Entry::Parsed(tuple) => {
+                        legacy_import_reference(tuple, &class_info, reference_id.file)
+                    }
+                };
+
+                let same_file = reference.file == reference_id.file;
+
+                let decl_class = syntax_file
+                    .classes
+                    .iter()
+                    .find(|c| c.class_name.as_deref() == Some(&reference.name));
+                let decl_span_start = decl_class.map(|c| c.span.start).unwrap_or(0);
+                let is_fw = *is_forward_ref || (same_file && decl_span_start > comp_span_start);
+
+                if class_info.class_type == ClassType::NgModule {
+                    if let Some(decl) = DeclarationData::from_class_info(
+                        reference.clone(),
+                        &class_info,
+                        &flattened,
+                        is_fw,
+                    ) {
+                        let contextual_decl =
+                            contextualize_declaration(ctx, &decl, reference_id.file, file_path)
+                                .await;
+                        resolved_declarations.push(contextual_decl);
+                    }
+                    let scope = ctx.ngmodule_exports_scope(class_info.reference_id).await;
+                    let propagated_scope = crate::query::propagate_owning_reference_validated(
+                        ctx,
+                        &scope,
+                        &reference.owning_reference,
+                        class_info.reference_id.file,
+                    )
+                    .await;
+                    for sub_decl in propagated_scope {
+                        let mut contextual_sub_decl =
+                            contextualize_declaration(ctx, &sub_decl, reference_id.file, file_path)
+                                .await;
+                        contextual_sub_decl.resolved_host_directives =
+                            resolve_host_directives_for_declaration(
+                                ctx,
+                                &sub_decl,
+                                reference_id.file,
+                                file_path,
+                            )
+                            .await;
+                        resolved_declarations.push(contextual_sub_decl);
+                    }
+                } else if let Some(decl) =
+                    DeclarationData::from_class_info(reference, &class_info, &flattened, is_fw)
+                {
+                    let mut contextual_decl =
+                        contextualize_declaration(ctx, &decl, reference_id.file, file_path).await;
+                    contextual_decl.resolved_host_directives = resolve_host_directives_for_class(
+                        ctx,
+                        &class_info,
+                        reference_id.file,
+                        file_path,
+                        &mut Vec::new(),
+                    )
+                    .await;
+                    resolved_declarations.push(contextual_decl);
+                } else {
+                    all_resolved = false;
+                }
+            }
+
+            component.resolved_declarations = Some(resolved_declarations);
+
+            // When any import could not be resolved statically, keep `raw_imports_span` so the
+            // emitter falls back to the raw source expression (runtime resolution). This is a
+            // supported path (the norm in local mode), not an error, so it is deliberately silent.
+            if all_resolved {
+                component.raw_imports_span = None;
+            }
         }
     }
 

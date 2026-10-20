@@ -183,7 +183,7 @@ export class MyApp {
 }
 ((): any => {
   (typeof ngDevMode === 'undefined' || ngDevMode) &&
-    i0.ɵsetClassDebugInfo(MyApp, { className: 'MyApp', filePath: 'pipes.ts', lineNumber: 37 });
+    i0.ɵsetClassDebugInfo(MyApp, { className: 'MyApp', filePath: 'pipes.ts', lineNumber: 38 });
 })();
 
 export class MyModule {
@@ -205,12 +205,7 @@ export class MyModule {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
         MyModule,
-        [
-          {
-            type: NgModule,
-            args: [{ declarations: [MyPipe, MyPurePipe, MyApp, PipeWithoutName] }],
-          },
-        ],
+        [{ type: NgModule, args: [{ declarations: [MyPipe, MyPurePipe, MyApp] }] }],
         null,
         null,
       );
@@ -218,7 +213,7 @@ export class MyModule {
 }
 (function (): any {
   (typeof ngJitMode === 'undefined' || ngJitMode) &&
-    i0.ɵɵsetNgModuleScope(MyModule, { declarations: [MyPipe, MyPurePipe, MyApp, PipeWithoutName] });
+    i0.ɵɵsetNgModuleScope(MyModule, { declarations: [MyPipe, MyPurePipe, MyApp] });
 })();
 
 ```

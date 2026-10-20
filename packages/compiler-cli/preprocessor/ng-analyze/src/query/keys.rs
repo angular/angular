@@ -1,6 +1,7 @@
 use std::collections::HashSet;
 use std::sync::{Arc, Mutex};
 
+use crate::query::module_scope::NgModuleScopeRegistry;
 use crate::query::{FileId, ReferenceId};
 use crate::{types::analysis::DeclarationData, FileData, NgModuleComponentMap, ParsedFile};
 
@@ -33,6 +34,10 @@ pub enum QueryKey {
     ModuleExportMap(FileId),
     /// Singleton: component → owning-NgModule mapping across [`QueryKey::ProgramFiles`].
     ComponentMapping,
+    /// Singleton: NgModule scope validation across [`QueryKey::ProgramFiles`] — the NG6xxx
+    /// diagnostics each source NgModule owns and whether its scope is poisoned. Whole-program
+    /// because ngtsc's cycle reporting depends on the order modules are resolved in.
+    NgModuleScopeRegistry,
     /// Singleton: tsconfig root files plus every local TS source reachable via static and dynamic
     /// imports. Whole-program questions iterate this, never the roots alone: a CLI app's tsconfig
     /// names only `main.ts`, and lazy feature modules are reached only via `loadChildren`.
@@ -52,6 +57,7 @@ impl QueryKey {
             Self::NgModuleExportsScope(_)
             | Self::NgModuleImportsScope(_)
             | Self::ComponentMapping
+            | Self::NgModuleScopeRegistry
             | Self::ProgramFiles => None,
         }
     }
@@ -85,6 +91,8 @@ pub enum QueryValue {
     ExportMap(Arc<ModuleExportMap>),
     /// The component → NgModule mapping singleton.
     ComponentMap(Arc<NgModuleComponentMap>),
+    /// The NgModule scope validation singleton ([`QueryKey::NgModuleScopeRegistry`]).
+    ScopeRegistry(Arc<NgModuleScopeRegistry>),
     /// The program's files ([`QueryKey::ProgramFiles`]), roots first in tsconfig order, then the
     /// files they import in breadth-first discovery order.
     ProgramFiles(Arc<Vec<FileId>>),
@@ -110,6 +118,7 @@ impl std::fmt::Debug for QueryValue {
             Self::ComponentMap(v) => {
                 write!(f, "ComponentMap({} entries)", v.component_to_module.len())
             }
+            Self::ScopeRegistry(_) => write!(f, "ScopeRegistry"),
             Self::ProgramFiles(v) => write!(f, "ProgramFiles({} files)", v.len()),
         }
     }

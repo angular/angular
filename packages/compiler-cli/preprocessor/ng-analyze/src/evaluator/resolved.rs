@@ -752,6 +752,7 @@ mod tests {
                 synthetic: false,
                 aliases: Vec::new(),
                 is_default_export: false,
+                identifiers: Vec::new(),
             },
             name: member.to_string(),
             resolved,
@@ -1029,6 +1030,7 @@ mod tests {
             synthetic: false,
             aliases: Vec::new(),
             is_default_export: false,
+            identifiers: Vec::new(),
         })
     }
 

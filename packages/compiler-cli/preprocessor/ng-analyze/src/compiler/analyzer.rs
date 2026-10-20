@@ -176,12 +176,13 @@ impl Analyzer {
             abs_dirs.push(base_dir.to_path_buf());
         }
         fs.set_root_dirs(abs_dirs.clone());
-        let entrypoints: Vec<PathBuf> = resolved_config
+        let mut entrypoints: Vec<PathBuf> = resolved_config
             .files
             .into_iter()
             .map(|p| fs.canonicalize(&p).unwrap_or(p))
             .filter(|p| is_compilation_root(p))
             .collect();
+        entrypoints.sort();
 
         let entrypoints_lock = Arc::new(RwLock::new(entrypoints));
 
@@ -228,6 +229,9 @@ impl Analyzer {
             resolved_config.compile_non_exported_classes,
             options.enable_hmr.unwrap_or(resolved_config.enable_hmr),
             resolved_config.strict_standalone,
+            options
+                .use_poisoned_data
+                .unwrap_or(resolved_config.compile_poisoned_components),
         );
 
         let analyzer = Analyzer {
@@ -478,12 +482,13 @@ impl Analyzer {
         if let Ok(resolved_config) =
             tsconfig_resolution::load_and_resolve_tsconfig(&self.tsconfig_path, &self.fs)
         {
-            let entrypoints: Vec<PathBuf> = resolved_config
+            let mut entrypoints: Vec<PathBuf> = resolved_config
                 .files
                 .into_iter()
                 .map(|p| self.fs.canonicalize(&p).unwrap_or(p))
                 .filter(|p| is_compilation_root(p))
                 .collect();
+            entrypoints.sort();
             *self.entrypoints.write().unwrap() = entrypoints;
         }
     }
@@ -1038,10 +1043,12 @@ async fn run_coordinator<S, LA, FutLA, P, FutP, Fs>(
         }
     }
 
-    let remaining_states: Vec<_> = uf.states.drain().map(|(_, state)| state).collect();
-    for state in remaining_states {
+    let mut remaining_states: Vec<_> = uf.states.drain().collect();
+    remaining_states.sort_by_key(|(root, _)| *root);
+    for (_, state) in remaining_states {
         if let Some(snd) = &final_sender {
-            let files: Vec<crate::AnalysisResult> = state.completed.into_values().collect();
+            let mut files: Vec<crate::AnalysisResult> = state.completed.into_values().collect();
+            files.sort_by_key(|f| f.file_id);
             if !files.is_empty() {
                 let static_edges = compute_intra_chunk_static_edges(&engine, &files);
                 let _ = snd.unbounded_send(Ok(crate::CompilationChunk {

@@ -15,24 +15,24 @@ function _tcb1(this: i0.MyApp) {
   if (true) {
     '' +
       _pipe2.transform(
-        /*690,700*/ _pipe1.transform(
-          /*676,682*/ this.name /*669,673*/ /*669,673*/,
-          this.size /*683,687*/ /*683,687*/,
-        ) /*669,687*/,
-        this.size /*701,705*/ /*701,705*/,
-      ) /*669,705*/;
+        /*679,689*/ _pipe1.transform(
+          /*665,671*/ this.name /*658,662*/ /*658,662*/,
+          this.size /*672,676*/ /*672,676*/,
+        ) /*658,676*/,
+        this.size /*690,694*/ /*690,694*/,
+      ) /*658,694*/;
     '' +
       _pipe1.transform(
-        /*721,727*/ this.name /*714,718*/ /*714,718*/,
-        1 /*728,729*/,
-        2 /*730,731*/,
-        3 /*732,733*/,
-        4 /*734,735*/,
-        5 /*736,737*/,
-      ) /*714,737*/ +
-      (this.name /*744,748*/ /*744,748*/
-        ? 1 /*751,752*/
-        : _pipe1.transform(/*759,765*/ 2 /*755,756*/) /*755,765*/) /*744,765*/;
+        /*710,716*/ this.name /*703,707*/ /*703,707*/,
+        1 /*717,718*/,
+        2 /*719,720*/,
+        3 /*721,722*/,
+        4 /*723,724*/,
+        5 /*725,726*/,
+      ) /*703,726*/ +
+      (this.name /*733,737*/ /*733,737*/
+        ? 1 /*740,741*/
+        : _pipe1.transform(/*748,754*/ 2 /*744,745*/) /*744,754*/) /*733,754*/;
   }
 }
 
@@ -223,7 +223,7 @@ export class MyApp {
 }
 ((): any => {
   (typeof ngDevMode === 'undefined' || ngDevMode) &&
-    i0.ɵsetClassDebugInfo(MyApp, { className: 'MyApp', filePath: 'pipes.ts', lineNumber: 37 });
+    i0.ɵsetClassDebugInfo(MyApp, { className: 'MyApp', filePath: 'pipes.ts', lineNumber: 38 });
 })();
 
 export class MyModule {
@@ -236,7 +236,7 @@ export class MyModule {
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     MyModule,
-    [typeof MyPipe, typeof MyPurePipe, typeof MyApp, typeof PipeWithoutName],
+    [typeof MyPipe, typeof MyPurePipe, typeof MyApp],
     never,
     never
   > =
@@ -250,12 +250,7 @@ export class MyModule {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
         MyModule,
-        [
-          {
-            type: NgModule,
-            args: [{ declarations: [MyPipe, MyPurePipe, MyApp, PipeWithoutName] }],
-          },
-        ],
+        [{ type: NgModule, args: [{ declarations: [MyPipe, MyPurePipe, MyApp] }] }],
         null,
         null,
       );
@@ -263,7 +258,7 @@ export class MyModule {
 }
 (function (): any {
   (typeof ngJitMode === 'undefined' || ngJitMode) &&
-    i0.ɵɵsetNgModuleScope(MyModule, { declarations: [MyPipe, MyPurePipe, MyApp, PipeWithoutName] });
+    i0.ɵɵsetNgModuleScope(MyModule, { declarations: [MyPipe, MyPurePipe, MyApp] });
 })();
 
 ```

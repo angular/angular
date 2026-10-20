@@ -47,6 +47,7 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'button[gm2-button]',
   template: '<ng-content></ng-content>',
+  standalone: false,
 })
 export class MatButton {}
 ```

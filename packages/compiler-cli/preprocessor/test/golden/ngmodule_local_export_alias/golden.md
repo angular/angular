@@ -145,11 +145,15 @@ export class LocalDir {
     {},
     never,
     never,
-    true,
+    false,
     never
   > =
     // @ts-ignore
-    /*@__PURE__*/ i0.ɵɵdefineDirective({ type: LocalDir, selectors: [['', 'local-dir', '']] });
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: LocalDir,
+      selectors: [['', 'local-dir', '']],
+      standalone: false,
+    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -160,6 +164,7 @@ export class LocalDir {
             args: [
               {
                 selector: '[local-dir]',
+                standalone: false,
               },
             ],
           },

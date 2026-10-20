@@ -527,6 +527,7 @@ fn resolve_named_export<'a, Fs: ResourceResolverFs + Clone + 'static>(
                         synthetic: false,
                         aliases: decl.aliases,
                         is_default_export: decl.exported_as_default,
+                        identifiers: Vec::new(),
                     });
                 }
 
@@ -795,9 +796,22 @@ mod tests {
     #[test]
     fn module_with_providers_map_in_imports() {
         let app = r#"
-            import { Component } from '@angular/core';
+            import { Component, NgModule } from '@angular/core';
             import { FooModule } from './foo.module';
             const MWP = { ngModule: FooModule, providers: [] };
+            @Component({
+                selector: 'non-standalone',
+                standalone: false,
+                template: ''
+            })
+            export class NonStandaloneComponent {}
+
+            @NgModule({
+                declarations: [NonStandaloneComponent],
+                imports: [MWP],
+            })
+            export class AppModule {}
+
             @Component({
                 selector: 'app',
                 imports: [MWP],
@@ -806,8 +820,18 @@ mod tests {
             export class AppComponent {}
         "#;
         let foo_module = r#"
-            import { NgModule } from '@angular/core';
-            @NgModule({})
+            import { Component, NgModule } from '@angular/core';
+            @Component({
+                selector: 'foo',
+                standalone: false,
+                template: ''
+            })
+            export class FooComponent {}
+
+            @NgModule({
+                declarations: [FooComponent],
+                exports: [FooComponent],
+            })
             export class FooModule {}
         "#;
         let engine = build_engine(
@@ -815,7 +839,7 @@ mod tests {
                 ("/app/app.component.ts", app),
                 ("/app/foo.module.ts", foo_module),
             ],
-            &["/app/app.component.ts"],
+            &["/app/app.component.ts", "/app/foo.module.ts"],
         );
         let ctx = QueryContext::new(engine.clone());
         let result = block_on_with_timeout(async move {
@@ -824,14 +848,22 @@ mod tests {
         });
 
         let app_id = engine.intern_path("/app/app.component.ts");
-        let component = expect_component(&result.classes[0]);
-        let decls = component.resolved_declarations.as_ref().unwrap();
+        let non_standalone = expect_component(&result.classes[0]);
+        let decls = non_standalone.resolved_declarations.as_ref().unwrap();
         let names: Vec<&str> = decls
             .iter()
             .map(|d| d.reference.name_in_file(app_id))
             .collect();
-        assert_eq!(names, vec!["FooModule"]);
-        assert!(component.raw_imports_span.is_none());
+        assert_eq!(names, vec!["FooComponent", "NonStandaloneComponent"]);
+
+        let standalone = expect_component(&result.classes[2]);
+        assert!(standalone.is_poisoned);
+        assert!(standalone
+            .resolved_declarations
+            .as_ref()
+            .unwrap()
+            .is_empty());
+        assert!(standalone.raw_imports_span.is_none());
     }
 
     #[test]

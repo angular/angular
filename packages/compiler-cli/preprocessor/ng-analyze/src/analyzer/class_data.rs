@@ -296,6 +296,7 @@ pub struct DirectiveData {
     /// `LocalModuleScopeRegistry.getDuplicateDeclarations`). `declaring_ng_module` is then
     /// `None`, and validation reports NG6007. Only the semantic pass fills it in.
     pub duplicate_declaring_ng_modules: Vec<crate::query::ReferenceId>,
+    pub duplicate_declaration_context: Vec<crate::NgRelatedInformation>,
     pub is_jit: bool,
     pub decorator_name: Option<String>,
 }
@@ -471,6 +472,7 @@ impl Default for DirectiveData {
             service: None,
             declaring_ng_module: None,
             duplicate_declaring_ng_modules: Vec::new(),
+            duplicate_declaration_context: Vec::new(),
             is_jit: false,
             decorator_name: None,
         }
@@ -925,10 +927,18 @@ pub struct ComponentData {
     /// `read_core_enum_field` applies when the evaluator could not answer.
     pub encapsulation_text: Option<String>,
     pub schemas: Option<Vec<String>>,
+    /// The `schemas` property's value expression span, present whenever the property is.
+    pub schemas_span: Option<oxc_span::Span>,
     pub raw_imports_span: Option<oxc_span::Span>,
     /// Preserved copy of `@Component.imports` expression span, unaffected by same-file scope
     /// resolution. Required by local compilation mode for runtime dependency resolution.
     pub imports_factory_span: Option<oxc_span::Span>,
+    /// Diagnostics about the entries of a standalone component's `imports` (ngtsc's
+    /// `validateStandaloneImports` and the `ModuleWithProviders` rejection of
+    /// `validateAndFlattenComponentImports`), filled by Stage 2. Already in wire form because
+    /// the related information points at the declaring NgModule, possibly in another file.
+    pub import_diagnostics: Vec<crate::NgDiagnostic>,
+    pub is_poisoned: bool,
     pub resolved_declarations: Option<Vec<DeclarationData>>,
     /// The component's own `hostDirectives`, resolved in stage 2 — what ngtsc's
     /// `TypeCheckScopeRegistry` puts in `directivesOnHost` ahead of the component itself. Kept
@@ -1027,6 +1037,7 @@ pub struct PipeData {
     /// `LocalModuleScopeRegistry.getDuplicateDeclarations`). `declaring_ng_module` is then
     /// `None`, and validation reports NG6007. Only the semantic pass fills it in.
     pub duplicate_declaring_ng_modules: Vec<crate::query::ReferenceId>,
+    pub duplicate_declaration_context: Vec<crate::NgRelatedInformation>,
     pub decorator_name: Option<String>,
 }
 
@@ -1215,6 +1226,12 @@ pub struct NgModuleData {
     /// Standalone components listed in `bootstrap` (`NG6009`), found by Stage 2 once the
     /// entries resolve to classes. Empty in local compilation, which never resolves them.
     pub bootstrap_issues: Vec<ValueIssue>,
+    /// The NgModule scope diagnostics this module owns (`LocalModuleScopeRegistry.scopeErrors`
+    /// plus the `resolveTypeList` and out-of-compilation declaration checks of ngtsc's
+    /// `analyze`), filled by Stage 2 from [`crate::query::NgModuleScopeRegistry`]. Already in
+    /// wire form because an entry may point into another file (e.g. the cycle diagnostic lands
+    /// on the imported module's name).
+    pub scope_diagnostics: Vec<crate::NgDiagnostic>,
     /// Raw source spans of the top-level elements of the `imports`/`exports` arrays (each
     /// element verbatim, spreads kept). When the value is not an array literal, a single span
     /// covering the whole expression. Used by LOCAL mode to emit `ɵinj.imports` as the raw
@@ -1823,6 +1840,7 @@ impl ClassData {
                 self.validate_unique_declaration(
                     "Component",
                     &c.directive.duplicate_declaring_ng_modules,
+                    &c.directive.duplicate_declaration_context,
                     file_path,
                     converter,
                     diagnostics,
@@ -1840,6 +1858,7 @@ impl ClassData {
                 self.validate_unique_declaration(
                     "Directive",
                     &d.duplicate_declaring_ng_modules,
+                    &d.duplicate_declaration_context,
                     file_path,
                     converter,
                     diagnostics,
@@ -1850,6 +1869,7 @@ impl ClassData {
                 self.validate_unique_declaration(
                     "Pipe",
                     &p.duplicate_declaring_ng_modules,
+                    &p.duplicate_declaration_context,
                     file_path,
                     converter,
                     diagnostics,
@@ -1935,9 +1955,8 @@ impl ClassData {
 
     /// Report a class declared by more than one NgModule (NG6007) on its name, matching ngtsc's
     /// `makeDuplicateDeclarationError` (from `getDirectiveDiagnostics` for components/directives
-    /// and the pipe handler's `resolve`). `kind` is the word ngtsc uses in the message.
-    // TODO(parity): `makeDuplicateDeclarationError` attaches a related-information entry per
-    // declaring NgModule; `NgDiagnostic` does not support related information yet.
+    /// and the pipe handler's `resolve`). `kind` is the word ngtsc uses in the message; `context`
+    /// is the related information naming each declaring NgModule.
     // TODO(parity): ngtsc skips `resolve` (and NG6007) when component analysis is poisoned (e.g.
     // NG2010). ngtsc also reports NG6007 for a standalone component listed in two NgModules, but
     // `optimize_component` only collects declaring NgModules for non-standalone components.
@@ -1945,6 +1964,7 @@ impl ClassData {
         &self,
         kind: &str,
         duplicate_declaring_ng_modules: &[crate::query::ReferenceId],
+        context: &[crate::NgRelatedInformation],
         file_path: &std::path::Path,
         converter: &crate::utils::Utf8ToUtf16,
         diagnostics: &mut Vec<crate::NgDiagnostic>,
@@ -1956,18 +1976,19 @@ impl ClassData {
         else {
             return;
         };
-        push_error(
-            diagnostics,
-            file_path,
-            converter,
-            "6007",
-            name_span,
-            format!("The {kind} '{class_name}' is declared by more than one NgModule."),
+        diagnostics.push(
+            crate::NgDiagnostic::error(
+                6007,
+                file_path.to_string_lossy().into_owned(),
+                crate::types::metadata::SpanMetadata::new(name_span, converter),
+                format!("The {kind} '{class_name}' is declared by more than one NgModule."),
+            )
+            .with_related_information(context.to_vec()),
         );
     }
 
-    /// Report the `id: module.id` anti-pattern (NG6100) and the standalone `bootstrap`
-    /// entries Stage 2 found (NG6009).
+    /// Report the `id: module.id` anti-pattern (NG6100), the standalone `bootstrap`
+    /// entries Stage 2 found (NG6009), and the module's scope diagnostics (NG6xxx).
     fn validate_ng_module(
         &self,
         m: &NgModuleData,
@@ -1978,6 +1999,7 @@ impl ClassData {
         for issue in &m.bootstrap_issues {
             push_issue(diagnostics, file_path, converter, issue);
         }
+        diagnostics.extend(m.scope_diagnostics.iter().cloned());
         let Some(span) = m.module_id_span else {
             return;
         };
@@ -2517,23 +2539,48 @@ impl ClassData {
             // `imports_factory_span` rather than `raw_imports_span`: the latter doubles as
             // "imports still needing runtime resolution" and is cleared as resolution
             // progresses, while the former is a stable record of the `imports` property.
-            let (field, span) = if let Some(span) = c.imports_factory_span {
-                ("imports", span)
+            let import_field = if let Some(span) = c.imports_factory_span {
+                Some(("imports", span))
             } else if let Some(span) = c.deferred_imports_span {
-                ("deferredImports", span)
-            } else if let Some(span) = c.foreign_imports_span {
-                ("foreignImports", span)
+                Some(("deferredImports", span))
             } else {
-                return;
+                c.foreign_imports_span.map(|span| ("foreignImports", span))
             };
-            push_error(
-                diagnostics,
-                file_path,
-                converter,
-                "2010",
-                span,
-                format!("'{field}' is only valid on a component that is standalone."),
-            );
+            if let Some((field, span)) = import_field {
+                let file_path_str = file_path.to_string_lossy().into_owned();
+                diagnostics.push(
+                    crate::NgDiagnostic::error(
+                        2010,
+                        file_path_str.clone(),
+                        crate::types::metadata::SpanMetadata::new(span, converter),
+                        format!("'{field}' is only valid on a component that is standalone."),
+                    )
+                    .with_related_information(vec![
+                        crate::NgRelatedInformation {
+                            file_path: file_path_str,
+                            span: crate::types::metadata::SpanMetadata::new(
+                                self.name_span.unwrap_or(self.span),
+                                converter,
+                            ),
+                            message_text:
+                                "Did you forget to add 'standalone: true' to this @Component?"
+                                    .to_string(),
+                        },
+                    ]),
+                );
+            }
+            // `schemas` is checked separately from the import fields, after them.
+            // https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L700-L710
+            if let Some(span) = c.schemas_span {
+                push_error(
+                    diagnostics,
+                    file_path,
+                    converter,
+                    "2010",
+                    span,
+                    "'schemas' is only valid on a component that is standalone.".to_string(),
+                );
+            }
             return;
         }
 
@@ -2566,6 +2613,8 @@ impl ClassData {
                 message.to_string(),
             );
         }
+
+        diagnostics.extend(c.import_diagnostics.iter().cloned());
     }
 }
 
@@ -4144,6 +4193,7 @@ impl ClassData {
                 }),
             declaring_ng_module,
             is_jit: c.directive.is_jit,
+            is_poisoned: c.is_poisoned,
         })
     }
 }

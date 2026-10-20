@@ -126,6 +126,7 @@ import {run} from './ngp.js';
         workspaceName,
         rootDirs,
         enableHmr,
+        usePoisonedData: tcbConfig.usePoisonedData,
       });
       innerAnalyzer = sidecar;
     } else {
@@ -145,6 +146,7 @@ import {run} from './ngp.js';
         workspaceName,
         rootDirs,
         enableHmr,
+        usePoisonedData: tcbConfig.usePoisonedData,
       });
     }
     const compiler = new HybridCompiler(innerAnalyzer, {

@@ -350,13 +350,15 @@ export class TestEnv {
   ): Promise<LanguageService> {
     const tsconfigPath = path.join(this.fileManager.getWorkspacePath(), 'tsconfig.json');
     const wasmBinding = resolveWasmBinding();
+    const tcbConfig = buildTypeCheckingConfig(options, true);
     const analyzer = await NapiAnalyzer.create(tsconfigPath, {
       nodeModulesPathOverride: path.resolve(TESTS_DIR, '../../node_modules'),
       ngAnalyzeDir: path.resolve(TESTS_DIR, '../../ng-analyze'),
+      usePoisonedData: tcbConfig.usePoisonedData,
       ...(wasmBinding ? {backend: 'wasm', wasmBinding} : {}),
     });
     this.compiler = new HybridCompiler(analyzer, {
-      tcbConfig: buildTypeCheckingConfig(options, true),
+      tcbConfig,
       templateParseOptions: {
         preserveWhitespaces: true,
         preserveLineEndings: true,

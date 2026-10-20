@@ -737,6 +737,7 @@ fn named_spread_hole_in_known_fn_receiver_flattens() {
         synthetic: false,
         aliases: Vec::new(),
         is_default_export: false,
+        identifiers: Vec::new(),
     };
     let hole = IncompleteValue {
         file,
@@ -749,6 +750,7 @@ fn named_spread_hole_in_known_fn_receiver_flattens() {
         transparent: false,
         spread: Some(SpreadArgument::Dependency),
         synthetic: false,
+        identifiers: Vec::new(),
     };
     let key = hole.key();
     let value = ResolvedValue::KnownFn(KnownFn::ArraySlice(vec![
@@ -860,6 +862,7 @@ fn foreign_static_call_three_pass_staging() {
         synthetic: false,
         aliases: Vec::new(),
         is_default_export: false,
+        identifiers: Vec::new(),
     };
     let mut env = ResolvedEnv::new();
     env.insert(import_key, ResolvedValue::Reference(router_ref.clone()));
@@ -912,6 +915,7 @@ fn call_hole_fingerprint_distinguishes_args() {
         synthetic: false,
         aliases: Vec::new(),
         is_default_export: false,
+        identifiers: Vec::new(),
     };
     let key_a = IncompleteValue {
         file,
@@ -924,6 +928,7 @@ fn call_hole_fingerprint_distinguishes_args() {
         transparent: true,
         spread: None,
         synthetic: false,
+        identifiers: Vec::new(),
     }
     .key();
     let key_b = IncompleteValue {
@@ -937,6 +942,7 @@ fn call_hole_fingerprint_distinguishes_args() {
         transparent: true,
         spread: None,
         synthetic: false,
+        identifiers: Vec::new(),
     }
     .key();
     assert_ne!(key_a, key_b);

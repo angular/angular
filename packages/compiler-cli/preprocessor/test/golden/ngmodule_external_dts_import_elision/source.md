@@ -30,7 +30,7 @@ export * from './drag-drop-module';
 import * as i0 from '@angular/core';
 
 export declare class CdkScrollable {
-  static ɵdir: i0.ɵɵDirectiveDeclaration<CdkScrollable, '[cdkScrollable]', never, {}, {}, never, never, false, never>;
+  static ɵdir: i0.ɵɵDirectiveDeclaration<CdkScrollable, '[cdkScrollable]', never, {}, {}, never, never, true, never>;
 }
 ```
 

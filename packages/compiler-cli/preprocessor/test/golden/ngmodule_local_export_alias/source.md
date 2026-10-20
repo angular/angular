@@ -54,6 +54,7 @@ import { Directive } from '@angular/core';
 
 @Directive({
   selector: '[local-dir]',
+  standalone: false,
 })
 export class LocalDir {}
 ```
