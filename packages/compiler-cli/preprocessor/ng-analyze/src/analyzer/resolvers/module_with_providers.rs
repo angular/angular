@@ -88,6 +88,7 @@ impl ModuleWithProvidersResolver {
                 }
                 _ => None,
             },
+            TSType::TSImportType(import_type) => Some(TypeNameRef::Import(import_type)),
             _ => None,
         }
     }
@@ -107,6 +108,7 @@ impl ModuleWithProvidersResolver {
                 };
                 ident
             }
+            TypeNameRef::Import(_) => return false,
         };
         let Some(source) = import_source_of(ident, input) else {
             return true; // Untraceable: trust the name.

@@ -14,6 +14,7 @@ pub struct ResolvedTsConfig {
     pub compile_non_exported_classes: bool,
     pub enable_hmr: bool,
     pub strict_standalone: bool,
+    pub compile_poisoned_components: bool,
 }
 
 pub fn load_and_resolve_tsconfig(
@@ -84,6 +85,9 @@ pub fn load_and_resolve_tsconfig(
             .unwrap_or(true),
         enable_hmr: extended_options.enable_hmr.unwrap_or(false),
         strict_standalone: extended_options.strict_standalone.unwrap_or(false),
+        compile_poisoned_components: extended_options
+            .compile_poisoned_components
+            .unwrap_or(false),
     })
 }
 
@@ -256,6 +260,7 @@ struct ExtendedOptions {
     compile_non_exported_classes: Option<bool>,
     enable_hmr: Option<bool>,
     strict_standalone: Option<bool>,
+    compile_poisoned_components: Option<bool>,
 }
 
 fn resolve_extended_options_recursive(
@@ -326,6 +331,11 @@ fn resolve_extended_options_recursive(
             .and_then(|v| v.as_bool())
     });
 
+    let mut current_compile_poisoned_components = parsed_json.as_ref().ok().and_then(|json| {
+        json.pointer("/angularCompilerOptions/_compilePoisonedComponents")
+            .and_then(|v| v.as_bool())
+    });
+
     let base_dir = abs_path.parent().unwrap_or(Path::new("."));
 
     let mut current_root_dirs = tsconfig.compiler_options.root_dirs.clone().map(|dirs| {
@@ -344,6 +354,7 @@ fn resolve_extended_options_recursive(
         && current_compile_non_exported.is_some()
         && current_enable_hmr.is_some()
         && current_strict_standalone.is_some()
+        && current_compile_poisoned_components.is_some()
     {
         visited.remove(&canonical);
         return Ok(ExtendedOptions {
@@ -354,6 +365,7 @@ fn resolve_extended_options_recursive(
             compile_non_exported_classes: current_compile_non_exported,
             enable_hmr: current_enable_hmr,
             strict_standalone: current_strict_standalone,
+            compile_poisoned_components: current_compile_poisoned_components,
         });
     }
 
@@ -367,6 +379,7 @@ fn resolve_extended_options_recursive(
             compile_non_exported_classes: current_compile_non_exported,
             enable_hmr: current_enable_hmr,
             strict_standalone: current_strict_standalone,
+            compile_poisoned_components: current_compile_poisoned_components,
         });
     };
 
@@ -416,6 +429,9 @@ fn resolve_extended_options_recursive(
         if let Some(strict_standalone) = res.strict_standalone {
             inherited.strict_standalone = Some(strict_standalone);
         }
+        if let Some(compile_poisoned_components) = res.compile_poisoned_components {
+            inherited.compile_poisoned_components = Some(compile_poisoned_components);
+        }
     }
     if current_root_dirs.is_none() {
         current_root_dirs = inherited.root_dirs;
@@ -438,6 +454,9 @@ fn resolve_extended_options_recursive(
     if current_strict_standalone.is_none() {
         current_strict_standalone = inherited.strict_standalone;
     }
+    if current_compile_poisoned_components.is_none() {
+        current_compile_poisoned_components = inherited.compile_poisoned_components;
+    }
 
     visited.remove(&canonical);
     Ok(ExtendedOptions {
@@ -448,6 +467,7 @@ fn resolve_extended_options_recursive(
         compile_non_exported_classes: current_compile_non_exported,
         enable_hmr: current_enable_hmr,
         strict_standalone: current_strict_standalone,
+        compile_poisoned_components: current_compile_poisoned_components,
     })
 }
 

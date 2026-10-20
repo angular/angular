@@ -66,6 +66,7 @@ impl ResolvedValue {
             transparent: true,
             spread: None,
             synthetic: false,
+            identifiers: Vec::new(),
         }))
     }
 
@@ -250,7 +251,7 @@ pub enum DeclKind {
 }
 
 /// Owned reference to a declaration in some file (`imports/src/references.ts`).
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Debug)]
 pub struct ValueReference {
     /// File containing the declaration.
     pub file: FileId,
@@ -276,6 +277,57 @@ pub struct ValueReference {
     pub aliases: Vec<(FileId, String)>,
     /// True when exported under the reserved `default` key (`export default class Foo {}`).
     pub is_default_export: bool,
+    /// Identifier nodes traversed while resolving this reference (`Reference.identifiers` in
+    /// `imports/src/references.ts`). Excluded from equality and hashing.
+    pub identifiers: Vec<(FileId, Span)>,
+}
+
+impl ValueReference {
+    pub fn identity_in_expression(&self, file: FileId, container: Span) -> Option<Span> {
+        self.identifiers
+            .iter()
+            .find(|&&(id_file, id_span)| {
+                id_file == file && id_span.start >= container.start && id_span.end <= container.end
+            })
+            .map(|&(_, id_span)| id_span)
+    }
+
+    pub fn origin_for_diagnostics(&self, file: FileId, container: Span, fallback: Span) -> Span {
+        self.identity_in_expression(file, container)
+            .unwrap_or(fallback)
+    }
+}
+
+impl PartialEq for ValueReference {
+    fn eq(&self, other: &Self) -> bool {
+        self.file == other.file
+            && self.name == other.name
+            && self.member == other.member
+            && self.reference_id == other.reference_id
+            && self.span == other.span
+            && self.kind == other.kind
+            && self.owning_reference == other.owning_reference
+            && self.synthetic == other.synthetic
+            && self.aliases == other.aliases
+            && self.is_default_export == other.is_default_export
+    }
+}
+
+impl Eq for ValueReference {}
+
+impl Hash for ValueReference {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.file.hash(state);
+        self.name.hash(state);
+        self.member.hash(state);
+        self.reference_id.hash(state);
+        self.span.hash(state);
+        self.kind.hash(state);
+        self.owning_reference.hash(state);
+        self.synthetic.hash(state);
+        self.aliases.hash(state);
+        self.is_default_export.hash(state);
+    }
 }
 
 /// Mirror of upstream `EnumValue` (`result.ts`): a single enum member.
@@ -487,7 +539,7 @@ pub struct UnresolvedReference {
 ///
 /// A tree containing any hole is non-final until re-evaluated or substituted with a
 /// [`ResolvedEnv`].
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug)]
 pub struct IncompleteValue {
     /// File in which the hole originated.
     pub file: FileId,
@@ -504,6 +556,21 @@ pub struct IncompleteValue {
     /// into the enclosing list; `node_id` is the spread's argument. Never `transparent`. Needed
     /// because the env key alone cannot tell `...LIST` from `LIST[0]`.
     pub spread: Option<SpreadArgument>,
+    /// Identifier nodes traversed while producing this transparent hole, transferred onto a
+    /// resolved [`ValueReference`] when the hole is filled.
+    pub identifiers: Vec<(FileId, Span)>,
+}
+
+impl PartialEq for IncompleteValue {
+    fn eq(&self, other: &Self) -> bool {
+        self.file == other.file
+            && self.span == other.span
+            && self.node_id == other.node_id
+            && self.dep == other.dep
+            && self.transparent == other.transparent
+            && self.synthetic == other.synthetic
+            && self.spread == other.spread
+    }
 }
 
 /// The argument of a spread hole (`...expr`).
@@ -541,6 +608,7 @@ impl IncompleteValue {
             SpreadArgument::Expression
         });
         self.transparent = false;
+        self.identifiers.clear();
         self.span = span;
         self.node_id = argument.or(self.node_id);
         self
@@ -705,7 +773,18 @@ pub fn substitute(
     match value {
         ResolvedValue::Incomplete(ref hole) => {
             let anchor = (hole.file, hole.span);
-            let inherit = |filled: ResolvedValue| {
+            let inherit = |mut filled: ResolvedValue| {
+                if hole.spread.is_none() && !hole.identifiers.is_empty() {
+                    if let ResolvedValue::Reference(ref mut r) = filled.unwrap_named_mut() {
+                        if !r.synthetic {
+                            for &id in &hole.identifiers {
+                                if !r.identifiers.contains(&id) {
+                                    r.identifiers.push(id);
+                                }
+                            }
+                        }
+                    }
+                }
                 if hole.synthetic {
                     mark_value_synthetic(filled)
                 } else {

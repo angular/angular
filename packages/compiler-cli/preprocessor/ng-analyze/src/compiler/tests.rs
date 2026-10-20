@@ -6399,3 +6399,129 @@ fn test_instance_io_not_clobbered_by_same_named_static_member() {
         .collect();
     assert_eq!(outputs, vec!["bar", "qux"]);
 }
+
+#[test]
+fn test_use_poisoned_data_populates_poisoned_component_scope_and_schemas() {
+    let app_source = r#"
+        import { Component, Directive } from '@angular/core';
+
+        @Directive({ selector: '[valid-dir]', standalone: false })
+        export class ValidDir {}
+
+        @Directive({ selector: '[valid-standalone]' })
+        export class ValidStandaloneDir {}
+
+        @Component({ selector: 'standalone-in-decl', template: '' })
+        export class StandaloneInDecl {}
+
+        @Component({ selector: 'non-standalone-cmp', standalone: false, template: '' })
+        export class NonStandaloneComp {}
+
+        @Component({
+            selector: 'poisoned-standalone',
+            imports: [ValidStandaloneDir, ValidDir],
+            template: '',
+        })
+        export class PoisonedStandaloneComp {}
+    "#;
+    let mod_source = r#"
+        import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
+        import { NonStandaloneComp, ValidDir, StandaloneInDecl } from './app';
+
+        @NgModule({
+            declarations: [NonStandaloneComp, ValidDir, StandaloneInDecl],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA],
+        })
+        export class PoisonedModule {}
+    "#;
+
+    let analyze_with = |use_poisoned_data: bool| {
+        let mut virtual_files = HashMap::new();
+        virtual_files.insert("/project/app.ts".to_string(), app_source.to_string());
+        virtual_files.insert("/project/mod.ts".to_string(), mod_source.to_string());
+        virtual_files.insert(
+            "/project/tsconfig.json".to_string(),
+            r#"{"files": ["app.ts", "mod.ts"]}"#.to_string(),
+        );
+        let analyzer = Analyzer::new(AnalyzerOptions {
+            tsconfig_path: "/project/tsconfig.json".to_string(),
+            optimize: Some(true),
+            virtual_files: Some(virtual_files),
+            use_poisoned_data: Some(use_poisoned_data),
+            ..Default::default()
+        })
+        .unwrap();
+        analyzer
+            .get_metadata_for_file("/project/app.ts".to_string())
+            .expect("app.ts metadata")
+    };
+
+    let without_poisoned = analyze_with(false);
+    let non_standalone_without = without_poisoned
+        .classes
+        .iter()
+        .find(|c| c.class_name.as_deref() == Some("NonStandaloneComp"))
+        .and_then(|c| c.component.as_ref())
+        .unwrap();
+    assert!(non_standalone_without.is_poisoned);
+    assert!(non_standalone_without
+        .resolved_declarations
+        .as_ref()
+        .unwrap()
+        .is_empty());
+    assert!(non_standalone_without.schemas.is_none());
+
+    let standalone_without = without_poisoned
+        .classes
+        .iter()
+        .find(|c| c.class_name.as_deref() == Some("PoisonedStandaloneComp"))
+        .and_then(|c| c.component.as_ref())
+        .unwrap();
+    assert!(standalone_without.is_poisoned);
+    assert!(standalone_without
+        .resolved_declarations
+        .as_ref()
+        .unwrap()
+        .is_empty());
+
+    let with_poisoned = analyze_with(true);
+    let non_standalone_with = with_poisoned
+        .classes
+        .iter()
+        .find(|c| c.class_name.as_deref() == Some("NonStandaloneComp"))
+        .and_then(|c| c.component.as_ref())
+        .unwrap();
+    assert!(non_standalone_with.is_poisoned);
+    let non_standalone_decls: Vec<&str> = non_standalone_with
+        .resolved_declarations
+        .as_ref()
+        .unwrap()
+        .iter()
+        .map(|d| d.name.as_str())
+        .collect();
+    assert_eq!(
+        non_standalone_decls,
+        vec!["NonStandaloneComp", "ValidDir", "StandaloneInDecl"]
+    );
+    assert_eq!(
+        non_standalone_with.schemas.as_deref(),
+        Some(&["CUSTOM_ELEMENTS_SCHEMA".to_string()][..])
+    );
+
+    let standalone_with = with_poisoned
+        .classes
+        .iter()
+        .find(|c| c.class_name.as_deref() == Some("PoisonedStandaloneComp"))
+        .and_then(|c| c.component.as_ref())
+        .unwrap();
+    assert!(standalone_with.is_poisoned);
+    let standalone_decls: Vec<&str> = standalone_with
+        .resolved_declarations
+        .as_ref()
+        .unwrap()
+        .iter()
+        .map(|d| d.name.as_str())
+        .collect();
+    assert_eq!(standalone_decls, vec!["ValidStandaloneDir", "ValidDir"]);
+}
+

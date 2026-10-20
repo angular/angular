@@ -122,7 +122,8 @@ pub fn evaluate_node_id(
         AstKind::TemplateLiteral(t) => Some(interp.visit_template(t, &scope)),
         AstKind::IdentifierReference(ident) => {
             let ref_id = ident.reference_id.get()?;
-            Some(interp.visit_reference(ref_id, &ident.name, span, &scope))
+            let res = interp.visit_reference(ref_id, &ident.name, span, &scope);
+            Some(interp.record_identifier(res, span))
         }
         AstKind::ArrayExpression(arr) => {
             let mut out = Vec::with_capacity(arr.elements.len());
@@ -220,6 +221,7 @@ pub fn evaluate_node_id(
         AstKind::TSTypeQuery(q) => Some(interp.visit_type_query(q, &scope)),
         AstKind::TSQualifiedName(q) => Some(interp.visit_qualified_name(q, span, &scope)),
         AstKind::TSTypeReference(r) => Some(interp.visit_type_reference(r, &scope)),
+        AstKind::TSImportType(i) => Some(interp.visit_import_type(i, &scope)),
         _ => None,
     };
     // This dispatcher stands in for `visit_expression` on the Stage-2 resume path, so it owes
@@ -332,12 +334,40 @@ impl<'a, 'e, 'i> Interpreter<'a, 'e, 'i> {
             ResolvedValue::Incomplete(mut hole) => {
                 hole.transparent = false;
                 hole.spread = None;
+                hole.identifiers.clear();
                 hole.span = span;
                 hole.node_id = self.current_node_id.get();
                 ResolvedValue::Incomplete(hole)
             }
             other => other,
         }
+    }
+
+    fn record_identifier(&self, mut value: ResolvedValue, span: Span) -> ResolvedValue {
+        match value.unwrap_named_mut() {
+            ResolvedValue::Reference(r) if !r.synthetic => {
+                let entry = (self.file(), span);
+                if !r.identifiers.contains(&entry) {
+                    r.identifiers.push(entry);
+                }
+            }
+            ResolvedValue::Incomplete(hole)
+                if !hole.synthetic
+                    && hole.transparent
+                    && !matches!(
+                        &hole.dep,
+                        IncompleteDep::Reference(u)
+                            if u.symbol == ImportKind::Namespace || u.is_namespace_member
+                    ) =>
+            {
+                let entry = (self.file(), span);
+                if !hole.identifiers.contains(&entry) {
+                    hole.identifiers.push(entry);
+                }
+            }
+            _ => {}
+        }
+        value
     }
 
     fn visit_type(&self, ts_type: &oxc_ast::ast::TSType<'a>, scope: &Scope) -> ResolvedValue {
@@ -368,9 +398,62 @@ impl<'a, 'e, 'i> Interpreter<'a, 'e, 'i> {
             }
             TSType::TSLiteralType(literal) => self.visit_literal_type(literal, scope),
             TSType::TSNeverKeyword(_) => ResolvedValue::Array(Vec::new()),
-            // TODO(parity): Support `TSType::TSImportType` (`import("./mod").Foo`) in `.d.ts` type
-            // evaluation (`StaticInterpreter.visitImportType` in `ngtsc/partial_evaluator`).
+            TSType::TSImportType(import_type) => {
+                let old_node_id = self.current_node_id.replace(Some(import_type.node_id()));
+                let res = self.visit_import_type(import_type, scope);
+                self.current_node_id.set(old_node_id);
+                res
+            }
             _ => self.dynamic(ts_type.span(), DynamicReason::UnsupportedSyntax),
+        }
+    }
+
+    fn visit_import_type(
+        &self,
+        import_type: &oxc_ast::ast::TSImportType<'a>,
+        scope: &Scope,
+    ) -> ResolvedValue {
+        let Some(qualifier) = &import_type.qualifier else {
+            return self.dynamic(import_type.span, DynamicReason::UnsupportedSyntax);
+        };
+        let specifier = import_type.source.value.to_string();
+        self.resolve_import_type_qualifier(qualifier, &specifier, import_type.span, scope)
+    }
+
+    fn resolve_import_type_qualifier(
+        &self,
+        qualifier: &oxc_ast::ast::TSImportTypeQualifier<'a>,
+        specifier: &str,
+        import_span: Span,
+        scope: &Scope,
+    ) -> ResolvedValue {
+        use oxc_ast::ast::TSImportTypeQualifier;
+
+        match qualifier {
+            TSImportTypeQualifier::Identifier(ident) => {
+                let target = UnresolvedReference {
+                    importer: self.file(),
+                    specifier: specifier.to_string(),
+                    symbol: ImportKind::Named(ident.name.to_string()),
+                    local_name: None,
+                    is_namespace_member: false,
+                };
+                self.import_hole(import_span, target)
+            }
+            TSImportTypeQualifier::QualifiedName(qualified) => {
+                let left = self.resolve_import_type_qualifier(
+                    &qualified.left,
+                    specifier,
+                    import_span,
+                    scope,
+                );
+                self.access(
+                    qualified.span,
+                    left,
+                    AccessKey::Str(qualified.right.name.as_str()),
+                    scope,
+                )
+            }
         }
     }
 
@@ -465,7 +548,7 @@ impl<'a, 'e, 'i> Interpreter<'a, 'e, 'i> {
 
         match &type_ref.type_name {
             TSTypeName::IdentifierReference(ident) => {
-                if let Some(ref_id) = ident.reference_id.get() {
+                let res = if let Some(ref_id) = ident.reference_id.get() {
                     self.visit_reference(ref_id, &ident.name, type_ref.span, scope)
                 } else if let Some(imported) = self.input.import_map.get(ident.name.as_str()) {
                     let target = UnresolvedReference {
@@ -481,7 +564,8 @@ impl<'a, 'e, 'i> Interpreter<'a, 'e, 'i> {
                         type_ref.span,
                         DynamicReason::UnknownIdentifier(ident.name.to_string()),
                     )
-                }
+                };
+                self.record_identifier(res, ident.span)
             }
             TSTypeName::QualifiedName(qualified) => {
                 self.visit_qualified_name(qualified, type_ref.span, scope)
@@ -522,7 +606,7 @@ impl<'a, 'e, 'i> Interpreter<'a, 'e, 'i> {
 
         match &query.expr_name {
             TSTypeQueryExprName::IdentifierReference(ident) => {
-                if let Some(ref_id) = ident.reference_id.get() {
+                let res = if let Some(ref_id) = ident.reference_id.get() {
                     self.visit_reference(ref_id, &ident.name, query.span, scope)
                 } else if let Some(imported) = self.input.import_map.get(ident.name.as_str()) {
                     let target = UnresolvedReference {
@@ -542,7 +626,8 @@ impl<'a, 'e, 'i> Interpreter<'a, 'e, 'i> {
                         query.span,
                         DynamicReason::UnknownIdentifier(ident.name.to_string()),
                     )
-                }
+                };
+                self.record_identifier(res, ident.span)
             }
             TSTypeQueryExprName::QualifiedName(qualified) => {
                 self.visit_qualified_name(qualified, query.span, scope)
@@ -567,7 +652,8 @@ impl<'a, 'e, 'i> Interpreter<'a, 'e, 'i> {
                         DynamicReason::UnknownIdentifier(ident.name.to_string()),
                     );
                 };
-                self.visit_reference(ref_id, &ident.name, ident.span, scope)
+                let res = self.visit_reference(ref_id, &ident.name, ident.span, scope);
+                self.record_identifier(res, ident.span)
             }
             TSTypeName::QualifiedName(inner) => self.visit_qualified_name(inner, inner.span, scope),
             TSTypeName::ThisExpression(_) => {
@@ -678,7 +764,7 @@ impl<'a, 'e, 'i> Interpreter<'a, 'e, 'i> {
             Expression::StringLiteral(s) => ResolvedValue::String(s.value.to_string()),
             Expression::TemplateLiteral(t) => self.visit_template(t, scope),
             Expression::Identifier(ident) => {
-                if let Some(ref_id) = ident.reference_id.get() {
+                let res = if let Some(ref_id) = ident.reference_id.get() {
                     self.visit_reference(ref_id, &ident.name, span, scope)
                 } else if let Some(imported) = self.input.import_map.get(ident.name.as_str()) {
                     let target = UnresolvedReference {
@@ -698,7 +784,8 @@ impl<'a, 'e, 'i> Interpreter<'a, 'e, 'i> {
                         span,
                         DynamicReason::UnknownIdentifier(ident.name.to_string()),
                     )
-                }
+                };
+                self.record_identifier(res, span)
             }
             Expression::ArrayExpression(arr) => {
                 let mut out = Vec::with_capacity(arr.elements.len());
@@ -1254,6 +1341,7 @@ impl<'a, 'e, 'i> Interpreter<'a, 'e, 'i> {
             // declaring file's own name, so there is no chain to record here.
             aliases: Vec::new(),
             is_default_export: false,
+            identifiers: Vec::new(),
         }
     }
 
@@ -1691,8 +1779,15 @@ impl<'a, 'e, 'i> Interpreter<'a, 'e, 'i> {
         call_span: Span,
         args: &[ResolvedValue],
     ) -> Option<ResolvedValue> {
-        let mut resolve_type =
-            |name: TypeNameRef<'_, 'a>| self.resolve_type_name(name, &Scope::new());
+        let mut resolve_type = |name: TypeNameRef<'_, 'a>| {
+            let resolved = self.resolve_type_name(name, &Scope::new());
+            match resolved {
+                ResolvedValue::Dynamic(_) | ResolvedValue::Incomplete(_) => {
+                    self.propagate_failure(call_span, resolved)
+                }
+                other => other,
+            }
+        };
         for foreign_fn in self.input.foreign {
             let result = foreign_fn.resolve_function_call(
                 target,
@@ -1782,6 +1877,7 @@ impl<'a, 'e, 'i> Interpreter<'a, 'e, 'i> {
                     scope,
                 )
             }
+            TypeNameRef::Import(import_type) => self.visit_import_type(import_type, scope),
         }
     }
 

@@ -110,23 +110,6 @@ export class AppComponent {
 
 ```
 
-# /out/legacy.component.ngtypecheck.ts
-```ts
-/**
- * TCB for /legacy.component.ts
- * @generated
- */
-
-import * as i0 from './legacy.component';
-
-/*tcb1*/
-function _tcb1(this: i0.LegacyComponent) {
-  if (true) {
-  }
-}
-
-```
-
 # /out/legacy.component.ts
 ```ts
 import { Component } from '@angular/core';

@@ -153,6 +153,7 @@ export interface PipeMeta {
 
 export interface NgpTypeCheckingConfig extends TypeCheckingConfig {
   typeCheckHostBindings?: boolean;
+  usePoisonedData?: boolean;
 }
 
 export function buildTypeCheckingConfig(
@@ -271,6 +272,8 @@ export function buildTypeCheckingConfig(
     typeCheckingConfig.strictLiteralTypes = options.strictLiteralTypes;
   }
   typeCheckingConfig.typeCheckHostBindings = options.typeCheckHostBindings ?? true;
+  typeCheckingConfig.usePoisonedData =
+    enableTemplateTypeChecker || Boolean(options._compilePoisonedComponents);
 
   return typeCheckingConfig;
 }

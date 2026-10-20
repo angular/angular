@@ -183,6 +183,20 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryContext<Fs> {
         }
     }
 
+    pub async fn ngmodule_scope_registry(
+        &self,
+    ) -> Arc<crate::query::module_scope::NgModuleScopeRegistry> {
+        let key = QueryKey::NgModuleScopeRegistry;
+        let cached = self.engine.query(key).await;
+        if let Ok(mut guard) = self.dependencies.lock() {
+            guard.extend(cached.dependencies.iter().copied());
+        }
+        match &*cached.value {
+            QueryValue::ScopeRegistry(r) => r.clone(),
+            _ => unreachable!("NgModuleScopeRegistry must yield ScopeRegistry"),
+        }
+    }
+
     /// Tsconfig roots plus their import closure, including dynamic imports ([`QueryKey::ProgramFiles`]).
     pub async fn program_files(&self) -> Arc<Vec<FileId>> {
         let key = QueryKey::ProgramFiles;

@@ -52,6 +52,7 @@ pub struct QueryEngine<Fs: ResourceResolverFs + Clone + 'static> {
     pub compile_non_exported_classes: bool,
     pub enable_hmr: bool,
     pub strict_standalone: bool,
+    pub use_poisoned_data: bool,
 }
 
 impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
@@ -72,6 +73,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             true,
             false,
             false,
+            false,
         )
     }
 
@@ -86,6 +88,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         compile_non_exported_classes: bool,
         enable_hmr: bool,
         strict_standalone: bool,
+        use_poisoned_data: bool,
     ) -> Arc<Self> {
         Arc::new(Self {
             fs,
@@ -101,6 +104,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             compile_non_exported_classes,
             enable_hmr,
             strict_standalone,
+            use_poisoned_data,
         })
     }
 
@@ -173,6 +177,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
 
         // TODO(parity): avoid evicting ComponentMapping on changes that do not affect @Component/@NgModule declarations.
         evicted_keys.insert(QueryKey::ComponentMapping);
+        evicted_keys.insert(QueryKey::NgModuleScopeRegistry);
         // `ProgramFiles` also reads the unrecorded tsconfig root list, so evict it on any change.
         evicted_keys.insert(QueryKey::ProgramFiles);
 
@@ -224,6 +229,9 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                 )),
                 QueryKey::ComponentMapping => Arc::new(QueryValue::ComponentMap(
                     self.component_mapping_body(&child_ctx).await,
+                )),
+                QueryKey::NgModuleScopeRegistry => Arc::new(QueryValue::ScopeRegistry(
+                    self.ngmodule_scope_registry_body(&child_ctx).await,
                 )),
                 QueryKey::ProgramFiles => Arc::new(QueryValue::ProgramFiles(
                     self.program_files_body(&child_ctx).await,
@@ -869,6 +877,14 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                     directive.declaring_ng_module,
                     directive.duplicate_declaring_ng_modules,
                 ) = mapping.declaring_ng_modules(reference_id.file, class_name.as_deref());
+                directive.duplicate_declaration_context =
+                    crate::query::module_scope::duplicate_declaration_context(
+                        ctx,
+                        reference_id.file,
+                        class_name.as_deref().unwrap_or_default(),
+                        &directive.duplicate_declaring_ng_modules,
+                    )
+                    .await;
                 optimize_directive(
                     ctx,
                     &file_path,
@@ -883,6 +899,14 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                     pipe.declaring_ng_module,
                     pipe.duplicate_declaring_ng_modules,
                 ) = mapping.declaring_ng_modules(reference_id.file, class_name.as_deref());
+                pipe.duplicate_declaration_context =
+                    crate::query::module_scope::duplicate_declaration_context(
+                        ctx,
+                        reference_id.file,
+                        class_name.as_deref().unwrap_or_default(),
+                        &pipe.duplicate_declaring_ng_modules,
+                    )
+                    .await;
             }
             // Semantic invariant: no `Incomplete` survives into the semantic FileData.
             class.demote_resolved();

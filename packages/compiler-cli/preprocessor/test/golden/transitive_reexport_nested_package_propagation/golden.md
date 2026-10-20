@@ -193,13 +193,14 @@ export class MatButton {
     {},
     never,
     ['*'],
-    true,
+    false,
     never
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineComponent({
       type: MatButton,
       selectors: [['button', 'gm2-button', '']],
+      standalone: false,
       ngContentSelectors: _c0,
       decls: 1,
       vars: 0,
@@ -209,6 +210,7 @@ export class MatButton {
           i0.ɵɵprojection(0);
         }
       },
+      dependencies: i0.ɵɵgetComponentDepsFactory(MatButton),
       encapsulation: 2,
     });
   static {
@@ -222,6 +224,7 @@ export class MatButton {
               {
                 selector: 'button[gm2-button]',
                 template: '<ng-content></ng-content>',
+                standalone: false,
               },
             ],
           },
@@ -236,7 +239,7 @@ export class MatButton {
     i0.ɵsetClassDebugInfo(MatButton, {
       className: 'MatButton',
       filePath: 'components/b/mat_button.ts',
-      lineNumber: 7,
+      lineNumber: 8,
     });
 })();
 

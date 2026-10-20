@@ -53,7 +53,6 @@ export class LocalDirective {
 }
 
 const LOCAL_DIRECTIVES = [LocalDirective];
-const MWP = { ngModule: FeatureModule, providers: [] };
 
 export class AppComponent {
   // @ts-ignore
@@ -95,7 +94,7 @@ export class AppComponent {
       dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [
         SHARED_COMPONENTS,
         ...LOCAL_DIRECTIVES,
-        MWP,
+        FeatureModule,
         icons.IconComponent,
         BarrelItemComponent,
       ]),
@@ -114,7 +113,7 @@ export class AppComponent {
                 imports: [
                   SHARED_COMPONENTS,
                   ...LOCAL_DIRECTIVES,
-                  MWP,
+                  FeatureModule,
                   icons.IconComponent,
                   BarrelItemComponent,
                 ],
@@ -139,7 +138,7 @@ export class AppComponent {
     i0.ɵsetClassDebugInfo(AppComponent, {
       className: 'AppComponent',
       filePath: 'app.component.ts',
-      lineNumber: 32,
+      lineNumber: 31,
     });
 })();
 
@@ -387,13 +386,14 @@ export class FeatureInnerComponent {
     {},
     never,
     never,
-    true,
+    false,
     never
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineComponent({
       type: FeatureInnerComponent,
       selectors: [['app-feature-inner']],
+      standalone: false,
       decls: 2,
       vars: 0,
       template: function FeatureInnerComponent_Template(rf: number, ctx: any): any {
@@ -403,6 +403,7 @@ export class FeatureInnerComponent {
           i0.ɵɵelementEnd();
         }
       },
+      dependencies: i0.ɵɵgetComponentDepsFactory(FeatureInnerComponent),
       encapsulation: 2,
     });
   static {
@@ -416,6 +417,7 @@ export class FeatureInnerComponent {
               {
                 selector: 'app-feature-inner',
                 template: '<p>Feature Inner</p>',
+                standalone: false,
               },
             ],
           },
@@ -430,7 +432,7 @@ export class FeatureInnerComponent {
     i0.ɵsetClassDebugInfo(FeatureInnerComponent, {
       className: 'FeatureInnerComponent',
       filePath: 'feature.module.ts',
-      lineNumber: 7,
+      lineNumber: 8,
     });
 })();
 

@@ -10,12 +10,23 @@ use std::collections::HashMap;
 #[cfg_attr(feature = "napi", napi(object))]
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
+pub struct NgRelatedInformation {
+    pub file_path: String,
+    pub span: SpanMetadata,
+    pub message_text: String,
+}
+
+#[cfg_attr(feature = "napi", napi(object))]
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
 pub struct NgDiagnostic {
     pub category: u8,
     pub code: u32,
     pub message_text: String,
     pub file_path: Option<String>,
     pub span: Option<SpanMetadata>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub related_information: Option<Vec<NgRelatedInformation>>,
 }
 
 impl NgDiagnostic {
@@ -45,7 +56,26 @@ impl NgDiagnostic {
             message_text: diag.message.to_string(),
             file_path,
             span,
+            related_information: None,
         }
+    }
+
+    pub fn error(code: u32, file_path: String, span: SpanMetadata, message_text: String) -> Self {
+        Self {
+            category: 1,
+            code,
+            message_text,
+            file_path: Some(file_path),
+            span: Some(span),
+            related_information: None,
+        }
+    }
+
+    pub fn with_related_information(mut self, related: Vec<NgRelatedInformation>) -> Self {
+        if !related.is_empty() {
+            self.related_information = Some(related);
+        }
+        self
     }
 }
 
@@ -88,6 +118,10 @@ pub struct AnalyzerOptions {
     /// `AnalysisResult.top_level_value_bindings`). Falls back to the tsconfig's
     /// `angularCompilerOptions._enableHmr` when unset.
     pub enable_hmr: Option<bool>,
+    /// Populate `resolved_declarations` and `schemas` on poisoned components (for the language
+    /// service and `_compilePoisonedComponents`). Falls back to the tsconfig's
+    /// `angularCompilerOptions._compilePoisonedComponents` when unset.
+    pub use_poisoned_data: Option<bool>,
 }
 
 #[cfg_attr(feature = "napi", napi(object))]

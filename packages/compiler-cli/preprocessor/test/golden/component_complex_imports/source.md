@@ -88,6 +88,7 @@ import { NgModule, Component } from '@angular/core';
 @Component({
   selector: 'app-feature-inner',
   template: '<p>Feature Inner</p>',
+  standalone: false,
 })
 export class FeatureInnerComponent {}
 
@@ -112,14 +113,13 @@ import { FeatureModule } from './feature.module';
 export class LocalDirective {}
 
 const LOCAL_DIRECTIVES = [LocalDirective];
-const MWP = { ngModule: FeatureModule, providers: [] };
 
 @Component({
   selector: 'app-root',
   imports: [
     SHARED_COMPONENTS,
     ...LOCAL_DIRECTIVES,
-    MWP,
+    FeatureModule,
     icons.IconComponent,
     BarrelItemComponent,
   ],

@@ -331,15 +331,25 @@ async fn chase_symbol_in_file<Fs: ResourceResolverFs + Clone + 'static>(
         }
     }
 
+    let mut is_exported_in_local_aliases = false;
     for entry in &exports.local_aliases {
-        if require_exported && entry.exported_name == name && entry.local_name != name {
-            return ChaseTarget::LocalAlias(entry.local_name.clone());
+        if require_exported && entry.exported_name == name {
+            if entry.local_name != name {
+                return ChaseTarget::LocalAlias(entry.local_name.clone());
+            }
+            if !entry.is_type {
+                is_exported_in_local_aliases = true;
+            }
         }
     }
 
     let parsed_file_arc = ctx.parse_file(file_id).await;
     let guard = parsed_file_arc.lock().unwrap();
-    let inner_target = chase_symbol_in_file_inner(guard.borrow_dependent(), name, require_exported);
+    let inner_target = chase_symbol_in_file_inner(
+        guard.borrow_dependent(),
+        name,
+        require_exported && !is_exported_in_local_aliases,
+    );
     if !matches!(inner_target, ChaseTarget::NotFound) {
         return inner_target;
     }

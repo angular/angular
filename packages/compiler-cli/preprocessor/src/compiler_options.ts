@@ -64,6 +64,7 @@ export interface NgpCompilerOptions {
   supportTestBed?: boolean;
   preserveWhitespaces?: boolean;
   _enableHmr?: boolean;
+  _compilePoisonedComponents?: boolean;
 
   // i18n (`I18nOptions`).
   enableI18nLegacyMessageIdFormat?: boolean;

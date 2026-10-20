@@ -236,6 +236,7 @@ export function normalizeNgpOutputFile(content: string): string {
       /(\.ɵfac\s*=\s*function\s+[A-Za-z0-9_$]+\(__ngFactoryType__\)\s*\{)\s*\n\s*(return\s+new\s+\(__ngFactoryType__\s*\|\|\s*[A-Za-z0-9_$]+\)\([^;\n]*\);)\s*\n\s*\};/g,
       '$1 $2 };',
     )
+    .replace(/(\(function\s*\(\)\s*\{)\s*\n\s*([^;\n]+;)\s*\n\s*(\}\)\(\);)/g, '$1 $2 $3')
     .replace(
       /\(\(\(typeof\s+(ngDevMode|ngJitMode)\s*===\s*(['"])undefined\2\)\s*\|\|\s*\1\)/g,
       '((typeof $1 === $2undefined$2 || $1)',
@@ -243,6 +244,10 @@ export function normalizeNgpOutputFile(content: string): string {
     .replace(
       /\(\(typeof\s+(ngDevMode|ngJitMode)\s*===\s*(['"])undefined\2\s*\|\|\s*\1\)\s*&&\s*([^;\n]+)\);/g,
       '(typeof $1 === $2undefined$2 || $1) && $3;',
+    )
+    .replace(
+      /\(\(\)\s*=>\s*\{\s*\n\s*\(\(typeof\s+(ngDevMode|ngJitMode)\s*===\s*(['"])undefined\2\s*\|\|\s*\1\)\s*&&\s*([\s\S]*?)\);\s*\n\s*\}\)\(\);/g,
+      '(() => { (typeof $1 === $2undefined$2 || $1) && $3; })();',
     )
     .replace(/\((m\.default && [A-Za-z0-9_$]+\.ɵɵreplaceMetadata\([^;\n]*\))\)/g, '$1')
     .replace(/'([^'\\\n]*)'/g, '"$1"');

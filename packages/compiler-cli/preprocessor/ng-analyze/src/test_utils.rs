@@ -3307,7 +3307,7 @@ import { NgModule, Directive } from '@angular/core';
 @Directive({ selector: 'button[mat-icon-button]' })
 export class MatIconButton {}
 
-@Directive({ selector: 'button[gm2-button]' })
+@Directive({ selector: 'button[gm2-button]', standalone: false })
 export class Gm2Button {}
 
 @NgModule({
@@ -3328,7 +3328,7 @@ export class MatMenuTrigger {}
 @Component({ selector: 'mat-menu', template: '' })
 export class MatMenu {}
 
-@Directive({ selector: '[gm2MatMenuTrigger]' })
+@Directive({ selector: '[gm2MatMenuTrigger]', standalone: false })
 export class Gm2MatMenuTrigger {}
 
 @NgModule({

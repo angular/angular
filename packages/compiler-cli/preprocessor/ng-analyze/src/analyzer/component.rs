@@ -213,7 +213,10 @@ fn parse_component_metadata<'a, Fs: ResourceResolverFs>(
                     eval.file,
                 ));
             }
-            "schemas" => data.schemas = extract_schemas(&p.value, semantic),
+            "schemas" => {
+                data.schemas_span = Some(p.value.span());
+                data.schemas = extract_schemas(&p.value, semantic);
+            }
             "imports" => {
                 data.raw_imports_span = Some(p.value.span());
                 data.imports_factory_span = Some(p.value.span());

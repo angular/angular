@@ -63,9 +63,11 @@ pub fn analyze_dts(
         foreign: crate::analyzer::resolvers::angular_foreign_resolvers(),
     };
 
+    let mut has_explicit_export = false;
     for stmt in &program.body {
         match stmt {
             Statement::ExportDeclaration(export) => {
+                has_explicit_export = true;
                 if let Declaration::ClassDeclaration(class) = &export.declaration {
                     // `class_index` holds every `declare class`, exported or not (arm below); the export
                     // itself must be recorded here.
@@ -102,6 +104,7 @@ pub fn analyze_dts(
                 }
             }
             Statement::ExportNamedDeclaration(export) => {
+                has_explicit_export = true;
                 let decl_is_type = export.export_kind.is_type();
                 for spec in &export.specifiers {
                     local_aliases.push(LocalExportAlias {
@@ -112,6 +115,7 @@ pub fn analyze_dts(
                 }
             }
             Statement::ExportFromDeclaration(export) => {
+                has_explicit_export = true;
                 let decl_is_type = export.export_kind.is_type();
                 for spec in &export.specifiers {
                     named_exports.push(ReexportInfo {
@@ -126,6 +130,7 @@ pub fn analyze_dts(
                 }
             }
             Statement::ExportAllDeclaration(decl) => {
+                has_explicit_export = true;
                 if let Some(exported) = &decl.exported {
                     // `export * as ns from './z'` publishes one binding, `ns`. Filing it as a
                     // wildcard would claim this file publishes everything in './z' under its own
@@ -145,6 +150,7 @@ pub fn analyze_dts(
                 }
             }
             Statement::ExportDefaultDeclaration(export) => {
+                has_explicit_export = true;
                 let local_name = match &export.declaration {
                     ExportDefaultDeclarationKind::ClassDeclaration(class) => {
                         let Some(id) = &class.id else {
@@ -181,7 +187,9 @@ pub fn analyze_dts(
                 });
             }
             // `export = Foo` publishes no named export, so nothing here may be imported by name.
-            Statement::TSExportAssignment(_) => {}
+            Statement::TSExportAssignment(_) => {
+                has_explicit_export = true;
+            }
             Statement::ClassDeclaration(class) => {
                 let symbol_id = class
                     .id
@@ -207,6 +215,18 @@ pub fn analyze_dts(
                 }
             }
             _ => {}
+        }
+    }
+
+    // In TypeScript's binder, a `.d.ts` module with no explicit `export` statements implicitly
+    // exports all of its top-level declarations.
+    if !has_explicit_export {
+        for reg in &registrations {
+            local_aliases.push(LocalExportAlias {
+                exported_name: reg.class_name.clone(),
+                local_name: reg.class_name.clone(),
+                is_type: false,
+            });
         }
     }
 
@@ -450,6 +470,7 @@ fn extract_class_metadata(
             exports_span: None,
             bootstrap_span: None,
             bootstrap_issues: Vec::new(),
+            scope_diagnostics: Vec::new(),
             local_imports_element_spans: None,
             local_exports_element_spans: None,
             isolated_imports: None,
@@ -1214,6 +1235,7 @@ fn host_directives_to_resolved_value(directives: Vec<HostDirectiveEntry>) -> Res
                     synthetic: entry.is_forward_ref,
                     aliases: entry.directive.aliases.into_iter().collect(),
                     is_default_export: entry.directive.is_default_export,
+                    identifiers: Vec::new(),
                 };
                 ResolvedValue::Reference(val_ref)
             };

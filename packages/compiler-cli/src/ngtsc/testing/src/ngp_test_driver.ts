@@ -119,6 +119,8 @@ function createTestWasmAnalyzerSync(
       nodeModulesPathOverride: options.nodeModulesPathOverride,
       workspaceName: options.workspaceName,
       rootDirs: options.rootDirs,
+      enableHmr: options.enableHmr,
+      usePoisonedData: options.usePoisonedData,
     }),
     options.hostFs,
   );
@@ -314,17 +316,6 @@ export function performNgpCompilationSync(params: {
     });
   }
 
-  const analyzer = createTestWasmAnalyzerSync(posixTsconfigPath, {
-    backend: 'wasm',
-    wasmBinding,
-    hostFs,
-    optimize,
-    virtualFiles,
-    nodeModulesPathOverride: toPosixPath(fs.resolve('/node_modules')),
-    workspaceName,
-    rootDirs,
-  });
-
   const tcbConfig: NgpTypeCheckingConfig = {
     ...buildTypeCheckingConfig({
       strictTemplates: options.strictTemplates ?? true,
@@ -335,6 +326,19 @@ export function performNgpCompilationSync(params: {
     }),
     ...tcbConfigOverride,
   };
+
+  const analyzer = createTestWasmAnalyzerSync(posixTsconfigPath, {
+    backend: 'wasm',
+    wasmBinding,
+    hostFs,
+    optimize,
+    virtualFiles,
+    nodeModulesPathOverride: toPosixPath(fs.resolve('/node_modules')),
+    workspaceName,
+    rootDirs,
+    enableHmr: Boolean(rawOpts['_enableHmr']),
+    usePoisonedData: tcbConfig.usePoisonedData,
+  });
 
   let compiler: HybridCompiler;
   try {
@@ -597,12 +601,20 @@ export function performNgpCompilationSync(params: {
     }
   }
 
-  // 2. Collect NGP analyzer & processor diagnostics from compiler.diagnosticsMap
-  for (const [diagPosixPath, ngDiags] of compiler.diagnosticsMap.entries()) {
-    const diagFsPath = fromPosixPath(fs, diagPosixPath);
-    const origSf = getOriginalSourceFile(diagFsPath);
+  // 2. Collect NGP analyzer & processor diagnostics from compiler.diagnosticsMap. Entries are
+  // keyed by the analyzed file, but a diagnostic may point elsewhere (e.g. an NgModule cycle is
+  // reported on the imported module's name), so prefer the diagnostic's own path.
+  const sortedDiagEntries = Array.from(compiler.diagnosticsMap.entries()).sort(([a], [b]) =>
+    a < b ? -1 : a > b ? 1 : 0,
+  );
+  for (const [diagPosixPath, ngDiags] of sortedDiagEntries) {
     for (const ngDiag of ngDiags) {
-      allDiagnostics.push(convertNgDiagnosticToTs(ngDiag, origSf));
+      const origSf = getOriginalSourceFile(fromPosixPath(fs, ngDiag.filePath ?? diagPosixPath));
+      allDiagnostics.push(
+        convertNgDiagnosticToTs(ngDiag, origSf, (relatedPosixPath) =>
+          getOriginalSourceFile(fromPosixPath(fs, relatedPosixPath)),
+        ),
+      );
     }
   }
 
@@ -930,6 +942,7 @@ function createPreprocessedLookup(
 export function convertNgDiagnosticToTs(
   ngDiag: NgDiagnostic,
   sourceFile: ts.SourceFile | undefined,
+  getRelatedSourceFile?: (filePath: string) => ts.SourceFile | undefined,
 ): ts.Diagnostic {
   let category = ts.DiagnosticCategory.Error;
   if (ngDiag.category === 0) {
@@ -947,7 +960,7 @@ export function convertNgDiagnosticToTs(
   const start = ngDiag.span?.start;
   const length = ngDiag.span ? Math.max(0, ngDiag.span.end - ngDiag.span.start) : undefined;
 
-  return {
+  const diagnostic: ts.Diagnostic = {
     file: sourceFile,
     start,
     length,
@@ -956,6 +969,17 @@ export function convertNgDiagnosticToTs(
     code,
     source: 'ngtsc',
   };
+  if (ngDiag.relatedInformation !== undefined && ngDiag.relatedInformation.length > 0) {
+    diagnostic.relatedInformation = ngDiag.relatedInformation.map((related) => ({
+      file: getRelatedSourceFile?.(related.filePath),
+      start: related.span.start,
+      length: Math.max(0, related.span.end - related.span.start),
+      messageText: related.messageText,
+      category: ts.DiagnosticCategory.Message,
+      code: 0,
+    }));
+  }
+  return diagnostic;
 }
 
 function findClosestPrecedingNode(
