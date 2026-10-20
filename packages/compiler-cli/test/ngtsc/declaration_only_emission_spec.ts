@@ -109,7 +109,7 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(dtsContent).toContain(
         'static ɵmod: i0.ɵɵNgModuleDeclaration<CompModule, never, [typeof i1.Comp], never>;',
@@ -131,7 +131,7 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(dtsContent).toContain(
         'static ɵmod: i0.ɵɵNgModuleDeclaration<CompModule, never, [ReturnType<typeof i1.FooModule.forRoot>], never>;',
@@ -153,7 +153,7 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(dtsContent).toContain(
         'static ɵmod: i0.ɵɵNgModuleDeclaration<CompModule, never, [ReturnType<typeof i1.provideFoo>], never>;',
@@ -176,7 +176,7 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(dtsContent).toContain(
         'static ɵmod: i0.ɵɵNgModuleDeclaration<CompModule, never, [typeof i1.BarModule, ReturnType<typeof i2.FooModule.forRoot>], never>;',
@@ -198,7 +198,7 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(dtsContent).toContain(
         'static ɵmod: i0.ɵɵNgModuleDeclaration<CompModule, never, never, [ReturnType<typeof i1.FooModule.forRoot>]>;',
@@ -225,7 +225,7 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(dtsContent).toContain(
         'static ɵmod: i0.ɵɵNgModuleDeclaration<CompModule, never, [[typeof BarModule]], never>;',
@@ -253,7 +253,7 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(dtsContent).toContain(
         'static ɵmod: i0.ɵɵNgModuleDeclaration<CompModule, never, [[typeof BarModule], ReturnType<typeof i1.provideFoo>], never>;',
@@ -300,7 +300,7 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(dtsContent).toContain(
         'static ɵmod: i0.ɵɵNgModuleDeclaration<CompModule, never, [typeof i1.FooModule], never>;',
@@ -322,7 +322,7 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(dtsContent).toContain(
         'static ɵmod: i0.ɵɵNgModuleDeclaration<CompModule, never, never, [typeof i1.Comp]>;',
@@ -364,7 +364,7 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(dtsContent).toContain(
         'static ɵcmp: i0.ɵɵComponentDeclaration<HostComp, "host-comp", never, {}, {}, never, never, true, [{ directive: typeof i1.Dir; inputs: {}; outputs: {}; }]>;',
@@ -390,7 +390,7 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(dtsContent).toContain(
         'static ɵcmp: i0.ɵɵComponentDeclaration<HostComp, "host-comp", never, {}, {}, never, never, true, [{ directive: typeof i1.Dir; inputs: {}; outputs: {}; }]>;',
@@ -413,7 +413,7 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(dtsContent).toContain(
         'static ɵdir: i0.ɵɵDirectiveDeclaration<HostDir, "[host-dir]", never, {}, {}, never, never, true, [{ directive: typeof i1.Dir; inputs: {}; outputs: {}; }]>;',
@@ -438,7 +438,7 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(dtsContent).toContain(
         'static ɵdir: i0.ɵɵDirectiveDeclaration<HostDir, "[host-dir]", never, {}, {}, never, never, true, [{ directive: typeof i1.Dir; inputs: {}; outputs: {}; }]>;',
@@ -490,7 +490,7 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(dtsContent).toContain(
         'static ɵcmp: i0.ɵɵComponentDeclaration<HostComp, "host-comp", never, {}, {}, never, never, true, [{ directive: typeof i1.Dir; inputs: { "a": "b"; }; outputs: { "c": "d"; }; }]>;',
@@ -857,6 +857,34 @@ runInEachFileSystem(() => {
         @Component({template: '', selector: 'comp'})
         export class Comp {
           @Input({ transform: (v: string) => !!v }) decoratedInput!: boolean;
+        }
+        `,
+      );
+
+      env.driveMain();
+      const dtsContent = env.getContents('test.d.ts');
+
+      expect(dtsContent).toContain('static ngAcceptInputType_decoratedInput: string;');
+    });
+
+    it('should emit type declarations when using an inputs array entry with a transform function referenced via a constant', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+
+        const INPUT_CONFIG = {
+          name: 'decoratedInput',
+          transform: (v: string) => !!v,
+        };
+
+        @Component({
+          template: '',
+          selector: 'comp',
+          inputs: [INPUT_CONFIG],
+        })
+        export class Comp {
+          decoratedInput!: boolean;
         }
         `,
       );

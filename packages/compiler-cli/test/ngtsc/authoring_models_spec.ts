@@ -39,7 +39,7 @@ runInEachFileSystem(() => {
       env.driveMain();
 
       const js = env.getContents('test.js');
-      const dts = env.getContents('test.d.ts');
+      const dts = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(js).toContain('inputs: { value: [1, "value"] }');
       expect(js).toContain('outputs: { value: "valueChange" }');
@@ -65,7 +65,7 @@ runInEachFileSystem(() => {
       env.driveMain();
 
       const js = env.getContents('test.js');
-      const dts = env.getContents('test.d.ts');
+      const dts = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(js).toContain('inputs: { value: [1, "alias", "value"] }');
       expect(js).toContain('outputs: { value: "aliasChange" }');
@@ -91,7 +91,7 @@ runInEachFileSystem(() => {
       env.driveMain();
 
       const js = env.getContents('test.js');
-      const dts = env.getContents('test.d.ts');
+      const dts = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(js).toContain('inputs: { value: [1, "value"] }');
       expect(js).toContain('outputs: { value: "valueChange" }');

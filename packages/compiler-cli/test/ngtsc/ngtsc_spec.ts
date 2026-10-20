@@ -1737,7 +1737,7 @@ runInEachFileSystem((os: string) => {
         'i0.ɵɵdefineDirective({ type: TestBase, inputs: { input: "input" } });',
       );
 
-      const dtsContents = env.getContents('test.d.ts');
+      const dtsContents = trim(env.getContents('test.d.ts'));
       const expectedDirectiveDeclaration = `static ɵdir: i0.ɵɵDirectiveDeclaration<TestBase, never, never, { "input": { "alias": "input"; "required": false; }; }, {}, never, never, true, never>;`;
       expect(dtsContents).toContain(expectedDirectiveDeclaration);
     });
@@ -5180,7 +5180,7 @@ runInEachFileSystem((os: string) => {
       );
 
       env.driveMain();
-      const dtsContents = env.getContents('test.d.ts');
+      const dtsContents = trim(env.getContents('test.d.ts'));
       expect(dtsContents).toContain(
         'static ɵfac: i0.ɵɵFactoryDeclaration<WithDecorators, [' +
           '{ self: true; }, { skipSelf: true; }, { host: true; }, ' +
@@ -5246,7 +5246,7 @@ runInEachFileSystem((os: string) => {
       );
 
       env.driveMain();
-      const dtsContents = env.getContents('test.d.ts');
+      const dtsContents = trim(env.getContents('test.d.ts'));
       expect(dtsContents).toContain(`static ɵfac: i0.ɵɵFactoryDeclaration<Inj, [{ self: true; }]>`);
       expect(dtsContents).toContain(
         `static ɵfac: i0.ɵɵFactoryDeclaration<InjUseExisting, [{ self: true; }]>`,
@@ -7494,7 +7494,7 @@ runInEachFileSystem((os: string) => {
 
       env.driveMain();
 
-      const dtsContents = env.getContents('test.d.ts');
+      const dtsContents = trim(env.getContents('test.d.ts'));
 
       expect(dtsContents).toContain(
         'static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, "[dir]", never, ' +
@@ -7534,7 +7534,7 @@ runInEachFileSystem((os: string) => {
 
       env.driveMain();
 
-      const dtsContents = env.getContents('test.d.ts');
+      const dtsContents = trim(env.getContents('test.d.ts'));
 
       expect(dtsContents).toContain(
         'static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, "[dir]", never, ' +
@@ -11527,6 +11527,36 @@ runInEachFileSystem((os: string) => {
         env.driveMain();
         const dtsContents = env.getContents('test.d.ts');
         expect(dtsContents).toContain('static "ngAcceptInputType_aria-label": string;');
+      });
+
+      it('should compile an input with a transform function in the inputs array referenced via a constant', () => {
+        env.write(
+          '/test.ts',
+          `
+          import {Directive} from '@angular/core';
+
+          const INPUT_CONFIG = {
+            name: 'value',
+            transform: (value: boolean | string) => 1,
+          };
+
+          @Directive({
+            selector: '[dir]',
+            inputs: [INPUT_CONFIG],
+          })
+          export class Dir {
+            value!: number;
+          }
+        `,
+        );
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        const dtsContents = env.getContents('test.d.ts');
+
+        expect(jsContents).toContain('inputs: { value: [2, "value", "value", (value) => 1] }');
+        expect(dtsContents).toContain('static ngAcceptInputType_value: boolean | string;');
       });
     });
 
