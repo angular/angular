@@ -239,11 +239,13 @@ const routes: Routes = [
 ];
 ```
 
-Both `resources` functions run concurrently: the parent route starts fetching the user while the child route sets up its own resources. As soon as `user` resolves, the child's `params` function reruns with the user value and `fetchRoleDetails` starts.
+IMPORTANT: Never destructure or invoke `ctx.resources()` directly in the outer `resources` function body (for example, `const {user} = ctx.resources()`). Because ancestor routes initialize in parallel and can do so asynchronously, ancestor resources are not available during route setup. Calling `ctx.resources()` synchronously outside a reactive context throws an error and fails the navigation. Always read `ctx.resources()` reactively inside a resource's `params` function.
 
-NOTE: Read `ctx.resources()` inside a reactive context such as a resource's `params` function rather than synchronously in the top-level `resources` function body, as ancestor `resources` functions may still be initializing asynchronously. Because `ctx.resources()` is typed as a record of `Resource<unknown>`, cast the inherited resource to its value type when reading it.
+NOTE: Because `ctx.resources()` is typed as a record of `Resource<unknown>`, cast the inherited resource to its value type (such as `as Resource<User>`) when reading it.
 
 `chain()` also propagates the state of the ancestor resource. If the ancestor errors, the chained resource errors with a `ResourceDependencyError`, and the router cancels the navigation when that chained resource is blocking. If the ancestor is `idle`, the chained resource becomes `idle`.
+
+IMPORTANT: Non-blocking status does not propagate down dependency chains. If a blocking resource chains off an ancestor resource marked with `nonBlocking()`, the router still blocks the navigation until the dependent resource resolves. If the ancestor errors, the resulting `ResourceDependencyError` causes the blocking dependent resource to fail, which cancels the navigation. If you do not want the navigation to wait, wrap the dependent resource in `nonBlocking()` as well.
 
 ## Blocking and non-blocking resources
 

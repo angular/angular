@@ -10,23 +10,27 @@ import {
   createEnvironmentInjector,
   DestroyRef,
   effect,
+  EffectRef,
   EnvironmentInjector,
+  ɵisInParamsFunction as isInParamsFunction,
   Resource,
   ResourceParamsStatus,
   runInInjectionContext,
+  ɵRuntimeError as RuntimeError,
   signal,
 } from '@angular/core';
 import {OperatorFunction, pipe} from 'rxjs';
+import {RuntimeErrorCode} from '../errors';
 import {ResourceContext, ResourceResult, Route} from '../models';
 import {NavigationTransition} from '../navigation_transition';
-import {ActivatedRoute, initializeActivatedRoute} from '../router_state';
-import {TreeNode} from '../utils/tree';
 import {
   BLOCKING_SYMBOL,
   InternalRouterResource,
   routerResource,
   SOURCE_RESOURCE_SYMBOL,
 } from '../router_resource';
+import {ActivatedRoute, initializeActivatedRoute} from '../router_state';
+import {TreeNode} from '../utils/tree';
 import {switchTap} from './switch_tap';
 
 /**
@@ -37,27 +41,32 @@ import {switchTap} from './switch_tap';
  * is still pending.
  */
 function initializeRouteResources(route: ActivatedRoute): void {
-  if (route._resourceContextSignal !== undefined) {
+  if (!route.routeConfig?.resources) {
+    route._resourceContextSignal = route.parent?._resourceContextSignal;
     return;
   }
-  // Note: Inherited resources are bound to the parent `ActivatedRoute` at activation time.
-  // If a custom `RouteReuseStrategy` detaches a child route while an ancestor route with
-  // `resources` is deactivated, the ancestor's `_localInjector` (and its resources) will be
-  // destroyed on deactivation, which is not supported when reattaching the child under a new parent.
-  const parentContextSignal = route.parent?._resourceContextSignal;
-  if (!route.routeConfig?.resources) {
-    route._resourceContextSignal = parentContextSignal;
+  if (route._resourceContextSignal !== undefined) {
     return;
   }
   const ownRawResources = signal<ResourceResult | undefined>(undefined);
   route._ownRawResourcesSignal = ownRawResources;
   route._resourceContextSignal = computed(() => {
-    const parentResources = parentContextSignal?.();
+    const parentResources = route.parent?._resourceContextSignal?.();
     const ownResources = ownRawResources();
     if (ownResources === undefined) {
-      // Throw LOADING while this route's async `resources` setup is still in flight so
-      // descendant resources reading `ctx.resources()` inside `params` stay in loading state.
-      throw ResourceParamsStatus.LOADING;
+      if (isInParamsFunction()) {
+        // Throw LOADING while this route's async `resources` setup is still in flight so
+        // descendant resources reading `ctx.resources()` inside `params` stay in loading state.
+        throw ResourceParamsStatus.LOADING;
+      }
+
+      throw new RuntimeError(
+        RuntimeErrorCode.CANNOT_READ_RESOURCES_SYNCHRONOUSLY,
+        ngDevMode &&
+          `Route resources cannot be read synchronously during route initialization because ancestor ` +
+            `resources are still pending. Access 'ctx.resources()' reactively inside a resource's 'params' ` +
+            `function (e.g. 'resource({ params: ({chain}) => chain(ctx.resources()["name"]) })').`,
+      );
     }
     return {
       ...parentResources,
@@ -116,7 +125,7 @@ function finalizeResources(
 ): void {
   const route = stateNode.value;
   if (route && route._resourceContextSignal) {
-    route.resources ??= {
+    route.resources = {
       ...route.parent?.resources,
       ...route._ownResources,
     };
@@ -246,11 +255,12 @@ function waitForResource(
   return new Promise<void>((resolve, reject) => {
     const underlyingRes = resource[SOURCE_RESOURCE_SYMBOL];
     let isDestroyed = false;
+    let blockingEffect: EffectRef | undefined;
     let unregisterDestroy: (() => void) | undefined;
 
     const cleanup = () => {
       isDestroyed = true;
-      blockingEffect.destroy();
+      blockingEffect?.destroy();
       unregisterDestroy?.();
       abortSignal.removeEventListener('abort', onDone);
     };
@@ -261,8 +271,9 @@ function waitForResource(
     };
 
     abortSignal.addEventListener('abort', onDone, {once: true});
+    unregisterDestroy = injector.get(DestroyRef).onDestroy(onDone);
 
-    const blockingEffect = effect(
+    blockingEffect = effect(
       () => {
         if (isDestroyed) return;
         const status = underlyingRes.status();
@@ -276,7 +287,5 @@ function waitForResource(
       },
       {injector, manualCleanup: true},
     );
-
-    unregisterDestroy = injector.get(DestroyRef).onDestroy(onDone);
   });
 }
