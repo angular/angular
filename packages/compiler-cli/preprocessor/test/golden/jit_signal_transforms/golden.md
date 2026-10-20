@@ -45,6 +45,11 @@ export class JitComponent {
       alias: 'publicName',
     },
   );
+  @i0.Input({ isSignal: true, alias: 'transformedInput', required: false } as any)
+  transformedInput = input('', {
+    ...(ngDevMode ? { debugName: 'transformedInput' } : /* istanbul ignore next */ {}),
+    transform: (v: string) => v.trim(),
+  });
 
   @i0.Output('sigOutput') sigOutput = output<string>();
   @i0.Output('customEvent') aliasedOutput = output({ alias: 'customEvent' });
