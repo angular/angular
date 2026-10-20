@@ -165,6 +165,16 @@ export class RouterTestingHarness {
    * Triggers a `Router` navigation using commands and waits for it to complete.
    *
    * @param commands The commands passed to `Router.navigate`.
+   * @param requiredRoutedComponentType After navigation completes, the required type for the
+   *     activated component of the `RouterOutlet`. If the outlet is not activated or a different
+   *     component is activated, this function will throw an error.
+   * @returns The activated component instance of the `RouterOutlet` after navigation completes.
+   */
+  async navigate<T>(commands: readonly any[], requiredRoutedComponentType: Type<T>): Promise<T>;
+  /**
+   * Triggers a `Router` navigation using commands and waits for it to complete.
+   *
+   * @param commands The commands passed to `Router.navigate`.
    * @param extras Navigation extras, such as `queryParams` and `fragment`.
    * @param requiredRoutedComponentType After navigation completes, the required type for the
    *     activated component of the `RouterOutlet`. If the outlet is not activated or a different
@@ -173,30 +183,43 @@ export class RouterTestingHarness {
    */
   async navigate<T>(
     commands: readonly any[],
-    extras: NavigationExtras | undefined,
+    extras: NavigationExtras,
     requiredRoutedComponentType: Type<T>,
   ): Promise<T>;
   async navigate<T>(
     commands: readonly any[],
-    extras?: NavigationExtras,
+    extrasOrComponent?: NavigationExtras | Type<T>,
     requiredRoutedComponentType?: Type<T>,
   ): Promise<T | null> {
-    return this.runNavigation(
-      (router) => router.navigate(commands, extras),
-      requiredRoutedComponentType,
-    );
+    let extras: NavigationExtras | undefined;
+    let componentType: Type<T> | undefined;
+    if (typeof extrasOrComponent === 'function') {
+      if (requiredRoutedComponentType !== undefined) {
+        throw new Error('Navigation extras must be provided before the required component type.');
+      }
+      componentType = extrasOrComponent;
+    } else {
+      extras = extrasOrComponent;
+      componentType = requiredRoutedComponentType;
+    }
+    return this.runNavigation((router) => router.navigate(commands, extras), componentType);
   }
 
   /**
    * Shared implementation of `navigateByUrl` and `navigate`.
    *
    * Starts a navigation, waits for it (including any redirects) to complete, runs change
-   * detection, and returns the component activated in the root `RouterOutlet`.
+   * detection, and returns the component currently rendered in the root `RouterOutlet`.
+   *
+   * If a guard cancels the navigation, the outlet keeps its current component, so that component is
+   * returned (or checked against `requiredRoutedComponentType`) rather than `null`. This lets tests
+   * verify that the user stayed on the current page. `navigate` and `navigateByUrl` behave the same.
    *
    * @param startNavigation Callback that triggers the navigation on the given `Router` (e.g., `router.navigateByUrl('/path')` or `router.navigate(['/path'])`).
    * @param requiredRoutedComponentType If provided, the activated component must be an instance
    *     of this type, otherwise an error is thrown.
-   * @returns The activated component instance, or `null` if the outlet was not activated.
+   * @returns The component instance rendered in the outlet, or `null` if the outlet has nothing
+   *     rendered.
    */
   private async runNavigation<T>(
     startNavigation: (router: Router) => Promise<unknown>,
@@ -212,8 +235,8 @@ export class RouterTestingHarness {
     await redirectTrackingPromise;
     this.fixture.detectChanges();
     const outlet = (this.fixture.componentInstance as RootCmp).outlet;
-    // The outlet might not be activated if the user is testing a navigation for a guard that
-    // rejects
+    // The outlet is only empty if nothing was ever rendered (e.g. a failed initial navigation).
+    // When a guard cancels a later navigation, the previously rendered component stays in place.
     if (outlet && outlet.isActivated && outlet.activatedRoute.component) {
       const activatedComponent = outlet.component;
       if (
