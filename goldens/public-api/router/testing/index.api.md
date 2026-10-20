@@ -41,7 +41,8 @@ export class RouterTestingHarness {
         routerOutletData: WritableSignal<unknown>;
     }>;
     navigate(commands: readonly any[], extras?: NavigationExtras): Promise<null | {}>;
-    navigate<T>(commands: readonly any[], extras: NavigationExtras | undefined, requiredRoutedComponentType: Type<T>): Promise<T>;
+    navigate<T>(commands: readonly any[], requiredRoutedComponentType: Type<T>): Promise<T>;
+    navigate<T>(commands: readonly any[], extras: NavigationExtras, requiredRoutedComponentType: Type<T>): Promise<T>;
     navigateByUrl(url: string): Promise<null | {}>;
     navigateByUrl<T>(url: string, requiredRoutedComponentType: Type<T>): Promise<T>;
     get routeDebugElement(): DebugElement | null;

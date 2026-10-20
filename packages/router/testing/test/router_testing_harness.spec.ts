@@ -36,6 +36,45 @@ describe('navigateForTest', () => {
     expect(harness.routeNativeElement?.innerHTML).toContain('hello world');
   });
 
+  it('navigates with commands only', async () => {
+    @Component({template: 'hello'})
+    class TestCmp {}
+
+    TestBed.configureTestingModule({providers: [provideRouter([{path: 'a', component: TestCmp}])]});
+    const harness = await RouterTestingHarness.create();
+    const activatedComponent = await harness.navigate(['/a']);
+
+    expect(activatedComponent).toBeInstanceOf(TestCmp);
+    expect(TestBed.inject(Router).url).toBe('/a');
+  });
+
+  it('navigates with commands and a component type', async () => {
+    @Component({template: 'hello'})
+    class TestCmp {}
+
+    TestBed.configureTestingModule({providers: [provideRouter([{path: 'a', component: TestCmp}])]});
+    const harness = await RouterTestingHarness.create();
+    const activatedComponent: TestCmp = await harness.navigate(['/a'], TestCmp);
+
+    expect(activatedComponent).toBeInstanceOf(TestCmp);
+    expect(TestBed.inject(Router).url).toBe('/a');
+  });
+
+  it('navigates with commands and extras', async () => {
+    @Component({template: 'hello'})
+    class TestCmp {}
+
+    TestBed.configureTestingModule({providers: [provideRouter([{path: 'a', component: TestCmp}])]});
+    const harness = await RouterTestingHarness.create();
+    const activatedComponent = await harness.navigate(['/a'], {
+      queryParams: {q: '1'},
+      fragment: 'frag',
+    });
+
+    expect(activatedComponent).toBeInstanceOf(TestCmp);
+    expect(TestBed.inject(Router).url).toBe('/a?q=1#frag');
+  });
+
   it('navigates with commands, query params and fragment', async () => {
     @Component({template: 'hello'})
     class TestCmp {}
