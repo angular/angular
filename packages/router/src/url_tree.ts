@@ -540,21 +540,31 @@ function serializeSegment(segment: UrlSegmentGroup, root: boolean): string {
 
     return children.length > 0 ? `${primary}(${children.join('//')})` : primary;
   } else {
+    // use no parenthesis if the only child is a primary outlet route
+    if (Object.keys(segment.children).length === 1 && segment.children[PRIMARY_OUTLET] != null) {
+      return `${serializePaths(segment)}/${serializeSegment(segment.children[PRIMARY_OUTLET], false)}`;
+    }
+
     const children = mapChildrenIntoArray(segment, (v: UrlSegmentGroup, k: string) => {
       if (k === PRIMARY_OUTLET) {
-        return [serializeSegment(segment.children[PRIMARY_OUTLET], false)];
+        return [escapeOutletDelimiter(serializeSegment(segment.children[PRIMARY_OUTLET], false))];
       }
 
       return [`${k}:${serializeSegment(v, false)}`];
     });
 
-    // use no parenthesis if the only child is a primary outlet route
-    if (Object.keys(segment.children).length === 1 && segment.children[PRIMARY_OUTLET] != null) {
-      return `${serializePaths(segment)}/${children[0]}`;
-    }
-
     return `${serializePaths(segment)}/(${children.join('//')})`;
   }
+}
+
+/**
+ * Inside a parenthesized group, the parser distinguishes a named outlet (`name:path`) from the
+ * unprefixed primary child by looking for a `:` in the first segment token. A primary child whose
+ * first segment legitimately contains a colon (e.g. a param value `admin:y`) would therefore be
+ * misparsed as outlet `admin` on round-trip. Percent-encode colons in that leading token only.
+ */
+function escapeOutletDelimiter(serializedPrimary: string): string {
+  return serializedPrimary.replace(SEGMENT_RE, (firstSegment) => firstSegment.replace(/:/g, '%3A'));
 }
 
 /**
