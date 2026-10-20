@@ -40,12 +40,17 @@ If you're deploying to a self-managed server or there's no builder for your favo
 
 ## Manual deployment to a remote server
 
-To manually deploy your application, create a production build and copy the output directory to a web server or content delivery network (CDN).
+To manually deploy your application, create a production build and deploy the output artifacts to your hosting environment.
 By default, `ng build` uses the `production` configuration.
 If you have customized your build configurations, you may want to confirm [production optimizations](tools/cli/deployment#production-optimizations) are being applied before deploying.
 
 `ng build` outputs the built artifacts to `dist/my-app/` by default, however this path can be configured with the `outputPath` option in the `@angular/build:application` builder.
-Copy this directory to the server and configure it to serve the directory.
+What you deploy depends on how your application is rendered:
+
+- **Static hosting (client-side rendering or `outputMode: "static"`):** Copy the `dist/my-app/browser/` directory to a web server or content delivery network (CDN), and configure it to serve that directory.
+- **Server-side rendering (`outputMode: "server"`):** Copy both the `dist/my-app/browser/` and `dist/my-app/server/` directories to the server, then run `node dist/my-app/server/server.mjs`.
+
+For more details, see [Server and hybrid rendering](guide/ssr).
 
 While this is a minimal deployment solution, there are a few requirements for the server to serve your Angular application correctly.
 
