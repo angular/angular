@@ -2808,8 +2808,12 @@ function compileNgModuleDef(
       }
     }
 
-    // Sort targets to guarantee deterministic order of generated statements
-    scopeTargets.sort((a, b) => refName(a.component).localeCompare(refName(b.component)));
+    // Emit `ɵɵsetComponentScope` statements in the order the components appear in the NgModule's
+    // `declarations` array, matching ngtsc's `scopeRegistry.getRemoteScope(decl.node)` loop.
+    const ngModuleDecls = ngModule.declarations || [];
+    scopeTargets.sort(
+      (a, b) => ngModuleDecls.indexOf(a.component) - ngModuleDecls.indexOf(b.component),
+    );
 
     const coreSetScope = o.importExpr({
       moduleName: '@angular/core',
