@@ -368,16 +368,55 @@ fn imports_may_export_providers<'a, Fs: ResourceResolverFs + Clone + 'static>(
     calculating: &'a mut HashSet<ReferenceId>,
 ) -> BoxFuture<'a, bool> {
     async move {
-        let Some(raw_imports) = &class_info.raw_imports else {
-            return false;
-        };
         let fp = ctx.engine.lookup_path(class_info.reference_id.file);
-        for decl in raw_imports {
-            let Some(imported) = resolve_declaration_async(decl, &fp, ctx).await else {
-                continue;
-            };
-            if may_export_providers(&imported, ctx, calculating).await {
+        let mut checked_refs = HashSet::new();
+        if let Some(raw_imports) = &class_info.raw_imports {
+            for decl in raw_imports {
+                let Some(imported) = resolve_declaration_async(decl, &fp, ctx).await else {
+                    continue;
+                };
+                checked_refs.insert(imported.reference_id);
+                if may_export_providers(&imported, ctx, calculating).await {
+                    return true;
+                }
+            }
+        }
+        // `raw_imports` records only direct identifier references (`extract_declarations`).
+        // A call expression (`SomeModule.forRoot()`, `getFeatureModule()`), inline
+        // `ModuleWithProviders` literal, or imported const array has no entry in `raw_imports`
+        // or fails `resolve_declaration_async`, so evaluate the AST `imports` expression with
+        // `angular_foreign_resolvers()` and check `may_export_providers` on each resolved reference.
+        let syntax_file = ctx.analyze_file_syntax(class_info.reference_id.file).await;
+        let imports_slot = syntax_file
+            .classes
+            .iter()
+            .find(|cs| cs.reference_id == class_info.reference_id)
+            .and_then(|cs| {
+                cs.as_component()
+                    .and_then(|c| c.imports.clone())
+                    .or_else(|| cs.as_ng_module().and_then(|m| m.imports.clone()))
+            });
+        if let Some(mut imports_resolved) = imports_slot {
+            use crate::evaluator::FromResolved;
+            let foreign = crate::analyzer::resolvers::angular_foreign_resolvers();
+            imports_resolved.complete_with(ctx, foreign).await;
+            if is_module_with_providers(imports_resolved.raw()) {
                 return true;
+            }
+            if let Some(scope_refs) = crate::evaluator::ScopeReferences::from_value(
+                imports_resolved.raw(),
+                imports_resolved.origin,
+            ) {
+                for r in &scope_refs.0 {
+                    if let Some(imported) = crate::query::resolve_reference_async(r, ctx).await {
+                        if !checked_refs.insert(imported.reference_id) {
+                            continue;
+                        }
+                        if may_export_providers(&imported, ctx, calculating).await {
+                            return true;
+                        }
+                    }
+                }
             }
         }
         false
