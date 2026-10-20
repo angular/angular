@@ -70,6 +70,7 @@ export interface NgpCompilerOptions {
   enableI18nLegacyMessageIdFormat?: boolean;
   i18nUseExternalIds?: boolean;
   i18nNormalizeLineEndingsInICUs?: boolean;
+  i18nPreserveWhitespaceForLegacyExtraction?: boolean;
 
   // TypeScript `compilerOptions` that ngtsc reads off the same merged options object.
   emitDeclarationOnly?: boolean;

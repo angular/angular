@@ -351,6 +351,7 @@ export function performNgpCompilationSync(params: {
         enableI18nLegacyMessageIdFormat: options.enableI18nLegacyMessageIdFormat,
         i18nNormalizeLineEndingsInICUs: options.i18nNormalizeLineEndingsInICUs,
         preserveWhitespaces: options.preserveWhitespaces,
+        preserveSignificantWhitespace: options.i18nPreserveWhitespaceForLegacyExtraction ?? true,
         enableSelectorless: Boolean(rawOpts['_enableSelectorless']),
       },
       legacyOptionalChaining: Boolean(rawOpts['legacyOptionalChaining']),
@@ -369,6 +370,7 @@ export function performNgpCompilationSync(params: {
       enableI18nLegacyMessageIdFormat: options.enableI18nLegacyMessageIdFormat,
       i18nUseExternalIds: options.i18nUseExternalIds,
       i18nNormalizeLineEndingsInICUs: options.i18nNormalizeLineEndingsInICUs,
+      i18nPreserveWhitespaceForLegacyExtraction: options.i18nPreserveWhitespaceForLegacyExtraction,
       enableHmr: Boolean(rawOpts['_enableHmr']),
       rootDir: options.rootDir
         ? toPosixPath(fs.resolve(basePath, options.rootDir))

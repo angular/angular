@@ -168,6 +168,8 @@ import {run} from './ngp.js';
       enableI18nLegacyMessageIdFormat: angularCompilerOptions?.enableI18nLegacyMessageIdFormat,
       i18nUseExternalIds: angularCompilerOptions?.i18nUseExternalIds,
       i18nNormalizeLineEndingsInICUs: angularCompilerOptions?.i18nNormalizeLineEndingsInICUs,
+      i18nPreserveWhitespaceForLegacyExtraction:
+        angularCompilerOptions?.i18nPreserveWhitespaceForLegacyExtraction,
       enableHmr,
       rootDir,
       workspaceName,

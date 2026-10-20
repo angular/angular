@@ -136,6 +136,8 @@ export interface HybridCompilerOptions {
   i18nUseExternalIds?: boolean;
   /** Literal inline templates always normalize, whatever this is set to. */
   i18nNormalizeLineEndingsInICUs?: boolean;
+  /** Legacy i18n whitespace preservation fallback for `preserveWhitespaces`. */
+  i18nPreserveWhitespaceForLegacyExtraction?: boolean;
   /**
    * Whether HMR is enabled (`_enableHmr`): emits an HMR initializer after every component and
    * enables `emitHmrUpdateModule`. The analyzer must run with `enableHmr` as well.
@@ -182,6 +184,7 @@ export class HybridCompiler {
     this.virtualFiles = options.virtualFiles;
     this.templateParseOptions = {
       preserveWhitespaces: options.preserveWhitespaces ?? false,
+      preserveSignificantWhitespace: options.i18nPreserveWhitespaceForLegacyExtraction ?? true,
       enableI18nLegacyMessageIdFormat: options.enableI18nLegacyMessageIdFormat !== false,
       i18nNormalizeLineEndingsInICUs: options.i18nNormalizeLineEndingsInICUs === true,
       ...options.templateParseOptions,

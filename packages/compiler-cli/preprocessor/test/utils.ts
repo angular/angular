@@ -407,6 +407,8 @@ export async function runPipeline(
     enableI18nLegacyMessageIdFormat: tsconfigOptions.enableI18nLegacyMessageIdFormat ?? false,
     i18nUseExternalIds: tsconfigOptions.i18nUseExternalIds,
     i18nNormalizeLineEndingsInICUs: tsconfigOptions.i18nNormalizeLineEndingsInICUs,
+    i18nPreserveWhitespaceForLegacyExtraction:
+      tsconfigOptions.i18nPreserveWhitespaceForLegacyExtraction,
   };
 
   const workspaceName = tsconfigOptions.workspaceName;
