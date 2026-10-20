@@ -1209,6 +1209,36 @@ async fn resolve_qualified_symbol_value_kind<Fs: ResourceResolverFs + Clone + 's
     let file_id = ctx.engine.intern_path(&file_path);
     let syntax = ctx.analyze_file_syntax(file_id).await;
     let Some(specifier) = find_namespace_import_specifier(&syntax, ns_prefix) else {
+        for decl in &syntax.import_declarations {
+            for binding in &decl.bindings {
+                if binding.local == ns_prefix && !binding.is_type {
+                    if let Some(imported_ns) = binding.imported.as_deref() {
+                        if let Some(target_file) =
+                            crate::evaluator::cross_file::resolve_specifier(
+                                ctx.engine.resolver.as_ref(),
+                                &file_path,
+                                &decl.specifier,
+                            )
+                        {
+                            let full_member = if imported_ns == "default" {
+                                member_name.to_string()
+                            } else {
+                                format!("{imported_ns}.{member_name}")
+                            };
+                            if let Some(kind) = resolve_export_equals_namespace_member(
+                                &target_file,
+                                &full_member,
+                                ctx,
+                            )
+                            .await
+                            {
+                                return kind;
+                            }
+                        }
+                    }
+                }
+            }
+        }
         return SymbolValueKind::Unresolved;
     };
 
@@ -1225,10 +1255,18 @@ async fn resolve_qualified_symbol_value_kind<Fs: ResourceResolverFs + Clone + 's
         if namespace_is_type_only(&target_file, inner_ns, ctx).await {
             return SymbolValueKind::Unresolved;
         }
-        return resolve_symbol_value_kind(member_name.to_string(), target_file, ctx, visited).await;
+        let kind =
+            resolve_symbol_value_kind(member_name.to_string(), target_file.clone(), ctx, visited)
+                .await;
+        if kind != SymbolValueKind::Unresolved {
+            return kind;
+        }
+        return resolve_export_equals_namespace_member(&target_file, member_name, ctx)
+            .await
+            .unwrap_or(SymbolValueKind::Unresolved);
     }
 
-    let Ok(decl_sym) = crate::evaluator::cross_file::cross_file_resolve(
+    if let Ok(decl_sym) = crate::evaluator::cross_file::cross_file_resolve(
         ctx,
         &file_path,
         Some(specifier),
@@ -1236,10 +1274,153 @@ async fn resolve_qualified_symbol_value_kind<Fs: ResourceResolverFs + Clone + 's
         visited,
     )
     .await
-    else {
+    {
+        let kind = classify_declaration(decl_sym, &file_path, ctx).await;
+        if kind != SymbolValueKind::Unresolved {
+            return kind;
+        }
+    }
+
+    // Fallback for CommonJS / Closure `declare namespace foo { ... } export = foo;` ambient `.d.ts`
+    // modules where `cross_file_resolve` returns `Ok(None)` because it only tracks ES module exports.
+    let Some(target_file) = crate::evaluator::cross_file::resolve_specifier(
+        ctx.engine.resolver.as_ref(),
+        &file_path,
+        specifier,
+    ) else {
         return SymbolValueKind::Unresolved;
     };
-    classify_declaration(decl_sym, &file_path, ctx).await
+    resolve_export_equals_namespace_member(&target_file, member_name, ctx)
+        .await
+        .unwrap_or(SymbolValueKind::Unresolved)
+}
+
+fn extract_dotted_identifier_path(expr: &oxc_ast::ast::Expression<'_>) -> Option<String> {
+    match expr {
+        oxc_ast::ast::Expression::Identifier(id) => Some(id.name.to_string()),
+        oxc_ast::ast::Expression::StaticMemberExpression(member) => {
+            let prefix = extract_dotted_identifier_path(&member.object)?;
+            Some(format!("{prefix}.{}", member.property.name))
+        }
+        _ => None,
+    }
+}
+
+/// Resolves a member inside a `declare namespace N { ... } export = N;` ambient `.d.ts` file.
+async fn resolve_export_equals_namespace_member<Fs: ResourceResolverFs + Clone + 'static>(
+    target_file: &Path,
+    member_path: &str,
+    ctx: &QueryContext<Fs>,
+) -> Option<SymbolValueKind> {
+    use oxc_syntax::symbol::SymbolFlags;
+
+    let file_id = ctx.engine.intern_path(target_file);
+    let parsed = ctx.parse_file(file_id).await;
+    let guard = parsed.lock().unwrap();
+    let dep = guard.borrow_dependent();
+
+    let export_equals_path = dep.program.body.iter().find_map(|stmt| match stmt {
+        oxc_ast::ast::Statement::TSExportAssignment(assign) => {
+            extract_dotted_identifier_path(&assign.expression)
+        }
+        _ => None,
+    });
+
+    let segments: Vec<&str> = member_path.split('.').collect();
+    let (&leaf_name, member_ns_prefix) = segments.split_last()?;
+
+    let mut candidate_ns_paths: Vec<Vec<&str>> = Vec::new();
+    if let Some(eq_path) = export_equals_path.as_deref() {
+        let mut full_ns: Vec<&str> = eq_path.split('.').collect();
+        full_ns.extend_from_slice(member_ns_prefix);
+        candidate_ns_paths.push(full_ns);
+    }
+    if !member_ns_prefix.is_empty() {
+        candidate_ns_paths.push(member_ns_prefix.to_vec());
+    }
+
+    let scoping = dep.semantic.scoping();
+    for ns_path in candidate_ns_paths {
+        let mut scopes = Vec::new();
+        collect_namespace_scopes(&dep.program.body, &ns_path, &mut scopes);
+        let mut combined_flags = SymbolFlags::empty();
+        let mut found_any = false;
+        for scope_id in scopes {
+            if let Some(symbol_id) = scoping.get_binding(scope_id, leaf_name.into()) {
+                combined_flags |= scoping.symbol_flags(symbol_id);
+                found_any = true;
+            }
+        }
+        if found_any {
+            if combined_flags.intersects(SymbolFlags::Value)
+                && !combined_flags.contains(SymbolFlags::ConstEnum)
+            {
+                return Some(SymbolValueKind::Value);
+            }
+            if combined_flags.intersects(
+                SymbolFlags::Interface
+                    | SymbolFlags::TypeAlias
+                    | SymbolFlags::TypeParameter
+                    | SymbolFlags::NamespaceModule
+                    | SymbolFlags::ConstEnum,
+            ) {
+                return Some(SymbolValueKind::TypeOnly);
+            }
+        }
+    }
+    None
+}
+
+fn collect_namespace_scopes<'a>(
+    stmts: &'a [oxc_ast::ast::Statement<'a>],
+    path: &[&str],
+    out: &mut Vec<oxc_syntax::scope::ScopeId>,
+) {
+    let Some((&first, rest)) = path.split_first() else {
+        return;
+    };
+    for stmt in stmts {
+        let decl = match stmt {
+            oxc_ast::ast::Statement::TSNamespaceDeclaration(decl) => decl.as_ref(),
+            oxc_ast::ast::Statement::ExportDeclaration(export) => {
+                if let oxc_ast::ast::Declaration::TSNamespaceDeclaration(decl) = &export.declaration
+                {
+                    decl.as_ref()
+                } else {
+                    continue;
+                }
+            }
+            _ => continue,
+        };
+        collect_from_namespace_decl(decl, first, rest, out);
+    }
+}
+
+fn collect_from_namespace_decl<'a>(
+    decl: &'a oxc_ast::ast::TSNamespaceDeclaration<'a>,
+    expected_name: &str,
+    rest: &[&str],
+    out: &mut Vec<oxc_syntax::scope::ScopeId>,
+) {
+    if decl.id.name.as_str() != expected_name {
+        return;
+    }
+    match (&decl.body, rest.split_first()) {
+        (_, None) => {
+            if let Some(scope_id) = decl.scope_id.get() {
+                out.push(scope_id);
+            }
+        }
+        (
+            oxc_ast::ast::TSNamespaceDeclarationBody::TSNamespaceDeclaration(inner),
+            Some((&next, tail)),
+        ) => {
+            collect_from_namespace_decl(inner, next, tail, out);
+        }
+        (oxc_ast::ast::TSNamespaceDeclarationBody::TSModuleBlock(block), Some(_)) => {
+            collect_namespace_scopes(&block.body, rest, out);
+        }
+    }
 }
 #[cfg(test)]
 mod tests {

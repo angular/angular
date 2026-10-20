@@ -35,11 +35,7 @@ export class TestService {
   static ɵfac: i0.ɵɵFactoryDeclaration<TestService, never> = function TestService_Factory(
     __ngFactoryType__: any,
   ): any {
-    /* @ts-ignore */
-    return new (__ngFactoryType__ || TestService)(
-      i0.ɵɵinject('$q'),
-      i0.ɵɵinject(angular.IQService),
-    );
+    i0.ɵɵinvalidFactory();
   };
   // @ts-ignore
   static ɵprov: i0.ɵɵInjectableDeclaration<any> =
@@ -56,10 +52,7 @@ export class TestService {
         [{ type: Injectable, args: [{ providedIn: 'root' }] }],
         (): any => [
           { type: undefined, decorators: [{ type: Inject, args: ['$q'] }] },
-          {
-            /* @ts-ignore */
-            type: angular.IQService,
-          },
+          { type: undefined },
         ],
         null,
       );

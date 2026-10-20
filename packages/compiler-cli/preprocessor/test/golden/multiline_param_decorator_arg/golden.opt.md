@@ -17,14 +17,7 @@ export class MultiLineDecoratorArgService {
   // @ts-ignore
   static ɵfac: i0.ɵɵFactoryDeclaration<MultiLineDecoratorArgService, never> =
     function MultiLineDecoratorArgService_Factory(__ngFactoryType__: any): any {
-      /* @ts-ignore */
-      return new (__ngFactoryType__ || MultiLineDecoratorArgService)(
-        i0.ɵɵinject({
-          token: 'legacy.$q',
-          legacy: true,
-        }),
-        i0.ɵɵinject(angular.ITimeoutService),
-      );
+      i0.ɵɵinvalidFactory();
     };
   // @ts-ignore
   static ɵprov: i0.ɵɵInjectableDeclaration<any> =
@@ -54,10 +47,7 @@ export class MultiLineDecoratorArgService {
               },
             ],
           },
-          {
-            /* @ts-ignore */
-            type: angular.ITimeoutService,
-          },
+          { type: undefined },
         ],
         null,
       );
