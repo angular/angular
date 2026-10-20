@@ -57,6 +57,10 @@ function isRelevantSelectMutation(mutation: MutationRecord) {
     if (mutation.target instanceof Comment) {
       return false;
     }
+    // A text node's data changed, which may change the implicit value of an `<option>`.
+    if (mutation.type === 'characterData') {
+      return true;
+    }
     // Otherwise if any non-comment nodes were added / removed it is relevant.
     for (const node of mutation.addedNodes) {
       if (!(node instanceof Comment)) {

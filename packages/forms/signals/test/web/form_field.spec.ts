@@ -4862,6 +4862,34 @@ describe('field directive', () => {
     expect(fix.componentInstance.select()!.nativeElement.value).toEqual('four');
   });
 
+  it('should resync the select value when the text of an option without a value changes', async () => {
+    @Component({
+      imports: [FormField],
+      template: `
+        <select #select [formField]="f">
+          <option>one</option>
+          <option>{{ label() }}</option>
+        </select>
+      `,
+    })
+    class TestCmp {
+      f = form(signal('two'));
+      select = viewChild<ElementRef<HTMLSelectElement>>('select');
+      label = signal('pending');
+    }
+
+    const fix = act(() => TestBed.createComponent(TestCmp));
+    await fix.whenStable();
+    const cmp = fix.componentInstance as TestCmp;
+
+    expect(cmp.select()!.nativeElement.value).toEqual('');
+
+    act(() => cmp.label.set('two'));
+    await fix.whenStable();
+
+    expect(cmp.select()!.nativeElement.value).toEqual('two');
+  });
+
   it('initializes a required value input before the component lifecycle runs', () => {
     let initialValue: string | undefined = undefined;
     @Component({
