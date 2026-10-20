@@ -907,15 +907,18 @@ export function processFileSync(
         }
       }
 
-      const usedDeclarations = filteredDeclarations.filter((d) => {
-        if (d.declarationType === 'ngmodule') {
-          return true; // Eagerly preserve NgModules!
-        }
-        if (d.declarationType === 'pipe') {
-          return d.pipeName && usedPipes.has(d.pipeName) && pipeNameToDecl.get(d.pipeName) === d;
-        }
-        return usedDirectiveDecls.has(d);
-      });
+      // Match ngtsc's `componentDependenciesToDeclarations` ordering (directives & NgModules in
+      // scope order first, then pipes from the pipe map) before iterating for deferred symbol
+      // tracking and per-block `@defer` resolvers.
+      const usedDirectivesAndModules = filteredDeclarations.filter(
+        (d) =>
+          d.declarationType === 'ngmodule' ||
+          (d.declarationType !== 'pipe' && usedDirectiveDecls.has(d)),
+      );
+      const usedPipeDecls = Array.from(pipeNameToDecl.values()).filter(
+        (d) => d.pipeName != null && usedPipes.has(d.pipeName),
+      );
+      const usedDeclarations = [...usedDirectivesAndModules, ...usedPipeDecls];
 
       const hasBlockSpecificImports = component?.deferredImportsByBlock != null;
       const hasDeferredImportsField = hasBlockSpecificImports || component?.deferredImports != null;
@@ -1224,28 +1227,20 @@ export function processFileSync(
         }
 
         const blockBound = binder.bind({template: block.children});
+        const blockUsedDirectiveDecls = new Set(toDecls(blockBound.getEagerlyUsedDirectives()));
+        const blockUsedPipes = new Set(blockBound.getEagerlyUsedPipes());
         const dependencies: R3DeferPerBlockDependency[] = [];
 
-        for (const decl of toDecls(blockBound.getEagerlyUsedDirectives())) {
-          if (allowedNames !== null && !allowedNames.has(decl.name)) continue;
-
-          const imported = deferredImportIfDeferrable(decl.ref);
-          if (imported === null) {
-            markNotDeferrable(decl.ref.localAlias);
-          }
-          dependencies.push({
-            typeReference: refToExpression(decl.ref),
-            symbolName: imported?.symbolName ?? decl.name,
-            isDeferrable: imported !== null,
-            importPath: imported?.importPath ?? null,
-            isDefaultImport: imported?.isDefaultImport ?? false,
-          });
-        }
-
-        // Add deferred pipes
-        for (const pipeName of blockBound.getEagerlyUsedPipes()) {
-          const decl = pipeNameToDecl.get(pipeName);
-          if (!decl) continue;
+        // Iterate `usedDeclarations` (scope-ordered directives/NgModules followed by pipes) rather
+        // than `blockBound.getEagerlyUsedDirectives()` (template encounter order) so the per-block
+        // resolver function matches ngtsc's `componentDependenciesToDeclarations` order.
+        for (const decl of usedDeclarations) {
+          if (decl.declarationType === 'ngmodule') continue;
+          const isUsedInBlock =
+            decl.declarationType === 'pipe'
+              ? decl.pipeName != null && blockUsedPipes.has(decl.pipeName)
+              : blockUsedDirectiveDecls.has(decl);
+          if (!isUsedInBlock) continue;
           if (allowedNames !== null && !allowedNames.has(decl.name)) continue;
 
           const imported = deferredImportIfDeferrable(decl.ref);
