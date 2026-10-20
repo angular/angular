@@ -410,6 +410,40 @@ describe('Form Directives', () => {
         expect(formModel.get(['person', 'login'])).not.toBeNull();
       });
 
+      it(
+        'should not throw when a control is registered after its parent container was removed',
+        async () => {
+          // Mirrors the race where a nested control is added and its parent group is
+          // destroyed in the same tick: by the time the deferred registration runs,
+          // the parent container no longer exists.
+          await jasmine.spyOnGlobalErrorsAsync(async (globalErrorSpy) => {
+            form.addControl(loginControlDir);
+
+            await timeout();
+
+            expect(globalErrorSpy).not.toHaveBeenCalled();
+            expect(formModel.get(['person', 'login'])).toBeNull();
+          });
+        },
+      );
+
+      it(
+        'should not throw when a group is registered after its parent container was removed',
+        async () => {
+          const nestedGroupDir = new NgModelGroup(personControlGroupDir, [], []);
+          nestedGroupDir.name = 'nested';
+
+          await jasmine.spyOnGlobalErrorsAsync(async (globalErrorSpy) => {
+            form.addFormGroup(nestedGroupDir);
+
+            await timeout();
+
+            expect(globalErrorSpy).not.toHaveBeenCalled();
+            expect(formModel.get(['person', 'nested'])).toBeNull();
+          });
+        },
+      );
+
       // should update the form's value and validity
     });
 
