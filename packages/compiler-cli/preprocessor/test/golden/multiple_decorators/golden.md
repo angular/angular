@@ -40,7 +40,7 @@ export class GreetingDirective {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
         GreetingDirective,
-        [{ type: Directive, args: [{ standalone: true }] }, { type: Injectable }],
+        [{ type: Injectable }, { type: Directive, args: [{ standalone: true }] }],
         null,
         null,
       );
