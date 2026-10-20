@@ -11,6 +11,13 @@ function CustomClassDec(): ClassDecorator {
 @CustomClassDec()
 export class DualDecoratedModule {
   // @ts-ignore
+  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjectable({
+      token: DualDecoratedModule,
+      factory: DualDecoratedModule.ɵfac,
+    });
+  // @ts-ignore
   static ɵfac: i0.ɵɵFactoryDeclaration<DualDecoratedModule, never> =
     function DualDecoratedModule_Factory(__ngFactoryType__: any): any {
       return new (__ngFactoryType__ || DualDecoratedModule)();
@@ -23,13 +30,6 @@ export class DualDecoratedModule {
   static ɵinj: i0.ɵɵInjectorDeclaration<DualDecoratedModule> =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineInjector({});
-  // @ts-ignore
-  static ɵprov: i0.ɵɵInjectableDeclaration<any> =
-    // @ts-ignore
-    /*@__PURE__*/ i0.ɵɵdefineInjectable({
-      token: DualDecoratedModule,
-      factory: DualDecoratedModule.ɵfac,
-    });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
