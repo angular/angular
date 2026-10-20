@@ -35,17 +35,17 @@ export class AppComp {
           /**
            * @suppress {msgDescriptions}
            */
-          const MSG_EXTERNAL_2706437655713359815$$APP_TS_0 =
+          const MSG_EXTERNAL_5990241859543196033$$APP_TS_0 =
             /* @ts-ignore */
             goog.getMsg(
               ' hello {$startTagSpan}world{$closeTagSpan}',
               { 'closeTagSpan': '\uFFFD/#2\uFFFD', 'startTagSpan': '\uFFFD#2\uFFFD' },
               { original_code: { 'closeTagSpan': '</span>', 'startTagSpan': '<span>' } },
             );
-          i18n_0 = MSG_EXTERNAL_2706437655713359815$$APP_TS_0;
+          i18n_0 = MSG_EXTERNAL_5990241859543196033$$APP_TS_0;
         } else {
           /* @ts-ignore */
-          i18n_0 = $localize`:␟a595f893476a55f9061a2ac4a1620b58461957fb␟2706437655713359815: hello ${'\uFFFD#2\uFFFD'}:START_TAG_SPAN:world${'\uFFFD/#2\uFFFD'}:CLOSE_TAG_SPAN:`;
+          i18n_0 = $localize`:␟3c43e6854ab71b2d5be4e4dc83c53d25e4c5f52d␟5990241859543196033: hello ${'\uFFFD#2\uFFFD'}:START_TAG_SPAN:world${'\uFFFD/#2\uFFFD'}:CLOSE_TAG_SPAN:`;
         }
         return [i18n_0];
       },
