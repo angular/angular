@@ -607,6 +607,7 @@
       "errorHandler",
       "errorHandlerEnvironmentInitializer",
       "errorNotification",
+      "escapeOutletDelimiter",
       "exactMatchOptions",
       "execFinalizer",
       "executeCheckHooks",

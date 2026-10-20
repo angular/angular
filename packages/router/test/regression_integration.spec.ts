@@ -23,6 +23,7 @@ import {
 } from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {
+  ActivatedRoute,
   ChildrenOutletContexts,
   DefaultUrlSerializer,
   NavigationCancel,
@@ -514,6 +515,79 @@ describe('Integration', () => {
     expect(errors).toEqual([]);
     // navigations to a and b were both cancelled.
     expect(cancellations.length).toEqual(2);
+  });
+
+  it('should not confuse outlets across navigation and URL re-parse when primary segment contains a colon', async () => {
+    @Component({
+      template: `<router-outlet />`,
+      imports: [RouterOutlet],
+    })
+    class RootCmp {}
+
+    @Component({
+      template: `
+        <div class="primary-outlet"><router-outlet /></div>
+        <div class="admin-outlet"><router-outlet name="admin" /></div>
+        <div class="aux-outlet"><router-outlet name="aux" /></div>
+      `,
+      imports: [RouterOutlet],
+    })
+    class ParentCmp {}
+
+    @Component({template: `Primary({{ route.snapshot.paramMap.get('id') }})`})
+    class PrimaryCmp {
+      readonly route = inject(ActivatedRoute);
+    }
+
+    @Component({template: `Admin({{ route.snapshot.paramMap.get('p') }})`})
+    class AdminCmp {
+      readonly route = inject(ActivatedRoute);
+    }
+
+    @Component({template: `Aux({{ route.snapshot.paramMap.get('a') }})`})
+    class AuxCmp {
+      readonly route = inject(ActivatedRoute);
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideLocationMocks(),
+        provideRouter([
+          {
+            path: 'x',
+            component: ParentCmp,
+            children: [
+              {path: ':id', component: PrimaryCmp},
+              {path: ':p', component: AdminCmp, outlet: 'admin'},
+              {path: ':a', component: AuxCmp, outlet: 'aux'},
+            ],
+          },
+        ]),
+      ],
+    });
+
+    const router = TestBed.inject(Router);
+    const location = TestBed.inject(Location);
+    const fixture = TestBed.createComponent(RootCmp);
+
+    await router.navigate(['/x', {outlets: {primary: ['admin:y'], aux: ['z']}}]);
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.textContent).toContain('Primary(admin:y)');
+    expect(fixture.nativeElement.textContent).not.toContain('Admin(');
+    expect(fixture.nativeElement.textContent).toContain('Aux(z)');
+
+    const browserUrl = location.path();
+    expect(browserUrl).toBe('/x/(admin%3Ay//aux:z)');
+
+    await router.navigateByUrl('/x/(aux:init)');
+    await fixture.whenStable();
+    await router.navigateByUrl(browserUrl);
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.textContent).toContain('Primary(admin:y)');
+    expect(fixture.nativeElement.textContent).not.toContain('Admin(');
+    expect(fixture.nativeElement.textContent).toContain('Aux(z)');
   });
 
   if (isBrowser) {
