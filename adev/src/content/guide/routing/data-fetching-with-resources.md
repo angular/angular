@@ -245,7 +245,7 @@ NOTE: Because `ctx.resources()` is typed as a record of `Resource<unknown>`, cas
 
 `chain()` also propagates the state of the ancestor resource. If the ancestor errors, the chained resource errors with a `ResourceDependencyError`, and the router cancels the navigation when that chained resource is blocking. If the ancestor is `idle`, the chained resource becomes `idle`.
 
-IMPORTANT: Non-blocking status does not propagate down dependency chains. If a blocking resource chains off an ancestor resource marked with `nonBlocking()`, the router still blocks the navigation until the dependent resource resolves. If the ancestor errors, the resulting `ResourceDependencyError` causes the blocking dependent resource to fail, which cancels the navigation. If you do not want the navigation to wait, wrap the dependent resource in `nonBlocking()` as well.
+HELPFUL: Non-blocking status does not propagate down dependency chains. If a blocking resource chains off an ancestor resource marked with `nonBlocking()`, the router still blocks the navigation until the dependent resource resolves. If the ancestor errors, the resulting `ResourceDependencyError` causes the blocking dependent resource to fail, which cancels the navigation. If you do not want the navigation to wait, wrap the dependent resource in `nonBlocking()` as well.
 
 ## Blocking and non-blocking resources
 

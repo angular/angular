@@ -1740,7 +1740,11 @@ describe('Router resources integration', () => {
         expect(ordersRoute.resources!['orders'].value()).toEqual(['orders-for-maintainer']);
       });
 
-      it('should update inherited resources when a route is reused under a new parent via RouteReuseStrategy', async () => {
+      it('should update inherited ActivatedRoute.resources dictionary when a route is reused under a new parent', async () => {
+        // Validates that the component-facing `ActivatedRoute.resources` and `snapshot.resources`
+        // dictionaries reflect the active parent when a route is re-attached under a new parent.
+        // (Note: Reactive dependency chaining via `chain(ctx.resources()[...])` across destroyed
+        // ancestor injectors is intentionally not supported.)
         class ReusableStrategy implements RouteReuseStrategy {
           private handles = new Map<string, DetachedRouteHandle>();
 
@@ -1821,7 +1825,7 @@ describe('Router resources integration', () => {
         expect(reattachedChild.snapshot.resources?.['parent1Res']).toBeUndefined();
       });
 
-      it('should update inherited resources when a route without own resources is reused under a new parent', async () => {
+      it('should update inherited ActivatedRoute.resources when a route without own resources is reused under a new parent', async () => {
         class ReusableStrategy implements RouteReuseStrategy {
           private handles = new Map<string, DetachedRouteHandle>();
 

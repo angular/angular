@@ -41,6 +41,11 @@ import {switchTap} from './switch_tap';
  * is still pending.
  */
 function initializeRouteResources(route: ActivatedRoute): void {
+  // Note: Inherited resources on `ActivatedRoute.resources` are updated top-down at navigation
+  // finalization time. However, if a custom `RouteReuseStrategy` detaches a child route while an
+  // ancestor route with `resources` is deactivated, the ancestor's `_localInjector` (and its resources)
+  // will be destroyed on deactivation. Reactive dependency chaining (`chain(ctx.resources()[...])`)
+  // across a destroyed ancestor is not supported when reattaching the child under a new parent.
   if (!route.routeConfig?.resources) {
     route._resourceContextSignal = route.parent?._resourceContextSignal;
     return;
@@ -63,9 +68,8 @@ function initializeRouteResources(route: ActivatedRoute): void {
       throw new RuntimeError(
         RuntimeErrorCode.CANNOT_READ_RESOURCES_SYNCHRONOUSLY,
         ngDevMode &&
-          `Route resources cannot be read synchronously during route initialization because ancestor ` +
-            `resources are still pending. Access 'ctx.resources()' reactively inside a resource's 'params' ` +
-            `function (e.g. 'resource({ params: ({chain}) => chain(ctx.resources()["name"]) })').`,
+          `Router resources should be accessed inside a resource's 'params' ` +
+            `(e.g. 'resource({ params: ({chain}) => chain(ctx.resources()["name"]) })').`,
       );
     }
     return {
