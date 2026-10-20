@@ -984,7 +984,9 @@ export function convertNgDiagnosticToTs(
   };
   if (ngDiag.relatedInformation !== undefined && ngDiag.relatedInformation.length > 0) {
     diagnostic.relatedInformation = ngDiag.relatedInformation.map((related) => ({
-      file: related.filePath ? (getRelatedSourceFile?.(related.filePath) ?? sourceFile) : sourceFile,
+      file: related.filePath
+        ? (getRelatedSourceFile?.(related.filePath) ?? sourceFile)
+        : sourceFile,
       start: related.span.start,
       length: Math.max(0, related.span.end - related.span.start),
       messageText: related.messageText,

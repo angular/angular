@@ -197,12 +197,26 @@ fn is_statically_exported(symbol_id: SymbolId, semantic: &Semantic<'_>) -> bool 
                 | AstKind::ExportSpecifier(_)
         )
     };
+    let is_decl_exported = |node_id| {
+        let decl_id = match nodes.kind(node_id) {
+            AstKind::VariableDeclarator(_) => nodes.parent_id(node_id),
+            _ => node_id,
+        };
+        is_export(nodes.parent_kind(decl_id))
+    };
     let declaration = semantic.symbol_declaration(symbol_id);
-    if is_export(nodes.parent_kind(declaration.id())) {
+    if is_decl_exported(declaration.id()) {
         return true;
     }
-    semantic
-        .scoping()
+    let scoping = semantic.scoping();
+    if scoping
+        .symbol_redeclarations(symbol_id)
+        .iter()
+        .any(|redecl| is_decl_exported(redecl.declaration))
+    {
+        return true;
+    }
+    scoping
         .get_resolved_references(symbol_id)
         .any(|reference| is_export(nodes.parent_kind(reference.node_id())))
 }

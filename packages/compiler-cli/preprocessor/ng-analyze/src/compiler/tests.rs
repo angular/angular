@@ -6752,14 +6752,17 @@ fn test_input_transform_diagnostics() {
     let util = r#"
         interface InternalType { foo: boolean; }
         export interface PublicType { foo: boolean; }
+        export const CompanionUtilType = { A: 'a' } as const;
+        export type CompanionUtilType = (typeof CompanionUtilType)[keyof typeof CompanionUtilType];
         export function internalParam(val: InternalType) { return 1; }
         export function nestedInternalParam(val: {value: InternalType}) { return 1; }
         export function publicParam(val: PublicType) { return 1; }
+        export function companionUtilParam(val: CompanionUtilType) { return 1; }
         export const constArrow = (val: string) => 1;
     "#;
     let source = r#"
         import { Directive, Input } from '@angular/core';
-        import { internalParam, nestedInternalParam, publicParam, constArrow } from './util';
+        import { internalParam, nestedInternalParam, publicParam, companionUtilParam, constArrow } from './util';
         import { publicParam as aliasedPublicParam, internalParam as aliasedInternalParam } from './util';
 
         const NOT_A_FUNCTION: any = null!;
@@ -6767,6 +6770,10 @@ fn test_input_transform_diagnostics() {
         export interface Shown { foo: boolean; }
         interface Aliased { foo: boolean; }
         export { Aliased as PublicAlias };
+        export const CompanionType = { A: 'a' } as const;
+        export type CompanionType = (typeof CompanionType)[keyof typeof CompanionType];
+        const UnexportedConst = { A: 'a' } as const;
+        export type UnexportedConst = (typeof UnexportedConst)[keyof typeof UnexportedConst];
         function overloaded(value: boolean): number;
         function overloaded(value: string): number;
         function overloaded(value: boolean | string) { return 1; }
@@ -6786,6 +6793,8 @@ fn test_input_transform_diagnostics() {
             @Input({transform: (val: Hidden) => 1}) hidden!: number;
             @Input({transform: (val: Shown) => 1}) shown!: number;
             @Input({transform: (val: Aliased) => 1}) aliased!: number;
+            @Input({transform: (val: CompanionType) => 1}) companion!: number;
+            @Input({transform: (val: UnexportedConst) => 1}) companionRedecl!: number;
             @Input({transform: overloaded}) overloads!: number;
             @Input({transform: spread}) rest!: number;
             @Input({transform: noParams}) none!: number;
@@ -6794,6 +6803,7 @@ fn test_input_transform_diagnostics() {
             @Input({transform: internalParam}) imported!: number;
             @Input({transform: nestedInternalParam}) nested!: number;
             @Input({transform: publicParam}) importedPublic!: number;
+            @Input({transform: companionUtilParam}) importedCompanion!: number;
             @Input({transform: aliasedPublicParam}) aliasedPublic!: number;
             @Input({transform: aliasedInternalParam}) aliasedInternal!: number;
             @Input({transform: constArrow}) arrowConst!: number;
