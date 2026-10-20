@@ -17,7 +17,7 @@ import * as fsSync from 'node:fs';
 import * as fs from 'node:fs/promises';
 import * as path from 'path';
 import {makeClassKey} from './compiler-utils.js';
-import {withErrorGuide} from './diagnostic.js';
+import {flattenNgDiagnosticMessage, withErrorGuide} from './diagnostic.js';
 import {
   ChunkContext,
   FileAnalysis,
@@ -71,7 +71,7 @@ export function serializeDiagnostics(
           filePath: d.filePath,
           category: d.category === 1 ? 'error' : 'warning',
           code: d.code,
-          messageText: d.messageText,
+          messageText: flattenNgDiagnosticMessage(d),
           span: d.span,
         })),
       },

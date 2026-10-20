@@ -19,15 +19,11 @@ export abstract class Base {
     public extra?: boolean,
   ) {}
   // @ts-ignore
-  static ɵfac: i0.ɵɵFactoryDeclaration<Base, [null, { optional: true }, null]> =
-    function Base_Factory(__ngFactoryType__: any): any {
-      /* @ts-ignore */
-      return new (__ngFactoryType__ || Base)(
-        i0.ɵɵdirectiveInject(MY_TOKEN),
-        i0.ɵɵdirectiveInject(MY_TOKEN, 8),
-        i0.ɵɵdirectiveInject(Object),
-      );
-    };
+  static ɵfac: i0.ɵɵFactoryDeclaration<Base, never> = function Base_Factory(
+    __ngFactoryType__: any,
+  ): any {
+    i0.ɵɵinvalidFactory();
+  };
   // @ts-ignore
   static ɵdir: i0.ɵɵDirectiveDeclaration<Base, '[base]', never, {}, {}, never, never, true, never> =
     // @ts-ignore
@@ -105,6 +101,26 @@ export class Child extends Base {
         null,
       );
   }
+}
+
+```
+
+# /tsconfig.ngdiag.json
+```json
+{
+  "tsconfigPath": "/tsconfig.json",
+  "diagnostics": [
+    {
+      "filePath": "/app.ts",
+      "category": "error",
+      "code": 2003,
+      "messageText": "No suitable injection token for parameter 'extra' of class 'Base'. Find more at https://next.angular.dev/errors/NG2003\n  Consider using the @Inject decorator to specify an injection token.",
+      "span": {
+        "start": 554,
+        "end": 559
+      }
+    }
+  ]
 }
 
 ```

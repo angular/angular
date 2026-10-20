@@ -138,12 +138,19 @@ impl<'a, Fs: ResourceResolverFs> ClassVisitor<'a, Fs> {
 
         let reference_id = ReferenceId::new(self.file_id, symbol_id);
         let super_class = evaluate_super_class(class, &eval);
+        let ctor_params_di = super::constructor_params_di(
+            class,
+            self.semantic,
+            self.import_map,
+            self.angular_imports,
+        );
         self.di_facts.extend(super::di_facts::ts_class_di_facts(
             class,
             reference_id,
             self.semantic,
             self.angular_imports,
             super_class.clone(),
+            ctor_params_di.as_deref(),
         ));
 
         if class.decorators.is_empty() {
@@ -176,6 +183,7 @@ impl<'a, Fs: ResourceResolverFs> ClassVisitor<'a, Fs> {
             &eval,
             self.enable_hmr,
             super_class,
+            ctor_params_di.unwrap_or_default(),
         ) else {
             return;
         };
@@ -353,6 +361,8 @@ fn classify(reference_id: ReferenceId, parsed: ParsedClass, has_real_symbol: boo
         name_span: common.name_span,
         class_name: common.class_name,
         constructor_params: common.constructor_params,
+        ctor_params_di: common.ctor_params_di,
+        is_abstract: common.is_abstract,
         unexpected_param_decorators: common.unexpected_param_decorators,
         decorator_issues: common.decorator_issues,
         di_issues: Vec::new(),
@@ -439,6 +449,8 @@ struct ParsedCommon {
     name_span: Option<oxc_span::Span>,
     class_name: Option<String>,
     constructor_params: Option<Vec<ConstructorParamMetadata>>,
+    ctor_params_di: Vec<super::CtorParamDi>,
+    is_abstract: bool,
     unexpected_param_decorators: Vec<crate::analyzer::UnexpectedParamDecorator>,
     decorator_issues: Vec<crate::analyzer::class_data::ValueIssue>,
     member_decorators: Vec<crate::DecoratedMemberMetadata>,
@@ -512,6 +524,7 @@ fn process_class_common<'a, Fs: ResourceResolverFs>(
     eval: &crate::evaluator::EvalInput<'a, '_>,
     enable_hmr: bool,
     super_class: Option<crate::DeclarationTuple>,
+    ctor_params_di: Vec<super::CtorParamDi>,
 ) -> Option<ParsedClass> {
     let class_name = class.id.as_ref().map(|id| id.name.to_string());
     let name_span = class.id.as_ref().map(|id| id.span);
@@ -521,6 +534,7 @@ fn process_class_common<'a, Fs: ResourceResolverFs>(
     });
     let constructor_params_result = get_constructor_params(
         class,
+        &ctor_params_di,
         semantic,
         converter,
         import_map,
@@ -708,6 +722,8 @@ fn process_class_common<'a, Fs: ResourceResolverFs>(
             name_span,
             class_name,
             constructor_params,
+            ctor_params_di,
+            is_abstract: class.r#abstract,
             unexpected_param_decorators,
             decorator_issues,
             member_decorators,

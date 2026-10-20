@@ -69,3 +69,7 @@ export function withErrorGuide(diag: NgDiagnostic): NgDiagnostic {
   const separator = /[.,;!?\n]$/.test(message) ? ' ' : '. ';
   return {...diag, messageText: `${message}${separator}${details}`};
 }
+
+export function flattenNgDiagnosticMessage(diag: NgDiagnostic): string {
+  return [diag.messageText, ...(diag.next ?? [])].join('\n  ');
+}

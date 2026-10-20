@@ -25,8 +25,10 @@ pub struct NgDiagnostic {
     pub message_text: String,
     pub file_path: Option<String>,
     pub span: Option<SpanMetadata>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub related_information: Option<Vec<NgRelatedInformation>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub next: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub related_information: Vec<NgRelatedInformation>,
 }
 
 impl NgDiagnostic {
@@ -56,7 +58,8 @@ impl NgDiagnostic {
             message_text: diag.message.to_string(),
             file_path,
             span,
-            related_information: None,
+            next: Vec::new(),
+            related_information: Vec::new(),
         }
     }
 
@@ -67,14 +70,13 @@ impl NgDiagnostic {
             message_text,
             file_path: Some(file_path),
             span: Some(span),
-            related_information: None,
+            next: Vec::new(),
+            related_information: Vec::new(),
         }
     }
 
     pub fn with_related_information(mut self, related: Vec<NgRelatedInformation>) -> Self {
-        if !related.is_empty() {
-            self.related_information = Some(related);
-        }
+        self.related_information = related;
         self
     }
 }

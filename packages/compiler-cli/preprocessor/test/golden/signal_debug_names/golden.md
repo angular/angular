@@ -39,8 +39,7 @@ export class MyService {
   static ɵfac: i0.ɵɵFactoryDeclaration<MyService, never> = function MyService_Factory(
     __ngFactoryType__: any,
   ): any {
-    /* @ts-ignore */
-    return new (__ngFactoryType__ || MyService)(i0.ɵɵinject(Object), i0.ɵɵinject(Object));
+    i0.ɵɵinvalidFactory();
   };
   // @ts-ignore
   static ɵprov: i0.ɵɵInjectableDeclaration<any> =
