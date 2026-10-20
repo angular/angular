@@ -969,7 +969,7 @@ export interface RootFieldContext<TValue> {
   readonly fieldTree: ReadonlyFieldTree<TValue>;
 
   /** Gets the value of the field represented by the given path. */
-  valueOf<PValue>(p: SchemaPath<PValue, SchemaPathRules>): PValue;
+  valueOf<PValue>(this: void, p: SchemaPath<PValue, SchemaPathRules>): PValue;
 
   // Note: These methods use a tautological conditional type (`[P] extends [any] ? ... : never`).
   // This is required because the `FieldNodeContext` implementation returns a deferred conditional
@@ -980,13 +980,16 @@ export interface RootFieldContext<TValue> {
   // structure so that TypeScript accepts the assignment gracefully.
   /** Gets the state of the field represented by the given path. */
   stateOf<PControl extends AbstractControl>(
+    this: void,
     p: CompatSchemaPath<PControl>,
   ): [PControl] extends [any] ? ReadonlyCompatFieldState<PControl> : never;
   stateOf<PValue>(
+    this: void,
     p: SchemaPath<PValue, SchemaPathRules>,
   ): [PValue] extends [any] ? ReadonlyFieldState<PValue> : never;
   /** Gets the field represented by the given path. */
   fieldTreeOf<PModel>(
+    this: void,
     p: SchemaPathTree<PModel>,
   ): [PModel] extends [any] ? ReadonlyFieldTree<PModel> : never;
   /** The list of keys that lead from the root field to the current field. */
