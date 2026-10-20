@@ -64,11 +64,3 @@ export class AppComp {
 })();
 
 ```
-
-# /out/helper.ts
-```ts
-import { Injectable } from '@angular/core';
-export const SETUP = 1;
-export const USED = Injectable;
-
-```

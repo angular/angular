@@ -1812,7 +1812,7 @@ export function processFileSync(
   // downstream CommonJS / Closure downleveling never emits a lexical `const ... = require(...)`
   // below a top-level statement that references it.
   const hoistedImports: string[] = [];
-  if (!filePath.endsWith('.d.ts')) {
+  if (!filePath.endsWith('.d.ts') && classes.length > 0) {
     for (const decl of importDeclarations) {
       if (decl.span.start > importsEnd && !removedDecls.has(decl)) {
         hoistedImports.push(s.slice(decl.span.start, decl.span.end));
