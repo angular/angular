@@ -34,7 +34,7 @@
         },
         {
           "name": "active",
-          "type": "Signal<any>",
+          "type": "Signal<boolean>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -44,7 +44,7 @@
         },
         {
           "name": "id",
-          "type": "InputSignal<any>",
+          "type": "InputSignal<string>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -96,7 +96,7 @@
         },
         {
           "name": "selected",
-          "type": "Signal<any>",
+          "type": "Signal<boolean | undefined>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -221,7 +221,7 @@
       "members": [
         {
           "name": "id",
-          "type": "InputSignal<any>",
+          "type": "InputSignal<string>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -372,7 +372,7 @@
         },
         {
           "name": "tabIndex",
-          "type": "InputSignal<undefined>",
+          "type": "InputSignalWithTransform<number | undefined, string | number | undefined>",
           "memberType": "property",
           "memberTags": [
             "readonly",
