@@ -423,6 +423,11 @@ export function processFileSync(
     }
   }
 
+  // Defer printing and inserting class fields/metadata until all classes in the file have
+  // compiled against `sharedPool`, so `ConstantPool` `FixupExpression`s (e.g., shared styles
+  // across multiple components in the same file) are finalized before `printer.print` runs.
+  const deferredClassAppends: Array<() => void> = [];
+
   for (const classMeta of classes) {
     if (ctx.hmrUpdateTarget !== undefined && classMeta.className !== ctx.hmrUpdateTarget) {
       continue;
@@ -550,8 +555,6 @@ export function processFileSync(
         target: FactoryTarget.Pipe,
       });
 
-      const compiledFactory = compileFactoryField(factoryRes, printer, ctx);
-
       const def = compilePipeFromMetadata({
         name: className,
         type: {
@@ -564,15 +567,17 @@ export function processFileSync(
         typeArgumentCount: classMeta?.typeParameters?.length ?? 0,
         deps: null,
       });
-      const compiledPipe = createStaticField(
-        'ɵpipe',
-        printer.print(def.expression),
-        printer.emitTypes ? printer.printType(def.type) : null,
-        true,
-        ctx.isClosureCompilerEnabled,
-      );
-
-      out.appendLeft(span.end - 1, compiledFactory + compiledPipe);
+      deferredClassAppends.push(() => {
+        const compiledFactory = compileFactoryField(factoryRes, printer, ctx);
+        const compiledPipe = createStaticField(
+          'ɵpipe',
+          printer.print(def.expression),
+          printer.emitTypes ? printer.printType(def.type) : null,
+          true,
+          ctx.isClosureCompilerEnabled,
+        );
+        out.appendLeft(span.end - 1, compiledFactory + compiledPipe);
+      });
     }
 
     if (component) {
@@ -1460,15 +1465,17 @@ export function processFileSync(
       });
 
       // 8. Insert static fields
-      const compiledFac = compileFactoryField(factoryRes, printer, ctx);
-      const compiledCmp = createStaticField(
-        'ɵcmp',
-        printer.print(compileResult.expression),
-        printer.emitTypes ? printer.printType(compileResult.type) : null,
-        true,
-        ctx.isClosureCompilerEnabled,
-      );
-      out.appendLeft(span.end - 1, compiledFac + compiledCmp + classMeta.coercionMembers);
+      deferredClassAppends.push(() => {
+        const compiledFac = compileFactoryField(factoryRes, printer, ctx);
+        const compiledCmp = createStaticField(
+          'ɵcmp',
+          printer.print(compileResult.expression),
+          printer.emitTypes ? printer.printType(compileResult.type) : null,
+          true,
+          ctx.isClosureCompilerEnabled,
+        );
+        out.appendLeft(span.end - 1, compiledFac + compiledCmp + classMeta.coercionMembers);
+      });
 
       if (ctx.enableHmr) {
         hmrComponent = {
@@ -1545,15 +1552,17 @@ export function processFileSync(
       });
 
       // Insert static fields
-      const compiledFac = compileFactoryField(factoryRes, printer, ctx);
-      const compiledDir = createStaticField(
-        'ɵdir',
-        printer.print(compileResult.expression),
-        printer.emitTypes ? printer.printType(compileResult.type) : null,
-        true,
-        ctx.isClosureCompilerEnabled,
-      );
-      out.appendLeft(span.end - 1, compiledFac + compiledDir + classMeta.coercionMembers);
+      deferredClassAppends.push(() => {
+        const compiledFac = compileFactoryField(factoryRes, printer, ctx);
+        const compiledDir = createStaticField(
+          'ɵdir',
+          printer.print(compileResult.expression),
+          printer.emitTypes ? printer.printType(compileResult.type) : null,
+          true,
+          ctx.isClosureCompilerEnabled,
+        );
+        out.appendLeft(span.end - 1, compiledFac + compiledDir + classMeta.coercionMembers);
+      });
     }
     if (ngModule) {
       if (!ctx.emitDeclarationOnly) {
@@ -1563,25 +1572,27 @@ export function processFileSync(
         });
       }
       factoryGenerated = true;
-      const {compiledFac, compiledMod, compiledInj, statements} = compileNgModuleDef(
-        className,
-        ngModule,
-        deps,
-        printer,
-        ctx,
-        classes,
-        classMeta,
-        s,
-        filePath,
-        fileDiagnostics,
-      );
+      deferredClassAppends.push(() => {
+        const {compiledFac, compiledMod, compiledInj, statements} = compileNgModuleDef(
+          className,
+          ngModule,
+          deps,
+          printer,
+          ctx,
+          classes,
+          classMeta,
+          s,
+          filePath,
+          fileDiagnostics,
+        );
 
-      out.appendLeft(span.end - 1, compiledFac + compiledMod + compiledInj);
-      // The NgModule side-effect statements (`ɵɵsetNgModuleScope`, `ɵɵregisterNgModuleType`)
-      // must be emitted AFTER `ɵsetClassMetadata`. The reference compiler unshifts the class
-      // metadata statement to the front of these statements before emission.
-      // https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L1007-L1014
-      ngModuleStatements = statements;
+        out.appendLeft(span.end - 1, compiledFac + compiledMod + compiledInj);
+        // The NgModule side-effect statements (`ɵɵsetNgModuleScope`, `ɵɵregisterNgModuleType`)
+        // must be emitted AFTER `ɵsetClassMetadata`. The reference compiler unshifts the class
+        // metadata statement to the front of these statements before emission.
+        // https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L1007-L1014
+        ngModuleStatements = statements;
+      });
     }
 
     if (injectable) {
@@ -1590,21 +1601,18 @@ export function processFileSync(
         argsSpan: injectable.argsSpan ?? undefined,
       });
       // 1. Generate ɵfac (Factory) if not already generated by another decorator
-      let compiledFactory = '';
-      if (!factoryGenerated) {
-        const factoryRes = compileFactoryFunction({
-          name: className,
-          type: {
-            value: o.variable(className),
-            type: o.variable(className),
-          },
-          typeArgumentCount: classMeta?.typeParameters?.length ?? 0,
-          deps: deps,
-          target: FactoryTarget.Injectable,
-        });
-
-        compiledFactory = compileFactoryField(factoryRes, printer, ctx);
-      }
+      const factoryRes = !factoryGenerated
+        ? compileFactoryFunction({
+            name: className,
+            type: {
+              value: o.variable(className),
+              type: o.variable(className),
+            },
+            typeArgumentCount: classMeta?.typeParameters?.length ?? 0,
+            deps: deps,
+            target: FactoryTarget.Injectable,
+          })
+        : null;
 
       const wrapProviderField = (field: nga.ProviderField) => ({
         expression: rawSlice(s, field.span, guards),
@@ -1647,16 +1655,19 @@ export function processFileSync(
       }
 
       const def = compileInjectable(injectableMeta, false);
-      const compiledProv = createStaticField(
-        'ɵprov',
-        printer.print(def.expression),
-        printer.emitTypes ? printer.printType(def.type) : null,
-        true,
-        ctx.isClosureCompilerEnabled,
-      );
+      deferredClassAppends.push(() => {
+        const compiledFactory = factoryRes ? compileFactoryField(factoryRes, printer, ctx) : '';
+        const compiledProv = createStaticField(
+          'ɵprov',
+          printer.print(def.expression),
+          printer.emitTypes ? printer.printType(def.type) : null,
+          true,
+          ctx.isClosureCompilerEnabled,
+        );
 
-      // Insert at classEnd - 1 (before the closing brace)
-      out.appendLeft(span.end - 1, compiledFactory + compiledProv);
+        // Insert at classEnd - 1 (before the closing brace)
+        out.appendLeft(span.end - 1, compiledFactory + compiledProv);
+      });
     }
 
     if (service) {
@@ -1664,8 +1675,6 @@ export function processFileSync(
         decoratorName: service.decoratorName ?? 'Service',
         argsSpan: service.argsSpan ?? undefined,
       });
-
-      let compiledFactory = '';
 
       const factoryRes = compileFactoryFunction({
         name: className,
@@ -1677,8 +1686,6 @@ export function processFileSync(
         deps: [], // Intentional since services don't allow constructor DI.
         target: FactoryTarget.Service,
       });
-
-      compiledFactory = compileFactoryField(factoryRes, printer, ctx);
 
       const serviceMeta: R3ServiceMetadata = {
         name: className,
@@ -1692,14 +1699,17 @@ export function processFileSync(
       };
 
       const def = compileService(serviceMeta, false);
-      const compiledProv = createStaticField(
-        'ɵprov',
-        printer.print(def.expression),
-        printer.emitTypes ? printer.printType(def.type) : null,
-        true,
-        ctx.isClosureCompilerEnabled,
-      );
-      out.appendLeft(span.end - 1, compiledFactory + compiledProv);
+      deferredClassAppends.push(() => {
+        const compiledFactory = compileFactoryField(factoryRes, printer, ctx);
+        const compiledProv = createStaticField(
+          'ɵprov',
+          printer.print(def.expression),
+          printer.emitTypes ? printer.printType(def.type) : null,
+          true,
+          ctx.isClosureCompilerEnabled,
+        );
+        out.appendLeft(span.end - 1, compiledFactory + compiledProv);
+      });
     }
 
     let classMetadataStmt: o.Statement | null = null;
@@ -1712,12 +1722,15 @@ export function processFileSync(
         perComponentDeferredDeps,
         ctx.complianceMode ?? false,
       );
-      const metadata = printSetClassMetadata(classMetadataStmt, printer, ctx.complianceMode);
-      if (ctx.complianceMode) {
-        out.appendRight(span.end, '\n' + metadata);
-      } else {
-        out.appendLeft(span.end - 1, metadata);
-      }
+      const stmt = classMetadataStmt;
+      deferredClassAppends.push(() => {
+        const metadata = printSetClassMetadata(stmt, printer, ctx.complianceMode);
+        if (ctx.complianceMode) {
+          out.appendRight(span.end, '\n' + metadata);
+        } else {
+          out.appendLeft(span.end - 1, metadata);
+        }
+      });
     }
 
     let debugInfoStmt: o.Statement | null = null;
@@ -1729,7 +1742,10 @@ export function processFileSync(
         classMeta.nameSpan?.start ?? span.start,
         ctx.forbidOrphanComponents ?? false,
       );
-      out.appendRight(span.end, '\n' + printer.printStatement(debugInfoStmt));
+      const stmt = debugInfoStmt;
+      deferredClassAppends.push(() => {
+        out.appendRight(span.end, '\n' + printer.printStatement(stmt));
+      });
     }
 
     if (hmrComponent !== null) {
@@ -1754,10 +1770,12 @@ export function processFileSync(
       // `ɵsetClassDebugInfo`.
       // https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L427-L439
       if (hmrMeta !== null) {
-        out.appendRight(
-          span.end,
-          '\n' + printer.printStatement(compileHmrInitializer(hmrMeta).toStmt()),
-        );
+        deferredClassAppends.push(() => {
+          out.appendRight(
+            span.end,
+            '\n' + printer.printStatement(compileHmrInitializer(hmrMeta).toStmt()),
+          );
+        });
       }
       if (ctx.hmrUpdateTarget === className) {
         hmrUpdateModule =
@@ -1781,14 +1799,20 @@ export function processFileSync(
     }
 
     // Emit NgModule side-effect statements after `ɵsetClassMetadata` to match the reference order.
-    if (ngModuleStatements) {
-      out.appendRight(span.end, '\n' + ngModuleStatements + '\n');
-    }
+    deferredClassAppends.push(() => {
+      if (ngModuleStatements) {
+        out.appendRight(span.end, '\n' + ngModuleStatements + '\n');
+      }
+    });
   }
 
   // The target was not a component (or has no HMR metadata); nothing to update.
   if (ctx.hmrUpdateTarget !== undefined) {
     return {magicString: s, generateSourceMap, hmrUpdateModule: null};
+  }
+
+  for (const appendClassFields of deferredClassAppends) {
+    appendClassFields();
   }
 
   for (const local of eagerDependencyNames) {
