@@ -12,9 +12,8 @@
 import {fileURLToPath} from 'url';
 import * as fs from 'node:fs/promises';
 import * as path from 'path';
-import {resolveWorkspaceConfig, stripJsonComments} from './src/workspace.js';
-import {readConfiguration} from '@angular/compiler-cli';
-import {verifyCompilerOptions, type NgpCompilerOptions} from './src/compiler_options.js';
+import {resolveWorkspaceConfig} from './src/workspace.js';
+import {verifyCompilerOptions} from './src/compiler_options.js';
 import {HybridCompiler, IAnalyzer} from './src/hybrid_compiler.js';
 import {buildTypeCheckingConfig} from './src/tcb.js';
 import {SidecarAnalyzer} from './src/analyzer_sidecar.js';
@@ -67,20 +66,16 @@ import {run} from './ngp.js';
     const targetPath = path.resolve(targetArg);
     let rootDir: string;
     let tsconfigPath: string;
-    let angularCompilerOptions: NgpCompilerOptions | undefined;
 
     // If we're resolving a tsconfig, we shouldn't consult the workspace for tsconfig path,
     // but we should still try to locate the workspaceRoot to prevent sibling library files from escaping outDir.
+    const workspaceConfig = await resolveWorkspaceConfig(targetPath);
     if (path.basename(targetPath).includes('tsconfig') && targetPath.endsWith('.json')) {
-      const workspaceConfig = await resolveWorkspaceConfig(targetPath);
       rootDir = workspaceConfig ? workspaceConfig.workspaceRoot : path.dirname(targetPath);
       tsconfigPath = targetPath;
-      angularCompilerOptions = readConfiguration(tsconfigPath).options;
     } else {
-      const workspaceConfig = await resolveWorkspaceConfig(targetPath);
       tsconfigPath = workspaceConfig ? workspaceConfig.tsConfig : targetPath;
       rootDir = workspaceConfig ? workspaceConfig.workspaceRoot : path.dirname(tsconfigPath);
-      angularCompilerOptions = workspaceConfig?.angularCompilerOptions;
     }
 
     // Parse --root <dir> argument
@@ -93,48 +88,10 @@ import {run} from './ngp.js';
       `Running ngp...${useWasm ? ' (wasm)' : ''}${optimize ? ' (optimize mode)' : ''}${outDir ? ` (output: ${outDir})` : ''} (root: ${rootDir})`,
     );
 
-    const tcbConfig = buildTypeCheckingConfig(angularCompilerOptions, enableTemplateTypeCheckerArg);
-
-    let bazelOptions: any;
-    try {
-      const rawContent = await fs.readFile(tsconfigPath, 'utf8');
-      const rawTsconfig = JSON.parse(stripJsonComments(rawContent)) as any;
-      bazelOptions = rawTsconfig?.bazelOptions || rawTsconfig?.bazelOpts;
-    } catch {
-      // Fallback if tsconfig cannot be read as raw JSON
-    }
-    const isClosureCompilerEnabled =
-      angularCompilerOptions?.annotateForClosureCompiler === true ||
-      bazelOptions?.annotateForClosureCompiler === true ||
-      bazelOptions?.tsickle === true;
-
-    const emitDeclarationOnly =
-      angularCompilerOptions?.emitDeclarationOnly === true &&
-      angularCompilerOptions?._experimentalAllowEmitDeclarationOnly === true;
-
-    const onlyPublishPublicTypingsForNgModules =
-      angularCompilerOptions?.onlyPublishPublicTypingsForNgModules === true;
-
-    const workspaceName = angularCompilerOptions?.workspaceName || bazelOptions?.workspaceName;
-    const rootDirs = angularCompilerOptions?.rootDirs || bazelOptions?.rootDirs;
-    const enableHmr = angularCompilerOptions?._enableHmr;
-    // Left undefined when unset so the analyzer falls back to the tsconfig's own value.
-    const useHostForImportGeneration =
-      angularCompilerOptions?._useHostForImportGeneration ||
-      angularCompilerOptions?._useHostForImportAndAliasGeneration
-        ? true
-        : undefined;
-
     let innerAnalyzer: IAnalyzer;
     if (sidecarPath) {
       const sidecar = new SidecarAnalyzer(sidecarPath);
-      await sidecar.initialize(tsconfigPath, optimize, undefined, undefined, {
-        workspaceName,
-        rootDirs,
-        enableHmr,
-        usePoisonedData: tcbConfig.usePoisonedData,
-        useHostForImportGeneration,
-      });
+      await sidecar.initialize(tsconfigPath, optimize);
       innerAnalyzer = sidecar;
     } else {
       const {NapiAnalyzer} = await import('./src/analyzer_napi.js');
@@ -150,14 +107,28 @@ import {run} from './ngp.js';
         optimize,
         useWasm,
         ngAnalyzeDir,
-        workspaceName,
-        rootDirs,
-        enableHmr,
-        usePoisonedData: tcbConfig.usePoisonedData,
-        useHostForImportGeneration,
       });
     }
+    const angularCompilerOptions = innerAnalyzer.getCompilerOptions?.();
+
+    const tcbConfig = buildTypeCheckingConfig(angularCompilerOptions, enableTemplateTypeCheckerArg);
     const optionDiagnostics = verifyCompilerOptions(angularCompilerOptions ?? {});
+
+    const isClosureCompilerEnabled =
+      angularCompilerOptions?.annotateForClosureCompiler === true ||
+      angularCompilerOptions?.tsickle === true;
+
+    const emitDeclarationOnly =
+      angularCompilerOptions?.emitDeclarationOnly === true &&
+      angularCompilerOptions?._experimentalAllowEmitDeclarationOnly === true;
+
+    const onlyPublishPublicTypingsForNgModules =
+      angularCompilerOptions?.onlyPublishPublicTypingsForNgModules === true;
+
+    const workspaceName = angularCompilerOptions?.workspaceName || undefined;
+    const rootDirs = angularCompilerOptions?.rootDirs;
+    const enableHmr = angularCompilerOptions?._enableHmr;
+
     const compiler = new HybridCompiler(innerAnalyzer, {
       optimize,
       // Where `writeDiagnosticsFile` writes the `.ngdiag.json` file; nothing is written without it.

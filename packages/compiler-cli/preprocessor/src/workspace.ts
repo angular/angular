@@ -8,8 +8,6 @@
 
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
-import {readConfiguration} from '@angular/compiler-cli';
-import type {NgpCompilerOptions} from './compiler_options.js';
 
 export interface WorkspaceConfig {
   workspaceRoot: string;
@@ -19,7 +17,6 @@ export interface WorkspaceConfig {
   indexHtml: string | null;
   assets: Array<string | {input: string; glob: string; output?: string}>;
   styles: Array<string | {input: string; bundleName?: string; inject?: boolean}>;
-  angularCompilerOptions?: NgpCompilerOptions;
 }
 
 export function stripJsonComments(json: string): string {
@@ -139,13 +136,6 @@ export async function resolveWorkspaceConfig(targetPath: string): Promise<Worksp
   }
 
   const absTsConfig = path.resolve(workspaceRoot, options.tsConfig);
-  let angularCompilerOptions: NgpCompilerOptions = {};
-  try {
-    const parsedConfig = readConfiguration(absTsConfig);
-    angularCompilerOptions = parsedConfig.options;
-  } catch (e) {
-    console.warn(`Warning: Failed to read tsconfig options at ${absTsConfig}`, e);
-  }
 
   return {
     workspaceRoot,
@@ -155,6 +145,5 @@ export async function resolveWorkspaceConfig(targetPath: string): Promise<Worksp
     indexHtml: indexHtml ? path.resolve(workspaceRoot, indexHtml) : null,
     assets: options.assets || [],
     styles: options.styles || [],
-    angularCompilerOptions,
   };
 }
