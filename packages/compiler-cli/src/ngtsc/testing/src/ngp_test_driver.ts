@@ -28,6 +28,8 @@ import {
 } from '../../../../preprocessor/api';
 import {createRequire} from 'node:module';
 import {exitCodeFromResult} from '../../../perform_compile';
+import {verifySupportedTypeScriptVersion} from '../../../typescript_support';
+import {UNKNOWN_ERROR_CODE} from '../../../transformers/api';
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
 import {AbsoluteFsPath, FileSystem} from '../../file_system';
 import {ClassDeclaration, DeclarationNode} from '../../reflection';
@@ -568,6 +570,23 @@ export function performNgpCompilationSync(params: {
   const tsProgram = ts.createProgram(programRootNames, options, overlayHost);
 
   const allDiagnostics: ts.Diagnostic[] = [];
+  // `NgtscProgram` verifies the TypeScript version in its constructor and `performCompilation`
+  // surfaces the thrown error as an `UNKNOWN_ERROR_CODE` diagnostic. Mirror that here.
+  if (!options.disableTypeScriptVersionCheck) {
+    try {
+      verifySupportedTypeScriptVersion();
+    } catch (e) {
+      allDiagnostics.push({
+        category: ts.DiagnosticCategory.Error,
+        messageText: (e as Error).message,
+        code: UNKNOWN_ERROR_CODE,
+        source: 'angular',
+        file: undefined,
+        start: undefined,
+        length: undefined,
+      });
+    }
+  }
   for (const thrown of processorThrownErrors) {
     const origSf = getOriginalSourceFile(thrown.fsFilePath);
     allDiagnostics.push({
