@@ -12,7 +12,7 @@ import {
   EmitterVisitorContext,
   ParseSourceSpan,
 } from '@angular/compiler';
-import {validateAndRewriteCoreSymbol} from '@angular/compiler-cli/private/hybrid_analysis';
+import {validateAndRewriteCoreSymbol} from '@angular/compiler-cli/private/hybrid_preprocessor';
 import type {SpanMetadata} from './types.js';
 
 /** A location in a source file that some printed text originates from. */

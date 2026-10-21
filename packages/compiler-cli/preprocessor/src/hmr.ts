@@ -12,7 +12,7 @@ import {
   PotentialTopLevelReadsVisitor,
   type HmrCompiledOutput,
   type HmrReadResolver,
-} from '@angular/compiler-cli/private/hybrid_analysis';
+} from '@angular/compiler-cli/private/hybrid_preprocessor';
 import {ExpressionPrinter, RawSource} from './output_ast_printer.js';
 import * as nga from './types.js';
 
