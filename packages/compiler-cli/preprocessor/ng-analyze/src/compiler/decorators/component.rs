@@ -100,16 +100,21 @@ async fn resolve_host_directives_for_class<Fs: ResourceResolverFs + Clone + 'sta
     Some(resolved)
 }
 
-/// Resolve one `hostDirectives` entry written in `declaring_file_path`, including the host
-/// directives it declares in turn.
-async fn resolve_host_directive<Fs: ResourceResolverFs + Clone + 'static>(
+/// The class a `hostDirectives` entry names, looked up in its declaring file.
+struct HostDirectiveClass {
+    decl: crate::evaluator::cross_file::DeclaredSymbol,
+    decl_file_id: crate::query::FileId,
+    symbol_name: String,
+    class_info: Option<crate::ClassInfo>,
+}
+
+/// Chase a `hostDirectives` entry written in `declaring_file_path` to its declaration. `None`
+/// when the symbol itself cannot be resolved (e.g. a package without typings).
+async fn resolve_host_directive_class<Fs: ResourceResolverFs + Clone + 'static>(
     ctx: &QueryCtx<Fs>,
     hd: &crate::types::analysis::HostDirectiveEntry,
     declaring_file_path: &Path,
-    consumer_file: crate::query::FileId,
-    consumer_path: &Path,
-    ancestors: &mut Vec<ReferenceId>,
-) -> Option<ResolvedHostDirective> {
+) -> Option<HostDirectiveClass> {
     let declaring_file_id = ctx.engine.intern_path(declaring_file_path);
     let specifier = hd.directive.specifier_for(
         declaring_file_id,
@@ -143,8 +148,33 @@ async fn resolve_host_directive<Fs: ResourceResolverFs + Clone + 'static>(
             .symbol_name(decl.symbol_id)
             .to_string()
     };
+    let class_info = evaluated.class_index.get(&symbol_name).cloned();
 
-    let hd_class_info = evaluated.class_index.get(&symbol_name)?.clone();
+    Some(HostDirectiveClass {
+        decl,
+        decl_file_id,
+        symbol_name,
+        class_info,
+    })
+}
+
+/// Resolve one `hostDirectives` entry written in `declaring_file_path`, including the host
+/// directives it declares in turn.
+async fn resolve_host_directive<Fs: ResourceResolverFs + Clone + 'static>(
+    ctx: &QueryCtx<Fs>,
+    hd: &crate::types::analysis::HostDirectiveEntry,
+    declaring_file_path: &Path,
+    consumer_file: crate::query::FileId,
+    consumer_path: &Path,
+    ancestors: &mut Vec<ReferenceId>,
+) -> Option<ResolvedHostDirective> {
+    let HostDirectiveClass {
+        decl,
+        decl_file_id,
+        symbol_name,
+        class_info,
+    } = resolve_host_directive_class(ctx, hd, declaring_file_path).await?;
+    let hd_class_info = class_info?;
     if ancestors.contains(&hd_class_info.reference_id) {
         return None;
     }
@@ -177,6 +207,200 @@ async fn resolve_host_directive<Fs: ResourceResolverFs + Clone + 'static>(
     })
 }
 
+struct HostBinding {
+    class_property_name: String,
+    public_name: String,
+    required: bool,
+}
+
+fn host_bindings(info: &crate::ClassInfo, kind: &str) -> Vec<HostBinding> {
+    info.fields
+        .iter()
+        .flatten()
+        .filter(|field| field.kind == kind)
+        .filter_map(|field| match kind {
+            "input" => field.input.as_ref().map(|input| HostBinding {
+                class_property_name: input.name.clone(),
+                public_name: input.alias.clone().unwrap_or_else(|| input.name.clone()),
+                required: input.required,
+            }),
+            _ => field.output.as_ref().map(|output| HostBinding {
+                class_property_name: output.name.clone(),
+                public_name: output.alias.clone().unwrap_or_else(|| output.name.clone()),
+                required: false,
+            }),
+        })
+        .collect()
+}
+
+fn validate_host_directive_mappings(
+    kind: &str,
+    mappings: Option<&[crate::types::metadata::HostDirectiveBinding]>,
+    existing: &[HostBinding],
+    class_name: &str,
+    push: &mut dyn FnMut(u32, String),
+) {
+    let required: Vec<&HostBinding> = existing.iter().filter(|b| b.required).collect();
+    let mut exposed_required = std::collections::HashSet::new();
+
+    for mapping in mappings.into_iter().flatten() {
+        let public_name = &mapping.public_name;
+        let remapped = &mapping.binding_name;
+        let bindings: Vec<&HostBinding> = existing
+            .iter()
+            .filter(|b| &b.public_name == public_name)
+            .collect();
+        if bindings.is_empty() {
+            push(
+                2017, // HOST_DIRECTIVE_UNDEFINED_BINDING
+                format!(
+                    "Directive {class_name} does not have an {kind} with a public name of {public_name}."
+                ),
+            );
+        } else {
+            for binding in bindings {
+                if required
+                    .iter()
+                    .any(|r| r.class_property_name == binding.class_property_name)
+                {
+                    exposed_required.insert(binding.class_property_name.clone());
+                }
+            }
+        }
+
+        if remapped != public_name {
+            for _ in existing.iter().filter(|b| &b.public_name == remapped) {
+                push(
+                    2018, // HOST_DIRECTIVE_CONFLICTING_ALIAS
+                    format!(
+                        "Cannot alias {kind} {public_name} of host directive {class_name} to {remapped}, \
+                         because it already has a different {kind} with the same public name."
+                    ),
+                );
+            }
+        }
+    }
+
+    if !required.is_empty() && required.len() != exposed_required.len() {
+        let missing: Vec<String> = required
+            .iter()
+            .filter(|r| !exposed_required.contains(&r.class_property_name))
+            .map(|r| format!("'{}'", r.public_name))
+            .collect();
+        push(
+            2019, // HOST_DIRECTIVE_MISSING_REQUIRED_BINDING
+            format!(
+                "Required {kind}{} {} from host directive {class_name} must be exposed.",
+                if missing.len() == 1 { "" } else { "s" },
+                missing.join(", ")
+            ),
+        );
+    }
+}
+
+// TODO(parity): ngtsc poisons the class when any of these fire, suppressing its emit.
+async fn validate_own_host_directives<Fs: ResourceResolverFs + Clone + 'static>(
+    ctx: &QueryCtx<Fs>,
+    file_path: &Path,
+    reference_id: ReferenceId,
+    directive: &DirectiveData,
+) -> Vec<crate::NgDiagnostic> {
+    let mut diagnostics = Vec::new();
+    let (Some(entries), Some(container)) = (
+        directive
+            .host_directives
+            .as_ref()
+            .and_then(crate::evaluator::Resolved::get_optional),
+        directive.host_directives_span,
+    ) else {
+        return diagnostics;
+    };
+    if entries.is_empty() {
+        return diagnostics;
+    }
+
+    let syntax = ctx.analyze_file_syntax(reference_id.file).await;
+    let file_path_text = file_path.to_string_lossy().into_owned();
+
+    for entry in &entries {
+        let span = entry
+            .origin_identifiers
+            .iter()
+            .find(|id| id.start >= container.start && id.end <= container.end)
+            .copied()
+            .unwrap_or(container);
+        let span = crate::types::metadata::SpanMetadata::new(span, &syntax.converter);
+        let mut push = |code: u32, message: String| {
+            diagnostics.push(crate::NgDiagnostic::error(
+                code,
+                file_path_text.clone(),
+                span,
+                message,
+            ));
+        };
+
+        let Some(resolved) = resolve_host_directive_class(ctx, entry, file_path).await else {
+            continue;
+        };
+        let Some(class_info) = resolved.class_info else {
+            push(
+                2013, // HOST_DIRECTIVE_INVALID
+                format!(
+                    "{} must be a standalone directive to be used as a host directive",
+                    resolved.symbol_name
+                ),
+            );
+            continue;
+        };
+        if !matches!(
+            class_info.class_type,
+            ClassType::Directive | ClassType::Component
+        ) {
+            push(
+                2013, // HOST_DIRECTIVE_INVALID
+                format!(
+                    "{} must be a standalone directive to be used as a host directive",
+                    class_info.class_name
+                ),
+            );
+            continue;
+        }
+
+        let host_meta = flatten_class_info(class_info, ctx).await;
+        let class_name = host_meta.class_name.clone();
+        let is_dts = crate::utils::is_dts(&ctx.engine.lookup_path(resolved.decl_file_id));
+        if !crate::query::module_scope::is_standalone_class(&host_meta, is_dts) {
+            push(
+                2014, // HOST_DIRECTIVE_NOT_STANDALONE
+                format!("Host directive {class_name} must be standalone"),
+            );
+        }
+        if host_meta.class_type == ClassType::Component {
+            push(
+                2015, // HOST_DIRECTIVE_COMPONENT
+                format!("Host directive {class_name} cannot be a component"),
+            );
+        }
+
+        validate_host_directive_mappings(
+            "input",
+            entry.inputs.as_deref(),
+            &host_bindings(&host_meta, "input"),
+            &class_name,
+            &mut push,
+        );
+        validate_host_directive_mappings(
+            "output",
+            entry.outputs.as_deref(),
+            &host_bindings(&host_meta, "output"),
+            &class_name,
+            &mut push,
+        );
+    }
+
+    diagnostics
+}
+
 /// Resolve the `hostDirectives` a class declares on itself, in its own file's frame — what
 /// ngtsc's `TypeCheckScopeRegistry` puts in `directivesOnHost` ahead of the class itself when
 /// type-checking its host bindings. Shared by components and directives.
@@ -199,7 +423,8 @@ async fn resolve_own_host_directives<Fs: ResourceResolverFs + Clone + 'static>(
 }
 
 /// Stage 2 for a directive: resolve its own `hostDirectives` for the host binding type-check
-/// block. The directive's template scope does not exist, so this is all it needs cross-file.
+/// block, and validate them. The directive's template scope does not exist, so this is all it
+/// needs cross-file.
 pub async fn optimize_directive<Fs: ResourceResolverFs + Clone + 'static>(
     ctx: &QueryCtx<Fs>,
     file_path: &Path,
@@ -209,6 +434,8 @@ pub async fn optimize_directive<Fs: ResourceResolverFs + Clone + 'static>(
 ) {
     directive.resolved_host_directives =
         resolve_own_host_directives(ctx, file_path, reference_id, class_name).await;
+    directive.host_directive_diagnostics =
+        validate_own_host_directives(ctx, file_path, reference_id, directive).await;
 }
 
 /// Resolve the `hostDirectives` of a scope entry, looking its class up in its declaring file.
@@ -837,6 +1064,8 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
     // (ngtsc's `directivesOnHost`). Like any host directive they stay out of its template scope.
     component.resolved_host_directives =
         resolve_own_host_directives(ctx, file_path, reference_id, class_name).await;
+    component.directive.host_directive_diagnostics =
+        validate_own_host_directives(ctx, file_path, reference_id, &component.directive).await;
 
     if let Some(ref mut decls) = component.resolved_declarations {
         DeclarationData::deduplicate(decls);

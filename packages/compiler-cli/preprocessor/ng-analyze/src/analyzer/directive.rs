@@ -158,6 +158,7 @@ pub fn extract_directive_metadata<'a>(
                     evaluate_expression(&p.value, eval),
                     eval.file,
                 ));
+                data.host_directives_span = Some(p.value.span());
             }
             "providers" => {
                 data.providers_span = Some(p.value.span());

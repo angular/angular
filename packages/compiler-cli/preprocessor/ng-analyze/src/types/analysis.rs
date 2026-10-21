@@ -55,6 +55,7 @@ pub struct HostDirectiveEntry {
     pub is_forward_ref: bool,
     pub inputs: Option<Vec<crate::types::metadata::HostDirectiveBinding>>,
     pub outputs: Option<Vec<crate::types::metadata::HostDirectiveBinding>>,
+    pub origin_identifiers: Vec<oxc_span::Span>,
 }
 
 impl HostDirectiveEntry {

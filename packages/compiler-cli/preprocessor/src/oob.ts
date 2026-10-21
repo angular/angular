@@ -211,32 +211,11 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
   ) {
     const aliasString = inputAliases.map((n) => `'${n}'`).join(', ');
     const type = isComponent ? 'component' : 'directive';
-    let name: string | null;
-    let span: ParseSourceSpan;
-
-    if (element instanceof TmplAstElement || element instanceof TmplAstDirective) {
-      name = element.name;
-    } else if (element instanceof TmplAstComponent) {
-      name = element.componentName;
-    } else {
-      name = null;
-    }
-
-    if (name === null) {
-      span = element.startSourceSpan;
-    } else {
-      // Only highlight the tag name since highlighting the entire start tag can be noisy.
-      const start = element.startSourceSpan.start.moveBy(1);
-      const end = element.startSourceSpan.end.moveBy(
-        start.offset + name.length - element.startSourceSpan.end.offset,
-      );
-      span = new ParseSourceSpan(start, end);
-    }
 
     this.pushDiagnostic(
       id,
       `Required input${inputAliases.length === 1 ? '' : 's'} ${aliasString} from ${type} ${directiveName} must be specified.`,
-      span,
+      this.getTagNameSpan(element),
       OutOfBandDiagnosticCategory.Error,
       8008,
     );
@@ -458,6 +437,45 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     classPropertyName: string,
     aliases: string[],
   ): void {
-    // TODO(parity): report ngtsc's CONFLICTING_HOST_DIRECTIVE_BINDING (-8024) diagnostic.
+    const message =
+      `${kind === 'input' ? 'Input' : 'Output'} declared in ${directiveName}.${classPropertyName} ` +
+      `is exposed under the following conflicting names: ${aliases.map((a) => `"${a}"`).join(', ')}. ` +
+      `An ${kind} can only be exposed under a single name.`;
+
+    this.pushDiagnostic(
+      id,
+      message,
+      this.getTagNameSpan(node),
+      OutOfBandDiagnosticCategory.Error,
+      8024, // CONFLICTING_HOST_DIRECTIVE_BINDING
+    );
+  }
+
+  /**
+   * Span covering only the tag name of a node, since highlighting the entire start tag can be
+   * noisy. Falls back to the whole start tag for nodes without a name (e.g. `<ng-template>`).
+   */
+  private getTagNameSpan(
+    node: TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
+  ): ParseSourceSpan {
+    let name: string | null;
+
+    if (node instanceof TmplAstElement || node instanceof TmplAstDirective) {
+      name = node.name;
+    } else if (node instanceof TmplAstComponent) {
+      name = node.componentName;
+    } else {
+      name = null;
+    }
+
+    if (name === null) {
+      return node.startSourceSpan;
+    }
+
+    const start = node.startSourceSpan.start.moveBy(1);
+    const end = node.startSourceSpan.end.moveBy(
+      start.offset + name.length - node.startSourceSpan.end.offset,
+    );
+    return new ParseSourceSpan(start, end);
   }
 }

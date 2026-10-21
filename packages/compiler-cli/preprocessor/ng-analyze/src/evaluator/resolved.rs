@@ -506,6 +506,61 @@ fn collect_references(
     }
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum HostDirectivesShapeError {
+    /// The value is not an array.
+    NotArray,
+    /// An entry (or its `directive` property) is not a reference to a declaration.
+    NotReference,
+    /// An entry references a declaration that is not a class.
+    NotClass,
+}
+
+impl HostDirectivesShapeError {
+    pub fn message(self) -> &'static str {
+        match self {
+            Self::NotArray => "hostDirectives must be an array",
+            Self::NotReference => "Host directive must be a reference",
+            Self::NotClass => "Host directive reference must be a class",
+        }
+    }
+}
+
+/// Check a fully evaluated `hostDirectives` value against the shape ngtsc requires. Callers
+/// must only invoke this once no `Incomplete` hole remains (Stage 2), since an unresolved
+/// import is a legitimate reference that merely hasn't been chased yet.
+pub fn host_directives_shape_error(value: &ResolvedValue) -> Option<HostDirectivesShapeError> {
+    let ResolvedValue::Array(items) = value.unwrap_named() else {
+        return Some(HostDirectivesShapeError::NotArray);
+    };
+    for item in items {
+        let directive_value = match item.unwrap_named() {
+            ResolvedValue::Map(map) => map.get("directive"),
+            other => Some(other),
+        };
+        match directive_value.map(ResolvedValue::unwrap_named) {
+            Some(ResolvedValue::Reference(reference)) => {
+                if reference.kind != crate::evaluator::value::DeclKind::Class
+                    || reference.member.is_some()
+                {
+                    return Some(HostDirectivesShapeError::NotClass);
+                }
+            }
+            // An import that could not be resolved is still a reference as far as the shape
+            // check is concerned; ngtsc has the same blind spot since the reference resolves to
+            // whatever the `.d.ts` declares.
+            Some(ResolvedValue::Dynamic(dynamic))
+                if matches!(
+                    dynamic.reason,
+                    crate::evaluator::value::DynamicReason::UnresolvedImport(_)
+                ) => {}
+            Some(ResolvedValue::Incomplete(hole)) if hole.transparent => {}
+            _ => return Some(HostDirectivesShapeError::NotReference),
+        }
+    }
+    None
+}
+
 /// Destructure an evaluated `hostDirectives` array into entries (`extractHostDirectives` in ngtsc `shared.ts`).
 impl FromResolved for Vec<crate::types::analysis::HostDirectiveEntry> {
     fn from_value(value: &ResolvedValue, origin: crate::query::FileId) -> Option<Self> {
@@ -515,7 +570,8 @@ impl FromResolved for Vec<crate::types::analysis::HostDirectiveEntry> {
         let mut entries = Vec::with_capacity(items.len());
         for item in items {
             let Some(entry) = host_directive_entry(item, origin) else {
-                // Defer to Stage 2 if any hole remains; otherwise skip invalid entries.
+                // Defer to Stage 2 if any hole remains; otherwise skip invalid entries
+                // (`host_directives_shape_error` reports them).
                 if value.contains_incomplete() {
                     return None;
                 }
@@ -551,29 +607,41 @@ fn host_directive_entry(
         _ => (value, None, None),
     };
 
-    let (directive, is_forward_ref) = host_directive_reference(directive_value, origin)?;
+    let (directive, is_forward_ref, origin_identifiers) =
+        host_directive_reference(directive_value, origin)?;
     Some(crate::types::analysis::HostDirectiveEntry {
         directive,
         is_forward_ref,
         inputs,
         outputs,
+        origin_identifiers,
     })
 }
 
-/// Extract the host directive class reference and `isForwardReference` flag.
+/// Extract the host directive class reference, `isForwardReference` flag, and the identifier
+/// spans in `origin` that led to it.
 fn host_directive_reference(
     value: &ResolvedValue,
     origin: crate::query::FileId,
-) -> Option<(crate::types::analysis::Reference, bool)> {
+) -> Option<(crate::types::analysis::Reference, bool, Vec<oxc_span::Span>)> {
+    let identifiers_in = |identifiers: &[(crate::query::FileId, oxc_span::Span)]| {
+        identifiers
+            .iter()
+            .filter(|(file, _)| *file == origin)
+            .map(|(_, span)| *span)
+            .collect::<Vec<_>>()
+    };
     match value.unwrap_named() {
         ResolvedValue::Reference(reference) => Some((
             crate::types::analysis::Reference::from_value_reference(reference),
             reference.synthetic,
+            identifiers_in(&reference.identifiers),
         )),
         ResolvedValue::Incomplete(hole) if hole.transparent => match &hole.dep {
             crate::evaluator::value::IncompleteDep::Reference(target) => Some((
                 reference_from_import_hole(hole.file, target, origin),
                 hole.synthetic,
+                identifiers_in(&hole.identifiers),
             )),
             _ => None,
         },
@@ -581,7 +649,16 @@ fn host_directive_reference(
             let crate::evaluator::value::DynamicReason::UnresolvedImport(target) = &d.reason else {
                 return None;
             };
-            Some((reference_from_import_hole(d.file, target, origin), false))
+            let identifiers = if d.file == origin {
+                vec![d.span]
+            } else {
+                Vec::new()
+            };
+            Some((
+                reference_from_import_hole(d.file, target, origin),
+                false,
+                identifiers,
+            ))
         }
         _ => None,
     }

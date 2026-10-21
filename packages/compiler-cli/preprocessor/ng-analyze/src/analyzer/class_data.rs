@@ -269,11 +269,13 @@ pub struct DirectiveData {
     /// The `hostDirectives` expression, partially evaluated. Kept as a `Resolved` so
     /// Stage 2 can chase cross-file arrays and aliases before it is projected onto the wire.
     pub host_directives: Option<Resolved<Vec<HostDirectiveEntry>>>,
+    pub host_directives_span: Option<oxc_span::Span>,
     /// The directive's own `hostDirectives`, resolved in stage 2 — what ngtsc's
     /// `TypeCheckScopeRegistry` puts in `directivesOnHost` ahead of the directive itself when
     /// type-checking its host bindings. Components keep theirs on
     /// [`ComponentData::resolved_host_directives`].
     pub resolved_host_directives: Option<Vec<ResolvedHostDirective>>,
+    pub host_directive_diagnostics: Vec<crate::NgDiagnostic>,
     pub providers_span: Option<oxc_span::Span>,
     /// `providers` as the partial evaluator sees it, for the undecorated-provider check only
     /// (the field itself is emitted verbatim from `providers_span`).
@@ -462,7 +464,9 @@ impl Default for DirectiveData {
             host_span: None,
             host_properties: Vec::new(),
             host_directives: None,
+            host_directives_span: None,
             resolved_host_directives: None,
+            host_directive_diagnostics: Vec::new(),
             providers_span: None,
             providers: None,
             args_span: None,
@@ -1977,6 +1981,13 @@ impl ClassData {
         match &self.decorator {
             DecoratorData::Component(c) => {
                 self.validate_directive(&c.directive, false, file_path, converter, diagnostics);
+                self.validate_host_directives(
+                    &c.directive,
+                    cx.mode,
+                    file_path,
+                    converter,
+                    diagnostics,
+                );
                 self.validate_component(c, cx.mode, file_path, converter, diagnostics);
                 self.validate_unique_declaration(
                     "Component",
@@ -1989,6 +2000,7 @@ impl ClassData {
             }
             DecoratorData::Directive(d) => {
                 self.validate_directive(d, true, file_path, converter, diagnostics);
+                self.validate_host_directives(d, cx.mode, file_path, converter, diagnostics);
                 self.validate_declared_directive_selector(
                     d,
                     cx.mode,
@@ -2422,6 +2434,39 @@ impl ClassData {
                 }
             }
         }
+    }
+
+    fn validate_host_directives(
+        &self,
+        d: &DirectiveData,
+        mode: WireMode,
+        file_path: &std::path::Path,
+        converter: &crate::utils::Utf8ToUtf16,
+        diagnostics: &mut Vec<crate::NgDiagnostic>,
+    ) {
+        if mode != WireMode::Semantic {
+            return;
+        }
+        if let (Some(host_directives), Some(span)) = (&d.host_directives, d.host_directives_span) {
+            // A lingering hole means the value was never completed (e.g. a poisoned file);
+            // its entries can't be judged either way.
+            if !host_directives.contains_incomplete() {
+                if let Some(error) =
+                    crate::evaluator::host_directives_shape_error(host_directives.raw())
+                {
+                    push_error(
+                        diagnostics,
+                        file_path,
+                        converter,
+                        "1010",
+                        span,
+                        error.message().to_string(),
+                    );
+                    return;
+                }
+            }
+        }
+        diagnostics.extend(d.host_directive_diagnostics.iter().cloned());
     }
 
     fn validate_component(
