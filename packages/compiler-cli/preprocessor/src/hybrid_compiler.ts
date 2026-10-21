@@ -19,12 +19,7 @@ import * as path from 'path';
 import {makeClassKey} from './compiler-utils.js';
 import {DependencyTemplates} from './dependency_templates.js';
 import {flattenNgDiagnosticMessage, withErrorGuide} from './diagnostic.js';
-import {
-  ChunkContext,
-  FileAnalysis,
-  ParsedComponentTemplate,
-  getOrCreateFileAnalysis,
-} from './file_analysis.js';
+import {ChunkContext, FileAnalysis, getOrCreateFileAnalysis} from './file_analysis.js';
 import {IndexedComponent} from './indexer_api.js';
 import {getIndexedComponents, getIndexedComponentsSync} from './indexing/indexer.js';
 import {buildTcbTargets, processFile, processFileSync, type ProcessedFile} from './processor.js';
@@ -655,11 +650,7 @@ export class HybridCompiler {
     content: string,
     dependencyTemplates: DependencyTemplates,
   ): FileAnalysis {
-    let templatesByClass = fileAnalysis.parsedTemplates;
-    if (!templatesByClass) {
-      templatesByClass = new Map<string, ParsedComponentTemplate>();
-      fileAnalysis.parsedTemplates = templatesByClass;
-    }
+    const templatesByClass = fileAnalysis.parsedTemplates;
 
     const tcbTargets = buildTcbTargets(
       filePath,
@@ -728,7 +719,7 @@ export class HybridCompiler {
   }
 
   getParsedTemplate(filePath: string, classKey: string): any | null {
-    const parsed = this.ensureBoundSync(filePath).parsedTemplates?.get(classKey);
+    const parsed = this.ensureBoundSync(filePath).parsedTemplates.get(classKey);
     return parsed ? {...parsed, nodes: parsed.diagNodes} : null;
   }
 

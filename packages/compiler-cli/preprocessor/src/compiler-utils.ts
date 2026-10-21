@@ -657,6 +657,31 @@ export function parseComponentTemplate(
   return {...parsed, diagNodes};
 }
 
+/**
+ * The parsed template of `component` from `templatesByClass` (a `FileAnalysis.parsedTemplates`),
+ * parsing and caching it on first use. Every consumer of a template in a file goes through this,
+ * so that it is parsed once whichever of them gets to it first.
+ */
+export function getOrParseComponentTemplate(
+  templatesByClass: Map<string, ParsedComponentTemplate>,
+  classMeta: nga.ClassMetadata,
+  component: nga.ComponentMetadata,
+  filePath: string,
+  content: string,
+  options?: Partial<ParseTemplateOptions>,
+): ParsedComponentTemplate {
+  const classKey = makeClassKey(classMeta.className, classMeta.span.start);
+  let parsed = templatesByClass.get(classKey);
+  if (parsed === undefined) {
+    parsed = {
+      ...parseComponentTemplate(component, filePath, content, options),
+      classNameStart: classMeta.nameSpan?.start,
+    };
+    templatesByClass.set(classKey, parsed);
+  }
+  return parsed;
+}
+
 export function metadataToDeclaration(
   meta: nga.ComponentMetadata | nga.DirectiveMetadata,
   classMeta: nga.ClassMetadata,

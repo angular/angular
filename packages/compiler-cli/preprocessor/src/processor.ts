@@ -63,9 +63,9 @@ import {
   createDummySourceSpan,
   createEmptySourceSpan,
   createForeignComponentMatcher,
+  getOrParseComponentTemplate,
   makeClassKey,
   metadataToDeclaration,
-  parseComponentTemplate,
   refName,
   refToExpression,
   refToTypeExpression,
@@ -202,12 +202,14 @@ export function buildTcbTargets(
       }
 
       // 1. Parse template (or reuse if already parsed in processFile)
-      const classKey = makeClassKey(cls.className, cls.span.start);
-      let parsed = templatesByClass.get(classKey);
-      if (!parsed) {
-        parsed = parseComponentTemplate(component, filePath, content, options);
-        templatesByClass.set(classKey, parsed);
-      }
+      const parsed = getOrParseComponentTemplate(
+        templatesByClass,
+        cls,
+        component,
+        filePath,
+        content,
+        options,
+      );
 
       const parsedSchemas: SchemaMetadata[] = [];
       if (component.schemas) {
@@ -318,25 +320,18 @@ export async function processFile(
   if (!result) {
     return unprocessedFile(new MagicString(content));
   }
-  const fileAnalysis = getOrCreateFileAnalysis(rawCtx.fileCache, filePath);
-  if (!fileAnalysis.parsedTemplates) {
-    fileAnalysis.parsedTemplates = new Map<string, ParsedComponentTemplate>();
-  }
-  const templatesByClass = fileAnalysis.parsedTemplates;
+  const {parsedTemplates: templatesByClass} = getOrCreateFileAnalysis(rawCtx.fileCache, filePath);
   const resourceMap = new Map<string, nga.ResolvedResource | null>();
   for (const classMeta of result.classes) {
     if (!classMeta.component || !classMeta.className) continue;
-    const classKey = makeClassKey(classMeta.className, classMeta.span.start);
-    let parsed = templatesByClass.get(classKey);
-    if (!parsed) {
-      parsed = parseComponentTemplate(
-        classMeta.component,
-        filePath,
-        content,
-        rawCtx.templateParseOptions,
-      );
-      templatesByClass.set(classKey, parsed);
-    }
+    const parsed = getOrParseComponentTemplate(
+      templatesByClass,
+      classMeta,
+      classMeta.component,
+      filePath,
+      content,
+      rawCtx.templateParseOptions,
+    );
     for (const styleUrl of parsed.styleUrls) {
       if (!resourceMap.has(styleUrl)) {
         const resource = await rawCtx.analyzer.readResource(filePath, styleUrl);
@@ -345,12 +340,16 @@ export async function processFile(
     }
   }
   // Templates of dependencies declared in other files are needed to bind this file's
-  // templates; read them here, where the analyzer can be awaited.
-  await new DependencyTemplates(
-    rawCtx.analyzer,
-    rawCtx.fileCache,
-    rawCtx.templateParseOptions,
-  ).prefetch(result);
+  // templates for type-checking; read them here, where the analyzer can be awaited. The
+  // condition mirrors when `processFileSync` builds the TCB targets.
+  if (rawCtx.optimize && !rawCtx.emitDeclarationOnly) {
+    await new DependencyTemplates(
+      rawCtx.analyzer,
+      rawCtx.fileCache,
+      rawCtx.templateParseOptions,
+      chunkContext?.metadataMap || rawCtx.metadataMap,
+    ).prefetch(result);
+  }
   return processFileSync(rawCtx, filePath, content, resourceMap, result, chunkContext);
 }
 
@@ -404,12 +403,7 @@ export function processFileSync(
     }
   }
 
-  let fileAnalysis = getOrCreateFileAnalysis(ctx.fileCache, filePath);
-  let templatesByClass = fileAnalysis.parsedTemplates;
-  if (!templatesByClass) {
-    templatesByClass = new Map<string, ParsedComponentTemplate>();
-    fileAnalysis.parsedTemplates = templatesByClass;
-  }
+  const {parsedTemplates: templatesByClass} = getOrCreateFileAnalysis(ctx.fileCache, filePath);
 
   // Shared pool for all components and directives in the file.
   // This mirrors Angular's behavior:
@@ -655,12 +649,14 @@ export function processFileSync(
       }
 
       // 1. Parse template (or reuse if already parsed)
-      const classKey = makeClassKey(classMeta.className, classMeta.span.start);
-      let parsed = templatesByClass.get(classKey);
-      if (!parsed) {
-        parsed = parseComponentTemplate(component, filePath, content, ctx.templateParseOptions);
-        templatesByClass.set(classKey, parsed);
-      }
+      const parsed = getOrParseComponentTemplate(
+        templatesByClass,
+        classMeta,
+        component,
+        filePath,
+        content,
+        ctx.templateParseOptions,
+      );
 
       if (parsed.errors && parsed.errors.length > 0) {
         for (const error of parsed.errors) {

@@ -8,7 +8,7 @@
 
 import type {ParseTemplateOptions} from '@angular/compiler';
 
-import {makeClassKey, parseComponentTemplate} from './compiler-utils.js';
+import {getOrParseComponentTemplate} from './compiler-utils.js';
 import {
   getOrCreateFileAnalysis,
   type FileAnalysis,
@@ -25,8 +25,21 @@ export interface DependencyTemplateConsumer {
   templatesByClass: Map<string, ParsedComponentTemplate>;
 }
 
-/** Component classes whose template is not parsed yet, grouped by the file declaring them. */
-type MissingTemplates = Map<string, Set<string>>;
+/**
+ * Identifies a class within its declaring file. The name alone is not enough: same-named classes
+ * can be declared in different scopes of one file, which is why `FileAnalysis.parsedTemplates`
+ * is keyed by `makeClassKey(className, span.start)`.
+ */
+interface ClassId {
+  name: string;
+  nameStart: number;
+}
+
+/**
+ * Component classes whose template is not parsed yet, grouped by the file declaring them and
+ * keyed by the start of their name span.
+ */
+type MissingTemplates = Map<string, Map<number, ClassId>>;
 
 /**
  * Fills in template-derived metadata of the components a template depends on.
@@ -69,7 +82,7 @@ export class DependencyTemplates {
   ): nga.DeclarationMetadata[] {
     const missing: MissingTemplates = new Map();
     this.collectMissing(declarations, consumer.filePath, missing);
-    for (const [filePath, classNames] of missing) {
+    for (const [filePath, classIds] of missing) {
       // The sidecar analyzer has no synchronous lookups and throws. Its callers `prefetch` first,
       // so nothing is missing by the time they get here; a dependency that still is gets no
       // selectors rather than failing the whole file.
@@ -78,7 +91,7 @@ export class DependencyTemplates {
         safeLookup(() => this.analyzer.getMetadataForFileSync(filePath));
       const content = metadata && safeLookup(() => this.analyzer.getFileContentSync(filePath));
       if (metadata && content !== null) {
-        this.parseTemplates(filePath, metadata.classes, content, classNames);
+        this.parseTemplates(filePath, metadata.classes, content, classIds.values());
       }
     }
 
@@ -110,13 +123,14 @@ export class DependencyTemplates {
       this.collectMissing(cls.component?.resolvedDeclarations ?? [], consumer.filePath, missing);
     }
     await Promise.all(
-      Array.from(missing, async ([filePath, classNames]) => {
-        const metadata = await this.analyzer.getMetadataForFile(filePath);
-        if (metadata === null) {
+      Array.from(missing, async ([filePath, classIds]) => {
+        const metadata =
+          this.knownMetadata?.get(filePath) ?? (await this.analyzer.getMetadataForFile(filePath));
+        if (metadata == null) {
           return;
         }
         const content = await this.analyzer.getFileContent(filePath);
-        this.parseTemplates(filePath, metadata.classes, content, classNames);
+        this.parseTemplates(filePath, metadata.classes, content, classIds.values());
       }),
     );
   }
@@ -136,28 +150,29 @@ export class DependencyTemplates {
       if (!needsNgContentSelectors(decl) || filePath === consumerPath) {
         continue;
       }
-      if (findParsedTemplate(this.getParsedTemplates(filePath), decl.name) !== null) {
+      const id = classIdOf(decl);
+      if (findParsedTemplate(this.getParsedTemplates(filePath), id) !== null) {
         continue;
       }
-      let classNames = missing.get(filePath);
-      if (classNames === undefined) {
-        classNames = new Set();
-        missing.set(filePath, classNames);
+      let classIds = missing.get(filePath);
+      if (classIds === undefined) {
+        classIds = new Map();
+        missing.set(filePath, classIds);
       }
-      classNames.add(decl.name);
+      classIds.set(id.nameStart, id);
     }
   }
 
-  /** Parses the templates of `classNames` into `filePath`'s cache, if not there already. */
+  /** Parses the templates of `classIds` into `filePath`'s cache, if not there already. */
   private parseTemplates(
     filePath: string,
     classes: nga.ClassMetadata[],
     content: string,
-    classNames: Iterable<string>,
+    classIds: Iterable<ClassId>,
   ): void {
     const templatesByClass = this.getParsedTemplates(filePath);
-    for (const className of classNames) {
-      this.getOrParseTemplate(className, classes, filePath, content, templatesByClass);
+    for (const id of classIds) {
+      this.getOrParseTemplate(id, classes, filePath, content, templatesByClass);
     }
   }
 
@@ -166,46 +181,44 @@ export class DependencyTemplates {
     consumer: DependencyTemplateConsumer,
   ): ParsedComponentTemplate | null {
     const filePath = decl.filePath ?? consumer.filePath;
+    const id = classIdOf(decl);
     if (filePath === consumer.filePath) {
       return this.getOrParseTemplate(
-        decl.name,
+        id,
         consumer.classes,
         consumer.filePath,
         consumer.content,
         consumer.templatesByClass,
       );
     }
-    return findParsedTemplate(this.getParsedTemplates(filePath), decl.name);
+    return findParsedTemplate(this.getParsedTemplates(filePath), id);
   }
 
   private getParsedTemplates(filePath: string): Map<string, ParsedComponentTemplate> {
-    const fileAnalysis = getOrCreateFileAnalysis(this.fileCache, filePath);
-    return (fileAnalysis.parsedTemplates ??= new Map());
+    return getOrCreateFileAnalysis(this.fileCache, filePath).parsedTemplates;
   }
 
   private getOrParseTemplate(
-    className: string,
+    id: ClassId,
     classes: nga.ClassMetadata[],
     filePath: string,
     content: string,
     templatesByClass: Map<string, ParsedComponentTemplate>,
   ): ParsedComponentTemplate | null {
-    const classMeta = classes.find((c) => c.className === className && c.component != null);
+    const classMeta = classes.find(
+      (c) => c.nameSpan?.start === id.nameStart && c.className === id.name && c.component != null,
+    );
     if (classMeta?.component == null) {
       return null;
     }
-    const key = makeClassKey(className, classMeta.span.start);
-    let parsed = templatesByClass.get(key);
-    if (parsed === undefined) {
-      parsed = parseComponentTemplate(
-        classMeta.component,
-        filePath,
-        content,
-        this.templateParseOptions,
-      );
-      templatesByClass.set(key, parsed);
-    }
-    return parsed;
+    return getOrParseComponentTemplate(
+      templatesByClass,
+      classMeta,
+      classMeta.component,
+      filePath,
+      content,
+      this.templateParseOptions,
+    );
   }
 }
 
@@ -213,15 +226,23 @@ function needsNgContentSelectors(decl: nga.DeclarationMetadata): boolean {
   return decl.declarationType === 'component' && decl.ngContentSelectors == null;
 }
 
-/** The cached template of the class named `className`, without needing its class span. */
+function classIdOf(decl: nga.DeclarationMetadata): ClassId {
+  return {name: decl.name, nameStart: decl.nameSpan.start};
+}
+
+/**
+ * The cached template of the class `id`, without needing its class span (which is what the cache
+ * is keyed by, through `makeClassKey(className, span.start)`, but is not known before the
+ * declaring file's metadata is). Entries are matched on the name span start recorded when they
+ * were cached instead.
+ */
 function findParsedTemplate(
   templatesByClass: Map<string, ParsedComponentTemplate>,
-  className: string,
+  id: ClassId,
 ): ParsedComponentTemplate | null {
-  // Keys are `makeClassKey(className, spanStart)`.
-  const prefix = `${className}@`;
+  const prefix = `${id.name}@`;
   for (const [key, parsed] of templatesByClass) {
-    if (key.startsWith(prefix)) {
+    if (key.startsWith(prefix) && parsed.classNameStart === id.nameStart) {
       return parsed;
     }
   }
