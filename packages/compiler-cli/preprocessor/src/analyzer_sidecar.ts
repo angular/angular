@@ -10,18 +10,34 @@ import * as child_process from 'child_process';
 import * as readline from 'readline';
 import type {
   AnalysisResult,
+  AnalyzerOptions,
   FileInvalidation,
+  FileUpdate,
   CompilationChunk,
   ResolvedResource,
   TemplateUsage,
 } from './types.js';
 import type {IAnalyzer} from './hybrid_compiler.js';
 
+interface RpcMethods {
+  initialize: {params: AnalyzerOptions; result: null};
+  analyze: {params: Record<string, never>; result: null};
+  analyze_optimized: {params: Record<string, never>; result: null};
+  analyze_delta: {params: Record<string, never>; result: null};
+  analyze_optimized_delta: {params: Record<string, never>; result: null};
+  getMetadataForFile: {params: {filePath: string}; result: AnalysisResult | null};
+  updateFileContent: {params: FileUpdate[]; result: string[]};
+  invalidateFiles: {params: FileInvalidation[]; result: string[]};
+  getTsFileForTemplate: {params: {templatePath: string}; result: TemplateUsage[] | null};
+  getFileContent: {params: {filePath: string}; result: string};
+  readResource: {params: {containingFile: string; url: string}; result: ResolvedResource | null};
+}
+
 export class SidecarAnalyzer implements IAnalyzer {
   private sidecarProcess: child_process.ChildProcess;
   private pendingRequests = new Map<
     number,
-    {method: string; resolve: (val: any) => void; reject: (err: any) => void}
+    {method: keyof RpcMethods; resolve: (value: unknown) => void; reject: (error: Error) => void}
   >();
   private requestId = 0;
   private resultQueue: CompilationChunk[] = [];
@@ -47,24 +63,28 @@ export class SidecarAnalyzer implements IAnalyzer {
       rl.on('line', (line: string) => {
         if (line.trim() === '') return;
         try {
-          const parsed = JSON.parse(line) as Record<string, any>;
+          const parsed: unknown = JSON.parse(line);
           if (parsed && typeof parsed === 'object') {
-            if ('id' in parsed && parsed['id'] !== undefined && parsed['id'] !== null) {
-              const req = this.pendingRequests.get(parsed['id'] as number);
+            if ('id' in parsed && typeof parsed.id === 'number') {
+              const req = this.pendingRequests.get(parsed.id);
               if (req) {
-                if (parsed['error']) {
-                  req.reject(new Error(parsed['error'] as string));
+                if ('error' in parsed && typeof parsed.error === 'string') {
+                  req.reject(new Error(parsed.error));
+                } else if ('result' in parsed) {
+                  req.resolve(parsed.result);
                 } else {
-                  req.resolve(parsed['result']);
+                  req.reject(new Error(`Invalid response to '${req.method}': missing result`));
                 }
-                this.pendingRequests.delete(parsed['id'] as number);
+                this.pendingRequests.delete(parsed.id);
               }
-            } else if (parsed['method'] === 'analysisResult') {
-              this.handleAnalysisResult(parsed['params'] as CompilationChunk);
-            } else if (parsed['method'] === 'analysisError') {
-              this.handleAnalysisError(parsed['params'] as string);
-            } else if (parsed['method'] === 'analysisComplete') {
-              this.handleAnalysisComplete();
+            } else if ('method' in parsed && 'params' in parsed) {
+              if (parsed.method === 'analysisResult') {
+                this.handleAnalysisResult(parsed.params as CompilationChunk);
+              } else if (parsed.method === 'analysisError' && typeof parsed.params === 'string') {
+                this.handleAnalysisError(parsed.params);
+              } else if (parsed.method === 'analysisComplete') {
+                this.handleAnalysisComplete();
+              }
             }
           }
         } catch (e) {
@@ -150,7 +170,10 @@ export class SidecarAnalyzer implements IAnalyzer {
     }
   }
 
-  private async callRpc<T = any>(method: string, params: any): Promise<T> {
+  private async callRpc<M extends keyof RpcMethods>(
+    method: M,
+    params: RpcMethods[M]['params'],
+  ): Promise<RpcMethods[M]['result']> {
     if (this.terminationReason !== null) {
       throw new Error(`${this.terminationReason}; cannot send '${method}'`);
     }
@@ -160,8 +183,12 @@ export class SidecarAnalyzer implements IAnalyzer {
     const id = ++this.requestId;
     const request = {id, method, params};
 
-    return new Promise((resolve, reject) => {
-      this.pendingRequests.set(id, {method, resolve, reject});
+    return new Promise<RpcMethods[M]['result']>((resolve, reject) => {
+      this.pendingRequests.set(id, {
+        method,
+        resolve: (value) => resolve(value as RpcMethods[M]['result']),
+        reject,
+      });
       this.sidecarProcess.stdin!.write(JSON.stringify(request) + '\n');
     });
   }
@@ -281,7 +308,7 @@ export class SidecarAnalyzer implements IAnalyzer {
   }
 
   async getMetadataForFile(filePath: string): Promise<AnalysisResult | null> {
-    return this.callRpc<AnalysisResult | null>('getMetadataForFile', {filePath});
+    return this.callRpc('getMetadataForFile', {filePath});
   }
 
   async updateFileContent(updates: {filePath: string; content: string}[]): Promise<string[]> {
@@ -301,7 +328,7 @@ export class SidecarAnalyzer implements IAnalyzer {
   }
 
   async readResource(containingFile: string, url: string): Promise<ResolvedResource | null> {
-    return this.callRpc<ResolvedResource | null>('readResource', {containingFile, url});
+    return this.callRpc('readResource', {containingFile, url});
   }
 
   getMetadataForFileSync(filePath: string): AnalysisResult | null {
