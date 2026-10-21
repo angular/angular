@@ -430,8 +430,6 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'ngtsc @defer block block-specific deferredImports type checking should report separate diagnostics for multiple deferred directives on the same element',
   'ngtsc @defer block setClassMetadataAsync should generate setClassMetadataAsync for components with defer blocks',
   'ngtsc @defer block should generate setClassMetadataAsync for default imports',
-  'ngtsc @defer block trigger validation should report if reference-based trigger has no reference and the placeholder is empty',
-  'ngtsc @defer block trigger validation should report if reference-based trigger has no reference and the placeholder with text at the root',
   'ngtsc @defer block trigger validation should report if reference-based trigger has no reference and there is no placeholder block',
   'ngtsc @defer block trigger validation should report if reference-based trigger has no reference and there is no placeholder block but a hydrate trigger exists',
   'ngtsc @defer block trigger validation should report if reference-based trigger has no reference and there is no placeholder block but a hydrate trigger exists and it is also viewport',
