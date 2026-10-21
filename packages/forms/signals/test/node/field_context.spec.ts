@@ -11,13 +11,10 @@ import {TestBed} from '@angular/core/testing';
 import {
   applyEach,
   createMetadataKey,
-  disabled,
   FieldContext,
   form,
-  hidden,
   metadata,
   PathKind,
-  readonly,
   SchemaPath,
   SchemaPathTree,
   validate,
@@ -180,30 +177,18 @@ describe('Field Context', () => {
     });
   });
 
-  it('supports destructured valueOf, stateOf and fieldTreeOf', () => {
-    const model = signal({type: 'a', company: '', notes: ''});
-    const f = form(
-      model,
-      (p) => {
-        disabled(p.company, {when: ({valueOf}) => valueOf(p.type) !== 'a'});
-        hidden(p.notes, {when: ({stateOf}) => stateOf(p.company).disabled()});
-        readonly(p.notes, {when: ({fieldTreeOf}) => fieldTreeOf(p.company)().value() === ''});
-      },
-      {injector: TestBed.inject(Injector)},
-    );
+  it('supports destructuring valueOf, stateOf and fieldTreeOf with void this typing', () => {
+    const cat = signal({name: 'pirojok-the-cat', age: 5});
+    testContext(cat, ({valueOf, stateOf, fieldTreeOf}, p) => {
+      expect(valueOf(p.name)).toEqual('pirojok-the-cat');
+      expect(stateOf(p.name).value()).toEqual('pirojok-the-cat');
+      expect(fieldTreeOf(p.name)().value()).toEqual('pirojok-the-cat');
 
-    expect(f.company().disabled()).toBe(false);
-    expect(f.notes().hidden()).toBe(false);
-    expect(f.notes().readonly()).toBe(true);
-
-    model.update((m) => ({...m, company: 'Acme'}));
-    expect(f.company().disabled()).toBe(false);
-    expect(f.notes().hidden()).toBe(false);
-    expect(f.notes().readonly()).toBe(false);
-
-    model.update((m) => ({...m, type: 'b'}));
-    expect(f.company().disabled()).toBe(true);
-    expect(f.notes().hidden()).toBe(true);
-    expect(f.notes().readonly()).toBe(false);
+      // Fails to compile unless the helpers declare `this: void`, which is what
+      // `@typescript-eslint/unbound-method` relies on to allow destructuring.
+      const _v: void = null as unknown as ThisParameterType<typeof valueOf>;
+      const _s: void = null as unknown as ThisParameterType<typeof stateOf>;
+      const _f: void = null as unknown as ThisParameterType<typeof fieldTreeOf>;
+    });
   });
 });
