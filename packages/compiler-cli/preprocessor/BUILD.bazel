@@ -28,9 +28,7 @@ ts_project(
     deps = [
         "//:node_modules/@types/node",
         "//:node_modules/magic-string",
-        "//:node_modules/typescript",
         "//packages/compiler",
-        "//packages/compiler-cli",
         "//packages/compiler-cli/preprocessor/ng-analyze:wasm",
         "//packages/compiler-cli/private:hybrid_preprocessor",
     ],
