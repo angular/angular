@@ -35,6 +35,7 @@ export declare class Analyzer {
   getMetadataForFile(filePath: string): AnalysisResult | null;
   getFileContent(filePath: string): string;
   canonicalPaths(paths: Array<string>): Array<string>;
+  getCompilerOptions?(): string;
 }
 
 /** Test analyzer that uses virtual filesystem for in-memory testing */
@@ -42,6 +43,7 @@ export declare class TestAnalyzer {
   constructor(options: TestAnalyzerOptions);
   getMetadataForFile(filePath: string): AnalysisResult | null;
   getFileContent(filePath: string): string;
+  getCompilerOptions?(): string;
   getTsFileForTemplate(templatePath: string): Array<TemplateUsage> | null;
   readResource(containingFile: string, url: string): ResolvedResource | null;
   canonicalPaths(paths: Array<string>): Array<string>;
