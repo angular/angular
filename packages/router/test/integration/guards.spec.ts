@@ -2610,6 +2610,133 @@ export function guardsIntegrationSuite() {
         expect(location.path()).toEqual('/b');
       });
 
+      it('should give priority to an earlier guard over a later guard that throws', async () => {
+        const router = TestBed.inject(Router);
+        const location = TestBed.inject(Location);
+        const fixture = await createRoot(router, RootCmp);
+
+        let resolveFirstGuard!: (result: RedirectCommand) => void;
+        router.resetConfig([
+          {
+            path: 'a',
+            canActivate: [
+              () => new Promise<RedirectCommand>((resolve) => (resolveFirstGuard = resolve)),
+              () => {
+                throw new RedirectCommand(router.parseUrl('/upgrade'));
+              },
+            ],
+            component: BlankCmp,
+          },
+          {path: 'login', component: BlankCmp},
+          {path: 'upgrade', component: BlankCmp},
+        ]);
+
+        router.navigateByUrl('/a');
+        await advance(fixture);
+        resolveFirstGuard(new RedirectCommand(router.parseUrl('/login')));
+        await advance(fixture);
+
+        expect(location.path()).toEqual('/login');
+      });
+
+      it('should give priority to an earlier canDeactivate guard over a later guard that throws', async () => {
+        const router = TestBed.inject(Router);
+        const location = TestBed.inject(Location);
+        const fixture = await createRoot(router, RootCmp);
+
+        let resolveFirstGuard!: (result: RedirectCommand) => void;
+        let firstGuardCalls = 0;
+        router.resetConfig([
+          {
+            path: 'a',
+            // Leaving `/a` again for the redirect re-runs these guards, so only the first run blocks or throws.
+            canDeactivate: [
+              () =>
+                firstGuardCalls++ === 0
+                  ? new Promise<RedirectCommand>((resolve) => (resolveFirstGuard = resolve))
+                  : true,
+              (_c: unknown, _route: unknown, _state: unknown, next: RouterStateSnapshot) => {
+                if (next.url === '/b') {
+                  throw new RedirectCommand(router.parseUrl('/upgrade'));
+                }
+                return true;
+              },
+            ],
+            component: BlankCmp,
+          },
+          {path: 'b', component: BlankCmp},
+          {path: 'login', component: BlankCmp},
+          {path: 'upgrade', component: BlankCmp},
+        ]);
+
+        router.navigateByUrl('/a');
+        await advance(fixture);
+        router.navigateByUrl('/b');
+        await advance(fixture);
+        resolveFirstGuard(new RedirectCommand(router.parseUrl('/login')));
+        await advance(fixture);
+
+        expect(location.path()).toEqual('/login');
+      });
+
+      it('should give priority to an earlier canMatch guard over a later guard that throws', async () => {
+        const router = TestBed.inject(Router);
+        const location = TestBed.inject(Location);
+        const fixture = await createRoot(router, RootCmp);
+
+        let resolveFirstGuard!: (result: RedirectCommand) => void;
+        router.resetConfig([
+          {
+            path: 'a',
+            canMatch: [
+              () => new Promise<RedirectCommand>((resolve) => (resolveFirstGuard = resolve)),
+              () => {
+                throw new RedirectCommand(router.parseUrl('/upgrade'));
+              },
+            ],
+            component: BlankCmp,
+          },
+          {path: 'login', component: BlankCmp},
+          {path: 'upgrade', component: BlankCmp},
+        ]);
+
+        router.navigateByUrl('/a');
+        await advance(fixture);
+        resolveFirstGuard(new RedirectCommand(router.parseUrl('/login')));
+        await advance(fixture);
+
+        expect(location.path()).toEqual('/login');
+      });
+
+      it('should give priority to an earlier canLoad guard over a later guard that throws', async () => {
+        const router = TestBed.inject(Router);
+        const location = TestBed.inject(Location);
+        const fixture = await createRoot(router, RootCmp);
+
+        let resolveFirstGuard!: (result: RedirectCommand) => void;
+        router.resetConfig([
+          {
+            path: 'a',
+            canLoad: [
+              () => new Promise<RedirectCommand>((resolve) => (resolveFirstGuard = resolve)),
+              () => {
+                throw new RedirectCommand(router.parseUrl('/upgrade'));
+              },
+            ],
+            loadChildren: () => [{path: '', component: BlankCmp}],
+          },
+          {path: 'login', component: BlankCmp},
+          {path: 'upgrade', component: BlankCmp},
+        ]);
+
+        router.navigateByUrl('/a');
+        await advance(fixture);
+        resolveFirstGuard(new RedirectCommand(router.parseUrl('/login')));
+        await advance(fixture);
+
+        expect(location.path()).toEqual('/login');
+      });
+
       it('should redirect when a resolver throws a RedirectCommand', async () => {
         const router = TestBed.inject(Router);
         const location = TestBed.inject(Location);
