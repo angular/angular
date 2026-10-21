@@ -128,7 +128,14 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
     }
 
     pub fn intern_path(&self, path: impl AsRef<Path>) -> FileId {
-        self.interner.intern_path(path)
+        let path = path.as_ref();
+        if let Some(id) = self.interner.get_if_interned(path) {
+            return id;
+        }
+        match self.fs.resolve_root_dirs_backing_path(path) {
+            Some(backing) => self.interner.intern_path(backing),
+            None => self.interner.intern_path(path),
+        }
     }
 
     pub fn validation_context(
@@ -162,7 +169,12 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
     /// `SharedQuery` clones also cancels any still-running tasks for those keys. The component
     /// mapping is a whole-program singleton, so it is always dropped. Returns the list of evicted keys.
     pub fn invalidate_file(&self, path: &Path) -> Vec<QueryKey> {
-        let Some(file_id) = self.interner.get_if_interned(path) else {
+        let file_id = self.interner.get_if_interned(path).or_else(|| {
+            self.fs
+                .resolve_root_dirs_backing_path(path)
+                .and_then(|backing| self.interner.get_if_interned(backing))
+        });
+        let Some(file_id) = file_id else {
             return Vec::new();
         };
         self.invalidate_file_id(file_id)
@@ -1459,6 +1471,47 @@ mod tests {
     use crate::test_utils::create_test_fs;
     use oxc_resolver::ResolveOptions;
     use std::path::Path;
+    
+    #[test]
+    fn test_intern_path_canonicalizes_root_dirs_paths() {
+        for merged_first in [false, true] {
+            let fs = create_test_fs(&[(
+                "/project/out-dir/pkg/index.d.ts",
+                "export declare class Lib {}",
+            )]);
+            fs.set_root_dirs(vec![
+                PathBuf::from("/project"),
+                PathBuf::from("/project/out-dir"),
+            ]);
+            let resolver = Arc::new(ResolverGeneric::new_with_file_system(
+                fs.clone(),
+                ResolveOptions::default(),
+            ));
+            let engine = QueryEngine::new_default(
+                fs,
+                resolver,
+                Arc::new(ResourceRegistry::default()),
+                Arc::new(std::sync::RwLock::new(Vec::new())),
+            );
+
+            let merged = Path::new("/project/pkg/index.d.ts");
+            let backing = Path::new("/project/out-dir/pkg/index.d.ts");
+            let (merged_id, backing_id) = if merged_first {
+                let merged_id = engine.intern_path(merged);
+                (merged_id, engine.intern_path(backing))
+            } else {
+                let backing_id = engine.intern_path(backing);
+                (engine.intern_path(merged), backing_id)
+            };
+
+            assert_eq!(merged_id, backing_id, "merged_first={merged_first}");
+            assert_eq!(
+                engine.lookup_path(merged_id),
+                PathBuf::from("/project/out-dir/pkg/index.d.ts"),
+                "merged_first={merged_first}"
+            );
+        }
+    }
 
     #[test]
     fn test_query_context_chaining_inheritance() {

@@ -257,11 +257,7 @@ export class HybridCompiler {
   }
 
   async prepareChunk(chunk: nga.CompilationChunk): Promise<ChunkContext> {
-    for (const file of chunk.files) {
-      if (file.diagnostics) {
-        this.diagnosticsMap.set(file.filePath, file.diagnostics.map(withErrorGuide));
-      }
-    }
+    this.recordChunkDiagnostics(chunk);
     await this.writeDiagnosticsFile();
 
     const boundFiles = await Promise.all(
@@ -274,11 +270,7 @@ export class HybridCompiler {
   }
 
   prepareChunkSync(chunk: nga.CompilationChunk): ChunkContext {
-    for (const file of chunk.files) {
-      if (file.diagnostics) {
-        this.diagnosticsMap.set(file.filePath, file.diagnostics.map(withErrorGuide));
-      }
-    }
+    this.recordChunkDiagnostics(chunk);
     this.writeDiagnosticsFileSync();
 
     const boundFiles = chunk.files.map((file) => ({
@@ -286,6 +278,14 @@ export class HybridCompiler {
       analysis: this.ensureBoundWithMetadataSync(file),
     }));
     return this.finalizePreparedChunk(chunk, boundFiles);
+  }
+
+  private recordChunkDiagnostics(chunk: nga.CompilationChunk): void {
+    for (const file of chunk.files) {
+      if (file.diagnostics) {
+        this.diagnosticsMap.set(file.filePath, file.diagnostics.map(withErrorGuide));
+      }
+    }
   }
 
   private finalizePreparedChunk(
