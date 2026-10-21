@@ -1807,6 +1807,86 @@ describe('Router resources integration', () => {
         expect(initialChildResources!['user'].value()).toEqual({id: '2', role: 'viewer'});
         expect(initialChildResources!['details'].value()).toBe('viewer-details');
       });
+
+      it('should maintain reactivity in reused components that capture ActivatedRoute.resources at initialization', async () => {
+        let fetchCount = 0;
+
+        @Component({
+          template: `
+            <span id="captured-dict">{{ resources?.['user']?.value() }}</span>
+            <span id="captured-res">{{ userResource?.value() }}</span>
+            <span id="computed-val">{{ userName() }}</span>
+          `,
+        })
+        class ReusedProfileCmp {
+          readonly route = inject(ActivatedRoute);
+
+          // Component captures dictionary reference at construction time
+          readonly resources = this.route.resources;
+
+          // Component captures specific Resource instance reference at construction time
+          readonly userResource = this.route.resources?.['user'];
+
+          // Component defines a computed reading through this.route.resources.
+          // Because ActivatedRoute.resources is a plain property (not a Signal), accessing
+          // route.resources does not register a reactive dependency; the computed only tracks
+          // the underlying Resource's signals. If the dictionary or Resource reference were swapped,
+          // the computed would not update.
+          readonly userName = computed(() => this.route.resources?.['user']?.value());
+        }
+
+        const {harness} = await setupRouter([
+          {
+            path: 'user/:id',
+            component: ReusedProfileCmp,
+            resources: (ctx) => ({
+              user: resource({
+                params: () => ctx.params()['id'],
+                loader: async ({params: id}) => {
+                  fetchCount++;
+                  return `User #${id}`;
+                },
+              }),
+            }),
+          },
+        ]);
+
+        // 1. Initial navigation to /user/1
+        const cmp1 = await harness.navigateByUrl('/user/1', ReusedProfileCmp);
+        await harness.fixture.whenStable();
+
+        expect(fetchCount).toBe(1);
+        expect(cmp1.userResource?.value()).toBe('User #1');
+        expect(cmp1.resources?.['user']?.value()).toBe('User #1');
+        expect(cmp1.userName()).toBe('User #1');
+
+        const el = harness.fixture.nativeElement;
+        expect(el.querySelector('#captured-dict').textContent).toBe('User #1');
+        expect(el.querySelector('#captured-res').textContent).toBe('User #1');
+        expect(el.querySelector('#computed-val').textContent).toBe('User #1');
+
+        // 2. Navigate to /user/2 (reusing the route and the component instance)
+        const cmp2 = await harness.navigateByUrl('/user/2', ReusedProfileCmp);
+        expect(cmp2).toBe(cmp1);
+        await harness.fixture.whenStable();
+
+        expect(fetchCount).toBe(2);
+
+        // Verify that the component's captured dictionary reference is strictly identical
+        // to the active route's resources property (no re-assignment or orphaned reference)
+        expect(cmp1.resources).toBe(cmp1.route.resources);
+        expect(cmp1.userResource).toBe(cmp1.route.resources?.['user']);
+
+        // Verify that the captured references and computed successfully reflected the update
+        expect(cmp1.userResource?.value()).toBe('User #2');
+        expect(cmp1.resources?.['user']?.value()).toBe('User #2');
+        expect(cmp1.userName()).toBe('User #2');
+
+        // Verify the rendered DOM output updated via change detection
+        expect(el.querySelector('#captured-dict').textContent).toBe('User #2');
+        expect(el.querySelector('#captured-res').textContent).toBe('User #2');
+        expect(el.querySelector('#computed-val').textContent).toBe('User #2');
+      });
     });
 
     describe('Resource reloading', () => {
