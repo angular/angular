@@ -12,6 +12,13 @@ pub trait ResourceResolverFs: FileSystem {
         static GLOBAL: OnceLock<RwLock<std::collections::HashMap<PathBuf, bool>>> = OnceLock::new();
         GLOBAL.get_or_init(|| RwLock::new(std::collections::HashMap::new()))
     }
+
+    /// The file that actually backs `path` when `path` itself does not exist and only appears to
+    /// through `rootDirs` merging (e.g. `<root0>/pkg/index.d.ts` backed by
+    /// `<root1>/pkg/index.d.ts`). `None` when `path` exists as is or no other root backs it.
+    fn resolve_root_dirs_backing_path(&self, _path: &Path) -> Option<PathBuf> {
+        None
+    }
 }
 
 /// A resource located by [`ResourceResolver::load_resource`].

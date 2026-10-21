@@ -1462,6 +1462,108 @@ fn test_dts_root_files_are_not_compiled() {
     }
 }
 
+fn analyze_app_module_importing_non_class(
+    extra_files: &[(&str, &str)],
+    import_source: &str,
+) -> AnalysisResult {
+    let mut virtual_files = HashMap::new();
+    virtual_files.insert(
+        "/project/tsconfig.json".to_string(),
+        r#"{"files": ["app.ts"]}"#.to_string(),
+    );
+    virtual_files.insert(
+        "/project/app.ts".to_string(),
+        format!(
+            r#"
+            import {{NgModule}} from '@angular/core';
+            import {{NotAClass}} from '{import_source}';
+
+            @NgModule({{imports: [NotAClass]}})
+            export class AppModule {{}}
+        "#
+        ),
+    );
+    for (path, content) in extra_files {
+        virtual_files.insert(path.to_string(), content.to_string());
+    }
+    let analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: "/project/tsconfig.json".to_string(),
+        optimize: Some(true),
+        virtual_files: Some(virtual_files),
+        ..Default::default()
+    })
+    .unwrap();
+    analyzer
+        .get_metadata_for_file("/project/app.ts".to_string())
+        .expect("app.ts metadata")
+}
+
+fn app_module_scope_failed(meta: &AnalysisResult) -> bool {
+    let ng_module = meta
+        .classes
+        .iter()
+        .find(|c| c.class_name.as_deref() == Some("AppModule"))
+        .and_then(|c| c.ng_module.as_ref())
+        .expect("AppModule ng_module");
+    ng_module.imports.is_none()
+}
+
+#[test]
+fn test_ngmodule_non_class_reference_from_dts_reports_ng1010_on_dts() {
+    let decl = "export declare const NotAClass: unknown;\n";
+    let meta = analyze_app_module_importing_non_class(&[("/project/decl.d.ts", decl)], "./decl");
+
+    assert!(
+        app_module_scope_failed(&meta),
+        "AppModule analysis must fail"
+    );
+    let ng1010: Vec<_> = meta.diagnostics.iter().filter(|d| d.code == 1010).collect();
+    assert_eq!(ng1010.len(), 1, "{:?}", meta.diagnostics);
+    let diag = ng1010[0];
+    assert_eq!(diag.file_path.as_deref(), Some("/project/decl.d.ts"));
+    assert_eq!(
+        diag.message_text,
+        "Value at position 0 in the NgModule.imports of AppModule is not a class\n  \
+         Value is a reference to 'NotAClass'."
+    );
+    let start = decl.find("NotAClass").unwrap() as u32;
+    let span = diag.span.as_ref().expect("NG1010 span");
+    assert_eq!(
+        (span.start, span.end),
+        (start, start + "NotAClass".len() as u32)
+    );
+}
+
+/// The same mistake with a declaration in a source file of the compilation is still NG1010,
+/// reported on that declaration. (A function, since a `const` with an initializer evaluates to its
+/// value rather than to a reference.)
+#[test]
+fn test_ngmodule_non_class_reference_from_source_reports_ng1010() {
+    let consts = "export function NotAClass() {}\n";
+    let meta =
+        analyze_app_module_importing_non_class(&[("/project/consts.ts", consts)], "./consts");
+
+    assert!(
+        app_module_scope_failed(&meta),
+        "AppModule analysis must fail"
+    );
+    let ng1010: Vec<_> = meta.diagnostics.iter().filter(|d| d.code == 1010).collect();
+    assert_eq!(ng1010.len(), 1, "{:?}", meta.diagnostics);
+    let diag = ng1010[0];
+    assert_eq!(diag.file_path.as_deref(), Some("/project/consts.ts"));
+    assert_eq!(
+        diag.message_text,
+        "Value at position 0 in the NgModule.imports of AppModule is not a class\n  \
+         Value is a reference to 'NotAClass'."
+    );
+    let start = consts.find("NotAClass").unwrap() as u32;
+    let span = diag.span.as_ref().expect("NG1010 span");
+    assert_eq!(
+        (span.start, span.end),
+        (start, start + "NotAClass".len() as u32)
+    );
+}
+
 #[test]
 fn test_resource_files_in_entrypoints_and_metadata() {
     let mut virtual_files = HashMap::new();

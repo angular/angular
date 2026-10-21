@@ -445,6 +445,18 @@ impl crate::resource_loader::ResourceResolverFs for OverlayFileSystem {
     fn is_core_cache(&self) -> &RwLock<HashMap<PathBuf, bool>> {
         &self.is_core_cache
     }
+
+    fn resolve_root_dirs_backing_path(&self, path: &Path) -> Option<PathBuf> {
+        if self.root_dirs.read().unwrap().len() <= 1 || self.exists_raw(path) {
+            return None;
+        }
+        let resolved = self.resolve_across_root_dirs(path)?;
+        // Prefer the virtual file's own spelling over the case-folded lookup key.
+        Some(match self.get_virtual_entry(&resolved) {
+            Some(vf) => vf.path,
+            None => resolved,
+        })
+    }
 }
 
 impl FileSystem for OverlayFileSystem {
@@ -1187,5 +1199,43 @@ mod tests {
         // With the fix, `fs.cwd.join("link.ts")` is canonicalized correctly to match `canonical_target`.
         let rel_path = Path::new("link.ts");
         assert!(fs.is_allowed(rel_path));
+    }
+
+    #[test]
+    fn test_resolve_root_dirs_backing_path() {
+        use crate::resource_loader::ResourceResolverFs;
+
+        let fs = OverlayFileSystem::new_with_overlay();
+        fs.set_root_dirs(vec![
+            PathBuf::from("/project"),
+            PathBuf::from("/project/out-dir"),
+        ]);
+        fs.upsert_file(
+            PathBuf::from("/project/out-dir/pkg/index.d.ts"),
+            "export declare class Lib {}".to_string(),
+        );
+
+        assert!(fs.metadata(Path::new("/project/pkg/index.d.ts")).is_ok());
+        assert_eq!(
+            fs.resolve_root_dirs_backing_path(Path::new("/project/pkg/index.d.ts")),
+            Some(PathBuf::from("/project/out-dir/pkg/index.d.ts"))
+        );
+        assert_eq!(
+            fs.resolve_root_dirs_backing_path(Path::new("/project/out-dir/pkg/index.d.ts")),
+            None
+        );
+        assert_eq!(
+            fs.resolve_root_dirs_backing_path(Path::new("/project/missing.d.ts")),
+            None
+        );
+
+        fs.upsert_file(
+            PathBuf::from("/project/pkg/index.d.ts"),
+            "export declare class Lib {}".to_string(),
+        );
+        assert_eq!(
+            fs.resolve_root_dirs_backing_path(Path::new("/project/pkg/index.d.ts")),
+            None
+        );
     }
 }
