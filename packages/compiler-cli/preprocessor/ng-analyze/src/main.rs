@@ -113,10 +113,12 @@ fn handle_rpc_request(req: RpcRequest, analyzer: &mut Option<Analyzer>) -> RpcRe
         };
         return match Analyzer::new_core(options) {
             Ok(a) => {
+                let compiler_options =
+                    serde_json::Value::Object(a.merged_compiler_options().clone());
                 *analyzer = Some(a);
                 RpcResponse {
                     id: req.id,
-                    result: Some(serde_json::Value::Null),
+                    result: Some(compiler_options),
                     error: None,
                 }
             }

@@ -14,7 +14,7 @@ import {
   TcbDirectiveMetadata,
 } from '@angular/compiler';
 import {makeClassKey} from './compiler-utils.js';
-import {verifyExtendedDiagnosticsOptions} from './compiler_options.js';
+import {verifyExtendedDiagnosticsOptions, type NgpCompilerOptions} from './compiler_options.js';
 import {DependencyTemplates, ngContentSignature} from './dependency_templates.js';
 import {flattenNgDiagnosticMessage, withErrorGuide} from './diagnostic.js';
 import {ChunkContext, FileAnalysis, getOrCreateFileAnalysis} from './file_analysis.js';
@@ -139,6 +139,7 @@ export interface IAnalyzer {
   getTsFileForTemplateSync(templatePath: string): nga.TemplateUsage[] | null;
   readResourceSync?(containingFile: string, url: string): nga.ResolvedResource | null;
   canonicalPathsSync?(paths: string[]): string[];
+  getCompilerOptions?(): NgpCompilerOptions;
   close(): void;
 }
 export interface HybridCompilerOptions {

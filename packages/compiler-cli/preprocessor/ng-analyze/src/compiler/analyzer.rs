@@ -128,6 +128,7 @@ pub struct Analyzer {
     roots_from_tsconfig: AtomicBool,
     entrypoints: Arc<RwLock<Vec<PathBuf>>>,
     current_cancel_token: RwLock<Option<CancellationToken>>,
+    merged_compiler_options: serde_json::Map<String, serde_json::Value>,
 }
 
 /// Every setting an [`Analyzer`] is built from, after merging explicit [`AnalyzerOptions`] over
@@ -164,6 +165,7 @@ struct EffectiveConfig {
     implicit_standalone: bool,
     emit_declaration_only: bool,
     experimental_local_compilation: bool,
+    merged_compiler_options: serde_json::Map<String, serde_json::Value>,
 }
 
 impl EffectiveConfig {
@@ -232,9 +234,19 @@ impl EffectiveConfig {
         let experimental_local_compilation =
             tsconfig_flag(|r| r.experimental_local_compilation, false);
 
-        let (tsconfig_files, tsconfig_root_dirs, tsconfig_workspace_name) = match resolved {
-            Some(r) => (r.files, r.compiler_options.root_dirs, r.workspace_name),
-            None => (Vec::new(), None, None),
+        let (
+            tsconfig_files,
+            tsconfig_root_dirs,
+            tsconfig_workspace_name,
+            merged_compiler_options,
+        ) = match resolved {
+            Some(r) => (
+                r.files,
+                r.compiler_options.root_dirs,
+                r.workspace_name,
+                r.merged_compiler_options,
+            ),
+            None => (Vec::new(), None, None, serde_json::Map::new()),
         };
 
         let mut merge_root_dirs = match default_host.root_dirs {
@@ -281,6 +293,7 @@ impl EffectiveConfig {
             emit_declaration_only,
             experimental_local_compilation,
             tsconfig_path,
+            merged_compiler_options,
         })
     }
 }
@@ -387,7 +400,12 @@ impl Analyzer {
             roots_from_tsconfig: AtomicBool::new(roots_from_tsconfig),
             entrypoints: entrypoints_lock,
             current_cancel_token: RwLock::new(None),
+            merged_compiler_options: config.merged_compiler_options,
         }
+    }
+
+    pub fn merged_compiler_options(&self) -> &serde_json::Map<String, serde_json::Value> {
+        &self.merged_compiler_options
     }
 
     pub fn analyze_core<S: Spawner>(
@@ -986,6 +1004,11 @@ impl Analyzer {
     #[cfg_attr(feature = "napi", napi)]
     pub fn canonical_paths(&self, paths: Vec<String>) -> Vec<String> {
         self.canonical_paths_core(paths)
+    }
+
+    #[cfg_attr(feature = "napi", napi)]
+    pub fn get_compiler_options(&self) -> String {
+        serde_json::to_string(&self.merged_compiler_options).unwrap_or_else(|_| "{}".to_string())
     }
 
     fn run_coordinator_helper<S: Spawner>(

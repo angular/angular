@@ -167,6 +167,10 @@ impl WasmAnalyzer {
         serde_json::to_string(&self.analyzer.canonical_paths_core(paths)).map_err(|e| e.to_string())
     }
 
+    pub fn get_compiler_options(&self) -> String {
+        self.analyzer.get_compiler_options()
+    }
+
     pub fn pump(&mut self) -> Option<String> {
         step_local_pool();
 
