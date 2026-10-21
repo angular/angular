@@ -676,21 +676,15 @@ class _Scanner {
 
     const prevToken = this.tokens[this.tokens.length - 1];
 
-    // If a slash is preceded by a `!` operator, we need to distinguish whether it's a
-    // negation or a non-null assertion. Regexes can only be precded by negations.
-    if (prevToken.isOperator('!')) {
-      const beforePrevToken = this.tokens.length > 1 ? this.tokens[this.tokens.length - 2] : null;
-      const isNegation =
-        beforePrevToken === null ||
-        (beforePrevToken.type !== TokenType.Identifier &&
-          !beforePrevToken.isCharacter(chars.$RPAREN) &&
-          !beforePrevToken.isCharacter(chars.$RBRACKET));
-
-      return isNegation;
+    // `!`, `++` and `--` can be prefix operators, followed by an operand that can start with a
+    // regex (e.g. `!/a/.test(b)` or `++/a/.lastIndex`), or postfix ones, i.e. a non-null assertion
+    // or an update (e.g. `a! / 2` or `a++ / 2`), after which a slash is a division.
+    if (prevToken.isOperator('!') || prevToken.isOperator('++') || prevToken.isOperator('--')) {
+      return !this.isPostfixOperator(this.tokens.length - 1);
     }
 
     // Only consider the slash a regex if it's preceded either by:
-    // - Any operator, aside from `!` which is special-cased above.
+    // - Any operator, aside from `!`, `++` and `--` which are special-cased above.
     // - Opening paren (e.g. `(/a/)`).
     // - Opening bracket (e.g. `[/a/]`).
     // - A comma (e.g. `[1, /a/]`).
@@ -701,6 +695,29 @@ class _Scanner {
       prevToken.isCharacter(chars.$LBRACKET) ||
       prevToken.isCharacter(chars.$COMMA) ||
       prevToken.isCharacter(chars.$COLON)
+    );
+  }
+
+  /**
+   * Whether the `!`, `++` or `--` token at the given index is a postfix operator, i.e. whether it
+   * follows an operand (e.g. `a!`, `a[0]++` or `(a)!--`).
+   */
+  private isPostfixOperator(index: number): boolean {
+    const prevToken = index > 0 ? this.tokens[index - 1] : null;
+
+    if (prevToken === null) {
+      return false;
+    }
+
+    if (prevToken.isOperator('!') || prevToken.isOperator('++') || prevToken.isOperator('--')) {
+      return this.isPostfixOperator(index - 1);
+    }
+
+    return (
+      prevToken.type === TokenType.Identifier ||
+      prevToken.type === TokenType.Keyword ||
+      prevToken.isCharacter(chars.$RPAREN) ||
+      prevToken.isCharacter(chars.$RBRACKET)
     );
   }
 
