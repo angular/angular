@@ -111,7 +111,7 @@
     {
       "name": "output-file",
       "type": "string",
-      "description": "Specifies a file path for the test report, applying only to the first reporter. To configure output files for multiple reporters, use the tuple format `['reporter-name', { outputFile: '...' }]` within the `reporters` option. When not provided, output is written to the console."
+      "description": "Specifies a file path for the test report. This path is used by every configured reporter that writes to a file. To write a separate file for each reporter, use the tuple format `['reporter-name', { outputFile: '...' }]` within the `reporters` option. When not provided, output is written to the console."
     },
     {
       "name": "progress",
@@ -121,7 +121,7 @@
     {
       "name": "project",
       "type": "string",
-      "description": "The name of the project to build. Can be an application or a library.",
+      "description": "The name of the project to run the command for. Can be an application or a library.",
       "positional": 0
     },
     {

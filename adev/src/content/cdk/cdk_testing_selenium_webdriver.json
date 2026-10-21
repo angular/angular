@@ -125,7 +125,7 @@
                 {
                   "name": "modifiers",
                   "description": "",
-                  "type": "any",
+                  "type": "ModifierKeys | undefined",
                   "isOptional": true,
                   "isRestParam": false
                 }
@@ -151,7 +151,7 @@
                 {
                   "name": "modifiers",
                   "description": "",
-                  "type": "any",
+                  "type": "ModifierKeys | undefined",
                   "isOptional": true,
                   "isRestParam": false
                 }
@@ -197,7 +197,7 @@
                 {
                   "name": "modifiers",
                   "description": "Modifier keys held while clicking",
-                  "type": "any",
+                  "type": "ModifierKeys | undefined",
                   "isOptional": true,
                   "isRestParam": false
                 }
@@ -211,7 +211,7 @@
               {
                 "name": "args",
                 "description": "",
-                "type": "[any?] | [\"center\", any?] | [number, number, any?]",
+                "type": "[(ModifierKeys | undefined)?] | [\"center\", (ModifierKeys | undefined)?] | [number, number, (ModifierKeys | undefined)?]",
                 "isOptional": false,
                 "isRestParam": true
               }
@@ -273,7 +273,7 @@
                 {
                   "name": "modifiers",
                   "description": "Modifier keys held while clicking",
-                  "type": "any",
+                  "type": "ModifierKeys | undefined",
                   "isOptional": true,
                   "isRestParam": false
                 }
@@ -287,7 +287,7 @@
               {
                 "name": "args",
                 "description": "",
-                "type": "[any?] | [\"center\", any?] | [number, number, any?]",
+                "type": "[(ModifierKeys | undefined)?] | [\"center\", (ModifierKeys | undefined)?] | [number, number, (ModifierKeys | undefined)?]",
                 "isOptional": false,
                 "isRestParam": true
               }
@@ -483,7 +483,7 @@
                 {
                   "name": "keys",
                   "description": "",
-                  "type": "any[]",
+                  "type": "(string | TestKey)[]",
                   "isOptional": false,
                   "isRestParam": true
                 }
@@ -509,7 +509,7 @@
                 {
                   "name": "keys",
                   "description": "",
-                  "type": "any[]",
+                  "type": "(string | TestKey)[]",
                   "isOptional": false,
                   "isRestParam": true
                 }
@@ -563,7 +563,7 @@
                 {
                   "name": "options",
                   "description": "Options that affect what text is included.",
-                  "type": "any",
+                  "type": "TextOptions | undefined",
                   "isOptional": true,
                   "isRestParam": false
                 }
@@ -577,7 +577,7 @@
               {
                 "name": "options",
                 "description": "Options that affect what text is included.",
-                "type": "any",
+                "type": "TextOptions | undefined",
                 "isOptional": true,
                 "isRestParam": false
               }
@@ -1524,6 +1524,1454 @@
           ]
         },
         {
+          "name": "rawRootElement",
+          "type": "E",
+          "memberType": "property",
+          "memberTags": [
+            "protected",
+            "override"
+          ],
+          "description": "The native root element of this `HarnessEnvironment`.",
+          "jsdocTags": []
+        },
+        {
+          "name": "rootElement",
+          "type": "TestElement",
+          "memberType": "getter",
+          "memberTags": [
+            "override"
+          ],
+          "description": "The root element of this `HarnessEnvironment` as a `TestElement`.",
+          "jsdocTags": []
+        },
+        {
+          "name": "rootElement",
+          "type": "TestElement",
+          "memberType": "setter",
+          "memberTags": [
+            "override"
+          ],
+          "description": "",
+          "jsdocTags": []
+        },
+        {
+          "name": "documentRootLocatorFactory",
+          "signatures": [
+            {
+              "name": "documentRootLocatorFactory",
+              "entryType": "function",
+              "description": "Gets a locator factory rooted at the document root.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Gets a locator factory rooted at the document root. */",
+              "returnType": "LocatorFactory"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "LocatorFactory",
+            "generics": [],
+            "name": "documentRootLocatorFactory",
+            "description": "Gets a locator factory rooted at the document root.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Gets a locator factory rooted at the document root. */"
+          },
+          "entryType": "function",
+          "description": "Gets a locator factory rooted at the document root.",
+          "jsdocTags": [],
+          "rawComment": "/** Gets a locator factory rooted at the document root. */",
+          "memberType": "method",
+          "memberTags": [
+            "override"
+          ]
+        },
+        {
+          "name": "locatorFor",
+          "signatures": [
+            {
+              "name": "locatorFor",
+              "entryType": "function",
+              "description": "Creates an asynchronous locator function that can be used to find a `ComponentHarness` instance\nor element under the root element of this `HarnessEnvironment`.\n\nFor example, given the following DOM and assuming `DivHarness.hostSelector` is `'div'`\n\n```html\n<div id=\"d1\"></div><div id=\"d2\"></div>\n```\n\nthen we expect:\n\n```ts\nawait lf.locatorFor(DivHarness, 'div')() // Gets a `DivHarness` instance for #d1\nawait lf.locatorFor('div', DivHarness)() // Gets a `TestElement` instance for #d1\nawait lf.locatorFor('span')()            // Throws because the `Promise` rejects\n```",
+              "generics": [
+                {
+                  "name": "T",
+                  "constraint": "(HarnessQuery<any> | string)[]"
+                }
+              ],
+              "isNewType": false,
+              "jsdocTags": [
+                {
+                  "name": "param",
+                  "comment": "A list of queries specifying which harnesses and elements to search for:\n- A `string` searches for elements matching the CSS selector specified by the string.\n- A `ComponentHarness` constructor searches for `ComponentHarness` instances matching the\ngiven class.\n- A `HarnessPredicate` searches for `ComponentHarness` instances matching the given\npredicate."
+                },
+                {
+                  "name": "return",
+                  "comment": "An asynchronous locator function that searches for and returns a `Promise` for the\nfirst element or harness matching the given search criteria. Matches are ordered first by\norder in the DOM, and second by order in the queries list. If no matches are found, the\n`Promise` rejects. The type that the `Promise` resolves to is a union of all result types for\neach query."
+                }
+              ],
+              "params": [
+                {
+                  "name": "queries",
+                  "description": "A list of queries specifying which harnesses and elements to search for:\n- A `string` searches for elements matching the CSS selector specified by the string.\n- A `ComponentHarness` constructor searches for `ComponentHarness` instances matching the\ngiven class.\n- A `HarnessPredicate` searches for `ComponentHarness` instances matching the given\npredicate.",
+                  "type": "T",
+                  "isOptional": false,
+                  "isRestParam": true
+                }
+              ],
+              "rawComment": "/**\n     * Creates an asynchronous locator function that can be used to find a `ComponentHarness` instance\n     * or element under the root element of this `HarnessEnvironment`.\n     *\n     * For example, given the following DOM and assuming `DivHarness.hostSelector` is `'div'`\n     *\n     * ```html\n     * <div id=\"d1\"></div><div id=\"d2\"></div>\n     * ```\n     *\n     * then we expect:\n     *\n     * ```ts\n     * await lf.locatorFor(DivHarness, 'div')() // Gets a `DivHarness` instance for #d1\n     * await lf.locatorFor('div', DivHarness)() // Gets a `TestElement` instance for #d1\n     * await lf.locatorFor('span')()            // Throws because the `Promise` rejects\n     * ```\n     *\n     * @param queries A list of queries specifying which harnesses and elements to search for:\n     *   - A `string` searches for elements matching the CSS selector specified by the string.\n     *   - A `ComponentHarness` constructor searches for `ComponentHarness` instances matching the\n     *     given class.\n     *   - A `HarnessPredicate` searches for `ComponentHarness` instances matching the given\n     *     predicate.\n     * @return An asynchronous locator function that searches for and returns a `Promise` for the\n     *   first element or harness matching the given search criteria. Matches are ordered first by\n     *   order in the DOM, and second by order in the queries list. If no matches are found, the\n     *   `Promise` rejects. The type that the `Promise` resolves to is a union of all result types for\n     *   each query.\n     */",
+              "returnType": "() => Promise<LocatorFnResult<T>>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "queries",
+                "description": "A list of queries specifying which harnesses and elements to search for:\n- A `string` searches for elements matching the CSS selector specified by the string.\n- A `ComponentHarness` constructor searches for `ComponentHarness` instances matching the\ngiven class.\n- A `HarnessPredicate` searches for `ComponentHarness` instances matching the given\npredicate.",
+                "type": "T",
+                "isOptional": false,
+                "isRestParam": true
+              }
+            ],
+            "isNewType": false,
+            "returnType": "() => Promise<LocatorFnResult<T>>",
+            "generics": [
+              {
+                "name": "T",
+                "constraint": "(HarnessQuery<any> | string)[]"
+              }
+            ],
+            "name": "locatorFor",
+            "description": "Creates an asynchronous locator function that can be used to find a `ComponentHarness` instance\nor element under the root element of this `HarnessEnvironment`.\n\nFor example, given the following DOM and assuming `DivHarness.hostSelector` is `'div'`\n\n```html\n<div id=\"d1\"></div><div id=\"d2\"></div>\n```\n\nthen we expect:\n\n```ts\nawait lf.locatorFor(DivHarness, 'div')() // Gets a `DivHarness` instance for #d1\nawait lf.locatorFor('div', DivHarness)() // Gets a `TestElement` instance for #d1\nawait lf.locatorFor('span')()            // Throws because the `Promise` rejects\n```",
+            "entryType": "function",
+            "jsdocTags": [
+              {
+                "name": "param",
+                "comment": "A list of queries specifying which harnesses and elements to search for:\n- A `string` searches for elements matching the CSS selector specified by the string.\n- A `ComponentHarness` constructor searches for `ComponentHarness` instances matching the\ngiven class.\n- A `HarnessPredicate` searches for `ComponentHarness` instances matching the given\npredicate."
+              },
+              {
+                "name": "return",
+                "comment": "An asynchronous locator function that searches for and returns a `Promise` for the\nfirst element or harness matching the given search criteria. Matches are ordered first by\norder in the DOM, and second by order in the queries list. If no matches are found, the\n`Promise` rejects. The type that the `Promise` resolves to is a union of all result types for\neach query."
+              }
+            ],
+            "rawComment": "/**\n     * Creates an asynchronous locator function that can be used to find a `ComponentHarness` instance\n     * or element under the root element of this `HarnessEnvironment`.\n     *\n     * For example, given the following DOM and assuming `DivHarness.hostSelector` is `'div'`\n     *\n     * ```html\n     * <div id=\"d1\"></div><div id=\"d2\"></div>\n     * ```\n     *\n     * then we expect:\n     *\n     * ```ts\n     * await lf.locatorFor(DivHarness, 'div')() // Gets a `DivHarness` instance for #d1\n     * await lf.locatorFor('div', DivHarness)() // Gets a `TestElement` instance for #d1\n     * await lf.locatorFor('span')()            // Throws because the `Promise` rejects\n     * ```\n     *\n     * @param queries A list of queries specifying which harnesses and elements to search for:\n     *   - A `string` searches for elements matching the CSS selector specified by the string.\n     *   - A `ComponentHarness` constructor searches for `ComponentHarness` instances matching the\n     *     given class.\n     *   - A `HarnessPredicate` searches for `ComponentHarness` instances matching the given\n     *     predicate.\n     * @return An asynchronous locator function that searches for and returns a `Promise` for the\n     *   first element or harness matching the given search criteria. Matches are ordered first by\n     *   order in the DOM, and second by order in the queries list. If no matches are found, the\n     *   `Promise` rejects. The type that the `Promise` resolves to is a union of all result types for\n     *   each query.\n     */"
+          },
+          "entryType": "function",
+          "description": "Creates an asynchronous locator function that can be used to find a `ComponentHarness` instance\nor element under the root element of this `HarnessEnvironment`.\n\nFor example, given the following DOM and assuming `DivHarness.hostSelector` is `'div'`\n\n```html\n<div id=\"d1\"></div><div id=\"d2\"></div>\n```\n\nthen we expect:\n\n```ts\nawait lf.locatorFor(DivHarness, 'div')() // Gets a `DivHarness` instance for #d1\nawait lf.locatorFor('div', DivHarness)() // Gets a `TestElement` instance for #d1\nawait lf.locatorFor('span')()            // Throws because the `Promise` rejects\n```",
+          "jsdocTags": [
+            {
+              "name": "param",
+              "comment": "A list of queries specifying which harnesses and elements to search for:\n- A `string` searches for elements matching the CSS selector specified by the string.\n- A `ComponentHarness` constructor searches for `ComponentHarness` instances matching the\ngiven class.\n- A `HarnessPredicate` searches for `ComponentHarness` instances matching the given\npredicate."
+            },
+            {
+              "name": "return",
+              "comment": "An asynchronous locator function that searches for and returns a `Promise` for the\nfirst element or harness matching the given search criteria. Matches are ordered first by\norder in the DOM, and second by order in the queries list. If no matches are found, the\n`Promise` rejects. The type that the `Promise` resolves to is a union of all result types for\neach query."
+            }
+          ],
+          "rawComment": "/**\n     * Creates an asynchronous locator function that can be used to find a `ComponentHarness` instance\n     * or element under the root element of this `HarnessEnvironment`.\n     *\n     * For example, given the following DOM and assuming `DivHarness.hostSelector` is `'div'`\n     *\n     * ```html\n     * <div id=\"d1\"></div><div id=\"d2\"></div>\n     * ```\n     *\n     * then we expect:\n     *\n     * ```ts\n     * await lf.locatorFor(DivHarness, 'div')() // Gets a `DivHarness` instance for #d1\n     * await lf.locatorFor('div', DivHarness)() // Gets a `TestElement` instance for #d1\n     * await lf.locatorFor('span')()            // Throws because the `Promise` rejects\n     * ```\n     *\n     * @param queries A list of queries specifying which harnesses and elements to search for:\n     *   - A `string` searches for elements matching the CSS selector specified by the string.\n     *   - A `ComponentHarness` constructor searches for `ComponentHarness` instances matching the\n     *     given class.\n     *   - A `HarnessPredicate` searches for `ComponentHarness` instances matching the given\n     *     predicate.\n     * @return An asynchronous locator function that searches for and returns a `Promise` for the\n     *   first element or harness matching the given search criteria. Matches are ordered first by\n     *   order in the DOM, and second by order in the queries list. If no matches are found, the\n     *   `Promise` rejects. The type that the `Promise` resolves to is a union of all result types for\n     *   each query.\n     */",
+          "memberType": "method",
+          "memberTags": [
+            "override"
+          ]
+        },
+        {
+          "name": "locatorForOptional",
+          "signatures": [
+            {
+              "name": "locatorForOptional",
+              "entryType": "function",
+              "description": "Creates an asynchronous locator function that can be used to find a `ComponentHarness` instance\nor element under the root element of this `HarnessEnvironmnet`.\n\nFor example, given the following DOM and assuming `DivHarness.hostSelector` is `'div'`\n\n```html\n<div id=\"d1\"></div><div id=\"d2\"></div>\n```\n\nthen we expect:\n\n```ts\nawait lf.locatorForOptional(DivHarness, 'div')() // Gets a `DivHarness` instance for #d1\nawait lf.locatorForOptional('div', DivHarness)() // Gets a `TestElement` instance for #d1\nawait lf.locatorForOptional('span')()            // Gets `null`\n```",
+              "generics": [
+                {
+                  "name": "T",
+                  "constraint": "(HarnessQuery<any> | string)[]"
+                }
+              ],
+              "isNewType": false,
+              "jsdocTags": [
+                {
+                  "name": "param",
+                  "comment": "A list of queries specifying which harnesses and elements to search for:\n- A `string` searches for elements matching the CSS selector specified by the string.\n- A `ComponentHarness` constructor searches for `ComponentHarness` instances matching the\ngiven class.\n- A `HarnessPredicate` searches for `ComponentHarness` instances matching the given\npredicate."
+                },
+                {
+                  "name": "return",
+                  "comment": "An asynchronous locator function that searches for and returns a `Promise` for the\nfirst element or harness matching the given search criteria. Matches are ordered first by\norder in the DOM, and second by order in the queries list. If no matches are found, the\n`Promise` is resolved with `null`. The type that the `Promise` resolves to is a union of all\nresult types for each query or null."
+                }
+              ],
+              "params": [
+                {
+                  "name": "queries",
+                  "description": "A list of queries specifying which harnesses and elements to search for:\n- A `string` searches for elements matching the CSS selector specified by the string.\n- A `ComponentHarness` constructor searches for `ComponentHarness` instances matching the\ngiven class.\n- A `HarnessPredicate` searches for `ComponentHarness` instances matching the given\npredicate.",
+                  "type": "T",
+                  "isOptional": false,
+                  "isRestParam": true
+                }
+              ],
+              "rawComment": "/**\n     * Creates an asynchronous locator function that can be used to find a `ComponentHarness` instance\n     * or element under the root element of this `HarnessEnvironmnet`.\n     *\n     * For example, given the following DOM and assuming `DivHarness.hostSelector` is `'div'`\n     *\n     * ```html\n     * <div id=\"d1\"></div><div id=\"d2\"></div>\n     * ```\n     *\n     * then we expect:\n     *\n     * ```ts\n     * await lf.locatorForOptional(DivHarness, 'div')() // Gets a `DivHarness` instance for #d1\n     * await lf.locatorForOptional('div', DivHarness)() // Gets a `TestElement` instance for #d1\n     * await lf.locatorForOptional('span')()            // Gets `null`\n     * ```\n     *\n     * @param queries A list of queries specifying which harnesses and elements to search for:\n     *   - A `string` searches for elements matching the CSS selector specified by the string.\n     *   - A `ComponentHarness` constructor searches for `ComponentHarness` instances matching the\n     *     given class.\n     *   - A `HarnessPredicate` searches for `ComponentHarness` instances matching the given\n     *     predicate.\n     * @return An asynchronous locator function that searches for and returns a `Promise` for the\n     *   first element or harness matching the given search criteria. Matches are ordered first by\n     *   order in the DOM, and second by order in the queries list. If no matches are found, the\n     *   `Promise` is resolved with `null`. The type that the `Promise` resolves to is a union of all\n     *   result types for each query or null.\n     */",
+              "returnType": "() => Promise<LocatorFnResult<T> | null>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "queries",
+                "description": "A list of queries specifying which harnesses and elements to search for:\n- A `string` searches for elements matching the CSS selector specified by the string.\n- A `ComponentHarness` constructor searches for `ComponentHarness` instances matching the\ngiven class.\n- A `HarnessPredicate` searches for `ComponentHarness` instances matching the given\npredicate.",
+                "type": "T",
+                "isOptional": false,
+                "isRestParam": true
+              }
+            ],
+            "isNewType": false,
+            "returnType": "() => Promise<LocatorFnResult<T> | null>",
+            "generics": [
+              {
+                "name": "T",
+                "constraint": "(HarnessQuery<any> | string)[]"
+              }
+            ],
+            "name": "locatorForOptional",
+            "description": "Creates an asynchronous locator function that can be used to find a `ComponentHarness` instance\nor element under the root element of this `HarnessEnvironmnet`.\n\nFor example, given the following DOM and assuming `DivHarness.hostSelector` is `'div'`\n\n```html\n<div id=\"d1\"></div><div id=\"d2\"></div>\n```\n\nthen we expect:\n\n```ts\nawait lf.locatorForOptional(DivHarness, 'div')() // Gets a `DivHarness` instance for #d1\nawait lf.locatorForOptional('div', DivHarness)() // Gets a `TestElement` instance for #d1\nawait lf.locatorForOptional('span')()            // Gets `null`\n```",
+            "entryType": "function",
+            "jsdocTags": [
+              {
+                "name": "param",
+                "comment": "A list of queries specifying which harnesses and elements to search for:\n- A `string` searches for elements matching the CSS selector specified by the string.\n- A `ComponentHarness` constructor searches for `ComponentHarness` instances matching the\ngiven class.\n- A `HarnessPredicate` searches for `ComponentHarness` instances matching the given\npredicate."
+              },
+              {
+                "name": "return",
+                "comment": "An asynchronous locator function that searches for and returns a `Promise` for the\nfirst element or harness matching the given search criteria. Matches are ordered first by\norder in the DOM, and second by order in the queries list. If no matches are found, the\n`Promise` is resolved with `null`. The type that the `Promise` resolves to is a union of all\nresult types for each query or null."
+              }
+            ],
+            "rawComment": "/**\n     * Creates an asynchronous locator function that can be used to find a `ComponentHarness` instance\n     * or element under the root element of this `HarnessEnvironmnet`.\n     *\n     * For example, given the following DOM and assuming `DivHarness.hostSelector` is `'div'`\n     *\n     * ```html\n     * <div id=\"d1\"></div><div id=\"d2\"></div>\n     * ```\n     *\n     * then we expect:\n     *\n     * ```ts\n     * await lf.locatorForOptional(DivHarness, 'div')() // Gets a `DivHarness` instance for #d1\n     * await lf.locatorForOptional('div', DivHarness)() // Gets a `TestElement` instance for #d1\n     * await lf.locatorForOptional('span')()            // Gets `null`\n     * ```\n     *\n     * @param queries A list of queries specifying which harnesses and elements to search for:\n     *   - A `string` searches for elements matching the CSS selector specified by the string.\n     *   - A `ComponentHarness` constructor searches for `ComponentHarness` instances matching the\n     *     given class.\n     *   - A `HarnessPredicate` searches for `ComponentHarness` instances matching the given\n     *     predicate.\n     * @return An asynchronous locator function that searches for and returns a `Promise` for the\n     *   first element or harness matching the given search criteria. Matches are ordered first by\n     *   order in the DOM, and second by order in the queries list. If no matches are found, the\n     *   `Promise` is resolved with `null`. The type that the `Promise` resolves to is a union of all\n     *   result types for each query or null.\n     */"
+          },
+          "entryType": "function",
+          "description": "Creates an asynchronous locator function that can be used to find a `ComponentHarness` instance\nor element under the root element of this `HarnessEnvironmnet`.\n\nFor example, given the following DOM and assuming `DivHarness.hostSelector` is `'div'`\n\n```html\n<div id=\"d1\"></div><div id=\"d2\"></div>\n```\n\nthen we expect:\n\n```ts\nawait lf.locatorForOptional(DivHarness, 'div')() // Gets a `DivHarness` instance for #d1\nawait lf.locatorForOptional('div', DivHarness)() // Gets a `TestElement` instance for #d1\nawait lf.locatorForOptional('span')()            // Gets `null`\n```",
+          "jsdocTags": [
+            {
+              "name": "param",
+              "comment": "A list of queries specifying which harnesses and elements to search for:\n- A `string` searches for elements matching the CSS selector specified by the string.\n- A `ComponentHarness` constructor searches for `ComponentHarness` instances matching the\ngiven class.\n- A `HarnessPredicate` searches for `ComponentHarness` instances matching the given\npredicate."
+            },
+            {
+              "name": "return",
+              "comment": "An asynchronous locator function that searches for and returns a `Promise` for the\nfirst element or harness matching the given search criteria. Matches are ordered first by\norder in the DOM, and second by order in the queries list. If no matches are found, the\n`Promise` is resolved with `null`. The type that the `Promise` resolves to is a union of all\nresult types for each query or null."
+            }
+          ],
+          "rawComment": "/**\n     * Creates an asynchronous locator function that can be used to find a `ComponentHarness` instance\n     * or element under the root element of this `HarnessEnvironmnet`.\n     *\n     * For example, given the following DOM and assuming `DivHarness.hostSelector` is `'div'`\n     *\n     * ```html\n     * <div id=\"d1\"></div><div id=\"d2\"></div>\n     * ```\n     *\n     * then we expect:\n     *\n     * ```ts\n     * await lf.locatorForOptional(DivHarness, 'div')() // Gets a `DivHarness` instance for #d1\n     * await lf.locatorForOptional('div', DivHarness)() // Gets a `TestElement` instance for #d1\n     * await lf.locatorForOptional('span')()            // Gets `null`\n     * ```\n     *\n     * @param queries A list of queries specifying which harnesses and elements to search for:\n     *   - A `string` searches for elements matching the CSS selector specified by the string.\n     *   - A `ComponentHarness` constructor searches for `ComponentHarness` instances matching the\n     *     given class.\n     *   - A `HarnessPredicate` searches for `ComponentHarness` instances matching the given\n     *     predicate.\n     * @return An asynchronous locator function that searches for and returns a `Promise` for the\n     *   first element or harness matching the given search criteria. Matches are ordered first by\n     *   order in the DOM, and second by order in the queries list. If no matches are found, the\n     *   `Promise` is resolved with `null`. The type that the `Promise` resolves to is a union of all\n     *   result types for each query or null.\n     */",
+          "memberType": "method",
+          "memberTags": [
+            "override"
+          ]
+        },
+        {
+          "name": "locatorForAll",
+          "signatures": [
+            {
+              "name": "locatorForAll",
+              "entryType": "function",
+              "description": "Creates an asynchronous locator function that can be used to find `ComponentHarness` instances\nor elements under the root element of this `HarnessEnvironment`.\n\nFor example, given the following DOM and assuming `DivHarness.hostSelector` is `'div'` and\n`IdIsD1Harness.hostSelector` is `'#d1'`\n\n```html\n<div id=\"d1\"></div><div id=\"d2\"></div>\n```\n\nthen we expect:\n\n```ts\n// Gets [DivHarness for #d1, TestElement for #d1, DivHarness for #d2, TestElement for #d2]\nawait lf.locatorForAll(DivHarness, 'div')()\n// Gets [TestElement for #d1, TestElement for #d2]\nawait lf.locatorForAll('div', '#d1')()\n// Gets [DivHarness for #d1, IdIsD1Harness for #d1, DivHarness for #d2]\nawait lf.locatorForAll(DivHarness, IdIsD1Harness)()\n// Gets []\nawait lf.locatorForAll('span')()\n```",
+              "generics": [
+                {
+                  "name": "T",
+                  "constraint": "(HarnessQuery<any> | string)[]"
+                }
+              ],
+              "isNewType": false,
+              "jsdocTags": [
+                {
+                  "name": "param",
+                  "comment": "A list of queries specifying which harnesses and elements to search for:\n- A `string` searches for elements matching the CSS selector specified by the string.\n- A `ComponentHarness` constructor searches for `ComponentHarness` instances matching the\ngiven class.\n- A `HarnessPredicate` searches for `ComponentHarness` instances matching the given\npredicate."
+                },
+                {
+                  "name": "return",
+                  "comment": "An asynchronous locator function that searches for and returns a `Promise` for all\nelements and harnesses matching the given search criteria. Matches are ordered first by\norder in the DOM, and second by order in the queries list. If an element matches more than\none `ComponentHarness` class, the locator gets an instance of each for the same element. If\nan element matches multiple `string` selectors, only one `TestElement` instance is returned\nfor that element. The type that the `Promise` resolves to is an array where each element is\nthe union of all result types for each query."
+                }
+              ],
+              "params": [
+                {
+                  "name": "queries",
+                  "description": "A list of queries specifying which harnesses and elements to search for:\n- A `string` searches for elements matching the CSS selector specified by the string.\n- A `ComponentHarness` constructor searches for `ComponentHarness` instances matching the\ngiven class.\n- A `HarnessPredicate` searches for `ComponentHarness` instances matching the given\npredicate.",
+                  "type": "T",
+                  "isOptional": false,
+                  "isRestParam": true
+                }
+              ],
+              "rawComment": "/**\n     * Creates an asynchronous locator function that can be used to find `ComponentHarness` instances\n     * or elements under the root element of this `HarnessEnvironment`.\n     *\n     * For example, given the following DOM and assuming `DivHarness.hostSelector` is `'div'` and\n     * `IdIsD1Harness.hostSelector` is `'#d1'`\n     *\n     * ```html\n     * <div id=\"d1\"></div><div id=\"d2\"></div>\n     * ```\n     *\n     * then we expect:\n     *\n     * ```ts\n     * // Gets [DivHarness for #d1, TestElement for #d1, DivHarness for #d2, TestElement for #d2]\n     * await lf.locatorForAll(DivHarness, 'div')()\n     * // Gets [TestElement for #d1, TestElement for #d2]\n     * await lf.locatorForAll('div', '#d1')()\n     * // Gets [DivHarness for #d1, IdIsD1Harness for #d1, DivHarness for #d2]\n     * await lf.locatorForAll(DivHarness, IdIsD1Harness)()\n     * // Gets []\n     * await lf.locatorForAll('span')()\n     * ```\n     *\n     * @param queries A list of queries specifying which harnesses and elements to search for:\n     *   - A `string` searches for elements matching the CSS selector specified by the string.\n     *   - A `ComponentHarness` constructor searches for `ComponentHarness` instances matching the\n     *     given class.\n     *   - A `HarnessPredicate` searches for `ComponentHarness` instances matching the given\n     *     predicate.\n     * @return An asynchronous locator function that searches for and returns a `Promise` for all\n     *   elements and harnesses matching the given search criteria. Matches are ordered first by\n     *   order in the DOM, and second by order in the queries list. If an element matches more than\n     *   one `ComponentHarness` class, the locator gets an instance of each for the same element. If\n     *   an element matches multiple `string` selectors, only one `TestElement` instance is returned\n     *   for that element. The type that the `Promise` resolves to is an array where each element is\n     *   the union of all result types for each query.\n     */",
+              "returnType": "() => Promise<LocatorFnResult<T>[]>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "queries",
+                "description": "A list of queries specifying which harnesses and elements to search for:\n- A `string` searches for elements matching the CSS selector specified by the string.\n- A `ComponentHarness` constructor searches for `ComponentHarness` instances matching the\ngiven class.\n- A `HarnessPredicate` searches for `ComponentHarness` instances matching the given\npredicate.",
+                "type": "T",
+                "isOptional": false,
+                "isRestParam": true
+              }
+            ],
+            "isNewType": false,
+            "returnType": "() => Promise<LocatorFnResult<T>[]>",
+            "generics": [
+              {
+                "name": "T",
+                "constraint": "(HarnessQuery<any> | string)[]"
+              }
+            ],
+            "name": "locatorForAll",
+            "description": "Creates an asynchronous locator function that can be used to find `ComponentHarness` instances\nor elements under the root element of this `HarnessEnvironment`.\n\nFor example, given the following DOM and assuming `DivHarness.hostSelector` is `'div'` and\n`IdIsD1Harness.hostSelector` is `'#d1'`\n\n```html\n<div id=\"d1\"></div><div id=\"d2\"></div>\n```\n\nthen we expect:\n\n```ts\n// Gets [DivHarness for #d1, TestElement for #d1, DivHarness for #d2, TestElement for #d2]\nawait lf.locatorForAll(DivHarness, 'div')()\n// Gets [TestElement for #d1, TestElement for #d2]\nawait lf.locatorForAll('div', '#d1')()\n// Gets [DivHarness for #d1, IdIsD1Harness for #d1, DivHarness for #d2]\nawait lf.locatorForAll(DivHarness, IdIsD1Harness)()\n// Gets []\nawait lf.locatorForAll('span')()\n```",
+            "entryType": "function",
+            "jsdocTags": [
+              {
+                "name": "param",
+                "comment": "A list of queries specifying which harnesses and elements to search for:\n- A `string` searches for elements matching the CSS selector specified by the string.\n- A `ComponentHarness` constructor searches for `ComponentHarness` instances matching the\ngiven class.\n- A `HarnessPredicate` searches for `ComponentHarness` instances matching the given\npredicate."
+              },
+              {
+                "name": "return",
+                "comment": "An asynchronous locator function that searches for and returns a `Promise` for all\nelements and harnesses matching the given search criteria. Matches are ordered first by\norder in the DOM, and second by order in the queries list. If an element matches more than\none `ComponentHarness` class, the locator gets an instance of each for the same element. If\nan element matches multiple `string` selectors, only one `TestElement` instance is returned\nfor that element. The type that the `Promise` resolves to is an array where each element is\nthe union of all result types for each query."
+              }
+            ],
+            "rawComment": "/**\n     * Creates an asynchronous locator function that can be used to find `ComponentHarness` instances\n     * or elements under the root element of this `HarnessEnvironment`.\n     *\n     * For example, given the following DOM and assuming `DivHarness.hostSelector` is `'div'` and\n     * `IdIsD1Harness.hostSelector` is `'#d1'`\n     *\n     * ```html\n     * <div id=\"d1\"></div><div id=\"d2\"></div>\n     * ```\n     *\n     * then we expect:\n     *\n     * ```ts\n     * // Gets [DivHarness for #d1, TestElement for #d1, DivHarness for #d2, TestElement for #d2]\n     * await lf.locatorForAll(DivHarness, 'div')()\n     * // Gets [TestElement for #d1, TestElement for #d2]\n     * await lf.locatorForAll('div', '#d1')()\n     * // Gets [DivHarness for #d1, IdIsD1Harness for #d1, DivHarness for #d2]\n     * await lf.locatorForAll(DivHarness, IdIsD1Harness)()\n     * // Gets []\n     * await lf.locatorForAll('span')()\n     * ```\n     *\n     * @param queries A list of queries specifying which harnesses and elements to search for:\n     *   - A `string` searches for elements matching the CSS selector specified by the string.\n     *   - A `ComponentHarness` constructor searches for `ComponentHarness` instances matching the\n     *     given class.\n     *   - A `HarnessPredicate` searches for `ComponentHarness` instances matching the given\n     *     predicate.\n     * @return An asynchronous locator function that searches for and returns a `Promise` for all\n     *   elements and harnesses matching the given search criteria. Matches are ordered first by\n     *   order in the DOM, and second by order in the queries list. If an element matches more than\n     *   one `ComponentHarness` class, the locator gets an instance of each for the same element. If\n     *   an element matches multiple `string` selectors, only one `TestElement` instance is returned\n     *   for that element. The type that the `Promise` resolves to is an array where each element is\n     *   the union of all result types for each query.\n     */"
+          },
+          "entryType": "function",
+          "description": "Creates an asynchronous locator function that can be used to find `ComponentHarness` instances\nor elements under the root element of this `HarnessEnvironment`.\n\nFor example, given the following DOM and assuming `DivHarness.hostSelector` is `'div'` and\n`IdIsD1Harness.hostSelector` is `'#d1'`\n\n```html\n<div id=\"d1\"></div><div id=\"d2\"></div>\n```\n\nthen we expect:\n\n```ts\n// Gets [DivHarness for #d1, TestElement for #d1, DivHarness for #d2, TestElement for #d2]\nawait lf.locatorForAll(DivHarness, 'div')()\n// Gets [TestElement for #d1, TestElement for #d2]\nawait lf.locatorForAll('div', '#d1')()\n// Gets [DivHarness for #d1, IdIsD1Harness for #d1, DivHarness for #d2]\nawait lf.locatorForAll(DivHarness, IdIsD1Harness)()\n// Gets []\nawait lf.locatorForAll('span')()\n```",
+          "jsdocTags": [
+            {
+              "name": "param",
+              "comment": "A list of queries specifying which harnesses and elements to search for:\n- A `string` searches for elements matching the CSS selector specified by the string.\n- A `ComponentHarness` constructor searches for `ComponentHarness` instances matching the\ngiven class.\n- A `HarnessPredicate` searches for `ComponentHarness` instances matching the given\npredicate."
+            },
+            {
+              "name": "return",
+              "comment": "An asynchronous locator function that searches for and returns a `Promise` for all\nelements and harnesses matching the given search criteria. Matches are ordered first by\norder in the DOM, and second by order in the queries list. If an element matches more than\none `ComponentHarness` class, the locator gets an instance of each for the same element. If\nan element matches multiple `string` selectors, only one `TestElement` instance is returned\nfor that element. The type that the `Promise` resolves to is an array where each element is\nthe union of all result types for each query."
+            }
+          ],
+          "rawComment": "/**\n     * Creates an asynchronous locator function that can be used to find `ComponentHarness` instances\n     * or elements under the root element of this `HarnessEnvironment`.\n     *\n     * For example, given the following DOM and assuming `DivHarness.hostSelector` is `'div'` and\n     * `IdIsD1Harness.hostSelector` is `'#d1'`\n     *\n     * ```html\n     * <div id=\"d1\"></div><div id=\"d2\"></div>\n     * ```\n     *\n     * then we expect:\n     *\n     * ```ts\n     * // Gets [DivHarness for #d1, TestElement for #d1, DivHarness for #d2, TestElement for #d2]\n     * await lf.locatorForAll(DivHarness, 'div')()\n     * // Gets [TestElement for #d1, TestElement for #d2]\n     * await lf.locatorForAll('div', '#d1')()\n     * // Gets [DivHarness for #d1, IdIsD1Harness for #d1, DivHarness for #d2]\n     * await lf.locatorForAll(DivHarness, IdIsD1Harness)()\n     * // Gets []\n     * await lf.locatorForAll('span')()\n     * ```\n     *\n     * @param queries A list of queries specifying which harnesses and elements to search for:\n     *   - A `string` searches for elements matching the CSS selector specified by the string.\n     *   - A `ComponentHarness` constructor searches for `ComponentHarness` instances matching the\n     *     given class.\n     *   - A `HarnessPredicate` searches for `ComponentHarness` instances matching the given\n     *     predicate.\n     * @return An asynchronous locator function that searches for and returns a `Promise` for all\n     *   elements and harnesses matching the given search criteria. Matches are ordered first by\n     *   order in the DOM, and second by order in the queries list. If an element matches more than\n     *   one `ComponentHarness` class, the locator gets an instance of each for the same element. If\n     *   an element matches multiple `string` selectors, only one `TestElement` instance is returned\n     *   for that element. The type that the `Promise` resolves to is an array where each element is\n     *   the union of all result types for each query.\n     */",
+          "memberType": "method",
+          "memberTags": [
+            "override"
+          ]
+        },
+        {
+          "name": "rootHarnessLoader",
+          "signatures": [
+            {
+              "name": "rootHarnessLoader",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [
+                {
+                  "name": "return",
+                  "comment": "A `HarnessLoader` rooted at the root element of this `HarnessEnvironment`."
+                }
+              ],
+              "params": [],
+              "rawComment": "/** @return A `HarnessLoader` rooted at the root element of this `HarnessEnvironment`. */",
+              "returnType": "Promise<HarnessLoader>"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "Promise<HarnessLoader>",
+            "generics": [],
+            "name": "rootHarnessLoader",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [
+              {
+                "name": "return",
+                "comment": "A `HarnessLoader` rooted at the root element of this `HarnessEnvironment`."
+              }
+            ],
+            "rawComment": "/** @return A `HarnessLoader` rooted at the root element of this `HarnessEnvironment`. */"
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [
+            {
+              "name": "return",
+              "comment": "A `HarnessLoader` rooted at the root element of this `HarnessEnvironment`."
+            }
+          ],
+          "rawComment": "/** @return A `HarnessLoader` rooted at the root element of this `HarnessEnvironment`. */",
+          "memberType": "method",
+          "memberTags": [
+            "override"
+          ]
+        },
+        {
+          "name": "harnessLoaderFor",
+          "signatures": [
+            {
+              "name": "harnessLoaderFor",
+              "entryType": "function",
+              "description": "Gets a `HarnessLoader` instance for an element under the root of this `HarnessEnvironment`.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [
+                {
+                  "name": "param",
+                  "comment": "The selector for the root element."
+                },
+                {
+                  "name": "return",
+                  "comment": "A `HarnessLoader` rooted at the first element matching the given selector."
+                },
+                {
+                  "name": "throws",
+                  "comment": "If no matching element is found for the given selector."
+                }
+              ],
+              "params": [
+                {
+                  "name": "selector",
+                  "description": "The selector for the root element.",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/**\n     * Gets a `HarnessLoader` instance for an element under the root of this `HarnessEnvironment`.\n     * @param selector The selector for the root element.\n     * @return A `HarnessLoader` rooted at the first element matching the given selector.\n     * @throws If no matching element is found for the given selector.\n     */",
+              "returnType": "Promise<HarnessLoader>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "selector",
+                "description": "The selector for the root element.",
+                "type": "string",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "Promise<HarnessLoader>",
+            "generics": [],
+            "name": "harnessLoaderFor",
+            "description": "Gets a `HarnessLoader` instance for an element under the root of this `HarnessEnvironment`.",
+            "entryType": "function",
+            "jsdocTags": [
+              {
+                "name": "param",
+                "comment": "The selector for the root element."
+              },
+              {
+                "name": "return",
+                "comment": "A `HarnessLoader` rooted at the first element matching the given selector."
+              },
+              {
+                "name": "throws",
+                "comment": "If no matching element is found for the given selector."
+              }
+            ],
+            "rawComment": "/**\n     * Gets a `HarnessLoader` instance for an element under the root of this `HarnessEnvironment`.\n     * @param selector The selector for the root element.\n     * @return A `HarnessLoader` rooted at the first element matching the given selector.\n     * @throws If no matching element is found for the given selector.\n     */"
+          },
+          "entryType": "function",
+          "description": "Gets a `HarnessLoader` instance for an element under the root of this `HarnessEnvironment`.",
+          "jsdocTags": [
+            {
+              "name": "param",
+              "comment": "The selector for the root element."
+            },
+            {
+              "name": "return",
+              "comment": "A `HarnessLoader` rooted at the first element matching the given selector."
+            },
+            {
+              "name": "throws",
+              "comment": "If no matching element is found for the given selector."
+            }
+          ],
+          "rawComment": "/**\n     * Gets a `HarnessLoader` instance for an element under the root of this `HarnessEnvironment`.\n     * @param selector The selector for the root element.\n     * @return A `HarnessLoader` rooted at the first element matching the given selector.\n     * @throws If no matching element is found for the given selector.\n     */",
+          "memberType": "method",
+          "memberTags": [
+            "override"
+          ]
+        },
+        {
+          "name": "harnessLoaderForOptional",
+          "signatures": [
+            {
+              "name": "harnessLoaderForOptional",
+              "entryType": "function",
+              "description": "Gets a `HarnessLoader` instance for an element under the root of this `HarnessEnvironment`.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [
+                {
+                  "name": "param",
+                  "comment": "The selector for the root element."
+                },
+                {
+                  "name": "return",
+                  "comment": "A `HarnessLoader` rooted at the first element matching the given selector, or null if\nno matching element is found."
+                }
+              ],
+              "params": [
+                {
+                  "name": "selector",
+                  "description": "The selector for the root element.",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/**\n     * Gets a `HarnessLoader` instance for an element under the root of this `HarnessEnvironment`.\n     * @param selector The selector for the root element.\n     * @return A `HarnessLoader` rooted at the first element matching the given selector, or null if\n     *     no matching element is found.\n     */",
+              "returnType": "Promise<HarnessLoader | null>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "selector",
+                "description": "The selector for the root element.",
+                "type": "string",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "Promise<HarnessLoader | null>",
+            "generics": [],
+            "name": "harnessLoaderForOptional",
+            "description": "Gets a `HarnessLoader` instance for an element under the root of this `HarnessEnvironment`.",
+            "entryType": "function",
+            "jsdocTags": [
+              {
+                "name": "param",
+                "comment": "The selector for the root element."
+              },
+              {
+                "name": "return",
+                "comment": "A `HarnessLoader` rooted at the first element matching the given selector, or null if\nno matching element is found."
+              }
+            ],
+            "rawComment": "/**\n     * Gets a `HarnessLoader` instance for an element under the root of this `HarnessEnvironment`.\n     * @param selector The selector for the root element.\n     * @return A `HarnessLoader` rooted at the first element matching the given selector, or null if\n     *     no matching element is found.\n     */"
+          },
+          "entryType": "function",
+          "description": "Gets a `HarnessLoader` instance for an element under the root of this `HarnessEnvironment`.",
+          "jsdocTags": [
+            {
+              "name": "param",
+              "comment": "The selector for the root element."
+            },
+            {
+              "name": "return",
+              "comment": "A `HarnessLoader` rooted at the first element matching the given selector, or null if\nno matching element is found."
+            }
+          ],
+          "rawComment": "/**\n     * Gets a `HarnessLoader` instance for an element under the root of this `HarnessEnvironment`.\n     * @param selector The selector for the root element.\n     * @return A `HarnessLoader` rooted at the first element matching the given selector, or null if\n     *     no matching element is found.\n     */",
+          "memberType": "method",
+          "memberTags": [
+            "override"
+          ]
+        },
+        {
+          "name": "harnessLoaderForAll",
+          "signatures": [
+            {
+              "name": "harnessLoaderForAll",
+              "entryType": "function",
+              "description": "Gets a list of `HarnessLoader` instances, one for each matching element.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [
+                {
+                  "name": "param",
+                  "comment": "The selector for the root element."
+                },
+                {
+                  "name": "return",
+                  "comment": "A list of `HarnessLoader`, one rooted at each element matching the given selector."
+                }
+              ],
+              "params": [
+                {
+                  "name": "selector",
+                  "description": "The selector for the root element.",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/**\n     * Gets a list of `HarnessLoader` instances, one for each matching element.\n     * @param selector The selector for the root element.\n     * @return A list of `HarnessLoader`, one rooted at each element matching the given selector.\n     */",
+              "returnType": "Promise<HarnessLoader[]>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "selector",
+                "description": "The selector for the root element.",
+                "type": "string",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "Promise<HarnessLoader[]>",
+            "generics": [],
+            "name": "harnessLoaderForAll",
+            "description": "Gets a list of `HarnessLoader` instances, one for each matching element.",
+            "entryType": "function",
+            "jsdocTags": [
+              {
+                "name": "param",
+                "comment": "The selector for the root element."
+              },
+              {
+                "name": "return",
+                "comment": "A list of `HarnessLoader`, one rooted at each element matching the given selector."
+              }
+            ],
+            "rawComment": "/**\n     * Gets a list of `HarnessLoader` instances, one for each matching element.\n     * @param selector The selector for the root element.\n     * @return A list of `HarnessLoader`, one rooted at each element matching the given selector.\n     */"
+          },
+          "entryType": "function",
+          "description": "Gets a list of `HarnessLoader` instances, one for each matching element.",
+          "jsdocTags": [
+            {
+              "name": "param",
+              "comment": "The selector for the root element."
+            },
+            {
+              "name": "return",
+              "comment": "A list of `HarnessLoader`, one rooted at each element matching the given selector."
+            }
+          ],
+          "rawComment": "/**\n     * Gets a list of `HarnessLoader` instances, one for each matching element.\n     * @param selector The selector for the root element.\n     * @return A list of `HarnessLoader`, one rooted at each element matching the given selector.\n     */",
+          "memberType": "method",
+          "memberTags": [
+            "override"
+          ]
+        },
+        {
+          "name": "getHarness",
+          "signatures": [
+            {
+              "name": "getHarness",
+              "entryType": "function",
+              "description": "Searches for an instance of the component corresponding to the given harness type under the\n`HarnessEnvironment`'s root element, and returns a `ComponentHarness` for that instance. If\nmultiple matching components are found, a harness for the first one is returned. If no matching\ncomponent is found, an error is thrown.",
+              "generics": [
+                {
+                  "name": "T",
+                  "constraint": "ComponentHarness"
+                }
+              ],
+              "isNewType": false,
+              "jsdocTags": [
+                {
+                  "name": "param",
+                  "comment": "A query for a harness to create"
+                },
+                {
+                  "name": "return",
+                  "comment": "An instance of the given harness type"
+                },
+                {
+                  "name": "throws",
+                  "comment": "If a matching component instance can't be found."
+                }
+              ],
+              "params": [
+                {
+                  "name": "query",
+                  "description": "A query for a harness to create",
+                  "type": "HarnessQuery<T>",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/**\n     * Searches for an instance of the component corresponding to the given harness type under the\n     * `HarnessEnvironment`'s root element, and returns a `ComponentHarness` for that instance. If\n     * multiple matching components are found, a harness for the first one is returned. If no matching\n     * component is found, an error is thrown.\n     * @param query A query for a harness to create\n     * @return An instance of the given harness type\n     * @throws If a matching component instance can't be found.\n     */",
+              "returnType": "Promise<T>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "query",
+                "description": "A query for a harness to create",
+                "type": "HarnessQuery<T>",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "Promise<T>",
+            "generics": [
+              {
+                "name": "T",
+                "constraint": "ComponentHarness"
+              }
+            ],
+            "name": "getHarness",
+            "description": "Searches for an instance of the component corresponding to the given harness type under the\n`HarnessEnvironment`'s root element, and returns a `ComponentHarness` for that instance. If\nmultiple matching components are found, a harness for the first one is returned. If no matching\ncomponent is found, an error is thrown.",
+            "entryType": "function",
+            "jsdocTags": [
+              {
+                "name": "param",
+                "comment": "A query for a harness to create"
+              },
+              {
+                "name": "return",
+                "comment": "An instance of the given harness type"
+              },
+              {
+                "name": "throws",
+                "comment": "If a matching component instance can't be found."
+              }
+            ],
+            "rawComment": "/**\n     * Searches for an instance of the component corresponding to the given harness type under the\n     * `HarnessEnvironment`'s root element, and returns a `ComponentHarness` for that instance. If\n     * multiple matching components are found, a harness for the first one is returned. If no matching\n     * component is found, an error is thrown.\n     * @param query A query for a harness to create\n     * @return An instance of the given harness type\n     * @throws If a matching component instance can't be found.\n     */"
+          },
+          "entryType": "function",
+          "description": "Searches for an instance of the component corresponding to the given harness type under the\n`HarnessEnvironment`'s root element, and returns a `ComponentHarness` for that instance. If\nmultiple matching components are found, a harness for the first one is returned. If no matching\ncomponent is found, an error is thrown.",
+          "jsdocTags": [
+            {
+              "name": "param",
+              "comment": "A query for a harness to create"
+            },
+            {
+              "name": "return",
+              "comment": "An instance of the given harness type"
+            },
+            {
+              "name": "throws",
+              "comment": "If a matching component instance can't be found."
+            }
+          ],
+          "rawComment": "/**\n     * Searches for an instance of the component corresponding to the given harness type under the\n     * `HarnessEnvironment`'s root element, and returns a `ComponentHarness` for that instance. If\n     * multiple matching components are found, a harness for the first one is returned. If no matching\n     * component is found, an error is thrown.\n     * @param query A query for a harness to create\n     * @return An instance of the given harness type\n     * @throws If a matching component instance can't be found.\n     */",
+          "memberType": "method",
+          "memberTags": [
+            "override"
+          ]
+        },
+        {
+          "name": "getHarnessOrNull",
+          "signatures": [
+            {
+              "name": "getHarnessOrNull",
+              "entryType": "function",
+              "description": "Searches for an instance of the component corresponding to the given harness type under the\n`HarnessEnvironment`'s root element, and returns a `ComponentHarness` for that instance. If\nmultiple matching components are found, a harness for the first one is returned. If no matching\ncomponent is found, null is returned.",
+              "generics": [
+                {
+                  "name": "T",
+                  "constraint": "ComponentHarness"
+                }
+              ],
+              "isNewType": false,
+              "jsdocTags": [
+                {
+                  "name": "param",
+                  "comment": "A query for a harness to create"
+                },
+                {
+                  "name": "return",
+                  "comment": "An instance of the given harness type (or null if not found)."
+                }
+              ],
+              "params": [
+                {
+                  "name": "query",
+                  "description": "A query for a harness to create",
+                  "type": "HarnessQuery<T>",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/**\n     * Searches for an instance of the component corresponding to the given harness type under the\n     * `HarnessEnvironment`'s root element, and returns a `ComponentHarness` for that instance. If\n     * multiple matching components are found, a harness for the first one is returned. If no matching\n     * component is found, null is returned.\n     * @param query A query for a harness to create\n     * @return An instance of the given harness type (or null if not found).\n     */",
+              "returnType": "Promise<T | null>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "query",
+                "description": "A query for a harness to create",
+                "type": "HarnessQuery<T>",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "Promise<T | null>",
+            "generics": [
+              {
+                "name": "T",
+                "constraint": "ComponentHarness"
+              }
+            ],
+            "name": "getHarnessOrNull",
+            "description": "Searches for an instance of the component corresponding to the given harness type under the\n`HarnessEnvironment`'s root element, and returns a `ComponentHarness` for that instance. If\nmultiple matching components are found, a harness for the first one is returned. If no matching\ncomponent is found, null is returned.",
+            "entryType": "function",
+            "jsdocTags": [
+              {
+                "name": "param",
+                "comment": "A query for a harness to create"
+              },
+              {
+                "name": "return",
+                "comment": "An instance of the given harness type (or null if not found)."
+              }
+            ],
+            "rawComment": "/**\n     * Searches for an instance of the component corresponding to the given harness type under the\n     * `HarnessEnvironment`'s root element, and returns a `ComponentHarness` for that instance. If\n     * multiple matching components are found, a harness for the first one is returned. If no matching\n     * component is found, null is returned.\n     * @param query A query for a harness to create\n     * @return An instance of the given harness type (or null if not found).\n     */"
+          },
+          "entryType": "function",
+          "description": "Searches for an instance of the component corresponding to the given harness type under the\n`HarnessEnvironment`'s root element, and returns a `ComponentHarness` for that instance. If\nmultiple matching components are found, a harness for the first one is returned. If no matching\ncomponent is found, null is returned.",
+          "jsdocTags": [
+            {
+              "name": "param",
+              "comment": "A query for a harness to create"
+            },
+            {
+              "name": "return",
+              "comment": "An instance of the given harness type (or null if not found)."
+            }
+          ],
+          "rawComment": "/**\n     * Searches for an instance of the component corresponding to the given harness type under the\n     * `HarnessEnvironment`'s root element, and returns a `ComponentHarness` for that instance. If\n     * multiple matching components are found, a harness for the first one is returned. If no matching\n     * component is found, null is returned.\n     * @param query A query for a harness to create\n     * @return An instance of the given harness type (or null if not found).\n     */",
+          "memberType": "method",
+          "memberTags": [
+            "override"
+          ]
+        },
+        {
+          "name": "getHarnessAtIndex",
+          "signatures": [
+            {
+              "name": "getHarnessAtIndex",
+              "entryType": "function",
+              "description": "Searches for an instance of the component corresponding to the given harness type and index\nunder the `HarnessEnvironment`'s root element, and returns a `ComponentHarness` for that\ninstance. The index specifies the offset of the component to find. If no matching\ncomponent is found at that index, an error is thrown.",
+              "generics": [
+                {
+                  "name": "T",
+                  "constraint": "ComponentHarness"
+                }
+              ],
+              "isNewType": false,
+              "jsdocTags": [
+                {
+                  "name": "param",
+                  "comment": "A query for a harness to create"
+                },
+                {
+                  "name": "param",
+                  "comment": "The zero-indexed offset of the component to find"
+                },
+                {
+                  "name": "return",
+                  "comment": "An instance of the given harness type"
+                },
+                {
+                  "name": "throws",
+                  "comment": "If a matching component instance can't be found."
+                }
+              ],
+              "params": [
+                {
+                  "name": "query",
+                  "description": "A query for a harness to create",
+                  "type": "HarnessQuery<T>",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "offset",
+                  "description": "",
+                  "type": "number",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/**\n     * Searches for an instance of the component corresponding to the given harness type and index\n     * under the `HarnessEnvironment`'s root element, and returns a `ComponentHarness` for that\n     * instance. The index specifies the offset of the component to find. If no matching\n     * component is found at that index, an error is thrown.\n     * @param query A query for a harness to create\n     * @param index The zero-indexed offset of the component to find\n     * @return An instance of the given harness type\n     * @throws If a matching component instance can't be found.\n     */",
+              "returnType": "Promise<T>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "query",
+                "description": "A query for a harness to create",
+                "type": "HarnessQuery<T>",
+                "isOptional": false,
+                "isRestParam": false
+              },
+              {
+                "name": "offset",
+                "description": "",
+                "type": "number",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "Promise<T>",
+            "generics": [
+              {
+                "name": "T",
+                "constraint": "ComponentHarness"
+              }
+            ],
+            "name": "getHarnessAtIndex",
+            "description": "Searches for an instance of the component corresponding to the given harness type and index\nunder the `HarnessEnvironment`'s root element, and returns a `ComponentHarness` for that\ninstance. The index specifies the offset of the component to find. If no matching\ncomponent is found at that index, an error is thrown.",
+            "entryType": "function",
+            "jsdocTags": [
+              {
+                "name": "param",
+                "comment": "A query for a harness to create"
+              },
+              {
+                "name": "param",
+                "comment": "The zero-indexed offset of the component to find"
+              },
+              {
+                "name": "return",
+                "comment": "An instance of the given harness type"
+              },
+              {
+                "name": "throws",
+                "comment": "If a matching component instance can't be found."
+              }
+            ],
+            "rawComment": "/**\n     * Searches for an instance of the component corresponding to the given harness type and index\n     * under the `HarnessEnvironment`'s root element, and returns a `ComponentHarness` for that\n     * instance. The index specifies the offset of the component to find. If no matching\n     * component is found at that index, an error is thrown.\n     * @param query A query for a harness to create\n     * @param index The zero-indexed offset of the component to find\n     * @return An instance of the given harness type\n     * @throws If a matching component instance can't be found.\n     */"
+          },
+          "entryType": "function",
+          "description": "Searches for an instance of the component corresponding to the given harness type and index\nunder the `HarnessEnvironment`'s root element, and returns a `ComponentHarness` for that\ninstance. The index specifies the offset of the component to find. If no matching\ncomponent is found at that index, an error is thrown.",
+          "jsdocTags": [
+            {
+              "name": "param",
+              "comment": "A query for a harness to create"
+            },
+            {
+              "name": "param",
+              "comment": "The zero-indexed offset of the component to find"
+            },
+            {
+              "name": "return",
+              "comment": "An instance of the given harness type"
+            },
+            {
+              "name": "throws",
+              "comment": "If a matching component instance can't be found."
+            }
+          ],
+          "rawComment": "/**\n     * Searches for an instance of the component corresponding to the given harness type and index\n     * under the `HarnessEnvironment`'s root element, and returns a `ComponentHarness` for that\n     * instance. The index specifies the offset of the component to find. If no matching\n     * component is found at that index, an error is thrown.\n     * @param query A query for a harness to create\n     * @param index The zero-indexed offset of the component to find\n     * @return An instance of the given harness type\n     * @throws If a matching component instance can't be found.\n     */",
+          "memberType": "method",
+          "memberTags": [
+            "override"
+          ]
+        },
+        {
+          "name": "getAllHarnesses",
+          "signatures": [
+            {
+              "name": "getAllHarnesses",
+              "entryType": "function",
+              "description": "Searches for all instances of the component corresponding to the given harness type under the\n`HarnessEnvironment`'s root element, and returns a list `ComponentHarness` for each instance.",
+              "generics": [
+                {
+                  "name": "T",
+                  "constraint": "ComponentHarness"
+                }
+              ],
+              "isNewType": false,
+              "jsdocTags": [
+                {
+                  "name": "param",
+                  "comment": "A query for a harness to create"
+                },
+                {
+                  "name": "return",
+                  "comment": "A list instances of the given harness type."
+                }
+              ],
+              "params": [
+                {
+                  "name": "query",
+                  "description": "A query for a harness to create",
+                  "type": "HarnessQuery<T>",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/**\n     * Searches for all instances of the component corresponding to the given harness type under the\n     * `HarnessEnvironment`'s root element, and returns a list `ComponentHarness` for each instance.\n     * @param query A query for a harness to create\n     * @return A list instances of the given harness type.\n     */",
+              "returnType": "Promise<T[]>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "query",
+                "description": "A query for a harness to create",
+                "type": "HarnessQuery<T>",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "Promise<T[]>",
+            "generics": [
+              {
+                "name": "T",
+                "constraint": "ComponentHarness"
+              }
+            ],
+            "name": "getAllHarnesses",
+            "description": "Searches for all instances of the component corresponding to the given harness type under the\n`HarnessEnvironment`'s root element, and returns a list `ComponentHarness` for each instance.",
+            "entryType": "function",
+            "jsdocTags": [
+              {
+                "name": "param",
+                "comment": "A query for a harness to create"
+              },
+              {
+                "name": "return",
+                "comment": "A list instances of the given harness type."
+              }
+            ],
+            "rawComment": "/**\n     * Searches for all instances of the component corresponding to the given harness type under the\n     * `HarnessEnvironment`'s root element, and returns a list `ComponentHarness` for each instance.\n     * @param query A query for a harness to create\n     * @return A list instances of the given harness type.\n     */"
+          },
+          "entryType": "function",
+          "description": "Searches for all instances of the component corresponding to the given harness type under the\n`HarnessEnvironment`'s root element, and returns a list `ComponentHarness` for each instance.",
+          "jsdocTags": [
+            {
+              "name": "param",
+              "comment": "A query for a harness to create"
+            },
+            {
+              "name": "return",
+              "comment": "A list instances of the given harness type."
+            }
+          ],
+          "rawComment": "/**\n     * Searches for all instances of the component corresponding to the given harness type under the\n     * `HarnessEnvironment`'s root element, and returns a list `ComponentHarness` for each instance.\n     * @param query A query for a harness to create\n     * @return A list instances of the given harness type.\n     */",
+          "memberType": "method",
+          "memberTags": [
+            "override"
+          ]
+        },
+        {
+          "name": "countHarnesses",
+          "signatures": [
+            {
+              "name": "countHarnesses",
+              "entryType": "function",
+              "description": "Searches for all instance of the component corresponding to the given harness type under the\n`HarnessEnvironment`'s root element, and returns the number that were found.",
+              "generics": [
+                {
+                  "name": "T",
+                  "constraint": "ComponentHarness"
+                }
+              ],
+              "isNewType": false,
+              "jsdocTags": [
+                {
+                  "name": "param",
+                  "comment": "A query for a harness to create"
+                },
+                {
+                  "name": "return",
+                  "comment": "The number of instances that were found."
+                }
+              ],
+              "params": [
+                {
+                  "name": "query",
+                  "description": "A query for a harness to create",
+                  "type": "HarnessQuery<T>",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/**\n     * Searches for all instance of the component corresponding to the given harness type under the\n     * `HarnessEnvironment`'s root element, and returns the number that were found.\n     * @param query A query for a harness to create\n     * @return The number of instances that were found.\n     */",
+              "returnType": "Promise<number>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "query",
+                "description": "A query for a harness to create",
+                "type": "HarnessQuery<T>",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "Promise<number>",
+            "generics": [
+              {
+                "name": "T",
+                "constraint": "ComponentHarness"
+              }
+            ],
+            "name": "countHarnesses",
+            "description": "Searches for all instance of the component corresponding to the given harness type under the\n`HarnessEnvironment`'s root element, and returns the number that were found.",
+            "entryType": "function",
+            "jsdocTags": [
+              {
+                "name": "param",
+                "comment": "A query for a harness to create"
+              },
+              {
+                "name": "return",
+                "comment": "The number of instances that were found."
+              }
+            ],
+            "rawComment": "/**\n     * Searches for all instance of the component corresponding to the given harness type under the\n     * `HarnessEnvironment`'s root element, and returns the number that were found.\n     * @param query A query for a harness to create\n     * @return The number of instances that were found.\n     */"
+          },
+          "entryType": "function",
+          "description": "Searches for all instance of the component corresponding to the given harness type under the\n`HarnessEnvironment`'s root element, and returns the number that were found.",
+          "jsdocTags": [
+            {
+              "name": "param",
+              "comment": "A query for a harness to create"
+            },
+            {
+              "name": "return",
+              "comment": "The number of instances that were found."
+            }
+          ],
+          "rawComment": "/**\n     * Searches for all instance of the component corresponding to the given harness type under the\n     * `HarnessEnvironment`'s root element, and returns the number that were found.\n     * @param query A query for a harness to create\n     * @return The number of instances that were found.\n     */",
+          "memberType": "method",
+          "memberTags": [
+            "override"
+          ]
+        },
+        {
+          "name": "hasHarness",
+          "signatures": [
+            {
+              "name": "hasHarness",
+              "entryType": "function",
+              "description": "Searches for an instance of the component corresponding to the given harness type under the\n`HarnessEnvironment`'s root element, and returns a boolean indicating if any were found.",
+              "generics": [
+                {
+                  "name": "T",
+                  "constraint": "ComponentHarness"
+                }
+              ],
+              "isNewType": false,
+              "jsdocTags": [
+                {
+                  "name": "param",
+                  "comment": "A query for a harness to create"
+                },
+                {
+                  "name": "return",
+                  "comment": "A boolean indicating if an instance was found."
+                }
+              ],
+              "params": [
+                {
+                  "name": "query",
+                  "description": "A query for a harness to create",
+                  "type": "HarnessQuery<T>",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/**\n     * Searches for an instance of the component corresponding to the given harness type under the\n     * `HarnessEnvironment`'s root element, and returns a boolean indicating if any were found.\n     * @param query A query for a harness to create\n     * @return A boolean indicating if an instance was found.\n     */",
+              "returnType": "Promise<boolean>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "query",
+                "description": "A query for a harness to create",
+                "type": "HarnessQuery<T>",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "Promise<boolean>",
+            "generics": [
+              {
+                "name": "T",
+                "constraint": "ComponentHarness"
+              }
+            ],
+            "name": "hasHarness",
+            "description": "Searches for an instance of the component corresponding to the given harness type under the\n`HarnessEnvironment`'s root element, and returns a boolean indicating if any were found.",
+            "entryType": "function",
+            "jsdocTags": [
+              {
+                "name": "param",
+                "comment": "A query for a harness to create"
+              },
+              {
+                "name": "return",
+                "comment": "A boolean indicating if an instance was found."
+              }
+            ],
+            "rawComment": "/**\n     * Searches for an instance of the component corresponding to the given harness type under the\n     * `HarnessEnvironment`'s root element, and returns a boolean indicating if any were found.\n     * @param query A query for a harness to create\n     * @return A boolean indicating if an instance was found.\n     */"
+          },
+          "entryType": "function",
+          "description": "Searches for an instance of the component corresponding to the given harness type under the\n`HarnessEnvironment`'s root element, and returns a boolean indicating if any were found.",
+          "jsdocTags": [
+            {
+              "name": "param",
+              "comment": "A query for a harness to create"
+            },
+            {
+              "name": "return",
+              "comment": "A boolean indicating if an instance was found."
+            }
+          ],
+          "rawComment": "/**\n     * Searches for an instance of the component corresponding to the given harness type under the\n     * `HarnessEnvironment`'s root element, and returns a boolean indicating if any were found.\n     * @param query A query for a harness to create\n     * @return A boolean indicating if an instance was found.\n     */",
+          "memberType": "method",
+          "memberTags": [
+            "override"
+          ]
+        },
+        {
+          "name": "getChildLoader",
+          "signatures": [
+            {
+              "name": "getChildLoader",
+              "entryType": "function",
+              "description": "Searches for an element with the given selector under the evironment's root element,\nand returns a `HarnessLoader` rooted at the matching element. If multiple elements match the\nselector, the first is used. If no elements match, an error is thrown.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [
+                {
+                  "name": "param",
+                  "comment": "The selector for the root element of the new `HarnessLoader`"
+                },
+                {
+                  "name": "return",
+                  "comment": "A `HarnessLoader` rooted at the element matching the given selector."
+                },
+                {
+                  "name": "throws",
+                  "comment": "If a matching element can't be found."
+                }
+              ],
+              "params": [
+                {
+                  "name": "selector",
+                  "description": "The selector for the root element of the new `HarnessLoader`",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/**\n     * Searches for an element with the given selector under the evironment's root element,\n     * and returns a `HarnessLoader` rooted at the matching element. If multiple elements match the\n     * selector, the first is used. If no elements match, an error is thrown.\n     * @param selector The selector for the root element of the new `HarnessLoader`\n     * @return A `HarnessLoader` rooted at the element matching the given selector.\n     * @throws If a matching element can't be found.\n     */",
+              "returnType": "Promise<HarnessLoader>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "selector",
+                "description": "The selector for the root element of the new `HarnessLoader`",
+                "type": "string",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "Promise<HarnessLoader>",
+            "generics": [],
+            "name": "getChildLoader",
+            "description": "Searches for an element with the given selector under the evironment's root element,\nand returns a `HarnessLoader` rooted at the matching element. If multiple elements match the\nselector, the first is used. If no elements match, an error is thrown.",
+            "entryType": "function",
+            "jsdocTags": [
+              {
+                "name": "param",
+                "comment": "The selector for the root element of the new `HarnessLoader`"
+              },
+              {
+                "name": "return",
+                "comment": "A `HarnessLoader` rooted at the element matching the given selector."
+              },
+              {
+                "name": "throws",
+                "comment": "If a matching element can't be found."
+              }
+            ],
+            "rawComment": "/**\n     * Searches for an element with the given selector under the evironment's root element,\n     * and returns a `HarnessLoader` rooted at the matching element. If multiple elements match the\n     * selector, the first is used. If no elements match, an error is thrown.\n     * @param selector The selector for the root element of the new `HarnessLoader`\n     * @return A `HarnessLoader` rooted at the element matching the given selector.\n     * @throws If a matching element can't be found.\n     */"
+          },
+          "entryType": "function",
+          "description": "Searches for an element with the given selector under the evironment's root element,\nand returns a `HarnessLoader` rooted at the matching element. If multiple elements match the\nselector, the first is used. If no elements match, an error is thrown.",
+          "jsdocTags": [
+            {
+              "name": "param",
+              "comment": "The selector for the root element of the new `HarnessLoader`"
+            },
+            {
+              "name": "return",
+              "comment": "A `HarnessLoader` rooted at the element matching the given selector."
+            },
+            {
+              "name": "throws",
+              "comment": "If a matching element can't be found."
+            }
+          ],
+          "rawComment": "/**\n     * Searches for an element with the given selector under the evironment's root element,\n     * and returns a `HarnessLoader` rooted at the matching element. If multiple elements match the\n     * selector, the first is used. If no elements match, an error is thrown.\n     * @param selector The selector for the root element of the new `HarnessLoader`\n     * @return A `HarnessLoader` rooted at the element matching the given selector.\n     * @throws If a matching element can't be found.\n     */",
+          "memberType": "method",
+          "memberTags": [
+            "override"
+          ]
+        },
+        {
+          "name": "getAllChildLoaders",
+          "signatures": [
+            {
+              "name": "getAllChildLoaders",
+              "entryType": "function",
+              "description": "Searches for all elements with the given selector under the environment's root element,\nand returns an array of `HarnessLoader`s, one for each matching element, rooted at that\nelement.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [
+                {
+                  "name": "param",
+                  "comment": "The selector for the root element of the new `HarnessLoader`"
+                },
+                {
+                  "name": "return",
+                  "comment": "A list of `HarnessLoader`s, one for each matching element, rooted at that element."
+                }
+              ],
+              "params": [
+                {
+                  "name": "selector",
+                  "description": "The selector for the root element of the new `HarnessLoader`",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/**\n     * Searches for all elements with the given selector under the environment's root element,\n     * and returns an array of `HarnessLoader`s, one for each matching element, rooted at that\n     * element.\n     * @param selector The selector for the root element of the new `HarnessLoader`\n     * @return A list of `HarnessLoader`s, one for each matching element, rooted at that element.\n     */",
+              "returnType": "Promise<HarnessLoader[]>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "selector",
+                "description": "The selector for the root element of the new `HarnessLoader`",
+                "type": "string",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "Promise<HarnessLoader[]>",
+            "generics": [],
+            "name": "getAllChildLoaders",
+            "description": "Searches for all elements with the given selector under the environment's root element,\nand returns an array of `HarnessLoader`s, one for each matching element, rooted at that\nelement.",
+            "entryType": "function",
+            "jsdocTags": [
+              {
+                "name": "param",
+                "comment": "The selector for the root element of the new `HarnessLoader`"
+              },
+              {
+                "name": "return",
+                "comment": "A list of `HarnessLoader`s, one for each matching element, rooted at that element."
+              }
+            ],
+            "rawComment": "/**\n     * Searches for all elements with the given selector under the environment's root element,\n     * and returns an array of `HarnessLoader`s, one for each matching element, rooted at that\n     * element.\n     * @param selector The selector for the root element of the new `HarnessLoader`\n     * @return A list of `HarnessLoader`s, one for each matching element, rooted at that element.\n     */"
+          },
+          "entryType": "function",
+          "description": "Searches for all elements with the given selector under the environment's root element,\nand returns an array of `HarnessLoader`s, one for each matching element, rooted at that\nelement.",
+          "jsdocTags": [
+            {
+              "name": "param",
+              "comment": "The selector for the root element of the new `HarnessLoader`"
+            },
+            {
+              "name": "return",
+              "comment": "A list of `HarnessLoader`s, one for each matching element, rooted at that element."
+            }
+          ],
+          "rawComment": "/**\n     * Searches for all elements with the given selector under the environment's root element,\n     * and returns an array of `HarnessLoader`s, one for each matching element, rooted at that\n     * element.\n     * @param selector The selector for the root element of the new `HarnessLoader`\n     * @return A list of `HarnessLoader`s, one for each matching element, rooted at that element.\n     */",
+          "memberType": "method",
+          "memberTags": [
+            "override"
+          ]
+        },
+        {
+          "name": "createComponentHarness",
+          "signatures": [
+            {
+              "name": "createComponentHarness",
+              "entryType": "function",
+              "description": "Creates a `ComponentHarness` for the given harness type with the given raw host element.",
+              "generics": [
+                {
+                  "name": "T",
+                  "constraint": "ComponentHarness"
+                }
+              ],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "harnessType",
+                  "description": "",
+                  "type": "ComponentHarnessConstructor<T>",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "element",
+                  "description": "",
+                  "type": "E",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/** Creates a `ComponentHarness` for the given harness type with the given raw host element. */",
+              "returnType": "T"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "harnessType",
+                "description": "",
+                "type": "ComponentHarnessConstructor<T>",
+                "isOptional": false,
+                "isRestParam": false
+              },
+              {
+                "name": "element",
+                "description": "",
+                "type": "E",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "T",
+            "generics": [
+              {
+                "name": "T",
+                "constraint": "ComponentHarness"
+              }
+            ],
+            "name": "createComponentHarness",
+            "description": "Creates a `ComponentHarness` for the given harness type with the given raw host element.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Creates a `ComponentHarness` for the given harness type with the given raw host element. */"
+          },
+          "entryType": "function",
+          "description": "Creates a `ComponentHarness` for the given harness type with the given raw host element.",
+          "jsdocTags": [],
+          "rawComment": "/** Creates a `ComponentHarness` for the given harness type with the given raw host element. */",
+          "memberType": "method",
+          "memberTags": [
+            "protected",
+            "override"
+          ]
+        },
+        {
           "name": "getNativeElement",
           "signatures": [
             {
@@ -1800,6 +3248,86 @@
     ],
     [
       "SeleniumWebDriverHarnessEnvironment.getAllRawElements",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverHarnessEnvironment.rawRootElement",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverHarnessEnvironment.rootElement",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverHarnessEnvironment.rootElement",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverHarnessEnvironment.documentRootLocatorFactory",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverHarnessEnvironment.locatorFor",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverHarnessEnvironment.locatorForOptional",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverHarnessEnvironment.locatorForAll",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverHarnessEnvironment.rootHarnessLoader",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverHarnessEnvironment.harnessLoaderFor",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverHarnessEnvironment.harnessLoaderForOptional",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverHarnessEnvironment.harnessLoaderForAll",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverHarnessEnvironment.getHarness",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverHarnessEnvironment.getHarnessOrNull",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverHarnessEnvironment.getHarnessAtIndex",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverHarnessEnvironment.getAllHarnesses",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverHarnessEnvironment.countHarnesses",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverHarnessEnvironment.hasHarness",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverHarnessEnvironment.getChildLoader",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverHarnessEnvironment.getAllChildLoaders",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverHarnessEnvironment.createComponentHarness",
       "@angular/cdk/testing/selenium-webdriver"
     ],
     [
