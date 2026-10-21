@@ -17,6 +17,7 @@ import * as fsSync from 'node:fs';
 import * as fs from 'node:fs/promises';
 import * as path from 'path';
 import {makeClassKey} from './compiler-utils.js';
+import {DependencyTemplates} from './dependency_templates.js';
 import {flattenNgDiagnosticMessage, withErrorGuide} from './diagnostic.js';
 import {
   ChunkContext,
@@ -260,24 +261,26 @@ export class HybridCompiler {
     this.recordChunkDiagnostics(chunk);
     await this.writeDiagnosticsFile();
 
+    const metadataMap = chunkMetadataMap(chunk);
     const boundFiles = await Promise.all(
       chunk.files.map(async (file) => ({
         file,
-        analysis: await this.ensureBoundWithMetadata(file),
+        analysis: await this.ensureBoundWithMetadata(file, undefined, metadataMap),
       })),
     );
-    return this.finalizePreparedChunk(chunk, boundFiles);
+    return this.finalizePreparedChunk(chunk, boundFiles, metadataMap);
   }
 
   prepareChunkSync(chunk: nga.CompilationChunk): ChunkContext {
     this.recordChunkDiagnostics(chunk);
     this.writeDiagnosticsFileSync();
 
+    const metadataMap = chunkMetadataMap(chunk);
     const boundFiles = chunk.files.map((file) => ({
       file,
-      analysis: this.ensureBoundWithMetadataSync(file),
+      analysis: this.ensureBoundWithMetadataSync(file, undefined, metadataMap),
     }));
-    return this.finalizePreparedChunk(chunk, boundFiles);
+    return this.finalizePreparedChunk(chunk, boundFiles, metadataMap);
   }
 
   private recordChunkDiagnostics(chunk: nga.CompilationChunk): void {
@@ -291,6 +294,7 @@ export class HybridCompiler {
   private finalizePreparedChunk(
     chunk: nga.CompilationChunk,
     boundFiles: Array<{file: nga.AnalysisResult; analysis: FileAnalysis}>,
+    metadataMap: Map<string, nga.AnalysisResult>,
   ): ChunkContext {
     const remoteScopedClasses = new Set<string>();
     const eagerlyUsedDeclarations = new Map<string, nga.DeclarationMetadata[]>();
@@ -402,11 +406,6 @@ export class HybridCompiler {
           }
         }
       }
-    }
-
-    const metadataMap = new Map<string, nga.AnalysisResult>();
-    for (const file of chunk.files) {
-      metadataMap.set(file.filePath, file);
     }
 
     return {remoteScopedClasses, metadataMap, eagerlyUsedDeclarations};
@@ -550,11 +549,25 @@ export class HybridCompiler {
     }
 
     const content = this.analyzer.getFileContentSync(filePath);
-    return this.populateBoundData(normalized, fileAnalysis, result, content);
+    return this.populateBoundData(
+      normalized,
+      fileAnalysis,
+      result,
+      content,
+      this.dependencyTemplates(),
+    );
   }
 
-  /** Asynchronously binds template targets for `filePath`. */
-  ensureBoundWithMetadataSync(result: nga.AnalysisResult, content?: string): FileAnalysis {
+  /**
+   * Synchronously binds template targets using a pre-fetched `AnalysisResult`. `knownMetadata`
+   * (e.g. the other files of the chunk) spares a round trip to the analyzer for the templates of
+   * dependencies declared in those files.
+   */
+  ensureBoundWithMetadataSync(
+    result: nga.AnalysisResult,
+    content?: string,
+    knownMetadata?: ReadonlyMap<string, nga.AnalysisResult>,
+  ): FileAnalysis {
     const normalized = result.filePath;
     const fileAnalysis = getOrCreateFileAnalysis(this.fileCache, normalized);
     if (fileAnalysis.preparedTcbData !== undefined) {
@@ -568,7 +581,13 @@ export class HybridCompiler {
 
     const fileContent =
       content !== undefined ? content : this.analyzer.getFileContentSync(result.filePath);
-    return this.populateBoundData(normalized, fileAnalysis, result, fileContent);
+    return this.populateBoundData(
+      normalized,
+      fileAnalysis,
+      result,
+      fileContent,
+      this.dependencyTemplates(knownMetadata),
+    );
   }
 
   /**
@@ -587,6 +606,7 @@ export class HybridCompiler {
   async ensureBoundWithMetadata(
     result: nga.AnalysisResult,
     content?: string,
+    knownMetadata?: ReadonlyMap<string, nga.AnalysisResult>,
   ): Promise<FileAnalysis> {
     const normalized = result.filePath;
     const fileAnalysis = getOrCreateFileAnalysis(this.fileCache, normalized);
@@ -601,7 +621,28 @@ export class HybridCompiler {
 
     const fileContent =
       content !== undefined ? content : await this.analyzer.getFileContent(result.filePath);
-    return this.populateBoundData(normalized, fileAnalysis, result, fileContent);
+    // Binding is synchronous; read the templates of dependencies declared in other files here,
+    // where the analyzer can be awaited (the sidecar analyzer has no synchronous lookups).
+    const dependencyTemplates = this.dependencyTemplates(knownMetadata);
+    await dependencyTemplates.prefetch(result);
+    return this.populateBoundData(
+      normalized,
+      fileAnalysis,
+      result,
+      fileContent,
+      dependencyTemplates,
+    );
+  }
+
+  private dependencyTemplates(
+    knownMetadata?: ReadonlyMap<string, nga.AnalysisResult>,
+  ): DependencyTemplates {
+    return new DependencyTemplates(
+      this.analyzer,
+      this.fileCache,
+      this.templateParseOptions,
+      knownMetadata,
+    );
   }
 
   /**
@@ -612,6 +653,7 @@ export class HybridCompiler {
     fileAnalysis: FileAnalysis,
     result: nga.AnalysisResult,
     content: string,
+    dependencyTemplates: DependencyTemplates,
   ): FileAnalysis {
     let templatesByClass = fileAnalysis.parsedTemplates;
     if (!templatesByClass) {
@@ -626,6 +668,7 @@ export class HybridCompiler {
       templatesByClass,
       this.templateParseOptions,
       this.tcbConfig,
+      dependencyTemplates,
     );
 
     const prepared = prepareTcbTargets(
@@ -818,6 +861,15 @@ export class HybridCompiler {
   getFileContent(filePath: string): string {
     return this.analyzer.getFileContentSync(filePath);
   }
+}
+
+/** The chunk's files keyed by path, as `ChunkContext.metadataMap`. */
+function chunkMetadataMap(chunk: nga.CompilationChunk): Map<string, nga.AnalysisResult> {
+  const metadataMap = new Map<string, nga.AnalysisResult>();
+  for (const file of chunk.files) {
+    metadataMap.set(file.filePath, file);
+  }
+  return metadataMap;
 }
 
 /** Uncached empty analysis for a file the analyzer has no metadata for. */

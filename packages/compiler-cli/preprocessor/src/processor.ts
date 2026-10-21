@@ -42,7 +42,6 @@ import {
   compileService,
   makeBindingParser,
   outputAst as o,
-  parseTemplate,
   type BindingParser,
   type R3CompiledExpression,
   type R3ComponentDeferMetadata,
@@ -66,13 +65,14 @@ import {
   createForeignComponentMatcher,
   makeClassKey,
   metadataToDeclaration,
-  parseDirectInlineTemplate,
+  parseComponentTemplate,
   refName,
   refToExpression,
   refToTypeExpression,
   stripIife,
   type MinimalDirectiveMeta,
 } from './compiler-utils.js';
+import {DependencyTemplates} from './dependency_templates.js';
 import {
   ChunkContext,
   FileAnalysis,
@@ -185,8 +185,10 @@ export function buildTcbTargets(
   templatesByClass: Map<string, ParsedComponentTemplate>,
   options: Partial<ParseTemplateOptions> = {},
   tcbConfig: NgpTypeCheckingConfig,
+  dependencyTemplates: DependencyTemplates,
 ): TcbTargetInput[] {
   const tcbTargets: TcbTargetInput[] = [];
+  const consumer = {filePath, content, classes, templatesByClass};
 
   for (const cls of classes) {
     const {className, component, directive, hostBindings, hostListeners} = cls;
@@ -231,7 +233,10 @@ export function buildTcbTargets(
         className,
         template: component.template || '',
         templateNodes: parsed.diagNodes,
-        declarations: component.resolvedDeclarations ?? [],
+        declarations: dependencyTemplates.withNgContentSelectors(
+          component.resolvedDeclarations ?? [],
+          consumer,
+        ),
         enableSelectorless: options.enableSelectorless ?? false,
         selectorlessEnabled,
         ownDeclaration: metadataToDeclaration(
@@ -339,6 +344,13 @@ export async function processFile(
       }
     }
   }
+  // Templates of dependencies declared in other files are needed to bind this file's
+  // templates; read them here, where the analyzer can be awaited.
+  await new DependencyTemplates(
+    rawCtx.analyzer,
+    rawCtx.fileCache,
+    rawCtx.templateParseOptions,
+  ).prefetch(result);
   return processFileSync(rawCtx, filePath, content, resourceMap, result, chunkContext);
 }
 
@@ -1871,6 +1883,12 @@ export function processFileSync(
           templatesByClass,
           ctx.templateParseOptions,
           ctx.tcbConfig,
+          new DependencyTemplates(
+            ctx.analyzer,
+            ctx.fileCache,
+            ctx.templateParseOptions,
+            ctx.metadataMap,
+          ),
         )
       : [];
   const prepared =
@@ -3223,50 +3241,4 @@ function templateDiagnosticLocation(
   // `template` expression. `NgDiagnostic` can carry neither a synthetic file nor related
   // information, so only the expression location is reported.
   return {filePath, span: {start: expressionSpan.start, end: expressionSpan.end}};
-}
-
-function parseComponentTemplate(
-  component: nga.ComponentMetadata,
-  filePath: string,
-  content: string,
-  options: Partial<ParseTemplateOptions> = {},
-): ParsedComponentTemplate {
-  const parseOptions: Partial<ParseTemplateOptions> = {
-    ...options,
-    preserveWhitespaces: component.preserveWhitespaces ?? options.preserveWhitespaces ?? false,
-  };
-  const diagParseOptions: Partial<ParseTemplateOptions> = {
-    ...options,
-    preserveWhitespaces: true,
-    preserveLineEndings: true,
-    preserveSignificantWhitespace: true,
-    leadingTriviaChars: [],
-  };
-
-  // A `template` literal is parsed out of this file's source text so its spans are offsets
-  // into it. An external template, or an inline one computed by any other expression, is parsed
-  // on its own: its spans are offsets into the template string (ngtsc's `external` and
-  // `indirect` source mappings).
-  // Mirroring ngtsc's `parseExtractedTemplate`, also parse a second, span-faithful copy
-  // (`diagNodes`: whitespace, line endings and leading trivia preserved) for type-checking,
-  // diagnostics, and indexing.
-  const contentSpan = component.templateContentSpan;
-  if (component.templateUrl == null && contentSpan != null) {
-    const parsed = parseDirectInlineTemplate(content, filePath, contentSpan, parseOptions);
-    const diagNodes = parseDirectInlineTemplate(
-      content,
-      filePath,
-      contentSpan,
-      diagParseOptions,
-    ).nodes;
-    return {...parsed, diagNodes};
-  }
-
-  // The URL identifies the file the spans are offsets into, which for an external template is
-  // the template file itself (as in ngtsc's `extractTemplate`).
-  const templateStr = component.template || '';
-  const templateUrl = component.templateUrl?.resolvedPath ?? filePath;
-  const parsed = parseTemplate(templateStr, templateUrl, parseOptions);
-  const diagNodes = parseTemplate(templateStr, templateUrl, diagParseOptions).nodes;
-  return {...parsed, diagNodes};
 }

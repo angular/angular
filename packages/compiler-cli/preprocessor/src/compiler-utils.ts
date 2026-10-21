@@ -36,6 +36,7 @@ import {
 
 import * as nga from './types.js';
 import {PipeMeta} from './tcb.js';
+import type {ParsedComponentTemplate} from './file_analysis.js';
 import {RawSource} from './output_ast_printer.js';
 import {offsetToPosition} from './tcb_util.js';
 import MagicString from 'magic-string';
@@ -608,6 +609,52 @@ export function parseDirectInlineTemplate(
       startCol: character,
     },
   });
+}
+
+export function parseComponentTemplate(
+  component: nga.ComponentMetadata,
+  filePath: string,
+  content: string,
+  options: Partial<ParseTemplateOptions> = {},
+): ParsedComponentTemplate {
+  const parseOptions: Partial<ParseTemplateOptions> = {
+    ...options,
+    preserveWhitespaces: component.preserveWhitespaces ?? options.preserveWhitespaces ?? false,
+  };
+  const diagParseOptions: Partial<ParseTemplateOptions> = {
+    ...options,
+    preserveWhitespaces: true,
+    preserveLineEndings: true,
+    preserveSignificantWhitespace: true,
+    leadingTriviaChars: [],
+  };
+
+  // A `template` literal is parsed out of this file's source text so its spans are offsets
+  // into it. An external template, or an inline one computed by any other expression, is parsed
+  // on its own: its spans are offsets into the template string (ngtsc's `external` and
+  // `indirect` source mappings).
+  // Mirroring ngtsc's `parseExtractedTemplate`, also parse a second, span-faithful copy
+  // (`diagNodes`: whitespace, line endings and leading trivia preserved) for type-checking,
+  // diagnostics, and indexing.
+  const contentSpan = component.templateContentSpan;
+  if (component.templateUrl == null && contentSpan != null) {
+    const parsed = parseDirectInlineTemplate(content, filePath, contentSpan, parseOptions);
+    const diagNodes = parseDirectInlineTemplate(
+      content,
+      filePath,
+      contentSpan,
+      diagParseOptions,
+    ).nodes;
+    return {...parsed, diagNodes};
+  }
+
+  // The URL identifies the file the spans are offsets into, which for an external template is
+  // the template file itself (as in ngtsc's `extractTemplate`).
+  const templateStr = component.template || '';
+  const templateUrl = component.templateUrl?.resolvedPath ?? filePath;
+  const parsed = parseTemplate(templateStr, templateUrl, parseOptions);
+  const diagNodes = parseTemplate(templateStr, templateUrl, diagParseOptions).nodes;
+  return {...parsed, diagNodes};
 }
 
 export function metadataToDeclaration(
