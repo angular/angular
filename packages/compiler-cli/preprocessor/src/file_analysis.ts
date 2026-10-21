@@ -17,13 +17,18 @@ export interface ParsedComponentTemplate extends ParsedTemplate {
    * for accurate source spans in type-checking, diagnostics, and indexing.
    */
   diagNodes: TmplAstNode[];
+  /**
+   * Start of the component class's name span, recorded when the template is cached in
+   * `FileAnalysis.parsedTemplates`. Lets a template be found from a `DeclarationMetadata`, which
+   * carries the class's name span but not the class span the cache is keyed by.
+   */
+  classNameStart?: number;
 }
 
 export interface FileAnalysis {
   filePath: string;
   tcb?: string | null;
-  // maps keyed by className
-  parsedTemplates?: Map<string, ParsedComponentTemplate>;
+  parsedTemplates: Map<string, ParsedComponentTemplate>;
   preparedTcbData?: PreparedTcbData | null;
 }
 
