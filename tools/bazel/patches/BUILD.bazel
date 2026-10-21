@@ -1,0 +1,1 @@
+exports_files(["aspect_rules_jasmine.patch"])
