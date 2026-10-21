@@ -178,7 +178,6 @@ console.log('Awesome Angular Docs!');
 | `language`     | `string`             | code language                                                   |
 | `linenums`     | `boolean`            | (False) displays line numbers                                   |
 | `highlight`    | `string of number[]` | lines highlighted                                               |
-| `diff`         | `string`             | path to changed code                                            |
 | `visibleLines` | `string of number[]` | range of lines for collapse mode                                |
 | `region`       | `string`             | only show the provided region.                                  |
 | `preview`      | `boolean`            | (False) display preview                                         |
@@ -202,13 +201,12 @@ You can create multifile examples by wrapping the examples inside a `<docs-code-
 
 #### `<docs-code-multifile>` Attributes
 
-| Attributes    | Type      | Details                                                         |
-| :------------ | :-------- | :-------------------------------------------------------------- |
-| body contents | `string`  | nested tabs of `docs-code` examples                             |
-| `path`        | `string`  | Path to code example for preview and external link              |
-| `preview`     | `boolean` | (False) display preview                                         |
-| `hideCode`    | `boolean` | (False) Whether to collapse code example by default.            |
-| `hideDollar`  | `boolean` | (False) Whether to hide the dollar sign in shell code examples. |
+| Attributes    | Type      | Details                                              |
+| :------------ | :-------- | :--------------------------------------------------- |
+| body contents | `string`  | nested tabs of `docs-code` examples                  |
+| `path`        | `string`  | Path to code example for preview and external link   |
+| `preview`     | `boolean` | (False) display preview                              |
+| `hideCode`    | `boolean` | (False) Whether to collapse code example by default. |
 
 ### Adding `preview` to your code example
 
