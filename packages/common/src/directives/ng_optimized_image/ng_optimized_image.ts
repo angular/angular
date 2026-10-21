@@ -852,17 +852,62 @@ function assertNotBase64Image(dir: NgOptimizedImage) {
 }
 
 /**
- * Verifies that the 'sizes' only includes responsive values.
+ * Matches a slot width given as a plain pixel length, such as `500px`.
+ */
+const PIXEL_LENGTH = /^\d*\.?\d+px$/i;
+
+/**
+ * Splits `value` wherever `isSeparator` matches a character that is not nested inside
+ * parentheses, then trims the parts and drops empty ones. This keeps media conditions such as
+ * `(max-width: 768px)` and CSS functions such as `min(100vw, 600px)` in one piece.
+ */
+function splitOutsideParentheses(value: string, isSeparator: (char: string) => boolean): string[] {
+  const parts: string[] = [];
+  let depth = 0;
+  let start = 0;
+  for (let i = 0; i < value.length; i++) {
+    const char = value[i];
+    if (char === '(') {
+      depth++;
+    } else if (char === ')') {
+      depth = Math.max(0, depth - 1);
+    } else if (depth === 0 && isSeparator(char)) {
+      parts.push(value.slice(start, i));
+      start = i + 1;
+    }
+  }
+  parts.push(value.slice(start));
+  return parts.map((part) => part.trim()).filter((part) => part !== '');
+}
+
+/**
+ * Verifies that the 'sizes' includes at least one responsive value.
+ *
+ * Each comma-separated entry in `sizes` is an optional media condition followed by a slot width,
+ * for example `(max-width: 768px) 100vw`. When every slot width is a plain pixel length, such as
+ * `sizes="500px"` or `sizes="(max-width: 768px) 300px, 500px"`, the image is fixed-size, and a
+ * density-based `srcset` generated from `width` fits it better than the breakpoint-based one that
+ * `sizes` triggers. Pixel values mixed with responsive values, such as
+ * `sizes="(max-width: 768px) 100vw, 500px"`, and pixel values inside media conditions or CSS
+ * functions, such as `sizes="min(100vw, 600px)"`, are allowed.
  */
 function assertNoComplexSizes(dir: NgOptimizedImage) {
-  let sizes = dir.sizes;
-  if (sizes?.match(/((\)|,)\s|^)\d+px/)) {
+  const sizes = dir.sizes;
+  if (!sizes) {
+    return;
+  }
+  const slotWidths = splitOutsideParentheses(sizes, (char) => char === ',').map((sourceSize) => {
+    const tokens = splitOutsideParentheses(sourceSize, (char) => /\s/.test(char));
+    return tokens[tokens.length - 1];
+  });
+  if (slotWidths.length > 0 && slotWidths.every((width) => PIXEL_LENGTH.test(width))) {
     throw new RuntimeError(
       RuntimeErrorCode.INVALID_INPUT,
-      `${imgDirectiveDetails(dir.ngSrc, false)} \`sizes\` was set to a string including ` +
-        `pixel values. For automatic \`srcset\` generation, \`sizes\` must only include responsive ` +
-        `values, such as \`sizes="50vw"\` or \`sizes="(min-width: 768px) 50vw, 100vw"\`. ` +
-        `To fix this, modify the \`sizes\` attribute, or provide your own \`ngSrcset\` value directly.`,
+      `${imgDirectiveDetails(dir.ngSrc, false)} \`sizes\` was set to a string that only includes ` +
+        `pixel values. For automatic \`srcset\` generation, \`sizes\` must include at least one ` +
+        `responsive value, such as \`sizes="50vw"\` or \`sizes="(max-width: 768px) 100vw, 500px"\`. ` +
+        `To fix this, modify the \`sizes\` attribute, remove it so that a density-based \`srcset\` ` +
+        `is generated from \`width\`, or provide your own \`ngSrcset\` value directly.`,
     );
   }
 }
