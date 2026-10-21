@@ -9,6 +9,7 @@
 import {
   APP_BASE_HREF,
   CommonModule,
+  HashLocationStrategy,
   Location,
   LocationStrategy,
   PathLocationStrategy,
@@ -18,6 +19,59 @@ import {MockLocationStrategy, MockPlatformLocation} from '../../testing';
 import {TestBed} from '@angular/core/testing';
 
 const baseUrl = '/base';
+
+describe('HashLocationStrategy', () => {
+  describe('blob URLs', () => {
+    it('should resolve history URLs against the current href', () => {
+      const platformLocation = new MockPlatformLocation();
+      spyOnProperty(platformLocation, 'href').and.returnValue(
+        'blob:https://example.com/69396032-5820-4118-9819-ed5c810f8218',
+      );
+      const replaceState = spyOn(platformLocation, 'replaceState');
+      const strategy = new HashLocationStrategy(platformLocation);
+
+      strategy.replaceState(null, '', '/home', '');
+
+      expect(replaceState).toHaveBeenCalledWith(
+        null,
+        '',
+        'blob:https://example.com/69396032-5820-4118-9819-ed5c810f8218#/home',
+      );
+    });
+
+    it('should replace the existing fragment when resolving history URLs', () => {
+      const platformLocation = new MockPlatformLocation();
+      spyOnProperty(platformLocation, 'href').and.returnValue(
+        'blob:https://example.com/69396032-5820-4118-9819-ed5c810f8218#/old',
+      );
+      const pushState = spyOn(platformLocation, 'pushState');
+      const strategy = new HashLocationStrategy(platformLocation, '/app');
+
+      strategy.pushState(null, '', '/about', '');
+
+      expect(pushState).toHaveBeenCalledWith(
+        null,
+        '',
+        'blob:https://example.com/69396032-5820-4118-9819-ed5c810f8218#/app/about',
+      );
+    });
+  });
+
+  describe('regular URLs', () => {
+    it('should resolve history URLs against the current href', () => {
+      const platformLocation = new MockPlatformLocation();
+      spyOnProperty(platformLocation, 'href').and.returnValue(
+        'https://example.com/app/index.html#/old',
+      );
+      const pushState = spyOn(platformLocation, 'pushState');
+      const strategy = new HashLocationStrategy(platformLocation);
+
+      strategy.pushState(null, '', '/about', '');
+
+      expect(pushState).toHaveBeenCalledWith(null, '', 'https://example.com/app/index.html#/about');
+    });
+  });
+});
 
 describe('Location Class', () => {
   describe('stripTrailingSlash', () => {

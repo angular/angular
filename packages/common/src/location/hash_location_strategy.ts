@@ -77,16 +77,12 @@ export class HashLocationStrategy extends LocationStrategy implements OnDestroy 
   }
 
   override pushState(state: any, title: string, path: string, queryParams: string) {
-    const url =
-      this.prepareExternalUrl(path + normalizeQueryParams(queryParams)) ||
-      this._platformLocation.pathname;
+    const url = this.prepareHistoryUrl(path, queryParams);
     this._platformLocation.pushState(state, title, url);
   }
 
   override replaceState(state: any, title: string, path: string, queryParams: string) {
-    const url =
-      this.prepareExternalUrl(path + normalizeQueryParams(queryParams)) ||
-      this._platformLocation.pathname;
+    const url = this.prepareHistoryUrl(path, queryParams);
     this._platformLocation.replaceState(state, title, url);
   }
 
@@ -104,5 +100,18 @@ export class HashLocationStrategy extends LocationStrategy implements OnDestroy 
 
   override historyGo(relativePosition: number = 0): void {
     this._platformLocation.historyGo?.(relativePosition);
+  }
+
+  private prepareHistoryUrl(path: string, queryParams: string): string {
+    const externalUrl = this.prepareExternalUrl(path + normalizeQueryParams(queryParams));
+    if (!externalUrl) {
+      // Fallback to the current pathname if the external URL is empty.
+      return this._platformLocation.pathname;
+    }
+
+    // Create full URL by combining the current href (up to the hash) with the external URL.
+    const href = this._platformLocation.href;
+    const hashIndex = href.indexOf('#');
+    return `${hashIndex === -1 ? href : href.slice(0, hashIndex)}${externalUrl}`;
   }
 }
