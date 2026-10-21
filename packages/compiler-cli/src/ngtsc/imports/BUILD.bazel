@@ -3,11 +3,22 @@ load("//tools:defaults.bzl", "ts_project")
 package(default_visibility = ["//visibility:public"])
 
 ts_project(
+    name = "core_symbols",
+    srcs = ["src/core_symbols.ts"],
+)
+
+ts_project(
     name = "imports",
-    srcs = ["index.ts"] + glob([
-        "src/*.ts",
-    ]),
+    srcs = ["index.ts"] + glob(
+        [
+            "src/*.ts",
+        ],
+        exclude = [
+            "src/core_symbols.ts",
+        ],
+    ),
     deps = [
+        ":core_symbols",
         "//:node_modules/@types/node",
         "//:node_modules/typescript",
         "//packages:types",
