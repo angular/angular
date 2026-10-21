@@ -30,6 +30,7 @@ ts_project(
         "//packages/compiler",
         "//packages/compiler-cli",
         "//packages/compiler-cli/preprocessor/ng-analyze:wasm",
+        "//packages/compiler-cli/private:hybrid_preprocessor",
     ],
 )
 
