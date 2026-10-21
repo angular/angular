@@ -9,6 +9,7 @@ ts_project(
         "//:node_modules/@types/jasmine",
         "//:node_modules/@types/node",
         "//packages/compiler-cli/preprocessor",
+        "//packages/compiler-cli/preprocessor:ls_utils",
         "//packages/compiler-cli/preprocessor/language-service",
         "//packages/compiler-cli/preprocessor/language-service:node_modules/vscode-jsonrpc",
         "//packages/compiler-cli/preprocessor/language-service:node_modules/vscode-languageserver",

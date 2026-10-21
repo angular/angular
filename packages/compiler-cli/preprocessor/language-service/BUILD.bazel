@@ -17,6 +17,7 @@ ts_project(
         "//:node_modules/typescript",
         "//packages/compiler",
         "//packages/compiler-cli/preprocessor",
+        "//packages/compiler-cli/preprocessor:ls_utils",
         "//packages/compiler-cli/private",
         "//packages/language-service:private",
     ],
