@@ -397,41 +397,39 @@ With the stubbed service returning async observables, most of your tests will ha
 Here's a test that demonstrates the data flow you'd expect in the real world.
 
 ```ts
-it('should show quote after getQuote', async () => {
-  class MockTwainQuotes implements TwainQuotes {
-    private subject = new Subject<string>();
+class MockTwainQuotes implements TwainQuotes {
+  private subject = new Subject<string>();
 
-    getQuote() {
-      return this.subject.asObservable();
-    }
-
-    emit(val: string) {
-      this.subject.next(val);
-    }
+  getQuote() {
+    return this.subject.asObservable();
   }
 
-  it('should show quote after getQuote (success)', async () => {
-    vi.useFakeTimers();
+  emit(val: string) {
+    this.subject.next(val);
+  }
+}
 
-    TestBed.configureTestingModule({
-      providers: [{provide: TwainQuotes, useClass: MockTwainQuotes}],
-    });
+it('should show quote after getQuote (success)', async () => {
+  vi.useFakeTimers();
 
-    const fixture = TestBed.createComponent(TwainComponent);
-    const twainQuotes = TestBed.inject(TwainQuotes) as MockTwainQuotes;
-    await vi.runAllTimersAsync(); // render before the quote is received
-
-    const quoteEl = fixture.nativeElement.querySelector('.twain');
-    expect(quoteEl.textContent).toBe('...');
-
-    twainQuotes.emit('Twain Quote'); // emits the quote
-    await vi.runAllTimersAsync(); // render with the quote received
-
-    expect(quoteEl.textContent).toBe('Twain Quote');
-    expect(fixture.nativeElement.querySelector('.error')).toBeNull();
-
-    vi.useRealTimers();
+  TestBed.configureTestingModule({
+    providers: [{provide: TwainQuotes, useClass: MockTwainQuotes}],
   });
+
+  const fixture = TestBed.createComponent(TwainComponent);
+  const twainQuotes = TestBed.inject(TwainQuotes) as MockTwainQuotes;
+  await vi.runAllTimersAsync(); // render before the quote is received
+
+  const quoteEl = fixture.nativeElement.querySelector('.twain');
+  expect(quoteEl.textContent).toBe('...');
+
+  twainQuotes.emit('Twain Quote'); // emits the quote
+  await vi.runAllTimersAsync(); // render with the quote received
+
+  expect(quoteEl.textContent).toBe('Twain Quote');
+  expect(fixture.nativeElement.querySelector('.error')).toBeNull();
+
+  vi.useRealTimers();
 });
 ```
 
