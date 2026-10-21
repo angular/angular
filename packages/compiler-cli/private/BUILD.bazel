@@ -19,10 +19,31 @@ copy_to_bin(
     ],
 )
 
+copy_to_bin(
+    name = "hybrid_preprocessor_files",
+    srcs = [
+        "hybrid_preprocessor.ts",
+    ],
+)
+
+ts_project(
+    name = "hybrid_preprocessor",
+    srcs = ["hybrid_preprocessor.ts"],
+    deps = [
+        "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/hmr:extract_dependencies_output",
+        "//packages/compiler-cli/src/ngtsc/imports:core_symbols",
+    ],
+)
+
 ts_project(
     name = "private",
-    srcs = glob(["*.ts"]),
+    srcs = glob(
+        ["*.ts"],
+        exclude = ["hybrid_preprocessor.ts"],
+    ),
     deps = [
+        ":hybrid_preprocessor",
         "//:node_modules/typescript",
         "//packages/compiler-cli/src/ngtsc/annotations",
         "//packages/compiler-cli/src/ngtsc/core",

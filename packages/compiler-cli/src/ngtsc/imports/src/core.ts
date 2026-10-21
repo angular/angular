@@ -7,6 +7,9 @@
  */
 
 import {relativePathBetween} from '../../util/src/path';
+import {CORE_MODULE, validateAndRewriteCoreSymbol} from './core_symbols';
+
+export {validateAndRewriteCoreSymbol};
 
 /**
  * Rewrites imports of symbols being written into generated code.
@@ -47,29 +50,6 @@ export class NoopImportRewriter implements ImportRewriter {
 }
 
 /**
- * A mapping of supported symbols that can be imported from within @angular/core, and the names by
- * which they're exported from r3_symbols.
- */
-const CORE_SUPPORTED_SYMBOLS = new Map<string, string>([
-  ['ɵɵdefineInjectable', 'ɵɵdefineInjectable'],
-  ['ɵɵdefineService', 'ɵɵdefineService'],
-  ['ɵɵdefineInjector', 'ɵɵdefineInjector'],
-  ['ɵɵdefineNgModule', 'ɵɵdefineNgModule'],
-  ['ɵɵsetNgModuleScope', 'ɵɵsetNgModuleScope'],
-  ['ɵɵinject', 'ɵɵinject'],
-  ['ɵɵFactoryDeclaration', 'ɵɵFactoryDeclaration'],
-  ['ɵsetClassMetadata', 'setClassMetadata'],
-  ['ɵsetClassMetadataAsync', 'setClassMetadataAsync'],
-  ['ɵɵInjectableDeclaration', 'ɵɵInjectableDeclaration'],
-  ['ɵɵInjectorDeclaration', 'ɵɵInjectorDeclaration'],
-  ['ɵɵNgModuleDeclaration', 'ɵɵNgModuleDeclaration'],
-  ['ɵNgModuleFactory', 'NgModuleFactory'],
-  ['ɵnoSideEffects', 'ɵnoSideEffects'],
-]);
-
-const CORE_MODULE = '@angular/core';
-
-/**
  * `ImportRewriter` that rewrites imports from '@angular/core' to be imported from the r3_symbols.ts
  * file instead.
  */
@@ -104,11 +84,4 @@ export class R3SymbolsImportRewriter implements ImportRewriter {
   rewriteNamespaceImportIdentifier(specifier: string): string {
     return specifier;
   }
-}
-
-export function validateAndRewriteCoreSymbol(name: string): string {
-  if (!CORE_SUPPORTED_SYMBOLS.has(name)) {
-    throw new Error(`Importing unexpected symbol ${name} while compiling ${CORE_MODULE}`);
-  }
-  return CORE_SUPPORTED_SYMBOLS.get(name)!;
 }
