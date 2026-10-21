@@ -31,6 +31,7 @@ import {
   prepareTcbTargets,
   type NgpTypeCheckingConfig,
 } from './tcb.js';
+import type {NgpCompilerOptions} from './compiler_options.js';
 import type * as nga from './types.js';
 
 export function getDiagnosticPath(tsconfigPath: string): string {
@@ -106,6 +107,7 @@ export interface IAnalyzer {
   getFileContentSync(filePath: string): string;
   getTsFileForTemplateSync(templatePath: string): nga.TemplateUsage[] | null;
   readResourceSync?(containingFile: string, url: string): nga.ResolvedResource | null;
+  getCompilerOptions?(): NgpCompilerOptions;
   close(): void;
 }
 export interface HybridCompilerOptions {

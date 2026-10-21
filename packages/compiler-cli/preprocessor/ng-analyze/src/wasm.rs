@@ -164,6 +164,10 @@ impl WasmAnalyzer {
         serde_json::to_string(&res).ok()
     }
 
+    pub fn get_compiler_options(&self) -> String {
+        self.analyzer.get_compiler_options()
+    }
+
     pub fn pump(&mut self) -> Option<String> {
         step_local_pool();
 

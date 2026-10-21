@@ -108,6 +108,7 @@ export interface NgpCompilerOptions {
 
   // Emit and Bazel/google3 (`BazelAndG3Options`, `InternalOptions`).
   annotateForClosureCompiler?: boolean;
+  tsickle?: boolean;
   _experimentalAllowEmitDeclarationOnly?: boolean;
   onlyPublishPublicTypingsForNgModules?: boolean;
   workspaceName?: string;

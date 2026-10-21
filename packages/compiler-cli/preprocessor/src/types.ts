@@ -29,6 +29,7 @@ export declare class Analyzer {
   analyzeOptimizedDelta(): AnalysisIterator;
   getMetadataForFile(filePath: string): AnalysisResult | null;
   getFileContent(filePath: string): string;
+  getCompilerOptions?(): string;
 }
 
 /** Test analyzer that uses virtual filesystem for in-memory testing */
@@ -36,6 +37,7 @@ export declare class TestAnalyzer {
   constructor(options: TestAnalyzerOptions);
   getMetadataForFile(filePath: string): AnalysisResult | null;
   getFileContent(filePath: string): string;
+  getCompilerOptions?(): string;
   getTsFileForTemplate(templatePath: string): Array<TemplateUsage> | null;
   readResource(containingFile: string, url: string): ResolvedResource | null;
   updateFileContent(updates: Array<FileUpdate>): Array<string>;
