@@ -10,6 +10,12 @@ bazel_dep(name = "aspect_rules_ts", version = "3.10.1")
 bazel_dep(name = "aspect_rules_js", version = "3.5.1")
 bazel_dep(name = "aspect_rules_esbuild", version = "0.27.1")
 bazel_dep(name = "aspect_rules_jasmine", version = "2.0.4")
+single_version_override(
+    module_name = "aspect_rules_jasmine",
+    patch_strip = 1,
+    patches = ["//tools/bazel/patches:aspect_rules_jasmine.patch"],
+)
+
 bazel_dep(name = "aspect_rules_rollup", version = "2.0.1")
 bazel_dep(name = "bazel_skylib", version = "1.9.2")
 bazel_dep(name = "bazel_lib", version = "3.7.2")
