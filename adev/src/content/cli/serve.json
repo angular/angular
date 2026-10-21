@@ -44,7 +44,7 @@
     {
       "name": "hmr",
       "type": "boolean",
-      "description": "Enable hot module replacement. Defaults to the value of 'liveReload'. Currently, only global and component stylesheets are supported."
+      "description": "Enable hot module replacement. Defaults to the value of 'liveReload'. Currently, global stylesheets, component stylesheets, and component templates are supported."
     },
     {
       "name": "host",
@@ -81,7 +81,7 @@
       "name": "port",
       "type": "number",
       "default": 4200,
-      "description": "Port to listen on."
+      "description": "Port to listen on. The `PORT` environment variable, when set, takes precedence over this option."
     },
     {
       "name": "prebundle",
@@ -92,7 +92,7 @@
     {
       "name": "project",
       "type": "string",
-      "description": "The name of the project to build. Can be an application or a library.",
+      "description": "The name of the project to run the command for. Can be an application or a library.",
       "positional": 0
     },
     {

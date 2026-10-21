@@ -69,7 +69,7 @@
     {
       "name": "project",
       "type": "string",
-      "description": "The name of the project to build. Can be an application or a library.",
+      "description": "The name of the project to run the command for. Can be an application or a library.",
       "positional": 0
     }
   ]
