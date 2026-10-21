@@ -466,6 +466,11 @@ export class Parser {
       const char = input.charCodeAt(i);
       const nextChar = input.charCodeAt(i + 1);
 
+      if (char === chars.$BACKSLASH) {
+        i++;
+        continue;
+      }
+
       if (char === chars.$SLASH && nextChar == chars.$SLASH && outerQuote == null) return i;
 
       if (outerQuote === char) {

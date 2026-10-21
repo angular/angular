@@ -641,6 +641,11 @@ describe('parser', () => {
         checkBinding('/abc/.test("foo") && something || somethingElse');
       });
 
+      it('should parse a regular expression literal that ends with an escaped slash', () => {
+        checkBinding('/^https?:\\/\\//');
+        checkBinding('url.replace(/^\\//, "") //comment', 'url.replace(/^\\//, "")');
+      });
+
       it('should report invalid regular expression flag', () => {
         expectBindingError('"foo".match(/abc/O)', 'Unsupported regular expression flag "O"');
       });
@@ -1654,6 +1659,10 @@ describe('parser', () => {
 
       it('should retain // in nested, unterminated strings', () => {
         checkInterpolation(`{{ "a\'b\`" //comment}}`, `{{ "a\'b\`" }}`);
+      });
+
+      it('should ignore escaped quotes when looking for comments', () => {
+        checkInterpolation(`{{ 'it\\'s // here' //comment }}`, `{{ "it's // here" }}`);
       });
 
       it('should ignore quotes inside a comment', () => {
