@@ -41,7 +41,8 @@ export function removeAllGlobalEventListeners() {
   removeAllEventListeners(window._ejsa);
 }
 
-/** Removes the global early event contract. */
+/** Removes the early event listeners and the global early event contract. */
 export function clearGlobalEarlyEventContract() {
+  removeAllEventListeners(window._ejsa);
   window._ejsa = undefined;
 }
