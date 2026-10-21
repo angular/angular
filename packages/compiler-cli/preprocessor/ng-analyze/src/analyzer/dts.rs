@@ -1200,6 +1200,7 @@ fn extract_host_directives_from_type(
             inputs,
             outputs,
             is_forward_ref: false,
+            origin_identifiers: Vec::new(),
         });
     }
 

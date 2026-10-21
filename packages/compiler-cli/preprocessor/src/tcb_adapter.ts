@@ -160,7 +160,7 @@ export function resolveHostDirectives(
   requiresInline: boolean = false,
   content?: string,
   consumerPath?: string,
-  visited = new Set<string>(),
+  ancestors = new Set<string>(),
 ): TcbDirectiveMetadata[] {
   if (!resolvedHostDirectives || resolvedHostDirectives.length === 0) {
     return [];
@@ -170,23 +170,23 @@ export function resolveHostDirectives(
 
   for (const hd of resolvedHostDirectives) {
     const hostDecl = hd.directive;
-    const hostKey = `${hostDecl.filePath || filePath}#${hostDecl.name}`;
-    if (visited.has(hostKey)) {
+    const hostDeclPath = hostDecl.filePath || filePath;
+    const hostKey = `${hostDeclPath}#${hostDecl.name}`;
+    if (ancestors.has(hostKey)) {
       continue;
     }
-    visited.add(hostKey);
-
-    const hostDeclPath = hostDecl.filePath || filePath;
 
     // Recursively resolve chained host directives first
+    ancestors.add(hostKey);
     const chained = resolveHostDirectives(
       hostDecl.resolvedHostDirectives,
       hostDeclPath,
       requiresInline,
       content,
       consumerPath,
-      visited,
+      ancestors,
     );
+    ancestors.delete(hostKey);
     results.push(...chained);
 
     const hostMeta = declarationToMetadata(
