@@ -26,6 +26,8 @@ pub struct TestAnalyzerOptions {
     /// Populate `resolved_declarations` and `schemas` on poisoned components; see
     /// `AnalyzerOptions::use_poisoned_data`.
     pub use_poisoned_data: Option<bool>,
+    /// Emit host-style module specifiers; see `AnalyzerOptions::use_host_for_import_generation`.
+    pub use_host_for_import_generation: Option<bool>,
 }
 
 /// Test analyzer that uses virtual filesystem for in-memory testing
@@ -49,6 +51,7 @@ impl TestAnalyzer {
             root_dirs: options.root_dirs,
             enable_hmr: options.enable_hmr,
             use_poisoned_data: options.use_poisoned_data,
+            use_host_for_import_generation: options.use_host_for_import_generation,
         })?;
 
         Ok(TestAnalyzer { analyzer })
@@ -66,6 +69,7 @@ impl TestAnalyzer {
             root_dirs: options.root_dirs,
             enable_hmr: options.enable_hmr,
             use_poisoned_data: options.use_poisoned_data,
+            use_host_for_import_generation: options.use_host_for_import_generation,
         })?;
 
         Ok(TestAnalyzer { analyzer })

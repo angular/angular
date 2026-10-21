@@ -426,7 +426,6 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'ngtsc @defer block trigger validation should report if reference-based trigger has no reference and there is no placeholder block',
   'ngtsc @defer block trigger validation should report if reference-based trigger has no reference and there is no placeholder block but a hydrate trigger exists',
   'ngtsc @defer block trigger validation should report if reference-based trigger has no reference and there is no placeholder block but a hydrate trigger exists and it is also viewport',
-  'ngtsc behavioral tests NgModule export aliasing should directly import a directive from a deep dependency when _useHostForImportGeneration is set',
   'ngtsc behavioral tests NgModule export aliasing should escape unusual characters in aliased filenames',
   'ngtsc behavioral tests NgModule export aliasing should use an alias to import a directive from a deep dependency when _useHostForImportAndAliasGeneration is set',
   'ngtsc behavioral tests NgModule export aliasing should write alias ES2015 exports for NgModule exported directives when _useHostForImportAndAliasGeneration is set',

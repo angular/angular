@@ -54,6 +54,8 @@ export interface NgpCompilerOptions {
   _experimentalAllowEmitDeclarationOnly?: boolean;
   onlyPublishPublicTypingsForNgModules?: boolean;
   workspaceName?: string;
+  _useHostForImportGeneration?: boolean;
+  _useHostForImportAndAliasGeneration?: boolean;
 
   // Compilation (`MiscOptions`, `TargetOptions`, `InternalOptions`).
   legacyOptionalChaining?: boolean;

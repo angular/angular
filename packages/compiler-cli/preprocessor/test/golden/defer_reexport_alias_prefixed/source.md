@@ -15,7 +15,8 @@
     "rootDirs": ["."]
   },
   "angularCompilerOptions": {
-    "workspaceName": "google3"
+    "workspaceName": "google3",
+    "_useHostForImportGeneration": true
   },
   "files": ["my/common/ng_for_of.ts", "my/common/index.ts", "list.ts"]
 }
