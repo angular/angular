@@ -80,6 +80,7 @@ export interface AnalyzerOptions {
   rootDirs?: Array<string>;
   enableHmr?: boolean;
   usePoisonedData?: boolean;
+  useHostForImportGeneration?: boolean;
 }
 
 export interface AngularFieldMetadata {
@@ -838,6 +839,8 @@ export interface TestAnalyzerOptions {
   rootDirs?: Array<string>;
   enableHmr?: boolean;
   usePoisonedData?: boolean;
+  /** See `AnalyzerOptions.useHostForImportGeneration`. */
+  useHostForImportGeneration?: boolean;
 }
 
 /** Text to splice into the source at `position`, a UTF-16 offset. */

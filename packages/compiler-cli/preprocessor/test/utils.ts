@@ -413,6 +413,11 @@ export async function runPipeline(
 
   const workspaceName = tsconfigOptions.workspaceName;
   const rootDirs = compilerOptions.rootDirs;
+  const useHostForImportGeneration =
+    tsconfigOptions._useHostForImportGeneration ||
+    tsconfigOptions._useHostForImportAndAliasGeneration
+      ? true
+      : undefined;
 
   const outputs: TestFile[] = [];
 
@@ -443,6 +448,7 @@ export async function runPipeline(
       workspaceName,
       rootDirs,
       usePoisonedData: tcbConfig.usePoisonedData,
+      useHostForImportGeneration,
     });
     analyzer = sidecar;
   } else {
@@ -456,6 +462,7 @@ export async function runPipeline(
       workspaceName,
       rootDirs,
       usePoisonedData: tcbConfig.usePoisonedData,
+      useHostForImportGeneration,
     });
   }
 

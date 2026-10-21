@@ -124,6 +124,12 @@ pub struct AnalyzerOptions {
     /// service and `_compilePoisonedComponents`). Falls back to the tsconfig's
     /// `angularCompilerOptions._compilePoisonedComponents` when unset.
     pub use_poisoned_data: Option<bool>,
+    /// ngtsc's `_useHostForImportGeneration` / `_useHostForImportAndAliasGeneration`: emit
+    /// module specifiers the way the compiler host would name files (`PrefixImportStrategy`
+    /// from `workspace_name` + `root_dirs`) rather than relative paths. Falls back to the
+    /// tsconfig's `angularCompilerOptions` when unset. Without a `workspace_name` the flag has
+    /// no effect, as in ngtsc when the host has no `fileNameToModuleName`.
+    pub use_host_for_import_generation: Option<bool>,
 }
 
 #[cfg_attr(feature = "napi", napi(object))]

@@ -210,12 +210,15 @@ impl Analyzer {
             None => abs_dirs.clone(),
         };
 
+        let use_host_for_import_generation = options
+            .use_host_for_import_generation
+            .unwrap_or(resolved_config.use_host_for_import_generation);
         let reference_strategy: Arc<dyn crate::analyzer::import_emit::ReferenceEmitStrategy> =
             match workspace_name {
-                Some(ws) => Arc::new(crate::analyzer::import_emit::PrefixImportStrategy::new(
-                    ws, root_dirs,
-                )),
-                None => Arc::new(crate::analyzer::import_emit::ApfImportStrategy::new()),
+                Some(ws) if use_host_for_import_generation => Arc::new(
+                    crate::analyzer::import_emit::PrefixImportStrategy::new(ws, root_dirs),
+                ),
+                _ => Arc::new(crate::analyzer::import_emit::ApfImportStrategy::new()),
             };
 
         let engine = crate::query::QueryEngine::new_with_options(

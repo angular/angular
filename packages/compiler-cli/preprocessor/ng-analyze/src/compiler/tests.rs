@@ -3960,6 +3960,7 @@ fn test_compilation_chunk_with_prefix_imports_and_cycles() {
         virtual_files: Some(virtual_files),
         workspace_name: Some("google3".to_string()),
         root_dirs: Some(vec!["/project".to_string()]),
+        use_host_for_import_generation: Some(true),
         ..Default::default()
     };
 
@@ -3990,6 +3991,124 @@ fn test_compilation_chunk_with_prefix_imports_and_cycles() {
     assert!(file_paths.contains(&"/project/app.module.ts"));
     assert!(file_paths.contains(&"/project/a.component.ts"));
     assert!(file_paths.contains(&"/project/b.component.ts"));
+}
+
+/// A component in one file using a directive declared in another, through an NgModule, so the
+/// component's `resolvedDeclarations` has to import the directive. `tsconfig_extra` is spliced
+/// into `angularCompilerOptions`.
+fn cross_file_import_project(tsconfig_extra: &str) -> HashMap<String, String> {
+    [
+        (
+            "/project/tsconfig.json",
+            format!(
+                r#"{{"compilerOptions": {{"rootDirs": ["/project"]}},
+                    "angularCompilerOptions": {{"workspaceName": "google3"{tsconfig_extra}}},
+                    "files": ["app.module.ts", "cmp.ts", "dir.ts"]}}"#
+            ),
+        ),
+        (
+            "/project/dir.ts",
+            "import {Directive} from '@angular/core';\n\
+             @Directive({selector: '[test]', standalone: false})\n\
+             export class TestDir {}\n"
+                .to_string(),
+        ),
+        (
+            "/project/cmp.ts",
+            "import {Component} from '@angular/core';\n\
+             @Component({selector: 'cmp', template: '<div test></div>', standalone: false})\n\
+             export class Cmp {}\n"
+                .to_string(),
+        ),
+        (
+            "/project/app.module.ts",
+            "import {NgModule} from '@angular/core';\n\
+             import {Cmp} from './cmp';\n\
+             import {TestDir} from './dir';\n\
+             @NgModule({declarations: [Cmp, TestDir]})\n\
+             export class AppModule {}\n"
+                .to_string(),
+        ),
+    ]
+    .into_iter()
+    .map(|(path, content)| (path.to_string(), content))
+    .collect()
+}
+
+/// The specifier `cmp.ts` imports `TestDir` with, under `options`.
+fn test_dir_import_specifier(options: AnalyzerOptions) -> String {
+    let analyzer = Analyzer::new(options).unwrap();
+    let meta = analyzer
+        .get_metadata_for_file("/project/cmp.ts".to_string())
+        .expect("cmp.ts metadata");
+    let component = meta.classes[0].component.as_ref().expect("component");
+    let decl = component
+        .resolved_declarations
+        .as_ref()
+        .expect("resolved declarations")
+        .iter()
+        .find(|d| d.name == "TestDir")
+        .expect("TestDir in scope");
+    decl.r#ref
+        .consumer_import
+        .as_ref()
+        .expect("TestDir is imported")
+        .specifier
+        .clone()
+}
+
+/// `_useHostForImportGeneration` switches module naming to the host's scheme, which the
+/// analyzer stands in for with `workspaceName` + `rootDirs` (ngtsc's `UnifiedModulesStrategy`).
+#[test]
+fn test_use_host_for_import_generation_emits_prefixed_specifiers() {
+    // The flag passed as an option.
+    let specifier = test_dir_import_specifier(AnalyzerOptions {
+        tsconfig_path: "/project/tsconfig.json".to_string(),
+        optimize: Some(true),
+        virtual_files: Some(cross_file_import_project("")),
+        use_host_for_import_generation: Some(true),
+        ..Default::default()
+    });
+    assert_eq!(specifier, "google3/dir");
+
+    // The flag read from the tsconfig, in either spelling.
+    for flag in [
+        "_useHostForImportGeneration",
+        "_useHostForImportAndAliasGeneration",
+    ] {
+        let specifier = test_dir_import_specifier(AnalyzerOptions {
+            tsconfig_path: "/project/tsconfig.json".to_string(),
+            optimize: Some(true),
+            virtual_files: Some(cross_file_import_project(&format!(", \"{flag}\": true"))),
+            ..Default::default()
+        });
+        assert_eq!(specifier, "google3/dir", "{flag}");
+    }
+}
+
+/// Without the flag a `workspaceName` is inert and imports stay relative, as in ngtsc where
+/// Bazel's `bazelOptions.workspaceName` is present but the host's module naming is not used.
+#[test]
+fn test_workspace_name_without_use_host_flag_emits_relative_specifiers() {
+    for options in [
+        AnalyzerOptions {
+            tsconfig_path: "/project/tsconfig.json".to_string(),
+            optimize: Some(true),
+            virtual_files: Some(cross_file_import_project("")),
+            ..Default::default()
+        },
+        AnalyzerOptions {
+            tsconfig_path: "/project/tsconfig.json".to_string(),
+            optimize: Some(true),
+            virtual_files: Some(cross_file_import_project("")),
+            workspace_name: Some("google3".to_string()),
+            root_dirs: Some(vec!["/project".to_string()]),
+            use_host_for_import_generation: Some(false),
+            ..Default::default()
+        },
+    ] {
+        assert_eq!(test_dir_import_specifier(options), "./dir");
+    }
 }
 
 #[test]

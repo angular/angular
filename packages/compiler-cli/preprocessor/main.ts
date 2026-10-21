@@ -118,6 +118,12 @@ import {run} from './ngp.js';
     const workspaceName = angularCompilerOptions?.workspaceName || bazelOptions?.workspaceName;
     const rootDirs = angularCompilerOptions?.rootDirs || bazelOptions?.rootDirs;
     const enableHmr = angularCompilerOptions?._enableHmr;
+    // Left undefined when unset so the analyzer falls back to the tsconfig's own value.
+    const useHostForImportGeneration =
+      angularCompilerOptions?._useHostForImportGeneration ||
+      angularCompilerOptions?._useHostForImportAndAliasGeneration
+        ? true
+        : undefined;
 
     let innerAnalyzer: IAnalyzer;
     if (sidecarPath) {
@@ -127,6 +133,7 @@ import {run} from './ngp.js';
         rootDirs,
         enableHmr,
         usePoisonedData: tcbConfig.usePoisonedData,
+        useHostForImportGeneration,
       });
       innerAnalyzer = sidecar;
     } else {
@@ -147,6 +154,7 @@ import {run} from './ngp.js';
         rootDirs,
         enableHmr,
         usePoisonedData: tcbConfig.usePoisonedData,
+        useHostForImportGeneration,
       });
     }
     const compiler = new HybridCompiler(innerAnalyzer, {

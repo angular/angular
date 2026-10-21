@@ -16,6 +16,7 @@ pub struct ResolvedTsConfig {
     pub strict_standalone: bool,
     pub compile_poisoned_components: bool,
     pub strict_injection_parameters: bool,
+    pub use_host_for_import_generation: bool,
 }
 
 pub fn load_and_resolve_tsconfig(
@@ -100,6 +101,9 @@ pub fn load_and_resolve_tsconfig(
             .unwrap_or(false),
         strict_injection_parameters: extended_options
             .strict_injection_parameters
+            .unwrap_or(false),
+        use_host_for_import_generation: extended_options
+            .use_host_for_import_generation
             .unwrap_or(false),
     })
 }
@@ -275,6 +279,7 @@ struct ExtendedOptions {
     strict_standalone: Option<bool>,
     compile_poisoned_components: Option<bool>,
     strict_injection_parameters: Option<bool>,
+    use_host_for_import_generation: Option<bool>,
 }
 
 fn resolve_extended_options_recursive(
@@ -355,6 +360,23 @@ fn resolve_extended_options_recursive(
             .and_then(|v| v.as_bool())
     });
 
+    // Either flag selects host-driven module naming in ngtsc (`makeCompilation`); the alias
+    // variant additionally enables aliasing, which the analyzer does not implement.
+    let mut current_use_host_for_import_generation = parsed_json.as_ref().ok().and_then(|json| {
+        let read = |key: &str| {
+            json.pointer(&format!("/angularCompilerOptions/{key}"))
+                .or_else(|| json.pointer(&format!("/bazelOptions/angularCompilerOptions/{key}")))
+                .and_then(|v| v.as_bool())
+        };
+        match (
+            read("_useHostForImportGeneration"),
+            read("_useHostForImportAndAliasGeneration"),
+        ) {
+            (None, None) => None,
+            (a, b) => Some(a.unwrap_or(false) || b.unwrap_or(false)),
+        }
+    });
+
     let base_dir = abs_path.parent().unwrap_or(Path::new("."));
 
     let mut current_root_dirs = tsconfig.compiler_options.root_dirs.clone().map(|dirs| {
@@ -375,6 +397,7 @@ fn resolve_extended_options_recursive(
         && current_strict_standalone.is_some()
         && current_compile_poisoned_components.is_some()
         && current_strict_injection_parameters.is_some()
+        && current_use_host_for_import_generation.is_some()
     {
         visited.remove(&canonical);
         return Ok(ExtendedOptions {
@@ -387,6 +410,7 @@ fn resolve_extended_options_recursive(
             strict_standalone: current_strict_standalone,
             compile_poisoned_components: current_compile_poisoned_components,
             strict_injection_parameters: current_strict_injection_parameters,
+            use_host_for_import_generation: current_use_host_for_import_generation,
         });
     }
 
@@ -402,6 +426,7 @@ fn resolve_extended_options_recursive(
             strict_standalone: current_strict_standalone,
             compile_poisoned_components: current_compile_poisoned_components,
             strict_injection_parameters: current_strict_injection_parameters,
+            use_host_for_import_generation: current_use_host_for_import_generation,
         });
     };
 
@@ -457,6 +482,9 @@ fn resolve_extended_options_recursive(
         if let Some(strict_injection_parameters) = res.strict_injection_parameters {
             inherited.strict_injection_parameters = Some(strict_injection_parameters);
         }
+        if let Some(use_host) = res.use_host_for_import_generation {
+            inherited.use_host_for_import_generation = Some(use_host);
+        }
     }
     if current_root_dirs.is_none() {
         current_root_dirs = inherited.root_dirs;
@@ -485,6 +513,9 @@ fn resolve_extended_options_recursive(
     if current_strict_injection_parameters.is_none() {
         current_strict_injection_parameters = inherited.strict_injection_parameters;
     }
+    if current_use_host_for_import_generation.is_none() {
+        current_use_host_for_import_generation = inherited.use_host_for_import_generation;
+    }
 
     visited.remove(&canonical);
     Ok(ExtendedOptions {
@@ -497,6 +528,7 @@ fn resolve_extended_options_recursive(
         strict_standalone: current_strict_standalone,
         compile_poisoned_components: current_compile_poisoned_components,
         strict_injection_parameters: current_strict_injection_parameters,
+        use_host_for_import_generation: current_use_host_for_import_generation,
     })
 }
 

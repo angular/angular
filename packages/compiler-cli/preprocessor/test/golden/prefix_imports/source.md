@@ -10,7 +10,8 @@
     "rootDirs": ["src", "generated", "extra"]
   },
   "angularCompilerOptions": {
-    "workspaceName": "repo"
+    "workspaceName": "repo",
+    "_useHostForImportGeneration": true
   },
   "files": [
     "src/app/parent.component.ts",

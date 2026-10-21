@@ -29,7 +29,7 @@ import {
 import {createRequire} from 'node:module';
 import {exitCodeFromResult} from '../../../perform_compile';
 import {verifySupportedTypeScriptVersion} from '../../../typescript_support';
-import {UNKNOWN_ERROR_CODE} from '../../../transformers/api';
+import {CompilerOptions, CustomTransformers, UNKNOWN_ERROR_CODE} from '../../../transformers/api';
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
 import {AbsoluteFsPath, FileSystem} from '../../file_system';
 import {ClassDeclaration, DeclarationNode} from '../../reflection';
@@ -38,10 +38,17 @@ import {hasIgnoreForDiagnosticsMarker, readSpanComment} from '../../typecheck/sr
 import {shouldReportDiagnostic} from '../../typecheck/src/diagnostics';
 import {isInHostBindingTcb} from '../../typecheck/src/tcb_util';
 import {getTokenAtPosition} from '../../util/src/typescript';
-import type * as api from '../../../transformers/api';
 import {NgtscTestCompilerHost} from './compiler_host';
 
 const SPAN_COMMENT_REGEX = /\/\*(\d+),(\d+)\*\//g;
+
+/**
+ * Workspace name under which ngtsc's test `FileNameToModuleNameHost` (`test/ngtsc/env.ts`) names
+ * modules when `_useHostForImportGeneration` is set, and the specifier prefix it strips again on
+ * resolution.
+ */
+const ROOT_HOST_WORKSPACE_NAME = 'root';
+const ROOT_HOST_PREFIX = `${ROOT_HOST_WORKSPACE_NAME}/`;
 
 /**
  * Returns true if the current test run is configured to use the NGP compiler backend.
@@ -123,6 +130,7 @@ function createTestWasmAnalyzerSync(
       rootDirs: options.rootDirs,
       enableHmr: options.enableHmr,
       usePoisonedData: options.usePoisonedData,
+      useHostForImportGeneration: options.useHostForImportGeneration,
     }),
     options.hostFs,
   );
@@ -246,10 +254,10 @@ export function performNgpCompilationSync(params: {
   basePath: AbsoluteFsPath;
   tsconfigPath: AbsoluteFsPath;
   rootNames: readonly string[];
-  options: api.CompilerOptions;
+  options: CompilerOptions;
   emit: boolean;
   complianceMode?: boolean;
-  customTransformers?: api.CustomTransformers;
+  customTransformers?: CustomTransformers;
   writeFileCallback?: ts.WriteFileCallback;
   closeAnalyzer?: boolean;
   tcbConfigOverride?: Partial<NgpTypeCheckingConfig>;
@@ -287,6 +295,12 @@ export function performNgpCompilationSync(params: {
     Boolean(rawOpts['_experimentalAllowEmitDeclarationOnly']);
   const workspaceName = rawOpts['workspaceName'] as string | undefined;
   const rootDirs = options.rootDirs?.map((d: string) => toPosixPath(fs.resolve(basePath, d)));
+  const useHostForImportGeneration = Boolean(
+    rawOpts['_useHostForImportGeneration'] || rawOpts['_useHostForImportAndAliasGeneration'],
+  );
+  const emulateRootHost = useHostForImportGeneration && workspaceName === undefined;
+  const analyzerWorkspaceName = emulateRootHost ? ROOT_HOST_WORKSPACE_NAME : workspaceName;
+  const analyzerRootDirs = emulateRootHost ? [toPosixPath(fs.pwd())] : rootDirs;
 
   // If tsconfig.json does not exist or does not explicitly specify `files` or `include`,
   // inject `files` from TypeScript's resolved `rootNames` via `virtualFiles` so `WasmAnalyzer`
@@ -312,7 +326,8 @@ export function performNgpCompilationSync(params: {
       angularCompilerOptions: {
         _generateExtraImportsInLocalMode: Boolean(rawOpts['_generateExtraImportsInLocalMode']),
         compileNonExportedClasses: rawOpts['compileNonExportedClasses'] !== false,
-        workspaceName,
+        workspaceName: analyzerWorkspaceName,
+        _useHostForImportGeneration: useHostForImportGeneration,
       },
       files: rootNames.map((r) => toPosixPath(fs.resolve(basePath, r))),
     });
@@ -336,10 +351,11 @@ export function performNgpCompilationSync(params: {
     optimize,
     virtualFiles,
     nodeModulesPathOverride: toPosixPath(fs.resolve('/node_modules')),
-    workspaceName,
-    rootDirs,
+    workspaceName: analyzerWorkspaceName,
+    rootDirs: analyzerRootDirs,
     enableHmr: Boolean(rawOpts['_enableHmr']),
     usePoisonedData: tcbConfig.usePoisonedData,
+    useHostForImportGeneration,
   });
 
   let compiler: HybridCompiler;
@@ -560,6 +576,29 @@ export function performNgpCompilationSync(params: {
 
   if (writeFileCallback) {
     overlayHost.writeFile = writeFileCallback;
+  }
+
+  if (emulateRootHost) {
+    overlayHost.resolveModuleNames = (
+      moduleNames: string[],
+      containingFile: string,
+      _reusedNames: string[] | undefined,
+      redirectedReference: ts.ResolvedProjectReference | undefined,
+      compilerOptions: ts.CompilerOptions,
+    ): (ts.ResolvedModule | undefined)[] =>
+      moduleNames.map((moduleName) => {
+        if (moduleName.startsWith(ROOT_HOST_PREFIX)) {
+          moduleName = fs.resolve('/' + moduleName.slice(ROOT_HOST_PREFIX.length));
+        }
+        return ts.resolveModuleName(
+          moduleName,
+          containingFile,
+          compilerOptions,
+          overlayHost,
+          /* cache */ undefined,
+          redirectedReference,
+        ).resolvedModule;
+      });
   }
 
   const programRootNames: string[] = [...rootNames];
@@ -1351,7 +1390,7 @@ export function createNgpBoundTemplate(
 export function createNgpTestCompiler(
   fs: FileSystem,
   inputFiles: readonly string[],
-  options: api.CompilerOptions,
+  options: CompilerOptions,
   program: ts.Program,
 ) {
   let currentResult!: NgpCompilationResult;

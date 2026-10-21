@@ -10,7 +10,8 @@
     "rootDirs": ["src"]
   },
   "angularCompilerOptions": {
-    "workspaceName": "repo"
+    "workspaceName": "repo",
+    "_useHostForImportGeneration": true
   },
   "files": [
     "src/apps/dashboard.component.ts",

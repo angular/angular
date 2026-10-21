@@ -45,6 +45,7 @@ export interface LoadAnalyzerOptions {
   rootDirs?: string[];
   enableHmr?: boolean;
   usePoisonedData?: boolean;
+  useHostForImportGeneration?: boolean;
 
   /**
    * Force a specific engine. When set, only that engine is attempted — a failure
@@ -259,6 +260,7 @@ async function constructNative(
       rootDirs: options.rootDirs,
       enableHmr: options.enableHmr,
       usePoisonedData: options.usePoisonedData,
+      useHostForImportGeneration: options.useHostForImportGeneration,
     }),
   );
 }
@@ -298,6 +300,7 @@ async function constructWasm(
       rootDirs: options.rootDirs,
       enableHmr: options.enableHmr,
       usePoisonedData: options.usePoisonedData,
+      useHostForImportGeneration: options.useHostForImportGeneration,
     }),
     hostFs,
   );

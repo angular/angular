@@ -14,7 +14,8 @@
     "rootDirs": ["."]
   },
   "angularCompilerOptions": {
-    "workspaceName": "google3"
+    "workspaceName": "google3",
+    "_useHostForImportGeneration": true
   },
   "files": [
     "my/upstream/directive.ts",
