@@ -160,6 +160,7 @@ export interface NgpTypeCheckingConfig extends TypeCheckingConfig {
 export function buildTypeCheckingConfig(
   options: NgpCompilerOptions = {},
   enableTemplateTypeChecker: boolean = false,
+  usePoisonedData = false,
 ): NgpTypeCheckingConfig {
   const strictTemplates = options.strictTemplates !== false;
 
@@ -274,7 +275,7 @@ export function buildTypeCheckingConfig(
   }
   typeCheckingConfig.typeCheckHostBindings = options.typeCheckHostBindings ?? true;
   typeCheckingConfig.usePoisonedData =
-    enableTemplateTypeChecker || Boolean(options._compilePoisonedComponents);
+    usePoisonedData || Boolean(options._compilePoisonedComponents);
 
   return typeCheckingConfig;
 }

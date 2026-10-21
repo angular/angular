@@ -350,7 +350,7 @@ export class TestEnv {
   ): Promise<LanguageService> {
     const tsconfigPath = path.join(this.fileManager.getWorkspacePath(), 'tsconfig.json');
     const wasmBinding = resolveWasmBinding();
-    const tcbConfig = buildTypeCheckingConfig(options, true);
+    const tcbConfig = buildTypeCheckingConfig(options, true, true);
     const analyzer = await NapiAnalyzer.create(tsconfigPath, {
       nodeModulesPathOverride: path.resolve(TESTS_DIR, '../../node_modules'),
       ngAnalyzeDir: path.resolve(TESTS_DIR, '../../ng-analyze'),
