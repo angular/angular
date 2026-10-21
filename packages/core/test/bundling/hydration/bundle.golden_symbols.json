@@ -852,6 +852,7 @@
       "registerPreOrderHooks",
       "relativePath",
       "remove",
+      "removeAllAppScopedEventListeners",
       "removeAllEventListeners",
       "removeDehydratedView",
       "removeDehydratedViewList",
