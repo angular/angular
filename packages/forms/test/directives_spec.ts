@@ -410,6 +410,47 @@ describe('Form Directives', () => {
         expect(formModel.get(['person', 'login'])).not.toBeNull();
       });
 
+      it('should skip control registration when the container was removed first', async () => {
+        const rejections: unknown[] = [];
+        const handler = (event: PromiseRejectionEvent) => {
+          rejections.push(event.reason);
+          event.preventDefault();
+        };
+        window.addEventListener('unhandledrejection', handler);
+
+        form.addFormGroup(personControlGroupDir);
+        form.removeFormGroup(personControlGroupDir);
+        form.addControl(loginControlDir);
+
+        await timeout();
+
+        window.removeEventListener('unhandledrejection', handler);
+        expect(rejections).toEqual([]);
+        expect(formModel.get(['person', 'login'])).toBeNull();
+      });
+
+      it('should skip group registration when the container was removed first', async () => {
+        const innerGroupDir = new NgModelGroup(personControlGroupDir, [], []);
+        innerGroupDir.name = 'address';
+
+        const rejections: unknown[] = [];
+        const handler = (event: PromiseRejectionEvent) => {
+          rejections.push(event.reason);
+          event.preventDefault();
+        };
+        window.addEventListener('unhandledrejection', handler);
+
+        form.addFormGroup(personControlGroupDir);
+        form.removeFormGroup(personControlGroupDir);
+        form.addFormGroup(innerGroupDir);
+
+        await timeout();
+
+        window.removeEventListener('unhandledrejection', handler);
+        expect(rejections).toEqual([]);
+        expect(formModel.get(['person', 'address'])).toBeNull();
+      });
+
       // should update the form's value and validity
     });
 
