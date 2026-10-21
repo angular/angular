@@ -443,6 +443,7 @@
       "bootstrapApplication",
       "borrowReactiveLViewConsumer",
       "cacheMatchingLocalNames",
+      "callGuard",
       "callHook",
       "callHookInternal",
       "callHooks",
