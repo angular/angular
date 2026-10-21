@@ -14,6 +14,10 @@ import type {DocsImage} from '../extensions/docs-image.mjs';
 // TODO(josephperrott): Determine how we can define/know the image content base path.
 const imageContentBasePath = 'unknown';
 
+function escapeAttribute(value: string): string {
+  return value.replace(/"/g, '&quot;');
+}
+
 export function imageRender(this: Renderer, token: DocsImage) {
   const {href, title, text, loading, decoding, fetchpriority} = token;
 
@@ -22,9 +26,9 @@ export function imageRender(this: Renderer, token: DocsImage) {
 
   const attrs = [
     `src="${src}"`,
-    `alt="${text}"`,
+    `alt="${escapeAttribute(text)}"`,
     `class="docs-image"`,
-    title ? `title="${title}"` : null,
+    title ? `title="${escapeAttribute(title)}"` : null,
     loading ? `loading="${loading}"` : null,
     decoding ? `decoding="${decoding}"` : null,
     fetchpriority ? `fetchpriority="${fetchpriority}"` : null,

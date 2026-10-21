@@ -53,4 +53,10 @@ describe('markdown to html', () => {
     expect(image?.getAttribute('fetchpriority')).toBe('high');
     expect(image?.getAttribute('title')).toBe('Hero Image');
   });
+
+  it('should escape double quotes in the alt and title attributes', () => {
+    const image = markdownDocument.querySelectorAll('img')[6];
+    expect(image?.getAttribute('alt')).toBe('Say "hello" to the logo');
+    expect(image?.getAttribute('title')).toBe('The "new" icon');
+  });
 });
