@@ -484,9 +484,6 @@ export class Router {
       default:
         q = queryParams || null;
     }
-    if (q !== null) {
-      q = this.removeEmptyProps(q);
-    }
 
     let relativeToUrlSegmentGroup: UrlSegmentGroup | undefined;
     try {
@@ -651,15 +648,6 @@ export class Router {
 
     const urlTree = this.parseUrl(url);
     return containsTree(this.currentUrlTree, urlTree, options);
-  }
-
-  private removeEmptyProps(params: Params): Params {
-    return Object.entries(params).reduce((result: Params, [key, value]: [string, any]) => {
-      if (value !== null && value !== undefined) {
-        result[key] = value;
-      }
-      return result;
-    }, {});
   }
 
   private scheduleNavigation(
