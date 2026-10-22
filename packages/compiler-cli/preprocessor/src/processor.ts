@@ -415,6 +415,9 @@ export function processFileSync(
   // the loop ends — see `removeDeferredImports`.
   const deferredOnlyNames = new Set<string>();
   const eagerlyBoundNames = new Set<string>();
+  // The subset of `eagerlyBoundNames` that the *source* references eagerly, as opposed to names
+  // this compiler merely decided to emit as an eager dependency.
+  const eagerlyReferencedNames = new Set<string>();
   // Locals a component names in `imports: [...]` without deferring them itself, so its emitted
   // dependencies still reference them and the static import has to survive.
   //
@@ -1136,6 +1139,14 @@ export function processFileSync(
           if (local === undefined) continue;
           if (filteredDeclarations.includes(decl)) {
             eagerlyBoundNames.add(local);
+            // An explicitly deferred declaration only ends up here because the compiler fell
+            // back to an eager dependency (used outside any `@defer` block, or in one whose
+            // allow-list excludes it). The source still references it solely from
+            // `deferredImports`, which ngtsc's tracker excuses, so this is not an eager
+            // reference for NG8014 purposes.
+            if (!decl.isExplicitlyDeferred) {
+              eagerlyReferencedNames.add(local);
+            }
             continue;
           }
           if (ctx.onlyExplicitDeferDependencyImports && !decl.isExplicitlyDeferred) {
@@ -1187,6 +1198,7 @@ export function processFileSync(
       const markNotDeferrable = (local: string | undefined) => {
         if (!canDeferDeps || local === undefined) return;
         eagerlyBoundNames.add(local);
+        eagerlyReferencedNames.add(local);
         deferredOnlyNames.delete(local);
       };
 
@@ -1871,6 +1883,7 @@ export function processFileSync(
 
   for (const local of eagerDependencyNames) {
     eagerlyBoundNames.add(local);
+    eagerlyReferencedNames.add(local);
     deferredOnlyNames.delete(local);
   }
 
@@ -1880,7 +1893,7 @@ export function processFileSync(
     importDeclarations,
     classes,
     deferredOnlyNames,
-    eagerlyBoundNames,
+    eagerlyReferencedNames,
   );
   const removedDecls = ctx.enableHmr
     ? new Set<nga.ImportDeclarationMetadata>()
@@ -3044,7 +3057,7 @@ function reportEagerlyImportedDeferredDependencies(
   importDeclarations: readonly nga.ImportDeclarationMetadata[],
   classes: readonly nga.ClassMetadata[],
   deferredOnlyNames: ReadonlySet<string>,
-  eagerlyBoundNames: ReadonlySet<string>,
+  eagerlyReferencedNames: ReadonlySet<string>,
 ) {
   const explicitlyDeferredNames = new Set<string>();
   for (const classMeta of classes) {
@@ -3067,11 +3080,16 @@ function reportEagerlyImportedDeferredDependencies(
     // ngtsc asks whether the declaration would survive *its* emit, which is JavaScript, so a
     // type-only binding or a type-position reference is erased on the way out and does not block
     // deferral (`valueReferenced` rather than `eagerlyReferenced`).
+    //
+    // A name listed in `deferredImports` is excused by `markAsDeferrableCandidate` at analysis
+    // time whether or not the compiler ends up deferring it, so it counts as a deferred candidate
+    // here even when it is absent from `deferredOnlyNames` (which only holds the names this
+    // compiler actually deferred).
     const canDefer = decl.bindings.every(
       (binding) =>
         binding.isType ||
-        (deferredOnlyNames.has(binding.local) &&
-          !eagerlyBoundNames.has(binding.local) &&
+        ((deferredOnlyNames.has(binding.local) || explicitlyDeferredNames.has(binding.local)) &&
+          !eagerlyReferencedNames.has(binding.local) &&
           !binding.valueReferenced),
     );
     if (canDefer) {
