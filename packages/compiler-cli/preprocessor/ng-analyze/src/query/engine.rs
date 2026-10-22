@@ -860,7 +860,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                         .ctor_params_di
                         .get(index)
                         .is_some_and(|di| di.type_info.is_type_only());
-                    if di_is_type_only || param.is_value_verified {
+                    if di_is_type_only || param.is_type_only || param.is_value_verified {
                         continue;
                     }
                     if let Some(ref type_name) = param.type_name {

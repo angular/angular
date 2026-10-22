@@ -1916,6 +1916,119 @@ export class UserService {
         }
     }
 
+    fn inject_param_kind(fs: &OverlayFileSystem, optimize: bool) -> (bool, bool) {
+        let results = run_analyzer(fs.clone(), "/test/tsconfig.json", optimize);
+        let class_meta = find_class(&results, "Consumer").expect("Consumer should exist");
+        let param = &class_meta.constructor_params.as_ref().unwrap()[0];
+        (param.is_type_only, param.is_value_verified)
+    }
+
+    fn inject_fixture(dep_source: &str, consumer_source: &str) -> OverlayFileSystem {
+        create_test_fs(&[
+            (
+                "/test/tsconfig.json",
+                r#"{"compilerOptions": {"strict": true}, "files": ["consumer.ts"]}"#,
+            ),
+            ("/test/dep.ts", dep_source),
+            ("/test/consumer.ts", consumer_source),
+        ])
+    }
+
+    #[test]
+    fn test_inject_param_with_imported_class_is_type_only_in_both_modes() {
+        let fs = inject_fixture(
+            "export class Dep {}\n",
+            r#"
+import { Inject, Injectable } from '@angular/core';
+import { Dep } from './dep';
+
+@Injectable({ providedIn: 'root' })
+export class Consumer {
+  constructor(@Inject('TOKEN') private dep: Dep) {}
+}
+"#,
+        );
+        let local = inject_param_kind(&fs, false);
+        let optimized = inject_param_kind(&fs, true);
+        assert_eq!(local, (true, false));
+        assert_eq!(optimized, local, "optimized mode must not undo the @Inject rule");
+
+        let results = run_analyzer(fs, "/test/tsconfig.json", true);
+        let param = &find_class(&results, "Consumer")
+            .unwrap()
+            .constructor_params
+            .as_ref()
+            .unwrap()[0];
+        assert_eq!(param.type_name.as_deref(), Some("Dep"));
+        assert_eq!(param.decorators[0].canonical_name.as_deref(), Some("Inject"));
+    }
+
+    #[test]
+    fn test_inject_param_with_imported_interface_is_type_only_in_both_modes() {
+        let fs = inject_fixture(
+            "export interface Iface {}\n",
+            r#"
+import { Inject, Injectable } from '@angular/core';
+import { Iface } from './dep';
+
+@Injectable({ providedIn: 'root' })
+export class Consumer {
+  constructor(@Inject('TOKEN') private dep: Iface) {}
+}
+"#,
+        );
+        for optimize in [false, true] {
+            let (is_type_only, _) = inject_param_kind(&fs, optimize);
+            assert!(is_type_only, "optimize={optimize}: expected type-only");
+        }
+    }
+
+    #[test]
+    fn test_inject_param_with_same_file_class_keeps_value_in_both_modes() {
+        // A same-file class is verified by the in-file pass, so the `@Inject` rule does not apply
+        // and the type is emitted in both modes.
+        let fs = inject_fixture(
+            "",
+            r#"
+import { Inject, Injectable } from '@angular/core';
+
+class Local {}
+
+@Injectable({ providedIn: 'root' })
+export class Consumer {
+  constructor(@Inject('TOKEN') private dep: Local) {}
+}
+"#,
+        );
+        for optimize in [false, true] {
+            assert_eq!(
+                inject_param_kind(&fs, optimize),
+                (false, true),
+                "optimize={optimize}"
+            );
+        }
+    }
+
+    #[test]
+    fn test_non_inject_param_with_imported_class_still_upgrades_in_optimize_mode() {
+        // Without `@Inject` the in-file pass leaves the parameter open (emitted under a guard),
+        // and Stage 2 is still allowed to verify it.
+        let fs = inject_fixture(
+            "export class Dep {}\n",
+            r#"
+import { Injectable } from '@angular/core';
+import { Dep } from './dep';
+
+@Injectable({ providedIn: 'root' })
+export class Consumer {
+  constructor(private dep: Dep) {}
+}
+"#,
+        );
+        assert_eq!(inject_param_kind(&fs, false), (false, false));
+        assert_eq!(inject_param_kind(&fs, true), (false, true));
+    }
+
     #[test]
     fn test_constructor_params_qualified_type_detection() {
         let fs = create_test_fs(&[

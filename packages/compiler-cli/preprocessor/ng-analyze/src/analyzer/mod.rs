@@ -660,11 +660,13 @@ pub fn get_constructor_params<'a>(
                 }
             }
 
-            // In single-file (local) mode, an unverified imported type on an `@Inject` parameter is
-            // frequently an interface (which is why `@Inject` was needed), so default `is_type_only`
-            // to `true` when `!is_value_verified`. Verified value types (same-file classes, or
-            // cross-file classes resolved in Stage 2) keep `is_type_only = false` to match ngtsc:
-            // https://github.com/angular/angular/blob/16fe27b/packages/compiler-cli/src/ngtsc/annotations/common/src/metadata.ts#L160-L181
+            // Single-file analysis cannot tell an imported interface from an imported class, and
+            // `@Inject(TOKEN) x: SomeInterface` is the canonical reason `@Inject` is written at
+            // all. Emitting the interface in `ɵsetClassMetadata` would be unsound: `tsc` elides
+            // its import (the alias has no value meaning) but leaves the identifier behind in
+            // `ctorParameters`, which throws the first time the metadata is read. Withholding the
+            // type is always safe here because DI uses the token, never the type. Verified value
+            // types (same-file classes) keep `is_type_only = false`.
             if canonical_name == Some("Inject") && !is_value_verified {
                 is_type_only = true;
             }
