@@ -14,7 +14,7 @@ import * as fs from 'node:fs/promises';
 import * as path from 'path';
 import {resolveWorkspaceConfig, stripJsonComments} from './src/workspace.js';
 import {readConfiguration} from '@angular/compiler-cli';
-import type {NgpCompilerOptions} from './src/compiler_options.js';
+import {verifyCompilerOptions, type NgpCompilerOptions} from './src/compiler_options.js';
 import {HybridCompiler, IAnalyzer} from './src/hybrid_compiler.js';
 import {buildTypeCheckingConfig} from './src/tcb.js';
 import {SidecarAnalyzer} from './src/analyzer_sidecar.js';
@@ -183,6 +183,11 @@ import {run} from './ngp.js';
       workspaceName,
       rootDirs,
     });
+
+    const optionDiagnostics = verifyCompilerOptions(angularCompilerOptions ?? {});
+    if (optionDiagnostics.length > 0) {
+      compiler.diagnosticsMap.set(tsconfigPath, optionDiagnostics);
+    }
 
     console.log('Processing files...');
     await run(compiler, {outDir, rootDir, inPlace});

@@ -29,6 +29,7 @@ export {run} from './ngp.js';
 export type {RunOptions} from './ngp.js';
 
 export {buildTypeCheckingConfig, type NgpTypeCheckingConfig} from './src/tcb.js';
+export {verifyCompilerOptions, type NgpCompilerOptions} from './src/compiler_options.js';
 export {resolveWorkspaceConfig} from './src/workspace.js';
 export type {WorkspaceConfig} from './src/workspace.js';
 export {WasmAnalyzer, type WasmInner} from './src/analyzer_wasm.js';

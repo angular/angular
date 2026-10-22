@@ -16,12 +16,14 @@ import {
   buildTypeCheckingConfig,
   HybridCompiler,
   IndexerBoundTemplate,
+  verifyCompilerOptions,
   WasmAnalyzer,
   type ClassEntity,
   type HostDirEntry,
   type HostFileStat,
   type LoadAnalyzerOptions,
   type NgDiagnostic,
+  type NgpCompilerOptions,
   type NgpTypeCheckingConfig,
   type WasmHostFs,
   type WasmInner,
@@ -637,7 +639,13 @@ export function performNgpCompilationSync(params: {
       messageText: thrown.message,
     });
   }
-  if (!templateDiagnosticsOnly) {
+  const optionDiagnostics = verifyCompilerOptions(options as NgpCompilerOptions);
+  for (const ngDiag of optionDiagnostics) {
+    allDiagnostics.push(convertNgDiagnosticToTs(ngDiag, undefined));
+  }
+  const hasOptionErrors = optionDiagnostics.some((d) => d.category === 1);
+
+  if (!templateDiagnosticsOnly && !hasOptionErrors) {
     allDiagnostics.push(...tsProgram.getOptionsDiagnostics());
     if (optimize || !complianceMode) {
       allDiagnostics.push(...tsProgram.getGlobalDiagnostics());
@@ -667,7 +675,7 @@ export function performNgpCompilationSync(params: {
   const sortedDiagEntries = Array.from(compiler.diagnosticsMap.entries()).sort(([a], [b]) =>
     a < b ? -1 : a > b ? 1 : 0,
   );
-  for (const [diagPosixPath, ngDiags] of sortedDiagEntries) {
+  for (const [diagPosixPath, ngDiags] of hasOptionErrors ? [] : sortedDiagEntries) {
     for (const ngDiag of ngDiags) {
       const origSf = getOriginalSourceFile(fromPosixPath(fs, ngDiag.filePath ?? diagPosixPath));
       allDiagnostics.push(
@@ -679,7 +687,9 @@ export function performNgpCompilationSync(params: {
   }
 
   // 3. Collect and map TCB semantic diagnostics from .ngtypecheck.ts files
-  for (const [tcbFsPath, {code: tcbCode, originFsPath}] of tcbFileMap.entries()) {
+  for (const [tcbFsPath, {code: tcbCode, originFsPath}] of hasOptionErrors
+    ? []
+    : tcbFileMap.entries()) {
     const tcbSf = tsProgram.getSourceFile(tcbFsPath);
     if (!tcbSf) {
       continue;
