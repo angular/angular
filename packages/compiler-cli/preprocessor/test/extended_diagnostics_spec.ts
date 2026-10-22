@@ -947,6 +947,78 @@ export class ExternalSharedPlusDirectComp {}
     expect(appCode.slice(diags[3].span!.start, diags[3].span!.end)).toBe('DirA');
   });
 
+  it('NG8113: reports single-directive alias variables and imports with conditional expressions', async () => {
+    const extCode = `import {Directive} from '@angular/core';
+@Directive({selector: '[extUnused]'})
+export class ExtUnusedDir {}
+`;
+    const appCode = `import {Component, Directive} from '@angular/core';
+import {ExtUnusedDir} from './ext';
+
+@Directive({selector: '[used]'})
+export class UsedDir {}
+
+@Directive({selector: '[other]'})
+export class OtherDir {}
+
+@Directive({selector: '[localUnused]'})
+export class LocalUnusedDir {}
+
+const Alias = ExtUnusedDir;
+export const ExportedAlias = LocalUnusedDir;
+const cond = true;
+
+@Component({
+  selector: 'alias-comp',
+  imports: [UsedDir, Alias, ExportedAlias],
+  template: '<div used></div>',
+})
+export class AliasComp {}
+
+@Component({
+  selector: 'cond-comp',
+  imports: [cond ? UsedDir : OtherDir, LocalUnusedDir, UsedDir],
+  template: '<div used></div>',
+})
+export class CondComp {}
+`;
+    const diags = await getDiagnostics(
+      {'/ext.ts': extCode, '/app.ts': appCode},
+      {
+        extendedDiagnostics: {
+          checks: {
+            unusedStandaloneImports: 'warning',
+          },
+        },
+      },
+    );
+    expect(diags.length).toBe(3);
+
+    expect(diags[0]).toEqual(
+      jasmine.objectContaining({
+        code: 8113,
+        messageText: 'ExtUnusedDir is not used within the template of AliasComp',
+      }),
+    );
+    expect(appCode.slice(diags[0].span!.start, diags[0].span!.end)).toBe('Alias');
+
+    expect(diags[1]).toEqual(
+      jasmine.objectContaining({
+        code: 8113,
+        messageText: 'LocalUnusedDir is not used within the template of AliasComp',
+      }),
+    );
+    expect(appCode.slice(diags[1].span!.start, diags[1].span!.end)).toBe('ExportedAlias');
+
+    expect(diags[2]).toEqual(
+      jasmine.objectContaining({
+        code: 8113,
+        messageText: 'LocalUnusedDir is not used within the template of CondComp',
+      }),
+    );
+    expect(appCode.slice(diags[2].span!.start, diags[2].span!.end)).toBe('LocalUnusedDir');
+  });
+
   it('NG8113: supports direct unusedStandaloneImports configuration overrides (warning, error, suppress)', async () => {
     const files = {
       '/app.ts': `

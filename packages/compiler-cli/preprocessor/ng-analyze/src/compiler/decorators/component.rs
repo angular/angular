@@ -463,18 +463,8 @@ pub struct EvaluatedDeclaration {
     pub reference: crate::types::analysis::Reference,
     /// True when the reference came through a foreign-function resolver (`forwardRef`).
     pub synthetic: bool,
-    /// The file in which the reference expression was evaluated.
-    pub evaluated_in_file: crate::query::FileId,
-}
-
-fn value_reference_origin_file(
-    reference: &crate::evaluator::value::ValueReference,
-) -> crate::query::FileId {
-    reference
-        .aliases
-        .last()
-        .map(|(file, _)| *file)
-        .unwrap_or(reference.file)
+    /// Identifier nodes traversed while resolving this reference (`ValueReference.identifiers`).
+    pub identifiers: Vec<(crate::query::FileId, oxc_span::Span)>,
 }
 
 fn collect_declaration_tuples(
@@ -495,12 +485,82 @@ fn collect_declaration_tuples(
             out.push(EvaluatedDeclaration {
                 reference: crate::types::analysis::Reference::from_value_reference(reference),
                 synthetic: reference.synthetic,
-                evaluated_in_file: value_reference_origin_file(reference),
+                identifiers: reference.identifiers.clone(),
             });
             Ok(())
         }
         crate::evaluator::ResolvedValue::Dynamic(dynamic) => Err(dynamic.reason.clone()),
         _ => Err(crate::evaluator::DynamicReason::InvalidExpressionType),
+    }
+}
+
+/// Mirror of `UnusedStandaloneImportsRule.isPotentialSharedReference` and `diagnosticNode`
+/// selection in `@angular/compiler-cli`:
+///
+/// - If `identifiers` has an entry inside `raw_imports_span` (`getIdentityInExpression`), it was
+///   written directly in `@Component.imports` (or via a single-directive alias variable) and is not
+///   shared (`(false, Some(span))`).
+/// - Otherwise, if the declaration comes from another file (`reference_file != component_file`)
+///   and its first identifier in `component_file` (`getIdentityIn(sourceFile)`) sits inside a
+///   non-exported `VariableDeclaration`, it is a file-local array and is not shared
+///   (`(false, Some(span))`).
+/// - All other references (same-file declarations in a variable, exported variable arrays, or
+///   imported shared arrays) are treated as potentially shared (`(true, None)`).
+async fn resolve_import_usage<Fs: ResourceResolverFs + Clone + 'static>(
+    ctx: &QueryCtx<Fs>,
+    component_file: crate::query::FileId,
+    reference_file: crate::query::FileId,
+    raw_imports_span: Option<oxc_span::Span>,
+    identifiers: &[(crate::query::FileId, oxc_span::Span)],
+) -> (bool, Option<oxc_span::Span>) {
+    if let Some(container) = raw_imports_span {
+        if let Some(&(_, span)) = identifiers.iter().find(|&&(id_file, id_span)| {
+            id_file == component_file
+                && id_span.start >= container.start
+                && id_span.end <= container.end
+        }) {
+            return (false, Some(span));
+        }
+    }
+
+    if reference_file == component_file {
+        return (true, None);
+    }
+
+    let Some(&(_, id_span)) = identifiers
+        .iter()
+        .find(|&&(id_file, _)| id_file == component_file)
+    else {
+        return (true, None);
+    };
+
+    let parsed = ctx.parse_file(component_file).await;
+    let in_non_exported_var = {
+        let guard = parsed.lock().unwrap();
+        let nodes = guard.borrow_dependent().semantic.nodes();
+        let enclosing_var_decl = nodes
+            .iter()
+            .filter(|node| {
+                matches!(
+                    node.kind(),
+                    oxc_ast::AstKind::VariableDeclaration(decl)
+                        if decl.span.start <= id_span.start && id_span.end <= decl.span.end
+                )
+            })
+            .last();
+        enclosing_var_decl.is_some_and(|var_decl| {
+            !matches!(
+                nodes.parent_kind(var_decl.id()),
+                oxc_ast::AstKind::ExportDeclaration(_)
+                    | oxc_ast::AstKind::ExportNamedDeclaration(_)
+            )
+        })
+    };
+
+    if in_non_exported_var {
+        (false, Some(id_span))
+    } else {
+        (true, None)
     }
 }
 
@@ -716,7 +776,10 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
             // arrays/tuples, spreads, and `ModuleWithProviders` calls. Fall back to identifier-rooted
             // `parsed_imports` if evaluation hits a dynamic entry (e.g. unwrapping `X.forRoot()` syntactically).
             enum Entry {
-                Evaluated(crate::types::analysis::Reference, crate::query::FileId),
+                Evaluated(
+                    crate::types::analysis::Reference,
+                    Vec<(crate::query::FileId, oxc_span::Span)>,
+                ),
                 Parsed(DeclarationTuple),
             }
 
@@ -748,7 +811,7 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
                             .into_iter()
                             .map(|decl| {
                                 (
-                                    Entry::Evaluated(decl.reference, decl.evaluated_in_file),
+                                    Entry::Evaluated(decl.reference, decl.identifiers),
                                     decl.synthetic,
                                 )
                             })
@@ -772,7 +835,7 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
 
             let mut resolved_declarations = Vec::new();
             let mut resolved_import_entries = Vec::new();
-            let mut parsed_cursor = 0;
+            let raw_imports_span = component.imports_factory_span;
             // The legacy path with nothing to resolve (slot evaluation failed and no
             // identifier-rooted imports survived extraction) must keep the runtime fallback.
             let mut all_resolved = used_evaluated_entries || !entries.is_empty();
@@ -807,44 +870,18 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
                     }
                 };
 
-                let matched_import_info = match entry {
-                    Entry::Parsed(_) => {
-                        let info = component.parsed_imports.get(parsed_cursor);
-                        parsed_cursor += 1;
-                        info
+                let (is_potential_shared, usage_span) = match entry {
+                    Entry::Evaluated(_, identifiers) => {
+                        resolve_import_usage(
+                            ctx,
+                            reference_id.file,
+                            reference.file,
+                            raw_imports_span,
+                            identifiers,
+                        )
+                        .await
                     }
-                    Entry::Evaluated(_, evaluated_in_file) => {
-                        if *evaluated_in_file == reference_id.file {
-                            let mut found = None;
-                            for (idx, imp) in
-                                component.parsed_imports[parsed_cursor..].iter().enumerate()
-                            {
-                                let matches = if imp.import_source.is_none() {
-                                    reference.file == reference_id.file
-                                        && imp.local_name == class_info.class_name
-                                } else {
-                                    reference.aliases.get(&reference_id.file)
-                                        == Some(&imp.local_name)
-                                };
-                                if matches {
-                                    parsed_cursor += idx + 1;
-                                    found = Some(imp);
-                                    break;
-                                }
-                            }
-                            found
-                        } else {
-                            None
-                        }
-                    }
-                };
-
-                let (is_potential_shared, usage_span) = match matched_import_info {
-                    Some(imp) if imp.in_decorator => (false, Some(imp.span)),
-                    Some(imp) if imp.import_source.is_some() && !imp.in_exported_variable => {
-                        (false, Some(imp.span))
-                    }
-                    _ => (true, None),
+                    Entry::Parsed(_) => (true, None),
                 };
 
                 let same_file = reference.file == reference_id.file;
