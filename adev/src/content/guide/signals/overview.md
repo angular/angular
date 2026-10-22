@@ -131,7 +131,7 @@ Angular automatically enters a reactive context when:
 - Executing an `effect`, `afterRenderEffect` callback.
 - Evaluating a `computed` signal.
 - Evaluating a `linkedSignal`.
-- Evaluating a `resource`'s params or loader function.
+- Evaluating a `resource`'s params function.
 - Rendering a component template (including bindings in the [host property](guide/components/host-elements#binding-to-the-host-element)).
 
 During these operations, Angular creates a _live_ connection. If a tracked signal changes, Angular will _eventually_ re-run the consumer.
