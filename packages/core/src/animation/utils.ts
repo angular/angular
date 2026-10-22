@@ -15,6 +15,7 @@ import {
   EnterNodeAnimations,
   LeaveNodeAnimations,
   AnimationClassBindingFn,
+  AnimationClassValue,
 } from './interfaces';
 import {INJECTOR, LView, ANIMATIONS, DECLARATION_VIEW} from '../render3/interfaces/view';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
@@ -269,8 +270,13 @@ export function getLViewLeaveAnimations(lView: LView): Map<number, LeaveNodeAnim
 /**
  * Gets the list of classes from a passed in value
  */
-export function getClassListFromValue(value: string | AnimationClassBindingFn): string[] | null {
-  const classes = typeof value === 'function' ? value() : value;
+export function getClassListFromValue(
+  value: string | AnimationClassBindingFn | AnimationClassValue,
+): string[] | null {
+  let classes: AnimationClassValue = typeof value === 'function' ? value() : value;
+  while (typeof classes === 'function') {
+    classes = classes();
+  }
   let classList: string[] | null = Array.isArray(classes) ? classes : null;
   if (typeof classes === 'string') {
     classList = classes
@@ -279,6 +285,24 @@ export function getClassListFromValue(value: string | AnimationClassBindingFn): 
       .filter((k) => k);
   }
   return classList;
+}
+
+/**
+ * Removes a list of CSS classes from an element using the provided renderer.
+ */
+export function removeClasses(renderer: Renderer, el: RElement, classList: string[]): void {
+  for (const item of classList) {
+    renderer.removeClass(el, item);
+  }
+}
+
+/**
+ * Adds a list of CSS classes to an element using the provided renderer.
+ */
+export function addClasses(renderer: Renderer, el: RElement, classList: string[]): void {
+  for (const item of classList) {
+    renderer.addClass(el, item);
+  }
 }
 
 /**
@@ -293,9 +317,7 @@ export function cancelAnimationsIfRunning(element: HTMLElement, renderer: Render
     elementData.classList.length > 0 &&
     elementHasClassList(element, elementData.classList)
   ) {
-    for (const klass of elementData.classList) {
-      renderer.removeClass(element as unknown as RElement, klass);
-    }
+    removeClasses(renderer, element, elementData.classList);
   }
   // We need to prevent any enter animation listeners from firing if they exist.
   cleanupEnterClassData(element);

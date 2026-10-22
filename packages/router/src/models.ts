@@ -16,58 +16,55 @@ import {
   Signal,
   Type,
   Resource,
+  WritableResource,
 } from '@angular/core';
 import {Observable} from 'rxjs';
 export {DefaultExport} from '@angular/core';
 
 import type {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
-import {ParamMap, Params} from './shared';
+import {Params} from './shared';
 import type {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 
 /**
  * The expected return type of a `resources` function.
- * @experimental
+ * @developerPreview 22.2
  */
-export type ResourceResult = Record<string, Resource<unknown>>;
+export type ResourceResult = Record<
+  string,
+  Resource<unknown> & Pick<WritableResource<unknown>, 'reload'>
+>;
 
 // Developer notes: properties are exposed as a plain Record (`Params`) rather than a `ParamMap`
 // to allow future type-check layers to infer exact keys (e.g., `{ id: string }`).
 // Same applies to data and queryparams.
 /**
  * The contextual information provided to a `resources` function.
- * @experimental
+ * @developerPreview 22.2
  */
 export interface ResourceContext {
   /**
-   * The matrix parameters of the route.
+   * The path and matrix parameters available to the route.
    *
-   * @experimental
+   * @developerPreview 22.2
    */
   params: Signal<Params>;
   /**
    * The query parameters of the route.
    *
-   * @experimental
+   * @developerPreview 22.2
    */
   queryParams: Signal<Params>;
   /**
    * The URL fragment.
-   * @experimental
+   * @developerPreview 22.2
    */
   fragment: Signal<string | null>;
   /**
    * Data provided in the route configuration.
    *
-   * @experimental
+   * @developerPreview 22.2
    */
   data: Signal<Record<string, any>>;
-  /**
-   * The static activated route snapshot for this navigation.
-   * Useful for reading initial static configuration statically without
-   * reacting to future parameter changes on reused routes.
-   * @experimental
-   */
-  snapshot: ActivatedRouteSnapshot;
 }
 
 /**
@@ -741,6 +738,7 @@ export interface Route {
    *
    */
   canDeactivate?: Array<CanDeactivateFn<any> | DeprecatedGuard>;
+  // 3p-only-start
   /**
    * An array of `CanLoadFn` or DI tokens used to look up `CanLoad()`
    * handlers, in order to determine if the current user is allowed to
@@ -751,6 +749,7 @@ export interface Route {
    * @deprecated Use `canMatch` instead
    */
   canLoad?: Array<CanLoadFn | DeprecatedGuard>;
+  // 3p-only-end
   /**
    * Additional developer-defined data provided to the component via
    * `ActivatedRoute`. By default, no additional data is passed.
@@ -765,8 +764,7 @@ export interface Route {
   /**
    * A function that returns a record of resources.
    * This function is executed during the Main Loading Phase of a navigation.
-   * @experimental
-   * @internal
+   * @developerPreview 22.2
    */
   resources?: (ctx: ResourceContext) => ResourceResult | Promise<ResourceResult>;
 

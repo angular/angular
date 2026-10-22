@@ -13,6 +13,7 @@ export type FileType =
   | 'es6'
   | 'html'
   | 'svg'
+  | 'xlf'
   | 'css'
   | 'conf'
   | 'yaml'

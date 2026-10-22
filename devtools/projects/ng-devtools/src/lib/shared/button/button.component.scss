@@ -16,12 +16,19 @@
   }
 
   &.size-compact {
-    padding: 0.1rem 0.5rem;
+    /*
+     * The sizing of compact buttons has a delicate role
+     * in the UI. This is why, we are subtracting the 1px border
+     * to keep the final size small.
+     */
+    padding: calc(0.1rem - 1px) calc(0.5rem - 1px);
   }
 
   &.type-primary {
     border-radius: 2rem;
     background: var(--dynamic-blue-02);
+    box-sizing: border-box;
+    border: 1px solid var(--dynamic-blue-02);
     color: var(--septenary-contrast);
   }
 

@@ -202,7 +202,7 @@ export class Stats {
 
 When Angular activates the `Stats` in that outlet, it receives `{ layout: 'sidebar' }` as injected data.
 
-NOTE: When the `routerOutletData` input is unset, the injected value is null by default.
+NOTE: When the `routerOutletData` input is unset, the injected signal's value is `undefined` by default.
 
 ---
 

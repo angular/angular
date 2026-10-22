@@ -18,6 +18,8 @@ export interface PopStateEvent {
   state?: any;
   type?: string;
   url?: string;
+  /** Whether the user agent performed a visual transition for this navigation. */
+  hasUAVisualTransition?: boolean;
 }
 
 /**
@@ -75,12 +77,16 @@ export class Location implements OnDestroy {
     // https://developer.mozilla.org/en-US/docs/Web/API/URL/URL#parameters
     this._basePath = _stripOrigin(stripTrailingSlash(_stripIndexHtml(baseHref)));
     this._locationStrategy.onPopState((ev) => {
-      this._subject.next({
+      const popStateEvent: PopStateEvent = {
         'url': this.path(true),
         'pop': true,
         'state': ev.state,
         'type': ev.type,
-      });
+      };
+      if (ev.hasUAVisualTransition) {
+        popStateEvent.hasUAVisualTransition = true;
+      }
+      this._subject.next(popStateEvent);
     });
   }
 
@@ -210,7 +216,7 @@ export class Location implements OnDestroy {
    * moves forward two pages and `location.historyGo(-2)` moves back two pages. When we try to go
    * beyond what's stored in the history session, we stay in the current page. Same behaviour occurs
    * when `relativePosition` equals 0.
-   * @see https://developer.mozilla.org/en-US/docs/Web/API/History_API#Moving_to_a_specific_point_in_history
+   * @see [Moving to a specific point in history](https://developer.mozilla.org/en-US/docs/Web/API/History_API#Moving_to_a_specific_point_in_history)
    */
   historyGo(relativePosition: number = 0): void {
     this._locationStrategy.historyGo?.(relativePosition);
@@ -252,8 +258,9 @@ export class Location implements OnDestroy {
    * Note: `Location.go()` does not trigger the `popState` event in the browser. Use
    * `Location.onUrlChange()` to subscribe to URL changes instead.
    *
-   * @param value Event that is triggered when the state history changes.
-   * @param exception The exception to throw.
+   * @param onNext Callback invoked with the event that is triggered when the state history changes.
+   * @param onThrow Callback invoked with the exception if an error occurs.
+   * @param onReturn Callback invoked when the subscription completes.
    *
    * @see [onpopstate](https://developer.mozilla.org/en-US/docs/Web/API/WindowEventHandlers/onpopstate)
    *

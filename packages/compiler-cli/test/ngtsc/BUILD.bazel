@@ -15,7 +15,6 @@ ts_project(
         "//packages/compiler-cli/src/ngtsc/docs",
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/file_system/testing",
-        "//packages/compiler-cli/src/ngtsc/indexer",
         "//packages/compiler-cli/src/ngtsc/reflection",
         "//packages/compiler-cli/src/ngtsc/testing",
         "//packages/compiler-cli/src/ngtsc/typecheck/api",
@@ -35,5 +34,22 @@ jasmine_test(
         "//packages/core:npm_package",
         "//packages/forms:npm_package",
     ],
+    shard_count = 4,
+)
+
+jasmine_test(
+    name = "ngtsc_ngp",
+    timeout = "long",
+    data = [
+        ":ngtsc_lib",
+        "//:node_modules/yargs",
+        "//packages/compiler-cli/preprocessor/ng-analyze:wasm",
+        "//packages/compiler-cli/src/ngtsc/testing/fake_common:npm_package",
+        "//packages/core:npm_package",
+        "//packages/forms:npm_package",
+    ],
+    env = {
+        "NG_COMPILER_BACKEND": "ngp",
+    },
     shard_count = 4,
 )

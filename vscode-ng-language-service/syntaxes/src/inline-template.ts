@@ -32,13 +32,19 @@ export const InlineTemplate: GrammarDefinition = {
     },
 
     ngTemplate: {
-      begin: /\G\s*([`|'|"])/,
+      begin: /\G\s*([`'"])/,
       beginCaptures: {1: {name: 'string'}},
       // @ts-ignore
       end: /\1/,
       endCaptures: {0: {name: 'string'}},
       contentName: 'text.html.derivative',
-      patterns: [{include: 'text.html.derivative'}, {include: 'template.ng'}],
+      patterns: [
+        // Consume escape sequences first so that an escaped delimiter (e.g. \`)
+        // does not terminate the template string prematurely.
+        {match: /\\[\s\S]/, name: 'constant.character.escape.ts'},
+        {include: 'text.html.derivative'},
+        {include: 'template.ng'},
+      ],
     },
   },
 };

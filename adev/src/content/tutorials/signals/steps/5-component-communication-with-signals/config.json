@@ -1,10 +1,5 @@
 {
-  "openFiles": [
-    "src/app/app.ts",
-    "src/app/product-card.ts",
-    "src/app/quantity-selector.ts",
-    "src/app/app.css"
-  ],
+  "openFiles": ["src/app/app.ts", "src/app/product-card.ts", "src/app/app.css"],
   "type": "editor",
   "title": "Passing data to components with input signals"
 }

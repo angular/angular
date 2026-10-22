@@ -16,20 +16,16 @@
     "noUnusedParameters": false,
     "noUnusedLocals": false,
     "useDefineForClassFields": false,
-    "strictNullChecks": true,
     "noImplicitReturns": true,
-    "strictFunctionTypes": true,
     "noImplicitOverride": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
-    "strictBindCallApply": true,
     "esModuleInterop": true
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true,
-    "strictTemplates": true
+    "strictInputAccessModifiers": true
   }
 }

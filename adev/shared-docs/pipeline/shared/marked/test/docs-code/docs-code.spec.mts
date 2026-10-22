@@ -46,6 +46,7 @@ describe('markdown to html', () => {
   it('should load header and html code', () => {
     const codeBlock = markdownDocument.querySelectorAll('code')[3];
     expect(codeBlock).toBeTruthy();
+    expect(codeBlock?.textContent).not.toContain('docregion');
   });
 
   it('should not link property names in object literals', () => {

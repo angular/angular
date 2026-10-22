@@ -5,66 +5,51 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {CommonModule} from '@angular/common';
+import {CommonModule, NgIf} from '@angular/common';
 import {By} from '@angular/platform-browser';
 import {
-  ChangeDetectionStrategy,
   Component,
   Directive,
   Input,
-  provideZoneChangeDetection,
   QueryList,
+  signal,
   ViewChild,
   ViewChildren,
 } from '../../src/core';
 import {TestBed} from '../../testing';
 
 describe('components using pure function instructions internally', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [provideZoneChangeDetection()],
-    });
-  });
   describe('with array literals', () => {
     @Component({
       selector: 'my-comp',
       template: ``,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyComp {
       @Input() names: string[] = [];
     }
 
-    it('should support an array literal with a binding', () => {
+    it('should support an array literal with a binding', async () => {
       @Component({
-        template: ` <my-comp [names]="['Nancy', customName, 'Bess']"></my-comp> `,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: ` <my-comp [names]="['Nancy', customName(), 'Bess']"></my-comp> `,
+        imports: [MyComp],
       })
       class App {
-        showing = true;
-        customName = 'Carson';
+        customName = signal('Carson');
       }
 
-      TestBed.configureTestingModule({
-        declarations: [App, MyComp],
-      });
       const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const myComp = fixture.debugElement.query(By.directive(MyComp)).componentInstance;
 
       const firstArray = myComp.names;
       expect(firstArray).toEqual(['Nancy', 'Carson', 'Bess']);
 
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(myComp.names).toEqual(['Nancy', 'Carson', 'Bess']);
       expect(firstArray).toBe(myComp.names);
 
-      fixture.componentInstance.customName = 'Hannah';
-      fixture.detectChanges();
+      fixture.componentInstance.customName.set('Hannah');
+      await fixture.whenStable();
       expect(myComp.names).toEqual(['Nancy', 'Hannah', 'Bess']);
 
       // Identity must change if binding changes
@@ -73,40 +58,30 @@ describe('components using pure function instructions internally', () => {
       // The property should not be set if the exp value is the same, so artificially
       // setting the property to ensure it's not overwritten.
       myComp.names = ['should not be overwritten'];
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(myComp!.names).toEqual(['should not be overwritten']);
     });
 
-    it('should support array literals in dynamic views', () => {
+    it('should support array literals in dynamic views', async () => {
       @Component({
-        template: ` <my-comp *ngIf="showing" [names]="['Nancy', customName, 'Bess']"></my-comp> `,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: ` <my-comp *ngIf="true" [names]="['Nancy', customName(), 'Bess']"></my-comp> `,
+        imports: [NgIf, MyComp],
       })
       class App {
-        showing = true;
-        customName = 'Carson';
+        customName = signal('Carson');
       }
 
-      TestBed.configureTestingModule({
-        declarations: [App, MyComp],
-        imports: [CommonModule],
-      });
       const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const myComp = fixture.debugElement.query(By.directive(MyComp)).componentInstance;
       expect(myComp.names).toEqual(['Nancy', 'Carson', 'Bess']);
     });
 
-    it('should support multiple array literals passed through to one node', () => {
+    it('should support multiple array literals passed through to one node', async () => {
       @Component({
         selector: 'many-prop-comp',
         template: ``,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class ManyPropComp {
         @Input() names1: string[] = [];
@@ -116,32 +91,26 @@ describe('components using pure function instructions internally', () => {
 
       @Component({
         template: `
-          <many-prop-comp [names1]="['Nancy', customName]" [names2]="[customName2]">
+          <many-prop-comp [names1]="['Nancy', customName()]" [names2]="[customName2()]">
           </many-prop-comp>
         `,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [ManyPropComp],
       })
       class App {
-        showing = true;
-        customName = 'Carson';
-        customName2 = 'George';
+        customName = signal('Carson');
+        customName2 = signal('George');
       }
 
-      TestBed.configureTestingModule({
-        declarations: [App, ManyPropComp],
-      });
       const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const manyPropComp = fixture.debugElement.query(By.directive(ManyPropComp)).componentInstance;
 
       expect(manyPropComp!.names1).toEqual(['Nancy', 'Carson']);
       expect(manyPropComp!.names2).toEqual(['George']);
 
-      fixture.componentInstance.customName = 'George';
-      fixture.componentInstance.customName2 = 'Carson';
-      fixture.detectChanges();
+      fixture.componentInstance.customName.set('George');
+      fixture.componentInstance.customName2.set('Carson');
+      await fixture.whenStable();
       expect(manyPropComp!.names1).toEqual(['Nancy', 'George']);
       expect(manyPropComp!.names2).toEqual(['Carson']);
     });
@@ -150,9 +119,7 @@ describe('components using pure function instructions internally', () => {
       @Component({
         selector: 'parent-comp',
         template: ` <my-comp [names]="someFn(['Nancy', customName])"></my-comp> `,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [MyComp],
       })
       class ParentComp {
         customName = 'Bess';
@@ -168,15 +135,10 @@ describe('components using pure function instructions internally', () => {
           <parent-comp></parent-comp>
           <parent-comp></parent-comp>
         `,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [ParentComp],
       })
       class App {}
 
-      TestBed.configureTestingModule({
-        declarations: [App, MyComp, ParentComp],
-      });
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const myComps = fixture.debugElement
@@ -196,44 +158,41 @@ describe('components using pure function instructions internally', () => {
       expect(secondArray).toBe(myComps[1].names);
     });
 
-    it('should support an array literal with more than 1 binding', () => {
+    it('should support an array literal with more than 1 binding', async () => {
       @Component({
         template: `
-          <my-comp *ngIf="showing" [names]="['Nancy', customName, 'Bess', customName2]"></my-comp>
+          <my-comp
+            *ngIf="showing"
+            [names]="['Nancy', customName(), 'Bess', customName2()]"
+          ></my-comp>
         `,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [NgIf, MyComp],
       })
       class App {
-        showing = true;
-        customName = 'Carson';
-        customName2 = 'Hannah';
+        showing = signal(true);
+        customName = signal('Carson');
+        customName2 = signal('Hannah');
       }
 
-      TestBed.configureTestingModule({
-        declarations: [App, MyComp],
-        imports: [CommonModule],
-      });
       const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const myComp = fixture.debugElement.query(By.directive(MyComp)).componentInstance;
 
       const firstArray = myComp.names;
       expect(firstArray).toEqual(['Nancy', 'Carson', 'Bess', 'Hannah']);
 
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(myComp.names).toEqual(['Nancy', 'Carson', 'Bess', 'Hannah']);
       expect(firstArray).toBe(myComp.names);
 
-      fixture.componentInstance.customName = 'George';
-      fixture.detectChanges();
+      fixture.componentInstance.customName.set('George');
+      await fixture.whenStable();
       expect(myComp.names).toEqual(['Nancy', 'George', 'Bess', 'Hannah']);
       expect(firstArray).not.toBe(myComp.names);
 
-      fixture.componentInstance.customName = 'Frank';
-      fixture.componentInstance.customName2 = 'Ned';
-      fixture.detectChanges();
+      fixture.componentInstance.customName.set('Frank');
+      fixture.componentInstance.customName2.set('Ned');
+      await fixture.whenStable();
       expect(myComp.names).toEqual(['Nancy', 'Frank', 'Bess', 'Ned']);
 
       // The property should not be set if the exp value is the same, so artificially
@@ -243,38 +202,33 @@ describe('components using pure function instructions internally', () => {
       expect(myComp.names).toEqual(['should not be overwritten']);
     });
 
-    it('should work up to 8 bindings', () => {
+    it('should work up to 8 bindings', async () => {
       @Component({
         template: `
-          <my-comp [names]="['a', 'b', 'c', 'd', 'e', 'f', 'g', v8]"></my-comp>
-          <my-comp [names]="['a', 'b', 'c', 'd', 'e', 'f', v7, v8]"></my-comp>
-          <my-comp [names]="['a', 'b', 'c', 'd', 'e', v6, v7, v8]"></my-comp>
-          <my-comp [names]="['a', 'b', 'c', 'd', v5, v6, v7, v8]"></my-comp>
-          <my-comp [names]="['a', 'b', 'c', v4, v5, v6, v7, v8]"></my-comp>
-          <my-comp [names]="['a', 'b', v3, v4, v5, v6, v7, v8]"></my-comp>
-          <my-comp [names]="['a', v2, v3, v4, v5, v6, v7, v8]"></my-comp>
-          <my-comp [names]="[v1, v2, v3, v4, v5, v6, v7, v8]"></my-comp>
+          <my-comp [names]="['a', 'b', 'c', 'd', 'e', 'f', 'g', v8()]"></my-comp>
+          <my-comp [names]="['a', 'b', 'c', 'd', 'e', 'f', v7(), v8()]"></my-comp>
+          <my-comp [names]="['a', 'b', 'c', 'd', 'e', v6(), v7(), v8()]"></my-comp>
+          <my-comp [names]="['a', 'b', 'c', 'd', v5(), v6(), v7(), v8()]"></my-comp>
+          <my-comp [names]="['a', 'b', 'c', v4(), v5(), v6(), v7(), v8()]"></my-comp>
+          <my-comp [names]="['a', 'b', v3(), v4(), v5(), v6(), v7(), v8()]"></my-comp>
+          <my-comp [names]="['a', v2(), v3(), v4(), v5(), v6(), v7(), v8()]"></my-comp>
+          <my-comp [names]="[v1(), v2(), v3(), v4(), v5(), v6(), v7(), v8()]"></my-comp>
         `,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [MyComp],
       })
       class App {
-        v1 = 'a';
-        v2 = 'b';
-        v3 = 'c';
-        v4 = 'd';
-        v5 = 'e';
-        v6 = 'f';
-        v7 = 'g';
-        v8 = 'h';
+        v1 = signal('a');
+        v2 = signal('b');
+        v3 = signal('c');
+        v4 = signal('d');
+        v5 = signal('e');
+        v6 = signal('f');
+        v7 = signal('g');
+        v8 = signal('h');
       }
 
-      TestBed.configureTestingModule({
-        declarations: [App, MyComp],
-      });
       const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const myComps = fixture.debugElement
         .queryAll(By.directive(MyComp))
@@ -286,16 +240,16 @@ describe('components using pure function instructions internally', () => {
 
       const app = fixture.componentInstance;
 
-      app.v1 = 'a1';
-      app.v2 = 'b1';
-      app.v3 = 'c1';
-      app.v4 = 'd1';
-      app.v5 = 'e1';
-      app.v6 = 'f1';
-      app.v7 = 'g1';
-      app.v8 = 'h1';
+      app.v1.set('a1');
+      app.v2.set('b1');
+      app.v3.set('c1');
+      app.v4.set('d1');
+      app.v5.set('e1');
+      app.v6.set('f1');
+      app.v7.set('g1');
+      app.v8.set('h1');
 
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(myComps[0].names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h1']);
       expect(myComps[1].names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g1', 'h1']);
@@ -306,8 +260,8 @@ describe('components using pure function instructions internally', () => {
       expect(myComps[6].names).toEqual(['a', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1']);
       expect(myComps[7].names).toEqual(['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1']);
 
-      app.v8 = 'h2';
-      fixture.detectChanges();
+      app.v8.set('h2');
+      await fixture.whenStable();
 
       expect(myComps[0].names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h2']);
       expect(myComps[1].names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g1', 'h2']);
@@ -319,32 +273,42 @@ describe('components using pure function instructions internally', () => {
       expect(myComps[7].names).toEqual(['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h2']);
     });
 
-    it('should work with pureFunctionV for 9+ bindings', () => {
+    it('should work with pureFunctionV for 9+ bindings', async () => {
       @Component({
         template: `
-          <my-comp [names]="['start', v0, v1, v2, v3, 'modified_' + v4, v5, v6, v7, v8, 'end']">
+          <my-comp
+            [names]="[
+              'start',
+              v0(),
+              v1(),
+              v2(),
+              v3(),
+              'modified_' + v4(),
+              v5(),
+              v6(),
+              v7(),
+              v8(),
+              'end',
+            ]"
+          >
           </my-comp>
         `,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [MyComp],
       })
       class App {
-        v0 = 'a';
-        v1 = 'b';
-        v2 = 'c';
-        v3 = 'd';
-        v4 = 'e';
-        v5 = 'f';
-        v6 = 'g';
-        v7 = 'h';
-        v8 = 'i';
+        v0 = signal('a');
+        v1 = signal('b');
+        v2 = signal('c');
+        v3 = signal('d');
+        v4 = signal('e');
+        v5 = signal('f');
+        v6 = signal('g');
+        v7 = signal('h');
+        v8 = signal('i');
       }
-      TestBed.configureTestingModule({
-        declarations: [App, MyComp],
-      });
+
       const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const myComp = fixture.debugElement.query(By.directive(MyComp)).componentInstance;
       const app = fixture.componentInstance;
 
@@ -362,8 +326,8 @@ describe('components using pure function instructions internally', () => {
         'end',
       ]);
 
-      app.v0 = 'a1';
-      fixture.detectChanges();
+      app.v0.set('a1');
+      await fixture.whenStable();
 
       expect(myComp.names).toEqual([
         'start',
@@ -379,8 +343,8 @@ describe('components using pure function instructions internally', () => {
         'end',
       ]);
 
-      app.v4 = 'e5';
-      fixture.detectChanges();
+      app.v4.set('e5');
+      await fixture.whenStable();
 
       expect(myComp.names).toEqual([
         'start',
@@ -402,74 +366,59 @@ describe('components using pure function instructions internally', () => {
     @Component({
       selector: 'object-comp',
       template: ``,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class ObjectComp {
       @Input() config: any = [];
     }
 
-    it('should support an object literal', () => {
+    it('should support an object literal', async () => {
       @Component({
-        template: '<object-comp [config]="{duration: 500, animation: name}"></object-comp>',
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: '<object-comp [config]="{duration: 500, animation: name()}"></object-comp>',
+        imports: [ObjectComp],
       })
       class App {
-        name = 'slide';
+        name = signal('slide');
       }
 
-      TestBed.configureTestingModule({
-        declarations: [App, ObjectComp],
-      });
-
       const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const objectComp = fixture.debugElement.query(By.directive(ObjectComp)).componentInstance;
 
       const firstObj = objectComp.config;
       expect(objectComp.config).toEqual({duration: 500, animation: 'slide'});
 
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(objectComp.config).toEqual({duration: 500, animation: 'slide'});
       expect(firstObj).toBe(objectComp.config);
 
-      fixture.componentInstance.name = 'tap';
-      fixture.detectChanges();
+      fixture.componentInstance.name.set('tap');
+      await fixture.whenStable();
       expect(objectComp.config).toEqual({duration: 500, animation: 'tap'});
 
       // Identity must change if binding changes
       expect(firstObj).not.toBe(objectComp.config);
     });
 
-    it('should support expressions nested deeply in object/array literals', () => {
+    it('should support expressions nested deeply in object/array literals', async () => {
       @Component({
         template: `
           <object-comp
             [config]="{
-              animation: name,
+              animation: name(),
               actions: [
                 {opacity: 0, duration: 0},
-                {opacity: 1, duration: duration},
+                {opacity: 1, duration: duration()},
               ],
             }"
           >
           </object-comp>
         `,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [ObjectComp],
       })
       class App {
-        name = 'slide';
-        duration = 100;
+        name = signal('slide');
+        duration = signal(100);
       }
-
-      TestBed.configureTestingModule({
-        declarations: [App, ObjectComp],
-      });
 
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
@@ -494,7 +443,7 @@ describe('components using pure function instructions internally', () => {
       });
       expect(objectComp.config).toBe(firstConfig);
 
-      fixture.componentInstance.duration = 50;
+      fixture.componentInstance.duration.set(50);
       fixture.detectChanges();
       expect(objectComp.config).toEqual({
         animation: 'slide',
@@ -505,8 +454,8 @@ describe('components using pure function instructions internally', () => {
       });
       expect(objectComp.config).not.toBe(firstConfig);
 
-      fixture.componentInstance.name = 'tap';
-      fixture.detectChanges();
+      fixture.componentInstance.name.set('tap');
+      await fixture.whenStable();
       expect(objectComp.config).toEqual({
         animation: 'tap',
         actions: [
@@ -515,9 +464,9 @@ describe('components using pure function instructions internally', () => {
         ],
       });
 
-      fixture.componentInstance.name = 'drag';
-      fixture.componentInstance.duration = 500;
-      fixture.detectChanges();
+      fixture.componentInstance.name.set('drag');
+      fixture.componentInstance.duration.set(500);
+      await fixture.whenStable();
       expect(objectComp.config).toEqual({
         animation: 'drag',
         actions: [
@@ -536,9 +485,7 @@ describe('components using pure function instructions internally', () => {
     it('should support multiple view instances with multiple bindings', () => {
       @Component({
         template: ` <object-comp *ngFor="let config of configs" [config]="config"> </object-comp> `,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [CommonModule, ObjectComp],
       })
       class App {
         configs = [
@@ -546,11 +493,6 @@ describe('components using pure function instructions internally', () => {
           {opacity: 1, duration: 600},
         ];
       }
-
-      TestBed.configureTestingModule({
-        declarations: [App, ObjectComp],
-        imports: [CommonModule],
-      });
 
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
@@ -572,7 +514,6 @@ describe('components using pure function instructions internally', () => {
   describe('identical literals', () => {
     @Directive({
       selector: '[dir]',
-      standalone: false,
     })
     class Dir {
       @Input('dir') value: any;
@@ -584,15 +525,12 @@ describe('components using pure function instructions internally', () => {
           <div [dir]="{}"></div>
           <div [dir]="{}"></div>
         `,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         @ViewChildren(Dir) directives!: QueryList<Dir>;
       }
 
-      TestBed.configureTestingModule({declarations: [Dir, App]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -606,15 +544,12 @@ describe('components using pure function instructions internally', () => {
           <div [dir]="[]"></div>
           <div [dir]="[]"></div>
         `,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         @ViewChildren(Dir) directives!: QueryList<Dir>;
       }
 
-      TestBed.configureTestingModule({declarations: [Dir, App]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -625,15 +560,12 @@ describe('components using pure function instructions internally', () => {
     it('should not share object literals across component instances', () => {
       @Component({
         template: `<div [dir]="{}"></div>`,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         @ViewChild(Dir) directive!: Dir;
       }
 
-      TestBed.configureTestingModule({declarations: [Dir, App]});
       const firstFixture = TestBed.createComponent(App);
       firstFixture.detectChanges();
 
@@ -648,15 +580,12 @@ describe('components using pure function instructions internally', () => {
     it('should not share array literals across component instances', () => {
       @Component({
         template: `<div [dir]="[]"></div>`,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         @ViewChild(Dir) directive!: Dir;
       }
 
-      TestBed.configureTestingModule({declarations: [Dir, App]});
       const firstFixture = TestBed.createComponent(App);
       firstFixture.detectChanges();
 
@@ -674,15 +603,12 @@ describe('components using pure function instructions internally', () => {
           <div [dir]="{foo: null}"></div>
           <div [dir]="{foo: {}}"></div>
         `,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         @ViewChildren(Dir) directives!: QueryList<Dir>;
       }
 
-      TestBed.configureTestingModule({declarations: [Dir, App]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const values = fixture.componentInstance.directives.map((directive) => directive.value);
@@ -696,15 +622,12 @@ describe('components using pure function instructions internally', () => {
           <div [dir]="{foo: null}"></div>
           <div [dir]="{foo: []}"></div>
         `,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         @ViewChildren(Dir) directives!: QueryList<Dir>;
       }
 
-      TestBed.configureTestingModule({declarations: [Dir, App]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const values = fixture.componentInstance.directives.map((directive) => directive.value);
@@ -718,9 +641,7 @@ describe('components using pure function instructions internally', () => {
           <div [dir]="{foo: null}"></div>
           <div [dir]="{foo: getFoo()}"></div>
         `,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         @ViewChildren(Dir) directives!: QueryList<Dir>;
@@ -729,7 +650,6 @@ describe('components using pure function instructions internally', () => {
         }
       }
 
-      TestBed.configureTestingModule({declarations: [Dir, App]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const values = fixture.componentInstance.directives.map((directive) => directive.value);

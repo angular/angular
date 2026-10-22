@@ -48,7 +48,7 @@ In the course of this tutorial, you bind a sample form to data and handle user i
    - Add custom CSS to provide visual feedback on the status
    - Show and hide validation-error messages
 1. Respond to a native HTML button-click event by adding to the model data.
-1. Handle form submission using the [`ngSubmit`](api/forms/NgForm#properties) output property of the form.
+1. Handle form submission using the [`ngSubmit`](api/forms/NgForm#ngSubmit) output property of the form.
    - Disable the **Submit** button until the form is valid
    - After submit, swap out the finished form for different content on the page
 
@@ -321,7 +321,7 @@ To respond to this event, take the following steps.
 <docs-workflow>
 
 <docs-step title="Listen to ngOnSubmit">
-Bind the form's [`ngSubmit`](api/forms/NgForm#properties) event property to the actor-form component's `onSubmit()` method.
+Bind the form's [`ngSubmit`](api/forms/NgForm#ngSubmit) event property to the actor-form component's `onSubmit()` method.
 
 <docs-code header="actor-form.component.html (ngSubmit)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" region="ngSubmit"/>
 </docs-step>

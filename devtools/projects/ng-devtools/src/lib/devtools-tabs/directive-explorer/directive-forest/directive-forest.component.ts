@@ -11,7 +11,6 @@ import {
   CdkFixedSizeVirtualScroll,
   CdkVirtualForOf,
 } from '@angular/cdk/scrolling';
-import {FlatTreeControl} from '@angular/cdk/tree';
 import {
   afterRenderEffect,
   Component,
@@ -34,11 +33,10 @@ import {
   Events,
   MessageBus,
 } from '../../../../../../protocol';
-
 import {TabUpdate} from '../../tab-update/index';
 import {DEEP_LINK_INSTANCE_ID} from '../../../application-providers/deep_link';
-
 import {ComponentDataSource, FlatNode} from './component-data-source';
+import {ExpansionModel} from './expansion-model';
 import {
   getFullNodeNameString,
   isChildOf,
@@ -138,11 +136,8 @@ export class DirectiveForestComponent {
     return mapped;
   });
 
-  readonly treeControl = new FlatTreeControl<FlatNode>(
-    (node) => node!.level,
-    (node) => node.expandable,
-  );
-  readonly dataSource = new ComponentDataSource(this.treeControl);
+  readonly expansionModel = new ExpansionModel<FlatNode>();
+  readonly dataSource = new ComponentDataSource(this.expansionModel);
   readonly itemHeight = NODE_ITEM_HEIGHT;
   readonly filterGenerator = directiveForestFilterFnGenerator;
 
@@ -260,7 +255,7 @@ export class DirectiveForestComponent {
     if (prevNode.position.length <= currentNode.position.length) {
       return this.selectAndEnsureVisible(data[prevIdx]);
     }
-    while (prevIdx >= 0 && parentCollapsed(prevIdx, data, this.treeControl)) {
+    while (prevIdx >= 0 && parentCollapsed(prevIdx, data, this.expansionModel)) {
       prevIdx--;
       prevNode = data[prevIdx];
     }
@@ -277,7 +272,7 @@ export class DirectiveForestComponent {
     const selectedNode = this.selectedNode();
     let idx = data.findIndex((e) => selectedNode && e.id === selectedNode.id);
     const currentNode = data[idx];
-    if (!this.treeControl.isExpanded(currentNode) && currentNode.expandable) {
+    if (!this.expansionModel.isExpanded(currentNode) && currentNode.expandable) {
       for (let i = idx + 1; i < data.length; i++) {
         const node = data[i];
         if (!isChildOf(node.position, currentNode.position)) {
@@ -302,7 +297,7 @@ export class DirectiveForestComponent {
     if (!selectedNode) {
       return;
     }
-    this.treeControl.collapse(selectedNode);
+    this.expansionModel.collapse(selectedNode);
     event.preventDefault();
   }
 
@@ -314,7 +309,7 @@ export class DirectiveForestComponent {
     if (!selectedNode) {
       return;
     }
-    this.treeControl.expand(selectedNode);
+    this.expansionModel.expand(selectedNode);
     event.preventDefault();
   }
 
@@ -324,7 +319,7 @@ export class DirectiveForestComponent {
 
   handleFilter(filterFn: FilterFn): void {
     this.currentlyMatchedIndex.set(-1);
-    this.matchedNodes.set(new Map());
+    const matched = new Map<number, NodeTextMatch[]>();
 
     for (let i = 0; i < this.dataSource.data.length; i++) {
       const node = this.dataSource.data[i];
@@ -332,13 +327,11 @@ export class DirectiveForestComponent {
       const matches = filterFn(fullName);
 
       if (matches.length) {
-        this.matchedNodes.update((matched) => {
-          const map = new Map(matched);
-          map.set(i, matches);
-          return map;
-        });
+        matched.set(i, matches);
       }
     }
+
+    this.matchedNodes.set(matched);
 
     // Select the first match, if there are any.
     if (this.matchesCount()) {
@@ -356,7 +349,7 @@ export class DirectiveForestComponent {
     const [nodeIdxToSelect] = indexesOfMatchedNodes[newMatchedIndex];
     const nodeToSelect = this.dataSource.data[nodeIdxToSelect];
     if (nodeIdxToSelect !== undefined) {
-      this.treeControl.expand(nodeToSelect);
+      this.expansionModel.expand(nodeToSelect);
       this.selectAndEnsureVisible(nodeToSelect);
 
       // Set the `currentlyMatchedIndex` after `selectAndEnsureVisible` since it resets it.
@@ -390,11 +383,11 @@ export class DirectiveForestComponent {
     this.forestRoot = this.dataSource.data[0];
 
     if (!this.initialized && forest && forest.length) {
-      for (const n of this.treeControl.dataNodes) {
+      for (const n of this.dataSource.data) {
         if (!n.collapsedByDefault) {
-          this.treeControl.expand(n);
+          this.expansionModel.expand(n);
         } else {
-          this.treeControl.collapse(n);
+          this.expansionModel.collapse(n);
         }
       }
 
@@ -405,7 +398,7 @@ export class DirectiveForestComponent {
     // they are `collapsedByDefault`.
     result.newItems.forEach((item) => {
       if (!item.collapsedByDefault) {
-        this.treeControl.expand(item);
+        this.expansionModel.expand(item);
       }
     });
     return result;
@@ -466,7 +459,7 @@ export class DirectiveForestComponent {
   }
 
   private expandParents(): void {
-    this.parents.forEach((parent) => this.treeControl.expand(parent));
+    this.parents.forEach((parent) => this.expansionModel.expand(parent));
   }
 
   private handleViewportResize() {

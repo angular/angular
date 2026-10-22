@@ -17,7 +17,7 @@ import {Component, Inject, Optional} from '@angular/core';
 import {MyService} from './service';
 import {DI_TOKEN} from './token';
 
-@Component()
+@Component({template: ''})
 export class MyComp {
   constructor(
     private service: MyService,
@@ -33,7 +33,7 @@ import {Component, inject} from '@angular/core';
 import {MyService} from './service';
 import {DI_TOKEN} from './token';
 
-@Component()
+@Component({template: ''})
 export class MyComp {
   private service = inject(MyService);
   readonly token = inject(DI_TOKEN, {optional: true});
@@ -70,7 +70,7 @@ additional constructor signature to keep it backwards compatible, at the expense
 import {Component} from '@angular/core';
 import {MyService} from './service';
 
-@Component()
+@Component({template: ''})
 export class MyComp {
   constructor(private service: MyService) {}
 }
@@ -78,15 +78,15 @@ export class MyComp {
 
 #### After {#backwards-compatible-constructors-after}
 
-```ts
-import { Component } from '@angular/core';
-import { MyService } from './service';
+```typescript
+import {Component, inject} from '@angular/core';
+import {MyService} from './service';
 
-@Component()
+@Component({template: ''})
 export class MyComp {
-private service = inject(MyService);
+  private service = inject(MyService);
 
-  /\*_ Inserted by Angular inject() migration for backwards compatibility _/
+  /** Inserted by Angular inject() migration for backwards compatibility */
   constructor(...args: unknown[]);
 
   constructor() {}
@@ -102,7 +102,7 @@ fixed in `inject()` which can cause new compilation errors to show up. If you en
 the migration will produce a non-null assertion after the `inject()` call to match the old type,
 at the expense of potentially hiding type errors.
 
-**NOTE:** non-null assertions won't be added to parameters that are already typed to be nullable,
+NOTE: non-null assertions won't be added to parameters that are already typed to be nullable,
 because the code that depends on them likely already accounts for their nullability.
 
 #### Before {#non-nullable-optional-before}
@@ -111,7 +111,7 @@ because the code that depends on them likely already accounts for their nullabil
 import {Component, Inject, Optional} from '@angular/core';
 import {TOKEN_ONE, TOKEN_TWO} from './token';
 
-@Component()
+@Component({template: ''})
 export class MyComp {
   constructor(
     @Inject(TOKEN_ONE) @Optional() private tokenOne: number,
@@ -126,7 +126,7 @@ export class MyComp {
 import {Component, inject} from '@angular/core';
 import {TOKEN_ONE, TOKEN_TWO} from './token';
 
-@Component()
+@Component({template: ''})
 export class MyComp {
   // Note the `!` at the end.
   private tokenOne = inject(TOKEN_ONE, {optional: true})!;

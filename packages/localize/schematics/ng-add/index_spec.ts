@@ -7,7 +7,7 @@
  */
 
 import {EmptyTree, Tree} from '@angular-devkit/schematics';
-import {SchematicTestRunner} from '@angular-devkit/schematics/testing/index.js';
+import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
 import {resolve} from 'node:path';
 import ts from 'typescript';
 

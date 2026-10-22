@@ -26,13 +26,6 @@ import SIGNAL_FORMS_TUTORIAL_NAV_DATA from '../../../content/tutorials/signal-fo
 // @ts-ignore
 import API_MANIFEST_JSON from '../../../assets/manifest.json' with {type: 'json'};
 
-interface SubNavigationData {
-  docs: NavigationItem[];
-  reference: NavigationItem[];
-  tutorials: NavigationItem[];
-  footer: NavigationItem[];
-}
-
 export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
   {
     label: 'Introduction',
@@ -264,6 +257,12 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/templates/defer',
           },
           {
+            label: 'Error boundaries with @boundary',
+            path: 'guide/templates/error-boundaries',
+            contentPath: 'guide/templates/error-boundaries',
+            status: 'new',
+          },
+          {
             label: 'Expression syntax',
             path: 'guide/templates/expression-syntax',
             contentPath: 'guide/templates/expression-syntax',
@@ -405,6 +404,12 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             label: 'Route data resolvers',
             path: 'guide/routing/data-resolvers',
             contentPath: 'guide/routing/data-resolvers',
+          },
+          {
+            label: 'Data fetching with resources',
+            path: 'guide/routing/data-fetching-with-resources',
+            contentPath: 'guide/routing/data-fetching-with-resources',
+            status: 'new',
           },
           {
             label: 'Lifecycle and events',
@@ -1082,12 +1087,11 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             path: 'tools/devtools/injectors',
             contentPath: 'tools/devtools/injectors',
           },
-          // TODO: create those guides
-          // The signal debugging docs should also be added to the signal section
-          //   label: 'Signals',
-          //   path: 'tools/devtools/signals',
-          //   contentPath: 'tools/devtools/signals',
-          // },
+          {
+            label: 'Signals',
+            path: 'tools/devtools/signals',
+            contentPath: 'tools/devtools/signals',
+          },
           {
             label: 'Router Tree',
             path: 'tools/devtools/router',
@@ -1767,6 +1771,11 @@ export const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         label: 'CommonModule to Standalone',
         path: 'reference/migrations/common-to-standalone',
         contentPath: 'reference/migrations/common-to-standalone',
+      },
+      {
+        label: 'Injectable to Service',
+        path: 'reference/migrations/injectable-to-service',
+        contentPath: 'reference/migrations/injectable-to-service',
       },
     ],
   },

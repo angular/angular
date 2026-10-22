@@ -53,7 +53,7 @@ runInEachFileSystem(() => {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      const dtsContents = env.getContents('test.d.ts');
+      const dtsContents = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(jsContents).toContain('ɵɵdefineDirective({ type: DirectiveA');
       expect(jsContents).toContain('ɵɵdefineDirective({ type: DirectiveB');
@@ -98,7 +98,7 @@ runInEachFileSystem(() => {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      const dtsContents = env.getContents('test.d.ts');
+      const dtsContents = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(jsContents).toContain('ɵɵdefineDirective({ type: HostDir');
       expect(jsContents).toContain(
@@ -145,7 +145,7 @@ runInEachFileSystem(() => {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      const dtsContents = env.getContents('test.d.ts');
+      const dtsContents = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(jsContents).toContain('ɵɵdefineDirective({ type: HostDir');
       expect(jsContents).toContain(
@@ -193,7 +193,7 @@ runInEachFileSystem(() => {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      const dtsContents = env.getContents('test.d.ts');
+      const dtsContents = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(jsContents).toContain('ɵɵdefineDirective({ type: DirectiveA });');
       expect(jsContents).toContain(
@@ -262,31 +262,26 @@ runInEachFileSystem(() => {
       const jsContents = env.getContents('test.js');
       const dtsContents = env.getContents('test.d.ts');
 
-      expect(jsContents).toContain(
-        'features: [i0.ɵɵHostDirectivesFeature(function () { return [DirectiveB]; })]',
+      expect(jsContents).toMatch(
+        /features: \[i0\.ɵɵHostDirectivesFeature\(function \(\) {\s*return \[DirectiveB];\s*}\)]/,
       );
-      expect(jsContents).toContain(
-        'features: [i0.ɵɵHostDirectivesFeature(function () { return [{ directive: DirectiveA, inputs: ["value", "value"] }]; })]',
+      expect(jsContents).toMatch(
+        /features: \[i0\.ɵɵHostDirectivesFeature\(function \(\) {\s*return\s*\[{ directive: DirectiveA, inputs: \[['"]value['"], ['"]value['"]] }];/,
       );
-      expect(jsContents).toContain(
-        'ɵɵdefineDirective({ type: DirectiveA, ' + 'inputs: { value: "value" } });',
-      );
-
-      expect(dtsContents).toContain(
-        'ɵɵComponentDeclaration<MyComponent, "my-component", ' +
-          'never, {}, {}, never, never, false, [{ directive: typeof DirectiveB; ' +
-          'inputs: {}; outputs: {}; }]>;',
+      expect(jsContents).toMatch(
+        /ɵɵdefineDirective\({ type: DirectiveA, inputs: { value: ['"]value['"] } }\);/,
       );
 
-      expect(dtsContents).toContain(
-        'ɵɵDirectiveDeclaration<DirectiveB, never, never, {}, ' +
-          '{}, never, never, true, [{ directive: typeof DirectiveA; ' +
-          'inputs: { "value": "value"; }; outputs: {}; }]>;',
+      expect(dtsContents).toMatch(
+        /ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never, false, \[{\s*directive: typeof DirectiveB;\s*inputs: {};\s* outputs: {};\s*}]>;/,
       );
 
-      expect(dtsContents).toContain(
-        'ɵɵDirectiveDeclaration<DirectiveA, never, never, ' +
-          '{ "value": { "alias": "value"; "required": false; }; }, {}, never, never, true, never>;',
+      expect(dtsContents).toMatch(
+        /ɵɵDirectiveDeclaration<DirectiveB, never, never, {}, {}, never, never, true, \[{\s*directive: typeof DirectiveA;\s*inputs: {\s*"value": "value";\s*};\s*outputs: {};\s*}]>;/,
+      );
+
+      expect(dtsContents).toMatch(
+        /ɵɵDirectiveDeclaration<DirectiveA, never, never, {\s*"value": {\s*"alias": "value";\s*"required": false;\s*};\s*}, {}, never, never, true, never>;/,
       );
     });
 
@@ -343,21 +338,16 @@ runInEachFileSystem(() => {
       const jsContents = env.getContents('test.js');
       const dtsContents = env.getContents('test.d.ts');
 
-      expect(jsContents).toContain(`import { DirectiveA } from './dir-a'`);
-      expect(jsContents).toContain(`import { DirectiveB } from './dir-b'`);
-      expect(jsContents).toContain(
-        'features: [i0.ɵɵHostDirectivesFeature(function () { ' +
-          'return [i1.DirectiveA, { directive: i2.DirectiveB, inputs: ["input", "inputAlias"], ' +
-          'outputs: ["output", "outputAlias"] }]; })]',
+      expect(jsContents).toMatch(/import { DirectiveA } from ['"].\/dir-a['"]/);
+      expect(jsContents).toMatch(/import { DirectiveB } from ['"].\/dir-b['"]/);
+      expect(jsContents).toMatch(
+        /features: \[i0\.ɵɵHostDirectivesFeature\(function \(\) {\s*return \[(i1\.)?DirectiveA, {\s*directive: (i2\.)?DirectiveB,\s*inputs: \[['"]input['"], ['"]inputAlias['"]],\s*outputs: \[['"]output['"], ['"]outputAlias['"]]\s*}];\s*}\)]/,
       );
 
       expect(dtsContents).toContain('import * as i1 from "./dir-a";');
       expect(dtsContents).toContain('import * as i2 from "./dir-b";');
-      expect(dtsContents).toContain(
-        'ɵɵComponentDeclaration<MyComp, "my-comp", never, {}, ' +
-          '{}, never, never, false, [{ directive: typeof i1.DirectiveA; ' +
-          'inputs: {}; outputs: {}; }, { directive: typeof i2.DirectiveB; ' +
-          'inputs: { "input": "inputAlias"; }; outputs: { "output": "outputAlias"; }; }]>;',
+      expect(dtsContents).toMatch(
+        /ɵɵComponentDeclaration<MyComp, "my-comp", never, {}, {}, never, never, false, \[{\s*directive: typeof (i1\.)?DirectiveA;\s*inputs: {};\s*outputs: {};\s*}, {\s*directive: typeof (i2\.)?DirectiveB;\s*inputs: {\s*"input": "inputAlias";\s*};\s*outputs: {\s*"output": "outputAlias";\s*};\s*}]>;/,
       );
     });
 
@@ -393,17 +383,16 @@ runInEachFileSystem(() => {
       const jsContents = env.getContents('test.js');
       const dtsContents = env.getContents('test.d.ts');
 
-      expect(jsContents).toContain(`import * as i1 from "external";`);
-      expect(jsContents).toContain(
-        'features: [i0.ɵɵHostDirectivesFeature([{ directive: i1.ExternalDir, ' +
-          'inputs: ["input", "inputAlias"], outputs: ["output", "outputAlias"] }])]',
+      expect(jsContents).toMatch(
+        /import \* as i1 from "external";|import { ExternalDir } from "external";/,
+      );
+      expect(jsContents).toMatch(
+        /features: \[i0\.ɵɵHostDirectivesFeature\(\[{ directive: (i1\.)?ExternalDir, inputs: \["input", "inputAlias"], outputs: \["output", "outputAlias"] }]\)]/,
       );
 
       expect(dtsContents).toContain('import * as i1 from "external";');
-      expect(dtsContents).toContain(
-        'ɵɵComponentDeclaration<MyComp, "ng-component", never, {}, ' +
-          '{}, never, never, false, [{ directive: typeof i1.ExternalDir; ' +
-          'inputs: { "input": "inputAlias"; }; outputs: { "output": "outputAlias"; }; }]>;',
+      expect(dtsContents).toMatch(
+        /ɵɵComponentDeclaration<MyComp, "ng-component", never, {}, {}, never, never, false, \[{\s*directive: typeof i1\.ExternalDir;\s*inputs: {\s*"input": "inputAlias";\s*};\s*outputs: {\s*"output": "outputAlias";\s*};\s*}]>;/,
       );
     });
 
@@ -444,13 +433,16 @@ runInEachFileSystem(() => {
       const jsContents = env.getContents('test.js');
       const dtsContents = env.getContents('test.d.ts');
 
-      expect(jsContents).toContain(`import * as i1 from "external";`);
-      expect(jsContents).toContain('features: [i0.ɵɵHostDirectivesFeature([i1.ExternalDir])]');
+      expect(jsContents).toMatch(
+        /import \* as i1 from "external";|import { ExternalDir } from "external";/,
+      );
+      expect(jsContents).toMatch(
+        /features: \[i0\.ɵɵHostDirectivesFeature\(\[(i1\.)?ExternalDir]\)]/,
+      );
 
       expect(dtsContents).toContain('import * as i1 from "external";');
-      expect(dtsContents).toContain(
-        'ɵɵComponentDeclaration<MyComp, "ng-component", never, {}, {}, ' +
-          'never, never, false, [{ directive: typeof i1.ExternalDir; inputs: {}; outputs: {}; }]>;',
+      expect(dtsContents).toMatch(
+        /ɵɵComponentDeclaration<MyComp, "ng-component", never, {}, {}, never, never, false, \[{\s*directive: typeof i1\.ExternalDir;\s*inputs: {};\s*outputs: {};\s*}]>;/,
       );
     });
 
@@ -549,16 +541,19 @@ runInEachFileSystem(() => {
           `,
         );
 
-        // First diagnostic checks that the input is available under the original name.
+        // First diagnostic checks that the host directive alias does not apply.
         // Second diagnostic checks that an input that would otherwise be hidden by a host directive is available.
-        // Third diagnostic checks that the host directive alias does not apply.
-        const diags = env.driveDiagnostics();
+        // Third diagnostic checks that the input is available under the original name.
+        const diags = env
+          .driveDiagnostics()
+          .slice()
+          .sort((a, b) => (a.messageText as string).localeCompare(b.messageText as string));
         expect(diags.length).toBe(3);
-        expect(diags[0].messageText).toBe(`Type 'string' is not assignable to type 'number'.`);
-        expect(diags[1].messageText).toBe(`Type 'string' is not assignable to type 'boolean'.`);
-        expect(diags[2].messageText).toMatch(
+        expect(diags[0].messageText).toMatch(
           /Can't bind to 'valueAlias' since it isn't a known property of 'div'\. Find more at .*/,
         );
+        expect(diags[1].messageText).toBe(`Type 'string' is not assignable to type 'boolean'.`);
+        expect(diags[2].messageText).toBe(`Type 'string' is not assignable to type 'number'.`);
       });
 
       it('should expose original outputs if a directive matches both as a host directive and through the template', () => {

@@ -13,6 +13,7 @@ import {AdevDocsRenderer} from '../../renderer.mjs';
 interface DocsCardToken extends Tokens.Generic {
   type: 'docs-card';
   title: string;
+  titleTokens: Token[];
   body: string;
   link?: string;
   href?: string;
@@ -57,6 +58,7 @@ export const docsCardExtension = {
         type: 'docs-card',
         raw: match[0],
         title: title ? title[1] : '',
+        titleTokens: title ? this.lexer.inlineTokens(title[1]) : [],
         body: body ?? '',
         href: href ? href[1] : undefined,
         link: link ? link[1] : undefined,
@@ -78,14 +80,16 @@ export const docsCardExtension = {
 };
 
 function getStandardCard(renderer: AdevDocsRenderer, token: DocsCardToken) {
+  const title = parseTitle(renderer, token);
+
   if (token.iconImgSrc && token.href) {
     // We can assume that all icons are svg files since they are custom.
     // We need to read svg content, instead of renering svg with `img`,
     // cause we would like to use CSS variables to support dark and light mode.
     const icon = loadWorkspaceRelativeFile(token.iconImgSrc);
     const header = token.titleInline
-      ? `<div class="docs-card-header-inline">${icon}<h3>${token.title}</h3></div>`
-      : `${icon}<h3>${token.title}</h3>`;
+      ? `<div class="docs-card-header-inline">${icon}<h3>${title}</h3></div>`
+      : `${icon}<h3>${title}</h3>`;
 
     return `
     <a href="${token.href}" ${anchorTarget(token.href)} class="docs-card">
@@ -100,7 +104,7 @@ function getStandardCard(renderer: AdevDocsRenderer, token: DocsCardToken) {
     return `
     <a href="${token.href}" ${anchorTarget(token.href)} class="docs-card">
       <div>
-        ${token.title ? `<h3>${token.title}</h3>` : ''}
+        ${token.title ? `<h3>${title}</h3>` : ''}
         ${parseWithoutCreatingLinks(renderer, token)}
       </div>
       <span>${token.link ? token.link : 'Learn more'}</span>
@@ -110,7 +114,7 @@ function getStandardCard(renderer: AdevDocsRenderer, token: DocsCardToken) {
   return `
   <div class="docs-card">
     <div>
-      ${token.title ? `<h3>${token.title}</h3>` : ''}
+      ${token.title ? `<h3>${title}</h3>` : ''}
       ${renderer.parser.parse(token.tokens)}
     </div>
     ${token.link ? `<span>${token.link}</span>` : ''}
@@ -125,11 +129,19 @@ function parseWithoutCreatingLinks(renderer: AdevDocsRenderer, token: DocsCardTo
   return parsed;
 }
 
+function parseTitle(renderer: AdevDocsRenderer, token: DocsCardToken) {
+  renderer.context.disableAutoLinking = true;
+  const title = renderer.parser.parseInline(token.titleTokens);
+  renderer.context.disableAutoLinking = false;
+  return title;
+}
+
 function getCardWithSvgIllustration(renderer: RendererThis, token: DocsCardToken) {
   // We can assume that all illustrations are svg files
   // We need to read svg content, instead of renering svg with `img`,
   // cause we would like to use CSS variables to support dark and light mode.
   const illustration = loadWorkspaceRelativeFile(token.imgSrc!);
+  const title = parseTitle(renderer.parser.renderer as AdevDocsRenderer, token);
 
   if (token.href) {
     return `
@@ -137,7 +149,7 @@ function getCardWithSvgIllustration(renderer: RendererThis, token: DocsCardToken
         ${illustration}
         <div class="docs-card-text-content">
           <div>
-            ${token.title ? `<h3>${token.title}</h3>` : ''}
+            ${token.title ? `<h3>${title}</h3>` : ''}
             ${renderer.parser.parse(token.tokens)}
           </div>
           <span>${token.link ? token.link : 'Learn more'}</span>
@@ -149,7 +161,7 @@ function getCardWithSvgIllustration(renderer: RendererThis, token: DocsCardToken
     <div class="docs-card docs-card-with-svg">
       ${illustration}
       <div class="docs-card-text-content">
-      ${token.title ? `<h3>${token.title}</h3>` : ''}
+      ${token.title ? `<h3>${title}</h3>` : ''}
       ${renderer.parser.parse(token.tokens)}
       </div>
     </div>

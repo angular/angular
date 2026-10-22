@@ -149,7 +149,7 @@ Schematic templates support special syntax to execute code and variable substitu
 1. Create a file named `__name@dasherize__.service.ts.template` that defines a template to use for generating files.
    This template will generate a service that already has Angular's `HttpClient` injected into an `http` property.
 
-   ```ts {header:projects/my-lib/schematics/my-service/files/__name@dasherize__.service.ts.template (Schematic Template)}
+   ```ts {header: "projects/my-lib/schematics/my-service/files/__name@dasherize__.service.ts.template (Schematic Template)"}
 
    import { Service } from '@angular/core';
    import { HttpClient } from '@angular/common/http';

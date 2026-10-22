@@ -110,12 +110,22 @@ export class RegistrationComponent {
 }
 ```
 
-A field is considered "empty" when:
+A field is considered "empty" when its value is one of the following, and non-empty for every other
+value — including `0` and the empty array `[]`:
 
-| Condition                | Example |
-| ------------------------ | ------- |
-| Value is `null`          | `null`, |
-| Value is an empty string | `''`    |
+| Condition                | Example     |
+| ------------------------ | ----------- |
+| Value is `null`          | `null`      |
+| Value is `undefined`     | `undefined` |
+| Value is an empty string | `''`        |
+| Value is `false`         | `false`     |
+| Value is `NaN`           | `NaN`       |
+
+The last two are worth calling out:
+
+- `false` is empty to follow the native semantics of `required` on `<input type="checkbox">`, where
+  an unchecked box fails validation.
+- `NaN` is empty because it is usually the result of a parsing error, and is not a valid number.
 
 For conditional requirements, use the `when` option:
 
@@ -130,7 +140,7 @@ registrationForm = form(this.registrationModel, (schemaPath) => {
 
 The validation rule only runs when the `when` function returns `true`.
 
-Note: `required` treats an empty array as present (valid), so use [`minLength()`](#minlength-and-maxlength) to enforce a minimum number of array items; it treats `false` as missing (invalid), matching `<input type="checkbox" required>`.
+NOTE: `required` treats an empty array as present (valid), so use [`minLength()`](#minlength-and-maxlength) to enforce a minimum number of array items.
 
 ### email()
 
@@ -213,6 +223,49 @@ ageForm = form(this.ageModel, (schemaPath) => {
   });
 });
 ```
+
+### minDate() and maxDate()
+
+The `minDate()` and `maxDate()` validation rules work with `Date` values, such as a field bound to `<input type="date">`. They also set the `min` and `max` attributes of that input.
+
+```angular-ts
+import {Component, signal} from '@angular/core';
+import {form, FormField, minDate, maxDate} from '@angular/forms/signals';
+
+@Component({
+  selector: 'app-booking-form',
+  imports: [FormField],
+  template: `
+    <form novalidate>
+      <label>
+        Check-in
+        <input type="date" [formField]="bookingForm.checkIn" />
+      </label>
+    </form>
+  `,
+})
+export class BookingFormComponent {
+  bookingModel = signal<{checkIn: Date | null}>({checkIn: null});
+
+  bookingForm = form(this.bookingModel, (schemaPath) => {
+    minDate(schemaPath.checkIn, new Date('2026-06-01'), {message: 'Bookings open on June 1'});
+    maxDate(schemaPath.checkIn, new Date('2026-08-31'), {message: 'Bookings close on August 31'});
+  });
+}
+```
+
+IMPORTANT: An `<input type="date">` reads and writes `Date` values at midnight UTC, whatever the user's time zone, because that is how the browser's `valueAsDate` works. Build the limits the same way, for example with `new Date('2026-06-01')` or `new Date(Date.UTC(2026, 5, 1))`. A `Date` created from local time, such as `new Date(2026, 5, 1)` or `new Date()`, is shifted by the user's UTC offset. Depending on the time zone, the `min` or `max` attribute can then be off by a day, and the limit date itself can be rejected.
+
+To require a date that is not before today, use today's calendar date in the user's time zone, expressed at midnight UTC:
+
+```ts
+const now = new Date();
+const today = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+
+minDate(schemaPath.checkIn, today, {message: 'Check-in cannot be in the past'});
+```
+
+Passing `new Date()` directly can reject today's date, because the value picked in the input is midnight UTC, which is earlier than the current time. This happens in UTC and in the time zones behind it.
 
 ### minLength() and maxLength()
 
@@ -350,9 +403,7 @@ export class OrderComponent {
 
 When validation rules fail, they produce error objects that describe what went wrong. Understanding error structure helps you provide clear feedback to users.
 
-<!-- TODO: Uncomment when field state management guide is published
-
-NOTE: This section covers the errors that validation rules produce. For displaying and using validation errors in your UI, see the [Field State Management guide](guide/forms/signals/field-state-management). -->
+NOTE: This section covers the errors that validation rules produce. For displaying and using validation errors in your UI, see the [Field State Management guide](guide/forms/signals/field-state-management).
 
 ### Error structure
 
@@ -482,7 +533,7 @@ The validator function receives a `FieldContext` object with:
 | --------------- | ---------- | ------------------------------------------- |
 | `value`         | Signal     | Signal containing the current field value   |
 | `state`         | FieldState | The field state reference                   |
-| `field`         | FieldTree  | The field tree reference                    |
+| `fieldTree`     | FieldTree  | The field tree reference                    |
 | `valueOf()`     | Method     | Get the value of another field by path      |
 | `stateOf()`     | Method     | Get the state of another field by path      |
 | `fieldTreeOf()` | Method     | Get the field tree of another field by path |
@@ -505,9 +556,7 @@ interface User {
   lastName: string;
 }
 
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class UserFormComponent {
   readonly userModel = model<User>({
     firstName: '',
@@ -660,7 +709,7 @@ import {Component, signal} from '@angular/core';
 import {form, FormField, required, validateHttp} from '@angular/forms/signals';
 
 @Component({
-  selector: 'app-username-form',|
+  selector: 'app-username-form',
   imports: [FormField],
   template: `
     <form novalidate>
@@ -750,9 +799,7 @@ import {Component, computed, signal} from '@angular/core';
 import {form, FormField, validateStandardSchema} from '@angular/forms/signals';
 import z from 'zod';
 
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class DynamicSchema {
   model = signal({document: '', type: 'dni'});
 

@@ -55,9 +55,7 @@ export class CounterState {
   }
 }
 
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class AwesomeCounter {
   state = inject(CounterState);
 
@@ -228,7 +226,7 @@ Synchronous or asynchronous derivations are recommended when we want to react to
 
 ## Reading signals in `OnPush` components
 
-When you read a signal within an `OnPush` component's template, Angular tracks the signal as a dependency of that component. When the value of that signal changes, Angular automatically [marks](api/core/ChangeDetectorRef#markforcheck) the component to ensure it gets updated the next time change detection runs. Refer to the [Skipping component subtrees](best-practices/skipping-subtrees) guide for more information about `OnPush` components.
+When you read a signal within an `OnPush` component's template, Angular tracks the signal as a dependency of that component. When the value of that signal changes, Angular automatically [marks](api/core/ChangeDetectorRef#markForCheck) the component to ensure it gets updated the next time change detection runs. Refer to the [Skipping component subtrees](best-practices/skipping-subtrees) guide for more information about `OnPush` components.
 
 ## Advanced topics
 
@@ -277,3 +275,8 @@ isWritableSignal(doubled); // false
 ## Using signals with RxJS
 
 See [RxJS interop with Angular signals](ecosystem/rxjs-interop) for details on interoperability between signals and RxJS.
+
+## Debugging signals
+
+Angular DevTools can visualize the signal graph of a component or directive, showing how its signals, computeds, effects, and other reactive nodes depend on each other.
+See [Debug the signal graph](tools/devtools/signals) to learn how to open, read, and inspect the graph.

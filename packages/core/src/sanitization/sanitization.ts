@@ -358,7 +358,7 @@ export function ɵɵvalidateAttribute<T = any>(value: T, tagName: string, attrib
     if (resolvedTagName === 'iframe') {
       const element = getNativeByTNode(tNode, lView) as RElement;
       enforceIframeSecurity(element as HTMLIFrameElement);
-    } else if (namespace === SVG_NAMESPACE) {
+    } else if (namespace === SVG_NAMESPACE || !namespace) {
       const config =
         SVG_ANIMATION_SENSITIVE_STATIC_VALUES[resolvedTagName]?.[attributeName.toLowerCase()];
       if (config) {

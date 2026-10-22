@@ -203,7 +203,7 @@ export interface UrlCreationOptions {
  *
  * @see {@link Router#navigate}
  * @see {@link Router#navigateByUrl}
- * @see {@link Router#createurltree}
+ * @see {@link Router#createUrlTree}
  * @see [Routing and Navigation guide](guide/routing/common-router-tasks)
  * @see {@link UrlCreationOptions}
  * @see {@link NavigationBehaviorOptions}
@@ -232,7 +232,7 @@ export type RestoredState = {
  * * *id* : The unique identifier of the current navigation.
  * * *initialUrl* : The target URL passed into the `Router#navigateByUrl()` call before navigation.
  * This is the value before the router has parsed or applied redirects to it.
- * * *extractedUrl* : The initial target URL after being parsed with `UrlSerializer.extract()`.
+ * * *extractedUrl* : The initial target URL after being parsed with `UrlHandlingStrategy.extract()`.
  * * *finalUrl* : The extracted URL after redirects have been applied.
  * This URL may not be available immediately, therefore this property can be `undefined`.
  * It is guaranteed to be set after the `RoutesRecognized` event fires.
@@ -318,6 +318,7 @@ export interface NavigationTransition {
   urlAfterRedirects?: UrlTree;
   rawUrl: UrlTree;
   extras: NavigationExtras;
+  hasUAVisualTransition?: boolean;
   resolve: (value: boolean | PromiseLike<boolean>) => void;
   reject: (reason?: any) => void;
   promise: Promise<boolean>;
@@ -414,6 +415,7 @@ export class NavigationTransitions {
       | 'currentRawUrl'
       | 'rawUrl'
       | 'extras'
+      | 'hasUAVisualTransition'
       | 'resolve'
       | 'reject'
       | 'promise'
@@ -775,6 +777,7 @@ export class NavigationTransitions {
               this.environmentInjector,
               currentSnapshot.root,
               targetSnapshot!.root,
+              overallTransitionState.hasUAVisualTransition,
             );
 
             // If view transitions are enabled, block the navigation until the view

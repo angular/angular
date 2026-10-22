@@ -13,10 +13,12 @@ import {
   InjectionToken,
 } from '@angular/core';
 import {
+  getDirectiveCdStrategy,
   getInjectorFromElementNode,
   getRootElements,
   serializeProviderRecord,
 } from './component-tree';
+import {ChangeDetectionStrategy, Framework} from '../core-enums';
 
 type Ng = ɵExternalCoreGlobalUtils;
 const NG_VERSION = 'ng-version';
@@ -181,6 +183,25 @@ describe('component-tree', () => {
       );
 
       expect(result.token).toBe('InjectionToken (FOO)');
+    });
+  });
+
+  describe('getDirectiveCdStrategy', () => {
+    it('returns change detection strategy when passed valid component', () => {
+      const ng: Partial<Ng> = {
+        getDirectiveMetadata: jasmine.createSpy('getDirectiveMetadata').and.returnValue({
+          framework: Framework.Angular,
+          changeDetection: ChangeDetectionStrategy.OnPush,
+        } as any),
+      };
+      (globalThis as any).ng = ng;
+
+      const result = getDirectiveCdStrategy({
+        instance: {},
+        name: 'Foo',
+        isElement: false,
+      });
+      expect(result).toBe('ng-on-push');
     });
   });
 });

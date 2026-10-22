@@ -7,6 +7,7 @@
  */
 
 import {XSS_SECURITY_URL} from '../error_details_base_url';
+import {getFirstChild, getNextSibling, getNodeName} from '../util/dom';
 import {TrustedHTML} from '../util/security/trusted_type_defs';
 import {trustedHTMLFromString} from '../util/security/trusted_types';
 
@@ -215,58 +216,6 @@ class SanitizingHtmlSerializer {
   private chars(chars: string) {
     this.buf.push(encodeEntities(chars));
   }
-}
-
-/**
- * Verifies whether a given child node is a descendant of a given parent node.
- * It may not be the case when properties like `.firstChild` are clobbered and
- * accessing `.firstChild` results in an unexpected node returned.
- */
-function isClobberedElement(parentNode: Node, childNode: Node): boolean {
-  return (
-    (parentNode.compareDocumentPosition(childNode) & Node.DOCUMENT_POSITION_CONTAINED_BY) !==
-    Node.DOCUMENT_POSITION_CONTAINED_BY
-  );
-}
-
-/**
- * Retrieves next sibling node and makes sure that there is no
- * clobbering of the `nextSibling` property happening.
- */
-function getNextSibling(node: Node): Node | null {
-  const nextSibling = node.nextSibling;
-  // Make sure there is no `nextSibling` clobbering: navigating to
-  // the next sibling and going back to the previous one should result
-  // in the original node.
-  if (nextSibling && node !== nextSibling.previousSibling) {
-    throw clobberedElementError(nextSibling);
-  }
-  return nextSibling;
-}
-
-/**
- * Retrieves first child node and makes sure that there is no
- * clobbering of the `firstChild` property happening.
- */
-function getFirstChild(node: Node): Node | null {
-  const firstChild = node.firstChild;
-  if (firstChild && isClobberedElement(node, firstChild)) {
-    throw clobberedElementError(firstChild);
-  }
-  return firstChild;
-}
-
-/** Gets a reasonable nodeName, even for clobbered nodes. */
-export function getNodeName(node: Node): string {
-  const nodeName = node.nodeName;
-  // If the property is clobbered, assume it is an `HTMLFormElement`.
-  return typeof nodeName === 'string' ? nodeName : 'FORM';
-}
-
-function clobberedElementError(node: Node) {
-  return new Error(
-    `Failed to sanitize html because the element is clobbered: ${(node as Element).outerHTML}`,
-  );
 }
 
 // Regular Expressions for parsing tags and attributes

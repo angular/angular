@@ -88,6 +88,7 @@ export const CSS_VAR_NAMESPACE = new InjectionToken<string>(
  *
  * @param namespace The prefix string to use as a namespace. If not provided, it defaults
  *     to the `APP_ID`. An underscore is appended unconditionally.
+ * @see [Namespacing CSS custom properties](guide/components/styling#namespacing-css-custom-properties)
  * @publicApi
  */
 export function provideCssVarNamespacing(namespace?: string): EnvironmentProviders {
@@ -538,6 +539,12 @@ class DefaultDomRenderer2 implements Renderer2 {
   }
 }
 
+export function disableThrowOnSyntheticProps(renderer: Renderer2): void {
+  if (renderer instanceof DefaultDomRenderer2) {
+    renderer.throwOnSyntheticProps = false;
+  }
+}
+
 const AT_CHARCODE = (() => '@'.charCodeAt(0))();
 
 function checkNoSyntheticProp(name: string, nameKind: string) {
@@ -556,11 +563,11 @@ function isTemplateNode(node: any): node is HTMLTemplateElement {
 }
 
 class ShadowDomRenderer extends DefaultDomRenderer2 {
-  private shadowRoot: any;
+  private readonly shadowRoot: ShadowRoot;
 
   constructor(
     eventManager: EventManager,
-    private hostEl: any,
+    private readonly hostEl: Element,
     component: RendererType2,
     doc: Document,
     ngZone: NgZone,
@@ -570,7 +577,7 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
     private sharedStylesHost?: SharedStylesHost,
   ) {
     super(eventManager, doc, ngZone, tracingService, cssVarNamespace);
-    this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
+    this.shadowRoot = hostEl.attachShadow({mode: 'open'});
 
     // SharedStylesHost is used to add styles to the shadow root by ShadowDom.
     // This is optional as it is not used by ExperimentalIsolatedShadowDom.

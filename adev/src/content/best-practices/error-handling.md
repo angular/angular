@@ -46,6 +46,20 @@ export class GlobalErrorHandler implements ErrorHandler {
 
 In many cases, `ErrorHandler` may only log errors and otherwise allow the application to continue running. In tests, however, you almost always want to surface these errors. Angular's `TestBed` rethrows unexpected errors to ensure that errors caught by the framework cannot be unintentionally missed or ignored. In rare circumstances, a test may specifically attempt to ensure errors do not cause the application to be unresponsive or crash. In these situations, you can [configure `TestBed` to _not_ rethrow application errors](api/core/testing/TestModuleMetadata#rethrowApplicationErrors) with `TestBed.configureTestingModule({rethrowApplicationErrors: false})`.
 
+### Errors thrown while your app is still starting up
+
+There's a brief moment when Angular can't send errors to your `ErrorHandler` yet: while it is still creating your app's root module or root component. Angular needs that root instance to exist before it can look up the `ErrorHandler` you provided, so an error thrown before then has nowhere to go. It behaves like a normal uncaught error instead of being reported through `ErrorHandler`.
+
+You're most likely to run into this with [Angular elements](guide/elements). If you define a custom element while its tag is already present on the page, the browser upgrades it right away, running the component's constructor and `ngOnInit` as part of that early startup work. Any error thrown there can get lost.
+
+If this happens to you, move the code that throws so it runs after your app has finished starting up, for example:
+
+- Wrap it in `setTimeout(() => /* your code */)` so it runs on its own turn instead of during startup.
+- Provide it as an `APP_BOOTSTRAP_LISTENER` instead of running it from a constructor.
+- Define your custom elements in `ngDoBootstrap` instead of your root module's constructor.
+
+Turning on `provideBrowserGlobalErrorListeners()` (see below) can also help catch these errors, since they still reach the browser as uncaught errors.
+
 ## Global error listeners
 
 Errors that are caught neither by the application code nor by the framework's application instance may reach the global scope. Errors reaching the global scope can have unintended consequences if not accounted for. In non-browser environments, they may cause the process to crash. In the browser, these errors may go unreported and site visitors may see the errors in the browser console. Angular provides global listeners for both environments to account for these issues.

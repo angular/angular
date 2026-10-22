@@ -365,6 +365,7 @@ export class NodeRuntimeSandbox {
   }
 
   private setLoading(loading: LoadingStep) {
+    if (this.nodeRuntimeState.loadingStep() === LoadingStep.ERROR) return;
     this.nodeRuntimeState.setLoadingStep(loading);
   }
 
@@ -412,8 +413,13 @@ export class NodeRuntimeSandbox {
   }
 
   private setErrorState(message: string | undefined, type?: ErrorType) {
+    if (this.nodeRuntimeState.loadingStep() === LoadingStep.ERROR) {
+      return;
+    }
+
     this.nodeRuntimeState.setError({message, type});
     this.nodeRuntimeState.setLoadingStep(LoadingStep.ERROR);
+    this.alertManager.decreaseInstancesCounter();
     this.terminate();
   }
 

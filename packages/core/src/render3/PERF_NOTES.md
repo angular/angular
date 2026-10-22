@@ -8,8 +8,7 @@ Each Array costs 70 bytes and is composed of `Array` and `(array)` object
 Each Object cost is 24 bytes plus 8 bytes per property.
 
 For small arrays, it is more efficient to store the data as a linked list
-of items rather than small arrays. However, the array access is faster as
-shown here: https://jsperf.com/small-arrays-vs-linked-objects
+of items rather than small arrays. However, the array access is faster.
 
 ## Monomorphic vs Megamorphic code
 
@@ -20,8 +19,6 @@ Great reads:
 
 1. Monomorphic prop access is 100 times faster than megamorphic.
 2. Monomorphic call is 4 times faster the megamorphic call.
-
-See benchmark [here](https://jsperf.com/mono-vs-megamorphic-property-access).
 
 ## Packed vs. holey Array
 
@@ -75,8 +72,8 @@ Also writing to a property of `exports` might change its hidden class resulting 
 
 ## Iterating over Keys of an Object.
 
-https://jsperf.com/object-keys-vs-for-in-with-closure/3 implies that `Object.keys` is the fastest way of iterating
-over properties of an object.
+[This benchmark](https://jsperf.app/object-keys-vs-for-in-with-closure/3) implies that
+`Object.keys` is the fastest way of iterating over properties of an object.
 
 ```
 for (var i = 0, keys = Object.keys(obj); i < keys.length; i++) {
@@ -87,7 +84,6 @@ for (var i = 0, keys = Object.keys(obj); i < keys.length; i++) {
 ## Recursive functions
 
 Avoid recursive functions when possible because they cannot be inlined.
-https://jsperf.com/cost-of-recursion
 
 ## Function Inlining
 
@@ -127,7 +123,7 @@ export function i18nStartfirstCreatePass(tView: TView, index: number, message: s
 ## Loops
 
 Don't use `forEach`, it can cause megamorphic function calls (depending on the browser) and function allocations.
-It is [a lot slower than regular `for` loops](https://jsperf.com/for-vs-foreach-misko)
+It is a lot slower than regular `for` loops.
 
 ## Limit global state access
 

@@ -150,7 +150,10 @@ export {
   ProviderRecord as ɵProviderRecord,
   setInjectorProfilerContext as ɵsetInjectorProfilerContext,
 } from './render3/debug/injector_profiler';
-export {getComponentDef as ɵgetComponentDef} from './render3/def_getters';
+export {
+  getComponentDef as ɵgetComponentDef,
+  getDirectiveDef as ɵgetDirectiveDef,
+} from './render3/def_getters';
 export {getDocument as ɵgetDocument} from './render3/interfaces/document';
 export {
   SHARED_STYLES_HOST as ɵSHARED_STYLES_HOST,

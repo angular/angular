@@ -51,25 +51,18 @@ Default is `false`.
 Specifies the compilation mode to use.
 The following modes are available:
 
-| Modes       | Details                                                                                             |
-| :---------- | :-------------------------------------------------------------------------------------------------- |
-| `'full'`    | Generates fully AOT-compiled code according to the version of Angular that is currently being used. |
-| `'partial'` | Generates code in a stable, but intermediate form suitable for a published library.                 |
+| Modes       | Details                                                                                                                                                      |
+| :---------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `'full'`    | Generates fully AOT-compiled code. The compiler ABI (the internal runtime APIs used by this code) is stable across patch versions of the same minor version. |
+| `'partial'` | Generates code in a stable, but intermediate form suitable for independently published libraries.                                                            |
 
 The default value is `'full'`.
 
 For most applications, `'full'` is the correct compilation mode.
 
-Use `'partial'` for independently published libraries, such as npm packages.
-`'partial'` compilations output a stable, intermediate format which better supports usage by applications built at different Angular versions from the library.
-Libraries built at "HEAD" alongside their applications and using the same version of Angular such as in a mono-repository can use `'full'` since there is no risk of version skew.
-
-### `disableExpressionLowering`
-
-When `true`, the default, transforms code that is or could be used in an annotation, to allow it to be imported from template factory modules.
-See [metadata rewriting](tools/cli/aot-compiler#metadata-rewriting) for more information.
-
-When `false`, disables this rewriting, requiring the rewriting to be done manually.
+Use `'partial'` for independently published libraries, such as NPM packages.
+`'partial'` compilations output a stable, intermediate format which better supports usage by applications built at different major or minor Angular versions from the library.
+Libraries built at "HEAD" alongside their applications and using the same version of Angular such as in a mono-repository can use `'full'` since there is no risk of version skew across minor versions. Note that the compiler ABI is stable across patch versions of the same minor, allowing for safe sharing of the Angular runtime in microfrontend architectures where different applications might be on different patch levels.
 
 ### `disableTypeScriptVersionCheck`
 
@@ -101,12 +94,6 @@ When `true`, replaces the `templateUrl` and `styleUrls` properties in all `@Comp
 When enabled, the `.js` output of `ngc` does not include any lazy-loaded template or style URLs.
 
 For library projects created with the Angular CLI, the development configuration default is `true`.
-
-### `enableLegacyTemplate`
-
-When `true`, enables the deprecated `<template>` element in place of `<ng-template>`.
-Default is `false`.
-Might be required by some third-party Angular libraries.
 
 ### `flatModuleId`
 

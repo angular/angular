@@ -13,7 +13,14 @@ import {RuntimeErrorCode} from './errors';
 /**
  * Matches http: or https:
  */
-const HTTP_OR_HTTPS_PROTOCOL_REGEX = /^https?:/i;
+const HTTP_OR_HTTPS_PROTOCOL_REGEXP = /^https?:/i;
+
+/**
+ * Matches an HTTP or HTTPS URL that does not have an authority (i.e. missing `//` or `\\`).
+ * In the WHATWG standard, when resolved against a base of the same scheme, these URLs are relative.
+ * @internal
+ */
+export const HTTP_OR_HTTPS_NO_AUTHORITY_REGEXP = /^https?:(?![/\\]{2})/i;
 
 /**
  * Options for {@link resolveUrl}.
@@ -58,13 +65,20 @@ export function resolveUrl(
   }
 
   // Fast-path: if the URL is a valid, standard absolute URL, parse and return it immediately.
+  // URLs with no authority (e.g. `http:/path` or `http:path`) must be resolved against the origin when one is provided.
   let resolved: URL | undefined;
-  try {
-    resolved = new URL(urlStr);
-  } catch {}
+  if (!originUrl || !HTTP_OR_HTTPS_NO_AUTHORITY_REGEXP.test(urlStr)) {
+    try {
+      resolved = new URL(urlStr);
+    } catch {}
+  }
   const {allowProtocolRelative = false, allowOriginChange = true} = options;
 
   if (resolved) {
+    if (isDisallowedProtocolRelative(resolved, allowProtocolRelative)) {
+      throwProtocolRelativeUrlError(urlStr);
+    }
+
     if (originUrl && !isSafeOriginChange(resolved, originUrl, urlStr, allowOriginChange)) {
       throwSuspiciousUrlError(urlStr);
     }
@@ -92,12 +106,7 @@ export function resolveUrl(
   // and we are configured to allow and preserve standard cross-origin protocol-relative requests.
   if (urlStr.startsWith('//')) {
     if (!allowProtocolRelative) {
-      throw new RuntimeError(
-        RuntimeErrorCode.PROTOCOL_RELATIVE_URL_NOT_ALLOWED,
-        typeof ngDevMode === 'undefined' || ngDevMode
-          ? `Protocol relative URLs are not allowed in this context. URL: ${urlStr}`
-          : urlStr,
-      );
+      throwProtocolRelativeUrlError(urlStr);
     }
 
     return new URL(urlStr, origin);
@@ -105,11 +114,38 @@ export function resolveUrl(
 
   resolved = new URL(urlStr, origin);
 
+  if (isDisallowedProtocolRelative(resolved, allowProtocolRelative)) {
+    throwProtocolRelativeUrlError(urlStr);
+  }
+
   if (!isSafeOriginChange(resolved, originUrl, urlStr, allowOriginChange)) {
     throwSuspiciousUrlError(urlStr);
   }
 
   return resolved;
+}
+
+/**
+ * Checks if the resolved URL has a disallowed protocol-relative path.
+ *
+ * @param resolved The resolved URL.
+ * @param allowProtocolRelative Whether protocol-relative URLs are allowed.
+ * @returns True if the URL has a disallowed protocol-relative path, false otherwise.
+ */
+function isDisallowedProtocolRelative(resolved: URL, allowProtocolRelative: boolean): boolean {
+  return !allowProtocolRelative && resolved.pathname.startsWith('//');
+}
+
+/**
+ * Throws a protocol-relative URL error indicating that protocol-relative URLs are not allowed.
+ */
+function throwProtocolRelativeUrlError(urlStr: string): never {
+  throw new RuntimeError(
+    RuntimeErrorCode.PROTOCOL_RELATIVE_URL_NOT_ALLOWED,
+    typeof ngDevMode === 'undefined' || ngDevMode
+      ? `Protocol relative URLs are not allowed in this context. URL: ${urlStr}`
+      : urlStr,
+  );
 }
 
 /**
@@ -147,5 +183,7 @@ function isSafeOriginChange(
     return false;
   }
 
-  return HTTP_OR_HTTPS_PROTOCOL_REGEX.test(urlStr);
+  return (
+    HTTP_OR_HTTPS_PROTOCOL_REGEXP.test(urlStr) && !HTTP_OR_HTTPS_NO_AUTHORITY_REGEXP.test(urlStr)
+  );
 }

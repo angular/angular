@@ -14,6 +14,7 @@ import {
   ɵControlFlowBlockType as ControlFlowBlockType,
 } from '@angular/core';
 import {RTreeStrategy} from './render-tree';
+import {getConfig} from '../../config/config';
 
 describe('render tree extraction', () => {
   let treeStrategy: RTreeStrategy;
@@ -28,6 +29,9 @@ describe('render tree extraction', () => {
     componentMap = new Map();
     directiveMetadataMap = new Map();
     controlFlowBlocksMap = new Map();
+
+    // Control flow blocks are filtered out by default.
+    getConfig().set({deferBlocks: true, forBlocks: true});
 
     (window as any).ng = {
       getDirectiveMetadata(dir: any): DirectiveDebugMetadata | null {
@@ -45,7 +49,10 @@ describe('render tree extraction', () => {
     } satisfies Partial<FrameworkAgnosticGlobalUtils>;
   });
 
-  afterEach(() => delete (window as any).ng);
+  afterEach(() => {
+    delete (window as any).ng;
+    getConfig().set({deferBlocks: false, forBlocks: false});
+  });
 
   it('should detect Angular Ivy apps', () => {
     expect(treeStrategy.supports()).toBeTrue();
@@ -237,5 +244,41 @@ describe('render tree extraction', () => {
         children: [],
       }),
     );
+  });
+
+  it('should skip control flow blocks that are disabled in the config', () => {
+    // Represent:
+    //
+    // <app>
+    //   @for (...) {
+    //     <child />
+    //   }
+    // </app>
+
+    const appNode = document.createElement('app');
+    const forHostNode = document.createElement('comment');
+    const childNode = document.createElement('child');
+
+    appNode.appendChild(forHostNode);
+    appNode.appendChild(childNode);
+
+    componentMap.set(appNode, {});
+    componentMap.set(childNode, {});
+
+    controlFlowBlocksMap.set(appNode, [
+      {
+        type: ControlFlowBlockType.For,
+        hostNode: forHostNode,
+        rootNodes: [childNode],
+        items: [],
+      },
+    ]);
+
+    getConfig().set({forBlocks: false});
+
+    const rtree = treeStrategy.build(appNode);
+
+    // The child component is a direct descendant of the app root.
+    expect(rtree[0].children.map((c) => c.tagName)).toEqual(['child']);
   });
 });

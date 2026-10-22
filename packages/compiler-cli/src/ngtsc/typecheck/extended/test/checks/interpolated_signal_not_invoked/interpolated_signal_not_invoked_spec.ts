@@ -55,6 +55,51 @@ runInEachFileSystem(() => {
     });
   });
 
+  it('should produce a warning when a signal is not invoked in an svg:ng-template', () => {
+    const fileName = absoluteFrom('/main.ts');
+    const {program, templateTypeChecker} = setup([
+      {
+        fileName,
+        declarations: [
+          {
+            type: 'directive',
+            name: 'TestDir',
+            selector: '[dir]',
+            inputs: {
+              myInput: 'myInput',
+            },
+          },
+        ],
+        templates: {
+          'TestCmp': `<svg><ng-template dir myInput="{{mySignal}}"></ng-template></svg>`,
+        },
+        source: `
+          import {signal} from '@angular/core';
+
+          export class TestDir {
+            myInput: any;
+          }
+
+          export class TestCmp {
+            mySignal = signal<number>(0);
+          }`,
+      },
+    ]);
+    const sf = getSourceFileOrError(program, fileName);
+    const component = getClass(sf, 'TestCmp');
+    const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+      templateTypeChecker,
+      program.getTypeChecker(),
+      [interpolatedSignalFactory],
+      {} /* options */,
+    );
+    const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+    expect(diags.length).toBe(1);
+    expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+    expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED));
+    expect(getSourceCodeForDiagnostic(diags[0])).toBe('mySignal');
+  });
+
   it('should produce a warning when a signal is not invoked', () => {
     const fileName = absoluteFrom('/main.ts');
     const {program, templateTypeChecker} = setup([
@@ -1201,4 +1246,186 @@ runInEachFileSystem(() => {
       });
     },
   );
+
+  describe('@let declarations', () => {
+    it('should produce a warning when a signal aliased via @let is not invoked in interpolation', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const {program, templateTypeChecker} = setup([
+        {
+          fileName,
+          templates: {
+            'TestCmp': `@let mySignal2 = mySignal; <div>{{ mySignal2 }}</div>`,
+          },
+          source: `
+            import {signal} from '@angular/core';
+
+            export class TestCmp {
+              mySignal = signal(0);
+            }`,
+        },
+      ]);
+      const sf = getSourceFileOrError(program, fileName);
+      const component = getClass(sf, 'TestCmp');
+      const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [interpolatedSignalFactory],
+        {},
+      );
+      const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+      expect(diags.length).toBe(1);
+      expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED));
+      expect(getSourceCodeForDiagnostic(diags[0])).toBe('mySignal2');
+    });
+
+    it('should not produce a warning when a signal aliased via @let is invoked', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const {program, templateTypeChecker} = setup([
+        {
+          fileName,
+          templates: {
+            'TestCmp': `@let mySignal2 = mySignal; <div>{{ mySignal2() }}</div>`,
+          },
+          source: `
+            import {signal} from '@angular/core';
+
+            export class TestCmp {
+              mySignal = signal(0);
+            }`,
+        },
+      ]);
+      const sf = getSourceFileOrError(program, fileName);
+      const component = getClass(sf, 'TestCmp');
+      const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [interpolatedSignalFactory],
+        {},
+      );
+      const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+      expect(diags.length).toBe(0);
+    });
+
+    it('should not produce a warning when a signal is aliased via @let without being interpolated', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const {program, templateTypeChecker} = setup([
+        {
+          fileName,
+          templates: {
+            'TestCmp': `@let mySignal2 = mySignal;`,
+          },
+          source: `
+            import {signal} from '@angular/core';
+
+            export class TestCmp {
+              mySignal = signal(0);
+            }`,
+        },
+      ]);
+      const sf = getSourceFileOrError(program, fileName);
+      const component = getClass(sf, 'TestCmp');
+      const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [interpolatedSignalFactory],
+        {},
+      );
+      const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+      expect(diags.length).toBe(0);
+    });
+
+    it('should produce a warning when a signal aliased via @let is used in @if', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const {program, templateTypeChecker} = setup([
+        {
+          fileName,
+          templates: {
+            'TestCmp': `@let mySignal2 = mySignal; @if (mySignal2) { <div>visible</div> }`,
+          },
+          source: `
+            import {signal} from '@angular/core';
+
+            export class TestCmp {
+              mySignal = signal(true);
+            }`,
+        },
+      ]);
+      const sf = getSourceFileOrError(program, fileName);
+      const component = getClass(sf, 'TestCmp');
+      const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [interpolatedSignalFactory],
+        {},
+      );
+      const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+      expect(diags.length).toBe(1);
+      expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED));
+      expect(getSourceCodeForDiagnostic(diags[0])).toBe('mySignal2');
+    });
+
+    it('should produce a warning when a signal aliased via @let is used in a bound attribute', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const {program, templateTypeChecker} = setup([
+        {
+          fileName,
+          templates: {
+            'TestCmp': `@let mySignal2 = mySignal; <div [title]="mySignal2"></div>`,
+          },
+          source: `
+            import {signal} from '@angular/core';
+
+            export class TestCmp {
+              mySignal = signal('hello');
+            }`,
+        },
+      ]);
+      const sf = getSourceFileOrError(program, fileName);
+      const component = getClass(sf, 'TestCmp');
+      const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [interpolatedSignalFactory],
+        {},
+      );
+      const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+      expect(diags.length).toBe(1);
+      expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED));
+      expect(getSourceCodeForDiagnostic(diags[0])).toBe('mySignal2');
+    });
+
+    it('should produce a warning when an instance property of a signal aliased via @let is accessed in interpolation', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const {program, templateTypeChecker} = setup([
+        {
+          fileName,
+          templates: {
+            'TestCmp': `@let mySignal2 = mySignal; <div>{{ mySignal2.name }}</div>`,
+          },
+          source: `
+            import {signal} from '@angular/core';
+
+            export class TestCmp {
+              mySignal = signal(0);
+            }`,
+        },
+      ]);
+      const sf = getSourceFileOrError(program, fileName);
+      const component = getClass(sf, 'TestCmp');
+      const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [interpolatedSignalFactory],
+        {},
+      );
+      const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+      expect(diags.length).toBe(1);
+      expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED));
+      expect(getSourceCodeForDiagnostic(diags[0])).toBe('mySignal2');
+    });
+  });
 });

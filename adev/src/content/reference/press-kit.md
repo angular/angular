@@ -52,9 +52,9 @@ In this example, we’ve adapted the shield to create an Angular Signals logo va
 
 <docs-step title="Do’s and don’ts of using Angular's brand">
 If you are creating your own logo, we encourage differentiating your logo from ours to not cause confusion. When adapting the logo, you are free to change and adapt the colors and shape to make it your own.
-  
+
 When representing Angular with the original logo, please follow these guidelines:
-![Rhubarb the small cat](assets/images/press-kit/do_and_dont.png "Rhubarb the small cat")
+![Rhubarb the small cat](assets/images/press-kit/do_and_dont.png 'Rhubarb the small cat')
 </docs-step>
 
 </docs-workflow>
@@ -63,7 +63,7 @@ When representing Angular with the original logo, please follow these guidelines
 
 ### 2016 Angular (v3-v16)
 
-In 2023 , we announced a modernized logo with v17. We advise against using the former Angular logo to prevent confusion. You can view the old press kit on our [old docs site](https://angular.io/presskit).
+In 2023, we announced a modernized logo with v17. We advise against using the former Angular logo to prevent confusion. You can view the old press kit on our [old docs site](https://angular.io/presskit).
 
 ### AngularJS
 

@@ -19,8 +19,46 @@ import ts from 'typescript';
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
 
 /**
+ * The compiled output of a class that HMR inspects for the file-level dependencies it has to
+ * capture.
+ */
+export interface HmrCompiledOutput {
+  /** Compiled component definition. */
+  definition: R3CompiledExpression;
+  /** Compiled component factory. */
+  factory: Pick<CompileResult, 'initializer' | 'statements'>;
+  /** Metadata about the defer blocks in the component. */
+  deferBlockMetadata: R3ComponentDeferMetadata;
+  /** Compiled `setClassMetadata` expression, if any. */
+  classMetadata: o.Statement | null;
+  /** Compiled `setClassDebugInfo` expression, if any. */
+  debugInfo: o.Statement | null;
+}
+
+/**
+ * Resolves the reads a `PotentialTopLevelReadsVisitor` found to the top-level bindings they
+ * refer to. `T` is the read representation of whatever is wrapped in the output's
+ * `WrappedNodeExpr`s (`ts.Identifier` in ngtsc).
+ */
+export interface HmrReadResolver<T> {
+  /** Name of the top-level binding a read refers to. */
+  getName(read: o.ReadVarExpr | T): string;
+  /**
+   * Expression that stands in for the read in the HMR initializer's capture list, or `null` when
+   * it has no runtime representation, in which case HMR is disabled for the class.
+   */
+  getRuntimeRepresentation(read: o.ReadVarExpr | T): o.Expression | null;
+}
+
+/** The file-level dependencies that the HMR initializer needs to capture and pass along. */
+export interface HmrDependencies {
+  local: {name: string; runtimeRepresentation: o.Expression}[];
+  external: R3HmrNamespaceDependency[];
+}
+
+/**
  * Determines the file-level dependencies that the HMR initializer needs to capture and pass along.
- * @param sourceFile File in which the file is being compiled.
+ * @param node Class for which we're extracting the dependencies.
  * @param definition Compiled component definition.
  * @param factory Compiled component factory.
  * @param deferBlockMetadata Metadata about the defer blocks in the component.
@@ -36,13 +74,30 @@ export function extractHmrDependencies(
   debugInfo: o.Statement | null,
   reflection: ReflectionHost,
   evaluator: PartialEvaluator,
-): {
-  local: {name: string; runtimeRepresentation: o.Expression}[];
-  external: R3HmrNamespaceDependency[];
-} | null {
+): HmrDependencies | null {
   const name = ts.isClassDeclaration(node) && node.name ? node.name.text : null;
-  const visitor = new PotentialTopLevelReadsVisitor();
   const sourceFile = ts.getOriginalNode(node).getSourceFile();
+
+  return extractHmrDependenciesFromOutput(
+    name,
+    {definition, factory, deferBlockMetadata, classMetadata, debugInfo},
+    new TypeScriptPotentialTopLevelReadsVisitor(),
+    getTopLevelDeclarationNames(sourceFile),
+    {
+      getName: (read) => (read instanceof o.ReadVarExpr ? read.name : read.text),
+      getRuntimeRepresentation: (read) => getRuntimeRepresentation(read, reflection, evaluator),
+    },
+  );
+}
+
+export function extractHmrDependenciesFromOutput<T>(
+  className: string | null,
+  output: HmrCompiledOutput,
+  visitor: PotentialTopLevelReadsVisitor<T>,
+  availableTopLevel: ReadonlySet<string>,
+  resolver: HmrReadResolver<T>,
+): HmrDependencies | null {
+  const {definition, factory, deferBlockMetadata, classMetadata, debugInfo} = output;
 
   // Visit all of the compiled expressions to look for potential
   // local references that would have to be retained.
@@ -62,15 +117,14 @@ export function extractHmrDependencies(
   // Filter out only the references to defined top-level symbols. This allows us to ignore local
   // variables inside of functions. Note that we filter out the class name since it is always
   // defined and it saves us having to repeat this logic wherever the locals are consumed.
-  const availableTopLevel = getTopLevelDeclarationNames(sourceFile);
   const local: {name: string; runtimeRepresentation: o.Expression}[] = [];
   const seenLocals = new Set<string>();
 
   for (const readNode of visitor.allReads) {
-    const readName = readNode instanceof o.ReadVarExpr ? readNode.name : readNode.text;
+    const readName = resolver.getName(readNode);
 
-    if (readName !== name && !seenLocals.has(readName) && availableTopLevel.has(readName)) {
-      const runtimeRepresentation = getRuntimeRepresentation(readNode, reflection, evaluator);
+    if (readName !== className && !seenLocals.has(readName) && availableTopLevel.has(readName)) {
+      const runtimeRepresentation = resolver.getRuntimeRepresentation(readNode);
 
       if (runtimeRepresentation === null) {
         return null;
@@ -226,8 +280,8 @@ function trackBindingName(node: ts.BindingName, results: Set<string>): void {
  * The reads are "potential", because the visitor doesn't account for local variables
  * inside functions.
  */
-class PotentialTopLevelReadsVisitor extends o.RecursiveAstVisitor {
-  readonly allReads = new Set<o.ReadVarExpr | ts.Identifier>();
+export abstract class PotentialTopLevelReadsVisitor<T> extends o.RecursiveAstVisitor {
+  readonly allReads = new Set<o.ReadVarExpr | T>();
   readonly namespaceReads = new Set<string>();
 
   override visitExternalExpr(ast: o.ExternalExpr, context: any) {
@@ -243,11 +297,18 @@ class PotentialTopLevelReadsVisitor extends o.RecursiveAstVisitor {
   }
 
   override visitWrappedNodeExpr(ast: o.WrappedNodeExpr<unknown>, context: any) {
-    if (this.isTypeScriptNode(ast.node)) {
-      this.addAllTopLevelIdentifiers(ast.node);
-    }
-
+    this.addWrappedNodeReads(ast.node);
     super.visitWrappedNodeExpr(ast, context);
+  }
+
+  protected abstract addWrappedNodeReads(node: unknown): void;
+}
+
+class TypeScriptPotentialTopLevelReadsVisitor extends PotentialTopLevelReadsVisitor<ts.Identifier> {
+  protected override addWrappedNodeReads(node: unknown): void {
+    if (this.isTypeScriptNode(node)) {
+      this.addAllTopLevelIdentifiers(node);
+    }
   }
 
   /**

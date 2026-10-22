@@ -270,9 +270,8 @@ If you create a new project with `ng new builder-test`, the generated `angular.j
           "options": {
             "outputPath": "dist/builder-test",
             "index": "src/index.html",
-            "main": "src/main.ts",
-            "polyfills": "src/polyfills.ts",
-            "tsConfig": "src/tsconfig.app.json"
+            "browser": "src/main.ts",
+            "tsConfig": "tsconfig.app.json"
           },
           "configurations": {
             "production": {

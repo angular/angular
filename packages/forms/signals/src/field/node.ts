@@ -414,7 +414,7 @@ export class FieldNode implements FieldState<unknown> {
   /**
    * If there is a pending sync, abort it and sync immediately.
    */
-  private flushSync() {
+  flushSync() {
     const pending = this.pendingSync();
     if (pending && !pending.signal.aborted) {
       pending.abort();

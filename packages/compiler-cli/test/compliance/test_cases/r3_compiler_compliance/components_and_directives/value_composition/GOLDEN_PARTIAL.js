@@ -1085,3 +1085,31 @@ export declare class MyComponent {
     static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-comp", never, {}, {}, never, never, false, never>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: inline_object_literal_access.js
+ ****************************************************************************************************/
+import { Component, input } from '@angular/core';
+import * as i0 from "@angular/core";
+export class Greeting {
+    type = input('one', /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: "type" }] : /* istanbul ignore next */ []));
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Greeting, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.1.0", version: "0.0.0-PLACEHOLDER", type: Greeting, isStandalone: true, selector: "ng-component", inputs: { type: { classPropertyName: "type", publicName: "type", isSignal: true, isRequired: false, transformFunction: null } }, ngImport: i0, template: `<span [title]="{one: 'Hello', two: 'Hola'}[type()]"></span>`, isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Greeting, decorators: [{
+            type: Component,
+            args: [{
+                    template: `<span [title]="{one: 'Hello', two: 'Hola'}[type()]"></span>`,
+                }]
+        }], propDecorators: { type: [{ type: i0.Input, args: [{ isSignal: true, alias: "type", required: false }] }] } });
+
+/****************************************************************************************************
+ * PARTIAL FILE: inline_object_literal_access.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class Greeting {
+    readonly type: import("@angular/core").InputSignal<"one" | "two">;
+    static ɵfac: i0.ɵɵFactoryDeclaration<Greeting, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<Greeting, "ng-component", never, { "type": { "alias": "type"; "required": false; "isSignal": true; }; }, {}, never, never, true, never>;
+}
+

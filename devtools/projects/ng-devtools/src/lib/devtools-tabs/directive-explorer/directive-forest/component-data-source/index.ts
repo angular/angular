@@ -7,19 +7,17 @@
  */
 
 import {CollectionViewer, DataSource} from '@angular/cdk/collections';
-import {FlatTreeControl} from '@angular/cdk/tree';
 import {DefaultIterableDiffer, TrackByFunction} from '@angular/core';
-import {MatTreeFlattener} from '@angular/material/tree';
 import {
   DevToolsNode,
   ControlFlowBlock,
   HydrationStatus,
   ChangeDetection,
 } from '../../../../../../../protocol';
-import {BehaviorSubject, merge, Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {BehaviorSubject, merge, Observable, map} from 'rxjs';
 
 import {diff} from '../../diffing';
+import {ExpansionModel} from '../expansion-model';
 import {IndexedNode, indexForest} from '../index-forest';
 
 /** Flat node with expandable and level information */
@@ -88,57 +86,87 @@ const filterCommentNodes = (nodes: IndexedNode[]) => {
   return nodes;
 };
 
+/**
+ * Returns the nodes of a flattened tree that are visible, i.e. whose ancestors are all expanded.
+ *
+ * @param nodes flat nodes in depth-first order.
+ * @param isExpanded whether the given node is expanded.
+ */
+const getVisibleNodes = (nodes: FlatNode[], isExpanded: (node: FlatNode) => boolean) => {
+  const visibleNodes: FlatNode[] = [];
+  // Whether all ancestors are expanded, indexed by level.
+  const expandedAtLevel: boolean[] = [true];
+  for (const node of nodes) {
+    let visible = true;
+    for (let i = 0; i <= node.level; i++) {
+      visible = visible && !!expandedAtLevel[i];
+    }
+    if (visible) {
+      visibleNodes.push(node);
+    }
+    if (node.expandable) {
+      expandedAtLevel[node.level + 1] = isExpanded(node);
+    }
+  }
+  return visibleNodes;
+};
+
 export class ComponentDataSource extends DataSource<FlatNode> {
-  private _differ = new DefaultIterableDiffer<FlatNode>(trackBy);
-  private _expandedData = new BehaviorSubject<FlatNode[]>([]);
-  private _flattenedData = new BehaviorSubject<FlatNode[]>([]);
-  private _nodeToFlat = new WeakMap<IndexedNode, FlatNode>();
+  private differ = new DefaultIterableDiffer<FlatNode>(trackBy);
+  private expandedData = new BehaviorSubject<FlatNode[]>([]);
+  private flattenedData = new BehaviorSubject<FlatNode[]>([]);
+  private nodeToFlat = new WeakMap<IndexedNode, FlatNode>();
 
-  private _treeFlattener = new MatTreeFlattener(
-    (node: IndexedNode, level: number) => {
-      if (this._nodeToFlat.has(node)) {
-        return this._nodeToFlat.get(node);
-      }
-      const flatNode: FlatNode = {
-        expandable: expandable(node),
-        id: getId(node),
-        // We can compare the nodes in the navigation functions above
-        // based on this identifier directly, since it's a reference type
-        // and the reference is preserved after transformation.
-        position: node.position,
-        name: node.component ? node.component.name : (node.tagName ?? ''),
-        directives: node.directives?.map((d) => d.name) ?? [],
-        original: node,
-        level,
-        hydration: node.hydration,
-        controlFlowBlock: node.controlFlowBlock,
-        static: node.static,
-        changeDetection: node.changeDetection,
-        hasNativeElement: node.hasNativeElement,
-        collapsedByDefault: node.children.every((n) => n.static),
-      };
-      this._nodeToFlat.set(node, flatNode);
-      return flatNode;
-    },
-    (node) => (node ? node.level : -1),
-    (node) => (node ? node.expandable : false),
-    (node) => (node ? node.children : []),
-  );
-
-  constructor(private _treeControl: FlatTreeControl<FlatNode>) {
+  constructor(private expansionModel: ExpansionModel<FlatNode>) {
     super();
   }
 
+  /** Flattens the forest into a list of nodes in depth-first order. */
+  private flattenNodes(nodes: IndexedNode[], level = 0, result: FlatNode[] = []): FlatNode[] {
+    for (const node of nodes) {
+      const flatNode = this.toFlatNode(node, level);
+      result.push(flatNode);
+      if (flatNode.expandable) {
+        this.flattenNodes(node.children, level + 1, result);
+      }
+    }
+    return result;
+  }
+
+  private toFlatNode(node: IndexedNode, level: number): FlatNode {
+    const existingNode = this.nodeToFlat.get(node);
+    if (existingNode) {
+      return existingNode;
+    }
+    const flatNode: FlatNode = {
+      expandable: expandable(node),
+      id: getId(node),
+      position: node.position,
+      name: node.component ? node.component.name : (node.tagName ?? ''),
+      directives: node.directives?.map((d) => d.name) ?? [],
+      original: node,
+      level,
+      hydration: node.hydration,
+      controlFlowBlock: node.controlFlowBlock,
+      static: node.static,
+      changeDetection: node.changeDetection,
+      hasNativeElement: node.hasNativeElement,
+      collapsedByDefault: node.children.every((n) => n.static),
+    };
+    this.nodeToFlat.set(node, flatNode);
+    return flatNode;
+  }
+
   get data(): FlatNode[] {
-    return this._flattenedData.value;
+    return this.flattenedData.value;
   }
 
   get expandedDataValues(): FlatNode[] {
-    return this._expandedData.value;
+    return this.expandedData.value;
   }
 
   getFlatNodeFromIndexedNode(indexedNode: IndexedNode): FlatNode | undefined {
-    return this._nodeToFlat.get(indexedNode);
+    return this.nodeToFlat.get(indexedNode);
   }
 
   getFlatNodeByPosition(position: number[]): FlatNode | undefined {
@@ -175,50 +203,42 @@ export class ComponentDataSource extends DataSource<FlatNode> {
       indexedForest = filterCommentNodes(indexedForest);
     }
 
-    const flattenedCollection = this._treeFlattener.flattenNodes(indexedForest) as FlatNode[];
+    const flattenedCollection = this.flattenNodes(indexedForest);
 
     this.data.forEach((i) => (i.newItem = false));
 
     const expandedNodes: Record<string, boolean> = {};
     this.data.forEach((item) => {
-      expandedNodes[item.id] = this._treeControl.isExpanded(item);
+      expandedNodes[item.id] = this.expansionModel.isExpanded(item);
     });
 
     const {newItems, movedItems, removedItems} = diff<FlatNode>(
-      this._differ,
+      this.differ,
       this.data,
       flattenedCollection,
     );
-    this._treeControl.dataNodes = this.data;
-    this._flattenedData.next(this.data);
+    this.flattenedData.next(this.data);
 
     movedItems.forEach((i) => {
-      this._nodeToFlat.set(i.original, i);
+      this.nodeToFlat.set(i.original, i);
       if (expandedNodes[i.id]) {
-        this._treeControl.expand(i);
+        this.expansionModel.expand(i);
       }
     });
     newItems.forEach((i) => (i.newItem = true));
-    removedItems.forEach((i) => this._nodeToFlat.delete(i.original));
+    removedItems.forEach((i) => this.nodeToFlat.delete(i.original));
 
     return {newItems, movedItems, removedItems};
   }
 
   override connect(collectionViewer: CollectionViewer): Observable<FlatNode[]> {
-    const changes = [
-      collectionViewer.viewChange,
-      this._treeControl.expansionModel.changed,
-      this._flattenedData,
-    ];
+    const changes = [collectionViewer.viewChange, this.expansionModel.changed, this.flattenedData];
     return merge<unknown[]>(...changes).pipe(
       map(() => {
-        this._expandedData.next(
-          this._treeFlattener.expandFlattenedNodes(
-            this.data,
-            this._treeControl as FlatTreeControl<FlatNode | undefined>,
-          ) as FlatNode[],
+        this.expandedData.next(
+          getVisibleNodes(this.data, (node) => this.expansionModel.isExpanded(node)),
         );
-        return this._expandedData.value;
+        return this.expandedData.value;
       }),
     );
   }

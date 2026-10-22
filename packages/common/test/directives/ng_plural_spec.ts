@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy} from '@angular/compiler';
 import {Component, Injectable} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/private/testing/matchers';
@@ -143,7 +142,6 @@ describe('ngPlural', () => {
 
   it('should be available as a standalone directive', async () => {
     @Component({
-      selector: 'test-component',
       imports: [NgPlural, NgPluralCase],
       template:
         '<ul [ngPlural]="switchValue">' +
@@ -178,11 +176,9 @@ class TestLocalization extends NgLocalization {
 }
 
 @Component({
-  selector: 'test-cmp',
   template: '',
   imports: [NgPlural, NgPluralCase],
   providers: [{provide: NgLocalization, useClass: TestLocalization}],
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class TestComponent {
   switchValue: number | null = null;

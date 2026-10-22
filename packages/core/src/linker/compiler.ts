@@ -17,7 +17,7 @@ import {NgModuleFactory} from './ng_module_factory';
 
 /**
  * Low-level service for running the angular compiler during runtime
- * to create {@link AbstractComponentFactory}s, which
+ * to create {@link NgModuleFactory} instances, which
  * can later be used to create and render a Component instance.
  *
  * Each `@NgModule` provides an own `Compiler` to its injector,

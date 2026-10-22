@@ -8,7 +8,7 @@ In the example application, the `Banner` component presents static title text in
 
 After a few changes, the `Banner` component presents a dynamic title by binding to the component's `title` property like this.
 
-```angular-ts {header="banner.ts"}
+```angular-ts {header: "banner.ts"}
 import {Component, signal} from '@angular/core';
 
 @Component({
@@ -397,41 +397,39 @@ With the stubbed service returning async observables, most of your tests will ha
 Here's a test that demonstrates the data flow you'd expect in the real world.
 
 ```ts
-it('should show quote after getQuote', async () => {
-  class MockTwainQuotes implements TwainQuotes {
-    private subject = new Subject<string>();
+class MockTwainQuotes implements TwainQuotes {
+  private subject = new Subject<string>();
 
-    getQuote() {
-      return this.subject.asObservable();
-    }
-
-    emit(val: string) {
-      this.subject.next(val);
-    }
+  getQuote() {
+    return this.subject.asObservable();
   }
 
-  it('should show quote after getQuote (success)', async () => {
-    vi.useFakeTimers();
+  emit(val: string) {
+    this.subject.next(val);
+  }
+}
 
-    TestBed.configureTestingModule({
-      providers: [{provide: TwainQuotes, useClass: MockTwainQuotes}],
-    });
+it('should show quote after getQuote (success)', async () => {
+  vi.useFakeTimers();
 
-    const fixture = TestBed.createComponent(TwainComponent);
-    const twainQuotes = TestBed.inject(TwainQuotes) as MockTwainQuotes;
-    await vi.runAllTimersAsync(); // render before the quote is received
-
-    const quoteEl = fixture.nativeElement.querySelector('.twain');
-    expect(quoteEl.textContent).toBe('...');
-
-    twainQuotes.emit('Twain Quote'); // emits the quote
-    await vi.runAllTimersAsync(); // render with the quote received
-
-    expect(quoteEl.textContent).toBe('Twain Quote');
-    expect(fixture.nativeElement.querySelector('.error')).toBeNull();
-
-    vi.useRealTimers();
+  TestBed.configureTestingModule({
+    providers: [{provide: TwainQuotes, useClass: MockTwainQuotes}],
   });
+
+  const fixture = TestBed.createComponent(TwainComponent);
+  const twainQuotes = TestBed.inject(TwainQuotes) as MockTwainQuotes;
+  await vi.runAllTimersAsync(); // render before the quote is received
+
+  const quoteEl = fixture.nativeElement.querySelector('.twain');
+  expect(quoteEl.textContent).toBe('...');
+
+  twainQuotes.emit('Twain Quote'); // emits the quote
+  await vi.runAllTimersAsync(); // render with the quote received
+
+  expect(quoteEl.textContent).toBe('Twain Quote');
+  expect(fixture.nativeElement.querySelector('.error')).toBeNull();
+
+  vi.useRealTimers();
 });
 ```
 
@@ -446,7 +444,7 @@ The `fakeAsync` helper function is another mock clock that relies on patching as
 
 TIP: Prefer using native async testing strategies or other fake timers (also called mock clocks) like those from Vitest or Jasmine.
 
-IMPORTANT: `fakeAsync` cannot be used with the Vitest test runner as no `zone.js` patch is applied for this runner.
+IMPORTANT: `fakeAsync` requires `zone.js`. To use it with the Vitest test runner, add the `zone.js/plugins/vitest-patch` polyfill as described in [the Vitest migration guide](guide/testing/migrating-to-vitest#zonejs-vitest-patch).
 
 ## Component with inputs and outputs
 
@@ -558,7 +556,7 @@ it('should raise selected event when clicked (triggerEventHandler)', () => {
 });
 ```
 
-The component's `selected` property returns an `EventEmitter`, which looks like an RxJS synchronous `Observable` to consumers.
+The component's `selected` property is an `OutputEmitterRef`, whose `subscribe` method notifies subscribers synchronously.
 The test subscribes to it _explicitly_ just as the host component does _implicitly_.
 
 If the component behaves as expected, clicking the hero's element should tell the component's `selected` property to emit the `hero` object.
@@ -567,7 +565,7 @@ The test detects that event through its subscription to `selected`.
 
 ### `triggerEventHandler`
 
-The `heroDe` in the previous test is a `DebugElement` that represents the hero `<div>`.
+The `heroDe` in the previous test is a `DebugElement` that represents the hero `<button>`.
 
 It has Angular properties and methods that abstract interaction with the native element.
 This test calls the `DebugElement.triggerEventHandler` with the "click" event name.
@@ -783,9 +781,7 @@ The component has to _subscribe_ to the `ActivatedRoute.paramMap` observable and
 ```ts
 constructor() {
   // get hero when `id` param changes
-  this.route.paramMap
-    .pipe(takeUntilDestroyed())
-    .subscribe((pmap) => this.getHero(pmap.get('id')));
+  this.route.paramMap.subscribe((pmap) => this.getHero(pmap.get('id')));
 }
 ```
 

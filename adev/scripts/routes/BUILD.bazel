@@ -1,5 +1,5 @@
 load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
-load("//adev/shared-docs:defaults.bzl", "js_binary", "js_run_binary")
+load("//adev/shared-docs:defaults.bzl", "js_binary", "js_run_binary", "zoneless_jasmine_test")
 
 package(default_visibility = ["//adev:__subpackages__"])
 
@@ -58,4 +58,48 @@ js_run_binary(
         "//packages:__subpackages__",
         "//tools:__subpackages__",
     ],
+)
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = [
+        "routes.spec.mts",
+    ],
+    data = [
+        "//adev/src/assets:docs_api_manifest",
+        "//adev/src/content:guide_files",
+        "//adev/src/content/tutorials/deferrable-views",
+        "//adev/src/content/tutorials/first-app",
+        "//adev/src/content/tutorials/learn-angular",
+        "//adev/src/content/tutorials/signal-forms",
+        "//adev/src/content/tutorials/signals",
+    ],
+    tsconfig = {
+        "compilerOptions": {
+            "target": "ES2022",
+            "module": "nodenext",
+            "moduleResolution": "nodenext",
+            "types": [
+                "node",
+                "jasmine",
+            ],
+            "rootDir": ".",
+            "skipLibCheck": True,
+        },
+    },
+    deps = [
+        "//adev:node_modules/@types/jasmine",
+        "//adev:node_modules/@types/node",
+        "//adev/shared-docs/interfaces",
+        "//adev/shared-docs/utils",
+        "//adev/src/app/routing/navigation-entries",
+        "//adev/src/content/reference/errors:route-nav-items",
+        "//adev/src/content/reference/extended-diagnostics:route-nav-items",
+    ],
+)
+
+zoneless_jasmine_test(
+    name = "test",
+    data = [":test_lib"],
 )

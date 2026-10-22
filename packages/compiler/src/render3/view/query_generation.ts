@@ -219,7 +219,7 @@ export function createViewQueriesFunction(
       renderFlagCheckIfStmt(core.RenderFlags.Create, createStatements),
       renderFlagCheckIfStmt(core.RenderFlags.Update, collapseAdvanceStatements(updateStatements)),
     ],
-    o.INFERRED_TYPE,
+    o.DYNAMIC_TYPE,
     null,
     viewQueryFnName,
   );
@@ -286,7 +286,7 @@ export function createContentQueriesFunction(
       renderFlagCheckIfStmt(core.RenderFlags.Create, createStatements),
       renderFlagCheckIfStmt(core.RenderFlags.Update, collapseAdvanceStatements(updateStatements)),
     ],
-    o.INFERRED_TYPE,
+    o.DYNAMIC_TYPE,
     null,
     contentQueriesFnName,
   );

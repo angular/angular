@@ -32,6 +32,11 @@ import type {CompilationJob} from '../compilation';
  *    with `||` and `&&` where it prints the parentheses even if they are not present in the AST.
  *    Note: We may be able to remove this case if Typescript resolves the following issue:
  *    https://github.com/microsoft/TypeScript/issues/61369
+ *
+ * 4. Expressions that bind less tightly than the expression containing them. For example,
+ *    `(!a).b`, `(typeof a) ** 2` or `(1).toString()`. While TypeScript's printer re-inserts these
+ *    parentheses when printing its own AST, the output AST may also be printed directly (e.g. in
+ *    JIT mode) where removing them would change the semantics of the expression.
  */
 export function stripNonrequiredParentheses(job: CompilationJob): void {
   // Check which parentheses are required.
@@ -40,6 +45,8 @@ export function stripNonrequiredParentheses(job: CompilationJob): void {
     for (const op of unit.ops()) {
       ir.visitExpressionsInOp(op, (expr) => {
         if (expr instanceof o.BinaryOperatorExpr) {
+          checkArrowFunctionOperandParens(expr, requiredParens);
+
           switch (expr.operator) {
             case o.BinaryOperator.Exponentiation:
               checkExponentiationParens(expr, requiredParens);
@@ -53,6 +60,12 @@ export function stripNonrequiredParentheses(job: CompilationJob): void {
             case o.BinaryOperator.Or:
               checkAndOrParens(expr, requiredParens);
           }
+        } else if (expr instanceof o.ReadPropExpr || expr instanceof o.ReadKeyExpr) {
+          checkTargetParens(expr.receiver, requiredParens);
+        } else if (expr instanceof o.InvokeFunctionExpr) {
+          checkTargetParens(expr.fn, requiredParens);
+        } else if (expr instanceof o.TaggedTemplateLiteralExpr) {
+          checkTargetParens(expr.tag, requiredParens);
         }
       });
     }
@@ -79,7 +92,10 @@ function checkExponentiationParens(
   expr: o.BinaryOperatorExpr,
   requiredParens: Set<o.ParenthesizedExpr>,
 ) {
-  if (expr.lhs instanceof o.ParenthesizedExpr && expr.lhs.expr instanceof o.UnaryOperatorExpr) {
+  if (
+    expr.lhs instanceof o.ParenthesizedExpr &&
+    (expr.lhs.expr instanceof o.UnaryOperatorExpr || isUnaryLikeExpr(expr.lhs.expr))
+  ) {
     requiredParens.add(expr.lhs);
   }
 }
@@ -117,4 +133,35 @@ function isLogicalAndOr(expr: o.Expression) {
     expr instanceof o.BinaryOperatorExpr &&
     (expr.operator === o.BinaryOperator.And || expr.operator === o.BinaryOperator.Or)
   );
+}
+
+function checkTargetParens(target: o.Expression, requiredParens: Set<o.ParenthesizedExpr>) {
+  if (
+    target instanceof o.ParenthesizedExpr &&
+    (isUnaryLikeExpr(target.expr) ||
+      target.expr instanceof o.ArrowFunctionExpr ||
+      (target.expr instanceof o.LiteralExpr && typeof target.expr.value === 'number'))
+  ) {
+    requiredParens.add(target);
+  }
+}
+
+function checkArrowFunctionOperandParens(
+  expr: o.BinaryOperatorExpr,
+  requiredParens: Set<o.ParenthesizedExpr>,
+) {
+  if (expr.lhs instanceof o.ParenthesizedExpr && expr.lhs.expr instanceof o.ArrowFunctionExpr) {
+    requiredParens.add(expr.lhs);
+  }
+  if (
+    !expr.isAssignment() &&
+    expr.rhs instanceof o.ParenthesizedExpr &&
+    expr.rhs.expr instanceof o.ArrowFunctionExpr
+  ) {
+    requiredParens.add(expr.rhs);
+  }
+}
+
+function isUnaryLikeExpr(expr: o.Expression): boolean {
+  return expr instanceof o.NotExpr || expr instanceof o.TypeofExpr || expr instanceof o.VoidExpr;
 }

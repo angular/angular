@@ -178,10 +178,7 @@ describe('AsyncPipe', () => {
     let promise: Promise<any>;
 
     beforeEach(() => {
-      promise = new Promise((res, rej) => {
-        resolve = res;
-        reject = rej;
-      });
+      ({promise, resolve, reject} = Promise.withResolvers<any>());
     });
 
     describe('transform', () => {
@@ -298,7 +295,6 @@ describe('AsyncPipe', () => {
 
   it('should be available as a standalone pipe', async () => {
     @Component({
-      selector: 'test-component',
       imports: [AsyncPipe],
       template: '{{ value | async }}',
     })

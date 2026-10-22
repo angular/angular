@@ -10,6 +10,8 @@ import {timeout} from '@angular/private/testing';
 import {BehaviorSubject, EMPTY, Observable, of, Subscriber, throwError} from 'rxjs';
 import {
   ApplicationRef,
+  Component,
+  ErrorHandler,
   ɵCACHE_ACTIVE as CACHE_ACTIVE,
   Injector,
   makeStateKey,
@@ -176,6 +178,46 @@ describe('rxResource()', () => {
     expect(res.status()).toBe('error');
     expect(res.error()).toBeInstanceOf(Error);
     expect(() => res.value()).toThrowError(/Resource completed before producing a value/);
+  });
+
+  it('reports NG0991 to the ErrorHandler when a template reads value() after the stream completes immediately', async () => {
+    const handledErrors: unknown[] = [];
+    TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: ErrorHandler,
+          useClass: class extends ErrorHandler {
+            override handleError(error: unknown): void {
+              handledErrors.push(error);
+            }
+          },
+        },
+      ],
+    });
+
+    @Component({template: '{{res.value()}}'})
+    class TestComponent {
+      res = rxResource({stream: () => EMPTY});
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    // No manual `fixture.detectChanges()` here: that call would surface the
+    // error synchronously to the test itself. Reading an errored resource
+    // from a template during an app-triggered (scheduled) CD cycle is what
+    // routes the error to `ErrorHandler` instead, since nothing in user code
+    // is positioned to catch it — this is the actual failure mode reported
+    // in production.
+    //
+    // `TestBedApplicationErrorHandler` calls our `ErrorHandler` first and
+    // then still rejects the pending `whenStable()` promise with the same
+    // error (so tests don't silently swallow real bugs), so we expect the
+    // rejection here in addition to asserting our handler saw the error.
+    await expectAsync(fixture.whenStable()).toBeRejected();
+
+    expect(handledErrors.length).toBe(1);
+    expect((handledErrors[0] as Error).message).toContain(
+      'Resource completed before producing a value',
+    );
   });
 
   it('should report sync error synchronously (after tick) ', () => {

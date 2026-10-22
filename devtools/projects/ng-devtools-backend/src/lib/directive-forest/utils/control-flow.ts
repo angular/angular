@@ -17,6 +17,7 @@ import {
   ForLoopBlock,
   DeferBlock,
   RenderedDeferBlock,
+  DevtoolsConfig,
 } from '../../../../../protocol';
 import {ComponentTreeNode} from '../../shared/interfaces';
 import {serializeValue} from '../../shared/state-serializer/state-serializer';
@@ -104,6 +105,18 @@ export class ControlFlowBlocksIterator<
   get currentBlock(): T | undefined {
     return this.blocks[this.currentIndex];
   }
+}
+
+export function blocksFilter(block: ControlFlowBlockInternal, config: DevtoolsConfig) {
+  if (!config.forBlocks && block.type === ControlFlowBlockTypeInternal.For) {
+    return false;
+  }
+
+  if (!config.deferBlocks && block.type === ControlFlowBlockTypeInternal.Defer) {
+    return false;
+  }
+
+  return true;
 }
 
 function groupTriggers(triggers: string[]) {

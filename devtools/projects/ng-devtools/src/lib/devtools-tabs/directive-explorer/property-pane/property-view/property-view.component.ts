@@ -36,10 +36,10 @@ export class PropertyViewComponent {
     controller.logValue();
   }
 
-  private _nestedProps = inject(ElementPropertyResolver);
+  private nestedProps = inject(ElementPropertyResolver);
 
   protected readonly controller = computed(() =>
-    this._nestedProps.getDirectiveController(this.directive().name),
+    this.nestedProps.getDirectiveController(this.directive().name),
   );
 
   protected readonly directiveInputControls = computed(

@@ -54,7 +54,6 @@ function generateTemporaries(
     // read for the final time.
     let count = 0;
     const assigned = new Set<ir.XrefId>();
-    const released = new Set<ir.XrefId>();
     const defs = new Map<ir.XrefId, string>();
     ir.visitExpressionsInOp(op, (expr, flag) => {
       if (flag & ir.VisitorContextFlag.InChildOperation) {
@@ -70,7 +69,6 @@ function generateTemporaries(
         assignName(defs, expr);
       } else if (expr instanceof ir.ReadTemporaryExpr) {
         if (finalReads.get(expr.xref) === expr) {
-          released.add(expr.xref);
           count--;
         }
         assignName(defs, expr);

@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "strict": true,
     "noImplicitReturns": true,
     "noImplicitOverride": true,
     "noFallthroughCasesInSwitch": true,

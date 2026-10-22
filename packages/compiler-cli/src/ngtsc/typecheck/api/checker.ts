@@ -7,6 +7,7 @@
  */
 
 import {
+  AbsoluteSourceSpan,
   AST,
   ForeignComponentMeta,
   LiteralPrimitive,
@@ -373,7 +374,7 @@ export interface TemplateTypeChecker {
    */
   makeTemplateDiagnostic<T extends ErrorCode>(
     clazz: ts.ClassDeclaration,
-    sourceSpan: ParseSourceSpan,
+    sourceSpan: ParseSourceSpan | AbsoluteSourceSpan,
     category: ts.DiagnosticCategory,
     errorCode: T,
     message: string,

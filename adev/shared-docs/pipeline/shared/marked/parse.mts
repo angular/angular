@@ -24,6 +24,7 @@ import {docsCodeExtension, DocsCodeToken} from './extensions/docs-code/docs-code
 import {docsCodeMultifileExtension} from './extensions/docs-code/docs-code-multifile.mjs';
 import {docsTabGroupExtension, docsTabExtension} from './extensions/docs-tabs.mjs';
 import {docsImageExtension} from './extensions/docs-image.mjs';
+import {validatePairedTags} from './validate-paired-tags.mjs';
 
 let markedInstance: typeof marked;
 const extensions = [
@@ -51,11 +52,13 @@ export async function parseMarkdownAsync(
   markdownContent: string,
   context: Partial<RendererContext>,
 ): Promise<string> {
+  validatePairedTags(markdownContent, context.markdownFilePath);
   markedInstance ??= marked.use({extensions, walkTokens, async: true});
   return markedInstance.parse(markdownContent, {renderer: new AdevDocsRenderer(context)});
 }
 
 export function parseMarkdown(markdownContent: string, context: Partial<RendererContext>): string {
+  validatePairedTags(markdownContent, context.markdownFilePath);
   markedInstance ??= marked.use({extensions, walkTokens});
   return markedInstance.parse(markdownContent, {renderer: new AdevDocsRenderer(context)}) as string;
 }

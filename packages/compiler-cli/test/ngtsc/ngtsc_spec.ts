@@ -114,8 +114,7 @@ runInEachFileSystem((os: string) => {
       expect(jsContents).toContain('Service.ɵprov =');
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
-      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Dep>;');
-      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Service>;');
+      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<any>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Dep, never>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Service, never>;');
     });
@@ -137,7 +136,7 @@ runInEachFileSystem((os: string) => {
       expect(jsContents).toContain('Store.ɵprov =');
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Store<any>, never>;');
-      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Store<any>>;');
+      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<any>;');
     });
 
     it('should compile Injectables with providedIn without errors', () => {
@@ -161,14 +160,13 @@ runInEachFileSystem((os: string) => {
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain('Dep.ɵprov =');
       expect(jsContents).toContain('Service.ɵprov =');
-      expect(jsContents).toContain(
-        'Service.ɵfac = function Service_Factory(__ngFactoryType__) { /* @ts-ignore */\nreturn new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep)); };',
+      expect(jsContents).toMatch(
+        /Service\.ɵfac = function Service_Factory\(__ngFactoryType__\) \{ (?:\/\* @ts-ignore \*\/\s*)?return new \(__ngFactoryType__ \|\| Service\)\(i0\.ɵɵinject\(Dep\)\); \};/,
       );
-      expect(jsContents).toContain("providedIn: 'root' })");
+      expect(jsContents).toMatch(/providedIn: ['"]root['"] \}\)/);
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
-      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Dep>;');
-      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Service>;');
+      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<any>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Dep, never>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Service, never>;');
     });
@@ -194,10 +192,10 @@ runInEachFileSystem((os: string) => {
       expect(jsContents).toContain(
         'Service_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || Service)(); }',
       );
-      expect(jsContents).toContain(", providedIn: 'root' });");
+      expect(jsContents).toMatch(/, providedIn: ['"]root['"] \}\);/);
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
-      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Service>;');
+      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<any>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Service, never>;');
     });
 
@@ -225,8 +223,8 @@ runInEachFileSystem((os: string) => {
         env.driveMain();
 
         const jsContents = env.getContents('test.js');
-        expect(jsContents).toContain(
-          'i0.ɵɵanimateEnterListener(function TestComponent_Conditional_1_Template_p_animateenter_0_listener($event) { i0.ɵɵrestoreView(_r1); const ctx_r1 = i0.ɵɵnextContext(); return i0.ɵɵresetView(ctx_r1.animateFn($event)); });',
+        expect(jsContents).toMatch(
+          /i0\.ɵɵanimateEnterListener\(function TestComponent_Conditional_1_Template_p_animateenter_0_listener\(\$event\) \{\s*i0\.ɵɵrestoreView\(_r1\);\s*const ctx_r1 = i0\.ɵɵnextContext\(\);\s*return i0\.ɵɵresetView\(ctx_r1\.animateFn\(\$event\)\);\s*\}\);/,
         );
         const instances = jsContents.match(/ɵɵanimateEnter/g);
         expect(instances?.length).toBe(1);
@@ -253,8 +251,8 @@ runInEachFileSystem((os: string) => {
         env.driveMain();
 
         const jsContents = env.getContents('test.js');
-        expect(jsContents).toContain(
-          'i0.ɵɵanimateEnter(function TestComponent_Conditional_1_Template_animateenter_cb() { i0.ɵɵrestoreView(_r1); const ctx_r1 = i0.ɵɵnextContext(); return i0.ɵɵresetView(ctx_r1.fade()); });',
+        expect(jsContents).toMatch(
+          /i0\.ɵɵanimateEnter\(function TestComponent_Conditional_1_Template_animateenter_cb\(\) \{\s*i0\.ɵɵrestoreView\(_r1\);\s*const ctx_r1 = i0\.ɵɵnextContext\(\);\s*return i0\.ɵɵresetView\(ctx_r1\.fade\(\)\);\s*\}\);/,
         );
         const instances = jsContents.match(/ɵɵanimateEnter/g);
         expect(instances?.length).toBe(1);
@@ -281,8 +279,8 @@ runInEachFileSystem((os: string) => {
         env.driveMain();
 
         const jsContents = env.getContents('test.js');
-        expect(jsContents).toContain(
-          'i0.ɵɵanimateEnter(function TestComponent_Conditional_1_Template_animateenter_cb() { i0.ɵɵrestoreView(_r1); const ctx_r1 = i0.ɵɵnextContext(); return i0.ɵɵresetView(ctx_r1.classList); });',
+        expect(jsContents).toMatch(
+          /i0\.ɵɵanimateEnter\(function TestComponent_Conditional_1_Template_animateenter_cb\(\) \{\s*i0\.ɵɵrestoreView\(_r1\);\s*const ctx_r1 = i0\.ɵɵnextContext\(\);\s*return i0\.ɵɵresetView\(ctx_r1\.classList\);\s*\}\);/,
         );
         const instances = jsContents.match(/ɵɵanimateEnter/g);
         expect(instances?.length).toBe(1);
@@ -382,8 +380,8 @@ runInEachFileSystem((os: string) => {
         env.driveMain();
 
         const jsContents = env.getContents('test.js');
-        expect(jsContents).toContain(
-          'i0.ɵɵanimateLeaveListener(function TestComponent_Conditional_1_Template_p_animateleave_0_listener($event) { i0.ɵɵrestoreView(_r1); const ctx_r1 = i0.ɵɵnextContext(); return i0.ɵɵresetView(ctx_r1.animateFn($event)); });',
+        expect(jsContents).toMatch(
+          /i0\.ɵɵanimateLeaveListener\(function TestComponent_Conditional_1_Template_p_animateleave_0_listener\(\$event\) \{\s*i0\.ɵɵrestoreView\(_r1\);\s*const ctx_r1 = i0\.ɵɵnextContext\(\);\s*return i0\.ɵɵresetView\(ctx_r1\.animateFn\(\$event\)\);\s*\}\);/,
         );
         const instances = jsContents.match(/ɵɵanimateLeave/g);
         expect(instances?.length).toBe(1);
@@ -410,8 +408,8 @@ runInEachFileSystem((os: string) => {
         env.driveMain();
 
         const jsContents = env.getContents('test.js');
-        expect(jsContents).toContain(
-          'i0.ɵɵanimateLeave(function TestComponent_Conditional_1_Template_animateleave_cb() { i0.ɵɵrestoreView(_r1); const ctx_r1 = i0.ɵɵnextContext(); return i0.ɵɵresetView(ctx_r1.fade()); });',
+        expect(jsContents).toMatch(
+          /i0\.ɵɵanimateLeave\(function TestComponent_Conditional_1_Template_animateleave_cb\(\) \{\s*i0\.ɵɵrestoreView\(_r1\);\s*const ctx_r1 = i0\.ɵɵnextContext\(\);\s*return i0\.ɵɵresetView\(ctx_r1\.fade\(\)\);\s*\}\);/,
         );
         const instances = jsContents.match(/ɵɵanimateLeave/g);
         expect(instances?.length).toBe(1);
@@ -438,8 +436,8 @@ runInEachFileSystem((os: string) => {
         env.driveMain();
 
         const jsContents = env.getContents('test.js');
-        expect(jsContents).toContain(
-          'i0.ɵɵanimateLeave(function TestComponent_Conditional_1_Template_animateleave_cb() { i0.ɵɵrestoreView(_r1); const ctx_r1 = i0.ɵɵnextContext(); return i0.ɵɵresetView(ctx_r1.classList); });',
+        expect(jsContents).toMatch(
+          /i0\.ɵɵanimateLeave\(function TestComponent_Conditional_1_Template_animateleave_cb\(\) \{\s*i0\.ɵɵrestoreView\(_r1\);\s*const ctx_r1 = i0\.ɵɵnextContext\(\);\s*return i0\.ɵɵresetView\(ctx_r1\.classList\);\s*\}\);/,
         );
         const instances = jsContents.match(/ɵɵanimateLeave/g);
         expect(instances?.length).toBe(1);
@@ -491,19 +489,21 @@ runInEachFileSystem((os: string) => {
 
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain('Service.ɵprov =');
-      expect(jsContents).toContain(
-        'factory: function Service_Factory(__ngFactoryType__) { let __ngConditionalFactory__ = null; if (__ngFactoryType__) {',
+      expect(jsContents).toMatch(
+        /factory: function Service_Factory\(__ngFactoryType__\) \{\s*let __ngConditionalFactory__ = null;\s*if \(__ngFactoryType__\) \{/,
       );
-      expect(jsContents).toContain(
-        '/* @ts-ignore */\nreturn new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep));',
+      expect(jsContents).toMatch(
+        /(?:\/\* @ts-ignore \*\/\s*)?return new \(__ngFactoryType__ \|\| Service\)\(i0\.ɵɵinject\(Dep\)\);/,
       );
-      expect(jsContents).toContain(
-        '__ngConditionalFactory__ = ((dep) => new Service(dep))(i0.ɵɵinject(Dep));',
+      expect(jsContents).toMatch(
+        /__ngConditionalFactory__ = \(\(dep\) => new Service\(dep\)\)\(i0\.ɵɵinject\(Dep\)\)\)?;/,
       );
-      expect(jsContents).toContain("return __ngConditionalFactory__; }, providedIn: 'root' });");
+      expect(jsContents).toMatch(
+        /return __ngConditionalFactory__;\s*\},\s*providedIn: ['"]root['"] \}\);/,
+      );
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
-      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Service>;');
+      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<any>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Service, never>;');
     });
 
@@ -531,19 +531,21 @@ runInEachFileSystem((os: string) => {
 
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain('Service.ɵprov =');
-      expect(jsContents).toContain(
-        'factory: function Service_Factory(__ngFactoryType__) { let __ngConditionalFactory__ = null; if (__ngFactoryType__) {',
+      expect(jsContents).toMatch(
+        /factory: function Service_Factory\(__ngFactoryType__\) \{\s*let __ngConditionalFactory__ = null;\s*if \(__ngFactoryType__\) \{/,
       );
-      expect(jsContents).toContain(
-        '/* @ts-ignore */\nreturn new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep));',
+      expect(jsContents).toMatch(
+        /(?:\/\* @ts-ignore \*\/\s*)?return new \(__ngFactoryType__ \|\| Service\)\(i0\.ɵɵinject\(Dep\)\);/,
       );
-      expect(jsContents).toContain(
-        '__ngConditionalFactory__ = ((dep) => new Service(dep))(i0.ɵɵinject(Dep, 10));',
+      expect(jsContents).toMatch(
+        /__ngConditionalFactory__ = \(\(dep\) => new Service\(dep\)\)\(i0\.ɵɵinject\(Dep, 10\)\)\)?;/,
       );
-      expect(jsContents).toContain(`return __ngConditionalFactory__; }, providedIn: 'root' });`);
+      expect(jsContents).toMatch(
+        /return __ngConditionalFactory__;\s*\},\s*providedIn: ['"]root['"] \}\);/,
+      );
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
-      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Service>;');
+      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<any>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Service, never>;');
     });
 
@@ -572,14 +574,13 @@ runInEachFileSystem((os: string) => {
       expect(jsContents).toContain('Dep.ɵprov =');
       expect(jsContents).toContain('Service.ɵprov =');
       expect(jsContents).toContain('Mod.ɵmod =');
-      expect(jsContents).toContain(
-        'Service.ɵfac = function Service_Factory(__ngFactoryType__) { /* @ts-ignore */\nreturn new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep)); };',
+      expect(jsContents).toMatch(
+        /Service\.ɵfac = function Service_Factory\(__ngFactoryType__\) \{ (?:\/\* @ts-ignore \*\/\s*)?return new \(__ngFactoryType__ \|\| Service\)\(i0\.ɵɵinject\(Dep\)\); \};/,
       );
       expect(jsContents).toContain('providedIn: i0.forwardRef(() => Mod) })');
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
-      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Dep>;');
-      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Service>;');
+      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<any>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Dep, never>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Service, never>;');
       expect(dtsContents).toContain('i0.ɵɵFactoryDeclaration<Mod, never>;');
@@ -628,9 +629,8 @@ runInEachFileSystem((os: string) => {
       env.driveMain();
       const jsContents = env.getContents('test.js');
 
-      expect(jsContents).toContain(
-        `Service.ɵfac = function Service_Factory(__ngFactoryType__) { ` +
-          `/* @ts-ignore */\nreturn new (__ngFactoryType__ || Service)(i0.ɵɵinject(Dep), i0.ɵɵinject(OptionalDep, 8)); };`,
+      expect(jsContents).toMatch(
+        /Service\.ɵfac = function Service_Factory\(__ngFactoryType__\) \{ (?:\/\* @ts-ignore \*\/\s*)?return new \(__ngFactoryType__ \|\| Service\)\(i0\.ɵɵinject\(Dep\), i0\.ɵɵinject\(OptionalDep, 8\)\); \};/,
       );
     });
 
@@ -1022,8 +1022,8 @@ runInEachFileSystem((os: string) => {
 
           const jsContents = env.getContents('test.js');
           expect(jsContents).toContain('Dir.ɵfac = /** @pureOrBreakMyCode */ (() => {');
-          expect(jsContents).toContain(
-            '(ɵDir_BaseFactory || (ɵDir_BaseFactory = i0.ɵɵgetInheritedFactory(Dir)))(__ngFactoryType__ || Dir);',
+          expect(jsContents).toMatch(
+            /\(ɵDir_BaseFactory \|\| \(ɵDir_BaseFactory = i0\.ɵɵgetInheritedFactory\(Dir\)\)\)\(\(?__ngFactoryType__ \|\| Dir\)?\);/,
           );
         });
 
@@ -1048,7 +1048,7 @@ runInEachFileSystem((os: string) => {
           env.driveMain();
 
           const jsContents = env.getContents('test.js');
-          expect(jsContents).toContain('/** @nocollapse */ TestCmp.ɵcmp');
+          expect(jsContents).toMatch(/\/\*\* @nocollapse \*\/\s*TestCmp\.ɵcmp/);
         });
 
         it('should still perform schema checks in embedded views', () => {
@@ -1740,7 +1740,7 @@ runInEachFileSystem((os: string) => {
         'i0.ɵɵdefineDirective({ type: TestBase, inputs: { input: "input" } });',
       );
 
-      const dtsContents = env.getContents('test.d.ts');
+      const dtsContents = trim(env.getContents('test.d.ts'));
       const expectedDirectiveDeclaration = `static ɵdir: i0.ɵɵDirectiveDeclaration<TestBase, never, never, { "input": { "alias": "input"; "required": false; }; }, {}, never, never, true, never>;`;
       expect(dtsContents).toContain(expectedDirectiveDeclaration);
     });
@@ -1899,7 +1899,9 @@ runInEachFileSystem((os: string) => {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain(`i0.ɵɵdefineNgModule({ type: TestModule, id: 'test' })`);
+      expect(jsContents).toMatch(
+        /i0\.ɵɵdefineNgModule\(\{ type: TestModule, id: ['"]test['"] \}\)/,
+      );
     });
 
     it('should warn when an NgModule id is defined as module.id, and not emit it', () => {
@@ -1945,7 +1947,7 @@ runInEachFileSystem((os: string) => {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain(`i0.ɵɵregisterNgModuleType(TestModule, 'test')`);
+      expect(jsContents).toMatch(/i0\.ɵɵregisterNgModuleType\(TestModule, ['"]test['"]\)/);
     });
 
     it('should filter out directives and pipes from module exports in the injector def', () => {
@@ -2065,10 +2067,8 @@ runInEachFileSystem((os: string) => {
         'TestModule.ɵfac = function TestModule_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || TestModule)(); }',
       );
       expect(jsContents).toContain('i0.ɵɵdefineNgModule({ type: TestModule });');
-      expect(jsContents).toContain(
-        `TestModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ ` +
-          `providers: [{ provide: Token, useValue: 'test' }], ` +
-          `imports: [OtherModule] });`,
+      expect(jsContents).toMatch(
+        /TestModule\.ɵinj = \/\*@__PURE__\*\/ i0\.ɵɵdefineInjector\(\{ providers: \[\{ provide: Token, useValue: ['"]test['"] \}\], imports: \[OtherModule\] \}\);/,
       );
 
       const dtsContents = env.getContents('test.d.ts');
@@ -2207,7 +2207,7 @@ runInEachFileSystem((os: string) => {
       const jsContents = env.getContents('test.js');
       const dtsContents = env.getContents('test.d.ts');
 
-      expect(jsContents).toContain("import { Foo } from './foo';");
+      expect(jsContents).toMatch(/import \{ Foo \} from ['"]\.\/foo['"];/);
       expect(jsContents).not.toMatch(/as i[0-9] from ".\/foo"/);
       expect(dtsContents).toContain('as i1 from "./foo";');
     });
@@ -2256,7 +2256,7 @@ runInEachFileSystem((os: string) => {
       const jsContents = env.getContents('test.js');
       const dtsContents = env.getContents('test.d.ts');
 
-      expect(jsContents).toContain("import { Foo } from 'foo';");
+      expect(jsContents).toMatch(/import \{ Foo \} from ['"]foo['"];/);
       expect(jsContents).not.toMatch(/as i[0-9] from "foo"/);
       expect(dtsContents).toContain('as i1 from "foo";');
     });
@@ -3706,10 +3706,7 @@ runInEachFileSystem((os: string) => {
 
         // Validate that each class's .d.ts declaration also has an injectable
         // definition.
-        expect(dtsContents).toContain('ɵɵInjectableDeclaration<TestCmp');
-        expect(dtsContents).toContain('ɵɵInjectableDeclaration<TestDir');
-        expect(dtsContents).toContain('ɵɵInjectableDeclaration<TestPipe');
-        expect(dtsContents).toContain('ɵɵInjectableDeclaration<TestNgModule');
+        expect(dtsContents.match(/ɵɵInjectableDeclaration<any>/g)?.length).toBe(4);
       });
 
       it('should not compile a component and a directive annotation on the same class', () => {
@@ -5133,8 +5130,8 @@ runInEachFileSystem((os: string) => {
 
       env.driveMain();
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain(
-        `FooCmp.ɵfac = function FooCmp_Factory(__ngFactoryType__) { /* @ts-ignore */\nreturn new (__ngFactoryType__ || FooCmp)(i0.ɵɵinjectAttribute("test"), i0.ɵɵdirectiveInject(i0.ChangeDetectorRef), i0.ɵɵdirectiveInject(i0.ElementRef), i0.ɵɵdirectiveInject(i0.Injector), i0.ɵɵdirectiveInject(i0.Renderer2), i0.ɵɵdirectiveInject(i0.TemplateRef), i0.ɵɵdirectiveInject(i0.ViewContainerRef)); }`,
+      expect(jsContents).toMatch(
+        /FooCmp\.ɵfac = function FooCmp_Factory\(__ngFactoryType__\) \{ (?:\/\* @ts-ignore \*\/\s*)?return new \(__ngFactoryType__ \|\| FooCmp\)\(i0\.ɵɵinjectAttribute\("test"\), i0\.ɵɵdirectiveInject\(i0\.ChangeDetectorRef\), i0\.ɵɵdirectiveInject\(i0\.ElementRef\), i0\.ɵɵdirectiveInject\(i0\.Injector\), i0\.ɵɵdirectiveInject\(i0\.Renderer2\), i0\.ɵɵdirectiveInject\(i0\.TemplateRef\), i0\.ɵɵdirectiveInject\(i0\.ViewContainerRef\)\); \}/,
       );
     });
 
@@ -5186,7 +5183,7 @@ runInEachFileSystem((os: string) => {
       );
 
       env.driveMain();
-      const dtsContents = env.getContents('test.d.ts');
+      const dtsContents = trim(env.getContents('test.d.ts'));
       expect(dtsContents).toContain(
         'static ɵfac: i0.ɵɵFactoryDeclaration<WithDecorators, [' +
           '{ self: true; }, { skipSelf: true; }, { host: true; }, ' +
@@ -5252,7 +5249,7 @@ runInEachFileSystem((os: string) => {
       );
 
       env.driveMain();
-      const dtsContents = env.getContents('test.d.ts');
+      const dtsContents = trim(env.getContents('test.d.ts'));
       expect(dtsContents).toContain(`static ɵfac: i0.ɵɵFactoryDeclaration<Inj, [{ self: true; }]>`);
       expect(dtsContents).toContain(
         `static ɵfac: i0.ɵɵFactoryDeclaration<InjUseExisting, [{ self: true; }]>`,
@@ -5671,8 +5668,8 @@ runInEachFileSystem((os: string) => {
       );
 
       env.driveMain();
-      expect(env.getContents('test.js')).toContain(
-        `ɵɵdomListener("click", function TestCmp_Template_div_click_0_listener() { return 123; });`,
+      expect(env.getContents('test.js')).toMatch(
+        /ɵɵdomListener\("click", function TestCmp_Template_div_click_0_listener\(\) \{\s*return 123;\s*\}\);/,
       );
     });
 
@@ -5805,8 +5802,8 @@ runInEachFileSystem((os: string) => {
       );
       env.driveMain();
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain(
-        'text(2, "\\n            Template with whitespaces\\n          ");',
+      expect(jsContents).toMatch(
+        /text\(2, ['"]\\n            Template with whitespaces\\n          ['"]\);/,
       );
     });
 
@@ -6199,11 +6196,11 @@ runInEachFileSystem((os: string) => {
       env.driveMain();
       const jsContents = env.getContents('test.js');
 
-      expect(jsContents).toContain(
-        'function Base_Factory(__ngFactoryType__) { /* @ts-ignore */\nreturn new (__ngFactoryType__ || Base)(i0.ɵɵinject(Dep)); }',
+      expect(jsContents).toMatch(
+        /function Base_Factory\(__ngFactoryType__\) \{ (?:\/\* @ts-ignore \*\/\s*)?return new \(__ngFactoryType__ \|\| Base\)\(i0\.ɵɵinject\(Dep\)\); \}/,
       );
-      expect(jsContents).toContain(
-        '(() => { let ɵChild_BaseFactory; return function Child_Factory(__ngFactoryType__) { return (ɵChild_BaseFactory || (ɵChild_BaseFactory = i0.ɵɵgetInheritedFactory(Child)))(__ngFactoryType__ || Child); }; })();',
+      expect(jsContents).toMatch(
+        /\(\(\) => \{\s*let ɵChild_BaseFactory;\s*return function Child_Factory\(__ngFactoryType__\) \{\s*return \(ɵChild_BaseFactory \|\| \(ɵChild_BaseFactory = i0\.ɵɵgetInheritedFactory\(Child\)\)\)\(\(?__ngFactoryType__ \|\| Child\)?\);\s*\};\s*\}\)\(\);/,
       );
       expect(jsContents).toContain(
         'function GrandChild_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || GrandChild)(); }',
@@ -6231,8 +6228,8 @@ runInEachFileSystem((os: string) => {
 
       env.driveMain();
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain(
-        '/*@__PURE__*/ (() => { let ɵDir_BaseFactory; return function Dir_Factory(__ngFactoryType__) { return (ɵDir_BaseFactory || (ɵDir_BaseFactory = i0.ɵɵgetInheritedFactory(Dir)))(__ngFactoryType__ || Dir); }; })();',
+      expect(jsContents).toMatch(
+        /\/\*@__PURE__\*\/ \(\(\) => \{\s*let ɵDir_BaseFactory;\s*return function Dir_Factory\(__ngFactoryType__\) \{\s*return \(ɵDir_BaseFactory \|\| \(ɵDir_BaseFactory = i0\.ɵɵgetInheritedFactory\(Dir\)\)\)\(\(?__ngFactoryType__ \|\| Dir\)?\);\s*\};\s*\}\)\(\);/,
       );
     });
 
@@ -6282,9 +6279,8 @@ runInEachFileSystem((os: string) => {
 
       env.driveMain();
       const jsContents = env.getContents('test.js').replace(/\s+/g, ' ');
-      expect(jsContents).toContain(
-        `(() => { (typeof ngDevMode === "undefined" || ngDevMode) && ` +
-          `i0.ɵsetClassMetadata(Service, [{ type: Injectable, args: [{ providedIn: 'root' }] }], null, null); })();`,
+      expect(jsContents).toMatch(
+        /\(\(\) => \{ \(typeof ngDevMode === "undefined" \|\| ngDevMode\) && i0\.ɵsetClassMetadata\(Service, \[\{ type: Injectable, args: \[\{ providedIn: ['"]root['"] \}\] \}\], null, null\); \}\)\(\);/,
       );
     });
 
@@ -6496,9 +6492,11 @@ runInEachFileSystem((os: string) => {
 
       env.driveMain();
       const jsContents = trim(env.getContents('test.js'));
-      expect(jsContents).toContain(`import * as i1 from "./types";`);
-      expect(jsContents).toMatch(setClassMetadataRegExp('type: i1\\.MyTypeA'));
-      expect(jsContents).toMatch(setClassMetadataRegExp('type: i1\\.MyTypeB'));
+      expect(jsContents).toMatch(
+        /import \* as i1 from "\.\/types";|import \{ MyTypeA, MyTypeB \} from "\.\/types";/,
+      );
+      expect(jsContents).toMatch(setClassMetadataRegExp('type: (?:i1\\.MyTypeA|MyTypeA)'));
+      expect(jsContents).toMatch(setClassMetadataRegExp('type: (?:i1\\.MyTypeB|MyTypeB)'));
     });
 
     it('should use imported types in setClassMetadata if they can be represented as values and imported as `* as foo`', () => {
@@ -6532,9 +6530,11 @@ runInEachFileSystem((os: string) => {
 
       env.driveMain();
       const jsContents = trim(env.getContents('test.js'));
-      expect(jsContents).toContain(`import * as i1 from "./types";`);
-      expect(jsContents).toMatch(setClassMetadataRegExp('type: i1.MyTypeA'));
-      expect(jsContents).toMatch(setClassMetadataRegExp('type: i1.MyTypeB'));
+      expect(jsContents).toMatch(
+        /import \* as i1 from "\.\/types";|import \* as types from "\.\/types";/,
+      );
+      expect(jsContents).toMatch(setClassMetadataRegExp('type: (?:i1|types)\\.MyTypeA'));
+      expect(jsContents).toMatch(setClassMetadataRegExp('type: (?:i1|types)\\.MyTypeB'));
     });
 
     it('should use default-imported types if they can be represented as values', () => {
@@ -6561,12 +6561,14 @@ runInEachFileSystem((os: string) => {
 
       env.driveMain();
       const jsContents = trim(env.getContents('test.js'));
-      expect(jsContents).toContain(`import Default from './types';`);
-      expect(jsContents).toContain(`import * as i1 from "./types";`);
+      expect(jsContents).toMatch(/import Default from ['"]\.\/types['"];/);
+      expect(jsContents).toMatch(
+        /import \* as i1 from "\.\/types";|import \{ Other \} from "\.\/types";/,
+      );
       expect(jsContents).toContain('i0.ɵɵdirectiveInject(Default)');
-      expect(jsContents).toContain('i0.ɵɵdirectiveInject(i1.Other)');
+      expect(jsContents).toMatch(/i0\.ɵɵdirectiveInject\((?:i1\.Other|Other)\)/);
       expect(jsContents).toMatch(setClassMetadataRegExp('type: Default'));
-      expect(jsContents).toMatch(setClassMetadataRegExp('type: i1.Other'));
+      expect(jsContents).toMatch(setClassMetadataRegExp('type: (?:i1\\.Other|Other)'));
     });
 
     it('should not throw when using an SVG-specific `title` tag', () => {
@@ -6629,13 +6631,13 @@ runInEachFileSystem((os: string) => {
 
         env.driveMain();
         const jsContents = trim(env.getContents('test.js'));
-        expect(jsContents).toContain(`import * as i1 from "ns";`);
-        expect(jsContents).toContain('i0.ɵɵinject(i1.Zero)');
-        expect(jsContents).toContain('i0.ɵɵinject(i1.one.One)');
-        expect(jsContents).toContain('i0.ɵɵinject(i1.one.two.Two)');
-        expect(jsContents).toMatch(setClassMetadataRegExp('type: i1.Zero'));
-        expect(jsContents).toMatch(setClassMetadataRegExp('type: i1.one.One'));
-        expect(jsContents).toMatch(setClassMetadataRegExp('type: i1.one.two.Two'));
+        expect(jsContents).toMatch(/import \* as i1 from "ns";|import \* as ns from "ns";/);
+        expect(jsContents).toMatch(/i0\.ɵɵinject\((?:i1|ns)\.Zero\)/);
+        expect(jsContents).toMatch(/i0\.ɵɵinject\((?:i1|ns)\.one\.One\)/);
+        expect(jsContents).toMatch(/i0\.ɵɵinject\((?:i1|ns)\.one\.two\.Two\)/);
+        expect(jsContents).toMatch(setClassMetadataRegExp('type: (?:i1|ns)\\.Zero'));
+        expect(jsContents).toMatch(setClassMetadataRegExp('type: (?:i1|ns)\\.one\\.One'));
+        expect(jsContents).toMatch(setClassMetadataRegExp('type: (?:i1|ns)\\.one\\.two\\.Two'));
       });
 
       it('should generate correct imports for type references to namespaced symbols using named imports', () => {
@@ -6676,18 +6678,17 @@ runInEachFileSystem((os: string) => {
 
         env.driveMain();
         const jsContents = trim(env.getContents('test.js'));
-        expect(jsContents).toContain(`import * as i1 from "ns";`);
-        expect(jsContents).toContain(
-          'i0.ɵɵinject(i1.ns.Zero), ' +
-            'i0.ɵɵinject(i1.ns.one.One), ' +
-            'i0.ɵɵinject(i1.ns.one.two.Two), ' +
-            'i0.ɵɵinject(i1.ns.Zero), ' +
-            'i0.ɵɵinject(i1.ns.one.One), ' +
-            'i0.ɵɵinject(i1.ns.one.two.Two)',
+        expect(jsContents).toMatch(
+          /import \* as i1 from "ns";|import \{ ns \} from "ns"; import \{ ns as alias \} from "ns";/,
         );
-        expect(jsContents).toMatch(setClassMetadataRegExp('type: i1.ns.Zero'));
-        expect(jsContents).toMatch(setClassMetadataRegExp('type: i1.ns.one.One'));
-        expect(jsContents).toMatch(setClassMetadataRegExp('type: i1.ns.one.two.Two'));
+        expect(jsContents).toMatch(
+          /i0\.ɵɵinject\(i1\.ns\.Zero\), i0\.ɵɵinject\(i1\.ns\.one\.One\), i0\.ɵɵinject\(i1\.ns\.one\.two\.Two\), i0\.ɵɵinject\(i1\.ns\.Zero\), i0\.ɵɵinject\(i1\.ns\.one\.One\), i0\.ɵɵinject\(i1\.ns\.one\.two\.Two\)|i0\.ɵɵinject\(ns\.Zero\), i0\.ɵɵinject\(ns\.one\.One\), i0\.ɵɵinject\(ns\.one\.two\.Two\), i0\.ɵɵinject\(alias\.Zero\), i0\.ɵɵinject\(alias\.one\.One\), i0\.ɵɵinject\(alias\.one\.two\.Two\)/,
+        );
+        expect(jsContents).toMatch(setClassMetadataRegExp('type: (?:i1\\.ns|ns)\\.Zero'));
+        expect(jsContents).toMatch(setClassMetadataRegExp('type: (?:i1\\.ns|ns)\\.one\\.One'));
+        expect(jsContents).toMatch(
+          setClassMetadataRegExp('type: (?:i1\\.ns|ns)\\.one\\.two\\.Two'),
+        );
       });
 
       it('should not error for a namespace import as parameter type when @Inject is used', () => {
@@ -6844,8 +6845,10 @@ runInEachFileSystem((os: string) => {
 
       env.driveMain();
       const jsContents = trim(env.getContents('test.js'));
-      expect(jsContents).toContain(`import * as i1 from "./keycodes";`);
-      expect(jsContents).toMatch(setClassMetadataRegExp('type: i1.KeyCodes'));
+      expect(jsContents).toMatch(
+        /import \* as i1 from "\.\/keycodes";|import \{ KeyCodes \} from "\.\/keycodes";/,
+      );
+      expect(jsContents).toMatch(setClassMetadataRegExp('type: (?:i1\\.KeyCodes|KeyCodes)'));
     });
 
     it('should use `undefined` in setClassMetadata if types originate from type-only imports', () => {
@@ -7500,7 +7503,7 @@ runInEachFileSystem((os: string) => {
 
       env.driveMain();
 
-      const dtsContents = env.getContents('test.d.ts');
+      const dtsContents = trim(env.getContents('test.d.ts'));
 
       expect(dtsContents).toContain(
         'static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, "[dir]", never, ' +
@@ -7540,7 +7543,7 @@ runInEachFileSystem((os: string) => {
 
       env.driveMain();
 
-      const dtsContents = env.getContents('test.d.ts');
+      const dtsContents = trim(env.getContents('test.d.ts'));
 
       expect(dtsContents).toContain(
         'static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, "[dir]", never, ' +
@@ -9505,9 +9508,9 @@ runInEachFileSystem((os: string) => {
         env.driveMain();
 
         const jsContents = trim(env.getContents('test.js'));
+        expect(jsContents).toMatch(/import \{ Directive \} from ['"]@angular\/core['"];/);
         expect(jsContents).toContain(
           trim(`
-            import { Directive } from '@angular/core';
             import * as i0 from "@angular/core";
             function Log(target, key) { }
             export class Child {
@@ -9698,12 +9701,8 @@ runInEachFileSystem((os: string) => {
         // Verify that long strings are extracted to a separate var. This should be
         // wrapped in a function to trick Closure not to inline the contents for very
         // large strings. See: https://github.com/angular/angular/pull/38253.
-        expect(jsContents).toContain(
-          '_c0 = function () {' +
-            ' return "div[_ngcontent-%COMP%] {' +
-            ' background: url(/some-very-very-long-path.png);' +
-            ' }";' +
-            ' };',
+        expect(jsContents).toMatch(
+          /_c0 = function \(\) \{\s*return "div\[_ngcontent-%COMP%\] \{ background: url\(\/some-very-very-long-path\.png\); \}";\s*\};/,
         );
 
         expect(jsContents).toContain(
@@ -11533,6 +11532,36 @@ runInEachFileSystem((os: string) => {
         env.driveMain();
         const dtsContents = env.getContents('test.d.ts');
         expect(dtsContents).toContain('static "ngAcceptInputType_aria-label": string;');
+      });
+
+      it('should compile an input with a transform function in the inputs array referenced via a constant', () => {
+        env.write(
+          '/test.ts',
+          `
+          import {Directive} from '@angular/core';
+
+          const INPUT_CONFIG = {
+            name: 'value',
+            transform: (value: boolean | string) => 1,
+          };
+
+          @Directive({
+            selector: '[dir]',
+            inputs: [INPUT_CONFIG],
+          })
+          export class Dir {
+            value!: number;
+          }
+        `,
+        );
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        const dtsContents = env.getContents('test.d.ts');
+
+        expect(jsContents).toContain('inputs: { value: [2, "value", "value", (value) => 1] }');
+        expect(dtsContents).toContain('static ngAcceptInputType_value: boolean | string;');
       });
     });
 

@@ -2,8 +2,6 @@
 
 Route transition animations enhance user experience by providing smooth visual transitions when navigating between different views in your Angular application. [Angular Router](/guide/routing) includes built-in support for the browser's View Transitions API, enabling seamless animations between route changes in supported browsers.
 
-HELPFUL: The Router's native View Transitions integration is currently in [developer preview](/reference/releases#developer-preview). Native View Transitions are a relatively new browser feature with limited support across all browsers.
-
 ## How View Transitions work
 
 View transitions use the browser's native [`document.startViewTransition` API](https://developer.mozilla.org/en-US/docs/Web/API/Document/startViewTransition) to create smooth animations between different states of your application. The API works by:
@@ -27,7 +25,7 @@ For more details about the browser API, see the [Chrome Explainer](https://devel
 
 Angular Router integrates view transitions into the navigation lifecycle to create seamless route changes. During navigation, the Router:
 
-1. **Completes navigation preparation** - Route matching, [lazy loading](guide/routing/loading-strategies#lazily-loaded-components-and-routes), [guards](/guide/routing/route-guards), and [resolvers](/guide/routing/data-resolvers) execute
+1. **Completes navigation preparation** - Route matching, [lazy loading](guide/routing/loading-strategies#lazily-loaded-components-and-routes), [guards](/guide/routing/route-guards), [resources](/guide/routing/data-fetching-with-resources), and [resolvers](/guide/routing/data-resolvers) execute
 2. **Initiates the view transition** - Router calls `startViewTransition` when routes are ready for activation
 3. **Updates the DOM** - Router activates new routes and deactivates old ones within the transition callback
 4. **Finalizes the transition** - The transition Promise resolves when Angular completes rendering
@@ -122,7 +120,7 @@ Use this callback to customize transition behavior based on navigation context. 
 
 ```ts
 import {inject} from '@angular/core';
-import {Router, withViewTransitions, isActive} from '@angular/router';
+import {Router, withViewTransitions, isActive, IsActiveMatchOptions} from '@angular/router';
 
 withViewTransitions({
   onViewTransitionCreated: ({transition}) => {
@@ -130,7 +128,7 @@ withViewTransitions({
     const targetUrl = router.currentNavigation()!.finalUrl!;
 
     // Skip transition if only fragment or query params change
-    const config = {
+    const config: Partial<IsActiveMatchOptions> = {
       paths: 'exact',
       matrixParams: 'exact',
       fragment: 'ignored',
@@ -147,6 +145,20 @@ withViewTransitions({
 ```
 
 This example skips the view transition when navigation only changes the [URL fragment or query parameters](/guide/routing/read-route-state#query-parameters) (such as anchor links within the same page). The `skipTransition()` method prevents the animation while still allowing the navigation to complete.
+
+## Respecting the user's motion preferences
+
+The Router runs view transitions regardless of the user's [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) setting. A preference for reduced motion doesn't necessarily mean the user wants no motion at all, so the framework leaves the choice to the application: you can [provide more subtle animations](https://developer.chrome.com/docs/web-platform/view-transitions/same-document#react_to_the_reduced_motion_preference) for these users, or skip the transition entirely with the `onViewTransitionCreated` callback:
+
+```ts
+withViewTransitions({
+  onViewTransitionCreated: ({transition}) => {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      transition.skipTransition();
+    }
+  },
+});
+```
 
 ## Examples from the Chrome explainer adapted to Angular
 

@@ -7,10 +7,11 @@
  */
 
 import {
-  BoundTarget,
   ClassPropertyMapping,
   CssSelector,
+  AbstractBoundTemplate,
   DirectiveMatcher,
+  DirectiveMeta,
   MatchSource,
   parseTemplate,
   ParseTemplateOptions,
@@ -20,12 +21,15 @@ import {
 } from '@angular/compiler';
 import ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath} from '../../file_system';
+import {absoluteFrom, AbsoluteFsPath, getFileSystem} from '../../file_system';
 import {Reference} from '../../imports';
 import {ClassDeclaration, DeclarationNode} from '../../reflection';
-import {getDeclaration, makeProgram} from '../../testing';
-import {ComponentMeta} from '../src/context';
-import {AbstractBoundTemplate} from '../src/api';
+import {createNgpBoundTemplate, getDeclaration, isNgpTestMode, makeProgram} from '../../testing';
+
+export interface ComponentMeta extends DirectiveMeta {
+  ref: {key: string; node: DeclarationNode};
+  selector: string | null;
+}
 
 /** Dummy file URL */
 function getTestFilePath(): AbsoluteFsPath {
@@ -63,7 +67,14 @@ export function getBoundTemplate(
     inputs?: Record<string, string>;
     outputs?: Record<string, string>;
   }> = [],
+  pipes: Array<{
+    name: string;
+    declaration: ClassDeclaration;
+  }> = [],
 ): AbstractBoundTemplate<DeclarationNode> {
+  if (isNgpTestMode()) {
+    return createNgpBoundTemplate(getFileSystem(), template, options, components, pipes);
+  }
   const componentsMeta = components.map(({selector, declaration, inputs = {}, outputs = {}}) => ({
     ref: new Reference(declaration),
     selector,
@@ -129,6 +140,10 @@ export function getBoundTemplate(
     },
     getTemplateAst() {
       return boundTemplate.target.template;
+    },
+    getPipe(name) {
+      const pipe = pipes.find((p) => p.name === name);
+      return pipe ? {ref: {node: pipe.declaration}} : null;
     },
   };
   return abstractBoundTemplate;

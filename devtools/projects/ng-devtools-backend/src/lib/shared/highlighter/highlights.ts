@@ -223,7 +223,6 @@ export const inspectElementHighlightTemplate: HighlightTemplate<InspectElementLa
   type: HighlightType.InspectElement,
   overlayColor: COLORS.blue,
   labelsType: 'sticky',
-  ttl: 4000,
   labels: {
     ['component-name']: {
       x: 'right',

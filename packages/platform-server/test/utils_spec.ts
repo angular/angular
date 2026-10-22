@@ -61,7 +61,11 @@ describe('allowedHosts validation in renderApplication', () => {
   });
 
   it('should reject URLs with wrong host', async () => {
-    const relativeUrls = ['http://evil.com/deep/path', 'ht\ttp://evil.com/deep/path'];
+    const relativeUrls = [
+      'http://evil.com/deep/path',
+      'http:/evil.com/deep/path',
+      'ht\ttp://evil.com/deep/path',
+    ];
 
     for (const url of relativeUrls) {
       await expectAsync(

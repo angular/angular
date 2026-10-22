@@ -21,6 +21,7 @@ import {
   computed,
   assertInInjectionContext,
   reflectComponentType,
+  untracked,
 } from '@angular/core';
 import {Router} from './router';
 import type {ActivatedRoute} from './router_state';
@@ -33,20 +34,12 @@ import {
   NavigationCancellationCode,
 } from './events';
 
-export const BLOCKING_SYMBOL: unique symbol = Symbol(
+export const BLOCKING_SYMBOL: unique symbol = /* @__PURE__ */ Symbol(
   typeof ngDevMode === 'undefined' || ngDevMode ? '__isBlocking' : '',
 );
-export const SOURCE_RESOURCE_SYMBOL: unique symbol = Symbol(
+export const SOURCE_RESOURCE_SYMBOL: unique symbol = /* @__PURE__ */ Symbol(
   typeof ngDevMode === 'undefined' || ngDevMode ? '__sourceResource' : '',
 );
-
-/**
- * Checks if a resource has a value or has transitioned to a resolved/non-loading status.
- */
-export function hasValueOrResolved(res: Resource<unknown>): boolean {
-  const status = res.status();
-  return res.hasValue() || (status !== 'loading' && status !== 'reloading');
-}
 
 /**
  * @internal
@@ -60,7 +53,7 @@ export interface InternalRouterResource<T = unknown> extends Resource<T> {
 /**
  * Marks a resource as non-blocking. The Router will NOT wait for this resource to resolve
  * before completing the navigation.
- * @experimental
+ * @developerPreview 22.2
  */
 export function nonBlocking<T, R extends Resource<T>>(res: R): R {
   (res as unknown as InternalRouterResource<T>)[BLOCKING_SYMBOL] = false;
@@ -88,22 +81,18 @@ export function routerResource<T>(source: Resource<T>): Resource<T> & {reload():
   res[BLOCKING_SYMBOL] =
     (source as unknown as InternalRouterResource<T>)[BLOCKING_SYMBOL] !== false;
 
-  if (typeof (source as any).reload === 'function') {
-    res.reload = function (): boolean {
-      // If the resource is currently frozen (e.g., during an active navigation transition
-      // or while recovering from a cancelled navigation), we reject manual reload requests.
-      // Triggering a reload during an active navigation (where the resource may already be
-      // reactively loading new parameters behind the scenes) would disrupt the router's resource
-      // tracking for the transition. Similarly, during a rollback recovery, the router is
-      // already managing the resource reload to restore the previous state.
-      if (frozenSnapshot() !== null) {
-        return false;
-      }
-      return (source as any).reload();
-    };
-  } else {
-    res.reload = () => false;
-  }
+  res.reload = function (): boolean {
+    // If the resource is currently frozen (e.g., during an active navigation transition
+    // or while recovering from a cancelled navigation), we reject manual reload requests.
+    // Triggering a reload during an active navigation (where the resource may already be
+    // reactively loading new parameters behind the scenes) would disrupt the router's resource
+    // tracking for the transition. Similarly, during a rollback recovery, the router is
+    // already managing the resource reload to restore the previous state.
+    if (frozenSnapshot() !== null) {
+      return false;
+    }
+    return (source as any).reload?.() ?? false;
+  };
 
   return res;
 }
@@ -169,7 +158,7 @@ function createTransactionalSnapshot<T>(
 
   effect(
     () => {
-      if (isRollbackRecoveryPending() && hasValueOrResolved(source)) {
+      if (isRollbackRecoveryPending() && !source.isLoading()) {
         isRollbackRecoveryPending.set(false);
         frozenSnapshot.set(null);
       }
@@ -197,26 +186,27 @@ function createTransactionalSnapshot<T>(
 export function createResourceOutletBindingEffects(
   componentRef: ComponentRef<unknown>,
   route: ActivatedRoute,
-  injector: Injector,
 ): {createdEffects: EffectRef[]; handledKeys: string[]} {
   const createdEffects: EffectRef[] = [];
   const handledKeys: string[] = [];
   const mirror = route.component ? reflectComponentType(route.component) : null;
-  if (!mirror) {
+  const resources = route.resources;
+  if (!mirror || !resources) {
     return {createdEffects, handledKeys};
   }
 
   for (const {templateName} of mirror.inputs) {
-    const resource = route.resources?.[templateName];
+    const resource = resources[templateName];
     if (!resource || !(resource as InternalRouterResource)[BLOCKING_SYMBOL]) {
       continue;
     }
 
+    componentRef.setInput(templateName, untracked(resource.value));
     const effectRef = effect(
       () => {
         componentRef.setInput(templateName, resource.value());
       },
-      {injector},
+      {injector: componentRef.injector},
     );
     createdEffects.push(effectRef);
     handledKeys.push(templateName);

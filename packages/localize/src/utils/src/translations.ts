@@ -95,6 +95,7 @@ export function translate(
  * @param message the message to be parsed.
  */
 export function parseTranslation(messageString: TargetMessage): ParsedTranslation {
+  messageString = messageString.replace(/\uFFFD/g, '');
   const parts = messageString.split(/{\$([^}]*)}/);
   const messageParts = [parts[0]];
   const placeholderNames: string[] = [];
@@ -122,6 +123,7 @@ export function makeParsedTranslation(
   messageParts: string[],
   placeholderNames: string[] = [],
 ): ParsedTranslation {
+  messageParts = messageParts.map((part) => part.replace(/\uFFFD/g, ''));
   let messageString = messageParts[0];
   for (let i = 0; i < placeholderNames.length; i++) {
     messageString += `{$${placeholderNames[i]}}${messageParts[i + 1]}`;

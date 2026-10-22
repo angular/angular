@@ -1,0 +1,1262 @@
+use self::utils::{
+    expression_to_string, extract_decorator_name, get_canonical_decorator_name, get_decorator_args,
+    is_angular_decorator,
+};
+use crate::types::metadata::SpanMetadata;
+
+use oxc_ast_visit::utf8_to_utf16::Utf8ToUtf16;
+
+pub mod class_data;
+mod closure_nocollapse;
+mod component;
+pub(crate) mod di_facts;
+mod directive;
+mod dts;
+pub(crate) mod evaluated_io;
+mod host_binding;
+pub mod import_emit;
+mod imports;
+mod initializer_api_usage;
+mod injectable;
+mod input_output;
+mod ngmodule;
+mod pipe;
+mod queries;
+pub mod resolver;
+pub mod resolvers;
+mod service;
+pub mod signal_debug_name;
+pub mod transforms;
+pub mod utils;
+mod visitor;
+
+pub use class_data::*;
+pub use dts::analyze_dts;
+pub use import_emit::{
+    strip_extension_str, ApfImportStrategy, PrefixImportStrategy, ReferenceEmitStrategy,
+};
+pub use imports::{
+    extract_import_map, FileExportInfo, ImportDeclarationInfo, ImportKind, ImportedSymbol,
+};
+pub use resolver::{flatten_class_info, resolve_declaration_async, resolve_to_dts};
+pub use visitor::{analyze_parsed, ParsedFileAnalysis, RegistrationInfo};
+
+/// Span covering a decorator's argument list (first arg start..last arg end), or `None` when the
+/// decorator has no call arguments. Used to slice the original source so `ɵsetClassMetadata` emits
+/// each decorator's `args: [...]` verbatim, matching ngtsc which re-emits the original arg nodes.
+fn decorator_args_span(
+    decorator: &oxc_ast::ast::Decorator,
+    converter: &Utf8ToUtf16,
+) -> Option<crate::types::metadata::SpanMetadata> {
+    use oxc_span::GetSpan;
+    let args = get_decorator_args(decorator)?;
+    let first = args.first()?;
+    let last = args.last()?;
+    Some(crate::types::metadata::SpanMetadata::new(
+        oxc_span::Span::new(first.span().start, last.span().end),
+        converter,
+    ))
+}
+
+use oxc_ast_visit::Visit;
+
+struct TypeArgumentSpanCollector {
+    spans: Vec<oxc_span::Span>,
+}
+
+impl<'a> Visit<'a> for TypeArgumentSpanCollector {
+    fn visit_ts_instantiation_expression(
+        &mut self,
+        inst: &oxc_ast::ast::TSInstantiationExpression<'a>,
+    ) {
+        self.spans.push(inst.type_arguments.span);
+        self.visit_expression(&inst.expression);
+    }
+
+    fn visit_call_expression(&mut self, call: &oxc_ast::ast::CallExpression<'a>) {
+        if let Some(type_args) = &call.type_arguments {
+            self.spans.push(type_args.span);
+        }
+        oxc_ast_visit::walk::walk_call_expression(self, call);
+    }
+
+    fn visit_new_expression(&mut self, new_expr: &oxc_ast::ast::NewExpression<'a>) {
+        if let Some(type_args) = &new_expr.type_arguments {
+            self.spans.push(type_args.span);
+        }
+        oxc_ast_visit::walk::walk_new_expression(self, new_expr);
+    }
+}
+
+/// Line inserted before an identifier in `ɵsetClassMetadata` arguments that names a later
+/// declaration; see [`later_declaration_references`]. Mirrored by `FORWARD_REFERENCE_GUARD` in
+/// `src/processor.ts`.
+const FORWARD_REFERENCE_GUARD: &str = "// @ts-ignore\n";
+
+/// Copies `source_text[from..to]` into `out`, inserting [`FORWARD_REFERENCE_GUARD`] before every
+/// position in `guards` (sorted) that falls in the range.
+fn push_guarded(out: &mut String, source_text: &str, from: u32, to: u32, guards: &[u32]) {
+    let mut cursor = from;
+    for &pos in guards.iter().filter(|&&pos| pos >= from && pos < to) {
+        out.push_str(&source_text[cursor as usize..pos as usize]);
+        out.push_str(FORWARD_REFERENCE_GUARD);
+        cursor = pos;
+    }
+    out.push_str(&source_text[cursor as usize..to as usize]);
+}
+
+/// Extracts the argument string for a decorator with generic type arguments stripped, with a
+/// [`FORWARD_REFERENCE_GUARD`] before each of `guards`.
+/// Returns `None` if there are no type arguments in the decorator arguments, allowing
+/// the caller to use `args_span` for zero-allocation source slicing (and to insert the guards
+/// itself).
+fn extract_decorator_args_string<'a>(
+    decorator: &oxc_ast::ast::Decorator<'a>,
+    source_text: &str,
+    guards: &[oxc_span::Span],
+) -> Option<String> {
+    use oxc_span::GetSpan;
+    let args = get_decorator_args(decorator)?;
+    let first = args.first()?;
+    let last = args.last()?;
+    let first_start = first.span().start;
+    let last_end = last.span().end;
+
+    let mut collector = TypeArgumentSpanCollector { spans: Vec::new() };
+    for arg in args {
+        collector.visit_argument(arg);
+    }
+
+    if collector.spans.is_empty() {
+        return None;
+    }
+
+    collector.spans.sort_by_key(|s| s.start);
+    let mut guard_starts: Vec<u32> = guards.iter().map(|span| span.start).collect();
+    guard_starts.sort_unstable();
+    guard_starts.dedup();
+
+    let mut result = String::new();
+    let mut cursor = first_start;
+    for span in collector.spans {
+        if span.start >= cursor && span.end <= last_end {
+            push_guarded(&mut result, source_text, cursor, span.start, &guard_starts);
+            cursor = span.end;
+        }
+    }
+    if cursor < last_end {
+        push_guarded(&mut result, source_text, cursor, last_end, &guard_starts);
+    }
+
+    Some(result)
+}
+
+/// Returns `true` if any property declaration (`TSPropertySignature`, `PropertyDefinition`, or
+/// `AccessorProperty`) in the same file at or after `class_end` declares a property named
+/// `prop_name`.
+fn has_later_property_declaration(
+    semantic: &oxc_semantic::Semantic<'_>,
+    prop_name: &str,
+    class_end: u32,
+) -> bool {
+    use oxc_ast::AstKind;
+    use oxc_span::GetSpan;
+
+    semantic.nodes().iter().any(|node| {
+        if node.kind().span().start < class_end {
+            return false;
+        }
+        let key = match node.kind() {
+            AstKind::TSPropertySignature(sig) => &sig.key,
+            AstKind::PropertyDefinition(prop) => &prop.key,
+            AstKind::AccessorProperty(acc) => &acc.key,
+            _ => return false,
+        };
+        self::utils::extract_property_key(key).as_deref() == Some(prop_name)
+    })
+}
+
+/// A read of a root-scope value binding inside a class's decorator metadata, destined for the
+/// wire as [`crate::types::metadata::TopLevelReferenceMetadata`].
+#[derive(Clone, Debug)]
+pub struct TopLevelReference {
+    pub name: String,
+    pub span: oxc_span::Span,
+    /// For the object of a `Name.member` access whose binding is an import or a local
+    /// `const enum`: what `Name` evaluates to. Stage 2 completes it, so an imported const
+    /// enum can be told apart from a class or a regular enum declared in another file.
+    pub const_enum: Option<crate::evaluator::Resolved<crate::evaluator::ConstEnumResolution>>,
+}
+
+/// Per-class accumulator for HMR top-level reads across the class's decorators, member
+/// decorators and constructor-parameter decorators. Callers hold `None` when HMR is off.
+pub(crate) struct TopLevelReads<'s, 'a, 'e> {
+    pub out: Vec<TopLevelReference>,
+    pub eval: &'s crate::evaluator::EvalInput<'a, 'e>,
+}
+
+/// Where the HMR half of [`DecoratorReferenceFinder`] writes, plus what it needs to evaluate
+/// potential const enums.
+struct TopLevelReferenceSink<'s, 'a, 'e> {
+    out: &'s mut Vec<TopLevelReference>,
+    eval: &'s crate::evaluator::EvalInput<'a, 'e>,
+}
+
+/// One traversal of a decorator's arguments serving two consumers:
+///
+/// - **Later-declaration guards** (`later`): an identifier or member access that a lowered
+///   static field initializer or `ɵsetClassMetadata` static block would evaluate while the
+///   binding or property declaration it resolves to is still after `class_end`. Function bodies
+///   are skipped, since they are not evaluated when the static field is.
+/// - **HMR top-level reads** (`top_level`): every identifier resolving to a root-scope value
+///   binding, function bodies included — ngtsc's `PotentialTopLevelReadsVisitor` walks the whole
+///   `WrappedNodeExpr`. Resolving through `oxc_semantic` also rules out the locals and
+///   parameters that visitor can only approximate by name.
+///   https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/hmr/src/extract_dependencies.ts#L229-L263
+///
+/// Types are erased and never evaluated, so neither consumer looks inside them.
+struct DecoratorReferenceFinder<'s, 'a, 'e> {
+    semantic: &'s oxc_semantic::Semantic<'a>,
+    class_end: u32,
+    later: Option<&'s mut Vec<oxc_span::Span>>,
+    top_level: Option<TopLevelReferenceSink<'s, 'a, 'e>>,
+    /// How many function bodies enclose the current node.
+    function_depth: u32,
+}
+
+impl<'a> DecoratorReferenceFinder<'_, 'a, '_> {
+    fn resolve(
+        &self,
+        ident: &oxc_ast::ast::IdentifierReference<'a>,
+    ) -> Option<oxc_semantic::SymbolId> {
+        let scoping = self.semantic.scoping();
+        ident
+            .reference_id
+            .get()
+            .and_then(|id| scoping.get_reference(id).symbol_id())
+    }
+
+    fn record_later_declaration(
+        &mut self,
+        symbol_id: oxc_semantic::SymbolId,
+        span: oxc_span::Span,
+    ) {
+        use oxc_syntax::symbol::SymbolFlags;
+        if self.function_depth > 0 {
+            return;
+        }
+        let Some(later) = self.later.as_deref_mut() else {
+            return;
+        };
+        let scoping = self.semantic.scoping();
+        let flags = scoping.symbol_flags(symbol_id);
+        if !flags.intersects(SymbolFlags::BlockScoped) || flags.contains(SymbolFlags::Ambient) {
+            return;
+        }
+        if scoping.symbol_span(symbol_id).start >= self.class_end {
+            later.push(span);
+        }
+    }
+
+    /// Record `ident` as an HMR top-level read if it is bound at the root scope to something
+    /// that exists at runtime. `member_object` is the `Name` of a `Name.member` access.
+    fn record_top_level_read(
+        &mut self,
+        ident: &oxc_ast::ast::IdentifierReference<'a>,
+        symbol_id: oxc_semantic::SymbolId,
+        member_object: Option<&oxc_ast::ast::Expression<'a>>,
+    ) {
+        use oxc_syntax::symbol::SymbolFlags;
+        let Some(sink) = self.top_level.as_mut() else {
+            return;
+        };
+        let scoping = self.semantic.scoping();
+        if scoping.symbol_scope_id(symbol_id) != scoping.root_scope_id() {
+            return;
+        }
+        // Interfaces, type aliases and type-only imports are erased; namespace *values*
+        // (`ValueModule`) are part of `Value`. Const enums carry their own flag.
+        let flags = scoping.symbol_flags(symbol_id);
+        if flags.contains(SymbolFlags::TypeImport)
+            || !flags.intersects(SymbolFlags::Value | SymbolFlags::ConstEnum | SymbolFlags::Import)
+        {
+            return;
+        }
+
+        // ngtsc's `isConstEnumReference`: only the `Name.member` shape, and only when `Name`
+        // can be a const enum — one declared here, or an import whose declaration Stage 2
+        // chases. A namespace import names a module, never an enum.
+        let may_be_const_enum = flags.contains(SymbolFlags::ConstEnum)
+            || (flags.contains(SymbolFlags::Import)
+                && !matches!(
+                    sink.eval
+                        .import_map
+                        .get(ident.name.as_str())
+                        .map(|sym| &sym.kind),
+                    Some(ImportKind::Namespace)
+                ));
+        let const_enum = member_object.filter(|_| may_be_const_enum).map(|object| {
+            crate::evaluator::Resolved::from_syntax(
+                crate::evaluator::evaluate_expression(object, sink.eval),
+                sink.eval.file,
+            )
+        });
+        sink.out.push(TopLevelReference {
+            name: ident.name.to_string(),
+            span: ident.span,
+            const_enum,
+        });
+    }
+
+    /// `obj.prop`, `this.prop` and `super.prop` (non-chained member accesses) are what
+    /// TypeScript's `checkPropertyNotUsedBeforeDeclaration` (TS2729) rejects; guard them when
+    /// `prop` is declared later in the file.
+    fn record_later_property(&mut self, expr: &oxc_ast::ast::StaticMemberExpression<'a>) {
+        if self.function_depth > 0 || self.later.is_none() {
+            return;
+        }
+        if has_later_property_declaration(
+            self.semantic,
+            expr.property.name.as_str(),
+            self.class_end,
+        ) {
+            if let Some(later) = self.later.as_deref_mut() {
+                later.push(expr.span);
+            }
+        }
+    }
+}
+
+impl<'a> Visit<'a> for DecoratorReferenceFinder<'_, 'a, '_> {
+    fn visit_identifier_reference(&mut self, ident: &oxc_ast::ast::IdentifierReference<'a>) {
+        let Some(symbol_id) = self.resolve(ident) else {
+            return;
+        };
+        self.record_later_declaration(symbol_id, ident.span);
+        self.record_top_level_read(ident, symbol_id, None);
+    }
+
+    fn visit_static_member_expression(&mut self, expr: &oxc_ast::ast::StaticMemberExpression<'a>) {
+        if let oxc_ast::ast::Expression::Identifier(ident) = &expr.object {
+            let later_before = self.later.as_deref().map_or(0, Vec::len);
+            if let Some(symbol_id) = self.resolve(ident) {
+                self.record_later_declaration(symbol_id, ident.span);
+                self.record_top_level_read(ident, symbol_id, Some(&expr.object));
+            }
+            if self.later.as_deref().map_or(0, Vec::len) == later_before {
+                self.record_later_property(expr);
+            }
+            return;
+        }
+
+        oxc_ast_visit::walk::walk_static_member_expression(self, expr);
+        if matches!(
+            expr.object,
+            oxc_ast::ast::Expression::ThisExpression(_) | oxc_ast::ast::Expression::Super(_)
+        ) {
+            self.record_later_property(expr);
+        }
+    }
+
+    fn visit_function(
+        &mut self,
+        func: &oxc_ast::ast::Function<'a>,
+        flags: oxc_syntax::scope::ScopeFlags,
+    ) {
+        if self.top_level.is_none() {
+            return;
+        }
+        self.function_depth += 1;
+        oxc_ast_visit::walk::walk_function(self, func, flags);
+        self.function_depth -= 1;
+    }
+
+    fn visit_arrow_function_expression(
+        &mut self,
+        arrow: &oxc_ast::ast::ArrowFunctionExpression<'a>,
+    ) {
+        if self.top_level.is_none() {
+            return;
+        }
+        self.function_depth += 1;
+        oxc_ast_visit::walk::walk_arrow_function_expression(self, arrow);
+        self.function_depth -= 1;
+    }
+
+    // Types are erased and never evaluated.
+    fn visit_ts_type(&mut self, _ty: &oxc_ast::ast::TSType<'a>) {}
+}
+
+/// Pushes onto `spans` every identifier or static member expression in `decorator`'s arguments
+/// that eagerly references a declaration after `class_end`, and, when `top_level` is given,
+/// every root-scope value read for HMR (see [`DecoratorReferenceFinder`]).
+pub(crate) fn collect_decorator_references<'a>(
+    decorator: &oxc_ast::ast::Decorator<'a>,
+    semantic: &oxc_semantic::Semantic<'a>,
+    class_end: u32,
+    later: Option<&mut Vec<oxc_span::Span>>,
+    top_level: Option<&mut TopLevelReads<'_, 'a, '_>>,
+) {
+    let Some(args) = get_decorator_args(decorator) else {
+        return;
+    };
+    collect_argument_references(args, semantic, class_end, later, top_level);
+}
+
+pub(crate) fn collect_argument_references<'a>(
+    args: &[oxc_ast::ast::Argument<'a>],
+    semantic: &oxc_semantic::Semantic<'a>,
+    class_end: u32,
+    later: Option<&mut Vec<oxc_span::Span>>,
+    top_level: Option<&mut TopLevelReads<'_, 'a, '_>>,
+) {
+    let mut finder = DecoratorReferenceFinder {
+        semantic,
+        class_end,
+        later,
+        top_level: top_level.map(|reads| TopLevelReferenceSink {
+            out: &mut reads.out,
+            eval: reads.eval,
+        }),
+        function_depth: 0,
+    };
+    for arg in args {
+        finder.visit_argument(arg);
+    }
+}
+
+pub(crate) fn top_level_value_bindings(semantic: &oxc_semantic::Semantic<'_>) -> Vec<String> {
+    use oxc_syntax::symbol::SymbolFlags;
+    let scoping = semantic.scoping();
+    let mut bindings: Vec<(u32, String)> = scoping
+        .get_bindings(scoping.root_scope_id())
+        .iter()
+        .filter_map(|(name, &symbol_id)| {
+            let flags = scoping.symbol_flags(symbol_id);
+            if flags.contains(SymbolFlags::TypeImport)
+                || !flags
+                    .intersects(SymbolFlags::Value | SymbolFlags::ConstEnum | SymbolFlags::Import)
+            {
+                return None;
+            }
+            Some((scoping.symbol_span(symbol_id).start, name.to_string()))
+        })
+        .collect();
+    bindings.sort_unstable();
+    bindings.into_iter().map(|(_, name)| name).collect()
+}
+
+const DI_PARAMETER_DECORATORS: [&str; 6] = [
+    "Inject",
+    "Optional",
+    "SkipSelf",
+    "Self",
+    "Host",
+    "Attribute",
+];
+
+pub struct ConstructorParams {
+    pub params: Vec<crate::ConstructorParamMetadata>,
+    pub unexpected_decorators: Vec<crate::analyzer::UnexpectedParamDecorator>,
+}
+
+/// The constructor ngtsc's `getConstructorParameters` reads: the implementation (the one with a
+/// body) or, in a declaration file, the first one; `None` when the class declares no such
+/// constructor.
+pub(crate) fn constructor_method<'c, 'a>(
+    class: &'c oxc_ast::ast::Class<'a>,
+    in_declaration_file: bool,
+) -> Option<&'c oxc_ast::ast::MethodDefinition<'a>> {
+    class.body.body.iter().find_map(|element| {
+        let oxc_ast::ast::ClassElement::MethodDefinition(method) = element else {
+            return None;
+        };
+        (method.kind == oxc_ast::ast::MethodDefinitionKind::Constructor
+            && (in_declaration_file || method.value.body.is_some()))
+        .then_some(&**method)
+    })
+}
+
+pub(crate) fn constructor_param_count(
+    class: &oxc_ast::ast::Class<'_>,
+    in_declaration_file: bool,
+) -> Option<usize> {
+    let params = &constructor_method(class, in_declaration_file)?.value.params;
+    Some(params.items.len() + usize::from(params.rest.is_some()))
+}
+
+/// What dependency injection needs to know about a constructor parameter: ngtsc's
+/// `CtorParameter` with its `typeValueReference`.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct CtorParamDi {
+    pub name: Option<String>,
+    pub name_span: oxc_span::Span,
+    pub type_span: Option<oxc_span::Span>,
+    pub type_name: Option<String>,
+    pub type_info: TypeRefInfo,
+    pub has_explicit_token: bool,
+}
+
+impl CtorParamDi {
+    /// Why the parameter has no DI token (ngtsc's `ConstructorDepError`), if it has none.
+    pub fn missing_token(&self) -> Option<UnavailableValue> {
+        if self.has_explicit_token {
+            return None;
+        }
+        self.type_info.unavailable
+    }
+}
+
+/// The DI view of the parameters of the constructor ngtsc reads; `None` when the class declares
+/// no constructor.
+pub(crate) fn constructor_params_di<'a>(
+    class: &oxc_ast::ast::Class<'a>,
+    semantic: &oxc_semantic::Semantic<'a>,
+    import_map: &std::collections::HashMap<String, ImportedSymbol>,
+    angular_imports: &crate::analyzer::imports::AngularImports,
+) -> Option<Vec<CtorParamDi>> {
+    use oxc_span::GetSpan;
+
+    let method = constructor_method(class, false)?;
+    let build_di = |name: Option<String>,
+                    name_span: oxc_span::Span,
+                    type_annotation: Option<&oxc_ast::ast::TSTypeAnnotation<'a>>,
+                    decorators: &[oxc_ast::ast::Decorator<'a>]| {
+        let (type_name, type_info) = match extract_type_info(type_annotation, semantic, import_map)
+        {
+            Ok((name, info)) => (Some(name), info),
+            Err(reason) => (None, TypeRefInfo::unavailable(reason)),
+        };
+        let has_explicit_token = decorators.iter().any(|decorator| {
+            matches!(
+                get_canonical_decorator_name(decorator, semantic, angular_imports),
+                Some("Inject" | "Attribute")
+            )
+        });
+        CtorParamDi {
+            name,
+            name_span,
+            type_span: type_annotation
+                .map(|annotation| unwrap_union_type(&annotation.type_annotation).span()),
+            type_name,
+            type_info,
+            has_explicit_token,
+        }
+    };
+
+    let mut params: Vec<CtorParamDi> = method
+        .value
+        .params
+        .items
+        .iter()
+        .map(|param| {
+            build_di(
+                param
+                    .pattern
+                    .get_binding_identifier()
+                    .map(|id| id.name.to_string()),
+                param.pattern.span(),
+                param.type_annotation.as_deref(),
+                &param.decorators,
+            )
+        })
+        .collect();
+
+    if let Some(rest_param) = &method.value.params.rest {
+        params.push(build_di(
+            rest_param
+                .rest
+                .argument
+                .get_binding_identifier()
+                .map(|id| id.name.to_string()),
+            rest_param.span,
+            rest_param.type_annotation.as_deref(),
+            &rest_param.decorators,
+        ));
+    }
+
+    Some(params)
+}
+
+pub fn get_constructor_params<'a>(
+    class: &oxc_ast::ast::Class<'a>,
+    params_di: &[CtorParamDi],
+    semantic: &oxc_semantic::Semantic<'a>,
+    converter: &Utf8ToUtf16,
+    import_map: &std::collections::HashMap<String, ImportedSymbol>,
+    angular_imports: &crate::analyzer::imports::AngularImports,
+    mut top_level_reads: Option<&mut TopLevelReads<'_, 'a, '_>>,
+) -> Option<ConstructorParams> {
+    let target_method = constructor_method(class, false)?;
+
+    let mut params = Vec::new();
+    let mut unexpected_decorators = Vec::new();
+    let all_param_decorators = target_method
+        .value
+        .params
+        .items
+        .iter()
+        .map(|p| p.decorators.as_slice())
+        .chain(
+            target_method
+                .value
+                .params
+                .rest
+                .iter()
+                .map(|r| r.decorators.as_slice()),
+        );
+
+    for (ast_decorators, di) in all_param_decorators.zip(params_di) {
+        let mut is_type_only = di.type_name.is_some() && di.type_info.is_type_only();
+        let is_value_verified = di.type_info.is_value_verified;
+        // `None` when the parameter has no runtime-referenceable type (primitive, inline type, or
+        // untyped), emitted as `type: undefined` in `ɵsetClassMetadata`.
+        let type_name = di.type_name.clone();
+        let mut decorators = Vec::new();
+
+        // Non-aliased named imports record their source module for namespaced DI token emission
+        // (e.g. `i0.ElementRef`).
+        let type_module = type_name.as_deref().and_then(|name| {
+            import_map.get(name).and_then(|sym| match &sym.kind {
+                crate::analyzer::ImportKind::Named(original) if original == name => {
+                    Some(sym.source.clone())
+                }
+                _ => None,
+            })
+        });
+
+        for decorator in ast_decorators {
+            let Some(name) = extract_decorator_name(decorator) else {
+                continue;
+            };
+
+            let canonical_name = get_canonical_decorator_name(decorator, semantic, angular_imports);
+            let is_angular = is_angular_decorator(decorator, semantic, angular_imports);
+            let args = if is_angular {
+                extract_decorator_args(decorator, semantic.source_text())
+            } else {
+                None
+            };
+            let decorator_span = is_angular.then(|| SpanMetadata::new(decorator.span, converter));
+            if is_angular {
+                collect_decorator_references(
+                    decorator,
+                    semantic,
+                    class.span.end,
+                    None,
+                    top_level_reads.as_deref_mut(),
+                );
+            }
+
+            // Flag unrecognized @angular/core decorators on constructor parameters (NG1005).
+            if is_angular && !canonical_name.is_some_and(|c| DI_PARAMETER_DECORATORS.contains(&c)) {
+                if let Some(reported) =
+                    self::utils::reported_decorator_name(decorator, angular_imports, import_map)
+                {
+                    unexpected_decorators.push(crate::analyzer::UnexpectedParamDecorator {
+                        name: reported,
+                        span: decorator.span,
+                    });
+                }
+            }
+
+            // In single-file (local) mode, an unverified imported type on an `@Inject` parameter is
+            // frequently an interface (which is why `@Inject` was needed), so default `is_type_only`
+            // to `true` when `!is_value_verified`. Verified value types (same-file classes, or
+            // cross-file classes resolved in Stage 2) keep `is_type_only = false` to match ngtsc:
+            // https://github.com/angular/angular/blob/16fe27b/packages/compiler-cli/src/ngtsc/annotations/common/src/metadata.ts#L160-L181
+            if canonical_name == Some("Inject") && !is_value_verified {
+                is_type_only = true;
+            }
+
+            decorators.push(crate::DecoratorMetadata {
+                name,
+                canonical_name: canonical_name.map(String::from),
+                args,
+                decorator_span,
+                args_span: if is_angular {
+                    decorator_args_span(decorator, converter)
+                } else {
+                    None
+                },
+                args_string: if is_angular {
+                    extract_decorator_args_string(decorator, semantic.source_text(), &[])
+                } else {
+                    None
+                },
+                is_angular,
+            });
+        }
+
+        params.push(crate::ConstructorParamMetadata {
+            type_name,
+            type_module,
+            is_type_only,
+            is_value_verified,
+            decorators,
+        });
+    }
+
+    Some(ConstructorParams {
+        params,
+        unexpected_decorators,
+    })
+}
+
+/// Extract the decorated, non-static, non-(ES-private) members of a class, in source order, for
+/// the property-decorator map (4th argument) of `ɵsetClassMetadata`. Only members carrying at
+/// least one decorator are returned; whether each decorator is Angular is resolved through the
+/// semantic symbol table (non-Angular decorators are kept so the member still appears with an
+/// empty array, matching ngtsc).
+///
+/// Pushes each Angular decorator's removal span onto `removal_spans`, its later-declaration
+/// guards onto `later_references`, and its HMR top-level reads onto `top_level_reads`.
+/// https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/annotations/common/src/metadata.ts#L91-L131
+#[allow(clippy::too_many_arguments)]
+pub fn get_member_decorators<'a>(
+    class: &'a oxc_ast::ast::Class<'a>,
+    converter: &Utf8ToUtf16,
+    semantic: &oxc_semantic::Semantic<'a>,
+    angular_imports: &crate::analyzer::imports::AngularImports,
+    source_text: &str,
+    later_references: &mut Vec<oxc_span::Span>,
+    removal_spans: &mut Vec<oxc_span::Span>,
+    mut top_level_reads: Option<&mut TopLevelReads<'_, 'a, '_>>,
+) -> Vec<crate::DecoratedMemberMetadata> {
+    use oxc_ast::ast::{ClassElement, PropertyKey};
+
+    let mut members = Vec::new();
+    for element in &class.body.body {
+        let (decorators, is_static, key) = match element {
+            ClassElement::PropertyDefinition(p) => (&p.decorators, p.r#static, &p.key),
+            ClassElement::MethodDefinition(m) => (&m.decorators, m.r#static, &m.key),
+            ClassElement::AccessorProperty(a) => (&a.decorators, a.r#static, &a.key),
+            _ => continue,
+        };
+        if decorators.is_empty() {
+            continue;
+        }
+        // Static, ES-private (`#field`), and computed-key members are not supported in the
+        // metadata emit, but `ngtsc`'s `IvyTransformationVisitor._stripAngularDecorators` still
+        // strips any Angular decorators from them.
+        let property_name = if is_static || matches!(key, PropertyKey::PrivateIdentifier(_)) {
+            None
+        } else {
+            self::utils::extract_property_key(key)
+        };
+        let Some(property_name) = property_name else {
+            for decorator in decorators {
+                if is_angular_decorator(decorator, semantic, angular_imports) {
+                    removal_spans.push(self::utils::decorator_removal_span(decorator, source_text));
+                }
+            }
+            continue;
+        };
+
+        let captured: Vec<crate::DecoratorMetadata> = decorators
+            .iter()
+            .filter_map(|decorator| {
+                let name = extract_decorator_name(decorator)?;
+                let canonical_name =
+                    get_canonical_decorator_name(decorator, semantic, angular_imports);
+                let is_angular = is_angular_decorator(decorator, semantic, angular_imports);
+                let mut guards = Vec::new();
+                if is_angular {
+                    collect_decorator_references(
+                        decorator,
+                        semantic,
+                        class.span.end,
+                        Some(&mut guards),
+                        top_level_reads.as_deref_mut(),
+                    );
+                    removal_spans.push(self::utils::decorator_removal_span(decorator, source_text));
+                }
+                // `args` is intentionally omitted as an optimization, because `ɵsetClassMetadata`
+                // emission in TypeScript only requires `args_span` for verbatim source slicing.
+                let metadata = crate::DecoratorMetadata {
+                    name,
+                    canonical_name: canonical_name.map(String::from),
+                    args: None,
+                    decorator_span: is_angular
+                        .then(|| SpanMetadata::new(decorator.span, converter)),
+                    args_span: if is_angular {
+                        decorator_args_span(decorator, converter)
+                    } else {
+                        None
+                    },
+                    args_string: if is_angular {
+                        extract_decorator_args_string(decorator, source_text, &guards)
+                    } else {
+                        None
+                    },
+                    is_angular,
+                };
+                later_references.extend(guards);
+                Some(metadata)
+            })
+            .collect();
+        if captured.is_empty() {
+            continue;
+        }
+
+        members.push(crate::DecoratedMemberMetadata {
+            property_name: property_name.into_owned(),
+            is_string_literal: matches!(key, PropertyKey::StringLiteral(_)),
+            decorators: captured,
+        });
+    }
+    members
+}
+
+/// Why a constructor parameter's type cannot be used as a DI token.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum UnavailableValue {
+    /// Not a reference to a named type (a primitive, a union, a literal type etc).
+    Unsupported,
+    /// The type has no runtime value.
+    NoValueDeclaration { decl: Option<oxc_span::Span> },
+    /// The type comes from a type-only `import`, whose span is `import`.
+    TypeOnlyImport { import: oxc_span::Span },
+    /// The type names a namespace import (`import * as ns`), whose span is `import`.
+    Namespace { import: oxc_span::Span },
+    /// The parameter has no type.
+    MissingType,
+}
+
+/// What the analyzer was able to work out about a constructor parameter's type reference.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct TypeRefInfo {
+    /// Why the reference has no runtime value, which means it must be emitted as `undefined`
+    /// and cannot be a DI token.
+    pub unavailable: Option<UnavailableValue>,
+    /// The reference was resolved to a declaration that has a runtime value. The in-file pass can
+    /// only establish this for a class declared in the same file; the cross-file pass in
+    /// `query::engine` upgrades imported references that it manages to chase to a declaration.
+    pub is_value_verified: bool,
+}
+
+impl TypeRefInfo {
+    /// There is no reason to think the reference is type-only, but we could not resolve it to a
+    /// declaration either. Emitting a DI token that turns out to be missing degrades at runtime,
+    /// whereas withholding one from a real class breaks injection outright, so we emit it and let
+    /// the compiler guard the metadata entry with `@ts-ignore`.
+    const UNVERIFIED_VALUE: Self = Self {
+        unavailable: None,
+        is_value_verified: false,
+    };
+
+    /// Resolved to a declaration in this file that has a runtime value.
+    const VERIFIED_VALUE: Self = Self {
+        unavailable: None,
+        is_value_verified: true,
+    };
+
+    /// No runtime value: `undefined` in the metadata, `ɵɵinvalidFactory()` in the factory.
+    pub(crate) const fn unavailable(reason: UnavailableValue) -> Self {
+        Self {
+            unavailable: Some(reason),
+            is_value_verified: false,
+        }
+    }
+
+    pub fn is_type_only(&self) -> bool {
+        self.unavailable.is_some()
+    }
+}
+
+/// Extract the type name and what we know about the reference from a parameter's type annotation.
+fn extract_type_info(
+    type_annotation: Option<&oxc_ast::ast::TSTypeAnnotation>,
+    semantic: &oxc_semantic::Semantic,
+    import_map: &std::collections::HashMap<String, ImportedSymbol>,
+) -> Result<(String, TypeRefInfo), UnavailableValue> {
+    let Some(type_annotation) = type_annotation else {
+        return Err(UnavailableValue::MissingType);
+    };
+    let unwrapped_type = unwrap_union_type(&type_annotation.type_annotation);
+
+    let oxc_ast::ast::TSType::TSTypeReference(type_ref) = unwrapped_type else {
+        return Err(UnavailableValue::Unsupported);
+    };
+
+    let (name, leftmost_ident, is_qualified) = match &type_ref.type_name {
+        oxc_ast::ast::TSTypeName::IdentifierReference(ref_ident) => {
+            (ref_ident.name.to_string(), Some(&**ref_ident), false)
+        }
+        oxc_ast::ast::TSTypeName::QualifiedName(qualified) => {
+            let name = self::utils::qualified_name_to_string(qualified);
+            let leftmost = self::utils::get_leftmost_identifier_in_qualified(qualified);
+            (name, leftmost, true)
+        }
+        _ => return Err(UnavailableValue::Unsupported),
+    };
+
+    let info = leftmost_ident.map_or(TypeRefInfo::UNVERIFIED_VALUE, |ident| {
+        get_type_reference_info(ident, &name, semantic, import_map, is_qualified)
+    });
+
+    Ok((name, info))
+}
+
+fn unwrap_union_type<'a>(ts_type: &'a oxc_ast::ast::TSType<'a>) -> &'a oxc_ast::ast::TSType<'a> {
+    let oxc_ast::ast::TSType::TSUnionType(union_type) = ts_type else {
+        return ts_type;
+    };
+    let non_null_types: Vec<&oxc_ast::ast::TSType<'a>> = union_type
+        .types
+        .iter()
+        .filter(|t| !matches!(t, oxc_ast::ast::TSType::TSNullKeyword(_)))
+        .collect();
+    if non_null_types.len() == 1 {
+        return non_null_types[0];
+    }
+    ts_type
+}
+
+// TypeScript built-in types from lib.es5.d.ts (and friends) that have no runtime value
+// declaration (decl.valueDeclaration === undefined in ngtsc): the utility type aliases, plus the
+// structural interfaces that shadow no global object. `ReadonlyMap` is the trap — `Map` exists at
+// runtime, `ReadonlyMap` does not — so emitting one as a DI token is a `ReferenceError`.
+// Kept in sorted order.
+const TS_BUILTIN_UTILITY_TYPES: &[&str] = &[
+    "AggregateErrorConstructor",
+    "ArrayBufferConstructor",
+    "ArrayBufferLike",
+    "ArrayBufferView",
+    "ArrayConstructor",
+    "ArrayLike",
+    "AsyncDisposableStackConstructor",
+    "AsyncGenerator",
+    "AsyncGeneratorFunctionConstructor",
+    "AsyncIterable",
+    "AsyncIterableIterator",
+    "AsyncIterator",
+    "Awaited",
+    "BigInt64ArrayConstructor",
+    "BigIntConstructor",
+    "BigUint64ArrayConstructor",
+    "BooleanConstructor",
+    "Capitalize",
+    "ClassDecorator",
+    "ConstructorParameters",
+    "CustomElementConstructor",
+    "DataViewConstructor",
+    "DateConstructor",
+    "Disposable",
+    "DisposableStackConstructor",
+    "EnumeratorConstructor",
+    "ErrorConstructor",
+    "EvalErrorConstructor",
+    "Exclude",
+    "Extract",
+    "FinalizationRegistryConstructor",
+    "FlatArray",
+    "Float16ArrayConstructor",
+    "Float32ArrayConstructor",
+    "Float64ArrayConstructor",
+    "FunctionConstructor",
+    "Generator",
+    "GeneratorFunctionConstructor",
+    "IArguments",
+    "InstanceType",
+    "Int16ArrayConstructor",
+    "Int32ArrayConstructor",
+    "Int8ArrayConstructor",
+    "Iterable",
+    "IterableIterator",
+    "Iterator",
+    "Lowercase",
+    "MapConstructor",
+    "MapIterator",
+    "MethodDecorator",
+    "NoInfer",
+    "NonNullable",
+    "NumberConstructor",
+    "ObjectConstructor",
+    "Omit",
+    "OmitThisParameter",
+    "ParameterDecorator",
+    "Parameters",
+    "Partial",
+    "Pick",
+    "PromiseConstructor",
+    "PromiseLike",
+    "PropertyDecorator",
+    "PropertyDescriptor",
+    "PropertyDescriptorMap",
+    "PropertyKey",
+    "ProxyConstructor",
+    "RangeErrorConstructor",
+    "Readonly",
+    "ReadonlyArray",
+    "ReadonlyMap",
+    "ReadonlySet",
+    "ReadonlySetLike",
+    "Record",
+    "ReferenceErrorConstructor",
+    "RegExpConstructor",
+    "Required",
+    "ReturnType",
+    "SetConstructor",
+    "SharedArrayBufferConstructor",
+    "StringConstructor",
+    "StringIterator",
+    "SymbolConstructor",
+    "SyntaxErrorConstructor",
+    "TemplateStringsArray",
+    "ThisParameterType",
+    "ThisType",
+    "TypeErrorConstructor",
+    "TypedPropertyDescriptor",
+    "URIErrorConstructor",
+    "Uint16ArrayConstructor",
+    "Uint32ArrayConstructor",
+    "Uint8ArrayConstructor",
+    "Uint8ClampedArrayConstructor",
+    "Uncapitalize",
+    "Uppercase",
+    "VBArrayConstructor",
+    "WeakKey",
+    "WeakMapConstructor",
+    "WeakRefConstructor",
+    "WeakSetConstructor",
+];
+
+// Type-only exports of `@angular/core` (sorted for `binary_search`). Must be withheld rather than
+// guarded with `@ts-ignore` because emitting them in value position causes a runtime missing-export
+// error.
+// TODO(parity): Single-file-mode stopgap, deliberately not exhaustive (`@angular/core`'s ~195
+// type-only exports shift between versions). Optimize mode resolves `.d.ts` declarations via
+// `resolve_qualified_symbol_value_kind`; remove once single-file mode can reach a resolver.
+const ANGULAR_CORE_TYPE_ONLY_EXPORTS: &[&str] = &[
+    "AbstractType",
+    "AfterContentChecked",
+    "AfterContentInit",
+    "AfterRenderRef",
+    "AfterViewChecked",
+    "AfterViewInit",
+    "DoBootstrap",
+    "DoCheck",
+    "EnvironmentProviders",
+    "ModuleWithProviders",
+    "OnChanges",
+    "OnDestroy",
+    "OnInit",
+    "OutputRef",
+    "PipeTransform",
+    "Provider",
+    "Signal",
+    "SimpleChanges",
+    "StaticProvider",
+    "TrackByFunction",
+    "WritableSignal",
+];
+
+/// Returns the `@angular/core` export name referenced by `full_type_name` (via a `core.OnInit`
+/// namespace import or `OnInit` / `OnInit as Hook` named import).
+fn angular_core_member<'n>(
+    sym: &'n ImportedSymbol,
+    local_name: &str,
+    full_type_name: &'n str,
+    is_qualified: bool,
+) -> Option<&'n str> {
+    if sym.source != "@angular/core" && !sym.source.starts_with("@angular/core/") {
+        return None;
+    }
+    match (&sym.kind, is_qualified) {
+        (ImportKind::Namespace, true) => full_type_name
+            .strip_prefix(local_name)?
+            .strip_prefix('.')
+            .filter(|member| !member.contains('.')),
+        (ImportKind::Named(original), false) => Some(original.as_str()),
+        _ => None,
+    }
+}
+
+// Mirrors ngtsc's `typeToValue()` using oxc `SymbolFlags` to determine whether a type reference
+// can be emitted as a runtime DI token.
+// https://github.com/angular/angular/blob/50e599e/packages/compiler-cli/src/ngtsc/reflection/src/type_to_value.ts#L25-L179
+fn get_type_reference_info<'a>(
+    ref_ident: &oxc_ast::ast::IdentifierReference<'a>,
+    full_type_name: &str,
+    semantic: &oxc_semantic::Semantic<'a>,
+    import_map: &std::collections::HashMap<String, ImportedSymbol>,
+    is_qualified: bool,
+) -> TypeRefInfo {
+    use oxc_span::GetSpan;
+
+    let no_value_declaration =
+        |decl| TypeRefInfo::unavailable(UnavailableValue::NoValueDeclaration { decl });
+    let symbol_id = ref_ident
+        .reference_id
+        .get()
+        .and_then(|id| semantic.scoping().get_reference(id).symbol_id());
+    let Some(symbol_id) = symbol_id else {
+        // Unresolved ambient/global symbol. Non-imported qualified references (`Gtag.Gtag`,
+        // `google.maps.Map`) and built-in utility types (`Partial`, `Record`, `Omit`) are
+        // type-only; other globals (`Window`, `Date`) are runtime values guarded with `@ts-ignore`.
+        // Some qualified refs do exist at runtime (`google.maps`), but single-file analysis can't
+        // tell, and losing a DI token beats a `ReferenceError` from `ɵfac` in production.
+        if is_qualified && !import_map.contains_key(ref_ident.name.as_str()) {
+            return no_value_declaration(None);
+        }
+        if TS_BUILTIN_UTILITY_TYPES
+            .binary_search(&ref_ident.name.as_str())
+            .is_ok()
+        {
+            return no_value_declaration(None);
+        }
+        return TypeRefInfo::UNVERIFIED_VALUE;
+    };
+    let flags = semantic.scoping().symbol_flags(symbol_id);
+    let declaration = semantic.symbol_declaration(symbol_id);
+
+    // Locally declared interface, type alias, type parameter, const enum, or type-only namespace module.
+    if flags.contains(oxc_syntax::symbol::SymbolFlags::ConstEnum)
+        || ((flags.contains(oxc_syntax::symbol::SymbolFlags::Interface)
+            || flags.contains(oxc_syntax::symbol::SymbolFlags::TypeAlias)
+            || flags.contains(oxc_syntax::symbol::SymbolFlags::TypeParameter)
+            || flags.contains(oxc_syntax::symbol::SymbolFlags::NamespaceModule))
+            && !flags.intersects(oxc_syntax::symbol::SymbolFlags::Value))
+    {
+        return no_value_declaration(Some(declaration.kind().span()));
+    }
+
+    // Type-only import (`import type { X }`, `import { type X }` or `import type * as X`).
+    // TODO(parity): ngtsc reports a type-only import of a symbol without a value (an interface)
+    // as NO_VALUE_DECLARATION, which needs the imported declaration.
+    // https://github.com/angular/angular/blob/50e599e/packages/compiler-cli/src/ngtsc/reflection/src/type_to_value.ts#L106-L110
+    if flags.contains(oxc_syntax::symbol::SymbolFlags::TypeImport) {
+        return TypeRefInfo::unavailable(UnavailableValue::TypeOnlyImport {
+            import: type_only_import_span(declaration, semantic),
+        });
+    }
+
+    if let Some(sym) = import_map.get(ref_ident.name.as_str()) {
+        // The namespace object of `import * as ns` is not a class.
+        if matches!(sym.kind, ImportKind::Namespace) && !is_qualified {
+            return TypeRefInfo::unavailable(UnavailableValue::Namespace {
+                import: declaration.kind().span(),
+            });
+        }
+        let member =
+            angular_core_member(sym, ref_ident.name.as_str(), full_type_name, is_qualified);
+        if member.is_some_and(|m| ANGULAR_CORE_TYPE_ONLY_EXPORTS.binary_search(&m).is_ok()) {
+            return no_value_declaration(None);
+        }
+    }
+
+    if is_qualified
+        && !import_map.contains_key(ref_ident.name.as_str())
+        && !flags.intersects(oxc_syntax::symbol::SymbolFlags::Value)
+    {
+        return no_value_declaration(None);
+    }
+
+    // Unqualified class declared in the same file is guaranteed to exist at runtime.
+    if !is_qualified
+        && flags.contains(oxc_syntax::symbol::SymbolFlags::Class)
+        && !flags.intersects(
+            oxc_syntax::symbol::SymbolFlags::Import | oxc_syntax::symbol::SymbolFlags::TypeImport,
+        )
+    {
+        return TypeRefInfo::VERIFIED_VALUE;
+    }
+
+    // Regular imports can't be classified without cross-file info. Default to an unverified value
+    // (emitted under `@ts-ignore`), since misclassifying a class as type-only would emit
+    // `ɵɵinject(null)` and break injection; `query::engine` verifies them in optimize mode.
+    TypeRefInfo::UNVERIFIED_VALUE
+}
+
+/// The node ngtsc blames for a type-only import: the specifier when it carries the `type`
+/// modifier itself, else the import declaration (ngtsc points at its import clause).
+fn type_only_import_span(
+    specifier: &oxc_semantic::AstNode<'_>,
+    semantic: &oxc_semantic::Semantic<'_>,
+) -> oxc_span::Span {
+    use oxc_span::GetSpan;
+
+    if let oxc_ast::AstKind::ImportSpecifier(specifier) = specifier.kind() {
+        if specifier.import_kind.is_type() {
+            return specifier.span;
+        }
+    }
+    semantic.nodes().parent_node(specifier.id()).kind().span()
+}
+
+fn extract_decorator_args<'a>(
+    decorator: &oxc_ast::ast::Decorator<'a>,
+    source_text: &str,
+) -> Option<Vec<crate::DecoratorArg>> {
+    use oxc_span::GetSpan;
+
+    let call_args = get_decorator_args(decorator)?;
+    if call_args.is_empty() {
+        return None;
+    }
+
+    let mut decorator_args = Vec::new();
+    for arg in call_args {
+        match arg {
+            oxc_ast::ast::Argument::StringLiteral(lit) => {
+                decorator_args.push(crate::DecoratorArg {
+                    value: lit.value.to_string(),
+                    is_literal: true,
+                });
+            }
+            oxc_ast::ast::Argument::Identifier(ident) => {
+                decorator_args.push(crate::DecoratorArg {
+                    value: ident.name.to_string(),
+                    is_literal: false,
+                });
+            }
+            oxc_ast::ast::Argument::StaticMemberExpression(member) => {
+                let Some(obj) = expression_to_string(&member.object) else {
+                    continue;
+                };
+                decorator_args.push(crate::DecoratorArg {
+                    value: format!("{}.{}", obj, member.property.name),
+                    is_literal: false,
+                });
+            }
+            // Fallback: any other non-literal expression (e.g. a call like
+            // `@Attribute(dynamicAttrName())`) is captured verbatim from source so the
+            // emitted token is the original expression.
+            // https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/annotations/common/src/di.ts#L84-L93
+            other => {
+                let span = other.span();
+                if let Some(text) = source_text.get(span.start as usize..span.end as usize) {
+                    decorator_args.push(crate::DecoratorArg {
+                        value: text.to_string(),
+                        is_literal: false,
+                    });
+                }
+            }
+        }
+    }
+
+    if decorator_args.is_empty() {
+        None
+    } else {
+        Some(decorator_args)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn type_only_name_lists_are_sorted_and_unique() {
+        // `ANGULAR_CORE_TYPE_ONLY_EXPORTS` is looked up with `binary_search`, which silently
+        // misses entries once the list is out of order. Strict ordering also rejects duplicates,
+        // which a merge of two independently extended lists is prone to leave behind.
+        for list in [ANGULAR_CORE_TYPE_ONLY_EXPORTS, TS_BUILTIN_UTILITY_TYPES] {
+            assert!(
+                list.windows(2).all(|w| w[0] < w[1]),
+                "not strictly sorted: {list:?}"
+            );
+        }
+    }
+}

@@ -123,7 +123,7 @@ export interface ContentChildrenDecorator {
    * * **emitDistinctChangesOnly** - The ` QueryList#changes` observable will emit new values only
    *   if the QueryList result has changed. When `false` the `changes` observable might emit even
    *   if the QueryList has not changed.
-   *   ** Note: *** This config option is **deprecated**, it will be permanently set to `true` and
+   *   **Note:** This config option is **deprecated**, it will be permanently set to `true` and
    *   removed in future versions of Angular.
    * * **read** - Used to read a different token from the queried elements.
    *
@@ -146,7 +146,7 @@ export interface ContentChildrenDecorator {
    *   * Any provider defined on the injector of the component that is matched by the `selector` of
    * this query
    *   * Any provider defined through a string token (e.g. `{provide: 'token', useValue: 'val'}`)
-   *   * `TemplateRef`, `ElementRef`, and `ViewContainerRef`
+   *   * `TemplateRef`, `ElementRef`, `ViewContainerRef`, and `Injector`
    *
    * @usageNotes
    *
@@ -249,7 +249,7 @@ export interface ContentChildDecorator {
    *   * Any provider defined on the injector of the component that is matched by the `selector` of
    * this query
    *   * Any provider defined through a string token (e.g. `{provide: 'token', useValue: 'val'}`)
-   *   * `TemplateRef`, `ElementRef`, and `ViewContainerRef`
+   *   * `TemplateRef`, `ElementRef`, `ViewContainerRef`, and `Injector`
    *
    * Difference between dynamic and static queries:
    *
@@ -335,7 +335,7 @@ export interface ViewChildrenDecorator {
    * * **emitDistinctChangesOnly** - The ` QueryList#changes` observable will emit new values only
    *   if the QueryList result has changed. When `false` the `changes` observable might emit even
    *   if the QueryList has not changed.
-   *   ** Note: *** This config option is **deprecated**, it will be permanently set to `true` and
+   *   **Note:** This config option is **deprecated**, it will be permanently set to `true` and
    * removed in future versions of Angular.
    *
    * The following selectors are supported.
@@ -357,7 +357,7 @@ export interface ViewChildrenDecorator {
    *   * Any provider defined on the injector of the component that is matched by the `selector` of
    * this query
    *   * Any provider defined through a string token (e.g. `{provide: 'token', useValue: 'val'}`)
-   *   * `TemplateRef`, `ElementRef`, and `ViewContainerRef`
+   *   * `TemplateRef`, `ElementRef`, `ViewContainerRef`, and `Injector`
    *
    * @usageNotes
    *
@@ -444,7 +444,7 @@ export interface ViewChildDecorator {
    *   * Any provider defined on the injector of the component that is matched by the `selector` of
    * this query
    *   * Any provider defined through a string token (e.g. `{provide: 'token', useValue: 'val'}`)
-   *   * `TemplateRef`, `ElementRef`, and `ViewContainerRef`
+   *   * `TemplateRef`, `ElementRef`, `ViewContainerRef`, and `Injector`
    *
    * Difference between dynamic and static queries:
    *   * Dynamic queries \(`static: false`\) - The query resolves before the `ngAfterViewInit()`

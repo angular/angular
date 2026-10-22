@@ -208,25 +208,25 @@ This happens automatically if the options object passed to the request method is
 
 In addition to the response body or response object, `HttpClient` can also return a stream of raw _events_ corresponding to specific moments in the request lifecycle. These events include when the request is sent, when the response header is returned, and when the body is complete. These events can also include _progress events_ that report upload and download status for large request or response bodies.
 
-Progress events are disabled by default (as they have a performance cost) but can be enabled with the `reportProgress` option.
+Progress events are disabled by default (as they have a performance cost) but can be enabled with the `reportUploadProgress` and `reportDownloadProgress` options.
 
-NOTE: The default fetch backend of `HttpClient` does not report _upload_ progress events. If your app needs upload progress events, configure `HttpClient` with `withXhr()` in `provideHttpClient(...)`.
+NOTE: The default fetch backend of `HttpClient` does not support _upload_ progress events and throws an error if you set `reportUploadProgress`. If your app needs upload progress events, configure `HttpClient` with `withXhr()` in `provideHttpClient(...)`.
 
 To observe the event stream, set the `observe` option to `'events'`:
 
 ```ts
 http
-  .post('/api/upload', myData, {
-    reportProgress: true,
+  .get('/api/download', {
+    reportDownloadProgress: true,
     observe: 'events',
   })
   .subscribe((event) => {
     switch (event.type) {
-      case HttpEventType.UploadProgress:
-        console.log('Uploaded ' + event.loaded + ' out of ' + event.total + ' bytes');
+      case HttpEventType.DownloadProgress:
+        console.log('Downloaded ' + event.loaded + ' out of ' + event.total + ' bytes');
         break;
       case HttpEventType.Response:
-        console.log('Finished uploading!');
+        console.log('Finished downloading!');
         break;
     }
   });
@@ -257,7 +257,7 @@ There are three ways an HTTP request can fail:
 - A request didn't respond in time when the timeout option was set.
 - The backend can receive the request but fail to process it, and return an error response.
 
-`HttpClient` captures all of the above kinds of errors in an `HttpErrorResponse` which it returns through the `Observable`'s error channel. Network and timeout errors have a `status` code of `0` and an `error` which is an instance of [`ProgressEvent`](https://developer.mozilla.org/docs/Web/API/ProgressEvent). Backend errors have the failing `status` code returned by the backend, and the error response as the `error`. Inspect the response to identify the error's cause and the appropriate action to handle the error.
+`HttpClient` captures all of the above kinds of errors in an `HttpErrorResponse` which it returns through the `Observable`'s error channel. Network and timeout errors have a `status` code of `0`. For timeouts, the `error` is a `DOMException` named `TimeoutError`; for network errors, it is the error thrown by `fetch` (or a [`ProgressEvent`](https://developer.mozilla.org/docs/Web/API/ProgressEvent) when using `withXhr()`). Backend errors have the failing `status` code returned by the backend, and the error response as the `error`. Inspect the response to identify the error's cause and the appropriate action to handle the error.
 
 The [RxJS library](https://rxjs.dev/) offers several operators which can be useful for error handling.
 
@@ -616,6 +616,8 @@ http
 
 IMPORTANT: The `integrity` option requires an exact match between the response content and the provided hash. If the content doesn't match, the request will fail with a network error.
 
+CRITICAL: During SSR, the Fetch implementation reads the entire response body to verify `integrity` before returning a response, as required by the [Fetch Standard](https://fetch.spec.whatwg.org/#concept-main-fetch). Angular enforces [`maxResponseBodySize`](/guide/ssr#configuring-the-response-body-size-limit) only after Fetch returns a response, so this limit does not constrain the data buffered during integrity verification.
+
 TIP: Use subresource integrity when loading critical resources from external sources to ensure they haven't been modified. Generate hashes using tools like `openssl`.
 
 ## HTTP `Observable`s
@@ -669,7 +671,7 @@ export class UserProfile {
 
   private userService = inject(UserService);
 
-  constructor(): void {
+  constructor() {
     effect(() => {
       this.user$ = this.userService.getUser(this.userId());
     });

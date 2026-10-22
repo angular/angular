@@ -390,6 +390,39 @@ describe('ShadowCss', () => {
     it('should handle adjacent comments', () => {
       expect(shim('/* comment 1 */ /* comment 2 */ b {}', 'contenta')).toBe('  b[contenta] {}');
     });
+
+    it('should not scope comments that are placed between a selector and its block', () => {
+      expect(shim('.a /* comment */ {}', 'contenta')).toBe('.a[contenta]    {}');
+    });
+
+    it('should not scope comments that are placed between selectors of a list', () => {
+      expect(shim('.a, /* comment */ .b {}', 'contenta')).toBe('.a[contenta],    .b[contenta] {}');
+      expect(shim('.a /* comment */, .b {}', 'contenta')).toBe('.a[contenta]   , .b[contenta] {}');
+    });
+
+    it('should not scope comments that are placed between compound selectors', () => {
+      expect(shim('.a /* comment */ .b {}', 'contenta')).toBe('.a[contenta]      .b[contenta] {}');
+      expect(shim('.a > /* comment */ .b {}', 'contenta')).toBe(
+        '.a[contenta]    >    .b[contenta] {}',
+      );
+      expect(shim('.a /* c1 */ /* c2 */ .b {}', 'contenta')).toBe(
+        '.a[contenta]         .b[contenta] {}',
+      );
+    });
+
+    it('should not scope comments inside of :host and pseudo selector functions', () => {
+      expect(shim(':host /* comment */ .b {}', 'contenta', 'a-host')).toBe(
+        '[a-host]      .b[contenta] {}',
+      );
+      expect(shim(':is(.a, /* comment */ .b) {}', 'contenta')).toBe(
+        ':is(.a[contenta],    .b[contenta]) {}',
+      );
+    });
+
+    it('should scope compound selectors that contain a comment', () => {
+      expect(shim('.a/* comment */.b {}', 'contenta')).toBe('.a.b[contenta] {}');
+      expect(shim('.a/* comment */:hover {}', 'contenta')).toBe('.a[contenta]:hover {}');
+    });
   });
 
   describe('CSS variable namespacing', () => {
@@ -433,7 +466,7 @@ describe('ShadowCss', () => {
       const input = `
 .foo {
   border: var(--global--border-size) solid var(--border-color);
-  box-shadow: 
+  box-shadow:
     var(--shadow-1),
     var(--global--shadow-2),
     var(--shadow-3);
@@ -443,7 +476,7 @@ describe('ShadowCss', () => {
       const expected = `
 .foo {
   border: var(--border-size) solid var(--%NS%border-color);
-  box-shadow: 
+  box-shadow:
     var(--%NS%shadow-1),
     var(--shadow-2),
     var(--%NS%shadow-3);
@@ -596,6 +629,94 @@ p {
       expect(() => namespaceCssVariables('p { --global-: red; }')).toThrowError(
         'CSS variable "--global-" has a single hyphen after "--global". Use two hyphens ("--global--") to opt-out of namespacing.',
       );
+    });
+
+    it('should namespace @property declarations', () => {
+      const input = `
+  @property --myColor {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: rebeccapurple;
+  }
+
+  @property --myWidth {
+    syntax: "<length> | <percentage>";
+    inherits: true;
+    initial-value: 200px;
+  }
+
+  p {
+    background-color: var(--myColor);
+    width: var(--myWidth);
+    color: white;
+  }
+`.trim();
+
+      const expected = `
+  @property --%NS%myColor {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: rebeccapurple;
+  }
+
+  @property --%NS%myWidth {
+    syntax: "<length> | <percentage>";
+    inherits: true;
+    initial-value: 200px;
+  }
+
+  p {
+    background-color: var(--%NS%myColor);
+    width: var(--%NS%myWidth);
+    color: white;
+  }
+`.trim();
+
+      expect(namespaceCssVariables(input)).toBe(expected);
+    });
+
+    it('should not namespace @property if --global-- is present', () => {
+      const input = `
+  @property --global--my-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: rebeccapurple;
+  }
+
+  @property --global--my-width {
+    syntax: "<length> | <percentage>";
+    inherits: true;
+    initial-value: 200px;
+  }
+
+  p {
+    background-color: var(--global--my-color);
+    width: var(--global--my-width);
+    color: white;
+  }
+`.trim();
+
+      const expected = `
+  @property --my-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: rebeccapurple;
+  }
+
+  @property --my-width {
+    syntax: "<length> | <percentage>";
+    inherits: true;
+    initial-value: 200px;
+  }
+
+  p {
+    background-color: var(--my-color);
+    width: var(--my-width);
+    color: white;
+  }
+`.trim();
+
+      expect(namespaceCssVariables(input)).toBe(expected);
     });
   });
 });

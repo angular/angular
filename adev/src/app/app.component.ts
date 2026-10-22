@@ -16,7 +16,7 @@ import {
   TopLevelBannerComponent,
 } from '@angular/docs';
 import {NavigationEnd, NavigationSkipped, Router, RouterOutlet} from '@angular/router';
-import {filter, map} from 'rxjs/operators';
+import {filter, map} from 'rxjs';
 import {ESCAPE, SEARCH_TRIGGER_KEY} from './core/constants/keys';
 import {Footer} from './core/layout/footer/footer.component';
 import {Navigation} from './core/layout/navigation/navigation.component';

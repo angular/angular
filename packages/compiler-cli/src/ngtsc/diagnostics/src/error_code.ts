@@ -378,7 +378,7 @@ export enum ErrorCode {
    * </comp>
    * ```
    */
-  CONTROL_FLOW_PREVENTING_CONTENT_PROJECTION = 8011,
+  CONTROL_FLOW_PREVENTING_CONTENT_PROJECTION = -8011,
 
   /**
    * A pipe imported via `@Component.deferredImports` is
@@ -484,6 +484,18 @@ export enum ErrorCode {
    * Raised when a `@content` block name conflicts with an input binding on the parent foreign component.
    */
   CONFLICTING_CONTENT_AND_PROPERTY = 8029,
+
+  /**
+   * An event binding on an element with matched directives refers to an event which is neither
+   * an output of the matched directives nor a known native DOM event. For example:
+   *
+   * ```html
+   * <some-cmp (outputTypo)="handle()"></some-cmp>
+   * ```
+   *
+   * This is only reported when `strictUnclaimedEventNames` is enabled.
+   */
+  UNCLAIMED_EVENT_BINDING = 8030,
 
   /**
    * A two way binding in a template has an incorrect syntax,
@@ -688,6 +700,24 @@ export enum ErrorCode {
    *  }
    */
   FORBIDDEN_REQUIRED_INITIALIZER_INVOCATION = 8118,
+
+  /**
+   * A numeric value is bound to a CSS property that requires a unit.
+   *
+   * For example:
+   * ```html
+   * <div [style.width]="200"></div>
+   * ```
+   *
+   * This will not have the intended effect since CSS requires units for length values.
+   * It should be:
+   * ```html
+   * <div [style.width.px]="200"></div>
+   * <!-- OR -->
+   * <div [style.width]="'200px'"></div>
+   * ```
+   */
+  NUMERIC_CSS_PROPERTY_REQUIRES_UNIT = 8119,
 
   /**
    * The template type-checking engine would need to generate an inline type check block for a

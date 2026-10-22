@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ComponentRef, EffectRef, InjectionToken, Injector} from '@angular/core';
+import {ComponentRef, EffectRef, InjectionToken} from '@angular/core';
 import {OperatorFunction} from 'rxjs';
 import type {NavigationTransition} from './navigation_transition';
 
@@ -19,7 +19,6 @@ export interface RouterResourcesFeatureImplementation {
   createResourceOutletBindingEffects?: (
     componentRef: ComponentRef<unknown>,
     route: ActivatedRoute,
-    injector: Injector,
   ) => {createdEffects: EffectRef[]; handledKeys: string[]};
 }
 

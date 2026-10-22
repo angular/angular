@@ -331,9 +331,25 @@ Groups related controls (like text formatting).
 
 ```html
 <div ngToolbar class="toolbar">
-  <div ngToolbarWidgetGroup [multi]="true" role="group" aria-label="Formatting">
-    <button ngToolbarWidget value="bold" class="tool-btn">B</button>
-    <button ngToolbarWidget value="italic" class="tool-btn">I</button>
+  <div ngToolbarWidgetGroup role="group" aria-label="Formatting">
+    <button
+      ngToolbarWidget
+      type="button"
+      [attr.aria-pressed]="bold()"
+      (click)="bold.set(!bold())"
+      class="tool-btn"
+    >
+      B
+    </button>
+    <button
+      ngToolbarWidget
+      type="button"
+      [attr.aria-pressed]="italic()"
+      (click)="italic.set(!italic())"
+      class="tool-btn"
+    >
+      I
+    </button>
   </div>
 </div>
 ```

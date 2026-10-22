@@ -15,7 +15,6 @@ import {
   signal,
   WritableSignal,
   resource,
-  ɵpromiseWithResolvers,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {provideRouter, Router, UrlTree} from '@angular/router';
@@ -94,9 +93,9 @@ describe('routerResource behavior tests', () => {
           resolveImmediately = false;
           return Promise.resolve('initial');
         }
-        return new Promise<string>((resolve) => {
-          resolveLoader = resolve;
-        });
+        const {promise, resolve} = Promise.withResolvers<string>();
+        resolveLoader = resolve;
+        return promise;
       },
     });
   }
@@ -131,7 +130,9 @@ describe('routerResource behavior tests', () => {
       await timeout();
 
       // Setup pending navigation to /route2
-      guardPromise2 = new Promise((resolve) => (resolveGuard2 = resolve));
+      ({promise: guardPromise2, resolve: resolveGuard2} = Promise.withResolvers<
+        boolean | UrlTree
+      >());
       const navPromise = harness.navigateByUrl('/route2');
       await timeout();
 
@@ -158,7 +159,9 @@ describe('routerResource behavior tests', () => {
       const wrapped = createWrappedResource();
       await timeout();
 
-      guardPromise2 = new Promise((resolve) => (resolveGuard2 = resolve));
+      ({promise: guardPromise2, resolve: resolveGuard2} = Promise.withResolvers<
+        boolean | UrlTree
+      >());
       const navPromise = harness.navigateByUrl('/route2');
       await timeout();
 
@@ -203,9 +206,13 @@ describe('routerResource behavior tests', () => {
       await timeout();
 
       // Block route3 with a pending guard so we can pause and inspect the redirect transition
-      guardPromise3 = new Promise((resolve) => (resolveGuard3 = resolve));
+      ({promise: guardPromise3, resolve: resolveGuard3} = Promise.withResolvers<
+        boolean | UrlTree
+      >());
 
-      guardPromise2 = new Promise((resolve) => (resolveGuard2 = resolve));
+      ({promise: guardPromise2, resolve: resolveGuard2} = Promise.withResolvers<
+        boolean | UrlTree
+      >());
       const navPromise = harness.navigateByUrl('/route2');
       await timeout();
 
@@ -233,7 +240,9 @@ describe('routerResource behavior tests', () => {
       const wrapped = createWrappedResource();
       await timeout();
 
-      guardPromise2 = new Promise((resolve) => (resolveGuard2 = resolve));
+      ({promise: guardPromise2, resolve: resolveGuard2} = Promise.withResolvers<
+        boolean | UrlTree
+      >());
       const navPromise = harness.navigateByUrl('/route2');
       await timeout();
 
@@ -266,12 +275,16 @@ describe('routerResource behavior tests', () => {
       await timeout();
 
       // Start Nav 1 (to /route2)
-      guardPromise2 = new Promise((resolve) => (resolveGuard2 = resolve));
+      ({promise: guardPromise2, resolve: resolveGuard2} = Promise.withResolvers<
+        boolean | UrlTree
+      >());
       const nav1Promise = harness.navigateByUrl('/route2');
       await timeout();
 
       // Start Nav 2 (to /route3), which cancels Nav 1
-      guardPromise3 = new Promise((resolve) => (resolveGuard3 = resolve));
+      ({promise: guardPromise3, resolve: resolveGuard3} = Promise.withResolvers<
+        boolean | UrlTree
+      >());
       const nav2Promise = harness.navigateByUrl('/route3');
       await timeout();
 
@@ -301,7 +314,9 @@ describe('routerResource behavior tests', () => {
       await timeout();
 
       // Start Nav 1
-      guardPromise2 = new Promise((resolve) => (resolveGuard2 = resolve));
+      ({promise: guardPromise2, resolve: resolveGuard2} = Promise.withResolvers<
+        boolean | UrlTree
+      >());
       const nav1Promise = harness.navigateByUrl('/route2');
       await timeout();
 
@@ -313,7 +328,9 @@ describe('routerResource behavior tests', () => {
       await timeout();
 
       // While recovery is pending, a new navigation (Nav 2) starts (to /route3)
-      guardPromise3 = new Promise((resolve) => (resolveGuard3 = resolve));
+      ({promise: guardPromise3, resolve: resolveGuard3} = Promise.withResolvers<
+        boolean | UrlTree
+      >());
       const nav2Promise = harness.navigateByUrl('/route3');
       await timeout();
 
@@ -352,7 +369,9 @@ describe('routerResource behavior tests', () => {
       const wrapped = createWrappedResource();
       await timeout();
 
-      guardPromise2 = new Promise((resolve) => (resolveGuard2 = resolve));
+      ({promise: guardPromise2, resolve: resolveGuard2} = Promise.withResolvers<
+        boolean | UrlTree
+      >());
       const navPromise = harness.navigateByUrl('/route2');
       await timeout();
 
@@ -376,7 +395,9 @@ describe('routerResource behavior tests', () => {
       expect(wrapped.value()).toBe('initial');
 
       // 1. Start navigation to route2 (blocked by guard)
-      guardPromise2 = new Promise((resolve) => (resolveGuard2 = resolve));
+      ({promise: guardPromise2, resolve: resolveGuard2} = Promise.withResolvers<
+        boolean | UrlTree
+      >());
       const navPromise = harness.navigateByUrl('/route2');
       await timeout(); // Let router start and freeze the resource
 
@@ -437,7 +458,9 @@ describe('routerResource behavior tests', () => {
       expect(wrapped.value()).toBe('initial-2');
 
       // 2. Start navigation (should freeze at the last streamed value)
-      guardPromise2 = new Promise((resolve) => (resolveGuard2 = resolve));
+      ({promise: guardPromise2, resolve: resolveGuard2} = Promise.withResolvers<
+        boolean | UrlTree
+      >());
       const navPromise = harness.navigateByUrl('/route2');
       await timeout();
 
@@ -466,24 +489,30 @@ describe('routerResource behavior tests', () => {
       expect(wrapped.value()).toBe('updated-2');
     });
 
-    it('should complete rollback recovery when a resource has a value even while remaining in loading state', async () => {
+    it('should maintain frozen state during rollback recovery until loading completes', async () => {
       const valueSignal = signal<string | undefined>('initial');
+      const statusSignal = signal<ResourceStatus>('resolved');
+      const isLoadingSignal = signal<boolean>(false);
       const hasValueSignal = signal<boolean>(true);
 
       const customResource: Resource<string> = {
         value: valueSignal as Signal<string>,
-        status: signal<ResourceStatus>('loading').asReadonly(),
-        isLoading: signal(true).asReadonly(),
+        status: statusSignal.asReadonly(),
+        isLoading: isLoadingSignal.asReadonly(),
         hasValue: (() => hasValueSignal()) as any,
         error: signal<Error | undefined>(undefined).asReadonly(),
-        snapshot: computed(() => ({
-          status: 'loading' as const,
-          value: valueSignal()!,
-        })),
+        snapshot: computed(
+          () =>
+            ({
+              status: statusSignal(),
+              value: valueSignal()!,
+            }) as any,
+        ),
       };
 
       const wrapped = TestBed.runInInjectionContext(() => routerResource(customResource));
       expect(wrapped.value()).toBe('initial');
+      expect(wrapped.isLoading()).toBe(false);
 
       // Start navigation to route2 with a failing guard to trigger rollback
       guardPromise2 = Promise.reject(new Error('Navigation failed'));
@@ -492,21 +521,33 @@ describe('routerResource behavior tests', () => {
       } catch {}
 
       // Reset value and set hasValue to false to simulate recovery fetch starting
+      statusSignal.set('loading');
+      isLoadingSignal.set(true);
       valueSignal.set(undefined);
       hasValueSignal.set(false);
       await timeout();
 
       // Wrapped snapshot should be frozen at 'initial' during recovery loading
       expect(wrapped.value()).toBe('initial');
+      expect(wrapped.isLoading()).toBe(false);
 
       // Resource receives value while isLoading() remains true and status is 'loading'
       valueSignal.set('recovered-stream-1');
       hasValueSignal.set(true);
+      await timeout();
+
+      // Rollback recovery remains frozen because isLoading is still true
+      expect(wrapped.value()).toBe('initial');
+      expect(wrapped.isLoading()).toBe(false);
+
+      // Loading completes
+      statusSignal.set('resolved');
+      isLoadingSignal.set(false);
       await harness.fixture.whenStable();
 
-      // Rollback recovery unfreezes because hasValue is true despite isLoading being true
+      // Rollback recovery unfreezes because loading is complete
       expect(wrapped.value()).toBe('recovered-stream-1');
-      expect(wrapped.isLoading()).toBe(true);
+      expect(wrapped.isLoading()).toBe(false);
     });
   });
 });

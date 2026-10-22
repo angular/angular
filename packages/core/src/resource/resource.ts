@@ -29,6 +29,7 @@ import {
 import {assertInInjectionContext} from '../di/contextual';
 import {Injector} from '../di/injector';
 import {inject} from '../di/injector_compatibility';
+import {isErrorLike} from '../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {CACHE_ACTIVE} from '../hydration/cache';
 import {DestroyRef} from '../linker/destroy_ref';
@@ -245,11 +246,25 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
 
     this.transferState = injector.get(TransferState, undefined, {optional: true}) ?? undefined;
 
+    const paramsSignal = isSignal(request)
+      ? request
+      : computed(
+          () => {
+            try {
+              setInParamsFunction(true);
+              return request(paramsContext);
+            } finally {
+              setInParamsFunction(false);
+            }
+          },
+          ngDevMode ? createDebugNameObject(debugName, 'params') : undefined,
+        );
+
     this.extRequest = linkedSignal<WrappedRequest>(
       () => {
         try {
           setInParamsFunction(true);
-          return {request: request(paramsContext), reload: 0};
+          return {request: paramsSignal(), reload: 0};
         } catch (error) {
           rethrowFatalErrors(error);
           if (error === ResourceParamsStatus.IDLE) {
@@ -257,7 +272,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
           } else if (error === ResourceParamsStatus.LOADING) {
             return {status: 'loading', reload: 0};
           }
-          return {error: error as Error, reload: 0};
+          return {error: encapsulateResourceError(error), reload: 0};
         } finally {
           setInParamsFunction(false);
         }
@@ -278,7 +293,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
         if (error) {
           status = 'resolved';
           stream = signal(
-            {error: encapsulateResourceError(error)},
+            {error},
             ngDevMode ? createDebugNameObject(this.debugName, 'stream') : undefined,
           );
         } else if (!status) {
@@ -604,15 +619,6 @@ export function encapsulateResourceError(error: unknown): Error {
   }
 
   return new ResourceWrappedError(error);
-}
-
-export function isErrorLike(error: unknown): error is Error {
-  return (
-    error instanceof Error ||
-    (typeof error === 'object' &&
-      typeof (error as Error).name === 'string' &&
-      typeof (error as Error).message === 'string')
-  );
 }
 
 export class ResourceValueError extends Error {

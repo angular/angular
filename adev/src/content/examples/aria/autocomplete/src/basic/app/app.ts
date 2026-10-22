@@ -36,10 +36,6 @@ export class App {
     });
   }
 
-  onBlur() {
-    this.commitSelection();
-  }
-
   onCommit() {
     this.commitSelection();
     this.popupExpanded.set(false);

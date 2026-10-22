@@ -2,6 +2,8 @@
 
 Data resolvers allow you to fetch data before navigating to a route, ensuring that your components receive the data they need before rendering. This can help prevent the need for loading states and improve the user experience by pre-loading essential data.
 
+TIP: If your application uses Angular Signals, consider using [route resources](/guide/routing/data-fetching-with-resources) for reactive data fetching with `Resource` APIs and built-in support for non-blocking data loading.
+
 ## What are data resolvers?
 
 A data resolver is a service that implements the `ResolveFn` function. It runs before a route activates and can fetch data from APIs, databases, or other sources. The resolved data becomes available to the component through the `ActivatedRoute`.
@@ -92,7 +94,7 @@ import type {User, Settings} from './types';
 })
 export class UserDetail {
   private route = inject(ActivatedRoute);
-  private data = toSignal(this.route.data);
+  private data = toSignal(this.route.data, {requireSync: true});
   user = computed(() => this.data().user as User);
   settings = computed(() => this.data().settings as Settings);
 }
@@ -149,9 +151,8 @@ The [`withNavigationErrorHandler`](api/router/withNavigationErrorHandler) featur
 
 ```ts
 import {bootstrapApplication} from '@angular/platform-browser';
-import {provideRouter, withNavigationErrorHandler} from '@angular/router';
+import {provideRouter, Router, withNavigationErrorHandler} from '@angular/router';
 import {inject} from '@angular/core';
-import {Router} from '@angular/router';
 import {routes} from './app.routes';
 
 bootstrapApplication(App, {
@@ -161,8 +162,8 @@ bootstrapApplication(App, {
       withNavigationErrorHandler((error) => {
         const router = inject(Router);
 
-        if (error?.message) {
-          console.error('Navigation error occurred:', error.message);
+        if (error.error?.message) {
+          console.error('Navigation error occurred:', error.error.message);
         }
 
         router.navigate(['/error']);
@@ -272,12 +273,14 @@ export const userResolver: ResolveFn<User | RedirectCommand> = (route) => {
 
 While data resolvers prevent loading states within components, they introduce a different UX consideration: navigation is blocked while resolvers execute. Users may experience delays between clicking a link and seeing the new route, especially with slow network requests.
 
+TIP: To avoid blocking navigation and render components immediately with skeleton or loading indicators, use [non-blocking route resources](/guide/routing/data-fetching-with-resources#blocking-and-non-blocking-resources).
+
 ### Providing navigation feedback
 
 To improve user experience during resolver execution, you can listen to router events and show loading indicators:
 
 ```angular-ts
-import {Component, inject} from '@angular/core';
+import {Component, computed, inject} from '@angular/core';
 import {Router} from '@angular/router';
 
 @Component({
@@ -308,20 +311,22 @@ This approach ensures users receive visual feedback that navigation is in progre
 
 ## Reading parent resolved data in child resolvers
 
-Resolvers execute from parent to child. When a parent route defines a resolver, its resolved data is available to child resolvers that run afterward.
+Resolvers execute sequentially from parent to child. When a parent route defines a resolver, its resolved data is available to child resolvers that run afterward.
+
+NOTE: Because resolvers execute sequentially from parent to child, each nested level adds to the total navigation wait time (a network waterfall). If your child routes do not depend on parent data, consider [route resources](/guide/routing/data-fetching-with-resources), which execute concurrently across all routes.
 
 ```ts
-import { inject } from '@angular/core';
-import { provideRouter , ActivatedRouteSnapshot } from '@angular/router';
-import { userResolver } from './resolvers';
-import { UserPosts } from './pages';
-import { PostService } from './services',
-import type { User } from './types';
+import {inject} from '@angular/core';
+import {provideRouter, ActivatedRouteSnapshot} from '@angular/router';
+import {userResolver} from './resolvers';
+import {UserPosts} from './pages';
+import {PostService} from './services';
+import type {User} from './types';
 
 provideRouter([
   {
     path: 'users/:id',
-    resolve: { user: userResolver }, // user resolver in the parent route
+    resolve: {user: userResolver}, // user resolver in the parent route
     children: [
       {
         path: 'posts',
@@ -340,3 +345,10 @@ provideRouter([
   },
 ]);
 ```
+
+## Next steps
+
+<docs-pill-row>
+  <docs-pill href="/guide/routing/data-fetching-with-resources" title="Data fetching with resources"/>
+  <docs-pill href="/guide/routing/route-guards" title="Control route access with guards"/>
+</docs-pill-row>

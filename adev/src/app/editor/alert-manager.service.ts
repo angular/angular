@@ -16,7 +16,7 @@ import {
 } from '../core/services/errors-handling/error-snack-bar';
 
 export const MAX_RECOMMENDED_WEBCONTAINERS_INSTANCES = 3;
-export const WEBCONTAINERS_COUNTER_KEY = 'numberOfWebcontainers';
+const WEBCONTAINERS_COUNTER_KEY = 'numberOfWebcontainers';
 
 export enum AlertReason {
   OUT_OF_MEMORY,
@@ -58,11 +58,20 @@ export class AlertManager {
   // Decrease count of running instances of the webcontainers when user close the app.
   private decreaseInstancesCounterOnPageClose(): void {
     this.window.addEventListener('beforeunload', () => {
-      const countOfRunningInstances = this.getStoredCountOfWebcontainerInstances() - 1;
-
-      this.localStorage?.setItem(WEBCONTAINERS_COUNTER_KEY, countOfRunningInstances.toString());
-      this.validateRunningInstances(countOfRunningInstances);
+      this.decreaseInstancesCounter();
     });
+  }
+
+  /**
+   * Decrease the counter of running webcontainer instances.
+   * This should be called when the webcontainer crashes or encounters an error,
+   * to ensure the counter accurately reflects the number of active instances.
+   */
+  decreaseInstancesCounter(): void {
+    const countOfRunningInstances = this.getStoredCountOfWebcontainerInstances() - 1;
+
+    this.localStorage?.setItem(WEBCONTAINERS_COUNTER_KEY, countOfRunningInstances.toString());
+    this.validateRunningInstances(countOfRunningInstances);
   }
 
   private getStoredCountOfWebcontainerInstances(): number {

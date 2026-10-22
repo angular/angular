@@ -47,7 +47,6 @@ describe('foreign components', () => {
   describe('reactivity', () => {
     it('should update foreign content', async () => {
       @Component({
-        selector: 'test-cmp',
         template: `
           <FancyButton>
             <span id="icon">{{ buttonIcon() }}</span>
@@ -84,7 +83,6 @@ describe('foreign components', () => {
       }
 
       @Component({
-        selector: 'test-cmp',
         template: `
           <FancyIcon>
             @content (icon; let _) {
@@ -126,7 +124,6 @@ describe('foreign components', () => {
       }
 
       @Component({
-        selector: 'test-cmp',
         template: `
           <Doubler [value]="value">
             @content (render; let double) {
@@ -163,7 +160,6 @@ describe('foreign components', () => {
   describe('content projection', () => {
     it('should not reparent content to next to its original container when added to the DOM', async () => {
       @Component({
-        selector: 'test-cmp',
         template: `
           @if (true) {
             <FancyButton>
@@ -229,7 +225,6 @@ describe('foreign components', () => {
       }
 
       @Component({
-        selector: 'test-cmp',
         template: `
           <Card>
             @content (header) {
@@ -273,7 +268,6 @@ describe('foreign components', () => {
 
     it('should support conditional (@if) in projected foreign content', async () => {
       @Component({
-        selector: 'test-cmp',
         template: `
           <FancyButton>
             @if (show()) {
@@ -307,7 +301,6 @@ describe('foreign components', () => {
 
     it('should support loops (@for) in projected foreign content', async () => {
       @Component({
-        selector: 'test-cmp',
         template: `
           <FancyButton>
             @for (item of items(); track item) {
@@ -365,7 +358,6 @@ describe('foreign components', () => {
       }
 
       @Component({
-        selector: 'test-cmp',
         template: `
           <SimpleWrapper>
             <FancyButton>
@@ -407,7 +399,6 @@ describe('foreign components', () => {
       class AngularWrapper {}
 
       @Component({
-        selector: 'test-cmp',
         imports: [AngularWrapper],
         template: `
           <angular-wrapper>
@@ -451,7 +442,6 @@ describe('foreign components', () => {
       }
 
       @Component({
-        selector: 'test-cmp',
         template: `
           <FancyList>
             @content (renderHeader; let _) {
@@ -490,7 +480,6 @@ describe('foreign components', () => {
       }
 
       @Component({
-        selector: 'test-cmp',
         template: `
           <FancyList>
             @content (renderItem; let item) {
@@ -531,7 +520,6 @@ describe('foreign components', () => {
       }
 
       @Component({
-        selector: 'test-cmp',
         template: `
           <FancyTable>
             @content (renderRow; let row, idx, isLast) {
@@ -594,7 +582,6 @@ describe('foreign components', () => {
       }
 
       @Component({
-        selector: 'test-cmp',
         template: `
           <OuterComp>
             @content (renderContent; let message) {
@@ -645,7 +632,6 @@ describe('foreign components', () => {
       }
 
       @Component({
-        selector: 'test-cmp',
         template: `
           @if (show()) {
             <LabeledButton [label]="buttonText" />
@@ -688,7 +674,6 @@ describe('foreign components', () => {
       }
 
       @Component({
-        selector: 'test-cmp',
         template: `
           @if (status() === 'success') {
             <StatusBadge [text]="successText" />
@@ -738,7 +723,6 @@ describe('foreign components', () => {
       }
 
       @Component({
-        selector: 'test-cmp',
         template: `
           @for (item of items(); track item.id) {
             <ItemCard [title]="item.name" />
@@ -808,7 +792,6 @@ describe('foreign components', () => {
       }
 
       @Component({
-        selector: 'test-cmp',
         template: `
           @switch (role()) {
             @case ('admin') {
@@ -859,7 +842,6 @@ describe('foreign components', () => {
       }
 
       @Component({
-        selector: 'test-cmp',
         template: `
           @if (sectionVisible()) {
             @for (user of users; track user.id) {
@@ -915,7 +897,6 @@ describe('foreign components', () => {
   describe('queries', () => {
     it('should support querying elements inside projected foreign content', async () => {
       @Component({
-        selector: 'test-cmp',
         template: `
           <FancyButton>
             @if (show()) {
@@ -955,7 +936,6 @@ describe('foreign components', () => {
       let clicked = false;
 
       @Component({
-        selector: 'test-cmp',
         template: `
           <FancyButton>
             <span id="icon" (click)="handleClick()">⭐</span>
@@ -1470,7 +1450,6 @@ describe('foreign components', () => {
       let textInAfterViewInit = '';
 
       @Component({
-        selector: 'test-cmp',
         template: `<TitleWidget title="Rendered Before ViewInit" />`,
         // @ts-ignore
         foreignImports: [frameworkImport(TitleWidget)],

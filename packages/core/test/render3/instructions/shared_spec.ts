@@ -71,6 +71,7 @@ export function enterViewWithOneDiv() {
       changeDetectionScheduler: null,
       ngReflect: false,
       tracingService: null,
+      locale: 'en-us',
     },
     renderer,
     null,

@@ -15,9 +15,11 @@ import {
 } from '../../../src/ngtsc/file_system';
 import {initMockFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {
+  isNgpTestMode,
   loadStandardTestFiles,
   loadTestDirectory,
   NgtscTestCompilerHost,
+  performNgpCompilationSync,
 } from '../../../src/ngtsc/testing';
 import {performCompilation} from '../../../src/perform_compile';
 import {CompilerOptions} from '../../../src/transformers/api';
@@ -68,6 +70,19 @@ export function compileTest(
     strictTemplates: false,
   });
   const rootNames = files.map((f) => fs.resolve(f));
+  if (isNgpTestMode()) {
+    const {diagnostics, emittedFiles} = performNgpCompilationSync({
+      fs,
+      basePath: rootDir,
+      tsconfigPath: fs.resolve(rootDir, 'tsconfig.json'),
+      rootNames,
+      options,
+      emit: true,
+      complianceMode: true,
+    });
+    const errors = parseDiagnostics(diagnostics);
+    return {errors, emittedFiles};
+  }
   const host = new NgtscTestCompilerHost(fs, options);
   const {diagnostics, emitResult} = performCompilation({rootNames, host, options});
   const emittedFiles = emitResult

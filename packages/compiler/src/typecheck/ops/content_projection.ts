@@ -8,12 +8,14 @@
 
 import {CssSelector, SelectorMatcher} from '../../directive_matching';
 import {
+  BoundaryBlock,
   Component,
   Element,
   ForLoopBlock,
   ForLoopBlockEmpty,
   IfBlock,
   IfBlockBranch,
+  LetDeclaration,
   Node,
   SwitchBlock,
   SwitchBlockCaseGroup,
@@ -94,8 +96,9 @@ export class TcbControlFlowContentProjectionOp extends TcbOp {
   }
 
   private findPotentialControlFlowNodes() {
-    const result: Array<IfBlockBranch | SwitchBlockCaseGroup | ForLoopBlock | ForLoopBlockEmpty> =
-      [];
+    const result: Array<
+      IfBlockBranch | SwitchBlockCaseGroup | ForLoopBlock | ForLoopBlockEmpty | BoundaryBlock
+    > = [];
 
     for (const child of this.element.children) {
       if (child instanceof ForLoopBlock) {
@@ -117,6 +120,12 @@ export class TcbControlFlowContentProjectionOp extends TcbOp {
             result.push(current);
           }
         }
+      } else if (child instanceof BoundaryBlock) {
+        // `@error` blocks aren't checked, because they don't copy the
+        // tag name and attributes of their root node for content projection.
+        if (this.shouldCheck(child)) {
+          result.push(child);
+        }
       }
     }
 
@@ -134,6 +143,11 @@ export class TcbControlFlowContentProjectionOp extends TcbOp {
 
     // Check the number of root nodes while skipping empty text where relevant.
     for (const child of node.children) {
+      // `@let` declarations don't render anything so they don't affect content projection.
+      if (child instanceof LetDeclaration) {
+        continue;
+      }
+
       // Normally `preserveWhitspaces` would have been accounted for during parsing, however
       // in `ngtsc/annotations/component/src/resources.ts#parseExtractedTemplate` we enable
       // `preserveWhitespaces` to preserve the accuracy of source maps diagnostics. This means

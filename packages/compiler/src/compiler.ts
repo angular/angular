@@ -152,6 +152,8 @@ export {
   BoundDeferredTrigger as TmplAstBoundDeferredTrigger,
   BoundEvent as TmplAstBoundEvent,
   BoundText as TmplAstBoundText,
+  BoundaryBlock as TmplAstBoundaryBlock,
+  BoundaryErrorBlock as TmplAstBoundaryErrorBlock,
   Content as TmplAstContent,
   DeferredBlock as TmplAstDeferredBlock,
   DeferredBlockError as TmplAstDeferredBlockError,
@@ -197,8 +199,10 @@ export {
   compileClassMetadata,
   CompileClassMetadataFn,
   compileComponentClassMetadata,
+  compileCtorParameters,
   compileOpaqueAsyncClassMetadata,
   R3ClassMetadata,
+  R3ClassMetadataCtorParameter,
 } from './render3/r3_class_metadata_compiler';
 export {
   compileFactoryFunction,
@@ -274,6 +278,11 @@ export {DomSchemaChecker} from './typecheck/schema';
 export {generateTypeCheckBlock} from './typecheck/type_check_block';
 export {TcbExpr} from './typecheck/ops/codegen';
 export {TcbGenericContextBehavior} from './typecheck/ops/context';
+
+export * from './indexer/api';
+export {type IndexerComponentInfo, IndexingContext} from './indexer/context';
+export {getIndexerTemplateIdentifiers, IndexerVisitor} from './indexer/template';
+export {generateIndexerAnalysis} from './indexer/transform';
 export {LEGACY_OPTIONAL_CHAINING_DEFAULT} from './legacy_optional_chaining_default';
 
 // This file only reexports content of the `src` folder. Keep it that way.

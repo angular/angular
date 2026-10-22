@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {initializeWebMCPPolyfill, cleanupWebMCPPolyfill} from '@mcp-b/webmcp-polyfill';
-import type {JsonSchemaForInference} from '../../third_party/@mcp-b/webmcp-types';
+import {cleanupWebMCPPolyfill, initializeWebMCPPolyfill} from '@mcp-b/webmcp-polyfill';
 import {inject, Injectable, Injector, runInInjectionContext} from '../../src/di';
-import {declareExperimentalWebMcpTool} from '../../src/webmcp/declare_tool';
-import {Execute, ModelContext, ToolDescriptor} from '../../src/webmcp/types';
 import {RuntimeErrorCode} from '../../src/errors';
+import {declareExperimentalWebMcpTool} from '../../src/webmcp/declare_tool';
+import {Execute, ToolDescriptor} from '../../src/webmcp/types';
+import type {JsonSchemaForInference} from '../../third_party/@mcp-b/webmcp-types';
 
 // Whether or not the input type is `any`.
 type IsAny<T> = 0 extends 1 & T ? true : false;

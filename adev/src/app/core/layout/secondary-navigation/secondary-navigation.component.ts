@@ -21,12 +21,12 @@ import {
   shouldReduceMotion,
 } from '@angular/docs';
 import {ActivatedRouteSnapshot, NavigationEnd, Router, RouterStateSnapshot} from '@angular/router';
-import {distinctUntilChanged, filter, map, skip, startWith} from 'rxjs/operators';
+import {distinctUntilChanged, filter, map, skip, startWith} from 'rxjs';
 import {SUB_NAVIGATION_DATA} from '../../../routing/sub-navigation-data';
 import {PRIMARY_NAV_ID, SEARCH_DIALOG_ID, SECONDARY_NAV_ID} from '../../constants/element-ids';
 import {PAGE_PREFIX} from '../../constants/pages';
 
-export const ANIMATION_DURATION = 500;
+const ANIMATION_DURATION = 500;
 
 @Component({
   selector: 'adev-secondary-navigation',

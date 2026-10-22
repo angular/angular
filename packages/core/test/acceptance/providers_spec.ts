@@ -10,7 +10,6 @@ import {CommonModule} from '@angular/common';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/private/testing/matchers';
 import {
-  ChangeDetectionStrategy,
   Component,
   Directive,
   forwardRef,
@@ -20,9 +19,9 @@ import {
   Injector,
   NgModule,
   Optional,
+  signal,
 } from '../../src/core';
-import {leaveView, specOnlyIsInstructionStateEmpty} from '../../src/render3/state';
-import {inject, TestBed, waitForAsync} from '../../testing';
+import {TestBed} from '../../testing';
 
 describe('providers', () => {
   describe('inheritance', () => {
@@ -32,36 +31,28 @@ describe('providers', () => {
       @Directive({
         selector: '[super-dir]',
         providers: [{provide: SOME_DIRS, useClass: SuperDirective, multi: true}],
-        standalone: false,
       })
       class SuperDirective {}
 
       @Directive({
         selector: '[sub-dir]',
         providers: [{provide: SOME_DIRS, useClass: SubDirective, multi: true}],
-        standalone: false,
       })
       class SubDirective extends SuperDirective {}
 
       @Directive({
         selector: '[other-dir]',
-        standalone: false,
       })
       class OtherDirective {
         constructor(@Inject(SOME_DIRS) public dirs: any) {}
       }
 
       @Component({
-        selector: 'app-comp',
         template: `<div other-dir sub-dir></div>`,
-        standalone: false,
-        changeDetection: ChangeDetectionStrategy.Eager,
+
+        imports: [SubDirective, OtherDirective],
       })
       class App {}
-
-      TestBed.configureTestingModule({
-        declarations: [SuperDirective, SubDirective, OtherDirective, App],
-      });
 
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
@@ -89,14 +80,11 @@ describe('providers', () => {
       @Component({
         template: '',
         providers: [SubInjectableWithDestroyHook],
-        standalone: false,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         constructor(foo: SubInjectableWithDestroyHook) {}
       }
 
-      TestBed.configureTestingModule({declarations: [App]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       fixture.destroy();
@@ -117,12 +105,9 @@ describe('providers', () => {
       @Component({
         template: '',
         providers: [InjectableWithDestroyHook],
-        standalone: false,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       fixture.destroy();
@@ -143,8 +128,6 @@ describe('providers', () => {
       @Component({
         selector: 'my-cmp',
         template: '',
-        standalone: false,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComponent {
         constructor(foo: InjectableWithDestroyHook) {}
@@ -156,12 +139,11 @@ describe('providers', () => {
           <my-cmp></my-cmp>
         `,
         providers: [InjectableWithDestroyHook],
-        standalone: false,
-        changeDetection: ChangeDetectionStrategy.Eager,
+
+        imports: [MyComponent],
       })
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App, MyComponent]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       fixture.destroy();
@@ -182,14 +164,11 @@ describe('providers', () => {
       @Component({
         template: '',
         providers: [{provide: InjectableWithDestroyHook, useClass: InjectableWithDestroyHook}],
-        standalone: false,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         constructor(foo: InjectableWithDestroyHook) {}
       }
 
-      TestBed.configureTestingModule({declarations: [App]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       fixture.destroy();
@@ -219,14 +198,11 @@ describe('providers', () => {
         providers: [
           {provide: InjectableWithDestroyHookToken, useClass: InjectableWithDestroyHookValue},
         ],
-        standalone: false,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         constructor(foo: InjectableWithDestroyHookToken) {}
       }
 
-      TestBed.configureTestingModule({declarations: [App]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       fixture.destroy();
@@ -257,8 +233,6 @@ describe('providers', () => {
           InjectableWithDestroyHookExisting,
           {provide: InjectableWithDestroyHookToken, useExisting: InjectableWithDestroyHookExisting},
         ],
-        standalone: false,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         constructor(
@@ -267,7 +241,6 @@ describe('providers', () => {
         ) {}
       }
 
-      TestBed.configureTestingModule({declarations: [App]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       fixture.destroy();
@@ -294,7 +267,6 @@ describe('providers', () => {
       @Directive({
         selector: '[dir-one]',
         providers: [DestroyService],
-        standalone: false,
       })
       class DirOne {
         constructor(service: DestroyService) {
@@ -305,7 +277,6 @@ describe('providers', () => {
       @Directive({
         selector: '[dir-two]',
         providers: [DestroyService],
-        standalone: false,
       })
       class DirTwo {
         constructor(service: DestroyService) {
@@ -316,8 +287,8 @@ describe('providers', () => {
       @Component({
         template: '<div dir-one dir-two></div>',
         providers: [DestroyService],
-        standalone: false,
-        changeDetection: ChangeDetectionStrategy.Eager,
+
+        imports: [DirOne, DirTwo],
       })
       class App {
         constructor(service: DestroyService) {
@@ -325,7 +296,6 @@ describe('providers', () => {
         }
       }
 
-      TestBed.configureTestingModule({declarations: [App, DirOne, DirTwo]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       fixture.destroy();
@@ -357,7 +327,6 @@ describe('providers', () => {
       @Directive({
         selector: '[dir-one]',
         providers: [{provide: token, useClass: DestroyService}],
-        standalone: false,
       })
       class DirOne {
         constructor(@Inject(token) service: DestroyService) {
@@ -368,7 +337,6 @@ describe('providers', () => {
       @Directive({
         selector: '[dir-two]',
         providers: [{provide: token, useClass: DestroyService}],
-        standalone: false,
       })
       class DirTwo {
         constructor(@Inject(token) service: DestroyService) {
@@ -379,8 +347,8 @@ describe('providers', () => {
       @Component({
         template: '<div dir-one dir-two></div>',
         providers: [{provide: token, useClass: DestroyService}],
-        standalone: false,
-        changeDetection: ChangeDetectionStrategy.Eager,
+
+        imports: [DirOne, DirTwo],
       })
       class App {
         constructor(@Inject(token) service: DestroyService) {
@@ -388,7 +356,6 @@ describe('providers', () => {
         }
       }
 
-      TestBed.configureTestingModule({declarations: [App, DirOne, DirTwo]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       fixture.destroy();
@@ -425,15 +392,11 @@ describe('providers', () => {
             {provide: SERVICES, useClass: DestroyService, multi: true},
             {provide: SERVICES, useClass: OtherDestroyService, multi: true},
           ],
-          standalone: false,
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class App {
           constructor(@Inject(SERVICES) s: any) {}
         }
 
-        TestBed.configureTestingModule({declarations: [App]});
         const fixture = TestBed.createComponent(App);
         fixture.detectChanges();
         fixture.destroy();
@@ -476,15 +439,11 @@ describe('providers', () => {
             {provide: SERVICES, useClass: Service3, multi: true},
             {provide: SERVICES, useClass: Service4, multi: true},
           ],
-          standalone: false,
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class App {
           constructor(@Inject(SERVICES) s: any) {}
         }
 
-        TestBed.configureTestingModule({declarations: [App]});
         const fixture = TestBed.createComponent(App);
         fixture.detectChanges();
         fixture.destroy();
@@ -516,15 +475,11 @@ describe('providers', () => {
             {provide: SERVICES, useFactory: () => new DestroyService(), multi: true},
             {provide: SERVICES, useFactory: () => new OtherDestroyService(), multi: true},
           ],
-          standalone: false,
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class App {
           constructor(@Inject(SERVICES) s: any) {}
         }
 
-        TestBed.configureTestingModule({declarations: [App]});
         const fixture = TestBed.createComponent(App);
         fixture.detectChanges();
         fixture.destroy();
@@ -547,33 +502,23 @@ describe('providers', () => {
         selector: 'comp-with-provider',
         template: '',
         providers: [InjectableWithDestroyHookToken],
-        standalone: false,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class CompWithProvider {
         constructor(token: InjectableWithDestroyHookToken) {}
       }
 
       @Component({
-        selector: 'app',
-        template: '<comp-with-provider *ngIf="condition"></comp-with-provider>',
-        standalone: false,
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: '<comp-with-provider *ngIf="condition()"></comp-with-provider>',
+        imports: [CommonModule, CompWithProvider],
       })
       class App {
-        condition = true;
+        condition = signal(true);
       }
-
-      TestBed.configureTestingModule({
-        declarations: [App, CompWithProvider],
-        imports: [CommonModule],
-      });
 
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
-      fixture.componentInstance.condition = false;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.componentInstance.condition.set(false);
       fixture.detectChanges();
 
       expect(logs).toEqual(['OnDestroy Token']);
@@ -588,8 +533,6 @@ describe('providers', () => {
     @Component({
       selector: 'my-comp',
       template: ``,
-      standalone: false,
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyComp {
       constructor(public svc: MyService) {}
@@ -597,7 +540,6 @@ describe('providers', () => {
 
     @Directive({
       selector: '[some-dir]',
-      standalone: false,
     })
     class MyDir {
       constructor(public svc: MyService) {}
@@ -605,15 +547,13 @@ describe('providers', () => {
 
     it('should support providing components in tests without @Injectable', () => {
       @Component({
-        selector: 'test-comp',
         template: '<my-comp></my-comp>',
-        standalone: false,
-        changeDetection: ChangeDetectionStrategy.Eager,
+
+        imports: [MyComp],
       })
       class TestComp {}
 
       TestBed.configureTestingModule({
-        declarations: [TestComp, MyComp],
         // providing MyComp is unnecessary but it shouldn't throw
         providers: [MyComp, MyService],
       });
@@ -625,15 +565,13 @@ describe('providers', () => {
 
     it('should support providing directives in tests without @Injectable', () => {
       @Component({
-        selector: 'test-comp',
         template: '<div some-dir></div>',
-        standalone: false,
-        changeDetection: ChangeDetectionStrategy.Eager,
+
+        imports: [MyDir],
       })
       class TestComp {}
 
       TestBed.configureTestingModule({
-        declarations: [TestComp, MyDir],
         // providing MyDir is unnecessary but it shouldn't throw
         providers: [MyDir, MyService],
       });
@@ -643,23 +581,12 @@ describe('providers', () => {
       expect(myCompInstance.svc.value).toEqual('some value');
     });
 
-    // TODO(alxhub): find a way to isolate this test from running in a dirty
-    // environment where a current LView exists (probably from some other test
-    // bootstrapping and then not cleaning up).
-    xdescribe('injection without bootstrapping', () => {
-      beforeEach(() => {
-        // Maybe something like this?
-        while (!specOnlyIsInstructionStateEmpty()) {
-          leaveView();
-        }
-        TestBed.configureTestingModule({declarations: [MyComp], providers: [MyComp, MyService]});
+    describe('injection without bootstrapping', () => {
+      it('should support injecting without bootstrapping', async () => {
+        TestBed.configureTestingModule({providers: [MyComp, MyService]});
+        const comp = TestBed.inject(MyComp);
+        expect(comp.svc.value).toEqual('some value');
       });
-
-      it('should support injecting without bootstrapping', waitForAsync(
-        inject([MyComp, MyService], (comp: MyComp, service: MyService) => {
-          expect(comp.svc.value).toEqual('some value');
-        }),
-      ));
     });
   });
 
@@ -674,10 +601,8 @@ describe('providers', () => {
       }
 
       @Component({
-        selector: 'app-comp',
         template: ``,
         standalone: false,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AppComp {
         constructor(public myService: MyService) {}
@@ -710,10 +635,7 @@ describe('providers', () => {
       class SomeProviderImpl extends SomeProvider {}
 
       @Component({
-        selector: 'my-app',
         template: '',
-        standalone: false,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         constructor(public foo: SomeProvider) {}
@@ -722,7 +644,7 @@ describe('providers', () => {
       // We don't configure the `SomeProvider` in the TestingModule so that it uses the
       // tree-shakable provider given in the `@Injectable` decorator above, which makes use of the
       // `forwardRef()`.
-      TestBed.configureTestingModule({declarations: [App]});
+
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -737,17 +659,13 @@ describe('providers', () => {
       class SomeProviderImpl extends SomeProvider {}
 
       @Component({
-        selector: 'my-app',
         template: '',
-        standalone: false,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         constructor(public foo: SomeProvider) {}
       }
 
       TestBed.configureTestingModule({
-        declarations: [App],
         providers: [{provide: SomeProvider, useClass: forwardRef(() => SomeProviderImpl)}],
       });
       const fixture = TestBed.createComponent(App);
@@ -784,15 +702,12 @@ describe('providers', () => {
   describe('view providers', () => {
     it('should have access to viewProviders within the same component', () => {
       @Component({
-        selector: 'comp',
         template: '{{s}}-{{n}}',
         providers: [{provide: Number, useValue: 1, multi: true}],
         viewProviders: [
           {provide: String, useValue: 'bar'},
           {provide: Number, useValue: 2, multi: true},
         ],
-        standalone: false,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Comp {
         constructor(
@@ -800,8 +715,6 @@ describe('providers', () => {
           private n: Number,
         ) {}
       }
-
-      TestBed.configureTestingModule({declarations: [Comp]});
 
       const fixture = TestBed.createComponent(Comp);
       fixture.detectChanges();
@@ -813,8 +726,6 @@ describe('providers', () => {
       @Component({
         selector: 'repeated',
         template: '[{{s}}-{{n}}]',
-        standalone: false,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Repeated {
         constructor(
@@ -836,17 +747,12 @@ describe('providers', () => {
           {provide: String, useValue: 'foo'},
           {provide: Number, useValue: 2, multi: true},
         ],
-        standalone: false,
-        changeDetection: ChangeDetectionStrategy.Eager,
+
+        imports: [CommonModule, Repeated],
       })
       class ComponentWithProviders {
         items = [1, 2, 3];
       }
-
-      TestBed.configureTestingModule({
-        declarations: [ComponentWithProviders, Repeated],
-        imports: [CommonModule],
-      });
 
       const fixture = TestBed.createComponent(ComponentWithProviders);
       fixture.detectChanges();

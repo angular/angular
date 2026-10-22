@@ -7,7 +7,7 @@
  */
 
 import {normalize, virtualFs} from '@angular-devkit/core';
-import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing/index.js';
+import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
 import {TempScopedNodeJsSyncHost} from '@angular-devkit/core/node/testing';
 import {HostTree} from '@angular-devkit/schematics';
 import {resolve} from 'path';

@@ -235,7 +235,11 @@ export function compileComponentFromMetadata(
     if (tpl.constsInitializers.length > 0) {
       definitionMap.set(
         'consts',
-        o.arrowFn([], [...tpl.constsInitializers, new o.ReturnStatement(o.literalArr(tpl.consts))]),
+        o.arrowFn(
+          [],
+          [...tpl.constsInitializers, new o.ReturnStatement(o.literalArr(tpl.consts))],
+          o.DYNAMIC_TYPE,
+        ),
       );
     } else {
       definitionMap.set('consts', o.literalArr(tpl.consts));
@@ -360,11 +364,11 @@ function compileDeclarationList(
       return list;
     case DeclarationListEmitMode.Closure:
       // directives: function () { return [MyDir]; }
-      return o.arrowFn([], list);
+      return o.arrowFn([], list, o.DYNAMIC_TYPE);
     case DeclarationListEmitMode.ClosureResolved:
       // directives: function () { return [MyDir].map(ng.resolveForwardRef); }
       const resolvedList = list.prop('map').callFn([o.importExpr(R3.resolveForwardRef)]);
-      return o.arrowFn([], resolvedList);
+      return o.arrowFn([], resolvedList, o.DYNAMIC_TYPE);
     case DeclarationListEmitMode.RuntimeResolved:
       throw new Error(`Unsupported with an array of pre-resolved dependencies`);
   }
@@ -716,7 +720,7 @@ function createHostDirectivesFeatureArg(
   // If there's a forward reference, we generate a `function() { return [HostDir] }`,
   // otherwise we can save some bytes by using a plain array, e.g. `[HostDir]`.
   return hasForwardRef
-    ? new o.FunctionExpr([], [new o.ReturnStatement(o.literalArr(expressions))])
+    ? new o.FunctionExpr([], [new o.ReturnStatement(o.literalArr(expressions))], o.DYNAMIC_TYPE)
     : o.literalArr(expressions);
 }
 
@@ -759,6 +763,7 @@ export function compileDeferResolverFunction(
           // Default imports are always accessed through the `default` property.
           [new o.FnParam('m', o.DYNAMIC_TYPE)],
           o.variable('m').prop(dep.isDefaultImport ? 'default' : dep.symbolName),
+          o.DYNAMIC_TYPE,
         );
 
         // Dynamic import, e.g. `import('./a').then(...)`.
@@ -783,6 +788,7 @@ export function compileDeferResolverFunction(
       const innerFn = o.arrowFn(
         [new o.FnParam('m', o.DYNAMIC_TYPE)],
         o.variable('m').prop(isDefaultImport ? 'default' : symbolName),
+        o.DYNAMIC_TYPE,
       );
 
       // Dynamic import, e.g. `import('./a').then(...)`.
@@ -797,5 +803,5 @@ export function compileDeferResolverFunction(
     }
   }
 
-  return o.arrowFn([], o.literalArr(depExpressions));
+  return o.arrowFn([], o.literalArr(depExpressions), o.DYNAMIC_TYPE);
 }

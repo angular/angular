@@ -11,13 +11,13 @@ import type {} from 'zone.js';
 
 import {firstValueFrom} from 'rxjs';
 import {Component, EventEmitter, NgZone, provideZoneChangeDetection} from '../../src/core';
-import {TestBed, fakeAsync, flush, flushMicrotasks, inject, waitForAsync} from '../../testing';
+import {TestBed} from '../../testing';
 import {Log} from '../../testing/src/testing_internal';
 
+import {isBrowser} from '@angular/private/testing';
 import {scheduleCallbackWithRafRace as scheduler} from '../../src/util/callback_scheduler';
 import {global} from '../../src/util/global';
 import {NoopNgZone} from '../../src/zone/ng_zone';
-import {isBrowser} from '@angular/private/testing';
 
 const resultTimer = 1000;
 // Schedules a macrotask (using a timer)
@@ -881,20 +881,18 @@ function commonTests() {
     describe('#10503', () => {
       let ngZone: NgZone;
 
-      beforeEach(inject([NgZone], (_ngZone: NgZone) => {
+      beforeEach(() => {
         // Create a zone outside the fakeAsync.
-        ngZone = _ngZone;
-      }));
+        ngZone = TestBed.inject(NgZone);
+      });
 
-      it('should fakeAsync even if the NgZone was created outside.', fakeAsync(() => {
+      it('should fakeAsync even if the NgZone was created outside.', async () => {
         let result: string = null!;
-        // try to escape the current fakeAsync zone by using NgZone which was created outside.
-        ngZone.run(() => {
-          Promise.resolve('works').then((v) => (result = v));
-          flushMicrotasks();
+        await ngZone.run(() => {
+          return Promise.resolve('works').then((v) => (result = v));
         });
         expect(result).toEqual('works');
-      }));
+      });
 
       describe('async', () => {
         let asyncResult: string;
@@ -904,14 +902,18 @@ function commonTests() {
           asyncResult = null!;
         });
 
-        it('should async even if the NgZone was created outside.', waitForAsync(() => {
-          // try to escape the current async zone by using NgZone which was created outside.
-          ngZone.run(() => {
-            setTimeout(() => {
-              Promise.resolve('works').then((v) => (asyncResult = v));
-            }, waitLongerThenTestFrameworkAsyncTimeout);
+        it('should async even if the NgZone was created outside.', async () => {
+          await new Promise<void>((resolve) => {
+            ngZone.run(() => {
+              setTimeout(() => {
+                Promise.resolve('works').then((v) => {
+                  asyncResult = v;
+                  resolve();
+                });
+              }, waitLongerThenTestFrameworkAsyncTimeout);
+            });
           });
-        }));
+        });
 
         afterEach(() => {
           expect(asyncResult).toEqual('works');
@@ -919,7 +921,7 @@ function commonTests() {
       });
     });
 
-    it('coalescing can work with fakeAsync', fakeAsync(() => {
+    it('coalescing can work with fakeAsync', async () => {
       if (!isBrowser) {
         return;
       }
@@ -941,9 +943,9 @@ function commonTests() {
       fixture.autoDetectChanges();
 
       document.querySelector('.clickable')!.dispatchEvent(new MouseEvent('click'));
-      flush();
+      await fixture.whenStable();
       expect(fixture.nativeElement.innerText).toContain('clicked');
-    }));
+    });
   });
 
   describe('coalescing', () => {

@@ -161,7 +161,6 @@ Display validation feedback to users:
 | Property  | Purpose                                 |
 | --------- | --------------------------------------- |
 | `errors`  | Array of current validation errors      |
-| `valid`   | Whether the field is valid              |
 | `invalid` | Whether the field has validation errors |
 | `pending` | Whether async validation is in progress |
 
@@ -176,7 +175,7 @@ Control whether users can interact with your field:
 | `readonly`        | Whether the field is readonly (visible but not editable) |
 | `hidden`          | Whether the field is hidden from view                    |
 
-NOTE: `disabledReasons` is an array of `DisabledReason` objects. Each object has a `field` property (reference to the field tree) and an optional `message` property. Access the message via `reason.message`.
+NOTE: `disabledReasons` is an array of `DisabledReason` objects. Each object has a `fieldTree` property (reference to the field tree) and an optional `message` property. Access the message via `reason.message`.
 
 #### Validation constraints
 
@@ -300,7 +299,7 @@ export class StatefulInput implements FormValueControl<string> {
 
   // Read-only state - form system manages these
   disabled = input<boolean>(false);
-  disabledReasons = input<readonly DisabledReason[]>([]);
+  disabledReasons = input<readonly WithOptionalFieldTree<DisabledReason>[]>([]);
   readonly = input<boolean>(false);
   hidden = input<boolean>(false);
   invalid = input<boolean>(false);
@@ -409,8 +408,8 @@ export class NumberInput implements FormValueControl<number | null> {
   readonly value = model.required<number | null>();
 
   protected readonly rawValue = transformedValue(this.value, {
-    parse: (val: string): number => ({value: val ? Number(val) : null}),
-    format: (val: number): string => val?.toString() ?? '',
+    parse: (val: string): {value: number | null} => ({value: val ? Number(val) : null}),
+    format: (val: number | null): string => val?.toString() ?? '',
   });
 }
 ```

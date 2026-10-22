@@ -5,41 +5,48 @@ module(
 )
 
 bazel_dep(name = "rules_pkg", version = "1.3.0")
-bazel_dep(name = "rules_nodejs", version = "6.7.5")
+bazel_dep(name = "rules_nodejs", version = "6.7.6")
 bazel_dep(name = "aspect_rules_ts", version = "3.10.1")
-bazel_dep(name = "aspect_rules_js", version = "3.4.1")
-bazel_dep(name = "aspect_rules_esbuild", version = "0.27.0")
+bazel_dep(name = "aspect_rules_js", version = "3.5.1")
+bazel_dep(name = "aspect_rules_esbuild", version = "0.27.1")
 bazel_dep(name = "aspect_rules_jasmine", version = "2.0.4")
+single_version_override(
+    module_name = "aspect_rules_jasmine",
+    patch_strip = 1,
+    patches = ["//tools/bazel/patches:aspect_rules_jasmine.patch"],
+)
+
 bazel_dep(name = "aspect_rules_rollup", version = "2.0.1")
 bazel_dep(name = "bazel_skylib", version = "1.9.2")
-bazel_dep(name = "bazel_lib", version = "3.7.1")
-bazel_dep(name = "tar.bzl", version = "0.10.8")
-bazel_dep(name = "yq.bzl", version = "0.3.6")
+bazel_dep(name = "bazel_lib", version = "3.7.2")
+bazel_dep(name = "platforms", version = "1.1.0")
+bazel_dep(name = "tar.bzl", version = "0.10.9")
+bazel_dep(name = "yq.bzl", version = "0.4.0")
 bazel_dep(name = "rules_angular")
 git_override(
     module_name = "rules_angular",
-    commit = "ed98d720477b10c13f3d0ccee72f929c777f6ccd",
+    commit = "05f153e60f1541c3020cf4be04affdfe5e0e7711",
     remote = "https://github.com/angular/rules_angular.git",
 )
 
 bazel_dep(name = "devinfra")
 git_override(
     module_name = "devinfra",
-    commit = "fa43fd2864c3bec677cd47f4e095370850cdf8bc",
+    commit = "92bbfe820d82139db749264cb86d6edcedece0ef",
     remote = "https://github.com/angular/dev-infra.git",
 )
 
 bazel_dep(name = "rules_sass")
 git_override(
     module_name = "rules_sass",
-    commit = "8ae8c820345a93c29e4f220b4d6f459f30243683",
+    commit = "e1296fa3cf9026d74aa3e0fac3fec573ffd710c8",
     remote = "https://github.com/angular/rules_sass.git",
 )
 
 bazel_dep(name = "rules_browsers")
 git_override(
     module_name = "rules_browsers",
-    commit = "c6cb5590120af8ae8125343f9fc522b7b66eb0e8",
+    commit = "cd5c45524dbe3298b0c77b6c184ddd4d05cf4808",
     remote = "https://github.com/angular/rules_browsers.git",
 )
 
@@ -49,15 +56,15 @@ use_repo(yq, "yq_toolchains")
 node = use_extension("@rules_nodejs//nodejs:extensions.bzl", "node")
 node.toolchain(
     node_repositories = {
-        "24.19.0-darwin_arm64": ("node-v24.19.0-darwin-arm64.tar.gz", "node-v24.19.0-darwin-arm64", "8294b7aa9b03997481c06babf1e8b270c859358f27da57a11509afe537ac381d"),
-        "24.19.0-darwin_amd64": ("node-v24.19.0-darwin-x64.tar.gz", "node-v24.19.0-darwin-x64", "d1b5e999db158c62fe8f7267a4476b035d8bd93b1a605bac24a3f0dd166e3316"),
-        "24.19.0-linux_arm64": ("node-v24.19.0-linux-arm64.tar.xz", "node-v24.19.0-linux-arm64", "01443c1e1a29e531ccad5a46fefa6df490d2189c49f7955904aecdbb0fe86fdc"),
-        "24.19.0-linux_ppc64le": ("node-v24.19.0-linux-ppc64le.tar.xz", "node-v24.19.0-linux-ppc64le", "c510c6ce12f07010f771e6edb22a3fe23f4f2e6f40b1ffd4941aed0646a0d8b3"),
-        "24.19.0-linux_s390x": ("node-v24.19.0-linux-s390x.tar.xz", "node-v24.19.0-linux-s390x", "a4792e65962ffa0af42627aacf1122a60c3c88dbf4e4184f06820d66f9da8ba4"),
-        "24.19.0-linux_amd64": ("node-v24.19.0-linux-x64.tar.xz", "node-v24.19.0-linux-x64", "14b342e71204f811bde6153be8e04b62aef63c236fef92b55f9c83154b409647"),
-        "24.19.0-windows_amd64": ("node-v24.19.0-win-x64.zip", "node-v24.19.0-win-x64", "57f71ab3652e797d84acddc79c81cc9ff1c6ddb2a1974cdb83f00fee9bff4c73"),
+        "24.22.0-darwin_arm64": ("node-v24.22.0-darwin-arm64.tar.gz", "node-v24.22.0-darwin-arm64", "6a9724d9b50a5f22b4816cded441b5a8d9ddae546191a5e5b7efa5a5e2ee26d5"),
+        "24.22.0-darwin_amd64": ("node-v24.22.0-darwin-x64.tar.gz", "node-v24.22.0-darwin-x64", "495e3f273c645f3c4677d438304cdfc701729ea5dec5728f5c8e76a2dece4b91"),
+        "24.22.0-linux_arm64": ("node-v24.22.0-linux-arm64.tar.xz", "node-v24.22.0-linux-arm64", "fef00bb4d36e1c50104a9775a10359beee98f162b4104dd12472c75065c6a143"),
+        "24.22.0-linux_ppc64le": ("node-v24.22.0-linux-ppc64le.tar.xz", "node-v24.22.0-linux-ppc64le", "edfc950d84a74b4fb4fedc8d2a569976682f6bbbf182961a4e916b7aad856013"),
+        "24.22.0-linux_s390x": ("node-v24.22.0-linux-s390x.tar.xz", "node-v24.22.0-linux-s390x", "ee3a16f7700188d62cd87b50fde39f8cbd8ab82f25611114e5ed6ef00d914431"),
+        "24.22.0-linux_amd64": ("node-v24.22.0-linux-x64.tar.xz", "node-v24.22.0-linux-x64", "cc2f601cee82d9a5a233302fe307abc600727035fd7d2c3a3571755989e95008"),
+        "24.22.0-windows_amd64": ("node-v24.22.0-win-x64.zip", "node-v24.22.0-win-x64", "f9683a19877e12a9b167305c8db71040d812876359de21f0d2e97c3f321f80c3"),
     },
-    node_version = "24.19.0",
+    node_version = "24.22.0",
 )
 use_repo(node, "nodejs_toolchains")
 use_repo(node, "nodejs_darwin_amd64")
@@ -71,8 +78,8 @@ use_repo(node, "nodejs_windows_amd64")
 pnpm = use_extension("@aspect_rules_js//npm:extensions.bzl", "pnpm")
 pnpm.pnpm(
     name = "pnpm",
-    pnpm_version = "11.24.0",
-    pnpm_version_integrity = "sha512-vSfjRel23LC+C3oSKCF7BJqBfiGx81XJDb59xGZxiVqLwebQbCRVRQXqk+oLRfSJon7Bv7yN5qlln8oPFvoAAA==",
+    pnpm_version = "12.11.2",
+    pnpm_version_integrity = "sha512-JaUWUqGWeFr18ovabf6NxYLr76SsHRgCIc4TkCMcX7dmN4IupLbkYzznSs3LCnf3Ja8RutOBd/3t2u6BipVcuQ==",
 )
 use_repo(pnpm, "pnpm")
 
@@ -95,6 +102,7 @@ npm.npm_translate_lock(
         "//packages/compiler:package.json",
         "//packages/compiler-cli:package.json",
         "//packages/compiler-cli/linker/babel/test:package.json",
+        "//packages/compiler-cli/preprocessor/language-service:package.json",
         "//packages/core:package.json",
         "//packages/core/test/bundling:package.json",
         "//packages/elements:package.json",
@@ -163,3 +171,25 @@ cldr_xml_data(
         "https://github.com/unicode-org/cldr/releases/download/release-%s/core.zip" % CLDR_VERSION: "d5ee2abac64158c04884a722f8ef4830ea22b6c74aac20185be2838db8eda788",
     },
 )
+
+bazel_dep(name = "rules_rust", version = "0.74.0")
+bazel_dep(name = "rules_rust_wasm_bindgen", version = "0.74.0")
+
+rust = use_extension("@rules_rust//rust:extensions.bzl", "rust")
+rust.toolchain(
+    edition = "2024",
+    extra_target_triples = ["wasm32-unknown-unknown"],
+)
+use_repo(rust, "rust_toolchains")
+
+register_toolchains("@rust_toolchains//:all")
+
+register_toolchains("@rules_rust_wasm_bindgen//:default_wasm_bindgen_toolchain")
+
+crate = use_extension("@rules_rust//crate_universe:extensions.bzl", "crate")
+crate.from_cargo(
+    name = "crates",
+    cargo_lockfile = "//:Cargo.lock",
+    manifests = ["//:Cargo.toml"],
+)
+use_repo(crate, "crates")

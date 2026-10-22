@@ -109,6 +109,27 @@ export class ChromeApplicationOperations extends ApplicationOperations {
     }
   }
 
+  override onSignalBreakpointsCleared(callback: () => void): () => void {
+    const tabId = chrome.devtools.inspectedWindow.tabId;
+    const listener = (
+      message: {action?: string; tabId?: number},
+      sender: chrome.runtime.MessageSender,
+    ) => {
+      if (
+        sender?.id === chrome.runtime.id &&
+        sender?.tab === undefined &&
+        message?.action === 'signalBreakpointsCleared' &&
+        message.tabId === tabId
+      ) {
+        callback();
+      }
+    };
+    chrome.runtime.onMessage.addListener(listener);
+    return () => {
+      chrome.runtime.onMessage.removeListener(listener);
+    };
+  }
+
   override viewSourceFromRouter(name: string, type: string, target: Frame): void {
     const viewSource = `inspect(inspectedApplication.findConstructorByNameForRouter(${JSON.stringify(name)}, ${JSON.stringify(type)}))`;
     this.runInInspectedWindow(viewSource, target);

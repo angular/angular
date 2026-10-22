@@ -44,7 +44,6 @@ describe('query', () => {
       // https://stackblitz.com/edit/ng-viewengine-viewchild-providers?file=src%2Fapp%2Fapp.component.ts
       it('should query for providers that are present on a directive', () => {
         @Component({
-          selector: 'app',
           template: '<div myDir></div>',
           imports: [MyDirective],
         })
@@ -64,7 +63,6 @@ describe('query', () => {
 
       it('should resolve a provider if given as read token', () => {
         @Component({
-          selector: 'app',
           template: '<div myDir></div>',
           imports: [MyDirective],
         })
@@ -93,7 +91,6 @@ describe('query', () => {
     }
 
     @Component({
-      selector: 'app',
       template: `
         <div *someDir></div>
         <div #foo></div>

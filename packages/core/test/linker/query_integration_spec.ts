@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {CommonModule} from '@angular/common';
 import {expect} from '@angular/private/testing/matchers';
 import {Subject} from 'rxjs';
 import {
@@ -20,6 +21,7 @@ import {
   ContentChildren,
   Directive,
   ElementRef,
+  forwardRef,
   provideZoneChangeDetection,
   QueryList,
   TemplateRef,
@@ -28,7 +30,7 @@ import {
   ViewChildren,
   ViewContainerRef,
 } from '../../src/core';
-import {ComponentFixture, TestBed, waitForAsync} from '../../testing';
+import {ComponentFixture, TestBed} from '../../testing';
 
 import {stringify} from '../../src/util/stringify';
 
@@ -36,40 +38,6 @@ describe('Query API', () => {
   beforeEach(() =>
     TestBed.configureTestingModule({
       providers: [provideZoneChangeDetection()],
-      declarations: [
-        MyComp0,
-        NeedsQuery,
-        NeedsQueryDesc,
-        NeedsQueryByLabel,
-        NeedsQueryByTwoLabels,
-        NeedsQueryAndProject,
-        NeedsViewQuery,
-        NeedsViewQueryIf,
-        NeedsViewQueryNestedIf,
-        NeedsViewQueryOrder,
-        NeedsViewQueryByLabel,
-        NeedsViewQueryOrderWithParent,
-        NeedsContentChildren,
-        NeedsViewChildren,
-        NeedsViewChild,
-        NeedsStaticContentAndViewChild,
-        NeedsContentChild,
-        DirectiveNeedsContentChild,
-        NeedsTpl,
-        NeedsNamedTpl,
-        TextDirective,
-        InertDirective,
-        NeedsFourQueries,
-        NeedsContentChildrenWithRead,
-        NeedsContentChildWithRead,
-        NeedsViewChildrenWithRead,
-        NeedsViewChildWithRead,
-        NeedsContentChildrenShallow,
-        NeedsContentChildTemplateRef,
-        NeedsContentChildTemplateRefApp,
-        NeedsViewContainerWithRead,
-        ManualProjecting,
-      ],
     }),
   );
 
@@ -277,9 +245,10 @@ describe('Query API', () => {
     });
 
     it('should throw with descriptive error when query selectors are not present', () => {
-      TestBed.configureTestingModule({declarations: [MyCompBroken0, HasNullQueryCondition]});
       const template = '<has-null-query-condition></has-null-query-condition>';
-      TestBed.overrideComponent(MyCompBroken0, {set: {template}});
+      TestBed.overrideComponent(MyCompBroken0, {
+        set: {template, imports: [forwardRef(() => HasNullQueryCondition)]},
+      });
       expect(() => TestBed.createComponent(MyCompBroken0)).toThrowError(
         `Can't construct a query for the property "errorTrigger" of "${stringify(
           HasNullQueryCondition,
@@ -431,7 +400,7 @@ describe('Query API', () => {
   });
 
   describe('changes', () => {
-    it('should notify query on change', waitForAsync(() => {
+    it('should notify query on change', async () => {
       const template =
         '<needs-query #q>' +
         '<div text="1"></div>' +
@@ -441,16 +410,19 @@ describe('Query API', () => {
 
       const q = view.debugElement.children[0].references!['q'];
 
+      const {promise, resolve} = Promise.withResolvers<void>();
       q.query.changes.subscribe({
         next: () => {
           expect(q.query.first.text).toEqual('1');
           expect(q.query.last.text).toEqual('2');
+          resolve();
         },
       });
 
       view.componentInstance.shouldShow = true;
-      view.detectChanges();
-    }));
+      await view.detectChanges();
+      await promise;
+    });
 
     it('should correctly clean-up when destroyed together with the directives it is querying', () => {
       const template = '<needs-query #q *ngIf="shouldShow"><div text="foo"></div></needs-query>';
@@ -737,17 +709,17 @@ describe('Query API', () => {
       @Component({
         selector: 'auto-projecting',
         template: '<div *ngIf="true; then: content"></div>',
-        standalone: false,
+
+        imports: [CommonModule],
       })
       class AutoProjecting {
         @ContentChild(TemplateRef) content!: TemplateRef<any>;
         @ContentChildren(TextDirective) query!: QueryList<TextDirective>;
       }
 
-      TestBed.configureTestingModule({declarations: [AutoProjecting]});
       const template =
         '<auto-projecting #q><ng-template><div text="1"></div></ng-template></auto-projecting>';
-      const view = createTestCmpAndDetectChanges(MyComp0, template);
+      const view = createTestCmpAndDetectChanges(MyComp0, template, [AutoProjecting]);
 
       const q = view.debugElement.children[0].references!['q'];
       expect(q.query.length).toBe(1);
@@ -759,7 +731,6 @@ describe('Query API', () => {
   selector: '[text]',
   inputs: ['text'],
   exportAs: 'textDir',
-  standalone: false,
 })
 class TextDirective {
   text: string | undefined;
@@ -768,7 +739,6 @@ class TextDirective {
 @Component({
   selector: 'needs-content-children',
   template: '',
-  standalone: false,
 })
 class NeedsContentChildren implements AfterContentInit {
   @ContentChildren(TextDirective) textDirChildren!: QueryList<TextDirective>;
@@ -782,7 +752,8 @@ class NeedsContentChildren implements AfterContentInit {
 @Component({
   selector: 'needs-view-children',
   template: '<div text></div>',
-  standalone: false,
+
+  imports: [TextDirective],
 })
 class NeedsViewChildren implements AfterViewInit {
   @ViewChildren(TextDirective) textDirChildren!: QueryList<TextDirective>;
@@ -796,7 +767,6 @@ class NeedsViewChildren implements AfterViewInit {
 @Component({
   selector: 'needs-content-child',
   template: '',
-  standalone: false,
 })
 class NeedsContentChild implements AfterContentInit, AfterContentChecked {
   private _child: TextDirective | undefined;
@@ -823,7 +793,6 @@ class NeedsContentChild implements AfterContentInit, AfterContentChecked {
 
 @Directive({
   selector: '[directive-needs-content-child]',
-  standalone: false,
 })
 class DirectiveNeedsContentChild {
   @ContentChild(TextDirective) child!: TextDirective;
@@ -832,7 +801,8 @@ class DirectiveNeedsContentChild {
 @Component({
   selector: 'needs-view-child',
   template: `<div *ngIf="shouldShow" text="foo"></div>`,
-  standalone: false,
+
+  imports: [CommonModule, TextDirective],
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NeedsViewChild implements AfterViewInit, AfterViewChecked {
@@ -861,21 +831,32 @@ class NeedsViewChild implements AfterViewInit, AfterViewChecked {
   }
 }
 
-function createTestCmp<T>(type: Type<T>, template: string): ComponentFixture<T> {
-  const view = TestBed.overrideComponent(type, {set: {template}}).createComponent(type);
-  return view;
+function createTestCmp<T>(
+  type: Type<T>,
+  template: string,
+  components: any[] = [],
+): ComponentFixture<T> {
+  TestBed.overrideComponent(type, {set: {template}});
+  if (components.length > 0) {
+    TestBed.overrideComponent(type, {add: {imports: components}});
+  }
+  return TestBed.createComponent(type);
 }
 
-function createTestCmpAndDetectChanges<T>(type: Type<T>, template: string): ComponentFixture<T> {
-  const view = createTestCmp(type, template);
+function createTestCmpAndDetectChanges<T>(
+  type: Type<T>,
+  template: string,
+  components: any[] = [],
+): ComponentFixture<T> {
+  const view = createTestCmp(type, template, components);
   view.detectChanges();
   return view;
 }
 
 @Component({
-  selector: 'needs-static-content-view-child',
   template: `<div text="viewFoo"></div>`,
-  standalone: false,
+
+  imports: [TextDirective],
 })
 class NeedsStaticContentAndViewChild {
   @ContentChild(TextDirective, {static: true}) contentChild!: TextDirective;
@@ -884,14 +865,14 @@ class NeedsStaticContentAndViewChild {
 
 @Directive({
   selector: '[dir]',
-  standalone: false,
 })
 class InertDirective {}
 
 @Component({
   selector: 'needs-query',
   template: '<div text="ignoreme"></div><b *ngFor="let  dir of query">{{dir.text}}|</b>',
-  standalone: false,
+
+  imports: [CommonModule, TextDirective, InertDirective],
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NeedsQuery {
@@ -901,7 +882,6 @@ class NeedsQuery {
 @Component({
   selector: 'needs-four-queries',
   template: '',
-  standalone: false,
 })
 class NeedsFourQueries {
   @ContentChild(TextDirective) query1!: TextDirective;
@@ -913,7 +893,8 @@ class NeedsFourQueries {
 @Component({
   selector: 'needs-query-desc',
   template: '<ng-content></ng-content><div *ngFor="let  dir of query">{{dir.text}}|</div>',
-  standalone: false,
+
+  imports: [CommonModule, InertDirective],
 })
 class NeedsQueryDesc {
   @ContentChildren(TextDirective, {descendants: true}) query!: QueryList<TextDirective>;
@@ -922,7 +903,6 @@ class NeedsQueryDesc {
 @Component({
   selector: 'needs-query-by-ref-binding',
   template: '<ng-content>',
-  standalone: false,
 })
 class NeedsQueryByLabel {
   @ContentChildren('textLabel', {descendants: true}) query!: QueryList<any>;
@@ -931,7 +911,6 @@ class NeedsQueryByLabel {
 @Component({
   selector: 'needs-view-query-by-ref-binding',
   template: '<div #textLabel>text</div>',
-  standalone: false,
 })
 class NeedsViewQueryByLabel {
   @ViewChildren('textLabel') query!: QueryList<any>;
@@ -940,7 +919,6 @@ class NeedsViewQueryByLabel {
 @Component({
   selector: 'needs-query-by-ref-bindings',
   template: '<ng-content>',
-  standalone: false,
 })
 class NeedsQueryByTwoLabels {
   @ContentChildren('textLabel1,textLabel2', {descendants: true}) query!: QueryList<any>;
@@ -949,7 +927,8 @@ class NeedsQueryByTwoLabels {
 @Component({
   selector: 'needs-query-and-project',
   template: '<div *ngFor="let  dir of query">{{dir.text}}|</div><ng-content></ng-content>',
-  standalone: false,
+
+  imports: [CommonModule, InertDirective],
 })
 class NeedsQueryAndProject {
   @ContentChildren(TextDirective) query!: QueryList<TextDirective>;
@@ -958,8 +937,8 @@ class NeedsQueryAndProject {
 @Component({
   selector: 'needs-view-query',
   template: '<div text="1"><div text="2"></div></div><div text="3"></div><div text="4"></div>',
-  standalone: false,
-  changeDetection: ChangeDetectionStrategy.Eager,
+
+  imports: [TextDirective],
 })
 class NeedsViewQuery {
   @ViewChildren(TextDirective) query!: QueryList<TextDirective>;
@@ -968,7 +947,8 @@ class NeedsViewQuery {
 @Component({
   selector: 'needs-view-query-if',
   template: '<div *ngIf="show" text="1"></div>',
-  standalone: false,
+
+  imports: [CommonModule, TextDirective],
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NeedsViewQueryIf {
@@ -979,8 +959,8 @@ class NeedsViewQueryIf {
 @Component({
   selector: 'needs-view-query-nested-if',
   template: '<div text="1"><div *ngIf="show"><div dir></div></div></div>',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false,
+
+  imports: [CommonModule, TextDirective, InertDirective],
 })
 class NeedsViewQueryNestedIf {
   show: boolean = true;
@@ -993,7 +973,8 @@ class NeedsViewQueryNestedIf {
     '<div text="1"></div>' +
     '<div *ngFor="let  i of list" [text]="i"></div>' +
     '<div text="4"></div>',
-  standalone: false,
+
+  imports: [CommonModule, TextDirective],
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NeedsViewQueryOrder {
@@ -1007,7 +988,8 @@ class NeedsViewQueryOrder {
     '<div dir><div text="1"></div>' +
     '<div *ngFor="let  i of list" [text]="i"></div>' +
     '<div text="4"></div></div>',
-  standalone: false,
+
+  imports: [CommonModule, TextDirective, InertDirective],
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NeedsViewQueryOrderWithParent {
@@ -1018,7 +1000,6 @@ class NeedsViewQueryOrderWithParent {
 @Component({
   selector: 'needs-tpl',
   template: '<ng-template><div>shadow</div></ng-template>',
-  standalone: false,
 })
 class NeedsTpl {
   @ViewChildren(TemplateRef) viewQuery!: QueryList<TemplateRef<Object>>;
@@ -1029,8 +1010,6 @@ class NeedsTpl {
 @Component({
   selector: 'needs-named-tpl',
   template: '<ng-template #tpl><div>shadow</div></ng-template>',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false,
 })
 class NeedsNamedTpl {
   @ViewChild('tpl', {static: true}) viewTpl!: TemplateRef<Object>;
@@ -1039,10 +1018,7 @@ class NeedsNamedTpl {
 }
 
 @Component({
-  selector: 'needs-content-children-read',
   template: '',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false,
 })
 class NeedsContentChildrenWithRead {
   @ContentChildren('q', {read: TextDirective}) textDirChildren!: QueryList<TextDirective>;
@@ -1052,8 +1028,6 @@ class NeedsContentChildrenWithRead {
 @Component({
   selector: 'needs-content-child-read',
   template: '',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false,
 })
 class NeedsContentChildWithRead {
   @ContentChild('q', {read: TextDirective}) textDirChild!: TextDirective;
@@ -1063,8 +1037,6 @@ class NeedsContentChildWithRead {
 @Component({
   selector: 'needs-content-children-shallow',
   template: '',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false,
 })
 class NeedsContentChildrenShallow {
   @ContentChildren('q', {descendants: false}) children!: QueryList<ElementRef>;
@@ -1073,8 +1045,8 @@ class NeedsContentChildrenShallow {
 @Component({
   selector: 'needs-content-child-template-ref',
   template: '<div [ngTemplateOutlet]="templateRef"></div>',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false,
+
+  imports: [CommonModule],
 })
 class NeedsContentChildTemplateRef {
   @ContentChild(TemplateRef, {static: true}) templateRef!: TemplateRef<any>;
@@ -1086,16 +1058,16 @@ class NeedsContentChildTemplateRef {
     '<needs-content-child-template-ref>' +
     '<ng-template>OUTER<ng-template>INNER</ng-template></ng-template>' +
     '</needs-content-child-template-ref>',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false,
+
+  imports: [NeedsContentChildTemplateRef],
 })
 class NeedsContentChildTemplateRefApp {}
 
 @Component({
   selector: 'needs-view-children-read',
   template: '<div #q text="va"></div><div #w text="vb"></div>',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false,
+
+  imports: [TextDirective],
 })
 class NeedsViewChildrenWithRead {
   @ViewChildren('q,w', {read: TextDirective}) textDirChildren!: QueryList<TextDirective>;
@@ -1105,8 +1077,8 @@ class NeedsViewChildrenWithRead {
 @Component({
   selector: 'needs-view-child-read',
   template: '<div #q text="va"></div>',
-  standalone: false,
-  changeDetection: ChangeDetectionStrategy.Eager,
+
+  imports: [TextDirective],
 })
 class NeedsViewChildWithRead {
   @ViewChild('q', {read: TextDirective}) textDirChild!: TextDirective;
@@ -1116,8 +1088,6 @@ class NeedsViewChildWithRead {
 @Component({
   selector: 'needs-viewcontainer-read',
   template: '<div #q></div>',
-  standalone: false,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NeedsViewContainerWithRead {
   @ViewChild('q', {read: ViewContainerRef}) vc!: ViewContainerRef;
@@ -1132,18 +1102,46 @@ class NeedsViewContainerWithRead {
 @Component({
   selector: 'has-null-query-condition',
   template: '<div></div>',
-  standalone: false,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class HasNullQueryCondition {
   @ContentChildren(null!) errorTrigger: any;
 }
 
 @Component({
-  selector: 'my-comp',
   template: '',
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
+
+  imports: [
+    CommonModule,
+    TextDirective,
+    NeedsContentChildren,
+    NeedsViewChildren,
+    NeedsContentChild,
+    DirectiveNeedsContentChild,
+    NeedsViewChild,
+    InertDirective,
+    NeedsQuery,
+    NeedsFourQueries,
+    NeedsQueryDesc,
+    NeedsQueryByLabel,
+    NeedsViewQueryByLabel,
+    NeedsQueryByTwoLabels,
+    NeedsQueryAndProject,
+    NeedsViewQuery,
+    NeedsViewQueryIf,
+    NeedsViewQueryNestedIf,
+    NeedsViewQueryOrder,
+    NeedsViewQueryOrderWithParent,
+    NeedsTpl,
+    NeedsNamedTpl,
+    NeedsContentChildWithRead,
+    NeedsContentChildrenShallow,
+    NeedsContentChildTemplateRefApp,
+    NeedsViewChildrenWithRead,
+    NeedsViewChildWithRead,
+    NeedsViewContainerWithRead,
+    forwardRef(() => ManualProjecting),
+  ],
 })
 class MyComp0 {
   shouldShow: boolean = false;
@@ -1151,17 +1149,13 @@ class MyComp0 {
 }
 
 @Component({
-  selector: 'my-comp',
   template: '',
-  standalone: false,
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class MyCompBroken0 {}
 
 @Component({
   selector: 'manual-projecting',
   template: '<div #vc></div>',
-  standalone: false,
 })
 class ManualProjecting {
   @ContentChild(TemplateRef, {static: true}) template!: TemplateRef<any>;

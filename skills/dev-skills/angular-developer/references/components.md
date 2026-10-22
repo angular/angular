@@ -119,12 +119,45 @@ The `@switch` block renders content based on a value. It uses strict equality (`
 } }
 ```
 
+**Multiple Cases**: Stack consecutive `@case` statements with no content between them to share one
+block across several matches.
+
+```angular-html
+@switch (status()) {
+  @case ('paused')
+  @case ('cancelled') {
+    <span>Not running</span>
+  }
+  @default {
+    <span>Running</span>
+  }
+}
+```
+
 **Exhaustive Type Checking**: Use `@default never;` to ensure all cases of a union type are handled.
 
 ```html
 @switch (state) { @case ('on') { ... } @case ('off') { ... } @default never; // Errors if a new
 state like 'standby' is added }
 ```
+
+### Arrow Functions in Template Expressions
+
+Template expressions support arrow functions with an expression body, such as inline array
+callbacks:
+
+```html
+<button (click)="count.update((c) => c + 1)">Increment</button>
+```
+
+For derived values such as a filtered list, use a `computed` signal in the component instead.
+
+Arrow functions must have an expression body, such as `(c) => c + 1`. In event bindings, call the
+method directly, `(click)="save()"`, because an arrow function like `(click)="() => save()"` is
+never invoked.
+
+Arrow functions with a block body (`() => { ... }`) are not supported. A pipe cannot be used
+inside an arrow function's body, but an arrow function can be passed as an argument to a pipe.
 
 ## Core Concepts
 

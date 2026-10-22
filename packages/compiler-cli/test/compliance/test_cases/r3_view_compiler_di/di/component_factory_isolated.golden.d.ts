@@ -1,7 +1,7 @@
 import * as i0 from "@angular/core";
 export declare class MyService {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyService, never>;
-    static ɵprov: i0.ɵɵInjectableDeclaration<MyService>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 export declare class MyComponent {
     constructor(name: string, other: string, s1: MyService, s2: MyService, s4: MyService, s3: MyService, s5: MyService, s6: MyService);

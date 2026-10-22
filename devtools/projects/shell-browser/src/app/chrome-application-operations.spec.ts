@@ -15,13 +15,29 @@ import {ChromeApplicationOperations} from './chrome-application-operations';
 
 describe('ChromeApplicationOperations', () => {
   let operations: ChromeApplicationOperations;
+  let evalSpy: jasmine.Spy;
+  let runtimeListeners: Array<(message: any, sender: chrome.runtime.MessageSender) => void>;
 
   beforeEach(() => {
+    evalSpy = jasmine.createSpy('eval');
+    runtimeListeners = [];
     // Mock chrome global
     (globalThis as any).chrome = {
       devtools: {
         inspectedWindow: {
-          eval: jasmine.createSpy('eval'),
+          tabId: 42,
+          eval: evalSpy,
+        },
+      },
+      runtime: {
+        id: 'test-ext-id',
+        onMessage: {
+          addListener: jasmine.createSpy('addListener').and.callFake((fn: any) => {
+            runtimeListeners.push(fn);
+          }),
+          removeListener: jasmine.createSpy('removeListener').and.callFake((fn: any) => {
+            runtimeListeners = runtimeListeners.filter((l) => l !== fn);
+          }),
         },
       },
     };
@@ -45,10 +61,41 @@ describe('ChromeApplicationOperations', () => {
       } as any;
       operations.viewSource([0, 0], target, 0);
 
-      expect(chrome.devtools.inspectedWindow.eval).toHaveBeenCalledWith(
+      expect(evalSpy).toHaveBeenCalledWith(
         'inspect(inspectedApplication.findConstructorByPosition("[0,0]", 0))',
         {frameURL: 'http://localhost:4200/url'},
       );
+    });
+  });
+
+  describe('onSignalBreakpointsCleared', () => {
+    it('invokes callback when signalBreakpointsCleared message is received for inspected tab from extension', () => {
+      const callback = jasmine.createSpy('callback');
+      const unsubscribe = operations.onSignalBreakpointsCleared(callback);
+
+      // Unrelated tabId should be ignored
+      runtimeListeners[0](
+        {action: 'signalBreakpointsCleared', tabId: 99},
+        {id: 'test-ext-id', tab: undefined},
+      );
+      expect(callback).not.toHaveBeenCalled();
+
+      // Message from content script (sender.tab defined) should be ignored
+      runtimeListeners[0](
+        {action: 'signalBreakpointsCleared', tabId: 42},
+        {id: 'test-ext-id', tab: {id: 42} as chrome.tabs.Tab},
+      );
+      expect(callback).not.toHaveBeenCalled();
+
+      // Valid message for inspected tabId from extension background
+      runtimeListeners[0](
+        {action: 'signalBreakpointsCleared', tabId: 42},
+        {id: 'test-ext-id', tab: undefined},
+      );
+      expect(callback).toHaveBeenCalledTimes(1);
+
+      unsubscribe();
+      expect(runtimeListeners.length).toBe(0);
     });
   });
 });

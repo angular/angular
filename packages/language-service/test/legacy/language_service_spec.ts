@@ -35,7 +35,6 @@ describe('language service adapter', () => {
     it('should initialize with angularCompilerOptions from tsconfig.json', () => {
       expect(ngLS.getCompilerOptions()).toEqual(
         jasmine.objectContaining({
-          strictTemplates: true,
           strictInjectionParameters: true,
         }),
       );
@@ -44,7 +43,6 @@ describe('language service adapter', () => {
     it('should reparse angularCompilerOptions on tsconfig.json change', () => {
       expect(ngLS.getCompilerOptions()).toEqual(
         jasmine.objectContaining({
-          strictTemplates: true,
           strictInjectionParameters: true,
         }),
       );

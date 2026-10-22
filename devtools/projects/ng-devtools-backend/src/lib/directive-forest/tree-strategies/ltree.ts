@@ -85,7 +85,7 @@ export class LTreeStrategy {
     return typeof (element as any).__ngContext__ !== 'undefined';
   }
 
-  private _getNode(lView: LView, data: any, idx: number): ComponentTreeNode {
+  private getNode(lView: LView, data: any, idx: number): ComponentTreeNode {
     const directives: DirectiveInstanceType[] = [];
     let component: ComponentInstanceType | null = null;
     const tNode = data[idx];
@@ -129,11 +129,11 @@ export class LTreeStrategy {
     };
   }
 
-  private _extract(lViewOrLContainer: any, nodes: ComponentTreeNode[] = []): ComponentTreeNode[] {
+  private extract(lViewOrLContainer: any, nodes: ComponentTreeNode[] = []): ComponentTreeNode[] {
     if (isLContainer(lViewOrLContainer)) {
       for (let i = 9; i < lViewOrLContainer.length; i++) {
         if (lViewOrLContainer[i]) {
-          this._extract(lViewOrLContainer[i], nodes);
+          this.extract(lViewOrLContainer[i], nodes);
         }
       }
       return nodes;
@@ -143,12 +143,12 @@ export class LTreeStrategy {
     for (let i = HEADER_OFFSET; i < lView.length; i++) {
       const lViewItem = lView[i];
       if (tView.data && Array.isArray(lViewItem) && lViewItem[ELEMENT] instanceof Node) {
-        const node = this._getNode(lView, tView.data, i);
+        const node = this.getNode(lView, tView.data, i);
 
         // TODO(mgechev): verify if this won't make us skip projected content.
         if (node.component || node.directives?.length) {
           nodes.push(node);
-          this._extract(lViewItem, node.children);
+          this.extract(lViewItem, node.children);
         }
       }
     }
@@ -158,7 +158,7 @@ export class LTreeStrategy {
   build(element: Element, _: number): ComponentTreeNode[] {
     const ctx = (element as any).__ngContext__;
     const rootLView = ctx.lView ?? ctx;
-    return this._extract(rootLView);
+    return this.extract(rootLView);
   }
 }
 

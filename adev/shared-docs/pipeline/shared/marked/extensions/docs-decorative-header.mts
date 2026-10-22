@@ -8,6 +8,7 @@
 
 import {TokenizerThis, Tokens, RendererThis} from 'marked';
 import {loadWorkspaceRelativeFile} from '../helpers.mjs';
+import {AdevDocsRenderer} from '../renderer.mjs';
 import {getPageTitle} from '../transformations/heading.mjs';
 
 interface DocsDecorativeHeaderToken extends Tokens.Generic {
@@ -75,7 +76,7 @@ function getStandardDecorativeHeader(renderer: RendererThis, token: DocsDecorati
       <div class="docs-header-content">
         <docs-breadcrumb></docs-breadcrumb>
 
-        ${getPageTitle(token.title)}
+        ${getPageTitle(token.title, (renderer.parser.renderer as AdevDocsRenderer).context.markdownFilePath)}
 
         <p>${token.body}</p>
       </div>
@@ -97,7 +98,7 @@ function getGradientDecorativeHeader(renderer: RendererThis, token: DocsDecorati
   <div class="docs-decorative-header-container">
     <div class="docs-decorative-gradient-header">
       <div class="docs-header-content">
-        ${getPageTitle(token.title)}
+        ${getPageTitle(token.title, (renderer.parser.renderer as AdevDocsRenderer).context.markdownFilePath)}
         <p>${token.body}</p>
       </div>
       <!-- illustration -->

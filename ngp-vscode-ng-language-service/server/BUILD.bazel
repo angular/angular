@@ -1,0 +1,42 @@
+load("@npm//:defs.bzl", "npm_link_all_packages")
+load("//tools:defaults.bzl", "esbuild", "ts_project")
+
+package(default_visibility = ["//ngp-vscode-ng-language-service:__subpackages__"])
+
+npm_link_all_packages(name = "node_modules")
+
+ts_project(
+    name = "src",
+    srcs = glob(["src/**/*.ts"]),
+    tsconfig = "//ngp-vscode-ng-language-service:tsconfig_build",
+    deps = [
+        ":node_modules/@typescript/native-preview",
+        ":node_modules/vscode-languageserver",
+        ":node_modules/vscode-languageserver-textdocument",
+        ":node_modules/vscode-uri",
+        "//:node_modules/@types/node",
+        "//ngp-vscode-ng-language-service:node_modules/vscode-jsonrpc",
+        "//packages/compiler-cli",
+        "//packages/compiler-cli/preprocessor",
+        "//packages/compiler-cli/preprocessor/language-service",
+    ],
+)
+
+# Standalone CommonJS bundle of the language server, equivalent to the
+# `dist/server/server.js` produced by `build.js`.
+esbuild(
+    name = "server_bundle",
+    config = "esbuild.config.mjs",
+    entry_point = "src/server.js",
+    external = [
+        "typescript",
+        "@typescript/native-preview",
+        "@typescript/native-preview/*",
+    ],
+    format = "cjs",
+    minify = False,
+    platform = "node",
+    target = "node20",
+    tsconfig = "esbuild-tsconfig.json",
+    deps = [":src"],
+)

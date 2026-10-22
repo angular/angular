@@ -1495,6 +1495,61 @@ runInEachFileSystem(() => {
           `MyDirective.ɵfac = function MyDirective_Factory(__ngFactoryType__) { i0.ɵɵinvalidFactory(); };`,
         );
       });
+
+      it('should guard unresolvable constructor parameter types in class metadata', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Directive, Optional} from '@angular/core';
+          import {SomeService1} from './some-where1'
+          import SomeService2 from './some-where2'
+
+          @Directive({
+            selector: '[main]',
+          })
+          export class MainDirective {
+            constructor(
+              private someService1: SomeService1,
+              @Optional() private someService2: SomeService2,
+              ) {}
+          }
+          `,
+        );
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        // Neither type could be confirmed to exist at runtime, so each parameter type is guarded
+        // individually on the `type` property assignment. Even when a parameter decorator forces
+        // the object literal across multiple lines, the comment stays on the line immediately
+        // before `type:`.
+        expect(jsContents).toMatch(
+          /\(\) => \[\{\s*\/\* @ts-ignore \*\/\n\s*type: i1\.SomeService1 \}, \{\s*\/\* @ts-ignore \*\/\n\s*type: SomeService2,\s*decorators: \[\{\s*type: Optional\s*\}\]\s*\}\], null\)/,
+        );
+      });
+
+      it('should not guard constructor parameter types that are known to exist at runtime', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Directive} from '@angular/core';
+
+          export class SomeService {}
+
+          @Directive({
+            selector: '[main]',
+          })
+          export class MainDirective {
+            constructor(private someService: SomeService) {}
+          }
+          `,
+        );
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain('() => [{ type: SomeService }], null)');
+      });
     });
 
     describe('LOCAL_COMPILATION_UNRESOLVED_CONST errors', () => {
@@ -2196,12 +2251,12 @@ runInEachFileSystem(() => {
           import {DeferredCmpA} from './deferred-a';
           import {DeferredCmpB} from './deferred-b';
           @Component({
-            deferredImports: [DeferredCmpA, DeferredCmpB],
+            deferredImports: { block1: [DeferredCmpA], block2: [DeferredCmpB] },
             template: \`
-              @defer {
+              @defer (name block1) {
                 <deferred-cmp-a />
               }
-              @defer {
+              @defer (name block2) {
                 <deferred-cmp-b />
               }
             \`,
@@ -2217,10 +2272,11 @@ runInEachFileSystem(() => {
         // Expect that all deferrableImports in local compilation mode
         // are located in a single function (since we can't detect in
         // the local mode which components belong to which block).
-        expect(cleanNewLines(jsContents)).toContain(
-          'const AppCmp_DeferFn = () => [/* @ts-ignore */ ' +
-            'import("./deferred-a").then(m => m.DeferredCmpA), /* @ts-ignore */ ' +
-            'import("./deferred-b").then(m => m.DeferredCmpB)];',
+        expect(cleanNewLines(jsContents)).toMatch(
+          /const AppCmp_Defer_1_DepsFn = \(\) => \[ ?(?:\/\* @ts-ignore \*\/ )?import\("\.\/deferred-a"\)\.then\(\(?m\)? => m\.DeferredCmpA\) ?\];/,
+        );
+        expect(cleanNewLines(jsContents)).toMatch(
+          /const AppCmp_Defer_4_DepsFn = \(\) => \[ ?(?:\/\* @ts-ignore \*\/ )?import\("\.\/deferred-b"\)\.then\(\(?m\)? => m\.DeferredCmpB\) ?\];/,
         );
 
         // Make sure there are no eager imports present in the output.
@@ -2228,15 +2284,12 @@ runInEachFileSystem(() => {
         expect(jsContents).not.toContain(`from './deferred-b'`);
 
         // All defer instructions use the same dependency function.
-        expect(jsContents).toContain('ɵɵdefer(1, 0, AppCmp_DeferFn);');
-        expect(jsContents).toContain('ɵɵdefer(4, 3, AppCmp_DeferFn);');
+        expect(jsContents).toContain('ɵɵdefer(1, 0, AppCmp_Defer_1_DepsFn);');
+        expect(jsContents).toContain('ɵɵdefer(4, 3, AppCmp_Defer_4_DepsFn);');
 
         // Expect `ɵsetClassMetadataAsync` to contain dynamic imports too.
-        expect(cleanNewLines(jsContents)).toContain(
-          'ɵsetClassMetadataAsync(AppCmp, () => [/* @ts-ignore */ ' +
-            'import("./deferred-a").then(m => m.DeferredCmpA), /* @ts-ignore */ ' +
-            'import("./deferred-b").then(m => m.DeferredCmpB)], ' +
-            '(DeferredCmpA, DeferredCmpB) => {',
+        expect(cleanNewLines(jsContents)).toMatch(
+          /ɵsetClassMetadataAsync\(AppCmp, \(\) => \[ ?(?:\/\* @ts-ignore \*\/ )?import\("\.\/deferred-a"\)\.then\(\(?m\)? => m\.DeferredCmpA\), (?:\/\* @ts-ignore \*\/ )?import\("\.\/deferred-b"\)\.then\(\(?m\)? => m\.DeferredCmpB\) ?\], \(DeferredCmpA, DeferredCmpB\) => \{/,
         );
       });
 
@@ -2340,13 +2393,13 @@ runInEachFileSystem(() => {
               import {EagerCmpA} from './eager-a';
               @Component({
                 imports: [EagerCmpA],
-                deferredImports: [DeferredCmpA, DeferredCmpB],
+                deferredImports: { block1: [DeferredCmpA], block2: [DeferredCmpB] },
                 template: \`
-                  @defer {
+                  @defer (name block1) {
                     <eager-cmp-a />
                     <deferred-cmp-a />
                   }
-                  @defer {
+                  @defer (name block2) {
                     <eager-cmp-a />
                     <deferred-cmp-b />
                   }
@@ -2364,10 +2417,11 @@ runInEachFileSystem(() => {
         // are located in a single function (since we can't detect in
         // the local mode which components belong to which block).
         // Eager dependencies are **not* included here.
-        expect(cleanNewLines(jsContents)).toContain(
-          'const AppCmp_DeferFn = () => [/* @ts-ignore */ ' +
-            'import("./deferred-a").then(m => m.DeferredCmpA), /* @ts-ignore */ ' +
-            'import("./deferred-b").then(m => m.DeferredCmpB)];',
+        expect(cleanNewLines(jsContents)).toMatch(
+          /const AppCmp_Defer_1_DepsFn = \(\) => \[ ?(?:\/\* @ts-ignore \*\/ )?import\("\.\/deferred-a"\)\.then\(\(?m\)? => m\.DeferredCmpA\) ?\];/,
+        );
+        expect(cleanNewLines(jsContents)).toMatch(
+          /const AppCmp_Defer_4_DepsFn = \(\) => \[ ?(?:\/\* @ts-ignore \*\/ )?import\("\.\/deferred-b"\)\.then\(\(?m\)? => m\.DeferredCmpB\) ?\];/,
         );
 
         // Make sure there are no eager imports present in the output.
@@ -2378,15 +2432,12 @@ runInEachFileSystem(() => {
         expect(jsContents).toContain(`from './eager-a';`);
 
         // All defer instructions use the same dependency function.
-        expect(jsContents).toContain('ɵɵdefer(1, 0, AppCmp_DeferFn);');
-        expect(jsContents).toContain('ɵɵdefer(4, 3, AppCmp_DeferFn);');
+        expect(jsContents).toContain('ɵɵdefer(1, 0, AppCmp_Defer_1_DepsFn);');
+        expect(jsContents).toContain('ɵɵdefer(4, 3, AppCmp_Defer_4_DepsFn);');
 
         // Expect `ɵsetClassMetadataAsync` to contain dynamic imports too.
-        expect(cleanNewLines(jsContents)).toContain(
-          'ɵsetClassMetadataAsync(AppCmp, () => [/* @ts-ignore */ ' +
-            'import("./deferred-a").then(m => m.DeferredCmpA), /* @ts-ignore */ ' +
-            'import("./deferred-b").then(m => m.DeferredCmpB)], ' +
-            '(DeferredCmpA, DeferredCmpB) => {',
+        expect(cleanNewLines(jsContents)).toMatch(
+          /ɵsetClassMetadataAsync\(AppCmp, \(\) => \[ ?(?:\/\* @ts-ignore \*\/ )?import\("\.\/deferred-a"\)\.then\(\(?m\)? => m\.DeferredCmpA\), (?:\/\* @ts-ignore \*\/ )?import\("\.\/deferred-b"\)\.then\(\(?m\)? => m\.DeferredCmpB\) ?\], \(DeferredCmpA, DeferredCmpB\) => \{/,
         );
       });
 
@@ -2426,9 +2477,9 @@ runInEachFileSystem(() => {
               import {DeferredCmpA, DeferredCmpB} from './deferred-deps';
 
               @Component({
-                deferredImports: [DeferredCmpA],
+                deferredImports: { block1: [DeferredCmpA] },
                 template: \`
-                  @defer {
+                  @defer (name block1) {
                     <deferred-cmp-a />
                   }
                 \`,
@@ -2436,9 +2487,9 @@ runInEachFileSystem(() => {
               export class AppCmpA {}
 
               @Component({
-                deferredImports: [DeferredCmpB],
+                deferredImports: { block1: [DeferredCmpB] },
                 template: \`
-                  @defer {
+                  @defer (name block1) {
                     <deferred-cmp-b />
                   }
                 \`,
@@ -2452,30 +2503,26 @@ runInEachFileSystem(() => {
 
           // Expect that we generate 2 different defer functions
           // (one for each component).
-          expect(cleanNewLines(jsContents)).toContain(
-            'const AppCmpA_DeferFn = () => [/* @ts-ignore */ ' +
-              'import("./deferred-deps").then(m => m.DeferredCmpA)]',
+          expect(cleanNewLines(jsContents)).toMatch(
+            /const AppCmpA_Defer_1_DepsFn = \(\) => \[ ?(?:\/\* @ts-ignore \*\/ )?import\("\.\/deferred-deps"\)\.then\(\(?m\)? => m\.DeferredCmpA\) ?\]/,
           );
-          expect(cleanNewLines(jsContents)).toContain(
-            'const AppCmpB_DeferFn = () => [/* @ts-ignore */ ' +
-              'import("./deferred-deps").then(m => m.DeferredCmpB)]',
+          expect(cleanNewLines(jsContents)).toMatch(
+            /const AppCmpB_Defer_1_DepsFn = \(\) => \[ ?(?:\/\* @ts-ignore \*\/ )?import\("\.\/deferred-deps"\)\.then\(\(?m\)? => m\.DeferredCmpB\) ?\]/,
           );
 
           // Make sure there are no eager imports present in the output.
           expect(jsContents).not.toContain(`from './deferred-deps'`);
 
           // Defer instructions use per-component dependency function.
-          expect(jsContents).toContain('ɵɵdefer(1, 0, AppCmpA_DeferFn)');
-          expect(jsContents).toContain('ɵɵdefer(1, 0, AppCmpB_DeferFn)');
+          expect(jsContents).toContain('ɵɵdefer(1, 0, AppCmpA_Defer_1_DepsFn)');
+          expect(jsContents).toContain('ɵɵdefer(1, 0, AppCmpB_Defer_1_DepsFn)');
 
           // Expect `ɵsetClassMetadataAsync` to contain dynamic imports too.
-          expect(cleanNewLines(jsContents)).toContain(
-            'ɵsetClassMetadataAsync(AppCmpA, () => [/* @ts-ignore */ ' +
-              'import("./deferred-deps").then(m => m.DeferredCmpA)]',
+          expect(cleanNewLines(jsContents)).toMatch(
+            /ɵsetClassMetadataAsync\(AppCmpA, \(\) => \[ ?(?:\/\* @ts-ignore \*\/ )?import\("\.\/deferred-deps"\)\.then\(\(?m\)? => m\.DeferredCmpA\) ?\]/,
           );
-          expect(cleanNewLines(jsContents)).toContain(
-            'ɵsetClassMetadataAsync(AppCmpB, () => [/* @ts-ignore */ ' +
-              'import("./deferred-deps").then(m => m.DeferredCmpB)]',
+          expect(cleanNewLines(jsContents)).toMatch(
+            /ɵsetClassMetadataAsync\(AppCmpB, \(\) => \[ ?(?:\/\* @ts-ignore \*\/ )?import\("\.\/deferred-deps"\)\.then\(\(?m\)? => m\.DeferredCmpB\) ?\]/,
           );
         },
       );
@@ -2520,9 +2567,9 @@ runInEachFileSystem(() => {
               import {DeferredCmpA, DeferredCmpB, utilityFn} from './deferred-deps';
 
               @Component({
-                deferredImports: [DeferredCmpA],
+                deferredImports: { block1: [DeferredCmpA] },
                 template: \`
-                  @defer {
+                  @defer (name block1) {
                     <deferred-cmp-a />
                   }
                 \`,
@@ -2534,9 +2581,9 @@ runInEachFileSystem(() => {
               }
 
               @Component({
-                deferredImports: [DeferredCmpB],
+                deferredImports: { block1: [DeferredCmpB] },
                 template: \`
-                  @defer {
+                  @defer (name block1) {
                     <deferred-cmp-b />
                   }
                 \`,

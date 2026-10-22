@@ -177,8 +177,7 @@ The TypeScript class should additionally implement the `PipeTransform` interface
 
 Here is an example of a custom pipe that transforms strings to kebab case:
 
-```angular-ts
-// kebab-case.pipe.ts
+```angular-ts {header: "kebab-case.pipe.ts"}
 import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
@@ -329,7 +328,7 @@ export class FormatterService {
 ```
 
 ```ts {header: "formatter.service.ts" , avoid}
-import {Service} from '@angular/core';
+import {inject, Service} from '@angular/core';
 import {KebabCasePipe} from './kebab-case.pipe';
 
 @Service()
@@ -369,7 +368,7 @@ export class PriceService {
 ```
 
 ```ts {avoid}
-import {Service} from '@angular/core';
+import {inject, Service} from '@angular/core';
 import {DecimalPipe} from '@angular/common';
 
 @Service()

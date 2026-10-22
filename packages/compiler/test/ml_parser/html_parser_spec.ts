@@ -387,6 +387,13 @@ describe('HtmlParser', () => {
         ]);
       });
 
+      it('should avoid walking the prototype when looking up entity names', () => {
+        expect(humanizeDom(parser.parse('<p>{{ &constructor; }}</p>', 'TestComp'))).toEqual([
+          [html.Element, 'p', 0],
+          [html.Text, '{{ &constructor; }}', 1, [''], ['{{', ' &constructor; ', '}}'], ['']],
+        ]);
+      });
+
       it('should normalize line endings within attribute values', () => {
         const result = parser.parse('<div key="  \r\n line 1 \r\n   line 2  "></div>', 'TestComp');
         expect(humanizeDom(result)).toEqual([

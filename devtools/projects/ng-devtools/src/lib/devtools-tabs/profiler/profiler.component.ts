@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, inject, signal} from '@angular/core';
+import {Component, DestroyRef, inject, signal} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {MatDialog} from '@angular/material/dialog';
 import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
@@ -35,14 +36,16 @@ export class ProfilerComponent {
   stream = new Subject<ProfilerFrame[]>();
 
   // We collect this buffer so we can have it available for export.
-  private _buffer: ProfilerFrame[] = [];
+  private buffer: ProfilerFrame[] = [];
 
-  private _fileApiService = inject(FileApiService);
-  private _messageBus = inject<MessageBus<Events>>(MessageBus);
+  private fileApiService = inject(FileApiService);
+  private messageBus = inject<MessageBus<Events>>(MessageBus);
   public dialog = inject(MatDialog);
 
   constructor() {
-    this._fileApiService.uploadedData.subscribe((importedFile) => {
+    // `FileApiService` is provided in root and outlives this component, which is destroyed and
+    // recreated when another frame is inspected.
+    this.fileApiService.uploadedData.pipe(takeUntilDestroyed()).subscribe((importedFile) => {
       if (importedFile.error) {
         console.error('Could not process uploaded file');
         console.error(importedFile.error);
@@ -73,56 +76,64 @@ export class ProfilerComponent {
         processDataDialog.afterClosed().subscribe((result) => {
           if (result) {
             this.state.set('visualizing');
-            this._buffer = importedFile.buffer;
+            this.buffer = importedFile.buffer;
             setTimeout(() => this.stream.next(importedFile.buffer));
           }
         });
       } else {
         this.state.set('visualizing');
-        this._buffer = importedFile.buffer;
+        this.buffer = importedFile.buffer;
         setTimeout(() => this.stream.next(importedFile.buffer));
       }
     });
 
-    this._messageBus.on('profilerResults', (remainingRecords) => {
+    const unlistenProfilerResults = this.messageBus.on('profilerResults', (remainingRecords) => {
       if (remainingRecords.duration > 0 && remainingRecords.source) {
         this.stream.next([remainingRecords]);
-        this._buffer.push(remainingRecords);
+        this.buffer.push(remainingRecords);
       }
     });
 
-    this._messageBus.on('sendProfilerChunk', (chunkOfRecords: ProfilerFrame) => {
-      this.stream.next([chunkOfRecords]);
-      this._buffer.push(chunkOfRecords);
+    const unlistenProfilerChunk = this.messageBus.on(
+      'sendProfilerChunk',
+      (chunkOfRecords: ProfilerFrame) => {
+        this.stream.next([chunkOfRecords]);
+        this.buffer.push(chunkOfRecords);
+      },
+    );
+
+    inject(DestroyRef).onDestroy(() => {
+      unlistenProfilerResults();
+      unlistenProfilerChunk();
     });
   }
 
   startRecording(): void {
     this.state.set('recording');
-    this._messageBus.emit('startProfiling');
+    this.messageBus.emit('startProfiling');
   }
 
   stopRecording(): void {
     this.state.set('visualizing');
-    this._messageBus.emit('stopProfiling');
+    this.messageBus.emit('stopProfiling');
     this.stream.complete();
   }
 
   exportProfilerResults(): void {
     const fileToExport = {
       version: PROFILER_VERSION,
-      buffer: this._buffer,
+      buffer: this.buffer,
     };
-    this._fileApiService.saveObjectAsJSON(fileToExport);
+    this.fileApiService.saveObjectAsJSON(fileToExport);
   }
 
   importProfilerResults(event: Event): void {
-    this._fileApiService.publishFileUpload(event);
+    this.fileApiService.publishFileUpload(event);
   }
 
   discardRecording(): void {
     this.stream = new Subject<ProfilerFrame[]>();
     this.state.set('idle');
-    this._buffer = [];
+    this.buffer = [];
   }
 }

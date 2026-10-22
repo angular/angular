@@ -39,7 +39,7 @@ export class PlatformState {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<PlatformState, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<PlatformState>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public

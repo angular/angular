@@ -14,7 +14,7 @@ export const TYPESCRIPT_VFS_WORKER_FACTORY = new InjectionToken<TypescriptVfsWor
   'TYPESCRIPT_VFS_WORKER_FACTORY',
 );
 
-export function createTypescriptVfsWorker(): Worker {
+function createTypescriptVfsWorker(): Worker {
   return new Worker(new URL('./typescript-vfs.worker.ts', import.meta.url), {
     type: 'module',
   });

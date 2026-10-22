@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, ɵRuntimeError as RuntimeError, Service, Signal} from '@angular/core';
+import {
+  computed,
+  ɵformatRuntimeError as formatRuntimeError,
+  ɵRuntimeError as RuntimeError,
+  Service,
+  Signal,
+} from '@angular/core';
 
 import {RuntimeErrorCode} from './errors';
 import type {Router} from './router';
@@ -472,12 +478,40 @@ export class DefaultUrlSerializer implements UrlSerializer {
 
   /** Converts a `UrlTree` into a url */
   serialize(tree: UrlTree): string {
-    const segment = `/${serializeSegment(tree.root, true)}`;
+    let segment = `/${serializeSegment(tree.root, true)}`;
+    if (isProtocolRelative(segment)) {
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+        console.warn(
+          formatRuntimeError(
+            RuntimeErrorCode.PROTOCOL_RELATIVE_URL_NOT_ALLOWED,
+            `Cannot serialize a UrlTree that would produce a protocol-relative URL. Falling back to '/' instead.`,
+          ),
+        );
+      }
+      segment = '/';
+    }
     const query = serializeQueryParams(tree.queryParams);
     const fragment =
       typeof tree.fragment === `string` ? `#${encodeUriFragment(tree.fragment)}` : '';
 
     return `${segment}${query}${fragment}`;
+  }
+}
+
+const DUMMY_BASE_URL = 'http://fake';
+
+/**
+ * Determines whether a serialized path would produce a protocol-relative URL when interpreted
+ * by a browser or server. Under the WHATWG URL standard, paths starting with `//` or `/\`, or paths
+ * where leading dot segments collapse to `//` (such as `/.//` or `/..//`), resolve to an external
+ * origin or a protocol-relative pathname.
+ */
+function isProtocolRelative(url: string): boolean {
+  try {
+    const resolved = new URL(url, DUMMY_BASE_URL);
+    return resolved.origin !== DUMMY_BASE_URL || resolved.pathname.startsWith('//');
+  } catch {
+    return true;
   }
 }
 
@@ -506,21 +540,31 @@ function serializeSegment(segment: UrlSegmentGroup, root: boolean): string {
 
     return children.length > 0 ? `${primary}(${children.join('//')})` : primary;
   } else {
+    // use no parenthesis if the only child is a primary outlet route
+    if (Object.keys(segment.children).length === 1 && segment.children[PRIMARY_OUTLET] != null) {
+      return `${serializePaths(segment)}/${serializeSegment(segment.children[PRIMARY_OUTLET], false)}`;
+    }
+
     const children = mapChildrenIntoArray(segment, (v: UrlSegmentGroup, k: string) => {
       if (k === PRIMARY_OUTLET) {
-        return [serializeSegment(segment.children[PRIMARY_OUTLET], false)];
+        return [escapeOutletDelimiter(serializeSegment(segment.children[PRIMARY_OUTLET], false))];
       }
 
       return [`${k}:${serializeSegment(v, false)}`];
     });
 
-    // use no parenthesis if the only child is a primary outlet route
-    if (Object.keys(segment.children).length === 1 && segment.children[PRIMARY_OUTLET] != null) {
-      return `${serializePaths(segment)}/${children[0]}`;
-    }
-
     return `${serializePaths(segment)}/(${children.join('//')})`;
   }
+}
+
+/**
+ * Inside a parenthesized group, the parser distinguishes a named outlet (`name:path`) from the
+ * unprefixed primary child by looking for a `:` in the first segment token. A primary child whose
+ * first segment legitimately contains a colon (e.g. a param value `admin:y`) would therefore be
+ * misparsed as outlet `admin` on round-trip. Percent-encode colons in that leading token only.
+ */
+function escapeOutletDelimiter(serializedPrimary: string): string {
+  return serializedPrimary.replace(SEGMENT_RE, (firstSegment) => firstSegment.replace(/:/g, '%3A'));
 }
 
 /**
@@ -598,6 +642,23 @@ function serializeQueryParams(params: {[key: string]: any}): string {
     .filter((s) => s);
 
   return strParams.length ? `?${strParams.join('&')}` : '';
+}
+
+// Above V8's threshold for requiring dictionary elements.
+const SLOW_ELEMENTS_SENTINEL = 0x40000000;
+
+/**
+ * Avoids oversized V8 backing stores for numeric URL keys.
+ * Setting then deleting the sentinel keeps indexed properties in dictionary storage.
+ * Indices below 32 use little space, so leave them alone.
+ */
+function setUrlDerivedKey<T>(target: {[key: string]: T}, key: string, value: T): void {
+  // Preserve URL keys that happen to equal the sentinel.
+  if (Number(key) >= 32 && !Object.hasOwn(target, SLOW_ELEMENTS_SENTINEL)) {
+    target[SLOW_ELEMENTS_SENTINEL] = value;
+    delete target[SLOW_ELEMENTS_SENTINEL];
+  }
+  target[key] = value;
 }
 
 const SEGMENT_RE = /^[^\/()?;#]+/;
@@ -742,7 +803,7 @@ class UrlParser {
       }
     }
 
-    params[decode(key)] = decode(value);
+    setUrlDerivedKey(params, decode(key), decode(value));
   }
 
   // Parse a single query parameter `name[=value]`
@@ -811,10 +872,11 @@ class UrlParser {
       }
 
       const children = this.parseChildren(depth + 1);
-      segments[outletName ?? PRIMARY_OUTLET] =
+      const child =
         Object.keys(children).length === 1 && children[PRIMARY_OUTLET]
           ? children[PRIMARY_OUTLET]
           : new UrlSegmentGroup([], children);
+      setUrlDerivedKey(segments, outletName ?? PRIMARY_OUTLET, child);
       this.consumeOptional('//');
     }
 
@@ -872,11 +934,11 @@ export function squashSegmentGroup(segmentGroup: UrlSegmentGroup): UrlSegmentGro
       childCandidate.hasChildren()
     ) {
       for (const [grandChildOutlet, grandChild] of Object.entries(childCandidate.children)) {
-        newChildren[grandChildOutlet] = grandChild;
+        setUrlDerivedKey(newChildren, grandChildOutlet, grandChild);
       }
     } // don't add empty children
     else if (childCandidate.segments.length > 0 || childCandidate.hasChildren()) {
-      newChildren[childOutlet] = childCandidate;
+      setUrlDerivedKey(newChildren, childOutlet, childCandidate);
     }
   }
   const s = new UrlSegmentGroup(segmentGroup.segments, newChildren);

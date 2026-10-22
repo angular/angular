@@ -30,12 +30,11 @@ export interface CdData {
   /** Position of the component element in the directive forest. */
   elementPosition: ElementPosition;
 
-  /**
-   * Contains the processing times of the component
-   * for each CD cycle it was part of. The last value
-   * represents the latest time.
-   */
-  cdPassDurations: number[];
+  /** Total number of CD cycles the component has been part of. */
+  cdCount: number;
+
+  /** Processing time of the component for its most recent CD cycle. */
+  lastCdPassDuration: number;
 }
 
 type CdDataListener = (current: CdData[], all: CdData[]) => void;
@@ -102,7 +101,12 @@ export class CdAnalyzerImpl implements CdAnalyzer {
             this.inCd = false;
 
             for (const [cmpId, time] of this.currCycleAccumProcessingTimes) {
-              this.data.get(cmpId)?.cdPassDurations.push(time);
+              const cmpData = this.data.get(cmpId);
+              if (!cmpData) {
+                continue;
+              }
+              cmpData.cdCount++;
+              cmpData.lastCdPassDuration = time;
             }
 
             const {current, all} = this.processDataForEmission();
@@ -125,7 +129,8 @@ export class CdAnalyzerImpl implements CdAnalyzer {
         this.cleanUpRegistry.register(cmp, id);
 
         this.data.set(id, {
-          cdPassDurations: [],
+          cdCount: 0,
+          lastCdPassDuration: 0,
           elementPosition: position,
           component: cmpRef,
         });

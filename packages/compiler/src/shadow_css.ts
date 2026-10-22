@@ -598,7 +598,7 @@ export class ShadowCss {
       if (rule.selector[0] !== '@') {
         if (rule.isBlock) {
           const selectorParts = selector.split(_selectorSplitRe);
-          const containsDeep = selectorParts.some((part) => _shadowDeepSelectors.test(part));
+          const containsDeep = selectorParts.some((part) => _shadowDeepSelectorRe.test(part));
 
           selector = this._scopeSelector({
             selector,
@@ -753,7 +753,9 @@ export class ShadowCss {
     const _scopeSelectorPart = (p: string) => {
       let scopedP = p.trim();
 
-      if (!scopedP || scopedP === '&') {
+      // Comments are replaced with placeholders before scoping. A part that only consists of
+      // comments is not a selector and must be left untouched.
+      if (!scopedP || scopedP === '&' || _onlyCommentPlaceholdersRe.test(scopedP)) {
         return p;
       }
 
@@ -1013,6 +1015,8 @@ const _polyfillHostNoCombinatorRe = /-shadowcsshost-no-combinator([^\s,]*)/;
 // Support for `>>>`, `deep`, `::ng-deep` is then also deprecated and will be removed in the future.
 // see https://github.com/angular/angular/pull/17677
 const _shadowDeepSelectors = /(?:>>>)|(?:\/deep\/)|(?:::ng-deep)/g;
+// Non-global copy for `.test()`, which would otherwise carry `lastIndex` over to the next rule.
+const _shadowDeepSelectorRe = new RegExp(_shadowDeepSelectors.source);
 
 // Splits the selector into independent parts by `,` (comma) unless comma is within parenthesis,
 // for example `:is(.one, two)`. Negative lookup after comma allows not splitting inside nested
@@ -1029,6 +1033,7 @@ const _commentRe = /\/\*[\s\S]*?\*\//g;
 const _commentWithHashRe = /\/\*\s*#\s*source(Mapping)?URL=/g;
 const COMMENT_PLACEHOLDER = '%COMMENT%';
 const _commentWithHashPlaceHolderRe = new RegExp(COMMENT_PLACEHOLDER, 'g');
+const _onlyCommentPlaceholdersRe = new RegExp(`^(?:${COMMENT_PLACEHOLDER})+$`);
 
 const BLOCK_PLACEHOLDER = '%BLOCK%';
 const _ruleRe = new RegExp(
@@ -1051,32 +1056,33 @@ const _cssRbraceInPlaceholderReGlobal = new RegExp(RBRACE_IN_PLACEHOLDER, 'g');
 
 // Matches any CSS variable name, defined by a double-hyphen followed by any valid ident.
 // https://www.w3.org/TR/css-syntax-3/#ident-token-diagram
-const _cssVariableRe = /(var\(\s*)?(--(?:[a-zA-Z0-9_-]|[^\x00-\x7F])+)(\s*:)?/g;
+const _cssVariableRe = /(var\(\s*|@property\s+)?(--(?:[a-zA-Z0-9_-]|[^\x00-\x7F])+)(\s*:)?/g;
 
 /**
  * Transforms CSS variables within a stylesheet to include a namespace placeholder.
  *
  * E.g. `--foo: bar;` becomes `--%NS%foo: bar;`
  * E.g. `color: var(--foo);` becomes `color: var(--%NS%foo);`
+ * E.g. `@property --foo` becomes `@property --%NS%foo`
  *
  * If a variable is prefixed with `--global--`, it is NOT namespaced and the prefix is removed.
  * E.g. `--global--mycolor: red;` becomes `--mycolor: red;`
  */
 export function namespaceCssVariables(cssText: string): string {
-  return cssText.replace(_cssVariableRe, (match, leadingVar, varName, trailingColon) => {
-    // Check for a leading `var(` or trailing `:` to approximate whether we're operating on a
-    // real CSS variable, not another piece of syntax that resembles it. For example, this
-    // guards against:
+  return cssText.replace(_cssVariableRe, (match, prefix, varName, trailingColon) => {
+    // Check for a leading `var(`, `@property`, or trailing `:` to approximate whether we're
+    // operating on a real CSS variable, not another piece of syntax that resembles it.
+    // For example, this guards against:
     // - `.foo--bar {}`
     // - `/* --foo */`
     // - `p { content: "--foo" }`
     // - `[data---bar] {}`
     // - `[data-status=foo--bar] {}`
     // etc.
-    if (!leadingVar && !trailingColon) {
+    if (!prefix && !trailingColon) {
       return match;
     }
-    return (leadingVar ?? '') + namespaceCssVariable(varName) + (trailingColon ?? '');
+    return (prefix ?? '') + namespaceCssVariable(varName) + (trailingColon ?? '');
   });
 }
 

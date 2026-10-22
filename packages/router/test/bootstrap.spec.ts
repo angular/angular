@@ -44,7 +44,6 @@ describe('bootstrap', () => {
 
   @Component({
     template: 'simple',
-    standalone: false,
   })
   class SimpleCmp {}
 
@@ -69,10 +68,9 @@ describe('bootstrap', () => {
   @Injectable({providedIn: 'root'})
   class TestResolver {
     resolve() {
-      let resolve: (value: unknown) => void;
-      const res = new Promise((r) => (resolve = r));
+      const {promise, resolve} = Promise.withResolvers();
       setTimeout(() => resolve('test-data'), 0);
-      return res;
+      return promise;
     }
   }
 
@@ -90,7 +88,7 @@ describe('bootstrap', () => {
     doc.body.appendChild(el1);
     doc.body.appendChild(el2);
 
-    const {promise, resolveFn} = createPromise();
+    const {promise, resolve: resolveFn} = Promise.withResolvers<void>();
     navigationEndPromise = promise;
     log = [];
     testProviders = [
@@ -265,7 +263,6 @@ describe('bootstrap', () => {
     @Component({
       selector: 'test',
       template: 'test',
-      standalone: false,
     })
     class TestCmpEnabled {}
 
@@ -277,7 +274,7 @@ describe('bootstrap', () => {
           {initialNavigation: 'enabledBlocking'},
         ),
       ],
-      declarations: [RootCmp, TestCmpEnabled],
+      declarations: [RootCmp],
       bootstrap: [RootCmp],
       providers: [...testProviders, TestResolver],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -303,7 +300,6 @@ describe('bootstrap', () => {
     @Component({
       selector: 'test',
       template: 'test',
-      standalone: false,
     })
     class TestCmpLegacyEnabled {}
 
@@ -315,7 +311,7 @@ describe('bootstrap', () => {
           {initialNavigation: 'enabledNonBlocking'},
         ),
       ],
-      declarations: [RootCmp, TestCmpLegacyEnabled],
+      declarations: [RootCmp],
       bootstrap: [RootCmp],
       providers: [...testProviders, TestResolver],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -343,7 +339,6 @@ describe('bootstrap', () => {
     @Component({
       selector: 'test',
       template: 'test',
-      standalone: false,
     })
     class TestCmpLegacyEnabled {}
 
@@ -354,7 +349,7 @@ describe('bootstrap', () => {
           {path: '**', component: TestCmpLegacyEnabled, resolve: {test: TestResolver}},
         ]),
       ],
-      declarations: [RootCmp, TestCmpLegacyEnabled],
+      declarations: [RootCmp],
       bootstrap: [RootCmp],
       providers: [...testProviders, TestResolver],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -382,7 +377,6 @@ describe('bootstrap', () => {
     @Component({
       selector: 'test',
       template: 'test',
-      standalone: false,
     })
     class TestCmpDiabled {}
 
@@ -394,7 +388,7 @@ describe('bootstrap', () => {
           {initialNavigation: 'disabled'},
         ),
       ],
-      declarations: [RootCmp, TestCmpDiabled],
+      declarations: [RootCmp],
       bootstrap: [RootCmp],
       providers: [...testProviders, TestResolver],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -455,7 +449,7 @@ describe('bootstrap', () => {
         spyOn(router as any, 'resetRootComponentType').and.callThrough();
 
         const appRef: ApplicationRef = res.injector.get(ApplicationRef);
-        const {promise, resolveFn} = createPromise();
+        const {promise, resolve: resolveFn} = Promise.withResolvers<void>();
         appRef.components[0].onDestroy(() => {
           appRef.bootstrap(SecondRootCmp);
           expect((router as any).resetRootComponentType).toHaveBeenCalled();
@@ -470,7 +464,6 @@ describe('bootstrap', () => {
   if (!isNode) {
     it('should restore the scrolling position', async () => {
       @Component({
-        selector: 'component-a',
         template: `
           <div style="height: 3000px;"></div>
           <div id="marker1"></div>
@@ -480,7 +473,6 @@ describe('bootstrap', () => {
           <a name="marker3"></a>
           <div style="height: 3000px;"></div>
         `,
-        standalone: false,
       })
       class TallComponent {}
       @NgModule({
@@ -502,7 +494,7 @@ describe('bootstrap', () => {
             },
           ),
         ],
-        declarations: [TallComponent, RootCmp],
+        declarations: [RootCmp],
         bootstrap: [RootCmp],
         providers: [...testProviders],
         schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -592,7 +584,7 @@ describe('bootstrap', () => {
           {path: 'b', component: SimpleCmp},
         ]),
       ],
-      declarations: [RootCmp, SimpleCmp],
+      declarations: [RootCmp],
       bootstrap: [RootCmp],
       providers: [...testProviders],
     })
@@ -628,12 +620,4 @@ function provideNavigationEndAction(fn: Function) {
       onNavigationEnd(inject(Router), fn);
     },
   };
-}
-
-function createPromise() {
-  let resolveFn: () => void;
-  const promise = new Promise<void>((r) => {
-    resolveFn = r;
-  });
-  return {resolveFn: () => resolveFn(), promise};
 }

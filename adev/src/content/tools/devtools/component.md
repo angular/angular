@@ -74,3 +74,7 @@ The hydration status can also be visualized on the application itself by enablin
 <img src="assets/images/guide/devtools/hydration-overlay-ecom.png" />
 
 Here is an illustration of the hydration overlays on a Angular e-shop example app.
+
+### Debug the signal graph
+
+To visualize how the signals, computeds, and effects of a component depend on each other, see [Debug the signal graph](tools/devtools/signals).

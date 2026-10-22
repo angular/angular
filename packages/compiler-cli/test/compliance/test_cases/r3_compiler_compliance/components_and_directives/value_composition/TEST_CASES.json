@@ -346,6 +346,16 @@
           "files": ["dollar_escape.js"]
         }
       ]
+    },
+    {
+      "description": "should support inline access of an object literal",
+      "inputFiles": ["inline_object_literal_access.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid template",
+          "files": ["inline_object_literal_access.js"]
+        }
+      ]
     }
   ]
 }

@@ -25,6 +25,7 @@ import {BindingParser} from '../template_parser/binding_parser';
 import {PreparsedElementType, preparseElement} from '../template_parser/template_preparser';
 
 import * as t from './r3_ast';
+import {createBoundaryBlock, isConnectedBoundaryErrorBlock} from './r3_boundaries';
 import {createContentBlock} from './r3_content_blocks';
 import {
   createForLoop,
@@ -525,10 +526,22 @@ class HtmlAstToIvyAst implements html.Visitor {
         );
         break;
 
+      case 'boundary':
+        result = createBoundaryBlock(
+          block,
+          this.findConnectedBlocks(index, context, isConnectedBoundaryErrorBlock),
+          this,
+          this.bindingParser,
+        );
+        break;
+
       default:
         let errorMessage: string;
 
-        if (isConnectedDeferLoopBlock(block.name)) {
+        if (isConnectedBoundaryErrorBlock(block.name)) {
+          errorMessage = `@${block.name} block can only be used after an @defer or @boundary block.`;
+          this.processedNodes.add(block);
+        } else if (isConnectedDeferLoopBlock(block.name)) {
           errorMessage = `@${block.name} block can only be used after an @defer block.`;
           this.processedNodes.add(block);
         } else if (isConnectedForLoopBlock(block.name)) {
@@ -591,13 +604,13 @@ class HtmlAstToIvyAst implements html.Visitor {
   private categorizePropertyAttributes(
     elementName: string | null,
     properties: ParsedProperty[],
-    i18nPropsMeta: {[key: string]: i18n.I18nMeta},
+    i18nPropsMeta: Map<string, i18n.I18nMeta> | null,
   ): {bound: t.BoundAttribute[]; literal: t.TextAttribute[]} {
     const bound: t.BoundAttribute[] = [];
     const literal: t.TextAttribute[] = [];
 
     properties.forEach((prop) => {
-      const i18n = i18nPropsMeta[prop.name];
+      const i18n = i18nPropsMeta?.get(prop.name);
       if (prop.isLiteral) {
         literal.push(
           new t.TextAttribute(
@@ -633,9 +646,9 @@ class HtmlAstToIvyAst implements html.Visitor {
     const variables: t.Variable[] = [];
     const references: t.Reference[] = [];
     const attributes: t.TextAttribute[] = [];
-    const i18nAttrsMeta: Record<string, i18n.I18nMeta> = {};
     const templateParsedProperties: ParsedProperty[] = [];
     const templateVariables: t.Variable[] = [];
+    let i18nAttrsMeta: Map<string, i18n.I18nMeta> | null = null;
 
     // Whether the element has any *-attribute
     let elementHasInlineTemplate = false;
@@ -647,7 +660,8 @@ class HtmlAstToIvyAst implements html.Visitor {
       let isTemplateBinding = false;
 
       if (attribute.i18n) {
-        i18nAttrsMeta[attribute.name] = attribute.i18n;
+        i18nAttrsMeta ??= new Map();
+        i18nAttrsMeta.set(attribute.name, attribute.i18n);
       }
 
       if (attribute.name.startsWith(TEMPLATE_ATTR_PREFIX)) {
@@ -1012,7 +1026,7 @@ class HtmlAstToIvyAst implements html.Visitor {
     node: t.Element | t.Component | t.Content | t.Template,
     templateProperties: ParsedProperty[],
     templateVariables: t.Variable[],
-    i18nAttrsMeta: Record<string, i18n.I18nMeta>,
+    i18nAttrsMeta: Map<string, i18n.I18nMeta> | null,
     isTemplateElement: boolean,
     isI18nRootElement: boolean,
   ) {

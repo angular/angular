@@ -18,7 +18,7 @@ import {
   Router,
   RouterOutlet,
   provideRouter,
-  withExperimentalAutoCleanupInjectors,
+  withAutoCleanupInjectors,
   RouterModule,
   destroyDetachedRouteHandle,
 } from '@angular/router';
@@ -133,7 +133,7 @@ describe('Route Injector Destruction', () => {
               loadChildren: () => Promise.resolve(LazyModule),
             },
           ],
-          withExperimentalAutoCleanupInjectors(),
+          withAutoCleanupInjectors(),
         ),
         {provide: RouteReuseStrategy, useClass: CustomReuseStrategy},
       ],
@@ -310,14 +310,14 @@ describe('Route Injector Destruction', () => {
     await router.navigateByUrl('/check');
 
     const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
+    await fixture.whenStable();
     const component = fixture.debugElement.query(
       By.directive(DestroyCheckComponent),
     ).componentInstance;
 
     // 1. Navigate away to detach 'check' route
     await router.navigateByUrl('/away');
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     // 2. Verify 'check' route is detached and stored
     expect(strategy.storedHandles.get(checkRoute)).toBeDefined();

@@ -45,7 +45,7 @@ import {
   ViewChild,
   ViewContainerRef,
 } from '../../src/core';
-import {fakeAsync, flushMicrotasks, TestBed} from '../../testing';
+import {TestBed} from '../../testing';
 
 const DEFAULT_NAMESPACE_ID = 'id';
 const DEFAULT_COMPONENT_ID = '1';
@@ -121,7 +121,7 @@ const DEFAULT_COMPONENT_ID = '1';
     }
 
     describe('fakeAsync testing', () => {
-      it('should only require one flushMicrotasks call to kick off animation callbacks', fakeAsync(() => {
+      it('should only require one flushMicrotasks call to kick off animation callbacks', async () => {
         @Component({
           changeDetection: ChangeDetectionStrategy.Eager,
           selector: 'cmp',
@@ -154,7 +154,7 @@ const DEFAULT_COMPONENT_ID = '1';
         fixture.detectChanges();
         expect(cmp.status).toEqual('');
 
-        flushMicrotasks();
+        await Promise.resolve();
         expect(cmp.status).toEqual('start');
 
         let player = MockAnimationDriver.log.pop()!;
@@ -169,11 +169,11 @@ const DEFAULT_COMPONENT_ID = '1';
         player = MockAnimationDriver.log.pop()!;
         player.finish();
         expect(cmp.status).toEqual('');
-        flushMicrotasks();
+        await Promise.resolve();
         expect(cmp.status).toEqual('done');
-      }));
+      });
 
-      it('should always run .start callbacks before .done callbacks even for noop animations', fakeAsync(() => {
+      it('should always run .start callbacks before .done callbacks even for noop animations', async () => {
         @Component({
           changeDetection: ChangeDetectionStrategy.Eager,
           selector: 'cmp',
@@ -202,11 +202,11 @@ const DEFAULT_COMPONENT_ID = '1';
         fixture.detectChanges();
         expect(cmp.log).toEqual([]);
 
-        flushMicrotasks();
+        await Promise.resolve();
         expect(cmp.log).toEqual(['start', 'done']);
-      }));
+      });
 
-      it('should emit the correct totalTime value for a noop-animation', fakeAsync(() => {
+      it('should emit the correct totalTime value for a noop-animation', async () => {
         @Component({
           changeDetection: ChangeDetectionStrategy.Eager,
           selector: 'cmp',
@@ -241,17 +241,17 @@ const DEFAULT_COMPONENT_ID = '1';
         fixture.detectChanges();
         expect(cmp.log).toEqual([]);
 
-        flushMicrotasks();
+        await Promise.resolve();
         expect(cmp.log.length).toEqual(2);
         const [start, end] = cmp.log;
         expect(start.totalTime).toEqual(1000);
         expect(end.totalTime).toEqual(1000);
-      }));
+      });
     });
 
     describe('component fixture integration', () => {
       describe('whenRenderingDone', () => {
-        it('should wait until the animations are finished until continuing', fakeAsync(() => {
+        it('should wait until the animations are finished until continuing', async () => {
           @Component({
             changeDetection: ChangeDetectionStrategy.Eager,
             selector: 'cmp',
@@ -284,11 +284,11 @@ const DEFAULT_COMPONENT_ID = '1';
           players[0].finish();
           expect(isDone).toBe(false);
 
-          flushMicrotasks();
+          await Promise.resolve();
           expect(isDone).toBe(true);
-        }));
+        });
 
-        it('should wait for a noop animation to finish before continuing', fakeAsync(() => {
+        it('should wait for a noop animation to finish before continuing', async () => {
           @Component({
             changeDetection: ChangeDetectionStrategy.Eager,
             selector: 'cmp',
@@ -320,11 +320,11 @@ const DEFAULT_COMPONENT_ID = '1';
           engine.flush();
           expect(isDone).toBe(false);
 
-          flushMicrotasks();
+          await Promise.resolve();
           expect(isDone).toBe(true);
-        }));
+        });
 
-        it('should wait for active animations to finish even if they have already started', fakeAsync(() => {
+        it('should wait for active animations to finish even if they have already started', async () => {
           @Component({
             changeDetection: ChangeDetectionStrategy.Eager,
             selector: 'cmp',
@@ -351,13 +351,13 @@ const DEFAULT_COMPONENT_ID = '1';
 
           let isDone = false;
           fixture.whenRenderingDone().then(() => (isDone = true));
-          flushMicrotasks();
+          await Promise.resolve();
           expect(isDone).toBe(false);
 
           players[0].finish();
-          flushMicrotasks();
+          await Promise.resolve();
           expect(isDone).toBe(true);
-        }));
+        });
       });
     });
 
@@ -576,7 +576,7 @@ const DEFAULT_COMPONENT_ID = '1';
         expect(player.duration).toEqual(1234);
       });
 
-      it('should always cancel the previous transition if a follow-up transition is not matched', fakeAsync(() => {
+      it('should always cancel the previous transition if a follow-up transition is not matched', async () => {
         @Component({
           changeDetection: ChangeDetectionStrategy.Eager,
           selector: 'if-cmp',
@@ -623,7 +623,7 @@ const DEFAULT_COMPONENT_ID = '1';
         expect(getLog().length).toEqual(0);
         expect(engine.players.length).toEqual(0);
 
-        flushMicrotasks();
+        await Promise.resolve();
         expect(cmp.startEvent.toState).toEqual('a');
         expect(cmp.startEvent.totalTime).toEqual(0);
         expect(cmp.startEvent.toState).toEqual('a');
@@ -638,7 +638,7 @@ const DEFAULT_COMPONENT_ID = '1';
         expect(players.length).toEqual(1);
         expect(engine.players.length).toEqual(1);
 
-        flushMicrotasks();
+        await Promise.resolve();
         expect(cmp.startEvent.toState).toEqual('b');
         expect(cmp.startEvent.totalTime).toEqual(500);
         expect(cmp.startEvent.toState).toEqual('b');
@@ -655,16 +655,16 @@ const DEFAULT_COMPONENT_ID = '1';
         expect(engine.players.length).toEqual(0);
         expect(getLog().length).toEqual(0);
 
-        flushMicrotasks();
+        await Promise.resolve();
         expect(cmp.startEvent.toState).toEqual('c');
         expect(cmp.startEvent.totalTime).toEqual(0);
         expect(cmp.startEvent.toState).toEqual('c');
         expect(cmp.startEvent.totalTime).toEqual(0);
 
         expect(completed).toBe(true);
-      }));
+      });
 
-      it('should always fire inner callbacks even if no animation is fired when a view is inserted', fakeAsync(() => {
+      it('should always fire inner callbacks even if no animation is fired when a view is inserted', async () => {
         @Component({
           changeDetection: ChangeDetectionStrategy.Eager,
           selector: 'if-cmp',
@@ -694,16 +694,16 @@ const DEFAULT_COMPONENT_ID = '1';
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
         fixture.detectChanges();
-        flushMicrotasks();
+        await Promise.resolve();
 
         expect(cmp.log).toEqual([]);
 
         cmp.exp = true;
         fixture.detectChanges();
-        flushMicrotasks();
+        await Promise.resolve();
 
         expect(cmp.log).toEqual(['myAnimation-start', 'myAnimation-done']);
-      }));
+      });
 
       it('should only turn a view removal as into `void` state transition', () => {
         @Component({
@@ -1017,7 +1017,7 @@ const DEFAULT_COMPONENT_ID = '1';
       });
 
       describe('host bindings', () => {
-        it('should trigger a state change animation from state => state on the component host element', fakeAsync(() => {
+        it('should trigger a state change animation from state => state on the component host element', () => {
           @Component({
             changeDetection: ChangeDetectionStrategy.Eager,
             selector: 'my-cmp',
@@ -1062,9 +1062,9 @@ const DEFAULT_COMPONENT_ID = '1';
               ['opacity', '1'],
             ]),
           ]);
-        }));
+        });
 
-        it('should trigger a leave animation when the inner has ViewContainerRef injected', fakeAsync(() => {
+        it('should trigger a leave animation when the inner has ViewContainerRef injected', () => {
           @Component({
             changeDetection: ChangeDetectionStrategy.Eager,
             selector: 'parent-cmp',
@@ -1121,9 +1121,9 @@ const DEFAULT_COMPONENT_ID = '1';
 
           player.finish();
           expect(fixture.debugElement.nativeElement.children.length).toBe(0);
-        }));
+        });
 
-        it('should trigger a leave animation when the inner components host binding updates', fakeAsync(() => {
+        it('should trigger a leave animation when the inner components host binding updates', () => {
           @Component({
             changeDetection: ChangeDetectionStrategy.Eager,
             selector: 'parent-cmp',
@@ -1179,9 +1179,9 @@ const DEFAULT_COMPONENT_ID = '1';
 
           player.finish();
           expect(fixture.debugElement.nativeElement.children.length).toBe(0);
-        }));
+        });
 
-        it('should wait for child animations before removing parent', fakeAsync(() => {
+        it('should wait for child animations before removing parent', async () => {
           @Component({
             changeDetection: ChangeDetectionStrategy.Eager,
             template: '<child-cmp *ngIf="exp" @parentTrigger></child-cmp>',
@@ -1237,12 +1237,12 @@ const DEFAULT_COMPONENT_ID = '1';
           ]);
 
           player.finish();
-          flushMicrotasks();
+          await Promise.resolve();
           expect(fixture.nativeElement.children.length).toBe(0);
-        }));
+        });
 
         // animationRenderer => nonAnimationRenderer
-        it('should trigger a leave animation when the outer components element binding updates on the host component element', fakeAsync(() => {
+        it('should trigger a leave animation when the outer components element binding updates on the host component element', async () => {
           @Component({
             changeDetection: ChangeDetectionStrategy.Eager,
             selector: 'parent-cmp',
@@ -1295,11 +1295,11 @@ const DEFAULT_COMPONENT_ID = '1';
           ]);
 
           player.finish();
-          flushMicrotasks();
+          await Promise.resolve();
           expect(fixture.debugElement.nativeElement.children.length).toBe(0);
-        }));
+        });
 
-        it('should trigger a leave animation when both the inner and outer components trigger on the same element', fakeAsync(() => {
+        it('should trigger a leave animation when both the inner and outer components trigger on the same element', async () => {
           @Component({
             changeDetection: ChangeDetectionStrategy.Eager,
             selector: 'parent-cmp',
@@ -1377,11 +1377,11 @@ const DEFAULT_COMPONENT_ID = '1';
 
           p1.finish();
           p2.finish();
-          flushMicrotasks();
+          await Promise.resolve();
           expect(fixture.debugElement.nativeElement.children.length).toBe(0);
-        }));
+        });
 
-        it('should not throw when the host element is removed and no animation triggers', fakeAsync(() => {
+        it('should not throw when the host element is removed and no animation triggers', async () => {
           @Component({
             changeDetection: ChangeDetectionStrategy.Eager,
             selector: 'parent-cmp',
@@ -1417,15 +1417,15 @@ const DEFAULT_COMPONENT_ID = '1';
           cmp.exp = false;
           fixture.detectChanges();
           engine.flush();
-          flushMicrotasks();
+          await Promise.resolve();
           expect(getLog().length).toEqual(0);
           expect(fixture.debugElement.nativeElement.children.length).toBe(0);
 
-          flushMicrotasks();
+          await Promise.resolve();
           expect(fixture.debugElement.nativeElement.children.length).toBe(0);
-        }));
+        });
 
-        it('should properly evaluate pre/auto-style values when components are inserted/removed which contain host animations', fakeAsync(() => {
+        it('should properly evaluate pre/auto-style values when components are inserted/removed which contain host animations', () => {
           @Component({
             changeDetection: ChangeDetectionStrategy.Eager,
             selector: 'parent-cmp',
@@ -1465,7 +1465,7 @@ const DEFAULT_COMPONENT_ID = '1';
             const item = items[i];
             expect(item.style['display']).toBeFalsy();
           }
-        }));
+        });
       });
 
       it('should cancel and merge in mid-animation styles into the follow-up animation, but only for animation keyframes that start right away', () => {
@@ -1930,7 +1930,7 @@ const DEFAULT_COMPONENT_ID = '1';
         }
       });
 
-      it('should keep/restore the trigger value when there are move operations (with *ngFor + trackBy)', fakeAsync(() => {
+      it('should keep/restore the trigger value when there are move operations (with *ngFor + trackBy)', async () => {
         @Component({
           changeDetection: ChangeDetectionStrategy.Eager,
           selector: 'ani-cmp',
@@ -1977,15 +1977,15 @@ const DEFAULT_COMPONENT_ID = '1';
         const cmp = fixture.componentInstance;
         fixture.detectChanges();
 
-        const completeAnimations = () => {
+        const completeAnimations = async () => {
           fixture.detectChanges();
-          flushMicrotasks();
+          await Promise.resolve();
           engine.players.forEach((player) => player.finish());
         };
 
         cmp.log = [];
         [0, 1, 2].forEach(() => cmp.addItem());
-        completeAnimations();
+        await completeAnimations();
         expect(cmp.log).toEqual([
           '[item0] void => null',
           '[item1] void => null',
@@ -1993,17 +1993,17 @@ const DEFAULT_COMPONENT_ID = '1';
         ]);
 
         cmp.reverseItems();
-        completeAnimations();
+        await completeAnimations();
 
         cmp.log = [];
         [0, 1, 2].forEach(() => cmp.removeItem());
-        completeAnimations();
+        await completeAnimations();
         expect(cmp.log).toEqual([
           '[item2] null => void',
           '[item1] null => void',
           '[item0] null => void',
         ]);
-      }));
+      });
 
       it('should animate removals of nodes to the `void` state for each animation trigger, but treat all auto styles as pre styles', () => {
         @Component({
@@ -2467,7 +2467,7 @@ const DEFAULT_COMPONENT_ID = '1';
         expect(players.length).toEqual(0);
       });
 
-      it("should update the final state styles when params update even if the expression hasn't changed", fakeAsync(() => {
+      it("should update the final state styles when params update even if the expression hasn't changed", async () => {
         @Component({
           changeDetection: ChangeDetectionStrategy.Eager,
           selector: 'ani-cmp',
@@ -2498,7 +2498,7 @@ const DEFAULT_COMPONENT_ID = '1';
         const element = player.element;
         player.finish();
 
-        flushMicrotasks();
+        await Promise.resolve();
         expect(hasStyle(element, 'color', 'red')).toBeTruthy();
 
         cmp.exp = '1';
@@ -2506,7 +2506,7 @@ const DEFAULT_COMPONENT_ID = '1';
         fixture.detectChanges();
         resetLog();
 
-        flushMicrotasks();
+        await Promise.resolve();
         expect(hasStyle(element, 'color', 'blue')).toBeTruthy();
 
         cmp.exp = '1';
@@ -2514,9 +2514,9 @@ const DEFAULT_COMPONENT_ID = '1';
         fixture.detectChanges();
         resetLog();
 
-        flushMicrotasks();
+        await Promise.resolve();
         expect(hasStyle(element, 'color', 'black')).toBeTruthy();
-      }));
+      });
 
       it('should substitute in values if the provided state match is an object with values', () => {
         @Component({
@@ -2565,7 +2565,7 @@ const DEFAULT_COMPONENT_ID = '1';
         ]);
       });
 
-      it('should retain substituted styles on the element once the animation is complete if referenced in the final state', fakeAsync(() => {
+      it('should retain substituted styles on the element once the animation is complete if referenced in the final state', async () => {
         @Component({
           changeDetection: ChangeDetectionStrategy.Eager,
           selector: 'ani-cmp',
@@ -2632,14 +2632,14 @@ const DEFAULT_COMPONENT_ID = '1';
 
         const element = p1.element;
         p1.finish();
-        flushMicrotasks();
+        await Promise.resolve();
 
         expect(hasStyle(element, 'color', 'blue')).toBeTruthy();
         expect(hasStyle(element, 'fontSize', '50px')).toBeTruthy();
         expect(hasStyle(element, 'width', '888px')).toBeTruthy();
-      }));
+      });
 
-      it('should only evaluate final state param substitutions from the expression and state values and not from the transition options ', fakeAsync(() => {
+      it('should only evaluate final state param substitutions from the expression and state values and not from the transition options ', async () => {
         @Component({
           changeDetection: ChangeDetectionStrategy.Eager,
           selector: 'ani-cmp',
@@ -2705,11 +2705,11 @@ const DEFAULT_COMPONENT_ID = '1';
 
         const element = p1.element;
         p1.finish();
-        flushMicrotasks();
+        await Promise.resolve();
 
         expect(hasStyle(element, 'width', '100px')).toBeTruthy();
         expect(hasStyle(element, 'height', '100px')).toBeTruthy();
-      }));
+      });
 
       it('should apply default params when resolved animation value is null or undefined', () => {
         @Component({
@@ -2988,7 +2988,7 @@ const DEFAULT_COMPONENT_ID = '1';
     });
 
     describe('animation listeners', () => {
-      it('should trigger a `start` state change listener for when the animation changes state from void => state', fakeAsync(() => {
+      it('should trigger a `start` state change listener for when the animation changes state from void => state', async () => {
         @Component({
           changeDetection: ChangeDetectionStrategy.Eager,
           selector: 'if-cmp',
@@ -3021,16 +3021,16 @@ const DEFAULT_COMPONENT_ID = '1';
         const cmp = fixture.componentInstance;
         cmp.exp = 'true';
         fixture.detectChanges();
-        flushMicrotasks();
+        await Promise.resolve();
 
         expect(cmp.event?.triggerName).toEqual('myAnimation');
         expect(cmp.event?.phaseName).toEqual('start');
         expect(cmp.event?.totalTime).toEqual(500);
         expect(cmp.event?.fromState).toEqual('void');
         expect(cmp.event?.toState).toEqual('true');
-      }));
+      });
 
-      it('should trigger a `done` state change listener for when the animation changes state from a => b', fakeAsync(() => {
+      it('should trigger a `done` state change listener for when the animation changes state from a => b', async () => {
         @Component({
           changeDetection: ChangeDetectionStrategy.Eager,
           selector: 'if-cmp',
@@ -3074,16 +3074,16 @@ const DEFAULT_COMPONENT_ID = '1';
 
         const player = engine.players.pop()!;
         player.finish();
-        flushMicrotasks();
+        await Promise.resolve();
 
         expect(cmp.event?.triggerName).toEqual('myAnimation123');
         expect(cmp.event?.phaseName).toEqual('done');
         expect(cmp.event?.totalTime).toEqual(999);
         expect(cmp.event?.fromState).toEqual('void');
         expect(cmp.event?.toState).toEqual('b');
-      }));
+      });
 
-      it('should handle callbacks for multiple triggers running simultaneously', fakeAsync(() => {
+      it('should handle callbacks for multiple triggers running simultaneously', async () => {
         @Component({
           changeDetection: ChangeDetectionStrategy.Eager,
           selector: 'if-cmp',
@@ -3142,12 +3142,12 @@ const DEFAULT_COMPONENT_ID = '1';
         expect(cmp.event1).toBeFalsy();
         expect(cmp.event2).toBeFalsy();
 
-        flushMicrotasks();
+        await Promise.resolve();
         expect(cmp.event1?.triggerName).toBeTruthy('ani1');
         expect(cmp.event2?.triggerName).toBeTruthy('ani2');
-      }));
+      });
 
-      it('should handle callbacks for multiple triggers running simultaneously on the same element', fakeAsync(() => {
+      it('should handle callbacks for multiple triggers running simultaneously on the same element', async () => {
         @Component({
           changeDetection: ChangeDetectionStrategy.Eager,
           selector: 'if-cmp',
@@ -3210,12 +3210,12 @@ const DEFAULT_COMPONENT_ID = '1';
         expect(cmp.event1).toBeFalsy();
         expect(cmp.event2).toBeFalsy();
 
-        flushMicrotasks();
+        await Promise.resolve();
         expect(cmp.event1?.triggerName).toBeTruthy('ani1');
         expect(cmp.event2?.triggerName).toBeTruthy('ani2');
-      }));
+      });
 
-      it('should handle a leave animation for multiple triggers even if not all triggers have their own leave transition specified', fakeAsync(() => {
+      it('should handle a leave animation for multiple triggers even if not all triggers have their own leave transition specified', async () => {
         @Component({
           changeDetection: ChangeDetectionStrategy.Eager,
           selector: 'if-cmp',
@@ -3244,7 +3244,7 @@ const DEFAULT_COMPONENT_ID = '1';
         expect(players.length).toEqual(1);
         let [p1] = players;
         p1.finish();
-        flushMicrotasks();
+        await Promise.resolve();
         expect(elm.innerText.trim()).toEqual('123');
 
         resetLog();
@@ -3255,11 +3255,11 @@ const DEFAULT_COMPONENT_ID = '1';
         expect(players.length).toEqual(1);
         [p1] = players;
         p1.finish();
-        flushMicrotasks();
+        await Promise.resolve();
         expect(elm.innerText.trim()).toEqual('');
-      }));
+      });
 
-      it('should trigger a state change listener for when the animation changes state from void => state on the host element', fakeAsync(() => {
+      it('should trigger a state change listener for when the animation changes state from void => state on the host element', async () => {
         @Component({
           changeDetection: ChangeDetectionStrategy.Eager,
           selector: 'my-cmp',
@@ -3292,16 +3292,16 @@ const DEFAULT_COMPONENT_ID = '1';
         const cmp = fixture.componentInstance;
         cmp.exp = 'TRUE';
         fixture.detectChanges();
-        flushMicrotasks();
+        await Promise.resolve();
 
         expect(cmp.event?.triggerName).toEqual('myAnimation2');
         expect(cmp.event?.phaseName).toEqual('start');
         expect(cmp.event?.totalTime).toEqual(1000);
         expect(cmp.event?.fromState).toEqual('void');
         expect(cmp.event?.toState).toEqual('TRUE');
-      }));
+      });
 
-      it('should always fire callbacks even when a transition is not detected', fakeAsync(() => {
+      it('should always fire callbacks even when a transition is not detected', async () => {
         @Component({
           changeDetection: ChangeDetectionStrategy.Eager,
           selector: 'my-cmp',
@@ -3331,18 +3331,18 @@ const DEFAULT_COMPONENT_ID = '1';
 
         cmp.exp = 'a';
         fixture.detectChanges();
-        flushMicrotasks();
+        await Promise.resolve();
         expect(cmp.log).toEqual(['start => a', 'done => a']);
 
         cmp.log = [];
         cmp.exp = 'b';
         fixture.detectChanges();
-        flushMicrotasks();
+        await Promise.resolve();
 
         expect(cmp.log).toEqual(['start => b', 'done => b']);
-      }));
+      });
 
-      it('should fire callback events for leave animations even if there is no leave transition', fakeAsync(() => {
+      it('should fire callback events for leave animations even if there is no leave transition', async () => {
         @Component({
           changeDetection: ChangeDetectionStrategy.Eager,
           selector: 'my-cmp',
@@ -3376,19 +3376,19 @@ const DEFAULT_COMPONENT_ID = '1';
 
         cmp.exp = true;
         fixture.detectChanges();
-        flushMicrotasks();
+        await Promise.resolve();
         expect(cmp.log).toEqual(['start => _default_', 'done => _default_']);
 
         cmp.log = [];
 
         cmp.exp = false;
         fixture.detectChanges();
-        flushMicrotasks();
+        await Promise.resolve();
 
         expect(cmp.log).toEqual(['start => void', 'done => void']);
-      }));
+      });
 
-      it('should fire callbacks on a sub animation once it starts and finishes', fakeAsync(() => {
+      it('should fire callbacks on a sub animation once it starts and finishes', async () => {
         @Component({
           changeDetection: ChangeDetectionStrategy.Eager,
           selector: 'my-cmp',
@@ -3444,7 +3444,7 @@ const DEFAULT_COMPONENT_ID = '1';
         cmp.exp2 = 'go';
         fixture.detectChanges();
         engine.flush();
-        flushMicrotasks();
+        await Promise.resolve();
 
         expect(cmp.log).toEqual(['parent-start', 'child-start']);
         cmp.log = [];
@@ -3461,19 +3461,19 @@ const DEFAULT_COMPONENT_ID = '1';
         const [_scp, pp1, pcp, pp2] = players;
 
         pp1.finish();
-        flushMicrotasks();
+        await Promise.resolve();
         expect(cmp.log).toEqual([]);
 
         pcp.finish();
-        flushMicrotasks();
+        await Promise.resolve();
         expect(cmp.log).toEqual([]);
 
         pp2.finish();
-        flushMicrotasks();
+        await Promise.resolve();
         expect(cmp.log).toEqual(['parent-done', 'child-done']);
-      }));
+      });
 
-      it('should fire callbacks and collect the correct the totalTime and element details for any queried sub animations', fakeAsync(() => {
+      it('should fire callbacks and collect the correct the totalTime and element details for any queried sub animations', async () => {
         @Component({
           changeDetection: ChangeDetectionStrategy.Eager,
           selector: 'my-cmp',
@@ -3525,7 +3525,7 @@ const DEFAULT_COMPONENT_ID = '1';
         cmp.exp = 'go';
         fixture.detectChanges();
         engine.flush();
-        flushMicrotasks();
+        await Promise.resolve();
 
         expect(cmp.log).toEqual(['c-0-start', 'c-1-start', 'c-2-start', 'c-3-start']);
         cmp.log = [];
@@ -3562,14 +3562,14 @@ const DEFAULT_COMPONENT_ID = '1';
         pc2p1.finish();
         pc3p1.finish();
         pc4p1.finish();
-        flushMicrotasks();
+        await Promise.resolve();
 
         expect(cmp.log).toEqual([]);
         pc1p2.finish();
         pc2p2.finish();
         pc3p2.finish();
         pc4p2.finish();
-        flushMicrotasks();
+        await Promise.resolve();
 
         expect(cmp.log).toEqual(['all-done', 'c-0-done', 'c-1-done', 'c-2-done', 'c-3-done']);
 
@@ -3583,7 +3583,7 @@ const DEFAULT_COMPONENT_ID = '1';
         expect(cmp.events['c-2'].element.innerText.trim()).toEqual('2');
         expect(cmp.events['c-3'].totalTime).toEqual(1500);
         expect(cmp.events['c-3'].element.innerText.trim()).toEqual('3');
-      }));
+      });
     });
 
     describe('animation control flags', () => {
@@ -3826,7 +3826,7 @@ const DEFAULT_COMPONENT_ID = '1';
           expect(parent.childElementCount).toEqual(0);
         });
 
-        it('should properly resolve animation event listeners when disabled', fakeAsync(() => {
+        it('should properly resolve animation event listeners when disabled', async () => {
           @Component({
             changeDetection: ChangeDetectionStrategy.Eager,
             selector: 'if-cmp',
@@ -3868,7 +3868,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
           cmp.exp = '1';
           fixture.detectChanges();
-          flushMicrotasks();
+          await Promise.resolve();
           expect(cmp.startEvent?.totalTime).toEqual(9876);
           expect(cmp.startEvent?.disabled).toBeTruthy();
           expect(cmp.doneEvent?.totalTime).toEqual(9876);
@@ -3877,11 +3877,11 @@ const DEFAULT_COMPONENT_ID = '1';
           cmp.exp = '2';
           cmp.disableExp = false;
           fixture.detectChanges();
-          flushMicrotasks();
+          await Promise.resolve();
           expect(cmp.startEvent?.totalTime).toEqual(9876);
           expect(cmp.startEvent?.disabled).toBeFalsy();
           // the done event isn't fired because it's an actual animation
-        }));
+        });
 
         it('should work when there are no animations on the component handling the disable/enable flag', () => {
           @Component({
@@ -3970,7 +3970,7 @@ const DEFAULT_COMPONENT_ID = '1';
           expect(getLog().length).toEqual(0);
         });
 
-        it('should respect parent/sub animations when the respective area in the DOM is disabled', fakeAsync(() => {
+        it('should respect parent/sub animations when the respective area in the DOM is disabled', async () => {
           @Component({
             changeDetection: ChangeDetectionStrategy.Eager,
             selector: 'parent-cmp',
@@ -4018,19 +4018,19 @@ const DEFAULT_COMPONENT_ID = '1';
           cmp.disableExp = true;
           cmp.items = [0, 1, 2, 3, 4];
           fixture.detectChanges();
-          flushMicrotasks();
+          await Promise.resolve();
 
           cmp.exp = 'empty';
           cmp.items = [];
           cmp.doneLog = [];
           fixture.detectChanges();
-          flushMicrotasks();
+          await Promise.resolve();
 
           const elms = cmp.container.nativeElement.querySelectorAll('.item');
           expect(elms.length).toEqual(0);
 
           expect(cmp.doneLog.length).toEqual(6);
-        }));
+        });
       });
     });
 

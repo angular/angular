@@ -227,7 +227,7 @@
                 {
                   "name": "element",
                   "description": "Element to which to attach the dragging functionality.",
-                  "type": "any",
+                  "type": "HTMLElement | ElementRef<HTMLElement>",
                   "isOptional": false,
                   "isRestParam": false
                 },
@@ -248,7 +248,7 @@
               {
                 "name": "element",
                 "description": "Element to which to attach the dragging functionality.",
-                "type": "any",
+                "type": "HTMLElement | ElementRef<HTMLElement>",
                 "isOptional": false,
                 "isRestParam": false
               },
@@ -347,7 +347,7 @@
                 {
                   "name": "element",
                   "description": "Element to which to attach the drop list functionality.",
-                  "type": "any",
+                  "type": "HTMLElement | ElementRef<HTMLElement>",
                   "isOptional": false,
                   "isRestParam": false
                 }
@@ -361,7 +361,7 @@
               {
                 "name": "element",
                 "description": "Element to which to attach the drop list functionality.",
-                "type": "any",
+                "type": "HTMLElement | ElementRef<HTMLElement>",
                 "isOptional": false,
                 "isRestParam": false
               }
@@ -451,7 +451,7 @@
     },
     {
       "name": "CDK_DRAG_PARENT",
-      "type": "any",
+      "type": "InjectionToken<CdkDrag<any>>",
       "entryType": "constant",
       "rawComment": "/**\n * Injection token that can be used for a `CdkDrag` to provide itself as a parent to the\n * drag-specific child directive (`CdkDragHandle`, `CdkDragPreview` etc.). Used primarily\n * to avoid circular imports.\n * @docs-private\n */",
       "description": "Injection token that can be used for a `CdkDrag` to provide itself as a parent to the\ndrag-specific child directive (`CdkDragHandle`, `CdkDragPreview` etc.). Used primarily\nto avoid circular imports.",
@@ -522,7 +522,7 @@
     },
     {
       "name": "CDK_DROP_LIST_GROUP",
-      "type": "any",
+      "type": "InjectionToken<CdkDropListGroup<CdkDropList<any>>>",
       "entryType": "constant",
       "rawComment": "/**\n * Injection token that can be used to reference instances of `CdkDropListGroup`. It serves as\n * alternative token to the actual `CdkDropListGroup` class which could cause unnecessary\n * retention of the class and its directive metadata.\n */",
       "description": "Injection token that can be used to reference instances of `CdkDropListGroup`. It serves as\nalternative token to the actual `CdkDropListGroup` class which could cause unnecessary\nretention of the class and its directive metadata.",
@@ -535,7 +535,7 @@
     },
     {
       "name": "CDK_DRAG_PLACEHOLDER",
-      "type": "any",
+      "type": "InjectionToken<CdkDragPlaceholder<any>>",
       "entryType": "constant",
       "rawComment": "/**\n * Injection token that can be used to reference instances of `CdkDragPlaceholder`. It serves as\n * alternative token to the actual `CdkDragPlaceholder` class which could cause unnecessary\n * retention of the class and its directive metadata.\n */",
       "description": "Injection token that can be used to reference instances of `CdkDragPlaceholder`. It serves as\nalternative token to the actual `CdkDragPlaceholder` class which could cause unnecessary\nretention of the class and its directive metadata.",
@@ -548,7 +548,7 @@
     },
     {
       "name": "CDK_DRAG_PREVIEW",
-      "type": "any",
+      "type": "InjectionToken<CdkDragPreview<any>>",
       "entryType": "constant",
       "rawComment": "/**\n * Injection token that can be used to reference instances of `CdkDragPreview`. It serves as\n * alternative token to the actual `CdkDragPreview` class which could cause unnecessary\n * retention of the class and its directive metadata.\n */",
       "description": "Injection token that can be used to reference instances of `CdkDragPreview`. It serves as\nalternative token to the actual `CdkDragPreview` class which could cause unnecessary\nretention of the class and its directive metadata.",
@@ -566,7 +566,7 @@
       "members": [
         {
           "name": "templateRef",
-          "type": "any",
+          "type": "TemplateRef<T>",
           "memberType": "property",
           "memberTags": [],
           "description": "",
@@ -645,15 +645,19 @@
     {
       "name": "CdkDropListGroup",
       "isAbstract": false,
-      "entryType": "undecorated_class",
+      "entryType": "directive",
       "members": [
         {
           "name": "disabled",
           "type": "boolean",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "input"
+          ],
           "description": "Whether starting a dragging sequence from inside this group is disabled.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "cdkDropListGroupDisabled",
+          "isRequiredInput": false
         },
         {
           "name": "ngOnDestroy",
@@ -700,6 +704,14 @@
       "implements": [
         "OnDestroy"
       ],
+      "isStandalone": true,
+      "selector": "[cdkDropListGroup]",
+      "exportAs": [
+        "cdkDropListGroup"
+      ],
+      "aliases": [
+        "cdkDropListGroup"
+      ],
       "source": {
         "filePath": "/src/cdk/drag-drop/directives/drop-list-group.ts",
         "startLine": 27,
@@ -709,11 +721,11 @@
     {
       "name": "CdkDragPreview",
       "isAbstract": false,
-      "entryType": "undecorated_class",
+      "entryType": "directive",
       "members": [
         {
           "name": "templateRef",
-          "type": "any",
+          "type": "TemplateRef<T>",
           "memberType": "property",
           "memberTags": [],
           "description": "",
@@ -723,17 +735,25 @@
           "name": "data",
           "type": "T",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "input"
+          ],
           "description": "Context data to be added to the preview template instance.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "data",
+          "isRequiredInput": false
         },
         {
           "name": "matchSize",
           "type": "boolean",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "input"
+          ],
           "description": "Whether the preview should preserve the same size as the item that is being dragged.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "matchSize",
+          "isRequiredInput": false
         },
         {
           "name": "ngOnDestroy",
@@ -781,6 +801,12 @@
       "implements": [
         "OnDestroy"
       ],
+      "isStandalone": true,
+      "selector": "ng-template[cdkDragPreview]",
+      "exportAs": [],
+      "aliases": [
+        "cdkDragPreview"
+      ],
       "source": {
         "filePath": "/src/cdk/drag-drop/directives/drag-preview.ts",
         "startLine": 31,
@@ -789,7 +815,7 @@
     },
     {
       "name": "CDK_DRAG_CONFIG",
-      "type": "any",
+      "type": "InjectionToken<DragDropConfig>",
       "entryType": "constant",
       "rawComment": "/**\n * Injection token that can be used to configure the\n * behavior of the drag&drop-related components.\n */",
       "description": "Injection token that can be used to configure the\nbehavior of the drag&drop-related components.",
@@ -803,7 +829,7 @@
     {
       "name": "DragDropModule",
       "isAbstract": false,
-      "entryType": "undecorated_class",
+      "entryType": "ng_module",
       "members": [],
       "generics": [],
       "description": "",
@@ -818,7 +844,7 @@
     },
     {
       "name": "CDK_DRAG_HANDLE",
-      "type": "any",
+      "type": "InjectionToken<CdkDragHandle>",
       "entryType": "constant",
       "rawComment": "/**\n * Injection token that can be used to reference instances of `CdkDragHandle`. It serves as\n * alternative token to the actual `CdkDragHandle` class which could cause unnecessary\n * retention of the class and its directive metadata.\n */",
       "description": "Injection token that can be used to reference instances of `CdkDragHandle`. It serves as\nalternative token to the actual `CdkDragHandle` class which could cause unnecessary\nretention of the class and its directive metadata.",
@@ -1211,11 +1237,11 @@
     {
       "name": "CdkDragHandle",
       "isAbstract": false,
-      "entryType": "undecorated_class",
+      "entryType": "directive",
       "members": [
         {
           "name": "element",
-          "type": "any",
+          "type": "ElementRef<HTMLElement>",
           "memberType": "property",
           "memberTags": [],
           "description": "",
@@ -1225,17 +1251,25 @@
           "name": "disabled",
           "type": "boolean",
           "memberType": "getter",
-          "memberTags": [],
+          "memberTags": [
+            "input"
+          ],
           "description": "Whether starting to drag through this handle is disabled.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "cdkDragHandleDisabled",
+          "isRequiredInput": false
         },
         {
           "name": "disabled",
           "type": "boolean",
           "memberType": "setter",
-          "memberTags": [],
+          "memberTags": [
+            "input"
+          ],
           "description": "",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "cdkDragHandleDisabled",
+          "isRequiredInput": false
         },
         {
           "name": "ngAfterViewInit",
@@ -1312,6 +1346,12 @@
         "AfterViewInit",
         "OnDestroy"
       ],
+      "isStandalone": true,
+      "selector": "[cdkDragHandle]",
+      "exportAs": [],
+      "aliases": [
+        "cdkDragHandle"
+      ],
       "source": {
         "filePath": "/src/cdk/drag-drop/directives/drag-handle.ts",
         "startLine": 33,
@@ -1321,11 +1361,11 @@
     {
       "name": "CdkDropList",
       "isAbstract": false,
-      "entryType": "undecorated_class",
+      "entryType": "directive",
       "members": [
         {
           "name": "element",
-          "type": "any",
+          "type": "ElementRef<HTMLElement>",
           "memberType": "property",
           "memberTags": [],
           "description": "",
@@ -1335,153 +1375,217 @@
           "name": "connectedTo",
           "type": "string | CdkDropList<any> | (string | CdkDropList<any>)[]",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "input"
+          ],
           "description": "Other draggable containers that this container is connected to and into which the\ncontainer's items can be transferred. Can either be references to other drop containers,\nor their unique IDs.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "cdkDropListConnectedTo",
+          "isRequiredInput": false
         },
         {
           "name": "data",
           "type": "T",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "input"
+          ],
           "description": "Arbitrary data to attach to this container.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "cdkDropListData",
+          "isRequiredInput": false
         },
         {
           "name": "orientation",
           "type": "DropListOrientation",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "input"
+          ],
           "description": "Direction in which the list is oriented.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "cdkDropListOrientation",
+          "isRequiredInput": false
         },
         {
           "name": "id",
           "type": "string",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "input"
+          ],
           "description": "Unique ID for the drop zone. Can be used as a reference\nin the `connectedTo` of another `CdkDropList`.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "id",
+          "isRequiredInput": false
         },
         {
           "name": "lockAxis",
           "type": "DragAxis | null",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "input"
+          ],
           "description": "Locks the position of the draggable elements inside the container along the specified axis.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "cdkDropListLockAxis",
+          "isRequiredInput": false
         },
         {
           "name": "disabled",
           "type": "boolean",
           "memberType": "getter",
-          "memberTags": [],
+          "memberTags": [
+            "input"
+          ],
           "description": "Whether starting a dragging sequence from this container is disabled.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "cdkDropListDisabled",
+          "isRequiredInput": false
         },
         {
           "name": "disabled",
           "type": "boolean",
           "memberType": "setter",
-          "memberTags": [],
+          "memberTags": [
+            "input"
+          ],
           "description": "",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "cdkDropListDisabled",
+          "isRequiredInput": false
         },
         {
           "name": "sortingDisabled",
           "type": "boolean",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "input"
+          ],
           "description": "Whether sorting within this drop list is disabled.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "cdkDropListSortingDisabled",
+          "isRequiredInput": false
         },
         {
           "name": "enterPredicate",
           "type": "(drag: CdkDrag<any>, drop: CdkDropList<any>) => boolean",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "input"
+          ],
           "description": "Function that is used to determine whether an item\nis allowed to be moved into a drop container.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "cdkDropListEnterPredicate",
+          "isRequiredInput": false
         },
         {
           "name": "sortPredicate",
           "type": "(index: number, drag: CdkDrag<any>, drop: CdkDropList<any>) => boolean",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "input"
+          ],
           "description": "Functions that is used to determine whether an item can be sorted into a particular index.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "cdkDropListSortPredicate",
+          "isRequiredInput": false
         },
         {
           "name": "autoScrollDisabled",
           "type": "boolean",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "input"
+          ],
           "description": "Whether to auto-scroll the view when the user moves their pointer close to the edges.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "cdkDropListAutoScrollDisabled",
+          "isRequiredInput": false
         },
         {
           "name": "autoScrollStep",
           "type": "NumberInput",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "input"
+          ],
           "description": "Number of pixels to scroll for each frame when auto-scrolling an element.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "cdkDropListAutoScrollStep",
+          "isRequiredInput": false
         },
         {
           "name": "elementContainerSelector",
           "type": "string | null",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "input"
+          ],
           "description": "Selector that will be used to resolve an alternate element container for the drop list.\nPassing an alternate container is useful for the cases where one might not have control\nover the parent node of the draggable items within the list (e.g. due to content projection).\nThis allows for usages like:\n\n```\n<div cdkDropList cdkDropListElementContainer=\".inner\">\n  <div class=\"inner\">\n    <div cdkDrag></div>\n  </div>\n</div>\n```",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "cdkDropListElementContainer",
+          "isRequiredInput": false
         },
         {
           "name": "hasAnchor",
           "type": "boolean",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "input"
+          ],
           "description": "By default when an item leaves its initial container, its placeholder will be transferred\nto the new container. If that's not desirable for your use case, you can enable this option\nwhich will clone the placeholder and leave it inside the original container. If the item is\nreturned to the initial container, the anchor element will be removed automatically.\n\nThe cloned placeholder can be styled by targeting the `cdk-drag-anchor` class.\n\nThis option is useful in combination with `cdkDropListSortingDisabled` to implement copying\nbehavior in a drop list.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "cdkDropListHasAnchor",
+          "isRequiredInput": false
         },
         {
           "name": "dropped",
           "type": "EventEmitter<CdkDragDrop<T, any, any>>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "output"
           ],
           "description": "Emits when the user drops an item inside the container.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "outputAlias": "cdkDropListDropped"
         },
         {
           "name": "entered",
           "type": "EventEmitter<CdkDragEnter<T, T>>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "output"
           ],
           "description": "Emits when the user has moved a new drag item into this container.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "outputAlias": "cdkDropListEntered"
         },
         {
           "name": "exited",
           "type": "EventEmitter<CdkDragExit<T, T>>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "output"
           ],
           "description": "Emits when the user removes an item from the container\nby dragging it into another container.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "outputAlias": "cdkDropListExited"
         },
         {
           "name": "sorted",
           "type": "EventEmitter<CdkDragSortEvent<T, T>>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "output"
           ],
           "description": "Emits as the user is swapping items while actively dragging.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "outputAlias": "cdkDropListSorted"
         },
         {
           "name": "addItem",
@@ -1659,6 +1763,14 @@
       "rawComment": "/** Container that wraps a set of draggable items. */",
       "implements": [
         "OnDestroy"
+      ],
+      "isStandalone": true,
+      "selector": "[cdkDropList], cdk-drop-list",
+      "exportAs": [
+        "cdkDropList"
+      ],
+      "aliases": [
+        "cdkDropList"
       ],
       "source": {
         "filePath": "/src/cdk/drag-drop/directives/drop-list.ts",
@@ -2711,7 +2823,7 @@
     },
     {
       "name": "CDK_DROP_LIST",
-      "type": "any",
+      "type": "InjectionToken<CdkDropList<any>>",
       "entryType": "constant",
       "rawComment": "/**\n * Injection token that can be used to reference instances of `CdkDropList`. It serves as\n * alternative token to the actual `CdkDropList` class which could cause unnecessary\n * retention of the class and its directive metadata.\n */",
       "description": "Injection token that can be used to reference instances of `CdkDropList`. It serves as\nalternative token to the actual `CdkDropList` class which could cause unnecessary\nretention of the class and its directive metadata.",
@@ -2757,7 +2869,7 @@
             {
               "name": "element",
               "description": "Element to which to attach the drop list functionality.",
-              "type": "any",
+              "type": "HTMLElement | ElementRef<HTMLElement>",
               "isOptional": false,
               "isRestParam": false
             }
@@ -2778,7 +2890,7 @@
           {
             "name": "element",
             "description": "Element to which to attach the drop list functionality.",
-            "type": "any",
+            "type": "HTMLElement | ElementRef<HTMLElement>",
             "isOptional": false,
             "isRestParam": false
           }
@@ -2828,11 +2940,11 @@
     {
       "name": "CdkDrag",
       "isAbstract": false,
-      "entryType": "undecorated_class",
+      "entryType": "directive",
       "members": [
         {
           "name": "element",
-          "type": "any",
+          "type": "ElementRef<HTMLElement>",
           "memberType": "property",
           "memberTags": [],
           "description": "",
@@ -2840,7 +2952,7 @@
         },
         {
           "name": "dropContainer",
-          "type": "any",
+          "type": "CdkDropList<any>",
           "memberType": "property",
           "memberTags": [],
           "description": "",
@@ -2850,169 +2962,230 @@
           "name": "data",
           "type": "T",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "input"
+          ],
           "description": "Arbitrary data to attach to this drag instance.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "cdkDragData",
+          "isRequiredInput": false
         },
         {
           "name": "lockAxis",
           "type": "DragAxis | null",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "input"
+          ],
           "description": "Locks the position of the dragged element along the specified axis.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "cdkDragLockAxis",
+          "isRequiredInput": false
         },
         {
           "name": "rootElementSelector",
           "type": "string",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "input"
+          ],
           "description": "Selector that will be used to determine the root draggable element, starting from\nthe `cdkDrag` element and going up the DOM. Passing an alternate root element is useful\nwhen trying to enable dragging on an element that you might not have access to.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "cdkDragRootElement",
+          "isRequiredInput": false
         },
         {
           "name": "boundaryElement",
-          "type": "any",
+          "type": "string | HTMLElement | ElementRef<HTMLElement>",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "input"
+          ],
           "description": "Node or selector that will be used to determine the element to which the draggable's\nposition will be constrained. If a string is passed in, it'll be used as a selector that\nwill be matched starting from the element's parent and going up the DOM until a match\nhas been found.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "cdkDragBoundary",
+          "isRequiredInput": false
         },
         {
           "name": "dragStartDelay",
           "type": "DragStartDelay",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "input"
+          ],
           "description": "Amount of milliseconds to wait after the user has put their\npointer down before starting to drag the element.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "cdkDragStartDelay",
+          "isRequiredInput": false
         },
         {
           "name": "freeDragPosition",
           "type": "Point",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "input"
+          ],
           "description": "Sets the position of a `CdkDrag` that is outside of a drop container.\nCan be used to restore the element's position for a returning user.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "cdkDragFreeDragPosition",
+          "isRequiredInput": false
         },
         {
           "name": "disabled",
           "type": "boolean",
           "memberType": "getter",
-          "memberTags": [],
+          "memberTags": [
+            "input"
+          ],
           "description": "Whether starting to drag this element is disabled.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "cdkDragDisabled",
+          "isRequiredInput": false
         },
         {
           "name": "disabled",
           "type": "boolean",
           "memberType": "setter",
-          "memberTags": [],
+          "memberTags": [
+            "input"
+          ],
           "description": "",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "cdkDragDisabled",
+          "isRequiredInput": false
         },
         {
           "name": "constrainPosition",
           "type": "DragConstrainPosition | undefined",
           "memberType": "property",
           "memberTags": [
-            "optional"
+            "optional",
+            "input"
           ],
           "description": "Function that can be used to customize the logic of how the position of the drag item\nis limited while it's being dragged. Gets called with a point containing the current position\nof the user's pointer on the page, a reference to the item being dragged and its dimensions.\nShould return a point describing where the item should be rendered.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "cdkDragConstrainPosition",
+          "isRequiredInput": false
         },
         {
           "name": "previewClass",
           "type": "string | string[]",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "input"
+          ],
           "description": "Class to be added to the preview element.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "cdkDragPreviewClass",
+          "isRequiredInput": false
         },
         {
           "name": "previewContainer",
-          "type": "any",
+          "type": "PreviewContainer",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "input"
+          ],
           "description": "Configures the place into which the preview of the item will be inserted. Can be configured\nglobally through `CDK_DROP_LIST`. Possible values:\n- `global` - Preview will be inserted at the bottom of the `<body>`. The advantage is that\nyou don't have to worry about `overflow: hidden` or `z-index`, but the item won't retain\nits inherited styles.\n- `parent` - Preview will be inserted into the parent of the drag item. The advantage is that\ninherited styles will be preserved, but it may be clipped by `overflow: hidden` or not be\nvisible due to `z-index`. Furthermore, the preview is going to have an effect over selectors\nlike `:nth-child` and some flexbox configurations.\n- `ElementRef<HTMLElement> | HTMLElement` - Preview will be inserted into a specific element.\nSame advantages and disadvantages as `parent`.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "cdkDragPreviewContainer",
+          "isRequiredInput": false
         },
         {
           "name": "scale",
           "type": "number",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "input"
+          ],
           "description": "If the parent of the dragged element has a `scale` transform, it can throw off the\npositioning when the user starts dragging. Use this input to notify the CDK of the scale.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "cdkDragScale",
+          "isRequiredInput": false
         },
         {
           "name": "started",
           "type": "EventEmitter<CdkDragStart<any>>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "output"
           ],
           "description": "Emits when the user starts dragging the item.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "outputAlias": "cdkDragStarted"
         },
         {
           "name": "released",
           "type": "EventEmitter<CdkDragRelease<any>>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "output"
           ],
           "description": "Emits when the user has released a drag item, before any animations have started.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "outputAlias": "cdkDragReleased"
         },
         {
           "name": "ended",
           "type": "EventEmitter<CdkDragEnd<any>>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "output"
           ],
           "description": "Emits when the user stops dragging an item in the container.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "outputAlias": "cdkDragEnded"
         },
         {
           "name": "entered",
           "type": "EventEmitter<CdkDragEnter<any, any>>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "output"
           ],
           "description": "Emits when the user has moved the item into a new container.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "outputAlias": "cdkDragEntered"
         },
         {
           "name": "exited",
           "type": "EventEmitter<CdkDragExit<any, any>>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "output"
           ],
           "description": "Emits when the user removes the item its container by dragging it into another container.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "outputAlias": "cdkDragExited"
         },
         {
           "name": "dropped",
           "type": "EventEmitter<CdkDragDrop<any, any, any>>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "output"
           ],
           "description": "Emits when the user drops the item inside a container.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "outputAlias": "cdkDragDropped"
         },
         {
           "name": "moved",
           "type": "Observable<CdkDragMove<T>>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "output"
           ],
           "description": "Emits as the user is dragging the item. Use with caution,\nbecause this event will fire for every pixel that the user has dragged.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "outputAlias": "cdkDragMoved"
         },
         {
           "name": "getPlaceholderElement",
@@ -3373,6 +3546,14 @@
         "OnChanges",
         "OnDestroy"
       ],
+      "isStandalone": true,
+      "selector": "[cdkDrag]",
+      "exportAs": [
+        "cdkDrag"
+      ],
+      "aliases": [
+        "cdkDrag"
+      ],
       "source": {
         "filePath": "/src/cdk/drag-drop/directives/drag.ts",
         "startLine": 60,
@@ -3508,7 +3689,7 @@
               {
                 "name": "element",
                 "description": "",
-                "type": "any",
+                "type": "HTMLElement | ElementRef<HTMLElement>",
                 "isOptional": false,
                 "isRestParam": false
               },
@@ -3559,7 +3740,7 @@
         },
         {
           "name": "element",
-          "type": "any",
+          "type": "HTMLElement | ElementRef<HTMLElement>",
           "memberType": "property",
           "memberTags": [],
           "description": "Element that the drop list is attached to.",
@@ -3631,7 +3812,7 @@
         },
         {
           "name": "beforeStarted",
-          "type": "any",
+          "type": "Subject<void>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -3641,7 +3822,7 @@
         },
         {
           "name": "entered",
-          "type": "any",
+          "type": "Subject<{ item: DragRef<any>; container: DropListRef<any>; currentIndex: number; }>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -3651,7 +3832,7 @@
         },
         {
           "name": "exited",
-          "type": "any",
+          "type": "Subject<{ item: DragRef<any>; container: DropListRef<any>; }>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -3661,7 +3842,7 @@
         },
         {
           "name": "dropped",
-          "type": "any",
+          "type": "Subject<{ item: DragRef<any>; currentIndex: number; previousIndex: number; container: DropListRef<any>; previousContainer: DropListRef<any>; isPointerOverContainer: boolean; distance: Point; dropPoint: Point; event: MouseEvent | TouchEvent; }>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -3671,7 +3852,7 @@
         },
         {
           "name": "sorted",
-          "type": "any",
+          "type": "Subject<{ previousIndex: number; currentIndex: number; container: DropListRef<any>; item: DragRef<any>; }>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -3681,7 +3862,7 @@
         },
         {
           "name": "receivingStarted",
-          "type": "any",
+          "type": "Subject<{ receiver: DropListRef<any>; initiator: DropListRef<any>; items: DragRef<any>[]; }>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -3691,7 +3872,7 @@
         },
         {
           "name": "receivingStopped",
-          "type": "any",
+          "type": "Subject<{ receiver: DropListRef<any>; initiator: DropListRef<any>; }>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -5033,7 +5214,7 @@
             {
               "name": "element",
               "description": "Element to which to attach the dragging functionality.",
-              "type": "any",
+              "type": "HTMLElement | ElementRef<HTMLElement>",
               "isOptional": false,
               "isRestParam": false
             },
@@ -5061,7 +5242,7 @@
           {
             "name": "element",
             "description": "Element to which to attach the dragging functionality.",
-            "type": "any",
+            "type": "HTMLElement | ElementRef<HTMLElement>",
             "isOptional": false,
             "isRestParam": false
           },
@@ -5136,7 +5317,7 @@
               {
                 "name": "element",
                 "description": "",
-                "type": "any",
+                "type": "HTMLElement | ElementRef<HTMLElement>",
                 "isOptional": false,
                 "isRestParam": false
               },
@@ -5249,7 +5430,7 @@
         },
         {
           "name": "beforeStarted",
-          "type": "any",
+          "type": "Subject<void>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -5259,7 +5440,7 @@
         },
         {
           "name": "started",
-          "type": "any",
+          "type": "Subject<{ source: DragRef<any>; event: MouseEvent | TouchEvent; }>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -5269,7 +5450,7 @@
         },
         {
           "name": "released",
-          "type": "any",
+          "type": "Subject<{ source: DragRef<any>; event: MouseEvent | TouchEvent; }>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -5279,7 +5460,7 @@
         },
         {
           "name": "ended",
-          "type": "any",
+          "type": "Subject<{ source: DragRef<any>; distance: Point; dropPoint: Point; event: MouseEvent | TouchEvent; }>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -5289,7 +5470,7 @@
         },
         {
           "name": "entered",
-          "type": "any",
+          "type": "Subject<{ container: DropListRef<any>; item: DragRef<any>; currentIndex: number; }>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -5299,7 +5480,7 @@
         },
         {
           "name": "exited",
-          "type": "any",
+          "type": "Subject<{ container: DropListRef<any>; item: DragRef<any>; }>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -5309,7 +5490,7 @@
         },
         {
           "name": "dropped",
-          "type": "any",
+          "type": "Subject<{ previousIndex: number; currentIndex: number; item: DragRef<any>; container: DropListRef<any>; previousContainer: DropListRef<any>; distance: Point; dropPoint: Point; isPointerOverContainer: boolean; event: MouseEvent | TouchEvent; }>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -5458,7 +5639,7 @@
                 {
                   "name": "handles",
                   "description": "",
-                  "type": "any[]",
+                  "type": "(HTMLElement | ElementRef<HTMLElement>)[]",
                   "isOptional": false,
                   "isRestParam": false
                 }
@@ -5472,7 +5653,7 @@
               {
                 "name": "handles",
                 "description": "",
-                "type": "any[]",
+                "type": "(HTMLElement | ElementRef<HTMLElement>)[]",
                 "isOptional": false,
                 "isRestParam": false
               }
@@ -5635,7 +5816,7 @@
                 {
                   "name": "rootElement",
                   "description": "",
-                  "type": "any",
+                  "type": "HTMLElement | ElementRef<HTMLElement>",
                   "isOptional": false,
                   "isRestParam": false
                 }
@@ -5649,7 +5830,7 @@
               {
                 "name": "rootElement",
                 "description": "",
-                "type": "any",
+                "type": "HTMLElement | ElementRef<HTMLElement>",
                 "isOptional": false,
                 "isRestParam": false
               }
@@ -5684,7 +5865,7 @@
                 {
                   "name": "boundaryElement",
                   "description": "",
-                  "type": "any",
+                  "type": "HTMLElement | ElementRef<HTMLElement> | null",
                   "isOptional": false,
                   "isRestParam": false
                 }
@@ -5698,7 +5879,7 @@
               {
                 "name": "boundaryElement",
                 "description": "",
-                "type": "any",
+                "type": "HTMLElement | ElementRef<HTMLElement> | null",
                 "isOptional": false,
                 "isRestParam": false
               }
@@ -6193,7 +6374,7 @@
                 {
                   "name": "value",
                   "description": "Container into which to insert the preview.",
-                  "type": "any",
+                  "type": "PreviewContainer",
                   "isOptional": false,
                   "isRestParam": false
                 }
@@ -6207,7 +6388,7 @@
               {
                 "name": "value",
                 "description": "Container into which to insert the preview.",
-                "type": "any",
+                "type": "PreviewContainer",
                 "isOptional": false,
                 "isRestParam": false
               }
@@ -6252,7 +6433,7 @@
       "source": {
         "filePath": "/src/cdk/drag-drop/drag-ref.ts",
         "startLine": 162,
-        "endLine": 1663
+        "endLine": 1662
       }
     }
   ],

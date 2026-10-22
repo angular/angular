@@ -69,6 +69,34 @@ describe('resolveUrl', () => {
       expect(() => resolveUrl(url, 'http://test.com')).toThrowError(/NG05703/);
     });
 
+    it('should throw on protocol-relative URLs when allowProtocolRelative is false or default', () => {
+      const urls = [
+        '//attacker.example/collect',
+        '///attacker.example/collect',
+        '/.//attacker.example/collect',
+        '/..//attacker.example/collect',
+        '/.\\/attacker.example/collect',
+        'http://test.com/.//attacker.example/collect',
+      ];
+
+      for (const url of urls) {
+        expect(() => resolveUrl(url, 'http://test.com')).toThrowError(/NG05702/);
+      }
+    });
+
+    it('should allow protocol-relative URLs when allowProtocolRelative is true', () => {
+      const url = resolveUrl('//attacker.example/collect', 'http://test.com', {
+        allowProtocolRelative: true,
+      });
+      expect(url.href).toBe('http://attacker.example/collect');
+      expect(url.origin).toBe('http://attacker.example');
+
+      const dotUrl = resolveUrl('/.//attacker.example/collect', 'http://test.com', {
+        allowProtocolRelative: true,
+      });
+      expect(dotUrl.href).toBe('http://test.com//attacker.example/collect');
+    });
+
     it('should not trim unicode whitespace into protocol-relative URLs', () => {
       const urls = ['\u00A0//attacker.example/collect', '\uFEFF//attacker.example/collect'];
 
@@ -83,6 +111,46 @@ describe('resolveUrl', () => {
         expect(urlWithoutProtocolRelative.origin).toBe('http://test.com');
         expect(urlWithoutProtocolRelative.pathname).toContain('//attacker.example/collect');
       }
+    });
+
+    it('should resolve scheme URLs without authority against origin of the same scheme', () => {
+      const urlA = resolveUrl('http:/attacker.example/steal', 'http://test.com');
+      expect(urlA.origin).toBe('http://test.com');
+      expect(urlA.pathname).toBe('/attacker.example/steal');
+
+      const urlB = resolveUrl('http:attacker.example/steal', 'http://test.com');
+      expect(urlB.origin).toBe('http://test.com');
+      expect(urlB.pathname).toBe('/attacker.example/steal');
+
+      const urlHttpsA = resolveUrl('https:/attacker.example/steal', 'https://test.com');
+      expect(urlHttpsA.origin).toBe('https://test.com');
+      expect(urlHttpsA.pathname).toBe('/attacker.example/steal');
+
+      const urlHttpsB = resolveUrl('https:attacker.example/steal', 'https://test.com');
+      expect(urlHttpsB.origin).toBe('https://test.com');
+      expect(urlHttpsB.pathname).toBe('/attacker.example/steal');
+
+      const urlBackslash = resolveUrl('http:\\attacker.example/steal', 'http://test.com');
+      expect(urlBackslash.origin).toBe('http://test.com');
+      expect(urlBackslash.pathname).toBe('/attacker.example/steal');
+    });
+
+    it('should throw on scheme URLs without authority when origin scheme differs', () => {
+      expect(() => resolveUrl('http:/attacker.example/steal', 'https://test.com')).toThrowError(
+        /NG05703/,
+      );
+      expect(() => resolveUrl('http:attacker.example/steal', 'https://test.com')).toThrowError(
+        /NG05703/,
+      );
+      expect(() => resolveUrl('https:/attacker.example/steal', 'http://test.com')).toThrowError(
+        /NG05703/,
+      );
+      expect(() => resolveUrl('https:attacker.example/steal', 'http://test.com')).toThrowError(
+        /NG05703/,
+      );
+      expect(() => resolveUrl('http:\\attacker.example/steal', 'https://test.com')).toThrowError(
+        /NG05703/,
+      );
     });
   });
 

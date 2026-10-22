@@ -44,6 +44,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     DUPLICATE_NG_MODULE_ID = 921,
     // (undocumented)
+    EVENT_REPLAY_CONTRACT_ALREADY_CONSUMED = 511,
+    // (undocumented)
     EXPORT_NOT_FOUND = -301,
     // (undocumented)
     EXPRESSION_CHANGED_AFTER_CHECKED = -100,
@@ -174,13 +176,13 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     REQUIRED_QUERY_NO_VALUE = -951,
     // (undocumented)
-    RESOURCE_COMPLETED_BEFORE_PRODUCING_VALUE = 991,
+    RESOURCE_COMPLETED_BEFORE_PRODUCING_VALUE = -991,
     // (undocumented)
     RUNTIME_DEPS_INVALID_IMPORTED_TYPE = 980,
     // (undocumented)
     RUNTIME_DEPS_ORPHAN_COMPONENT = 981,
     // (undocumented)
-    SIGNAL_WRITE_FROM_ILLEGAL_CONTEXT = 600,
+    SIGNAL_WRITE_FROM_ILLEGAL_CONTEXT = -600,
     // (undocumented)
     TEMPLATE_STRUCTURE_ERROR = 305,
     // (undocumented)
@@ -198,7 +200,7 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     UNSAFE_ATTRIBUTE_BINDING = -910,
     // (undocumented)
-    UNSAFE_VALUE_IN_RESOURCE_URL = 904,
+    UNSAFE_VALUE_IN_RESOURCE_URL = -904,
     // (undocumented)
     UNSAFE_VALUE_IN_SCRIPT = 905,
     // (undocumented)

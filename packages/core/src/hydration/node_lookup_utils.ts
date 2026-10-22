@@ -21,6 +21,7 @@ import {ɵɵresolveBody} from '../render3/util/misc_utils';
 import {renderStringify} from '../render3/util/stringify_utils';
 import {getNativeByTNode, unwrapRNode} from '../render3/util/view_utils';
 import {assertDefined, assertEqual} from '../util/assert';
+import {getFirstChild, getNextSibling} from '../util/dom';
 
 import {compressNodeLocation, decompressNodeLocation} from './compression';
 import {
@@ -150,7 +151,7 @@ export function locateNextRNode<T extends RNode>(
       } else {
         let previousRElement = getNativeByTNode(previousTNode, lView);
         if (previousTNodeParent) {
-          native = (previousRElement as RElement).firstChild;
+          native = getFirstChild(previousRElement as Node);
         } else {
           // If the previous node is an element, but it also has container info,
           // this means that we are processing a node like `<div #vcrTarget>`, which is
@@ -169,7 +170,7 @@ export function locateNextRNode<T extends RNode>(
             // First node after this segment.
             native = siblingAfter(nodesToSkip, segmentHead);
           } else {
-            native = previousRElement.nextSibling;
+            native = getNextSibling(previousRElement as Node);
           }
         }
       }
@@ -195,7 +196,7 @@ export function siblingAfter<T extends RNode>(skip: number, from: RNode): T | nu
           'During hydration Angular expected more sibling nodes to be present. This usually means the client-rendered DOM no longer matches the server-rendered HTML.',
       );
     }
-    currentNode = currentNode.nextSibling!;
+    currentNode = getNextSibling(currentNode as Node)!;
   }
   return currentNode as T;
 }
@@ -242,10 +243,10 @@ function navigateToNode(from: Node, instructions: (number | NodeNavigationStep)[
       }
       switch (step) {
         case NODE_NAVIGATION_STEP_FIRST_CHILD:
-          node = node.firstChild!;
+          node = getFirstChild(node)!;
           break;
         case NODE_NAVIGATION_STEP_NEXT_SIBLING:
-          node = node.nextSibling!;
+          node = getNextSibling(node)!;
           break;
       }
     }

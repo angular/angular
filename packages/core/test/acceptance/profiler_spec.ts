@@ -16,7 +16,6 @@ import {
   afterEveryRender,
   AfterViewChecked,
   AfterViewInit,
-  ChangeDetectionStrategy,
   Component,
   DoCheck,
   ErrorHandler,
@@ -27,6 +26,7 @@ import {
   OnInit,
   Output,
   provideZoneChangeDetection,
+  signal,
   ViewChild,
 } from '../../src/core';
 
@@ -66,17 +66,12 @@ describe('profiler', () => {
   describe('change detection hooks', () => {
     it('should call the profiler for creation and change detection', () => {
       @Component({
-        selector: 'my-comp',
         template: '<button (click)="onClick()"></button>',
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComponent {
         onClick() {}
       }
 
-      TestBed.configureTestingModule({declarations: [MyComponent]});
       const fixture = TestBed.createComponent(MyComponent);
 
       expect(profilerSpy).toHaveBeenCalled();
@@ -110,18 +105,13 @@ describe('profiler', () => {
 
     it('should invoke the profiler when the template throws', () => {
       @Component({
-        selector: 'my-comp',
         template: '{{ throw() }}',
-        standalone: false,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComponent {
         throw() {
           throw new Error();
         }
       }
-
-      TestBed.configureTestingModule({declarations: [MyComponent]});
 
       let myComp: MyComponent;
       expect(() => {
@@ -147,17 +137,12 @@ describe('profiler', () => {
   describe('outputs and events', () => {
     it('should invoke the profiler on event handler', () => {
       @Component({
-        selector: 'my-comp',
         template: '<button (click)="onClick()"></button>',
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComponent {
         onClick() {}
       }
 
-      TestBed.configureTestingModule({declarations: [MyComponent]});
       const fixture = TestBed.createComponent(MyComponent);
       const myComp = fixture.componentInstance;
 
@@ -177,11 +162,7 @@ describe('profiler', () => {
 
     it('should invoke the profiler on event handler even when it throws', () => {
       @Component({
-        selector: 'my-comp',
         template: '<button (click)="onClick()"></button>',
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComponent {
         onClick() {
@@ -194,7 +175,6 @@ describe('profiler', () => {
 
       TestBed.configureTestingModule({
         rethrowApplicationErrors: false,
-        declarations: [MyComponent],
         providers: [{provide: ErrorHandler, useValue: handler}],
       });
 
@@ -217,26 +197,20 @@ describe('profiler', () => {
       @Component({
         selector: 'child',
         template: '',
-        standalone: false,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Child {
         @Output() childEvent = new EventEmitter();
       }
 
       @Component({
-        selector: 'my-comp',
         template: '<child (childEvent)="onEvent()"></child>',
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Child],
       })
       class MyComponent {
         @ViewChild(Child) child!: Child;
         onEvent() {}
       }
 
-      TestBed.configureTestingModule({declarations: [MyComponent, Child]});
       const fixture = TestBed.createComponent(MyComponent);
       const myComp = fixture.componentInstance;
 
@@ -261,9 +235,6 @@ describe('profiler', () => {
         selector: 'my-comp',
         template: '{{prop}}',
         providers: [Service],
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComponent
         implements
@@ -291,18 +262,14 @@ describe('profiler', () => {
       }
 
       @Component({
-        selector: 'my-parent',
-        template: '<my-comp [prop]="prop"></my-comp>',
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: '<my-comp [prop]="prop()"></my-comp>',
+        imports: [MyComponent],
       })
       class MyParent {
-        prop = 1;
+        prop = signal(1);
         @ViewChild(MyComponent) child!: MyComponent;
       }
 
-      TestBed.configureTestingModule({declarations: [MyParent, MyComponent]});
       const fixture = TestBed.createComponent(MyParent);
 
       fixture.detectChanges();
@@ -384,7 +351,7 @@ describe('profiler', () => {
       const onChangesSpy = spyOn(myComp, 'ngOnChanges');
       profilerSpy.calls.reset();
 
-      myParent.prop = 2;
+      myParent.prop.set(2);
       fixture.detectChanges();
 
       const ngOnChangesStart = findProfilerCall(
@@ -434,10 +401,7 @@ describe('profiler', () => {
 
     it('should call the profiler on lifecycle execution even after error', () => {
       @Component({
-        selector: 'my-comp',
         template: '',
-        standalone: false,
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComponent implements OnInit {
         ngOnInit() {
@@ -445,12 +409,9 @@ describe('profiler', () => {
         }
       }
 
-      TestBed.configureTestingModule({declarations: [MyComponent]});
       const fixture = TestBed.createComponent(MyComponent);
 
-      expect(() => {
-        fixture.detectChanges();
-      }).toThrow();
+      expect(() => fixture.detectChanges()).toThrow();
 
       const lifecycleStart = findProfilerCall(ProfilerEvent.LifecycleHookStart);
       const lifecycleEnd = findProfilerCall(ProfilerEvent.LifecycleHookEnd);
@@ -496,9 +457,7 @@ describe('profiler', () => {
 
     it('should capture component creation and change detection entry points', () => {
       @Component({
-        selector: 'my-comp',
         template: '',
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComponent {}
 
@@ -528,7 +487,6 @@ describe('profiler', () => {
       @Component({
         selector: 'my-child',
         template: '{{ error() }}',
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class ChildComponent {
         constructor() {
@@ -536,10 +494,8 @@ describe('profiler', () => {
         }
       }
       @Component({
-        selector: 'my-comp',
         imports: [ChildComponent],
         template: '<my-child/>',
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComponent {}
 
@@ -552,7 +508,6 @@ describe('profiler', () => {
       @Component({
         selector: 'my-child',
         template: '{{ error() }}',
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class ChildComponent {
         error() {
@@ -560,10 +515,8 @@ describe('profiler', () => {
         }
       }
       @Component({
-        selector: 'my-comp',
         imports: [ChildComponent],
         template: '<my-child/>',
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComponent {}
 
@@ -580,7 +533,6 @@ describe('profiler', () => {
       @Component({
         selector: 'my-child',
         template: '{{ error() }}',
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class ChildComponent {
         error() {
@@ -588,10 +540,8 @@ describe('profiler', () => {
         }
       }
       @Component({
-        selector: 'my-comp',
         imports: [ChildComponent],
         template: '<my-child/>',
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComponent {}
 
@@ -618,10 +568,8 @@ describe('profiler', () => {
 
     it('should capture host binding events when an error occurs', () => {
       @Component({
-        selector: 'my-comp',
         host: {'[a]': 'error()'},
         template: '',
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComponent {
         error() {
@@ -642,9 +590,7 @@ describe('profiler', () => {
 
     it('should capture symmetric tick events when incorrectly called recursively', () => {
       @Component({
-        selector: 'my-comp',
         template: '{{ illegalTick() }}',
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComponent {
         illegalTick() {
@@ -673,13 +619,10 @@ describe('profiler', () => {
 
     it('should invoke a profiler when host bindings are evaluated', () => {
       @Component({
-        selector: 'my-comp',
         host: {
           '[id]': '"someId"',
         },
         template: '',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComponent {}
 
@@ -693,10 +636,7 @@ describe('profiler', () => {
 
     it('should invoke a profiler when after render hooks are executing', () => {
       @Component({
-        selector: 'my-comp',
         template: '',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComponent {
         arRef = afterEveryRender(() => {});
@@ -712,14 +652,11 @@ describe('profiler', () => {
 
     it('should invoke a profiler when defer block transitions between states', () => {
       @Component({
-        selector: 'my-comp',
         template: `
           @defer (on immediate) {
             nothing to see here...
           }
         `,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComponent {}
 

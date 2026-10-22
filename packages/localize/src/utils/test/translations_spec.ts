@@ -53,6 +53,14 @@ describe('utils', () => {
         'a{$ph1}b{$ph2}c',
       );
     });
+
+    it('should strip replacement characters from message parts', () => {
+      const translation = makeParsedTranslation(['a\uFFFD#1', 'b\uFFFD*1:1'], ['ph1']);
+      expect(translation.messageParts).toEqual(
+        makeTemplateObject(['a#1', 'b*1:1'], ['a#1', 'b*1:1']),
+      );
+      expect(translation.text).toEqual('a#1{$ph1}b*1:1');
+    });
   });
 
   describe('parseTranslation', () => {
@@ -107,6 +115,13 @@ describe('utils', () => {
       expect(translation.messageParts).toEqual(['', '', '']);
       expect(translation.messageParts.raw).toEqual(['', '', '']);
       expect(translation.placeholderNames).toEqual(['one', 'two']);
+    });
+
+    it('should strip replacement characters from message parts', () => {
+      const translation = parseTranslation('a\uFFFD#1{$one}\uFFFD:marker:b\uFFFD');
+      expect(translation.messageParts).toEqual(['a#1', ':marker:b']);
+      expect(translation.messageParts.raw).toEqual(['a#1', '\\:marker:b']);
+      expect(translation.text).toEqual('a#1{$one}:marker:b');
     });
   });
 

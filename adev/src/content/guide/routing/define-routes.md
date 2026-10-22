@@ -42,7 +42,7 @@ export const routes: Routes = [
 ];
 ```
 
-Tip: If you generated a project with Angular CLI, your routes are defined in `src/app/app.routes.ts`.
+TIP: If you generated a project with Angular CLI, your routes are defined in `src/app/app.routes.ts`.
 
 ### Adding the router to your application
 
@@ -112,7 +112,7 @@ import {SocialMediaFeed} from './social-media-feed';
 
 const routes: Routes = [
   {path: 'user/:id/:social-media', component: SocialMediaFeed},
-  {path: 'user/:id/', component: UserProfile},
+  {path: 'user/:id', component: UserProfile},
 ];
 ```
 
@@ -140,7 +140,7 @@ const routes: Routes = [
 
 In this routes array, the app displays the `NotFound` component when the user visits any path outside of `home` and `user/:id`.
 
-Tip: Wildcard routes are typically placed at the end of a routes array.
+TIP: Wildcard routes are typically placed at the end of a routes array.
 
 ## How Angular matches URLs
 
@@ -216,7 +216,8 @@ The page `title` property can be set dynamically to a resolver function using [`
 ```ts
 const titleResolver: ResolveFn<string> = (route) => route.queryParams['id'];
 const routes: Routes = [
-  ...{
+  // ...
+  {
     path: 'products',
     component: Products,
     title: titleResolver,
@@ -320,9 +321,12 @@ In this code sample, the home and about page are configured with specific `analy
 
 You can read this static data by injecting the `ActivatedRoute`. See [Reading route state](/guide/routing/read-route-state) for details.
 
-### Dynamic data with data resolvers
+### Dynamic data with resources and resolvers
 
-When you need to provide dynamic data to a route, check out the [guide on route data resolvers](/guide/routing/data-resolvers).
+When you need to fetch data for a route, Angular Router supports reactive route resources as well as data resolvers:
+
+- [Data fetching with resources](/guide/routing/data-fetching-with-resources): Fetch data reactively using Angular Signals `Resource` APIs.
+- [Route data resolvers](/guide/routing/data-resolvers): Fetch data before route activation using resolver functions.
 
 ## Nested Routes
 

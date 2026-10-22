@@ -77,6 +77,6 @@ export function compileClassDebugInfo(debugInfo: R3ClassDebugInfo): o.Expression
   const fnCall = o
     .importExpr(R3.setClassDebugInfo)
     .callFn([debugInfo.type, mapLiteral(debugInfoObject)]);
-  const iife = o.arrowFn([], [devOnlyGuardedExpression(fnCall).toStmt()]);
+  const iife = o.arrowFn([], [devOnlyGuardedExpression(fnCall).toStmt()], o.DYNAMIC_TYPE);
   return iife.callFn([]);
 }

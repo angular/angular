@@ -28,6 +28,7 @@ import {
   assertString,
 } from '../../util/assert';
 import {CharCode} from '../../util/char_code';
+import {getFirstChild, getNextSibling, getNodeName} from '../../util/dom';
 import {loadIcuContainerVisitor} from './i18n_icu_container_visitor';
 
 import {getDocument} from '../interfaces/document';
@@ -801,13 +802,13 @@ function walkIcuTree(
   depth: number,
 ): number {
   let bindingMask = 0;
-  let currentNode = parentNode.firstChild;
+  let currentNode = getFirstChild(parentNode);
   while (currentNode) {
     const newIndex = allocExpando(tView, lView, 1, null);
     switch (currentNode.nodeType) {
       case Node.ELEMENT_NODE:
         const element = currentNode as Element;
-        const tagName = element.tagName.toLowerCase();
+        const tagName = getNodeName(element).toLowerCase();
         if (Object.hasOwn(VALID_ELEMENTS, tagName)) {
           addCreateNodeAndAppend(create, ELEMENT_MARKER, tagName, parentIdx, newIndex);
           tView.data[newIndex] = tagName;
@@ -922,7 +923,7 @@ function walkIcuTree(
         }
         break;
     }
-    currentNode = currentNode.nextSibling;
+    currentNode = getNextSibling(currentNode);
   }
   return bindingMask;
 }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, debounced, resource, signal} from '@angular/core';
+import {Component, debounced, resource, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 import {form, FormField, validateAsync} from '../../public_api';
@@ -14,8 +14,6 @@ import {form, FormField, validateAsync} from '../../public_api';
 describe('debounced inside validateAsync bug', () => {
   it('should not throw a cycle error when using debounced in validateAsync factory', async () => {
     @Component({
-      selector: 'debounce-bug',
-      changeDetection: ChangeDetectionStrategy.OnPush,
       template: ` <input [formField]="form.hello" /> `,
       imports: [FormField],
     })

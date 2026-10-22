@@ -12,6 +12,7 @@ import {
   BindingType,
   Conditional,
   Interpolation,
+  isNgTemplate,
   NonNullAssert,
   ParenthesizedExpression,
   PrefixNot,
@@ -29,10 +30,10 @@ import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics
 import {NgTemplateDiagnostic, SymbolKind, TypeCheckableDirectiveMeta} from '../../../api';
 import {isSignalReference} from '../../../src/symbol_util';
 import {
+  formatExtendedError,
   TemplateCheckFactory,
   TemplateCheckWithVisitor,
   TemplateContext,
-  formatExtendedError,
 } from '../../api';
 
 /** Names of known signal instance properties. */
@@ -72,7 +73,7 @@ class InterpolatedSignalCheck extends TemplateCheckWithVisitor<ErrorCode.INTERPO
       return node.inputs.flatMap((input) =>
         checkBoundAttribute(ctx, component, directivesOfElement, input),
       );
-    } else if (node instanceof TmplAstTemplate && node.tagName === 'ng-template') {
+    } else if (node instanceof TmplAstTemplate && node.tagName && isNgTemplate(node.tagName)) {
       const directivesOfElement = ctx.templateTypeChecker.getDirectivesOfNode(component, node);
       const inputDiagnostics = node.inputs.flatMap((input) => {
         return checkBoundAttribute(ctx, component, directivesOfElement, input);
@@ -202,19 +203,22 @@ function buildDiagnosticForSignal(
   const symbol = ctx.templateTypeChecker.getSymbolOfNode(node, component);
   if (
     symbol !== null &&
-    symbol.kind === SymbolKind.Expression &&
+    (symbol.kind === SymbolKind.Expression ||
+      symbol.kind === SymbolKind.LetDeclaration ||
+      symbol.kind === SymbolKind.Variable) &&
     isSignalReference(symbol, ctx.templateTypeChecker)
   ) {
-    const templateMapping = ctx.templateTypeChecker.getSourceMappingAtTcbLocation(
-      symbol.tcbLocation,
-    )!;
+    const span =
+      symbol.kind === SymbolKind.Expression
+        ? ctx.templateTypeChecker.getSourceMappingAtTcbLocation(symbol.tcbLocation)!.span
+        : node.nameSpan;
 
     const errorString = formatExtendedError(
       ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED,
       `${node.name} is a function and should be invoked: ${node.name}()}`,
     );
 
-    const diagnostic = ctx.makeTemplateDiagnostic(templateMapping.span, errorString);
+    const diagnostic = ctx.makeTemplateDiagnostic(span, errorString);
     return [diagnostic];
   }
 
@@ -237,12 +241,15 @@ function buildDiagnosticForSignal(
   const symbolOfReceiver = ctx.templateTypeChecker.getSymbolOfNode(node.receiver, component);
   if (
     symbolOfReceiver !== null &&
-    symbolOfReceiver.kind === SymbolKind.Expression &&
+    (symbolOfReceiver.kind === SymbolKind.Expression ||
+      symbolOfReceiver.kind === SymbolKind.LetDeclaration ||
+      symbolOfReceiver.kind === SymbolKind.Variable) &&
     isSignalReference(symbolOfReceiver, ctx.templateTypeChecker)
   ) {
-    const templateMapping = ctx.templateTypeChecker.getSourceMappingAtTcbLocation(
-      symbolOfReceiver.tcbLocation,
-    )!;
+    const span =
+      symbolOfReceiver.kind === SymbolKind.Expression
+        ? ctx.templateTypeChecker.getSourceMappingAtTcbLocation(symbolOfReceiver.tcbLocation)!.span
+        : (node.receiver as PropertyRead).nameSpan;
 
     const errorString = formatExtendedError(
       ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED,
@@ -251,7 +258,7 @@ function buildDiagnosticForSignal(
       } is a function and should be invoked: ${(node.receiver as PropertyRead).name}()`,
     );
 
-    const diagnostic = ctx.makeTemplateDiagnostic(templateMapping.span, errorString);
+    const diagnostic = ctx.makeTemplateDiagnostic(span, errorString);
     return [diagnostic];
   }
 

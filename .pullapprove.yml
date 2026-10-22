@@ -138,11 +138,13 @@ groups:
           'packages/platform-browser/**/{*,.*}',
           'packages/platform-browser-dynamic/**/{*,.*}',
           'packages/platform-server/**/{*,.*}',
+          'packages/private/**/{*,.*}',
           'packages/ssr/**/{*,.*}',
           'packages/router/**/{*,.*}',
           'packages/service-worker/**/{*,.*}',
           'packages/upgrade/**/{*,.*}',
           'vscode-ng-language-service/**/{*,.*}',
+          'ngp-vscode-ng-language-service/**/{*,.*}',
         ])
     reviewers:
       users:
@@ -302,7 +304,7 @@ groups:
     conditions:
       - >
         contains_any_globs(files
-            .exclude('.pullapprove.yml') 
+            .exclude('.pullapprove.yml')
             .exclude('tools/manual_api_docs/blocks/*.md')
             .exclude('tools/manual_api_docs/elements/*.md')
             .exclude('.agent/**/*.md'),
@@ -322,7 +324,6 @@ groups:
           'modules/{*,.*}',
           'packages/{*,.*}',
           'packages/examples/test-utils/**/{*,.*}',
-          'packages/private/**/{*,.*}',
           'packages/examples/{*,.*}',
           'scripts/**/{*,.*}',
           'third_party/**/{*,.*}',
@@ -484,23 +485,9 @@ groups:
         - ~thePunderWoman # Jessica Janiuk
         - ~AndrewKushnir # Andrew Kushnir
         - atscott # Andrew Scott
-
-  # External team required reviews
-  primitives-shared:
-    <<: *defaults
-    conditions:
-      - >
-        contains_any_globs(files.exclude('packages/core/primitives/**/*spec.ts'), [
-          'packages/core/primitives/**/{*,.*}',
-        ])
-    reviewers:
-      users:
-        - csmick # Cameron Smick
-        - mturco # Matt Turco
-        - iteriani # Thomas Nguyen
-        - tbondwilkinson # Tom Wilkinson
         - rahatarmanahmed # Rahat Ahmed
         - e-cline # Ethan Cline
+        - rockymeza # Rocky Meza
 
   ####################################################################################
   # Override managed result groups

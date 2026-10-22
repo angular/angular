@@ -57,7 +57,7 @@ HELPFUL: Ahead-of-time (AOT) compilation is required to localize component templ
 If you changed this setting, set `"aot"` to `true` in order to use AOT.
 
 HELPFUL: Due to the deployment complexities of i18n and the need to minimize rebuild time, the development server only supports localizing a single locale at a time.
-If you set the `"localize"` option to `true`, define more than one locale, and use `ng serve`; then an error occurs.
+If you set the `"localize"` option to `true` or to an array of more than one locale, and use `ng serve`, the development server logs a warning and disables localization.
 If you want to develop against a specific locale, set the `"localize"` option to a specific locale.
 For example, for French \(`fr`\), specify `"localize": ["fr"]`.
 

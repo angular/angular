@@ -5,7 +5,7 @@ IMPORTANT: `debounced` is [experimental](reference/releases#experimental). It's 
 Use `debounced` to delay reacting to a signal's value until it stops changing. It returns a `Resource` whose value reflects the debounced value of the source signal.
 
 ```angular-ts
-import {debounced, resource, signal} from '@angular/core';
+import {Component, debounced, resource, signal} from '@angular/core';
 
 @Component({
   template: `

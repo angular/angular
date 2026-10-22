@@ -215,9 +215,9 @@ export function authRedirectInterceptor(
 
 ## Working with response types
 
-When `HttpClient` uses the fetch backend, responses include a `type` property that indicates how the browser handled the response based on CORS policies and request mode. This property aligns with the native Fetch API specification and provides valuable insights for debugging CORS issues and understanding response accessibility.
+When `HttpClient` uses the fetch backend, responses include a `responseType` property that indicates how the browser handled the response based on CORS policies and request mode. This property aligns with the native Fetch API specification and provides valuable insights for debugging CORS issues and understanding response accessibility.
 
-The response `type` property can have the following values:
+The response `responseType` property can have the following values:
 
 - `'basic'` - Same-origin response with all headers accessible
 - `'cors'` - Cross-origin response with CORS headers properly configured
@@ -233,7 +233,7 @@ export function responseTypeInterceptor(
   next: HttpHandlerFn,
 ): Observable<HttpEvent<unknown>> {
   return next(req).pipe(
-    map((event) => {
+    tap((event) => {
       if (event.type === HttpEventType.Response) {
         // Handle different response types appropriately
         switch (event.responseType) {

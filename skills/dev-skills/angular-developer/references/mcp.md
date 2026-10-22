@@ -9,9 +9,9 @@ When the MCP server is enabled, AI agents have access to the following tools:
 | Name                        | Description                                                                                               |
 | :-------------------------- | :-------------------------------------------------------------------------------------------------------- |
 | `ai_tutor`                  | Launches an interactive AI-powered Angular tutor.                                                         |
-| `devserver.start`           | Asynchronously starts a dev server (`ng serve`). Returns immediately.                                     |
-| `devserver.stop`            | Stops the dev server.                                                                                     |
-| `devserver.wait_for_build`  | Returns the logs of the most recent build in a running dev server.                                        |
+| `devserver_start`           | Asynchronously starts a dev server (`ng serve`). Returns immediately.                                     |
+| `devserver_stop`            | Stops the dev server.                                                                                     |
+| `devserver_wait_for_build`  | Returns the logs of the most recent build in a running dev server.                                        |
 | `get_best_practices`        | Retrieves the Angular Best Practices Guide (crucial for standalone components, typed forms, etc.).        |
 | `list_projects`             | Lists all applications and libraries in the workspace by reading `angular.json`.                          |
 | `onpush_zoneless_migration` | Analyzes code and provides a plan to migrate it to `OnPush` change detection (prerequisite for zoneless). |

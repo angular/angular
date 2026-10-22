@@ -1,7 +1,7 @@
 // #docplaster
-import {inject, Injectable} from '@angular/core';
+import {inject, Service} from '@angular/core';
 // #docregion sw-replicate-available
-import {filter, map} from 'rxjs/operators';
+import {filter, map} from 'rxjs';
 // #enddocregion sw-replicate-available
 import {SwUpdate, VersionReadyEvent} from '@angular/service-worker';
 
@@ -10,7 +10,7 @@ function promptUser(event: VersionReadyEvent): boolean {
 }
 
 // #docregion sw-version-ready
-@Injectable({providedIn: 'root'})
+@Service()
 export class PromptUpdateService {
   constructor() {
     const swUpdate = inject(SwUpdate);

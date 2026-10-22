@@ -8,6 +8,7 @@ ts_project(
     ),
     visibility = ["//:__pkg__"],
     deps = [
+        "//packages/core/primitives/dom-navigation",
         "//packages/core/primitives/dom-navigation/testing",
         "//packages/private/testing",
     ],

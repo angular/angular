@@ -375,10 +375,12 @@ describe('ServiceWorker library', () => {
       let subscriptionSpy: jasmine.Spy;
 
       beforeEach(() => {
-        nextSubEmitPromise = new Promise((resolve) => (nextSubEmitResolve = resolve));
+        ({promise: nextSubEmitPromise, resolve: nextSubEmitResolve} =
+          Promise.withResolvers<void>());
         subscriptionSpy = jasmine.createSpy('subscriptionSpy').and.callFake(() => {
           nextSubEmitResolve();
-          nextSubEmitPromise = new Promise((resolve) => (nextSubEmitResolve = resolve));
+          ({promise: nextSubEmitPromise, resolve: nextSubEmitResolve} =
+            Promise.withResolvers<void>());
         });
 
         push.subscription.subscribe(subscriptionSpy);

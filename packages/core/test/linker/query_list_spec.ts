@@ -9,7 +9,6 @@
 import {ɵgetDOM as getDOM} from '@angular/common';
 import {QueryList} from '../../src/linker/query_list';
 import {iterateListLike} from '../../src/util/iterable';
-import {fakeAsync, tick} from '../../testing';
 
 describe('QueryList', () => {
   let queryList: QueryList<string>;
@@ -160,7 +159,7 @@ describe('QueryList', () => {
 
   if (getDOM().supportsDOMEvents) {
     describe('simple observable interface', () => {
-      it('should fire callbacks on change', fakeAsync(() => {
+      it('should fire callbacks on change', () => {
         let fires = 0;
         queryList.changes.subscribe({
           next: (_) => {
@@ -169,17 +168,15 @@ describe('QueryList', () => {
         });
 
         queryList.notifyOnChanges();
-        tick();
 
         expect(fires).toEqual(1);
 
         queryList.notifyOnChanges();
-        tick();
 
         expect(fires).toEqual(2);
-      }));
+      });
 
-      it('should provides query list as an argument', fakeAsync(() => {
+      it('should provides query list as an argument', () => {
         let recorded!: QueryList<string>;
         queryList.changes.subscribe({
           next: (v: QueryList<string>) => {
@@ -189,10 +186,9 @@ describe('QueryList', () => {
 
         queryList.reset(['one']);
         queryList.notifyOnChanges();
-        tick();
 
         expect(recorded).toBe(queryList);
-      }));
+      });
     });
   }
 });

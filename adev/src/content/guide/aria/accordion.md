@@ -1,5 +1,4 @@
-<docs-decorative-header title="Accordion">
-</docs-decorative-header>
+# Accordion
 
 <docs-pill-row>
   <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/accordion/" title="Accordion ARIA pattern"/>
@@ -38,7 +37,7 @@ Accordions work well for organizing content into logical groups where users typi
 
 - **Expansion modes** - Control whether one or multiple panels can be open at the same time
 - **Keyboard navigation** - Navigate between triggers using arrow keys, Home, and End
-- **Lazy rendering** - Content is only created when a panel first expands, improving initial load performance
+- **Lazy rendering** - Content is only created when a panel expands, improving initial load performance
 - **Disabled states** - Disable the entire group or individual triggers
 - **Focus management** - Control whether disabled items can receive keyboard focus
 - **Programmatic control** - Expand, collapse, or toggle panels from your component code
@@ -140,7 +139,7 @@ When `[softDisabled]="true"` (the default), disabled items can receive focus but
 
 ### Lazy content rendering
 
-Use the `ngAccordionContent` directive on an `ng-template` to defer rendering content until the panel first expands. This improves performance for accordions with heavy content like images, charts, or complex components.
+Use the `ngAccordionContent` directive on an `ng-template` to defer rendering content until the panel expands. This improves performance for accordions with heavy content like images, charts, or complex components.
 
 ```angular-html
 <div ngAccordionGroup>
@@ -148,7 +147,7 @@ Use the `ngAccordionContent` directive on an `ng-template` to defer rendering co
     <button ngAccordionTrigger [panel]="panel1">Trigger Text</button>
     <div ngAccordionPanel #panel1="ngAccordionPanel">
       <ng-template ngAccordionContent>
-        <!-- This content only renders when the panel first opens -->
+        <!-- This content only renders when the panel opens -->
         <img src="large-image.jpg" alt="Description" />
         <app-expensive-component />
       </ng-template>
@@ -157,7 +156,7 @@ Use the `ngAccordionContent` directive on an `ng-template` to defer rendering co
 </div>
 ```
 
-By default, content remains in the DOM after the panel collapses. Set `[preserveContent]="false"` to remove the content from the DOM when the panel closes.
+By default, content is removed from the DOM when the panel collapses. Set `[preserveContent]="true"` to keep it, for example when the panel contains a video that shouldn't reset on collapse.
 
 ## Testing
 

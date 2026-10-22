@@ -1,12 +1,24 @@
-import {browser, by, element} from 'protractor';
-import {bootstrapClientApp, navigateTo, verifyNoBrowserErrors} from './util';
+import * as webdriver from 'selenium-webdriver';
+import {
+  bootstrapClientApp,
+  getWebDriver,
+  navigateTo,
+  quitWebDriver,
+  verifyNoBrowserErrors,
+} from './util';
 
 describe('App E2E Tests', () => {
-  beforeEach(async () => {
-    // Don't wait for Angular since it is not bootstrapped automatically.
-    await browser.waitForAngularEnabled(false);
+  let driver: webdriver.WebDriver;
 
-    // Load the page without waiting for Angular since it is not bootstrapped automatically.
+  beforeAll(() => {
+    driver = getWebDriver();
+  });
+
+  afterAll(async () => {
+    await quitWebDriver();
+  });
+
+  beforeEach(async () => {
     await navigateTo('');
   });
 
@@ -15,8 +27,8 @@ describe('App E2E Tests', () => {
     await verifyNoBrowserErrors();
   });
 
-  it('should reply click event', async () => {
-    const divElement = element(by.css('#divElement'));
+  it('should replay click event', async () => {
+    const divElement = await driver.findElement(webdriver.By.css('#divElement'));
     expect(await divElement.getText()).toContain('click not triggered');
 
     // Trigger click

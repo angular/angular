@@ -182,9 +182,7 @@ export interface R3NgModuleMetadataIsolated extends R3NgModuleMetadataCommon {
 }
 
 export type R3NgModuleMetadata =
-  | R3NgModuleMetadataGlobal
-  | R3NgModuleMetadataLocal
-  | R3NgModuleMetadataIsolated;
+  R3NgModuleMetadataGlobal | R3NgModuleMetadataLocal | R3NgModuleMetadataIsolated;
 
 /**
  * The shape of the object literal that is passed to the `ɵɵdefineNgModule()` call.
@@ -415,7 +413,11 @@ function generateSetNgModuleScopeCall(meta: R3NgModuleMetadata): o.Statement | n
   const guardedCall = jitOnlyGuardedExpression(fnCall);
 
   // function() { (ngJitMode guard) && setNgModuleScope(...); }
-  const iife = new o.FunctionExpr(/* params */ [], /* statements */ [guardedCall.toStmt()]);
+  const iife = new o.FunctionExpr(
+    /* params */ [],
+    /* statements */ [guardedCall.toStmt()],
+    o.DYNAMIC_TYPE,
+  );
 
   // (function() { (ngJitMode guard) && setNgModuleScope(...); })()
   const iifeCall = new o.InvokeFunctionExpr(/* fn */ iife, /* args */ []);

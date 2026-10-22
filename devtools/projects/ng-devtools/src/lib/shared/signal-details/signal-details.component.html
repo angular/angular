@@ -74,7 +74,7 @@
         [class.watched]="node.watched"
         [btnType]="node.watched ? 'primary' : 'secondary'"
         (click)="toggleIsBeingWatched()"
-        [matTooltip]="node.watched ? 'Unwatch signal' : 'Watch signal'"
+        [matTooltip]="node.watched ? 'Unwatch signal' : 'Watch signal (log in console)'"
       >
         <mat-icon> {{ node.watched ? 'visibility_off' : 'visibility' }} </mat-icon>
       </button>

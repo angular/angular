@@ -18,7 +18,6 @@ describe('signalGraphTool', () => {
 
   it('should discover signal graph from targeted element', async () => {
     @Component({
-      selector: 'signal-graph-test-root',
       template: '<div>Signals test: {{ double() }}</div>',
       standalone: true,
     })

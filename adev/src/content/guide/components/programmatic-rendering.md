@@ -20,24 +20,31 @@ chunks automatically and loaded only when necessary, based on the configured tri
 template.
 
 ```angular-ts
-@Component({/*...*/})
-export class AdminBio { /* ... */ }
+import {NgComponentOutlet} from '@angular/common';
 
 @Component({/*...*/})
-export class StandardBio { /* ... */ }
+export class AdminBio {
+  /* ... */
+}
+
+@Component({/*...*/})
+export class StandardBio {
+  /* ... */
+}
 
 @Component({
-  ...,
+  imports: [NgComponentOutlet],
   template: `
-    <p>Profile for {{user.name}}</p>
-    <ng-container *ngComponentOutlet="getBioComponent()" /> `
+    <p>Profile for {{ user().name }}</p>
+    <ng-container *ngComponentOutlet="bioComponent()" />
+  `,
 })
 export class CustomDialog {
   user = input.required<User>();
 
-  getBioComponent() {
+  bioComponent = computed(() => {
     return this.user().isAdmin ? AdminBio : StandardBio;
-  }
+  });
 }
 ```
 
@@ -396,3 +403,18 @@ export class PopupService {
   }
 }
 ```
+
+## Handling rendering errors
+
+When dynamically creating components using `ViewContainerRef.createComponent` or the standalone `createComponent` function, you can provide an `onError` callback in the options object to handle errors that occur during the rendering or change detection phases. This is the programmatic equivalent of using an `@error` block in templates.
+
+```ts
+viewContainerRef.createComponent(DynamicComponent, {
+  onError: (err: Error, details: ErrorDetails) => {
+    console.error('Component rendering failed:', err);
+    // Render an alternative UI or log metrics
+  },
+});
+```
+
+NOTE: The `onError` callback only catches errors that occur during the rendering or change detection phases. It does not catch errors that occur during component instantiation (for example, in the constructor). Angular throws construction errors synchronously when you call the API.

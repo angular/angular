@@ -229,17 +229,20 @@
     {
       "name": "ComboboxPopup",
       "isAbstract": false,
-      "entryType": "undecorated_class",
+      "entryType": "directive",
       "members": [
         {
           "name": "combobox",
           "type": "InputSignal<Combobox>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "The combobox that the popup belongs to.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "combobox",
+          "isRequiredInput": true
         },
         {
           "name": "controlTarget",
@@ -276,10 +279,13 @@
           "type": "InputSignal<\"listbox\" | \"tree\" | \"grid\" | \"dialog\">",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "The type of the popup (e.g., listbox, tree, grid, dialog).",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "popupType",
+          "isRequiredInput": false
         },
         {
           "name": "ngOnInit",
@@ -356,10 +362,18 @@
         "OnInit",
         "OnDestroy"
       ],
+      "isStandalone": true,
+      "selector": "ng-template[ngComboboxPopup]",
+      "exportAs": [
+        "ngComboboxPopup"
+      ],
+      "aliases": [
+        "ngComboboxPopup"
+      ],
       "source": {
         "filePath": "src/aria/combobox/combobox-popup.ts",
         "startLine": 29,
-        "endLine": 80
+        "endLine": 84
       }
     },
     {
@@ -431,7 +445,7 @@
         },
         {
           "name": "tabIndex",
-          "type": "InputSignal<undefined>",
+          "type": "InputSignalWithTransform<number | undefined, string | number | undefined>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -517,6 +531,28 @@
           "rawComment": "",
           "memberType": "method",
           "memberTags": []
+        },
+        {
+          "name": "contentVisible",
+          "type": "WritableSignal<boolean>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "override"
+          ],
+          "description": "",
+          "jsdocTags": []
+        },
+        {
+          "name": "preserveContent",
+          "type": "ModelSignal<boolean>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "override"
+          ],
+          "description": "",
+          "jsdocTags": []
         }
       ],
       "generics": [],
@@ -588,14 +624,6 @@
       "@angular/core"
     ],
     [
-      "DeferredContent",
-      "@angular/aria/private"
-    ],
-    [
-      "ComboboxPopupPattern",
-      "@angular/aria/private"
-    ],
-    [
       "afterRenderEffect",
       "@angular/core"
     ],
@@ -610,18 +638,6 @@
     [
       "Renderer2",
       "@angular/core"
-    ],
-    [
-      "DeferredContentAware",
-      "@angular/aria/private"
-    ],
-    [
-      "ComboboxPattern",
-      "@angular/aria/private"
-    ],
-    [
-      "tabIndexTransform",
-      "@angular/aria/private"
     ],
     [
       "COMBOBOX_POPUP",
@@ -749,6 +765,14 @@
     ],
     [
       "Combobox.ngOnInit",
+      "@angular/aria/combobox"
+    ],
+    [
+      "Combobox.contentVisible",
+      "@angular/aria/combobox"
+    ],
+    [
+      "Combobox.preserveContent",
       "@angular/aria/combobox"
     ]
   ]

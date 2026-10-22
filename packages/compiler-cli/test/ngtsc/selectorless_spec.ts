@@ -296,7 +296,7 @@ runInEachFileSystem(() => {
       );
     });
 
-    it('should not allow a `deferredImports` array in a selectorless component', () => {
+    it('should not allow a `deferredImports` object in a selectorless component', () => {
       env.write(
         'test.ts',
         `
@@ -308,7 +308,7 @@ runInEachFileSystem(() => {
           @Component({
             template: '<Dep/>',
             // @ts-ignore
-            deferredImports: [Dep]
+            deferredImports: { block1: [Dep] }
           })
           export class Comp {}
         `,

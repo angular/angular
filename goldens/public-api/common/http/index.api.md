@@ -25,7 +25,7 @@ export class FetchBackend implements HttpBackend {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<FetchBackend, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<FetchBackend>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -41,7 +41,7 @@ export abstract class HttpBackend implements HttpHandler {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<HttpBackend, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<HttpBackend>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -540,7 +540,7 @@ export class HttpClient {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<HttpClient, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<HttpClient>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -684,7 +684,7 @@ export abstract class HttpHandler {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<HttpHandler, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<HttpHandler>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -1200,7 +1200,7 @@ export class HttpXhrBackend implements HttpBackend {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<HttpXhrBackend, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<HttpXhrBackend>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -1209,7 +1209,7 @@ export abstract class HttpXsrfTokenExtractor {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<HttpXsrfTokenExtractor, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<HttpXsrfTokenExtractor>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public @deprecated
@@ -1219,7 +1219,7 @@ export class JsonpClientBackend implements HttpBackend {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<JsonpClientBackend, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<JsonpClientBackend>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public @deprecated
@@ -1229,7 +1229,7 @@ export class JsonpInterceptor {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<JsonpInterceptor, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<JsonpInterceptor>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public

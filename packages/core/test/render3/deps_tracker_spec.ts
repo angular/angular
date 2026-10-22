@@ -790,6 +790,22 @@ describe('runtime dependency tracker', () => {
       expect(ans.compilation.isPoisoned).toBeTrue();
     });
 
+    it('should not swallow errors thrown when reading an imported definition', () => {
+      class BrokenDirective {
+        static get ɵdir(): never {
+          throw new Error('Compilation failed');
+        }
+      }
+
+      class MainComponent {}
+
+      expect(() => {
+        depsTracker.getStandaloneComponentScope(MainComponent as ComponentType<any>, [
+          BrokenDirective,
+        ]);
+      }).toThrowError('Compilation failed');
+    });
+
     it('should include the imported module and its exported scope in the compilation scope', () => {
       @Directive({
         standalone: false,

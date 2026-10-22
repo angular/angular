@@ -5,17 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {ParseSourceFile} from '@angular/compiler';
+import {IndexingContext, ParseSourceFile} from '@angular/compiler';
 import {runInEachFileSystem} from '../../file_system/testing';
-import {IndexingContext} from '../src/context';
 import * as util from './util';
-import {AbstractBoundTemplate} from '../src/api';
 import {DeclarationNode} from '../../reflection';
 
 runInEachFileSystem(() => {
   describe('ComponentAnalysisContext', () => {
     it('should store and return information about components', () => {
-      const context = new IndexingContext();
+      const context = new IndexingContext<DeclarationNode>();
       const declaration = util.getComponentDeclaration('class C {};', 'C');
       const boundTemplate = util.getBoundTemplate('<div></div>');
 

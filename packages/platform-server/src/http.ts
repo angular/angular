@@ -17,7 +17,7 @@ import {inject, Injectable, Provider, ɵRuntimeError as RuntimeError} from '@ang
 import {Observable} from 'rxjs';
 
 import {RuntimeErrorCode} from './errors';
-import {resolveUrl} from './url';
+import {HTTP_OR_HTTPS_NO_AUTHORITY_REGEXP, resolveUrl} from './url';
 
 @Injectable()
 /**
@@ -73,9 +73,8 @@ function relativeUrlsTransformerInterceptorFn(
   request: HttpRequest<unknown>,
   next: HttpHandlerFn,
 ): Observable<HttpEvent<unknown>> {
-  const trimmedUrl = request.url.trim();
-  if (URL_SCHEMA_REGEXP.test(trimmedUrl)) {
-    // URLs with a schema should be left unchanged.
+  if (URL_SCHEMA_REGEXP.test(request.url) && !HTTP_OR_HTTPS_NO_AUTHORITY_REGEXP.test(request.url)) {
+    // URLs with a schema (and an authority for http(s)) should be left unchanged.
     return next(request);
   }
 

@@ -79,7 +79,7 @@ export class EmitScope<TStatement, TExpression, TType> {
   private wrapInIifeWithStatements(expression: TExpression, statements: TStatement[]): TExpression {
     const returnStatement = this.factory.createReturnStatement(expression);
     const body = this.factory.createBlock([...statements, returnStatement]);
-    const fn = this.factory.createFunctionExpression(/* name */ null, /* args */ [], body);
+    const fn = this.factory.createFunctionExpression(/* name */ null, /* args */ [], body, null);
     return this.factory.createCallExpression(fn, /* args */ [], /* pure */ false);
   }
 }

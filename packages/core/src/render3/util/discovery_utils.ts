@@ -304,6 +304,9 @@ export type DirectiveDebugMetadata =
 export function getDirectiveMetadata(
   directiveOrComponentInstance: any,
 ): AngularComponentDebugMetadata | AngularDirectiveDebugMetadata | null {
+  if (!directiveOrComponentInstance) {
+    return null;
+  }
   const {constructor} = directiveOrComponentInstance;
   if (!constructor) {
     throw new Error('Unable to find the instance constructor');

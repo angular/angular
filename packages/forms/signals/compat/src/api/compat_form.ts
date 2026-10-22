@@ -75,6 +75,7 @@ export function compatForm<TModel>(model: WritableSignal<TModel>): FieldTree<TMo
  * });
  *
  * nameForm.last().value(); // lastName, not FormControl
+ * ```
  *
  * @param model A writable signal that contains the model data for the form. The resulting field
  * structure will match the shape of the model and any changes to the form data will be written to
@@ -114,6 +115,7 @@ export function compatForm<TModel>(
  * });
  *
  * nameForm.last().value(); // lastName, not FormControl
+ * ```
  *
  * @param model A writable signal that contains the model data for the form. The resulting field
  * structure will match the shape of the model and any changes to the form data will be written to

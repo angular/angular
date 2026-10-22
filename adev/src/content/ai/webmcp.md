@@ -1,6 +1,6 @@
 # WebMCP
 
-Web Model Context Protocol (WebMCP) is an [emerging web standard](https://github.com/webmachinelearning/webmcp/) that allows web applications to expose structured tools directly to AI agents running natively in the browser. Tools defined by an application allow AI assistants to interact with it directly, providing additional capabilities to the agent and reducing the need for DOM interactions.
+WebMCP is a [proposed web standard](https://github.com/webmachinelearning/webmcp/) that allows web applications to expose structured tools directly to AI agents running natively in the browser. Tools defined by an application allow AI assistants to interact with it directly, providing additional capabilities to the agent and reducing the need for DOM interactions.
 
 For example, an application to register a new user might provide a WebMCP tool for a browser's AI agent to create the user directly rather than requiring the agent to go through a complex wizard UI via DOM interactions.
 
@@ -124,15 +124,15 @@ export const routes: Routes = [
 ];
 ```
 
-NOTE: When registering tools to a particular route, consider configuring the router to use [`withExperimentalAutoCleanupInjectors`](api/router/withExperimentalAutoCleanupInjectors) to ensure tools are automatically _unregistered_ when the user navigates away from the route. Without this option, WebMCP tools declared on routes will remain accessible to AI agents even after the user has navigated to a different route.
+NOTE: When registering tools to a particular route, consider configuring the router to use [`withAutoCleanupInjectors`](api/router/withAutoCleanupInjectors) to ensure tools are automatically _unregistered_ when the user navigates away from the route. Without this option, WebMCP tools declared on routes will remain accessible to AI agents even after the user has navigated to a different route.
 
 ```ts {header:"app.config.ts"}
 import {ApplicationConfig} from '@angular/core';
-import {provideRouter, withExperimentalAutoCleanupInjectors} from '@angular/router';
+import {provideRouter, withAutoCleanupInjectors} from '@angular/router';
 import {routes} from './routes';
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideRouter(routes, withExperimentalAutoCleanupInjectors())],
+  providers: [provideRouter(routes, withAutoCleanupInjectors())],
 };
 ```
 
@@ -214,7 +214,7 @@ export class UserRegistration {
       },
       submission: {
         action: async (formValue) => {
-          console.log('Submitting user:', formValue);
+          console.log('Submitting user:', formValue().value());
           // ...
         },
       },
@@ -231,7 +231,7 @@ In this example, Angular generates a WebMCP tool with a JSON schema which:
 
 Beyond inferring the input schema, Angular also connects the WebMCP tool to the form's validation logic and submission handler. This means the agent will observe any validation errors triggered by its inputs or any failures which happen during submission, allowing it to self-correct and potentially retry.
 
-NOTE: Async validators are _not_ triggered and should be handled by the submission action.
+NOTE: By default, async validators don't block submission: the submission action runs before they finish, so their errors aren't reported to the agent. Handle these checks in the submission action instead.
 
 #### Constraints
 

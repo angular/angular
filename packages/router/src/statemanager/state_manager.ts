@@ -15,6 +15,7 @@ import {
   Event,
   isRedirectingEvent,
   NavigationCancel,
+  NavigationCancellationCode,
   NavigationEnd,
   NavigationError,
   NavigationSkipped,
@@ -153,6 +154,7 @@ export abstract class StateManager {
       state: RestoredState | null | undefined,
       trigger: NavigationTrigger,
       extras: NavigationExtras,
+      hasUAVisualTransition?: boolean,
     ) => void,
   ): SubscriptionLike;
 
@@ -194,6 +196,7 @@ export class HistoryStateManager extends StateManager {
       state: RestoredState | null | undefined,
       trigger: NavigationTrigger,
       extras: NavigationExtras,
+      hasUAVisualTransition?: boolean,
     ) => void,
   ): SubscriptionLike {
     return this.location.subscribe((event) => {
@@ -201,9 +204,15 @@ export class HistoryStateManager extends StateManager {
         // The `setTimeout` was added in #12160 and is likely to support Angular/AngularJS
         // hybrid apps.
         setTimeout(() => {
-          listener(event['url']!, event.state as RestoredState | null | undefined, 'popstate', {
-            replaceUrl: true,
-          });
+          listener(
+            event['url']!,
+            event.state as RestoredState | null | undefined,
+            'popstate',
+            {
+              replaceUrl: true,
+            },
+            event.hasUAVisualTransition,
+          );
         });
       }
     });
@@ -225,8 +234,15 @@ export class HistoryStateManager extends StateManager {
       if (this.urlUpdateStrategy === 'deferred' && !currentTransition.extras.skipLocationChange) {
         this.setBrowserUrl(this.createBrowserPath(currentTransition), currentTransition);
       }
-    } else if (e instanceof NavigationCancel && !isRedirectingEvent(e)) {
-      this.restoreHistory(currentTransition);
+    } else if (e instanceof NavigationCancel) {
+      if (!isRedirectingEvent(e)) {
+        this.restoreHistory(currentTransition);
+      } else if (
+        e.code === NavigationCancellationCode.Redirect &&
+        this.routerState === currentTransition.targetRouterState
+      ) {
+        this.resetInternalState(currentTransition);
+      }
     } else if (e instanceof NavigationError) {
       this.restoreHistory(currentTransition, true);
     } else if (e instanceof NavigationEnd) {

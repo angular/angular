@@ -7,7 +7,7 @@
  */
 
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
-import {absoluteFrom, getSourceFileOrError} from '../../file_system';
+import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {InliningMode} from '../../program_driver';
 import {OptimizeFor} from '../api';
@@ -274,6 +274,103 @@ runInEachFileSystem(() => {
         const nodes = templateTypeChecker.getTemplate(cmp)!;
         expect(nodes).not.toBeNull();
         expect(nodes[0].sourceSpan.start.file.content).toBe('<div>Template</div>');
+      });
+    });
+
+    describe('non-exported directives in the same file as an exported component', () => {
+      let fileName: AbsoluteFsPath;
+      beforeEach(() => {
+        fileName = absoluteFrom('/main.ts');
+      });
+      const source = `
+        class HelperDir {
+          appHelper!: string;
+        }
+
+        export class Cmp {
+          open = true;
+          items = [{id: 1, src: '/photo.jpg'}];
+        }
+      `;
+      const template = `
+        @if (open) {
+          @for (item of items; track item.id) {
+            <img [appHelper]="item.src" />
+          }
+        }
+      `;
+      const declarations: TestDeclaration[] = [
+        {
+          name: 'HelperDir',
+          selector: 'img[appHelper]',
+          type: 'directive',
+          inputs: {appHelper: 'appHelper'},
+        },
+      ];
+
+      it('should type-check the template in CopySourceToTcb mode', () => {
+        const {program, templateTypeChecker, programStrategy} = setup(
+          [{fileName, source, templates: {'Cmp': template}, declarations}],
+          {inliningMode: InliningMode.CopySourceToTcb, config: {enableTemplateTypeChecker: true}},
+        );
+        const sf = getSourceFileOrError(program, fileName);
+        const diags = templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
+        expect(diags.length).toBe(0);
+
+        const block = templateTypeChecker.getTypeCheckBlock(getClass(sf, 'Cmp'));
+        expect(block).not.toBeNull();
+        expect(block!.getText()).toContain('HelperDir');
+
+        // The TCB should be generated in the shim alongside a copy of the original source,
+        // rather than trying to import the non-exported directive.
+        const shimSf = getSourceFileOrError(
+          programStrategy.getProgram(),
+          absoluteFrom('/main.ngtypecheck.ts'),
+        );
+        expect(shimSf.text).toContain('class HelperDir');
+        expect(shimSf.text).not.toContain(`from './main'`);
+      });
+
+      it('should report template errors in CopySourceToTcb mode', () => {
+        const {program, templateTypeChecker} = setup(
+          [
+            {
+              fileName,
+              source,
+              templates: {'Cmp': `<img [appHelper]="1" />`},
+              declarations,
+            },
+          ],
+          {inliningMode: InliningMode.CopySourceToTcb, config: {enableTemplateTypeChecker: true}},
+        );
+        const sf = getSourceFileOrError(program, fileName);
+        const diags = templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(`Type 'number' is not assignable to type 'string'`);
+      });
+
+      it('should inline the type check block when inlining is supported', () => {
+        const {program, templateTypeChecker, programStrategy} = setup(
+          [{fileName, source, templates: {'Cmp': template}, declarations}],
+          {inliningMode: InliningMode.InlineOps, config: {enableTemplateTypeChecker: true}},
+        );
+        const sf = getSourceFileOrError(program, fileName);
+        const diags = templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
+        expect(diags.length).toBe(0);
+
+        const updatedSf = getSourceFileOrError(programStrategy.getProgram(), fileName);
+        expect(updatedSf.text).toContain('function _tcb_');
+      });
+
+      it('should produce a diagnostic when inlining is unsupported', () => {
+        const {program, templateTypeChecker} = setup(
+          [{fileName, source, templates: {'Cmp': template}, declarations}],
+          {inlining: false, config: {enableTemplateTypeChecker: true}},
+        );
+        const sf = getSourceFileOrError(program, fileName);
+        const diags = templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
+        expect(diags.length).toBe(1);
+        expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INLINE_TCB_REQUIRED));
       });
     });
   });

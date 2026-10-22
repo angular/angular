@@ -3,7 +3,6 @@
     "sourceMap": true,
     "inlineSources": true,
     "declaration": true,
-    "strict": true,
     "noImplicitReturns": true,
     "noPropertyAccessFromIndexSignature": true,
     "downlevelIteration": true,
@@ -22,8 +21,11 @@
     }
   },
   "angularCompilerOptions": {
-    "strictTemplates": true,
     "strictInjectionParameters": true,
-    "unusedStandaloneImports": "error"
+    "extendedDiagnostics": {
+      "checks": {
+        "unusedStandaloneImports": "error"
+      }
+    }
   }
 }

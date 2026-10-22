@@ -46,7 +46,7 @@ The `Home` already contains an input field that you will use to capture input fr
 
 1. The last template update is to the `@for` directive. Update the `@for` to iterate over values from the `filteredLocationList` array.
 
-   <docs-code header="Update the @for template directive in home.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[17,19]" language="html"/>
+   <docs-code language="angular-ts" header="Update the @for template directive in home.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[17,19]"/>
 
 </docs-step>
 
@@ -57,7 +57,7 @@ The template has been updated to bind the `filterResults` function to the `click
 
     <docs-code header="Add the filterResults function implementation" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[35,44]"/>
 
-    This function uses the `String` `filter` function to compare the value of the `text` parameter against the `housingLocation.city` property. You can update this function to match against any property or multiple properties for a fun exercise.
+    This function uses the `Array` `filter` function to compare the value of the `text` parameter against the `housingLocation.city` property. You can update this function to match against any property or multiple properties for a fun exercise.
 
 1.  Save your code.
 

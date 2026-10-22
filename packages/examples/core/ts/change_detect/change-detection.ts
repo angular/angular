@@ -5,21 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  effect,
-  input,
-  signal,
-} from '@angular/core';
+import {ChangeDetectorRef, Component, effect, input, signal} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 
 // #docregion mark-for-check
 @Component({
   selector: 'app-root',
   template: `Number of ticks: {{ numberOfTicks }}`,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 class AppComponent {
   numberOfTicks = 0;

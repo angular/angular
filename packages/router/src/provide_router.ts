@@ -732,15 +732,15 @@ export function withNavigationErrorHandler(
 }
 
 /**
- * A type alias for providers returned by `withExperimentalAutoCleanupInjectors` for use with `provideRouter`.
+ * A type alias for providers returned by `withAutoCleanupInjectors` for use with `provideRouter`.
  *
- * @see {@link withExperimentalAutoCleanupInjectors}
+ * @see {@link withAutoCleanupInjectors}
  * @see {@link provideRouter}
  *
- * @experimental 21.1
+ * @publicApi 22.2
  */
-export type ExperimentalAutoCleanupInjectorsFeature =
-  RouterFeature<RouterFeatureKind.ExperimentalAutoCleanupInjectorsFeature>;
+export type AutoCleanupInjectorsFeature =
+  RouterFeature<RouterFeatureKind.AutoCleanupInjectorsFeature>;
 
 /**
  * Enables automatic destruction of unused route injectors.
@@ -755,12 +755,23 @@ export type ExperimentalAutoCleanupInjectorsFeature =
  * should also implement `retrieveStoredRouteHandles` to ensure injectors for handles that will be
  * reattached are not destroyed.
  *
- * @experimental 21.1
+ * @publicApi 22.2
  */
-export function withExperimentalAutoCleanupInjectors(): ExperimentalAutoCleanupInjectorsFeature {
-  return routerFeature(RouterFeatureKind.ExperimentalAutoCleanupInjectorsFeature, [
+export function withAutoCleanupInjectors(): AutoCleanupInjectorsFeature {
+  return routerFeature(RouterFeatureKind.AutoCleanupInjectorsFeature, [
     {provide: ROUTE_INJECTOR_CLEANUP, useValue: routeInjectorCleanup},
   ]);
+}
+
+/**
+ * Enables automatic destruction of unused route injectors.
+ *
+ * @deprecated Use `withAutoCleanupInjectors` instead.
+ * @see {@link withAutoCleanupInjectors}
+ * @publicApi
+ */
+export function withExperimentalAutoCleanupInjectors(): AutoCleanupInjectorsFeature {
+  return withAutoCleanupInjectors();
 }
 
 /**
@@ -780,7 +791,7 @@ export type ComponentInputBindingFeature =
  * @see {@link withViewTransitions}
  * @see {@link provideRouter}
  *
- * @publicApi
+ * @publicApi 22.3
  */
 export type ViewTransitionsFeature = RouterFeature<RouterFeatureKind.ViewTransitionsFeature>;
 
@@ -876,7 +887,7 @@ export function withComponentInputBinding(
  * @see [View Transitions on MDN](https://developer.chrome.com/docs/web-platform/view-transitions/)
  * @see [View Transitions API on MDN](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API)
  * @see [Route transition animations](guide/routing/route-transition-animations)
- * @developerPreview 19.0
+ * @publicApi 22.3
  */
 export function withViewTransitions(
   options?: ViewTransitionsFeatureOptions,
@@ -898,9 +909,9 @@ export function withViewTransitions(
  * @see {@link withRouterResources}
  * @see {@link provideRouter}
  *
- * @experimental
+ * @developerPreview 22.2
  */
-export type RouterResourcesFeature = RouterFeature<RouterFeatureKind.ViewTransitionsFeature>;
+export type RouterResourcesFeature = RouterFeature<RouterFeatureKind.RouterResourcesFeature>;
 
 /**
  * Enables `resources` capabilities for Route definitions.
@@ -919,7 +930,7 @@ export type RouterResourcesFeature = RouterFeature<RouterFeatureKind.ViewTransit
  * );
  * ```
  *
- * @experimental
+ * @developerPreview 22.2
  * @returns A set of providers for use with `provideRouter`.
  */
 export function withRouterResources(): RouterResourcesFeature {
@@ -932,7 +943,7 @@ export function withRouterResources(): RouterResourcesFeature {
       },
     },
   ];
-  return routerFeature(RouterFeatureKind.ViewTransitionsFeature, providers);
+  return routerFeature(RouterFeatureKind.RouterResourcesFeature, providers);
 }
 
 /**
@@ -954,9 +965,10 @@ export type RouterFeatures =
   | NavigationErrorHandlerFeature
   | ComponentInputBindingFeature
   | ViewTransitionsFeature
-  | ExperimentalAutoCleanupInjectorsFeature
+  | AutoCleanupInjectorsFeature
   | RouterHashLocationFeature
-  | ExperimentalPlatformNavigationFeature;
+  | ExperimentalPlatformNavigationFeature
+  | RouterResourcesFeature;
 
 /**
  * The list of features as an enum to uniquely type each feature.
@@ -972,6 +984,7 @@ export const enum RouterFeatureKind {
   NavigationErrorHandlerFeature,
   ComponentInputBindingFeature,
   ViewTransitionsFeature,
-  ExperimentalAutoCleanupInjectorsFeature,
+  AutoCleanupInjectorsFeature,
   ExperimentalPlatformNavigationFeature,
+  RouterResourcesFeature,
 }

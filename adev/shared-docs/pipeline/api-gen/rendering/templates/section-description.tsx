@@ -14,6 +14,7 @@ import {SECTION_CONTAINER} from '../styling/css-classes.mjs';
 import {SectionHeading} from './section-heading';
 
 const DESCRIPTION_SECTION_NAME = 'Description';
+const EXPORTED_BY_SECTION_NAME = 'Exported by';
 
 /** Component to render the description section. */
 export function SectionDescription(props: {entry: DocEntryRenderable}) {
@@ -33,8 +34,7 @@ export function SectionDescription(props: {entry: DocEntryRenderable}) {
 
       {exportedBy.length ? (
         <>
-          <hr />
-          <h2>Exported by</h2>
+          <SectionHeading name={EXPORTED_BY_SECTION_NAME} />
 
           <ul>
             {exportedBy.map((tag) => (

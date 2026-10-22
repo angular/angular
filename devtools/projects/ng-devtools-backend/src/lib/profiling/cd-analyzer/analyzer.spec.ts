@@ -104,7 +104,7 @@ describe('CD analyzer', () => {
       expect(current.length).toBe(1);
       expect(current[0].elementPosition).toEqual(pos);
       expect(current[0].component.deref()).toBe(cmp);
-      expect(current[0].cdPassDurations).toEqual([25]);
+      expect(current[0].lastCdPassDuration).toBe(25);
       expect(all).toEqual([current[0]]);
     });
 
@@ -122,7 +122,32 @@ describe('CD analyzer', () => {
       await Promise.resolve();
 
       const [current] = listener.calls.mostRecent().args as [CdData[], CdData[]];
-      expect(current[0].cdPassDurations).toEqual([25]); // (110 - 100) + (135 - 120)
+      expect(current[0].lastCdPassDuration).toBe(25); // (110 - 100) + (135 - 120)
+    });
+
+    it('should track the latest CD pass duration and total cycle count', async () => {
+      const times: number[] = [];
+      for (let i = 0; i < 15; i++) {
+        // Start and end timestamps for each of the 15 cycles; the duration of
+        // cycle i is i.
+        times.push(i * 100, i * 100 + i);
+      }
+      spyOn(performance, 'now').and.returnValues(...times);
+      const listener = jasmine.createSpy('listener');
+      analyzer.onCycle(listener);
+
+      const cmp = registerCmp(new CmpFoo());
+      const pos = [0];
+      for (let i = 0; i < 15; i++) {
+        startCdEvent(cmp, pos);
+        endCdEvent(cmp, pos);
+        await Promise.resolve();
+      }
+
+      const [, all] = listener.calls.mostRecent().args as [CdData[], CdData[]];
+      expect(all.length).toBe(1);
+      expect(all[0].cdCount).toBe(15);
+      expect(all[0].lastCdPassDuration).toBe(14);
     });
 
     it('should track multiple components within the same cycle', async () => {
@@ -169,15 +194,18 @@ describe('CD analyzer', () => {
 
       expect(current.length).toBe(1);
       expect(current[0].elementPosition).toEqual([0]);
-      expect(current[0].cdPassDurations).toEqual([10, 15]); // (10 - 0), (75 - 60)
+      expect(current[0].lastCdPassDuration).toBe(15); // 75 - 60
+      expect(current[0].cdCount).toBe(2);
 
       expect(all.length).toBe(2);
 
       const fooData = all.find((d) => d.elementPosition[0] === 0)!;
-      expect(fooData.cdPassDurations).toEqual([10, 15]); // (10 - 0), (75 - 60)
+      expect(fooData.lastCdPassDuration).toBe(15); // 75 - 60
+      expect(fooData.cdCount).toBe(2);
 
       const barData = all.find((d) => d.elementPosition[0] === 1)!;
-      expect(barData.cdPassDurations).toEqual([30]); // 50 - 20
+      expect(barData.lastCdPassDuration).toBe(30); // 50 - 20
+      expect(barData.cdCount).toBe(1);
     });
   });
 

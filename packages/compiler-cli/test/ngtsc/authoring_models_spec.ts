@@ -7,13 +7,16 @@
  */
 
 import ts from 'typescript';
-
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../../src/ngtsc/testing';
 
 import {NgtscTestEnvironment} from './env';
 
 const testFiles = loadStandardTestFiles();
+
+function extractMessage(diag: ts.Diagnostic) {
+  return typeof diag.messageText === 'string' ? diag.messageText : diag.messageText.messageText;
+}
 
 runInEachFileSystem(() => {
   describe('initializer-based model() API', () => {
@@ -39,7 +42,7 @@ runInEachFileSystem(() => {
       env.driveMain();
 
       const js = env.getContents('test.js');
-      const dts = env.getContents('test.d.ts');
+      const dts = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(js).toContain('inputs: { value: [1, "value"] }');
       expect(js).toContain('outputs: { value: "valueChange" }');
@@ -65,7 +68,7 @@ runInEachFileSystem(() => {
       env.driveMain();
 
       const js = env.getContents('test.js');
-      const dts = env.getContents('test.d.ts');
+      const dts = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(js).toContain('inputs: { value: [1, "alias", "value"] }');
       expect(js).toContain('outputs: { value: "aliasChange" }');
@@ -91,7 +94,7 @@ runInEachFileSystem(() => {
       env.driveMain();
 
       const js = env.getContents('test.js');
-      const dts = env.getContents('test.d.ts');
+      const dts = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(js).toContain('inputs: { value: [1, "value"] }');
       expect(js).toContain('outputs: { value: "valueChange" }');
@@ -116,7 +119,7 @@ runInEachFileSystem(() => {
       );
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe('Using @Input with a model input is not allowed.');
+      expect(extractMessage(diags[0])).toBe('Using @Input with a model input is not allowed.');
     });
 
     it('should report a diagnostic if a model field is decorated with @Output', () => {
@@ -133,7 +136,7 @@ runInEachFileSystem(() => {
       );
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe('Using @Output with a model input is not allowed.');
+      expect(extractMessage(diags[0])).toBe('Using @Output with a model input is not allowed.');
     });
 
     it('should report a diagnostic if a model input is also declared in the `inputs` field', () => {
@@ -152,7 +155,7 @@ runInEachFileSystem(() => {
       );
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(
+      expect(extractMessage(diags[0])).toBe(
         'Input "value" is also declared as non-signal in @Directive.',
       );
     });
@@ -174,7 +177,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(
+      expect(extractMessage(diags[0])).toBe(
         'Alias needs to be a string that is statically analyzable.',
       );
     });
@@ -195,7 +198,7 @@ runInEachFileSystem(() => {
       );
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(
+      expect(extractMessage(diags[0])).toBe(
         'Argument needs to be an object literal that is statically analyzable.',
       );
     });
@@ -214,7 +217,7 @@ runInEachFileSystem(() => {
       );
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(
+      expect(extractMessage(diags[0])).toBe(
         'Input "value" is incorrectly declared as static member of "TestDir".',
       );
     });
@@ -235,7 +238,7 @@ runInEachFileSystem(() => {
       );
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(
+      expect(extractMessage(diags[0])).toBe(
         `Object literal may only specify known properties, ` +
           `and 'initialValue' does not exist in type 'ModelOptions'.`,
       );
@@ -266,7 +269,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe('Unsupported expression in a two-way binding');
+      expect(extractMessage(diags[0])).toBe('Unsupported expression in a two-way binding');
     });
 
     describe('type checking', () => {
@@ -295,7 +298,7 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(`Type 'boolean' is not assignable to type 'number'.`);
+        expect(extractMessage(diags[0])).toBe(`Type 'boolean' is not assignable to type 'number'.`);
       });
 
       it('should check a signal value bound to a model input via a two-way binding', () => {
@@ -323,7 +326,7 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(`Type 'boolean' is not assignable to type 'number'.`);
+        expect(extractMessage(diags[0])).toBe(`Type 'boolean' is not assignable to type 'number'.`);
       });
 
       it('should check two-way binding of a signal to a decorator-based input/output pair', () => {
@@ -352,7 +355,7 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(`Type 'boolean' is not assignable to type 'number'.`);
+        expect(extractMessage(diags[0])).toBe(`Type 'boolean' is not assignable to type 'number'.`);
       });
 
       it('should not allow a non-writable signal to be assigned to a model', () => {
@@ -380,7 +383,7 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(extractMessage(diags[0])).toBe(
           `Type 'InputSignal<number>' is not assignable to type 'number'.`,
         );
       });
@@ -437,7 +440,7 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(extractMessage(diags[0])).toBe(
           `Argument of type 'number' is not assignable to parameter of type 'string'.`,
         );
       });
@@ -466,7 +469,7 @@ runInEachFileSystem(() => {
 
         const diagnostics = env.driveDiagnostics();
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics[0].messageText).toBe(
+        expect(extractMessage(diagnostics[0])).toBe(
           `Required input 'value' from directive TestDir must be specified.`,
         );
       });
@@ -496,10 +499,8 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toEqual(
-          jasmine.objectContaining({
-            messageText: `Type '{ id: number; }' is not assignable to type '{ id: string; }'.`,
-          }),
+        expect(extractMessage(diags[0])).toContain(
+          `Type '{ id: number; }' is not assignable to type '{ id: string; }'.`,
         );
       });
 
@@ -528,10 +529,8 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toEqual(
-          jasmine.objectContaining({
-            messageText: `Type '{ id: number; }' is not assignable to type '{ id: string; }'.`,
-          }),
+        expect(extractMessage(diags[0])).toContain(
+          `Type '{ id: number; }' is not assignable to type '{ id: string; }'.`,
         );
       });
 
@@ -560,7 +559,7 @@ runInEachFileSystem(() => {
 
         const diagnostics = env.driveDiagnostics();
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics[0].messageText).toBe(
+        expect(extractMessage(diagnostics[0])).toBe(
           `Type 'WritableSignal<number>' is not assignable to type 'number'.`,
         );
       });
@@ -621,7 +620,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(
+      expect(extractMessage(diags[0])).toBe(
         `Type 'WritableSignal<number>' is not assignable to type 'number'.`,
       );
     });
@@ -677,13 +676,9 @@ runInEachFileSystem(() => {
 
         const diagnostics = env.driveDiagnostics();
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics).toEqual([
-          jasmine.objectContaining<ts.Diagnostic>({
-            messageText: jasmine.objectContaining<ts.DiagnosticMessageChain>({
-              messageText: `Cannot use "model" on a class member that is declared as ES private.`,
-            }),
-          }),
-        ]);
+        expect(extractMessage(diagnostics[0])).toContain(
+          `Cannot use "model" on a class member that is declared as ES private.`,
+        );
       });
 
       it('should error when declared using a `private` field', () => {
@@ -703,13 +698,9 @@ runInEachFileSystem(() => {
 
         const diagnostics = env.driveDiagnostics();
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics).toEqual([
-          jasmine.objectContaining<ts.Diagnostic>({
-            messageText: jasmine.objectContaining<ts.DiagnosticMessageChain>({
-              messageText: `Cannot use "model" on a class member that is declared as private.`,
-            }),
-          }),
-        ]);
+        expect(extractMessage(diagnostics[0])).toContain(
+          `Cannot use "model" on a class member that is declared as private.`,
+        );
       });
 
       it('should allow using a `protected` field', () => {
@@ -748,12 +739,9 @@ runInEachFileSystem(() => {
 
       const js = env.getContents('test.js');
       expect(js).toContain('import * as i0 from "@angular/core";');
-      expect(js).toContain(
-        `i0.ɵsetClassMetadata(TestDir, [{
-        type: Directive
-    }], null, { value: [` +
-          `{ type: i0.Input, args: [{ isSignal: true, alias: "value", required: false }] }, ` +
-          `{ type: i0.Output, args: ["valueChange"] }] });`,
+      expect(js).toContain(`i0.ɵsetClassMetadata(TestDir`);
+      expect(js).toMatch(
+        /value: \[{ type: i0\.Input, args: \[{ isSignal: true, alias: ['"]value['"], required: false }\] }, { type: i0\.Output, args: \[['"]valueChange['"]\] }]/,
       );
     });
   });

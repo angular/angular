@@ -27,7 +27,7 @@ Usage:
 
 ## Currently Supported Non-Standard Common APIs
 
-- [Bluebird](http://bluebirdjs.com/docs/getting-started.html) Promise
+- [Bluebird](https://github.com/petkaantonov/bluebird) Promise
 
 Browser Usage:
 

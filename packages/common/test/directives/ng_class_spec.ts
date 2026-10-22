@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy} from '@angular/compiler';
-import {Component} from '@angular/core';
+import {Component, signal} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NgClass, NgFor} from '../../index';
 
@@ -445,7 +444,6 @@ describe('binding to CSS class list', () => {
           <div trailing-space [ngClass]="{'foo ': applyClasses}"></div>
         `,
         imports: [NgClass],
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {
         applyClasses = true;
@@ -462,13 +460,11 @@ describe('binding to CSS class list', () => {
 
     it('should mix class and ngClass bindings with the same value', async () => {
       @Component({
-        selector: 'test-component',
         imports: [NgClass],
-        template: `<div class="{{ 'option-' + level }}" [ngClass]="'option-' + level"></div>`,
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: `<div class="{{ 'option-' + level() }}" [ngClass]="'option-' + level()"></div>`,
       })
       class TestComponent {
-        level = 1;
+        level = signal(1);
       }
 
       const fixture = TestBed.createComponent(TestComponent);
@@ -476,15 +472,13 @@ describe('binding to CSS class list', () => {
 
       expect(fixture.nativeElement.firstChild.className).toBe('option-1');
 
-      fixture.componentInstance.level = 5;
-      fixture.changeDetectorRef.markForCheck();
+      fixture.componentInstance.level.set(5);
       await fixture.whenStable();
       expect(fixture.nativeElement.firstChild.className).toBe('option-5');
     });
 
     it('should be available as a standalone directive', async () => {
       @Component({
-        selector: 'test-component',
         imports: [NgClass],
         template: `<div trailing-space [ngClass]="{foo: applyClasses}"></div>`,
       })
@@ -501,10 +495,8 @@ describe('binding to CSS class list', () => {
 });
 
 @Component({
-  selector: 'test-cmp',
   template: '',
   imports: [NgClass, NgFor],
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class TestComponent {
   condition: boolean = true;

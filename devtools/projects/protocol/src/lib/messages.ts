@@ -379,6 +379,7 @@ export interface SupportedApis {
   signals: boolean;
   transferState: boolean;
   signalPropertiesInspection: boolean;
+  signalWatch: boolean;
 }
 
 export type TransferStateValue =
@@ -388,6 +389,15 @@ export interface CdElementData {
   element: ElementPosition;
   lastCdPassDuration: number;
   cdCount: number;
+}
+
+export interface DevtoolsConfig {
+  performanceTrack: boolean;
+  hydrationOverlays: boolean;
+  cdHighlighting: boolean;
+  cdDataStream: boolean;
+  forBlocks: boolean;
+  deferBlocks: boolean;
 }
 
 export interface Events {
@@ -434,15 +444,9 @@ export interface Events {
   createHighlightOverlay: (position: ElementPosition) => void;
   removeHighlightOverlay: () => void;
 
-  createHydrationOverlay: () => void;
-  removeHydrationOverlay: () => void;
-
   highlightComponent: (id: number) => void;
   selectComponent: (id: number) => void;
   removeComponentHighlight: () => void;
-
-  enablePerformanceTrack: () => void;
-  disablePerformanceTrack: () => void;
 
   // todo: type properly
   getInjectorProviders: (injector: SerializedInjector) => void;
@@ -456,11 +460,6 @@ export interface Events {
   getTransferState: () => void;
   transferStateData: (data: Record<string, TransferStateValue> | null) => void;
 
-  enableCdHighlighting: () => void;
-  disableCdHighlighting: () => void;
-
-  enableCdDataStream: () => void;
-  disableCdDataStream: () => void;
   latestCdData: (cdData: CdElementData[]) => void;
 
   contentScriptConnected: (frameId: number, name: string, url: string) => void;
@@ -470,6 +469,7 @@ export interface Events {
   detectAngular: (detectionResult: AngularDetection) => void;
   backendInstalled: (detectionResult: AngularDetection) => void;
   backendReady: () => void;
+  setConfig: (config: Partial<DevtoolsConfig>) => void;
   devtoolsShutdown: () => void;
 
   log: (logEvent: {message: string; level: 'log' | 'warn' | 'debug' | 'error'}) => void;

@@ -97,37 +97,46 @@ export function validateAndFlattenComponentImports(
   let importsByBlock: Map<string, Reference<ClassDeclaration>[]> | null = null;
 
   const errorMessage = isDeferred
-    ? `'deferredImports' must be an array of components, directives, or pipes, or an object mapping block names to dependency arrays.`
+    ? `'deferredImports' must be an object mapping block names to dependency arrays.`
     : `'imports' must be an array of components, directives, pipes, or NgModules.`;
 
-  if (isDeferred && imports instanceof Map) {
-    importsByBlock = new Map();
-    for (const [blockName, blockValue] of imports.entries()) {
-      let propExpr = expr;
-      if (ts.isObjectLiteralExpression(expr)) {
-        const prop = expr.properties.find(
-          (p) =>
-            ts.isPropertyAssignment(p) &&
-            (ts.isIdentifier(p.name) || ts.isStringLiteral(p.name)) &&
-            p.name.text === blockName,
-        );
-        if (prop && ts.isPropertyAssignment(prop)) {
-          propExpr = prop.initializer;
+  if (isDeferred) {
+    if (imports instanceof Map) {
+      importsByBlock = new Map();
+      for (const [blockName, blockValue] of imports.entries()) {
+        let propExpr = expr;
+        if (ts.isObjectLiteralExpression(expr)) {
+          const prop = expr.properties.find(
+            (p) =>
+              ts.isPropertyAssignment(p) &&
+              (ts.isIdentifier(p.name) || ts.isStringLiteral(p.name)) &&
+              p.name.text === blockName,
+          );
+          if (prop && ts.isPropertyAssignment(prop)) {
+            propExpr = prop.initializer;
+          }
         }
-      }
 
-      const {imports: blockImports, diagnostics: blockDiagnostics} =
-        validateAndFlattenComponentImports(blockValue, propExpr, isDeferred);
+        const {imports: blockImports, diagnostics: blockDiagnostics} =
+          validateAndFlattenComponentImports(blockValue, propExpr, false);
 
-      diagnostics.push(...blockDiagnostics);
-      for (const blockImport of blockImports) {
-        if (!flattened.some((existing) => existing.node === blockImport.node)) {
-          flattened.push(blockImport);
+        diagnostics.push(...blockDiagnostics);
+        for (const blockImport of blockImports) {
+          if (!flattened.some((existing) => existing.node === blockImport.node)) {
+            flattened.push(blockImport);
+          }
         }
+        importsByBlock.set(blockName, blockImports);
       }
-      importsByBlock.set(blockName, blockImports);
+      return {imports: flattened, importsByBlock, diagnostics};
+    } else {
+      const error = createValueHasWrongTypeError(expr, imports, errorMessage).toDiagnostic();
+      return {
+        imports: [],
+        importsByBlock: null,
+        diagnostics: [error],
+      };
     }
-    return {imports: flattened, importsByBlock, diagnostics};
   }
 
   if (!Array.isArray(imports)) {

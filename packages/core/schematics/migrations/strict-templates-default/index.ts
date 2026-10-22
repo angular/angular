@@ -44,7 +44,9 @@ function getResolvedAngularCompilerOptions(tree: any, tsconfigPath: string): Rec
  */
 export function migrate(): Rule {
   return async (tree) => {
-    const {buildPaths, testPaths} = await getProjectTsConfigPaths(tree);
+    const {buildPaths, testPaths} = await getProjectTsConfigPaths(tree, {
+      angularBuildersOnly: true,
+    });
     const allPaths = [...new Set([...buildPaths, ...testPaths])];
 
     for (const tsconfigPath of allPaths) {

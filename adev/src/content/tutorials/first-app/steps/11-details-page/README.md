@@ -33,7 +33,7 @@ In this case, `:id` is dynamic and will change based on how the route is request
 
     The `routerLink` directive enables Angular's router to create dynamic links in the application. The value assigned to the `routerLink` is an array with two entries: the static portion of the path and the dynamic data.
 
-    For the `routerLink` to work in the template, add a file level import of `RouterLink` and `RouterOutlet` from '@angular/router', then update the component `imports` array to include both `RouterLink` and `RouterOutlet`.
+    For the `routerLink` to work in the template, add a file level import of `RouterLink` from '@angular/router', then update the component `imports` array to include `RouterLink`.
 
 1.  At this point you can confirm that the routing is working in your app. In the browser, refresh the home page and click the "Learn More" button for a housing location.
 
@@ -92,7 +92,7 @@ To access the data you will add a call to the `HousingService`.
 
 1. Copy the following styles into the `src/app/details/details.css` file:
 
-   <docs-code header="Add styles for the Details" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.css" visibleLines="[1,71]"/>
+   <docs-code header="Add styles for the Details" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.css" visibleLines="[1,72]"/>
 
    and save your changes
 

@@ -86,10 +86,6 @@ export function SECURITY_SCHEMA(): SecuritySchema {
     ['area', ['href']],
     ['a', ['href', 'xlink:href']],
     ['form', ['action']],
-
-    // The below two items are safe and should be removed but they require a G3 clean-up as a small number of tests fail.
-    ['img', ['src']],
-    ['video', ['src']],
   ]);
 
   registerContext(SecurityContext.URL, MATH_ML_NAMESPACE, [
@@ -207,6 +203,15 @@ export function checkSecurityContext(
     const defaultSchema = attrSchema[NO_NAMESPACE];
     if (defaultSchema) {
       context = defaultSchema[tagLower] ?? defaultSchema[MATCH_ALL_ELEMENTS];
+    }
+  }
+
+  // An SVG animation element declared outside of an `<svg>` has no explicit namespace at compile
+  // time, but can still animate once it is projected into an SVG subtree.
+  if (context === undefined && (!namespace || namespace === NO_NAMESPACE)) {
+    const svgSchema = attrSchema[SVG_NAMESPACE];
+    if (svgSchema) {
+      context = svgSchema[tagLower];
     }
   }
 

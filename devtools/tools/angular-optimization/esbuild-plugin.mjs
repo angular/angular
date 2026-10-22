@@ -17,25 +17,22 @@ export function createEsbuildAngularOptimizePlugin(opts) {
     name: 'ng-optimize-esbuild',
     setup: async (build) => {
       const {JavaScriptTransformer} = (await import('@angular/build/private')).default;
-      const javascriptTransformer = new JavaScriptTransformer(
-        {
-          jit: false,
-          advancedOptimizations: !!opts.optimize,
-          sourcemap: !!build.initialOptions.sourcemap,
-        },
-        /** maxWorkers */ 2,
-      );
+      const javascriptTransformer = new JavaScriptTransformer({
+        jit: false,
+        advancedOptimizations: !!opts.optimize,
+        sourcemap: !!build.initialOptions.sourcemap,
+        maxConcurrency: 2,
+      });
 
       build.onLoad({filter: /\.[cm]?js$/}, async (args) => {
-        const sideEffects = opts.optimize?.isSideEffectFree
-          ? !opts.optimize.isSideEffectFree(args.path)
-          : true;
+        const contents = await javascriptTransformer.transformFile(args.path, {
+          skipLinker: !opts.enableLinker,
+          sideEffects: () => {
+            const sideEffects = opts.optimize?.isSideEffectFree?.(args.path) !== true;
 
-        const contents = await javascriptTransformer.transformFile(
-          args.path,
-          /** skipLinker */ !opts.enableLinker,
-          sideEffects,
-        );
+            return Promise.resolve(sideEffects);
+          },
+        });
 
         return {contents};
       });

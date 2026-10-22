@@ -4,11 +4,11 @@ Signal Forms' field state allows you to react to user interactions by providing 
 
 ## Understanding field state
 
-When you create a form with the [`form()`](api/forms/signals/form) function, it returns a **field tree** - an object structure that mirrors your form model. Each field in the tree is accessible via dot notation (like [`form.email`](api/forms/signals/form#email)).
+When you create a form with the [`form()`](api/forms/signals/form) function, it returns a **field tree** - an object structure that mirrors your form model. Each field in the tree is accessible via dot notation (like [`form.email`](api/forms/signals/FieldTree)).
 
 ### Accessing field state
 
-When you call any field in the field tree as a function (like [`form.email()`](api/forms/signals/form#email)), it returns a `FieldState` object containing reactive signals that track the field's validation, interaction, and availability state. For example, the `invalid()` signal tells you whether the field has validation errors:
+When you call any field in the field tree as a function (like [`form.email()`](api/forms/signals/FieldState)), it returns a `FieldState` object containing reactive signals that track the field's validation, interaction, and availability state. For example, the `invalid()` signal tells you whether the field has validation errors:
 
 ```angular-ts
 import {Component, signal} from '@angular/core';
@@ -108,7 +108,7 @@ When checking validity in code, use `invalid()` instead of `!valid()` if you wan
 
 ### Reading validation errors
 
-Access the array of validation errors with `errors()`. Each error object contains:
+Access the array of validation errors with `errors()`, or an individual error with `getError()`. Each error object contains:
 
 | Property    | Description                                                     |
 | ----------- | --------------------------------------------------------------- |
@@ -118,7 +118,7 @@ Access the array of validation errors with `errors()`. Each error object contain
 
 NOTE: The `message` property is optional. Validators can provide custom error messages, but if not specified, you may need to map error `kind` values to your own messages.
 
-Here's an example of how to display errors in your template:
+Here's an example of how to display errors in your template by an array of validation errors:
 
 ```angular-ts
 @Component({
@@ -137,6 +137,24 @@ Here's an example of how to display errors in your template:
 ```
 
 This approach loops through all errors for a field, displaying each error message to the user.
+
+Here's an example of how to display an error in your template with `getError()`:
+
+```angular-ts
+@Component({
+  template: `
+    <input type="email" [formField]="loginForm.email" />
+
+    @if (loginForm.email().getError('required'); as error) {
+      <div class="errors">
+        <p>{{ error.message }}</p>
+      </div>
+    }
+  `
+})
+```
+
+`getError()` accepts any string for an error's `kind`, and recognizes build-in validation error kinds (e.g., "required", "email", "minLength").
 
 ### Pending validation
 
@@ -804,9 +822,7 @@ A common use case is improving accessibility on form submission: when a form is 
 Given a registration form:
 
 ```ts
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class Registration {
   registrationModel = signal({username: '', email: '', password: ''});
   registrationForm = form(this.registrationModel, (schemaPath) => {
@@ -861,9 +877,7 @@ Consider a custom password input:
 ```
 
 ```ts
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class PasswordInput implements FormValueControl<string> {
   readonly value = model<string>('');
   readonly passwordCtrl = viewChild.required<ElementRef<HTMLInputElement>>('passwordCtrl');
@@ -880,7 +894,6 @@ export class PasswordInput implements FormValueControl<string> {
 
 This guide covered validation and availability status handling, interaction tracking and field state propagation. Related guides explore other aspects of Signal Forms:
 
-<!-- TODO: UNCOMMENT WHEN THE GUIDES ARE AVAILABLE -->
 <docs-pill-row>
   <docs-pill href="guide/forms/signals/models" title="Form models" />
   <docs-pill href="guide/forms/signals/validation" title="Validation" />

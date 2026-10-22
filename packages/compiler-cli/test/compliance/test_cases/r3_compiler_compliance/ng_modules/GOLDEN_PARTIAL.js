@@ -258,17 +258,17 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class Thing {
     static ɵfac: i0.ɵɵFactoryDeclaration<Thing, never>;
-    static ɵprov: i0.ɵɵInjectableDeclaration<Thing>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 export declare class BaseService {
     protected thing: Thing;
     constructor(thing: Thing);
     static ɵfac: i0.ɵɵFactoryDeclaration<BaseService, never>;
-    static ɵprov: i0.ɵɵInjectableDeclaration<BaseService>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 export declare class ChildService extends BaseService {
     static ɵfac: i0.ɵɵFactoryDeclaration<ChildService, never>;
-    static ɵprov: i0.ɵɵInjectableDeclaration<ChildService>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 export declare class FooModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<FooModule, never>;
@@ -566,7 +566,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class Service {
     static ɵfac: i0.ɵɵFactoryDeclaration<Service, never>;
-    static ɵprov: i0.ɵɵInjectableDeclaration<Service>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 export declare class BaseModule {
     private service;

@@ -7,11 +7,12 @@
  */
 
 import {ɵDebugSignalGraph as InternalDebugSignalGraph} from '@angular/core';
-import {debounceTime} from 'rxjs/operators';
+import {debounceTime} from 'rxjs';
 import {
   ComponentExplorerViewQuery,
   ComponentType,
   DebugSignalGraphNode,
+  DevtoolsConfig,
   DevToolsNode,
   DirectivePosition,
   DirectiveType,
@@ -52,18 +53,10 @@ import {
   updateState,
 } from './directive-forest/component-tree/component-tree';
 import {getDirectiveForestManager} from './directive-forest/manager';
-import {
-  highlightHydrationNodes,
-  removeHydrationHighlights,
-} from './hydration/hydration-highlighting';
+import {loadHydrationOverlays} from './hydration/hydration-overlays';
 import {start as startProfiling, stop as stopProfiling} from './profiling/capture';
-import {
-  disableCdDataStream,
-  disableCdHighlighting,
-  enableCdDataStream,
-  enableCdHighlighting,
-} from './profiling/cd-analyzer';
-import {disablePerformanceTrack, enablePerformanceTrack} from './profiling/performance-track';
+import {loadCdDataStream, loadCdHighlighting} from './profiling/cd-analyzer';
+import {loadPerformanceTrack} from './profiling/performance-track';
 import {getProfiler, Profiler} from './profiling/profiler';
 import {
   getRouterCallableConstructRef,
@@ -82,6 +75,7 @@ import {runOutsideAngular, unwrapSignal} from './shared/utils/general';
 import {debugLog, log, setupLogging} from './shared/utils/log';
 import {sanitizeObject} from './shared/utils/serialization';
 import {SignalGraphRef} from './shared/utils/signal-graph-ref';
+import {getConfig} from './config/config';
 
 type InspectorRef = {ref: ComponentInspector | null};
 
@@ -96,7 +90,14 @@ export const subscribeToClientEvents = (
   const inspector: InspectorRef = {ref: null};
   setupLogging(config?.devtoolsDevMode ?? false);
 
-  messageBus.on('shutdown', shutdownCallback(messageBus));
+  const cleanUpFns: (() => void)[] = [
+    loadCdDataStream(messageBus),
+    loadCdHighlighting(),
+    loadHydrationOverlays(),
+    loadPerformanceTrack(),
+  ];
+
+  messageBus.on('shutdown', shutdownCallback(messageBus, cleanUpFns));
 
   messageBus.on('devtoolsShutdown', devtoolsShutdownCallback(inspector));
 
@@ -121,20 +122,13 @@ export const subscribeToClientEvents = (
   messageBus.on('updateState', updateState);
   messageBus.on('logValue', logValue);
 
-  messageBus.on('enablePerformanceTrack', enablePerformanceTrack);
-  messageBus.on('disablePerformanceTrack', disablePerformanceTrack);
-
   messageBus.on('getInjectorProviders', getInjectorProvidersCallback(messageBus));
 
   messageBus.on('logProvider', logProvider);
 
   messageBus.on('getTransferState', getTransferStateCallback(messageBus));
 
-  messageBus.on('enableCdHighlighting', enableCdHighlighting);
-  messageBus.on('disableCdHighlighting', disableCdHighlighting);
-
-  messageBus.on('enableCdDataStream', enableCdDataStream(messageBus));
-  messageBus.on('disableCdDataStream', disableCdDataStream);
+  messageBus.on('setConfig', setConfigCallback);
 
   const SAFE_LOG_LEVELS = new Set(['log', 'info', 'warn', 'debug', 'error']);
   messageBus.on('log', ({message, level}) => {
@@ -161,6 +155,9 @@ export const subscribeToClientEvents = (
         .changeDetection$.pipe(debounceTime(250))
         .subscribe(() => messageBus.emit('componentTreeDirty'));
     });
+
+    getConfig().onChange('deferBlocks', () => messageBus.emit('componentTreeDirty'));
+    getConfig().onChange('forBlocks', () => messageBus.emit('componentTreeDirty'));
   }
 };
 
@@ -168,7 +165,10 @@ export const subscribeToClientEvents = (
 // Callback Definitions
 //
 
-const shutdownCallback = (messageBus: MessageBus<Events>) => () => {
+const shutdownCallback = (messageBus: MessageBus<Events>, cleanUpFns: (() => void)[]) => () => {
+  for (const fn of cleanUpFns) {
+    fn();
+  }
   messageBus.destroy();
 };
 
@@ -410,9 +410,6 @@ const setupInspector = (messageBus: MessageBus<Events>): ComponentInspector => {
   });
   messageBus.on('removeHighlightOverlay', () => inspector.unhighlight());
 
-  messageBus.on('createHydrationOverlay', highlightHydrationNodes);
-  messageBus.on('removeHydrationOverlay', removeHydrationHighlights);
-
   return inspector;
 };
 
@@ -623,7 +620,8 @@ const getTransferStateCallback = (messageBus: MessageBus<Events>) => () => {
     return;
   }
 
-  const merged: Record<string, TransferStateValue> = {};
+  // Keys can name `Object.prototype` properties like `__proto__`, so use a null-prototype map.
+  const merged: Record<string, TransferStateValue> = Object.create(null);
   let collected = false;
 
   for (const rootNode of forest) {
@@ -693,6 +691,10 @@ const toggleWatchSignal = (messageBus: MessageBus<Events>) => (id: string) => {
   if (lastSignalGraphElement) {
     getSignalGraphCallback(messageBus)(lastSignalGraphElement);
   }
+};
+
+const setConfigCallback = (config: Partial<DevtoolsConfig>) => {
+  getConfig().set(config);
 };
 
 // Route data needs to be serializable to be sent over the message bus.

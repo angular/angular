@@ -15,7 +15,7 @@ export {
 export {RegistryDomSchemaChecker} from '../src/ngtsc/typecheck/src/dom';
 export {Environment} from '../src/ngtsc/typecheck/src/environment';
 export {ImportManager} from '../src/ngtsc/translator';
-export type {ReferenceEmitter} from '../src/ngtsc/imports';
+export {validateAndRewriteCoreSymbol, type ReferenceEmitter} from '../src/ngtsc/imports';
 export type {ReflectionHost, ClassDeclaration} from '../src/ngtsc/reflection';
 export type {TypeCheckSourceResolver} from '../src/ngtsc/typecheck/src/tcb_util';
 export {
@@ -28,4 +28,12 @@ export {
   SymbolBoundTarget,
   SymbolDirectiveMeta,
 } from '../src/ngtsc/typecheck/src/template_symbol_builder';
-export * from '../src/ngtsc/indexer/src/api';
+export {
+  extractHmrDependenciesFromOutput,
+  PotentialTopLevelReadsVisitor,
+  type HmrCompiledOutput,
+  type HmrDependencies,
+  type HmrReadResolver,
+} from '../src/ngtsc/hmr';
+
+export * from '../src/ngtsc/indexer';

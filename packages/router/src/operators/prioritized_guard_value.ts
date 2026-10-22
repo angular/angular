@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {combineLatest, Observable, OperatorFunction} from 'rxjs';
-import {filter, map, startWith, switchMap, take} from 'rxjs/operators';
+import {combineLatest, Observable, of, OperatorFunction} from 'rxjs';
+import {catchError, filter, map, startWith, switchMap, take} from 'rxjs/operators';
 
 import {GuardResult, RedirectCommand} from '../models';
 import {isUrlTree, UrlTree} from '../url_tree';
@@ -18,7 +18,19 @@ declare type INTERIM_VALUES = typeof INITIAL_VALUE | GuardResult;
 export function prioritizedGuardValue(): OperatorFunction<Observable<GuardResult>[], GuardResult> {
   return switchMap((obs) => {
     return combineLatest(
-      obs.map((o) => o.pipe(take(1), startWith(INITIAL_VALUE as INTERIM_VALUES))),
+      obs.map((o) =>
+        o.pipe(
+          take(1),
+          // A thrown `RedirectCommand` is a result, so it must respect the guard order too.
+          catchError((e) => {
+            if (e instanceof RedirectCommand) {
+              return of(e);
+            }
+            throw e;
+          }),
+          startWith(INITIAL_VALUE as INTERIM_VALUES),
+        ),
+      ),
     ).pipe(
       map((results: INTERIM_VALUES[]) => {
         for (const result of results) {

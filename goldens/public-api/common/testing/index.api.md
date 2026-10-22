@@ -48,7 +48,7 @@ export class MockLocationStrategy extends LocationStrategy {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MockLocationStrategy, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<MockLocationStrategy>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -93,7 +93,7 @@ export class MockPlatformLocation implements PlatformLocation {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MockPlatformLocation, [{ optional: true; }]>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<MockPlatformLocation>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -147,7 +147,7 @@ export class SpyLocation implements Location_2 {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<SpyLocation, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<SpyLocation>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // (No @packageDocumentation comment for this package)

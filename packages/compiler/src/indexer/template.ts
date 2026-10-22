@@ -1,0 +1,487 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
+import {CombinedRecursiveAstVisitor} from '../combined_visitor';
+import {
+  AbsoluteSourceSpan,
+  AST,
+  ASTWithSource,
+  BindingPipe,
+  ImplicitReceiver,
+  PropertyRead,
+  ThisReceiver,
+} from '../expression_parser/ast';
+import {ParseSourceSpan} from '../parse_util';
+import * as t from '../render3/r3_ast';
+
+import {
+  AbstractBoundTemplate,
+  AttributeIdentifier,
+  BoundAttributeIdentifier,
+  ComponentNodeIdentifier,
+  DirectiveHostIdentifier,
+  DirectiveNodeIdentifier,
+  ElementIdentifier,
+  IdentifierKind,
+  LetDeclarationIdentifier,
+  MethodIdentifier,
+  PipeIdentifier,
+  PropertyIdentifier,
+  ReferenceIdentifier,
+  TemplateNodeIdentifier,
+  TopLevelIdentifier,
+  VariableIdentifier,
+} from './api';
+
+type ExpressionIdentifier<T> = PropertyIdentifier<T> | MethodIdentifier<T>;
+type TmplTarget = t.Reference | t.Variable | t.LetDeclaration;
+type TargetIdentifier<T> = ReferenceIdentifier<T> | VariableIdentifier | LetDeclarationIdentifier;
+type TargetIdentifierMap<T> = Map<TmplTarget, TargetIdentifier<T>>;
+type DirectiveHostNode = t.Element | t.Template | t.Component | t.Directive;
+
+/**
+ * Visits the AST of a parsed Angular template. Discovers and stores
+ * identifiers of interest, deferring to an `ExpressionVisitor` as needed.
+ */
+export class IndexerVisitor<T = unknown> extends CombinedRecursiveAstVisitor {
+  // Identifiers of interest found in the template.
+  readonly identifiers = new Set<TopLevelIdentifier<T>>();
+  readonly errors: Error[] = [];
+  private currentAstWithSource: {source: string | null; absoluteOffset: number} | null = null;
+
+  // Map of targets in a template to their identifiers.
+  private readonly targetIdentifierCache: TargetIdentifierMap<T> = new Map();
+
+  // Map of elements and templates to their identifiers.
+  private readonly directiveHostIdentifierCache = new Map<
+    DirectiveHostNode,
+    DirectiveHostIdentifier<T>
+  >();
+
+  /**
+   * Creates a template visitor for a bound template target. The bound target can be used when
+   * deferred to the expression visitor to get information about the target of an expression.
+   *
+   * @param boundTemplate bound template target
+   */
+  constructor(private boundTemplate: AbstractBoundTemplate<T>) {
+    super();
+  }
+
+  /**
+   * Add an identifier for an HTML element and visit its children recursively.
+   *
+   * @param element
+   */
+  override visitElement(element: t.Element) {
+    const elementIdentifier = this.directiveHostToIdentifier(element);
+    if (elementIdentifier !== null) {
+      this.identifiers.add(elementIdentifier);
+    }
+    super.visitElement(element);
+  }
+
+  override visitTemplate(template: t.Template) {
+    const templateIdentifier = this.directiveHostToIdentifier(template);
+    if (templateIdentifier !== null) {
+      this.identifiers.add(templateIdentifier);
+    }
+    super.visitTemplate(template);
+  }
+
+  override visitReference(reference: t.Reference) {
+    const referenceIdentifier = this.targetToIdentifier(reference);
+    if (referenceIdentifier !== null) {
+      this.identifiers.add(referenceIdentifier);
+    }
+    super.visitReference(reference);
+  }
+  override visitVariable(variable: t.Variable) {
+    const variableIdentifier = this.targetToIdentifier(variable);
+    if (variableIdentifier !== null) {
+      this.identifiers.add(variableIdentifier);
+    }
+    super.visitVariable(variable);
+  }
+
+  override visitLetDeclaration(decl: t.LetDeclaration): void {
+    const identifier = this.targetToIdentifier(decl);
+    if (identifier !== null) {
+      this.identifiers.add(identifier);
+    }
+    super.visitLetDeclaration(decl);
+  }
+
+  override visitComponent(component: t.Component): void {
+    const identifier = this.directiveHostToIdentifier(component);
+    if (identifier !== null) {
+      this.identifiers.add(identifier);
+    }
+    super.visitComponent(component);
+  }
+
+  override visitDirective(directive: t.Directive): void {
+    const identifier = this.directiveHostToIdentifier(directive);
+    if (identifier !== null) {
+      this.identifiers.add(identifier);
+    }
+    super.visitDirective(directive);
+  }
+
+  override visitPropertyRead(ast: PropertyRead) {
+    this.visitIdentifier(ast, IdentifierKind.Property);
+    super.visitPropertyRead(ast, null);
+  }
+
+  override visitPipe(ast: BindingPipe): void {
+    this.visitPipeIdentifier(ast);
+    super.visitPipe(ast, null);
+  }
+
+  private visitPipeIdentifier(ast: BindingPipe): void {
+    if (this.currentAstWithSource === null || this.currentAstWithSource.source === null) {
+      return;
+    }
+
+    const {absoluteOffset, source: expressionStr} = this.currentAstWithSource;
+    const identifierStart = ast.nameSpan.start - absoluteOffset;
+
+    if (!expressionStr.startsWith(ast.name, identifierStart)) {
+      this.errors.push(
+        new Error(
+          `Impossible state: "${ast.name}" not found in "${expressionStr}" at location ${identifierStart}`,
+        ),
+      );
+      return;
+    }
+
+    const absoluteStart = absoluteOffset + identifierStart;
+    const span = new AbsoluteSourceSpan(absoluteStart, absoluteStart + ast.name.length);
+    const target = this.boundTemplate.getPipe(ast.name);
+    const identifier: PipeIdentifier<T> = {
+      name: ast.name,
+      span,
+      kind: IdentifierKind.Pipe,
+      target: target ? {node: target.ref.node} : null,
+    };
+
+    this.identifiers.add(identifier);
+  }
+
+  override visitBoundAttribute(attribute: t.BoundAttribute): void {
+    const identifier = this.bindingToIdentifier(attribute, IdentifierKind.Input);
+    if (identifier !== null) {
+      this.identifiers.add(identifier);
+    }
+    const previous = this.currentAstWithSource;
+    this.currentAstWithSource = {
+      source: attribute.valueSpan?.toString() || null,
+      absoluteOffset: attribute.valueSpan ? attribute.valueSpan.start.offset : -1,
+    };
+    this.visit(attribute.value instanceof ASTWithSource ? attribute.value.ast : attribute.value);
+    this.currentAstWithSource = previous;
+  }
+
+  override visitBoundEvent(event: t.BoundEvent): void {
+    const identifier = this.bindingToIdentifier(event, IdentifierKind.Output);
+    if (identifier !== null) {
+      this.identifiers.add(identifier);
+    }
+    super.visitBoundEvent(event);
+  }
+
+  override visitTextAttribute(attribute: t.TextAttribute): void {
+    const identifier = this.bindingToIdentifier(attribute, IdentifierKind.Input);
+    if (identifier !== null) {
+      this.identifiers.add(identifier);
+    }
+    super.visitTextAttribute(attribute);
+  }
+
+  private bindingToIdentifier(
+    node: t.BoundAttribute | t.BoundEvent | t.TextAttribute,
+    kind: IdentifierKind.Input | IdentifierKind.Output,
+  ): BoundAttributeIdentifier<T> | null {
+    if (!this.boundTemplate.getConsumerOfBinding) {
+      return null;
+    }
+    const consumer = this.boundTemplate.getConsumerOfBinding(node);
+    if (!consumer || consumer instanceof t.Element || consumer instanceof t.Template) {
+      return null;
+    }
+
+    const keySpan = node.keySpan ?? (node instanceof t.TextAttribute ? node.sourceSpan : null);
+    if (!keySpan) {
+      return null;
+    }
+
+    const span = new AbsoluteSourceSpan(
+      keySpan.start.offset,
+      keySpan.start.offset + node.name.length,
+    );
+    return {
+      name: node.name,
+      span,
+      kind,
+      target: {
+        node: consumer.ref.node,
+      },
+    };
+  }
+
+  /** Creates an identifier for a template element or template node. */
+  private directiveHostToIdentifier(node: DirectiveHostNode): DirectiveHostIdentifier<T> | null {
+    // If this node has already been seen, return the cached result.
+    if (this.directiveHostIdentifierCache.has(node)) {
+      return this.directiveHostIdentifierCache.get(node)!;
+    }
+
+    let name: string;
+    let kind:
+      | IdentifierKind.Element
+      | IdentifierKind.Template
+      | IdentifierKind.Component
+      | IdentifierKind.Directive;
+    if (node instanceof t.Template) {
+      name = node.tagName ?? 'ng-template';
+      kind = IdentifierKind.Template;
+    } else if (node instanceof t.Element) {
+      name = node.name;
+      kind = IdentifierKind.Element;
+    } else if (node instanceof t.Component) {
+      name = node.fullName;
+      kind = IdentifierKind.Component;
+    } else {
+      name = node.name;
+      kind = IdentifierKind.Directive;
+    }
+    // Namespaced elements have a particular format for `node.name` that needs to be handled.
+    // For example, an `<svg>` element has a `node.name` of `':svg:svg'`.
+    // TODO(alxhub): properly handle namespaced elements
+    if ((node instanceof t.Template || node instanceof t.Element) && name.startsWith(':')) {
+      name = name.split(':').pop()!;
+    }
+
+    const sourceSpan = node.startSourceSpan;
+    // An element's or template's source span can be of the form `<element>`, `<element />`, or
+    // `<element></element>`. Only the selector is interesting to the indexer, so the source is
+    // searched for the first occurrence of the element (selector) name.
+    const start = this.getStartLocation(name, sourceSpan);
+    if (start === null) {
+      return null;
+    }
+    const absoluteSpan = new AbsoluteSourceSpan(start, start + name.length);
+
+    // Record the nodes's attributes, which an indexer can later traverse to see if any of them
+    // specify a used directive on the node.
+    const attributes = node.attributes.map(({name, sourceSpan}): AttributeIdentifier => {
+      return {
+        name,
+        span: new AbsoluteSourceSpan(sourceSpan.start.offset, sourceSpan.end.offset),
+        kind: IdentifierKind.Attribute,
+      };
+    });
+    const usedDirectives = this.boundTemplate.getDirectivesOfNode(node) || [];
+
+    const identifier = {
+      name,
+      span: absoluteSpan,
+      kind,
+      attributes: new Set(attributes),
+      usedDirectives: new Set(
+        usedDirectives.map((dir) => {
+          return {
+            node: dir.ref.node,
+            selector: dir.selector,
+          };
+        }),
+      ),
+      // cast b/c pre-TypeScript 3.5 unions aren't well discriminated
+    } as
+      | ElementIdentifier<T>
+      | TemplateNodeIdentifier<T>
+      | ComponentNodeIdentifier<T>
+      | DirectiveNodeIdentifier<T>;
+
+    this.directiveHostIdentifierCache.set(node, identifier);
+    return identifier;
+  }
+
+  /** Creates an identifier for a template reference or template variable target. */
+  private targetToIdentifier(node: TmplTarget): TargetIdentifier<T> | null {
+    // If this node has already been seen, return the cached result.
+    if (this.targetIdentifierCache.has(node)) {
+      return this.targetIdentifierCache.get(node)!;
+    }
+
+    const {name, sourceSpan} = node;
+    const start = this.getStartLocation(name, sourceSpan);
+    if (start === null) {
+      return null;
+    }
+
+    const span = new AbsoluteSourceSpan(start, start + name.length);
+    let identifier: ReferenceIdentifier<T> | VariableIdentifier | LetDeclarationIdentifier;
+    if (node instanceof t.Reference) {
+      // If the node is a reference, we care about its target. The target can be an element, a
+      // template, a directive applied on a template or element (in which case the directive field
+      // is non-null), or nothing at all.
+      const refTarget = this.boundTemplate.getReferenceTarget(node);
+      let target = null;
+      if (refTarget) {
+        let node: DirectiveHostIdentifier<T> | null = null;
+        let directive: T | null = null;
+        if (
+          refTarget instanceof t.Element ||
+          refTarget instanceof t.Template ||
+          refTarget instanceof t.Component ||
+          refTarget instanceof t.Directive
+        ) {
+          node = this.directiveHostToIdentifier(refTarget);
+        } else {
+          node = this.directiveHostToIdentifier(refTarget.node);
+          directive = refTarget.directive.ref.node;
+        }
+
+        if (node === null) {
+          return null;
+        }
+        target = {
+          node,
+          directive,
+        };
+      }
+
+      identifier = {
+        name,
+        span,
+        kind: IdentifierKind.Reference,
+        target,
+      };
+    } else if (node instanceof t.Variable) {
+      identifier = {
+        name,
+        span,
+        kind: IdentifierKind.Variable,
+      };
+    } else {
+      identifier = {
+        name,
+        span,
+        kind: IdentifierKind.LetDeclaration,
+      };
+    }
+
+    this.targetIdentifierCache.set(node, identifier);
+    return identifier;
+  }
+
+  /** Gets the start location of a string in a SourceSpan */
+  private getStartLocation(name: string, context: ParseSourceSpan): number | null {
+    const localStr = context.toString();
+    if (!localStr.includes(name)) {
+      this.errors.push(new Error(`Impossible state: "${name}" not found in "${localStr}"`));
+      return null;
+    }
+    return context.start.offset + localStr.indexOf(name);
+  }
+
+  /**
+   * Visits a node's expression and adds its identifiers, if any, to the visitor's state.
+   * Only ASTs with information about the expression source and its location are visited.
+   *
+   * @param node node whose expression to visit
+   */
+  override visit(node: t.Node | AST): void {
+    if (node instanceof ASTWithSource) {
+      const previous = this.currentAstWithSource;
+      this.currentAstWithSource = {source: node.source, absoluteOffset: node.sourceSpan.start};
+      super.visit(node.ast);
+      this.currentAstWithSource = previous;
+    } else {
+      super.visit(node);
+    }
+  }
+
+  /**
+   * Visits an identifier, adding it to the identifier store if it is useful for indexing.
+   *
+   * @param ast expression AST the identifier is in
+   * @param kind identifier kind
+   */
+  private visitIdentifier(
+    ast: AST & {name: string; receiver: AST},
+    kind: ExpressionIdentifier<T>['kind'],
+  ) {
+    // Only handle identifiers in expressions that have a source location.
+    if (this.currentAstWithSource === null || this.currentAstWithSource.source === null) {
+      return;
+    }
+
+    // The definition of a non-top-level property such as `bar` in `{{foo.bar}}` is currently
+    // impossible to determine by an indexer and unsupported by the indexing module.
+    // The indexing module also does not currently support references to identifiers declared in the
+    // template itself, which have a non-null expression target.
+    if (!(ast.receiver instanceof ImplicitReceiver) && !(ast.receiver instanceof ThisReceiver)) {
+      return;
+    }
+
+    const {absoluteOffset, source: expressionStr} = this.currentAstWithSource;
+
+    // The source span of the requested AST starts at a location that is offset from the expression.
+    let identifierStart = ast.sourceSpan.start - absoluteOffset;
+
+    if (ast instanceof PropertyRead) {
+      // For `PropertyRead` and the identifier starts at the `nameSpan`,
+      // not necessarily the `sourceSpan`.
+      identifierStart = ast.nameSpan.start - absoluteOffset;
+    }
+
+    if (!expressionStr.substring(identifierStart).startsWith(ast.name)) {
+      this.errors.push(
+        new Error(
+          `Impossible state: "${ast.name}" not found in "${expressionStr}" at location ${identifierStart}`,
+        ),
+      );
+      return;
+    }
+
+    // Join the relative position of the expression within a node with the absolute position
+    // of the node to get the absolute position of the expression in the source code.
+    const absoluteStart = absoluteOffset + identifierStart;
+    const span = new AbsoluteSourceSpan(absoluteStart, absoluteStart + ast.name.length);
+    const targetAst = this.boundTemplate.getExpressionTarget(ast);
+    const target = targetAst ? this.targetToIdentifier(targetAst) : null;
+    const identifier: ExpressionIdentifier<T> = {
+      name: ast.name,
+      span,
+      kind,
+      target,
+    };
+
+    this.identifiers.add(identifier);
+  }
+}
+
+/**
+ * Traverses a template AST and builds identifiers discovered in it.
+ *
+ * @param boundTemplate bound template target, which can be used for querying expression targets.
+ * @return identifiers in template
+ */
+export function getIndexerTemplateIdentifiers<T>(boundTemplate: AbstractBoundTemplate<T>): {
+  identifiers: Set<TopLevelIdentifier<T>>;
+  errors: Error[];
+} {
+  const visitor = new IndexerVisitor<T>(boundTemplate);
+  const template = boundTemplate.getTemplateAst();
+  if (template !== undefined) {
+    t.visitAll(visitor, template);
+  }
+  return {identifiers: visitor.identifiers, errors: visitor.errors};
+}

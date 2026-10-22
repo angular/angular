@@ -44,6 +44,11 @@ describe('DOMElementSchema', () => {
     expect(registry.hasProperty('div', 'id', [])).toBeTruthy();
     expect(registry.hasProperty('div', 'title', [])).toBeTruthy();
     expect(registry.hasProperty('div', 'inert', [])).toBeTruthy();
+    expect(registry.hasProperty('div', 'popover', [])).toBeTruthy();
+    expect(registry.hasProperty('button', 'popoverTargetAction', [])).toBeTruthy();
+    expect(registry.hasProperty('button', 'popoverTargetElement', [])).toBeTruthy();
+    expect(registry.hasProperty('input', 'popoverTargetAction', [])).toBeTruthy();
+    expect(registry.hasProperty('input', 'popoverTargetElement', [])).toBeTruthy();
     expect(registry.hasProperty('h1', 'align', [])).toBeTruthy();
     expect(registry.hasProperty('h2', 'align', [])).toBeTruthy();
     expect(registry.hasProperty('h3', 'align', [])).toBeTruthy();
@@ -171,6 +176,33 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
     expect(registry.securityContext(':svg:set', 'to', false)).toBe(
       SecurityContext.ATTRIBUTE_NO_BINDING,
     );
+
+    // SVG animation elements are sensitive when their namespace is omitted at compile time.
+    expect(registry.securityContext('set', 'to', true)).toBe(SecurityContext.ATTRIBUTE_NO_BINDING);
+    expect(registry.securityContext('set', 'attributeName', true)).toBe(
+      SecurityContext.ATTRIBUTE_NO_BINDING,
+    );
+    expect(registry.securityContext('animate', 'to', true)).toBe(
+      SecurityContext.ATTRIBUTE_NO_BINDING,
+    );
+    expect(registry.securityContext('animate', 'from', true)).toBe(
+      SecurityContext.ATTRIBUTE_NO_BINDING,
+    );
+    expect(registry.securityContext('animate', 'values', true)).toBe(
+      SecurityContext.ATTRIBUTE_NO_BINDING,
+    );
+    expect(registry.securityContext('animate', 'attributeName', true)).toBe(
+      SecurityContext.ATTRIBUTE_NO_BINDING,
+    );
+    expect(registry.securityContext('animateMotion', 'attributeName', true)).toBe(
+      SecurityContext.ATTRIBUTE_NO_BINDING,
+    );
+    expect(registry.securityContext('animateTransform', 'attributeName', true)).toBe(
+      SecurityContext.ATTRIBUTE_NO_BINDING,
+    );
+
+    // The defensive SVG lookup must not apply to elements in an explicit foreign namespace.
+    expect(registry.securityContext(':math:set', 'to', true)).toBe(SecurityContext.NONE);
 
     // SVG link attributes
     expect(registry.securityContext(':svg:a', 'href', false)).toBe(SecurityContext.URL);

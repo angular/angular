@@ -7,30 +7,30 @@
  */
 
 import {LifecycleProfile} from '../../../../protocol';
-import {getProfiler} from './profiler';
+import {getProfiler, Profiler} from './profiler';
 import {getDirectiveName} from '../directive-forest/component-tree/component-tree';
 import type {ComponentInstance, DirectiveInstance} from '../shared/interfaces';
+import {getConfig} from '../config/config';
 
 type Method = keyof LifecycleProfile | 'changeDetection' | string;
 
-// Performance track global flag.
-let chromeDevToolsPerformanceTrackEnabled = false;
+export function loadPerformanceTrack(): () => void {
+  let profiler: Profiler | undefined;
 
-/** Enable Angular's performance track in the Chrome DevTools profiler. */
-export function enablePerformanceTrack(): void {
-  if (!chromeDevToolsPerformanceTrackEnabled) {
-    getProfiler().subscribe(timingHooks);
-    chromeDevToolsPerformanceTrackEnabled = true;
-  }
+  return getConfig().onValue('performanceTrack', (enabled: boolean) => {
+    if (enabled) {
+      // We assign the profiler to a variable to avoid
+      // using `getProfiler` in the `else` case, if it
+      // happens to be executed first. This will prevent
+      // spawning a profiler just for the sake of calling
+      // `unsubscribe` on non-subscribed hooks.
+      profiler = getProfiler();
+      profiler.subscribe(timingHooks);
+    } else {
+      profiler?.unsubscribe(timingHooks);
+    }
+  });
 }
-
-/** Disable Angular's performance track in the Chrome DevTools profiler. */
-export function disablePerformanceTrack() {
-  getProfiler().unsubscribe(timingHooks);
-  chromeDevToolsPerformanceTrackEnabled = false;
-}
-
-const performanceTrackEnabled = () => chromeDevToolsPerformanceTrackEnabled;
 
 const markName = (s: string, method: Method) => `🅰️ ${s}#${method}`;
 
@@ -74,39 +74,21 @@ const endMark = (nodeName: string, method: Method) => {
 
 const timingHooks = {
   onChangeDetectionStart(component: ComponentInstance): void {
-    if (!performanceTrackEnabled()) {
-      return;
-    }
     recordMark(getDirectiveName(component), 'changeDetection');
   },
   onChangeDetectionEnd(component: ComponentInstance): void {
-    if (!performanceTrackEnabled()) {
-      return;
-    }
     endMark(getDirectiveName(component), 'changeDetection');
   },
   onLifecycleHookStart(component: DirectiveInstance, lifecyle: keyof LifecycleProfile): void {
-    if (!performanceTrackEnabled()) {
-      return;
-    }
     recordMark(getDirectiveName(component), lifecyle);
   },
   onLifecycleHookEnd(component: DirectiveInstance, lifecyle: keyof LifecycleProfile): void {
-    if (!performanceTrackEnabled()) {
-      return;
-    }
     endMark(getDirectiveName(component), lifecyle);
   },
   onOutputStart(component: DirectiveInstance, output: string): void {
-    if (!performanceTrackEnabled()) {
-      return;
-    }
     recordMark(getDirectiveName(component), output);
   },
   onOutputEnd(component: DirectiveInstance, output: string): void {
-    if (!performanceTrackEnabled()) {
-      return;
-    }
     endMark(getDirectiveName(component), output);
   },
 };

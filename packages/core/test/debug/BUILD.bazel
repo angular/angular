@@ -1,0 +1,33 @@
+load("//tools:defaults.bzl", "ts_project", "zoneless_jasmine_test", "zoneless_web_test_suite")
+
+package(default_visibility = ["//visibility:private"])
+
+ts_project(
+    name = "debug_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*.ts"],
+    ),
+    deps = [
+        "//packages/common",
+        "//packages/core",
+        "//packages/core/primitives/devtools",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/private/testing",
+    ],
+)
+
+zoneless_jasmine_test(
+    name = "debug",
+    data = [
+        ":debug_lib",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "debug_web",
+    deps = [
+        ":debug_lib",
+    ],
+)

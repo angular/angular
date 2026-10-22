@@ -35,7 +35,7 @@ The following `<div>` tag will display translated text as part of `div` and `ari
 
 <docs-code-multifile>
     <docs-code header="app.component.html" path="adev/src/content/examples/i18n/src/app/app.component.html"  region="i18n-conditional"/>
-    <docs-code header="app.component.ts" path="adev/src/content/examples/i18n/src/app/app.component.ts" visibleLines="[[14,21],[33,37]]"/>
+    <docs-code header="app.component.ts" path="adev/src/content/examples/i18n/src/app/app.component.ts" visibleLines="[[13,18],[32,34]]"/>
 </docs-code-multifile>
 
 ### Translate inline text without HTML element
@@ -190,7 +190,7 @@ $localize`:site header|An introduction header for this sample:Hello i18n!`;
 <docs-callout title="How meanings control text extraction and merges">
 
 The Angular extraction tool generates a translation unit entry for each `i18n` attribute in a template.
-The Angular extraction tool assigns each translation unit a unique ID based on the _meaning_ and _description_.
+The Angular extraction tool assigns each translation unit a unique ID based on its source text and _meaning_. The _description_ does not affect the ID.
 
 HELPFUL: For more information about the Angular extraction tool, see [Work with translation files](guide/i18n/translation-files).
 
@@ -265,7 +265,7 @@ other { default_quantity }
 
 HELPFUL: For more information about pluralization categories, see [Choosing plural category names][UnicodeCldrIndexCldrSpecPluralRulesTocChoosingPluralCategoryNames] in the [CLDR - Unicode Common Locale Data Repository][UnicodeCldrMain].
 
-<docs-callout header='Background: Locales may not support some pluralization categories'>
+<docs-callout title="Background: Locales may not support some pluralization categories">
 
 Many locales don't support some of the pluralization categories.
 The default locale \(`en-US`\) uses a very simple `plural()` function that doesn't support the `few` pluralization category.

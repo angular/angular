@@ -8,6 +8,7 @@
 
 import {CommonModule} from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   AfterViewInit,
   ChangeDetectorRef,
   Component,
@@ -24,7 +25,7 @@ import {
   TemplateRef,
   ViewChild,
   ViewContainerRef,
-  ChangeDetectionStrategy,
+  forwardRef,
 } from '../../src/core';
 import {TestBed} from '../../testing';
 import {By} from '@angular/platform-browser';
@@ -41,8 +42,6 @@ describe('onChanges', () => {
     @Component({
       selector: 'child-comp',
       template: 'child',
-      standalone: false,
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class ChildComp implements OnChanges {
@@ -59,10 +58,9 @@ describe('onChanges', () => {
     }
 
     @Component({
-      selector: 'app-comp',
       template: '<child-comp [a]="a" [b]="b" [c]="c"></child-comp>',
-      standalone: false,
 
+      imports: [ChildComp],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class AppComp {
@@ -71,7 +69,6 @@ describe('onChanges', () => {
       c = 0;
     }
 
-    TestBed.configureTestingModule({declarations: [AppComp, ChildComp]});
     const fixture = TestBed.createComponent(AppComp);
     fixture.detectChanges();
     const appComp = fixture.componentInstance;
@@ -99,8 +96,6 @@ describe('onChanges', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
-      standalone: false,
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
@@ -115,8 +110,8 @@ describe('onChanges', () => {
 
     @Component({
       template: `<comp [val1]="val1" [publicVal2]="val2"></comp>`,
-      standalone: false,
 
+      imports: [Comp],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
@@ -125,9 +120,6 @@ describe('onChanges', () => {
       val2 = 'b2';
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -163,8 +155,8 @@ describe('onChanges', () => {
     @Component({
       selector: 'parent',
       template: `<child [val]="val"></child>`,
-      standalone: false,
 
+      imports: [forwardRef(() => Child)],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Parent {
@@ -178,8 +170,6 @@ describe('onChanges', () => {
     @Component({
       selector: 'child',
       template: `<p>test</p>`,
-      standalone: false,
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child {
@@ -192,17 +182,14 @@ describe('onChanges', () => {
 
     @Component({
       template: `<parent [val]="val"></parent>`,
-      standalone: false,
 
+      imports: [Parent],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       val = 'foo';
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Child, Parent],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -247,8 +234,8 @@ describe('onChanges', () => {
     @Component({
       selector: 'parent',
       template: `<child [name]="name" [val]="val"></child>`,
-      standalone: false,
 
+      imports: [forwardRef(() => Child)],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Parent {
@@ -264,8 +251,6 @@ describe('onChanges', () => {
     @Component({
       selector: 'child',
       template: `<p>test</p>`,
-      standalone: false,
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child {
@@ -283,17 +268,14 @@ describe('onChanges', () => {
         <parent name="1" [val]="val"></parent>
         <parent name="2" [val]="val"></parent>
       `,
-      standalone: false,
 
+      imports: [Parent],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       val = 'foo';
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Child, Parent],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -366,8 +348,6 @@ describe('onChanges', () => {
     @Component({
       selector: 'comp',
       template: `<p>{{ val }}</p>`,
-      standalone: false,
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
@@ -380,8 +360,8 @@ describe('onChanges', () => {
 
     @Component({
       template: `<comp *ngIf="show" [val]="val"></comp>`,
-      standalone: false,
 
+      imports: [CommonModule, Comp],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
@@ -390,10 +370,6 @@ describe('onChanges', () => {
       val = 'a';
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp],
-      imports: [CommonModule],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -431,8 +407,6 @@ describe('onChanges', () => {
     @Component({
       selector: 'projected',
       template: `<p>{{ val }}</p>`,
-      standalone: false,
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Projected {
@@ -446,8 +420,6 @@ describe('onChanges', () => {
     @Component({
       selector: 'comp',
       template: `<div><ng-content></ng-content></div>`,
-      standalone: false,
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
@@ -460,17 +432,14 @@ describe('onChanges', () => {
 
     @Component({
       template: `<comp [val]="val"><projected [val]="val"></projected></comp>`,
-      standalone: false,
 
+      imports: [Projected, Comp],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       val = 'a';
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp, Projected],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -514,8 +483,6 @@ describe('onChanges', () => {
     @Component({
       selector: 'projected',
       template: `<p>{{ val }}</p>`,
-      standalone: false,
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Projected {
@@ -531,8 +498,6 @@ describe('onChanges', () => {
     @Component({
       selector: 'comp',
       template: `<div><ng-content></ng-content></div>`,
-      standalone: false,
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
@@ -554,17 +519,14 @@ describe('onChanges', () => {
           <projected name="2" [val]="val"></projected>
         </comp>
       `,
-      standalone: false,
 
+      imports: [Projected, Comp],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       val = 'a';
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp, Projected],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -636,7 +598,6 @@ describe('onChanges', () => {
 
     @Directive({
       selector: '[dir]',
-      standalone: false,
     })
     class Dir {
       @Input() dir = '';
@@ -649,8 +610,6 @@ describe('onChanges', () => {
     @Component({
       selector: 'comp',
       template: `<p>{{ val }}</p>`,
-      standalone: false,
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
@@ -663,17 +622,14 @@ describe('onChanges', () => {
 
     @Component({
       template: `<comp [dir]="val" [val]="val"></comp>`,
-      standalone: false,
 
+      imports: [Dir, Comp],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       val = 'a';
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp, Dir],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -717,7 +673,6 @@ describe('onChanges', () => {
 
     @Directive({
       selector: '[dir]',
-      standalone: false,
     })
     class Dir {
       @Input() dir = '';
@@ -730,8 +685,6 @@ describe('onChanges', () => {
     @Component({
       selector: 'comp',
       template: `<p>{{ val }}</p>`,
-      standalone: false,
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
@@ -746,17 +699,14 @@ describe('onChanges', () => {
 
     @Component({
       template: `<comp [dir]="val" [val]="val"></comp>`,
-      standalone: false,
 
+      imports: [Dir, Comp],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       val = 'a';
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp, Dir],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -800,7 +750,6 @@ describe('onChanges', () => {
 
     @Directive({
       selector: '[dir]',
-      standalone: false,
     })
     class Dir {
       @Input() dir = '';
@@ -812,7 +761,6 @@ describe('onChanges', () => {
 
     @Directive({
       selector: '[injectionDir]',
-      standalone: false,
     })
     class InjectionDir {
       @Input() injectionDir = '';
@@ -826,17 +774,13 @@ describe('onChanges', () => {
 
     @Component({
       template: `<div [injectionDir]="val" [dir]="val"></div>`,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [Dir, InjectionDir],
     })
     class App {
       val = 'a';
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, InjectionDir, Dir],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -861,7 +805,6 @@ describe('onChanges', () => {
 
     @Directive({
       selector: '[dir]',
-      standalone: false,
     })
     class Dir {
       @Input() dir = '';
@@ -875,8 +818,8 @@ describe('onChanges', () => {
 
     @Component({
       template: `<div [dir]="val1" [dir-val]="val2"></div>`,
-      standalone: false,
 
+      imports: [Dir],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
@@ -884,9 +827,6 @@ describe('onChanges', () => {
       val2 = 'b';
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Dir],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -921,8 +861,6 @@ describe('onChanges', () => {
     @Component({
       selector: 'comp',
       template: `<p>{{ val }}</p>`,
-      standalone: false,
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
@@ -941,8 +879,8 @@ describe('onChanges', () => {
         <comp *ngFor="let number of numbers" [name]="number" [val]="val"></comp>
         <comp name="1" [val]="val"></comp>
       `,
-      standalone: false,
 
+      imports: [CommonModule, Comp],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
@@ -951,10 +889,6 @@ describe('onChanges', () => {
       numbers = ['2', '3', '4'];
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp],
-      imports: [CommonModule],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -1040,8 +974,6 @@ describe('onChanges', () => {
     @Component({
       selector: 'child',
       template: `<p>{{ val }}</p>`,
-      standalone: false,
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child {
@@ -1057,8 +989,8 @@ describe('onChanges', () => {
     @Component({
       selector: 'parent',
       template: `<child [name]="name" [val]="val"></child>`,
-      standalone: false,
 
+      imports: [Child],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Parent {
@@ -1077,8 +1009,8 @@ describe('onChanges', () => {
         <parent *ngFor="let number of numbers" [name]="number" [val]="val"></parent>
         <parent name="1" [val]="val"></parent>
       `,
-      standalone: false,
 
+      imports: [CommonModule, Parent],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
@@ -1086,10 +1018,6 @@ describe('onChanges', () => {
       numbers = ['2', '3', '4'];
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Child, Parent],
-      imports: [CommonModule],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -1239,9 +1167,6 @@ describe('onChanges', () => {
 
     @Component({
       template: `<p>{{ value }}</p>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       value = 'a';
@@ -1250,9 +1175,6 @@ describe('onChanges', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -1276,18 +1198,14 @@ describe('meta-programming', () => {
 
     @Component({
       template: `<child name="value"></child>`,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [forwardRef(() => Child)],
     })
     class App {}
 
     @Component({
       selector: 'child',
       template: `empty`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child {
       @Input() name: string = '';
@@ -1309,9 +1227,6 @@ describe('meta-programming', () => {
     ChildPrototype.ngAfterViewChecked = () => events.push('ngAfterViewChecked');
     ChildPrototype.ngOnDestroy = () => events.push('ngOnDestroy');
 
-    TestBed.configureTestingModule({
-      declarations: [App, Child],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     fixture.destroy();
@@ -1332,9 +1247,8 @@ describe('meta-programming', () => {
 
     @Component({
       template: `<child name="value"></child>`,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [forwardRef(() => Child)],
     })
     class App {}
 
@@ -1343,9 +1257,6 @@ describe('meta-programming', () => {
     @Component({
       selector: 'child',
       template: `empty`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child extends BaseChild {
       @Input() name: string = '';
@@ -1375,9 +1286,6 @@ describe('meta-programming', () => {
     ChildPrototype.ngAfterViewChecked = () => events.push('ngAfterViewChecked');
     ChildPrototype.ngOnDestroy = () => events.push('ngOnDestroy');
 
-    TestBed.configureTestingModule({
-      declarations: [App, Child],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     fixture.destroy();
@@ -1436,7 +1344,6 @@ describe('hooks order', () => {
 
     @Directive({
       selector: 'div',
-      standalone: false,
     })
     class DirA extends AllHooks {
       @Input('a') override id: number = 0;
@@ -1444,7 +1351,6 @@ describe('hooks order', () => {
 
     @Directive({
       selector: 'div',
-      standalone: false,
     })
     class DirB extends AllHooks {
       @Input('b') override id: number = 0;
@@ -1452,22 +1358,18 @@ describe('hooks order', () => {
 
     @Directive({
       selector: 'div',
-      standalone: false,
     })
     class DirC extends AllHooks {
       @Input('c') override id: number = 0;
     }
 
     @Component({
-      selector: 'app-comp',
       template: '<div [a]="1" [b]="2" [c]="3"></div>',
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [DirA, DirB, DirC],
     })
     class AppComp {}
 
-    TestBed.configureTestingModule({declarations: [AppComp, DirA, DirB, DirC]});
     const fixture = TestBed.createComponent(AppComp);
     fixture.detectChanges();
 
@@ -1501,7 +1403,6 @@ describe('hooks order', () => {
 
     @Directive({
       selector: 'div',
-      standalone: false,
     })
     class DirA {
       @Input() a: number = 0;
@@ -1512,7 +1413,6 @@ describe('hooks order', () => {
 
     @Directive({
       selector: 'div',
-      standalone: false,
     })
     class DirB {
       @Input() b: number = 0;
@@ -1526,7 +1426,6 @@ describe('hooks order', () => {
 
     @Directive({
       selector: 'div',
-      standalone: false,
     })
     class DirC {
       @Input() c: number = 0;
@@ -1539,17 +1438,15 @@ describe('hooks order', () => {
     }
 
     @Component({
-      selector: 'app-comp',
       template: '<div [a]="id" [b]="id" [c]="id"></div><div [a]="id" [b]="id" [c]="id"></div>',
-      standalone: false,
 
+      imports: [DirA, DirB, DirC],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class AppComp {
       id = 0;
     }
 
-    TestBed.configureTestingModule({declarations: [AppComp, DirA, DirB, DirC]});
     const fixture = TestBed.createComponent(AppComp);
     fixture.detectChanges();
 
@@ -1586,9 +1483,6 @@ describe('onInit', () => {
     @Component({
       selector: 'my-comp',
       template: `<p>test</p>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyComponent {
       @Input() input1 = '';
@@ -1603,18 +1497,14 @@ describe('onInit', () => {
 
     @Component({
       template: ` <my-comp [input1]="value1" [input2]="value2"></my-comp> `,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [MyComponent],
     })
     class App {
       value1 = 'a';
       value2 = 'b';
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, MyComponent],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -1635,9 +1525,6 @@ describe('onInit', () => {
 
     @Component({
       template: ``,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       ngOnInit() {
@@ -1645,9 +1532,6 @@ describe('onInit', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -1660,9 +1544,6 @@ describe('onInit', () => {
     @Component({
       selector: `child-comp`,
       template: `<p>child</p>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class ChildComp {
       ngOnInit() {
@@ -1672,9 +1553,8 @@ describe('onInit', () => {
 
     @Component({
       template: `<child-comp></child-comp>`,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [ChildComp],
     })
     class ParentComp {
       ngOnInit() {
@@ -1682,9 +1562,6 @@ describe('onInit', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [ParentComp, ChildComp],
-    });
     const fixture = TestBed.createComponent(ParentComp);
     fixture.detectChanges();
 
@@ -1697,9 +1574,6 @@ describe('onInit', () => {
     @Component({
       selector: `child-comp`,
       template: `<p>child</p>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class ChildComp {
       @Input() name = '';
@@ -1712,9 +1586,8 @@ describe('onInit', () => {
     @Component({
       selector: 'parent-comp',
       template: `<child-comp [name]="name"></child-comp>`,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [ChildComp],
     })
     class ParentComp {
       @Input() name = '';
@@ -1729,15 +1602,11 @@ describe('onInit', () => {
         <parent-comp name="1"></parent-comp>
         <parent-comp name="2"></parent-comp>
       `,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [ParentComp],
     })
     class App {}
 
-    TestBed.configureTestingModule({
-      declarations: [App, ParentComp, ChildComp],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -1750,8 +1619,6 @@ describe('onInit', () => {
     @Component({
       selector: 'my-comp',
       template: '<p>test</p>',
-      standalone: false,
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyComp {
@@ -1762,16 +1629,14 @@ describe('onInit', () => {
 
     @Component({
       template: ` <div *ngIf="show"><my-comp></my-comp></div> `,
-      standalone: false,
 
+      imports: [CommonModule, MyComp],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       show = true;
     }
-    TestBed.configureTestingModule({
-      declarations: [App, MyComp],
-    });
+
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -1792,9 +1657,6 @@ describe('onInit', () => {
     @Component({
       selector: 'my-comp',
       template: '<p>test</p>',
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyComp {
       onInitCalled = false;
@@ -1805,19 +1667,14 @@ describe('onInit', () => {
     }
 
     @Component({
-      selector: 'dynamic-comp',
       template: ` <my-comp></my-comp> `,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [MyComp],
     })
     class DynamicComp {}
 
     @Component({
       template: ` <div #container></div> `,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       @ViewChild('container', {read: ViewContainerRef}) viewContainerRef!: ViewContainerRef;
@@ -1826,8 +1683,6 @@ describe('onInit', () => {
         this.viewContainerRef.createComponent(DynamicComp);
       }
     }
-
-    TestBed.configureTestingModule({declarations: [App, MyComp, DynamicComp]});
 
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
@@ -1845,9 +1700,6 @@ describe('onInit', () => {
     @Component({
       selector: 'projected',
       template: '',
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Projected {
       ngOnInit() {
@@ -1858,9 +1710,6 @@ describe('onInit', () => {
     @Component({
       selector: 'comp',
       template: `<ng-content></ng-content>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       ngOnInit() {
@@ -1874,9 +1723,8 @@ describe('onInit', () => {
           <projected></projected>
         </comp>
       `,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [Projected, Comp],
     })
     class App {
       ngOnInit() {
@@ -1884,9 +1732,6 @@ describe('onInit', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp, Projected],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -1899,9 +1744,6 @@ describe('onInit', () => {
     @Component({
       selector: 'projected',
       template: '',
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Projected {
       @Input() name = '';
@@ -1914,9 +1756,6 @@ describe('onInit', () => {
     @Component({
       selector: 'comp',
       template: `<ng-content></ng-content>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() name = '';
@@ -1935,9 +1774,8 @@ describe('onInit', () => {
           <projected name="2"></projected>
         </comp>
       `,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [Projected, Comp],
     })
     class App {
       ngOnInit() {
@@ -1945,9 +1783,6 @@ describe('onInit', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp, Projected],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -1959,7 +1794,6 @@ describe('onInit', () => {
 
     @Directive({
       selector: '[dir]',
-      standalone: false,
     })
     class Dir {
       @Input('dir-name') name = '';
@@ -1972,9 +1806,6 @@ describe('onInit', () => {
     @Component({
       selector: 'comp',
       template: `<p></p>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() name = '';
@@ -1989,9 +1820,8 @@ describe('onInit', () => {
         <comp name="1" dir dir-name="1"></comp>
         <comp name="2" dir dir-name="2"></comp>
       `,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [Dir, Comp],
     })
     class App {
       ngOnInit() {
@@ -1999,9 +1829,6 @@ describe('onInit', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp, Dir],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -2013,7 +1840,6 @@ describe('onInit', () => {
 
     @Directive({
       selector: '[dir]',
-      standalone: false,
     })
     class Dir {
       @Input() dir = '';
@@ -2025,7 +1851,6 @@ describe('onInit', () => {
 
     @Directive({
       selector: '[injectionDir]',
-      standalone: false,
     })
     class InjectionDir {
       @Input() injectionDir = '';
@@ -2039,9 +1864,8 @@ describe('onInit', () => {
 
     @Component({
       template: `<div [injectionDir]="val" [dir]="val"></div>`,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [Dir, InjectionDir],
     })
     class App {
       val = 'a';
@@ -2051,9 +1875,6 @@ describe('onInit', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, InjectionDir, Dir],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -2065,7 +1886,6 @@ describe('onInit', () => {
 
     @Directive({
       selector: '[dir]',
-      standalone: false,
     })
     class Dir {
       @Input('dir-name') name = '';
@@ -2078,9 +1898,6 @@ describe('onInit', () => {
     @Component({
       selector: 'comp',
       template: `<p></p>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() name = '';
@@ -2097,9 +1914,8 @@ describe('onInit', () => {
         <comp name="1" dir dir-name="1"></comp>
         <comp name="2" dir dir-name="2"></comp>
       `,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [Dir, Comp],
     })
     class App {
       ngOnInit() {
@@ -2107,9 +1923,6 @@ describe('onInit', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp, Dir],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -2121,7 +1934,6 @@ describe('onInit', () => {
 
     @Directive({
       selector: '[dir]',
-      standalone: false,
     })
     class Dir {
       @Input('dir-name') name = '';
@@ -2136,9 +1948,8 @@ describe('onInit', () => {
         <p name="1" dir dir-name="1"></p>
         <p name="2" dir dir-name="2"></p>
       `,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [Dir],
     })
     class App {
       ngOnInit() {
@@ -2146,9 +1957,6 @@ describe('onInit', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Dir],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -2161,9 +1969,6 @@ describe('onInit', () => {
     @Component({
       selector: 'comp',
       template: `<p></p>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() name = '';
@@ -2179,18 +1984,13 @@ describe('onInit', () => {
         <comp *ngFor="let number of numbers" [name]="number"></comp>
         <comp name="1"></comp>
       `,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [CommonModule, Comp],
     })
     class App {
       numbers = [2, 3, 4, 5, 6];
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp],
-      imports: [CommonModule],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -2211,9 +2011,6 @@ describe('onInit', () => {
     @Component({
       selector: 'child',
       template: `<p></p>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child {
       @Input() name = '';
@@ -2226,9 +2023,8 @@ describe('onInit', () => {
     @Component({
       selector: 'parent',
       template: '<child [name]="name"></child>',
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [Child],
     })
     class Parent {
       @Input() name = '';
@@ -2244,18 +2040,13 @@ describe('onInit', () => {
         <parent *ngFor="let number of numbers" [name]="number"></parent>
         <parent name="1"></parent>
       `,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [CommonModule, Parent],
     })
     class App {
       numbers = [2, 3, 4, 5, 6];
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Child, Parent],
-      imports: [CommonModule],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -2294,9 +2085,6 @@ describe('doCheck', () => {
 
     @Component({
       template: ``,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       ngDoCheck() {
@@ -2304,9 +2092,6 @@ describe('doCheck', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -2323,9 +2108,8 @@ describe('doCheck', () => {
     @Component({
       selector: 'parent',
       template: `<child></child>`,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [forwardRef(() => Child)],
     })
     class Parent {
       ngDoCheck() {
@@ -2336,9 +2120,6 @@ describe('doCheck', () => {
     @Component({
       selector: 'child',
       template: ``,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child {
       ngDoCheck() {
@@ -2348,9 +2129,8 @@ describe('doCheck', () => {
 
     @Component({
       template: `<parent></parent>`,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [Parent],
     })
     class App {
       ngDoCheck() {
@@ -2358,9 +2138,6 @@ describe('doCheck', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Parent, Child],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -2371,9 +2148,6 @@ describe('doCheck', () => {
     const events: string[] = [];
     @Component({
       template: ``,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       ngOnInit() {
@@ -2385,9 +2159,6 @@ describe('doCheck', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -2398,7 +2169,6 @@ describe('doCheck', () => {
     const doChecks: string[] = [];
     @Directive({
       selector: '[dir]',
-      standalone: false,
     })
     class Dir {
       @Input('dir') name = '';
@@ -2411,9 +2181,6 @@ describe('doCheck', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() name = '';
@@ -2428,9 +2195,8 @@ describe('doCheck', () => {
         <comp name="1" dir="1"></comp>
         <comp name="2" dir="2"></comp>
       `,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [Dir, Comp],
     })
     class App {
       ngDoCheck() {
@@ -2438,9 +2204,6 @@ describe('doCheck', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp, Dir],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -2451,7 +2214,6 @@ describe('doCheck', () => {
     const doChecks: string[] = [];
     @Directive({
       selector: '[dir]',
-      standalone: false,
     })
     class Dir {
       @Input('dir') name = '';
@@ -2464,9 +2226,6 @@ describe('doCheck', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() name = '';
@@ -2483,9 +2242,8 @@ describe('doCheck', () => {
         <comp name="1" dir="1"></comp>
         <comp name="2" dir="2"></comp>
       `,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [Dir, Comp],
     })
     class App {
       ngDoCheck() {
@@ -2493,9 +2251,6 @@ describe('doCheck', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp, Dir],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -2507,7 +2262,6 @@ describe('doCheck', () => {
 
     @Directive({
       selector: '[dir]',
-      standalone: false,
     })
     class Dir {
       @Input() dir = '';
@@ -2519,7 +2273,6 @@ describe('doCheck', () => {
 
     @Directive({
       selector: '[injectionDir]',
-      standalone: false,
     })
     class InjectionDir {
       @Input() injectionDir = '';
@@ -2533,9 +2286,8 @@ describe('doCheck', () => {
 
     @Component({
       template: `<div [injectionDir]="val" [dir]="val"></div>`,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [Dir, InjectionDir],
     })
     class App {
       val = 'a';
@@ -2545,9 +2297,6 @@ describe('doCheck', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, InjectionDir, Dir],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -2559,7 +2308,6 @@ describe('doCheck', () => {
 
     @Directive({
       selector: '[dir]',
-      standalone: false,
     })
     class Dir {
       @Input('dir') name = '';
@@ -2574,9 +2322,8 @@ describe('doCheck', () => {
         <p dir="1"></p>
         <p dir="2"></p>
       `,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [Dir],
     })
     class App {
       ngDoCheck() {
@@ -2584,9 +2331,6 @@ describe('doCheck', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Dir],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -2606,9 +2350,6 @@ describe('afterContentinit', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       ngAfterContentInit() {
@@ -2617,15 +2358,11 @@ describe('afterContentinit', () => {
     }
     @Component({
       template: `<comp></comp>`,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [Comp],
     })
     class App {}
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -2641,9 +2378,6 @@ describe('afterContentinit', () => {
 
     @Component({
       template: `<p>test</p>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       ngAfterContentInit() {
@@ -2651,9 +2385,6 @@ describe('afterContentinit', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -2670,8 +2401,6 @@ describe('afterContentinit', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
-      standalone: false,
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
@@ -2682,8 +2411,8 @@ describe('afterContentinit', () => {
 
     @Component({
       template: `<comp *ngIf="show"></comp>`,
-      standalone: false,
 
+      imports: [CommonModule, Comp],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
@@ -2694,10 +2423,6 @@ describe('afterContentinit', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp],
-      imports: [CommonModule],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -2724,9 +2449,8 @@ describe('afterContentinit', () => {
     @Component({
       selector: 'parent',
       template: `<child [name]="name"></child>`,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [forwardRef(() => Child)],
     })
     class Parent {
       @Input() name = '';
@@ -2739,9 +2463,6 @@ describe('afterContentinit', () => {
     @Component({
       selector: 'child',
       template: `<p>test</p>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child {
       @Input() name = '';
@@ -2756,9 +2477,8 @@ describe('afterContentinit', () => {
         <parent name="1"></parent>
         <parent name="2"></parent>
       `,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [Parent],
     })
     class App {
       ngAfterContentInit() {
@@ -2766,9 +2486,6 @@ describe('afterContentinit', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Parent, Child],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -2787,9 +2504,6 @@ describe('afterContentinit', () => {
     @Component({
       selector: 'projected-child',
       template: `<p>test</p>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class ProjectedChild {
       @Input() name = '';
@@ -2802,9 +2516,6 @@ describe('afterContentinit', () => {
     @Component({
       selector: 'comp',
       template: `<div><ng-content></ng-content></div>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() name = '';
@@ -2817,9 +2528,8 @@ describe('afterContentinit', () => {
     @Component({
       selector: 'projected',
       template: `<projected-child [name]="name"></projected-child>`,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [ProjectedChild],
     })
     class Projected {
       @Input() name = '';
@@ -2840,9 +2550,8 @@ describe('afterContentinit', () => {
           <projected name="4"></projected>
         </comp>
       `,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [Comp, Projected],
     })
     class App {
       ngAfterContentInit() {
@@ -2850,9 +2559,6 @@ describe('afterContentinit', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp, Projected, ProjectedChild],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -2883,9 +2589,6 @@ describe('afterContentinit', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() name = '';
@@ -2901,9 +2604,8 @@ describe('afterContentinit', () => {
         <comp *ngFor="let number of numbers" [name]="number"></comp>
         <comp name="5"></comp>
       `,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [CommonModule, Comp],
     })
     class App {
       numbers = [0, 1, 2, 3];
@@ -2913,10 +2615,6 @@ describe('afterContentinit', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp],
-      imports: [CommonModule],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -2929,9 +2627,8 @@ describe('afterContentinit', () => {
     @Component({
       selector: 'parent',
       template: `<child [name]="name"></child>`,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [forwardRef(() => Child)],
     })
     class Parent {
       @Input() name = '';
@@ -2944,9 +2641,6 @@ describe('afterContentinit', () => {
     @Component({
       selector: 'child',
       template: `<p>test</p>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child {
       @Input() name = '';
@@ -2962,9 +2656,8 @@ describe('afterContentinit', () => {
         <parent *ngFor="let number of numbers" [name]="number"></parent>
         <parent name="5"></parent>
       `,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [CommonModule, Parent],
     })
     class App {
       numbers = [0, 1, 2, 3];
@@ -2973,9 +2666,6 @@ describe('afterContentinit', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Parent, Child],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -3004,7 +2694,6 @@ describe('afterContentinit', () => {
     const events: string[] = [];
     @Directive({
       selector: '[dir]',
-      standalone: false,
     })
     class Dir {
       @Input('dir') name = '';
@@ -3017,9 +2706,6 @@ describe('afterContentinit', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() name = '';
@@ -3034,9 +2720,8 @@ describe('afterContentinit', () => {
         <comp name="1" dir="1"></comp>
         <comp name="2" dir="2"></comp>
       `,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [Dir, Comp],
     })
     class App {
       ngAfterContentInit() {
@@ -3044,9 +2729,6 @@ describe('afterContentinit', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp, Dir],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -3066,9 +2748,6 @@ describe('afterContentChecked', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       ngAfterContentInit() {
@@ -3082,9 +2761,8 @@ describe('afterContentChecked', () => {
 
     @Component({
       template: `<comp></comp>`,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [Comp],
     })
     class App {
       ngAfterContentInit() {
@@ -3096,9 +2774,6 @@ describe('afterContentChecked', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -3123,9 +2798,6 @@ describe('afterViewInit', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       ngAfterViewInit() {
@@ -3135,15 +2807,11 @@ describe('afterViewInit', () => {
 
     @Component({
       template: `<comp></comp>`,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [Comp],
     })
     class App {}
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -3159,9 +2827,6 @@ describe('afterViewInit', () => {
 
     @Component({
       template: `<p>test</p>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       ngAfterViewInit() {
@@ -3169,9 +2834,6 @@ describe('afterViewInit', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -3188,8 +2850,6 @@ describe('afterViewInit', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
-      standalone: false,
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
@@ -3200,8 +2860,8 @@ describe('afterViewInit', () => {
 
     @Component({
       template: `<comp *ngIf="show"></comp>`,
-      standalone: false,
 
+      imports: [CommonModule, Comp],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
@@ -3212,9 +2872,6 @@ describe('afterViewInit', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -3237,9 +2894,8 @@ describe('afterViewInit', () => {
     @Component({
       selector: 'parent',
       template: `<child [name]="name"></child>`,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [forwardRef(() => Child)],
     })
     class Parent {
       @Input() name = '';
@@ -3252,9 +2908,6 @@ describe('afterViewInit', () => {
     @Component({
       selector: 'child',
       template: `<p>test</p>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child {
       @Input() name = '';
@@ -3269,9 +2922,8 @@ describe('afterViewInit', () => {
         <parent name="1"></parent>
         <parent name="2"></parent>
       `,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [Parent],
     })
     class App {
       ngAfterViewInit() {
@@ -3279,9 +2931,6 @@ describe('afterViewInit', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Parent, Child],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -3300,9 +2949,6 @@ describe('afterViewInit', () => {
     @Component({
       selector: 'projected',
       template: `<p>test</p>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Projected {
       @Input() name = '';
@@ -3315,9 +2961,6 @@ describe('afterViewInit', () => {
     @Component({
       selector: 'comp',
       template: `<ng-content></ng-content>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() name = '';
@@ -3332,9 +2975,8 @@ describe('afterViewInit', () => {
         <comp name="1"><projected name="1"></projected></comp>
         <comp name="2"><projected name="2"></projected></comp>
       `,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [Projected, Comp],
     })
     class App {
       ngAfterViewInit() {
@@ -3342,9 +2984,6 @@ describe('afterViewInit', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp, Projected],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -3357,9 +2996,6 @@ describe('afterViewInit', () => {
     @Component({
       selector: 'projected-child',
       template: `<p>test</p>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class ProjectedChild {
       @Input() name = '';
@@ -3372,9 +3008,8 @@ describe('afterViewInit', () => {
     @Component({
       selector: 'projected',
       template: `<projected-child [name]="name"></projected-child>`,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [ProjectedChild],
     })
     class Projected {
       @Input() name = '';
@@ -3387,9 +3022,6 @@ describe('afterViewInit', () => {
     @Component({
       selector: 'comp',
       template: `<div><ng-content></ng-content></div>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() name = '';
@@ -3404,9 +3036,8 @@ describe('afterViewInit', () => {
         <comp name="1"><projected name="1"></projected></comp>
         <comp name="2"><projected name="2"></projected></comp>
       `,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [Projected, Comp],
     })
     class App {
       ngAfterViewInit() {
@@ -3414,9 +3045,6 @@ describe('afterViewInit', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp, Projected, ProjectedChild],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -3437,9 +3065,6 @@ describe('afterViewInit', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() name = '';
@@ -3455,9 +3080,8 @@ describe('afterViewInit', () => {
         <comp *ngFor="let number of numbers" [name]="number"></comp>
         <comp name="5"></comp>
       `,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [CommonModule, Comp],
     })
     class App {
       numbers = [0, 1, 2, 3];
@@ -3467,10 +3091,6 @@ describe('afterViewInit', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp],
-      imports: [CommonModule],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -3483,9 +3103,6 @@ describe('afterViewInit', () => {
     @Component({
       selector: 'child',
       template: `<p>test</p>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child {
       @Input() name = '';
@@ -3497,9 +3114,8 @@ describe('afterViewInit', () => {
     @Component({
       selector: 'parent',
       template: `<child [name]="name"></child>`,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [Child],
     })
     class Parent {
       @Input() name = '';
@@ -3515,9 +3131,8 @@ describe('afterViewInit', () => {
         <parent *ngFor="let number of numbers" [name]="number"></parent>
         <parent name="5"></parent>
       `,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [CommonModule, Parent],
     })
     class App {
       numbers = [0, 1, 2, 3];
@@ -3527,10 +3142,6 @@ describe('afterViewInit', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Parent, Child],
-      imports: [CommonModule],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -3556,7 +3167,6 @@ describe('afterViewInit', () => {
 
     @Directive({
       selector: '[dir]',
-      standalone: false,
     })
     class Dir {
       @Input('dir') name = '';
@@ -3569,9 +3179,6 @@ describe('afterViewInit', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() name = '';
@@ -3586,9 +3193,8 @@ describe('afterViewInit', () => {
         <comp name="1" dir="1"></comp>
         <comp name="2" dir="2"></comp>
       `,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [Dir, Comp],
     })
     class App {
       ngAfterViewInit() {
@@ -3596,9 +3202,6 @@ describe('afterViewInit', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp, Dir],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -3610,7 +3213,6 @@ describe('afterViewInit', () => {
 
     @Directive({
       selector: '[dir]',
-      standalone: false,
     })
     class Dir {
       @Input('dir') name = '';
@@ -3625,9 +3227,8 @@ describe('afterViewInit', () => {
         <div dir="1"></div>
         <div dir="2"></div>
       `,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [Dir],
     })
     class App {
       ngAfterViewInit() {
@@ -3635,9 +3236,6 @@ describe('afterViewInit', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Dir],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -3657,8 +3255,6 @@ describe('afterViewChecked', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
-      standalone: false,
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
@@ -3669,15 +3265,12 @@ describe('afterViewChecked', () => {
 
     @Component({
       template: `<comp></comp>`,
-      standalone: false,
 
+      imports: [Comp],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {}
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp],
-    });
     const fixture = TestBed.createComponent(App);
 
     fixture.detectChanges();
@@ -3695,9 +3288,6 @@ describe('afterViewChecked', () => {
 
     @Component({
       template: `<p>test</p>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       ngAfterViewChecked() {
@@ -3705,9 +3295,6 @@ describe('afterViewChecked', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App],
-    });
     const fixture = TestBed.createComponent(App);
 
     fixture.detectChanges();
@@ -3726,8 +3313,6 @@ describe('afterViewChecked', () => {
     @Component({
       selector: 'comp',
       template: `<p>{{ value }}</p>`,
-      standalone: false,
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
@@ -3739,17 +3324,14 @@ describe('afterViewChecked', () => {
 
     @Component({
       template: `<comp [value]="value"></comp>`,
-      standalone: false,
 
+      imports: [Comp],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       value = 1;
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     expect(afterViewCheckedCalls).toBe(1);
@@ -3765,9 +3347,6 @@ describe('afterViewChecked', () => {
     @Component({
       selector: 'child',
       template: `<p>test</p>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child {
       @Input() name = '';
@@ -3780,9 +3359,8 @@ describe('afterViewChecked', () => {
     @Component({
       selector: 'parent',
       template: `<child [name]="name"></child>`,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [Child],
     })
     class Parent {
       @Input() name = '';
@@ -3798,9 +3376,8 @@ describe('afterViewChecked', () => {
         <parent *ngFor="let number of numbers" [name]="number"></parent>
         <parent name="5"></parent>
       `,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [CommonModule, Parent],
     })
     class App {
       numbers = [0, 1, 2, 3];
@@ -3810,9 +3387,6 @@ describe('afterViewChecked', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Parent, Child],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -3838,7 +3412,6 @@ describe('afterViewChecked', () => {
 
     @Directive({
       selector: '[dir]',
-      standalone: false,
     })
     class Dir {
       @Input('dir') name = '';
@@ -3851,9 +3424,6 @@ describe('afterViewChecked', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() name = '';
@@ -3868,9 +3438,8 @@ describe('afterViewChecked', () => {
         <comp name="1" dir="1"></comp>
         <comp name="2" dir="2"></comp>
       `,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [Dir, Comp],
     })
     class App {
       ngAfterViewChecked() {
@@ -3878,9 +3447,6 @@ describe('afterViewChecked', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp, Dir],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -3892,7 +3458,6 @@ describe('afterViewChecked', () => {
 
     @Directive({
       selector: '[dir]',
-      standalone: false,
     })
     class Dir {
       @Input('dir') name = '';
@@ -3907,9 +3472,8 @@ describe('afterViewChecked', () => {
         <div dir="1"></div>
         <div dir="2"></div>
       `,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [Dir],
     })
     class App {
       ngAfterViewChecked() {
@@ -3917,9 +3481,6 @@ describe('afterViewChecked', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Dir],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -3939,8 +3500,6 @@ describe('onDestroy', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
-      standalone: false,
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
@@ -3951,18 +3510,14 @@ describe('onDestroy', () => {
 
     @Component({
       template: `<comp *ngIf="show"></comp>`,
-      standalone: false,
 
+      imports: [CommonModule, Comp],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       show = true;
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp],
-      imports: [CommonModule],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -3990,8 +3545,6 @@ describe('onDestroy', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
-      standalone: false,
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
@@ -4009,18 +3562,14 @@ describe('onDestroy', () => {
           <comp name="2"></comp>
         </div>
       `,
-      standalone: false,
 
+      imports: [CommonModule, Comp],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       show = true;
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp],
-      imports: [CommonModule],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -4038,8 +3587,6 @@ describe('onDestroy', () => {
     @Component({
       selector: 'child',
       template: `<p>test</p>`,
-      standalone: false,
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child {
@@ -4053,8 +3600,8 @@ describe('onDestroy', () => {
     @Component({
       selector: 'parent',
       template: `<child [name]="name"></child>`,
-      standalone: false,
 
+      imports: [Child],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Parent {
@@ -4071,18 +3618,14 @@ describe('onDestroy', () => {
           <parent name="2"></parent>
         </div>
       `,
-      standalone: false,
 
+      imports: [CommonModule, Parent],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       show = true;
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Parent, Child],
-      imports: [CommonModule],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -4100,8 +3643,6 @@ describe('onDestroy', () => {
     @Component({
       selector: 'child',
       template: `<p>test</p>`,
-      standalone: false,
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child {
@@ -4115,8 +3656,8 @@ describe('onDestroy', () => {
     @Component({
       selector: 'parent',
       template: `<child [name]="name"></child>`,
-      standalone: false,
 
+      imports: [Child],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Parent {
@@ -4129,8 +3670,8 @@ describe('onDestroy', () => {
     @Component({
       selector: 'grandparent',
       template: `<parent [name]="name"></parent>`,
-      standalone: false,
 
+      imports: [Parent],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Grandparent {
@@ -4147,18 +3688,14 @@ describe('onDestroy', () => {
           <grandparent name="2"></grandparent>
         </div>
       `,
-      standalone: false,
 
+      imports: [CommonModule, Grandparent],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       show = true;
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Grandparent, Parent, Child],
-      imports: [CommonModule],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -4183,8 +3720,6 @@ describe('onDestroy', () => {
     @Component({
       selector: 'projected',
       template: `<p>test</p>`,
-      standalone: false,
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Projected {
@@ -4198,8 +3733,6 @@ describe('onDestroy', () => {
     @Component({
       selector: 'comp',
       template: `<div><ng-content></ng-content></div>`,
-      standalone: false,
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
@@ -4221,17 +3754,14 @@ describe('onDestroy', () => {
           </comp>
         </div>
       `,
-      standalone: false,
 
+      imports: [CommonModule, Projected, Comp],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       show = true;
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp, Projected],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -4249,8 +3779,6 @@ describe('onDestroy', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
-      standalone: false,
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
@@ -4269,8 +3797,8 @@ describe('onDestroy', () => {
           <comp name="3"></comp>
         </div>
       `,
-      standalone: false,
 
+      imports: [CommonModule, Comp],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
@@ -4278,10 +3806,6 @@ describe('onDestroy', () => {
       showMiddle = true;
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp],
-      imports: [CommonModule],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -4311,8 +3835,6 @@ describe('onDestroy', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
-      standalone: false,
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
@@ -4329,8 +3851,8 @@ describe('onDestroy', () => {
           <comp *ngFor="let number of numbers" [name]="number"></comp>
         </div>
       `,
-      standalone: false,
 
+      imports: [CommonModule, Comp],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
@@ -4338,9 +3860,6 @@ describe('onDestroy', () => {
       numbers = [0, 1, 2, 3];
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -4380,9 +3899,6 @@ describe('onDestroy', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       ngOnDestroy() {
@@ -4397,9 +3913,8 @@ describe('onDestroy', () => {
           <button (click)="handleClick2()">test 2</button>
         </div>
       `,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [CommonModule, Comp],
     })
     class App {
       show = true;
@@ -4417,9 +3932,6 @@ describe('onDestroy', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -4444,25 +3956,18 @@ describe('onDestroy', () => {
     @Component({
       selector: 'child',
       template: `<ng-content></ng-content>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child {}
 
     @Component({
       selector: 'parent',
       template: `<ng-content></ng-content>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Parent {
       @ContentChildren(Child, {descendants: true}) child!: QueryList<Child>;
     }
 
     @Component({
-      selector: 'app',
       template: `
         <ng-template #tpl>
           <parent>
@@ -4471,9 +3976,8 @@ describe('onDestroy', () => {
         </ng-template>
         <div #container dir></div>
       `,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [Child, Parent, forwardRef(() => Dir)],
     })
     class App {
       @ViewChild('container', {read: ViewContainerRef, static: true}) container!: ViewContainerRef;
@@ -4487,7 +3991,6 @@ describe('onDestroy', () => {
 
     @Directive({
       selector: '[dir]',
-      standalone: false,
     })
     class Dir {
       constructor(public cdr: ChangeDetectorRef) {}
@@ -4501,9 +4004,6 @@ describe('onDestroy', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Parent, Child, Dir],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.autoDetectChanges();
 
@@ -4515,7 +4015,6 @@ describe('onDestroy', () => {
 
     @Directive({
       selector: '[dir]',
-      standalone: false,
     })
     class Dir {
       @Input('dir') name = '';
@@ -4528,8 +4027,6 @@ describe('onDestroy', () => {
     @Component({
       selector: 'comp',
       template: `<p>test</p>`,
-      standalone: false,
-
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
@@ -4547,18 +4044,14 @@ describe('onDestroy', () => {
           <comp name="2" dir="2"></comp>
         </div>
       `,
-      standalone: false,
 
+      imports: [CommonModule, Dir, Comp],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       show = true;
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Dir, Comp],
-      imports: [CommonModule],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -4575,7 +4068,6 @@ describe('onDestroy', () => {
 
     @Directive({
       selector: '[dir]',
-      standalone: false,
     })
     class Dir {
       ngOnDestroy() {
@@ -4585,18 +4077,14 @@ describe('onDestroy', () => {
 
     @Component({
       template: `<p *ngIf="show" dir></p>`,
-      standalone: false,
 
+      imports: [CommonModule, Dir],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       show = true;
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Dir],
-      imports: [CommonModule],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -4623,8 +4111,6 @@ describe('hook order', () => {
     selector: 'comp',
     template: `{{ value }}
       <div><ng-content></ng-content></div>`,
-    standalone: false,
-
     changeDetection: ChangeDetectionStrategy.Eager,
   })
   class Comp {
@@ -4670,8 +4156,8 @@ describe('hook order', () => {
     template: `<comp [name]="'child of ' + this.name" [value]="value"
       ><ng-content></ng-content
     ></comp>`,
-    standalone: false,
 
+    imports: [Comp],
     changeDetection: ChangeDetectionStrategy.Eager,
   })
   class Parent extends Comp {}
@@ -4679,8 +4165,8 @@ describe('hook order', () => {
   it('should call all hooks in correct order', () => {
     @Component({
       template: `<comp *ngIf="show" name="comp" [value]="value"></comp>`,
-      standalone: false,
 
+      imports: [CommonModule, Comp],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
@@ -4689,10 +4175,6 @@ describe('hook order', () => {
       show = true;
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Comp],
-      imports: [CommonModule],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -4734,8 +4216,8 @@ describe('hook order', () => {
           <parent name="parent2" [value]="value"></parent>
         </div>
       `,
-      standalone: false,
 
+      imports: [CommonModule, Parent],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
@@ -4744,10 +4226,6 @@ describe('hook order', () => {
       show = true;
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Parent, Comp],
-      imports: [CommonModule],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -4830,8 +4308,8 @@ describe('hook order', () => {
           </parent>
         </div>
       `,
-      standalone: false,
 
+      imports: [CommonModule, Comp, Parent],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
@@ -4839,10 +4317,6 @@ describe('hook order', () => {
       show = true;
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, Parent, Comp],
-      imports: [CommonModule],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -4943,7 +4417,6 @@ describe('non-regression', () => {
 
     @Directive({
       selector: '[onDestroyDir]',
-      standalone: false,
     })
     class OnDestroyDir {
       ngOnDestroy() {
@@ -4955,17 +4428,14 @@ describe('non-regression', () => {
       template: `<ng-template [ngIf]="show">
         <ng-template onDestroyDir>content</ng-template>
       </ng-template>`,
-      standalone: false,
 
+      imports: [CommonModule, OnDestroyDir],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       show = true;
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App, OnDestroyDir],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -4983,7 +4453,6 @@ describe('non-regression', () => {
 
     @Directive({
       selector: '[testDir]',
-      standalone: false,
     })
     class TestDirective implements OnChanges, AfterViewInit {
       constructor(private _changeDetectorRef: ChangeDetectorRef) {}
@@ -5002,15 +4471,13 @@ describe('non-regression', () => {
 
     @Component({
       template: `<div [testDir]="value">{{ value }}</div>`,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [TestDirective],
     })
     class App {
       value = 1;
     }
 
-    TestBed.configureTestingModule({declarations: [App, TestDirective]});
     const fixture = TestBed.createComponent(App);
     expect(() => fixture.detectChanges()).not.toThrow();
     expect(hooks).toEqual(['ngOnChanges', 'ngAfterViewInit']);
@@ -5022,7 +4489,6 @@ describe('non-regression', () => {
 
     @Directive({
       selector: '[testDir]',
-      standalone: false,
     })
     class TestDirective implements OnChanges, DoCheck, AfterViewInit {
       constructor(private _changeDetectorRef: ChangeDetectorRef) {}
@@ -5044,15 +4510,13 @@ describe('non-regression', () => {
 
     @Component({
       template: `<div [testDir]="value">{{ value }}</div>`,
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [TestDirective],
     })
     class App {
       value = 1;
     }
 
-    TestBed.configureTestingModule({declarations: [App, TestDirective]});
     const fixture = TestBed.createComponent(App);
     expect(() => fixture.detectChanges()).not.toThrow();
     expect(hooks).toEqual(['ngOnChanges', 'ngDoCheck', 'ngAfterViewInit']);

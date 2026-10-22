@@ -10,6 +10,7 @@ import {
   ArrowFunctionExpr,
   ClassPropertyMapping,
   createMayBeForwardRefExpression,
+  DYNAMIC_TYPE,
   emitDistinctChangesOnlyDefaultValue,
   Expression,
   ExpressionType,
@@ -1069,7 +1070,7 @@ function memberMetadataFromSignalQuery(call: ts.CallExpression): LiteralArrayExp
         // on the query initializer, because it executes after the class is initialized, whereas
         // `setClassMetadata` runs immediately.
         new ExternalExpr(R3Identifiers.forwardRef).callFn([
-          new ArrowFunctionExpr([], new WrappedNodeExpr(firstArg)),
+          new ArrowFunctionExpr([], new WrappedNodeExpr(firstArg), DYNAMIC_TYPE),
         ]);
 
   const entries: Expression[] = [

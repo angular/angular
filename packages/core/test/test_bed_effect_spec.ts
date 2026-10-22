@@ -25,7 +25,6 @@ describe('effects in TestBed', () => {
   it('created in the constructor should run with detectChanges()', () => {
     const log: string[] = [];
     @Component({
-      selector: 'test-cmp',
       template: '',
     })
     class Cmp {
@@ -60,7 +59,6 @@ describe('effects in TestBed', () => {
   it('created in ngOnInit should run with detectChanges()', () => {
     const log: string[] = [];
     @Component({
-      selector: 'test-cmp',
       template: '',
     })
     class Cmp {
@@ -103,7 +101,6 @@ describe('effects in TestBed', () => {
     const val = signal('initial');
     let observed = '';
     @Component({
-      selector: 'test-cmp',
       template: '',
     })
     class Cmp {

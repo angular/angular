@@ -206,7 +206,6 @@ describe('TestBed (isolated)', () => {
     TestBedImpl.INSTANCE.globalCompilationChecked = false;
 
     @Component({
-      selector: 'root',
       template: '<div dirA></div>',
       standalone: false,
     })
@@ -260,7 +259,6 @@ describe('TestBed with Standalone types', () => {
     class MockDep {}
 
     @Component({
-      selector: 'app-root',
       imports: [MainDep],
       template: '<dep />',
     })
@@ -460,7 +458,12 @@ describe('TestBed with Standalone types', () => {
 
     @Component({
       template: '<div dir>{{ name | pipe }}</div>',
-      imports: [MyStandalonePipeA, MyStandaloneDirectiveA],
+      imports: [
+        MyStandalonePipeA,
+        MyStandaloneDirectiveA,
+        MyStandaloneDirectiveB,
+        MyStandalonePipeB,
+      ],
     })
     class MyStandaloneComp {
       name = 'MyStandaloneComp';
@@ -539,8 +542,7 @@ describe('TestBed with Standalone types', () => {
     class TestNgModule {}
 
     @Component({
-      selector: 'test-component',
-      imports: [TestNgModule],
+      imports: [TestNgModule, TestPipe],
       template: `{{ 'original value' | testPipe }}`,
     })
     class TestComponent {}
@@ -583,7 +585,6 @@ describe('TestBed with Standalone types', () => {
     class TestModule {}
 
     @Component({
-      selector: 'app-root',
       template: `<test-cmp #testCmpCtrl></test-cmp>`,
       imports: [TestModule],
     })
@@ -657,13 +658,11 @@ describe('TestBed', () => {
 
   it('should not allow overrides of the `standalone` field', () => {
     @Component({
-      selector: 'standalone-comp',
       template: '...',
     })
     class StandaloneComponent {}
 
     @Component({
-      selector: 'non-standalone-comp',
       template: '...',
       standalone: false,
     })
@@ -963,7 +962,6 @@ describe('TestBed', () => {
     class TestModule {}
 
     @Component({
-      selector: 'app-root',
       template: `<test-cmp #testCmpCtrl></test-cmp>`,
       standalone: false,
     })
@@ -1053,7 +1051,6 @@ describe('TestBed', () => {
     // AppModule content:
 
     @Component({
-      selector: 'app',
       template: `
         <comp-a></comp-a>
         <comp-b></comp-b>
@@ -1433,16 +1430,13 @@ describe('TestBed', () => {
     class MyProvider {}
 
     @Component({
-      selector: 'my-comp',
       template: ``,
-      standalone: false,
     })
     class MyComp {
       constructor(@Inject(MY_TOKEN) public myProviders: MyProvider[]) {}
     }
 
     TestBed.configureTestingModule({
-      declarations: [MyComp],
       providers: [{provide: MY_TOKEN, useValue: {value: 'old provider'}, multi: true}],
     });
 
@@ -1463,9 +1457,7 @@ describe('TestBed', () => {
   it('should not trigger change detection for ComponentA while calling TestBed.createComponent for ComponentB', () => {
     const log: string[] = [];
     @Component({
-      selector: 'comp-a',
       template: '...',
-      standalone: false,
     })
     class CompA {
       @Input() inputA: string = '';
@@ -1475,9 +1467,7 @@ describe('TestBed', () => {
     }
 
     @Component({
-      selector: 'comp-b',
       template: '...',
-      standalone: false,
     })
     class CompB {
       @Input() inputB: string = '';
@@ -1485,8 +1475,6 @@ describe('TestBed', () => {
         log.push('CompB:ngOnInit', this.inputB);
       }
     }
-
-    TestBed.configureTestingModule({declarations: [CompA, CompB]});
 
     log.length = 0;
     const appA = TestBed.createComponent(CompA);
@@ -1534,9 +1522,7 @@ describe('TestBed', () => {
 
   it('should throw errors in CD', () => {
     @Component({
-      selector: 'my-comp',
       template: '',
-      standalone: false,
     })
     class MyComp {
       name!: {hello: string};
@@ -1546,8 +1532,6 @@ describe('TestBed', () => {
         this.name.hello = 'hello';
       }
     }
-
-    TestBed.configureTestingModule({declarations: [MyComp]});
 
     expect(() => {
       const fixture = TestBed.createComponent(MyComp);
@@ -1560,9 +1544,7 @@ describe('TestBed', () => {
   // change to completely fix (since simple re-throwing breaks handlers in ngrx, etc).
   xit('should throw errors in listeners', () => {
     @Component({
-      selector: 'my-comp',
       template: '<button (click)="onClick()">Click me</button>',
-      standalone: false,
     })
     class MyComp {
       name!: {hello: string};
@@ -1573,7 +1555,6 @@ describe('TestBed', () => {
       }
     }
 
-    TestBed.configureTestingModule({declarations: [MyComp]});
     const fixture = TestBed.createComponent(MyComp);
     fixture.detectChanges();
 
@@ -1619,7 +1600,7 @@ describe('TestBed', () => {
 
     @Component({
       template: '<outer></outer>',
-      selector: 'fixture',
+
       standalone: false,
     })
     class Fixture {}
@@ -2105,7 +2086,6 @@ describe('TestBed', () => {
       @Directive({
         selector: '[dir]',
         providers: [{provide: A, useValue: 'A'}],
-        standalone: false,
       })
       class SomeDir {
         constructor(
@@ -2156,7 +2136,7 @@ describe('TestBed', () => {
 
       @Component({
         template: '<comp></comp>',
-        selector: 'fixture',
+
         standalone: false,
       })
       class TestFixture {}
@@ -2203,7 +2183,6 @@ describe('TestBed', () => {
       }
 
       @Component({
-        selector: 'comp',
         template: 'someText',
         standalone: false,
       })
@@ -2317,7 +2296,6 @@ describe('TestBed', () => {
       class ChildCmp {}
 
       @Component({
-        selector: 'root',
         template: '<child></child>',
         standalone: false,
       })
@@ -2733,7 +2711,6 @@ describe('TestBed module teardown', () => {
   it('should re-throw errors that were thrown during fixture cleanup', () => {
     @Component({
       template: '',
-      standalone: false,
     })
     class ThrowsOnDestroy {
       ngOnDestroy() {
@@ -2742,14 +2719,13 @@ describe('TestBed module teardown', () => {
     }
 
     TestBed.configureTestingModule({
-      declarations: [ThrowsOnDestroy],
       teardown: {destroyAfterEach: true},
     });
     TestBed.createComponent(ThrowsOnDestroy);
 
     const spy = spyOn(console, 'error');
     expect(() => TestBed.resetTestingModule()).toThrowError(
-      '1 component threw errors during cleanup',
+      '1 fixture threw errors during cleanup',
     );
     expect(spy).toHaveBeenCalledTimes(1);
   });
@@ -2757,7 +2733,6 @@ describe('TestBed module teardown', () => {
   it('should not interrupt fixture destruction if an error is thrown', () => {
     @Component({
       template: '',
-      standalone: false,
     })
     class ThrowsOnDestroy {
       ngOnDestroy() {
@@ -2766,7 +2741,6 @@ describe('TestBed module teardown', () => {
     }
 
     TestBed.configureTestingModule({
-      declarations: [ThrowsOnDestroy],
       teardown: {destroyAfterEach: true},
     });
 
@@ -2776,7 +2750,7 @@ describe('TestBed module teardown', () => {
 
     const spy = spyOn(console, 'error');
     expect(() => TestBed.resetTestingModule()).toThrowError(
-      '3 components threw errors during cleanup',
+      '3 fixtures threw errors during cleanup',
     );
     expect(spy).toHaveBeenCalledTimes(3);
   });
@@ -2791,7 +2765,6 @@ describe('TestBed module teardown', () => {
 
     @Component({
       template: '',
-      standalone: false,
     })
     class App {
       constructor(_service: ThrowsOnDestroy) {}
@@ -2799,7 +2772,7 @@ describe('TestBed module teardown', () => {
 
     TestBed.configureTestingModule({
       providers: [ThrowsOnDestroy],
-      declarations: [App],
+
       teardown: {destroyAfterEach: true},
     });
     TestBed.createComponent(App);
@@ -2817,7 +2790,6 @@ describe('TestBed module teardown', () => {
 
     @Component({
       template: '',
-      standalone: false,
     })
     class App {
       constructor(_service: ThrowsOnDestroy) {}
@@ -2825,7 +2797,7 @@ describe('TestBed module teardown', () => {
 
     TestBed.configureTestingModule({
       providers: [ThrowsOnDestroy],
-      declarations: [App],
+
       teardown: {destroyAfterEach: true, rethrowErrors: false},
     });
     TestBed.createComponent(App);
@@ -2845,7 +2817,6 @@ describe('TestBed module teardown', () => {
           }
         `,
       ],
-      standalone: false,
     })
     class StyledComp1 {}
 
@@ -2858,12 +2829,10 @@ describe('TestBed module teardown', () => {
           }
         `,
       ],
-      standalone: false,
     })
     class StyledComp2 {}
 
     TestBed.configureTestingModule({
-      declarations: [StyledComp1, StyledComp2],
       teardown: {destroyAfterEach: true},
     });
 

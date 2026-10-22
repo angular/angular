@@ -579,6 +579,155 @@ describe('recognize', () => {
         ).recognize();
         await expectAsync(recognizePromise).toBeRejected();
       });
+
+      it('does not evaluate sibling routes under unconfigured zero-segment outlets', async () => {
+        let canMatchCalls = 0;
+        const config = [
+          {
+            path: 'a',
+            children: [
+              {
+                path: '',
+                outlet: 'detail',
+                children: [
+                  {
+                    path: ':id',
+                    component: ComponentA,
+                    canMatch: [
+                      () => {
+                        canMatchCalls++;
+                        return true;
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ];
+        await expectAsync(
+          recognize(config, 'a/(detail:1//x0:/(detail:2)//x1:/(detail:3)//x2:/(detail:4))'),
+        ).toBeRejectedWithError(/Cannot match any routes/);
+        expect(canMatchCalls).toBe(1);
+
+        canMatchCalls = 0;
+        await expectAsync(
+          recognize(config, 'a/(detail:1///(detail:2///(detail:3)))'),
+        ).toBeRejectedWithError(/Cannot match any routes/);
+        expect(canMatchCalls).toBe(0);
+      });
+
+      it('does not match empty-path primary routes against unconfigured outlets', async () => {
+        let canMatchCalls = 0;
+        const s1 = await recognize(
+          [
+            {
+              path: 'a',
+              children: [
+                {
+                  path: '',
+                  component: ComponentA,
+                  canMatch: [
+                    () => {
+                      canMatchCalls++;
+                      return true;
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+          'a/(x0:/()//x1:/()//x2:/())',
+        );
+        expect(canMatchCalls).toBe(1);
+        expect(s1.root.firstChild!.children.length).toBe(1);
+
+        canMatchCalls = 0;
+        const s2 = await recognize(
+          [
+            {
+              path: 'shop',
+              children: [
+                {
+                  path: '',
+                  canMatch: [
+                    () => {
+                      canMatchCalls++;
+                      return true;
+                    },
+                  ],
+                  children: [{path: '', component: ComponentA}],
+                },
+              ],
+            },
+          ],
+          'shop/(a:/()//b:/()//c:/())',
+        );
+        expect(canMatchCalls).toBe(1);
+        expect(s2.root.firstChild!.children.length).toBe(1);
+      });
+
+      it('allows navigation when an empty-path named outlet child fails canMatch', async () => {
+        const config = [
+          {
+            path: 'dashboard',
+            component: ComponentA,
+            children: [
+              {path: 'home', component: ComponentC},
+              {
+                path: '',
+                outlet: 'aux',
+                component: ComponentB,
+                canMatch: [() => false],
+              },
+            ],
+          },
+        ];
+
+        const s1 = await recognize(config, 'dashboard');
+        checkActivatedRoute(s1.root.firstChild!, 'dashboard', {}, ComponentA);
+        expect(s1.root.firstChild!.children.length).toBe(0);
+
+        const s2 = await recognize(config, 'dashboard/home');
+        checkActivatedRoute(s2.root.firstChild!, 'dashboard', {}, ComponentA);
+        expect(s2.root.firstChild!.children.length).toBe(1);
+        checkActivatedRoute(s2.root.firstChild!.firstChild!, 'home', {}, ComponentC);
+
+        const s3 = await recognize(
+          [
+            {path: '', outlet: 'aux', canMatch: [() => false], component: ComponentA},
+            {path: '', children: [{path: '', outlet: 'aux', component: ComponentB}]},
+          ],
+          '',
+        );
+        expect(s3.root.children.length).toBe(1);
+        expect(s3.root.firstChild!.children.length).toBe(1);
+        checkActivatedRoute(s3.root.firstChild!.firstChild!, '', {}, ComponentB, 'aux');
+      });
+
+      it('allows matching only the first level of a named outlet config with children', async () => {
+        const s = await recognize(
+          [
+            {
+              path: 'dashboard',
+              component: ComponentA,
+              children: [
+                {
+                  path: 'abc',
+                  outlet: 'detail',
+                  component: ComponentB,
+                  children: [{path: 'sub', component: ComponentC}],
+                },
+              ],
+            },
+          ],
+          'dashboard/(detail:abc)',
+        );
+        checkActivatedRoute(s.root.firstChild!, 'dashboard', {}, ComponentA);
+        expect(s.root.firstChild!.children.length).toBe(1);
+        checkActivatedRoute(s.root.firstChild!.firstChild!, 'abc', {}, ComponentB, 'detail');
+        expect(s.root.firstChild!.firstChild!.children.length).toBe(0);
+      });
     });
 
     describe('nested empty paths with outlets (issue 67708)', () => {
@@ -1144,7 +1293,94 @@ describe('recognize', () => {
       await expectAsync(recognizer('foo/bar')).toBeRejected();
     });
   });
+
+  describe('snapshot creation', () => {
+    it('shares one queryParams object across every snapshot', async () => {
+      const s = await recognize(
+        [{path: 'a', children: [{path: '', children: [{path: '', component: ComponentA}]}]}],
+        'a?p=1&q=2',
+      );
+      const snapshots = collectSnapshots(s.root);
+      expect(snapshots.length).toBeGreaterThan(1);
+      for (const snapshot of snapshots) {
+        expect(snapshot.queryParams).toBe(s.root.queryParams);
+      }
+      expect(s.root.queryParams).toEqual({p: '1', q: '2'});
+      expect(Object.isFrozen(s.root.queryParams)).toBeTrue();
+    });
+
+    it('shares the parent params with a route that adds none of its own', async () => {
+      const s = await recognize(
+        [
+          {
+            path: 'a',
+            children: [
+              {path: '', component: ComponentA},
+              {path: '', outlet: 'modal', component: ComponentB},
+            ],
+          },
+        ],
+        'a;x=1/(modal:/())',
+      );
+      const a = s.root.firstChild!;
+      expect(a.params).toEqual({x: '1'});
+      expect(a.children.length).toBe(2);
+      for (const child of a.children) {
+        expect(child.params).toBe(a.params);
+        expect(Object.isFrozen(child.params)).toBeTrue();
+      }
+    });
+  });
+
+  describe('outlet name uniqueness', () => {
+    // The two empty-path matches merge into one node, so the duplicate `detail` outlet is among its children.
+    it('rejects duplicates that appear only after empty path matches are merged', async () => {
+      await expectAsync(
+        recognize(
+          [
+            {
+              path: 'a',
+              children: [
+                {path: '', children: [{path: ':id', outlet: 'detail', component: ComponentA}]},
+              ],
+            },
+          ],
+          'a/(detail:1///(detail:2))',
+        ),
+      ).toBeRejectedWithError(/Two segments cannot have the same outlet name: '2' and '1'/);
+    });
+
+    it('does not treat an outlet named after an Object member as a duplicate', async () => {
+      const s = await recognize(
+        [
+          {
+            path: 'a',
+            children: [
+              {path: 'b', outlet: 'constructor', component: ComponentB},
+              {path: 'c', component: ComponentC},
+            ],
+          },
+        ],
+        'a/(c//constructor:b)',
+      );
+      const children = s.root.firstChild!.children;
+      expect(children.length).toBe(2);
+      checkActivatedRoute(children[0], 'c', {}, ComponentC);
+      checkActivatedRoute(children[1], 'b', {}, ComponentB, 'constructor');
+    });
+  });
 });
+
+function collectSnapshots(
+  snapshot: ActivatedRouteSnapshot,
+  into: ActivatedRouteSnapshot[] = [],
+): ActivatedRouteSnapshot[] {
+  into.push(snapshot);
+  for (const child of snapshot.children) {
+    collectSnapshots(child, into);
+  }
+  return into;
+}
 
 async function recognize(
   config: Routes,

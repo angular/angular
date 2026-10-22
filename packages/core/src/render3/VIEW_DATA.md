@@ -308,7 +308,6 @@ function factory(fn) {
 }
 const FactoryPrototype = Factory.prototype;
 function isFactory(obj: any): obj is Factory {
-  // See: https://jsperf.com/instanceof-vs-getprototypeof
   return typeof obj === 'object' && Object.getPrototypeOf(obj) === FactoryPrototype;
 }
 ```

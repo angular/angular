@@ -11,12 +11,9 @@ import {PROVIDED_NG_ZONE} from '../change_detection/scheduling/ng_zone_schedulin
 import {R3Injector} from '../di/r3_injector';
 import {INTERNAL_APPLICATION_ERROR_HANDLER} from '../error_handler';
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
-import {DEFAULT_LOCALE_ID} from '../i18n/localization';
-import {LOCALE_ID} from '../i18n/tokens';
 import {ImagePerformanceWarning} from '../image_performance_warning';
 import {Type} from '../interface/type';
 import {PLATFORM_DESTROY_LISTENERS} from './platform_destroy_listeners';
-import {setLocaleId} from '../render3/i18n/i18n_locale_id';
 import {NgZone} from '../zone/ng_zone';
 
 import {ApplicationInitStatus} from '../application/application_init';
@@ -142,10 +139,6 @@ export function bootstrap<M>(
 
       return initStatus.donePromise
         .then(() => {
-          // If the `LOCALE_ID` provider is defined at bootstrap then we set the value for ivy
-          const localeId = envInjector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
-          setLocaleId(localeId || DEFAULT_LOCALE_ID);
-
           const enableRootComponentbootstrap = envInjector.get(
             ENABLE_ROOT_COMPONENT_BOOTSTRAP,
             true,

@@ -20,7 +20,7 @@ import {
   isApple,
 } from '@angular/docs';
 import {NavigationEnd, Router, RouterLink} from '@angular/router';
-import {filter, map, startWith} from 'rxjs/operators';
+import {filter, map, startWith} from 'rxjs';
 import {DOCS_ROUTES, REFERENCE_ROUTES, TUTORIALS_ROUTES} from '../../../routing/routes';
 import {PRIMARY_NAV_ID, SEARCH_DIALOG_ID, SECONDARY_NAV_ID} from '../../constants/element-ids';
 import {COMMAND, CONTROL, SEARCH_TRIGGER_KEY} from '../../constants/keys';

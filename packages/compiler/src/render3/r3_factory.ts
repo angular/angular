@@ -191,7 +191,7 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3CompiledExpre
   let factoryFn: o.Expression = o.fn(
     [new o.FnParam(t.name, o.DYNAMIC_TYPE)],
     body,
-    o.INFERRED_TYPE,
+    o.DYNAMIC_TYPE,
     undefined,
     `${meta.name}_Factory`,
   );
@@ -206,6 +206,7 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3CompiledExpre
           new o.DeclareVarStmt(baseFactoryVar.name!, undefined, o.DYNAMIC_TYPE),
           new o.ReturnStatement(factoryFn),
         ],
+        o.DYNAMIC_TYPE,
       )
       .callFn([], /* sourceSpan */ undefined, /* pure */ true);
   }

@@ -6,8 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DirectiveOwner} from '../../render3/view/t2_api';
+import {CssSelector} from '../../directive_matching';
+import {splitNsName} from '../../ml_parser/tags';
 import {
+  BoundaryBlock,
+  BoundaryErrorBlock,
   BoundAttribute,
   BoundEvent,
   BoundText,
@@ -33,23 +36,31 @@ import {
   Variable,
   ViewportDeferredTrigger,
 } from '../../render3/r3_ast';
-import {TcbOp} from './base';
-import {TcbExpr} from './codegen';
+import {DirectiveOwner} from '../../render3/view/t2_api';
 import {TcbDirectiveMetadata} from '../api';
-import {Context} from './context';
-import {TcbTemplateBodyOp, TcbTemplateContextOp} from './template';
-import {TcbElementOp} from './element';
-import {tcbExpression, TcbConditionOp, TcbExpressionOp} from './expression';
-import {TcbBlockImplicitVariableOp, TcbBlockVariableOp, TcbTemplateVariableOp} from './variables';
+import {TcbOp} from './base';
+import {TcbBoundaryOp} from './boundary';
+import {TcbExpr} from './codegen';
 import {TcbComponentContextCompletionOp} from './completions';
-import {LocalSymbol, TcbInvalidReferenceOp, TcbReferenceOp} from './references';
-import {TcbIfBlockOp} from './if_block';
-import {TcbSwitchOp} from './switch_block';
-import {TcbForOfOp} from './for_block';
-import {TcbLetDeclarationOp} from './let';
-import {TcbDirectiveInputsOp, TcbUnclaimedInputsOp} from './inputs';
-import {TcbDomSchemaCheckerOp} from './schema';
+import {TcbControlFlowContentProjectionOp} from './content_projection';
+import {Context} from './context';
+import {TcbDirectiveCtorOp} from './directive_constructor';
+import {
+  TcbGenericDirectiveTypeWithAnyParamsOp,
+  TcbNonGenericDirectiveTypeOp,
+} from './directive_type';
+import {TcbElementOp} from './element';
 import {TcbDirectiveOutputsOp, TcbUnclaimedOutputsOp} from './events';
+import {TcbConditionOp, tcbExpression, TcbExpressionOp} from './expression';
+import {TcbForOfOp} from './for_block';
+import {TcbHostElementOp} from './host';
+import {TcbIfBlockOp} from './if_block';
+import {TcbDirectiveInputsOp, TcbUnclaimedInputsOp} from './inputs';
+import {TcbIntersectionObserverOp} from './intersection_observer';
+import {TcbLetDeclarationOp} from './let';
+import {LocalSymbol, TcbInvalidReferenceOp, TcbReferenceOp} from './references';
+import {TcbDomSchemaCheckerOp} from './schema';
+import {TcbComponentNodeOp} from './selectorless';
 import {
   CustomFormControlType,
   getCustomFieldDirectiveType,
@@ -58,15 +69,9 @@ import {
   TcbNativeFieldOp,
   TcbNativeRadioButtonFieldOp,
 } from './signal_forms';
-import {
-  TcbGenericDirectiveTypeWithAnyParamsOp,
-  TcbNonGenericDirectiveTypeOp,
-} from './directive_type';
-import {TcbDirectiveCtorOp} from './directive_constructor';
-import {TcbControlFlowContentProjectionOp} from './content_projection';
-import {TcbComponentNodeOp} from './selectorless';
-import {TcbIntersectionObserverOp} from './intersection_observer';
-import {TcbHostElementOp} from './host';
+import {TcbSwitchOp} from './switch_block';
+import {TcbTemplateBodyOp, TcbTemplateContextOp} from './template';
+import {TcbBlockImplicitVariableOp, TcbBlockVariableOp, TcbTemplateVariableOp} from './variables';
 
 /**
  * Local scope within the type check block for a particular template.
@@ -184,7 +189,7 @@ export class Scope {
   static forNodes(
     tcb: Context,
     parentScope: Scope | null,
-    scopedNode: Template | IfBlockBranch | ForLoopBlock | HostElement | null,
+    scopedNode: Template | IfBlockBranch | ForLoopBlock | HostElement | BoundaryErrorBlock | null,
     children: Node[] | null,
     guard: TcbExpr | null,
   ): Scope {
@@ -223,6 +228,22 @@ export class Scope {
             tcbExpression(expression, tcb, scope),
             expressionAlias,
           ),
+        );
+      }
+    } else if (scopedNode instanceof BoundaryErrorBlock) {
+      for (const variable of scopedNode.contextVariables) {
+        let typeExpr: TcbExpr;
+        if (variable.value === '$error') {
+          typeExpr = new TcbExpr(`(err as Error)`);
+        } else if (variable.value === '$reset') {
+          typeExpr = new TcbExpr(`(() => {})`);
+        } else {
+          throw new Error(`Unrecognized context variable ${variable.value}`);
+        }
+        Scope.registerVariable(
+          scope,
+          variable,
+          new TcbBlockVariableOp(tcb, scope, typeExpr, variable),
         );
       }
     } else if (scopedNode instanceof ForLoopBlock) {
@@ -290,6 +311,7 @@ export class Scope {
    * @param directive if present, a directive type on a `Element` or `Template` to
    * look up instead of the default for an element or template node.
    */
+
   resolve(node: LocalSymbol, directive?: TcbDirectiveMetadata): TcbExpr {
     // Attempt to resolve the operation locally.
     const res = this.resolveLocal(node, directive);
@@ -374,7 +396,7 @@ export class Scope {
    */
   createChildScope(
     parentScope: Scope,
-    scopedNode: Template | IfBlockBranch | ForLoopBlock | HostElement | null,
+    scopedNode: Template | IfBlockBranch | ForLoopBlock | HostElement | BoundaryErrorBlock | null,
     children: Node[] | null,
     guard: TcbExpr | null,
   ): Scope {
@@ -497,6 +519,8 @@ export class Scope {
       this.appendDeferredBlock(node);
     } else if (node instanceof IfBlock) {
       this.opQueue.push(new TcbIfBlockOp(this.tcb, this, node));
+    } else if (node instanceof BoundaryBlock) {
+      this.opQueue.push(new TcbBoundaryOp(this.tcb, this, node));
     } else if (node instanceof SwitchBlock) {
       this.opQueue.push(new TcbSwitchOp(this.tcb, this, node));
     } else if (node instanceof ForLoopBlock) {
@@ -642,11 +666,10 @@ export class Scope {
       }
 
       this.opQueue.push(new TcbUnclaimedInputsOp(this.tcb, this, node.inputs, node, claimedInputs));
-      // If there are no directives which match this element, then it's a "plain" DOM element (or a
-      // web component), and should be checked against the DOM schema. If any directives match,
-      // we must assume that the element could be custom (either a component, or a directive like
-      // <router-outlet>) and shouldn't validate the element name itself.
-      const checkElement = directives.length === 0;
+      // Check the element against the DOM schema unless it is matched by an Angular component
+      // or by a directive that explicitly targets the element's tag name (such as `<router-outlet>`).
+      // Directives that only match attributes (like `[formControl]`) do not claim the element name.
+      const checkElement = this.requiresUnknownElementCheck(node, directives);
       this.opQueue.push(new TcbDomSchemaCheckerOp(this.tcb, node, checkElement, claimedInputs));
     }
   }
@@ -691,7 +714,16 @@ export class Scope {
       }
 
       this.opQueue.push(
-        new TcbUnclaimedOutputsOp(this.tcb, this, node, events, bindings, claimedOutputs),
+        new TcbUnclaimedOutputsOp(
+          this.tcb,
+          this,
+          node,
+          events,
+          bindings,
+          claimedOutputs,
+          /* hasDirectives */ true,
+          /* hasComponent */ directives.some((dir) => dir.isComponent),
+        ),
       );
     }
   }
@@ -866,11 +898,7 @@ export class Scope {
           }
         }
 
-        let hasDirectives: boolean;
-        if (directives === null || directives.length === 0) {
-          hasDirectives = false;
-        } else {
-          hasDirectives = true;
+        if (directives !== null && directives.length > 0) {
           for (const dir of directives) {
             for (const propertyName of dir.inputs.propertyNames) {
               claimedInputs.add(propertyName);
@@ -879,9 +907,8 @@ export class Scope {
         }
         const isForeign = this.tcb.boundTarget.getForeignComponent(node) !== null;
         if (!isForeign) {
-          this.opQueue.push(
-            new TcbDomSchemaCheckerOp(this.tcb, node, !hasDirectives, claimedInputs),
-          );
+          const checkElement = this.requiresUnknownElementCheck(node, directives);
+          this.opQueue.push(new TcbDomSchemaCheckerOp(this.tcb, node, checkElement, claimedInputs));
         }
       }
 
@@ -1086,5 +1113,41 @@ export class Scope {
         );
       }
     }
+  }
+
+  /**
+   * Checks the element against the DOM schema unless it is matched by an Angular component
+   * or by a directive that explicitly targets the element's tag name (such as `<router-outlet>`).
+   * Directives that only match attributes (like `[formControl]`) do not claim the element name.
+   */
+  private requiresUnknownElementCheck(
+    node: Element,
+    directives: TcbDirectiveMetadata[] | null,
+  ): boolean {
+    if (directives === null || directives.length === 0) {
+      return true;
+    }
+
+    if (!this.tcb.env.config.checkUnknownElements) {
+      return false;
+    }
+
+    const hasComponent = directives.some((dir) => dir.isComponent);
+    const hasDirectiveMatchingTag = directives.some((dir) =>
+      matchesTagName(dir.selector, node.name),
+    );
+    return !hasComponent && !hasDirectiveMatchingTag;
+  }
+}
+
+function matchesTagName(selector: string | null, tagName: string): boolean {
+  if (selector === null) {
+    return false;
+  }
+  const lowerTag = splitNsName(tagName, false)[1].toLowerCase();
+  try {
+    return CssSelector.parse(selector).some((sel) => sel.element?.toLowerCase() === lowerTag);
+  } catch {
+    return false;
   }
 }

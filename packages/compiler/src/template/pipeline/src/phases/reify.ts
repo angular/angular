@@ -7,9 +7,9 @@
  */
 
 import * as o from '../../../../output/output_ast';
-import {CONTEXT_NAME} from '../../../../render3/view/util';
-import {isUnsafeObjectKey} from '../../../../render3/util';
 import {Identifiers} from '../../../../render3/r3_identifiers';
+import {isUnsafeObjectKey} from '../../../../render3/util';
+import {CONTEXT_NAME} from '../../../../render3/view/util';
 import * as ir from '../../ir';
 import {
   TemplateCompilationMode,
@@ -154,7 +154,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
                 })),
               )
             : null;
-        const propsExpr = propsMap !== null ? o.arrowFn([], propsMap) : null;
+        const propsExpr = propsMap !== null ? o.arrowFn([], propsMap, o.DYNAMIC_TYPE) : null;
         ir.OpList.replace(
           op,
           ng.foreignComponent(op.handle.slot!, o.literal(op.constIndex), propsExpr, op.sourceSpan),
@@ -557,6 +557,36 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
           ),
         );
         break;
+      case ir.OpKind.BoundaryErrorCreate:
+        if (!(unit instanceof ViewCompilationUnit)) {
+          throw new Error(`AssertionError: must be compiling a component`);
+        }
+        const boundaryErrorCreateChildView = unit.job.views.get(op.xref)!;
+        ir.OpList.replace(
+          op,
+          ng.conditionalBranchCreate(
+            op.handle.slot!,
+            o.variable(boundaryErrorCreateChildView.fnName!),
+            boundaryErrorCreateChildView.decls!,
+            boundaryErrorCreateChildView.vars!,
+            null, // tag
+            null, // attributes
+            null, // localRefs
+            op.startSourceSpan,
+          ),
+        );
+        break;
+      case ir.OpKind.BoundaryCreate:
+        if (!(unit instanceof ViewCompilationUnit)) {
+          throw new Error(`AssertionError: must be compiling a component`);
+        }
+        if (Array.isArray(op.localRefs) && op.localRefs.length > 0) {
+          throw new Error(
+            `AssertionError: local refs array should have been extracted into a constant`,
+          );
+        }
+        ir.OpList.replace(op, ng.boundaryCreate(op.handle.slot!, op.startSourceSpan));
+        break;
       case ir.OpKind.RepeaterCreate:
         if (op.handle.slot === null) {
           throw new Error('No slot was assigned for repeater instruction');
@@ -737,6 +767,28 @@ function reifyUpdateOperations(unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp
         }
         ir.OpList.replace(op, ng.conditional(op.processed, op.contextValue, op.sourceSpan));
         break;
+      case ir.OpKind.Boundary:
+        if (op.processed === null) {
+          throw new Error(`Boundary test was not set.`);
+        }
+        const boundarySlot = op.targetSlot.slot;
+        if (boundarySlot === null) {
+          throw new Error(`AssertionError: Boundary target slot not found`);
+        }
+        const primarySlot = op.guarded.targetSlot.slot;
+        if (primarySlot === null) {
+          throw new Error(`AssertionError: Primary slot not found for boundary`);
+        }
+        ir.OpList.replace(
+          op,
+          ng.boundary(
+            o.literal(boundarySlot),
+            op.processed!,
+            o.literal(primarySlot),
+            op.sourceSpan,
+          ),
+        );
+        break;
       case ir.OpKind.Repeater:
         ir.OpList.replace(op, ng.repeater(op.collection, op.sourceSpan));
         break;
@@ -910,7 +962,7 @@ function reifyListenerHandler(
     params.push(new o.FnParam('$event', o.DYNAMIC_TYPE));
   }
 
-  return o.fn(params, handlerStmts, undefined, undefined, name);
+  return o.fn(params, handlerStmts, o.DYNAMIC_TYPE, undefined, name);
 }
 
 /** Reifies the tracking expression of a `RepeaterCreateOp`. */
@@ -930,8 +982,8 @@ function reifyTrackBy(unit: CompilationUnit, op: ir.RepeaterCreateOp): o.Express
     // If there are no additional ops related to the tracking function, we just need
     // to turn it into a function that returns the result of the expression.
     fn = op.usesComponentInstance
-      ? o.fn(params, [new o.ReturnStatement(op.track)])
-      : o.arrowFn(params, op.track);
+      ? o.fn(params, [new o.ReturnStatement(op.track)], o.DYNAMIC_TYPE)
+      : o.arrowFn(params, op.track, o.DYNAMIC_TYPE);
   } else {
     // Otherwise first we need to reify the track-related ops.
     reifyUpdateOperations(unit, op.trackByOps);
@@ -951,8 +1003,8 @@ function reifyTrackBy(unit: CompilationUnit, op: ir.RepeaterCreateOp): o.Express
       op.usesComponentInstance ||
       statements.length !== 1 ||
       !(statements[0] instanceof o.ReturnStatement)
-        ? o.fn(params, statements)
-        : o.arrowFn(params, statements[0].value);
+        ? o.fn(params, statements, o.DYNAMIC_TYPE)
+        : o.arrowFn(params, statements[0].value, o.DYNAMIC_TYPE);
   }
 
   op.trackByFn = unit.job.pool.getSharedFunctionReference(fn, '_forTrack');
@@ -987,6 +1039,7 @@ function getArrowFunctionFactory(
       new o.FnParam(expr.contextName, o.DYNAMIC_TYPE),
       new o.FnParam(expr.currentViewName, o.DYNAMIC_TYPE),
     ],
-    o.arrowFn(expr.parameters, body),
+    o.arrowFn(expr.parameters, body, o.DYNAMIC_TYPE),
+    o.DYNAMIC_TYPE,
   );
 }

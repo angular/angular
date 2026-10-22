@@ -43,14 +43,16 @@ You can also control this behavior on individual navigations rather than globall
 router.navigate(['/some-path'], {onSameUrlNavigation: 'reload'});
 ```
 
+TIP: If you use [route resources](/guide/routing/data-fetching-with-resources#reloading-resources-without-renavigation), you can refresh data on-demand by calling `.reload()` on the resource or by updating signals read in `params`, without needing to configure `onSameUrlNavigation` or trigger a router navigation.
+
 ### Control parameter inheritance
 
 `paramsInheritanceStrategy` defines how route parameters and data flow from parent routes.
 
-By default (`'always'`), child routes automatically inherit parameters, route data, and resolved values from parent routes.
+By default (`'always'`), child routes automatically inherit parameters, route data, and resolved values from parent routes. This ensures matrix parameters, route data, and resolved values are available further down the route tree—handy when you share contextual identifiers across feature areas such as:
 
-```ts
-provideRouter(routes, withRouterConfig({paramsInheritanceStrategy: 'emptyOnly'}));
+```text {hideCopy}
+/org/:orgId/projects/:projectId/customers/:customerId
 ```
 
 ```ts
@@ -79,26 +81,28 @@ export const routes: Routes = [
 export class Customer {
   private route = inject(ActivatedRoute);
 
-  orgId = this.route.parent?.parent?.snapshot.params['orgId'];
-  projectId = this.route.parent?.snapshot.params['projectId'];
+  // All parent parameters are available directly
+  orgId = this.route.snapshot.params['orgId'];
+  projectId = this.route.snapshot.params['projectId'];
   customerId = this.route.snapshot.params['customerId'];
 }
 ```
 
-This ensures matrix parameters, route data, and resolved values are available further down the route tree—handy when you share contextual identifiers across feature areas such as:
+To restore the legacy behavior, set `paramsInheritanceStrategy` to `'emptyOnly'`. With `'emptyOnly'`, child routes inherit params only when their path is empty or the parent does not declare a component:
 
-```text {hideCopy}
-/org/:orgId/projects/:projectId/customers/:customerId
+```ts
+provideRouter(routes, withRouterConfig({paramsInheritanceStrategy: 'emptyOnly'}));
 ```
+
+In that case, the `Customer` component has to read the parent parameters from its ancestor routes:
 
 ```ts
 @Component({/* ... */})
 export class Customer {
   private route = inject(ActivatedRoute);
 
-  // All parent parameters are available directly
-  orgId = this.route.snapshot.params['orgId'];
-  projectId = this.route.snapshot.params['projectId'];
+  orgId = this.route.parent?.parent?.snapshot.params['orgId'];
+  projectId = this.route.parent?.snapshot.params['projectId'];
   customerId = this.route.snapshot.params['customerId'];
 }
 ```
@@ -180,14 +184,14 @@ Angular's `RouteReuseStrategy` class allows you to customize navigation behavior
 
 The `RouteReuseStrategy` class provides the following methods that control the lifecycle of route components:
 
-| Method                                                                         | Description                                                                                                         |
-| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
-| [`shouldDetach`](api/router/RouteReuseStrategy#shouldDetach)                   | Determines if a route should be stored for later reuse when navigating away                                         |
-| [`store`](api/router/RouteReuseStrategy#store)                                 | Stores the detached route handle when `shouldDetach` returns true                                                   |
-| [`shouldAttach`](api/router/RouteReuseStrategy#shouldAttach)                   | Determines if a stored route should be reattached when navigating to it                                             |
-| [`retrieve`](api/router/RouteReuseStrategy#retrieve)                           | Returns the previously stored route handle for reattachment                                                         |
-| [`shouldReuseRoute`](api/router/RouteReuseStrategy#shouldReuseRoute)           | Determines if the router should reuse the current route instance instead of destroying it during navigation         |
-| [`shouldDestroyInjector`](api/router/RouteReuseStrategy#shouldDestroyInjector) | (Experimental) Determines if the router should destroy the injector of a detached route when it is no longer stored |
+| Method                                                                         | Description                                                                                                 |
+| ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| [`shouldDetach`](api/router/RouteReuseStrategy#shouldDetach)                   | Determines if a route should be stored for later reuse when navigating away                                 |
+| [`store`](api/router/RouteReuseStrategy#store)                                 | Stores the detached route handle when `shouldDetach` returns true                                           |
+| [`shouldAttach`](api/router/RouteReuseStrategy#shouldAttach)                   | Determines if a stored route should be reattached when navigating to it                                     |
+| [`retrieve`](api/router/RouteReuseStrategy#retrieve)                           | Returns the previously stored route handle for reattachment                                                 |
+| [`shouldReuseRoute`](api/router/RouteReuseStrategy#shouldReuseRoute)           | Determines if the router should reuse the current route instance instead of destroying it during navigation |
+| [`shouldDestroyInjector`](api/router/RouteReuseStrategy#shouldDestroyInjector) | Determines if the router should destroy the injector of a detached route when it is no longer stored        |
 
 The following example demonstrates a custom route reuse strategy that selectively preserves component state based on route metadata:
 
@@ -261,17 +265,17 @@ if (this.handles.size > MAX_CACHE_SIZE) {
 
 NOTE: Avoid using the route path as the key when `canMatch` guards are involved, as it may lead to duplicate entries.
 
-### (Experimental) Automatic cleanup of unused route injectors
+### Automatic cleanup of unused route injectors
 
 By default, Angular does not destroy the injectors of detached routes, even if they are no longer stored by the `RouteReuseStrategy`. This is primarily because this level of memory management is not commonly needed for most applications.
 
-To enable automatic cleanup of unused route injectors, you can use the `withExperimentalAutoCleanupInjectors` feature in your router configuration. This feature checks which routes are currently stored by the strategy after navigations and destroys the injectors of any detached routes that are not currently stored by the reuse strategy.
+To enable automatic cleanup of unused route injectors, you can use the `withAutoCleanupInjectors` feature in your router configuration. This feature checks which routes are currently stored by the strategy after navigations and destroys the injectors of any detached routes that are not currently stored by the reuse strategy.
 
 ```ts
-import {provideRouter, withExperimentalAutoCleanupInjectors} from '@angular/router';
+import {provideRouter, withAutoCleanupInjectors} from '@angular/router';
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideRouter(routes, withExperimentalAutoCleanupInjectors())],
+  providers: [provideRouter(routes, withAutoCleanupInjectors())],
 };
 ```
 
@@ -303,7 +307,7 @@ export class CustomRouteReuseStrategy implements RouteReuseStrategy {
     this.handles.set(route.routeConfig!, handle);
   }
 
-  retrieveStoredRouteHandles(): DetachedRouteHandle {
+  retrieveStoredRouteHandles(): DetachedRouteHandle[] {
     return Array.from(this.handles.values());
   }
 
@@ -468,8 +472,7 @@ You can register a custom strategy through Angular's dependency injection system
 
 ```ts
 import {ApplicationConfig} from '@angular/core';
-import {provideRouter} from '@angular/router';
-import {UrlHandlingStrategy} from '@angular/router';
+import {provideRouter, UrlHandlingStrategy} from '@angular/router';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -549,8 +552,7 @@ export const routes: Routes = [
 The component receives the extracted parameters through route inputs:
 
 ```angular-ts
-import {Component, input, inject} from '@angular/core';
-import {resource} from '@angular/core';
+import {Component, input, inject, resource} from '@angular/core';
 
 @Component({
   selector: 'app-documentation',

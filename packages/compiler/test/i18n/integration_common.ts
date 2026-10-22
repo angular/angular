@@ -20,7 +20,6 @@ import {expect} from '@angular/private/testing/matchers';
 @Component({
   selector: 'i18n-cmp',
   template: '',
-  standalone: false,
 })
 export class I18nComponent {
   count?: number;
@@ -190,7 +189,6 @@ export async function configureCompiler(translationsToMerge: string, format: str
       {provide: TRANSLATIONS_FORMAT, useValue: format},
     ],
   });
-  TestBed.configureTestingModule({declarations: [I18nComponent]});
 }
 
 export function createComponent(html: string) {

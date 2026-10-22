@@ -193,8 +193,7 @@ Field state provides reactive signals for each field's value, making it suitable
 
 TIP: Field state includes many more signals beyond `value()`, such as validation state (e.g., valid, invalid, errors), interaction tracking (e.g., touched, dirty), and visibility (e.g., hidden, disabled).
 
-<!-- TODO: UNCOMMENT BELOW WHEN GUIDE IS AVAILABLE -->
-<!-- See the [Field State Management guide](guide/forms/signals/field-state-management) for complete coverage. -->
+See the [Field State Management guide](guide/forms/signals/field-state-management) for complete coverage.
 
 ## Updating form models programmatically
 
@@ -425,7 +424,6 @@ Array items containing objects automatically receive tracking identities, which 
 
 This guide covered creating models and updating values. Related guides explore other aspects of Signal Forms:
 
-<!-- TODO: UNCOMMENT WHEN THE GUIDES ARE AVAILABLE -->
 <docs-pill-row>
   <docs-pill href="guide/forms/signals/field-state-management" title="Field state management" />
   <docs-pill href="guide/forms/signals/validation" title="Validation" />

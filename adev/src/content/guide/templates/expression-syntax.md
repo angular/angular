@@ -70,6 +70,8 @@ Angular supports the following operators from standard JavaScript.
 | in                            | `'model' in car`                               |
 | instanceof                    | `car instanceof Automobile`                    |
 | Assignment                    | `a = b`                                        |
+| Increment                     | `a++`, `++a`                                   |
+| Decrement                     | `a--`, `--a`                                   |
 | Addition Assignment           | `a += b`                                       |
 | Subtraction Assignment        | `a -= b`                                       |
 | Multiplication Assignment     | `a *= b`                                       |
@@ -82,6 +84,11 @@ Angular supports the following operators from standard JavaScript.
 | Spread in object literals     | `{...obj, foo: 'bar'}`                         |
 | Spread in array literals      | `[...arr, 1, 2, 3]`                            |
 | Rest in function calls        | `fn(...args)`                                  |
+| Arrow function                | `items.filter((i) => i.active)`                |
+
+NOTE: Assignment and increment/decrement operators are only valid in [event listener statements](#event-listener-statements). Using them in a binding or interpolation is a compile error, unless they are inside an arrow function.
+
+Arrow functions must have an expression body. Pipes cannot be used inside an arrow function, but you can pass an arrow function as an argument to a pipe.
 
 Angular expressions additionally also support the following non-standard operators:
 
@@ -94,9 +101,9 @@ Angular expressions additionally also support the following non-standard operato
 ### Safe navigation migration
 
 Prior to Angular 22, the optional chaining operator (`?.`) returned `null` when the left-hand side is `null` or `undefined`, whereas standard JavaScript's `?.` returns `undefined`.
-Since Angular 22, the optional chaining operator behavior in angular expressions is alligned with the standard Javascript's behavior.
+Since Angular 22, the optional chaining operator behavior in Angular expressions is aligned with the standard JavaScript behavior.
 
-During the migration to v22, the `ng update` schematics added a `$safeNavigationMigration` magic function to existing expressions to preserve the previous `null`-returning behavior.
+During the migration to v22, the `ng update` schematics adds a `$safeNavigationMigration` function to existing expressions to preserve the previous behavior.
 
 ```html
 {{ $safeNavigationMigration(foo?.bar) }}
@@ -126,12 +133,12 @@ When referring to component class members, `this` is always implied. However, if
 
 Generally speaking, declarations are not supported in Angular expressions. This includes, but is not limited to:
 
-| Declarations    | Example(s)                                  |
-| --------------- | ------------------------------------------- |
-| Variables       | `let label = 'abc'`, `const item = 'apple'` |
-| Functions       | `function myCustomFunction() { }`           |
-| Arrow Functions | `() => { }`                                 |
-| Classes         | `class Rectangle { }`                       |
+| Declarations                      | Example(s)                                  |
+| --------------------------------- | ------------------------------------------- |
+| Variables                         | `let label = 'abc'`, `const item = 'apple'` |
+| Functions                         | `function myCustomFunction() { }`           |
+| Arrow functions with block bodies | `() => { }`                                 |
+| Classes                           | `class Rectangle { }`                       |
 
 ## Event listener statements
 

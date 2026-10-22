@@ -84,7 +84,7 @@ export class EagerView {
 
 Lazy-loaded routes create child injectors that are only available after the route loads.
 
-NOTE: By default, route injectors and their services persist even after navigating away from the route. They are not destroyed until the application is closed. For automatic cleanup of unused route injectors, see [customizing route behavior](guide/routing/customizing-route-behavior#experimental-automatic-cleanup-of-unused-route-injectors).
+NOTE: By default, route injectors and their services persist even after navigating away from the route. They are not destroyed until the application is closed. For automatic cleanup of unused route injectors, see [customizing route behavior](guide/routing/customizing-route-behavior#automatic-cleanup-of-unused-route-injectors).
 
 **Solution:** Use `@Service` for services that need to be shared across lazy boundaries.
 
@@ -135,7 +135,7 @@ Each component gets its own `UserClient` instance. Changes in one component don'
 **Solution:** Use `@Service` for singletons.
 
 ```ts {prefer, header: 'Root-level singleton'}
-import {Injectable} from '@angular/core';
+import {Service} from '@angular/core';
 
 @Service()
 export class UserClient {
@@ -250,7 +250,7 @@ export class UserProfile {
 Use `runInInjectionContext()` when you need to enable **other code** to call `inject()`. This is useful when accepting callbacks that might use dependency injection:
 
 ```angular-ts
-import {Component, inject, Injector, input} from '@angular/core';
+import {Component, inject, Injector, input, runInInjectionContext} from '@angular/core';
 
 @Component({
   selector: 'app-data-loader',
@@ -264,13 +264,13 @@ export class DataLoader {
     const callback = this.onLoad();
     if (callback) {
       // Enable the callback to use inject()
-      this.injector.runInInjectionContext(callback);
+      runInInjectionContext(this.injector, callback);
     }
   }
 }
 ```
 
-The `runInInjectionContext()` method creates a temporary injection context, allowing code inside the callback to call `inject()`.
+The `runInInjectionContext()` function creates a temporary injection context, allowing code inside the callback to call `inject()`.
 
 IMPORTANT: Always capture dependencies at the class level when possible. Use `injector.get()` for simple deferred retrieval, and `runInInjectionContext()` only when external code needs to call `inject()`.
 
@@ -671,16 +671,15 @@ This section provides detailed information about specific Angular DI error codes
 
 ### NullInjectorError: No provider for [Service]
 
-**Error code:** None (displayed as `NullInjectorError`)
+**Error code:** [NG0201](errors/NG0201)
 
 This error occurs when Angular cannot find a provider for a token in the injector hierarchy. The error message includes a dependency path showing where the injection was attempted.
 
 ```
-NullInjectorError: No provider for UserClient!
-  Dependency path: App -> AuthClient -> UserClient
+NG0201: No provider found for `UserClient`. Path: AuthClient -> UserClient.
 ```
 
-The dependency path shows that `App` injected `AuthClient`, which tried to inject `UserClient`, but no provider was found.
+The dependency path shows that `AuthClient` tried to inject `UserClient`, but no provider was found.
 
 #### Missing the `@Service ` or `@Injectable` decorator
 
@@ -749,7 +748,7 @@ import {UserClient} from './user-client';
 
 @Component({
   selector: 'app-profile',
-  template: '<p>User: {{user().name}}</p>',
+  template: '<p>User: {{user.name}}</p>',
 })
 export class UserProfile {
   private userService = inject(UserClient); // ERROR: No provider
@@ -765,7 +764,7 @@ import {UserClient} from './user-client';
 
 @Component({
   selector: 'app-profile',
-  template: '<p>User: {{user().name}}</p>',
+  template: '<p>User: {{user.name}}</p>',
 })
 export class UserProfile {
   private userService = inject(UserClient); // Works: providedIn: 'root'
@@ -778,16 +777,14 @@ export class UserProfile {
 The dependency path in the error message shows the chain of injections that led to the failure.
 
 ```
-NullInjectorError: No provider for LoggerStore!
-  Dependency path: App -> DataStore -> ApiClient -> LoggerStore
+NG0201: No provider found for `LoggerStore`. Path: DataStore -> ApiClient -> LoggerStore.
 ```
 
 This path tells you:
 
-1. `App` injected `DataStore`
-2. `DataStore` injected `ApiClient`
-3. `ApiClient` tried to inject `LoggerStore`
-4. No provider for `LoggerStore` was found
+1. `DataStore` injected `ApiClient`
+2. `ApiClient` tried to inject `LoggerStore`
+3. No provider for `LoggerStore` was found
 
 Start your investigation at the end of the chain (`LoggerStore`) and verify it has proper configuration.
 
@@ -818,9 +815,10 @@ Optional injection returns `null` if no provider is found, allowing you to handl
 This error occurs when you call `inject()` outside of a valid injection context. Angular requires `inject()` to be called synchronously during class construction or factory execution.
 
 ```
-NG0203: inject() must be called from an injection context such as a
-constructor, a factory function, a field initializer, or a function
-used with `runInInjectionContext`.
+NG0203: The `UserClient` token injection failed. `inject()` function must
+be called from an injection context such as a constructor, a factory
+function, a field initializer, or a function used with
+`runInInjectionContext`.
 ```
 
 #### Valid injection contexts
@@ -835,7 +833,7 @@ Angular allows `inject()` in these locations:
 
    @Component({
      selector: 'app-profile',
-     template: '<p>User: {{user().name}}</p>',
+     template: '<p>User: {{user.name}}</p>',
    })
    export class UserProfile {
      private userService = inject(UserClient); // Valid
@@ -851,16 +849,16 @@ Angular allows `inject()` in these locations:
 
    @Component({
      selector: 'app-profile',
-     template: '<p>User: {{user().name}}</p>',
+     template: '<p>User: {{user.name}}</p>',
    })
    export class UserProfile {
      private userService: UserClient;
+     user: ReturnType<UserClient['getUser']>;
 
      constructor() {
        this.userService = inject(UserClient); // Valid
+       this.user = this.userService.getUser();
      }
-
-     user = this.userService.getUser();
    }
    ```
 
@@ -882,7 +880,7 @@ Angular allows `inject()` in these locations:
 4. **Inside runInInjectionContext()**
 
    ```angular-ts
-   import {Component, inject, Injector} from '@angular/core';
+   import {Component, inject, Injector, runInInjectionContext} from '@angular/core';
    import {UserClient} from './user-client';
 
    @Component({
@@ -893,7 +891,7 @@ Angular allows `inject()` in these locations:
      private injector = inject(Injector);
 
      loadUser() {
-       this.injector.runInInjectionContext(() => {
+       runInInjectionContext(this.injector, () => {
          const userService = inject(UserClient); // Valid
          console.log(userService.getUser());
        });
@@ -907,6 +905,7 @@ Other injection contexts that `inject()` also works in include:
 - [provideEnvironmentInitializer](api/core/provideEnvironmentInitializer)
 - Functional [route guards](guide/routing/route-guards)
 - Functional [data resolvers](guide/routing/data-resolvers)
+- Route [resources](guide/routing/data-fetching-with-resources)
 
 #### When this error occurs
 
@@ -933,7 +932,7 @@ private userService = inject(UserClient) // Capture at class level
 private injector = inject(Injector)
 
 someCallback() {
-  this.injector.runInInjectionContext(() => {
+  runInInjectionContext(this.injector, () => {
     const service = inject(MyClient)
   })
 }
@@ -962,8 +961,7 @@ setTimeout(() => {
 This error occurs when two or more services depend on each other, creating a circular dependency that Angular cannot resolve.
 
 ```
-NG0200: Circular dependency in DI detected for AuthClient
-  Dependency path: AuthClient -> UserClient -> AuthClient
+NG0200: Circular dependency detected for `AuthClient`. Path: AuthClient -> UserClient -> AuthClient.
 ```
 
 The dependency path shows the cycle: `AuthClient` depends on `UserClient`, which depends back on `AuthClient`.

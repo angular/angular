@@ -76,6 +76,21 @@ httpResource.blob(() => ({ … })); // returns a Blob object in value()
 httpResource.arrayBuffer(() => ({ … })); // returns an ArrayBuffer in value()
 ```
 
+### Tracking download progress
+
+Set `reportProgress: true` in the request object to track the download progress of the response. The latest `HttpProgressEvent` is available through the `progress` signal of the resource:
+
+```ts
+file = httpResource.blob(() => ({
+  url: `/api/files/${fileId()}`,
+  reportProgress: true,
+}));
+
+downloaded = computed(() => this.file.progress()?.loaded ?? 0);
+```
+
+NOTE: Unlike `HttpClient`, where `reportProgress` is deprecated in favor of `reportUploadProgress` and `reportDownloadProgress`, `httpResource` keeps the single `reportProgress` option. It only enables download progress events.
+
 ## Response parsing and validation
 
 When fetching data, you may want to validate responses against a predefined schema, often using popular open-source libraries like [Zod](https://zod.dev) or [Valibot](https://valibot.dev). You can integrate validation libraries like this with `httpResource` by specifying a `parse` option. The return type of the `parse` function determines the type of the resource's `value`.

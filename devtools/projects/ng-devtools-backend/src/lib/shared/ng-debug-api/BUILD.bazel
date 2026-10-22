@@ -19,7 +19,7 @@ ng_project(
 
 ts_test_library(
     name = "ng-debug-api_test_lib",
-    srcs = ["ng-debug-api.spec.ts"],
+    srcs = glob(["*.spec.ts"]),
     deps = [
         ":ng-debug-api",
         "//:node_modules/@angular/core",

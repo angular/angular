@@ -69,10 +69,7 @@ describe('Signal Forms array removal orphan repro', () => {
     }
   });
   it('should handle debounceSync resolving after the field is orphaned', async () => {
-    let resolveDebounce!: () => void;
-    const debouncePromise = new Promise<void>((r) => {
-      resolveDebounce = r;
-    });
+    const {promise: debouncePromise, resolve: resolveDebounce} = Promise.withResolvers<void>();
 
     @Component({
       imports: [FormField],

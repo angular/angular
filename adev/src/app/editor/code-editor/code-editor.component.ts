@@ -22,10 +22,10 @@ import {
   untracked,
   viewChild,
 } from '@angular/core';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {takeUntilDestroyed, toSignal} from '@angular/core/rxjs-interop';
 import {MatTab, MatTabGroup, MatTabLabel} from '@angular/material/tabs';
 import {Title} from '@angular/platform-browser';
-import {from, switchMap} from 'rxjs';
+import {EMPTY, from, switchMap} from 'rxjs';
 
 import {TerminalType} from '../terminal/terminal-handler.service';
 
@@ -36,6 +36,7 @@ import {MatTooltip} from '@angular/material/tooltip';
 import {DownloadManager} from '../download-manager.service';
 import {LoadingStep} from '../enums/loading-steps';
 import {injectEmbeddedTutorialManager} from '../inject-embedded-tutorial-manager';
+import {NodeRuntimeSandbox} from '../node-runtime-sandbox.service';
 import {NodeRuntimeState} from '../node-runtime-state.service';
 import {StackBlitzOpener} from '../stackblitz-opener.service';
 import {CodeMirrorEditor} from './code-mirror-editor.service';
@@ -75,6 +76,16 @@ export class CodeEditor {
   private readonly destroyRef = inject(DestroyRef);
 
   private readonly nodeRuntimeState = inject(NodeRuntimeState);
+  private readonly nodeRuntimeSandbox = inject(NodeRuntimeSandbox, {
+    optional: true,
+  });
+  private readonly previewUrl = toSignal(this.nodeRuntimeSandbox?.previewUrl$ ?? EMPTY, {
+    initialValue: null,
+  });
+  private readonly trustedPreviewOrigin = computed(() => {
+    const url = this.previewUrl();
+    return url ? new URL(url).origin : null;
+  });
   private readonly codeMirrorEditor = inject(CodeMirrorEditor);
   private readonly diagnosticsState = inject(DiagnosticsState);
   private readonly downloadManager = inject(DownloadManager);
@@ -165,8 +176,16 @@ export class CodeEditor {
       openFile(file, line, character);
     };
 
-    // Listen for postMessage from preview iframe (Vite error overlay)
+    // Listen for postMessage from preview iframe (Vite error overlay).
+    // Only accept messages from the WebContainer preview origin, which is
+    // hosted on a dynamic `*.webcontainer.io` subdomain (cross-origin) and
+    // therefore captured at runtime once the dev server becomes ready.
     const handlePostMessage = (event: MessageEvent) => {
+      const trustedPreviewOrigin = this.trustedPreviewOrigin();
+
+      if (trustedPreviewOrigin === null || event.origin !== trustedPreviewOrigin) {
+        return;
+      }
       // Check if this is an openFileAtLocation message
       if (event.data?.type === 'openFileAtLocation') {
         const {file, line, character} = event.data;

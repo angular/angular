@@ -32,6 +32,8 @@ import {
   TmplAstTextAttribute,
   TmplAstVariable,
   TypeCheckingConfig,
+  Unary,
+  unwrapWriteTarget,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -663,14 +665,26 @@ export class SymbolBuilder {
 
     let withSpan = expression.sourceSpan;
 
+    // Whether `withSpan` points at a property read, in which case the search below should look
+    // for a `PropertyAccessExpression` rather than settling for whichever node comes first.
+    let isPropertyRead = expression instanceof PropertyRead;
+
     // The `name` part of a property write and `ASTWithName` do not have their own
     // AST so there is no way to retrieve a `Symbol` for just the `name` via a specific node.
-    if (
-      expression instanceof Binary &&
-      Binary.isAssignmentOperation(expression.operation) &&
-      expression.left instanceof PropertyRead
-    ) {
-      withSpan = expression.left.nameSpan;
+    if (expression instanceof Binary && Binary.isAssignmentOperation(expression.operation)) {
+      const target = unwrapWriteTarget(expression.left);
+      if (target instanceof PropertyRead) {
+        withSpan = target.nameSpan;
+        isPropertyRead = true;
+      }
+    } else if (expression instanceof Unary && Unary.isUpdateOperation(expression.operator)) {
+      // The target of an update operator can be wrapped in parentheses or a non-null assertion
+      // (e.g. `(value)++` or `value!++`), neither of which affect what is being written to.
+      const target = unwrapWriteTarget(expression.expr);
+      if (target instanceof PropertyRead) {
+        withSpan = target.nameSpan;
+        isPropertyRead = true;
+      }
     } else if (
       expression instanceof ASTWithName &&
       !(expression instanceof SafePropertyRead) &&
@@ -683,7 +697,7 @@ export class SymbolBuilder {
 
     // Property reads in templates usually map to a `PropertyAccessExpression`
     // (e.g. `ctx.foo`) so try looking for one first.
-    if (expression instanceof PropertyRead || expression instanceof SafePropertyRead) {
+    if (isPropertyRead || expression instanceof SafePropertyRead) {
       node = findFirstMatchingNode(this.typeCheckBlock, {
         withSpan,
         filter: ts.isPropertyAccessExpression,
