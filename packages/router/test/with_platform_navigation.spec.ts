@@ -484,5 +484,30 @@ if (typeof window !== 'undefined' && 'navigation' in window && !isFirefox()) {
       await timeout(3);
       expect(routerEvents).toEqual([]);
     });
+
+    /**
+     * Cancels the next `navigate` event so the browser doesn't download the file.
+     * The listener is added after the router's own listener, so the router has already handled
+     * the event when it runs.
+     */
+    function preventNextNavigation() {
+      TestBed.inject(PlatformNavigation).addEventListener(
+        'navigate',
+        (e: NavigateEvent) => e.preventDefault(),
+        {once: true},
+      );
+    }
+
+    it(
+      'should not convert downloads to SPA navigations',
+      withBody('<a href="/file.txt" download>download</a>', async () => {
+        preventNextNavigation();
+        const routerEvents: Event[] = [];
+        router.events.subscribe((e) => routerEvents.push(e));
+        document.querySelector('a')!.click();
+        await timeout();
+        expect(routerEvents).toEqual([]);
+      }),
+    );
   });
 }
