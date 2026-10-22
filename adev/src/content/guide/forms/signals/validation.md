@@ -486,7 +486,7 @@ While built-in validation rules handle common cases, you'll often need custom va
 
 ### Using validate()
 
-The `validate()` function creates custom validation rules. It receives a validator function that receives the field's current value and returns:
+The `validate()` function creates custom validation rules. It receives a validator function that accesses the field context and returns:
 
 | Return Value          | Meaning          |
 | --------------------- | ---------------- |
@@ -592,7 +592,7 @@ NOTE: For advanced async validation and complex scenarios requiring execution de
 | ----------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `debounce`        | `number \| DebounceTimer` | Duration in milliseconds to wait before triggering the async operation, or a function returning a timing promise. A function receives the new value and the previous snapshot. |
 | `when`            | `LogicFn`                 | A function that receives the field context and returns `true` if the async validation should run.                                                                              |
-| `onError`         | `Function`                | A handler for errors thrown by the validator. Defaults to an `{ kind: 'asyncError', message: ... }` object if omitted.                                                         |
+| `onError`         | `Function`                | A handler for errors thrown by the validator. Defaults to `{ kind: 'asyncError' }` if omitted.                                                                                 |
 
 ### Using validateTree()
 

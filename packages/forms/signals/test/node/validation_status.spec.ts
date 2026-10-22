@@ -610,6 +610,20 @@ describe('validation status', () => {
       expect(validator).toHaveBeenCalledOnceWith('b');
     });
 
+    it('should map rejected promises to an async error by default', async () => {
+      const f = form(
+        signal('a'),
+        (p) => validatePromise(p, () => Promise.reject(new Error('boom'))),
+        {injector},
+      );
+
+      await appRef.whenStable();
+
+      const error = f().errors()[0];
+      expect(error).toEqual(jasmine.objectContaining({kind: 'asyncError'}));
+      expect(error.message).toBeUndefined();
+    });
+
     it('should map rejected promises using `onError`', async () => {
       const f = form(
         signal('a'),

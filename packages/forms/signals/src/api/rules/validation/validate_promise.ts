@@ -102,12 +102,7 @@ export function validatePromise<TValue, TPathKind extends PathKind = PathKind.Ro
         },
       }),
     onSuccess: (result: TreeValidationResult | undefined) => result,
-    onError:
-      options.onError ??
-      ((error: unknown) => ({
-        kind: 'asyncError',
-        message: String(error ?? 'Async validation failed'),
-      })),
+    onError: options.onError ?? (() => ({kind: 'asyncError'})),
     when: options.when,
   });
 }
