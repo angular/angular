@@ -313,6 +313,17 @@ const NGP_POTENTIAL_BREAKING_CHANGES: ReadonlySet<string> = new Set([
   'ngtsc behavioral tests input transforms should compile an input with an external transform function',
   'ngtsc behavioral tests input transforms should compile an input with using an ambient type in the transform function',
   'ngtsc behavioral tests input transforms should treat an input transform function only with a `this` parameter as unknown',
+
+  // Design difference, not a bug: on an `@Inject` parameter whose type is imported from another
+  // file, ngp emits `type: undefined` in `ɵsetClassMetadata` in both compilation modes. Single-file
+  // analysis cannot tell an imported class from an imported interface (ngtsc can, via the type
+  // checker), and withholding the type is safe because DI uses the `@Inject` token. The
+  // cross-file pass deliberately does not upgrade these so that both modes keep the same runtime
+  // imports; see the `@Inject` rule in `ng-analyze/src/analyzer/mod.rs`. These specs assert the
+  // ngtsc shape (`type: ImportedClass` and a surviving import) for such a parameter.
+  'ngtsc behavioral tests should use imported types in setClassMetadata if they can be represented as values',
+  'ngtsc behavioral tests should use imported types in setClassMetadata if they can be represented as values and imported as `* as foo`',
+  'ngtsc behavioral tests should preserve the types of non-const enums in setClassMetadata',
 ]);
 
 /**
