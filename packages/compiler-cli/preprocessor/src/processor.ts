@@ -431,10 +431,10 @@ export function processFileSync(
     }
   }
 
-  // Defer printing and inserting class fields/metadata until all classes in the file have
-  // compiled against `sharedPool`, so `ConstantPool` `FixupExpression`s (e.g., shared styles
-  // across multiple components in the same file) are finalized before `printer.print` runs.
-  const deferredClassAppends: Array<() => void> = [];
+  // First pass: compile all classes in the file into AST representations so `sharedPool`
+  // (`ConstantPool`) finalizes all `FixupExpression`s (e.g., shared styles across multiple
+  // components in the same file) before the second pass prints and appends them.
+  const compiledClasses: CompiledClass[] = [];
 
   for (const classMeta of classes) {
     if (ctx.hmrUpdateTarget !== undefined && classMeta.className !== ctx.hmrUpdateTarget) {
@@ -548,10 +548,17 @@ export function processFileSync(
     // Avoid duplicate `ɵfac` generation when a class carries multiple decorators (e.g. `@Component` + `@Injectable`).
     // https://github.com/angular/angular/blob/d27e2c2/packages/compiler-cli/src/ngtsc/transform/src/compilation.ts#L710-L718
     let factoryGenerated = false;
-
-    // NgModule side-effect statements, emitted after `ɵsetClassMetadata` (see below).
-    let ngModuleStatements = '';
     let hmrComponent: HmrComponentCompilation | null = null;
+
+    const compiledClass: CompiledClass = {
+      classMeta,
+      fields: [],
+      ngModule: null,
+      classMetadataStmt: null,
+      debugInfoStmt: null,
+      hmrInitializerStmt: null,
+    };
+    compiledClasses.push(compiledClass);
 
     const decoratorsToEmit: DecoratorMetadata[] = [];
     const guards = ctx.complianceMode ? [] : classMeta.laterDeclarationReferences;
@@ -593,16 +600,9 @@ export function processFileSync(
         typeArgumentCount: classMeta?.typeParameters?.length ?? 0,
         deps: null,
       });
-      deferredClassAppends.push(() => {
-        const compiledFactory = compileFactoryField(factoryRes, printer, ctx);
-        const compiledPipe = createStaticField(
-          'ɵpipe',
-          printer.print(def.expression),
-          printer.emitTypes ? printer.printType(def.type) : null,
-          true,
-          ctx.isClosureCompilerEnabled,
-        );
-        out.appendLeft(span.end - 1, compiledFactory + compiledPipe);
+      compiledClass.fields.push({
+        factory: factoryRes,
+        def: {name: 'ɵpipe', def},
       });
     }
 
@@ -1490,17 +1490,11 @@ export function processFileSync(
         target: FactoryTarget.Component,
       });
 
-      // 8. Insert static fields
-      deferredClassAppends.push(() => {
-        const compiledFac = compileFactoryField(factoryRes, printer, ctx);
-        const compiledCmp = createStaticField(
-          'ɵcmp',
-          printer.print(compileResult.expression),
-          printer.emitTypes ? printer.printType(compileResult.type) : null,
-          true,
-          ctx.isClosureCompilerEnabled,
-        );
-        out.appendLeft(span.end - 1, compiledFac + compiledCmp + classMeta.coercionMembers);
+      // 8. Record compiled static fields
+      compiledClass.fields.push({
+        factory: factoryRes,
+        def: {name: 'ɵcmp', def: compileResult},
+        coercionMembers: classMeta.coercionMembers,
       });
 
       if (ctx.enableHmr) {
@@ -1577,17 +1571,11 @@ export function processFileSync(
         target: FactoryTarget.Directive,
       });
 
-      // Insert static fields
-      deferredClassAppends.push(() => {
-        const compiledFac = compileFactoryField(factoryRes, printer, ctx);
-        const compiledDir = createStaticField(
-          'ɵdir',
-          printer.print(compileResult.expression),
-          printer.emitTypes ? printer.printType(compileResult.type) : null,
-          true,
-          ctx.isClosureCompilerEnabled,
-        );
-        out.appendLeft(span.end - 1, compiledFac + compiledDir + classMeta.coercionMembers);
+      // Record compiled static fields
+      compiledClass.fields.push({
+        factory: factoryRes,
+        def: {name: 'ɵdir', def: compileResult},
+        coercionMembers: classMeta.coercionMembers,
       });
     }
     if (service) {
@@ -1619,16 +1607,9 @@ export function processFileSync(
       };
 
       const def = compileService(serviceMeta, false);
-      deferredClassAppends.push(() => {
-        const compiledFactory = compileFactoryField(factoryRes, printer, ctx);
-        const compiledProv = createStaticField(
-          'ɵprov',
-          printer.print(def.expression),
-          printer.emitTypes ? printer.printType(def.type) : null,
-          true,
-          ctx.isClosureCompilerEnabled,
-        );
-        out.appendLeft(span.end - 1, compiledFactory + compiledProv);
+      compiledClass.fields.push({
+        factory: factoryRes,
+        def: {name: 'ɵprov', def},
       });
     }
 
@@ -1698,18 +1679,9 @@ export function processFileSync(
       }
 
       const def = compileInjectable(injectableMeta, false);
-      deferredClassAppends.push(() => {
-        const compiledFactory = factoryRes ? compileFactoryField(factoryRes, printer, ctx) : '';
-        const compiledProv = createStaticField(
-          'ɵprov',
-          printer.print(def.expression),
-          printer.emitTypes ? printer.printType(def.type) : null,
-          true,
-          ctx.isClosureCompilerEnabled,
-        );
-
-        // Insert at classEnd - 1 (before the closing brace)
-        out.appendLeft(span.end - 1, compiledFactory + compiledProv);
+      compiledClass.fields.push({
+        factory: factoryRes,
+        def: {name: 'ɵprov', def},
       });
     }
 
@@ -1721,27 +1693,17 @@ export function processFileSync(
         });
       }
       factoryGenerated = true;
-      deferredClassAppends.push(() => {
-        const {compiledFac, compiledMod, compiledInj, statements} = compileNgModuleDef(
-          className,
-          ngModule,
-          deps,
-          printer,
-          ctx,
-          classes,
-          classMeta,
-          s,
-          filePath,
-          fileDiagnostics,
-        );
-
-        out.appendLeft(span.end - 1, compiledFac + compiledMod + compiledInj);
-        // The NgModule side-effect statements (`ɵɵsetNgModuleScope`, `ɵɵregisterNgModuleType`)
-        // must be emitted AFTER `ɵsetClassMetadata`. The reference compiler unshifts the class
-        // metadata statement to the front of these statements before emission.
-        // https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L1007-L1014
-        ngModuleStatements = statements;
-      });
+      compiledClass.ngModule = compileNgModuleDef(
+        className,
+        ngModule,
+        deps,
+        ctx,
+        classes,
+        classMeta,
+        s,
+        filePath,
+        fileDiagnostics,
+      );
     }
 
     let classMetadataStmt: o.Statement | null = null;
@@ -1754,15 +1716,7 @@ export function processFileSync(
         perComponentDeferredDeps,
         ctx.complianceMode ?? false,
       );
-      const stmt = classMetadataStmt;
-      deferredClassAppends.push(() => {
-        const metadata = printSetClassMetadata(stmt, printer, ctx.complianceMode);
-        if (ctx.complianceMode) {
-          out.appendRight(span.end, '\n' + metadata);
-        } else {
-          out.appendLeft(span.end - 1, metadata);
-        }
-      });
+      compiledClass.classMetadataStmt = classMetadataStmt;
     }
 
     let debugInfoStmt: o.Statement | null = null;
@@ -1774,10 +1728,7 @@ export function processFileSync(
         classMeta.nameSpan?.start ?? span.start,
         ctx.forbidOrphanComponents ?? false,
       );
-      const stmt = debugInfoStmt;
-      deferredClassAppends.push(() => {
-        out.appendRight(span.end, '\n' + printer.printStatement(stmt));
-      });
+      compiledClass.debugInfoStmt = debugInfoStmt;
     }
 
     if (hmrComponent !== null) {
@@ -1798,16 +1749,8 @@ export function processFileSync(
           debugInfo: debugInfoStmt,
         },
       });
-      // ngtsc appends the initializer to the `ɵcmp` statements, after `ɵsetClassMetadata` and
-      // `ɵsetClassDebugInfo`.
-      // https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L427-L439
       if (hmrMeta !== null) {
-        deferredClassAppends.push(() => {
-          out.appendRight(
-            span.end,
-            '\n' + printer.printStatement(compileHmrInitializer(hmrMeta).toStmt()),
-          );
-        });
+        compiledClass.hmrInitializerStmt = compileHmrInitializer(hmrMeta).toStmt();
       }
       if (ctx.hmrUpdateTarget === className) {
         hmrUpdateModule =
@@ -1829,13 +1772,6 @@ export function processFileSync(
         return {magicString: s, generateSourceMap, hmrUpdateModule};
       }
     }
-
-    // Emit NgModule side-effect statements after `ɵsetClassMetadata` to match the reference order.
-    deferredClassAppends.push(() => {
-      if (ngModuleStatements) {
-        out.appendRight(span.end, '\n' + ngModuleStatements + '\n');
-      }
-    });
   }
 
   // The target was not a component (or has no HMR metadata); nothing to update.
@@ -1843,8 +1779,9 @@ export function processFileSync(
     return {magicString: s, generateSourceMap, hmrUpdateModule: null};
   }
 
-  for (const appendClassFields of deferredClassAppends) {
-    appendClassFields();
+  // Second pass: print and append static fields and trailing statements for all compiled classes.
+  for (const compiledClass of compiledClasses) {
+    appendCompiledClass(compiledClass, out, printer, ctx);
   }
 
   for (const local of eagerDependencyNames) {
@@ -1956,6 +1893,107 @@ export function processFileSync(
     diagnostics: fileDiagnostics,
     hmrUpdateModule,
   };
+}
+
+interface CompiledNgModuleDef {
+  factory: R3CompiledExpression;
+  mod: R3CompiledExpression;
+  inj: R3CompiledExpression;
+  statements: o.Statement[];
+}
+
+interface CompiledClass {
+  classMeta: nga.ClassMetadata;
+  fields: Array<{
+    factory: R3CompiledExpression | null;
+    def: {name: string; def: R3CompiledExpression};
+    coercionMembers?: string;
+  }>;
+  ngModule: CompiledNgModuleDef | null;
+  classMetadataStmt: o.Statement | null;
+  debugInfoStmt: o.Statement | null;
+  hmrInitializerStmt: o.Statement | null;
+}
+
+function appendCompiledClass(
+  compiled: CompiledClass,
+  out: OutputSourceMapBuilder,
+  printer: ExpressionPrinter,
+  ctx: HybridCompilerContext,
+): void {
+  const {
+    classMeta: {span},
+    fields,
+    ngModule,
+    classMetadataStmt,
+    debugInfoStmt,
+    hmrInitializerStmt,
+  } = compiled;
+
+  for (const field of fields) {
+    const compiledFactory = field.factory ? compileFactoryField(field.factory, printer, ctx) : '';
+    const compiledDef = createStaticField(
+      field.def.name,
+      printer.print(field.def.def.expression),
+      printer.emitTypes ? printer.printType(field.def.def.type) : null,
+      true,
+      ctx.isClosureCompilerEnabled,
+    );
+    out.appendLeft(span.end - 1, compiledFactory + compiledDef + (field.coercionMembers ?? ''));
+  }
+
+  let ngModuleStatements = '';
+  if (ngModule !== null) {
+    const compiledFac = compileFactoryField(ngModule.factory, printer, ctx);
+    const compiledMod = createStaticField(
+      'ɵmod',
+      printer.print(ngModule.mod.expression),
+      printer.emitTypes ? printer.printType(ngModule.mod.type) : null,
+      true,
+      ctx.isClosureCompilerEnabled,
+    );
+    if (ngModule.statements.length > 0) {
+      ngModuleStatements = ngModule.statements
+        .map((stmt) => printer.printStatement(stmt))
+        .join('\n');
+    }
+    const compiledInj = createStaticField(
+      'ɵinj',
+      printer.print(ngModule.inj.expression),
+      printer.emitTypes ? printer.printType(ngModule.inj.type) : null,
+      true,
+      ctx.isClosureCompilerEnabled,
+    );
+    out.appendLeft(span.end - 1, compiledFac + compiledMod + compiledInj);
+  }
+
+  if (classMetadataStmt !== null) {
+    const metadata = printSetClassMetadata(classMetadataStmt, printer, ctx.complianceMode);
+    if (ctx.complianceMode) {
+      out.appendRight(span.end, '\n' + metadata);
+    } else {
+      out.appendLeft(span.end - 1, metadata);
+    }
+  }
+
+  if (debugInfoStmt !== null) {
+    out.appendRight(span.end, '\n' + printer.printStatement(debugInfoStmt));
+  }
+
+  // ngtsc appends the initializer to the `ɵcmp` statements, after `ɵsetClassMetadata` and
+  // `ɵsetClassDebugInfo`.
+  // https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L427-L439
+  if (hmrInitializerStmt !== null) {
+    out.appendRight(span.end, '\n' + printer.printStatement(hmrInitializerStmt));
+  }
+
+  // The NgModule side-effect statements (`ɵɵsetNgModuleScope`, `ɵɵregisterNgModuleType`)
+  // must be emitted AFTER `ɵsetClassMetadata`. The reference compiler unshifts the class
+  // metadata statement to the front of these statements before emission.
+  // https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L1007-L1014
+  if (ngModuleStatements) {
+    out.appendRight(span.end, '\n' + ngModuleStatements + '\n');
+  }
 }
 
 interface DecoratorMetadata {
@@ -2616,15 +2654,14 @@ function compileNgModuleDef(
   className: string,
   ngModule: nga.NgModuleMetadata,
   deps: any,
-  printer: ExpressionPrinter,
   ctx: HybridCompilerContext,
   classes: nga.ClassMetadata[] = [],
   classMeta?: nga.ClassMetadata,
   content?: MagicString | string,
   filePath?: string,
   diagnostics?: nga.NgDiagnostic[],
-): {compiledFac: string; compiledMod: string; compiledInj: string; statements: string} {
-  const {optimize, isClosureCompilerEnabled, emitDeclarationOnly} = ctx;
+): CompiledNgModuleDef {
+  const {optimize, emitDeclarationOnly} = ctx;
   const {declarations, imports, injectorImports, exports, bootstrap} = ngModule;
   const sourceText = typeof content === 'string' ? content : content?.original;
 
@@ -2711,7 +2748,7 @@ function compileNgModuleDef(
   };
 
   // Generate ɵfac (Factory) for NgModule
-  const factoryRes = compileFactoryFunction({
+  const factory = compileFactoryFunction({
     name: className,
     type: {
       value: o.variable(className),
@@ -2721,8 +2758,6 @@ function compileNgModuleDef(
     deps: deps,
     target: FactoryTarget.NgModule,
   });
-
-  const compiledFac = compileFactoryField(factoryRes, printer, ctx);
 
   // https://github.com/angular/angular/blob/4c9afb6/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L552-L591
   const sharedMeta = {
@@ -2806,17 +2841,8 @@ function compileNgModuleDef(
           exportsExpression: rawExprFromSpan(ngModule.exportsSpan) ?? mapToVarArr(exports),
         };
 
-  const compileResult = compileNgModule(ngModuleMeta);
-  const compiledMod = createStaticField(
-    'ɵmod',
-    printer.print(compileResult.expression),
-    printer.emitTypes ? printer.printType(compileResult.type) : null,
-    true,
-    isClosureCompilerEnabled,
-  );
-
-  let statements = '';
-  const allStatements = [...(compileResult.statements || [])];
+  const mod = compileNgModule(ngModuleMeta);
+  const statements = [...(mod.statements || [])];
 
   if (optimize && !emitDeclarationOnly && classMeta) {
     interface ScopeTarget {
@@ -2898,7 +2924,7 @@ function compileNgModuleDef(
     for (const target of scopeTargets) {
       // Emitted unguarded: remote scoping is how a cyclic component gets its directives at
       // all, so gating it on `ngDevMode` would leave the scope unset in production builds.
-      allStatements.push(
+      statements.push(
         coreSetScope
           .callFn([
             refToExpression(target.component),
@@ -2908,10 +2934,6 @@ function compileNgModuleDef(
           .toStmt(),
       );
     }
-  }
-
-  if (allStatements.length > 0) {
-    statements = allStatements.map((stmt) => printer.printStatement(stmt)).join('\n');
   }
 
   // ɵinj.imports:
@@ -2946,16 +2968,9 @@ function compileNgModuleDef(
     providers: rawExprFromSpan(ngModule.providersSpan),
     imports: injectorImportsExprs(),
   };
-  const injectorResult = compileInjector(injectorMeta);
-  const compiledInj = createStaticField(
-    'ɵinj',
-    printer.print(injectorResult.expression),
-    printer.emitTypes ? printer.printType(injectorResult.type) : null,
-    true,
-    isClosureCompilerEnabled,
-  );
+  const inj = compileInjector(injectorMeta);
 
-  return {compiledFac, compiledMod, compiledInj, statements};
+  return {factory, mod, inj, statements};
 }
 
 /**
