@@ -52,6 +52,7 @@ impl TestAnalyzer {
             enable_hmr: options.enable_hmr,
             use_poisoned_data: options.use_poisoned_data,
             use_host_for_import_generation: options.use_host_for_import_generation,
+            ..Default::default()
         })?;
 
         Ok(TestAnalyzer { analyzer })
@@ -70,6 +71,7 @@ impl TestAnalyzer {
             enable_hmr: options.enable_hmr,
             use_poisoned_data: options.use_poisoned_data,
             use_host_for_import_generation: options.use_host_for_import_generation,
+            ..Default::default()
         })?;
 
         Ok(TestAnalyzer { analyzer })

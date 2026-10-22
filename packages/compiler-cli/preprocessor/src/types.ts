@@ -63,10 +63,18 @@ export interface AnalysisResult {
   topLevelValueBindings?: Array<string>;
 }
 
+/**
+ * Options for constructing the analyzer. Every field except `tsconfigPath` is optional; unset
+ * fields fall back to the tsconfig, and an explicitly set field always takes precedence.
+ */
 export interface AnalyzerOptions {
   tsconfigPath: string;
   optimize?: boolean;
   virtualFiles?: Record<string, string>;
+  /**
+   * Deprecated alias of `defaultHost.nodeModulesPathOverride`, which takes precedence when both are set.
+   * @deprecated Use `defaultHost.nodeModulesPathOverride` instead.
+   */
   nodeModulesPathOverride?: string;
   /**
    * Optional allowlist of absolute JS/TS source paths that may be read from disk (used to
@@ -76,11 +84,35 @@ export interface AnalyzerOptions {
   allowedSources?: Array<string>;
   /** Workspace name used by `PrefixImportStrategy` for module specifiers (e.g., "google3"). */
   workspaceName?: string;
-  /** Root directories used by `PrefixImportStrategy` to strip prefixes. */
+  /**
+   * Root directories used by `PrefixImportStrategy` to strip prefixes. Falls back to the
+   * `rootDirs` merging directories when unset.
+   */
+  importPrefixRoots?: Array<string>;
+  /**
+   * Deprecated alias of `importPrefixRoots`, which takes precedence when both are set.
+   * @deprecated Use `importPrefixRoots` instead.
+   */
   rootDirs?: Array<string>;
   enableHmr?: boolean;
   usePoisonedData?: boolean;
   useHostForImportGeneration?: boolean;
+  strictStandalone?: boolean;
+  strictInjectionParameters?: boolean;
+  compileNonExportedClasses?: boolean;
+  generateExtraImportsInLocalMode?: boolean;
+  /** Configuration of the built-in file-system module resolution. */
+  defaultHost?: DefaultHostConfig;
+}
+
+/** Configuration of the analyzer's built-in file-system module resolution. */
+export interface DefaultHostConfig {
+  /** TypeScript `rootDirs` merging directories. Falls back to `compilerOptions.rootDirs`. */
+  rootDirs?: Array<string>;
+  /** Falls back to `compilerOptions.preserveSymlinks`. */
+  preserveSymlinks?: boolean;
+  /** An additional module directory searched after `node_modules`. */
+  nodeModulesPathOverride?: string;
 }
 
 export interface AngularFieldMetadata {

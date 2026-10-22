@@ -100,6 +100,10 @@ pub struct AnalysisResult {
     pub top_level_value_bindings: Option<Vec<String>>,
 }
 
+/// Options for constructing an [`crate::Analyzer`].
+///
+/// Every field except `tsconfig_path` is optional. Unset fields fall back to the value read from
+/// the tsconfig; an explicitly set field always takes precedence over the tsconfig.
 #[cfg_attr(feature = "napi", napi(object))]
 #[derive(Clone, Debug, Default, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -107,6 +111,8 @@ pub struct AnalyzerOptions {
     pub tsconfig_path: String,
     pub optimize: Option<bool>,
     pub virtual_files: Option<HashMap<String, String>>,
+    /// Deprecated alias of [`DefaultHostConfig::node_modules_path_override`], which takes
+    /// precedence when both are set.
     pub node_modules_path_override: Option<String>,
     /// Optional allowlist of absolute JS/TS source paths that may be read from disk (used to
     /// enforce build boundaries by falling back to `.d.ts` files). Both symlink and resolved paths
@@ -114,7 +120,10 @@ pub struct AnalyzerOptions {
     pub allowed_sources: Option<Vec<String>>,
     /// Workspace name used by `PrefixImportStrategy` for module specifiers (e.g., "google3").
     pub workspace_name: Option<String>,
-    /// Root directories used by `PrefixImportStrategy` to strip prefixes.
+    /// Root directories used by `PrefixImportStrategy` to strip prefixes. Falls back to the
+    /// `rootDirs` merging directories (see [`DefaultHostConfig::root_dirs`]) when unset.
+    pub import_prefix_roots: Option<Vec<String>>,
+    /// Deprecated alias of [`Self::import_prefix_roots`], which takes precedence when both are set.
     pub root_dirs: Option<Vec<String>>,
     /// Collect the HMR-only wire data (`ClassMetadata.top_level_references`,
     /// `AnalysisResult.top_level_value_bindings`). Falls back to the tsconfig's
@@ -126,10 +135,42 @@ pub struct AnalyzerOptions {
     pub use_poisoned_data: Option<bool>,
     /// ngtsc's `_useHostForImportGeneration` / `_useHostForImportAndAliasGeneration`: emit
     /// module specifiers the way the compiler host would name files (`PrefixImportStrategy`
-    /// from `workspace_name` + `root_dirs`) rather than relative paths. Falls back to the
-    /// tsconfig's `angularCompilerOptions` when unset. Without a `workspace_name` the flag has
-    /// no effect, as in ngtsc when the host has no `fileNameToModuleName`.
+    /// from `workspace_name` + `import_prefix_roots`) rather than relative paths. Falls back to
+    /// the tsconfig's `angularCompilerOptions` when unset. Without a `workspace_name` the flag
+    /// has no effect, as in ngtsc when the host has no `fileNameToModuleName`.
     pub use_host_for_import_generation: Option<bool>,
+    /// ngtsc's `strictStandalone`. Falls back to the tsconfig's `angularCompilerOptions` when
+    /// unset (default `false`).
+    pub strict_standalone: Option<bool>,
+    /// ngtsc's `strictInjectionParameters`. Falls back to the tsconfig's
+    /// `angularCompilerOptions` when unset (default `false`).
+    pub strict_injection_parameters: Option<bool>,
+    /// ngtsc's `compileNonExportedClasses`. Falls back to the tsconfig's
+    /// `angularCompilerOptions` when unset (default `true`).
+    pub compile_non_exported_classes: Option<bool>,
+    /// ngtsc's `generateExtraImportsInLocalMode`. Falls back to the tsconfig's
+    /// `angularCompilerOptions` when unset (default `false`).
+    pub generate_extra_imports_in_local_mode: Option<bool>,
+    /// Configuration of the built-in file-system module resolution. These settings only
+    /// configure how the analyzer itself finds files on disk, not what it analyzes.
+    pub default_host: Option<DefaultHostConfig>,
+}
+
+/// Configuration of the analyzer's built-in file-system module resolution (oxc resolver over the
+/// overlay file system). Unset fields fall back to the tsconfig.
+#[cfg_attr(feature = "napi", napi(object))]
+#[derive(Clone, Debug, Default, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DefaultHostConfig {
+    /// TypeScript `rootDirs` merging directories, used for resource resolution and for files that
+    /// only exist through another root. Relative entries resolve against the tsconfig directory.
+    /// Falls back to `compilerOptions.rootDirs`, then to the tsconfig directory.
+    pub root_dirs: Option<Vec<String>>,
+    /// Keep symlinked paths instead of resolving them to their real path. Falls back to
+    /// `compilerOptions.preserveSymlinks`.
+    pub preserve_symlinks: Option<bool>,
+    /// An additional module directory searched after `node_modules`.
+    pub node_modules_path_override: Option<String>,
 }
 
 #[cfg_attr(feature = "napi", napi(object))]

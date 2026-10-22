@@ -37,16 +37,12 @@ import type * as nga from './types.js';
 /** Which engine backs the analyzer. */
 export type AnalyzerBackend = 'native' | 'wasm';
 
-export interface LoadAnalyzerOptions {
-  optimize?: boolean;
-  virtualFiles?: Record<string, string>;
-  nodeModulesPathOverride?: string;
-  workspaceName?: string;
-  rootDirs?: string[];
-  enableHmr?: boolean;
-  usePoisonedData?: boolean;
-  useHostForImportGeneration?: boolean;
-
+/**
+ * Engine options (everything in {@link nga.AnalyzerOptions} except `tsconfigPath`, which is
+ * passed separately) plus the loader-only options below. Engine options are forwarded to the
+ * engine as-is, so new engine options are available here without changes to the loader.
+ */
+export interface LoadAnalyzerOptions extends Omit<nga.AnalyzerOptions, 'tsconfigPath'> {
   /**
    * Force a specific engine. When set, only that engine is attempted — a failure
    * throws rather than silently falling back, so parity runs stay honest.
@@ -76,6 +72,12 @@ export interface LoadAnalyzerOptions {
 
   /** @deprecated Pass `backend: 'wasm'` instead. */
   useWasm?: boolean;
+}
+
+/** Strips the loader-only keys from `options`, leaving exactly the engine's options. */
+function engineOptions(tsconfigPath: string, options: LoadAnalyzerOptions): nga.AnalyzerOptions {
+  const {backend, nativeBinding, wasmBinding, hostFs, ngAnalyzeDir, useWasm, ...engine} = options;
+  return {...engine, tsconfigPath, optimize: options.optimize ?? true};
 }
 
 export interface LoadedAnalyzer {
@@ -250,19 +252,7 @@ async function constructNative(
     );
   }
   const {NapiAnalyzer} = await import('./analyzer_napi.js');
-  return new NapiAnalyzer(
-    new Analyzer({
-      tsconfigPath,
-      optimize: options.optimize ?? true,
-      virtualFiles: options.virtualFiles,
-      nodeModulesPathOverride: options.nodeModulesPathOverride,
-      workspaceName: options.workspaceName,
-      rootDirs: options.rootDirs,
-      enableHmr: options.enableHmr,
-      usePoisonedData: options.usePoisonedData,
-      useHostForImportGeneration: options.useHostForImportGeneration,
-    }),
-  );
+  return new NapiAnalyzer(new Analyzer(engineOptions(tsconfigPath, options)));
 }
 
 async function constructWasm(
@@ -290,20 +280,7 @@ async function constructWasm(
     hostFs = createNodeHostFs();
   }
 
-  const inner = new Inner(
-    JSON.stringify({
-      virtualFiles: options.virtualFiles,
-      optimize: options.optimize ?? true,
-      tsconfigPath,
-      nodeModulesPathOverride: options.nodeModulesPathOverride,
-      workspaceName: options.workspaceName,
-      rootDirs: options.rootDirs,
-      enableHmr: options.enableHmr,
-      usePoisonedData: options.usePoisonedData,
-      useHostForImportGeneration: options.useHostForImportGeneration,
-    }),
-    hostFs,
-  );
+  const inner = new Inner(JSON.stringify(engineOptions(tsconfigPath, options)), hostFs);
   return new WasmAnalyzer(inner);
 }
 

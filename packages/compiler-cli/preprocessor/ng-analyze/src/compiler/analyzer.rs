@@ -124,6 +124,95 @@ pub struct Analyzer {
     current_cancel_token: RwLock<Option<CancellationToken>>,
 }
 
+/// Every setting an [`Analyzer`] is built from, after merging explicit [`AnalyzerOptions`] over
+/// the values read from the tsconfig. An explicitly set option always takes precedence.
+struct EffectiveConfig {
+    tsconfig_path: PathBuf,
+    /// The tsconfig's root files, not yet canonicalized (that needs the configured `fs`).
+    tsconfig_files: Vec<PathBuf>,
+    /// `default_host.preserve_symlinks` > `compilerOptions.preserveSymlinks`.
+    preserve_symlinks: bool,
+    /// `default_host.root_dirs` > `compilerOptions.rootDirs` > `[tsconfig dir]`.
+    merge_root_dirs: Vec<PathBuf>,
+    /// `default_host.node_modules_path_override` > `node_modules_path_override`.
+    node_modules_path_override: Option<String>,
+    /// `workspace_name` > `angularCompilerOptions.workspaceName` (or `bazelOptions`).
+    workspace_name: Option<String>,
+    /// `import_prefix_roots` > `root_dirs` (deprecated alias) > `merge_root_dirs`.
+    import_prefix_roots: Vec<PathBuf>,
+    use_host_for_import_generation: bool,
+    generate_extra_imports_in_local_mode: bool,
+    compile_non_exported_classes: bool,
+    enable_hmr: bool,
+    strict_standalone: bool,
+    use_poisoned_data: bool,
+    strict_injection_parameters: bool,
+}
+
+impl EffectiveConfig {
+    fn resolve(options: AnalyzerOptions, fs: &OverlayFileSystem) -> Result<Self, String> {
+        let tsconfig_path = PathBuf::from(&options.tsconfig_path);
+        let resolved = tsconfig_resolution::load_and_resolve_tsconfig(&tsconfig_path, fs)
+            .map_err(|e| e.to_string())?;
+        let base_dir = tsconfig_path.parent().unwrap_or(Path::new(".")).to_path_buf();
+        let absolutize = |p: PathBuf| if p.is_absolute() { p } else { base_dir.join(p) };
+
+        let default_host = options.default_host.unwrap_or_default();
+
+        let mut merge_root_dirs: Vec<PathBuf> = match default_host.root_dirs {
+            Some(dirs) => dirs.into_iter().map(PathBuf::from).map(absolutize).collect(),
+            None => resolved
+                .compiler_options
+                .root_dirs
+                .unwrap_or_default()
+                .into_iter()
+                .map(absolutize)
+                .collect(),
+        };
+        if merge_root_dirs.is_empty() {
+            merge_root_dirs.push(base_dir.clone());
+        }
+
+        let import_prefix_roots = match options.import_prefix_roots.or(options.root_dirs) {
+            Some(dirs) => dirs.into_iter().map(PathBuf::from).map(absolutize).collect(),
+            None => merge_root_dirs.clone(),
+        };
+
+        Ok(Self {
+            tsconfig_files: resolved.files,
+            preserve_symlinks: default_host
+                .preserve_symlinks
+                .unwrap_or(resolved.preserve_symlinks),
+            merge_root_dirs,
+            node_modules_path_override: default_host
+                .node_modules_path_override
+                .or(options.node_modules_path_override),
+            workspace_name: options.workspace_name.or(resolved.workspace_name),
+            import_prefix_roots,
+            use_host_for_import_generation: options
+                .use_host_for_import_generation
+                .unwrap_or(resolved.use_host_for_import_generation),
+            generate_extra_imports_in_local_mode: options
+                .generate_extra_imports_in_local_mode
+                .unwrap_or(resolved.generate_extra_imports_in_local_mode),
+            compile_non_exported_classes: options
+                .compile_non_exported_classes
+                .unwrap_or(resolved.compile_non_exported_classes),
+            enable_hmr: options.enable_hmr.unwrap_or(resolved.enable_hmr),
+            strict_standalone: options
+                .strict_standalone
+                .unwrap_or(resolved.strict_standalone),
+            use_poisoned_data: options
+                .use_poisoned_data
+                .unwrap_or(resolved.compile_poisoned_components),
+            strict_injection_parameters: options
+                .strict_injection_parameters
+                .unwrap_or(resolved.strict_injection_parameters),
+            tsconfig_path,
+        })
+    }
+}
+
 impl Analyzer {
     pub fn new_core(options: AnalyzerOptions) -> Result<Self, String> {
         let physical = std::sync::Arc::new(crate::physical_fs::default_physical_fs());
@@ -155,100 +244,67 @@ impl Analyzer {
         options: AnalyzerOptions,
         fs: OverlayFileSystem,
     ) -> Result<Self, String> {
-        let tsconfig_path = options.tsconfig_path;
-        let node_modules_path_override = options.node_modules_path_override;
+        let config = EffectiveConfig::resolve(options, &fs)?;
+        Ok(Self::construct(config, fs))
+    }
 
-        let path = PathBuf::from(&tsconfig_path);
-        let resolved_config = tsconfig_resolution::load_and_resolve_tsconfig(&path, &fs)
-            .map_err(|e| e.to_string())?;
+    /// Build the analyzer from fully merged settings. Order matters: the symlink mode and the
+    /// `rootDirs` must be set on `fs` before entry points are canonicalized through it.
+    fn construct(config: EffectiveConfig, fs: OverlayFileSystem) -> Self {
+        fs.set_preserve_symlinks(config.preserve_symlinks);
+        fs.set_root_dirs(config.merge_root_dirs);
 
-        fs.set_preserve_symlinks(resolved_config.preserve_symlinks);
-
-        let base_dir = path.parent().unwrap_or(Path::new("."));
-        let mut abs_dirs = Vec::new();
-        if let Some(dirs) = resolved_config.compiler_options.root_dirs {
-            abs_dirs = dirs
-                .into_iter()
-                .map(|d| if d.is_absolute() { d } else { base_dir.join(d) })
-                .collect();
-        }
-        if abs_dirs.is_empty() {
-            abs_dirs.push(base_dir.to_path_buf());
-        }
-        fs.set_root_dirs(abs_dirs.clone());
-        let entrypoints: Vec<PathBuf> = resolved_config
-            .files
+        let entrypoints: Vec<PathBuf> = config
+            .tsconfig_files
             .into_iter()
             .filter(|p| is_compilation_root(p))
             .map(|p| fs.canonicalize(&p).unwrap_or(p))
             .collect();
-
         let entrypoints_lock = Arc::new(RwLock::new(entrypoints));
 
         let resource_registry = Arc::new(ResourceRegistry::default());
 
         let resolver = Arc::new(create_resolver_with_fs(
-            &path,
+            &config.tsconfig_path,
             fs.clone(),
-            resolved_config.preserve_symlinks,
-            node_modules_path_override.clone(),
+            config.preserve_symlinks,
+            config.node_modules_path_override,
         ));
 
-        let workspace_name = options.workspace_name.or(resolved_config.workspace_name);
-        let root_dirs = match options.root_dirs {
-            Some(custom_roots) => custom_roots
-                .into_iter()
-                .map(|d| {
-                    let p = PathBuf::from(d);
-                    if p.is_absolute() {
-                        p
-                    } else {
-                        base_dir.join(p)
-                    }
-                })
-                .collect(),
-            None => abs_dirs.clone(),
+        use crate::analyzer::import_emit::{
+            ApfImportStrategy, PrefixImportStrategy, ReferenceEmitStrategy,
         };
-
-        let use_host_for_import_generation = options
-            .use_host_for_import_generation
-            .unwrap_or(resolved_config.use_host_for_import_generation);
-        let reference_strategy: Arc<dyn crate::analyzer::import_emit::ReferenceEmitStrategy> =
-            match workspace_name {
-                Some(ws) if use_host_for_import_generation => Arc::new(
-                    crate::analyzer::import_emit::PrefixImportStrategy::new(ws, root_dirs),
-                ),
-                _ => Arc::new(crate::analyzer::import_emit::ApfImportStrategy::new()),
-            };
+        let reference_strategy: Arc<dyn ReferenceEmitStrategy> = match config.workspace_name {
+            Some(ws) if config.use_host_for_import_generation => {
+                Arc::new(PrefixImportStrategy::new(ws, config.import_prefix_roots))
+            }
+            _ => Arc::new(ApfImportStrategy::new()),
+        };
 
         let engine = crate::query::QueryEngine::new_with_options(
             fs.clone(),
-            resolver.clone(),
+            resolver,
             resource_registry.clone(),
             entrypoints_lock.clone(),
             reference_strategy,
-            resolved_config.generate_extra_imports_in_local_mode,
-            resolved_config.compile_non_exported_classes,
-            options.enable_hmr.unwrap_or(resolved_config.enable_hmr),
-            resolved_config.strict_standalone,
-            options
-                .use_poisoned_data
-                .unwrap_or(resolved_config.compile_poisoned_components),
-            resolved_config.strict_injection_parameters,
+            config.generate_extra_imports_in_local_mode,
+            config.compile_non_exported_classes,
+            config.enable_hmr,
+            config.strict_standalone,
+            config.use_poisoned_data,
+            config.strict_injection_parameters,
         );
 
-        let analyzer = Analyzer {
+        Analyzer {
             resource_registry,
             fs,
             engine,
             #[cfg(not(target_arch = "wasm32"))]
             active_handles: Arc::new(RwLock::new(Vec::new())),
-            tsconfig_path: path,
+            tsconfig_path: config.tsconfig_path,
             entrypoints: entrypoints_lock,
             current_cancel_token: RwLock::new(None),
-        };
-
-        Ok(analyzer)
+        }
     }
 
     pub fn analyze_core<S: Spawner>(
@@ -1545,5 +1601,137 @@ mod chunk_order_tests {
                 "completion order {order:?}"
             );
         }
+    }
+}
+
+#[cfg(all(test, not(target_arch = "wasm32")))]
+mod effective_config_tests {
+    use super::*;
+
+    const TSCONFIG: &str = r#"{
+        "compilerOptions": {"rootDirs": ["./a", "./b"], "preserveSymlinks": true},
+        "angularCompilerOptions": {
+            "workspaceName": "ws",
+            "strictStandalone": true,
+            "strictInjectionParameters": true,
+            "compileNonExportedClasses": false,
+            "generateExtraImportsInLocalMode": true,
+            "_enableHmr": true,
+            "_compilePoisonedComponents": true
+        }
+    }"#;
+
+    fn resolve(options: AnalyzerOptions) -> EffectiveConfig {
+        let physical: Arc<dyn crate::physical_fs::PhysicalFs> =
+            Arc::new(crate::physical_fs::default_physical_fs());
+        let fs = OverlayFileSystem::new_with_allowed_sources_and_fs(None, physical);
+        fs.upsert_file(PathBuf::from("/project/tsconfig.json"), TSCONFIG.to_string());
+        fs.upsert_file(PathBuf::from("/project/main.ts"), "export {};".to_string());
+        EffectiveConfig::resolve(
+            AnalyzerOptions {
+                tsconfig_path: "/project/tsconfig.json".to_string(),
+                ..options
+            },
+            &fs,
+        )
+        .unwrap()
+    }
+
+    fn paths(items: &[&str]) -> Vec<PathBuf> {
+        items.iter().map(PathBuf::from).collect()
+    }
+
+    #[test]
+    fn falls_back_to_tsconfig_values() {
+        let config = resolve(AnalyzerOptions::default());
+        assert!(config.preserve_symlinks);
+        assert_eq!(config.merge_root_dirs, paths(&["/project/a", "/project/b"]));
+        assert_eq!(config.import_prefix_roots, config.merge_root_dirs);
+        assert_eq!(config.workspace_name.as_deref(), Some("ws"));
+        assert!(config.strict_standalone);
+        assert!(config.strict_injection_parameters);
+        assert!(!config.compile_non_exported_classes);
+        assert!(config.generate_extra_imports_in_local_mode);
+        assert!(config.enable_hmr);
+        assert!(config.use_poisoned_data);
+        assert_eq!(config.node_modules_path_override, None);
+    }
+
+    #[test]
+    fn explicit_options_win_over_tsconfig() {
+        let config = resolve(AnalyzerOptions {
+            workspace_name: Some("explicit".to_string()),
+            import_prefix_roots: Some(vec!["./prefix".to_string(), "/abs".to_string()]),
+            strict_standalone: Some(false),
+            strict_injection_parameters: Some(false),
+            compile_non_exported_classes: Some(true),
+            generate_extra_imports_in_local_mode: Some(false),
+            enable_hmr: Some(false),
+            use_poisoned_data: Some(false),
+            default_host: Some(crate::DefaultHostConfig {
+                root_dirs: Some(vec!["./gen".to_string()]),
+                preserve_symlinks: Some(false),
+                node_modules_path_override: Some("/nm".to_string()),
+            }),
+            ..Default::default()
+        });
+        assert!(!config.preserve_symlinks);
+        assert_eq!(config.merge_root_dirs, paths(&["/project/gen"]));
+        assert_eq!(config.import_prefix_roots, paths(&["/project/prefix", "/abs"]));
+        assert_eq!(config.workspace_name.as_deref(), Some("explicit"));
+        assert!(!config.strict_standalone);
+        assert!(!config.strict_injection_parameters);
+        assert!(config.compile_non_exported_classes);
+        assert!(!config.generate_extra_imports_in_local_mode);
+        assert!(!config.enable_hmr);
+        assert!(!config.use_poisoned_data);
+        assert_eq!(config.node_modules_path_override.as_deref(), Some("/nm"));
+    }
+
+    #[test]
+    fn deprecated_aliases_apply_only_when_new_fields_are_unset() {
+        let alias_only = resolve(AnalyzerOptions {
+            root_dirs: Some(vec!["./legacy".to_string()]),
+            node_modules_path_override: Some("/legacy_nm".to_string()),
+            ..Default::default()
+        });
+        assert_eq!(alias_only.import_prefix_roots, paths(&["/project/legacy"]));
+        assert_eq!(alias_only.node_modules_path_override.as_deref(), Some("/legacy_nm"));
+        // The deprecated `root_dirs` alias only feeds the import prefix roots, never the merging
+        // directories.
+        assert_eq!(alias_only.merge_root_dirs, paths(&["/project/a", "/project/b"]));
+
+        let both = resolve(AnalyzerOptions {
+            root_dirs: Some(vec!["./legacy".to_string()]),
+            import_prefix_roots: Some(vec!["./new".to_string()]),
+            node_modules_path_override: Some("/legacy_nm".to_string()),
+            default_host: Some(crate::DefaultHostConfig {
+                node_modules_path_override: Some("/new_nm".to_string()),
+                ..Default::default()
+            }),
+            ..Default::default()
+        });
+        assert_eq!(both.import_prefix_roots, paths(&["/project/new"]));
+        assert_eq!(both.node_modules_path_override.as_deref(), Some("/new_nm"));
+    }
+
+    #[test]
+    fn root_dirs_default_to_tsconfig_directory() {
+        let physical: Arc<dyn crate::physical_fs::PhysicalFs> =
+            Arc::new(crate::physical_fs::default_physical_fs());
+        let fs = OverlayFileSystem::new_with_allowed_sources_and_fs(None, physical);
+        fs.upsert_file(PathBuf::from("/bare/tsconfig.json"), "{}".to_string());
+        let config = EffectiveConfig::resolve(
+            AnalyzerOptions {
+                tsconfig_path: "/bare/tsconfig.json".to_string(),
+                ..Default::default()
+            },
+            &fs,
+        )
+        .unwrap();
+        assert_eq!(config.merge_root_dirs, paths(&["/bare"]));
+        assert_eq!(config.import_prefix_roots, paths(&["/bare"]));
+        assert!(!config.preserve_symlinks);
+        assert!(config.compile_non_exported_classes);
     }
 }

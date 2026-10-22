@@ -33,7 +33,12 @@ export type {ClassEntity} from './src/indexer_api.js';
 export {IndexerBoundTemplate} from './src/indexing/indexer.js';
 export {buildTypeCheckingConfig, type NgpTypeCheckingConfig} from './src/tcb.js';
 export {verifyCompilerOptions, type NgpCompilerOptions} from './src/compiler_options.js';
-export type {NgDiagnostic, NgRelatedInformation} from './src/types.js';
+export type {
+  AnalyzerOptions,
+  DefaultHostConfig,
+  NgDiagnostic,
+  NgRelatedInformation,
+} from './src/types.js';
 export type {HostDirEntry, HostFileStat, WasmHostFs} from './src/wasm_host_fs.js';
 export {resolveWorkspaceConfig} from './src/workspace.js';
 export type {WorkspaceConfig} from './src/workspace.js';

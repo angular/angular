@@ -10,6 +10,7 @@ import * as child_process from 'child_process';
 import * as readline from 'readline';
 import type {
   AnalysisResult,
+  AnalyzerOptions,
   FileInvalidation,
   CompilationChunk,
   ResolvedResource,
@@ -171,26 +172,18 @@ export class SidecarAnalyzer implements IAnalyzer {
     optimize: boolean,
     virtualFiles?: Record<string, string>,
     nodeModulesPathOverride?: string,
-    options?: {
-      allowedSources?: string[];
-      workspaceName?: string;
-      rootDirs?: string[];
-      enableHmr?: boolean;
-      usePoisonedData?: boolean;
-      useHostForImportGeneration?: boolean;
-    },
+    /** Any other engine options; forwarded to the engine as-is. */
+    options?: Omit<
+      AnalyzerOptions,
+      'tsconfigPath' | 'optimize' | 'virtualFiles' | 'nodeModulesPathOverride'
+    >,
   ): Promise<void> {
     await this.callRpc('initialize', {
+      ...options,
       tsconfigPath,
       optimize,
       virtualFiles,
       nodeModulesPathOverride,
-      allowedSources: options?.allowedSources,
-      workspaceName: options?.workspaceName,
-      rootDirs: options?.rootDirs,
-      enableHmr: options?.enableHmr,
-      usePoisonedData: options?.usePoisonedData,
-      useHostForImportGeneration: options?.useHostForImportGeneration,
     });
   }
 
