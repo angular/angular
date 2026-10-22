@@ -20,18 +20,18 @@ Cannot find "e2e" target for the specified project.
 You can add a package that implements these capabilities.
 
 For example:
+Playwright: ng add playwright-ng-schematics
 Cypress: ng add @cypress/schematic
 Nightwatch: ng add @nightwatch/schematics
 WebdriverIO: ng add @wdio/schematics
-Playwright: ng add playwright-ng-schematics
 Puppeteer: ng add @puppeteer/ng-schematics
 
 Would you like to add a package with "e2e" capabilities now?
-No
-❯ Cypress
+❯ No
+Playwright
+Cypress
 Nightwatch
 WebdriverIO
-Playwright
 Puppeteer
 
 ```
