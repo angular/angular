@@ -2222,9 +2222,7 @@ function buildPropDecoratorsExpr(
         }
         seenMemberNames.add(member.propertyName);
       }
-      const decOffset = member.decorators.find((d) => d.decoratorSpan != null)?.decoratorSpan!
-        .start;
-      const offset = decOffset ?? s.original.indexOf(member.propertyName, classMeta.span.start);
+      const offset = member.decorators[0]?.decoratorSpan?.start;
       const entry = getOrCreateEntry(member.propertyName, member.isStringLiteral, offset);
       const ngDecorators = member.decorators
         .filter((d) => d.isAngular)
@@ -2304,7 +2302,14 @@ function buildPropDecoratorsExpr(
     // in which a signal query has no selectors) is wrapped in `forwardRef`. When the user already
     // wrote `forwardRef(() => ...)`, preserve the local `forwardRef` identifier to match ngtsc.
     if (!query.predicateSelectors) {
-      const forwardRefFn = query.isForwardRef
+      const prefixBeforePredicate = s.original.slice(
+        query.propertySpan?.start ?? classMeta.span.start,
+        query.predicateSpan.start,
+      );
+      const isBareForwardRef =
+        query.isForwardRef &&
+        /(?<![.\w$])forwardRef\s*(?:<[\s\S]*?>)?\s*\(/.test(prefixBeforePredicate);
+      const forwardRefFn = isBareForwardRef
         ? o.variable('forwardRef')
         : new o.ExternalExpr(R3Identifiers.forwardRef);
       predicateExpr = forwardRefFn.callFn([new o.ArrowFunctionExpr([], predicateExpr)]);

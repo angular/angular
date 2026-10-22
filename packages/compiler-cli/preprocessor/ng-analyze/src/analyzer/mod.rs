@@ -777,8 +777,7 @@ pub fn get_member_decorators<'a>(
                     name,
                     canonical_name: canonical_name.map(String::from),
                     args: None,
-                    decorator_span: is_angular
-                        .then(|| SpanMetadata::new(decorator.span, converter)),
+                    decorator_span: Some(SpanMetadata::new(decorator.span, converter)),
                     args_span: if is_angular {
                         decorator_args_span(decorator, converter)
                     } else {

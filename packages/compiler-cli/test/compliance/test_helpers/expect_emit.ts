@@ -154,7 +154,7 @@ export function expectEmit(
   const allowPartial = Boolean(options?.allowPartial);
   if (isNgpMode) {
     source = normalizeNgpEmitForComparison(source);
-    expected = normalizeNgpEmitForComparison(expected);
+    expected = normalizeNgpEmitForComparison(expected, {pruneUnusedImports: true});
   }
   if (options?.isLinkedCompilation) {
     // Partial declaration linking does not emit `ɵsetClassDebugInfo` or `ɵɵsetNgModuleScope`

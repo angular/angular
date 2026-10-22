@@ -117,7 +117,10 @@ function applyReplacements(
  * Normalizes cosmetic differences between NGP's `ExpressionPrinter` + `tsc` emit and `ngtsc`'s
  * direct TypeScript AST transform emit for compliance golden comparisons.
  */
-export function normalizeNgpEmitForComparison(code: string): string {
+export function normalizeNgpEmitForComparison(
+  code: string,
+  options?: {pruneUnusedImports?: boolean},
+): string {
   let normalized = code;
 
   // TODO(ngp-parity): `ngtsc` runs as a TS transformer during emit, after TypeScript's
@@ -125,26 +128,28 @@ export function normalizeNgpEmitForComparison(code: string): string {
   // `QueryList`, `ElementRef`, `TemplateRef`) as value-used. NGP strips Angular decorators before
   // `tsc` runs, so `tsc` elides those imports. Either disable `emitDecoratorMetadata` in compliance
   // tests that do not test decorator metadata, or preserve decorator-metadata imports in NGP.
-  const bodyWithoutImports = normalized.replace(
-    /^[ \t]*import\s+(?:type\s+)?(?:\*\s+as\s+\w+|\{[\s\S]*?\}|\w+)\s+from\s+['"][^'"]+['"];?[ \t]*\r?\n?/gm,
-    '',
-  );
-  normalized = normalized.replace(
-    /^[ \t]*import\s*\{([\s\S]*?)\}\s*from\s*(['"][^'"]+['"]);?[ \t]*\r?\n?/gm,
-    (_, specifiersStr: string, moduleQuote: string) => {
-      const kept = specifiersStr
-        .split(',')
-        .map((s) => s.trim())
-        .filter(Boolean)
-        .filter((spec) => {
-          const parts = spec.split(/\s+as\s+/);
-          const localName = parts[parts.length - 1].trim().replace(/^type\s+/, '');
-          const escaped = localName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-          return new RegExp(`(?<![.\\w$])${escaped}(?![\\w$])`).test(bodyWithoutImports);
-        });
-      return kept.length === 0 ? '' : `import { ${kept.join(', ')} } from ${moduleQuote};\n`;
-    },
-  );
+  if (options?.pruneUnusedImports) {
+    const bodyWithoutImports = normalized.replace(
+      /^[ \t]*import\s+(?:type\s+)?(?:\*\s+as\s+\w+|\{[^}]*\}|\w+)\s+from\s+['"][^'"]+['"];?[ \t]*\r?\n?/gm,
+      '',
+    );
+    normalized = normalized.replace(
+      /^[ \t]*import\s*\{([^}]*)\}\s*from\s*(['"][^'"]+['"]);?[ \t]*\r?\n?/gm,
+      (_, specifiersStr: string, moduleQuote: string) => {
+        const kept = specifiersStr
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean)
+          .filter((spec) => {
+            const parts = spec.split(/\s+as\s+/);
+            const localName = parts[parts.length - 1].trim().replace(/^type\s+/, '');
+            const escaped = localName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            return new RegExp(`(?<![.\\w$])${escaped}(?![\\w$])`).test(bodyWithoutImports);
+          });
+        return kept.length === 0 ? '' : `import { ${kept.join(', ')} } from ${moduleQuote};\n`;
+      },
+    );
+  }
 
   // TODO(ngp-parity): When a class has both non-Angular decorators (e.g. `@CustomClassDecorator()`)
   // and static fields (`static ɵfac`, `static ɵcmp`), TS 5.0+ emits a `static { Class_1 = this; }`
