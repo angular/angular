@@ -19,7 +19,8 @@ function _tcb2(this: i0.AppComponent) {
   if (true) {
     var _t1 = null! as typeof i0.TestCoercedComponent.ngAcceptInputType_coercedByStatic; /*T:VAE*/
     _t1 /*1186,1201*/ = 'test' /*1204,1210*/; /*1185,1211*/
-    var _t2 = null! as string | null; /*T:VAE*/
+    var _t2 =
+      null! as typeof i0.TestCoercedComponent.ngAcceptInputType_coercedByTransform; /*T:VAE*/
     _t2 /*1219,1237*/ = 'test' /*1240,1246*/; /*1218,1247*/
     var _t3 /*T:DIR:0*/ /*1165,1442*/ = null! as i0.TestCoercedComponent; /*T:VAE*/
     var _t4 = null! as (typeof _t3)['privateInput']; /*T:VAE*/

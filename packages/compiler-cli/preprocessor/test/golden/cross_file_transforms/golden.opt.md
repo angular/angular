@@ -26,7 +26,8 @@ function _tcb2(this: i0.AppComponent) {
       'false' /*1025,1032*/; /*1010,1033*/
     _t3.aliasedSignal[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] /*1041,1054*/ =
       'hello' /*1057,1064*/; /*1040,1065*/
-    var _t4 = null! as string | null; /*T:VAE*/
+    var _t4 =
+      null! as typeof i0.TestTransformsComponent.ngAcceptInputType_inlineTransform; /*T:VAE*/
     _t4 /*1073,1088*/ = null /*1091,1095*/; /*1072,1096*/
     var _t5 =
       null! as typeof i0.TestTransformsComponent.ngAcceptInputType_externalTypeInput; /*T:VAE*/

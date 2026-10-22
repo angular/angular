@@ -35,7 +35,7 @@ import {createForeignComponentMatcher, createSpan, isStaticSourceNode} from './c
 
 export function createInputPropertyMapping(
   metadata: nga.InputMetadata[] | null | undefined,
-  content?: string,
+  inlineContent?: string,
 ): ClassPropertyMapping<TcbInputMapping> {
   const obj: Record<string, TcbInputMapping> = {};
 
@@ -54,9 +54,9 @@ export function createInputPropertyMapping(
         item.transform !== undefined &&
         item.transform.kind === 'type' &&
         item.transform.typeSpan &&
-        content
+        inlineContent
       ) {
-        mapping.transformType = content.substring(
+        mapping.transformType = inlineContent.substring(
           item.transform.typeSpan.start,
           item.transform.typeSpan.end,
         );
@@ -526,7 +526,13 @@ function declarationToMetadata(
           i.isCoerced = true;
         }
       }
-      return createInputPropertyMapping(inputsList, content);
+      // `content` is the consumer file's text and transform spans index into the declaring
+      // file, so the raw type is only usable when both are the same file and the TCB is
+      // inlined into it.
+      return createInputPropertyMapping(
+        inputsList,
+        requiresInline && isSameFile ? content : undefined,
+      );
     })(),
     outputs: (() => {
       const outputsList: nga.OutputMetadata[] = [];
