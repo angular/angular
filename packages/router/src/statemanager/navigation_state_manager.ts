@@ -405,7 +405,9 @@ export class NavigationStateManager extends StateManager {
     // We also do not convert reload navigation events to SPA navigations. Intercepting
     // would prevent the generally expected hard refresh. If an application wants special
     // handling for reloads, they can implement it in their own `navigate` event listener.
-    if (!event.canIntercept || event.navigationType === 'reload') {
+    // Downloads are left to the browser as well. Intercepting them would turn them into
+    // same-document navigations and the file would never be downloaded.
+    if (!event.canIntercept || event.navigationType === 'reload' || event.downloadRequest != null) {
       return;
     }
 
