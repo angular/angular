@@ -18,6 +18,7 @@ ts_project(
         "//ngp-vscode-ng-language-service:node_modules/vscode-jsonrpc",
         "//packages/compiler-cli",
         "//packages/compiler-cli/preprocessor",
+        "//packages/compiler-cli/preprocessor:ls_utils",
         "//packages/compiler-cli/preprocessor/language-service",
     ],
 )
