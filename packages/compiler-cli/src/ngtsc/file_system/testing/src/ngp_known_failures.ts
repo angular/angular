@@ -553,7 +553,6 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'ngtsc type checking for loop blocks should not allow usages of local references within the same template inside the tracking expression',
   'ngtsc type checking for loop blocks should not allow usages of parent loop variables inside the tracking expression',
   'ngtsc type checking for loop blocks should not allow usages of parent template variables inside the tracking expression',
-  'ngtsc type checking for loop blocks should not be able to write to loop template variables',
   'ngtsc type checking for loop blocks should not be able to write to loop template variables in a two-way binding',
   'ngtsc type checking for loop blocks should type check a @for loop without a `track` expression',
   'ngtsc type checking foreign component template semantics should detect a conflict between a @content block and property binding in an external template',
