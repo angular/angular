@@ -436,6 +436,14 @@ export function processFileSync(
   // across multiple components in the same file) are finalized before `printer.print` runs.
   const deferredClassAppends: Array<() => void> = [];
 
+  // The first error the template pipeline threw for a component in this file. ngtsc only runs
+  // the pipeline at emit time, and `performCompilation` never emits a program that has error
+  // diagnostics, so a template the type checker already rejects never reaches the pipeline
+  // there. ngp compiles and type-checks in one pass, so a pipeline throw is held back until the
+  // type-check block has produced its diagnostics and only surfaces if the file is otherwise
+  // error-free (where ngtsc would have reached emit and thrown too).
+  let pipelineError: unknown = undefined;
+
   for (const classMeta of classes) {
     if (ctx.hmrUpdateTarget !== undefined && classMeta.className !== ctx.hmrUpdateTarget) {
       continue;
@@ -1479,7 +1487,14 @@ export function processFileSync(
       const bindingParser = makeBindingParser(
         ctx.templateParseOptions?.enableSelectorless ?? false,
       );
-      const compileResult = compileComponentFromMetadata(componentMeta, sharedPool, bindingParser);
+
+      let compileResult: R3CompiledExpression;
+      try {
+        compileResult = compileComponentFromMetadata(componentMeta, sharedPool, bindingParser);
+      } catch (e) {
+        pipelineError ??= e;
+        continue;
+      }
 
       // 7. Generate factory (same as injectable)
       const factoryRes = compileFactoryFunction({
@@ -1566,7 +1581,14 @@ export function processFileSync(
       const bindingParser = makeBindingParser(
         ctx.templateParseOptions?.enableSelectorless ?? false,
       );
-      const compileResult = compileDirectiveFromMetadata(directiveMeta, sharedPool, bindingParser);
+      let compileResult: R3CompiledExpression;
+
+      try {
+        compileResult = compileDirectiveFromMetadata(directiveMeta, sharedPool, bindingParser);
+      } catch (e) {
+        pipelineError ??= e;
+        continue;
+      }
 
       // Generate factory
       const factoryRes = compileFactoryFunction({
@@ -1947,6 +1969,10 @@ export function processFileSync(
         ...(component ? templateDiagnosticLocation(component, filePath, span) : {filePath, span}),
       });
     }
+  }
+
+  if (pipelineError !== undefined && !fileDiagnostics.some((d) => d.category === 1)) {
+    throw pipelineError;
   }
 
   return {
