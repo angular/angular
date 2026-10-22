@@ -64222,6 +64222,7 @@ var ScreenManager = class {
   }
 };
 var nativeSetImmediate = globalThis.setImmediate;
+var nativeClearImmediate = globalThis.clearImmediate;
 function listenTo(target, event, listener) {
   if ("on" in target) {
     target.on(event, listener);
@@ -64327,7 +64328,8 @@ function createPrompt(view) {
         });
       };
       if ("readableFlowing" in input) {
-        nativeSetImmediate(startCycle);
+        const immediate = nativeSetImmediate(startCycle);
+        cleanups.add(() => nativeClearImmediate(immediate));
       } else {
         startCycle();
       }
@@ -64430,9 +64432,13 @@ var dist_default4 = createPrompt((config, done) => {
   const [active, setActive] = useState(bounds.first);
   const [errorMsg, setError] = useState();
   useKeypress(async (key) => {
+    if (status !== "idle")
+      return;
     if (isEnterKey(key)) {
+      setStatus("loading");
       const selection = items.filter(isChecked);
       const isValid = await validate2([...selection]);
+      setStatus("idle");
       if (required && !selection.length) {
         setError("At least one choice must be selected");
       } else if (isValid === true) {
@@ -64990,7 +64996,7 @@ var dist_default8 = createPrompt((config, done) => {
       return;
     }
     if (isEnterKey(key)) {
-      const input = value || defaultValue;
+      const input = value.trim() || defaultValue;
       const answer = input === "" ? void 0 : Number(input);
       setStatus("loading");
       let isValid = true;
@@ -65898,7 +65904,7 @@ content-type/dist/index.js:
      *)
   *)
 
-@angular/ng-dev/bundles/chunk-J3B7I6QL.mjs:
+@angular/ng-dev/bundles/chunk-E5VB5JIZ.mjs:
   (*! Bundled license information:
   
   content-type/dist/index.js:
