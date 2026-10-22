@@ -7,7 +7,7 @@
  */
 
 export {Attribute} from './src/attribute';
-export {getDefaulted as getActionCache} from './src/cache';
+export {clear as clearActionCache, getDefaulted as getActionCache} from './src/cache';
 export type {EarlyJsactionDataContainer} from './src/earlyeventcontract';
 export {EventContractContainer} from './src/event_contract_container';
 export {EventDispatcher, EventPhase, registerDispatcher} from './src/event_dispatcher';

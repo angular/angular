@@ -263,6 +263,38 @@ describe('event replay', () => {
     expect(window._ejsas![appId]).toBeUndefined();
   });
 
+  // Issue #71545: with incremental hydration the event contract outlives the replay.
+  it('should not prevent default of a link click after its early click was replayed', async () => {
+    const onClickSpy = jasmine.createSpy();
+
+    @Component({
+      selector: 'app',
+      template: `<a id="link" href="/other" target="_blank" (click)="onClick()">link</a>`,
+    })
+    class AppComponent {
+      onClick = onClickSpy;
+    }
+
+    const hydrationFeatures = () => [withEventReplay()];
+    const html = await ssr(AppComponent, {hydrationFeatures});
+    const ssrContents = getAppContents(html);
+    const doc = getDocument();
+
+    prepareEnvironment(doc, ssrContents);
+    resetTViewsFor(AppComponent);
+
+    const link = doc.getElementById('link')!;
+    link.click();
+
+    const appRef = await hydrate(doc, AppComponent, {hydrationFeatures});
+    await appRef.whenStable();
+    expect(onClickSpy).toHaveBeenCalledTimes(1);
+
+    const click = new CustomEvent('click', {bubbles: true, cancelable: true});
+    link.dispatchEvent(click);
+    expect(click.defaultPrevented).toBeFalse();
+  });
+
   // Two apps with the same APP_ID both see `_ejsas[appId]` as set, so both enable event
   // replay. The first one to stabilize reads it and clears it. The second one used to crash
   // instead of just skipping replay.

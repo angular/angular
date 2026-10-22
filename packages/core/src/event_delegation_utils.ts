@@ -8,7 +8,7 @@
 
 // tslint:disable:no-duplicate-imports
 import type {EventContract} from '../primitives/event-dispatch';
-import {Attribute} from '../primitives/event-dispatch';
+import {Attribute, clearActionCache} from '../primitives/event-dispatch';
 import {APP_ID} from './application/application_tokens';
 import {InjectionToken} from './di';
 import type {RElement, RNode} from './render3/interfaces/renderer_dom';
@@ -88,6 +88,7 @@ export const removeListeners = (el: Element) => {
   el.removeAttribute(Attribute.JSACTION);
   el.removeAttribute(DEFER_BLOCK_SSR_ID_ATTRIBUTE);
   el.__jsaction_fns = undefined;
+  clearActionCache(el);
 };
 
 export interface EventContractDetails {

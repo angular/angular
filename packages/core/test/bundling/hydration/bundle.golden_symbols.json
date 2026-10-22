@@ -406,6 +406,7 @@
       "cleanupMatchingDehydratedViews",
       "cleanupParentContainer",
       "cleanupRemainingHydrationQueue",
+      "clear",
       "clearAppScopedEarlyEventContract",
       "clearElementContents",
       "clobberedElementError",

@@ -13,6 +13,9 @@ export const Attribute: {
 export function bootstrapAppScopedEarlyEventContract(container: HTMLElement, appId: string, bubbleEventTypes: string[], captureEventTypes: string[], dataContainer?: EarlyJsactionDataContainer): void;
 
 // @public
+export function clearActionCache(element: Element): void;
+
+// @public
 export function clearAppScopedEarlyEventContract(appId: string, dataContainer?: EarlyJsactionDataContainer): void;
 
 // @public (undocumented)
