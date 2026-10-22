@@ -742,22 +742,27 @@ runInEachFileSystem(() => {
       `,
       );
 
-      const diags = env.driveDiagnostics();
-      expect(diags.length).toBe(4);
-      expect(diags[0].messageText).toBe(
-        `Property 'literalBindingDoesNotExist' does not exist on type 'SomeDir'.`,
-      );
-      expect(getDiagnosticSourceCode(diags[0])).toBe('literalBindingDoesNotExist');
-      expect(diags[1].messageText).toBe(
-        `Property 'literalListenerDoesNotExist' does not exist on type 'SomeDir'.`,
-      );
-      expect(getDiagnosticSourceCode(diags[1])).toBe('literalListenerDoesNotExist');
-      expect(diags[2].messageText).toBe(`Expected 1 arguments, but got 0.`);
-      expect(getDiagnosticSourceCode(diags[2])).toBe('directiveDecoratorHostListener');
-      expect(diags[3].messageText).toMatch(
-        /Can't bind to 'foo' since it isn't a known property of 'button'\. Find more at .*/,
-      );
-      expect(getDiagnosticSourceCode(diags[3])).toBe('foo');
+      const diags = env
+        .driveDiagnostics()
+        .map((d) => [getDiagnosticSourceCode(d), d.messageText])
+        .sort(([, a], [, b]) => (a as string).localeCompare(b as string));
+      expect(diags).toEqual([
+        [
+          'foo',
+          jasmine.stringMatching(
+            /Can't bind to 'foo' since it isn't a known property of 'button'\. Find more at .*/,
+          ),
+        ],
+        ['directiveDecoratorHostListener', `Expected 1 arguments, but got 0.`],
+        [
+          'literalBindingDoesNotExist',
+          `Property 'literalBindingDoesNotExist' does not exist on type 'SomeDir'.`,
+        ],
+        [
+          'literalListenerDoesNotExist',
+          `Property 'literalListenerDoesNotExist' does not exist on type 'SomeDir'.`,
+        ],
+      ]);
     });
 
     it('should not check host bindings if the compiler flag is disabled', () => {
