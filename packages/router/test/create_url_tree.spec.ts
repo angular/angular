@@ -844,6 +844,19 @@ describe('createUrlTreeFromSnapshot', () => {
     await advance(fixture);
     expect(router.url).toEqual('/parent/sibling');
   });
+
+  it('should remove query params with null or undefined values', async () => {
+    const router = TestBed.inject(Router);
+    router.resetConfig([{path: '**', component: class {}}]);
+    await router.navigateByUrl('/a?a=1&b=2&c=3');
+
+    const tree = createUrlTreeFromSnapshot(router.routerState.snapshot.root, [], {
+      a: null,
+      b: undefined,
+      c: '4',
+    });
+    expect(router.serializeUrl(tree)).toEqual('/a?c=4');
+  });
 });
 
 async function advance(fixture: ComponentFixture<unknown>) {
