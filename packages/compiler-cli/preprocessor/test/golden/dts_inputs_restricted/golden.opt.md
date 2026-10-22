@@ -13,10 +13,13 @@ function _tcb1(this: i0.AppComponent) {
   if (true) {
     var _t1 /*T:DIR:0*/ /*141,252*/ = null! as i1.TestComponent; /*T:VAE*/
     var _t2 = null! as (typeof _t1)['privateInput']; /*T:VAE*/
+    null! as typeof _t1.privateInput; /*D:ignore*/ /*159,171*/
     _t2 /*159,171*/ = 'val1' /*174,180*/; /*158,181*/
     var _t3 = null! as (typeof _t1)['protectedInput']; /*T:VAE*/
+    null! as typeof _t1.protectedInput; /*D:ignore*/ /*190,204*/
     _t3 /*190,204*/ = 'val2' /*207,213*/; /*189,214*/
     var _t4 = null! as (typeof _t1)['readonlyInput']; /*T:VAE*/
+    null! as typeof _t1.readonlyInput; /*D:ignore*/ /*223,236*/
     _t4 /*223,236*/ = 'val3' /*239,245*/; /*222,246*/
   }
 }
