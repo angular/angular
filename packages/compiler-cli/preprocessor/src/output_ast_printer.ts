@@ -429,6 +429,8 @@ function withSpan(
 class EmitterVisitor extends AbstractEmitterVisitor {
   suppressLeadingColon = false;
 
+  private readonly constVariableNames = new Set<string>();
+
   constructor(
     private printer: ExpressionPrinter,
     forcePrintTypes = false,
@@ -446,16 +448,50 @@ class EmitterVisitor extends AbstractEmitterVisitor {
     }
   }
 
+  override visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: EmitterVisitorContext): void {
+    super.visitDeclareVarStmt(stmt, ctx);
+
+    if (stmt.hasModifier(o.StmtModifier.Final)) {
+      this.constVariableNames.add(stmt.name);
+    }
+  }
+
   override visitBinaryOperatorExpr(ast: o.BinaryOperatorExpr, ctx: EmitterVisitorContext): void {
     super.visitBinaryOperatorExpr(ast, ctx);
+
+    if (!this.printTypes) {
+      return;
+    }
 
     // We have some internal users who had expressions like `!a > 1` or `'str' + something ?? 'foo'`
     // which normally get flagged by TS as errors, however due to our aggressive parenthesizing
     // in TCBs were not being flagged. This logic adds a `ts-ignore` if we detect cases like that,
     // because we emit expressions in runtime code (more or less) as they were written.
-    if (this.printTypes && binaryNeedsTsIgnore(ast)) {
+    if (binaryNeedsTsIgnore(ast) || (ast.isAssignment() && this.referencesConstVariable(ast.lhs))) {
       ctx.addUniqueSingleLineComment(' @ts-ignore');
     }
+  }
+
+  override visitUnaryOperatorExpr(ast: o.UnaryOperatorExpr, ctx: EmitterVisitorContext): void {
+    super.visitUnaryOperatorExpr(ast, ctx);
+
+    const isUpdate =
+      ast.operator === o.UnaryOperator.Increment || ast.operator === o.UnaryOperator.Decrement;
+
+    if (this.printTypes && isUpdate && this.referencesConstVariable(ast.expr)) {
+      ctx.addUniqueSingleLineComment(' @ts-ignore');
+    }
+  }
+
+  /** Whether `initialTarget` is a write to a `const` variable. */
+  private referencesConstVariable(initialTarget: o.Expression): boolean {
+    let target = initialTarget;
+
+    while (target instanceof o.ParenthesizedExpr) {
+      target = target.expr;
+    }
+
+    return target instanceof o.ReadVarExpr && this.constVariableNames.has(target.name);
   }
 
   // The nodes below are the ones ngtsc's translator attaches a source-map range to. Keep this
