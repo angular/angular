@@ -8,6 +8,7 @@
 
 import {isSignal, linkedSignal, signal, computed} from '../../src/core';
 import {defaultEquals, setPostProducerCreatedFn} from '../../primitives/signals';
+import {global} from '../../src/util/global';
 import {flushEffects, testingEffect} from './effect_util';
 
 describe('linkedSignal', () => {
@@ -56,6 +57,51 @@ describe('linkedSignal', () => {
 
     expect(choice()).toBe('apple');
     expect(choice.toString()).toBe('[LinkedSignal (TestChoice): apple]');
+  });
+
+  it('should support debugName in shorthand options', () => {
+    const choice = linkedSignal(() => 'apple', {debugName: 'TestChoice'});
+
+    expect(choice.toString()).toBe('[LinkedSignal (TestChoice): apple]');
+  });
+
+  describe('in production mode', () => {
+    let previousNgDevMode: typeof ngDevMode;
+
+    beforeEach(() => {
+      previousNgDevMode = global['ngDevMode'];
+      global['ngDevMode'] = false;
+    });
+
+    afterEach(() => {
+      global['ngDevMode'] = previousNgDevMode;
+    });
+
+    it('should not read debugName from the options object', () => {
+      const debugName = jasmine.createSpy('debugName').and.returnValue('TestChoice');
+      const choice = linkedSignal({
+        source: () => 'apple',
+        computation: (value) => value,
+        get debugName() {
+          return debugName();
+        },
+      });
+
+      expect(choice()).toBe('apple');
+      expect(debugName).not.toHaveBeenCalled();
+    });
+
+    it('should not read debugName from shorthand options', () => {
+      const debugName = jasmine.createSpy('debugName').and.returnValue('TestChoice');
+      const choice = linkedSignal(() => 'apple', {
+        get debugName() {
+          return debugName();
+        },
+      });
+
+      expect(choice()).toBe('apple');
+      expect(debugName).not.toHaveBeenCalled();
+    });
   });
 
   it('should update when the source changes', () => {

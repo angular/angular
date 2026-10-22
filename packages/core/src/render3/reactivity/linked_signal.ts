@@ -74,7 +74,11 @@ export function linkedSignal<S, D>(
       identityFn<D>,
       options?.equal,
     ) as LinkedSignalGetter<D, D> & WritableSignal<D>;
-    return upgradeLinkedSignalGetter(getter, options?.debugName, options?.set);
+    return upgradeLinkedSignalGetter(
+      getter,
+      typeof ngDevMode !== 'undefined' && ngDevMode ? options?.debugName : undefined,
+      options?.set,
+    );
   } else {
     const getter = createLinkedSignal<S, D>(
       optionsOrComputation.source,
@@ -83,7 +87,7 @@ export function linkedSignal<S, D>(
     );
     return upgradeLinkedSignalGetter(
       getter,
-      optionsOrComputation.debugName,
+      typeof ngDevMode !== 'undefined' && ngDevMode ? optionsOrComputation.debugName : undefined,
       optionsOrComputation.set,
     );
   }
