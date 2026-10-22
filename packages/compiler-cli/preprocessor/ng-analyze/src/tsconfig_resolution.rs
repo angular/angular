@@ -17,6 +17,7 @@ pub struct ResolvedTsConfig {
     pub compile_poisoned_components: bool,
     pub strict_injection_parameters: bool,
     pub use_host_for_import_generation: bool,
+    pub merged_compiler_options: serde_json::Map<String, serde_json::Value>,
 }
 
 pub fn load_and_resolve_tsconfig(
@@ -50,10 +51,19 @@ pub fn load_and_resolve_tsconfig(
         resolved_exclude.push(PathBuf::from("jspm_packages"));
     }
 
-    // Resolve extended options recursively to handle rootDirs, preserveSymlinks, and workspaceName
+    // Resolve extended options recursively to handle rootDirs, preserveSymlinks, workspaceName,
+    // and merged compiler/bazel/angularCompilerOptions.
     let mut visited = HashSet::new();
-    let extended_options = resolve_extended_options_recursive(path, fs, &resolver, &mut visited)?;
-    resolved_compiler_options.root_dirs = extended_options.root_dirs;
+    let merged_compiler_options =
+        resolve_extended_options_recursive(path, fs, &resolver, &mut visited)?;
+    resolved_compiler_options.root_dirs = merged_compiler_options
+        .get("rootDirs")
+        .and_then(|v| v.as_array())
+        .map(|arr| {
+            arr.iter()
+                .filter_map(|v| v.as_str().map(PathBuf::from))
+                .collect()
+        });
 
     // Resolve files (preserving tsconfig `files` order, then sorted `include` expansion)
     let mut files = Vec::new();
@@ -83,28 +93,63 @@ pub fn load_and_resolve_tsconfig(
         }
     }
 
+    let preserve_symlinks = merged_compiler_options
+        .get("preserveSymlinks")
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    let workspace_name = merged_compiler_options
+        .get("workspaceName")
+        .and_then(|v| v.as_str())
+        .filter(|s| !s.is_empty())
+        .map(|s| s.to_string());
+    let generate_extra_imports_in_local_mode = merged_compiler_options
+        .get("generateExtraImportsInLocalMode")
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    let compile_non_exported_classes = merged_compiler_options
+        .get("compileNonExportedClasses")
+        .and_then(|v| v.as_bool())
+        .unwrap_or(true);
+    let enable_hmr = merged_compiler_options
+        .get("_enableHmr")
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    let strict_standalone = merged_compiler_options
+        .get("strictStandalone")
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    let compile_poisoned_components = merged_compiler_options
+        .get("_compilePoisonedComponents")
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    let strict_injection_parameters = merged_compiler_options
+        .get("strictInjectionParameters")
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    // Either flag selects host-driven module naming in ngtsc (`makeCompilation`); the alias
+    // variant additionally enables aliasing, which the analyzer does not implement.
+    let use_host_for_import_generation = merged_compiler_options
+        .get("_useHostForImportGeneration")
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false)
+        || merged_compiler_options
+            .get("_useHostForImportAndAliasGeneration")
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false);
+
     Ok(ResolvedTsConfig {
         files,
         compiler_options: resolved_compiler_options,
-        preserve_symlinks: extended_options.preserve_symlinks.unwrap_or(false),
-        workspace_name: extended_options.workspace_name,
-        generate_extra_imports_in_local_mode: extended_options
-            .generate_extra_imports_in_local_mode
-            .unwrap_or(false),
-        compile_non_exported_classes: extended_options
-            .compile_non_exported_classes
-            .unwrap_or(true),
-        enable_hmr: extended_options.enable_hmr.unwrap_or(false),
-        strict_standalone: extended_options.strict_standalone.unwrap_or(false),
-        compile_poisoned_components: extended_options
-            .compile_poisoned_components
-            .unwrap_or(false),
-        strict_injection_parameters: extended_options
-            .strict_injection_parameters
-            .unwrap_or(false),
-        use_host_for_import_generation: extended_options
-            .use_host_for_import_generation
-            .unwrap_or(false),
+        preserve_symlinks,
+        workspace_name,
+        generate_extra_imports_in_local_mode,
+        compile_non_exported_classes,
+        enable_hmr,
+        strict_standalone,
+        compile_poisoned_components,
+        strict_injection_parameters,
+        use_host_for_import_generation,
+        merged_compiler_options,
     })
 }
 
@@ -268,18 +313,70 @@ fn expand_globs(
     files
 }
 
-#[derive(Default)]
-struct ExtendedOptions {
-    root_dirs: Option<Vec<PathBuf>>,
-    preserve_symlinks: Option<bool>,
-    workspace_name: Option<String>,
-    generate_extra_imports_in_local_mode: Option<bool>,
-    compile_non_exported_classes: Option<bool>,
-    enable_hmr: Option<bool>,
-    strict_standalone: Option<bool>,
-    compile_poisoned_components: Option<bool>,
-    strict_injection_parameters: Option<bool>,
-    use_host_for_import_generation: Option<bool>,
+fn collect_local_compiler_options(
+    parsed_json: Option<&serde_json::Value>,
+    base_dir: &Path,
+) -> serde_json::Map<String, serde_json::Value> {
+    let mut map = serde_json::Map::new();
+    let Some(json) = parsed_json else {
+        return map;
+    };
+
+    if let Some(co) = json.get("compilerOptions").and_then(|v| v.as_object()) {
+        for (k, v) in co {
+            map.insert(k.clone(), v.clone());
+        }
+    }
+
+    for bazel_key in ["bazelOptions", "bazelOpts"] {
+        if let Some(bo) = json.get(bazel_key).and_then(|v| v.as_object()) {
+            for (k, v) in bo {
+                if k != "angularCompilerOptions" {
+                    map.insert(k.clone(), v.clone());
+                }
+            }
+            if let Some(b_aco) = bo.get("angularCompilerOptions").and_then(|v| v.as_object()) {
+                for (k, v) in b_aco {
+                    map.insert(k.clone(), v.clone());
+                }
+            }
+        }
+    }
+
+    if let Some(aco) = json
+        .get("angularCompilerOptions")
+        .and_then(|v| v.as_object())
+    {
+        for (k, v) in aco {
+            map.insert(k.clone(), v.clone());
+        }
+    }
+
+    if let Some(dirs) = map.get("rootDirs").and_then(|v| v.as_array()) {
+        let resolved_dirs: Vec<serde_json::Value> = dirs
+            .iter()
+            .filter_map(|v| v.as_str())
+            .map(|d_str| {
+                let d = Path::new(d_str);
+                let p = if d.is_absolute() {
+                    d.to_path_buf()
+                } else {
+                    base_dir.join(d)
+                };
+                serde_json::Value::String(
+                    crate::fs::normalize_path_structural(&p)
+                        .to_string_lossy()
+                        .into_owned(),
+                )
+            })
+            .collect();
+        map.insert(
+            "rootDirs".to_string(),
+            serde_json::Value::Array(resolved_dirs),
+        );
+    }
+
+    map
 }
 
 fn resolve_extended_options_recursive(
@@ -287,7 +384,7 @@ fn resolve_extended_options_recursive(
     fs: &crate::fs::OverlayFileSystem,
     resolver: &ResolverGeneric<crate::fs::OverlayFileSystem>,
     visited: &mut HashSet<PathBuf>,
-) -> Result<ExtendedOptions, String> {
+) -> Result<serde_json::Map<String, serde_json::Value>, String> {
     let abs_path = if path.is_absolute() {
         path.to_path_buf()
     } else {
@@ -314,120 +411,13 @@ fn resolve_extended_options_recursive(
     let tsconfig = TsConfig::parse(false, path, path, json_str)
         .map_err(|e| format!("Failed to parse tsconfig JSON at {:?}: {:?}", path, e))?;
 
-    // Extract preserveSymlinks and workspaceName directly from the stripped JSON using serde_json.
     let parsed_json: Result<serde_json::Value, _> = serde_json::from_str(&stripped_json);
-    let mut current_preserve_symlinks = parsed_json.as_ref().ok().and_then(|json| {
-        json.pointer("/compilerOptions/preserveSymlinks")
-            .and_then(|v| v.as_bool())
-    });
-
-    let mut current_workspace_name = parsed_json.as_ref().ok().and_then(|json| {
-        json.pointer("/angularCompilerOptions/workspaceName")
-            .and_then(|v| v.as_str())
-            .map(|s| s.to_string())
-    });
-
-    let mut current_generate_extra_imports = parsed_json.as_ref().ok().and_then(|json| {
-        json.pointer("/angularCompilerOptions/generateExtraImportsInLocalMode")
-            .or_else(|| {
-                json.pointer("/bazelOptions/angularCompilerOptions/generateExtraImportsInLocalMode")
-            })
-            .and_then(|v| v.as_bool())
-    });
-
-    let mut current_compile_non_exported = parsed_json.as_ref().ok().and_then(|json| {
-        json.pointer("/angularCompilerOptions/compileNonExportedClasses")
-            .and_then(|v| v.as_bool())
-    });
-
-    let mut current_enable_hmr = parsed_json.as_ref().ok().and_then(|json| {
-        json.pointer("/angularCompilerOptions/_enableHmr")
-            .and_then(|v| v.as_bool())
-    });
-
-    let mut current_strict_standalone = parsed_json.as_ref().ok().and_then(|json| {
-        json.pointer("/angularCompilerOptions/strictStandalone")
-            .and_then(|v| v.as_bool())
-    });
-
-    let mut current_compile_poisoned_components = parsed_json.as_ref().ok().and_then(|json| {
-        json.pointer("/angularCompilerOptions/_compilePoisonedComponents")
-            .and_then(|v| v.as_bool())
-    });
-
-    let mut current_strict_injection_parameters = parsed_json.as_ref().ok().and_then(|json| {
-        json.pointer("/angularCompilerOptions/strictInjectionParameters")
-            .and_then(|v| v.as_bool())
-    });
-
-    // Either flag selects host-driven module naming in ngtsc (`makeCompilation`); the alias
-    // variant additionally enables aliasing, which the analyzer does not implement.
-    let mut current_use_host_for_import_generation = parsed_json.as_ref().ok().and_then(|json| {
-        let read = |key: &str| {
-            json.pointer(&format!("/angularCompilerOptions/{key}"))
-                .or_else(|| json.pointer(&format!("/bazelOptions/angularCompilerOptions/{key}")))
-                .and_then(|v| v.as_bool())
-        };
-        match (
-            read("_useHostForImportGeneration"),
-            read("_useHostForImportAndAliasGeneration"),
-        ) {
-            (None, None) => None,
-            (a, b) => Some(a.unwrap_or(false) || b.unwrap_or(false)),
-        }
-    });
-
     let base_dir = abs_path.parent().unwrap_or(Path::new("."));
-
-    let mut current_root_dirs = tsconfig.compiler_options.root_dirs.clone().map(|dirs| {
-        dirs.into_iter()
-            .map(|d| {
-                let p = if d.is_absolute() { d } else { base_dir.join(d) };
-                crate::fs::normalize_path(&p).into_owned()
-            })
-            .collect::<Vec<_>>()
-    });
-
-    if current_root_dirs.is_some()
-        && current_preserve_symlinks.is_some()
-        && current_workspace_name.is_some()
-        && current_generate_extra_imports.is_some()
-        && current_compile_non_exported.is_some()
-        && current_enable_hmr.is_some()
-        && current_strict_standalone.is_some()
-        && current_compile_poisoned_components.is_some()
-        && current_strict_injection_parameters.is_some()
-        && current_use_host_for_import_generation.is_some()
-    {
-        visited.remove(&canonical);
-        return Ok(ExtendedOptions {
-            root_dirs: current_root_dirs,
-            preserve_symlinks: current_preserve_symlinks,
-            workspace_name: current_workspace_name,
-            generate_extra_imports_in_local_mode: current_generate_extra_imports,
-            compile_non_exported_classes: current_compile_non_exported,
-            enable_hmr: current_enable_hmr,
-            strict_standalone: current_strict_standalone,
-            compile_poisoned_components: current_compile_poisoned_components,
-            strict_injection_parameters: current_strict_injection_parameters,
-            use_host_for_import_generation: current_use_host_for_import_generation,
-        });
-    }
+    let local_options = collect_local_compiler_options(parsed_json.as_ref().ok(), base_dir);
 
     let Some(extends_field) = &tsconfig.extends else {
         visited.remove(&canonical);
-        return Ok(ExtendedOptions {
-            root_dirs: current_root_dirs,
-            preserve_symlinks: current_preserve_symlinks,
-            workspace_name: current_workspace_name,
-            generate_extra_imports_in_local_mode: current_generate_extra_imports,
-            compile_non_exported_classes: current_compile_non_exported,
-            enable_hmr: current_enable_hmr,
-            strict_standalone: current_strict_standalone,
-            compile_poisoned_components: current_compile_poisoned_components,
-            strict_injection_parameters: current_strict_injection_parameters,
-            use_host_for_import_generation: current_use_host_for_import_generation,
-        });
+        return Ok(local_options);
     };
 
     let extends_list: &[String] = match extends_field {
@@ -435,7 +425,7 @@ fn resolve_extended_options_recursive(
         oxc_resolver::ExtendsField::Multiple(v) => v.as_slice(),
     };
 
-    let mut inherited = ExtendedOptions::default();
+    let mut merged = serde_json::Map::new();
     for extends_str in extends_list {
         let base_dir = path.parent().unwrap_or(Path::new("."));
         let extends_path = match resolver.resolve(base_dir, extends_str) {
@@ -453,83 +443,19 @@ fn resolve_extended_options_recursive(
             }
         };
 
-        let res = resolve_extended_options_recursive(&extends_path, fs, resolver, visited)?;
+        let parent_options =
+            resolve_extended_options_recursive(&extends_path, fs, resolver, visited)?;
+        for (k, v) in parent_options {
+            merged.insert(k, v);
+        }
+    }
 
-        if let Some(dirs) = res.root_dirs {
-            inherited.root_dirs = Some(dirs);
-        }
-        if let Some(preserve_symlinks) = res.preserve_symlinks {
-            inherited.preserve_symlinks = Some(preserve_symlinks);
-        }
-        if let Some(workspace_name) = res.workspace_name {
-            inherited.workspace_name = Some(workspace_name);
-        }
-        if let Some(generate_extra_imports) = res.generate_extra_imports_in_local_mode {
-            inherited.generate_extra_imports_in_local_mode = Some(generate_extra_imports);
-        }
-        if let Some(compile_non_exported) = res.compile_non_exported_classes {
-            inherited.compile_non_exported_classes = Some(compile_non_exported);
-        }
-        if let Some(enable_hmr) = res.enable_hmr {
-            inherited.enable_hmr = Some(enable_hmr);
-        }
-        if let Some(strict_standalone) = res.strict_standalone {
-            inherited.strict_standalone = Some(strict_standalone);
-        }
-        if let Some(compile_poisoned_components) = res.compile_poisoned_components {
-            inherited.compile_poisoned_components = Some(compile_poisoned_components);
-        }
-        if let Some(strict_injection_parameters) = res.strict_injection_parameters {
-            inherited.strict_injection_parameters = Some(strict_injection_parameters);
-        }
-        if let Some(use_host) = res.use_host_for_import_generation {
-            inherited.use_host_for_import_generation = Some(use_host);
-        }
-    }
-    if current_root_dirs.is_none() {
-        current_root_dirs = inherited.root_dirs;
-    }
-    if current_preserve_symlinks.is_none() {
-        current_preserve_symlinks = inherited.preserve_symlinks;
-    }
-    if current_workspace_name.is_none() {
-        current_workspace_name = inherited.workspace_name;
-    }
-    if current_generate_extra_imports.is_none() {
-        current_generate_extra_imports = inherited.generate_extra_imports_in_local_mode;
-    }
-    if current_compile_non_exported.is_none() {
-        current_compile_non_exported = inherited.compile_non_exported_classes;
-    }
-    if current_enable_hmr.is_none() {
-        current_enable_hmr = inherited.enable_hmr;
-    }
-    if current_strict_standalone.is_none() {
-        current_strict_standalone = inherited.strict_standalone;
-    }
-    if current_compile_poisoned_components.is_none() {
-        current_compile_poisoned_components = inherited.compile_poisoned_components;
-    }
-    if current_strict_injection_parameters.is_none() {
-        current_strict_injection_parameters = inherited.strict_injection_parameters;
-    }
-    if current_use_host_for_import_generation.is_none() {
-        current_use_host_for_import_generation = inherited.use_host_for_import_generation;
+    for (k, v) in local_options {
+        merged.insert(k, v);
     }
 
     visited.remove(&canonical);
-    Ok(ExtendedOptions {
-        root_dirs: current_root_dirs,
-        preserve_symlinks: current_preserve_symlinks,
-        workspace_name: current_workspace_name,
-        generate_extra_imports_in_local_mode: current_generate_extra_imports,
-        compile_non_exported_classes: current_compile_non_exported,
-        enable_hmr: current_enable_hmr,
-        strict_standalone: current_strict_standalone,
-        compile_poisoned_components: current_compile_poisoned_components,
-        strict_injection_parameters: current_strict_injection_parameters,
-        use_host_for_import_generation: current_use_host_for_import_generation,
-    })
+    Ok(merged)
 }
 
 pub fn is_supported_extension(path: &Path, allow_js: bool) -> bool {
@@ -1796,5 +1722,111 @@ mod tests {
 
         let config = load_and_resolve_tsconfig(Path::new("/virtual/child.json"), &fs).unwrap();
         assert_eq!(config.workspace_name.as_deref(), Some("child_ws"));
+    }
+
+    #[test]
+    fn test_merged_compiler_options_precedence_and_root_dirs() {
+        let fs = crate::fs::OverlayFileSystem::new_with_overlay();
+        fs.upsert_file(
+            PathBuf::from("/virtual/base/tsconfig.base.json"),
+            r#"{
+                "compilerOptions": {
+                    "strictNullChecks": true,
+                    "rootDirs": ["./base_co"]
+                },
+                "bazelOptions": {
+                    "workspaceName": "bazel_ws",
+                    "rootDirs": ["./base_bazel"],
+                    "angularCompilerOptions": {
+                        "_enableHmr": true,
+                        "strictTemplates": false
+                    }
+                },
+                "angularCompilerOptions": {
+                    "strictTemplates": true
+                }
+            }"#
+            .to_string(),
+        );
+        fs.upsert_file(
+            PathBuf::from("/virtual/app/tsconfig.json"),
+            r#"{
+                "extends": "../base/tsconfig.base.json",
+                "bazelOpts": {
+                    "angularCompilerOptions": {
+                        "_compilePoisonedComponents": true
+                    }
+                },
+                "angularCompilerOptions": {
+                    "checkTypeOfInputBindings": false
+                },
+                "files": []
+            }"#
+            .to_string(),
+        );
+
+        let config =
+            load_and_resolve_tsconfig(Path::new("/virtual/app/tsconfig.json"), &fs).unwrap();
+
+        // Typed fields should reflect bazelOptions / bazelOpts / angularCompilerOptions across extends
+        assert_eq!(config.workspace_name.as_deref(), Some("bazel_ws"));
+        assert!(config.enable_hmr);
+        assert!(config.compile_poisoned_components);
+
+        // bazelOptions.rootDirs in base should override compilerOptions.rootDirs in base and resolve relative to base_dir
+        let expected_root = PathBuf::from("/virtual/base/base_bazel");
+        assert_eq!(
+            config.compiler_options.root_dirs,
+            Some(vec![expected_root])
+        );
+        assert_eq!(
+            config.merged_compiler_options.get("rootDirs"),
+            Some(&serde_json::json!(["/virtual/base/base_bazel"]))
+        );
+
+        // angularCompilerOptions.strictTemplates should override bazelOptions.angularCompilerOptions.strictTemplates
+        assert_eq!(
+            config.merged_compiler_options.get("strictTemplates"),
+            Some(&serde_json::Value::Bool(true))
+        );
+        assert_eq!(
+            config.merged_compiler_options.get("strictNullChecks"),
+            Some(&serde_json::Value::Bool(true))
+        );
+        assert_eq!(
+            config
+                .merged_compiler_options
+                .get("checkTypeOfInputBindings"),
+            Some(&serde_json::Value::Bool(false))
+        );
+    }
+
+    #[test]
+    fn test_root_dirs_preserves_casing_in_merged_compiler_options() {
+        let fs = crate::fs::OverlayFileSystem::new_with_overlay();
+        fs.upsert_file(
+            PathBuf::from("/VirtualWorkspace/MyProject/tsconfig.json"),
+            r#"{
+                "compilerOptions": {
+                    "rootDirs": ["./SrcDir", "../BazelOut/BinDir"]
+                },
+                "files": []
+            }"#
+            .to_string(),
+        );
+
+        let config = load_and_resolve_tsconfig(
+            Path::new("/VirtualWorkspace/MyProject/tsconfig.json"),
+            &fs,
+        )
+        .unwrap();
+
+        assert_eq!(
+            config.merged_compiler_options.get("rootDirs"),
+            Some(&serde_json::json!([
+                "/VirtualWorkspace/MyProject/SrcDir",
+                "/VirtualWorkspace/BazelOut/BinDir"
+            ]))
+        );
     }
 }

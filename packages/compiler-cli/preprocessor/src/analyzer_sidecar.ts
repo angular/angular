@@ -15,10 +15,12 @@ import type {
   ResolvedResource,
   TemplateUsage,
 } from './types.js';
+import type {NgpCompilerOptions} from './compiler_options.js';
 import type {IAnalyzer} from './hybrid_compiler.js';
 
 export class SidecarAnalyzer implements IAnalyzer {
   private sidecarProcess: child_process.ChildProcess;
+  private compilerOptions: NgpCompilerOptions = {};
   private pendingRequests = new Map<
     number,
     {method: string; resolve: (val: any) => void; reject: (err: any) => void}
@@ -179,8 +181,8 @@ export class SidecarAnalyzer implements IAnalyzer {
       usePoisonedData?: boolean;
       useHostForImportGeneration?: boolean;
     },
-  ): Promise<void> {
-    await this.callRpc('initialize', {
+  ): Promise<NgpCompilerOptions> {
+    const res = await this.callRpc<NgpCompilerOptions | null>('initialize', {
       tsconfigPath,
       optimize,
       virtualFiles,
@@ -192,6 +194,12 @@ export class SidecarAnalyzer implements IAnalyzer {
       usePoisonedData: options?.usePoisonedData,
       useHostForImportGeneration: options?.useHostForImportGeneration,
     });
+    this.compilerOptions = res ?? {};
+    return this.compilerOptions;
+  }
+
+  getCompilerOptions(): NgpCompilerOptions {
+    return this.compilerOptions;
   }
 
   private async *runAnalysisStream(

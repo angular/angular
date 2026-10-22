@@ -7,6 +7,7 @@
  */
 
 import type * as nga from './types.js';
+import type {NgpCompilerOptions} from './compiler_options.js';
 import type {IAnalyzer} from './hybrid_compiler.js';
 
 /** The wasm-bindgen `WasmAnalyzer` surface this adapter drives. */
@@ -32,6 +33,8 @@ export interface WasmInner {
   get_ts_file_for_template?(templatePath: string): string | undefined;
   readResource?(containingFile: string, url: string): string | undefined;
   read_resource?(containingFile: string, url: string): string | undefined;
+  getCompilerOptions?(): string;
+  get_compiler_options?(): string;
   closeStream?(id: number): void;
   close_stream?(id: number): void;
 }
@@ -277,6 +280,15 @@ export class WasmAnalyzer implements IAnalyzer {
     }
     const res = fn.call(this.inner, templatePath);
     return res ? (JSON.parse(res) as nga.TemplateUsage[]) : null;
+  }
+
+  getCompilerOptions(): NgpCompilerOptions {
+    const fn = this.inner.getCompilerOptions ?? this.inner.get_compiler_options;
+    if (!fn) {
+      return {};
+    }
+    const raw = fn.call(this.inner);
+    return raw ? (JSON.parse(raw) as NgpCompilerOptions) : {};
   }
 
   analyzeSync(): Generator<nga.CompilationChunk, void, unknown> {

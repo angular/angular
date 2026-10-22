@@ -122,6 +122,7 @@ pub struct Analyzer {
     tsconfig_path: PathBuf,
     entrypoints: Arc<RwLock<Vec<PathBuf>>>,
     current_cancel_token: RwLock<Option<CancellationToken>>,
+    merged_compiler_options: serde_json::Map<String, serde_json::Value>,
 }
 
 impl Analyzer {
@@ -246,9 +247,14 @@ impl Analyzer {
             tsconfig_path: path,
             entrypoints: entrypoints_lock,
             current_cancel_token: RwLock::new(None),
+            merged_compiler_options: resolved_config.merged_compiler_options,
         };
 
         Ok(analyzer)
+    }
+
+    pub fn merged_compiler_options(&self) -> &serde_json::Map<String, serde_json::Value> {
+        &self.merged_compiler_options
     }
 
     pub fn analyze_core<S: Spawner>(
@@ -703,6 +709,11 @@ impl Analyzer {
         url: String,
     ) -> Option<crate::ResolvedResource> {
         self.read_resource_core(containing_file, url)
+    }
+
+    #[cfg_attr(feature = "napi", napi)]
+    pub fn get_compiler_options(&self) -> String {
+        serde_json::to_string(&self.merged_compiler_options).unwrap_or_else(|_| "{}".to_string())
     }
 
     fn run_coordinator_helper<S: Spawner>(
