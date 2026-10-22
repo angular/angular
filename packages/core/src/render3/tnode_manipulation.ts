@@ -131,6 +131,7 @@ export function getOrCreateTNode(
   } else if (tNode.type & TNodeType.Placeholder) {
     tNode.type = type;
     tNode.value = name;
+    tNode.namespace = getNamespace();
     tNode.attrs = attrs;
     const parent = getCurrentParentTNode();
     tNode.injectorIndex = parent === null ? -1 : parent.injectorIndex;
