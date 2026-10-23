@@ -149,9 +149,26 @@ export function createDummySourceSpan(filePath: string): ParseSourceSpan {
  */
 export interface HostBindingDiagnosticsContext {
   filePath: string;
+  sourceText?: string;
   hostSpan?: nga.SpanMetadata;
   hostProperties?: nga.HostPropertyMetadata[];
   diagnostics: nga.NgDiagnostic[];
+}
+
+function createHostSourceSpan(ctx: HostBindingDiagnosticsContext): ParseSourceSpan {
+  if (ctx.sourceText != null && ctx.hostSpan != null) {
+    const {line: startLine, character: startCol} = offsetToPosition(
+      ctx.sourceText,
+      ctx.hostSpan.start,
+    );
+    const {line: endLine, character: endCol} = offsetToPosition(ctx.sourceText, ctx.hostSpan.end);
+    const parseSf = new ParseSourceFile(ctx.sourceText, ctx.filePath);
+    return new ParseSourceSpan(
+      new ParseLocation(parseSf, ctx.hostSpan.start, startLine + 1, startCol + 1),
+      new ParseLocation(parseSf, ctx.hostSpan.end, endLine + 1, endCol + 1),
+    );
+  }
+  return createDummySourceSpan(ctx.filePath);
 }
 
 /**
@@ -169,7 +186,12 @@ function getHostBindingErrorSpan(
       prop.value.text != null &&
       error.msg.includes(`[${prop.value.text}]`)
     ) {
-      return prop.value.sourceSpan;
+      // `extract_host_object` narrows string-literal spans by 1 on each side for TCB binding
+      // offsets; restore the surrounding quote characters to match ngtsc's `prop.initializer`.
+      return {
+        start: prop.value.sourceSpan.start - 1,
+        end: prop.value.sourceSpan.end + 1,
+      };
     }
   }
   return ctx.hostSpan;
@@ -223,7 +245,7 @@ export function buildHostMetadata(
     let failed = false;
     try {
       const objBindings = parseHostBindings(hostObj);
-      const errors = verifyHostBindings(objBindings, createDummySourceSpan(diagCtx.filePath));
+      const errors = verifyHostBindings(objBindings, createHostSourceSpan(diagCtx));
       if (errors.length > 0) {
         failed = true;
         diagCtx.diagnostics.push({

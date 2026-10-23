@@ -138,10 +138,10 @@ export class DynamicListenerComponent {
       "filePath": "/bad-expression.directive.ts",
       "category": "error",
       "code": 5001,
-      "messageText": "Parser Error: Unexpected end of expression: handle(( at the end of the expression [handle((] in /bad-expression.directive.ts@0:0\nParser Error: Missing closing parentheses at the end of the expression [handle((] in /bad-expression.directive.ts@0:0\nParser Error: Missing expected ) at the end of the expression [handle((] in /bad-expression.directive.ts@0:0",
+      "messageText": "Parser Error: Unexpected end of expression: handle(( at the end of the expression [handle((] in /bad-expression.directive.ts@5:9\nParser Error: Missing closing parentheses at the end of the expression [handle((] in /bad-expression.directive.ts@5:9\nParser Error: Missing expected ) at the end of the expression [handle((] in /bad-expression.directive.ts@5:9",
       "span": {
-        "start": 148,
-        "end": 156
+        "start": 147,
+        "end": 157
       }
     },
     {
