@@ -1006,6 +1006,7 @@
       "profilerCallbacks",
       "projectNodes",
       "provideRouter",
+      "provideRouterInternal",
       "provideZonelessChangeDetection",
       "provideZonelessChangeDetectionInternal",
       "providerToFactory",

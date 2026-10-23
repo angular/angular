@@ -47,6 +47,8 @@ import {RouterConfigLoader, ROUTES} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
 import {ROUTER_SCROLLER, RouterScroller} from './router_scroller';
 import {ActivatedRoute} from './router_state';
+import {HistoryStateManager} from './statemanager/history_state_manager';
+import {StateManager} from './statemanager/state_manager';
 import {DefaultUrlSerializer, UrlSerializer} from './url_tree';
 
 /**
@@ -72,6 +74,7 @@ export const ROUTER_PROVIDERS: Provider[] = [
   ChildrenOutletContexts,
   {provide: ActivatedRoute, useFactory: rootRoute},
   RouterConfigLoader,
+  {provide: StateManager, useExisting: HistoryStateManager},
 ];
 
 /**

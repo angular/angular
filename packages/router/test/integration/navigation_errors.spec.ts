@@ -45,6 +45,7 @@ import {
   createRoot,
   advance,
   simulateLocationChange,
+  provideTestRouter,
 } from './integration_helpers';
 import {timeout} from '@angular/private/testing';
 
@@ -93,7 +94,8 @@ export async function navigationErrorsIntegrationSuite(browserAPI: 'history' | '
     }
     TestBed.configureTestingModule({
       providers: [
-        provideRouter(
+        provideTestRouter(
+          browserAPI,
           [
             {
               path: 'throw',
@@ -157,7 +159,8 @@ export async function navigationErrorsIntegrationSuite(browserAPI: 'history' | '
   it('can redirect from error handler', async () => {
     TestBed.configureTestingModule({
       providers: [
-        provideRouter(
+        provideTestRouter(
+          browserAPI,
           [
             {
               path: 'throw',
@@ -194,7 +197,8 @@ export async function navigationErrorsIntegrationSuite(browserAPI: 'history' | '
   it('should not break navigation if an error happens in NavigationErrorHandler', async () => {
     TestBed.configureTestingModule({
       providers: [
-        provideRouter(
+        provideTestRouter(
+          browserAPI,
           [
             {
               path: 'throw',
@@ -221,7 +225,8 @@ export async function navigationErrorsIntegrationSuite(browserAPI: 'history' | '
     let errors = 0;
     TestBed.configureTestingModule({
       providers: [
-        provideRouter(
+        provideTestRouter(
+          browserAPI,
           [
             {path: 'throwing', component: ThrowingCmp},
             {path: 'user/:name', outlet: 'aux', component: UserCmp},
@@ -249,7 +254,7 @@ export async function navigationErrorsIntegrationSuite(browserAPI: 'history' | '
   (['deferred', 'eager'] as const).forEach((urlUpdateStrategy) => {
     it(`should dispatch NavigationError after the url has been reset back (${urlUpdateStrategy})`, async () => {
       TestBed.configureTestingModule({
-        providers: [provideRouter([], withRouterConfig({urlUpdateStrategy}))],
+        providers: [provideTestRouter(browserAPI, [], withRouterConfig({urlUpdateStrategy}))],
       });
       const router = TestBed.inject(Router);
       const location = TestBed.inject(Location);
@@ -280,7 +285,9 @@ export async function navigationErrorsIntegrationSuite(browserAPI: 'history' | '
 
     it(`can renavigate to throwing component (${urlUpdateStrategy})`, async () => {
       TestBed.configureTestingModule({
-        providers: [provideRouter([], withRouterConfig({urlUpdateStrategy: 'eager'}))],
+        providers: [
+          provideTestRouter(browserAPI, [], withRouterConfig({urlUpdateStrategy: 'eager'})),
+        ],
       });
       const router = TestBed.inject(Router);
       const location = TestBed.inject(Location);
@@ -306,7 +313,7 @@ export async function navigationErrorsIntegrationSuite(browserAPI: 'history' | '
 
     it(`should reset the url with the right state when navigation errors  (${urlUpdateStrategy})`, async () => {
       TestBed.configureTestingModule({
-        providers: [provideRouter([], withRouterConfig({urlUpdateStrategy}))],
+        providers: [provideTestRouter(browserAPI, [], withRouterConfig({urlUpdateStrategy}))],
       });
       const router = TestBed.inject(Router);
       const location = TestBed.inject(Location);
@@ -343,7 +350,7 @@ export async function navigationErrorsIntegrationSuite(browserAPI: 'history' | '
 
     it(`should not trigger another navigation when resetting the url back due to a NavigationError (${urlUpdateStrategy})`, async () => {
       TestBed.configureTestingModule({
-        providers: [provideRouter([], withRouterConfig({urlUpdateStrategy}))],
+        providers: [provideTestRouter(browserAPI, [], withRouterConfig({urlUpdateStrategy}))],
       });
       const router = TestBed.inject(Router);
       router.onSameUrlNavigation = 'reload';
