@@ -38,6 +38,9 @@ export async function run(compiler: HybridCompiler, options: RunOptions): Promis
       );
       await compiler.writeDiagnosticsFile();
     }
+    // Also write when the analyzer produced no chunks so that option diagnostics (which don't
+    // depend on any file) still make it into the `.ngdiag.json`.
+    await compiler.writeDiagnosticsFile();
   } finally {
     compiler.analyzer.close();
   }

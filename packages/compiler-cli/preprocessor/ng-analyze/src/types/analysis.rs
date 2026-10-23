@@ -557,6 +557,7 @@ pub struct FileData {
     pub(crate) file_exports: Arc<crate::analyzer::FileExportInfo>,
     pub(crate) errors: Vec<String>,
     pub(crate) diagnostics: Vec<crate::NgDiagnostic>,
+    pub(crate) source_file_validator_diagnostics: Vec<crate::NgDiagnostic>,
     /// Byte offsets for implicit signal `debugName` insertions.
     pub(crate) signal_debug_names:
         Vec<crate::analyzer::signal_debug_name::SignalDebugNameInsertion>,
@@ -597,6 +598,7 @@ impl FileData {
             imports: self.wire_imports(),
             type_only_exports: self.type_only_exports.clone(),
             diagnostics: self.diagnostics.clone(),
+            source_file_validator_diagnostics: self.source_file_validator_diagnostics.clone(),
             signal_debug_names: self
                 .signal_debug_names
                 .iter()

@@ -360,6 +360,7 @@ export function performNgpCompilationSync(params: {
     useHostForImportGeneration,
   });
 
+  const optionDiagnostics = verifyCompilerOptions(options as NgpCompilerOptions);
   let compiler: HybridCompiler;
   try {
     compiler = new HybridCompiler(analyzer, {
@@ -367,6 +368,7 @@ export function performNgpCompilationSync(params: {
       tsconfigPath: posixTsconfigPath,
       virtualFiles,
       tcbConfig,
+      optionDiagnostics,
       templateParseOptions: {
         enableI18nLegacyMessageIdFormat: options.enableI18nLegacyMessageIdFormat,
         i18nNormalizeLineEndingsInICUs: options.i18nNormalizeLineEndingsInICUs,
@@ -639,11 +641,10 @@ export function performNgpCompilationSync(params: {
       messageText: thrown.message,
     });
   }
-  const optionDiagnostics = verifyCompilerOptions(options as NgpCompilerOptions);
-  for (const ngDiag of optionDiagnostics) {
+  for (const ngDiag of compiler.optionDiagnostics) {
     allDiagnostics.push(convertNgDiagnosticToTs(ngDiag, undefined));
   }
-  const hasOptionErrors = optionDiagnostics.some((d) => d.category === 1);
+  const hasOptionErrors = compiler.optionDiagnostics.some((d) => d.category === 1);
 
   if (!templateDiagnosticsOnly && !hasOptionErrors) {
     allDiagnostics.push(...tsProgram.getOptionsDiagnostics());
@@ -1450,6 +1451,11 @@ export function createNgpTestCompiler(
   };
 
   const compilerInstance = {
+    getOptionDiagnostics(): ts.Diagnostic[] {
+      return currentResult.compiler.optionDiagnostics.map((d) =>
+        convertNgDiagnosticToTs(d, undefined),
+      );
+    },
     getDiagnosticsForFile(file: ts.SourceFile): ts.Diagnostic[] {
       const targetFsPath = fs.resolve(file.fileName);
       const relatedPaths = new Set<AbsoluteFsPath>([targetFsPath]);
