@@ -18,7 +18,7 @@
  * skipping.
  *
  * Tracked compiler gap categories & GitHub issues (https://github.com/alxhub/ng-hybrid-preprocessor):
- * - Extended Template Diagnostics (NG8101-NG8117): #673, #675, #676, #677
+ * - Extended Template Diagnostics (NG8102, NG8107, NG8109, NG8111, NG8115, NG8117): #673, #677
  * - Template Type-Checking (TCB) & Host Binding Type-Checking: #678-#683, #694-#696
  * - Angular Diagnostic Error Codes (NG1xxx-NG11xxx): #684-#692
  * - Decorator Metadata Type-Checking: #693
@@ -100,43 +100,13 @@ const NGP_KNOWN_TYPECHECK_FAILURES: ReadonlySet<string> = new Set([
 
 /**
  * Known failures in `//packages/compiler-cli/src/ngtsc/typecheck/extended/test/checks/*:test_ngp`
- * (#673, #675, #676, #677 - Extended template diagnostics NG8101-NG8117 not yet implemented in NGP).
+ * (#673, #677 - TypeChecker-backed extended template diagnostics not yet implemented in NGP).
  */
 const NGP_KNOWN_EXTENDED_CHECK_FAILURES: ReadonlySet<string> = new Set([
   '@let declarations should produce a warning when a signal aliased via @let is not invoked in interpolation',
   '@let declarations should produce a warning when a signal aliased via @let is used in @if',
   '@let declarations should produce a warning when a signal aliased via @let is used in a bound attribute',
   '@let declarations should produce a warning when an instance property of a signal aliased via @let is accessed in interpolation',
-  'DeferTriggerMisconfiguration should emit when main viewport has no options and prefetch has empty options',
-  'DeferTriggerMisconfiguration should emit when on immediate coexists with other mains',
-  'DeferTriggerMisconfiguration should emit when on immediate coexists with prefetch',
-  'DeferTriggerMisconfiguration should emit when prefetch identical to main viewport/interaction/hover',
-  'DeferTriggerMisconfiguration should emit when prefetch idle is configured without a main trigger',
-  'DeferTriggerMisconfiguration should emit when prefetch idle matches main idle with no timeout',
-  'DeferTriggerMisconfiguration should emit when prefetch idle timeout >= main idle timeout',
-  'DeferTriggerMisconfiguration should emit when prefetch timer >= main timer',
-  'DeferTriggerMisconfiguration should emit when prefetch timer is configured without a main trigger',
-  'DeferTriggerMisconfiguration should emit when prefetch trigger is configured without a main trigger',
-  'DeferTriggerMisconfiguration should emit when prefetch when is configured without a main trigger',
-  'DeferTriggerMisconfiguration should emit when viewport triggers have identical empty options',
-  'DeferTriggerMisconfiguration should emit when viewport triggers have identical no parameters',
-  'DeferTriggerMisconfiguration should emit when viewport triggers have identical rootMargin options',
-  "MissingControlFlowDirectiveCheck should produce a warning when the 'ngFor' directive is not imported (when used on the 'div' element)",
-  "MissingControlFlowDirectiveCheck should produce a warning when the 'ngFor' directive is not imported (when used on the 'ng-container' element)",
-  "MissingControlFlowDirectiveCheck should produce a warning when the 'ngFor' directive is not imported (when used on the 'ng-content' element)",
-  "MissingControlFlowDirectiveCheck should produce a warning when the 'ngFor' directive is not imported (when used on the 'ng-template' element)",
-  "MissingControlFlowDirectiveCheck should produce a warning when the 'ngIf' directive is not imported (when used on the 'div' element)",
-  "MissingControlFlowDirectiveCheck should produce a warning when the 'ngIf' directive is not imported (when used on the 'ng-container' element)",
-  "MissingControlFlowDirectiveCheck should produce a warning when the 'ngIf' directive is not imported (when used on the 'ng-content' element)",
-  "MissingControlFlowDirectiveCheck should produce a warning when the 'ngIf' directive is not imported (when used on the 'ng-template' element)",
-  "MissingControlFlowDirectiveCheck should produce a warning when the 'ngSwitchCase' directive is not imported (when used on the 'div' element)",
-  "MissingControlFlowDirectiveCheck should produce a warning when the 'ngSwitchCase' directive is not imported (when used on the 'ng-container' element)",
-  "MissingControlFlowDirectiveCheck should produce a warning when the 'ngSwitchCase' directive is not imported (when used on the 'ng-content' element)",
-  "MissingControlFlowDirectiveCheck should produce a warning when the 'ngSwitchCase' directive is not imported (when used on the 'ng-template' element)",
-  "MissingControlFlowDirectiveCheck should produce a warning when the 'ngSwitchDefault' directive is not imported (when used on the 'div' element)",
-  "MissingControlFlowDirectiveCheck should produce a warning when the 'ngSwitchDefault' directive is not imported (when used on the 'ng-container' element)",
-  "MissingControlFlowDirectiveCheck should produce a warning when the 'ngSwitchDefault' directive is not imported (when used on the 'ng-content' element)",
-  "MissingControlFlowDirectiveCheck should produce a warning when the 'ngSwitchDefault' directive is not imported (when used on the 'ng-template' element)",
   'NullishCoalescingNotNullableCheck does not warn for pipe arguments when parens are used',
   'NullishCoalescingNotNullableCheck should produce nullish coalescing warning',
   'NullishCoalescingNotNullableCheck should produce nullish coalescing warning for classes with inline TCBs',
@@ -147,20 +117,6 @@ const NGP_KNOWN_EXTENDED_CHECK_FAILURES: ReadonlySet<string> = new Set([
   'OptionalChainNotNullableCheck should produce optional chain warning for method call',
   'OptionalChainNotNullableCheck should produce optional chain warning for property access',
   'OptionalChainNotNullableCheck should respect configured diagnostic category',
-  'SkipHydrationNotStatic should produce a wrong value warning',
-  'SkipHydrationNotStatic should produce an attribute binding warning',
-  'SkipHydrationNotStatic should produce class binding warning',
-  'SuffixNotSupportedCheck should produce suffix not supported warning',
-  'SuffixNotSupportedCheck should produce suffix not supported warning for .% suffix',
-  'SuffixNotSupportedCheck should produce suffix not supported warning for .em suffix',
-  'TemplateChecks should produce invalid banana in a box warning',
-  'TemplateChecks should produce invalid banana in a box warnings for *ngIf and ng-template',
-  'TemplateChecks should produce missing ngforof let warning',
-  'TemplateChecks should respect configured category',
-  'TextAttributeNotBindingCheck should not produce a warning when there is no value',
-  'TextAttributeNotBindingCheck should produce a style binding warning',
-  'TextAttributeNotBindingCheck should produce an attribute binding warning',
-  'TextAttributeNotBindingCheck should produce class binding warning',
   'Uninvoked function in text interpolation compiler check should produce a warning when a function is not invoked in text interpolation',
   'Uninvoked function in text interpolation compiler check should produce a warning when a property method is not invoked in text interpolation (with and without safe navigation)',
   'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a function in a chain is not invoked',
@@ -171,20 +127,11 @@ const NGP_KNOWN_EXTENDED_CHECK_FAILURES: ReadonlySet<string> = new Set([
   'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a nested function in a conditional is not invoked',
   'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a nested function in an event binding is not invoked',
   'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a nested function that uses key read in an event binding is not invoked',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when an event listener is declared as an arrow function',
   'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when no function in a conditional is not invoked',
   'UninvokedTrackFunctionCheck should produce a diagnostic when a track function in a @for block is not invoked',
   'UninvokedTrackFunctionCheck should produce a warning when track is a method on an item',
   'UninvokedTrackFunctionCheck should produce a warning when track is a regular function on an object',
   'UninvokedTrackFunctionCheck should produce a warning when track is an arrow function property on component',
-  'UnparenthesizedNullishCoalescingCheck should produce warning when mixing nullish coalescing with logical and',
-  'UnparenthesizedNullishCoalescingCheck should produce warning when mixing nullish coalescing with logical or',
-  'UnparenthesizedNullishCoalescingCheck should respect configured diagnostic category',
-  'UnusedLetDeclarationCheck should report a @let declaration that is not used (with other @let declarations)',
-  'UnusedLetDeclarationCheck should report a solo @let declaration that is not used',
-  'missingStructuralDirectiveCheck should produce a warning for missing unknown structural directives in standalone components',
-  'missingStructuralDirectiveCheck should produce a warning if ngTemplateOutlet is used without importing the directive',
-  'missingStructuralDirectiveCheck should produce a warning when missing structural directive is used alongside an imported directive',
   'should produce a warning if the template contains a directive with the same input name, but on a different node',
   'should produce a warning when a computed signal is not invoked',
   'should produce a warning when a model signal is not invoked',
@@ -329,7 +276,7 @@ const NGP_POTENTIAL_BREAKING_CHANGES: ReadonlySet<string> = new Set([
 /**
  * Known failures in `//packages/compiler-cli/test/ngtsc:ngtsc_ngp`
  * (HMR, local compilation, declaration-only emission, incremental compilation,
- * Xi18n, ComponentIndex, and diagnostic/TCB gaps #673-#696).
+ * Xi18n, ComponentIndex, and diagnostic/TCB gaps #677-#696).
  */
 const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'Debug Info Typescript tranformation afterRenderEffect should not override an explicit debugName',
@@ -465,14 +412,6 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'ngtsc behavioral tests when closure annotations are requested wrap functions in certain fields in parentheses should wrap functions in "providers" list in NgModule',
   'ngtsc behavioral tests when closure annotations are requested wrap functions in certain fields in parentheses should wrap functions in "viewProviders" list in Component',
   'ngtsc compilation of standalone types component-side should compile a standalone component in a cycle with its module',
-  'ngtsc extended template checks handles diagnostic configuration by emitting diagnostics configured as `warning`',
-  'ngtsc extended template checks handles diagnostic configuration by emitting diagnostics with the default category',
-  'ngtsc extended template checks handles diagnostic configuration by emitting unconfigured diagnostics as is',
-  'ngtsc extended template checks handles diagnostic configuration by enabling extended template diagnostics when `strictTemplates` is enabled',
-  'ngtsc extended template checks handles diagnostic configuration by promoting diagnostics configured as `error`',
-  'ngtsc extended template checks handles diagnostic configuration by throwing an error when given a bad category',
-  'ngtsc extended template checks should produce invalid banana in box warning',
-  'ngtsc extended template checks should produce invalid banana in box warning with external html file',
   'ngtsc extended template checks should produce nullish coalescing not nullable warning',
   'ngtsc incremental compilation (semantic changes) NgModule declarations should not recompile components when a non-matching directive is added in scope',
   'ngtsc incremental compilation (semantic changes) NgModule declarations should recompile components when a matching directive is added in the direct scope',
@@ -555,12 +494,6 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'ngtsc type checking strictUnclaimedEventNames should report the internal property name of an aliased output',
   'ngtsc type checking strictUnclaimedEventNames should report unclaimed camelCase events on elements with matched directives',
   'ngtsc type checking tagged template literals should produce diagnostics for invalid tag function',
-  'ngtsc type checking unused standalone imports should report unused imports coming from a nested array from the same file',
-  'ngtsc type checking unused standalone imports should report unused imports coming from an array used as the `imports` initializer',
-  'ngtsc type checking unused standalone imports should report when a directive is not used within a template',
-  'ngtsc type checking unused standalone imports should report when a pipe is not used within a template',
-  'ngtsc type checking unused standalone imports should report when all imports in an import array are not used',
-  'ngtsc type checking unused standalone imports should unused imports from external modules',
   'ngtsc type checking when input and output go to different directives',
   'selectorless should be able to alias imports of selectorless dependencies',
   'selectorless should be able to use default imports as selectorless dependencies',

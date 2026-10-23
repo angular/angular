@@ -107,16 +107,20 @@ class ExpressionsSemanticsVisitor extends RecursiveAstVisitor {
 
     const target = this.boundTarget.getExpressionTarget(ast);
     if (target instanceof TmplAstVariable) {
-      // TODO(parity): ngtsc attaches related information ("'<name>' is declared here." at the
-      // variable's `valueSpan || sourceSpan`), which `Diagnostic` can't carry yet.
       this.reportIllegalWrite(
         context,
+        target,
         `Cannot use variable '${target.name}' as the left-hand side of an assignment expression. Template variables are read-only.`,
       );
     }
   }
 
-  private reportIllegalWrite(event: TmplAstBoundEvent, message: string): void {
+  private reportIllegalWrite(
+    event: TmplAstBoundEvent,
+    target: TmplAstVariable,
+    message: string,
+  ): void {
+    const span = target.valueSpan || target.sourceSpan;
     this.diagnostics.push({
       typeCheckId: this.typeCheckId,
       category: OutOfBandDiagnosticCategory.Error,
@@ -124,6 +128,13 @@ class ExpressionsSemanticsVisitor extends RecursiveAstVisitor {
       message,
       start: event.handlerSpan.start.offset,
       end: event.handlerSpan.end.offset,
+      relatedInformation: [
+        {
+          message: `'${target.name}' is declared here.`,
+          start: span.start.offset,
+          end: span.end.offset,
+        },
+      ],
     });
   }
 

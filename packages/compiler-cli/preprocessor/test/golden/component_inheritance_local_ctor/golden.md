@@ -158,7 +158,17 @@ export class ChildZeroComp extends BaseClass {
       "span": {
         "start": 300,
         "end": 303
-      }
+      },
+      "relatedInformation": [
+        {
+          "filePath": "/app.ts",
+          "span": {
+            "start": 305,
+            "end": 311
+          },
+          "messageText": "This type is not supported as injection token."
+        }
+      ]
     }
   ]
 }

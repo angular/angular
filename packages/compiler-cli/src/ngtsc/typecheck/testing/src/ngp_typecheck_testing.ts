@@ -76,6 +76,7 @@ export function compileTargetsWithNgp(
     parseOptions?: ParseTemplateOptions;
   } = {},
   load: {forms?: boolean} = {},
+  enableExtendedDiagnostics = false,
 ): readonly ts.Diagnostic[] {
   const fs = getFileSystem();
   const allDeclarations: TestDeclaration[] = [];
@@ -125,9 +126,7 @@ export function compileTargetsWithNgp(
 
     const targetDecls = target.declarations ?? [];
     const externalImports: string[] = [];
-    const topLevelImportNames: string[] = [];
     for (const decl of targetDecls) {
-      topLevelImportNames.push(decl.name);
       if (decl.file && decl.file !== target.fileName) {
         const rel = path.posix
           .relative(path.posix.dirname(target.fileName), decl.file)
@@ -148,11 +147,19 @@ export function compileTargetsWithNgp(
           `${path.posix.dirname(target.fileName)}/${clsName}.html`,
         );
         files.push({name: templateFilePath, contents: templateHtml});
+        const selfDecl = fileDecls.get(clsName);
+        const isStandalone = selfDecl?.isStandalone ?? true;
+        const componentImports = targetDecls
+          .filter((d) => !(d.name === clsName && d.type === 'directive' && !d.isComponent))
+          .map((d) => d.name);
         const importsProp =
-          topLevelImportNames.length > 0 ? `, imports: [${topLevelImportNames.join(', ')}]` : '';
+          isStandalone && componentImports.length > 0
+            ? `, imports: [${componentImports.join(', ')}]`
+            : '';
         const selector =
-          clsName === 'TestComponent' ? 'test-cmp' : `test-cmp-${clsName.toLowerCase()}`;
-        const compDecorator = `@ɵNgpComponent({selector: ${JSON.stringify(selector)}, templateUrl: './${clsName}.html', standalone: true${importsProp}})\n`;
+          (selfDecl?.type === 'directive' ? selfDecl.selector : null) ??
+          (clsName === 'TestComponent' ? 'test-cmp' : `test-cmp-${clsName.toLowerCase()}`);
+        const compDecorator = `@ɵNgpComponent({selector: ${JSON.stringify(selector)}, templateUrl: './${clsName}.html', standalone: ${isStandalone}${importsProp}})\n`;
         replacements.push({
           start: stmt.getStart(sf),
           end: stmt.getStart(sf),
@@ -227,7 +234,13 @@ export function compileTargetsWithNgp(
     rootNames,
     options: compilerOptions,
     emit: false,
-    tcbConfigOverride: fullConfig,
+    tcbConfigOverride: enableExtendedDiagnostics
+      ? fullConfig
+      : {
+          ...fullConfig,
+          unusedStandaloneImports: 'suppress',
+          extendedDiagnostics: {defaultCategory: 'suppress'},
+        },
     templateDiagnosticsOnly: true,
   });
   return diagnostics;
@@ -243,7 +256,7 @@ function runNgpForExtendedChecks(
     return [];
   }
 
-  const diagnostics = compileTargetsWithNgp(ctx.targets, ctx.overrides, ctx.load);
+  const diagnostics = compileTargetsWithNgp(ctx.targets, ctx.overrides, ctx.load, true);
   const configuredByNgCode = new Map<number, ts.DiagnosticCategory>();
   for (const [check, category] of templateChecks.entries()) {
     configuredByNgCode.set(-990000 - Number(check.code), category);
@@ -251,6 +264,13 @@ function runNgpForExtendedChecks(
 
   const out: TemplateDiagnostic[] = [];
   for (const d of diagnostics) {
+    if (
+      d.file &&
+      d.file.fileName.endsWith('.html') &&
+      !d.file.fileName.endsWith(`/${componentName}.html`)
+    ) {
+      continue;
+    }
     if (configuredByNgCode.has(d.code)) {
       const category = configuredByNgCode.get(d.code)!;
       const sourceFile = component.getSourceFile();

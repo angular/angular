@@ -463,6 +463,8 @@ pub struct EvaluatedDeclaration {
     pub reference: crate::types::analysis::Reference,
     /// True when the reference came through a foreign-function resolver (`forwardRef`).
     pub synthetic: bool,
+    /// Identifier nodes traversed while resolving this reference (`ValueReference.identifiers`).
+    pub identifiers: Vec<(crate::query::FileId, oxc_span::Span)>,
 }
 
 fn collect_declaration_tuples(
@@ -483,11 +485,82 @@ fn collect_declaration_tuples(
             out.push(EvaluatedDeclaration {
                 reference: crate::types::analysis::Reference::from_value_reference(reference),
                 synthetic: reference.synthetic,
+                identifiers: reference.identifiers.clone(),
             });
             Ok(())
         }
         crate::evaluator::ResolvedValue::Dynamic(dynamic) => Err(dynamic.reason.clone()),
         _ => Err(crate::evaluator::DynamicReason::InvalidExpressionType),
+    }
+}
+
+/// Mirror of `UnusedStandaloneImportsRule.isPotentialSharedReference` and `diagnosticNode`
+/// selection in `@angular/compiler-cli`:
+///
+/// - If `identifiers` has an entry inside `raw_imports_span` (`getIdentityInExpression`), it was
+///   written directly in `@Component.imports` (or via a single-directive alias variable) and is not
+///   shared (`(false, Some(span))`).
+/// - Otherwise, if the declaration comes from another file (`reference_file != component_file`)
+///   and its first identifier in `component_file` (`getIdentityIn(sourceFile)`) sits inside a
+///   non-exported `VariableDeclaration`, it is a file-local array and is not shared
+///   (`(false, Some(span))`).
+/// - All other references (same-file declarations in a variable, exported variable arrays, or
+///   imported shared arrays) are treated as potentially shared (`(true, None)`).
+async fn resolve_import_usage<Fs: ResourceResolverFs + Clone + 'static>(
+    ctx: &QueryCtx<Fs>,
+    component_file: crate::query::FileId,
+    reference_file: crate::query::FileId,
+    raw_imports_span: Option<oxc_span::Span>,
+    identifiers: &[(crate::query::FileId, oxc_span::Span)],
+) -> (bool, Option<oxc_span::Span>) {
+    if let Some(container) = raw_imports_span {
+        if let Some(&(_, span)) = identifiers.iter().find(|&&(id_file, id_span)| {
+            id_file == component_file
+                && id_span.start >= container.start
+                && id_span.end <= container.end
+        }) {
+            return (false, Some(span));
+        }
+    }
+
+    if reference_file == component_file {
+        return (true, None);
+    }
+
+    let Some(&(_, id_span)) = identifiers
+        .iter()
+        .find(|&&(id_file, _)| id_file == component_file)
+    else {
+        return (true, None);
+    };
+
+    let parsed = ctx.parse_file(component_file).await;
+    let in_non_exported_var = {
+        let guard = parsed.lock().unwrap();
+        let nodes = guard.borrow_dependent().semantic.nodes();
+        let enclosing_var_decl = nodes
+            .iter()
+            .filter(|node| {
+                matches!(
+                    node.kind(),
+                    oxc_ast::AstKind::VariableDeclaration(decl)
+                        if decl.span.start <= id_span.start && id_span.end <= decl.span.end
+                )
+            })
+            .last();
+        enclosing_var_decl.is_some_and(|var_decl| {
+            !matches!(
+                nodes.parent_kind(var_decl.id()),
+                oxc_ast::AstKind::ExportDeclaration(_)
+                    | oxc_ast::AstKind::ExportNamedDeclaration(_)
+            )
+        })
+    };
+
+    if in_non_exported_var {
+        (false, Some(id_span))
+    } else {
+        (true, None)
     }
 }
 
@@ -703,7 +776,10 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
             // arrays/tuples, spreads, and `ModuleWithProviders` calls. Fall back to identifier-rooted
             // `parsed_imports` if evaluation hits a dynamic entry (e.g. unwrapping `X.forRoot()` syntactically).
             enum Entry {
-                Evaluated(crate::types::analysis::Reference),
+                Evaluated(
+                    crate::types::analysis::Reference,
+                    Vec<(crate::query::FileId, oxc_span::Span)>,
+                ),
                 Parsed(DeclarationTuple),
             }
 
@@ -733,7 +809,12 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
                     entries = Some(
                         evaluated
                             .into_iter()
-                            .map(|decl| (Entry::Evaluated(decl.reference), decl.synthetic))
+                            .map(|decl| {
+                                (
+                                    Entry::Evaluated(decl.reference, decl.identifiers),
+                                    decl.synthetic,
+                                )
+                            })
                             .collect(),
                     );
                 }
@@ -753,6 +834,8 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
             });
 
             let mut resolved_declarations = Vec::new();
+            let mut resolved_import_entries = Vec::new();
+            let raw_imports_span = component.imports_factory_span;
             // The legacy path with nothing to resolve (slot evaluation failed and no
             // identifier-rooted imports survived extraction) must keep the runtime fallback.
             let mut all_resolved = used_evaluated_entries || !entries.is_empty();
@@ -761,7 +844,9 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
                 let ctx = ctx.clone();
                 async move {
                     match entry {
-                        Entry::Evaluated(r) => crate::query::resolve_reference_async(r, &ctx).await,
+                        Entry::Evaluated(r, _) => {
+                            crate::query::resolve_reference_async(r, &ctx).await
+                        }
                         Entry::Parsed(tuple) => {
                             resolve_declaration_async(tuple, file_path, &ctx).await
                         }
@@ -779,10 +864,24 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
                 let flattened = flatten_class_info(class_info.clone(), ctx).await;
 
                 let reference = match entry {
-                    Entry::Evaluated(r) => r.clone(),
+                    Entry::Evaluated(r, _) => r.clone(),
                     Entry::Parsed(tuple) => {
                         legacy_import_reference(tuple, &class_info, reference_id.file)
                     }
+                };
+
+                let (is_potential_shared, usage_span) = match entry {
+                    Entry::Evaluated(_, identifiers) => {
+                        resolve_import_usage(
+                            ctx,
+                            reference_id.file,
+                            reference.file,
+                            raw_imports_span,
+                            identifiers,
+                        )
+                        .await
+                    }
+                    Entry::Parsed(_) => (true, None),
                 };
 
                 let same_file = reference.file == reference_id.file;
@@ -801,6 +900,15 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
                         &flattened,
                         is_fw,
                     ) {
+                        resolved_import_entries.push(crate::analyzer::ComponentImportEntryData {
+                            name: decl.reference.name.clone(),
+                            file: decl.reference.file,
+                            declaration_type: decl.declaration_type,
+                            pipe_name: decl.pipe_name.clone(),
+                            is_standalone: decl.is_standalone,
+                            is_potential_shared,
+                            usage_span,
+                        });
                         let contextual_decl =
                             contextualize_declaration(ctx, &decl, reference_id.file, file_path)
                                 .await;
@@ -831,6 +939,15 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
                 } else if let Some(decl) =
                     DeclarationData::from_class_info(reference, &class_info, &flattened, is_fw)
                 {
+                    resolved_import_entries.push(crate::analyzer::ComponentImportEntryData {
+                        name: decl.reference.name.clone(),
+                        file: decl.reference.file,
+                        declaration_type: decl.declaration_type,
+                        pipe_name: decl.pipe_name.clone(),
+                        is_standalone: decl.is_standalone,
+                        is_potential_shared,
+                        usage_span,
+                    });
                     let mut contextual_decl =
                         contextualize_declaration(ctx, &decl, reference_id.file, file_path).await;
                     contextual_decl.resolved_host_directives = resolve_host_directives_for_class(
@@ -854,6 +971,9 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
             // supported path (the norm in local mode), not an error, so it is deliberately silent.
             if all_resolved {
                 component.raw_imports_span = None;
+                component.resolved_import_entries = Some(resolved_import_entries);
+            } else {
+                component.resolved_import_entries = None;
             }
         }
     }

@@ -297,7 +297,25 @@ export class DefaultGenericComponent<T extends object = {}> {
       "span": {
         "start": 231,
         "end": 234
-      }
+      },
+      "relatedInformation": [
+        {
+          "filePath": "/generic.component.ts",
+          "span": {
+            "start": 236,
+            "end": 237
+          },
+          "messageText": "This type does not have a value, so it cannot be used as injection token."
+        },
+        {
+          "filePath": "/generic.component.ts",
+          "span": {
+            "start": 170,
+            "end": 171
+          },
+          "messageText": "The type is declared here."
+        }
+      ]
     }
   ]
 }

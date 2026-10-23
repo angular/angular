@@ -184,7 +184,17 @@ export class ThirdPartyService {
       "span": {
         "start": 668,
         "end": 679
-      }
+      },
+      "relatedInformation": [
+        {
+          "filePath": "/test.ts",
+          "span": {
+            "start": 681,
+            "end": 705
+          },
+          "messageText": "This type does not have a value, so it cannot be used as injection token."
+        }
+      ]
     }
   ]
 }

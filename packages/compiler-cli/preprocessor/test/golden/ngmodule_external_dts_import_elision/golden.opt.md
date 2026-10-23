@@ -19,6 +19,10 @@ function _tcb2(this: i0.AppComponent) {
   }
 }
 
+/* Diagnostics:
+ - (166, 173) All imports are unused
+*/
+
 ```
 
 # /out/minimap.ts
@@ -201,5 +205,25 @@ export class TestModule {
   (typeof ngJitMode === 'undefined' || ngJitMode) &&
     i0.ɵɵsetNgModuleScope(TestModule, { declarations: [AppComponent], imports: [DragDropModule] });
 })();
+
+```
+
+# /tsconfig.ngdiag.json
+```json
+{
+  "tsconfigPath": "/tsconfig.json",
+  "diagnostics": [
+    {
+      "filePath": "/minimap.ts",
+      "category": "warning",
+      "code": 8113,
+      "messageText": "All imports are unused",
+      "span": {
+        "start": 166,
+        "end": 173
+      }
+    }
+  ]
+}
 
 ```

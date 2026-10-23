@@ -218,6 +218,7 @@ fn parse_component_metadata<'a, Fs: ResourceResolverFs>(
                 data.schemas = extract_schemas(&p.value, semantic);
             }
             "imports" => {
+                data.imports_key_span = Some(p.key.span());
                 data.raw_imports_span = Some(p.value.span());
                 data.imports_factory_span = Some(p.value.span());
 

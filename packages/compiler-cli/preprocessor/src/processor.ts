@@ -16,6 +16,8 @@ import {
   ParsedTemplate,
   R3ClassDebugInfo,
   R3ClassMetadataCtorParameter,
+  R3CompiledExpression,
+  R3ComponentDeferMetadata,
   R3ComponentMetadata,
   R3DependencyMetadata,
   R3DirectiveMetadata,
@@ -44,8 +46,6 @@ import {
   makeBindingParser,
   outputAst as o,
   type BindingParser,
-  type R3CompiledExpression,
-  type R3ComponentDeferMetadata,
   type R3DeferPerBlockDependency,
   type R3DeferPerComponentDependency,
 } from '@angular/compiler';
@@ -294,7 +294,7 @@ function mapDeps(
   content: MagicString | string,
   guards: nga.SpanMetadata[] = [],
 ): R3DependencyMetadata[] {
-  return deps.map((dep) => {
+  return deps.map((dep): R3DependencyMetadata => {
     let token: o.Expression | null = null;
     if (dep.tokenSpan) {
       token = rawSlice(content, dep.tokenSpan, guards);
@@ -1912,11 +1912,34 @@ export function processFileSync(
       }
 
       const span = {start: diag.start, end: diag.end};
+      const loc = diag.sourceFilePath
+        ? {filePath: diag.sourceFilePath, span}
+        : component
+          ? templateDiagnosticLocation(component, filePath, span)
+          : {filePath, span};
+
+      const relatedInformation: nga.NgRelatedInformation[] | undefined =
+        diag.relatedInformation?.map((rel) => {
+          const relSpan = {start: rel.start, end: rel.end};
+          const relLoc = rel.sourceFilePath
+            ? {filePath: rel.sourceFilePath, span: relSpan}
+            : component
+              ? templateDiagnosticLocation(component, filePath, relSpan)
+              : {filePath, span: relSpan};
+          return {
+            messageText: rel.message,
+            filePath: relLoc.filePath,
+            span: relLoc.span,
+          };
+        });
+
       fileDiagnostics.push({
         category: diag.category === OutOfBandDiagnosticCategory.Warning ? 0 : 1,
         code: diag.code ?? 8000,
         messageText: diag.message,
-        ...(component ? templateDiagnosticLocation(component, filePath, span) : {filePath, span}),
+        filePath: loc.filePath,
+        span: loc.span,
+        ...(relatedInformation && relatedInformation.length > 0 ? {relatedInformation} : {}),
       });
     }
   }
@@ -3356,7 +3379,7 @@ function templateDiagnosticLocation(
   // TODO(parity): for an `indirect` template ngtsc reports the diagnostic at `span` inside a
   // synthetic `<file> (<ComponentName> template)` source file holding the resolved template, and
   // points related information ("Error occurs in the template of component …") at the
-  // `template` expression. `NgDiagnostic` can carry neither a synthetic file nor related
-  // information, so only the expression location is reported.
+  // `template` expression. `NgDiagnostic` cannot carry a synthetic file, so only the expression
+  // location is reported.
   return {filePath, span: {start: expressionSpan.start, end: expressionSpan.end}};
 }

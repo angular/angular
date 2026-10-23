@@ -1078,7 +1078,6 @@ fn extract_file_exports(module_record: &ModuleRecord<'_>) -> FileExportInfo {
 }
 
 /// Applies NgModule schemas to the components it declares within the same file.
-/// TODO(parity): support cross-file NgModule schema scoping.
 fn apply_ngmodule_schemas_local(
     classes: &mut [ClassData],
     mut registrations: Option<&mut [RegistrationInfo]>,
