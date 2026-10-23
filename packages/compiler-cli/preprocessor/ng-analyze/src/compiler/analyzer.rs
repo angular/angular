@@ -147,6 +147,7 @@ struct EffectiveConfig {
     strict_standalone: bool,
     use_poisoned_data: bool,
     strict_injection_parameters: bool,
+    implicit_standalone: bool,
 }
 
 impl EffectiveConfig {
@@ -208,6 +209,7 @@ impl EffectiveConfig {
             strict_injection_parameters: options
                 .strict_injection_parameters
                 .unwrap_or(resolved.strict_injection_parameters),
+            implicit_standalone: resolved.implicit_standalone,
             tsconfig_path,
         })
     }
@@ -293,6 +295,7 @@ impl Analyzer {
             config.strict_standalone,
             config.use_poisoned_data,
             config.strict_injection_parameters,
+            config.implicit_standalone,
         );
 
         Analyzer {

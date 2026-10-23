@@ -54,6 +54,7 @@ pub struct QueryEngine<Fs: ResourceResolverFs + Clone + 'static> {
     pub strict_standalone: bool,
     pub use_poisoned_data: bool,
     pub strict_injection_parameters: bool,
+    pub implicit_standalone: bool,
 }
 
 impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
@@ -76,6 +77,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             false,
             false,
             false,
+            true,
         )
     }
 
@@ -92,6 +94,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         strict_standalone: bool,
         use_poisoned_data: bool,
         strict_injection_parameters: bool,
+        implicit_standalone: bool,
     ) -> Arc<Self> {
         Arc::new(Self {
             fs,
@@ -109,6 +112,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             strict_standalone,
             use_poisoned_data,
             strict_injection_parameters,
+            implicit_standalone,
         })
     }
 
@@ -456,7 +460,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             });
         }
 
-        let analysis = crate::analyzer::analyze_parsed(
+        let mut analysis = crate::analyzer::analyze_parsed(
             &file_path,
             file_id,
             source_text,
@@ -469,6 +473,32 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             self.compile_non_exported_classes,
             self.enable_hmr,
         );
+
+        if !self.implicit_standalone && !crate::utils::is_dts(&file_path) {
+            for class in &mut analysis.classes {
+                match &mut class.decorator {
+                    crate::analyzer::DecoratorData::Component(c)
+                        if c.directive.standalone_span.is_none() =>
+                    {
+                        c.directive.standalone = false;
+                    }
+                    crate::analyzer::DecoratorData::Directive(d)
+                        if d.standalone_span.is_none() =>
+                    {
+                        d.standalone = false;
+                    }
+                    crate::analyzer::DecoratorData::Pipe(p) if p.standalone.is_none() => {
+                        p.standalone = Some(false);
+                    }
+                    _ => {}
+                }
+            }
+            analysis.registrations = analysis
+                .classes
+                .iter()
+                .filter_map(|class| class.to_registration(source_text, &converter))
+                .collect();
+        }
 
         self.resource_registry
             .register_resources(&file_path, analysis.classes.iter());
