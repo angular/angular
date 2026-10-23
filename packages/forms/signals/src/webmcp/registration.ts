@@ -15,11 +15,12 @@ import {
   makeEnvironmentProviders,
   untracked,
 } from '@angular/core';
-import type {JsonSchemaForInference} from '@mcp-b/webmcp-types';
 import {submit} from '../api/structure';
 import {FieldTree} from '../api/types';
 import {FieldNode} from '../field/node';
 import {REGISTER_WEBMCP_FORM, RegisterWebMcpForm} from './tokens';
+
+type JsonSchema = Record<string, unknown>;
 
 const registerWebMcpForm: RegisterWebMcpForm = (formTree, options) => {
   const injector = inject(Injector);
@@ -96,7 +97,7 @@ async function initWebMcpForm(
 }
 
 /** Infers the JSON schema from a specific form field. */
-function inferSchemaFromFieldNode(node: FieldNode): JsonSchemaForInference | undefined {
+function inferSchemaFromFieldNode(node: FieldNode): JsonSchema | undefined {
   const value = node.value();
 
   // Primitive types.
@@ -125,7 +126,7 @@ function inferSchemaFromFieldNode(node: FieldNode): JsonSchemaForInference | und
 
   // Recursively infer the types of all object properties.
   if (typeof value === 'object') {
-    const properties: Record<string, JsonSchemaForInference> = {};
+    const properties: Record<string, JsonSchema> = {};
     const required: string[] = [];
     const children = node.structure.children();
     for (const child of children) {

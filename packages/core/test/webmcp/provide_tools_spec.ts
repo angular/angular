@@ -8,12 +8,11 @@
 
 import {provideRouter, Router, withAutoCleanupInjectors} from '@angular/router';
 import {cleanupWebMCPPolyfill, initializeWebMCPPolyfill} from '@mcp-b/webmcp-polyfill';
-import {ModelContext} from '@mcp-b/webmcp-types';
 import {Component, createEnvironmentInjector, EnvironmentInjector} from '../../src/core';
 import {provideExperimentalWebMcpTools} from '../../src/webmcp/provide_tools';
 import {Execute} from '../../src/webmcp/types';
 import {TestBed} from '../../testing';
-import type {JsonSchemaForInference} from '../../third_party/@mcp-b/webmcp-types';
+import type {ModelContext} from '../../third_party/webmcp-types';
 
 describe('provideExperimentalWebMcpTools', () => {
   beforeEach(() => {
@@ -30,7 +29,7 @@ describe('provideExperimentalWebMcpTools', () => {
   });
 
   it('should register tools when initialized', async () => {
-    const execute = jasmine.createSpy<Execute<JsonSchemaForInference>>('execute').and.returnValue({
+    const execute = jasmine.createSpy<Execute>('execute').and.returnValue({
       content: [{type: 'text', text: 'Hello!'}],
     });
 
