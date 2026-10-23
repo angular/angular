@@ -2678,4 +2678,70 @@ mod tests {
             "fully evaluated imports must clear the runtime fallback"
         );
     }
+
+    #[test]
+    fn test_mwp_4897_and_5061() {
+        let core_dts = "export declare type ModuleWithProviders<T> = { ngModule: unknown };";
+        let value_4897 = complete_app_module_imports(&[
+            (
+                "/app/app.module.ts",
+                r#"
+                import {NgModule} from '@angular/core';
+                import {RouterModule} from 'router';
+                @NgModule({imports: [RouterModule.forRoot()]})
+                export class TestModule {}
+                "#,
+            ),
+            (
+                "/app/node_modules/router/index.d.ts",
+                r#"
+                import {ModuleWithProviders} from '@angular/core';
+                import * as internal from './internal';
+                export {InternalRouterModule} from './internal';
+
+                declare export class RouterModule {
+                  static forRoot(): ModuleWithProviders<internal.InternalRouterModule>;
+                }
+                "#,
+            ),
+            (
+                "/app/node_modules/router/internal.d.ts",
+                r#"
+                export declare class InternalRouterModule {}
+                "#,
+            ),
+            ("/app/node_modules/@angular/core/index.d.ts", core_dts),
+        ]);
+        let value_5061 = complete_app_module_imports(&[
+            (
+                "/app/app.module.ts",
+                r#"
+                import {NgModule} from '@angular/core';
+                import {RouterModule} from 'router';
+                @NgModule({imports: [RouterModule.forRoot()]})
+                export class TestModule {}
+                "#,
+            ),
+            (
+                "/app/node_modules/router/index.d.ts",
+                r#"
+                import * as core from '@angular/core';
+                import {RouterModule} from 'router';
+
+                declare class RouterModule {
+                  static forRoot(): core.ModuleWithProviders<RouterModule>;
+                }
+                "#,
+            ),
+            ("/app/node_modules/@angular/core/index.d.ts", core_dts),
+        ]);
+        assert_eq!(
+            mwp_ng_module_name(&expect_array(&value_4897)[0]),
+            "InternalRouterModule"
+        );
+        assert_eq!(
+            mwp_ng_module_name(&expect_array(&value_5061)[0]),
+            "RouterModule"
+        );
+    }
 }

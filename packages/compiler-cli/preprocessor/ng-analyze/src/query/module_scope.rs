@@ -151,6 +151,12 @@ pub(crate) enum ScopeEntryRejection {
     NotAnArray(ResolvedValue),
     /// A `ModuleWithProviders` whose `ngModule` could not be resolved to a reference.
     ModuleWithProvidersWithoutModule(ResolvedValue),
+    /// A `ModuleWithProviders` return type missing its generic type argument (`NG6005`).
+    ModuleWithProvidersMissingGeneric {
+        file: FileId,
+        span: Span,
+        symbol_name: String,
+    },
     /// An object literal without an `ngModule` property.
     MapWithoutModule(ResolvedValue),
 }
@@ -209,6 +215,27 @@ fn collect_scope_entry(
             Some(ng_module) => collect_scope_entry(ng_module, named, Some(None), out),
             None => out.push(Err(ScopeEntryRejection::MapWithoutModule(value.clone()))),
         },
+        ResolvedValue::Dynamic(dynamic) => {
+            let root = dynamic.root_cause();
+            if let crate::evaluator::DynamicReason::ModuleWithProvidersMissingGeneric {
+                symbol_name,
+            } = &root.reason
+            {
+                out.push(Err(
+                    ScopeEntryRejection::ModuleWithProvidersMissingGeneric {
+                        file: root.file,
+                        span: root.span,
+                        symbol_name: symbol_name.clone(),
+                    },
+                ));
+                return;
+            }
+            if mwp.is_some() {
+                out.push(Err(
+                    ScopeEntryRejection::ModuleWithProvidersWithoutModule(value.clone()),
+                ));
+            }
+        }
         _ if mwp.is_some() => {
             out.push(Err(
                 ScopeEntryRejection::ModuleWithProvidersWithoutModule(value.clone()),
@@ -601,6 +628,33 @@ impl<'a, Fs: ResourceResolverFs + Clone + 'static> Resolver<'a, Fs> {
                                 ),
                             ));
                         }
+                        self.registry.outcomes.insert(
+                            module,
+                            NgModuleScopeOutcome {
+                                is_poisoned: true,
+                                failed: true,
+                                diagnostics,
+                            },
+                        );
+                        return State::Failed;
+                    }
+                    Err(ScopeEntryRejection::ModuleWithProvidersMissingGeneric {
+                        file,
+                        span,
+                        symbol_name,
+                    }) => {
+                        diagnostics.push(NgDiagnostic::error(
+                            // NGMODULE_MODULE_WITH_PROVIDERS_MISSING_GENERIC
+                            6005,
+                            self.env.file_path(file),
+                            self.env.wire_span(file, span).await,
+                            format!(
+                                "{symbol_name} returns a ModuleWithProviders type without a \
+                                 generic type argument. Please add a generic type argument to the \
+                                 ModuleWithProviders type. If this occurrence is in library code \
+                                 you don't control, please contact the library authors."
+                            ),
+                        ));
                         self.registry.outcomes.insert(
                             module,
                             NgModuleScopeOutcome {
@@ -1249,6 +1303,26 @@ pub(crate) async fn validate_standalone_imports<Fs: ResourceResolverFs + Clone +
                             .to_string(),
                     ));
                 }
+                continue;
+            }
+            Err(ScopeEntryRejection::ModuleWithProvidersMissingGeneric {
+                file,
+                span,
+                symbol_name,
+            }) => {
+                out.is_poisoned = true;
+                out.diagnostics.push(NgDiagnostic::error(
+                    // NGMODULE_MODULE_WITH_PROVIDERS_MISSING_GENERIC
+                    6005,
+                    env.file_path(file),
+                    env.wire_span(file, span).await,
+                    format!(
+                        "{symbol_name} returns a ModuleWithProviders type without a generic type \
+                         argument. Please add a generic type argument to the ModuleWithProviders \
+                         type. If this occurrence is in library code you don't control, please \
+                         contact the library authors."
+                    ),
+                ));
                 continue;
             }
         };

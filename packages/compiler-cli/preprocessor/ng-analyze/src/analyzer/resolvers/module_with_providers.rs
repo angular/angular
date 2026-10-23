@@ -39,21 +39,21 @@ impl ModuleWithProvidersResolver {
         }
         let Some(type_arguments) = &reference.type_arguments else {
             // Upstream raises FatalDiagnosticError NGMODULE_MODULE_WITH_PROVIDERS_MISSING_GENERIC.
-            return Some(MwpTypeOutcome::MissingGeneric);
+            return Some(MwpTypeOutcome::MissingGeneric(reference.span));
         };
         if type_arguments.params.len() != 1 {
-            return Some(MwpTypeOutcome::MissingGeneric);
+            return Some(MwpTypeOutcome::MissingGeneric(reference.span));
         }
         Self::type_to_name(&type_arguments.params[0]).map(MwpTypeOutcome::Module)
     }
 
     /// `_reflectModuleFromLiteralType`: `... & {ngModule: typeof T}` → `T`.
     fn module_from_literal_type<'r, 'a>(ty: &'r TSType<'a>) -> Option<TypeNameRef<'r, 'a>> {
-        let TSType::TSIntersectionType(intersection) = ty else {
+        let TSType::TSIntersectionType(intersection) = Self::unwrap_paren_type(ty) else {
             return None;
         };
         for member_type in &intersection.types {
-            let TSType::TSTypeLiteral(literal) = member_type else {
+            let TSType::TSTypeLiteral(literal) = Self::unwrap_paren_type(member_type) else {
                 continue;
             };
             for signature in &literal.members {
@@ -65,7 +65,7 @@ impl ModuleWithProvidersResolver {
                 };
                 if key != "ngModule" {
                     continue;
-                }
+                };
                 let Some(annotation) = &property.type_annotation else {
                     continue;
                 };
@@ -77,9 +77,16 @@ impl ModuleWithProvidersResolver {
         None
     }
 
+    fn unwrap_paren_type<'r, 'a>(mut ty: &'r TSType<'a>) -> &'r TSType<'a> {
+        while let TSType::TSParenthesizedType(paren) = ty {
+            ty = &paren.type_annotation;
+        }
+        ty
+    }
+
     /// Extract the named type from `T`, `typeof T`, or a reference to `T`.
     fn type_to_name<'r, 'a>(ty: &'r TSType<'a>) -> Option<TypeNameRef<'r, 'a>> {
-        match ty {
+        match Self::unwrap_paren_type(ty) {
             TSType::TSTypeReference(reference) => TypeNameRef::from_type_name(&reference.type_name),
             TSType::TSTypeQuery(query) => match &query.expr_name {
                 TSTypeQueryExprName::IdentifierReference(ident) => Some(TypeNameRef::Ident(ident)),
@@ -119,14 +126,14 @@ impl ModuleWithProvidersResolver {
 
 enum MwpTypeOutcome<'r, 'a> {
     Module(TypeNameRef<'r, 'a>),
-    MissingGeneric,
+    MissingGeneric(Span),
 }
 
 impl ForeignFunctionResolver for ModuleWithProvidersResolver {
     fn resolve_function_call<'a>(
         &self,
         target: &FunctionTarget<'a>,
-        _callee: &ValueReference,
+        callee: &ValueReference,
         call_span: Span,
         _args: &[ResolvedValue],
         input: &EvalInput<'a, '_>,
@@ -137,11 +144,15 @@ impl ForeignFunctionResolver for ModuleWithProvidersResolver {
 
         let module_name = match Self::module_from_type_param(ty, input) {
             Some(MwpTypeOutcome::Module(name)) => Some(name),
-            Some(MwpTypeOutcome::MissingGeneric) => {
+            Some(MwpTypeOutcome::MissingGeneric(type_span)) => {
+                let symbol_name = match &callee.member {
+                    Some(member) => format!("{}.{member}", callee.name),
+                    None => callee.name.clone(),
+                };
                 return Some(ResolvedValue::dynamic(
                     input.file,
-                    call_span,
-                    DynamicReason::Unknown,
+                    type_span,
+                    DynamicReason::ModuleWithProvidersMissingGeneric { symbol_name },
                 ));
             }
             None => Self::module_from_literal_type(ty),

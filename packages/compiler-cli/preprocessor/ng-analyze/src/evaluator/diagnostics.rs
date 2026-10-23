@@ -136,6 +136,12 @@ impl fmt::Display for DynamicReason {
             DynamicReason::ExportNotFound => {
                 write!(f, "the named export was not found in the target module")
             }
+            DynamicReason::ModuleWithProvidersMissingGeneric { symbol_name } => {
+                write!(
+                    f,
+                    "{symbol_name} returns a ModuleWithProviders type without a generic type argument"
+                )
+            }
             DynamicReason::Unknown => write!(f, "value is not statically analyzable"),
         }
     }
