@@ -82,6 +82,8 @@ export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | 
     options.debugName,
     options.injector ?? inject(Injector),
     options.id as StateKey<T>,
+    undefined,
+    isStreamingResourceOptions(options),
   );
 }
 
@@ -210,6 +212,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
     injector: Injector,
     private transferCacheKey: StateKey<T> | undefined,
     getInitialStream?: (request: R) => Signal<ResourceStreamItem<T>> | undefined,
+    private readonly isStreaming = false,
   ) {
     if (isInParamsFunction()) {
       throw invalidResourceCreationInParams();
@@ -527,17 +530,33 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
       // Resolve the pending task now that the resource has a value.
       resolvePendingTask?.();
       resolvePendingTask = undefined;
+
+      // For non-streaming resources, once the load is complete (settled),
+      // there is no longer an in-progress operation to abort.
+      if (!this.isStreaming && this.pendingController?.signal === abortSignal) {
+        this.pendingController = undefined;
+      }
     }
   }
 
   private abortInProgressLoad(): void {
-    untracked(() => this.pendingController?.abort());
+    untracked(() => this.pendingController?.abort(getAbortReason()));
     this.pendingController = undefined;
 
     // Once the load is aborted, we no longer want to block stability on its resolution.
     this.resolvePendingTask?.();
     this.resolvePendingTask = undefined;
   }
+}
+
+let abortReason: DOMException | undefined;
+
+/**
+ * Returns a shared `AbortError` reason, since `abort()` without a reason creates a new one (with a
+ * stack trace) on every call, causing performance degradation on deep component trees.
+ */
+function getAbortReason(): DOMException {
+  return (abortReason ??= new DOMException('The operation was aborted.', 'AbortError'));
 }
 
 function saveToTransferState<R, T>(
