@@ -15,11 +15,15 @@ export const PRESERVE_WS_ATTR_NAME = 'ngPreserveWhitespaces';
 
 const SKIP_WS_TRIM_TAGS = new Set(['pre', 'template', 'textarea', 'script', 'style']);
 
-// Equivalent to \s with \u00a0 (non-breaking space) excluded.
+// Equivalent to \s with \u00a0 (non-breaking space) and the Unicode space
+// separators that HTML entities such as &emsp; / &ensp; / &thinsp; decode to
+// excluded, since those are significant in template text.
 // Based on https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp
-const WS_CHARS = ' \f\n\r\t\v\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff';
+const WS_CHARS = ' \f\n\r\t\v\u1680\u180e\u2028\u2029\u202f\u3000\ufeff';
 const NO_WS_REGEXP = new RegExp(`[^${WS_CHARS}]`);
 const WS_REPLACE_REGEXP = new RegExp(`[${WS_CHARS}]{2,}`, 'g');
+const WS_TRIM_START_REGEXP = new RegExp(`^[${WS_CHARS}]+`);
+const WS_TRIM_END_REGEXP = new RegExp(`[${WS_CHARS}]+$`);
 
 function hasPreserveWhitespacesAttr(attrs: html.Attribute[]): boolean {
   return attrs.some((attr: html.Attribute) => attr.name === PRESERVE_WS_ATTR_NAME);
@@ -129,9 +133,9 @@ export class WhitespaceVisitor implements html.Visitor {
 
       // Fully trim message when significant whitespace is not preserved.
       if (!this.preserveSignificantWhitespace && tokens.length > 0) {
-        // The first token should only call `.trimStart()` and the last token
-        // should only call `.trimEnd()`, but there might be only one token which
-        // needs to call both.
+        // The first token should only trim leading whitespace and the last token
+        // should only trim trailing whitespace, but there might be only one token
+        // which needs to do both.
         const firstToken = tokens[0]!;
         tokens.splice(0, 1, trimLeadingWhitespace(firstToken, context));
 
@@ -281,7 +285,7 @@ function trimLeadingWhitespace(
   const isFirstTokenInTag = !context?.prev;
   if (!isFirstTokenInTag) return token;
 
-  return transformTextToken(token, (text) => text.trimStart());
+  return transformTextToken(token, (text) => text.replace(WS_TRIM_START_REGEXP, ''));
 }
 
 function trimTrailingWhitespace(
@@ -293,7 +297,7 @@ function trimTrailingWhitespace(
   const isLastTokenInTag = !context?.next;
   if (!isLastTokenInTag) return token;
 
-  return transformTextToken(token, (text) => text.trimEnd());
+  return transformTextToken(token, (text) => text.replace(WS_TRIM_END_REGEXP, ''));
 }
 
 function trimLeadingAndTrailingWhitespace(
@@ -303,8 +307,10 @@ function trimLeadingAndTrailingWhitespace(
   const isFirstTokenInTag = !context?.prev;
   const isLastTokenInTag = !context?.next;
 
-  const maybeTrimmedStart = isFirstTokenInTag ? text.trimStart() : text;
-  const maybeTrimmed = isLastTokenInTag ? maybeTrimmedStart.trimEnd() : maybeTrimmedStart;
+  const maybeTrimmedStart = isFirstTokenInTag ? text.replace(WS_TRIM_START_REGEXP, '') : text;
+  const maybeTrimmed = isLastTokenInTag
+    ? maybeTrimmedStart.replace(WS_TRIM_END_REGEXP, '')
+    : maybeTrimmedStart;
   return maybeTrimmed;
 }
 

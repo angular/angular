@@ -24,6 +24,18 @@ describe('removeWhitespaces', () => {
     );
   }
 
+  function parseAndRemoveWSWithTrimming(
+    template: string,
+    options?: TokenizeOptions,
+  ): any[] {
+    return humanizeDom(
+      removeWhitespaces(
+        new HtmlParser().parse(template, 'TestComp', options),
+        false /* preserveSignificantWhitespace */,
+      ),
+    );
+  }
+
   it('should remove blank text nodes', () => {
     expect(parseAndRemoveWS(' ')).toEqual([]);
     expect(parseAndRemoveWS('\n')).toEqual([]);
@@ -83,6 +95,52 @@ describe('removeWhitespaces', () => {
   it('should not replace &nbsp;', () => {
     expect(parseAndRemoveWS('&nbsp;')).toEqual([
       [html.Text, '\u00a0', 0, [''], ['\u00a0', '&nbsp;'], ['']],
+    ]);
+  });
+
+  it('should preserve entity-decoded spaces when whitespace trimming is enabled', () => {
+    expect(parseAndRemoveWSWithTrimming('&emsp;')).toEqual([
+      [html.Text, '\u2003', 0, [''], ['\u2003', '&emsp;'], ['']],
+    ]);
+    expect(parseAndRemoveWSWithTrimming('<div>&emsp;hello&emsp;</div>')).toEqual([
+      [html.Element, 'div', 0],
+      [
+        html.Text,
+        '\u2003hello\u2003',
+        1,
+        [''],
+        ['\u2003', '&emsp;'],
+        ['hello'],
+        ['\u2003', '&emsp;'],
+        [''],
+      ],
+    ]);
+    expect(parseAndRemoveWSWithTrimming('<div>&emsp;&emsp;</div>')).toEqual([
+      [html.Element, 'div', 0],
+      [
+        html.Text,
+        '\u2003\u2003',
+        1,
+        [''],
+        ['\u2003', '&emsp;'],
+        [''],
+        ['\u2003', '&emsp;'],
+        [''],
+      ],
+    ]);
+    expect(parseAndRemoveWSWithTrimming('&nbsp;')).toEqual([
+      [html.Text, '\u00a0', 0, [''], ['\u00a0', '&nbsp;'], ['']],
+    ]);
+  });
+
+  it('should still trim and collapse ASCII whitespace when trimming is enabled', () => {
+    expect(parseAndRemoveWSWithTrimming('<div>  hello  </div>')).toEqual([
+      [html.Element, 'div', 0],
+      [html.Text, 'hello', 1, ['hello']],
+    ]);
+    expect(parseAndRemoveWSWithTrimming('<div>a  b</div>')).toEqual([
+      [html.Element, 'div', 0],
+      [html.Text, 'a b', 1, ['a b']],
     ]);
   });
 
