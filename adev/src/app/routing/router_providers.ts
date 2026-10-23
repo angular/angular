@@ -27,6 +27,7 @@ import {ADevTitleStrategy} from '../core/services/a-dev-title-strategy';
 import {ReuseTutorialsRouteStrategy} from '../features/tutorial/tutorials-route-reuse-strategy';
 import {AppScroller} from '../app-scroller';
 import {HttpErrorResponse} from '@angular/common/http';
+import {isFirefox} from '@angular/docs';
 
 /**
  * Integrates the Router with the browser's Navigation API, which lets the browser indicate an
@@ -35,9 +36,17 @@ import {HttpErrorResponse} from '@angular/common/http';
  *
  * Only enabled when the Navigation API is available: it is not supported by all browsers yet, and
  * it doesn't exist on the server (SSR/prerendering).
+ *
+ * Firefox is excluded for now: versions prior to 159 crash the tab on fragment navigations when
+ * the Router drives the Navigation API (https://bugzilla.mozilla.org/show_bug.cgi?id=2077448),
+ * e.g. when using the "On this page" menu or opening a URL with a hash. See
+ * https://github.com/angular/angular/issues/71567.
+ * TODO: remove the Firefox exclusion once Firefox 159+ is widely adopted.
  */
 const isPlatformNavigationSupported =
-  typeof window !== 'undefined' && (window as {navigation?: unknown}).navigation !== undefined;
+  typeof window !== 'undefined' &&
+  (window as {navigation?: unknown}).navigation !== undefined &&
+  !isFirefox;
 
 export const routerProviders = [
   provideRouter(
