@@ -127,6 +127,19 @@ If 'onClick' is a directive input, make sure the directive is imported by the cu
       `Binding to event property 'onAnything' is disallowed for security reasons, please use (Anything)=...
 If 'onAnything' is a directive input, make sure the directive is imported by the current module.`,
     );
+
+    report = registry.validateProperty(':onClick');
+    expect(report.error).toBeTruthy();
+    expect(report.msg).toEqual(
+      `Invalid property name ':onClick'. Property names cannot start with a colon.`,
+    );
+
+    report = registry.validateProperty('svg:onclick');
+    expect(report.error).toBeTruthy();
+    expect(report.msg).toEqual(
+      `Binding to event property 'svg:onclick' is disallowed for security reasons, please use (click)=...
+If 'svg:onclick' is a directive input, make sure the directive is imported by the current module.`,
+    );
   });
 
   it('should return an error message when asserting event attributes', () => {
@@ -140,6 +153,44 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
     expect(report.error).toBeTruthy();
     expect(report.msg).toEqual(
       `Binding to event attribute 'onAnything' is disallowed for security reasons, please use (Anything)=...`,
+    );
+
+    report = registry.validateAttribute(':onclick');
+    expect(report.error).toBeTruthy();
+    expect(report.msg).toEqual(
+      `Invalid attribute name ':onclick'. Attribute names cannot start with a colon.`,
+    );
+
+    report = registry.validateAttribute(':onClick');
+    expect(report.error).toBeTruthy();
+    expect(report.msg).toEqual(
+      `Invalid attribute name ':onClick'. Attribute names cannot start with a colon.`,
+    );
+
+    report = registry.validateAttribute('svg:onclick');
+    expect(report.error).toBeTruthy();
+    expect(report.msg).toEqual(
+      `Binding to event attribute 'svg:onclick' is disallowed for security reasons, please use (click)=...`,
+    );
+
+    report = registry.validateAttribute(':svg:onclick');
+    expect(report.error).toBeTruthy();
+    expect(report.msg).toEqual(
+      `Invalid attribute name ':svg:onclick'. Attribute names cannot start with a colon.`,
+    );
+  });
+
+  it('should return an error message when property or attribute names start with a colon', () => {
+    let report = registry.validateProperty(':title');
+    expect(report.error).toBeTruthy();
+    expect(report.msg).toEqual(
+      `Invalid property name ':title'. Property names cannot start with a colon.`,
+    );
+
+    report = registry.validateAttribute(':title');
+    expect(report.error).toBeTruthy();
+    expect(report.msg).toEqual(
+      `Invalid attribute name ':title'. Attribute names cannot start with a colon.`,
     );
   });
 
@@ -242,6 +293,10 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
   it('should check security contexts for attributes', () => {
     expect(registry.securityContext('p', 'innerHtml', true)).toBe(SecurityContext.HTML);
     expect(registry.securityContext('p', 'formaction', true)).toBe(SecurityContext.URL);
+    expect(registry.securityContext('a', ':href', true)).toBe(SecurityContext.URL);
+    expect(registry.securityContext('a', '::href', true)).toBe(SecurityContext.URL);
+    expect(registry.securityContext('iframe', '::srcdoc', true)).toBe(SecurityContext.HTML);
+    expect(registry.securityContext(':svg:a', ':xlink:href', true)).toBe(SecurityContext.URL);
   });
 
   describe('Angular custom elements', () => {
