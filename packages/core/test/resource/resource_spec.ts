@@ -527,6 +527,79 @@ describe('resource', () => {
     expect(aborted).toEqual([{counter: 0}]);
   });
 
+  it('should reuse the same abort reason when aborting in-progress resource loads', async () => {
+    const signals: AbortSignal[] = [];
+    const injector = createEnvironmentInjector([], TestBed.inject(EnvironmentInjector));
+    const resources = [0, 1].map((id) =>
+      resource({
+        params: () => id,
+        loader: ({abortSignal}) => {
+          signals.push(abortSignal);
+          return new Promise(() => {}); // never resolves
+        },
+        injector,
+      }),
+    );
+
+    TestBed.tick();
+    await Promise.resolve();
+
+    resources.forEach((res) => res.destroy());
+
+    expect(signals.length).toBe(2);
+    expect(signals[0].aborted).toBeTrue();
+    expect(signals[0].reason).toEqual(jasmine.any(DOMException));
+    expect(signals[0].reason.name).toBe('AbortError');
+    expect(signals[1].reason).toBe(signals[0].reason);
+  });
+
+  it('should not abort completed non-streaming resources on destroy', async () => {
+    let capturedSignal: AbortSignal | undefined;
+    const res = resource({
+      loader: async ({abortSignal}) => {
+        capturedSignal = abortSignal;
+        return 'loaded';
+      },
+      injector: TestBed.inject(Injector),
+    });
+
+    TestBed.tick();
+    await flushMicrotasks();
+
+    expect(res.status()).toBe('resolved');
+    expect(res.value()).toBe('loaded');
+    expect(capturedSignal!.aborted).toBeFalse();
+
+    res.destroy();
+
+    // The load was already completed, so destroying the resource should not trigger abort
+    expect(capturedSignal!.aborted).toBeFalse();
+  });
+
+  it('should abort streaming resources on destroy using the shared abort reason', async () => {
+    let capturedSignal: AbortSignal | undefined;
+    const streamSignal = signal<any>({value: 42});
+    const res = resource({
+      stream: ({abortSignal}) => {
+        capturedSignal = abortSignal;
+        return streamSignal;
+      },
+      injector: TestBed.inject(Injector),
+    });
+
+    TestBed.tick();
+    await flushMicrotasks();
+
+    expect(res.status()).toBe('resolved');
+    expect(capturedSignal!.aborted).toBeFalse();
+
+    res.destroy();
+
+    expect(capturedSignal!.aborted).toBeTrue();
+    expect(capturedSignal!.reason).toEqual(jasmine.any(DOMException));
+    expect(capturedSignal!.reason.name).toBe('AbortError');
+  });
+
   it('should not respond to reactive state changes in a loader', async () => {
     const unrelated = signal('a');
     const backend = new MockResponseCountingBackend();
