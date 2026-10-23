@@ -378,8 +378,6 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'ngtsc behavioral tests input transforms should compile an input with a transform function in the inputs array referenced via a constant',
   'ngtsc behavioral tests non-exported classes should still compile a class that is indirectly exported',
   'ngtsc behavioral tests passes the build when only warnings are emitted',
-  'ngtsc behavioral tests preanalysis phase checks [async] should throw if `styleUrls` is defined incorrectly in @Component',
-  'ngtsc behavioral tests preanalysis phase checks [sync] should throw if `styleUrls` is defined incorrectly in @Component',
   'ngtsc behavioral tests should accept dynamic host attribute bindings',
   'ngtsc behavioral tests should filter out directives and pipes from module exports in the injector def',
   'ngtsc behavioral tests should generate queries for components',
