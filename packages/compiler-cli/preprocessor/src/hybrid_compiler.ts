@@ -170,6 +170,7 @@ export class HybridCompiler {
   readonly enableTemplateSourceLocations: boolean;
   readonly onlyPublishPublicTypingsForNgModules: boolean;
   readonly forbidOrphanComponents: boolean;
+  readonly supportJitMode: boolean;
   readonly supportTestBed: boolean;
   readonly i18nUseExternalIds: boolean;
   readonly enableHmr: boolean;
@@ -190,6 +191,7 @@ export class HybridCompiler {
       i18nNormalizeLineEndingsInICUs: options.i18nNormalizeLineEndingsInICUs === true,
       ...options.templateParseOptions,
     };
+    this.supportJitMode = options.supportJitMode !== false;
     this.supportTestBed = options.supportTestBed !== false;
     this.i18nUseExternalIds = options.i18nUseExternalIds !== false;
     this.enableHmr = options.enableHmr === true;

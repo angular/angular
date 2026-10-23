@@ -116,6 +116,7 @@ interface HybridCompilerContext {
   enableTemplateSourceLocations?: boolean;
   onlyPublishPublicTypingsForNgModules?: boolean;
   forbidOrphanComponents?: boolean;
+  supportJitMode?: boolean;
   supportTestBed?: boolean;
   i18nUseExternalIds?: boolean;
   remoteScopedClasses?: Set<string>;
@@ -2928,7 +2929,9 @@ function compileNgModuleDef(
           // In JIT/linker mode scope information is emitted inline into `ɵɵdefineNgModule()`.
           selectorScopeMode: ctx.templateParseOptions?.linkerJitMode
             ? R3SelectorScopeMode.Inline
-            : R3SelectorScopeMode.SideEffect,
+            : ctx.supportJitMode === false
+              ? R3SelectorScopeMode.Omit
+              : R3SelectorScopeMode.SideEffect,
           bootstrap: mapToRefs(bootstrap),
           declarations: mapToRefs(declarations),
           imports: mapToRefs(imports),
