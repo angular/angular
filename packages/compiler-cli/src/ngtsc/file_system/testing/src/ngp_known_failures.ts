@@ -529,15 +529,6 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'selectorless should treat unclaimed inputs as DOM property bindings on component nodes',
   'selectorless should treat unclaimed outputs as DOM events on component nodes',
   'signal forms should report unsupported two-way bindings on a field',
-  'signal-based queries diagnostics should capture a contentChild query in the setClasMetadata call',
-  'signal-based queries diagnostics should capture a contentChildren query in the setClasMetadata call',
-  'signal-based queries diagnostics should capture a query with options in a setClassMetadata call',
-  'signal-based queries diagnostics should capture a viewChild query in the setClasMetadata call',
-  'signal-based queries diagnostics should capture a viewChildren query in the setClasMetadata call',
-  'signal-based queries diagnostics should error when a query is declared using an ES private field',
-  'signal-based queries diagnostics should wrap reference in query as a forwardRef in the setClassMetadata call',
-  'signal-based queries should support viewChild with `read` pointing to a parenthesized expression',
-  'signal-based queries should support viewChild with `read` pointing to an expression with a generic',
 ]);
 
 /**
