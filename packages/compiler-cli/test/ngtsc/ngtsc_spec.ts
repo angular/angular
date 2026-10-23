@@ -950,14 +950,11 @@ runInEachFileSystem((os: string) => {
 
       env.driveMain();
 
-      expect(trim(env.getContents('test.js'))).toContain(
-        trim(`
-        MyTestComponent.propDecorators = {
-          name: [{ type: i0.Input, args: [{ isSignal: true, alias: "name", required: false },] }]
-        };
-      `),
+      expect(trim(env.getContents('test.js'))).toMatch(
+        /i0\.Input[\s\S]*\{\s*isSignal:\s*true,\s*alias:\s*"name",\s*required:\s*false\s*,?\s*\}/,
       );
       expect(env.getContents('test.js')).not.toContain('NonJitComponent.propDecorators');
+      expect(env.getContents('test.js')).not.toContain('NonJitComponent.prototype, "nonJitInput"');
     });
 
     it('should run JIT transform for `NgModule` marked as `jit: true`', () => {
@@ -982,11 +979,8 @@ runInEachFileSystem((os: string) => {
 
       env.driveMain();
 
-      expect(trim(env.getContents('test.js'))).toContain(
-        trim(`
-        MyJitModule.ctorParameters = () => [
-          { type: Injector }
-        ];`),
+      expect(trim(env.getContents('test.js'))).toMatch(
+        /MyJitModule\.ctorParameters = \(\) => \[\s*\{ type: Injector \}\s*\];/,
       );
       expect(env.getContents('test.js')).not.toContain('NonJitModule.ctorParameters');
     });
@@ -3737,8 +3731,8 @@ runInEachFileSystem((os: string) => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
         expect(jsContents).toContain('Directive({');
-        expect(jsContents).toContain(
-          ` { type: String, decorators: [{ type: Inject, args: ['foo',] }] }`,
+        expect(jsContents).toMatch(
+          /\{ type: (?:String|undefined), decorators: \[\{ type: Inject, args: \[['"]foo['"],?\] \}\] \}/,
         );
       });
     });

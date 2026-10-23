@@ -753,6 +753,7 @@ export interface NgModuleMetadata {
   isolatedImports?: IsolatedTypeTupleMetadata;
   /** Syntactic type-tuple representation of `exports` for `emitDeclarationOnly`. */
   isolatedExports?: IsolatedTypeTupleMetadata;
+  isJit: boolean;
 }
 
 export interface OutputMetadata {

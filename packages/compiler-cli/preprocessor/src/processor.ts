@@ -482,7 +482,7 @@ export function processFileSync(
 
     if (!className) continue;
 
-    if (component?.isJit || directive?.isJit) {
+    if (component?.isJit || directive?.isJit || ngModule?.isJit) {
       const coreNamespace = printer.getOrCreateNamespace('@angular/core');
       for (const input of inputs) {
         if (input.isSignal && input.propertySpan) {

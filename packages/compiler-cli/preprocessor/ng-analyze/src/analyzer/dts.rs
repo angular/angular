@@ -513,6 +513,7 @@ fn extract_class_metadata(
             injectable: None,
             service: None,
             decorator_name: None,
+            is_jit: false,
         });
 
         let class_data = ClassData {

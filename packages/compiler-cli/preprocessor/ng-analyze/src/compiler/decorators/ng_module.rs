@@ -15,6 +15,9 @@ pub async fn optimize_ng_module<Fs: ResourceResolverFs + Clone + 'static>(
     _class_name: Option<&str>,
     ng_module: &mut NgModuleData,
 ) {
+    if ng_module.is_jit {
+        return;
+    }
     // Scope validation is a whole-program question so it is answered once by the
     // `NgModuleScopeRegistry` singleton and read back here. Like `ComponentMapping`
     // for directives/pipes, this makes every NgModule's semantic query wait for one program-wide
