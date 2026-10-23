@@ -138,11 +138,16 @@ function writeDirectClass(renderer: Renderer, element: RElement, newValue: strin
 }
 
 /** Sets up the static DOM attributes on an `RNode`. */
-export function setupStaticAttributes(renderer: Renderer, element: RElement, tNode: TNode) {
+export function setupStaticAttributes(
+  renderer: Renderer,
+  element: RElement,
+  tNode: TNode,
+  attrNameToSkip: string | null = null,
+) {
   const {mergedAttrs, classes, styles} = tNode;
 
   if (mergedAttrs !== null) {
-    setUpAttributes(renderer, element, mergedAttrs);
+    setUpAttributes(renderer, element, mergedAttrs, attrNameToSkip);
   }
 
   if (classes !== null) {

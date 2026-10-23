@@ -42,6 +42,7 @@ export const TEMPLATE_ID = 'i'; // as it's also an "id"
 export const NODES = 'n';
 export const DISCONNECTED_NODES = 'd';
 export const I18N_DATA = 'l';
+export const PROTECTED_ATTRIBUTES = 'a';
 export const DEFER_BLOCK_ID = 'di';
 export const DEFER_BLOCK_STATE = 's';
 export const DEFER_PARENT_BLOCK_ID = 'p';
@@ -111,6 +112,15 @@ export interface SerializedView {
    * active ICU cases.
    */
   [I18N_DATA]?: Record<number, number[]>;
+
+  /**
+   * Serialized information about static attributes that must not be re-applied during
+   * hydration, because doing so would trigger an unwanted side effect even though the
+   * value doesn't change (e.g. an `<iframe src="...">` reloading its resource).
+   * Key-value pairs where a key is an index of the corresponding element in an LView
+   * and the value is the name of the attribute to skip.
+   */
+  [PROTECTED_ATTRIBUTES]?: Record<number, string>;
 
   /**
    * If this view represents a `@defer` block, this field contains
