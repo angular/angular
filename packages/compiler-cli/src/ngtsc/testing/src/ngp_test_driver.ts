@@ -370,10 +370,6 @@ export function performNgpCompilationSync(params: {
       tcbConfig,
       optionDiagnostics,
       templateParseOptions: {
-        enableI18nLegacyMessageIdFormat: options.enableI18nLegacyMessageIdFormat,
-        i18nNormalizeLineEndingsInICUs: options.i18nNormalizeLineEndingsInICUs,
-        preserveWhitespaces: options.preserveWhitespaces,
-        preserveSignificantWhitespace: options.i18nPreserveWhitespaceForLegacyExtraction ?? true,
         enableSelectorless: Boolean(rawOpts['_enableSelectorless']),
       },
       legacyOptionalChaining: Boolean(rawOpts['legacyOptionalChaining']),
