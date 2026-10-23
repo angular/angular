@@ -4,7 +4,7 @@ import {HousingLocationInfo} from '../housinglocation';
 @Component({
   selector: 'app-housing-location',
   template: ` <p>housing-location works!</p> `,
-  styleUrls: ['./housing-location.css'],
+  styleUrl: './housing-location.css',
 })
 export class HousingLocation {
   housingLocation = input.required<HousingLocationInfo>();
