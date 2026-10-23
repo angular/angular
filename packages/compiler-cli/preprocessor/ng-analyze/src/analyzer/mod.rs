@@ -220,6 +220,7 @@ struct DecoratorReferenceFinder<'s, 'a, 'e> {
     class_end: u32,
     later: Option<&'s mut Vec<oxc_span::Span>>,
     top_level: Option<TopLevelReferenceSink<'s, 'a, 'e>>,
+    function_spans: Option<&'s mut Vec<oxc_span::Span>>,
     /// How many function bodies enclose the current node.
     function_depth: u32,
 }
@@ -358,12 +359,37 @@ impl<'a> Visit<'a> for DecoratorReferenceFinder<'_, 'a, '_> {
         }
     }
 
+    fn visit_object_property(&mut self, prop: &oxc_ast::ast::ObjectProperty<'a>) {
+        if prop.method || prop.kind != oxc_ast::ast::PropertyKind::Init {
+            self.visit_property_key(&prop.key);
+            if let oxc_ast::ast::Expression::FunctionExpression(func) = &prop.value {
+                self.visit_function(func, oxc_syntax::scope::ScopeFlags::Function);
+                return;
+            }
+        }
+        oxc_ast_visit::walk::walk_object_property(self, prop);
+    }
+
+    fn visit_expression(&mut self, expr: &oxc_ast::ast::Expression<'a>) {
+        use oxc_span::GetSpan;
+        if matches!(
+            expr,
+            oxc_ast::ast::Expression::FunctionExpression(_)
+                | oxc_ast::ast::Expression::ArrowFunctionExpression(_)
+        ) {
+            if let Some(spans) = self.function_spans.as_deref_mut() {
+                spans.push(expr.span());
+            }
+        }
+        oxc_ast_visit::walk::walk_expression(self, expr);
+    }
+
     fn visit_function(
         &mut self,
         func: &oxc_ast::ast::Function<'a>,
         flags: oxc_syntax::scope::ScopeFlags,
     ) {
-        if self.top_level.is_none() {
+        if self.top_level.is_none() && self.function_spans.is_none() {
             return;
         }
         self.function_depth += 1;
@@ -375,7 +401,7 @@ impl<'a> Visit<'a> for DecoratorReferenceFinder<'_, 'a, '_> {
         &mut self,
         arrow: &oxc_ast::ast::ArrowFunctionExpression<'a>,
     ) {
-        if self.top_level.is_none() {
+        if self.top_level.is_none() && self.function_spans.is_none() {
             return;
         }
         self.function_depth += 1;
@@ -396,11 +422,12 @@ pub(crate) fn collect_decorator_references<'a>(
     class_end: u32,
     later: Option<&mut Vec<oxc_span::Span>>,
     top_level: Option<&mut TopLevelReads<'_, 'a, '_>>,
+    function_spans: Option<&mut Vec<oxc_span::Span>>,
 ) {
     let Some(args) = get_decorator_args(decorator) else {
         return;
     };
-    collect_argument_references(args, semantic, class_end, later, top_level);
+    collect_argument_references(args, semantic, class_end, later, top_level, function_spans);
 }
 
 pub(crate) fn collect_argument_references<'a>(
@@ -409,6 +436,7 @@ pub(crate) fn collect_argument_references<'a>(
     class_end: u32,
     later: Option<&mut Vec<oxc_span::Span>>,
     top_level: Option<&mut TopLevelReads<'_, 'a, '_>>,
+    function_spans: Option<&mut Vec<oxc_span::Span>>,
 ) {
     let mut finder = DecoratorReferenceFinder {
         semantic,
@@ -418,6 +446,7 @@ pub(crate) fn collect_argument_references<'a>(
             out: &mut reads.out,
             eval: reads.eval,
         }),
+        function_spans,
         function_depth: 0,
     };
     for arg in args {
@@ -645,6 +674,7 @@ pub fn get_constructor_params<'a>(
                     class.span.end,
                     None,
                     top_level_reads.as_deref_mut(),
+                    None,
                 );
             }
 
@@ -770,6 +800,7 @@ pub fn get_member_decorators<'a>(
                         class.span.end,
                         Some(&mut guards),
                         top_level_reads.as_deref_mut(),
+                        None,
                     );
                     removal_spans.push(self::utils::decorator_removal_span(decorator, source_text));
                 }

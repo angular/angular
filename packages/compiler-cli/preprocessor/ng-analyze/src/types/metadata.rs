@@ -997,6 +997,8 @@ pub struct ClassMetadata {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub member_decorators: Option<Vec<DecoratedMemberMetadata>>,
     pub later_declaration_references: Vec<SpanMetadata>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub decorator_function_spans: Option<Vec<SpanMetadata>>,
     /// Root-scope value bindings read inside the class's Angular decorator metadata, for HMR's
     /// local-dependency capture. Only collected when the analyzer runs with `enable_hmr`.
     #[serde(skip_serializing_if = "Option::is_none")]
