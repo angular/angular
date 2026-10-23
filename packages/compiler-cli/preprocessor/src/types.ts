@@ -58,6 +58,12 @@ export interface AnalysisResult {
   imports: Array<ImportDeclarationMetadata>;
   typeOnlyExports: Array<string>;
   diagnostics: Array<NgDiagnostic>;
+  /**
+   * Diagnostics from `SourceFileValidator` checks, recorded separately
+   * from decorator/class diagnostics so they can be skipped when compiler option diagnostics
+   * are present.
+   */
+  sourceFileValidatorDiagnostics?: Array<NgDiagnostic>;
   signalDebugNames: Array<SignalDebugNameMetadata>;
   r3SymbolsSpecifier?: string;
   topLevelValueBindings?: Array<string>;

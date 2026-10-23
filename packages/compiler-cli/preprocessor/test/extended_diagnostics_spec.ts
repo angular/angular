@@ -54,10 +54,10 @@ interface DiagEntry {
   relatedInformation?: DiagRelatedInformation[];
 }
 
-async function getDiagnostics(
+async function getDiagnosticReport(
   files: Record<string, string>,
   angularCompilerOptions: Record<string, unknown> = {},
-): Promise<DiagEntry[]> {
+): Promise<{optionDiagnostics: DiagEntry[]; diagnostics: DiagEntry[]}> {
   const tsconfig = {
     compilerOptions: {
       strict: true,
@@ -87,9 +87,20 @@ async function getDiagnostics(
   const outputs = await runPipeline(sourceFiles, {optimize: true, format: false});
   const diagFile = outputs.find((f) => f.path.endsWith('.ngdiag.json'));
   if (!diagFile) {
-    return [];
+    return {optionDiagnostics: [], diagnostics: []};
   }
-  return JSON.parse(diagFile.content).diagnostics as DiagEntry[];
+  const parsed = JSON.parse(diagFile.content);
+  return {
+    optionDiagnostics: (parsed.optionDiagnostics ?? []) as DiagEntry[],
+    diagnostics: (parsed.diagnostics ?? []) as DiagEntry[],
+  };
+}
+
+async function getDiagnostics(
+  files: Record<string, string>,
+  angularCompilerOptions: Record<string, unknown> = {},
+): Promise<DiagEntry[]> {
+  return (await getDiagnosticReport(files, angularCompilerOptions)).diagnostics;
 }
 
 async function createIncrementalSession(
@@ -287,13 +298,20 @@ describe('extendedDiagnostics configuration validation', () => {
     );
   });
 
-  it('disables extendedTemplateChecker, templateSemanticsChecker, and suppresses control flow projection on config error', async () => {
-    const diags = await getDiagnostics(
+  it('separates optionDiagnostics from per-file diagnostics and disables extendedTemplateChecker, templateSemanticsChecker, and sourceFileValidator on config error', async () => {
+    const report = await getDiagnosticReport(
       {
         '/app.ts': `
-          import {Component} from '@angular/core';
+          import {Component, Directive, input} from '@angular/core';
+
+          @Directive({selector: '[unused]'})
+          export class UnusedDir {}
+
+          const illegalTopLevelInput = input(0);
+
           @Component({
             selector: 'app-root',
+            imports: [UnusedDir],
             template: \`
               <div ([thing])="bar"></div>
               @for (item of items; track item) {
@@ -304,6 +322,10 @@ describe('extendedDiagnostics configuration validation', () => {
           export class App {
             bar = 1;
             items = [1];
+            req = input.required<string>();
+            constructor() {
+              this.req();
+            }
           }
         `,
       },
@@ -314,8 +336,36 @@ describe('extendedDiagnostics configuration validation', () => {
         },
       },
     );
-    expect(diags.length).toBe(1);
-    expect(diags[0].code).toBe(4004);
+    expect(report.diagnostics).toEqual([]);
+    expect(report.optionDiagnostics.length).toBe(1);
+    expect(report.optionDiagnostics[0].code).toBe(4004);
+  });
+
+  it('separates NG4003 into optionDiagnostics when strictTemplates is false alongside extendedDiagnostics', async () => {
+    const report = await getDiagnosticReport(
+      {
+        '/service.ts': `
+          import {Injectable, input} from '@angular/core';
+
+          const illegalCall = input(0);
+
+          @Injectable({providedIn: 'root'})
+          export class MyService {}
+        `,
+      },
+      {
+        strictTemplates: false,
+        extendedDiagnostics: {
+          defaultCategory: 'error',
+          checks: {
+            optionalChainNotNullable: 'suppress',
+          },
+        },
+      },
+    );
+    expect(report.diagnostics).toEqual([]);
+    expect(report.optionDiagnostics.length).toBe(1);
+    expect(report.optionDiagnostics[0].code).toBe(4003);
   });
 });
 

@@ -46,10 +46,15 @@ export function getDiagnosticPath(tsconfigPath: string): string {
  * transports), so entries are sorted (file path, then span start) to keep the serialized file
  * deterministic; the sort is stable, so a file's diagnostics sharing a span keep their
  * reporting order.
+ *
+ * Compiler option diagnostics (`verifyCompilerOptions`) are serialized separately under
+ * `optionDiagnostics` so downstream consumers reading `diagnostics` for per-file reporting
+ * do not mix option diagnostics into file diagnostics.
  */
 export function serializeDiagnostics(
   tsconfigPath: string,
   diagnosticsMap: ReadonlyMap<string, nga.NgDiagnostic[]>,
+  optionDiagnostics: readonly nga.NgDiagnostic[] = [],
 ): string {
   const allDiagnostics: Array<nga.NgDiagnostic> = [];
   for (const diags of diagnosticsMap.values()) {
@@ -64,16 +69,10 @@ export function serializeDiagnostics(
     JSON.stringify(
       {
         tsconfigPath,
-        diagnostics: allDiagnostics.map((d) => ({
-          filePath: d.filePath,
-          category: d.category === 1 ? 'error' : 'warning',
-          code: d.code,
-          messageText: flattenNgDiagnosticMessage(d),
-          span: d.span,
-          ...(d.relatedInformation && d.relatedInformation.length > 0
-            ? {relatedInformation: d.relatedInformation}
-            : {}),
-        })),
+        ...(optionDiagnostics.length > 0
+          ? {optionDiagnostics: optionDiagnostics.map(formatSerializedDiagnostic)}
+          : {}),
+        diagnostics: allDiagnostics.map(formatSerializedDiagnostic),
       },
       null,
       2,
@@ -113,6 +112,7 @@ export interface HybridCompilerOptions {
   optimize?: boolean;
   tsconfigPath?: string;
   tcbConfig?: NgpTypeCheckingConfig;
+  optionDiagnostics?: nga.NgDiagnostic[];
   virtualFiles?: Record<string, string>;
   templateParseOptions?: Partial<ParseTemplateOptions>;
   legacyOptionalChaining?: boolean;
@@ -158,6 +158,7 @@ export class HybridCompiler {
   readonly optimize: boolean;
   readonly tsconfigPath?: string;
   readonly diagnosticsMap = new Map<string, nga.NgDiagnostic[]>();
+  readonly optionDiagnostics: nga.NgDiagnostic[] = [];
   readonly virtualFiles?: Record<string, string>;
   tcbConfig: NgpTypeCheckingConfig;
   readonly templateParseOptions: Partial<ParseTemplateOptions>;
@@ -209,21 +210,21 @@ export class HybridCompiler {
         'JIT mode support ("supportJitMode" option) cannot be disabled when forbidOrphanComponents is set to true',
       );
     }
-    if (this.tcbConfig.extendedDiagnostics) {
-      const configErrors = verifyExtendedDiagnosticsOptions({
-        strictTemplates: this.tcbConfig.checkTemplateBodies,
-        extendedDiagnostics: this.tcbConfig.extendedDiagnostics,
-      });
-      if (configErrors.length > 0) {
-        this.diagnosticsMap.set(this.tsconfigPath ?? '', configErrors);
-        this.tcbConfig = {
-          ...this.tcbConfig,
-          controlFlowPreventingContentProjection: 'suppress',
-          unusedStandaloneImports: 'suppress',
-          extendedDiagnostics: {defaultCategory: 'suppress'},
-          disabledExtendedDiagnostics: true,
-        };
-      }
+    const configErrors =
+      options.optionDiagnostics ??
+      (this.tcbConfig.extendedDiagnostics
+        ? verifyExtendedDiagnosticsOptions({
+            strictTemplates: this.tcbConfig.checkTemplateBodies,
+            extendedDiagnostics: this.tcbConfig.extendedDiagnostics,
+          })
+        : []);
+    this.optionDiagnostics = [...configErrors];
+    // Mirrors `NgCompiler`, which doesn't construct the extended template checker, the template
+    // semantics checker or the source file validator when it has construction diagnostics. Note
+    // that `controlFlowPreventingContentProjection` is intentionally left alone: ngtsc reports
+    // it from the type check block regardless of option diagnostics.
+    if (this.optionDiagnostics.length > 0) {
+      this.tcbConfig = {...this.tcbConfig, disabledExtendedDiagnostics: true};
     }
     this.rootDir = options.rootDir;
     this.complianceMode = options.complianceMode ?? false;
@@ -251,7 +252,11 @@ export class HybridCompiler {
       return;
     }
     const diagPath = getDiagnosticPath(this.tsconfigPath);
-    const content = serializeDiagnostics(this.tsconfigPath, this.diagnosticsMap);
+    const content = serializeDiagnostics(
+      this.tsconfigPath,
+      this.diagnosticsMap,
+      this.optionDiagnostics,
+    );
     if (this.virtualFiles) {
       this.virtualFiles[diagPath] = content;
     } else {
@@ -264,7 +269,11 @@ export class HybridCompiler {
       return;
     }
     const diagPath = getDiagnosticPath(this.tsconfigPath);
-    const content = serializeDiagnostics(this.tsconfigPath, this.diagnosticsMap);
+    const content = serializeDiagnostics(
+      this.tsconfigPath,
+      this.diagnosticsMap,
+      this.optionDiagnostics,
+    );
     if (this.virtualFiles) {
       this.virtualFiles[diagPath] = content;
     } else {
@@ -299,9 +308,18 @@ export class HybridCompiler {
   }
 
   private recordChunkDiagnostics(chunk: nga.CompilationChunk): void {
+    // `NgCompiler` skips the `SourceFileValidator` when it has construction diagnostics.
+    const skipSourceFileValidator = this.optionDiagnostics.length > 0;
     for (const file of chunk.files) {
+      const diagnostics: nga.NgDiagnostic[] = [];
       if (file.diagnostics) {
-        this.diagnosticsMap.set(file.filePath, file.diagnostics.map(withErrorGuide));
+        diagnostics.push(...file.diagnostics.map(withErrorGuide));
+      }
+      if (!skipSourceFileValidator && file.sourceFileValidatorDiagnostics) {
+        diagnostics.push(...file.sourceFileValidatorDiagnostics.map(withErrorGuide));
+      }
+      if (file.diagnostics || file.sourceFileValidatorDiagnostics) {
+        this.diagnosticsMap.set(file.filePath, diagnostics);
       }
     }
   }
@@ -984,4 +1002,17 @@ export function findCyclicNodes(graph: ReadonlyMap<number, ReadonlySet<number>>)
   }
 
   return cyclic;
+}
+
+function formatSerializedDiagnostic(d: nga.NgDiagnostic) {
+  return {
+    filePath: d.filePath,
+    category: d.category === 1 ? 'error' : 'warning',
+    code: d.code,
+    messageText: flattenNgDiagnosticMessage(d),
+    span: d.span,
+    ...(d.relatedInformation && d.relatedInformation.length > 0
+      ? {relatedInformation: d.relatedInformation}
+      : {}),
+  };
 }

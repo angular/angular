@@ -873,6 +873,7 @@ pub struct ParsedFileAnalysis {
     /// is an edge for cycle detection.
     pub dynamic_dependencies: Vec<String>,
     pub diagnostics: Vec<crate::NgDiagnostic>,
+    pub source_file_validator_diagnostics: Vec<crate::NgDiagnostic>,
     /// Where ngtsc's `signalMetadataTransform` would add a `debugName` to a signal-creating
     /// call ([`super::signal_debug_name`]). Byte offsets.
     pub signal_debug_names: Vec<super::signal_debug_name::SignalDebugNameInsertion>,
@@ -933,13 +934,19 @@ pub fn analyze_parsed<Fs: ResourceResolverFs>(
     }
 
     let file_exports = extract_file_exports(module_record);
-    let mut output = visitor.into_results(file_exports);
+    let output = visitor.into_results(file_exports);
+    let mut source_file_validator_diagnostics = Vec::new();
     for issue in super::initializer_api_usage::initializer_api_usage_issues(
         semantic,
         &angular_imports,
         source_text,
     ) {
-        super::class_data::push_issue(&mut output.diagnostics, path, converter, &issue);
+        super::class_data::push_issue(
+            &mut source_file_validator_diagnostics,
+            path,
+            converter,
+            &issue,
+        );
     }
 
     let import_declarations = super::imports::collect_import_declarations(
@@ -969,6 +976,7 @@ pub fn analyze_parsed<Fs: ResourceResolverFs>(
         static_dependencies,
         dynamic_dependencies,
         diagnostics: output.diagnostics,
+        source_file_validator_diagnostics,
         signal_debug_names,
         is_core,
         top_level_value_bindings,

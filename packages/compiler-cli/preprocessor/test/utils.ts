@@ -18,6 +18,7 @@ import {createTwoFilesPatch, diffLines} from 'diff';
 import {format} from 'prettier';
 
 import type {TestFile} from './golden_markdown.js';
+import {verifyCompilerOptions} from '../src/compiler_options.js';
 import {getDiagnosticPath, serializeDiagnostics, HybridCompiler} from '../src/hybrid_compiler.js';
 import {createAnalyzer} from '../api.js';
 import {buildTypeCheckingConfig} from '../src/tcb.js';
@@ -466,11 +467,17 @@ export async function runPipeline(
     });
   }
 
+  const optionDiagnostics = verifyCompilerOptions({
+    ...tsconfigOptions,
+    emitDeclarationOnly: compilerOptions.emitDeclarationOnly,
+  });
+
   const compiler = new HybridCompiler(analyzer, {
     optimize: options.optimize,
     tsconfigPath: tsconfigFile.path,
     virtualFiles,
     tcbConfig,
+    optionDiagnostics,
     templateParseOptions: {
       enableSelectorless: options.enableSelectorless,
       ...options.templateParseOptions,
@@ -555,10 +562,16 @@ export async function runPipeline(
     }
   }
 
-  const hasDiagnostics = [...compiler.diagnosticsMap.values()].some((diags) => diags.length > 0);
+  const hasDiagnostics =
+    compiler.optionDiagnostics.length > 0 ||
+    [...compiler.diagnosticsMap.values()].some((diags) => diags.length > 0);
   if (hasDiagnostics) {
     const diagPath = getDiagnosticPath(tsconfigFile.path);
-    const diagContent = serializeDiagnostics(tsconfigFile.path, compiler.diagnosticsMap);
+    const diagContent = serializeDiagnostics(
+      tsconfigFile.path,
+      compiler.diagnosticsMap,
+      compiler.optionDiagnostics,
+    );
     outputs.push({
       path: diagPath,
       content: await formatContent(diagPath, diagContent),

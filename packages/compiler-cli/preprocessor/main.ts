@@ -157,11 +157,13 @@ import {run} from './ngp.js';
         useHostForImportGeneration,
       });
     }
+    const optionDiagnostics = verifyCompilerOptions(angularCompilerOptions ?? {});
     const compiler = new HybridCompiler(innerAnalyzer, {
       optimize,
       // Where `writeDiagnosticsFile` writes the `.ngdiag.json` file; nothing is written without it.
       tsconfigPath,
       tcbConfig,
+      optionDiagnostics,
       legacyOptionalChaining: angularCompilerOptions?.legacyOptionalChaining,
       isClosureCompilerEnabled,
       onlyExplicitDeferDependencyImports:
@@ -183,11 +185,6 @@ import {run} from './ngp.js';
       workspaceName,
       rootDirs,
     });
-
-    const optionDiagnostics = verifyCompilerOptions(angularCompilerOptions ?? {});
-    if (optionDiagnostics.length > 0) {
-      compiler.diagnosticsMap.set(tsconfigPath, optionDiagnostics);
-    }
 
     console.log('Processing files...');
     await run(compiler, {outDir, rootDir, inPlace});

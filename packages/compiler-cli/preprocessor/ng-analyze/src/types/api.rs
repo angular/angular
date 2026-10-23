@@ -94,6 +94,11 @@ pub struct AnalysisResult {
     pub imports: Vec<ImportDeclarationMetadata>,
     pub type_only_exports: Vec<String>,
     pub diagnostics: Vec<NgDiagnostic>,
+    /// Diagnostics from `SourceFileValidator` checks (`NG8110`, `NG8118`), recorded separately
+    /// from decorator/class diagnostics so they can be skipped when compiler option diagnostics
+    /// are present.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub source_file_validator_diagnostics: Vec<NgDiagnostic>,
     pub signal_debug_names: Vec<super::metadata::SignalDebugNameMetadata>,
     pub r3_symbols_specifier: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
