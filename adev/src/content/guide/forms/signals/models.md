@@ -272,11 +272,11 @@ For some use cases, a service may store a form model:
 ```ts
 @Service()
 export class FormService {
-  readonly _formModel = signal<UserFormModel>({ name: '', birthday: null });
-  public readonly formModel = this._formModel.asReadonly();
+  private readonly formModel = signal<UserFormModel>({ name: '', birthday: null });
+  public readonly model = this.formModel.asReadonly();
 
   public syncFormModel(value: UserFormModel) {
-    this._formModel.set(value);
+    this.formModel.set(value);
   }
 
   // Model set synchronously or asynchronously elsewhere in service
@@ -286,7 +286,7 @@ export class FormService {
 export class UserForm {
   private readonly formService = inject(FormService);
 
-  private readonly formModel = linkedSignal(() => this.formService.formModel(), {
+  private readonly formModel = linkedSignal(() => this.formService.model(), {
     set: (value) => this.formService.syncFormModel(value),
   });
 
