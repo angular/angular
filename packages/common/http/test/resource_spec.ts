@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ApplicationRef, Injector, resourceFromSnapshots, signal} from '@angular/core';
+import {
+  ApplicationRef,
+  ɵglobal as global,
+  Injector,
+  resourceFromSnapshots,
+  signal,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {isNode} from '@angular/private/testing';
 import {Observable} from 'rxjs';
@@ -36,6 +42,51 @@ describe('httpResource', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({providers: [provideHttpClient(), provideHttpClientTesting()]});
+  });
+
+  it('should name its signals in development mode', () => {
+    const res = httpResource(() => '/data', {
+      defaultValue: 0,
+      debugName: 'TestHttpResource',
+      injector: TestBed.inject(Injector),
+    });
+
+    expect(res.value.toString()).toBe('[Computed (Resource#TestHttpResource.value): 0]');
+    expect(res.status.toString()).toBe('[Computed (Resource#TestHttpResource.status): loading]');
+    expect(res.isLoading.toString()).toBe('[Computed (Resource#TestHttpResource.isLoading): true]');
+  });
+
+  describe('in production mode', () => {
+    let previousNgDevMode: typeof ngDevMode;
+
+    beforeEach(() => {
+      previousNgDevMode = global['ngDevMode'];
+      global['ngDevMode'] = false;
+    });
+
+    afterEach(() => {
+      global['ngDevMode'] = previousNgDevMode;
+    });
+
+    it('should not read or retain debugName', async () => {
+      const debugName = jasmine.createSpy('debugName').and.returnValue('TestHttpResource');
+      const backend = TestBed.inject(HttpTestingController);
+      const res = httpResource(() => '/data', {
+        get debugName() {
+          return debugName();
+        },
+        injector: TestBed.inject(Injector),
+      });
+
+      TestBed.tick();
+      backend.expectOne('/data').flush(42);
+      await TestBed.inject(ApplicationRef).whenStable();
+      expect(res.value()).toBe(42);
+      res.value.set(43);
+      expect(res.value()).toBe(43);
+      expect(debugName).not.toHaveBeenCalled();
+      expect(Object.hasOwn(res, 'debugName')).toBeFalse();
+    });
   });
 
   it('should throw if used outside injection context', () => {

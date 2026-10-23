@@ -273,7 +273,7 @@ function makeHttpResourceFn<TRaw>(responseType: ResponseType) {
       injector,
       (ctx: ResourceParamsContext) => normalizeRequest(ctx, request, responseType),
       options?.defaultValue,
-      options?.debugName,
+      ngDevMode ? options?.debugName : undefined,
       options?.parse as (value: unknown) => TResult,
       options?.equal as ValueEqualityFn<unknown>,
       getInitialStream,

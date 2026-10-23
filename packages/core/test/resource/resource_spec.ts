@@ -9,6 +9,7 @@
 import {
   ApplicationRef,
   ɵCACHE_ACTIVE as CACHE_ACTIVE,
+  ɵglobal as global,
   Component,
   computed,
   createEnvironmentInjector,
@@ -85,6 +86,50 @@ class MockResponseCountingBackend extends MockBackend<number, string> {
 }
 
 describe('resource', () => {
+  it('should name its signals in development mode', () => {
+    const res = resource({
+      loader: async () => 42,
+      defaultValue: 0,
+      debugName: 'TestResource',
+      injector: TestBed.inject(Injector),
+    });
+
+    expect(res.value.toString()).toBe('[Computed (Resource#TestResource.value): 0]');
+    expect(res.status.toString()).toBe('[Computed (Resource#TestResource.status): loading]');
+    expect(res.isLoading.toString()).toBe('[Computed (Resource#TestResource.isLoading): true]');
+  });
+
+  describe('in production mode', () => {
+    let previousNgDevMode: typeof ngDevMode;
+
+    beforeEach(() => {
+      previousNgDevMode = global['ngDevMode'];
+      global['ngDevMode'] = false;
+    });
+
+    afterEach(() => {
+      global['ngDevMode'] = previousNgDevMode;
+    });
+
+    it('should not read or retain debugName', async () => {
+      const debugName = jasmine.createSpy('debugName').and.returnValue('TestResource');
+      const res = resource({
+        loader: async () => 42,
+        get debugName() {
+          return debugName();
+        },
+        injector: TestBed.inject(Injector),
+      });
+
+      await TestBed.inject(ApplicationRef).whenStable();
+      expect(res.value()).toBe(42);
+      res.value.set(43);
+      expect(res.value()).toBe(43);
+      expect(debugName).not.toHaveBeenCalled();
+      expect(Object.hasOwn(res, 'debugName')).toBeFalse();
+    });
+  });
+
   it('should expose data and status based on reactive request', async () => {
     const counter = signal(0);
     const backend = new MockEchoBackend();

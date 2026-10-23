@@ -79,7 +79,7 @@ export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | 
     getLoader(options),
     options.defaultValue,
     options.equal ? wrapEqualityFn(options.equal) : undefined,
-    options.debugName,
+    ngDevMode ? options.debugName : undefined,
     options.injector ?? inject(Injector),
     options.id as StateKey<T>,
   );
@@ -200,13 +200,14 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
   override readonly status: Signal<ResourceStatus>;
   override readonly error: Signal<Error | undefined>;
   private readonly transferState: TransferState | undefined;
+  declare private readonly debugName: string | undefined;
 
   constructor(
     request: (ctx: ResourceParamsContext) => R,
     private readonly loaderFn: ResourceStreamingLoader<T, R>,
     defaultValue: T,
     private readonly equal: ValueEqualityFn<T> | undefined,
-    private readonly debugName: string | undefined,
+    debugName: string | undefined,
     injector: Injector,
     private transferCacheKey: StateKey<T> | undefined,
     getInitialStream?: (request: R) => Signal<ResourceStreamItem<T>> | undefined,
@@ -241,6 +242,10 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
       ),
       debugName,
     );
+
+    if (ngDevMode) {
+      this.debugName = debugName;
+    }
 
     const cacheState = injector.get(CACHE_ACTIVE, undefined, {optional: true}) ?? {isActive: false};
 
