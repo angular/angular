@@ -1822,6 +1822,17 @@ describe('HtmlLexer', () => {
       ]);
     });
 
+    it('should not treat a leading colon as a namespace prefix separator', () => {
+      expect(tokenizeAndHumanizeParts('<t :a ::b :[c]>')).toEqual([
+        [TokenType.TAG_OPEN_START, '', 't'],
+        [TokenType.ATTR_NAME, '', ':a'],
+        [TokenType.ATTR_NAME, '', '::b'],
+        [TokenType.ATTR_NAME, '', ':[c]'],
+        [TokenType.TAG_OPEN_END],
+        [TokenType.EOF],
+      ]);
+    });
+
     it('should parse attributes with single quote value', () => {
       expect(tokenizeAndHumanizeParts("<t a='b'>")).toEqual([
         [TokenType.TAG_OPEN_START, '', 't'],

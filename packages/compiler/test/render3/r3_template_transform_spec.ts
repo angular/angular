@@ -464,6 +464,27 @@ describe('R3 template transform', () => {
       ]);
     });
 
+    it('should parse interpolated namespaced attributes without error', () => {
+      expectFromHtml('<svg><a xlink:href="{{v}}"></a></svg>').toEqual([
+        ['Element', ':svg:svg'],
+        ['Element', ':svg:a'],
+        ['BoundAttribute', BindingType.Attribute, ':xlink:href', '{{ v }}'],
+      ]);
+    });
+
+    it('should reject interpolated namespaced event attributes', () => {
+      expect(() => parse('<svg><a svg:onclick="{{v}}"></a></svg>')).toThrowError(
+        /Binding to event attribute 'svg:onclick' is disallowed for security reasons, please use \(click\)=\.\.\./,
+      );
+    });
+
+    it('should ignore raw attributes starting with a colon', () => {
+      expectFromHtml(
+        '<div :xlink:href="val" :onclick="handler"></div>',
+        true /* ignoreError */,
+      ).toEqual([['Element', 'div']]);
+    });
+
     it('should not attach i18n metadata for bound properties named after Object.prototype members', () => {
       const {nodes} = parse('<div [valueOf]="v" [constructor]="c" *toString="s"></div>');
       const template = nodes[0] as t.Template;

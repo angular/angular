@@ -80,6 +80,19 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<Diagnostic> {
     schemas: SchemaMetadata[],
     hostIsStandalone: boolean,
   ): void {
+    const report = REGISTRY.validateProperty(name);
+    if (report.error) {
+      this._diagnostics.push({
+        typeCheckId: id as TypeCheckId,
+        category: OutOfBandDiagnosticCategory.Error,
+        code: 8002,
+        message: report.msg!,
+        start: span.start.offset,
+        end: span.end.offset,
+      });
+      return;
+    }
+
     if (!REGISTRY.hasProperty(tagName, name, schemas)) {
       const decorator = hostIsStandalone ? '@Component' : '@NgModule';
       const schemasStr = `'${decorator}.schemas'`;
@@ -119,6 +132,19 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<Diagnostic> {
     span: ParseSourceSpan,
     schemas: SchemaMetadata[],
   ): void {
+    const report = REGISTRY.validateProperty(name);
+    if (report.error) {
+      this._diagnostics.push({
+        typeCheckId: id as TypeCheckId,
+        category: OutOfBandDiagnosticCategory.Error,
+        code: 8002,
+        message: report.msg!,
+        start: span.start.offset,
+        end: span.end.offset,
+      });
+      return;
+    }
+
     for (const tagName of element.tagNames) {
       if (REGISTRY.hasProperty(tagName, name, schemas)) {
         continue;

@@ -825,7 +825,7 @@ class _Tokenizer {
       this._cursor.advance();
     }
     let nameStart: CharacterCursor;
-    if (this._cursor.peek() === chars.$COLON) {
+    if (this._cursor.peek() === chars.$COLON && this._cursor.diff(nameOrPrefixStart) > 0) {
       prefix = this._cursor.getChars(nameOrPrefixStart);
       this._cursor.advance();
       nameStart = this._cursor.clone();

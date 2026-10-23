@@ -17,67 +17,68 @@ import * as a from '../../../src/render3/r3_ast';
 import {htmlAstToRender3Ast, Render3ParseResult} from '../../../src/render3/r3_template_transform';
 import {I18nMetaVisitor} from '../../../src/render3/view/i18n/meta';
 import {LEADING_TRIVIA_CHARS} from '../../../src/render3/view/template';
+import {DomElementSchemaRegistry} from '../../../src/schema/dom_element_schema_registry';
 import {ElementSchemaRegistry} from '../../../src/schema/element_schema_registry';
 import {BindingParser} from '../../../src/template_parser/binding_parser';
 
-class MockSchemaRegistry implements ElementSchemaRegistry {
+class MockSchemaRegistry extends DomElementSchemaRegistry {
   constructor(
     public existingProperties: {[key: string]: boolean},
     public attrPropMapping: {[key: string]: string},
     public existingElements: {[key: string]: boolean},
     public invalidProperties: Array<string>,
     public invalidAttributes: Array<string>,
-  ) {}
+  ) {
+    super();
+  }
 
-  hasProperty(tagName: string, property: string, schemas: any[]): boolean {
+  override hasProperty(tagName: string, property: string, schemas: any[]): boolean {
     const value = this.existingProperties[property];
     return value === void 0 ? true : value;
   }
 
-  hasElement(tagName: string, schemaMetas: any[]): boolean {
+  override hasElement(tagName: string, schemaMetas: any[]): boolean {
     const value = this.existingElements[tagName.toLowerCase()];
     return value === void 0 ? true : value;
   }
 
-  allKnownElementNames(): string[] {
+  override allKnownElementNames(): string[] {
     return Object.keys(this.existingElements);
   }
 
-  securityContext(selector: string, property: string, isAttribute: boolean): any {
+  override securityContext(selector: string, property: string, isAttribute: boolean): any {
     return 0;
   }
 
-  getMappedPropName(attrName: string): string {
+  override getMappedPropName(attrName: string): string {
     return this.attrPropMapping[attrName] || attrName;
   }
 
-  getDefaultComponentElementName(): string {
+  override getDefaultComponentElementName(): string {
     return 'ng-component';
   }
 
-  validateProperty(name: string): {error: boolean; msg?: string} {
+  override validateProperty(name: string): {error: boolean; msg?: string} {
     if (this.invalidProperties.indexOf(name) > -1) {
       return {error: true, msg: `Binding to property '${name}' is disallowed for security reasons`};
-    } else {
-      return {error: false};
     }
+    return super.validateProperty(name);
   }
 
-  validateAttribute(name: string): {error: boolean; msg?: string} {
+  override validateAttribute(name: string): {error: boolean; msg?: string} {
     if (this.invalidAttributes.indexOf(name) > -1) {
       return {
         error: true,
         msg: `Binding to attribute '${name}' is disallowed for security reasons`,
       };
-    } else {
-      return {error: false};
     }
+    return super.validateAttribute(name);
   }
 
-  normalizeAnimationStyleProperty(propName: string): string {
+  override normalizeAnimationStyleProperty(propName: string): string {
     return propName;
   }
-  normalizeAnimationStyleValue(
+  override normalizeAnimationStyleValue(
     camelCaseProp: string,
     userProvidedProp: string,
     val: string | number,
