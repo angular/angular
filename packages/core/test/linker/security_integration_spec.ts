@@ -45,6 +45,39 @@ describe('security integration tests', function () {
       }).toThrowError();
     });
 
+    it('should disallow binding to attr.:onclick', () => {
+      const template = `<div [attr.:onclick]="ctxProp"></div>`;
+      TestBed.overrideComponent(SecuredComponent, {set: {template}});
+
+      expect(() => {
+        TestBed.createComponent(SecuredComponent);
+      }).toThrowError(
+        /Invalid attribute name ':onclick'\. Attribute names cannot start with a colon\./,
+      );
+    });
+
+    it('should disallow binding to attributes starting with a colon like attr.:href', () => {
+      const template = `<a [attr.:href]="ctxProp">Link Title</a>`;
+      TestBed.overrideComponent(SecuredComponent, {set: {template}});
+
+      expect(() => {
+        TestBed.createComponent(SecuredComponent);
+      }).toThrowError(
+        /Invalid attribute name ':href'\. Attribute names cannot start with a colon\./,
+      );
+    });
+
+    it('should disallow binding to namespaced event attributes like attr.svg:onclick', () => {
+      const template = `<svg [attr.svg:onclick]="ctxProp"></svg>`;
+      TestBed.overrideComponent(SecuredComponent, {set: {template}});
+
+      expect(() => {
+        TestBed.createComponent(SecuredComponent);
+      }).toThrowError(
+        /Binding to event attribute 'svg:onclick' is disallowed for security reasons, please use \(click\)=.../,
+      );
+    });
+
     // this test is similar to the previous one, but since on-prefixed attributes validation now
     // happens at runtime, we need to invoke change detection to trigger elementProperty call
     it('should disallow binding to on* with NO_ERRORS_SCHEMA', () => {
@@ -113,6 +146,111 @@ describe('security integration tests', function () {
             TestBed.createComponent(LocalSecuredComponent);
           }).toThrowError(
             /Binding to event attribute 'onclick' is disallowed for security reasons, please use \(click\)=.../,
+          );
+        } finally {
+          (globalThis as any).ngDevMode = originalNgDevMode;
+        }
+      });
+
+      it(`should disallow binding to attr.:onclick in host bindings with ngDevMode=${ngDevModeValue}`, () => {
+        const originalNgDevMode = (globalThis as any).ngDevMode;
+        (globalThis as any).ngDevMode = ngDevModeValue;
+
+        @Directive({
+          selector: '[dirOnclickColon]',
+          standalone: false,
+        })
+        class LocalHostColonOnclickDirective {
+          @HostBinding('attr.:onclick') @Input() dirOnclickColon: string | undefined;
+        }
+
+        @Component({
+          template: `<button [dirOnclickColon]="ctxProp"></button>`,
+          standalone: false,
+        })
+        class LocalSecuredColonComponent {
+          ctxProp: any = 'some value';
+        }
+
+        try {
+          TestBed.configureTestingModule({
+            declarations: [LocalSecuredColonComponent, LocalHostColonOnclickDirective],
+          });
+
+          expect(() => {
+            TestBed.createComponent(LocalSecuredColonComponent);
+          }).toThrowError(
+            /Invalid attribute name ':onclick'\. Attribute names cannot start with a colon\./,
+          );
+        } finally {
+          (globalThis as any).ngDevMode = originalNgDevMode;
+        }
+      });
+
+      it(`should disallow binding to attr.svg:onclick in host bindings with ngDevMode=${ngDevModeValue}`, () => {
+        const originalNgDevMode = (globalThis as any).ngDevMode;
+        (globalThis as any).ngDevMode = ngDevModeValue;
+
+        @Directive({
+          selector: '[dirSvgOnclick]',
+          standalone: false,
+        })
+        class LocalHostSvgOnclickDirective {
+          @HostBinding('attr.svg:onclick') @Input() dirSvgOnclick: string | undefined;
+        }
+
+        @Component({
+          template: `<button [dirSvgOnclick]="ctxProp"></button>`,
+          standalone: false,
+        })
+        class LocalSecuredSvgComponent {
+          ctxProp: any = 'some value';
+        }
+
+        try {
+          TestBed.configureTestingModule({
+            declarations: [LocalSecuredSvgComponent, LocalHostSvgOnclickDirective],
+          });
+
+          expect(() => {
+            TestBed.createComponent(LocalSecuredSvgComponent);
+          }).toThrowError(
+            /Binding to event attribute 'svg:onclick' is disallowed for security reasons, please use \(click\)=.../,
+          );
+        } finally {
+          (globalThis as any).ngDevMode = originalNgDevMode;
+        }
+      });
+
+      it(`should disallow binding to attr.:href in host bindings with ngDevMode=${ngDevModeValue}`, () => {
+        const originalNgDevMode = (globalThis as any).ngDevMode;
+        (globalThis as any).ngDevMode = ngDevModeValue;
+
+        @Directive({
+          selector: '[dirHrefColon]',
+          standalone: false,
+        })
+        class LocalHostHrefColonDirective {
+          @HostBinding('attr.:href') @Input() dirHrefColon: string | undefined;
+        }
+
+        @Component({
+          template: `<button [dirHrefColon]="ctxProp"></button>`,
+          standalone: false,
+        })
+        class LocalSecuredHrefComponent {
+          ctxProp: any = 'some value';
+        }
+
+        try {
+          TestBed.configureTestingModule({
+            declarations: [LocalSecuredHrefComponent, LocalHostHrefColonDirective],
+          });
+
+          expect(() => {
+            TestBed.createComponent(LocalSecuredHrefComponent);
+          }).toThrowError(
+            /Invalid attribute name ':href'\. Attribute names cannot start with a colon\./,
           );
         } finally {
           (globalThis as any).ngDevMode = originalNgDevMode;

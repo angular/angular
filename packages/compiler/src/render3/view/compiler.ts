@@ -614,10 +614,22 @@ function validateNoEventBindings(
   for (const prop in bindings.properties) {
     const isAttr = prop.startsWith('attr.');
     const boundName = isAttr ? prop.slice(5) : prop;
+    if (boundName.startsWith(':')) {
+      const type = isAttr ? 'attribute' : 'property';
+      bindingParser.errors.push(
+        new ParseError(
+          sourceSpan,
+          `Invalid ${type} name '${boundName}'. ${type === 'attribute' ? 'Attribute' : 'Property'} names cannot start with a colon.`,
+        ),
+      );
+      continue;
+    }
+    const colonIdx = boundName.lastIndexOf(':');
+    const localName = colonIdx > -1 ? boundName.substring(colonIdx + 1) : boundName;
 
-    if (boundName.toLowerCase().startsWith('on')) {
+    if (localName.toLowerCase().startsWith('on')) {
       const errorType = isAttr ? 'attribute' : 'property';
-      const suggestion = `(${boundName.slice(2)})=...`;
+      const suggestion = `(${localName.slice(2)})=...`;
 
       let msg = `Binding to event ${errorType} '${boundName}' is disallowed for security reasons, please use ${suggestion}`;
       if (!isAttr) {
