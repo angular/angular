@@ -1205,7 +1205,7 @@ mod tests {
         write!(main_file, "export const x = 1;").unwrap();
 
         let result = Analyzer::new(AnalyzerOptions {
-            tsconfig_path: tsconfig_path.to_string_lossy().to_string(),
+            tsconfig_path: Some(tsconfig_path.to_string_lossy().to_string()),
             optimize: Some(false),
             ..Default::default()
         });
@@ -1717,8 +1717,12 @@ mod tests {
         let config = load_and_resolve_tsconfig(&tsconfig_path, &fs).unwrap();
         assert!(!config.preserve_symlinks);
 
-        let resolver =
-            create_resolver_with_fs(&tsconfig_path, fs.clone(), config.preserve_symlinks, None);
+        let resolver = create_resolver_with_fs(
+            Some(tsconfig_path.as_path()),
+            fs.clone(),
+            config.preserve_symlinks,
+            None,
+        );
         let resolved = resolver.resolve(&project_dir, "pkg").unwrap();
         let resolved_path = resolved.path().canonicalize().unwrap();
         assert!(resolved_path.ends_with("pkg/index.ts"));
@@ -1736,8 +1740,12 @@ mod tests {
         let config = load_and_resolve_tsconfig(&tsconfig_path, &fs).unwrap();
         assert!(config.preserve_symlinks);
 
-        let resolver =
-            create_resolver_with_fs(&tsconfig_path, fs.clone(), config.preserve_symlinks, None);
+        let resolver = create_resolver_with_fs(
+            Some(tsconfig_path.as_path()),
+            fs.clone(),
+            config.preserve_symlinks,
+            None,
+        );
         let resolved = resolver.resolve(&project_dir, "pkg").unwrap();
         let resolved_path = resolved.path();
         assert!(resolved_path.ends_with("node_modules/pkg/index.ts"));

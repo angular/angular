@@ -112,6 +112,11 @@ export interface IAnalyzer {
   updateFileContent(updates: {filePath: string; content: string}[]): Promise<string[]>;
   /** Like `updateFileContent`, for changed or deleted files. */
   invalidateFiles(updates: nga.FileInvalidation[]): Promise<string[]>;
+  /**
+   * Replaces the compilation roots (absolute paths) and returns every path whose cached analysis
+   * is now stale. From then on the roots are no longer re-read from the tsconfig.
+   */
+  setEntryPoints(entryPoints: string[]): Promise<string[]>;
   getTsFileForTemplate(templatePath: string): Promise<nga.TemplateUsage[] | null>;
   getFileContent(filePath: string): Promise<string>;
   /**

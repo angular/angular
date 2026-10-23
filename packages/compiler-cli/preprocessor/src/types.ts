@@ -23,6 +23,11 @@ export declare class Analyzer {
   readResource(containingFile: string, url: string): ResolvedResource | null;
   updateFileContent(updates: Array<FileUpdate>): Array<string>;
   invalidateFiles(updates: Array<FileInvalidation>): Array<string>;
+  /**
+   * Replace the compilation roots and return every path whose cached analysis is now stale.
+   * Paths must be absolute. From then on the roots are no longer re-read from the tsconfig.
+   */
+  setEntryPoints(entryPoints: Array<string>): Array<string>;
   analyze(): AnalysisIterator;
   analyzeOptimized(): AnalysisIterator;
   analyzeDelta(): AnalysisIterator;
@@ -40,6 +45,7 @@ export declare class TestAnalyzer {
   readResource(containingFile: string, url: string): ResolvedResource | null;
   updateFileContent(updates: Array<FileUpdate>): Array<string>;
   invalidateFiles(updates: Array<FileInvalidation>): Array<string>;
+  setEntryPoints(entryPoints: Array<string>): Array<string>;
   analyze(): AnalysisIterator;
   analyzeOptimized(): AnalysisIterator;
   analyzeDelta(): AnalysisIterator;
@@ -70,11 +76,20 @@ export interface AnalysisResult {
 }
 
 /**
- * Options for constructing the analyzer. Every field except `tsconfigPath` is optional; unset
- * fields fall back to the tsconfig, and an explicitly set field always takes precedence.
+ * Options for constructing the analyzer. Every field is optional. Unset fields fall back to the
+ * tsconfig when `tsconfigPath` is given, and to their defaults otherwise; an explicitly set field
+ * always takes precedence. Without a tsconfig, path-valued options must be absolute.
  */
 export interface AnalyzerOptions {
-  tsconfigPath: string;
+  /** tsconfig to read the root files and unset options from. */
+  tsconfigPath?: string;
+  /**
+   * Roots of the program closure. Falls back to the tsconfig's root files. Once set (here or via
+   * `setEntryPoints`), the tsconfig no longer supplies the roots.
+   */
+  entryPoints?: Array<string>;
+  /** The `r3_symbols.ts` file when compiling `@angular/core` itself. */
+  r3SymbolsFile?: string;
   optimize?: boolean;
   virtualFiles?: Record<string, string>;
   /**
@@ -107,6 +122,12 @@ export interface AnalyzerOptions {
   strictInjectionParameters?: boolean;
   compileNonExportedClasses?: boolean;
   generateExtraImportsInLocalMode?: boolean;
+  /**
+   * Treat components, directives and pipes without an explicit `standalone` flag as standalone
+   * (the `@angular/core` v19+ behavior). Falls back to the tsconfig's
+   * `angularCompilerOptions._angularCoreVersion` (`false` below v19) when unset (default `true`).
+   */
+  implicitStandalone?: boolean;
   /** Configuration of the built-in file-system module resolution. */
   defaultHost?: DefaultHostConfig;
 }

@@ -38,11 +38,11 @@ import type * as nga from './types.js';
 export type AnalyzerBackend = 'native' | 'wasm';
 
 /**
- * Engine options (everything in {@link nga.AnalyzerOptions} except `tsconfigPath`, which is
- * passed separately) plus the loader-only options below. Engine options are forwarded to the
+ * Engine options (everything in {@link nga.AnalyzerOptions}, including the optional
+ * `tsconfigPath`) plus the loader-only options below. Engine options are forwarded to the
  * engine as-is, so new engine options are available here without changes to the loader.
  */
-export interface LoadAnalyzerOptions extends Omit<nga.AnalyzerOptions, 'tsconfigPath'> {
+export interface LoadAnalyzerOptions extends nga.AnalyzerOptions {
   /**
    * Force a specific engine. When set, only that engine is attempted — a failure
    * throws rather than silently falling back, so parity runs stay honest.
@@ -74,10 +74,23 @@ export interface LoadAnalyzerOptions extends Omit<nga.AnalyzerOptions, 'tsconfig
   useWasm?: boolean;
 }
 
+/**
+ * Normalizes the `(tsconfigPath, options?)` and `(options)` call forms into one options object.
+ * A positional `tsconfigPath` takes precedence over `options.tsconfigPath`.
+ */
+export function toLoadAnalyzerOptions(
+  tsconfigPathOrOptions: string | LoadAnalyzerOptions,
+  options: LoadAnalyzerOptions = {},
+): LoadAnalyzerOptions {
+  return typeof tsconfigPathOrOptions === 'string'
+    ? {...options, tsconfigPath: tsconfigPathOrOptions}
+    : tsconfigPathOrOptions;
+}
+
 /** Strips the loader-only keys from `options`, leaving exactly the engine's options. */
-function engineOptions(tsconfigPath: string, options: LoadAnalyzerOptions): nga.AnalyzerOptions {
+function engineOptions(options: LoadAnalyzerOptions): nga.AnalyzerOptions {
   const {backend, nativeBinding, wasmBinding, hostFs, ngAnalyzeDir, useWasm, ...engine} = options;
-  return {...engine, tsconfigPath, optimize: options.optimize ?? true};
+  return {...engine, optimize: options.optimize ?? true};
 }
 
 export interface LoadedAnalyzer {
@@ -239,11 +252,7 @@ function describeExports(mod: unknown): string {
   return keys.length > 0 ? `exports: ${keys.join(', ')}` : 'module has no exports';
 }
 
-async function constructNative(
-  spec: string,
-  tsconfigPath: string,
-  options: LoadAnalyzerOptions,
-): Promise<IAnalyzer> {
+async function constructNative(spec: string, options: LoadAnalyzerOptions): Promise<IAnalyzer> {
   const mod = requireFromHere(spec);
   const Analyzer = mod?.Analyzer as AnalyzerConstructor | undefined;
   if (typeof Analyzer !== 'function') {
@@ -252,14 +261,10 @@ async function constructNative(
     );
   }
   const {NapiAnalyzer} = await import('./analyzer_napi.js');
-  return new NapiAnalyzer(new Analyzer(engineOptions(tsconfigPath, options)));
+  return new NapiAnalyzer(new Analyzer(engineOptions(options)));
 }
 
-async function constructWasm(
-  spec: string,
-  tsconfigPath: string,
-  options: LoadAnalyzerOptions,
-): Promise<IAnalyzer> {
+async function constructWasm(spec: string, options: LoadAnalyzerOptions): Promise<IAnalyzer> {
   const mod = requireFromHere(spec);
   const Inner = mod?.WasmAnalyzer as WasmInnerConstructor | undefined;
   if (typeof Inner !== 'function') {
@@ -280,7 +285,7 @@ async function constructWasm(
     hostFs = createNodeHostFs();
   }
 
-  const inner = new Inner(JSON.stringify(engineOptions(tsconfigPath, options)), hostFs);
+  const inner = new Inner(JSON.stringify(engineOptions(options)), hostFs);
   return new WasmAnalyzer(inner);
 }
 
@@ -337,10 +342,16 @@ function noAnalyzerError(
  * `NG_EXP_COMPILER_BACKEND`, `NG_EXP_FORCE_WASM`, then the default (native, falling
  * back to wasm). An explicit choice is strict and never falls back.
  */
-export async function loadAnalyzerWithInfo(
+export function loadAnalyzerWithInfo(options: LoadAnalyzerOptions): Promise<LoadedAnalyzer>;
+export function loadAnalyzerWithInfo(
   tsconfigPath: string,
-  options: LoadAnalyzerOptions = {},
+  options?: LoadAnalyzerOptions,
+): Promise<LoadedAnalyzer>;
+export async function loadAnalyzerWithInfo(
+  tsconfigPathOrOptions: string | LoadAnalyzerOptions,
+  maybeOptions?: LoadAnalyzerOptions,
 ): Promise<LoadedAnalyzer> {
+  const options = toLoadAnalyzerOptions(tsconfigPathOrOptions, maybeOptions);
   const requested = requestedBackend(options);
   const candidates =
     requested === 'wasm'
@@ -359,8 +370,8 @@ export async function loadAnalyzerWithInfo(
       debugLog(`trying ${candidate.backend}: ${candidate.spec} (${candidate.origin})`);
       const analyzer =
         candidate.backend === 'native'
-          ? await constructNative(candidate.spec, tsconfigPath, options)
-          : await constructWasm(candidate.spec, tsconfigPath, options);
+          ? await constructNative(candidate.spec, options)
+          : await constructWasm(candidate.spec, options);
       debugLog(`loaded ${candidate.backend} from ${candidate.spec}`);
       return {analyzer, backend: candidate.backend, resolvedFrom: candidate.spec};
     } catch (error) {
@@ -373,10 +384,17 @@ export async function loadAnalyzerWithInfo(
 }
 
 /** Loads the analysis engine. See {@link loadAnalyzerWithInfo} for selection rules. */
-export async function loadAnalyzer(
+export function loadAnalyzer(options: LoadAnalyzerOptions): Promise<IAnalyzer>;
+export function loadAnalyzer(
   tsconfigPath: string,
-  options: LoadAnalyzerOptions = {},
+  options?: LoadAnalyzerOptions,
+): Promise<IAnalyzer>;
+export async function loadAnalyzer(
+  tsconfigPathOrOptions: string | LoadAnalyzerOptions,
+  maybeOptions?: LoadAnalyzerOptions,
 ): Promise<IAnalyzer> {
-  const {analyzer} = await loadAnalyzerWithInfo(tsconfigPath, options);
+  const {analyzer} = await loadAnalyzerWithInfo(
+    toLoadAnalyzerOptions(tsconfigPathOrOptions, maybeOptions),
+  );
   return analyzer;
 }

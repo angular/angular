@@ -107,13 +107,25 @@ pub struct AnalysisResult {
 
 /// Options for constructing an [`crate::Analyzer`].
 ///
-/// Every field except `tsconfig_path` is optional. Unset fields fall back to the value read from
-/// the tsconfig; an explicitly set field always takes precedence over the tsconfig.
+/// Every field is optional. Unset fields fall back to the value read from the tsconfig when a
+/// `tsconfig_path` is given, and to their documented defaults otherwise; an explicitly set field
+/// always takes precedence over the tsconfig. Without a tsconfig, path-valued options must be
+/// absolute.
 #[cfg_attr(feature = "napi", napi(object))]
 #[derive(Clone, Debug, Default, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AnalyzerOptions {
-    pub tsconfig_path: String,
+    /// tsconfig to read the root files and unset options from. Optional: every setting it
+    /// provides can be passed explicitly instead.
+    pub tsconfig_path: Option<String>,
+    /// Roots of the program closure: the analyzer follows imports from these files. Falls back to
+    /// the tsconfig's root files (`files`/`include`) when unset, and to no roots without a
+    /// tsconfig. Relative paths resolve against the tsconfig directory. Once set (here or through
+    /// `set_entry_points`), the tsconfig no longer supplies the roots.
+    pub entry_points: Option<Vec<String>>,
+    /// The `r3_symbols.ts` file that compiling `@angular/core` itself imports runtime symbols from.
+    /// Falls back to a root file named `r3_symbols.ts` when unset.
+    pub r3_symbols_file: Option<String>,
     pub optimize: Option<bool>,
     pub virtual_files: Option<HashMap<String, String>>,
     /// Deprecated alias of [`DefaultHostConfig::node_modules_path_override`], which takes
@@ -156,6 +168,11 @@ pub struct AnalyzerOptions {
     /// ngtsc's `generateExtraImportsInLocalMode`. Falls back to the tsconfig's
     /// `angularCompilerOptions` when unset (default `false`).
     pub generate_extra_imports_in_local_mode: Option<bool>,
+    /// Treat components, directives and pipes without an explicit `standalone` flag as standalone
+    /// (the `@angular/core` v19+ behavior). Falls back to the tsconfig's
+    /// `angularCompilerOptions._angularCoreVersion` (`false` below v19) when unset (default
+    /// `true`).
+    pub implicit_standalone: Option<bool>,
     /// Configuration of the built-in file-system module resolution. These settings only
     /// configure how the analyzer itself finds files on disk, not what it analyzes.
     pub default_host: Option<DefaultHostConfig>,

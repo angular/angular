@@ -90,6 +90,11 @@ class ScriptedAnalyzer implements IAnalyzer {
     return updates.map((u) => u.filePath);
   }
 
+  async setEntryPoints(entryPoints: string[]): Promise<string[]> {
+    this.calls.push(`setEntryPoints(${entryPoints.join(',')})`);
+    return [];
+  }
+
   async getMetadataForFile(filePath: string): Promise<AnalysisResult | null> {
     return null;
   }

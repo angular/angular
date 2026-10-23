@@ -71,6 +71,12 @@ pub fn path_to_string(path: PathBuf) -> String {
         .unwrap_or_else(|os_str| os_str.to_string_lossy().into_owned())
 }
 
+/// Whether `path` is absolute. `Path::is_absolute` is always `false` on `wasm32-unknown-unknown`,
+/// which has no platform path rules, so a rooted path (`/a/b`) counts as absolute there.
+pub fn is_absolute_path(path: &Path) -> bool {
+    path.is_absolute() || (cfg!(target_arch = "wasm32") && path.has_root())
+}
+
 /// Normalize a path for lookup (resolve . and .., remove trailing slashes)
 ///
 /// Performs case-folding on case-insensitive platforms (Windows/macOS) to match real FS behavior.

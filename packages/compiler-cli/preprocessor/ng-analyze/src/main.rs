@@ -266,6 +266,27 @@ fn handle_rpc_request(req: RpcRequest, analyzer: &mut Option<Analyzer>) -> RpcRe
                 },
             }
         }
+        "setEntryPoints" => {
+            let Ok(entry_points) = serde_json::from_value::<Vec<String>>(req.params) else {
+                return RpcResponse {
+                    id: req.id,
+                    result: None,
+                    error: Some("Invalid setEntryPoints params".to_string()),
+                };
+            };
+            match a.set_entry_points_core(entry_points) {
+                Ok(res) => RpcResponse {
+                    id: req.id,
+                    result: Some(serde_json::to_value(&res).unwrap()),
+                    error: None,
+                },
+                Err(e) => RpcResponse {
+                    id: req.id,
+                    result: None,
+                    error: Some(e),
+                },
+            }
+        }
         "getTsFileForTemplate" => {
             let Ok(param) = serde_json::from_value::<TemplatePathParam>(req.params) else {
                 return RpcResponse {

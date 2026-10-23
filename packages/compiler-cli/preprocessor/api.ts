@@ -48,22 +48,36 @@ export type {AnalyzerBackend, LoadAnalyzerOptions, LoadedAnalyzer};
 /**
  * Resolves and constructs the analysis engine (native N-API, falling back to wasm).
  *
+ * Accepts either a tsconfig path plus options, or options alone. In the options form
+ * `tsconfigPath` is optional; without it, the analyzer is configured from the options only
+ * (see {@link AnalyzerOptions}).
+ *
  * Lazy by construction — see the module comment. Callers that only use
  * {@link SidecarAnalyzer} never invoke this and so never load engine-resolution code.
  */
-export async function createAnalyzer(
+export function createAnalyzer(options: LoadAnalyzerOptions): Promise<IAnalyzer>;
+export function createAnalyzer(
   tsconfigPath: string,
-  options: LoadAnalyzerOptions = {},
+  options?: LoadAnalyzerOptions,
+): Promise<IAnalyzer>;
+export async function createAnalyzer(
+  tsconfigPathOrOptions: string | LoadAnalyzerOptions,
+  options?: LoadAnalyzerOptions,
 ): Promise<IAnalyzer> {
-  const {loadAnalyzer} = await import('./src/analyzer_loader.js');
-  return loadAnalyzer(tsconfigPath, options);
+  const {loadAnalyzer, toLoadAnalyzerOptions} = await import('./src/analyzer_loader.js');
+  return loadAnalyzer(toLoadAnalyzerOptions(tsconfigPathOrOptions, options));
 }
 
 /** As {@link createAnalyzer}, but also reports which engine actually loaded. */
-export async function createAnalyzerWithInfo(
+export function createAnalyzerWithInfo(options: LoadAnalyzerOptions): Promise<LoadedAnalyzer>;
+export function createAnalyzerWithInfo(
   tsconfigPath: string,
-  options: LoadAnalyzerOptions = {},
+  options?: LoadAnalyzerOptions,
+): Promise<LoadedAnalyzer>;
+export async function createAnalyzerWithInfo(
+  tsconfigPathOrOptions: string | LoadAnalyzerOptions,
+  options?: LoadAnalyzerOptions,
 ): Promise<LoadedAnalyzer> {
-  const {loadAnalyzerWithInfo} = await import('./src/analyzer_loader.js');
-  return loadAnalyzerWithInfo(tsconfigPath, options);
+  const {loadAnalyzerWithInfo, toLoadAnalyzerOptions} = await import('./src/analyzer_loader.js');
+  return loadAnalyzerWithInfo(toLoadAnalyzerOptions(tsconfigPathOrOptions, options));
 }

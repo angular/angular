@@ -31,7 +31,7 @@ pub fn run_analyzer(
     optimize: bool,
 ) -> Vec<AnalysisResult> {
     let options = crate::AnalyzerOptions {
-        tsconfig_path: tsconfig_path.to_string(),
+        tsconfig_path: Some(tsconfig_path.to_string()),
         optimize: Some(optimize),
         ..Default::default()
     };
@@ -68,7 +68,7 @@ pub fn analyze_file_metadata(
     file_path: &str,
 ) -> AnalysisResult {
     let options = crate::AnalyzerOptions {
-        tsconfig_path: tsconfig_path.to_string(),
+        tsconfig_path: Some(tsconfig_path.to_string()),
         ..Default::default()
     };
     let analyzer = crate::Analyzer::new_core_with_fs(options, fs).unwrap();

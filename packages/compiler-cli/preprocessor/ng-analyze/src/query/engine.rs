@@ -55,6 +55,8 @@ pub struct QueryEngine<Fs: ResourceResolverFs + Clone + 'static> {
     pub(crate) cache: crate::QueryCache<QueryKey, CachedResult>,
     pub(crate) static_import_graph: RwLock<Option<Arc<StaticImportGraph>>>,
     pub(crate) reference_strategy: Arc<dyn crate::analyzer::import_emit::ReferenceEmitStrategy>,
+    /// Explicit `r3_symbols.ts`; when unset, a root file with that name is used.
+    pub(crate) r3_symbols_file: Option<PathBuf>,
     pub generate_extra_imports_in_local_mode: bool,
     pub compile_non_exported_classes: bool,
     pub enable_hmr: bool,
@@ -78,6 +80,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             resource_registry,
             entrypoints,
             reference_strategy,
+            None,
             false,
             true,
             false,
@@ -95,6 +98,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         resource_registry: Arc<ResourceRegistry>,
         entrypoints: Arc<std::sync::RwLock<Vec<PathBuf>>>,
         reference_strategy: Arc<dyn crate::analyzer::import_emit::ReferenceEmitStrategy>,
+        r3_symbols_file: Option<PathBuf>,
         generate_extra_imports_in_local_mode: bool,
         compile_non_exported_classes: bool,
         enable_hmr: bool,
@@ -114,6 +118,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             cache: crate::QueryCache::new(),
             static_import_graph: RwLock::new(None),
             reference_strategy,
+            r3_symbols_file,
             generate_extra_imports_in_local_mode,
             compile_non_exported_classes,
             enable_hmr,
@@ -166,6 +171,9 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
     }
 
     pub fn r3_symbols_file(&self) -> Option<PathBuf> {
+        if let Some(explicit) = &self.r3_symbols_file {
+            return Some(explicit.clone());
+        }
         self.entrypoints
             .read()
             .unwrap()

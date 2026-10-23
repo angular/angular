@@ -230,7 +230,7 @@ mod tests {
         );
 
         let options = AnalyzerOptions {
-            tsconfig_path: "/project/tsconfig.json".to_string(),
+            tsconfig_path: Some("/project/tsconfig.json".to_string()),
             optimize: Some(false),
             virtual_files: Some(virtual_files),
             ..Default::default()
@@ -276,7 +276,7 @@ mod tests {
         );
 
         let options = AnalyzerOptions {
-            tsconfig_path: "/project/tsconfig.json".to_string(),
+            tsconfig_path: Some("/project/tsconfig.json".to_string()),
             optimize: Some(false),
             virtual_files: Some(virtual_files),
             ..Default::default()
@@ -332,7 +332,7 @@ mod tests {
         );
 
         let options = AnalyzerOptions {
-            tsconfig_path: "/project/tsconfig.json".to_string(),
+            tsconfig_path: Some("/project/tsconfig.json".to_string()),
             optimize: Some(false),
             virtual_files: Some(virtual_files),
             ..Default::default()

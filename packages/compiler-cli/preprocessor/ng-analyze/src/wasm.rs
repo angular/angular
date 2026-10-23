@@ -145,6 +145,13 @@ impl WasmAnalyzer {
         serde_json::to_string(&res).map_err(|e| e.to_string())
     }
 
+    pub fn set_entry_points(&self, entry_points_json: &str) -> Result<String, String> {
+        let entry_points: Vec<String> =
+            serde_json::from_str(entry_points_json).map_err(|e| e.to_string())?;
+        let res = self.analyzer.set_entry_points_core(entry_points)?;
+        serde_json::to_string(&res).map_err(|e| e.to_string())
+    }
+
     pub fn get_ts_file_for_template(&self, template_path: String) -> Option<String> {
         let res = self.analyzer.get_ts_file_for_template_core(template_path)?;
         serde_json::to_string(&res).ok()

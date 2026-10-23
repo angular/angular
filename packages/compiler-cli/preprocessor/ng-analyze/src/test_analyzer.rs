@@ -42,7 +42,7 @@ impl TestAnalyzer {
     #[napi(constructor)]
     pub fn new(options: TestAnalyzerOptions) -> napi::Result<Self> {
         let analyzer = Analyzer::new(AnalyzerOptions {
-            tsconfig_path: options.tsconfig_path,
+            tsconfig_path: Some(options.tsconfig_path),
             optimize: options.optimize,
             virtual_files: Some(options.virtual_files),
             node_modules_path_override: options.node_modules_path_override,
@@ -61,7 +61,7 @@ impl TestAnalyzer {
     #[cfg(not(feature = "napi"))]
     pub fn new(options: TestAnalyzerOptions) -> Result<Self, String> {
         let analyzer = Analyzer::new(AnalyzerOptions {
-            tsconfig_path: options.tsconfig_path,
+            tsconfig_path: Some(options.tsconfig_path),
             optimize: options.optimize,
             virtual_files: Some(options.virtual_files),
             node_modules_path_override: options.node_modules_path_override,
@@ -130,6 +130,17 @@ impl TestAnalyzer {
     #[cfg(not(feature = "napi"))]
     pub fn invalidate_files(&self, updates: Vec<FileInvalidation>) -> Result<Vec<String>, String> {
         self.analyzer.invalidate_files(updates)
+    }
+
+    #[cfg(feature = "napi")]
+    #[napi]
+    pub fn set_entry_points(&self, entry_points: Vec<String>) -> napi::Result<Vec<String>> {
+        self.analyzer.set_entry_points(entry_points)
+    }
+
+    #[cfg(not(feature = "napi"))]
+    pub fn set_entry_points(&self, entry_points: Vec<String>) -> Result<Vec<String>, String> {
+        self.analyzer.set_entry_points(entry_points)
     }
 
     #[cfg(feature = "napi")]
