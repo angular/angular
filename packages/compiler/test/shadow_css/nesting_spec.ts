@@ -366,6 +366,122 @@ describe('ShadowCss nesting', () => {
     expect(result).toEqualCss(expected);
   });
 
+  it('should not add the content attribute to an ampersand that refers to the host', () => {
+    const css = `
+      :host {
+        display: block;
+
+        &.modifier {
+          width: 70px;
+        }
+
+        &:hover, &[disabled] {
+          color: red;
+        }
+
+        & .child, &.modifier > .child {
+          color: blue;
+        }
+      }
+    `;
+
+    const expected = `
+      [a-host] {
+        display: block;
+
+        &.modifier {
+          width: 70px;
+        }
+
+        &:hover, &[disabled] {
+          color: red;
+        }
+
+        & .child[contenta], &.modifier > .child[contenta] {
+          color: blue;
+        }
+      }
+    `;
+
+    const result = shim(css, 'contenta', 'a-host');
+    expect(result).toEqualCss(expected);
+  });
+
+  it('should not add the content attribute to an ampersand nested in :host() and :host-context()', () => {
+    expect(shim(':host(.foo) { &.bar { color: red; } }', 'contenta', 'a-host')).toEqualCss(
+      '.foo[a-host] { &.bar { color: red; } }',
+    );
+    expect(shim(':host-context(.dark) { &.bar { color: red; } }', 'contenta', 'a-host')).toEqualCss(
+      '.dark[a-host], .dark [a-host] { &.bar { color: red; } }',
+    );
+  });
+
+  it('should keep an ampersand that refers to the host unscoped through at-rules and nested ampersands', () => {
+    const css = `
+      :host {
+        @media (min-width: 1024px) {
+          &.modifier {
+            width: 70px;
+          }
+        }
+
+        &.active {
+          &:hover {
+            color: red;
+          }
+
+          .child {
+            color: blue;
+          }
+        }
+      }
+    `;
+
+    const expected = `
+      [a-host] {
+        @media (min-width: 1024px) {
+          &.modifier {
+            width: 70px;
+          }
+        }
+
+        &.active {
+          &:hover {
+            color: red;
+          }
+
+          .child[contenta] {
+            color: blue;
+          }
+        }
+      }
+    `;
+
+    const result = shim(css, 'contenta', 'a-host');
+    expect(result).toEqualCss(expected);
+  });
+
+  it('should not scope pseudo-class functions on an ampersand that refers to the host, like on :host', () => {
+    expect(
+      shim(':host { &:is(.foo, .bar > .baz) { color: red; } }', 'contenta', 'a-host'),
+    ).toEqualCss('[a-host] { &:is(.foo, .bar > .baz) { color: red; } }');
+    expect(shim(':host:is(.foo, .bar > .baz) { color: red; }', 'contenta', 'a-host')).toEqualCss(
+      '[a-host]:is(.foo, .bar > .baz) { color: red; }',
+    );
+  });
+
+  it('should add the content attribute to an ampersand inside @scope nested in :host', () => {
+    expect(
+      shim(':host { @scope (.card) { &.active { color: red; } } }', 'contenta', 'a-host'),
+    ).toEqualCss('[a-host] { @scope (.card) { &.active[contenta] { color: red; } } }');
+  });
+
+  it('should add the content attribute to an ampersand that refers to an element in the component', () => {
+    expect(shim(':host .child { &.active { color: red; } }', 'contenta', 'a-host')).toEqualCss(
+      '[a-host] .child[contenta] { &.active[contenta] { color: red; } }',
+    );
+  });
+
   it('should shim a selector with a nested media query', () => {
     const css = `
       .parent {

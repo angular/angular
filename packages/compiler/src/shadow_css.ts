@@ -591,7 +591,12 @@ export class ShadowCss {
   }
 
   // change a selector like 'div' to 'name div'
-  private _scopeSelectors(cssText: string, scopeSelector: string, hostSelector: string): string {
+  private _scopeSelectors(
+    cssText: string,
+    scopeSelector: string,
+    hostSelector: string,
+    isNestedInHost = false,
+  ): string {
     return processRules(cssText, (rule: CssRule) => {
       let selector = rule.selector;
       let content = rule.content;
@@ -599,23 +604,38 @@ export class ShadowCss {
         if (rule.isBlock) {
           const selectorParts = selector.split(_selectorSplitRe);
           const containsDeep = selectorParts.some((part) => _shadowDeepSelectorRe.test(part));
+          // Whether `&` in the nested rules refers to the host element.
+          const matchesHost = selectorParts.every((part) => {
+            const compound = lastCompoundSelector(part);
+            return (
+              compound.includes(_polyfillHostNoCombinator) ||
+              (isNestedInHost && compound.startsWith('&'))
+            );
+          });
 
           selector = this._scopeSelector({
             selector,
             scopeSelector,
             hostSelector,
             isParentSelector: true,
+            isNestedInHost,
           });
 
           content =
             // Only recurse into content if there might be any child blocks.
             // TODO: support something like `.parent { ::ng-deep { .child {} } }`
             !containsDeep && rule.content.includes('{')
-              ? this._scopeSelectors(rule.content, scopeSelector, hostSelector)
+              ? this._scopeSelectors(rule.content, scopeSelector, hostSelector, matchesHost)
               : this._stripScopingSelectors(rule.content);
         }
       } else if (scopedAtRuleIdentifiers.some((atRule) => rule.selector.startsWith(atRule))) {
-        content = this._scopeSelectors(rule.content, scopeSelector, hostSelector);
+        content = this._scopeSelectors(
+          rule.content,
+          scopeSelector,
+          hostSelector,
+          // Inside `@scope`, `&` refers to the scoping root.
+          isNestedInHost && !rule.selector.startsWith('@scope'),
+        );
       } else if (rule.selector.startsWith('@font-face') || rule.selector.startsWith('@page')) {
         content = this._stripScopingSelectors(rule.content);
       }
@@ -665,11 +685,13 @@ export class ShadowCss {
     scopeSelector,
     hostSelector,
     isParentSelector = false,
+    isNestedInHost = false,
   }: {
     selector: string;
     scopeSelector: string;
     hostSelector: string;
     isParentSelector?: boolean;
+    isNestedInHost?: boolean;
   }): string {
     return selector
       .split(_selectorSplitRe)
@@ -683,6 +705,7 @@ export class ShadowCss {
               scopeSelector,
               hostSelector,
               isParentSelector,
+              isNestedInHost,
             });
           } else {
             return shallowPart;
@@ -739,11 +762,13 @@ export class ShadowCss {
     scopeSelector,
     hostSelector,
     isParentSelector,
+    isNestedInHost,
   }: {
     selector: string;
     scopeSelector: string;
     hostSelector: string;
     isParentSelector?: boolean;
+    isNestedInHost?: boolean;
   }): string {
     const isRe = /\[is=([^\]]*)\]/g;
     scopeSelector = scopeSelector.replace(isRe, (_: string, ...parts: string[]) => parts[0]);
@@ -756,6 +781,11 @@ export class ShadowCss {
       // Comments are replaced with placeholders before scoping. A part that only consists of
       // comments is not a selector and must be left untouched.
       if (!scopedP || scopedP === '&' || _onlyCommentPlaceholdersRe.test(scopedP)) {
+        return p;
+      }
+
+      // The host element does not have the content attribute.
+      if (isNestedInHost && scopedP.startsWith('&')) {
         return p;
       }
 
@@ -1279,6 +1309,24 @@ function unescapeInStrings(input: string): string {
  */
 function unescapeQuotes(str: string, isQuoted: boolean): string {
   return !isQuoted ? str : str.replace(/((?:^|[^\\])(?:\\\\)*)\\(?=['"])/g, '$1');
+}
+
+/** Returns the last compound selector, for example `.b:hover` in `.a > .b:hover`. */
+function lastCompoundSelector(selector: string): string {
+  const trimmed = selector.trim();
+  let nesting = 0;
+  let start = 0;
+  for (let i = 0; i < trimmed.length; i++) {
+    const char = trimmed[i];
+    if (char === '(' || char === '[') {
+      nesting++;
+    } else if (char === ')' || char === ']') {
+      nesting--;
+    } else if (nesting === 0 && /[\s>+~]/.test(char)) {
+      start = i + 1;
+    }
+  }
+  return trimmed.slice(start);
 }
 
 /**
