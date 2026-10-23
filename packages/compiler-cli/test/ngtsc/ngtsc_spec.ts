@@ -10669,7 +10669,7 @@ runInEachFileSystem((os: string) => {
               }
             `,
           );
-          const diags = env.driveDiagnostics();
+          const diags = [...env.driveDiagnostics()].sort((a, b) => a.start! - b.start!);
 
           expect(diags.length).toBe(2);
           expect(diags[0].messageText).toEqual(`Type 'string' is not assignable to type 'number'.`);
