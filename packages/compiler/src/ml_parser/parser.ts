@@ -640,6 +640,15 @@ class _TreeBuilder {
 
   private _consumeAttr(attrName: AttributeNameToken): html.Attribute {
     const fullName = mergeNsAndName(attrName.parts[0], attrName.parts[1]);
+    if (attrName.parts[0].length === 0 && attrName.parts[1].startsWith(':')) {
+      this.errors.push(
+        TreeError.create(
+          attrName.parts[1],
+          attrName.sourceSpan,
+          `Invalid attribute name '${attrName.parts[1]}'. Attribute names cannot start with a colon.`,
+        ),
+      );
+    }
     let attrEnd = attrName.sourceSpan.end;
 
     // Consume any quote

@@ -7,15 +7,15 @@
  */
 
 import {
+  CUSTOM_ELEMENTS_SCHEMA,
   DomElementSchemaRegistry,
+  DomSchemaChecker,
+  NO_ERRORS_SCHEMA,
+  OutOfBandDiagnosticCategory,
   ParseSourceSpan,
   SchemaMetadata,
   TmplAstHostElement,
-  DomSchemaChecker,
-  OutOfBandDiagnosticCategory,
   TypeCheckId,
-  NO_ERRORS_SCHEMA,
-  CUSTOM_ELEMENTS_SCHEMA,
 } from '@angular/compiler';
 
 import {Diagnostic} from './diagnostic.js';

@@ -16,7 +16,7 @@ import {
 import * as i18n from '../i18n/i18n_ast';
 import * as html from '../ml_parser/ast';
 import {replaceNgsp} from '../ml_parser/html_whitespaces';
-import {isNgTemplate} from '../ml_parser/tags';
+import {isNgTemplate, splitNsName} from '../ml_parser/tags';
 import {InterpolatedAttributeToken, InterpolatedTextToken} from '../ml_parser/tokens';
 import {ParseError, ParseErrorLevel, ParseSourceSpan} from '../parse_util';
 import {isStyleUrlResolvable} from '../style_url_resolver';
@@ -623,14 +623,20 @@ class HtmlAstToIvyAst implements html.Visitor {
           ),
         );
       } else {
-        // Note that validation is skipped and property mapping is disabled
-        // due to the fact that we need to make sure a given prop is not an
-        // input of a directive and directive matching happens at runtime.
-        const isAttrOn = prop.name.toLowerCase().startsWith('attr.on');
+        const isAttr = prop.name.startsWith('attr.');
+        const attrName = isAttr ? prop.name.slice(5) : prop.name;
+        const [ns, nsLocalName] = splitNsName(attrName, false);
+        const colonIdx = attrName.lastIndexOf(':');
+        const localName = colonIdx > -1 ? attrName.substring(colonIdx + 1) : attrName;
+        const isColonOrOn =
+          (isAttr && attrName.startsWith(':')) ||
+          (ns === null && attrName.startsWith(':')) ||
+          (isAttr && localName.toLowerCase().startsWith('on')) ||
+          (ns !== null && nsLocalName.toLowerCase().startsWith('on'));
         const bep = this.bindingParser.createBoundElementProperty(
           elementName,
           prop,
-          /* skipValidation */ !isAttrOn,
+          /* skipValidation */ !isColonOrOn,
           /* mapPropertyName */ false,
         );
         bound.push(t.BoundAttribute.fromBoundElementProperty(bep, i18n));
@@ -654,6 +660,17 @@ class HtmlAstToIvyAst implements html.Visitor {
     let elementHasInlineTemplate = false;
 
     for (const attribute of attrs) {
+      const rawName = attribute.keySpan?.toString();
+      if (
+        rawName !== undefined
+          ? rawName.startsWith(':')
+          : attribute.name.startsWith(':') && splitNsName(attribute.name, false)[0] === null
+      ) {
+        // Attributes starting with a colon are already reported as errors by the HTML parser.
+        // Skip them here to avoid duplicate errors or downstream failures in `splitNsName`.
+        continue;
+      }
+
       let hasBinding = false;
 
       // `*attr` defines template bindings

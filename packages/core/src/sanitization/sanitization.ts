@@ -265,10 +265,16 @@ export function ɵɵsanitizeUrlOrResourceUrl(unsafeUrl: any, tag: string, prop: 
 }
 
 export function validateAgainstEventProperties(name: string) {
-  if (name.toLowerCase().startsWith('on')) {
+  if (name.startsWith(':')) {
+    const errorMessage = `Invalid property name '${name}'. Property names cannot start with a colon.`;
+    throw new RuntimeError(RuntimeErrorCode.INVALID_EVENT_BINDING, errorMessage);
+  }
+  const colonIdx = name.lastIndexOf(':');
+  const localName = colonIdx > -1 ? name.substring(colonIdx + 1) : name;
+  if (localName.toLowerCase().startsWith('on')) {
     const errorMessage =
       `Binding to event property '${name}' is disallowed for security reasons, ` +
-      `please use (${name.slice(2)})=...` +
+      `please use (${localName.slice(2)})=...` +
       `\nIf '${name}' is a directive input, make sure the directive is imported by the` +
       ` current module.`;
     throw new RuntimeError(RuntimeErrorCode.INVALID_EVENT_BINDING, errorMessage);
