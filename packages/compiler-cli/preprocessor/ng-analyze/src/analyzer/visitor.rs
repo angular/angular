@@ -43,6 +43,7 @@ pub struct ClassVisitor<'a, Fs: ResourceResolverFs> {
     file_exports: FileExportInfo,
     compile_non_exported_classes: bool,
     enable_hmr: bool,
+    implicit_standalone: bool,
     results: Vec<ClassData>,
     registrations: Vec<RegistrationInfo>,
     di_facts: Vec<super::di_facts::ClassDiFacts>,
@@ -66,6 +67,7 @@ impl<'a, Fs: ResourceResolverFs> ClassVisitor<'a, Fs> {
         file_exports: FileExportInfo,
         compile_non_exported_classes: bool,
         enable_hmr: bool,
+        implicit_standalone: bool,
     ) -> Self {
         Self {
             source_text,
@@ -81,6 +83,7 @@ impl<'a, Fs: ResourceResolverFs> ClassVisitor<'a, Fs> {
             file_exports,
             compile_non_exported_classes,
             enable_hmr,
+            implicit_standalone,
             results: Vec::new(),
             registrations: Vec::new(),
             di_facts: Vec::new(),
@@ -209,7 +212,12 @@ impl<'a, Fs: ResourceResolverFs> ClassVisitor<'a, Fs> {
             parent_kind,
             oxc_ast::AstKind::ExportDeclaration(_) | oxc_ast::AstKind::ExportDefaultDeclaration(_)
         );
-        let class_data = classify(reference_id, parsed, has_real_symbol);
+        let class_data = classify(
+            reference_id,
+            parsed,
+            has_real_symbol,
+            self.implicit_standalone,
+        );
 
         let is_indirectly_exported = matches!(parent_kind, oxc_ast::AstKind::Program(_))
             && class_data.class_name.as_deref().is_some_and(|name| {
@@ -321,7 +329,12 @@ fn populate_directive_members(
 /// decorators (`@Injectable`, `@Service`) nest inside the primary classification's data. A
 /// class with more than one primary decorator never gets here (`process_class` drops it with
 /// `DECORATOR_COLLISION`), so the `if` chain is a selection, not a priority.
-fn classify(reference_id: ReferenceId, parsed: ParsedClass, has_real_symbol: bool) -> ClassData {
+fn classify(
+    reference_id: ReferenceId,
+    parsed: ParsedClass,
+    has_real_symbol: bool,
+    implicit_standalone: bool,
+) -> ClassData {
     let ParsedClass {
         common,
         members,
@@ -334,15 +347,24 @@ fn classify(reference_id: ReferenceId, parsed: ParsedClass, has_real_symbol: boo
     } = parsed;
 
     let decorator = if let Some(mut comp_data) = component {
+        if !implicit_standalone && comp_data.directive.standalone_span.is_none() {
+            comp_data.directive.standalone = false;
+        }
         populate_directive_members(&mut comp_data.directive, members, injectable, service);
         if !has_real_symbol {
             comp_data.imports = None;
         }
         DecoratorData::Component(comp_data)
     } else if let Some(mut dir_data) = directive {
+        if !implicit_standalone && dir_data.standalone_span.is_none() {
+            dir_data.standalone = false;
+        }
         populate_directive_members(&mut dir_data, members, injectable, service);
         DecoratorData::Directive(dir_data)
     } else if let Some(mut pipe) = pipe {
+        if !implicit_standalone && pipe.standalone_span.is_none() {
+            pipe.standalone = Some(false);
+        }
         pipe.injectable = injectable;
         pipe.service = service;
         DecoratorData::Pipe(pipe)
@@ -921,6 +943,7 @@ pub fn analyze_parsed<Fs: ResourceResolverFs>(
     converter: &Utf8ToUtf16,
     compile_non_exported_classes: bool,
     enable_hmr: bool,
+    implicit_standalone: bool,
 ) -> ParsedFileAnalysis {
     let import_map = super::imports::extract_import_map(module_record);
     let is_core = super::imports::detect_is_core(path, fs);
@@ -942,6 +965,7 @@ pub fn analyze_parsed<Fs: ResourceResolverFs>(
         file_exports,
         compile_non_exported_classes,
         enable_hmr,
+        implicit_standalone,
     );
     visitor.process_classes();
 
