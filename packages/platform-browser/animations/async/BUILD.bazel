@@ -1,4 +1,3 @@
-load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", "generate_api_docs")
 load("//tools:defaults.bzl", "ng_project", "tsec_test")
 
 package(default_visibility = ["//visibility:public"])
@@ -34,14 +33,4 @@ filegroup(
         "*.ts",
         "src/**/*.ts",
     ]) + ["PACKAGE.md"],
-)
-
-generate_api_docs(
-    name = "platform-browser_animations_async_docs",
-    srcs = [
-        ":files_for_docgen",
-        "//packages:common_files_and_deps_for_docs",
-    ],
-    entry_point = ":index.ts",
-    module_name = "@angular/platform-browser/animations/async",
 )

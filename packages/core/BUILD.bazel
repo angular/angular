@@ -1,6 +1,5 @@
 load("@bazel_lib//lib:write_source_files.bzl", "write_source_file")
 load("@npm//:defs.bzl", "npm_link_all_packages")
-load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", "generate_api_docs")
 load("//packages/common/locales:index.bzl", "generate_base_locale_file")
 load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_package", "ng_project", "ts_config", "tsec_test")
 
@@ -148,20 +147,6 @@ filegroup(
         "src/**/*.ts",
     ]) + [
         "PACKAGE.md",
-    ],
-)
-
-generate_api_docs(
-    name = "core_docs",
-    srcs = [
-        "//packages:common_files_and_deps_for_docs",
-    ],
-    entry_point = ":index.ts",
-    module_name = "@angular/core",
-    private_modules = [
-        "//packages/core/primitives/di",
-        "core/primitives/signals",
-        "core/primitives/event-dispatch",
     ],
 )
 
