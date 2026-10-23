@@ -1,4 +1,5 @@
 use crate::fs::OverlayFileSystem;
+use crate::query::keys::QueryKey;
 use crate::query::{FileId, QueryContext};
 use crate::resource_loader::ResourceResolverFs;
 use crate::resource_registry::ResourceRegistry;
@@ -254,12 +255,7 @@ impl Analyzer {
         fs.set_preserve_symlinks(config.preserve_symlinks);
         fs.set_root_dirs(config.merge_root_dirs);
 
-        let entrypoints: Vec<PathBuf> = config
-            .tsconfig_files
-            .into_iter()
-            .filter(|p| is_compilation_root(p))
-            .map(|p| fs.canonicalize(&p).unwrap_or(p))
-            .collect();
+        let entrypoints = canonical_roots(&fs, config.tsconfig_files);
         let entrypoints_lock = Arc::new(RwLock::new(entrypoints));
 
         let resource_registry = Arc::new(ResourceRegistry::default());
@@ -454,9 +450,13 @@ impl Analyzer {
 
     /// Evict cached queries depending on `path` and append each evicted file's wire path.
     fn evict_file(&self, path: &Path, invalidated_paths: &mut Vec<String>) {
-        let mut evicted: Vec<String> = self
-            .engine
-            .invalidate_file(path)
+        let evicted = self.engine.invalidate_file(path);
+        self.push_evicted_paths(evicted, invalidated_paths);
+    }
+
+    /// Append the wire path of every file whose cached query was evicted.
+    fn push_evicted_paths(&self, evicted: Vec<QueryKey>, invalidated_paths: &mut Vec<String>) {
+        let mut evicted: Vec<String> = evicted
             .into_iter()
             .filter_map(|key| key.file_id())
             .map(|file_id| crate::fs::path_to_string(self.engine.lookup_path(file_id)))
@@ -509,7 +509,7 @@ impl Analyzer {
             self.invalidate_changed_path(&path, &mut paths_to_invalidate);
         }
 
-        self.re_resolve_entrypoints();
+        self.re_resolve_entrypoints(&mut paths_to_invalidate);
         Ok(dedup_preserving_order(paths_to_invalidate))
     }
 
@@ -533,23 +533,47 @@ impl Analyzer {
             self.invalidate_changed_path(&path, &mut ts_paths_to_invalidate);
         }
 
-        self.re_resolve_entrypoints();
+        self.re_resolve_entrypoints(&mut ts_paths_to_invalidate);
         Ok(dedup_preserving_order(ts_paths_to_invalidate))
     }
 
-    fn re_resolve_entrypoints(&self) {
+    /// Re-read the tsconfig's root files, which change when files matching its `include` globs are
+    /// added or removed, and evict queries that read the previous roots when they differ.
+    fn re_resolve_entrypoints(&self, invalidated_paths: &mut Vec<String>) {
         if let Ok(resolved_config) =
             tsconfig_resolution::load_and_resolve_tsconfig(&self.tsconfig_path, &self.fs)
         {
-            let entrypoints: Vec<PathBuf> = resolved_config
-                .files
-                .into_iter()
-                .filter(|p| is_compilation_root(p))
-                .map(|p| self.fs.canonicalize(&p).unwrap_or(p))
-                .collect();
-            *self.entrypoints.write().unwrap() = entrypoints;
+            self.replace_entrypoints(resolved_config.files, invalidated_paths);
         }
     }
+
+    /// Install `files` as the compilation roots, evicting every query that read the previous roots
+    /// when they differ.
+    fn replace_entrypoints(&self, files: Vec<PathBuf>, invalidated_paths: &mut Vec<String>) {
+        let roots = canonical_roots(&self.fs, files);
+        {
+            let mut current = self.entrypoints.write().unwrap();
+            if *current == roots {
+                return;
+            }
+            *current = roots;
+        }
+        let evicted = self.engine.invalidate_roots();
+        self.push_evicted_paths(evicted, invalidated_paths);
+    }
+}
+
+/// The compilation roots among `files`, canonicalized through `fs`. Declaration files and non-TS
+/// files are filtered out first so they never cost a canonicalize call.
+fn canonical_roots(fs: &OverlayFileSystem, files: Vec<PathBuf>) -> Vec<PathBuf> {
+    files
+        .into_iter()
+        .filter(|p| is_compilation_root(p))
+        .map(|p| {
+            fs.canonicalize(&p)
+                .unwrap_or_else(|_| crate::fs::normalize_path_structural(&p).into_owned())
+        })
+        .collect()
 }
 
 #[cfg_attr(feature = "napi", napi)]
@@ -1733,5 +1757,111 @@ mod effective_config_tests {
         assert_eq!(config.import_prefix_roots, paths(&["/bare"]));
         assert!(!config.preserve_symlinks);
         assert!(config.compile_non_exported_classes);
+    }
+}
+
+#[cfg(all(test, not(target_arch = "wasm32")))]
+mod entry_point_tests {
+    use super::*;
+
+    const MODULE: &str = r#"
+        import {NgModule} from '@angular/core';
+        import {C1} from './c1.component';
+        @NgModule({declarations: [C1]})
+        export class MModule {}
+    "#;
+    const COMPONENT: &str = r#"
+        import {Component} from '@angular/core';
+        @Component({selector: 'c1', template: '', standalone: false})
+        export class C1 {}
+    "#;
+
+    fn analyzer(files: &[(&str, &str)]) -> Analyzer {
+        Analyzer::new(AnalyzerOptions {
+            tsconfig_path: "/project/tsconfig.json".to_string(),
+            optimize: Some(true),
+            virtual_files: Some(
+                files
+                    .iter()
+                    .map(|(path, content)| (path.to_string(), content.to_string()))
+                    .collect(),
+            ),
+            ..Default::default()
+        })
+        .unwrap()
+    }
+
+    /// Whether `C1` currently resolves to a declaring NgModule.
+    fn c1_has_module(analyzer: &Analyzer) -> bool {
+        let engine = analyzer.engine.clone();
+        let c1 = engine.intern_path("/project/c1.component.ts");
+        let mapping =
+            futures::executor::block_on(QueryContext::new(engine.clone()).component_mapping());
+        mapping.get(c1, "C1").is_some()
+    }
+
+    /// Files whose cached analysis read the old roots are reported stale by the update that
+    /// changed the roots, even though they were not edited themselves.
+    #[test]
+    fn update_reports_paths_invalidated_by_root_change() {
+        let analyzer = analyzer(&[
+            ("/project/tsconfig.json", "{}"),
+            ("/project/c1.component.ts", COMPONENT),
+        ]);
+        // A non-standalone component's semantic analysis reads the program-wide NgModule mapping.
+        analyzer.engine.analyze_file_semantic_blocking("/project/c1.component.ts");
+
+        let stale = analyzer
+            .update_file_content_core(vec![FileUpdate {
+                file_path: "/project/m.module.ts".to_string(),
+                content: MODULE.to_string(),
+            }])
+            .unwrap();
+        assert!(
+            stale.contains(&"/project/c1.component.ts".to_string()),
+            "stale paths: {stale:?}"
+        );
+    }
+
+    /// Deleting a file matched by the tsconfig's `include` drops it from the roots.
+    #[test]
+    fn deleted_included_file_leaves_roots() {
+        let analyzer = analyzer(&[
+            ("/project/tsconfig.json", "{}"),
+            ("/project/c1.component.ts", COMPONENT),
+            ("/project/m.module.ts", MODULE),
+        ]);
+        assert!(c1_has_module(&analyzer));
+
+        analyzer
+            .invalidate_files_core(vec![FileInvalidation {
+                file_path: "/project/m.module.ts".to_string(),
+                update_type: crate::types::FileUpdateType::Deleted,
+            }])
+            .unwrap();
+        assert!(!c1_has_module(&analyzer));
+        assert_eq!(
+            *analyzer.entrypoints.read().unwrap(),
+            vec![PathBuf::from("/project/c1.component.ts")]
+        );
+    }
+
+    /// A file added under the tsconfig's `include` globs becomes a root, and program-level queries
+    /// computed before it existed must not be served stale.
+    #[test]
+    fn new_included_file_reaches_program_queries() {
+        let analyzer = analyzer(&[
+            ("/project/tsconfig.json", "{}"),
+            ("/project/c1.component.ts", COMPONENT),
+        ]);
+        assert!(!c1_has_module(&analyzer));
+
+        analyzer
+            .update_file_content_core(vec![FileUpdate {
+                file_path: "/project/m.module.ts".to_string(),
+                content: MODULE.to_string(),
+            }])
+            .unwrap();
+        assert!(c1_has_module(&analyzer));
     }
 }

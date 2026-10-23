@@ -28,6 +28,12 @@ pub type QueryCtx<Fs> = Arc<QueryEngine<Fs>>;
 /// that core's own compilation imports instead of `@angular/core` (`packages/core/src/r3_symbols.ts`).
 const R3_SYMBOLS_FILE_NAME: &str = "r3_symbols.ts";
 
+/// A pseudo [`FileId`] standing for the compilation root list. Queries that read the roots record
+/// it as a dependency, so replacing the roots ([`QueryEngine::invalidate_roots`]) evicts exactly
+/// those queries and everything derived from them through the reverse index. It is never
+/// interned, so it never maps to a path.
+pub(crate) const ROOTS_FILE_ID: FileId = FileId::MAX;
+
 /// The unified query engine.
 ///
 /// Every "question" the analyzer answers is a [`QueryKey`]; [`QueryEngine::query`] returns a cached,
@@ -195,8 +201,6 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         // TODO(parity): avoid evicting ComponentMapping on changes that do not affect @Component/@NgModule declarations.
         evicted_keys.insert(QueryKey::ComponentMapping);
         evicted_keys.insert(QueryKey::NgModuleScopeRegistry);
-        // `ProgramFiles` also reads the unrecorded tsconfig root list, so evict it on any change.
-        evicted_keys.insert(QueryKey::ProgramFiles);
 
         let evicted_vec: Vec<QueryKey> = evicted_keys.into_iter().collect();
 
@@ -208,6 +212,11 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         }
 
         actually_evicted
+    }
+
+    /// Purge every cached query that read the compilation root list, after the roots changed.
+    pub fn invalidate_roots(&self) -> Vec<QueryKey> {
+        self.invalidate_file_id(ROOTS_FILE_ID)
     }
 
     /// Request a query. If not already cached, the body is spawned onto the executor and a shared
@@ -577,10 +586,10 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
     /// ([`FileData::program_dependencies`], the same edges the streaming coordinator follows), in
     /// deterministic BFS order. This is the TS `Program` ngtsc analyzes: its
     /// `LocalModuleScopeRegistry` learns NgModules from any program file, not only the roots.
-    /// Every walked file is a recorded dependency, since editing one can change the closure.
-    // TODO(#588): read the root list through a recorded query input instead of relying on the
-    // unconditional eviction in `invalidate_file_id`.
+    /// Every walked file is a recorded dependency, since editing one can change the closure, and so
+    /// is the root list itself ([`ROOTS_FILE_ID`]).
     async fn program_files_body(self: &Arc<Self>, ctx: &QueryContext<Fs>) -> Arc<Vec<FileId>> {
+        ctx.record_file(ROOTS_FILE_ID);
         let roots: Vec<PathBuf> = self.entrypoints.read().unwrap().clone();
 
         let mut seen: HashSet<FileId> = HashSet::new();
@@ -694,6 +703,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             return;
         }
 
+        ctx.record_file(ROOTS_FILE_ID);
         let entrypoints: Vec<PathBuf> = self.entrypoints.read().unwrap().clone();
         let entrypoints_ids: HashSet<FileId> = entrypoints
             .iter()
@@ -1863,11 +1873,12 @@ mod tests {
             let path_str = format!("comp_{}.ts", i);
             let _ = engine.invalidate_file(Path::new(&path_str));
         }
+        let _ = engine.invalidate_roots();
 
         let r_index = engine.reverse_index.read().unwrap();
         assert!(
             r_index.is_empty(),
-            "Reverse index should be clean after fully invalidating all interned files"
+            "Reverse index should be clean after fully invalidating all interned files and roots"
         );
     }
 
