@@ -7,6 +7,8 @@
 // @public
 export const enum RuntimeErrorCode {
     // (undocumented)
+    CANNOT_READ_RESOURCES_SYNCHRONOUSLY = 4020,
+    // (undocumented)
     EMPTY_PATH_WITH_PARAMS = 4009,
     // (undocumented)
     ERROR_PARSING_URL = 4018,
