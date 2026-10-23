@@ -234,26 +234,28 @@ fn inline_input_transforms<'a>(
     eval: &EvalInput<'a, '_>,
     data: &mut DirectiveData,
 ) -> Vec<(String, crate::analyzer::class_data::TransformData)> {
-    let expr = inputs.get_inner_expression();
-    let arr = match expr {
-        Expression::ArrayExpression(arr) => Some(arr.as_ref()),
-        Expression::Identifier(ident) => {
+    let resolve_local_init =
+        |ident: &oxc_ast::ast::IdentifierReference<'a>| -> Option<&'a Expression<'a>> {
             let symbol_id = ident
                 .reference_id
                 .get()
                 .and_then(|r| semantic.scoping().get_reference(r).symbol_id())
-                .or_else(|| semantic.scoping().get_root_binding(ident.name));
-            symbol_id.and_then(|sym| {
-                let decl = semantic.symbol_declaration(sym);
-                match decl.kind() {
-                    oxc_ast::AstKind::VariableDeclarator(v) => match &v.init {
-                        Some(Expression::ArrayExpression(arr)) => Some(arr.as_ref()),
-                        _ => None,
-                    },
-                    _ => None,
+                .or_else(|| semantic.scoping().get_root_binding(ident.name))?;
+            let decl = semantic.symbol_declaration(symbol_id);
+            match decl.kind() {
+                oxc_ast::AstKind::VariableDeclarator(v) => {
+                    v.init.as_ref().map(Expression::get_inner_expression)
                 }
-            })
-        }
+                _ => None,
+            }
+        };
+    let expr = inputs.get_inner_expression();
+    let arr = match expr {
+        Expression::ArrayExpression(arr) => Some(arr.as_ref()),
+        Expression::Identifier(ident) => match resolve_local_init(ident) {
+            Some(Expression::ArrayExpression(arr)) => Some(arr.as_ref()),
+            _ => None,
+        },
         _ => None,
     };
     let Some(arr) = arr else {
@@ -261,10 +263,18 @@ fn inline_input_transforms<'a>(
     };
     let mut transforms = Vec::new();
     for (index, element) in arr.elements.iter().enumerate() {
-        let Some(Expression::ObjectExpression(obj)) = element
+        let obj = match element
             .as_expression()
             .map(Expression::get_inner_expression)
-        else {
+        {
+            Some(Expression::ObjectExpression(obj)) => Some(obj.as_ref()),
+            Some(Expression::Identifier(ident)) => match resolve_local_init(ident) {
+                Some(Expression::ObjectExpression(obj)) => Some(obj.as_ref()),
+                _ => None,
+            },
+            _ => None,
+        };
+        let Some(obj) = obj else {
             continue;
         };
         let Some(value) = transform_property(obj) else {
