@@ -11,6 +11,7 @@ import {
   ɵAnimationRendererFactory as AnimationRendererFactory,
 } from '@angular/animations/browser';
 import {
+  ApplicationRef,
   ChangeDetectorRef,
   Component,
   Directive,
@@ -39,6 +40,7 @@ import {
   NgForm,
   NgModel,
   ReactiveFormsModule,
+  SelectMultipleControlValueAccessor,
   Validators,
 } from '../index';
 
@@ -458,6 +460,65 @@ describe('value accessors', () => {
   });
 
   describe('select multiple controls', () => {
+    for (const binding of ['value', 'ngValue']) {
+      describe(`batched [${binding}] updates`, () => {
+        let fixture: ComponentFixture<FormControlSelectMultipleDynamicOptions>;
+        let accessor: SelectMultipleControlValueAccessor;
+
+        beforeEach(async () => {
+          TestBed.overrideComponent(FormControlSelectMultipleDynamicOptions, {
+            set: {
+              template: `
+                <select multiple [formControl]="control">
+                  @for (option of options(); track option) {
+                    <option [${binding}]="option">{{ option }}</option>
+                  }
+                </select>
+              `,
+            },
+          });
+          fixture = TestBed.createComponent(FormControlSelectMultipleDynamicOptions);
+          await fixture.whenStable();
+          accessor = fixture.debugElement
+            .query(By.css('select'))
+            .injector.get(SelectMultipleControlValueAccessor);
+        });
+
+        it('should write the selection once after adding multiple options', async () => {
+          const writeValue = spyOn(accessor, 'writeValue').and.callThrough();
+
+          fixture.componentInstance.options.set(['A', 'B', 'C']);
+          await fixture.whenStable();
+
+          expect(writeValue).toHaveBeenCalledOnceWith(['C']);
+          expect(fixture.debugElement.queryAll(By.css('option')).length).toBe(3);
+        });
+
+        it('should write the selection once after removing multiple options', async () => {
+          fixture.componentInstance.options.set(['A', 'B', 'C']);
+          await fixture.whenStable();
+          const writeValue = spyOn(accessor, 'writeValue').and.callThrough();
+
+          fixture.componentInstance.options.set(['C']);
+          await fixture.whenStable();
+
+          expect(writeValue).toHaveBeenCalledOnceWith(['C']);
+          expect(fixture.debugElement.queryAll(By.css('option')).length).toBe(1);
+        });
+
+        it('should not write the selection after the select is destroyed', async () => {
+          fixture.componentInstance.options.set(['A', 'B', 'C']);
+          await fixture.whenStable();
+          const writeValue = spyOn(accessor, 'writeValue').and.callThrough();
+
+          fixture.destroy();
+          await TestBed.inject(ApplicationRef).whenStable();
+
+          expect(writeValue).not.toHaveBeenCalled();
+        });
+      });
+    }
+
     describe('in reactive forms', () => {
       it('should support primitive values', async () => {
         if (isNode) return;
@@ -1826,6 +1887,15 @@ class FormControlSelectWithCompareTrackByFn {
 class FormControlSelectMultiple {
   cities = ['SF', 'NY'];
   form = new FormGroup({city: new FormControl(['SF'])});
+}
+
+@Component({
+  template: '',
+  imports: [ReactiveFormsModule],
+})
+class FormControlSelectMultipleDynamicOptions {
+  readonly control = new FormControl(['C']);
+  readonly options = signal<string[]>([]);
 }
 
 @Component({

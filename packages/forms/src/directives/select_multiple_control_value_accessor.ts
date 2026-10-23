@@ -7,10 +7,14 @@
  */
 
 import {
+  afterNextRender,
+  ApplicationRef,
+  DestroyRef,
   Directive,
   ElementRef,
   forwardRef,
   Host,
+  inject,
   Input,
   OnDestroy,
   Optional,
@@ -119,6 +123,33 @@ export class SelectMultipleControlValueAccessor
   }
 
   private _compareWith: (o1: any, o2: any) => boolean = Object.is;
+  // Option destruction can run after the application injector has been destroyed.
+  private readonly appRefInjector = inject(ApplicationRef).injector;
+  private readonly destroyRef = inject(DestroyRef);
+  private _queuedWrite = false;
+
+  /** @internal */
+  _writeValueAfterRender(): void {
+    if (this._queuedWrite || this.appRefInjector.destroyed) {
+      return;
+    }
+
+    this._queuedWrite = true;
+
+    // Reconcile the selection once after all option changes, avoiding quadratic work.
+    afterNextRender(
+      {
+        write: () => {
+          if (this.destroyRef.destroyed) {
+            return;
+          }
+          this._queuedWrite = false;
+          this.writeValue(this.value);
+        },
+      },
+      {injector: this.appRefInjector},
+    );
+  }
 
   /**
    * Sets the "value" property on one or of more of the select's options.
@@ -237,7 +268,7 @@ export class ɵNgSelectMultipleOption implements OnDestroy {
     if (this._select == null) return;
     this._value = value;
     this._setElementValue(_buildValueString(this.id, value));
-    this._select.writeValue(this._select.value);
+    this._select._writeValueAfterRender();
   }
 
   /**
@@ -250,7 +281,7 @@ export class ɵNgSelectMultipleOption implements OnDestroy {
     if (this._select) {
       this._value = value;
       this._setElementValue(_buildValueString(this.id, value));
-      this._select.writeValue(this._select.value);
+      this._select._writeValueAfterRender();
     } else {
       this._setElementValue(value);
     }
@@ -270,7 +301,7 @@ export class ɵNgSelectMultipleOption implements OnDestroy {
   ngOnDestroy(): void {
     if (this._select) {
       this._select._optionMap.delete(this.id);
-      this._select.writeValue(this._select.value);
+      this._select._writeValueAfterRender();
     }
   }
 }

@@ -109,10 +109,12 @@ describe('Form Directives', () => {
       });
 
       it('should return select multiple accessor when provided', () => {
-        const selectMultipleAccessor = new SelectMultipleControlValueAccessor(null!, null!);
-        expect(selectValueAccessor(dir, [defaultAccessor, selectMultipleAccessor])).toEqual(
-          selectMultipleAccessor,
-        );
+        TestBed.runInInjectionContext(() => {
+          const selectMultipleAccessor = new SelectMultipleControlValueAccessor(null!, null!);
+          expect(selectValueAccessor(dir, [defaultAccessor, selectMultipleAccessor])).toEqual(
+            selectMultipleAccessor,
+          );
+        });
       });
 
       it('should throw when more than one build-in accessor is provided', () => {
@@ -135,11 +137,17 @@ describe('Form Directives', () => {
       });
 
       it('should return custom accessor when provided with select multiple', () => {
-        const customAccessor: ControlValueAccessor = {} as any;
-        const selectMultipleAccessor = new SelectMultipleControlValueAccessor(null!, null!);
-        expect(
-          selectValueAccessor(dir, <any>[defaultAccessor, customAccessor, selectMultipleAccessor]),
-        ).toEqual(customAccessor);
+        TestBed.runInInjectionContext(() => {
+          const customAccessor: ControlValueAccessor = {} as any;
+          const selectMultipleAccessor = new SelectMultipleControlValueAccessor(null!, null!);
+          expect(
+            selectValueAccessor(dir, <any>[
+              defaultAccessor,
+              customAccessor,
+              selectMultipleAccessor,
+            ]),
+          ).toEqual(customAccessor);
+        });
       });
 
       it('should throw when more than one custom accessor is provided', () => {
