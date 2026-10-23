@@ -27,7 +27,7 @@ fn test_update_file_content() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(false),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -216,7 +216,7 @@ fn test_async_streaming_behavior() {
     // Delay b.ts's read by 250ms so a.ts streams first even under parallel test-pool contention.
     let delayed_fs = DelayedFileSystem::new(fs, "/project/b.ts", 250);
     let resolver = Arc::new(create_resolver_with_fs(
-        Path::new("/project/tsconfig.json"),
+        Some(Path::new("/project/tsconfig.json")),
         delayed_fs.clone(),
         false,
         None,
@@ -274,7 +274,7 @@ fn test_invalidate_files_html_returns_affected_ts() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(false),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -324,7 +324,7 @@ fn test_invalidate_files_html_template_deletion_edge_case() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(false),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -392,7 +392,7 @@ fn test_invalidate_files_html_multiple_components() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(false),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -443,7 +443,7 @@ fn test_invalidate_files_unregistered_file() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(false),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -501,7 +501,7 @@ fn test_invalidate_files_multiple_components_in_one_file() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(false),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -579,7 +579,7 @@ fn test_invalidate_files_html_partial_file_invalidation() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(false),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -658,7 +658,7 @@ fn test_file_changes_report_dependents_in_wire_spelling() {
     );
 
     let analyzer = Analyzer::new(AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -721,7 +721,7 @@ fn test_resource_registry_missing_template_file() {
         .to_string(),
     );
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(false),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -759,7 +759,7 @@ fn test_analysis_cancellation() {
     fs.set_delay(PathBuf::from("/project/a.ts"), 100);
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(false),
         virtual_files: None,
         ..Default::default()
@@ -802,7 +802,7 @@ fn test_dynamic_optimization_switching_no_panic() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(false),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -835,7 +835,7 @@ fn test_utf16_imports_end() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(false),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -891,7 +891,7 @@ fn test_utf16_dts_declaration_name_span() {
         );
 
         let options = AnalyzerOptions {
-            tsconfig_path: "/project/tsconfig.json".to_string(),
+            tsconfig_path: Some("/project/tsconfig.json".to_string()),
             optimize: Some(optimize),
             virtual_files: Some(virtual_files),
             ..Default::default()
@@ -996,7 +996,7 @@ export declare class MyFieldComponent {
         );
 
         let options = AnalyzerOptions {
-            tsconfig_path: "/project/tsconfig.json".to_string(),
+            tsconfig_path: Some("/project/tsconfig.json".to_string()),
             optimize: Some(optimize),
             virtual_files: Some(virtual_files),
             ..Default::default()
@@ -1108,7 +1108,7 @@ fn test_isolated_type_tuple_resolves_local_const_of_imported_classes() {
 
     for optimize in [false, true] {
         let options = AnalyzerOptions {
-            tsconfig_path: "/project/tsconfig.json".to_string(),
+            tsconfig_path: Some("/project/tsconfig.json".to_string()),
             optimize: Some(optimize),
             virtual_files: Some(virtual_files.clone()),
             ..Default::default()
@@ -1214,7 +1214,7 @@ fn test_injectable_with_deps() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(false),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -1344,7 +1344,7 @@ fn test_allowed_sources_allows_dts() {
     ];
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         node_modules_path_override: None,
@@ -1425,7 +1425,7 @@ fn test_dts_root_files_are_not_compiled() {
 
     for optimize in [false, true] {
         let options = AnalyzerOptions {
-            tsconfig_path: "/project/tsconfig.json".to_string(),
+            tsconfig_path: Some("/project/tsconfig.json".to_string()),
             optimize: Some(optimize),
             virtual_files: Some(virtual_files.clone()),
             ..Default::default()
@@ -1487,7 +1487,7 @@ fn analyze_app_module_importing_non_class(
         virtual_files.insert(path.to_string(), content.to_string());
     }
     let analyzer = Analyzer::new(AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -1615,7 +1615,7 @@ fn test_dts_root_files_are_not_canonicalized_during_entrypoint_discovery() {
 
     let analyzer = Analyzer::new_core_with_physical_fs(
         AnalyzerOptions {
-            tsconfig_path: "/project/tsconfig.json".into(),
+            tsconfig_path: Some("/project/tsconfig.json".into()),
             virtual_files: Some(virtual_files),
             ..Default::default()
         },
@@ -1661,7 +1661,7 @@ fn test_resource_files_in_entrypoints_and_metadata() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(false),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -1712,7 +1712,7 @@ fn test_get_metadata_for_file_on_non_source_path_returns_none() {
         r#"{"key": "value"}"#.to_string(),
     );
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(false),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -1755,7 +1755,7 @@ fn test_get_metadata_for_file_on_missing_file_returns_none() {
         "export class Plain {}".to_string(),
     );
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(false),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -1827,7 +1827,7 @@ fn test_ngmodule_array_spread_imports_resolution() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -1922,7 +1922,7 @@ fn test_ngmodule_dts_tuple_typeof_array_spread() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -2005,7 +2005,7 @@ fn test_component_dts_readonly_tuple_typeof_array_spread() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -2079,7 +2079,7 @@ fn test_selectorless_component_gets_default_selector() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -2147,7 +2147,7 @@ fn test_unresolvable_selector_diagnostic() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -2195,7 +2195,7 @@ fn test_invalid_style_urls_diagnostic_ng2021() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -2236,7 +2236,7 @@ fn test_missing_template_resource_diagnostic_ng2008() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -2277,7 +2277,7 @@ fn test_missing_style_resource_diagnostic_ng2008() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -2333,7 +2333,7 @@ fn two_root_dirs_files() -> HashMap<String, String> {
 #[test]
 fn test_read_resource_resolves_through_root_dirs() {
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(two_root_dirs_files()),
         ..Default::default()
@@ -2378,7 +2378,7 @@ fn test_read_resource_preprocessor_fallback_and_missing() {
         ".theme {}".to_string(),
     );
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -2422,7 +2422,7 @@ fn test_missing_pipe_name_diagnostic_ng2002() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -2461,7 +2461,7 @@ fn test_missing_directive_selector_diagnostic_ng2004() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -2506,7 +2506,7 @@ fn test_cross_file_selector_in_optimized_mode() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -2549,7 +2549,7 @@ fn test_cross_file_selector_in_non_optimized_mode() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(false),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -2598,7 +2598,7 @@ fn test_unresolvable_selector_in_non_optimized_mode() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(false),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -2681,7 +2681,7 @@ fn expected_evaluated_styles() -> Option<Vec<String>> {
 #[test]
 fn test_styles_fold_arithmetic_and_imported_constants_in_optimized_mode() {
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(styles_evaluation_files()),
         ..Default::default()
@@ -2701,7 +2701,7 @@ fn test_styles_fold_arithmetic_and_imported_constants_in_optimized_mode() {
 #[test]
 fn test_styles_fold_arithmetic_and_imported_constants_in_non_optimized_mode() {
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(false),
         virtual_files: Some(styles_evaluation_files()),
         ..Default::default()
@@ -2764,7 +2764,7 @@ fn test_unresolvable_styles_diagnostic_ng1010() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files.clone()),
         ..Default::default()
@@ -2827,7 +2827,7 @@ fn test_cross_file_invalid_selector_in_optimized_mode() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -2870,7 +2870,7 @@ fn test_cross_file_empty_directive_selector_in_optimized_mode() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -2949,7 +2949,7 @@ fn test_shadow_dom_selector_diagnostics_ng2009() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -3009,7 +3009,7 @@ fn test_pipe_field_diagnostics_ng1010() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -3057,7 +3057,7 @@ fn test_empty_pipe_name_is_not_missing() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -3096,7 +3096,7 @@ fn test_dynamic_standalone_flag_diagnostic_ng1010() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -3144,7 +3144,7 @@ fn test_dynamic_host_listener_args_diagnostic_ng1010() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -3188,7 +3188,7 @@ fn test_non_array_host_listener_args_diagnostic_ng1010() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -3227,7 +3227,7 @@ fn test_missing_template_diagnostic_ng2001() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -3268,7 +3268,7 @@ fn test_dynamic_template_diagnostic_ng1010() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -3306,7 +3306,7 @@ fn test_dynamic_template_url_diagnostic_ng1010() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -3349,7 +3349,7 @@ fn test_template_url_takes_precedence_over_dynamic_template() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -3412,7 +3412,7 @@ fn imported_template_url_project(template_url_initializer: &str) -> HashMap<Stri
 #[test]
 fn test_template_url_from_imported_dts_constant_resolves() {
     let analyzer = Analyzer::new(AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(imported_template_url_project(
             r#""./header_templates/default_header.html""#,
@@ -3467,7 +3467,7 @@ fn test_template_url_from_imported_dts_constant_resolves() {
 fn test_template_url_from_imported_non_string_constant_ng1010() {
     let files = imported_template_url_project("42");
     let analyzer = Analyzer::new(AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(files.clone()),
         ..Default::default()
@@ -3521,7 +3521,7 @@ fn test_template_url_from_same_file_constant_resolves() {
     );
 
     let analyzer = Analyzer::new(AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -3576,7 +3576,7 @@ fn test_foreign_imports_shape_diagnostics_ng1010() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -3637,7 +3637,7 @@ fn test_foreign_imports_non_array_diagnostic_ng1010() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -3686,7 +3686,7 @@ fn test_imports_on_non_standalone_component_ng2010() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -3731,7 +3731,7 @@ fn test_foreign_imports_on_non_standalone_component_ng2010() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -3810,7 +3810,7 @@ export class {name} {{}}
 fn test_duplicate_ngmodule_declaration_ng6007() {
     let files = duplicate_declaration_project();
     let analyzer = Analyzer::new(AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(files.clone()),
         ..Default::default()
@@ -3906,7 +3906,7 @@ fn test_duplicate_ngmodule_declaration_ng6007() {
 fn test_duplicate_ngmodule_declaration_is_deterministic() {
     let run = || {
         let analyzer = Analyzer::new(AnalyzerOptions {
-            tsconfig_path: "/project/tsconfig.json".to_string(),
+            tsconfig_path: Some("/project/tsconfig.json".to_string()),
             optimize: Some(true),
             virtual_files: Some(duplicate_declaration_project()),
             ..Default::default()
@@ -4022,7 +4022,7 @@ fn test_compilation_chunk_with_prefix_imports_and_cycles() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         workspace_name: Some("google3".to_string()),
@@ -4130,7 +4130,7 @@ fn test_dir_import_specifier(options: AnalyzerOptions) -> String {
 fn test_use_host_for_import_generation_emits_prefixed_specifiers() {
     // The flag passed as an option.
     let specifier = test_dir_import_specifier(AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(cross_file_import_project("")),
         use_host_for_import_generation: Some(true),
@@ -4144,7 +4144,7 @@ fn test_use_host_for_import_generation_emits_prefixed_specifiers() {
         "_useHostForImportAndAliasGeneration",
     ] {
         let specifier = test_dir_import_specifier(AnalyzerOptions {
-            tsconfig_path: "/project/tsconfig.json".to_string(),
+            tsconfig_path: Some("/project/tsconfig.json".to_string()),
             optimize: Some(true),
             virtual_files: Some(cross_file_import_project(&format!(", \"{flag}\": true"))),
             ..Default::default()
@@ -4159,13 +4159,13 @@ fn test_use_host_for_import_generation_emits_prefixed_specifiers() {
 fn test_workspace_name_without_use_host_flag_emits_relative_specifiers() {
     for options in [
         AnalyzerOptions {
-            tsconfig_path: "/project/tsconfig.json".to_string(),
+            tsconfig_path: Some("/project/tsconfig.json".to_string()),
             optimize: Some(true),
             virtual_files: Some(cross_file_import_project("")),
             ..Default::default()
         },
         AnalyzerOptions {
-            tsconfig_path: "/project/tsconfig.json".to_string(),
+            tsconfig_path: Some("/project/tsconfig.json".to_string()),
             optimize: Some(true),
             virtual_files: Some(cross_file_import_project("")),
             workspace_name: Some("google3".to_string()),
@@ -4239,7 +4239,7 @@ fn test_compilation_chunk_with_tsconfig_paths() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -4326,7 +4326,7 @@ fn test_syntax_mode_emits_one_file_per_chunk() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(false),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -4442,7 +4442,7 @@ fn test_host_directives_resolved_declarations_cross_file_and_chained() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -4542,7 +4542,7 @@ fn test_host_directives_on_component_itself() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -4637,7 +4637,7 @@ fn test_host_directives_cycle_prevention() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -4732,7 +4732,7 @@ fn test_inherited_input_and_output_same_name() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -4840,7 +4840,7 @@ fn test_inherited_model() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -4945,7 +4945,7 @@ fn test_legacy_inputs_outputs_through_imported_constant() {
     );
 
     let options = AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -5056,7 +5056,7 @@ fn consumer_analyzer(
         r#"{"files": ["app.ts"]}"#.to_string(),
     );
     Analyzer::new(AnalyzerOptions {
-        tsconfig_path: format!("{root}/tsconfig.json"),
+        tsconfig_path: Some(format!("{root}/tsconfig.json")),
         optimize: Some(false),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -5258,7 +5258,7 @@ pub(super) fn cli_shaped_ngmodule_project() -> HashMap<String, String> {
 #[test]
 fn test_ngmodule_reached_through_imports_owns_its_declarations() {
     let analyzer = Analyzer::new(AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(cli_shaped_ngmodule_project()),
         ..Default::default()
@@ -5339,7 +5339,7 @@ fn test_editing_ngmodule_reached_through_imports_refreshes_declaring_module() {
     };
     let analyzer_for = |files: HashMap<String, String>| {
         Analyzer::new(AnalyzerOptions {
-            tsconfig_path: "/project/tsconfig.json".to_string(),
+            tsconfig_path: Some("/project/tsconfig.json".to_string()),
             optimize: Some(true),
             virtual_files: Some(files),
             ..Default::default()
@@ -5439,7 +5439,7 @@ fn lazy_component_metadata(
     files: HashMap<String, String>,
 ) -> crate::types::metadata::ComponentMetadata {
     let analyzer = Analyzer::new(AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(files),
         ..Default::default()
@@ -5655,7 +5655,7 @@ fn test_same_file_ngmodule_after_component_only_marks_later_same_file_decls_forw
     );
 
     let analyzer = Analyzer::new(AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -6196,7 +6196,7 @@ fn test_directive_metadata_shape_diagnostics() {
         format!(r#"{{"files": [{}]}}"#, files.join(", ")),
     );
     let analyzer = Analyzer::new(AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files.clone()),
         ..Default::default()
@@ -6243,7 +6243,7 @@ fn test_strict_standalone_diagnostics() {
             ),
         );
         Analyzer::new(AnalyzerOptions {
-            tsconfig_path: "/project/tsconfig.json".to_string(),
+            tsconfig_path: Some("/project/tsconfig.json".to_string()),
             optimize: Some(optimize),
             virtual_files: Some(virtual_files),
             ..Default::default()
@@ -6454,7 +6454,7 @@ fn test_dependency_injection_diagnostics() {
         r#"{"files": ["inherited.ts", "providers.ts", "undecorated.ts"]}"#.to_string(),
     );
     let analyzer = Analyzer::new(AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -6638,7 +6638,7 @@ fn test_instance_io_not_clobbered_by_same_named_static_member() {
     );
 
     let analyzer = Analyzer::new(AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -6732,7 +6732,7 @@ fn test_use_poisoned_data_populates_poisoned_component_scope_and_schemas() {
             r#"{"files": ["app.ts", "mod.ts"]}"#.to_string(),
         );
         let analyzer = Analyzer::new(AnalyzerOptions {
-            tsconfig_path: "/project/tsconfig.json".to_string(),
+            tsconfig_path: Some("/project/tsconfig.json".to_string()),
             optimize: Some(true),
             virtual_files: Some(virtual_files),
             use_poisoned_data: Some(use_poisoned_data),
@@ -6893,7 +6893,7 @@ fn test_constructor_dependency_diagnostics() {
             ),
         );
         let analyzer = Analyzer::new(AnalyzerOptions {
-            tsconfig_path: "/project/tsconfig.json".to_string(),
+            tsconfig_path: Some("/project/tsconfig.json".to_string()),
             optimize: Some(true),
             virtual_files: Some(virtual_files),
             ..Default::default()
@@ -7116,7 +7116,7 @@ fn test_ambient_module_constructor_dependency_tokens() {
     );
 
     let analyzer = Analyzer::new(AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()
@@ -7234,7 +7234,7 @@ fn test_input_transform_diagnostics() {
             r#"{"files": ["app.ts"]}"#.to_string(),
         );
         let analyzer = Analyzer::new(AnalyzerOptions {
-            tsconfig_path: "/project/tsconfig.json".to_string(),
+            tsconfig_path: Some("/project/tsconfig.json".to_string()),
             optimize: Some(optimize),
             virtual_files: Some(virtual_files),
             ..Default::default()
@@ -7408,7 +7408,7 @@ fn test_ambient_constructors_and_injectable_options() {
             .to_string(),
     );
     let analyzer = Analyzer::new(AnalyzerOptions {
-        tsconfig_path: "/project/tsconfig.json".to_string(),
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
         optimize: Some(true),
         virtual_files: Some(virtual_files),
         ..Default::default()

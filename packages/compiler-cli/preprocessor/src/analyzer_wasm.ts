@@ -24,6 +24,8 @@ export interface WasmInner {
   update_file_content?(updatesJson: string): string;
   invalidateFiles?(updatesJson: string): string;
   invalidate_files?(updatesJson: string): string;
+  setEntryPoints?(entryPointsJson: string): string;
+  set_entry_points?(entryPointsJson: string): string;
   getMetadataForFile?(filePath: string): string | undefined;
   get_metadata_for_file?(filePath: string): string | undefined;
   getFileContent?(filePath: string): string;
@@ -230,6 +232,15 @@ export class WasmAnalyzer implements IAnalyzer {
     }
     const res = fn.call(this.inner, jsonStr);
     return Promise.resolve(JSON.parse(res) as string[]);
+  }
+
+  async setEntryPoints(entryPoints: string[]): Promise<string[]> {
+    const fn = this.inner.setEntryPoints ?? this.inner.set_entry_points;
+    if (!fn) {
+      throw new Error('WasmInner does not support setEntryPoints');
+    }
+    const res = fn.call(this.inner, JSON.stringify(entryPoints));
+    return JSON.parse(res) as string[];
   }
 
   async getTsFileForTemplate(templatePath: string): Promise<nga.TemplateUsage[] | null> {

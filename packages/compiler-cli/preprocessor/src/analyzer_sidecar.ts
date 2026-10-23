@@ -285,6 +285,10 @@ export class SidecarAnalyzer implements IAnalyzer {
     return this.callRpc('invalidateFiles', updates);
   }
 
+  async setEntryPoints(entryPoints: string[]): Promise<string[]> {
+    return this.callRpc('setEntryPoints', entryPoints);
+  }
+
   async getTsFileForTemplate(templatePath: string): Promise<TemplateUsage[] | null> {
     return this.callRpc('getTsFileForTemplate', {templatePath});
   }

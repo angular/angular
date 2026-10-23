@@ -60,8 +60,9 @@ impl<K: Eq + std::hash::Hash + Clone, V: 'static> QueryCache<K, V> {
     }
 }
 
+/// Build the module resolver. With a `tsconfig_path`, its `paths`/`baseUrl` mappings apply.
 pub(crate) fn create_resolver_with_fs<Fs: FileSystem + 'static>(
-    tsconfig_path: &Path,
+    tsconfig_path: Option<&Path>,
     fs: Fs,
     preserve_symlinks: bool,
     node_modules_path_override: Option<String>,
@@ -95,10 +96,12 @@ pub(crate) fn create_resolver_with_fs<Fs: FileSystem + 'static>(
             ],
             condition_names: vec!["types".into(), "node".into(), "import".into()],
             modules,
-            tsconfig: Some(TsconfigDiscovery::Manual(TsconfigOptions {
-                config_file: tsconfig_path.to_path_buf(),
-                references: TsconfigReferences::Disabled,
-            })),
+            tsconfig: tsconfig_path.map(|path| {
+                TsconfigDiscovery::Manual(TsconfigOptions {
+                    config_file: path.to_path_buf(),
+                    references: TsconfigReferences::Disabled,
+                })
+            }),
             ..ResolveOptions::default()
         },
     )

@@ -120,20 +120,33 @@ pub struct Analyzer {
     #[cfg(not(target_arch = "wasm32"))]
     active_handles: Arc<RwLock<Vec<futures::future::RemoteHandle<()>>>>,
 
-    tsconfig_path: PathBuf,
+    /// The tsconfig, re-read after file updates for the `.d.ts` files it lists and, while
+    /// `roots_from_tsconfig`, for its root files.
+    tsconfig_path: Option<PathBuf>,
+    /// Whether the roots still come from the tsconfig (no explicit `entry_points`, and
+    /// `set_entry_points` not called).
+    roots_from_tsconfig: AtomicBool,
     entrypoints: Arc<RwLock<Vec<PathBuf>>>,
     current_cancel_token: RwLock<Option<CancellationToken>>,
 }
 
 /// Every setting an [`Analyzer`] is built from, after merging explicit [`AnalyzerOptions`] over
-/// the values read from the tsconfig. An explicitly set option always takes precedence.
+/// the values read from the tsconfig (or their defaults without one). An explicitly set option
+/// always takes precedence.
 struct EffectiveConfig {
-    tsconfig_path: PathBuf,
-    /// The tsconfig's root files, not yet canonicalized (that needs the configured `fs`).
+    /// The tsconfig, if any. After construction it is re-read for its file list, and the module
+    /// resolver reads its `paths`/`baseUrl` mappings.
+    tsconfig_path: Option<PathBuf>,
+    /// Explicit `entry_points`, which replace the tsconfig's root files. Not yet canonicalized
+    /// (that needs the configured `fs`).
+    entry_points: Option<Vec<PathBuf>>,
+    /// The tsconfig's file list (root files and `.d.ts` files), empty without a tsconfig. Its
+    /// `.d.ts` files are used even when `entry_points` replace its roots.
     tsconfig_files: Vec<PathBuf>,
-    /// `default_host.preserve_symlinks` > `compilerOptions.preserveSymlinks`.
+    r3_symbols_file: Option<PathBuf>,
+    /// `default_host.preserve_symlinks` > `compilerOptions.preserveSymlinks` > `false`.
     preserve_symlinks: bool,
-    /// `default_host.root_dirs` > `compilerOptions.rootDirs` > `[tsconfig dir]`.
+    /// `default_host.root_dirs` > `compilerOptions.rootDirs` > `[tsconfig dir]` > none.
     merge_root_dirs: Vec<PathBuf>,
     /// `default_host.node_modules_path_override` > `node_modules_path_override`.
     node_modules_path_override: Option<String>,
@@ -153,64 +166,113 @@ struct EffectiveConfig {
 
 impl EffectiveConfig {
     fn resolve(options: AnalyzerOptions, fs: &OverlayFileSystem) -> Result<Self, String> {
-        let tsconfig_path = PathBuf::from(&options.tsconfig_path);
-        let resolved = tsconfig_resolution::load_and_resolve_tsconfig(&tsconfig_path, fs)
-            .map_err(|e| e.to_string())?;
-        let base_dir = tsconfig_path.parent().unwrap_or(Path::new(".")).to_path_buf();
-        let absolutize = |p: PathBuf| if p.is_absolute() { p } else { base_dir.join(p) };
+        let tsconfig_path = options.tsconfig_path.map(PathBuf::from);
+        let resolved = match &tsconfig_path {
+            Some(path) => Some(
+                tsconfig_resolution::load_and_resolve_tsconfig(path, fs)
+                    .map_err(|e| e.to_string())?,
+            ),
+            None => None,
+        };
 
+        // Relative paths resolve against the tsconfig directory; without a tsconfig there is no
+        // base to resolve them against.
+        let base_dir = tsconfig_path
+            .as_deref()
+            .map(|path| path.parent().unwrap_or(Path::new(".")).to_path_buf());
+        let absolutize = |path: PathBuf| -> Result<PathBuf, String> {
+            match &base_dir {
+                _ if crate::fs::is_absolute_path(&path) => Ok(path),
+                Some(base_dir) => Ok(base_dir.join(path)),
+                None => Err(format!(
+                    "'{}' must be an absolute path when no tsconfig is given",
+                    path.display()
+                )),
+            }
+        };
+        let absolutize_all = |paths: Vec<String>| -> Result<Vec<PathBuf>, String> {
+            paths.into_iter().map(PathBuf::from).map(absolutize).collect()
+        };
+
+        // A tsconfig-provided flag, or its default without a tsconfig.
+        let tsconfig_flag = |pick: fn(&tsconfig_resolution::ResolvedTsConfig) -> bool, default| {
+            resolved.as_ref().map_or(default, pick)
+        };
         let default_host = options.default_host.unwrap_or_default();
+        let preserve_symlinks = default_host
+            .preserve_symlinks
+            .unwrap_or_else(|| tsconfig_flag(|r| r.preserve_symlinks, false));
+        let use_host_for_import_generation = options
+            .use_host_for_import_generation
+            .unwrap_or_else(|| tsconfig_flag(|r| r.use_host_for_import_generation, false));
+        let generate_extra_imports_in_local_mode = options
+            .generate_extra_imports_in_local_mode
+            .unwrap_or_else(|| tsconfig_flag(|r| r.generate_extra_imports_in_local_mode, false));
+        let compile_non_exported_classes = options
+            .compile_non_exported_classes
+            .unwrap_or_else(|| tsconfig_flag(|r| r.compile_non_exported_classes, true));
+        let enable_hmr = options
+            .enable_hmr
+            .unwrap_or_else(|| tsconfig_flag(|r| r.enable_hmr, false));
+        let strict_standalone = options
+            .strict_standalone
+            .unwrap_or_else(|| tsconfig_flag(|r| r.strict_standalone, false));
+        let use_poisoned_data = options
+            .use_poisoned_data
+            .unwrap_or_else(|| tsconfig_flag(|r| r.compile_poisoned_components, false));
+        let strict_injection_parameters = options
+            .strict_injection_parameters
+            .unwrap_or_else(|| tsconfig_flag(|r| r.strict_injection_parameters, false));
+        let implicit_standalone = options
+            .implicit_standalone
+            .unwrap_or_else(|| tsconfig_flag(|r| r.implicit_standalone, true));
 
-        let mut merge_root_dirs: Vec<PathBuf> = match default_host.root_dirs {
-            Some(dirs) => dirs.into_iter().map(PathBuf::from).map(absolutize).collect(),
-            None => resolved
-                .compiler_options
-                .root_dirs
+        let (tsconfig_files, tsconfig_root_dirs, tsconfig_workspace_name) = match resolved {
+            Some(r) => (r.files, r.compiler_options.root_dirs, r.workspace_name),
+            None => (Vec::new(), None, None),
+        };
+
+        let mut merge_root_dirs = match default_host.root_dirs {
+            Some(dirs) => absolutize_all(dirs)?,
+            None => tsconfig_root_dirs
                 .unwrap_or_default()
                 .into_iter()
                 .map(absolutize)
-                .collect(),
+                .collect::<Result<_, _>>()?,
         };
         if merge_root_dirs.is_empty() {
-            merge_root_dirs.push(base_dir.clone());
+            merge_root_dirs.extend(base_dir.clone());
         }
 
         let import_prefix_roots = match options.import_prefix_roots.or(options.root_dirs) {
-            Some(dirs) => dirs.into_iter().map(PathBuf::from).map(absolutize).collect(),
+            Some(dirs) => absolutize_all(dirs)?,
             None => merge_root_dirs.clone(),
         };
 
+        let entry_points = options.entry_points.map(absolutize_all).transpose()?;
+
         Ok(Self {
-            tsconfig_files: resolved.files,
-            preserve_symlinks: default_host
-                .preserve_symlinks
-                .unwrap_or(resolved.preserve_symlinks),
+            entry_points,
+            tsconfig_files,
+            r3_symbols_file: options
+                .r3_symbols_file
+                .map(|path| absolutize(PathBuf::from(path)))
+                .transpose()?,
+            preserve_symlinks,
             merge_root_dirs,
             node_modules_path_override: default_host
                 .node_modules_path_override
                 .or(options.node_modules_path_override),
-            workspace_name: options.workspace_name.or(resolved.workspace_name),
+            workspace_name: options.workspace_name.or(tsconfig_workspace_name),
             import_prefix_roots,
-            use_host_for_import_generation: options
-                .use_host_for_import_generation
-                .unwrap_or(resolved.use_host_for_import_generation),
-            generate_extra_imports_in_local_mode: options
-                .generate_extra_imports_in_local_mode
-                .unwrap_or(resolved.generate_extra_imports_in_local_mode),
-            compile_non_exported_classes: options
-                .compile_non_exported_classes
-                .unwrap_or(resolved.compile_non_exported_classes),
-            enable_hmr: options.enable_hmr.unwrap_or(resolved.enable_hmr),
-            strict_standalone: options
-                .strict_standalone
-                .unwrap_or(resolved.strict_standalone),
-            use_poisoned_data: options
-                .use_poisoned_data
-                .unwrap_or(resolved.compile_poisoned_components),
-            strict_injection_parameters: options
-                .strict_injection_parameters
-                .unwrap_or(resolved.strict_injection_parameters),
-            implicit_standalone: resolved.implicit_standalone,
+            use_host_for_import_generation,
+            generate_extra_imports_in_local_mode,
+            compile_non_exported_classes,
+            enable_hmr,
+            strict_standalone,
+            use_poisoned_data,
+            strict_injection_parameters,
+            implicit_standalone,
             tsconfig_path,
         })
     }
@@ -257,13 +319,23 @@ impl Analyzer {
         fs.set_preserve_symlinks(config.preserve_symlinks);
         fs.set_root_dirs(config.merge_root_dirs);
 
-        let (entrypoints, dts_files) = partition_tsconfig_files(config.tsconfig_files, &fs);
+        let roots_from_tsconfig = config.entry_points.is_none();
+        let (entrypoints, dts_files) = match config.entry_points {
+            Some(entry_points) => (
+                compilation_roots(entry_points, &fs),
+                tsconfig_dts_files(config.tsconfig_files),
+            ),
+            None => partition_tsconfig_files(config.tsconfig_files, &fs),
+        };
+        let r3_symbols_file = config
+            .r3_symbols_file
+            .map(|path| fs.canonicalize(&path).unwrap_or(path));
         let entrypoints_lock = Arc::new(RwLock::new(entrypoints));
 
         let resource_registry = Arc::new(ResourceRegistry::default());
 
         let resolver = Arc::new(create_resolver_with_fs(
-            &config.tsconfig_path,
+            config.tsconfig_path.as_deref(),
             fs.clone(),
             config.preserve_symlinks,
             config.node_modules_path_override,
@@ -285,6 +357,7 @@ impl Analyzer {
             resource_registry.clone(),
             entrypoints_lock.clone(),
             reference_strategy,
+            r3_symbols_file,
             config.generate_extra_imports_in_local_mode,
             config.compile_non_exported_classes,
             config.enable_hmr,
@@ -302,6 +375,7 @@ impl Analyzer {
             #[cfg(not(target_arch = "wasm32"))]
             active_handles: Arc::new(RwLock::new(Vec::new())),
             tsconfig_path: config.tsconfig_path,
+            roots_from_tsconfig: AtomicBool::new(roots_from_tsconfig),
             entrypoints: entrypoints_lock,
             current_cancel_token: RwLock::new(None),
         }
@@ -542,21 +616,62 @@ impl Analyzer {
     }
 
     /// Re-read the tsconfig's file list, which changes when files matching its `include` globs are
-    /// added or removed, and evict queries that read the previous list when it differs.
+    /// added or removed. Its `.d.ts` files are always applied; its root files only while the roots
+    /// come from the tsconfig.
     fn re_resolve_entrypoints(&self, invalidated_paths: &mut Vec<String>) {
-        if let Ok(resolved_config) =
-            tsconfig_resolution::load_and_resolve_tsconfig(&self.tsconfig_path, &self.fs)
-        {
-            self.replace_entrypoints(resolved_config.files, invalidated_paths);
-        }
+        let Some(tsconfig_path) = &self.tsconfig_path else {
+            return;
+        };
+        let Ok(resolved_config) =
+            tsconfig_resolution::load_and_resolve_tsconfig(tsconfig_path, &self.fs)
+        else {
+            return;
+        };
+        let files = resolved_config.files;
+        let (roots, dts_files) = if self.roots_from_tsconfig.load(Ordering::SeqCst) {
+            let (roots, dts_files) = partition_tsconfig_files(files, &self.fs);
+            (Some(roots), dts_files)
+        } else {
+            (None, tsconfig_dts_files(files))
+        };
+        self.replace_program_files(roots, Some(dts_files), invalidated_paths);
     }
 
-    /// Install `files` as the compilation roots and the tsconfig's `.d.ts` files, evicting every
-    /// query that read the previous lists when either differs.
-    fn replace_entrypoints(&self, files: Vec<PathBuf>, invalidated_paths: &mut Vec<String>) {
-        let (roots, dts_files) = partition_tsconfig_files(files, &self.fs);
-        let roots_changed = replace_if_changed(&self.entrypoints, roots);
-        let dts_files_changed = replace_if_changed(&self.engine.tsconfig_dts_files, dts_files);
+    /// Replace the compilation roots and return every path whose cached analysis is now stale.
+    ///
+    /// Paths must be absolute. Non-TS sources and declaration files are not compilation roots and
+    /// are dropped; the `.d.ts` files searched for ambient modules still come from the tsconfig.
+    /// Setting the same roots again evicts nothing. From then on the roots are no longer re-read
+    /// from the tsconfig.
+    pub fn set_entry_points_core(&self, entry_points: Vec<String>) -> Result<Vec<String>, String> {
+        let paths: Vec<PathBuf> = entry_points.into_iter().map(PathBuf::from).collect();
+        if let Some(relative) = paths.iter().find(|p| !crate::fs::is_absolute_path(p)) {
+            return Err(format!(
+                "Entry points must be absolute paths, got '{}'",
+                relative.display()
+            ));
+        }
+
+        self.cancel_current_analysis();
+        self.roots_from_tsconfig.store(false, Ordering::SeqCst);
+        let mut invalidated_paths = Vec::new();
+        let roots = compilation_roots(paths, &self.fs);
+        self.replace_program_files(Some(roots), None, &mut invalidated_paths);
+        Ok(dedup_preserving_order(invalidated_paths))
+    }
+
+    /// Install the given compilation roots and the tsconfig's `.d.ts` files (`None` keeps the
+    /// current list), evicting every query that read the previous lists when either differs.
+    fn replace_program_files(
+        &self,
+        roots: Option<Vec<PathBuf>>,
+        dts_files: Option<Vec<PathBuf>>,
+        invalidated_paths: &mut Vec<String>,
+    ) {
+        let roots_changed = roots.is_some_and(|roots| replace_if_changed(&self.entrypoints, roots));
+        let dts_files_changed = dts_files.is_some_and(|dts_files| {
+            replace_if_changed(&self.engine.tsconfig_dts_files, dts_files)
+        });
         if !roots_changed && !dts_files_changed {
             return;
         }
@@ -588,15 +703,37 @@ fn partition_tsconfig_files(
     let mut dts_files = Vec::new();
     for path in files {
         if is_compilation_root(&path) {
-            roots.push(
-                fs.canonicalize(&path)
-                    .unwrap_or_else(|_| crate::fs::normalize_path_structural(&path).into_owned()),
-            );
+            roots.push(canonical_root(&path, fs));
         } else if crate::utils::is_dts(&path) {
             dts_files.push(crate::fs::normalize_path_structural(&path).into_owned());
         }
     }
     (roots, dts_files)
+}
+
+/// The compilation roots among `files`, canonicalized through `fs`, for roots that replace the
+/// tsconfig's.
+fn compilation_roots(files: Vec<PathBuf>, fs: &OverlayFileSystem) -> Vec<PathBuf> {
+    files
+        .into_iter()
+        .filter(|path| is_compilation_root(path))
+        .map(|path| canonical_root(&path, fs))
+        .collect()
+}
+
+/// The `.d.ts` files among the tsconfig's `files`, when its roots are replaced. See
+/// [`partition_tsconfig_files`].
+fn tsconfig_dts_files(files: Vec<PathBuf>) -> Vec<PathBuf> {
+    files
+        .into_iter()
+        .filter(|path| crate::utils::is_dts(path))
+        .map(|path| crate::fs::normalize_path_structural(&path).into_owned())
+        .collect()
+}
+
+fn canonical_root(path: &Path, fs: &OverlayFileSystem) -> PathBuf {
+    fs.canonicalize(path)
+        .unwrap_or_else(|_| crate::fs::normalize_path_structural(path).into_owned())
 }
 
 #[cfg_attr(feature = "napi", napi)]
@@ -642,6 +779,20 @@ impl Analyzer {
     #[cfg(not(feature = "napi"))]
     pub fn invalidate_files(&self, updates: Vec<FileInvalidation>) -> Result<Vec<String>, String> {
         self.invalidate_files_core(updates)
+    }
+
+    /// Replace the compilation roots and return every path whose cached analysis is now stale.
+    /// Paths must be absolute. From then on the roots are no longer re-read from the tsconfig.
+    #[cfg(feature = "napi")]
+    #[napi]
+    pub fn set_entry_points(&self, entry_points: Vec<String>) -> napi::Result<Vec<String>> {
+        self.set_entry_points_core(entry_points)
+            .map_err(napi::Error::from_reason)
+    }
+
+    #[cfg(not(feature = "napi"))]
+    pub fn set_entry_points(&self, entry_points: Vec<String>) -> Result<Vec<String>, String> {
+        self.set_entry_points_core(entry_points)
     }
 
     #[cfg(feature = "napi")]
@@ -1603,7 +1754,7 @@ mod chunk_order_tests {
     #[test]
     fn test_chunks_independent_of_completion_order() {
         let analyzer = Analyzer::new(AnalyzerOptions {
-            tsconfig_path: "/project/tsconfig.json".to_string(),
+            tsconfig_path: Some("/project/tsconfig.json".to_string()),
             optimize: Some(true),
             virtual_files: Some(super::super::tests::cli_shaped_ngmodule_project()),
             ..Default::default()
@@ -1664,7 +1815,8 @@ mod effective_config_tests {
             "compileNonExportedClasses": false,
             "generateExtraImportsInLocalMode": true,
             "_enableHmr": true,
-            "_compilePoisonedComponents": true
+            "_compilePoisonedComponents": true,
+            "_angularCoreVersion": "18.2.0"
         }
     }"#;
 
@@ -1676,7 +1828,7 @@ mod effective_config_tests {
         fs.upsert_file(PathBuf::from("/project/main.ts"), "export {};".to_string());
         EffectiveConfig::resolve(
             AnalyzerOptions {
-                tsconfig_path: "/project/tsconfig.json".to_string(),
+                tsconfig_path: Some("/project/tsconfig.json".to_string()),
                 ..options
             },
             &fs,
@@ -1701,6 +1853,7 @@ mod effective_config_tests {
         assert!(config.generate_extra_imports_in_local_mode);
         assert!(config.enable_hmr);
         assert!(config.use_poisoned_data);
+        assert!(!config.implicit_standalone);
         assert_eq!(config.node_modules_path_override, None);
     }
 
@@ -1715,6 +1868,7 @@ mod effective_config_tests {
             generate_extra_imports_in_local_mode: Some(false),
             enable_hmr: Some(false),
             use_poisoned_data: Some(false),
+            implicit_standalone: Some(true),
             default_host: Some(crate::DefaultHostConfig {
                 root_dirs: Some(vec!["./gen".to_string()]),
                 preserve_symlinks: Some(false),
@@ -1732,6 +1886,7 @@ mod effective_config_tests {
         assert!(!config.generate_extra_imports_in_local_mode);
         assert!(!config.enable_hmr);
         assert!(!config.use_poisoned_data);
+        assert!(config.implicit_standalone);
         assert_eq!(config.node_modules_path_override.as_deref(), Some("/nm"));
     }
 
@@ -1770,7 +1925,7 @@ mod effective_config_tests {
         fs.upsert_file(PathBuf::from("/bare/tsconfig.json"), "{}".to_string());
         let config = EffectiveConfig::resolve(
             AnalyzerOptions {
-                tsconfig_path: "/bare/tsconfig.json".to_string(),
+                tsconfig_path: Some("/bare/tsconfig.json".to_string()),
                 ..Default::default()
             },
             &fs,
@@ -1780,6 +1935,85 @@ mod effective_config_tests {
         assert_eq!(config.import_prefix_roots, paths(&["/bare"]));
         assert!(!config.preserve_symlinks);
         assert!(config.compile_non_exported_classes);
+    }
+
+    fn resolve_without_tsconfig(options: AnalyzerOptions) -> Result<EffectiveConfig, String> {
+        let physical: Arc<dyn crate::physical_fs::PhysicalFs> =
+            Arc::new(crate::physical_fs::default_physical_fs());
+        let fs = OverlayFileSystem::new_with_allowed_sources_and_fs(None, physical);
+        EffectiveConfig::resolve(options, &fs)
+    }
+
+    #[test]
+    fn without_tsconfig_uses_defaults() {
+        let config = resolve_without_tsconfig(AnalyzerOptions::default()).unwrap();
+        assert_eq!(config.tsconfig_path, None);
+        assert_eq!(config.entry_points, None);
+        assert!(config.tsconfig_files.is_empty());
+        assert!(config.merge_root_dirs.is_empty());
+        assert!(config.import_prefix_roots.is_empty());
+        assert!(!config.preserve_symlinks);
+        assert!(config.compile_non_exported_classes);
+        assert!(!config.strict_standalone);
+        assert!(config.implicit_standalone);
+        assert_eq!(config.r3_symbols_file, None);
+    }
+
+    #[test]
+    fn without_tsconfig_uses_explicit_options() {
+        let config = resolve_without_tsconfig(AnalyzerOptions {
+            entry_points: Some(vec!["/app/main.ts".to_string()]),
+            r3_symbols_file: Some("/core/r3_symbols.ts".to_string()),
+            strict_standalone: Some(true),
+            implicit_standalone: Some(false),
+            import_prefix_roots: Some(vec!["/app".to_string()]),
+            ..Default::default()
+        })
+        .unwrap();
+        assert_eq!(config.entry_points, Some(paths(&["/app/main.ts"])));
+        assert!(config.tsconfig_files.is_empty());
+        assert_eq!(config.r3_symbols_file, Some(PathBuf::from("/core/r3_symbols.ts")));
+        assert!(config.strict_standalone);
+        assert!(!config.implicit_standalone);
+        assert_eq!(config.import_prefix_roots, paths(&["/app"]));
+    }
+
+    #[test]
+    fn without_tsconfig_rejects_relative_paths() {
+        for options in [
+            AnalyzerOptions {
+                entry_points: Some(vec!["main.ts".to_string()]),
+                ..Default::default()
+            },
+            AnalyzerOptions {
+                import_prefix_roots: Some(vec!["src".to_string()]),
+                ..Default::default()
+            },
+            AnalyzerOptions {
+                r3_symbols_file: Some("r3_symbols.ts".to_string()),
+                ..Default::default()
+            },
+            AnalyzerOptions {
+                default_host: Some(crate::DefaultHostConfig {
+                    root_dirs: Some(vec!["gen".to_string()]),
+                    ..Default::default()
+                }),
+                ..Default::default()
+            },
+        ] {
+            let err = resolve_without_tsconfig(options).err().expect("relative path rejected");
+            assert!(err.contains("must be an absolute path"), "{err}");
+        }
+    }
+
+    #[test]
+    fn explicit_entry_points_replace_tsconfig_roots() {
+        let config = resolve(AnalyzerOptions {
+            entry_points: Some(vec!["main.ts".to_string()]),
+            ..Default::default()
+        });
+        assert_eq!(config.entry_points, Some(paths(&["/project/main.ts"])));
+        assert_eq!(config.tsconfig_path, Some(PathBuf::from("/project/tsconfig.json")));
     }
 }
 
@@ -1801,7 +2035,7 @@ mod entry_point_tests {
 
     fn analyzer(files: &[(&str, &str)]) -> Analyzer {
         Analyzer::new(AnalyzerOptions {
-            tsconfig_path: "/project/tsconfig.json".to_string(),
+            tsconfig_path: Some("/project/tsconfig.json".to_string()),
             optimize: Some(true),
             virtual_files: Some(
                 files
@@ -1821,6 +2055,87 @@ mod entry_point_tests {
         let mapping =
             futures::executor::block_on(QueryContext::new(engine.clone()).component_mapping());
         mapping.get(c1, "C1").is_some()
+    }
+
+    #[test]
+    fn set_entry_points_evicts_program_queries() {
+        let analyzer = analyzer(&[
+            ("/project/tsconfig.json", r#"{"files": ["c1.component.ts"]}"#),
+            ("/project/c1.component.ts", COMPONENT),
+            ("/project/m.module.ts", MODULE),
+        ]);
+        // The module is not reachable from the only root, so it declares nothing.
+        assert!(!c1_has_module(&analyzer));
+
+        let stale = analyzer
+            .set_entry_points_core(vec![
+                "/project/c1.component.ts".to_string(),
+                "/project/m.module.ts".to_string(),
+            ])
+            .unwrap();
+        assert!(c1_has_module(&analyzer), "stale paths: {stale:?}");
+    }
+
+    #[test]
+    fn set_entry_points_with_unchanged_roots_evicts_nothing() {
+        let analyzer = analyzer(&[
+            ("/project/tsconfig.json", r#"{"files": ["c1.component.ts"]}"#),
+            ("/project/c1.component.ts", COMPONENT),
+        ]);
+        analyzer.engine.analyze_file_semantic_blocking("/project/c1.component.ts");
+
+        let stale = analyzer
+            .set_entry_points_core(vec!["/project/c1.component.ts".to_string()])
+            .unwrap();
+        assert!(stale.is_empty(), "unexpected stale paths: {stale:?}");
+    }
+
+    #[test]
+    fn set_entry_points_rejects_relative_paths() {
+        let analyzer = analyzer(&[
+            ("/project/tsconfig.json", r#"{"files": ["c1.component.ts"]}"#),
+            ("/project/c1.component.ts", COMPONENT),
+        ]);
+        let err = analyzer.set_entry_points_core(vec!["c1.component.ts".to_string()]).unwrap_err();
+        assert!(err.contains("c1.component.ts"), "{err}");
+    }
+
+    /// Entry points replace only the roots: the `.d.ts` files searched for ambient modules still
+    /// come from the tsconfig, and keep following it after the roots stop doing so.
+    #[test]
+    fn set_entry_points_keeps_tsconfig_declaration_files() {
+        let analyzer = analyzer(&[
+            ("/project/tsconfig.json", r#"{"files": ["c1.component.ts", "a.d.ts"]}"#),
+            ("/project/c1.component.ts", COMPONENT),
+            ("/project/m.module.ts", MODULE),
+            ("/project/a.d.ts", "declare module 'a' {}"),
+            ("/project/b.d.ts", "declare module 'b' {}"),
+        ]);
+        let dts_files =
+            |analyzer: &Analyzer| analyzer.engine.tsconfig_dts_files.read().unwrap().clone();
+        assert_eq!(dts_files(&analyzer), paths(&["/project/a.d.ts"]));
+
+        analyzer
+            .set_entry_points_core(vec![
+                "/project/m.module.ts".to_string(),
+                "/project/b.d.ts".to_string(),
+            ])
+            .unwrap();
+        assert_eq!(*analyzer.entrypoints.read().unwrap(), paths(&["/project/m.module.ts"]));
+        assert_eq!(dts_files(&analyzer), paths(&["/project/a.d.ts"]));
+
+        analyzer
+            .update_file_content_core(vec![FileUpdate {
+                file_path: "/project/tsconfig.json".to_string(),
+                content: r#"{"files": ["c1.component.ts", "b.d.ts"]}"#.to_string(),
+            }])
+            .unwrap();
+        assert_eq!(*analyzer.entrypoints.read().unwrap(), paths(&["/project/m.module.ts"]));
+        assert_eq!(dts_files(&analyzer), paths(&["/project/b.d.ts"]));
+    }
+
+    fn paths(items: &[&str]) -> Vec<PathBuf> {
+        items.iter().map(PathBuf::from).collect()
     }
 
     /// Files whose cached analysis read the old roots are reported stale by the update that
@@ -1886,5 +2201,130 @@ mod entry_point_tests {
             }])
             .unwrap();
         assert!(c1_has_module(&analyzer));
+    }
+
+    /// An analyzer built from options alone, with no tsconfig at all.
+    #[test]
+    fn analyzes_without_tsconfig() {
+        let analyzer = Analyzer::new(AnalyzerOptions {
+            optimize: Some(true),
+            entry_points: Some(vec!["/project/c1.component.ts".to_string()]),
+            virtual_files: Some(
+                [
+                    ("/project/c1.component.ts", COMPONENT),
+                    ("/project/m.module.ts", MODULE),
+                ]
+                .into_iter()
+                .map(|(path, content)| (path.to_string(), content.to_string()))
+                .collect(),
+            ),
+            ..Default::default()
+        })
+        .unwrap();
+        assert!(!c1_has_module(&analyzer));
+
+        analyzer
+            .set_entry_points_core(vec![
+                "/project/c1.component.ts".to_string(),
+                "/project/m.module.ts".to_string(),
+            ])
+            .unwrap();
+        assert!(c1_has_module(&analyzer));
+    }
+
+    /// Explicit roots are never overwritten by the tsconfig's root files on file updates.
+    #[test]
+    fn explicit_entry_points_survive_updates() {
+        let analyzer = Analyzer::new(AnalyzerOptions {
+            tsconfig_path: Some("/project/tsconfig.json".to_string()),
+            optimize: Some(true),
+            entry_points: Some(vec!["/project/c1.component.ts".to_string()]),
+            virtual_files: Some(
+                [
+                    ("/project/tsconfig.json", "{}"),
+                    ("/project/c1.component.ts", COMPONENT),
+                ]
+                .into_iter()
+                .map(|(path, content)| (path.to_string(), content.to_string()))
+                .collect(),
+            ),
+            ..Default::default()
+        })
+        .unwrap();
+
+        // The tsconfig's `include` would make the new module a root; the explicit roots win.
+        analyzer
+            .update_file_content_core(vec![FileUpdate {
+                file_path: "/project/m.module.ts".to_string(),
+                content: MODULE.to_string(),
+            }])
+            .unwrap();
+        assert!(!c1_has_module(&analyzer));
+        assert_eq!(
+            *analyzer.entrypoints.read().unwrap(),
+            vec![PathBuf::from("/project/c1.component.ts")]
+        );
+    }
+
+    /// After `set_entry_points`, tsconfig-derived roots are no longer re-read on file updates.
+    #[test]
+    fn set_entry_points_stops_tsconfig_rereads() {
+        let analyzer = analyzer(&[
+            ("/project/tsconfig.json", "{}"),
+            ("/project/c1.component.ts", COMPONENT),
+        ]);
+        analyzer
+            .set_entry_points_core(vec!["/project/c1.component.ts".to_string()])
+            .unwrap();
+
+        // The tsconfig's `include` would make the new module a root; the set roots win.
+        analyzer
+            .update_file_content_core(vec![FileUpdate {
+                file_path: "/project/m.module.ts".to_string(),
+                content: MODULE.to_string(),
+            }])
+            .unwrap();
+        assert!(!c1_has_module(&analyzer));
+        assert_eq!(
+            *analyzer.entrypoints.read().unwrap(),
+            vec![PathBuf::from("/project/c1.component.ts")]
+        );
+    }
+
+    /// An explicit `r3_symbols_file` takes precedence over a root named `r3_symbols.ts`, which
+    /// remains the fallback.
+    #[test]
+    fn explicit_r3_symbols_file_overrides_root_scan() {
+        let files = [
+            (
+                "/project/tsconfig.json",
+                r#"{"files": ["c1.component.ts", "r3_symbols.ts"]}"#,
+            ),
+            ("/project/c1.component.ts", COMPONENT),
+            ("/project/r3_symbols.ts", "export {};"),
+            ("/core/r3_symbols.ts", "export {};"),
+        ];
+        let fallback = analyzer(&files);
+        assert_eq!(
+            fallback.engine.r3_symbols_file(),
+            Some(PathBuf::from("/project/r3_symbols.ts"))
+        );
+
+        let explicit = Analyzer::new(AnalyzerOptions {
+            tsconfig_path: Some("/project/tsconfig.json".to_string()),
+            r3_symbols_file: Some("/core/r3_symbols.ts".to_string()),
+            virtual_files: Some(
+                files
+                    .iter()
+                    .map(|(path, content)| (path.to_string(), content.to_string()))
+                    .collect(),
+            ),
+            ..Default::default()
+        })
+        .unwrap();
+        assert_eq!(
+            explicit.engine.r3_symbols_file(),
+            Some(PathBuf::from("/core/r3_symbols.ts"))
+        );
     }
 }

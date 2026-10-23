@@ -1960,7 +1960,7 @@ export * from 'wildcard-source';
 "#;
         let fs = create_test_fs(&[("/test/file.ts", source)]);
         let resolver = std::sync::Arc::new(crate::utils::create_resolver_with_fs(
-            std::path::Path::new("/test/tsconfig.json"),
+            Some(std::path::Path::new("/test/tsconfig.json")),
             fs.clone(),
             false,
             None,

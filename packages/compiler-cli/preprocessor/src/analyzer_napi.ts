@@ -74,6 +74,10 @@ export class NapiAnalyzer implements IAnalyzer {
     return this.analyzer.invalidateFiles(updates);
   }
 
+  async setEntryPoints(entryPoints: string[]): Promise<string[]> {
+    return this.analyzer.setEntryPoints(entryPoints);
+  }
+
   async getTsFileForTemplate(templatePath: string): Promise<nga.TemplateUsage[] | null> {
     return this.analyzer.getTsFileForTemplate(templatePath);
   }
