@@ -6815,6 +6815,7 @@ fn test_constructor_dependency_diagnostics() {
         import type { TypeOnly } from './types';
         import * as Ns from './types';
         import { Shape } from './types';
+        import { Missing } from 'missing';
 
         export interface Iface {}
 
@@ -6841,6 +6842,10 @@ fn test_constructor_dependency_diagnostics() {
         @Injectable()
         export class ImportedInterface {
             constructor(param: Shape) {}
+        }
+        @Injectable()
+        export class MissingModuleType {
+            constructor(param: Missing) {}
         }
         @Injectable()
         export class ExplicitToken {
@@ -7009,6 +7014,13 @@ fn test_constructor_dependency_diagnostics() {
                 "param".to_string(),
                 use_inject.clone(),
                 vec![(no_value.to_string(), "Shape".to_string())],
+            ),
+            (
+                2003,
+                missing("MissingModuleType", "param"),
+                "param".to_string(),
+                use_inject.clone(),
+                vec![(no_value.to_string(), "Missing".to_string())],
             ),
             cmp,
             (
