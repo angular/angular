@@ -268,6 +268,22 @@ fn chase_symbol_in_file_inner(
         });
 
     if is_locally_exported {
+        if let Some(symbol_id) = dep.semantic.scoping().get_root_binding(name.into()) {
+            let flags = dep.semantic.scoping().symbol_flags(symbol_id);
+            let has_local_decl = flags.intersects(
+                SymbolFlags::Class
+                    | SymbolFlags::Function
+                    | SymbolFlags::Variable
+                    | SymbolFlags::RegularEnum
+                    | SymbolFlags::ConstEnum
+                    | SymbolFlags::TypeAlias
+                    | SymbolFlags::Interface,
+            );
+            if has_local_decl || !flags.contains(SymbolFlags::Import) {
+                return ChaseTarget::LocalBinding(symbol_id, flags);
+            }
+        }
+
         for entry in &module_record.import_entries {
             if entry.local_name.name.as_str() == name {
                 let original_name = match &entry.import_name {

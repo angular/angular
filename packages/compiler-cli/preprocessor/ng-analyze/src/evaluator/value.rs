@@ -517,6 +517,8 @@ pub enum DynamicReason {
     DepthLimit,
     /// The named export was not found in the target module.
     ExportNotFound,
+    /// A `ModuleWithProviders` return type without a generic type argument (upstream `NG6005`).
+    ModuleWithProvidersMissingGeneric { symbol_name: String },
     Unknown,
 }
 
@@ -1005,7 +1007,7 @@ pub fn stamp_owning_reference(
             call_span,
             call_file,
         }) => {
-            if ng_module.file == file && ng_module.owning_reference.is_none() {
+            if ng_module.owning_reference.is_none() {
                 ng_module.owning_reference = Some(owning_for(&ng_module.name));
             }
             ResolvedValue::Synthetic(SyntheticValue::ModuleWithProviders {
