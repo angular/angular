@@ -433,14 +433,17 @@ async fn resolve_import<Fs: ResourceResolverFs + Clone + 'static>(
     )
     .await;
 
-    // Record the importing file's local binding at the tail of the alias chain.
+    // Record the importing file's local binding at the tail of the alias chain. Synthetic
+    // references (e.g. `export const useFoo = forwardRef(() => Foo)`) do not have the same
+    // value at runtime as the target declaration, so they cannot be emitted via the local binding.
     if let (ResolvedValue::Reference(ref_val), Some(local_name)) =
         (&mut value, &unresolved.local_name)
     {
-        if !ref_val
-            .aliases
-            .iter()
-            .any(|(file, _)| *file == unresolved.importer)
+        if !ref_val.synthetic
+            && !ref_val
+                .aliases
+                .iter()
+                .any(|(file, _)| *file == unresolved.importer)
         {
             ref_val
                 .aliases
