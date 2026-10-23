@@ -137,10 +137,6 @@ pub(crate) struct ScopeEntry {
     /// Span of the identifier naming this entry inside the list expression, when the evaluator
     /// recorded one (`Reference.getOriginForDiagnostics`).
     pub origin: Option<Span>,
-    /// Set when the entry was a `ModuleWithProviders` value unwrapped to its `ngModule`: the
-    /// originating `X.forRoot()` call when it came from a foreign function resolver (`mwpCall`),
-    /// or `None` for the `{ngModule: ...}` object-literal form.
-    pub module_with_providers: Option<Option<(FileId, Span)>>,
 }
 
 /// Rejection of a scope list or one of its entries, which ngtsc's `resolveTypeList` /
@@ -172,7 +168,7 @@ pub(crate) fn collect_scope_entries(
     match value.unwrap_named() {
         ResolvedValue::Array(items) => {
             for item in items {
-                collect_scope_entry(item, None, None, out);
+                collect_scope_entry(item, None, false, out);
             }
         }
         ResolvedValue::Dynamic(_) | ResolvedValue::Incomplete(_) => {}
@@ -183,36 +179,30 @@ pub(crate) fn collect_scope_entries(
 fn collect_scope_entry(
     value: &ResolvedValue,
     named: Option<Span>,
-    mwp: Option<Option<(FileId, Span)>>,
+    in_mwp: bool,
     out: &mut Vec<Result<ScopeEntry, ScopeEntryRejection>>,
 ) {
     match value {
         ResolvedValue::Named { span, value, .. } => {
-            collect_scope_entry(value, named.or(Some(*span)), mwp, out);
+            collect_scope_entry(value, named.or(Some(*span)), in_mwp, out);
         }
         ResolvedValue::Array(items) => {
             for item in items {
-                collect_scope_entry(item, None, mwp, out);
+                collect_scope_entry(item, None, in_mwp, out);
             }
         }
         ResolvedValue::Reference(reference) => out.push(Ok(ScopeEntry {
             reference: reference.clone(),
             origin: named,
-            module_with_providers: mwp,
         })),
-        ResolvedValue::Synthetic(SyntheticValue::ModuleWithProviders {
-            ng_module,
-            call_span,
-            call_file,
-        }) => {
+        ResolvedValue::Synthetic(SyntheticValue::ModuleWithProviders { ng_module, .. }) => {
             out.push(Ok(ScopeEntry {
                 reference: ng_module.clone(),
                 origin: named,
-                module_with_providers: Some(Some((*call_file, *call_span))),
             }));
         }
         ResolvedValue::Map(map) => match map.get("ngModule") {
-            Some(ng_module) => collect_scope_entry(ng_module, named, Some(None), out),
+            Some(ng_module) => collect_scope_entry(ng_module, named, true, out),
             None => out.push(Err(ScopeEntryRejection::MapWithoutModule(value.clone()))),
         },
         ResolvedValue::Dynamic(dynamic) => {
@@ -230,13 +220,13 @@ fn collect_scope_entry(
                 ));
                 return;
             }
-            if mwp.is_some() {
+            if in_mwp {
                 out.push(Err(
                     ScopeEntryRejection::ModuleWithProvidersWithoutModule(value.clone()),
                 ));
             }
         }
-        _ if mwp.is_some() => {
+        _ if in_mwp => {
             out.push(Err(
                 ScopeEntryRejection::ModuleWithProvidersWithoutModule(value.clone()),
             ));
@@ -1242,6 +1232,199 @@ pub(crate) struct StandaloneImportsValidation {
     pub is_poisoned: bool,
 }
 
+enum ComponentImportItem {
+    Reference {
+        entry: ScopeEntry,
+        expr_span: Option<Span>,
+    },
+    WrongType {
+        span: Option<Span>,
+        value: ResolvedValue,
+    },
+    ModuleWithProviders {
+        span: Option<Span>,
+    },
+    ModuleWithProvidersMissingGeneric {
+        file: FileId,
+        span: Span,
+        symbol_name: String,
+    },
+}
+
+fn unwrap_named_with_span(mut value: &ResolvedValue) -> (Option<Span>, &ResolvedValue) {
+    let mut outer_span = None;
+    while let ResolvedValue::Named {
+        span, value: inner, ..
+    } = value
+    {
+        if outer_span.is_none() {
+            outer_span = Some(*span);
+        }
+        value = inner;
+    }
+    (outer_span, value)
+}
+
+/// Walk evaluated `@Component.imports` in lockstep with the syntactic [`ExprSpanTree`],
+/// mirroring ngtsc's `validateAndFlattenComponentImports` and `getDiagnosticOrigin`.
+fn collect_component_import_items(
+    component_file: FileId,
+    imports: &ResolvedValue,
+    expr: Option<&crate::analyzer::ExprSpanTree>,
+    fallback_span: Option<Span>,
+    out: &mut Vec<ComponentImportItem>,
+) {
+    let expr_span = expr.map(crate::analyzer::ExprSpanTree::span).or(fallback_span);
+    let ResolvedValue::Array(items) = imports.unwrap_named() else {
+        match imports.unwrap_named() {
+            ResolvedValue::Incomplete(_) => return,
+            ResolvedValue::Dynamic(d) => {
+                let root = d.root_cause();
+                if matches!(
+                    root.reason,
+                    crate::evaluator::DynamicReason::UnresolvedImport(_)
+                        | crate::evaluator::DynamicReason::ImportCycle
+                        | crate::evaluator::DynamicReason::DepthLimit
+                ) {
+                    return;
+                }
+                if let crate::evaluator::DynamicReason::ModuleWithProvidersMissingGeneric {
+                    symbol_name,
+                } = &root.reason
+                {
+                    out.push(ComponentImportItem::ModuleWithProvidersMissingGeneric {
+                        file: root.file,
+                        span: root.span,
+                        symbol_name: symbol_name.clone(),
+                    });
+                    return;
+                }
+            }
+            _ => {}
+        }
+        out.push(ComponentImportItem::WrongType {
+            span: expr_span,
+            value: imports.clone(),
+        });
+        return;
+    };
+
+    let elem_trees = match expr {
+        Some(crate::analyzer::ExprSpanTree::Array { elements, .. })
+            if elements.len() == items.len() =>
+        {
+            Some(elements.as_slice())
+        }
+        _ => None,
+    };
+
+    for (i, raw_item) in items.iter().enumerate() {
+        let ref_expr = elem_trees.map(|elems| &elems[i]).or(expr);
+        let (named_span, item) = unwrap_named_with_span(raw_item);
+        match item {
+            ResolvedValue::Array(_) => {
+                collect_component_import_items(component_file, item, ref_expr, expr_span, out);
+            }
+            ResolvedValue::Reference(reference) => {
+                out.push(ComponentImportItem::Reference {
+                    entry: ScopeEntry {
+                        reference: reference.clone(),
+                        origin: named_span,
+                    },
+                    expr_span,
+                });
+            }
+            ResolvedValue::Synthetic(SyntheticValue::ModuleWithProviders {
+                call_span,
+                call_file,
+                ..
+            }) => {
+                let call_within = (*call_file == component_file
+                    && expr_span.is_some_and(|list| {
+                        list.start <= call_span.start && call_span.end <= list.end
+                    }))
+                .then_some(*call_span);
+                out.push(ComponentImportItem::ModuleWithProviders {
+                    span: call_within.or(expr_span),
+                });
+            }
+            ResolvedValue::Map(map) if map.contains_key("ngModule") => {
+                if let Some(ResolvedValue::Dynamic(d)) =
+                    map.get("ngModule").map(ResolvedValue::unwrap_named)
+                {
+                    let root = d.root_cause();
+                    if let crate::evaluator::DynamicReason::ModuleWithProvidersMissingGeneric {
+                        symbol_name,
+                    } = &root.reason
+                    {
+                        out.push(ComponentImportItem::ModuleWithProvidersMissingGeneric {
+                            file: root.file,
+                            span: root.span,
+                            symbol_name: symbol_name.clone(),
+                        });
+                        continue;
+                    }
+                }
+                out.push(ComponentImportItem::ModuleWithProviders { span: expr_span });
+            }
+            ResolvedValue::Incomplete(_) => {}
+            ResolvedValue::Dynamic(d) => {
+                let root = d.root_cause();
+                if matches!(
+                    root.reason,
+                    crate::evaluator::DynamicReason::UnresolvedImport(_)
+                        | crate::evaluator::DynamicReason::ImportCycle
+                        | crate::evaluator::DynamicReason::DepthLimit
+                ) {
+                    continue;
+                }
+                if let crate::evaluator::DynamicReason::ModuleWithProvidersMissingGeneric {
+                    symbol_name,
+                } = &root.reason
+                {
+                    out.push(ComponentImportItem::ModuleWithProvidersMissingGeneric {
+                        file: root.file,
+                        span: root.span,
+                        symbol_name: symbol_name.clone(),
+                    });
+                    continue;
+                }
+                let ref_expr_span = ref_expr
+                    .map(crate::analyzer::ExprSpanTree::span)
+                    .or(expr_span);
+                let (diag_span, diag_value) = if d.file == component_file
+                    && expr_span
+                        .is_some_and(|es| es.start <= d.span.start && d.span.end <= es.end)
+                {
+                    (Some(d.span), item.clone())
+                } else if ref_expr_span != expr_span {
+                    (ref_expr_span, item.clone())
+                } else {
+                    (expr_span, imports.clone())
+                };
+                out.push(ComponentImportItem::WrongType {
+                    span: diag_span,
+                    value: diag_value,
+                });
+            }
+            _ => {
+                let ref_expr_span = ref_expr
+                    .map(crate::analyzer::ExprSpanTree::span)
+                    .or(expr_span);
+                let (diag_span, diag_value) = if ref_expr_span != expr_span {
+                    (ref_expr_span, item.clone())
+                } else {
+                    (expr_span, imports.clone())
+                };
+                out.push(ComponentImportItem::WrongType {
+                    span: diag_span,
+                    value: diag_value,
+                });
+            }
+        }
+    }
+}
+
 /// Validate the evaluated `imports` of a standalone component in `component_file`: ngtsc's
 /// `validateStandaloneImports` (`annotations/component/src/handler.ts`) together with the
 /// `ModuleWithProviders` rejection of `validateAndFlattenComponentImports` (`.../util.ts`).
@@ -1251,29 +1434,33 @@ pub(crate) async fn validate_standalone_imports<Fs: ResourceResolverFs + Clone +
     component_file: FileId,
     imports: &ResolvedValue,
     imports_span: Option<Span>,
+    imports_span_tree: Option<&crate::analyzer::ExprSpanTree>,
 ) -> StandaloneImportsValidation {
     let env = ScopeEnv { ctx };
     let file_path = env.file_path(component_file);
     let mut out = StandaloneImportsValidation::default();
 
-    let mut entries = Vec::new();
-    collect_scope_entries(imports, &mut entries);
-    if entries.is_empty() {
+    let mut items = Vec::new();
+    collect_component_import_items(
+        component_file,
+        imports,
+        imports_span_tree,
+        imports_span,
+        &mut items,
+    );
+    if items.is_empty() {
         return out;
     }
     // The registry is a whole-program barrier (`ngmodule_scope_registry_body`); only fetch it
     // when an entry needs it, so a component importing only standalone entities does not wait.
     let mut registry: Option<Arc<NgModuleScopeRegistry>> = None;
 
-    for entry in entries {
-        let entry = match entry {
-            Ok(entry) => entry,
-            Err(
-                ScopeEntryRejection::NotAnArray(value)
-                | ScopeEntryRejection::MapWithoutModule(value),
-            ) => {
+    for item in items {
+        let (entry, entry_expr_span) = match item {
+            ComponentImportItem::Reference { entry, expr_span } => (entry, expr_span),
+            ComponentImportItem::WrongType { span, value } => {
                 out.is_poisoned = true;
-                if let Some(span) = imports_span {
+                if let Some(span) = span.or(imports_span) {
                     out.diagnostics.push(NgDiagnostic::error(
                         // VALUE_HAS_WRONG_TYPE
                         1010,
@@ -1288,9 +1475,9 @@ pub(crate) async fn validate_standalone_imports<Fs: ResourceResolverFs + Clone +
                 }
                 continue;
             }
-            Err(ScopeEntryRejection::ModuleWithProvidersWithoutModule(_)) => {
+            ComponentImportItem::ModuleWithProviders { span } => {
                 out.is_poisoned = true;
-                if let Some(span) = imports_span {
+                if let Some(span) = span.or(imports_span) {
                     out.diagnostics.push(NgDiagnostic::error(
                         // COMPONENT_UNKNOWN_IMPORT
                         2012,
@@ -1305,11 +1492,11 @@ pub(crate) async fn validate_standalone_imports<Fs: ResourceResolverFs + Clone +
                 }
                 continue;
             }
-            Err(ScopeEntryRejection::ModuleWithProvidersMissingGeneric {
+            ComponentImportItem::ModuleWithProvidersMissingGeneric {
                 file,
                 span,
                 symbol_name,
-            }) => {
+            } => {
                 out.is_poisoned = true;
                 out.diagnostics.push(NgDiagnostic::error(
                     // NGMODULE_MODULE_WITH_PROVIDERS_MISSING_GENERIC
@@ -1326,35 +1513,9 @@ pub(crate) async fn validate_standalone_imports<Fs: ResourceResolverFs + Clone +
                 continue;
             }
         };
-        if let Some(mwp_call) = entry.module_with_providers {
-            // A `ModuleWithProviders` is never valid in component imports. A foreign call's own
-            // span is used when it sits inside the `imports` expression; a locally evaluated
-            // `forRoot()` or a call reached through a constant reports on the whole expression.
-            let call_within = mwp_call.filter(|(file, span)| {
-                *file == component_file
-                    && imports_span
-                        .is_some_and(|list| list.start <= span.start && span.end <= list.end)
-            });
-            let Some(span) = call_within.map(|(_, span)| span).or(imports_span) else {
-                continue;
-            };
-            out.is_poisoned = true;
-            out.diagnostics.push(NgDiagnostic::error(
-                // COMPONENT_UNKNOWN_IMPORT
-                2012,
-                file_path.clone(),
-                env.wire_span(component_file, span).await,
-                "Component imports contains a ModuleWithProviders value, likely the result of a \
-                 'Module.forRoot()'-style call. These calls are not used to configure components \
-                 and are not valid in standalone component imports - consider importing them in \
-                 the application bootstrap instead."
-                    .to_string(),
-            ));
-            continue;
-        }
 
         let Some(span) = env
-            .diagnostic_span(component_file, &entry, imports_span)
+            .diagnostic_span(component_file, &entry, entry_expr_span.or(imports_span))
             .await
         else {
             continue;
