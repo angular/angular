@@ -211,6 +211,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryContext<Fs> {
     }
 
     pub async fn has_path(&self, start: FileId, target: FileId) -> bool {
+        self.record_file(crate::query::engine::ROOTS_FILE_ID);
         let graph = self.engine.get_or_build_import_graph().await;
         graph.has_path(start, target)
     }
