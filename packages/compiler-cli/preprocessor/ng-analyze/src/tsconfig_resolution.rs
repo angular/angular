@@ -17,6 +17,7 @@ pub struct ResolvedTsConfig {
     pub compile_poisoned_components: bool,
     pub strict_injection_parameters: bool,
     pub use_host_for_import_generation: bool,
+    pub implicit_standalone: bool,
 }
 
 pub fn load_and_resolve_tsconfig(
@@ -105,6 +106,7 @@ pub fn load_and_resolve_tsconfig(
         use_host_for_import_generation: extended_options
             .use_host_for_import_generation
             .unwrap_or(false),
+        implicit_standalone: extended_options.implicit_standalone.unwrap_or(true),
     })
 }
 
@@ -280,6 +282,20 @@ struct ExtendedOptions {
     compile_poisoned_components: Option<bool>,
     strict_injection_parameters: Option<bool>,
     use_host_for_import_generation: Option<bool>,
+    implicit_standalone: Option<bool>,
+}
+
+fn core_version_supports_implicit_standalone(version: &str) -> bool {
+    if version == "0.0.0-PLACEHOLDER" {
+        return true;
+    }
+    let major_str = version
+        .trim()
+        .trim_start_matches('v')
+        .split('.')
+        .next()
+        .unwrap_or("");
+    major_str.parse::<u32>().map_or(true, |major| major >= 19)
 }
 
 fn resolve_extended_options_recursive(
@@ -377,6 +393,12 @@ fn resolve_extended_options_recursive(
         }
     });
 
+    let mut current_implicit_standalone = parsed_json.as_ref().ok().and_then(|json| {
+        json.pointer("/angularCompilerOptions/_angularCoreVersion")
+            .and_then(|v| v.as_str())
+            .map(core_version_supports_implicit_standalone)
+    });
+
     let base_dir = abs_path.parent().unwrap_or(Path::new("."));
 
     let mut current_root_dirs = tsconfig.compiler_options.root_dirs.clone().map(|dirs| {
@@ -398,6 +420,7 @@ fn resolve_extended_options_recursive(
         && current_compile_poisoned_components.is_some()
         && current_strict_injection_parameters.is_some()
         && current_use_host_for_import_generation.is_some()
+        && current_implicit_standalone.is_some()
     {
         visited.remove(&canonical);
         return Ok(ExtendedOptions {
@@ -411,6 +434,7 @@ fn resolve_extended_options_recursive(
             compile_poisoned_components: current_compile_poisoned_components,
             strict_injection_parameters: current_strict_injection_parameters,
             use_host_for_import_generation: current_use_host_for_import_generation,
+            implicit_standalone: current_implicit_standalone,
         });
     }
 
@@ -427,6 +451,7 @@ fn resolve_extended_options_recursive(
             compile_poisoned_components: current_compile_poisoned_components,
             strict_injection_parameters: current_strict_injection_parameters,
             use_host_for_import_generation: current_use_host_for_import_generation,
+            implicit_standalone: current_implicit_standalone,
         });
     };
 
@@ -485,6 +510,9 @@ fn resolve_extended_options_recursive(
         if let Some(use_host) = res.use_host_for_import_generation {
             inherited.use_host_for_import_generation = Some(use_host);
         }
+        if let Some(implicit_standalone) = res.implicit_standalone {
+            inherited.implicit_standalone = Some(implicit_standalone);
+        }
     }
     if current_root_dirs.is_none() {
         current_root_dirs = inherited.root_dirs;
@@ -516,6 +544,9 @@ fn resolve_extended_options_recursive(
     if current_use_host_for_import_generation.is_none() {
         current_use_host_for_import_generation = inherited.use_host_for_import_generation;
     }
+    if current_implicit_standalone.is_none() {
+        current_implicit_standalone = inherited.implicit_standalone;
+    }
 
     visited.remove(&canonical);
     Ok(ExtendedOptions {
@@ -529,6 +560,7 @@ fn resolve_extended_options_recursive(
         compile_poisoned_components: current_compile_poisoned_components,
         strict_injection_parameters: current_strict_injection_parameters,
         use_host_for_import_generation: current_use_host_for_import_generation,
+        implicit_standalone: current_implicit_standalone,
     })
 }
 

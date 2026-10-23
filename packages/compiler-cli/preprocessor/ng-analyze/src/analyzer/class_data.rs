@@ -2107,7 +2107,11 @@ impl ClassData {
         converter: &crate::utils::Utf8ToUtf16,
         diagnostics: &mut Vec<crate::NgDiagnostic>,
     ) {
-        if mode != WireMode::Semantic || d.declaring_ng_module.is_none() || d.selector.is_some() {
+        if mode != WireMode::Semantic
+            || d.standalone
+            || d.declaring_ng_module.is_none()
+            || d.selector.is_some()
+        {
             return;
         }
         let Some(class_name) = self.class_name.as_deref() else {

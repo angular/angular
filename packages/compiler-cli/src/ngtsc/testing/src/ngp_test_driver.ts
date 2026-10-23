@@ -330,6 +330,7 @@ export function performNgpCompilationSync(params: {
         compileNonExportedClasses: rawOpts['compileNonExportedClasses'] !== false,
         workspaceName: analyzerWorkspaceName,
         _useHostForImportGeneration: useHostForImportGeneration,
+        _angularCoreVersion: rawOpts['_angularCoreVersion'],
       },
       files: rootNames.map((r) => toPosixPath(fs.resolve(basePath, r))),
     });
