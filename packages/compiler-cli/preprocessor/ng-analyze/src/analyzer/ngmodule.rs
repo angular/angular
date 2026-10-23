@@ -149,7 +149,12 @@ fn parse_ng_module_args<'a>(
                             }
                             "jit" => {
                                 // https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L352-L356
-                                return None;
+                                return Some(NgModuleData {
+                                    is_jit: true,
+                                    args_span,
+                                    decorator_name,
+                                    ..Default::default()
+                                });
                             }
                             "id" => {
                                 if is_module_id_expression(&p.value) {
@@ -199,6 +204,7 @@ fn parse_ng_module_args<'a>(
         injectable: None,
         service: None,
         decorator_name,
+        is_jit: false,
     })
 }
 

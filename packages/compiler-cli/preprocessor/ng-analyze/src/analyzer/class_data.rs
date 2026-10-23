@@ -1411,6 +1411,7 @@ pub struct NgModuleData {
     /// Weak `@Service` accompanying this module.
     pub service: Option<ServiceData>,
     pub decorator_name: Option<String>,
+    pub is_jit: bool,
 }
 
 #[derive(Clone, Debug)]
@@ -1615,7 +1616,7 @@ impl ClassData {
         let DecoratorData::NgModule(module) = &self.decorator else {
             return None;
         };
-        Some(module)
+        (!module.is_jit).then_some(module)
     }
 
     /// The directive-shaped part, when this class has one (components extend directives).
@@ -1980,7 +1981,9 @@ impl ClassData {
         for issue in &self.decorator_issues {
             push_issue(diagnostics, file_path, converter, issue);
         }
-        if self.directive_part().is_some_and(|d| d.is_jit) {
+        if self.directive_part().is_some_and(|d| d.is_jit)
+            || matches!(&self.decorator, DecoratorData::NgModule(m) if m.is_jit)
+        {
             return;
         }
         for issue in &self.di_issues {
@@ -3770,6 +3773,7 @@ impl ClassData {
                         .isolated_exports
                         .as_ref()
                         .map(|t| self.to_wire_isolated_tuple(t, cx)),
+                    is_jit: m.is_jit,
                 });
             }
             // Already projected via injectable_data()/service_data() above.
@@ -3782,7 +3786,8 @@ impl ClassData {
         let prepared = members
             .map(|m| prepare_members(m, cx.source_text, cx.converter))
             .unwrap_or_default();
-        let is_jit = members.is_some_and(|d| d.is_jit);
+        let is_jit = members.is_some_and(|d| d.is_jit)
+            || matches!(&self.decorator, DecoratorData::NgModule(m) if m.is_jit);
         // For JIT classes, decorators are preserved on source, so removal_spans is empty.
         let removal_spans: Vec<crate::types::metadata::SpanMetadata> = if is_jit {
             Vec::new()
@@ -4592,6 +4597,7 @@ impl ClassData {
                     None,
                     None,
                 ),
+                DecoratorData::NgModule(m) if m.is_jit => return None,
                 DecoratorData::NgModule(_) => (ClassType::NgModule, None, None, None, None, None),
                 DecoratorData::Injectable(_) => {
                     (ClassType::Injectable, None, None, None, None, None)

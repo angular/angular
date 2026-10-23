@@ -1275,7 +1275,7 @@ async fn extract_chunk_info<Fs: FileSystem + Clone + 'static + ResourceResolverF
 
     for class in &file_data.classes {
         match &class.decorator {
-            crate::analyzer::DecoratorData::NgModule(m) => {
+            crate::analyzer::DecoratorData::NgModule(m) if !m.is_jit => {
                 has_non_standalone = true;
                 let Some(declarations) = &m.declarations else {
                     continue;

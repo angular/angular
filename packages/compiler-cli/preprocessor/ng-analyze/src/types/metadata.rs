@@ -761,6 +761,7 @@ pub struct NgModuleMetadata {
     /// Syntactic type-tuple representation of `exports` for `emitDeclarationOnly`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub isolated_exports: Option<IsolatedTypeTupleMetadata>,
+    pub is_jit: bool,
 }
 
 #[cfg(feature = "napi")]
