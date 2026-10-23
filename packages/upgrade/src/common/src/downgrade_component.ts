@@ -146,7 +146,7 @@ export function downgradeComponent(info: {
         },
       ],
       link: (scope: IScope, element: IAugmentedJQuery, attrs: IAttributes, required: any[]) => {
-        const template = templates.get(element[0])!;
+        const template = templates.get(element[0]) ?? [];
         templates.delete(element[0]);
 
         // We might have to compile the contents asynchronously, because this might have been
