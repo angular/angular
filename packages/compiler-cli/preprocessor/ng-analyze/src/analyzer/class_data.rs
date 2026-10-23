@@ -152,6 +152,7 @@ pub struct ClassData {
     pub di_issues: Vec<ValueIssue>,
     pub member_decorators: Vec<crate::DecoratedMemberMetadata>,
     pub later_declaration_references: Vec<oxc_span::Span>,
+    pub decorator_function_spans: Vec<oxc_span::Span>,
     pub top_level_references: Option<Vec<super::TopLevelReference>>,
     pub type_parameters: Option<Vec<TypeParameterData>>,
     pub has_ng_template_context_guard: bool,
@@ -3856,6 +3857,16 @@ impl ClassData {
                 .iter()
                 .map(|span| crate::types::metadata::SpanMetadata::new(*span, cx.converter))
                 .collect(),
+            decorator_function_spans: if self.decorator_function_spans.is_empty() {
+                None
+            } else {
+                Some(
+                    self.decorator_function_spans
+                        .iter()
+                        .map(|span| crate::types::metadata::SpanMetadata::new(*span, cx.converter))
+                        .collect(),
+                )
+            },
             top_level_references: self.top_level_references.as_ref().map(|references| {
                 references
                     .iter()

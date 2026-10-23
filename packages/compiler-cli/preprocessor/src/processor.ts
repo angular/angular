@@ -1448,9 +1448,21 @@ export function processFileSync(
         usesInheritance: classMeta.usesInheritance,
         controlCreate: null,
         exportAs: component.exportAs || null,
-        providers: component.providersSpan ? rawSlice(s, component.providersSpan, guards) : null,
+        providers: component.providersSpan
+          ? rawSlice(
+              s,
+              component.providersSpan,
+              guards,
+              ctx.isClosureCompilerEnabled ? classMeta.decoratorFunctionSpans : undefined,
+            )
+          : null,
         viewProviders: component.viewProvidersSpan
-          ? rawSlice(s, component.viewProvidersSpan, guards)
+          ? rawSlice(
+              s,
+              component.viewProvidersSpan,
+              guards,
+              ctx.isClosureCompilerEnabled ? classMeta.decoratorFunctionSpans : undefined,
+            )
           : null,
         isStandalone: standalone,
         isSignal: component.signals,
@@ -1575,7 +1587,14 @@ export function processFileSync(
         usesInheritance: classMeta.usesInheritance,
         controlCreate: null,
         exportAs: directive.exportAs || null,
-        providers: directive.providersSpan ? rawSlice(s, directive.providersSpan, guards) : null,
+        providers: directive.providersSpan
+          ? rawSlice(
+              s,
+              directive.providersSpan,
+              guards,
+              ctx.isClosureCompilerEnabled ? classMeta.decoratorFunctionSpans : undefined,
+            )
+          : null,
         isStandalone: standalone,
         isSignal: directive.signals,
         hostDirectives: buildHostDirectives(hostDirectives),
@@ -1748,6 +1767,7 @@ export function processFileSync(
         s,
         perComponentDeferredDeps,
         ctx.complianceMode ?? false,
+        ctx.isClosureCompilerEnabled ?? false,
       );
       compiledClass.classMetadataStmt = classMetadataStmt;
     }
@@ -2083,8 +2103,9 @@ function inlineDecoratorResources(
   override: NonNullable<DecoratorMetadata['resourceOverride']>,
   s: MagicString,
   guards: nga.SpanMetadata[],
+  functionSpans?: nga.SpanMetadata[],
 ): string {
-  const props = preservedProperties.map((span) => sliceGuarded(s, span, guards));
+  const props = preservedProperties.map((span) => sliceGuarded(s, span, guards, functionSpans));
   if (override.inlineTemplate !== null) {
     props.push(`template: ${JSON.stringify(override.inlineTemplate)}`);
   }
@@ -2149,6 +2170,7 @@ function sliceGuarded(
   s: MagicString | string,
   span: nga.SpanMetadata,
   guards: nga.SpanMetadata[],
+  functionSpans?: nga.SpanMetadata[],
 ): string {
   const source = typeof s === 'string' ? s : s.original;
   const insertions: SourceInsertion[] = [];
@@ -2167,6 +2189,18 @@ function sliceGuarded(
     if (guard.start >= span.start && guard.start < span.end && !seenGuards.has(guard.start)) {
       seenGuards.add(guard.start);
       insertions.push({position: guard.start, text: FORWARD_REFERENCE_GUARD});
+    }
+  }
+  if (functionSpans !== undefined) {
+    for (const fnSpan of functionSpans) {
+      if (
+        fnSpan.start >= span.start &&
+        fnSpan.end <= span.end &&
+        !(fnSpan.start === span.start && fnSpan.end === span.end)
+      ) {
+        insertions.push({position: fnSpan.start, text: '('});
+        insertions.push({position: fnSpan.end, text: ')'});
+      }
     }
   }
   if (insertions.length === 0) {
@@ -2190,8 +2224,9 @@ function rawSlice(
   s: MagicString | string,
   span: nga.SpanMetadata,
   guards: nga.SpanMetadata[],
+  functionSpans?: nga.SpanMetadata[],
 ): o.WrappedNodeExpr<RawSource> {
-  return new o.WrappedNodeExpr(new RawSource(sliceGuarded(s, span, guards), [span]));
+  return new o.WrappedNodeExpr(new RawSource(sliceGuarded(s, span, guards, functionSpans), [span]));
 }
 
 /**
@@ -2451,8 +2486,10 @@ function buildSetClassMetadata(
   s: MagicString,
   deferredDeps: R3DeferPerComponentDependency[] = [],
   complianceMode: boolean = false,
+  isClosureCompilerEnabled: boolean = false,
 ): o.Statement {
   const guards = complianceMode ? [] : classMeta.laterDeclarationReferences;
+  const functionSpans = isClosureCompilerEnabled ? classMeta.decoratorFunctionSpans : undefined;
   const sortedDecorators =
     decorators.length > 1
       ? [...decorators].sort(
@@ -2470,8 +2507,14 @@ function buildSetClassMetadata(
       if (argsSpan != null) {
         const inlineResources = resourceOverride && preservedDecoratorProperties;
         let argsStr = inlineResources
-          ? inlineDecoratorResources(preservedDecoratorProperties, resourceOverride, s, guards)
-          : sliceGuarded(s, argsSpan, guards);
+          ? inlineDecoratorResources(
+              preservedDecoratorProperties,
+              resourceOverride,
+              s,
+              guards,
+              functionSpans,
+            )
+          : sliceGuarded(s, argsSpan, guards, functionSpans);
         if (complianceMode) {
           // Match Angular compliance test formatting for single-line decorator object literals.
           argsStr = argsStr
@@ -2616,7 +2659,15 @@ function compileHmrUpdateModule(options: HmrUpdateModuleOptions): string | null 
   // The update callback replaces `ɵsetClassMetadata` outright, so it never defers dependencies.
   const classMetadata =
     decorators.length > 0 && ctx.supportTestBed !== false
-      ? buildSetClassMetadata(className, decorators, classMeta, s, [], ctx.complianceMode)
+      ? buildSetClassMetadata(
+          className,
+          decorators,
+          classMeta,
+          s,
+          [],
+          ctx.complianceMode,
+          ctx.isClosureCompilerEnabled,
+        )
       : null;
   const debugInfo = buildSetClassDebugInfo(
     className,
@@ -2743,9 +2794,12 @@ function compileNgModuleDef(
   // https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L566-L603
   // We reproduce "the raw node" by slicing the original source text at the captured span.
   const guards = ctx.complianceMode ? [] : (classMeta?.laterDeclarationReferences ?? []);
-  const rawExprFromSpan = (span: nga.SpanMetadata | undefined | null): o.Expression | null =>
+  const rawExprFromSpan = (
+    span: nga.SpanMetadata | undefined | null,
+    functionSpans?: nga.SpanMetadata[],
+  ): o.Expression | null =>
     span && content !== undefined
-      ? new o.WrappedNodeExpr(new RawSource(sliceGuarded(content, span, guards)))
+      ? new o.WrappedNodeExpr(new RawSource(sliceGuarded(content, span, guards, functionSpans)))
       : null;
 
   const rawExprsFromSpans = (
@@ -3026,7 +3080,10 @@ function compileNgModuleDef(
       value: o.variable(className),
       type: o.variable(className),
     },
-    providers: rawExprFromSpan(ngModule.providersSpan),
+    providers: rawExprFromSpan(
+      ngModule.providersSpan,
+      ctx.isClosureCompilerEnabled ? classMeta?.decoratorFunctionSpans : undefined,
+    ),
     imports: injectorImportsExprs(),
   };
   const inj = compileInjector(injectorMeta);

@@ -373,6 +373,7 @@ fn classify(reference_id: ReferenceId, parsed: ParsedClass, has_real_symbol: boo
         di_issues: Vec::new(),
         member_decorators: common.member_decorators,
         later_declaration_references: common.later_declaration_references,
+        decorator_function_spans: common.decorator_function_spans,
         top_level_references: common.top_level_references,
         type_parameters: common.type_parameters,
         has_ng_template_context_guard: common.has_ng_template_context_guard,
@@ -460,6 +461,7 @@ struct ParsedCommon {
     decorator_issues: Vec<crate::analyzer::class_data::ValueIssue>,
     member_decorators: Vec<crate::DecoratedMemberMetadata>,
     later_declaration_references: Vec<oxc_span::Span>,
+    decorator_function_spans: Vec<oxc_span::Span>,
     top_level_references: Option<Vec<super::TopLevelReference>>,
     type_parameters: Option<Vec<TypeParameterData>>,
     has_ng_template_context_guard: bool,
@@ -640,6 +642,7 @@ fn process_class_common<'a, Fs: ResourceResolverFs>(
 
     // Class decorators lead the removal list, followed by the member decorators.
     let mut decorator_removal_spans = Vec::new();
+    let mut decorator_function_spans = Vec::new();
     for decorator in &class.decorators {
         if ng_decorator_spans.contains(&decorator.span) {
             super::collect_decorator_references(
@@ -648,6 +651,7 @@ fn process_class_common<'a, Fs: ResourceResolverFs>(
                 class.span.end,
                 Some(&mut later_declaration_references),
                 top_level_reads.as_mut(),
+                Some(&mut decorator_function_spans),
             );
             decorator_removal_spans.push(super::utils::decorator_removal_span(
                 decorator,
@@ -735,6 +739,7 @@ fn process_class_common<'a, Fs: ResourceResolverFs>(
             decorator_issues,
             member_decorators,
             later_declaration_references,
+            decorator_function_spans,
             top_level_references: top_level_reads.map(|reads| reads.out),
             type_parameters,
             has_ng_template_context_guard: type_check_meta.has_ng_template_context_guard,

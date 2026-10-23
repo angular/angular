@@ -1129,20 +1129,8 @@ runInEachFileSystem((os: string) => {
             // insertion by checking that there are no function return statements
             // not wrapped in parentheses
             expect(trim(jsContents)).not.toMatch(/return\s+function/);
-            expect(trim(jsContents)).toContain(
-              trim(`
-              [{
-                  provide: 'token-a',
-                  useFactory: ((service) => {
-                      return (() => service.id);
-                  })
-              }, {
-                  provide: 'token-b',
-                  useFactory: (function (service) {
-                      return (function () { return service.id; });
-                  })
-              }]
-            `),
+            expect(trim(jsContents)).toMatch(
+              /\[\{\s*provide:\s*['"]token-a['"],\s*useFactory:\s*\(\(service\)\s*=>\s*\{\s*return\s*\(\(\)\s*=>\s*service\.id\);\s*\}\)\s*\},\s*\{\s*provide:\s*['"]token-b['"],\s*useFactory:\s*\(function\s*\(service\)\s*\{\s*return\s*\(function\s*\(\)\s*\{\s*return\s*service\.id;\s*\}\);\s*\}\)\s*\}\]/,
             );
           };
 

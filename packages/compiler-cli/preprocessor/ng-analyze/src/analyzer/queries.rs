@@ -543,6 +543,7 @@ pub fn extract_queries<'a>(
                 class.span.end,
                 None,
                 Some(reads),
+                None,
             );
         }
 
