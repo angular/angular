@@ -1224,15 +1224,55 @@ pub fn resolve_symbol_value_kind<'a, Fs: ResourceResolverFs + Clone + 'static>(
             .await;
         }
 
-        let Ok(decl) =
-            crate::evaluator::cross_file::cross_file_resolve(ctx, &file_path, None, name, visited)
-                .await
+        let Ok(decl) = crate::evaluator::cross_file::cross_file_resolve(
+            ctx,
+            &file_path,
+            None,
+            name.clone(),
+            visited,
+        )
+        .await
         else {
             return SymbolValueKind::Unresolved;
         };
+        if decl.is_none() && is_imported_from_missing_module(&file_path, &name, ctx).await {
+            return SymbolValueKind::TypeOnly;
+        }
         classify_declaration(decl, &file_path, ctx).await
     }
     .boxed()
+}
+
+/// Returns `true` when `name` is bound by an import declaration in `file_path` whose module
+/// specifier cannot be resolved (leaving the symbol without any value declaration). Ignores
+/// `@angular/*` specifiers so unit tests that omit `@angular/core` `.d.ts` stubs still treat
+/// framework symbols like `ElementRef` as values.
+async fn is_imported_from_missing_module<Fs: ResourceResolverFs + Clone + 'static>(
+    file_path: &Path,
+    name: &str,
+    ctx: &QueryContext<Fs>,
+) -> bool {
+    let syntax = ctx
+        .analyze_file_syntax(ctx.engine.intern_path(file_path))
+        .await;
+    for decl in &syntax.import_declarations {
+        if decl.specifier.starts_with("@angular/") {
+            continue;
+        }
+        if decl
+            .bindings
+            .iter()
+            .any(|b| b.local == name && !b.is_type)
+        {
+            return crate::evaluator::cross_file::resolve_specifier(
+                ctx.engine.resolver.as_ref(),
+                file_path,
+                &decl.specifier,
+            )
+            .is_none();
+        }
+    }
+    false
 }
 
 fn find_namespace_import_specifier<'a>(syntax: &'a FileData, ns_prefix: &str) -> Option<&'a str> {
