@@ -418,7 +418,6 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'ngtsc behavioral tests compiling invalid @Injectables with strictInjectionParameters = true should report an error when using a missing type as injection token',
   'ngtsc behavioral tests cycle detection should detect a simple cycle and fatally error if doing partial-compilation',
   'ngtsc behavioral tests input transforms should compile an input with a transform function in the inputs array referenced via a constant',
-  'ngtsc behavioral tests should accept dynamic host attribute bindings',
   'ngtsc behavioral tests should filter out directives and pipes from module exports in the injector def',
   'ngtsc compilation of standalone types component-side should compile a standalone component in a cycle with its module',
   'ngtsc extended template checks should produce nullish coalescing not nullable warning',

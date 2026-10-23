@@ -1293,17 +1293,11 @@ fn spread_of_an_imported_call_is_spliced() {
 }
 
 #[test]
-fn element_access_through_a_parameter_is_never_the_whole_array() {
-    // TODO(parity): ngtsc evaluates this to `[A]`; re-evaluating `xs[0]` without the `xs`
-    // parameter binding falls back to `Dynamic` rather than returning the whole array.
+fn element_access_through_a_parameter() {
     let value = complete_list_consumer(&format!(
         "{LIST_IMPORTS}function first(xs: any[]) {{ return xs[0]; }}\n[first(LIST)];"
     ));
-    let ResolvedValue::Array(items) = &value else {
-        panic!("expected an array, got {value:?}");
-    };
-    assert_eq!(items.len(), 1, "got {value:?}");
-    assert!(items[0].is_dynamic(), "got {value:?}");
+    assert_eq!(reference_names(&value), ["A"]);
 }
 
 #[test]
