@@ -108,10 +108,6 @@ pub fn evaluate_node_id(
     let interp = Interpreter::new(input);
     interp.current_node_id.set(Some(node_id));
     let ast_node = input.semantic.nodes().get_node(node_id);
-    // TODO(parity): a hole propagated inside a function body evaluated for a call (`function
-    // first(xs) { return xs[0]; }` called with an import) re-evaluates here without the call's
-    // parameter bindings, so it degrades to Dynamic where ngtsc, which evaluates the call
-    // afresh, produces the element.
     let scope = Scope::new();
     let span = ast_node.kind().span();
     let result = match ast_node.kind() {
@@ -229,6 +225,11 @@ pub fn evaluate_node_id(
     // hands back a dynamic anchored on a sub-expression instead of on `node_id` itself.
     result.map(|value| match value {
         ResolvedValue::Dynamic(dynamic) => interp.chain_dynamic_boxed(span, dynamic),
+        ResolvedValue::Incomplete(mut hole) if hole.span != span => {
+            hole.span = span;
+            hole.node_id = Some(node_id);
+            ResolvedValue::Incomplete(hole)
+        }
         other => other,
     })
 }
@@ -779,6 +780,13 @@ impl<'a, 'e, 'i> Interpreter<'a, 'e, 'i> {
         // https://github.com/angular/angular/blob/1c9c453/packages/compiler-cli/src/ngtsc/partial_evaluator/src/interpreter.ts#L155-L158
         match result {
             ResolvedValue::Dynamic(dynamic) => self.chain_dynamic_boxed(outer_span, dynamic),
+            ResolvedValue::Incomplete(mut hole)
+                if scope.is_empty() && hole.span != outer_span =>
+            {
+                hole.span = outer_span;
+                hole.node_id = Some(expr.node_id());
+                ResolvedValue::Incomplete(hole)
+            }
             other => other,
         }
     }
