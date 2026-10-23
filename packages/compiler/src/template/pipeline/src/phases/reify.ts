@@ -400,6 +400,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
             op.sourceSpan,
             op.flags,
             op.errorRetryCount,
+            op.errorContextUsed,
           ),
         );
         break;

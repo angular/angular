@@ -473,6 +473,22 @@
           "failureMessage": "Incorrect linked template"
         }
       ]
+    },
+    {
+      "description": "should expose `$error` and `$retry` to the `@error` block",
+      "inputFiles": ["deferred_with_error_context.ts", "deferred_with_error_context_dep.ts"],
+      "compilationModeFilter": ["full compile", "linked compile"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_with_error_context_template.js",
+              "generated": "deferred_with_error_context.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }

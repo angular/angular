@@ -116,9 +116,33 @@ The `@error` block is an optional block that displays if deferred loading fails.
 }
 ```
 
-#### Automatically retry failed loads with `@error (retry N)`
+#### Access the error and retry from `@error`
 
-HELPFUL: Retrying failed loads with `@error (retry N)` is currently in [developer preview](/reference/releases#developer-preview).
+HELPFUL: `$error`, `$retry`, `@error (retry N)` and `provideDeferBlockRetryHandler` are currently in [developer preview](/reference/releases#developer-preview).
+
+The `@error` block exposes the loading error as the implicit `$error` variable, and an implicit `$retry` function. When called, `$retry` renders the `@loading` block again and loads the dependencies as if the block was triggered for the first time.
+
+```angular-html
+@defer (on viewport) {
+  <large-component />
+} @error {
+  <p>Couldn't load this section: {{ $error.message }}</p>
+  <button (click)="$retry()">Try again</button>
+}
+```
+
+As in the `@error` block of [`@boundary`](/guide/templates/error-boundaries), you can give these variables other names:
+
+```angular-html
+@defer {
+  <large-component />
+} @error (let err, retry = $retry) {
+  <p>{{ err.message }}</p>
+  <button (click)="retry()">Try again</button>
+}
+```
+
+#### Automatically retry failed loads with `@error (retry N)`
 
 Temporary network or server errors can cause a deferred dependency to fail. Add a `retry` parameter to the `@error` block to try the load again:
 

@@ -1541,6 +1541,9 @@ export interface DeferOp extends Op<CreateOp>, ConsumesSlotOpTrait {
   /** Retry count from `@error`, or `null` when omitted. */
   errorRetryCount: number | null;
 
+  /** Whether the `@error` view reads `$error` or `$retry`. */
+  errorContextUsed: boolean;
+
   placeholderConfig: o.Expression | null;
   loadingConfig: o.Expression | null;
 
@@ -1593,6 +1596,7 @@ export function createDeferOp(
     errorView: null,
     errorSlot: null,
     errorRetryCount: null,
+    errorContextUsed: false,
     ownResolverFn,
     resolverFn,
     flags: null,

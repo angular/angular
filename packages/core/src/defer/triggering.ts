@@ -263,6 +263,7 @@ export function triggerResourceLoading(
 
     if (failed) {
       tDetails.loadingState = DeferDependenciesLoadingState.FAILED;
+      tDetails.loadingError = failedReason;
 
       if (tDetails.errorTmplIndex === null) {
         const templateLocation = ngDevMode ? getTemplateLocationDetails(lView) : '';

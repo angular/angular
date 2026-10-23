@@ -1631,6 +1631,111 @@ describe('@defer', () => {
         expect(round).toBe(3);
       });
 
+      it('should expose the loading error and $retry in the @error block', async () => {
+        @Component({
+          selector: 'nested-cmp',
+          template: 'Loaded!',
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class NestedCmp {}
+
+        @Component({
+          selector: 'simple-app',
+          imports: [NestedCmp],
+          template: `
+            @defer (on immediate) {
+              <nested-cmp />
+            } @error {
+              Failed: {{ $error.message }}
+              <button (click)="$retry()">Retry</button>
+            }
+          `,
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class MyCmp {}
+
+        let round = 0;
+        const deferDepsInterceptor = {
+          intercept() {
+            return () => [
+              round++ === 0 ? Promise.reject(new Error('offline')) : dynamicImportOf(NestedCmp),
+            ];
+          },
+        };
+
+        TestBed.configureTestingModule({
+          providers: [
+            {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+          ],
+        });
+
+        clearDirectiveDefs(MyCmp);
+
+        const fixture = TestBed.createComponent(MyCmp);
+        await fixture.whenStable();
+        expect(fixture.nativeElement.textContent).toContain('Failed: offline');
+        expect(round).toBe(1);
+
+        fixture.nativeElement.querySelector('button').click();
+        await fixture.whenStable();
+
+        expect(fixture.nativeElement.textContent).toContain('Loaded!');
+        expect(round).toBe(2);
+      });
+
+      it('should run the automatic retries again after $retry', async () => {
+        @Component({
+          selector: 'nested-cmp',
+          template: 'Loaded!',
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class NestedCmp {}
+
+        @Component({
+          selector: 'simple-app',
+          imports: [NestedCmp],
+          template: `
+            @defer (on immediate) {
+              <nested-cmp />
+            } @error (retry 1; let again = $retry) {
+              Failed!
+              <button (click)="again()">Retry</button>
+            }
+          `,
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class MyCmp {}
+
+        let round = 0;
+        const deferDepsInterceptor = {
+          intercept() {
+            return () => [
+              round++ < 3 ? Promise.reject(new Error('offline')) : dynamicImportOf(NestedCmp),
+            ];
+          },
+        };
+
+        TestBed.configureTestingModule({
+          providers: [
+            {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+          ],
+        });
+
+        clearDirectiveDefs(MyCmp);
+
+        const fixture = TestBed.createComponent(MyCmp);
+        await fixture.whenStable();
+        expect(fixture.nativeElement.textContent).toContain('Failed!');
+        expect(round).toBe(2);
+
+        // `$retry` starts a new sequence, which fails once and then succeeds.
+        fixture.nativeElement.querySelector('button').click();
+        await fixture.whenStable();
+
+        expect(fixture.nativeElement.textContent).toContain('Loaded!');
+        expect(round).toBe(4);
+      });
+
       it('should stop retrying when the handler rejects', async () => {
         @Component({
           selector: 'simple-app',

@@ -312,9 +312,11 @@ export function defer(
   sourceSpan: ParseSourceSpan | null,
   flags: ir.TDeferDetailsFlags | null,
   errorRetryCount: number | null,
+  errorContextUsed: boolean,
 ): ir.CreateOp {
+  // `$error` and `$retry` need the retry runtime, even without automatic retries.
   const runtimeRetryCount =
-    errorRetryCount !== null && errorRetryCount > 0 ? errorRetryCount : null;
+    errorRetryCount !== null && errorRetryCount > 0 ? errorRetryCount : errorContextUsed ? 0 : null;
   const args: Array<o.Expression> = [
     o.literal(selfSlot),
     o.literal(primarySlot),

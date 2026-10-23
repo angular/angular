@@ -9,17 +9,33 @@
 import {EnvironmentInjector} from '../di/r3_injector';
 import {Injector} from '../di/injector';
 import {runInInjectionContext} from '../di/contextual';
+import type {TNode} from '../render3/interfaces/node';
+import {isDestroyed} from '../render3/interfaces/type_checks';
+import type {LView} from '../render3/interfaces/view';
 import {isPromise} from '../util/lang';
 import {NgZone} from '../zone';
-import {DeferDependencyLoadResult, DependencyResolverFn, TDeferBlockDetails} from './interfaces';
+import {
+  DEFER_BLOCK_STATE,
+  DeferBlockInternalState,
+  DeferBlockState,
+  DeferDependencyLoadResult,
+  DependencyResolverFn,
+  NEXT_DEFER_BLOCK_STATE,
+  SSR_BLOCK_STATE,
+  TDeferBlockDetails,
+  TriggerType,
+} from './interfaces';
 import {
   DEFER_BLOCK_RETRY_HANDLER,
   DeferBlockRetryContext,
   DeferBlockRetryHandler,
 } from './retry_handler';
+import {triggerDeferBlock} from './triggering';
+import {getLDeferBlockDetails} from './utils';
 
 /**
- * Enables retry loading for a defer block.
+ * Enables retry loading for a defer block, and the `$error` and `$retry` variables of
+ * its `@error` block.
  *
  * @param tDetails Static information about the defer block.
  * @param maxRetryCount Number of additional dependency-loading rounds after a failure.
@@ -29,6 +45,31 @@ import {
 export function ɵɵdeferEnableRetry(tDetails: TDeferBlockDetails, maxRetryCount: number): void {
   tDetails.maxRetryCount = maxRetryCount;
   tDetails.retryLoadingFn = loadDeferDependenciesWithRetry;
+  tDetails.errorContextFn = createErrorContext;
+}
+
+/** Creates the context of the `@error` view. */
+function createErrorContext(lView: LView, tNode: TNode, tDetails: TDeferBlockDetails) {
+  return {
+    $error: tDetails.loadingError,
+    $retry: () => retryDeferBlock(lView, tNode),
+  };
+}
+
+/** Loads the dependencies of a block in the error state again. */
+function retryDeferBlock(lView: LView, tNode: TNode): void {
+  const lDetails = getLDeferBlockDetails(lView, tNode);
+  if (isDestroyed(lView) || lDetails[DEFER_BLOCK_STATE] !== DeferBlockState.Error) {
+    return;
+  }
+
+  // States only move forward, so reset the block to its initial state.
+  lDetails[DEFER_BLOCK_STATE] = DeferBlockInternalState.Initial;
+  lDetails[NEXT_DEFER_BLOCK_STATE] = null;
+  lDetails[SSR_BLOCK_STATE] = null;
+
+  // Retry is enabled, so this also resets the failed loading state.
+  triggerDeferBlock(TriggerType.Regular, lView, tNode);
 }
 
 /**

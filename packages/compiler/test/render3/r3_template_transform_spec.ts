@@ -214,7 +214,9 @@ class R3AstHumanizer implements t.Visitor<void> {
     const result = ['DeferredBlockError'];
     block.retryCount !== null && result.push(`retry ${block.retryCount}`);
     this.result.push(result);
-    this.visitAll([block.children]);
+    // Skip the implicit `$error` and `$retry` variables.
+    const aliases = block.contextVariables.filter((v) => v.name !== v.value);
+    this.visitAll([aliases, block.children]);
   }
 
   visitUnknownBlock(block: t.UnknownBlock): void {
@@ -1286,6 +1288,19 @@ describe('R3 template transform', () => {
       ]);
     });
 
+    it('should parse aliases of the error block context variables', () => {
+      expectFromHtml(
+        '@defer{<calendar-cmp/>}@error (retry 2; let err, again = $retry){{{err.message}}}',
+      ).toEqual([
+        ['DeferredBlock'],
+        ['Element', 'calendar-cmp', '#selfClosing'],
+        ['DeferredBlockError', 'retry 2'],
+        ['Variable', 'err', '$error'],
+        ['Variable', 'again', '$retry'],
+        ['BoundText', '{{ err.message }}'],
+      ]);
+    });
+
     it('should parse a placeholder block with parameters', () => {
       expectFromHtml(
         '@defer {<calendar-cmp [date]="current"/>}' + '@placeholder (minimum 1.5s){Placeholder...}',
@@ -1600,6 +1615,31 @@ describe('R3 template transform', () => {
         expect(() => parse('@defer {hello} @error (retry ) {hi}')).toThrowError(
           /The "retry" parameter requires a value/,
         );
+      });
+
+      it('should report an unknown context variable in error block', () => {
+        expect(() => parse('@defer {hello} @error (let e = $reset) {hi}')).toThrowError(
+          /Unknown context variable "\$reset". Only "\$error" and "\$retry" are allowed/,
+        );
+      });
+
+      it('should report a duplicate context variable alias in error block', () => {
+        expect(() => parse('@defer {hello} @error (let a = $error, a = $retry) {hi}')).toThrowError(
+          /Duplicate "let" parameter variable "a"/,
+        );
+      });
+
+      it('should report invalid parameters of the error block on the parameter', () => {
+        const {nodes, errors} = parse('@defer {hello} @error (retry abc; foo; let err) {hi}', {
+          ignoreError: true,
+        });
+
+        expect(errors.map((e) => e.span.toString())).toEqual(['retry abc', 'foo']);
+        expect((nodes[0] as t.DeferredBlock).error?.contextVariables.map((v) => v.name)).toEqual([
+          '$error',
+          '$retry',
+          'err',
+        ]);
       });
 
       it('should report if minimum placeholder time cannot be parsed', () => {

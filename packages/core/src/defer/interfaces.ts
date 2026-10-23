@@ -181,6 +181,15 @@ export interface TDeferBlockDetails {
   retryLoadingFn: DeferDependencyRetryLoadingFn | null;
 
   /**
+   * Creates the context of the `@error` view. Installed by `ɵɵdeferEnableRetry`, or `null`
+   * when retry is disabled.
+   */
+  errorContextFn: ((lView: LView, tNode: TNode, tDetails: TDeferBlockDetails) => unknown) | null;
+
+  /** Error of the last failed loading sequence, or `null`. */
+  loadingError: unknown;
+
+  /**
    * Tracks debugging information about the deferred block.
    */
   debug: {

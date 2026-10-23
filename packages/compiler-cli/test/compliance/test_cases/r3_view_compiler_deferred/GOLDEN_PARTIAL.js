@@ -1762,3 +1762,71 @@ export declare class LinkedRetryApp {
     static ɵcmp: i0.ɵɵComponentDeclaration<LinkedRetryApp, "ng-component", never, {}, {}, never, never, true, never>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_with_error_context_dep.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class ErrorContextCmp {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: ErrorContextCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: ErrorContextCmp, isStandalone: true, selector: "error-context-cmp", ngImport: i0, template: 'Loaded!', isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: ErrorContextCmp, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'error-context-cmp',
+                    template: 'Loaded!',
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_with_error_context_dep.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class ErrorContextCmp {
+    static ɵfac: i0.ɵɵFactoryDeclaration<ErrorContextCmp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<ErrorContextCmp, "error-context-cmp", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_with_error_context.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyApp {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    @defer {
+      <error-context-cmp />
+    } @error (let err, again = $retry) {
+      <p>{{ $error.message }} {{ err.name }}</p>
+      <button (click)="again()">Retry</button>
+    }
+  `, isInline: true, deferBlockDependencies: [() => [/* @ts-ignore */
+                import("./deferred_with_error_context_dep").then(m => m.ErrorContextCmp)]] });
+}
+i0.ɵɵngDeclareClassMetadataAsync({ minVersion: "18.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, resolveDeferredDeps: () => [/* @ts-ignore */
+        import("./deferred_with_error_context_dep").then(m => m.ErrorContextCmp)], resolveMetadata: ErrorContextCmp => ({ decorators: [{
+                type: Component,
+                args: [{
+                        imports: [ErrorContextCmp],
+                        template: `
+    @defer {
+      <error-context-cmp />
+    } @error (let err, again = $retry) {
+      <p>{{ $error.message }} {{ err.name }}</p>
+      <button (click)="again()">Retry</button>
+    }
+  `,
+                    }]
+            }], ctorParameters: null, propDecorators: null }) });
+
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_with_error_context.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyApp {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+

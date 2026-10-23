@@ -174,6 +174,8 @@ export function ɵɵdefer(
       flags: flags ?? TDeferDetailsFlags.Default,
       maxRetryCount: null,
       retryLoadingFn: null,
+      errorContextFn: null,
+      loadingError: null,
     };
     enableTimerScheduling?.(tView, tDetails, placeholderConfigIndex, loadingConfigIndex);
     if (retryCount != null) {
