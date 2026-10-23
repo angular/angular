@@ -381,8 +381,6 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'ngtsc behavioral tests should accept dynamic host attribute bindings',
   'ngtsc behavioral tests should filter out directives and pipes from module exports in the injector def',
   'ngtsc behavioral tests should provide error location for invalid host properties',
-  'ngtsc behavioral tests should report diagnostic on the exact element in the `imports` array',
-  'ngtsc behavioral tests should report imports diagnostic for declaration file in original expression',
   'ngtsc behavioral tests should throw in case pipes are used in host bindings (defined as `value | pipe`)',
   'ngtsc behavioral tests undecorated providers template parsing diagnostics should emit both type-check diagnostics and parse error diagnostics',
   'ngtsc compilation of standalone types component-side should compile a standalone component in a cycle with its module',

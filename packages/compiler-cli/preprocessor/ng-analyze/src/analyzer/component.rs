@@ -221,6 +221,8 @@ fn parse_component_metadata<'a, Fs: ResourceResolverFs>(
                 data.imports_key_span = Some(p.key.span());
                 data.raw_imports_span = Some(p.value.span());
                 data.imports_factory_span = Some(p.value.span());
+                data.imports_span_tree =
+                    Some(crate::analyzer::ExprSpanTree::from_expression(&p.value));
 
                 data.imports = Some(Resolved::from_syntax(
                     evaluate_expression(&p.value, eval),

@@ -1,26 +1,3 @@
-# /out/app.component.ngtypecheck.ts
-```ts
-/**
- * TCB for /app.component.ts
- * @generated
- */
-
-import * as i0 from './app.component';
-
-/*tcb1*/
-function _tcb1(this: i0.AppComponent) {
-  if (true) {
-  }
-}
-
-/* Diagnostics:
- - (247, 262) 'external-comp' is not a known element:
-1. If 'external-comp' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'external-comp' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
-*/
-
-```
-
 # /out/app.component.ts
 ```ts
 import { Component } from '@angular/core';
@@ -56,10 +33,9 @@ export class AppComponent {
       vars: 0,
       template: function AppComponent_Template(rf: number, ctx: any): any {
         if (rf & 1) {
-          i0.ɵɵelement(0, 'local-comp')(1, 'external-comp');
+          i0.ɵɵdomElement(0, 'local-comp')(1, 'external-comp');
         }
       },
-      dependencies: i0.ɵɵgetComponentDepsFactory(AppComponent, [LocalComp, ExternalComp]),
       encapsulation: 2,
     });
   static {
@@ -191,11 +167,11 @@ export class LocalComp {
     {
       "filePath": "/app.component.ts",
       "category": "error",
-      "code": 8001,
-      "messageText": "'external-comp' is not a known element:\n1. If 'external-comp' is an Angular component, then verify that it is included in the '@Component.imports' of this component.\n2. If 'external-comp' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. Find more at https://next.angular.dev/errors/NG8001",
+      "code": 1010,
+      "messageText": "'imports' must be an array of components, directives, pipes, or NgModules.\n  Value could not be determined statically.",
       "span": {
-        "start": 247,
-        "end": 262
+        "start": 184,
+        "end": 196
       }
     }
   ]

@@ -793,6 +793,7 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
                     reference_id.file,
                     imports_eval.raw(),
                     component.imports_factory_span,
+                    component.imports_span_tree.as_ref(),
                 )
                 .await;
                 component.import_diagnostics = validation.diagnostics;

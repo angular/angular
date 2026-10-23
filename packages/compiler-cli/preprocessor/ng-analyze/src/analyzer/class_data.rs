@@ -1077,6 +1077,9 @@ pub struct ComponentData {
     /// Preserved copy of `@Component.imports` expression span, unaffected by same-file scope
     /// resolution. Required by local compilation mode for runtime dependency resolution.
     pub imports_factory_span: Option<oxc_span::Span>,
+    /// Syntactic span tree of `@Component.imports`, used to walk array literal elements in
+    /// lockstep with evaluated `imports` values when reporting element-level diagnostics.
+    pub imports_span_tree: Option<ExprSpanTree>,
     /// Diagnostics about the entries of a standalone component's `imports` (ngtsc's
     /// `validateStandaloneImports` and the `ModuleWithProviders` rejection of
     /// `validateAndFlattenComponentImports`), filled by Stage 2. Already in wire form because
@@ -1130,6 +1133,44 @@ pub struct ComponentImportEntryData {
     pub is_standalone: Option<bool>,
     pub is_potential_shared: bool,
     pub usage_span: Option<oxc_span::Span>,
+}
+
+/// Syntactic expression-span tree for `@Component.imports`, mirroring the `expr: ts.Expression`
+/// parameter threaded through `validateAndFlattenComponentImports` in ngtsc so element-level
+/// diagnostic spans can be recovered when traversing nested array expressions in lockstep with
+/// evaluated `ResolvedValue` arrays.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum ExprSpanTree {
+    Leaf(oxc_span::Span),
+    Array {
+        span: oxc_span::Span,
+        elements: Vec<ExprSpanTree>,
+    },
+}
+
+impl ExprSpanTree {
+    pub fn from_expression(expr: &oxc_ast::ast::Expression<'_>) -> Self {
+        use oxc_span::GetSpan;
+        if let oxc_ast::ast::Expression::ArrayExpression(arr) = expr {
+            if arr.elements.iter().all(|el| el.as_expression().is_some()) {
+                return Self::Array {
+                    span: arr.span,
+                    elements: arr
+                        .elements
+                        .iter()
+                        .filter_map(|el| el.as_expression().map(Self::from_expression))
+                        .collect(),
+                };
+            }
+        }
+        Self::Leaf(expr.span())
+    }
+
+    pub fn span(&self) -> oxc_span::Span {
+        match self {
+            Self::Leaf(span) | Self::Array { span, .. } => *span,
+        }
+    }
 }
 
 #[derive(Clone, Debug)]
