@@ -460,7 +460,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             });
         }
 
-        let mut analysis = crate::analyzer::analyze_parsed(
+        let analysis = crate::analyzer::analyze_parsed(
             &file_path,
             file_id,
             source_text,
@@ -472,33 +472,8 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             &converter,
             self.compile_non_exported_classes,
             self.enable_hmr,
+            self.implicit_standalone,
         );
-
-        if !self.implicit_standalone && !crate::utils::is_dts(&file_path) {
-            for class in &mut analysis.classes {
-                match &mut class.decorator {
-                    crate::analyzer::DecoratorData::Component(c)
-                        if c.directive.standalone_span.is_none() =>
-                    {
-                        c.directive.standalone = false;
-                    }
-                    crate::analyzer::DecoratorData::Directive(d)
-                        if d.standalone_span.is_none() =>
-                    {
-                        d.standalone = false;
-                    }
-                    crate::analyzer::DecoratorData::Pipe(p) if p.standalone.is_none() => {
-                        p.standalone = Some(false);
-                    }
-                    _ => {}
-                }
-            }
-            analysis.registrations = analysis
-                .classes
-                .iter()
-                .filter_map(|class| class.to_registration(source_text, &converter))
-                .collect();
-        }
 
         self.resource_registry
             .register_resources(&file_path, analysis.classes.iter());

@@ -2177,6 +2177,18 @@ function sliceGuarded(
 ): string {
   const source = typeof s === 'string' ? s : s.original;
   const insertions: SourceInsertion[] = [];
+  if (functionSpans) {
+    for (const fnSpan of functionSpans) {
+      if (
+        fnSpan.start >= span.start &&
+        fnSpan.end <= span.end &&
+        !(fnSpan.start === span.start && fnSpan.end === span.end)
+      ) {
+        insertions.push({position: fnSpan.start, text: '('});
+        insertions.push({position: fnSpan.end, text: ')'});
+      }
+    }
+  }
   if (typeof s !== 'string') {
     const debugInsertions = signalDebugNameInsertionsBySource.get(s);
     if (debugInsertions !== undefined) {
@@ -2192,18 +2204,6 @@ function sliceGuarded(
     if (guard.start >= span.start && guard.start < span.end && !seenGuards.has(guard.start)) {
       seenGuards.add(guard.start);
       insertions.push({position: guard.start, text: FORWARD_REFERENCE_GUARD});
-    }
-  }
-  if (functionSpans !== undefined) {
-    for (const fnSpan of functionSpans) {
-      if (
-        fnSpan.start >= span.start &&
-        fnSpan.end <= span.end &&
-        !(fnSpan.start === span.start && fnSpan.end === span.end)
-      ) {
-        insertions.push({position: fnSpan.start, text: '('});
-        insertions.push({position: fnSpan.end, text: ')'});
-      }
     }
   }
   if (insertions.length === 0) {
