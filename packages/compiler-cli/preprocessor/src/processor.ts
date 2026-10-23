@@ -1439,6 +1439,7 @@ export function processFileSync(
         viewQueries: buildQueriesMap(viewQueries, content),
         host: buildHostMetadata(hostMetadata, hostBindings, hostListeners, className, {
           filePath,
+          sourceText: content,
           hostSpan: component.hostSpan,
           hostProperties: component.hostProperties,
           diagnostics: fileDiagnostics,
@@ -1578,6 +1579,7 @@ export function processFileSync(
         viewQueries: buildQueriesMap(viewQueries, content),
         host: buildHostMetadata(hostMetadata, hostBindings, hostListeners, className, {
           filePath,
+          sourceText: content,
           hostSpan: directive.hostSpan,
           hostProperties: directive.hostProperties,
           diagnostics: fileDiagnostics,
