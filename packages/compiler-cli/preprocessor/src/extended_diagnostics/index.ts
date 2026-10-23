@@ -46,14 +46,14 @@ export {
   checkUnusedStandaloneImports,
   diagnosticLabelToCategory,
   EXTENDED_ERROR_DETAILS_PAGE_BASE_URL,
-  ExtendedTemplateChecker,
+  type ExtendedTemplateChecker,
   ExtendedTemplateCheckerImpl,
   formatExtendedError,
   isAccessFromUncheckedIndex,
-  TemplateCheck,
-  TemplateCheckFactory,
+  type TemplateCheck,
+  type TemplateCheckFactory,
   TemplateCheckWithVisitor,
-  TemplateContext,
+  type TemplateContext,
 };
 
 // TODO: Add factories for `nullishCoalescingNotNullable` (NG8102), `optionalChainNotNullable`
