@@ -1198,7 +1198,6 @@ export function processFileSync(
       const markNotDeferrable = (local: string | undefined) => {
         if (!canDeferDeps || local === undefined) return;
         eagerlyBoundNames.add(local);
-        eagerlyReferencedNames.add(local);
         deferredOnlyNames.delete(local);
       };
 

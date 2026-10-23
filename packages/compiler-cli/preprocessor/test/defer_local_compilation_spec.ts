@@ -683,5 +683,37 @@ ${deferFirst ? `${parentCmp}\n${helperCmp}` : `${helperCmp}\n${parentCmp}`}
         params: ['DeferredA', 'DeferredB'],
       });
     });
+
+    it('does not report a false-positive NG8014 when a co-imported deferredImports symbol is unused in the template', async () => {
+      const files: TestFile[] = [
+        tsconfig(['app.component.ts', 'comps.ts']),
+        {
+          path: '/comps.ts',
+          content: `
+            import { Component } from '@angular/core';
+            @Component({ selector: 'comp-a', template: 'A' })
+            export class CompA {}
+            @Component({ selector: 'comp-b', template: 'B' })
+            export class CompB {}
+          `,
+        },
+        {
+          path: '/app.component.ts',
+          content: `
+            import { Component } from '@angular/core';
+            import { CompA, CompB } from './comps';
+
+            @Component({
+              selector: 'app-comp',
+              deferredImports: [CompA, CompB],
+              template: '@defer { <comp-a /> }',
+            })
+            export class AppComponent {}
+          `,
+        },
+      ];
+
+      expect(await diagnose(files, true)).toEqual([]);
+    });
   });
 });
