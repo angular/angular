@@ -2,7 +2,7 @@ use std::collections::HashSet;
 use std::path::Path;
 
 use crate::ResourceResolverFs;
-use oxc_ast::ast::{Class, ClassElement};
+use oxc_ast::ast::{Class, ClassElement, ExportDefaultDeclarationKind, Program, Statement};
 use oxc_ast_visit::utf8_to_utf16::Utf8ToUtf16;
 use oxc_resolver::ResolverGeneric;
 use oxc_semantic::Semantic;
@@ -40,6 +40,7 @@ pub struct ClassVisitor<'a, Fs: ResourceResolverFs> {
     angular_imports: &'a crate::analyzer::imports::AngularImports,
     semantic: &'a Semantic<'a>,
     local_exported_names: &'a HashSet<&'a str>,
+    file_exports: FileExportInfo,
     compile_non_exported_classes: bool,
     enable_hmr: bool,
     results: Vec<ClassData>,
@@ -62,6 +63,7 @@ impl<'a, Fs: ResourceResolverFs> ClassVisitor<'a, Fs> {
         import_map: &'a std::collections::HashMap<String, ImportedSymbol>,
         angular_imports: &'a crate::analyzer::imports::AngularImports,
         local_exported_names: &'a HashSet<&'a str>,
+        file_exports: FileExportInfo,
         compile_non_exported_classes: bool,
         enable_hmr: bool,
     ) -> Self {
@@ -76,6 +78,7 @@ impl<'a, Fs: ResourceResolverFs> ClassVisitor<'a, Fs> {
             import_map,
             angular_imports,
             local_exported_names,
+            file_exports,
             compile_non_exported_classes,
             enable_hmr,
             results: Vec::new(),
@@ -86,14 +89,14 @@ impl<'a, Fs: ResourceResolverFs> ClassVisitor<'a, Fs> {
         }
     }
 
-    fn into_results(mut self, file_exports: FileExportInfo) -> ClassVisitorOutput {
+    fn into_results(mut self) -> ClassVisitorOutput {
         apply_ngmodule_schemas_local(&mut self.results, Some(&mut self.registrations));
         resolve_local_imports(&mut self.results, self.source_text, self.converter);
         ClassVisitorOutput {
             classes: self.results,
             registrations: self.registrations,
             di_facts: self.di_facts,
-            file_exports,
+            file_exports: self.file_exports,
             diagnostics: self.diagnostics,
         }
     }
@@ -201,16 +204,23 @@ impl<'a, Fs: ResourceResolverFs> ClassVisitor<'a, Fs> {
             return;
         }
 
+        let parent_kind = self.semantic.nodes().parent_kind(node_id);
         let has_export_keyword = matches!(
-            self.semantic.nodes().parent_kind(node_id),
+            parent_kind,
             oxc_ast::AstKind::ExportDeclaration(_) | oxc_ast::AstKind::ExportDefaultDeclaration(_)
         );
         let class_data = classify(reference_id, parsed, has_real_symbol);
 
-        // TODO(parity): ngtsc's `isStaticallyExported` also counts export lists
-        // (`export {Foo}`, `export {Foo as Bar}`, `export default Foo`).
+        let is_indirectly_exported = matches!(parent_kind, oxc_ast::AstKind::Program(_))
+            && class_data.class_name.as_deref().is_some_and(|name| {
+                self.file_exports
+                    .local_aliases
+                    .iter()
+                    .any(|alias| !alias.is_type && alias.local_name == name)
+            });
         if !self.compile_non_exported_classes
             && !has_export_keyword
+            && !is_indirectly_exported
             && !is_standalone_declaration(&class_data.decorator)
         {
             return;
@@ -916,6 +926,7 @@ pub fn analyze_parsed<Fs: ResourceResolverFs>(
     let is_core = super::imports::detect_is_core(path, fs);
     let angular_imports = super::imports::extract_angular_imports(module_record, semantic, is_core);
     let local_exported_names = get_local_exported_names(module_record);
+    let file_exports = extract_file_exports(module_record, program);
 
     let mut visitor = ClassVisitor::new(
         source_text,
@@ -928,6 +939,7 @@ pub fn analyze_parsed<Fs: ResourceResolverFs>(
         &import_map,
         &angular_imports,
         &local_exported_names,
+        file_exports,
         compile_non_exported_classes,
         enable_hmr,
     );
@@ -938,8 +950,7 @@ pub fn analyze_parsed<Fs: ResourceResolverFs>(
         conv.convert_offset(&mut imports_end);
     }
 
-    let file_exports = extract_file_exports(module_record);
-    let output = visitor.into_results(file_exports);
+    let output = visitor.into_results();
     let mut source_file_validator_diagnostics = Vec::new();
     for issue in super::initializer_api_usage::initializer_api_usage_issues(
         semantic,
@@ -1020,7 +1031,7 @@ fn dependency_array_references(
 
 /// Extract a file's re-export table (`export { x } from …`, `export * from …`) from its module
 /// record.
-fn extract_file_exports(module_record: &ModuleRecord<'_>) -> FileExportInfo {
+fn extract_file_exports(module_record: &ModuleRecord<'_>, program: &Program<'_>) -> FileExportInfo {
     let mut named = Vec::new();
     let mut wildcards = Vec::new();
     let mut local_aliases = Vec::new();
@@ -1071,6 +1082,22 @@ fn extract_file_exports(module_record: &ModuleRecord<'_>) -> FileExportInfo {
             local_name: local_name.to_string(),
             is_type: entry.is_type,
         });
+    }
+
+    for stmt in &program.body {
+        let Statement::ExportDefaultDeclaration(decl) = stmt else {
+            continue;
+        };
+        let ExportDefaultDeclarationKind::Identifier(ident) = &decl.declaration else {
+            continue;
+        };
+        if !local_aliases.iter().any(|a| a.exported_name == "default") {
+            local_aliases.push(LocalExportAlias {
+                exported_name: "default".to_string(),
+                local_name: ident.name.to_string(),
+                is_type: false,
+            });
+        }
     }
 
     for entry in &module_record.star_export_entries {
