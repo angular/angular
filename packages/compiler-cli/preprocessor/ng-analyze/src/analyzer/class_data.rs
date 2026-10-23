@@ -3553,9 +3553,13 @@ fn prepare_members(
         }
     }
 
-    // Signal queries first, then `first` queries, then the rest (stable within groups).
+    // Class member queries come before decorator `queries` metadata (`property_span.is_none()`):
+    // signal queries first, then `first` queries, then the rest, and finally `queries` metadata
+    // entries (stable within groups).
     let sort_key = |q: &QueryMetadata| {
-        if q.is_signal {
+        if q.property_span.is_none() {
+            3
+        } else if q.is_signal {
             0
         } else if q.first {
             1
