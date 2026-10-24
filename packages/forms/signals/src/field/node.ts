@@ -275,7 +275,6 @@ export class FieldNode implements FieldState<unknown> {
     }
     untracked(() => {
       this.markAsTouchedInternal(options);
-      this.flushSync();
     });
   }
 
@@ -283,14 +282,20 @@ export class FieldNode implements FieldState<unknown> {
     if (this.structure.isOrphaned()) {
       return;
     }
-    if (this.validationState.shouldSkipValidation()) {
-      return;
+    const skipValidation = this.validationState.shouldSkipValidation();
+    if (!skipValidation) {
+      this.nodeState.markAsTouched();
     }
-    this.nodeState.markAsTouched();
+    // Flush even when validation is skipped, so a pending value still reaches the model.
+    this.flushSync();
     if (options?.skipDescendants) {
       return;
     }
-    for (const child of this.structure.children()) {
+    // Inactive subtrees stay lazy: only fields that already exist can have a pending value.
+    const children = skipValidation
+      ? this.structure.materializedChildren()
+      : this.structure.children();
+    for (const child of children) {
       child.markAsTouchedInternal();
     }
   }
