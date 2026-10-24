@@ -469,6 +469,89 @@ runInEachFileSystem((os: string) => {
       });
     });
 
+    it('should report animate bindings that are not supported animations in templates', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: \`
+              <p animate.entr="fade-in"></p>
+              <p [animate.leav]="'fade-out'"></p>
+              <p (animate.enterr)="animateFn($event)"></p>
+            \`,
+          })
+          class TestComponent {
+            animateFn(event: unknown) {}
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.map((diag) => diag.messageText)).toEqual([
+        'Unsupported animation binding "animate.entr". The supported animation bindings are "animate.enter" and "animate.leave".',
+        'Unsupported animation binding "animate.leav". The supported animation bindings are "animate.enter" and "animate.leave".',
+        'Unsupported animation binding "animate.enterr". The supported animation bindings are "animate.enter" and "animate.leave".',
+      ]);
+    });
+
+    it('should report animate bindings that are not supported animations in host bindings', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Directive} from '@angular/core';
+
+          @Directive({
+            selector: '[test]',
+            host: {
+              'animate.entr': 'fade-in',
+              '[animate.leav]': "'fade-out'",
+              '(animate.enterr)': 'animateFn($event)',
+            },
+          })
+          class TestDirective {
+            animateFn(event: unknown) {}
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      const message = diags[0].messageText as string;
+      expect(message).toContain('Unsupported animation binding "animate.entr"');
+      expect(message).toContain('Unsupported animation binding "animate.leav"');
+      expect(message).toContain('Unsupported animation binding "animate.enterr"');
+    });
+
+    it('should report animate bindings that are not supported animations in decorators', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Directive, HostBinding, HostListener} from '@angular/core';
+
+          @Directive({selector: '[binding]'})
+          class BindingDirective {
+            @HostBinding('animate.entr') animation = 'fade-in';
+          }
+
+          @Directive({selector: '[listener]'})
+          class ListenerDirective {
+            @HostListener('animate.leav', ['$event']) onLeave(event: unknown) {}
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.map((diag) => diag.messageText)).toEqual(
+        jasmine.arrayWithExactContents([
+          'Unsupported animation binding "animate.entr". The supported animation bindings are "animate.enter" and "animate.leave".',
+          'Unsupported animation binding "animate.leav". The supported animation bindings are "animate.enter" and "animate.leave".',
+        ]),
+      );
+    });
+
     it('should compile Injectables with providedIn and factory with deps without errors', () => {
       env.write(
         'test.ts',
