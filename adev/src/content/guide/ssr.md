@@ -55,6 +55,7 @@ You can add this config to your application with [`provideServerRendering`](api/
 
 ```typescript {header: "app.config.server.ts"}
 import {provideServerRendering, withRoutes} from '@angular/ssr';
+import {ApplicationConfig} from '@angular/core';
 import {serverRoutes} from './app.routes.server';
 
 const serverConfig: ApplicationConfig = {
@@ -69,6 +70,7 @@ When using the [App shell pattern](ecosystem/service-workers/app-shell), you mus
 
 ```typescript
 import {provideServerRendering, withRoutes, withAppShell} from '@angular/ssr';
+import {ApplicationConfig} from '@angular/core';
 import {AppShell} from './app-shell';
 
 const serverConfig: ApplicationConfig = {
@@ -177,6 +179,7 @@ You can also use this function with catch-all routes (e.g., `/**`), where the pa
 
 ```ts {header: "app.routes.server.ts"}
 import {RenderMode, ServerRoute} from '@angular/ssr';
+import {inject} from '@angular/core';
 
 export const serverRoutes: ServerRoute[] = [
   {
@@ -364,7 +367,7 @@ The `@angular/core` package provides several tokens for interacting with the ser
 - **[`REQUEST_CONTEXT`](api/core/REQUEST_CONTEXT 'API reference'):** Provides access to additional context related to the current request. This context can be passed as the second parameter of the [`handle`](api/ssr/AngularAppEngine#handle 'API reference') function. Typically, this is used to provide additional request-related information that is not part of the standard Web API.
 
 ```angular-ts
-import {inject, REQUEST} from '@angular/core';
+import {inject, REQUEST, Component} from '@angular/core';
 
 @Component({
   selector: 'app-my-component',
@@ -426,6 +429,7 @@ If your application needs to fetch larger responses during server rendering, set
 
 ```ts
 import {provideServerRendering, withRoutes} from '@angular/ssr';
+import {ApplicationConfig} from '@angular/core';
 import {serverRoutes} from './app.routes.server';
 
 const serverConfig: ApplicationConfig = {

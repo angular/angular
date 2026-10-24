@@ -19,6 +19,7 @@ To enable route resources, provide `withRouterResources()` to your router config
 
 ```ts
 import {provideRouter, withComponentInputBinding, withRouterResources} from '@angular/router';
+import {bootstrapApplication} from '@angular/platform-browser';
 
 bootstrapApplication(App, {
   providers: [provideRouter(routes, withComponentInputBinding(), withRouterResources())],

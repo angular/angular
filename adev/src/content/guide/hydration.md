@@ -72,6 +72,7 @@ import {
   provideClientHydration,
   withEventReplay,
   withNoIncrementalHydration,
+  bootstrapApplication,
 } from '@angular/platform-browser';
 
 bootstrapApplication(App, {

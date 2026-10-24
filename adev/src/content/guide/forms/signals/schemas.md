@@ -55,7 +55,7 @@ TIP: If rules only appear in one place, an inline schema function works just as 
 You can apply a reusable schema to a specific path in a form by using the `apply()` function. When you call `apply()`, the schema receives a scoped path that only sees the fields within that sub-path:
 
 ```ts
-import {apply} from '@angular/forms/signals';
+import {apply, form} from '@angular/forms/signals';
 
 profileForm = form(this.profileModel, (schemaPath) => {
   apply(schemaPath.name, nameSchema);
