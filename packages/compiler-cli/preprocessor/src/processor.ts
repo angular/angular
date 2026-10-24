@@ -540,12 +540,10 @@ export function processFileSync(
         );
         if (ctorParams) {
           const ctorExpr = compileCtorParameters(ctorParams, /* allowSuppressions */ true);
-          const jsdoc = ctx.isClosureCompilerEnabled
-            ? '/** @internal @nocollapse */'
-            : '/** @internal */';
+          const nocollapse = ctx.isClosureCompilerEnabled ? '/** @nocollapse */\n  ' : '';
           s.appendLeft(
             span.end - 1,
-            `\n  ${jsdoc}\n  static ctorParameters = ${printer.print(ctorExpr)};\n`,
+            `\n  ${nocollapse}static ctorParameters = ${printer.print(ctorExpr)};\n`,
           );
         }
       }
