@@ -172,6 +172,8 @@ in tests. If a test needs it, the component usually isn't fully reactive or
 
 ### Debug-mode check to ensure updates are detected
 
+IMPORTANT: `provideCheckNoChangesConfig` is in [developer preview](reference/releases#developer-preview).
+
 Angular also provides an additional tool to help verify that an application is making
 updates to state in a zoneless-compatible way. `provideCheckNoChangesConfig({exhaustive: true, interval: <milliseconds>})`
 can be used to periodically check to ensure that no bindings have been updated

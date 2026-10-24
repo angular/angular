@@ -1,5 +1,7 @@
 # Data fetching with resources
 
+IMPORTANT: Route resources are in [developer preview](reference/releases#developer-preview).
+
 The Angular Router integrates with Angular signals through the `resources` route configuration. This allows you to fetch data reactively using `Resource` APIs.
 
 ## Why use route resources?
