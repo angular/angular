@@ -8,9 +8,10 @@
 
 import {ElementPosition} from '../../../../protocol';
 import {ComponentTreeNode, DirectiveInstance} from '../shared/interfaces';
-import {getProfiler} from '../profiling/profiler';
 import {IdentityTracker, IndexedNode, IndexingOutput} from './identity-tracker/identity-tracker';
 import {debugLog} from '../shared/utils/log';
+import {inject} from '../di';
+import {Profiler} from '../profiling/profiler';
 
 // Global reference.
 let directiveForestManager: DirectiveForestManager;
@@ -93,7 +94,7 @@ export function getDirectiveForestManager(): DirectiveForestManager {
   }
 
   directiveForestManager.onIndexForest(({newNodes, removedNodes}) => {
-    getProfiler().onIndexForest(newNodes, removedNodes);
+    inject(Profiler).onIndexForest(newNodes, removedNodes);
   });
   directiveForestManager.initialize();
 

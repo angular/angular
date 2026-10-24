@@ -11,6 +11,7 @@ import {subscribeToClientEvents} from './client-event-subscribers';
 import {appIsAngular, appIsAngularIvy, appIsSupportedAngularVersion} from '../../../shared-utils';
 import {Profiler} from './profiling/profiler';
 import {NodeArray} from './directive-forest/identity-tracker/identity-tracker';
+import {DevtoolsInjector} from './di/injector';
 
 describe('ClientEventSubscriber', () => {
   let messageBusMock: MessageBus<Events>;
@@ -43,10 +44,13 @@ describe('ClientEventSubscriber', () => {
   });
 
   it('should setup inspector', () => {
-    subscribeToClientEvents(messageBusMock, {
-      devtoolsDevMode: true,
-      depsForTestOnly: {profiler: MockProfiler},
-    });
+    subscribeToClientEvents(
+      messageBusMock,
+      {
+        devtoolsDevMode: true,
+      },
+      new DevtoolsInjector().register(Profiler, () => new MockProfiler()),
+    );
 
     expect(messageBusMock.on).toHaveBeenCalledWith('inspectorStart', jasmine.any(Function));
     expect(messageBusMock.on).toHaveBeenCalledWith('inspectorEnd', jasmine.any(Function));
