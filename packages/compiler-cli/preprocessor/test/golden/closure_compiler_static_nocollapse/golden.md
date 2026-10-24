@@ -151,10 +151,10 @@ export class StillDecorated {
       token: StillDecorated,
       factory: StillDecorated.ɵfac,
     });
-  static {
-    (typeof ngDevMode === 'undefined' || ngDevMode) &&
-      i0.ɵsetClassMetadata(StillDecorated, [{ type: Injectable }], null, null);
-  }
 }
+((): any => {
+  (typeof ngDevMode === 'undefined' || ngDevMode) &&
+    i0.ɵsetClassMetadata(StillDecorated, [{ type: Injectable }], null, null);
+})();
 
 ```

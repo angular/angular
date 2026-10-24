@@ -416,6 +416,7 @@ fn classify(
         uses_on_changes: common.uses_on_changes,
         is_exported: common.is_exported,
         has_non_exported_bounds: common.has_non_exported_bounds,
+        has_non_angular_class_decorators: common.has_non_angular_class_decorators,
         decorator,
         super_class: common.super_class,
         flattened_fields: None,
@@ -504,6 +505,7 @@ struct ParsedCommon {
     uses_on_changes: bool,
     is_exported: bool,
     has_non_exported_bounds: bool,
+    has_non_angular_class_decorators: bool,
     super_class: Option<crate::DeclarationTuple>,
 }
 
@@ -721,6 +723,7 @@ fn process_class_common<'a, Fs: ResourceResolverFs>(
     let has_non_exported_bounds = extracted_type_parameters
         .as_ref()
         .is_some_and(|tp| tp.has_non_exported_bounds);
+    let has_non_angular_class_decorators = class.decorators.len() > ng_decorator_spans.len();
     let type_parameters = extracted_type_parameters.map(|tp| tp.params);
 
     let type_check_meta = extract_class_body_type_check_meta(class);
@@ -782,6 +785,7 @@ fn process_class_common<'a, Fs: ResourceResolverFs>(
             uses_on_changes,
             is_exported,
             has_non_exported_bounds,
+            has_non_angular_class_decorators,
             super_class,
         },
         members: ParsedMembers {

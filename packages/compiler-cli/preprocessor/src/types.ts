@@ -188,6 +188,7 @@ export interface ClassMetadata {
   usesOnChanges: boolean;
   isExported: boolean;
   hasNonExportedBounds: boolean;
+  hasNonAngularClassDecorators: boolean;
 }
 
 export interface CompilationChunk {

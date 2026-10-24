@@ -83,7 +83,9 @@ describe('ɵsetClassMetadata placement with non-Angular class decorators', () =>
     });
 
     const content = outputs.get('/out/test.ts')!;
-    expect(content).toContain('static {');
-    expect(content).toContain('i0.ɵsetClassMetadata(DecoratedCmp,');
+    expect(content).not.toContain('static {');
+    expect(content).toContain(
+      "((): any => {\n  (((typeof ngDevMode === 'undefined') || ngDevMode) && i0.ɵsetClassMetadata(DecoratedCmp,",
+    );
   });
 });
