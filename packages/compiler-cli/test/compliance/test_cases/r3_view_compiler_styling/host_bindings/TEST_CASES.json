@@ -26,22 +26,7 @@
       "inputFiles": ["important.ts"],
       "expectations": [
         {
-          "failureMessage": "Incorrect template",
-          "files": [
-            {
-              "expected": "important_template.js",
-              "generated": "important.js"
-            }
-          ]
-        },
-        {
-          "failureMessage": "Incorrect host",
-          "files": [
-            {
-              "expected": "important_host.js",
-              "generated": "important.js"
-            }
-          ]
+          "files": ["important.js"]
         }
       ]
     },

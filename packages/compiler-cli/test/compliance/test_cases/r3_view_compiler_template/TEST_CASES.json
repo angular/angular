@@ -156,22 +156,7 @@
       "inputFiles": ["ng_template_interpolated_prop_with_structural_directive.ts"],
       "expectations": [
         {
-          "files": [
-            {
-              "expected": "ng_template_interpolated_prop_with_structural_directive_inner_template.js",
-              "generated": "ng_template_interpolated_prop_with_structural_directive.js"
-            }
-          ],
-          "failureMessage": "Incorrect inner template"
-        },
-        {
-          "files": [
-            {
-              "expected": "ng_template_interpolated_prop_with_structural_directive_outer_template.js",
-              "generated": "ng_template_interpolated_prop_with_structural_directive.js"
-            }
-          ],
-          "failureMessage": "Incorrect outer template"
+          "files": ["ng_template_interpolated_prop_with_structural_directive.js"]
         }
       ]
     },

@@ -1,14 +1,25 @@
+import { Component } from "@angular/core";
+import * as i0 from "@angular/core";
+const _c0 = ["*"];
+const _c1 = ["*ngIf", "showContent"];
+function SimpleComponent_ng_content_0_Template(rf, ctx) {
+  if (rf & 1) {
+    i0.ɵɵprojection(0, 0, _c1);
+  }
+}
 export class SimpleComponent {
-  // ...
-  static ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
+  static ɵfac = function SimpleComponent_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || SimpleComponent)();
+  };
+  static ɵcmp = /*@__PURE__*/ i0.ɵɵdefineComponent({
     type: SimpleComponent,
     selectors: [["simple"]],
     standalone: false,
-    ngContentSelectors: $c0$,
+    ngContentSelectors: _c0,
     decls: 1,
     vars: 1,
-    consts: [[__AttributeMarker.Template__, "ngIf"]],
-    template:  function SimpleComponent_Template(rf, ctx) {
+    consts: [[4, "ngIf"]],
+    template: function SimpleComponent_Template(rf, ctx) {
       if (rf & 1) {
         i0.ɵɵprojectionDef();
         i0.ɵɵtemplate(0, SimpleComponent_ng_content_0_Template, 1, 0, "ng-content", 0);
@@ -20,3 +31,31 @@ export class SimpleComponent {
     encapsulation: 2
   });
 }
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) &&
+    i0.ɵsetClassMetadata(
+      SimpleComponent,
+      [
+        {
+          type: Component,
+          args: [
+            {
+              selector: "simple",
+              template: '<ng-content *ngIf="showContent"></ng-content>',
+              standalone: false
+            }
+          ]
+        }
+      ],
+      null,
+      null
+    );
+})();
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) &&
+    i0.ɵsetClassDebugInfo(SimpleComponent, {
+      className: "SimpleComponent",
+      filePath: "ng_content_with_structural_dir.ts",
+      lineNumber: 7
+    });
+})();

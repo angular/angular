@@ -51,22 +51,7 @@
       "inputFiles": ["local_ref_before_listener.ts"],
       "expectations": [
         {
-          "files": [
-            {
-              "expected": "local_ref_before_listener.js",
-              "generated": "local_ref_before_listener.js"
-            }
-          ],
-          "failureMessage": "Incorrect template"
-        },
-        {
-          "files": [
-            {
-              "expected": "local_ref_before_listener_factory.js",
-              "generated": "local_ref_before_listener.js"
-            }
-          ],
-          "failureMessage": "Incorrect factory"
+          "files": ["local_ref_before_listener.js"]
         }
       ]
     },
