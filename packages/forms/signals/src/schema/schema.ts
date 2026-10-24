@@ -16,8 +16,12 @@ import {FieldPathNode} from './path_node';
  * Keeps track of the path node for the schema function that is currently being compiled. This is
  * used to detect erroneous references to a path node outside of the context of its schema function.
  * Do not set this directly, it is a context variable managed by `SchemaImpl.compile`.
+ *
+ * Safari 16-17 have a JIT bug where assigning to a module-level let/var can
+ * sometimes fail to write the value. We wrap in an array to keep a constant
+ * variable with a mutable internal value.
  */
-let currentCompilingNode: FieldPathNode | undefined = undefined;
+const currentCompilingNode: [FieldPathNode | undefined] = [undefined];
 
 /**
  * A cache of all schemas compiled under the current root compilation. This is used to avoid doing
@@ -56,14 +60,14 @@ export class SchemaImpl {
     }
     const path = FieldPathNode.newRoot();
     compiledSchemas.set(this, path);
-    let prevCompilingNode = currentCompilingNode;
+    let prevCompilingNode = currentCompilingNode[0];
     try {
-      currentCompilingNode = path;
+      currentCompilingNode[0] = path;
       this.schemaFn(path.fieldPathProxy);
     } finally {
       // Use a try/finally to ensure we restore the previous root upon completion,
       // even if there are errors while compiling the schema.
-      currentCompilingNode = prevCompilingNode;
+      currentCompilingNode[0] = prevCompilingNode;
     }
     return path;
   }
@@ -107,7 +111,7 @@ export function isSchemaOrSchemaFn(value: unknown): value is SchemaOrSchemaFn<un
 
 /** Checks that a path node belongs to the schema function currently being compiled. */
 export function assertPathIsCurrent(path: SchemaPath<unknown>): void {
-  if (currentCompilingNode !== FieldPathNode.unwrapFieldPath(path).root) {
+  if (currentCompilingNode[0] !== FieldPathNode.unwrapFieldPath(path).root) {
     throw new RuntimeError(
       RuntimeErrorCode.PATH_OUTSIDE_SCHEMA,
       ngDevMode &&

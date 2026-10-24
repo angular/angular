@@ -26,8 +26,12 @@ export type Version = number & {__brand: 'Version'};
 
 /**
  * Global epoch counter. Incremented whenever a source signal is set.
+ *
+ * Safari 16-17 have a JIT bug where assigning to a module-level let/var can
+ * sometimes fail to write the value. We wrap in an array to keep a constant
+ * variable with a mutable internal value.
  */
-let epoch: Version = 1 as Version;
+const epoch: [Version] = [1 as Version];
 
 export type ReactiveHookFn = (node: ReactiveNode) => void;
 
@@ -253,7 +257,7 @@ export function producerAccessed(node: ReactiveNode): void {
       // last read version, update the tail of the producers list of this rerun, and return.
       consumer.producersTail = nextProducerLink;
       nextProducerLink.lastReadVersion = node.version;
-      nextProducerLink.knownValidAtEpoch = epoch;
+      nextProducerLink.knownValidAtEpoch = epoch[0];
       return;
     }
   }
@@ -265,7 +269,7 @@ export function producerAccessed(node: ReactiveNode): void {
   if (
     prevConsumerLink !== undefined &&
     prevConsumerLink.consumer === consumer &&
-    (!isRecomputing || prevConsumerLink.knownValidAtEpoch === epoch)
+    (!isRecomputing || prevConsumerLink.knownValidAtEpoch === epoch[0])
   ) {
     return;
   }
@@ -283,7 +287,7 @@ export function producerAccessed(node: ReactiveNode): void {
     // the link is actually inserted. Setting it eagerly would create a dangling
     // reference into the consumer list that prevents GC of removed entries.
     prevConsumer: undefined,
-    knownValidAtEpoch: epoch,
+    knownValidAtEpoch: epoch[0],
     lastReadVersion: node.version,
     nextConsumer: undefined,
   };
@@ -305,7 +309,7 @@ export function producerAccessed(node: ReactiveNode): void {
  * Called by source producers (that is, not computeds) whenever their values change.
  */
 export function producerIncrementEpoch(): void {
-  epoch++;
+  epoch[0]++;
 }
 
 /**
@@ -318,7 +322,7 @@ export function producerUpdateValueVersion(node: ReactiveNode): void {
     return;
   }
 
-  if (!node.dirty && node.lastCleanEpoch === epoch) {
+  if (!node.dirty && node.lastCleanEpoch === epoch[0]) {
     // Even non-live consumers can skip polling if they previously found themselves to be clean at
     // the current epoch, since their dependencies could not possibly have changed (such a change
     // would've increased the epoch).
@@ -381,7 +385,7 @@ export function consumerMarkDirty(node: ReactiveNode): void {
 
 export function producerMarkClean(node: ReactiveNode): void {
   node.dirty = false;
-  node.lastCleanEpoch = epoch;
+  node.lastCleanEpoch = epoch[0];
 }
 
 /**
@@ -410,7 +414,7 @@ export function resetConsumerBeforeComputation(node: ReactiveNode): void {
   // (which may have happened in the same epoch) are not mistakenly considered valid. This is only necessary if any of
   // the links has `knownValidAtEpoch` equal to the current epoch, for which the producer that was accessed last is used
   // as proxy: any earlier producers cannot exceed its epoch.
-  if (node.producersTail?.knownValidAtEpoch === epoch) {
+  if (node.producersTail?.knownValidAtEpoch === epoch[0]) {
     let producer = node.producers;
     while (producer !== undefined) {
       producer.knownValidAtEpoch = null;
