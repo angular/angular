@@ -397,10 +397,10 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                 .with_class_table(true)
                 .build(program);
 
-            // Only treat unrecoverable parse errors as fatal. When `ret.panicked` is false, the
+            // Only treat unrecoverable parse errors as fatal. When `ret.fatal_error` is false, the
             // parser has recovered and produced a complete AST that we can analyze.
             // We can rely on TS to perform the final verification downstream.
-            let errors = if ret.panicked {
+            let errors = if ret.fatal_error {
                 ret.diagnostics.into_iter().map(|e| e.to_string()).collect()
             } else {
                 Vec::new()

@@ -4,12 +4,41 @@ use oxc_ast::ast::{
     Argument, BindingPattern, Decorator, Expression, IdentifierReference, Program, PropertyKey,
     Statement, TSQualifiedName, TSTypeName,
 };
-use oxc_ast::AstKind;
+use oxc_ast::{AstKind, StaticPropertyName};
 use oxc_semantic::{Scoping, Semantic, SymbolFlags};
 use oxc_span::GetSpan;
+use oxc_str::JSStr;
 use oxc_syntax::module_record::{ExportEntry, ExportExportName, ModuleRecord};
 use oxc_syntax::operator::BinaryOperator;
 use oxc_syntax::scope::ScopeId;
+use std::borrow::Cow;
+
+/// Converts an Oxc JavaScript string value into a Rust string, replacing each lone surrogate
+/// with U+FFFD (the replacement character).
+///
+/// Values that are valid UTF-8 are borrowed as is. Rust strings cannot represent lone
+/// surrogates, so values containing them are converted lossily.
+///
+/// TODO(parity): ngtsc preserves lone surrogates in string values (e.g. `template: '\uD83D'`).
+/// Matching that would require carrying a surrogate-preserving representation through the
+/// analyzer and its JSON output.
+pub fn js_str_to_string_lossy(value: JSStr<'_>) -> Cow<'_, str> {
+    match value.as_str() {
+        Some(value) => Cow::Borrowed(value),
+        None => value
+            .chars()
+            .map(|c| c.to_char().unwrap_or(char::REPLACEMENT_CHARACTER))
+            .collect(),
+    }
+}
+
+/// Converts a statically known property name into a Rust string. See [`js_str_to_string_lossy`].
+fn static_property_name_to_string_lossy(name: StaticPropertyName<'_>) -> Cow<'_, str> {
+    match name {
+        StaticPropertyName::Borrowed(value) => js_str_to_string_lossy(value),
+        StaticPropertyName::Owned(value) => Cow::Owned(value.into_string()),
+    }
+}
 
 /// Recursively resolves a local identifier reference to its assigned expression.
 /// Returns the original expression if it cannot be resolved or is imported from another file.
@@ -117,7 +146,7 @@ pub fn reflect_object_literal<'o, 'a>(
 /// Extract a string value from a PropertyKey expression.
 pub fn extract_property_key<'a>(key: &'a PropertyKey<'a>) -> Option<std::borrow::Cow<'a, str>> {
     if let Some(name) = key.static_name() {
-        return Some(name);
+        return Some(static_property_name_to_string_lossy(name));
     }
     match key {
         PropertyKey::Identifier(ident) => Some(std::borrow::Cow::Borrowed(ident.name.as_str())),
@@ -136,15 +165,14 @@ pub fn class_member_name<'a>(key: &'a PropertyKey<'a>) -> Option<std::borrow::Co
 /// without performing partial evaluation.
 pub fn extract_literal_string(expr: &Expression<'_>) -> Option<String> {
     match expr {
-        Expression::StringLiteral(s) => Some(s.value.to_string()),
+        Expression::StringLiteral(s) => Some(js_str_to_string_lossy(s.value).into_owned()),
         Expression::TemplateLiteral(t) if t.expressions.is_empty() => {
             let q = t.quasis.first()?;
             Some(
                 q.value
                     .cooked
-                    .as_deref()
-                    .unwrap_or(q.value.raw.as_str())
-                    .to_string(),
+                    .map_or(Cow::Borrowed(q.value.raw.as_str()), js_str_to_string_lossy)
+                    .into_owned(),
             )
         }
         _ => None,
@@ -157,7 +185,7 @@ pub fn extract_string_resolved<'a>(
     semantic: &Semantic<'a>,
 ) -> Option<String> {
     match expr {
-        Expression::StringLiteral(s) => Some(s.value.to_string()),
+        Expression::StringLiteral(s) => Some(js_str_to_string_lossy(s.value).into_owned()),
         Expression::NumericLiteral(n) => Some(n.value.to_string()),
         Expression::BooleanLiteral(b) => Some(b.value.to_string()),
         Expression::NullLiteral(_) => Some("null".to_string()),
@@ -167,12 +195,11 @@ pub fn extract_string_resolved<'a>(
             // https://github.com/angular/angular/blob/0e16bb7/packages/compiler-cli/src/ngtsc/partial_evaluator/src/interpreter.ts#L219-L232
             let mut result = String::new();
             for (i, quasi) in t.quasis.iter().enumerate() {
-                let cooked = quasi
-                    .value
-                    .cooked
-                    .as_deref()
-                    .unwrap_or(quasi.value.raw.as_str());
-                result.push_str(cooked);
+                let cooked = quasi.value.cooked.map_or(
+                    Cow::Borrowed(quasi.value.raw.as_str()),
+                    js_str_to_string_lossy,
+                );
+                result.push_str(&cooked);
                 if let Some(sub) = t.expressions.get(i) {
                     result.push_str(&extract_string(sub, semantic)?);
                 }
@@ -247,7 +274,7 @@ use crate::utils::ANGULAR_CORE;
 pub(crate) fn import_of_identifier<'a>(
     ident: &oxc_ast::ast::IdentifierReference<'a>,
     semantic: &Semantic<'a>,
-) -> Option<(&'a str, Option<&'a str>)> {
+) -> Option<(Cow<'a, str>, Option<&'a str>)> {
     let ref_id = ident.reference_id.get()?;
     let scoping = semantic.scoping();
     let symbol_id = scoping.get_reference(ref_id).symbol_id()?;
@@ -269,7 +296,7 @@ pub(crate) fn import_of_identifier<'a>(
     let AstKind::ImportDeclaration(decl) = parent.kind() else {
         return None;
     };
-    Some((decl.source.value.as_str(), imported_name))
+    Some((js_str_to_string_lossy(decl.source.value), imported_name))
 }
 
 /// Whether a call's callee is `@angular/core`'s `forwardRef`, reached through an import
@@ -284,7 +311,7 @@ fn is_angular_forward_ref_callee<'a>(callee: &Expression<'a>, semantic: &Semanti
         Expression::Identifier(ident) => {
             matches!(
                 import_of_identifier(ident, semantic),
-                Some((ANGULAR_CORE, Some("forwardRef")))
+                Some((specifier, Some("forwardRef"))) if specifier == ANGULAR_CORE
             )
         }
         Expression::StaticMemberExpression(member) => {
@@ -298,7 +325,7 @@ fn is_angular_forward_ref_callee<'a>(callee: &Expression<'a>, semantic: &Semanti
             };
             matches!(
                 import_of_identifier(object, semantic),
-                Some((ANGULAR_CORE, None))
+                Some((specifier, None)) if specifier == ANGULAR_CORE
             )
         }
         _ => false,
@@ -705,8 +732,8 @@ pub fn extract_class_body_type_check_meta(
                     let Some(name) = public_instance_method_name(method) else {
                         continue;
                     };
-                    if !public_methods.iter().any(|existing| existing == name) {
-                        public_methods.push(name.to_string());
+                    if !public_methods.iter().any(|existing| *existing == name) {
+                        public_methods.push(name.into_owned());
                     }
                     continue;
                 }
@@ -776,7 +803,7 @@ pub fn extract_class_body_type_check_meta(
 
 fn public_instance_method_name<'a>(
     method: &'a oxc_ast::ast::MethodDefinition<'a>,
-) -> Option<&'a str> {
+) -> Option<Cow<'a, str>> {
     use oxc_ast::ast::{MethodDefinitionKind, PropertyKey, TSAccessibility};
 
     if method.kind != MethodDefinitionKind::Method {
@@ -789,8 +816,8 @@ fn public_instance_method_name<'a>(
         return None;
     }
     match &method.key {
-        PropertyKey::StaticIdentifier(ident) => Some(ident.name.as_str()),
-        PropertyKey::StringLiteral(literal) => Some(literal.value.as_str()),
+        PropertyKey::StaticIdentifier(ident) => Some(Cow::Borrowed(ident.name.as_str())),
+        PropertyKey::StringLiteral(literal) => Some(js_str_to_string_lossy(literal.value)),
         _ => None,
     }
 }
