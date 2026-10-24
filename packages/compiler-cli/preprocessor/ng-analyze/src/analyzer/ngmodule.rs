@@ -389,7 +389,7 @@ fn classify_isolated_element<'a>(
         };
     }
     match resolved.unwrap_named() {
-        ResolvedValue::Reference(r) => {
+        ResolvedValue::Reference(r) if r.member.is_none() => {
             return IsolatedTypeElementData::Typeof {
                 span: None,
                 reference: Some(Reference::from_value_reference(r)),
@@ -403,6 +403,10 @@ fn classify_isolated_element<'a>(
                     all_valid = false;
                     break;
                 };
+                if r.member.is_some() {
+                    all_valid = false;
+                    break;
+                }
                 references.push(Reference::from_value_reference(r));
             }
             if all_valid {

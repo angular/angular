@@ -92,7 +92,7 @@ describe('isolated NgModule imports under emitDeclarationOnly', () => {
 
     const content = outputs.get('/out/test.ts')!;
     expect(content).toContain(
-      'static ɵmod: i0.ɵɵNgModuleDeclaration<AppModule, never, never, never>',
+      'static ɵmod: i0.ɵɵNgModuleDeclaration<AppModule, never, [typeof ImportedModule], never>',
     );
   });
 });
