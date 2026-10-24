@@ -384,6 +384,9 @@ pub(crate) fn object_literal_transform(
                 value_span: value.span(),
             }
         }
+        crate::analyzer::transforms::ExtractedTransformType::Unknown(value_span) => {
+            TransformData::Unknown { value_span }
+        }
         crate::analyzer::transforms::ExtractedTransformType::Expression(span) => {
             TransformData::Expression(span)
         }
@@ -753,6 +756,7 @@ mod tests {
                 type_span,
                 value_span,
             } => (type_span, value_span),
+            TransformData::Unknown { value_span } => (value_span, value_span),
             TransformData::Expression(s) => (s, s),
         };
         assert!(matches!(tt, TransformData::Type { .. }));

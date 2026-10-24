@@ -247,19 +247,11 @@ const NGP_POTENTIAL_BREAKING_CHANGES: ReadonlySet<string> = new Set([
   'Debug Info Typescript tranformation viewChildren should not tree-shake away debug info if in dev mode',
   'Debug Info Typescript tranformation viewChildren should tree-shake away debug info if in prod mode',
 
-  // Design difference, not a bug: ngtsc writes the transform's resolved first parameter type into
-  // `static ngAcceptInputType_<input>` (e.g. `boolean | string`, `unknown` for a `this`-only
-  // function, and `i1.Foo` with a matching `import * as i1` in the `.d.ts`). ngp has no type
-  // checker when it analyzes the file, so it emits `Parameters<typeof transformFn>[0]` instead.
-  'ngtsc behavioral tests input transforms should compile a component input with a transform function',
-  'ngtsc behavioral tests input transforms should compile a directive input with a transform function',
-  'ngtsc behavioral tests input transforms should compile a directive input with a transform function with a `this` typing',
-  'ngtsc behavioral tests input transforms should compile an input referencing an imported function with literal types',
-  'ngtsc behavioral tests input transforms should compile an input with a transform function that contains a generic parameter',
-  'ngtsc behavioral tests input transforms should compile an input with a transform function that contains nested generic parameters',
+  // Design difference, not a bug: when an imported transform function's parameter type references
+  // another symbol imported in the external declaration file (rather than a self-contained type),
+  // ngp emits `Parameters<typeof i1.transformFn>[0]` instead of re-importing the external symbol.
   'ngtsc behavioral tests input transforms should compile an input with an external transform function',
   'ngtsc behavioral tests input transforms should compile an input with using an ambient type in the transform function',
-  'ngtsc behavioral tests input transforms should treat an input transform function only with a `this` parameter as unknown',
 
   // Design difference, not a bug: on an `@Inject` parameter whose type is imported from another
   // file, ngp emits `type: undefined` in `ɵsetClassMetadata` in both compilation modes. Single-file
@@ -365,7 +357,6 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'HMR code generation should generate an HMR initializer and update code when enabled',
   'HMR code generation should generate an HMR initializer and update function for a class that depends on multiple namespaces',
   'HMR code generation should not defer dependencies when HMR is enabled',
-  'declaration-only emission should emit type declarations when using an inputs array entry with a transform function referenced via a constant',
   'declaration-only emission should produce a diagnostic when using an @Input decorator with an inline transform function missing a parameter type',
   'declaration-only emission should show correct error message when using an expression resolving to an external reference in a simple host directive on a component',
   'declaration-only emission should show correct error message when using an expression resolving to an external reference in a simple host directive on a directive',
@@ -484,7 +475,6 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'ngtsc type checking host directives generates diagnostic when the library does not export the host directive',
   'ngtsc type checking host directives should check bindings to inherited host directive inputs 2',
   'ngtsc type checking host directives should check bindings to inherited host directive outputs 2',
-  'ngtsc type checking input coercion should allow any value to be assigned if the transform function has no parameters',
   'ngtsc type checking legacy schema checking with the DOM schema should report unknown element error when matched only by an attribute directive',
   'ngtsc type checking should check split two way binding',
   'ngtsc type checking should detect a duplicate variable declaration',

@@ -104,10 +104,10 @@ describe('@Input({ transform }) coercion member types', () => {
     });
 
     const content = outputs.get('/out/test.ts')!;
-    expect(content).toContain('static ngAcceptInputType_extFlag: Parameters<typeof externalToBool>[0];');
-    expect(content).toContain('static ngAcceptInputType_localCount: Parameters<typeof localToNumber>[0];');
-    expect(content).not.toContain('ngAcceptInputType_inlineZeroArg');
-    expect(content).toContain('static ngAcceptInputType_namedZeroArg: Parameters<typeof zeroArgNamed>[0];');
+    expect(content).toContain('static ngAcceptInputType_extFlag: boolean | string;');
+    expect(content).toContain('static ngAcceptInputType_localCount: number | string;');
+    expect(content).toContain('static ngAcceptInputType_inlineZeroArg: unknown;');
+    expect(content).toContain('static ngAcceptInputType_namedZeroArg: unknown;');
     expect(content).toContain('static ngAcceptInputType_privateParam: unknown;');
     expect(content).toContain("inlineZeroArg: [2, 'inlineZeroArg', 'inlineZeroArg', () => true]");
   });
