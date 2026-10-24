@@ -124,6 +124,7 @@ export {
   ɵɵgetBoundary,
   ɵɵdefer,
   ɵɵdeferWhen,
+  ɵɵdeferEnableRetry,
   ɵɵdeferOnIdle,
   ɵɵdeferOnImmediate,
   ɵɵdeferOnTimer,
