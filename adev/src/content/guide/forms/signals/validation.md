@@ -776,6 +776,7 @@ Signal Forms have built-in support for libraries that conform to [Standard Schem
 
 ```ts
 import {form, validateStandardSchema} from '@angular/forms/signals';
+import {signal} from '@angular/core';
 import * as z from 'zod';
 
 // Define your schema

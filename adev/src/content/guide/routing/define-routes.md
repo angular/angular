@@ -127,6 +127,7 @@ When you need to catch all routes for a specific path, the solution is a wildcar
 A common example is defining a Page Not Found component.
 
 ```ts
+import {Routes} from '@angular/router';
 import {Home} from './home/home';
 import {UserProfile} from './user-profile';
 import {NotFound} from './not-found';
@@ -171,6 +172,7 @@ If a user visits `/users/new`, Angular router would go through the following ste
 You can define a route that redirects to another route instead of rendering a component:
 
 ```ts
+import {Routes} from '@angular/router';
 import {Blog} from './home/blog';
 
 const routes: Routes = [

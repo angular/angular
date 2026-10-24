@@ -148,7 +148,7 @@ export class UserClient {
 Sometimes you want separate instances per component for component-specific state.
 
 ```angular-ts {header: 'Intentional: Component-scoped state'}
-import {Injectable, signal} from '@angular/core';
+import {Injectable, signal, Component, inject} from '@angular/core';
 
 @Injectable() // No providedIn - must be provided explicitly
 export class FormStateStore {
@@ -390,6 +390,7 @@ export const APP_CONFIG = new InjectionToken<AppConfig>('app config');
 ```
 
 ```ts {header: 'app.config.ts'}
+import {bootstrapApplication} from '@angular/platform-browser';
 import {APP_CONFIG} from './config.token';
 
 export const appConfig: AppConfig = {
@@ -403,7 +404,7 @@ bootstrapApplication(App, {
 
 ```angular-ts {avoid, header: 'feature-view.ts'}
 // Creating new token with same description
-import {InjectionToken, inject} from '@angular/core';
+import {InjectionToken, inject, Component} from '@angular/core';
 import {AppConfig} from './config.token';
 
 const APP_CONFIG = new InjectionToken<AppConfig>('app config');
@@ -422,7 +423,7 @@ Even though both tokens have the description `'app config'`, they are different 
 **Solution:** Import the same token instance.
 
 ```angular-ts {prefer, header: 'feature-view.ts'}
-import {inject} from '@angular/core';
+import {inject, Component} from '@angular/core';
 import {APP_CONFIG, AppConfig} from './config.token';
 
 @Component({
@@ -459,7 +460,8 @@ export class UserProfile {
 **Solution:** Use `InjectionToken` for interface types.
 
 ```angular-ts {prefer, header: 'Use InjectionToken for interfaces'}
-import {InjectionToken, inject} from '@angular/core';
+import {InjectionToken, inject, Component} from '@angular/core';
+import {bootstrapApplication} from '@angular/platform-browser';
 
 interface UserConfig {
   name: string;

@@ -395,6 +395,7 @@ export {OtherComponent} from './other.component';
 ```
 
 ```typescript {header: "parent.component.ts"}
+import {Component} from '@angular/core';
 import {HeavyComponent} from './index'; // pulls in OtherComponent too
 
 @Component({

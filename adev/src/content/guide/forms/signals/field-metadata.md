@@ -180,7 +180,8 @@ After both rules run, `state.metadata(HELP)!()` returns only the second message.
 To combine contributions, pass a reducer to `createMetadataKey()`. A reducer describes how to fold individual values into an accumulated result:
 
 ```ts
-import {createMetadataKey, MetadataReducer} from '@angular/forms/signals';
+import {createMetadataKey, MetadataReducer, form, metadata} from '@angular/forms/signals';
+import {model} from '@angular/core';
 
 const HELP = createMetadataKey<string, string[]>(MetadataReducer.list());
 

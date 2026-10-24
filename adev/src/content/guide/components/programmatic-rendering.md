@@ -21,6 +21,7 @@ template.
 
 ```angular-ts
 import {NgComponentOutlet} from '@angular/common';
+import {Component, input, computed} from '@angular/core';
 
 @Component({/*...*/})
 export class AdminBio {

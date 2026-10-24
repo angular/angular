@@ -708,7 +708,8 @@ While field state typically updates through user interactions (typing, focusing,
 Signal Forms provides a `FormRoot` directive that simplifies form submission. It automatically prevents the default browser form submission behavior and sets the `novalidate` attribute on the `<form>` element.
 
 ```angular-ts
-import {FormField, FormRoot} from '@angular/forms/signals';
+import {FormField, FormRoot, form, required, email} from '@angular/forms/signals';
+import {Component, signal} from '@angular/core';
 
 @Component({
   imports: [FormRoot, FormField],
