@@ -322,13 +322,15 @@ export class GreetingComponent {
           count: [{ type: Input }],
           displayName: [{ type: Input, args: ['userName'] }],
           title: [{ type: Input, args: [{ required: true }] }],
-          clicked: [{ type: Output }],
-          change: [{ type: Output, args: ['valueChanged'] }],
           name: [{ type: i0.Input, args: [{ isSignal: true, alias: 'name', required: false }] }],
           greeting: [
             { type: i0.Input, args: [{ isSignal: true, alias: 'greetingText', required: false }] },
           ],
           id: [{ type: i0.Input, args: [{ isSignal: true, alias: 'id', required: true }] }],
+          clicked: [{ type: Output }],
+          change: [{ type: Output, args: ['valueChanged'] }],
+          submitted: [{ type: i0.Output, args: ['submitted'] }],
+          cancelled: [{ type: i0.Output, args: ['onCancel'] }],
           value: [
             { type: i0.Input, args: [{ isSignal: true, alias: 'value', required: false }] },
             { type: i0.Output, args: ['valueChange'] },
@@ -341,8 +343,6 @@ export class GreetingComponent {
             { type: i0.Input, args: [{ isSignal: true, alias: 'selectedId', required: true }] },
             { type: i0.Output, args: ['selectedIdChange'] },
           ],
-          submitted: [{ type: i0.Output, args: ['submitted'] }],
-          cancelled: [{ type: i0.Output, args: ['onCancel'] }],
         },
       );
   }

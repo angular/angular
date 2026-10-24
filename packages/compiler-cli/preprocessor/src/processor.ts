@@ -2314,13 +2314,18 @@ function buildPropDecoratorsExpr(
   guards: nga.SpanMetadata[],
 ): o.Expression | null {
   const {memberDecorators, inputs, outputs, queries, viewQueries} = classMeta;
-  const propMap = new Map<string, {key: string; quoted: boolean; decorators: o.Expression[]}>();
+  const propMap = new Map<
+    string,
+    {key: string; quoted: boolean; offset: number; decorators: o.Expression[]}
+  >();
 
-  function getOrCreateEntry(key: string, quoted: boolean) {
+  function getOrCreateEntry(key: string, quoted: boolean, offset: number) {
     let entry = propMap.get(key);
     if (!entry) {
-      entry = {key, quoted, decorators: []};
+      entry = {key, quoted, offset, decorators: []};
       propMap.set(key, entry);
+    } else if (offset < entry.offset) {
+      entry.offset = offset;
     }
     return entry;
   }
@@ -2338,7 +2343,11 @@ function buildPropDecoratorsExpr(
         }
         seenMemberNames.add(member.propertyName);
       }
-      const entry = getOrCreateEntry(member.propertyName, member.isStringLiteral);
+      const entry = getOrCreateEntry(
+        member.propertyName,
+        member.isStringLiteral,
+        member.memberSpan.start,
+      );
       const ngDecorators = member.decorators
         .filter((d) => d.isAngular)
         .map((d) => buildDecoratorMetadataExpr(d.name, d.argsSpan, d.argsString, s, guards));
@@ -2359,7 +2368,11 @@ function buildPropDecoratorsExpr(
   // 2. Signal inputs (including model() inputs)
   for (const input of inputs) {
     if (!input.isSignal) continue;
-    const entry = getOrCreateEntry(input.name, input.isLiteral);
+    const entry = getOrCreateEntry(
+      input.name,
+      input.isLiteral,
+      input.propertySpan?.start ?? Infinity,
+    );
     const inputOptionsProps: {key: string; value: o.Expression; quoted: boolean}[] = [
       {key: 'isSignal', value: o.literal(true), quoted: false},
       {key: 'alias', value: o.literal(input.alias ?? input.name), quoted: false},
@@ -2376,7 +2389,7 @@ function buildPropDecoratorsExpr(
   // 3. Signal outputs and model() outputs
   for (const output of outputs) {
     if (!output.isSignal) continue;
-    const entry = getOrCreateEntry(output.name, false);
+    const entry = getOrCreateEntry(output.name, false, output.propertySpan?.start ?? Infinity);
     entry.decorators.push(
       o.literalMap([
         {key: 'type', value: new o.ExternalExpr(R3Identifiers.outputDecorator), quoted: false},
@@ -2388,7 +2401,11 @@ function buildPropDecoratorsExpr(
   // 4. Signal queries and view queries
   const allSignalQueries = [...(queries ?? []), ...(viewQueries ?? [])].filter((q) => q.isSignal);
   for (const query of allSignalQueries) {
-    const entry = getOrCreateEntry(query.propertyName, false);
+    const entry = getOrCreateEntry(
+      query.propertyName,
+      false,
+      query.propertySpan?.start ?? Infinity,
+    );
     const queryIdentifier = query.isView
       ? query.first
         ? R3Identifiers.viewChildDecorator
@@ -2441,8 +2458,9 @@ function buildPropDecoratorsExpr(
     return null;
   }
 
+  const sortedEntries = Array.from(propMap.values()).sort((a, b) => a.offset - b.offset);
   const entries: {key: string; quoted: boolean; value: o.Expression}[] = [];
-  for (const [, entry] of propMap) {
+  for (const entry of sortedEntries) {
     entries.push({
       key: entry.key,
       quoted: entry.quoted,

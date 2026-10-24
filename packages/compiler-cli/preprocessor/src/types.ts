@@ -409,6 +409,8 @@ export interface DecoratedMemberMetadata {
   propertyName: string;
   /** Whether the member name must be quoted (the name node is a string literal). */
   isStringLiteral: boolean;
+  /** Span of the class member element itself, used to order `propDecorators` entries in source order. */
+  memberSpan: SpanMetadata;
   decorators: Array<DecoratorMetadata>;
 }
 

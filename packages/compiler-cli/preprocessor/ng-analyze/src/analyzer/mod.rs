@@ -835,6 +835,7 @@ pub fn get_member_decorators<'a>(
         members.push(crate::DecoratedMemberMetadata {
             property_name: property_name.into_owned(),
             is_string_literal: matches!(key, PropertyKey::StringLiteral(_)),
+            member_span: SpanMetadata::new(oxc_span::GetSpan::span(element), converter),
             decorators: captured,
         });
     }
