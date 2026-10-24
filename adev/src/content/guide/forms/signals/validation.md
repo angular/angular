@@ -476,7 +476,7 @@ signupForm = form(this.signupModel, (schemaPath) => {
 });
 ```
 
-If the email field is empty, only the `required()` error appears. If the user types "a@b", both `email()` and `minLength()` errors appear. All validation rules run - validation doesn't stop after the first failure.
+If the email field is empty, only the `required()` error appears. If the user types "a@", both `email()` and `minLength()` errors appear. All validation rules run - validation doesn't stop after the first failure.
 
 TIP: Use the `touched() && invalid()` pattern in your templates to prevent errors from appearing before users have interacted with a field. For comprehensive guidance on displaying validation errors, see the [Field State Management guide](guide/forms/signals/field-state-management#conditional-error-display).
 
@@ -775,6 +775,7 @@ The `valid()` signal returns `false` while validation is pending, even if there 
 Signal Forms have built-in support for libraries that conform to [Standard Schema](https://standardschema.dev/) like [Zod](https://zod.dev/) or [Valibot](https://valibot.dev/). The integration is provided via the `validateStandardSchema` function. This allows you to use existing schemas while maintaining Signal Forms' reactive validation benefits.
 
 ```ts
+import {signal} from '@angular/core';
 import {form, validateStandardSchema} from '@angular/forms/signals';
 import * as z from 'zod';
 
@@ -792,12 +793,12 @@ const userForm = form(signal({email: '', password: ''}), (schemaPath) => {
 
 ### Dynamic schemas
 
-You can pass a signal instead of a static schema so the validation schema updates automatically when its dependencies change.
+Instead of a static schema, you can pass a function that returns the schema. The validation then updates automatically when the signals read by the function change.
 
 ```angular-ts
 import {Component, computed, signal} from '@angular/core';
 import {form, FormField, validateStandardSchema} from '@angular/forms/signals';
-import z from 'zod';
+import * as z from 'zod';
 
 @Component({/* ... */})
 export class DynamicSchema {
