@@ -7,7 +7,6 @@
  */
 
 import {AST, BindingType, Call, PropertyRead, SafeCall} from '../../expression_parser/ast';
-import {DirectiveOwner} from '../../render3/view/t2_api';
 import {
   BoundAttribute,
   Component,
@@ -17,6 +16,8 @@ import {
   Node,
   Template,
 } from '../../render3/r3_ast';
+import {CUSTOM_CONTROL_CONSTRAINT_INPUTS} from '../../render3/signal_forms_constraints';
+import {DirectiveOwner, MatchSource} from '../../render3/view/t2_api';
 
 import {TcbDirectiveMetadata, TcbInputMapping} from '../api';
 import {TcbOp} from './base';
@@ -50,6 +51,47 @@ const formControlInputFields = [
   'pattern',
   'required',
 ];
+
+export function hasExplicitConstraintBinding(
+  node: Template | Element | Component | Directive,
+  name: string,
+): boolean {
+  return (
+    CUSTOM_CONTROL_CONSTRAINT_INPUTS.has(name) &&
+    node.inputs.some(
+      (input) =>
+        input.name === name &&
+        (input.type === BindingType.Property || input.type === BindingType.TwoWay),
+    )
+  );
+}
+
+/**
+ * Whether the compiler must leave constraint inputs to Signal Forms instead of generating
+ * synthetic bindings or treating the inputs as missing. The same decision must be used
+ * by both the input type checker and the synthetic binding expansion.
+ *
+ * Host directives on custom controls may expose independently typed inputs. Host directives
+ * on native controls still receive schema constraints and must be checked against them.
+ */
+export function skipsConstraintBindings(
+  directive: TcbDirectiveMetadata,
+  customFormControlType: CustomFormControlType | null,
+  allDirectiveMatches: readonly TcbDirectiveMetadata[],
+): boolean {
+  return (
+    customFormControlType !== null ||
+    (directive.matchSource === MatchSource.HostDirective &&
+      allDirectiveMatches.some(
+        (meta) =>
+          getCustomFieldDirectiveType(meta) !== null ||
+          isControlValueAccessorLike(meta) ||
+          meta.isComponent,
+      )) ||
+    isControlValueAccessorLike(directive) ||
+    directive.isComponent
+  );
+}
 
 /** Names of input fields to which users aren't allowed to bind when using a `field` directive. */
 export const customFormControlBannedInputFields = new Set([
@@ -250,6 +292,7 @@ export function expandBoundAttributesForField(
   directive: TcbDirectiveMetadata,
   node: Template | Element | Component | Directive,
   customFormControlType: CustomFormControlType | null,
+  allDirectiveMatches: readonly TcbDirectiveMetadata[],
 ): TcbBoundAttribute[] | null {
   const fieldBinding = node.inputs.find(
     (input) => input.type === BindingType.Property && input.name === 'formField',
@@ -287,7 +330,25 @@ export function expandBoundAttributesForField(
     boundInputs.push(primaryInput);
   }
 
+  // Other directives on the same node may still require schema-bound constraint inputs.
+  const skipConstraintBindings = skipsConstraintBindings(
+    directive,
+    customFormControlType,
+    allDirectiveMatches,
+  );
+  // Custom controls and CVAs preserve explicit constraint bindings at runtime, while native
+  // controls still forward schema constraints to every directive on the node.
+  const honorsExplicitConstraintBindings = allDirectiveMatches.some(
+    (match) => getCustomFieldDirectiveType(match) !== null || isControlValueAccessorLike(match),
+  );
   for (const name of formControlInputFields) {
+    if (
+      CUSTOM_CONTROL_CONSTRAINT_INPUTS.has(name) &&
+      (skipConstraintBindings ||
+        (honorsExplicitConstraintBindings && hasExplicitConstraintBinding(node, name)))
+    ) {
+      continue;
+    }
     const input = getSyntheticFieldBoundInput(
       directive,
       name,

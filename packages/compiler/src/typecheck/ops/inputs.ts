@@ -23,7 +23,10 @@ import {
   CustomFormControlType,
   customFormControlBannedInputFields,
   expandBoundAttributesForField,
+  hasExplicitConstraintBinding,
+  skipsConstraintBindings,
 } from './signal_forms';
+import {CUSTOM_CONTROL_CONSTRAINT_INPUTS} from '../../render3/signal_forms_constraints';
 import {getBoundAttributes, widenBinding} from './bindings';
 import {LocalSymbol} from './references';
 import {isUnsafeObjectKey} from '../../render3/util';
@@ -69,9 +72,18 @@ export class TcbDirectiveInputsOp extends TcbOp {
     // TODO(joost): report duplicate properties
     const seenRequiredInputs = new Set<ClassPropertyName>();
     const boundAttrs = getBoundAttributes(this.dir, this.node);
+    const allDirectiveMatches = this.tcb.boundTarget.getDirectivesOfNode(this.node) ?? [];
 
     if (this.customFormControlType !== null) {
-      checkUnsupportedFieldBindings(this.node, customFormControlBannedInputFields, this.tcb);
+      checkUnsupportedFieldBindings(
+        this.node,
+        new Set(
+          [...customFormControlBannedInputFields].filter(
+            (name) => !hasExplicitConstraintBinding(this.node, name),
+          ),
+        ),
+        this.tcb,
+      );
     }
 
     if (this.customFormControlType !== null || this.isFormControl) {
@@ -79,6 +91,7 @@ export class TcbDirectiveInputsOp extends TcbOp {
         this.dir,
         this.node,
         this.customFormControlType,
+        allDirectiveMatches,
       );
 
       if (additionalBindings !== null) {
@@ -220,6 +233,20 @@ export class TcbDirectiveInputsOp extends TcbOp {
       }
 
       this.scope.addStatement(assignment);
+    }
+
+    // Field constraints are supplied by Signal Forms at runtime (when present in the schema).
+    // Dropping their synthetic TCB assignments must not introduce a missing required input
+    // diagnostic, so this must match `expandBoundAttributesForField`.
+    if (
+      this.isFormControl &&
+      skipsConstraintBindings(this.dir, this.customFormControlType, allDirectiveMatches)
+    ) {
+      for (const input of this.dir.inputs) {
+        if (CUSTOM_CONTROL_CONSTRAINT_INPUTS.has(input.bindingPropertyName)) {
+          seenRequiredInputs.add(input.classPropertyName);
+        }
+      }
     }
 
     this.checkRequiredInputs(seenRequiredInputs);

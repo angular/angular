@@ -643,8 +643,15 @@ export function control(sourceSpan: ParseSourceSpan | null): ir.UpdateOp {
   return call(Identifiers.control, [], sourceSpan);
 }
 
-export function controlCreate(sourceSpan: ParseSourceSpan | null): ir.CreateOp {
-  return call(Identifiers.controlCreate, [], sourceSpan);
+export function controlCreate(
+  explicitConstraintBindings: o.Expression | null,
+  sourceSpan: ParseSourceSpan | null,
+): ir.CreateOp {
+  return call(
+    Identifiers.controlCreate,
+    explicitConstraintBindings !== null ? [explicitConstraintBindings] : [],
+    sourceSpan,
+  );
 }
 
 export function twoWayProperty(
