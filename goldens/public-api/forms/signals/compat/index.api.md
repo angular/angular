@@ -69,14 +69,14 @@ export class SignalFormControl<T> extends AbstractControl {
     get dirty(): boolean;
     set dirty(_: boolean);
     // (undocumented)
-    disable(_opts?: {
+    disable(opts?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
     }): void;
     // (undocumented)
     get disabled(): boolean;
     // (undocumented)
-    enable(_opts?: {
+    enable(opts?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
     }): void;
