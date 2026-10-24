@@ -1478,8 +1478,8 @@ importers:
         specifier: 1.5.0
         version: 1.5.0
       '@types/jasmine':
-        specifier: 6.0.0
-        version: 6.0.0
+        specifier: 7.0.0
+        version: 7.0.0
       '@types/node':
         specifier: ^24.3.0
         version: 24.19.2
@@ -1496,11 +1496,11 @@ importers:
         specifier: 3.0.0
         version: 3.0.0
       jasmine:
-        specifier: 6.3.0
-        version: 6.3.0
+        specifier: 7.0.0
+        version: 7.0.0
       jasmine-core:
-        specifier: 6.3.0
-        version: 6.3.0
+        specifier: 7.0.2
+        version: 7.0.2
       jasmine-reporters:
         specifier: 2.5.2
         version: 2.5.2
