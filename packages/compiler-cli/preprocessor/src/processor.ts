@@ -2915,9 +2915,7 @@ function compileNgModuleDef(
         ...sharedMeta,
         kind: R3NgModuleMetadataKind.Isolated,
         selectorScopeMode: R3SelectorScopeMode.Omit,
-        importsExpression: ctx.onlyPublishPublicTypingsForNgModules
-          ? null
-          : buildIsolatedTypeTupleExpr(ngModule.isolatedImports),
+        importsExpression: buildIsolatedTypeTupleExpr(ngModule.isolatedImports),
         exportsExpression: buildIsolatedTypeTupleExpr(ngModule.isolatedExports),
       }
     : optimize &&

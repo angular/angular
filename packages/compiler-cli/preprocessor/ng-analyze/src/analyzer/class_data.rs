@@ -1495,11 +1495,15 @@ impl ResolvedIsolatedElement {
     pub(crate) fn from_value(value: &crate::evaluator::ResolvedValue) -> Option<Self> {
         use crate::evaluator::ResolvedValue;
         match value.unwrap_named() {
-            ResolvedValue::Reference(r) => Some(Self::Single(Reference::from_value_reference(r))),
+            ResolvedValue::Reference(r) if r.member.is_none() => {
+                Some(Self::Single(Reference::from_value_reference(r)))
+            }
             ResolvedValue::Array(items) if !items.is_empty() => items
                 .iter()
                 .map(|item| match item.unwrap_named() {
-                    ResolvedValue::Reference(r) => Some(Reference::from_value_reference(r)),
+                    ResolvedValue::Reference(r) if r.member.is_none() => {
+                        Some(Reference::from_value_reference(r))
+                    }
                     _ => None,
                 })
                 .collect::<Option<Vec<_>>>()
