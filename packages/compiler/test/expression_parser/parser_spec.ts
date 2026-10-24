@@ -732,9 +732,9 @@ describe('parser', () => {
       });
 
       it('should report an error if a template literal with an interpolation is not closed', () => {
-        expectBindingError('`hello ${a}', 'Unterminated template literal');
-        expectBindingError('`hello ${a} world', 'Unterminated template literal');
-        expectBindingError('`hello ${a} and ${b} world', 'Unterminated template literal');
+        expectBindingError('`hello ${a}', 'Unterminated template literal', 1);
+        expectBindingError('`hello ${a} world', 'Unterminated template literal', 1);
+        expectBindingError('`hello ${a} and ${b} world', 'Unterminated template literal', 1);
       });
 
       it('should retain all the elements and expressions of a malformed template literal', () => {
@@ -2085,8 +2085,8 @@ function expectActionError(text: string, message: string, errorCount?: number) {
   expectError(validate(parseAction(text)), message, errorCount);
 }
 
-function expectBindingError(text: string, message: string) {
-  expectError(validate(parseBinding(text)), message);
+function expectBindingError(text: string, message: string, errorCount?: number) {
+  expectError(validate(parseBinding(text)), message, errorCount);
 }
 
 /**

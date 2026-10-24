@@ -1700,7 +1700,17 @@ class _ParseAST {
         this.rbracesExpected--;
       } else if (token.isError()) {
         // The lexer produces an error token if the template literal isn't terminated.
-        this.error(`Unexpected token ${token}`);
+        // Report it directly and advance. `this.error` would skip over the same token again and
+        // report it twice.
+        this.errors.push(
+          getParseError(
+            token.toString()!,
+            this.input,
+            this.getErrorLocationText(this.index),
+            this.parseSourceSpan,
+          ),
+        );
+        this.advance();
       } else {
         // Skip over any leftover tokens of an interpolation that was already reported as invalid.
         this.advance();
