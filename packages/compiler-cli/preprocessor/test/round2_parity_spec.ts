@@ -98,15 +98,19 @@ describe('jit: true Angular member and constructor parameter decorator downlevel
 
     const content = outputs.get('/out/test.ts')!;
     expect(content).toContain('@Component(');
-    expect(content).toContain("@Inject('TOKEN')");
-    expect(content).toContain('@Optional()');
+    expect(content).not.toContain("@Inject('TOKEN')");
+    expect(content).not.toContain('@Optional()');
     expect(content).toContain('static ctorParameters = (): any => [');
-    expect(content).toContain("@ViewChild('tpl')");
-    expect(content).toContain("@Input('aliased')");
-    expect(content).toContain('@Output()');
+    expect(content).not.toContain("@ViewChild('tpl')");
+    expect(content).not.toContain("@Input('aliased')");
+    expect(content).not.toContain('@Output()');
     expect(content).toContain('@CustomProp()');
     expect(content).toContain("@Input() 'string-literal-input' = 123;");
-    expect(content).not.toContain('static propDecorators = {');
+    expect(content).toContain('static propDecorators = {');
+    expect(content).not.toContain('string-literal-input:');
+    const gsMatches = [...content.matchAll(/\bgs:\s*\[/g)];
+    expect(gsMatches.length).toBe(1);
+    expect(content).toContain("gs: [{type: Input, args: ['gsAlias']}]");
   });
 
   it('preserves decorators and omits static propDecorators for jit: true when emitDeclarationOnly is true', async () => {

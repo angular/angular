@@ -3837,15 +3837,13 @@ impl ClassData {
             .unwrap_or_default();
         let is_jit = members.is_some_and(|d| d.is_jit)
             || matches!(&self.decorator, DecoratorData::NgModule(m) if m.is_jit);
-        // For JIT classes, decorators are preserved on source, so removal_spans is empty.
-        let removal_spans: Vec<crate::types::metadata::SpanMetadata> = if is_jit {
-            Vec::new()
-        } else {
-            self.decorator_removal_spans
-                .iter()
-                .map(|s| crate::types::metadata::SpanMetadata::new(*s, cx.converter))
-                .collect()
-        };
+        // For JIT classes, class decorators are preserved on source, while `decorator_removal_spans`
+        // holds only Angular constructor-parameter and identifier-named member decorator spans.
+        let removal_spans: Vec<crate::types::metadata::SpanMetadata> = self
+            .decorator_removal_spans
+            .iter()
+            .map(|s| crate::types::metadata::SpanMetadata::new(*s, cx.converter))
+            .collect();
         // A JIT class keeps its decorators, so tsickle still adds `@nocollapse` itself.
         let nocollapse_insertions: Vec<crate::types::metadata::TextInsertionMetadata> = if is_jit {
             Vec::new()
