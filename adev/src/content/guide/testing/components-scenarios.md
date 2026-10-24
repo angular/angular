@@ -101,6 +101,7 @@ To reflect changes to inputs and listen to outputs you can dynamically bind sign
 
 ```ts
 import {inputBinding, outputBinding} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
 
 const fixture = TestBed.createComponent(ValueDisplay, {
   bindings: [

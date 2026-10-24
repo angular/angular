@@ -177,6 +177,7 @@ You can use the [`bootstrapModule`](/api/core/PlatformRef#bootstrapModule) metho
 
 ```typescript
 import {platformBrowser} from '@angular/platform-browser';
+import {NgModule} from '@angular/core';
 
 @NgModule({
   bootstrap: [MyApplication],

@@ -235,6 +235,7 @@ When you read a signal within an `OnPush` component's template, Angular tracks t
 When creating a signal, you can optionally provide an equality function, which will be used to check whether the new value is actually different than the previous one.
 
 ```ts
+import {signal} from '@angular/core';
 import isEqual from 'lodash/isEqual';
 
 const data = signal(['test'], {equal: isEqual});

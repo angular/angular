@@ -190,12 +190,13 @@ You can also handle resolver errors by subscribing to router events and listenin
 
 ```angular-ts
 import {Component, inject, signal} from '@angular/core';
-import {Router, NavigationError} from '@angular/router';
+import {Router, NavigationError, RouterOutlet} from '@angular/router';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {map} from 'rxjs';
 
 @Component({
   selector: 'app-root',
+  imports: [RouterOutlet],
   template: `
     @if (errorMessage()) {
       <div class="error-banner">
@@ -281,10 +282,11 @@ To improve user experience during resolver execution, you can listen to router e
 
 ```angular-ts
 import {Component, computed, inject} from '@angular/core';
-import {Router} from '@angular/router';
+import {Router, RouterOutlet} from '@angular/router';
 
 @Component({
   selector: 'app-root',
+  imports: [RouterOutlet],
   template: `
     @if (isNavigating()) {
       <div class="loading-bar">Loading...</div>

@@ -215,6 +215,7 @@ Customize the HTTP request by returning an `HttpResourceRequest` object from the
 
 ```ts
 import {HttpHeaders} from '@angular/common/http';
+import {validateHttp} from '@angular/forms/signals';
 
 validateHttp(schemaPath.field, {
   request: ({value}) => ({
@@ -445,7 +446,7 @@ With `'blur'`, the model keeps its previous value while the user is typing. Sync
 For timing logic that a duration or `'blur'` can't express, pass a `Debouncer` function. The function receives the field context and an [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal), and returns a `Promise<void>` that resolves when the model should update:
 
 ```ts
-import {debounce, type Debouncer} from '@angular/forms/signals';
+import {debounce, type Debouncer, form} from '@angular/forms/signals';
 
 const shorterWhenLonger: Debouncer<string> = ({value}, abortSignal) => {
   // Shorter queries get a longer delay since the user is likely still typing.
@@ -635,6 +636,7 @@ Async validation only runs after synchronous validation passes. This prevents un
 
 ```ts
 import {form, required, minLength, validateHttp} from '@angular/forms/signals';
+import {model} from '@angular/core';
 
 form(model, (schemaPath) => {
   // 1. These synchronous validation rules run first
@@ -673,6 +675,7 @@ Always validate format before making async requests. This catches errors instant
 
 ```ts
 import {form, required, email, validateHttp} from '@angular/forms/signals';
+import {model} from '@angular/core';
 
 form(model, (schemaPath) => {
   // Validate format first

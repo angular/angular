@@ -285,6 +285,8 @@ export const delayedConfig: ApplicationConfig = {
 You can also provide an Observable factory function for custom registration timing:
 
 ```ts
+import {ApplicationConfig, isDevMode} from '@angular/core';
+import {provideServiceWorker} from '@angular/service-worker';
 import {timer} from 'rxjs';
 
 export const customConfig: ApplicationConfig = {

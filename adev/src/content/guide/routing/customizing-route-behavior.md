@@ -135,6 +135,7 @@ You can configure the `Location` service to force a trailing slash on all URLs w
 
 ```ts
 import {LocationStrategy, TrailingSlashPathLocationStrategy} from '@angular/common';
+import {bootstrapApplication} from '@angular/platform-browser';
 
 bootstrapApplication(App, {
   providers: [{provide: LocationStrategy, useClass: TrailingSlashPathLocationStrategy}],
@@ -145,6 +146,7 @@ You can also force the `Location` service to never have a trailing slash on all 
 
 ```ts
 import {LocationStrategy, NoTrailingSlashPathLocationStrategy} from '@angular/common';
+import {bootstrapApplication} from '@angular/platform-browser';
 
 bootstrapApplication(App, {
   providers: [{provide: LocationStrategy, useClass: NoTrailingSlashPathLocationStrategy}],
@@ -275,6 +277,7 @@ To enable automatic cleanup of unused route injectors, you can use the `withAuto
 
 ```ts
 import {provideRouter, withAutoCleanupInjectors} from '@angular/router';
+import {ApplicationConfig} from '@angular/core';
 
 export const appConfig: ApplicationConfig = {
   providers: [provideRouter(routes, withAutoCleanupInjectors())],
