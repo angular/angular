@@ -10,15 +10,15 @@ crate-type = ["cdylib", "rlib"]
 napi = { version = "3", features = ["napi4", "tokio_rt"], optional = true }
 napi-derive = { version = "3", optional = true }
 futures = { version = "0.3", features = ["executor", "alloc", "std", "thread-pool"] }
-oxc_allocator = "0.144.0"
-oxc_parser = "0.144.0"
-oxc_ast = "0.144.0"
-oxc_ast_visit = { version = "0.144.0", features = ["serialize"] }
+oxc_allocator = "0.155.0"
+oxc_parser = "0.155.0"
+oxc_ast = "0.155.0"
+oxc_ast_visit = { version = "0.155.0", features = ["serialize"] }
 oxc_resolver = "11.24.2"
-oxc_span = "0.144.0"
-oxc_semantic = "0.144.0"
-oxc_syntax = "0.144.0"
-oxc_diagnostics = "0.144.0"
+oxc_span = "0.155.0"
+oxc_semantic = "0.155.0"
+oxc_syntax = "0.155.0"
+oxc_diagnostics = "0.155.0"
 oxc-miette-derive = "3.0.1"
 self_cell = "1.3.0"
 
@@ -33,7 +33,7 @@ json-strip-comments = "3.1.2"
 
 # Pin to 0.2.121 to match the wasm-bindgen-cli version bundled in rules_rust_wasm_bindgen.
 # wasm-bindgen requires exact schema match between the library and the CLI binary.
-wasm-bindgen = "=0.2.121"
+wasm-bindgen = "=0.2.129"
 # Reflect/Uint8Array/Array, used by the JavaScript filesystem bridge in `physical_fs`.
 js-sys = "0.3"
 
