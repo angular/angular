@@ -62,6 +62,8 @@ const INITIAL_STATES = {
   contentChangeListenerSubscription$: undefined,
   tutorialChangeListener$: undefined,
   createdFile$: undefined,
+  librariesTypesListener$: undefined,
+  vfsEnvListener$: undefined,
 };
 
 @Service()
@@ -98,6 +100,11 @@ export class CodeMirrorEditor {
     INITIAL_STATES.tutorialChangeListener$;
 
   private createdFileListener$: Subscription | undefined = INITIAL_STATES.createdFile$;
+
+  private librariesTypesListener$: Subscription | undefined =
+    INITIAL_STATES.librariesTypesListener$;
+
+  private vfsEnvListener$: Subscription | undefined = INITIAL_STATES.vfsEnvListener$;
 
   init(parentElement: HTMLElement): void {
     if (this._editorView) return;
@@ -138,7 +145,7 @@ export class CodeMirrorEditor {
 
     // Create TypeScript virtual filesystem when default files map is created
     // and files are set
-    this.eventManager$
+    this.vfsEnvListener$ = this.eventManager$
       .pipe(
         filter(
           (event) =>
@@ -170,6 +177,12 @@ export class CodeMirrorEditor {
 
     this.createdFileListener$?.unsubscribe();
     this.createdFileListener$ = INITIAL_STATES.createdFile$;
+
+    this.librariesTypesListener$?.unsubscribe();
+    this.librariesTypesListener$ = INITIAL_STATES.librariesTypesListener$;
+
+    this.vfsEnvListener$?.unsubscribe();
+    this.vfsEnvListener$ = INITIAL_STATES.vfsEnvListener$;
   }
 
   changeCurrentFile(fileName: string): void {
@@ -219,7 +232,7 @@ export class CodeMirrorEditor {
   }
 
   private saveLibrariesTypes(): void {
-    this.typingsLoader.typings$
+    this.librariesTypesListener$ = this.typingsLoader.typings$
       .pipe(
         filter((typings) => typings.length > 0),
         takeUntilDestroyed(this.destroyRef),
