@@ -899,7 +899,7 @@ describe('NgClass migration', () => {
       expect(content).toContain(`<div [ngClass]="{foo isActive}"></div>`);
     });
 
-    it('should not migrate string literal class list', async () => {
+    it('should migrate string literal class list to [class]', async () => {
       writeFile(
         '/app.component.ts',
         `
@@ -917,7 +917,280 @@ describe('NgClass migration', () => {
       await runMigration();
 
       const content = tree.readContent('/app.component.ts');
-      expect(content).toContain(`<div [ngClass]="'class1 class2'"></div>`);
+      expect(content).toContain(`<div [class]="'class1 class2'"></div>`);
+    });
+
+    it('should migrate array literal to [class]', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="['class1', 'class2']"></div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+      expect(content).toContain(`<div [class]="['class1', 'class2']"></div>`);
+    });
+
+    it('should migrate array with single element to [class]', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="['activeClass']"></div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+      expect(content).toContain(`<div [class]="['activeClass']"></div>`);
+    });
+
+    it('should migrate string with empty value to [class]=""', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="''"></div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+      expect(content).toContain(`<div [class]="''"></div>`);
+    });
+
+    it('should not migrate a ternary whose branches are string literals', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="isActive ? 'yes' : 'no'"></div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+      expect(content).toContain(`<div [ngClass]="isActive ? 'yes' : 'no'"></div>`);
+    });
+
+    it('should not migrate a concatenation of string literals', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="'class1' + 'class2'"></div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+      expect(content).toContain(`<div [ngClass]="'class1' + 'class2'"></div>`);
+    });
+
+    it('should not migrate an array whose entry contains a space', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="['class1 class2', 'class3']"></div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+      expect(content).toContain(`<div [ngClass]="['class1 class2', 'class3']"></div>`);
+    });
+
+    it('should migrate a double-quoted literal into a single-quoted attribute', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]='"class1 class2"'></div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+      expect(content).toContain(`<div [class]='"class1 class2"'></div>`);
+    });
+
+    it('should migrate an array of double-quoted entries into a single-quoted attribute', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]='["class1", "class2"]'></div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+      expect(content).toContain(`<div [class]='["class1", "class2"]'></div>`);
+    });
+
+    it('should migrate a template literal to [class]', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: '<div [ngClass]="\`class1 class2\`"></div>',
+        })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+      expect(content).toContain('<div [class]="`class1 class2`"></div>');
+    });
+
+    it('should remove the NgClass import once a string literal binding is migrated', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="'class1 class2'"></div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+      expect(content).toContain(`<div [class]="'class1 class2'"></div>`);
+      expect(content).not.toContain("import {NgClass} from '@angular/common';");
+    });
+
+    it('should migrate an object literal with double-quoted keys into a single-quoted attribute', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]='{"class1": isA, "class2": isB}'></div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+      expect(content).toContain(`<div [class]='{"class1": isA, "class2": isB}'></div>`);
+    });
+
+    it('should migrate a condition containing a double-quoted string into a single-quoted attribute', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]='{active: mode === "on"}'></div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+      expect(content).toContain(`<div [class.active]='mode === "on"'></div>`);
+    });
+
+    it('should migrate a string literal value containing a double quote into a single-quoted attribute', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]='{active: "\\"yes\\""}'></div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+      expect(content).toContain(`<div [class.active]='"\\"yes\\""'></div>`);
     });
 
     it('should not migrate dynamic variable bindings', async () => {
