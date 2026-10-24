@@ -165,7 +165,7 @@ function runCanActivate(
         : runInInjectionContext(closestInjector, () =>
             (guard as CanActivateFn)(futureARS, futureRSS),
           );
-      return wrapIntoObservable(guardVal).pipe(first());
+      return wrapIntoObservable(guardVal).pipe(first(undefined, false));
     });
   });
   return of(canActivateObservables).pipe(prioritizedGuardValue());
@@ -197,7 +197,7 @@ function runCanActivateChild(
             : runInInjectionContext(closestInjector, () =>
                 (guard as CanActivateChildFn)(futureARS, futureRSS),
               );
-          return wrapIntoObservable(guardVal).pipe(first());
+          return wrapIntoObservable(guardVal).pipe(first(undefined, false));
         },
       );
       return of(guardsMapped).pipe(prioritizedGuardValue());
@@ -223,7 +223,7 @@ function runCanDeactivate(
         : runInInjectionContext(closestInjector, () =>
             (guard as CanDeactivateFn<any>)(component, currARS, currRSS, futureRSS),
           ),
-    ).pipe(first());
+    ).pipe(first(undefined, false));
   });
   return of(canDeactivateObservables).pipe(prioritizedGuardValue());
 }
