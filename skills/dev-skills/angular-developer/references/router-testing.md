@@ -82,7 +82,7 @@ it('should get the activated component directly', async () => {
 
 ### Best Practices
 
-- **Navigate with the Harness:** Always use `harness.navigateByUrl()` to simulate navigation. This method returns a promise that resolves with the instance of the activated component.
+- **Navigate with the Harness:** Use `harness.navigateByUrl()` or `harness.navigate()` to simulate navigation. Both methods return a promise that resolves with the activated component instance, or `null` if no outlet is activated.
 - **Access the Router State:** Inject `Router` from `TestBed` to inspect the live router state.
 - **Get Activated Components:** Use the component returned by `navigateByUrl(url, ComponentType)`. After application-driven navigation, read `harness.routeDebugElement?.componentInstance`.
 - **Wait for Stability:** After performing an action that causes navigation, always `await harness.fixture.whenStable()` to ensure the routing is complete before making assertions.
