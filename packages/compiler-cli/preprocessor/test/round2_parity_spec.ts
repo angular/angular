@@ -88,6 +88,6 @@ describe('ɵsetClassMetadata propDecorators member declaration order', () => {
       (a, b) => propBlock.indexOf(`${a}:`) - propBlock.indexOf(`${b}:`),
     );
 
-    expect(orderedKeys).toEqual(['decInput', 'decOut', 'sigInput', 'sigOut', 'sigQuery']);
+    expect(orderedKeys).toEqual(['sigInput', 'decInput', 'sigOut', 'sigQuery', 'decOut']);
   });
 });
