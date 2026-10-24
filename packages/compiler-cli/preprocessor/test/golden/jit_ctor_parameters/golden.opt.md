@@ -18,7 +18,7 @@ function CustomParamDec(): ParameterDecorator {
 })
 export class JitCtorComponent {
   constructor(
-    @Optional() @Inject(TOKEN) public token: string,
+    public token: string,
     count: number,
     @CustomParamDec() public dep: DepService,
   ) {}

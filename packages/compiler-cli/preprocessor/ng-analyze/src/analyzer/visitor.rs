@@ -573,6 +573,7 @@ fn process_class_common<'a, Fs: ResourceResolverFs>(
         out: Vec::new(),
         eval,
     });
+    let mut jit_removal_spans = Vec::new();
     let constructor_params_result = get_constructor_params(
         class,
         &ctor_params_di,
@@ -580,6 +581,7 @@ fn process_class_common<'a, Fs: ResourceResolverFs>(
         converter,
         import_map,
         angular_imports,
+        &mut jit_removal_spans,
         top_level_reads.as_mut(),
     );
     let (constructor_params, unexpected_param_decorators) = match constructor_params_result {
@@ -596,6 +598,7 @@ fn process_class_common<'a, Fs: ResourceResolverFs>(
         semantic.source_text(),
         &mut later_declaration_references,
         &mut member_removal_spans,
+        &mut jit_removal_spans,
         top_level_reads.as_mut(),
     );
 
@@ -672,7 +675,14 @@ fn process_class_common<'a, Fs: ResourceResolverFs>(
         }
     }
 
+    let is_jit = component.as_ref().is_some_and(|c| c.directive.is_jit)
+        || directive.as_ref().is_some_and(|d| d.is_jit)
+        || ng_module.as_ref().is_some_and(|m| m.is_jit);
+
     // Class decorators lead the removal list, followed by the member decorators.
+    // For JIT classes, class decorators are preserved on the class declaration while
+    // Angular constructor parameter and identifier-named member decorators are downleveled
+    // into `static ctorParameters` and `static propDecorators`.
     let mut decorator_removal_spans = Vec::new();
     let mut decorator_function_spans = Vec::new();
     for decorator in &class.decorators {
@@ -685,13 +695,19 @@ fn process_class_common<'a, Fs: ResourceResolverFs>(
                 top_level_reads.as_mut(),
                 Some(&mut decorator_function_spans),
             );
-            decorator_removal_spans.push(super::utils::decorator_removal_span(
-                decorator,
-                semantic.source_text(),
-            ));
+            if !is_jit {
+                decorator_removal_spans.push(super::utils::decorator_removal_span(
+                    decorator,
+                    semantic.source_text(),
+                ));
+            }
         }
     }
-    decorator_removal_spans.extend(member_removal_spans);
+    if is_jit {
+        decorator_removal_spans.extend(jit_removal_spans);
+    } else {
+        decorator_removal_spans.extend(member_removal_spans);
+    }
     let nocollapse_insertions = super::closure_nocollapse::collect_nocollapse_insertions(
         class,
         &ng_decorator_spans,
