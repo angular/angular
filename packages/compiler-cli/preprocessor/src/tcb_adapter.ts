@@ -60,6 +60,8 @@ export function createInputPropertyMapping(
           item.transform.typeSpan.start,
           item.transform.typeSpan.end,
         );
+      } else if (item.transform?.kind === 'unknown' && inlineContent) {
+        mapping.transformType = 'unknown';
       }
 
       obj[classProp] = mapping;

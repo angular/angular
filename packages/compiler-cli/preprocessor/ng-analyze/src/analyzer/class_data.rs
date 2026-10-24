@@ -36,6 +36,9 @@ pub enum TransformData {
         type_span: oxc_span::Span,
         value_span: oxc_span::Span,
     },
+    Unknown {
+        value_span: oxc_span::Span,
+    },
     Expression(oxc_span::Span),
 }
 
@@ -3330,6 +3333,11 @@ impl TransformData {
                     *type_span, converter,
                 )),
             },
+            TransformData::Unknown { value_span } => TransformMetadata {
+                kind: "unknown".to_string(),
+                span: crate::types::metadata::SpanMetadata::new(*value_span, converter),
+                type_span: None,
+            },
             TransformData::Expression(span) => TransformMetadata {
                 kind: "expression".to_string(),
                 span: crate::types::metadata::SpanMetadata::new(*span, converter),
@@ -3526,11 +3534,11 @@ fn prepare_members(
                 // locate, which would splice a malformed `: ;` member.
                 if !i.is_signal {
                     use std::fmt::Write;
-                    let invalid_site = d
+                    let site = d
                         .input_transforms
                         .iter()
-                        .find(|site| site.input == i.name && site.is_invalid());
-                    if let Some(site) = invalid_site {
+                        .rfind(|site| site.input == i.name);
+                    if let Some(site) = site.filter(|s| s.is_invalid()) {
                         if !site.conflicting_coercion {
                             let _ = writeln!(
                                 prepared.coercion_members,
@@ -3553,13 +3561,30 @@ fn prepare_members(
                                 coercion_member_key(&i.name)
                             );
                         }
-                        Some(TransformData::Expression(span)) if !span.is_empty() => {
-                            let expr_str = &source_text[span.start as usize..span.end as usize];
+                        Some(TransformData::Unknown { .. }) => {
                             let _ = writeln!(
                                 prepared.coercion_members,
-                                "{NG_ACCEPT_INPUT_TYPE_PREFIX}{}: Parameters<typeof {expr_str}>[0];",
+                                "{NG_ACCEPT_INPUT_TYPE_PREFIX}{}: unknown;",
                                 coercion_member_key(&i.name)
                             );
+                        }
+                        Some(TransformData::Expression(span)) if !span.is_empty() => {
+                            if let Some(resolved_type) =
+                                site.and_then(|s| s.resolved_type.as_deref())
+                            {
+                                let _ = writeln!(
+                                    prepared.coercion_members,
+                                    "{NG_ACCEPT_INPUT_TYPE_PREFIX}{}: {resolved_type};",
+                                    coercion_member_key(&i.name)
+                                );
+                            } else {
+                                let expr_str = &source_text[span.start as usize..span.end as usize];
+                                let _ = writeln!(
+                                    prepared.coercion_members,
+                                    "{NG_ACCEPT_INPUT_TYPE_PREFIX}{}: Parameters<typeof {expr_str}>[0];",
+                                    coercion_member_key(&i.name)
+                                );
+                            }
                         }
                         _ => {}
                     }
