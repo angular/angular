@@ -21,12 +21,11 @@ The `ng test` command builds the application in _watch mode_ and launches the [V
 The console output looks like this:
 
 ```shell
- ✓ src/app/app.spec.ts (3)
-   ✓ AppComponent should create the app
-   ✓ AppComponent should have as title 'my-app'
-   ✓ AppComponent should render title
+ ✓ src/app/app.spec.ts (2)
+   ✓ App should create the app
+   ✓ App should render title
  Test Files  1 passed (1)
-      Tests  3 passed (3)
+      Tests  2 passed (2)
    Start at  18:18:01
    Duration  2.46s (transform 615ms, setup 2ms, collect 2.21s, tests 5ms)
 ```
