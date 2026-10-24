@@ -52,6 +52,7 @@ function MyApp_Template(rf, ctx) {
     $r3$.ɵɵdomElementStart(0, "div");
     $r3$.ɵɵtext(1);
     $r3$.ɵɵconditionalCreate(2, MyApp_Conditional_2_Template, 1, 1)(3, MyApp_Conditional_3_Template, 1, 1)(4, MyApp_Conditional_4_Template, 1, 1)(5, MyApp_Conditional_5_Template, 1, 1)(6, MyApp_Conditional_6_Template, 1, 1);
+    (typeof ngDevMode === "undefined" || ngDevMode) && $r3$.ɵɵconditionalMetadata(2, "if", 5, null, "one", ["one", "two", "three", "four", "five"]);
     $r3$.ɵɵdomElementEnd();
   }
   if (rf & 2) {

@@ -122,6 +122,7 @@ export {
   ɵɵboundaryCreate,
   ɵɵboundaryUpdate,
   ɵɵgetBoundary,
+  ɵɵconditionalMetadata,
   ɵɵdefer,
   ɵɵdeferWhen,
   ɵɵdeferOnIdle,
