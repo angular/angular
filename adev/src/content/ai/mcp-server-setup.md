@@ -44,11 +44,11 @@ To use the MCP server, you configure your host environment (IDE or CLI) to run `
   </docs-tab>
 
   <docs-tab label="VS Code">
-    Create `.vscode/mcp.json`:
+    Create `.mcp.json` in the project root:
 
     ```json
     {
-      "servers": {
+      "mcpServers": {
         "angular-cli": {
           "command": "npx",
           "args": ["-y", "@angular/cli", "mcp"]
