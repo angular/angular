@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "generate_api_docs", "ng_project")
+load("//tools:defaults.bzl", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -25,15 +25,4 @@ filegroup(
         "*.ts",
         "src/**/*.ts",
     ]) + ["PACKAGE.md"],
-)
-
-generate_api_docs(
-    name = "forms_signals_docs",
-    srcs = [
-        ":files_for_docgen",
-        "//packages:common_files_and_deps_for_docs",
-        "//packages/common:files_for_docgen",
-    ],
-    entry_point = ":index.ts",
-    module_name = "@angular/forms/signals",
 )
