@@ -8,7 +8,15 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {applyWhenValue, debounce, form} from '@angular/forms/signals';
+import {
+  applyWhenValue,
+  debounce,
+  disabled,
+  form,
+  hidden,
+  required,
+  submit,
+} from '@angular/forms/signals';
 import {timeout} from '@angular/private/testing';
 
 describe('debounce', () => {
@@ -65,6 +73,24 @@ describe('debounce', () => {
 
       street.markAsTouched();
       expect(street.value()).toBe('1600 Amphitheatre Pkwy');
+    });
+
+    it('should synchronize the value before running the submit action', async () => {
+      const address = signal({street: ''});
+      const addressForm = form(
+        address,
+        (address) => {
+          debounce(address.street, 500);
+        },
+        options(),
+      );
+      let submittedStreet: string | undefined;
+
+      addressForm.street().controlValue.set('1600 Amphitheatre Pkwy');
+      await submit(addressForm, async (form) => {
+        submittedStreet = form.street().value();
+      });
+      expect(submittedStreet).toBe('1600 Amphitheatre Pkwy');
     });
   });
 
@@ -309,6 +335,130 @@ describe('debounce', () => {
 
       street.markAsTouched();
       expect(street.value()).toBe('2000 N Shoreline Blvd');
+    });
+
+    it('should synchronize descendant values when an ancestor is touched', () => {
+      const address = signal({street: ''});
+      const addressForm = form(
+        address,
+        (address) => {
+          debounce(address.street, 'blur');
+        },
+        options(),
+      );
+      const street = addressForm.street();
+
+      street.controlValue.set('1600 Amphitheatre Pkwy');
+      addressForm().markAsTouched();
+      expect(street.value()).toBe('1600 Amphitheatre Pkwy');
+    });
+
+    it('should synchronize the value of a disabled field when it is touched', () => {
+      const locked = signal(false);
+      const address = signal({street: ''});
+      const addressForm = form(
+        address,
+        (address) => {
+          debounce(address.street, 'blur');
+          disabled(address.street, {when: () => locked()});
+        },
+        options(),
+      );
+      const street = addressForm.street();
+
+      street.controlValue.set('1600 Amphitheatre Pkwy');
+      locked.set(true);
+      street.markAsTouched();
+      expect(street.value()).toBe('1600 Amphitheatre Pkwy');
+    });
+
+    it('should synchronize values below a hidden field when an ancestor is touched', () => {
+      const showAddress = signal(true);
+      const user = signal({address: {street: ''}});
+      const userForm = form(
+        user,
+        (user) => {
+          debounce(user.address.street, 'blur');
+          hidden(user.address, {when: () => !showAddress()});
+        },
+        options(),
+      );
+      const street = userForm.address.street();
+
+      street.controlValue.set('1600 Amphitheatre Pkwy');
+      showAddress.set(false);
+      userForm().markAsTouched();
+      expect(street.value()).toBe('1600 Amphitheatre Pkwy');
+    });
+
+    it('should synchronize descendant values before running the submit action', async () => {
+      const address = signal({street: ''});
+      const addressForm = form(
+        address,
+        (address) => {
+          debounce(address.street, 'blur');
+        },
+        options(),
+      );
+      let submittedStreet: string | undefined;
+
+      addressForm.street().controlValue.set('1600 Amphitheatre Pkwy');
+      await submit(addressForm, async (form) => {
+        submittedStreet = form.street().value();
+      });
+      expect(submittedStreet).toBe('1600 Amphitheatre Pkwy');
+    });
+
+    it('should not create the fields of a hidden subtree when an ancestor is touched', () => {
+      const user = signal({address: {street: ''}});
+      const userForm = form(
+        user,
+        (user) => {
+          hidden(user.address, {when: () => true});
+        },
+        options(),
+      );
+
+      userForm().markAsTouched();
+      expect((userForm.address() as any).structure._areChildrenMaterialized()).toBeFalse();
+    });
+
+    it('should not run the submit action when a synchronized descendant value is invalid', async () => {
+      const address = signal({street: '1600 Amphitheatre Pkwy'});
+      const addressForm = form(
+        address,
+        (address) => {
+          debounce(address.street, 'blur');
+          required(address.street);
+        },
+        options(),
+      );
+      const action = jasmine.createSpy('action');
+
+      addressForm.street().controlValue.set('');
+      expect(await submit(addressForm, action)).toBeFalse();
+      expect(action).not.toHaveBeenCalled();
+      expect(addressForm.street().errors()).toEqual([jasmine.objectContaining({kind: 'required'})]);
+    });
+
+    it('should synchronize the values of sibling fields before running the submit action', async () => {
+      const address = signal({street: '', city: ''});
+      const addressForm = form(
+        address,
+        (address) => {
+          debounce(address.street, 'blur');
+          debounce(address.city, 'blur');
+        },
+        options(),
+      );
+      let submitted: {street: string; city: string} | undefined;
+
+      addressForm.street().controlValue.set('1600 Amphitheatre Pkwy');
+      addressForm.city().controlValue.set('Mountain View');
+      await submit(addressForm, async (form) => {
+        submitted = form().value();
+      });
+      expect(submitted).toEqual({street: '1600 Amphitheatre Pkwy', city: 'Mountain View'});
     });
   });
 
