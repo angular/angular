@@ -6,13 +6,27 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ɵRuntimeError as RuntimeError} from '@angular/core';
+import {ɵRuntimeError as RuntimeError, type Signal} from '@angular/core';
 import {RuntimeErrorCode} from '../errors';
-
-import type {MetadataKey, ValidationError} from '../api/rules';
+import type {ValidationError} from '../api/rules';
 import type {AsyncValidationResult, DisabledReason, LogicFn, ValidationResult} from '../api/types';
 import {setBoundPathDepthForResolution} from '../field/resolution';
 import {type BoundPredicate, DYNAMIC, LogicContainer, type Predicate} from './logic';
+import {createMetadataKey, type MetadataKey, MetadataReducer} from './metadata';
+
+/**
+ * A {@link MetadataKey} representing the custom equality function for the field.
+ *
+ * @see [Custom equality](guide/forms/signals/form-logic#custom-equality)
+ *
+ * @category logic
+ * @publicApi 22.0
+ */
+export const EQUALITY: MetadataKey<
+  Signal<((a: any, b: any) => boolean) | undefined>,
+  (a: any, b: any) => boolean,
+  ((a: any, b: any) => boolean) | undefined
+> = createMetadataKey(MetadataReducer.override());
 
 /**
  * Abstract base class for building a `LogicNode`.
@@ -46,6 +60,9 @@ export abstract class AbstractLogicNodeBuilder {
 
   /** Adds a rule to compute metadata for a field. */
   abstract addMetadataRule<M>(key: MetadataKey<unknown, M, unknown>, logic: LogicFn<any, M>): void;
+
+  /** Adds a rule to compute the equality function for a field. */
+  abstract addEqualityRule(logic: LogicFn<any, (a: any, b: any) => boolean>): void;
 
   /**
    * Gets a builder for a child node associated with the given property key.
@@ -136,6 +153,10 @@ export class LogicNodeBuilder extends AbstractLogicNodeBuilder {
 
   override addMetadataRule<T>(key: MetadataKey<unknown, T, any>, logic: LogicFn<any, T>): void {
     this.getCurrent().addMetadataRule(key, logic);
+  }
+
+  override addEqualityRule(logic: LogicFn<any, (a: any, b: any) => boolean>): void {
+    this.getCurrent().addEqualityRule(logic);
   }
 
   override getChild(key: PropertyKey): LogicNodeBuilder {
@@ -274,6 +295,10 @@ class NonMergeableLogicNodeBuilder extends AbstractLogicNodeBuilder {
 
   override addMetadataRule<T>(key: MetadataKey<unknown, T, unknown>, logic: LogicFn<any, T>): void {
     this.logic.getMetadata(key).push(setBoundPathDepthForResolution(logic, this.depth));
+  }
+
+  override addEqualityRule(logic: LogicFn<any, (a: any, b: any) => boolean>): void {
+    this.logic.getMetadata(EQUALITY).push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
   override getChild(key: PropertyKey): LogicNodeBuilder {
