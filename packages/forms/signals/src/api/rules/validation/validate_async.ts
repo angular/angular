@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DebounceTimer, Resource, Signal, computed, debounced, ɵchain} from '@angular/core';
+import {
+  DebounceTimer,
+  Resource,
+  Signal,
+  computed,
+  debounced,
+  resourceFromSnapshots,
+} from '@angular/core';
 import {FieldNode} from '../../../field/node';
 import {addDefaultField} from '../../../field/validation';
 import {FieldPathNode} from '../../../schema/path_node';
@@ -81,6 +88,8 @@ export interface AsyncValidatorOptions<
    * A function that receives the resource params and returns a resource of the given params.
    * The given params should be used as is to create the resource.
    * The forms system will report the params as `undefined` when this validation doesn't need to be run.
+   * When debouncing, params keeps its previous value until the debounce completes, while validation
+   * remains pending.
    *
    * @param params The params to use for constructing the resource
    * @returns A reference to the constructed resource.
@@ -136,8 +145,15 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
     (_state, params) => {
       if (opts.debounce !== undefined) {
         const debouncedResource = debounced(() => params(), opts.debounce);
-        const wrappedParams = computed(() => ɵchain(debouncedResource));
-        return opts.factory(wrappedParams);
+        // `chain` relies on `resource()` params evaluation to catch its thrown status markers.
+        // Factories may read params elsewhere (e.g. in effects), where those markers would escape.
+        // Pass safe params to the factory and compose resource statuses through snapshots instead.
+        const debouncedParams = computed(() => {
+          const snapshot = debouncedResource.snapshot();
+          return snapshot.status === 'error' ? undefined : snapshot.value;
+        });
+        const factoryResource = opts.factory(debouncedParams);
+        return safeChainResources(debouncedResource, factoryResource);
       }
       return opts.factory(params);
     },
@@ -177,4 +193,33 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
         return addDefaultField(errors, ctx.fieldTree);
     }
   });
+}
+
+/** Composes two resources, propagating the source status until its value is ready. */
+function safeChainResources<TSource, TResult>(
+  source: Resource<TSource>,
+  target: Resource<TResult>,
+): Resource<TResult | undefined> {
+  return Object.assign(
+    resourceFromSnapshots<TResult | undefined>(() => {
+      const snapshot = source.snapshot();
+      switch (snapshot.status) {
+        case 'resolved':
+        case 'local':
+          return target.snapshot();
+        case 'error':
+          return snapshot;
+        default:
+          return {status: snapshot.status, value: undefined};
+      }
+    }),
+    {
+      reload: () => {
+        if (source.isLoading() || source.status() === 'error') {
+          return false;
+        }
+        return 'reload' in target && typeof target.reload === 'function' ? target.reload() : false;
+      },
+    },
+  );
 }
