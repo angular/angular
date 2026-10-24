@@ -432,10 +432,20 @@ pub async fn optimize_directive<Fs: ResourceResolverFs + Clone + 'static>(
     class_name: Option<&str>,
     directive: &mut DirectiveData,
 ) {
+    if directive.has_host_directives_shape_error() {
+        directive.is_poisoned = true;
+        return;
+    }
     directive.resolved_host_directives =
         resolve_own_host_directives(ctx, file_path, reference_id, class_name).await;
     directive.host_directive_diagnostics =
         validate_own_host_directives(ctx, file_path, reference_id, directive).await;
+    if !directive.host_directive_diagnostics.is_empty() {
+        directive.is_poisoned = true;
+        if !ctx.engine.use_poisoned_data {
+            directive.resolved_host_directives = None;
+        }
+    }
 }
 
 /// Resolve the `hostDirectives` of a scope entry, looking its class up in its declaring file.
@@ -656,6 +666,45 @@ async fn contextualize_ngmodule_scope_declarations<Fs: ResourceResolverFs + Clon
 /// Invalidation needs no explicit bookkeeping: every awaited sub-query records the files it touched
 /// on the `QueryContext`, and they flow into this semantic query's reverse-index entry.
 pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
+    ctx: &QueryCtx<Fs>,
+    file_path: &Path,
+    reference_id: ReferenceId,
+    class_name: Option<&str>,
+    component: &mut ComponentData,
+) {
+    if component.directive.has_host_directives_shape_error() {
+        component.is_poisoned = true;
+        component.directive.is_poisoned = true;
+        return;
+    }
+
+    // The component's own host directives go on its host element, ahead of the component itself
+    // (ngtsc's `directivesOnHost`). Like any host directive they stay out of its template scope.
+    component.resolved_host_directives =
+        resolve_own_host_directives(ctx, file_path, reference_id, class_name).await;
+    component.directive.host_directive_diagnostics =
+        validate_own_host_directives(ctx, file_path, reference_id, &component.directive).await;
+
+    optimize_component_scope(ctx, file_path, reference_id, class_name, component).await;
+
+    if !component.directive.host_directive_diagnostics.is_empty() {
+        component.is_poisoned = true;
+        component.directive.is_poisoned = true;
+    }
+    if component.is_poisoned && !ctx.engine.use_poisoned_data {
+        component.resolved_declarations = Some(Vec::new());
+        component.raw_imports_span = None;
+        component.resolved_host_directives = None;
+        component.schemas = None;
+        return;
+    }
+
+    if let Some(ref mut decls) = component.resolved_declarations {
+        DeclarationData::deduplicate(decls);
+    }
+}
+
+async fn optimize_component_scope<Fs: ResourceResolverFs + Clone + 'static>(
     ctx: &QueryCtx<Fs>,
     file_path: &Path,
     reference_id: ReferenceId,
@@ -1179,17 +1228,6 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
             }
             component.resolved_declarations = Some(all_decls);
         }
-    }
-
-    // The component's own host directives go on its host element, ahead of the component itself
-    // (ngtsc's `directivesOnHost`). Like any host directive they stay out of its template scope.
-    component.resolved_host_directives =
-        resolve_own_host_directives(ctx, file_path, reference_id, class_name).await;
-    component.directive.host_directive_diagnostics =
-        validate_own_host_directives(ctx, file_path, reference_id, &component.directive).await;
-
-    if let Some(ref mut decls) = component.resolved_declarations {
-        DeclarationData::deduplicate(decls);
     }
 }
 

@@ -87,7 +87,7 @@ describe('component hostDirectives validation and poisoning', () => {
     const diags = outputs.get('/tsconfig.ngdiag.json')!;
     expect(diags).toBeDefined();
     expect(diags).toContain('"code": 2011');
-    expect(diags).not.toContain('"code": 2013');
+    expect(diags).toContain('"code": 2013');
   });
 
   it('validates hostDirectives on an orphan non-standalone component', async () => {
@@ -108,8 +108,9 @@ describe('component hostDirectives validation and poisoning', () => {
       `,
     });
 
-    const diags = outputs.get('/tsconfig.ngdiag.json') ?? '';
-    expect(diags).not.toContain('"code": 2014');
+    const diags = outputs.get('/tsconfig.ngdiag.json')!;
+    expect(diags).toBeDefined();
+    expect(diags).toContain('"code": 2014');
   });
 
   it('handles cascading diagnostics when hostDirectives has a shape error (NG1010)', async () => {
@@ -133,6 +134,6 @@ describe('component hostDirectives validation and poisoning', () => {
     const diags = outputs.get('/tsconfig.ngdiag.json')!;
     expect(diags).toBeDefined();
     expect(diags).toContain('"code": 1010');
-    expect(diags).toContain('"code": 2011');
+    expect(diags).not.toContain('"code": 2011');
   });
 });
