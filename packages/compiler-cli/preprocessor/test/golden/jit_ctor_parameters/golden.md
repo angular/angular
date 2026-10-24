@@ -23,7 +23,6 @@ export class JitCtorComponent {
     @CustomParamDec() public dep: DepService,
   ) {}
 
-  /** @internal */
   static ctorParameters = (): any => [
     { type: undefined, decorators: [{ type: Optional }, { type: Inject, args: [TOKEN] }] },
     { type: undefined },
