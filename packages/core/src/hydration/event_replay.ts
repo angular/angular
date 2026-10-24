@@ -15,6 +15,7 @@ import {
   registerDispatcher,
   getAppScopedQueuedEventInfos,
   clearAppScopedEarlyEventContract,
+  removeAllAppScopedEventListeners,
   EventPhase,
 } from '../../primitives/event-dispatch';
 
@@ -154,6 +155,7 @@ export function withEventReplay(): Provider[] {
                 // `_ejsa` should be deleted when the app is destroyed, ensuring that
                 // no elements are still captured in the global list and are not prevented
                 // from being garbage collected.
+                removeAllAppScopedEventListeners(appId);
                 clearAppScopedEarlyEventContract(appId);
               }
             });
@@ -235,6 +237,7 @@ const initEventReplay = (eventDelegation: EventContractDetails, injector: Inject
   }
   const eventInfos = getAppScopedQueuedEventInfos(appId);
   eventContract.replayEarlyEventInfos(eventInfos);
+  removeAllAppScopedEventListeners(appId);
   clearAppScopedEarlyEventContract(appId);
   const dispatcher = new EventDispatcher((event) => {
     invokeRegisteredReplayListeners(injector, event, event.currentTarget as Element);
