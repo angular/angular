@@ -165,6 +165,7 @@ pub struct ClassData {
     pub uses_on_changes: bool,
     pub is_exported: bool,
     pub has_non_exported_bounds: bool,
+    pub has_non_angular_class_decorators: bool,
     pub decorator: DecoratorData,
     pub super_class: Option<DeclarationTuple>,
     pub flattened_fields: Option<Vec<crate::AngularFieldMetadata>>,
@@ -4015,6 +4016,7 @@ impl ClassData {
             uses_on_changes: self.uses_on_changes,
             is_exported: self.is_exported,
             has_non_exported_bounds: self.has_non_exported_bounds,
+            has_non_angular_class_decorators: self.has_non_angular_class_decorators,
         };
         Ok(metadata)
     }

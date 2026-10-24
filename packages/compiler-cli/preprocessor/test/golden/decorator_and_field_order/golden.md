@@ -30,15 +30,15 @@ export class DualDecoratedModule {
   static ɵinj: i0.ɵɵInjectorDeclaration<DualDecoratedModule> =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineInjector({});
-  static {
-    (typeof ngDevMode === 'undefined' || ngDevMode) &&
-      i0.ɵsetClassMetadata(
-        DualDecoratedModule,
-        [{ type: NgModule }, { type: Injectable }],
-        null,
-        null,
-      );
-  }
 }
+((): any => {
+  (typeof ngDevMode === 'undefined' || ngDevMode) &&
+    i0.ɵsetClassMetadata(
+      DualDecoratedModule,
+      [{ type: NgModule }, { type: Injectable }],
+      null,
+      null,
+    );
+})();
 
 ```

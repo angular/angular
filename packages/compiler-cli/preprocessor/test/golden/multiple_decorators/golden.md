@@ -36,15 +36,15 @@ export class GreetingDirective {
       token: GreetingDirective,
       factory: GreetingDirective.ɵfac,
     });
-  static {
-    (typeof ngDevMode === 'undefined' || ngDevMode) &&
-      i0.ɵsetClassMetadata(
-        GreetingDirective,
-        [{ type: Injectable }, { type: Directive, args: [{ standalone: true }] }],
-        null,
-        null,
-      );
-  }
 }
+((): any => {
+  (typeof ngDevMode === 'undefined' || ngDevMode) &&
+    i0.ɵsetClassMetadata(
+      GreetingDirective,
+      [{ type: Injectable }, { type: Directive, args: [{ standalone: true }] }],
+      null,
+      null,
+    );
+})();
 
 ```
