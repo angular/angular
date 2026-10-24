@@ -231,6 +231,8 @@ Each snapshot contains a `status` and either a `value` or an `error`.
 
 ### Composing resources with snapshots
 
+IMPORTANT: `resourceFromSnapshots` is [experimental](reference/releases#experimental). It's ready for you to try, but it might change before it is stable.
+
 You can create new resources from snapshots using `resourceFromSnapshots`. This enables composition with signal APIs like `computed` and `linkedSignal` to transform resource behavior.
 
 ```ts
