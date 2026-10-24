@@ -420,6 +420,7 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
     const knownQueries = new KnownQueries(info, this.config, globalMetadata);
     const referenceResult: ReferenceResult<ClassFieldDescriptor> = {references: []};
     const sourceQueries: ExtractedQuery[] = [];
+    const unitSourceFiles = new Set(sourceFiles);
 
     // Detect all queries in this unit.
     const queryWholeProgramVisitor = (node: ts.Node) => {
@@ -427,7 +428,10 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
       const extractedQuery = extractSourceQueryDefinition(node, reflector, evaluator, info);
       if (extractedQuery !== null) {
         knownQueries.registerQueryField(extractedQuery.node, extractedQuery.id);
-        sourceQueries.push(extractedQuery);
+        // Files shared between tsconfigs are only migrated by the unit that owns them.
+        if (unitSourceFiles.has(extractedQuery.node.getSourceFile())) {
+          sourceQueries.push(extractedQuery);
+        }
         return;
       }
 
