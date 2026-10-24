@@ -10,6 +10,8 @@ use oxc_ast::ast::{Class, ClassElement, Comment, PropertyKey};
 use oxc_semantic::Semantic;
 use oxc_span::GetSpan;
 
+use super::utils::js_str_to_string_lossy;
+
 const NOCOLLAPSE_TAG: &str = "nocollapse";
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -60,7 +62,9 @@ fn is_closure_static_property(element: &ClassElement<'_>) -> bool {
     }
     match key {
         PropertyKey::StaticIdentifier(_) => true,
-        PropertyKey::StringLiteral(literal) => is_valid_closure_property_name(&literal.value),
+        PropertyKey::StringLiteral(literal) => {
+            is_valid_closure_property_name(&js_str_to_string_lossy(literal.value))
+        }
         _ => false,
     }
 }
