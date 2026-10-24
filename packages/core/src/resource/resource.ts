@@ -398,8 +398,8 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
 
   override reload(): boolean {
     // We don't want to restart in-progress loads.
-    const {status} = untracked(this.state);
-    if (status === 'idle' || status === 'loading') {
+    const {status, extRequest} = untracked(this.state);
+    if (status === 'idle' || status === 'loading' || extRequest.error) {
       return false;
     }
 

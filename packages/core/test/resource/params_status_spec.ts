@@ -85,6 +85,32 @@ describe('resource with ResourceParamsStatus', () => {
     expect(() => res.value()).toThrowError(/params error/);
   });
 
+  it('should not reload when params throws an Error', async () => {
+    const s = signal<string | Error>('foo');
+    let loadCount = 0;
+    const res = await act(() =>
+      resource({
+        params: throwStatusAndErrors(s),
+        loader: async ({params}) => {
+          loadCount++;
+          return params as string;
+        },
+        injector: TestBed.inject(Injector),
+      }),
+    );
+
+    const err = new Error('params error');
+    await act(() => s.set(err));
+    expect(res.status()).toBe('error');
+
+    expect(res.reload()).toBeFalse();
+    await TestBed.inject(ApplicationRef).whenStable();
+
+    expect(res.status()).toBe('error');
+    expect(res.error()).toEqual(err);
+    expect(loadCount).toBe(1);
+  });
+
   it('should recover from special statuses', async () => {
     const s = signal<string | ResourceParamsStatus | Error>(ResourceParamsStatus.IDLE);
     let loadCount = 0;
