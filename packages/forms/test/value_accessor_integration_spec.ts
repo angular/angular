@@ -460,6 +460,19 @@ describe('value accessors', () => {
 
   describe('select multiple controls', () => {
     describe('in reactive forms', () => {
+      it('should synchronously apply model writes and clear the selection', async () => {
+        const fixture = TestBed.createComponent(FormControlSelectMultiple);
+        await fixture.whenStable();
+        const options = fixture.debugElement.queryAll(By.css('option'));
+        const control = fixture.componentInstance.form.controls.city;
+
+        control.setValue(['SF', 'NY']);
+        expect(options.map((option) => option.nativeElement.selected)).toEqual([true, true]);
+
+        control.setValue([]);
+        expect(options.map((option) => option.nativeElement.selected)).toEqual([false, false]);
+      });
+
       it('should support primitive values', async () => {
         if (isNode) return;
         const fixture = TestBed.createComponent(FormControlSelectMultiple);
