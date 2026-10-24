@@ -25,6 +25,7 @@ describe('DOMElementSchema', () => {
   it('should detect elements', () => {
     expect(registry.hasElement('div', [])).toBeTruthy();
     expect(registry.hasElement('b', [])).toBeTruthy();
+    expect(registry.hasElement('cite', [])).toBeTruthy();
     expect(registry.hasElement('ng-container', [])).toBeTruthy();
     expect(registry.hasElement('ng-content', [])).toBeTruthy();
 
@@ -49,6 +50,20 @@ describe('DOMElementSchema', () => {
     expect(registry.hasProperty('button', 'popoverTargetElement', [])).toBeTruthy();
     expect(registry.hasProperty('input', 'popoverTargetAction', [])).toBeTruthy();
     expect(registry.hasProperty('input', 'popoverTargetElement', [])).toBeTruthy();
+    expect(registry.hasProperty('div', 'autocorrect', [])).toBeTruthy();
+    expect(registry.hasProperty('div', 'ariaBrailleLabel', [])).toBeTruthy();
+    expect(registry.hasProperty('div', 'ariaBrailleRoleDescription', [])).toBeTruthy();
+    expect(registry.hasProperty('button', 'command', [])).toBeTruthy();
+    expect(registry.hasProperty('button', 'commandForElement', [])).toBeTruthy();
+    expect(registry.hasProperty('details', 'name', [])).toBeTruthy();
+    expect(registry.hasProperty('img', 'fetchPriority', [])).toBeTruthy();
+    expect(registry.hasProperty('link', 'fetchPriority', [])).toBeTruthy();
+    expect(registry.hasProperty('input', 'webkitdirectory', [])).toBeTruthy();
+    expect(registry.hasProperty('form', 'rel', [])).toBeTruthy();
+    expect(registry.hasProperty('form', 'relList', [])).toBeTruthy();
+    expect(registry.hasProperty('blockquote', 'cite', [])).toBeTruthy();
+    expect(registry.hasProperty('q', 'cite', [])).toBeTruthy();
+    expect(registry.hasProperty('cite', 'cite', [])).toBeFalsy();
     expect(registry.hasProperty('h1', 'align', [])).toBeTruthy();
     expect(registry.hasProperty('h2', 'align', [])).toBeTruthy();
     expect(registry.hasProperty('h3', 'align', [])).toBeTruthy();
@@ -83,6 +98,15 @@ describe('DOMElementSchema', () => {
     expect(registry.hasProperty('video', 'click', [])).toBeFalsy();
   });
 
+  it('should detect events on regular elements', () => {
+    const events = registry.allKnownEventsOfElement('div');
+    expect(events).toContain('animationcancel');
+    expect(events).toContain('beforeinput');
+    expect(events).toContain('beforetoggle');
+    expect(events).toContain('contentvisibilityautostatechange');
+    expect(events).toContain('scrollend');
+  });
+
   it('should treat custom elements as an unknown element by default', () => {
     expect(registry.hasProperty('custom-like', 'unknown', [])).toBe(false);
     expect(registry.hasProperty('custom-like', 'className', [])).toBeTruthy();
@@ -106,6 +130,7 @@ describe('DOMElementSchema', () => {
 
   it('should re-map property names that are specified in DOM facade', () => {
     expect(registry.getMappedPropName('readonly')).toEqual('readOnly');
+    expect(registry.getMappedPropName('aria-braillelabel')).toEqual('ariaBrailleLabel');
   });
 
   it('should not re-map property names that are not specified in DOM facade', () => {
