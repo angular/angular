@@ -427,6 +427,7 @@ export interface Navigation {
 // @public
 export interface NavigationBehaviorOptions {
     readonly browserUrl?: UrlTree | string;
+    readonly focusReset?: 'manual' | 'after-transition';
     readonly info?: unknown;
     onSameUrlNavigation?: OnSameUrlNavigation;
     replaceUrl?: boolean;
