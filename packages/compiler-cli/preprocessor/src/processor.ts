@@ -261,7 +261,7 @@ export function buildTcbTargets(
         foreignImports: component.foreignImports ?? null,
       });
     } else if (directive) {
-      if (directive.isJit) continue;
+      if (directive.isJit || (directive.isPoisoned && !tcbConfig.usePoisonedData)) continue;
       if (tcbConfig.typeCheckHostBindings === false) continue;
       const {hostProperties, standalone} = directive;
       const hasHostBindings =
