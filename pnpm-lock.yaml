@@ -1255,11 +1255,11 @@ importers:
         version: 0.16.3
     devDependencies:
       '@mcp-b/webmcp-polyfill':
-        specifier: ^5.0.0
-        version: 5.1.0
+        specifier: ^6.0.0
+        version: 6.0.3
       '@mcp-b/webmcp-types':
-        specifier: ^5.0.0
-        version: 5.1.0
+        specifier: ^6.0.0
+        version: 6.0.3
       '@modelcontextprotocol/server':
         specifier: ^2.0.0
         version: 2.3.1
@@ -1331,11 +1331,11 @@ importers:
         version: 4.6.7
     devDependencies:
       '@mcp-b/webmcp-polyfill':
-        specifier: ^5.0.0
-        version: 5.1.0
+        specifier: ^6.0.0
+        version: 6.0.3
       '@mcp-b/webmcp-types':
-        specifier: ^5.0.0
-        version: 5.1.0
+        specifier: ^6.0.0
+        version: 6.0.3
 
   packages/language-service: {}
 
@@ -3494,21 +3494,16 @@ packages:
   '@marijn/find-cluster-break@1.0.4':
     resolution: {integrity: sha512-Wy0V7+SGUjnF9/TkiM1hKVDPj7jKXduPNboMVtHTA8dySMURWqfg/JZ9E2Sq8JgSJmkl7k7Qe9FLeMSrSraWmQ==}
 
-  '@mcp-b/webmcp-polyfill@5.1.0':
-    resolution: {integrity: sha512-KL09hniFssPY8HBO3qzurWPqm+1JYRwV3wx6x2XSySgo+6BL1XHGsHGIoAO7U9zzigv7TA5keNBoZ+3P1jq18g==}
+  '@mcp-b/webmcp-polyfill@6.0.3':
+    resolution: {integrity: sha512-pD8iKBXpDKLeYyqDcWPiNFI0JuK7/f+/RxspA6qW81kcDdabWUTt7A0fH+cJx6EIjpoHkk4o3QPci7yQPuHofA==}
     engines: {node: '>=20'}
 
-  '@mcp-b/webmcp-types@5.1.0':
-    resolution: {integrity: sha512-twOKDUr7al60K890HvRcNvoHSfQ2rnGeKJiQs6eUr+Leg+LQ6K+yz3F4K70jykMK1a09ZIgYb3Oc7mAypuKPig==}
-    engines: {node: '>=20'}
+  '@mcp-b/webmcp-types@6.0.3':
+    resolution: {integrity: sha512-xa5QOPINxWjTI9m1Q8eVn2mbGRYOFY+m7HmxcnqBDobWUw2qEMgkrxmnJL2feCGfLNC+HkmQEnXzi/toNHMjEQ==}
 
   '@mermaid-js/parser@2.0.1':
     resolution: {integrity: sha512-j37dj/h6p6pots1L7pLPPNuABEEu9WP4OYg9pW1g+nYG331j0+3canE9OagtYdytYvdSAMG+2fKU5cxep6LgjA==}
     engines: {node: '>=22.12.0'}
-
-  '@modelcontextprotocol/core@2.0.0':
-    resolution: {integrity: sha512-pJCEwGG7Lfr/+PQp9ZTwKXNeO5wzbfKL7H3MYpCorM4oFBoQrdjnBgEoqG+RjhsvS1FKrDbKux+M1HhlnGWqcA==}
-    engines: {node: '>=20'}
 
   '@modelcontextprotocol/core@2.3.1':
     resolution: {integrity: sha512-laVmIhPGpWi7rG9q+0UigblRN0Hws/Yjlb6qLFtVqryXVLkc4h+yN8z731POD2LnAGQlFe7/tXhUm7Bi0YB91g==}
@@ -3523,10 +3518,6 @@ packages:
     peerDependenciesMeta:
       '@cfworker/json-schema':
         optional: true
-
-  '@modelcontextprotocol/server@2.0.0':
-    resolution: {integrity: sha512-YhHWdHfpFMQfd0prsEnxKeS3Qz3ytIGmsS0sth4KDjnacIT7hxk6hXHkJ9KysxlkvTM+WZAtQbbcUhdoP4Hvtw==}
-    engines: {node: '>=20'}
 
   '@modelcontextprotocol/server@2.3.1':
     resolution: {integrity: sha512-e59MfWuSssj6DoQ96JCTqdW1AXT5/XtnTl0WWd6MU1Ka434fFUGGosCLJbGNySDhHGvxQWoRWK137FXYFkYNWw==}
@@ -11140,6 +11131,9 @@ packages:
     resolution: {integrity: sha512-BMhLD/Sw+GbJC21C/UgyaZX41nPt8bUTg+jWyDeg7e7YN4xOM05YPSIXceACnXVtqyEw/LMClUQMtMZ+PGGpqQ==}
     engines: {node: '>=20'}
 
+  webmcp-types@0.1.9:
+    resolution: {integrity: sha512-ibdkppgRDkQ/nvH541YS48kVt96OiuDr+d9JHnirAtI5k0coaFdo2QqCipbXyfwrteDC6xXwPoUGC9uS5ZGwfw==}
+
   websocket-driver@0.7.5:
     resolution: {integrity: sha512-ZL2+3c7kMBdIRCMz6l8jQMHyGVxj+UL+xVk74Ombiciboca8rHa15L86B19E5oh1pL9Ii/uj54gtsIrZGMo6zA==}
     engines: {node: '>=0.8.0'}
@@ -13975,22 +13969,17 @@ snapshots:
 
   '@marijn/find-cluster-break@1.0.4': {}
 
-  '@mcp-b/webmcp-polyfill@5.1.0':
+  '@mcp-b/webmcp-polyfill@6.0.3':
     dependencies:
-      '@mcp-b/webmcp-types': 5.1.0
-      '@standard-schema/spec': 1.1.0
+      webmcp-types: 0.1.9
 
-  '@mcp-b/webmcp-types@5.1.0':
+  '@mcp-b/webmcp-types@6.0.3':
     dependencies:
-      '@modelcontextprotocol/server': 2.0.0
+      webmcp-types: 0.1.9
 
   '@mermaid-js/parser@2.0.1':
     dependencies:
       '@chevrotain/types': 13.2.0
-
-  '@modelcontextprotocol/core@2.0.0':
-    dependencies:
-      zod: 4.6.7
 
   '@modelcontextprotocol/core@2.3.1':
     dependencies:
@@ -14017,11 +14006,6 @@ snapshots:
       zod-to-json-schema: 3.25.2(zod@4.6.7)
     transitivePeerDependencies:
       - supports-color
-
-  '@modelcontextprotocol/server@2.0.0':
-    dependencies:
-      '@modelcontextprotocol/core': 2.0.0
-      zod: 4.6.7
 
   '@modelcontextprotocol/server@2.3.1':
     dependencies:
@@ -22368,6 +22352,8 @@ snapshots:
   webidl-conversions@7.0.0: {}
 
   webidl-conversions@8.0.1: {}
+
+  webmcp-types@0.1.9: {}
 
   websocket-driver@0.7.5:
     dependencies:
