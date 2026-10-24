@@ -363,7 +363,14 @@ export abstract class AssetGroup {
     }
   }
 
-  protected async fetchFromNetwork(req: Request, redirectLimit: number = 3): Promise<Response> {
+  protected async fetchFromNetwork(
+    req: Request,
+    redirectLimit: number = 3,
+    hashToVerify?: string,
+  ): Promise<Response> {
+    const originalUrl = this.adapter.normalizeUrl(req.url);
+    const canonicalHash = hashToVerify ?? this.hashes.get(originalUrl);
+
     // Make a cache-busted request for the resource.
     const res = await this.cacheBustedFetchFromNetwork(req);
 
@@ -377,7 +384,22 @@ export abstract class AssetGroup {
       }
 
       // Unwrap the redirect directly.
-      return this.fetchFromNetwork(this.newRequestWithMetadata(res.url, req), redirectLimit - 1);
+      const redirectedResponse = await this.fetchFromNetwork(
+        this.newRequestWithMetadata(res.url, req),
+        redirectLimit - 1,
+        canonicalHash,
+      );
+
+      if (canonicalHash !== undefined && redirectedResponse.ok) {
+        const redirectedHash = sha1Binary(await redirectedResponse.clone().arrayBuffer());
+        if (canonicalHash !== redirectedHash) {
+          throw new SwCriticalError(
+            `Hash mismatch (fetchFromNetwork redirect): ${req.url}: expected ${canonicalHash}, got ${redirectedHash} after redirect to ${res.url}`,
+          );
+        }
+      }
+
+      return redirectedResponse;
     }
 
     return res;

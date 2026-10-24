@@ -115,6 +115,11 @@ export class MockServerStateBuilder {
     return this;
   }
 
+  withRedirectedResponse(from: string, to: string, body: string): MockServerStateBuilder {
+    this.resources.set(from, new MockResponse(body, {redirected: true, url: to}));
+    return this;
+  }
+
   withError(url: string): MockServerStateBuilder {
     this.errors.add(url);
     return this;
