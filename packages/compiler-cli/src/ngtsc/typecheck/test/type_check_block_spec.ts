@@ -2615,6 +2615,50 @@ describe('type check blocks', () => {
       return text.replace(/\/\*[\s\S]*?\*\//g, '');
     }
 
+    it('should not generate conflicting imports in CopySourceToTcb mode', () => {
+      const {templateTypeChecker, program, programStrategy} = setup(
+        [
+          {
+            fileName: absoluteFrom('/test.ts'),
+            templates: {'AppComponent': '<div dir [test]="null"></div>'},
+            declarations: [{...DIRECTIVE, file: absoluteFrom('/dir.ts')}],
+            // Use non-exported class to force inlining into a copied shim.
+            source: `class AppComponent {}\n`,
+          },
+          {
+            fileName: absoluteFrom('/dir.ts'),
+            source: `export class Dir {}`,
+            templates: {},
+          },
+        ],
+        {inliningMode: InliningMode.CopySourceToTcb},
+      );
+
+      // Trigger type check block generation.
+      templateTypeChecker.getDiagnosticsForFile(
+        getSourceFileOrError(program, absoluteFrom('/test.ts')),
+        OptimizeFor.SingleFile,
+      );
+
+      const typeCheckProgram = programStrategy.getProgram();
+      const shimSf = getSourceFileOrError(typeCheckProgram, absoluteFrom('/test.ngtypecheck.ts'));
+
+      // Imports inserted into the copied source must be separated from the
+      // surrounding text, otherwise the shim does not parse.
+      expect(typeCheckProgram.getSyntacticDiagnostics(shimSf).length).toBe(0);
+
+      // The imports added to the copied source and the ones appended by the type check
+      // file itself must not declare the same alias for different modules.
+      const aliases = [...shimSf.text.matchAll(/import \* as (\S+) from '([^']+)'/g)].map(
+        (match) => match[1],
+      );
+      expect(new Set(aliases).size).toBe(aliases.length);
+
+      // The signal input brand must be read off an alias that refers to `@angular/core`.
+      const brandAlias = shimSf.text.match(/(\w+)\.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE/)![1];
+      expect(shimSf.text).toContain(`import * as ${brandAlias} from '@angular/core'`);
+    });
+
     it('should copy source content to shim file in CopySourceToTcb mode', () => {
       const TEMPLATE = '<div>{{hello}}</div>';
       const {templateTypeChecker, program, programStrategy} = setup(

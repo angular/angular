@@ -466,6 +466,10 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       // Type check block code affects code completion and fix suggestions.
       // We want to encourage single quotes for now, like we always did.
       shouldUseSingleQuotes: () => true,
+      // In `CopySourceToTcb` mode (`targetSf !== opsSourceSf`), the rendered shim later appends
+      // imports named `i0`, `i1`, ... from its own import manager. Use a different prefix here
+      // so the two sets of imports cannot declare the same alias for different modules.
+      namespaceImportPrefix: targetSf === opsSourceSf ? 'i' : '_i',
     });
 
     // Execute ops.
@@ -481,12 +485,13 @@ export class TypeCheckContextImpl implements TypeCheckContext {
 
     const {newImports, updatedImports} = importManager.finalize();
 
-    // Capture new imports
+    // Capture new imports. The printed text has no trailing newline or semicolon, so one has
+    // to be added to separate the import from whatever follows it at the insertion position.
     if (newImports.has(targetSf.fileName)) {
       newImports.get(targetSf.fileName)!.forEach((newImport) => {
         updates.push({
           pos: 0,
-          text: printer.printNode(ts.EmitHint.Unspecified, newImport, targetSf),
+          text: printer.printNode(ts.EmitHint.Unspecified, newImport, targetSf) + '\n',
         });
       });
     }
