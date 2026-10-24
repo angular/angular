@@ -1685,4 +1685,19 @@ export interface NavigationBehaviorOptions {
    * @see InMemoryScrollingOptions
    */
   readonly scroll?: 'manual' | 'after-transition';
+
+  /**
+   * Configures whether the browser resets focus when the navigation is complete. It only applies
+   * when the router uses the browser Navigation API (`withExperimentalPlatformNavigation`).
+   *
+   * - When 'after-transition' (the default), the browser moves focus to the first element with the
+   * `autofocus` attribute, or to the `<body>`.
+   * - When 'manual', the browser doesn't reset focus. For example, a search field that updates a
+   * query parameter as the user types keeps focus.
+   *
+   * @see [NavigateEvent#intercept](https://developer.mozilla.org/docs/Web/API/NavigateEvent/intercept)
+   *
+   * @experimental 22.3
+   */
+  readonly focusReset?: 'manual' | 'after-transition';
 }

@@ -218,6 +218,7 @@ export class Router {
             );
             const extras = {
               scroll: currentTransition.extras.scroll,
+              focusReset: currentTransition.extras.focusReset,
               browserUrl: currentTransition.extras.browserUrl,
               info: currentTransition.extras.info,
               skipLocationChange: currentTransition.extras.skipLocationChange,

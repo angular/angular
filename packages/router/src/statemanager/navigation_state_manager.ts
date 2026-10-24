@@ -458,6 +458,7 @@ export class NavigationStateManager extends StateManager {
       : (this.currentNavigation.routerTransition?.extras.scroll ?? 'after-transition');
     const interceptOptions: NavigationInterceptOptions = {
       scroll,
+      focusReset: this.currentNavigation.routerTransition?.extras.focusReset,
     };
 
     const {
