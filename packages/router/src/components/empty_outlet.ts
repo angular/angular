@@ -37,14 +37,19 @@ export class ɵEmptyOutletComponent {}
 export function standardizeConfig(r: Route): Route {
   const children = r.children && r.children.map(standardizeConfig);
   const c = children ? {...r, children} : {...r};
+  assignEmptyOutletComponent(c);
+  return c;
+}
+
+export function assignEmptyOutletComponent(c: Route): void {
   if (
     !c.component &&
     !c.loadComponent &&
-    (children || c.loadChildren) &&
+    (!c.loadConfig || c._configLoaded) &&
+    (c.children || c.loadChildren) &&
     c.outlet &&
     c.outlet !== PRIMARY_OUTLET
   ) {
     c.component = ɵEmptyOutletComponent;
   }
-  return c;
 }

@@ -20,10 +20,10 @@ import {
   Type,
 } from '@angular/core';
 
-import {standardizeConfig} from './components/empty_outlet';
+import {assignEmptyOutletComponent, standardizeConfig} from './components/empty_outlet';
 import {LoadedRouterConfig, Route, Routes} from './models';
 import {wrapIntoPromise} from './utils/collection';
-import {assertStandalone, validateConfig} from './utils/config';
+import {assertStandalone, validateConfig, validateLoadedConfig} from './utils/config';
 
 /**
  * The DI token for a router configuration.
@@ -43,9 +43,37 @@ export const ROUTES = new InjectionToken<Route[][]>(
 export class RouterConfigLoader {
   private componentLoaders = new WeakMap<Route, Promise<Type<unknown>>>();
   private childrenLoaders = new WeakMap<Route, Promise<LoadedRouterConfig>>();
+  private configLoaders = new WeakMap<Route, Promise<void>>();
   onLoadStartListener?: (r: Route) => void;
   onLoadEndListener?: (r: Route) => void;
   private readonly compiler = inject(Compiler);
+
+  loadConfig(route: Route): Promise<void> {
+    let loader = this.configLoaders.get(route);
+    if (loader) {
+      return loader;
+    } else if (route._configLoaded) {
+      return Promise.resolve();
+    }
+
+    loader = (async () => {
+      try {
+        const config = await maybeResolveResources(
+          maybeUnwrapDefaultExport(await route.loadConfig!()),
+        );
+
+        (typeof ngDevMode === 'undefined' || ngDevMode) && validateLoadedConfig(route, config);
+
+        Object.assign(route, config);
+        route._configLoaded = true;
+        assignEmptyOutletComponent(route);
+      } finally {
+        this.configLoaders.delete(route);
+      }
+    })();
+    this.configLoaders.set(route, loader);
+    return loader;
+  }
 
   async loadComponent(injector: EnvironmentInjector, route: Route): Promise<Type<unknown>> {
     if (this.componentLoaders.get(route)) {
