@@ -7,6 +7,7 @@ use crate::{ClassType, HostDirectiveBinding, InputMetadata, OutputMetadata};
 use super::imports::{FileExportInfo, LocalExportAlias, ReexportInfo, WildcardExport};
 use super::utils::{
     extract_class_body_type_check_meta, extract_property_key, extract_type_parameters,
+    js_str_to_string_lossy,
 };
 use oxc_ast_visit::utf8_to_utf16::Utf8ToUtf16;
 
@@ -131,7 +132,7 @@ pub fn analyze_dts(
                     named_exports.push(ReexportInfo {
                         exported_name: spec.exported.name().to_string(),
                         local_name: spec.local.name().to_string(),
-                        source: export.source.value.to_string(),
+                        source: js_str_to_string_lossy(export.source.value).into_owned(),
                         // `export … from` in a `.d.ts` forwards the symbol without
                         // binding it here.
                         binds_locally: false,
@@ -148,13 +149,13 @@ pub fn analyze_dts(
                     named_exports.push(ReexportInfo {
                         exported_name: exported.name().to_string(),
                         local_name: "*".to_string(),
-                        source: decl.source.value.to_string(),
+                        source: js_str_to_string_lossy(decl.source.value).into_owned(),
                         binds_locally: false,
                         is_type: decl.export_kind.is_type(),
                     });
                 } else {
                     wildcards.push(WildcardExport {
-                        source: decl.source.value.to_string(),
+                        source: js_str_to_string_lossy(decl.source.value).into_owned(),
                         is_type: decl.export_kind.is_type(),
                     });
                 }
@@ -819,7 +820,7 @@ fn extract_string_from_type_argument(
     let TSLiteral::StringLiteral(s) = &lit.literal else {
         return None;
     };
-    Some(s.value.to_string())
+    Some(js_str_to_string_lossy(s.value).into_owned())
 }
 
 /// Extract ngContentSelectors from position 7 (index 6) of: i0.ɵɵComponentDeclaration<T, "[selector]", ..., NgContentSelectors, ...>
@@ -838,7 +839,7 @@ fn extract_ng_content_selectors_from_type(
         let TSLiteral::StringLiteral(s) = &lit.literal else {
             continue;
         };
-        selectors.push(s.value.to_string());
+        selectors.push(js_str_to_string_lossy(s.value).into_owned());
     }
     if !selectors.is_empty() {
         return Some(selectors);
@@ -861,7 +862,7 @@ fn extract_export_as_from_type(
         let TSLiteral::StringLiteral(s) = &lit.literal else {
             continue;
         };
-        exports.push(s.value.to_string());
+        exports.push(js_str_to_string_lossy(s.value).into_owned());
     }
     if !exports.is_empty() {
         return Some(exports);
@@ -903,7 +904,7 @@ fn extract_inputs_map(ts_type: &TSType) -> Vec<InputMetadata> {
         if let Some(type_ann) = &prop.type_annotation {
             if let TSType::TSLiteralType(lit_type) = &type_ann.type_annotation {
                 if let TSLiteral::StringLiteral(s) = &lit_type.literal {
-                    binding_property_name = s.value.to_string();
+                    binding_property_name = js_str_to_string_lossy(s.value).into_owned();
                 }
             } else if let TSType::TSTypeLiteral(obj_type) = &type_ann.type_annotation {
                 // { alias: "aliasName", required: true, isSignal: true }
@@ -923,7 +924,8 @@ fn extract_inputs_map(ts_type: &TSType) -> Vec<InputMetadata> {
                                     {
                                         if let TSLiteral::StringLiteral(s) = &inner_lit_type.literal
                                         {
-                                            binding_property_name = s.value.to_string();
+                                            binding_property_name =
+                                                js_str_to_string_lossy(s.value).into_owned();
                                         }
                                     }
                                 }
@@ -1010,7 +1012,7 @@ fn extract_outputs_map(ts_type: &TSType) -> Vec<OutputMetadata> {
                 if let Some(type_ann) = &prop.type_annotation {
                     if let TSType::TSLiteralType(lit_type) = &type_ann.type_annotation {
                         if let TSLiteral::StringLiteral(s) = &lit_type.literal {
-                            binding_property_name = s.value.to_string();
+                            binding_property_name = js_str_to_string_lossy(s.value).into_owned();
                         }
                     }
                 }
@@ -1089,7 +1091,7 @@ fn extract_string_literal_from_type_annotation(
     let TSLiteral::StringLiteral(s) = &lit_type.literal else {
         return None;
     };
-    Some(s.value.to_string())
+    Some(js_str_to_string_lossy(s.value).into_owned())
 }
 
 fn extract_directive_name_and_specifier(
