@@ -379,6 +379,10 @@ describe('ShadowCss nesting', () => {
           color: red;
         }
 
+        &::before {
+          content: '';
+        }
+
         & .child, &.modifier > .child {
           color: blue;
         }
@@ -397,6 +401,10 @@ describe('ShadowCss nesting', () => {
           color: red;
         }
 
+        &::before {
+          content: '';
+        }
+
         & .child[contenta], &.modifier > .child[contenta] {
           color: blue;
         }
@@ -405,6 +413,15 @@ describe('ShadowCss nesting', () => {
 
     const result = shim(css, 'contenta', 'a-host');
     expect(result).toEqualCss(expected);
+  });
+
+  it('should not add the content attribute to an ampersand inside :where() or :is() nested in :host', () => {
+    expect(shim(':host { :where(&.modifier) { color: red; } }', 'contenta', 'a-host')).toEqualCss(
+      '[a-host] { :where(&.modifier) { color: red; } }',
+    );
+    expect(
+      shim(':host { :is(&.modifier, .child) { color: red; } }', 'contenta', 'a-host'),
+    ).toEqualCss('[a-host] { :is(&.modifier, .child[contenta]) { color: red; } }');
   });
 
   it('should not add the content attribute to an ampersand nested in :host() and :host-context()', () => {

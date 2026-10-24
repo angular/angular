@@ -870,6 +870,7 @@ export class ShadowCss {
               selector: selectorToScope,
               scopeSelector,
               hostSelector,
+              isNestedInHost,
             });
 
             // Put the result back into the pseudo selector function.
