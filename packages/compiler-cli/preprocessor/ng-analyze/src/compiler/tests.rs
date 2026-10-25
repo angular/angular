@@ -7039,6 +7039,119 @@ fn test_constructor_dependency_diagnostics() {
 }
 
 #[test]
+fn test_ambient_module_constructor_dependency_tokens() {
+    let ambient_dts = r#"
+        declare module 'my-ambient-rpc/client' {
+            export class RpcPromiseClient {
+                call(): Promise<void>;
+            }
+            export interface RpcOptions {
+                timeout: number;
+            }
+        }
+        declare module 'my-ambient-rpc/default' {
+            export default class DefaultClient {}
+        }
+
+        // Clutz publishes a `goog.module` through an alias of its `declare namespace`: as the
+        // `export =` of the module for a namespace of exports, as its `export default` for a
+        // single class.
+        declare namespace ಠ_ಠ.clutz.my.rpc {
+            class ClutzClient {}
+            class ClutzDefaultClient {}
+        }
+        declare module 'goog:my.rpc' {
+            import alias = ಠ_ಠ.clutz.my.rpc;
+            export = alias;
+        }
+        declare module 'goog:my.rpc.ClutzDefaultClient' {
+            import ClutzDefaultClient = ಠ_ಠ.clutz.my.rpc.ClutzDefaultClient;
+            export default ClutzDefaultClient;
+        }
+    "#;
+    let source = r#"
+        import { Injectable } from '@angular/core';
+        import { RpcPromiseClient, RpcOptions } from 'my-ambient-rpc/client';
+        import * as rpc from 'my-ambient-rpc/client';
+        import DefaultClient from 'my-ambient-rpc/default';
+        import { ClutzClient } from 'goog:my.rpc';
+        import ClutzDefaultClient from 'goog:my.rpc.ClutzDefaultClient';
+
+        @Injectable({ providedIn: 'root' })
+        export class MyService {
+            constructor(
+                private readonly client: RpcPromiseClient,
+                private readonly nsClient: rpc.RpcPromiseClient,
+                private readonly defaultClient: DefaultClient,
+                private readonly clutzClient: ClutzClient,
+                private readonly clutzDefaultClient: ClutzDefaultClient,
+            ) {}
+        }
+
+        @Injectable({ providedIn: 'root' })
+        export class InvalidAmbientInterfaceService {
+            constructor(private readonly opts: RpcOptions) {}
+        }
+    "#;
+
+    let mut virtual_files = HashMap::new();
+    virtual_files.insert(
+        "/project/ambient_rpc.d.ts".to_string(),
+        ambient_dts.to_string(),
+    );
+    virtual_files.insert("/project/app.ts".to_string(), source.to_string());
+    virtual_files.insert(
+        "/project/tsconfig.json".to_string(),
+        r#"{"files": ["app.ts", "ambient_rpc.d.ts"], "angularCompilerOptions": {"strictInjectionParameters": true}}"#
+            .to_string(),
+    );
+
+    let analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: "/project/tsconfig.json".to_string(),
+        optimize: Some(true),
+        virtual_files: Some(virtual_files),
+        ..Default::default()
+    })
+    .unwrap();
+
+    let meta = analyzer
+        .get_metadata_for_file("/project/app.ts".to_string())
+        .expect("app.ts metadata");
+
+    let my_service = meta
+        .classes
+        .iter()
+        .find(|c| c.class_name.as_deref() == Some("MyService"))
+        .expect("MyService should exist");
+    let params = my_service.constructor_params.as_ref().unwrap();
+    assert_eq!(params.len(), 5);
+    for param in params {
+        assert!(
+            !param.is_type_only && param.is_value_verified,
+            "expected verified value param for {:?}, got is_type_only={} is_value_verified={}",
+            param.type_name,
+            param.is_type_only,
+            param.is_value_verified
+        );
+    }
+
+    let invalid_service = meta
+        .classes
+        .iter()
+        .find(|c| c.class_name.as_deref() == Some("InvalidAmbientInterfaceService"))
+        .expect("InvalidAmbientInterfaceService should exist");
+    let invalid_param = &invalid_service.constructor_params.as_ref().unwrap()[0];
+    assert!(invalid_param.is_type_only);
+
+    // Only InvalidAmbientInterfaceService should trigger NG2003; MyService must have no diagnostics.
+    assert_eq!(meta.diagnostics.len(), 1, "{:?}", meta.diagnostics);
+    assert_eq!(meta.diagnostics[0].code, 2003);
+    assert!(meta.diagnostics[0]
+        .message_text
+        .contains("InvalidAmbientInterfaceService"));
+}
+
+#[test]
 fn test_input_transform_diagnostics() {
     let util = r#"
         interface InternalType { foo: boolean; }

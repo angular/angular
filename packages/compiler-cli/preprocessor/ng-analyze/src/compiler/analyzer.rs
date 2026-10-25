@@ -257,7 +257,7 @@ impl Analyzer {
         fs.set_preserve_symlinks(config.preserve_symlinks);
         fs.set_root_dirs(config.merge_root_dirs);
 
-        let entrypoints = canonical_roots(&fs, config.tsconfig_files);
+        let (entrypoints, dts_files) = partition_tsconfig_files(config.tsconfig_files, &fs);
         let entrypoints_lock = Arc::new(RwLock::new(entrypoints));
 
         let resource_registry = Arc::new(ResourceRegistry::default());
@@ -293,6 +293,7 @@ impl Analyzer {
             config.strict_injection_parameters,
             config.implicit_standalone,
         );
+        *engine.tsconfig_dts_files.write().unwrap() = dts_files;
 
         Analyzer {
             resource_registry,
@@ -540,8 +541,8 @@ impl Analyzer {
         Ok(dedup_preserving_order(ts_paths_to_invalidate))
     }
 
-    /// Re-read the tsconfig's root files, which change when files matching its `include` globs are
-    /// added or removed, and evict queries that read the previous roots when they differ.
+    /// Re-read the tsconfig's file list, which changes when files matching its `include` globs are
+    /// added or removed, and evict queries that read the previous list when it differs.
     fn re_resolve_entrypoints(&self, invalidated_paths: &mut Vec<String>) {
         if let Ok(resolved_config) =
             tsconfig_resolution::load_and_resolve_tsconfig(&self.tsconfig_path, &self.fs)
@@ -550,33 +551,52 @@ impl Analyzer {
         }
     }
 
-    /// Install `files` as the compilation roots, evicting every query that read the previous roots
-    /// when they differ.
+    /// Install `files` as the compilation roots and the tsconfig's `.d.ts` files, evicting every
+    /// query that read the previous lists when either differs.
     fn replace_entrypoints(&self, files: Vec<PathBuf>, invalidated_paths: &mut Vec<String>) {
-        let roots = canonical_roots(&self.fs, files);
-        {
-            let mut current = self.entrypoints.write().unwrap();
-            if *current == roots {
-                return;
-            }
-            *current = roots;
+        let (roots, dts_files) = partition_tsconfig_files(files, &self.fs);
+        let roots_changed = replace_if_changed(&self.entrypoints, roots);
+        let dts_files_changed = replace_if_changed(&self.engine.tsconfig_dts_files, dts_files);
+        if !roots_changed && !dts_files_changed {
+            return;
         }
         let evicted = self.engine.invalidate_roots();
         self.push_evicted_paths(evicted, invalidated_paths);
     }
 }
 
-/// The compilation roots among `files`, canonicalized through `fs`. Declaration files and non-TS
-/// files are filtered out first so they never cost a canonicalize call.
-fn canonical_roots(fs: &OverlayFileSystem, files: Vec<PathBuf>) -> Vec<PathBuf> {
-    files
-        .into_iter()
-        .filter(|p| is_compilation_root(p))
-        .map(|p| {
-            fs.canonicalize(&p)
-                .unwrap_or_else(|_| crate::fs::normalize_path_structural(&p).into_owned())
-        })
-        .collect()
+/// Store `value` in `lock` and report whether it differed from the previous value.
+fn replace_if_changed<T: PartialEq>(lock: &RwLock<T>, value: T) -> bool {
+    let mut current = lock.write().unwrap();
+    if *current == value {
+        return false;
+    }
+    *current = value;
+    true
+}
+
+/// Split the tsconfig's file list into the compilation roots, canonicalized through `fs`, and the
+/// `.d.ts` files it also lists, only normalized structurally. Bazel targets can list thousands of
+/// transitive `.d.ts` files, so they never cost a canonicalize call here: the ambient module index
+/// canonicalizes them lazily, once an import actually needs it (`QueryKey::AmbientModuleFiles`).
+/// Other files are filtered out.
+fn partition_tsconfig_files(
+    files: Vec<PathBuf>,
+    fs: &OverlayFileSystem,
+) -> (Vec<PathBuf>, Vec<PathBuf>) {
+    let mut roots = Vec::new();
+    let mut dts_files = Vec::new();
+    for path in files {
+        if is_compilation_root(&path) {
+            roots.push(
+                fs.canonicalize(&path)
+                    .unwrap_or_else(|_| crate::fs::normalize_path_structural(&path).into_owned()),
+            );
+        } else if crate::utils::is_dts(&path) {
+            dts_files.push(crate::fs::normalize_path_structural(&path).into_owned());
+        }
+    }
+    (roots, dts_files)
 }
 
 #[cfg_attr(feature = "napi", napi)]

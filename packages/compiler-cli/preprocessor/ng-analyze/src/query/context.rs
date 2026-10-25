@@ -210,6 +210,18 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryContext<Fs> {
         }
     }
 
+    pub async fn ambient_module_files(&self) -> Arc<crate::query::keys::AmbientModuleFiles> {
+        let key = QueryKey::AmbientModuleFiles;
+        let cached = self.engine.query(key).await;
+        if let Ok(mut guard) = self.dependencies.lock() {
+            guard.extend(cached.dependencies.iter().copied());
+        }
+        match &*cached.value {
+            QueryValue::AmbientModuleFiles(r) => r.clone(),
+            _ => unreachable!("AmbientModuleFiles must yield AmbientModuleFiles"),
+        }
+    }
+
     pub async fn has_path(&self, start: FileId, target: FileId) -> bool {
         self.record_file(crate::query::engine::ROOTS_FILE_ID);
         let graph = self.engine.get_or_build_import_graph().await;
