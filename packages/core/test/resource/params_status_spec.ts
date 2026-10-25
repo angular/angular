@@ -109,6 +109,12 @@ describe('resource with ResourceParamsStatus', () => {
     expect(res.status()).toBe('error');
     expect(res.error()).toEqual(err);
     expect(loadCount).toBe(1);
+
+    await act(() => s.set('recovered'));
+    expect(res.status()).toBe('resolved');
+    expect(res.value()).toBe('recovered');
+    expect(loadCount).toBe(2);
+    expect(res.reload()).toBeTrue();
   });
 
   it('should recover from special statuses', async () => {

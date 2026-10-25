@@ -397,9 +397,10 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
   }
 
   override reload(): boolean {
-    // We don't want to restart in-progress loads.
+    // We don't want to restart in-progress loads. A params error can only be cleared by a change
+    // to the params dependencies, so reloading isn't supported in that case either.
     const {status, extRequest} = untracked(this.state);
-    if (status === 'idle' || status === 'loading' || extRequest.error) {
+    if (status === 'idle' || status === 'loading' || extRequest.error !== undefined) {
       return false;
     }
 
