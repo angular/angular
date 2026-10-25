@@ -31,6 +31,7 @@ export {
   HttpUrlEncodingCodec,
 } from './src/params';
 export {
+  HTTP_CONFIGURED_INTERCEPTOR_FNS,
   HttpFeature,
   HttpFeatureKind,
   provideHttpClient,
