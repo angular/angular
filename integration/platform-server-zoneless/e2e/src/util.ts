@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import * as webdriver from 'selenium-webdriver';
-import * as chrome from 'selenium-webdriver/chrome';
+import * as chrome from 'selenium-webdriver/chrome.js';
 
 let driver: webdriver.WebDriver | null = null;
 let serviceInitialized = false;

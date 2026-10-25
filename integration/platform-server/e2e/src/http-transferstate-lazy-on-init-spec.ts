@@ -12,7 +12,7 @@ import {
   getWebDriver,
   navigateTo,
   verifyNoBrowserErrors,
-} from './util';
+} from './util.ts';
 
 describe('Http TransferState Lazy On Init', () => {
   beforeEach(async () => {

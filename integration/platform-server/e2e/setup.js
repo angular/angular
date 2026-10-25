@@ -1,10 +1,5 @@
-const path = require('path');
-const tsNode = require('ts-node');
-const {SpecReporter, StacktraceOption} = require('jasmine-spec-reporter');
-
-tsNode.register({
-  project: path.join(__dirname, 'tsconfig.json'),
-});
+import {SpecReporter, StacktraceOption} from 'jasmine-spec-reporter';
+import {quitWebDriver} from './src/util.ts';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 30000;
 jasmine.getEnv().clearReporters();
@@ -17,6 +12,5 @@ jasmine.getEnv().addReporter(
 );
 
 afterAll(async () => {
-  const {quitWebDriver} = require('./src/util');
   await quitWebDriver();
 });

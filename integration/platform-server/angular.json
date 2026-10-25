@@ -70,7 +70,7 @@
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "progress": false,
-            "polyfills": ["zone.js", "zone.js/testing"],
+            "polyfills": ["zone.js"],
             "tsConfig": "projects/ngmodule/tsconfig.spec.json",
             "assets": ["projects/ngmodule/src/favicon.ico", "projects/ngmodule/src/assets"],
             "styles": ["projects/ngmodule/src/styles.css"],
@@ -152,7 +152,7 @@
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "progress": false,
-            "polyfills": ["zone.js", "zone.js/testing"],
+            "polyfills": ["zone.js"],
             "tsConfig": "projects/standalone/tsconfig.spec.json",
             "assets": ["projects/standalone/src/favicon.ico", "projects/standalone/src/assets"],
             "styles": ["projects/standalone/src/styles.css"],
