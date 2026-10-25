@@ -50,6 +50,20 @@ describe('deepSignal', () => {
     expect(sourceTriggerCount).toBe(2); // Should STILL be 2 if optimization works
   });
 
+  it('should use custom equality when setting a value', () => {
+    const source = signal({value: {id: 1}});
+    const prop = signal('value' as const);
+    const deep = deepSignal(source, prop, (a, b) => a.id === b.id);
+    const initial = deep();
+
+    deep.set({id: 1});
+    expect(deep()).toBe(initial);
+
+    const next = {id: 2};
+    deep.set(next);
+    expect(deep()).toBe(next);
+  });
+
   it('should optimize sets with same value on arrays', () => {
     const source = signal(['a', 'b', 'c']);
     const prop = signal(1); // index 1, value 'b'
