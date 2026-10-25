@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {getProfiler, Hooks, Profiler} from '../profiler';
+import {Hooks, Profiler} from '../profiler';
 import type {ComponentInstance} from '../../shared/interfaces';
 import type {ElementPosition} from '../../../../../protocol';
 import {runOutsideAngular} from '../../shared/utils/general';
 import {IdentityTracker} from '../../directive-forest/identity-tracker/identity-tracker';
 import {debugLog} from '../../shared/utils/log';
+import {inject} from '../../di';
 
 // Current analyzer instance
 let analyzer: CdAnalyzerImpl | null = null;
@@ -52,7 +53,7 @@ export interface CdAnalyzer {
  */
 export function getCdAnalyzer(): {analyzer: CdAnalyzer; disposeFn: () => void} {
   if (!analyzer) {
-    analyzer = new CdAnalyzerImpl(getProfiler());
+    analyzer = new CdAnalyzerImpl(inject(Profiler));
   }
   const consumer = Symbol('consumer');
   consumers.add(consumer);

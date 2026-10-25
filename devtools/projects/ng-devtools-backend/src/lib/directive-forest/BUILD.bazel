@@ -23,6 +23,7 @@ ts_project(
         "manager.ts",
     ],
     deps = [
+        "//devtools/projects/ng-devtools-backend/src/lib/di:root",
         "//devtools/projects/ng-devtools-backend/src/lib/directive-forest/identity-tracker",
         "//devtools/projects/ng-devtools-backend/src/lib/profiling/profiler",
         "//devtools/projects/ng-devtools-backend/src/lib/shared:interfaces",
