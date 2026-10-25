@@ -321,7 +321,7 @@ export declare class MyModule {
 /****************************************************************************************************
  * PARTIAL FILE: ng_template.js
  ****************************************************************************************************/
-import { Component, NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
+import { Component, NgModule } from '@angular/core';
 import * as i0 from "@angular/core";
 export class MyComponent {
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
@@ -348,7 +348,7 @@ export class MyModule {
 }
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, decorators: [{
             type: NgModule,
-            args: [{ declarations: [MyComponent], schemas: [NO_ERRORS_SCHEMA] }]
+            args: [{ declarations: [MyComponent] }]
         }] });
 
 /****************************************************************************************************
@@ -356,7 +356,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class MyComponent {
-    b: any;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never, false, never>;
 }
@@ -972,7 +971,7 @@ export declare class MyModule {
 /****************************************************************************************************
  * PARTIAL FILE: ng_template_bindings.js
  ****************************************************************************************************/
-import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
+import { Component } from '@angular/core';
 import * as i0 from "@angular/core";
 export class MyComponent {
     p1;
@@ -986,7 +985,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     selector: 'my-component',
                     template: '<ng-template l="l1" [p]="p1" [attr.a]="a1" [class.c]="c1"></ng-template>',
-                    schemas: [NO_ERRORS_SCHEMA],
                 }]
         }] });
 
@@ -1311,7 +1309,7 @@ export declare class MyModule {
 /****************************************************************************************************
  * PARTIAL FILE: ng_template_implicit.js
  ****************************************************************************************************/
-import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
+import { Component } from '@angular/core';
 import * as i0 from "@angular/core";
 export class MyComponent {
     p1;
@@ -1325,7 +1323,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     selector: 'my-component',
                     template: '<ng-template let-a [ngIf]="true">{{a}}</ng-template>',
-                    schemas: [NO_ERRORS_SCHEMA],
                 }]
         }] });
 

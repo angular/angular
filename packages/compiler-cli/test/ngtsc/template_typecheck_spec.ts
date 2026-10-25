@@ -4837,11 +4837,149 @@ runInEachFileSystem(() => {
           imports: [NgTemplateOutlet],
           template: '<svg><ng-template [ngTemplateOutlet]="foo"></ng-template></svg>',
         })
-        export class FooCmp {}
+        export class FooCmp {
+          foo: any;
+        }
       `,
           );
           const diags = env.driveDiagnostics();
           expect(diags.length).toBe(0);
+        });
+
+        it('should type-check the bound expression even when the binding only matches a directive selector', () => {
+          env.write(
+            'test.ts',
+            `
+        import {Component, Directive} from '@angular/core';
+        @Directive({selector: '[foobar]'})
+        export class FoobarDirective {}
+        @Component({
+          selector: 'blah',
+          imports: [FoobarDirective],
+          template: '<ng-template [foobar]="missingProp"></ng-template>',
+        })
+        export class FooCmp {}
+      `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain(
+            "Property 'missingProp' does not exist on type 'FooCmp'",
+          );
+        });
+
+        it('should type-check inputs on directives matching namespaced ng-template elements', () => {
+          env.write(
+            'test.ts',
+            `
+        import {Component, Directive, input} from '@angular/core';
+        @Directive({selector: '[svgDir]'})
+        export class SvgDir {
+          readonly req = input.required<string>();
+        }
+        @Component({
+          selector: 'blah',
+          imports: [SvgDir],
+          template: '<svg><ng-template svgDir></ng-template></svg>',
+        })
+        export class FooCmp {}
+      `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain(
+            "Required input 'req' from directive SvgDir must be specified",
+          );
+        });
+
+        it('should report standard DOM properties on ng-template', () => {
+          env.write(
+            'test.ts',
+            `
+        import {Component} from '@angular/core';
+        @Component({
+          selector: 'blah',
+          template: '<ng-template [id]="\\'my-id\\'"></ng-template>',
+        })
+        export class FooCmp {}
+      `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain(
+            "Can't bind to 'id' since it isn't a known property of 'ng-template'",
+          );
+        });
+
+        it('should report unknown properties on ng-template even when CUSTOM_ELEMENTS_SCHEMA is present', () => {
+          env.write(
+            'test.ts',
+            `
+        import {Component, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+        @Component({
+          selector: 'blah',
+          schemas: [CUSTOM_ELEMENTS_SCHEMA],
+          template: '<ng-template [foo]="1"></ng-template>',
+        })
+        export class FooCmp {}
+      `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain(
+            "Can't bind to 'foo' since it isn't a known property of 'ng-template'",
+          );
+        });
+
+        it('should check nested ng-template schema in template bodies with deep schema checks', () => {
+          env.tsconfig({
+            strictTemplates: false,
+            annotateForClosureCompiler: true,
+            strictNgTemplateTypes: true,
+          });
+          env.write(
+            'test.ts',
+            `
+        import {Component} from '@angular/core';
+        @Component({
+          selector: 'blah',
+          template: '<ng-template><ng-template [foo]="1"></ng-template></ng-template>',
+        })
+        export class FooCmp {}
+      `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain(
+            "Can't bind to 'foo' since it isn't a known property of 'ng-template'",
+          );
+        });
+
+        it('should check unclaimed inputs on nested ng-template matching a directive with deep schema checks', () => {
+          env.tsconfig({
+            strictTemplates: false,
+            annotateForClosureCompiler: true,
+            strictNgTemplateTypes: true,
+          });
+          env.write(
+            'test.ts',
+            `
+        import {Component, Directive} from '@angular/core';
+        @Directive({selector: '[myDir]'})
+        export class MyDir {}
+        @Component({
+          selector: 'blah',
+          imports: [MyDir],
+          template: '<ng-template><ng-template myDir [foo]="1"></ng-template></ng-template>',
+        })
+        export class FooCmp {}
+      `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain(
+            "Can't bind to 'foo' since it isn't a known property of 'ng-template'",
+          );
         });
 
         it('should not report an ng-template inside an XHTML element', () => {

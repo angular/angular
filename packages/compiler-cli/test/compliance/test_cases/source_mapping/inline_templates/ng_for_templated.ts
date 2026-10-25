@@ -1,4 +1,4 @@
-import {Component, NgModule, NO_ERRORS_SCHEMA} from '@angular/core';
+import {Component} from '@angular/core';
 
 @Component({
     selector: 'test-cmp',
@@ -6,9 +6,4 @@ import {Component, NgModule, NO_ERRORS_SCHEMA} from '@angular/core';
     standalone: false
 })
 export class TestCmp {
-  declare items: any[];
-}
-
-@NgModule({declarations: [TestCmp], schemas: [NO_ERRORS_SCHEMA]})
-export class TestCmpModule {
 }

@@ -7,7 +7,7 @@
  */
 
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata, SecurityContext} from '../core';
-import {isNgContainer, isNgContent, splitNsName} from '../ml_parser/tags';
+import {isNgContainer, isNgContent, isNgTemplate, splitNsName} from '../ml_parser/tags';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from '../template/pipeline/src/namespaces';
 import {dashCaseToCamelCase} from '../util';
 import {checkSecurityContext} from './dom_security_schema';
@@ -401,7 +401,11 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
 
     const normalizedTag = normalizeTagName(tagName);
     if (normalizedTag.includes('-')) {
-      if (isNgContainer(normalizedTag) || isNgContent(normalizedTag)) {
+      if (
+        isNgContainer(normalizedTag) ||
+        isNgContent(normalizedTag) ||
+        isNgTemplate(normalizedTag)
+      ) {
         return false;
       }
 
@@ -423,7 +427,11 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
 
     const normalizedTag = normalizeTagName(tagName);
     if (normalizedTag.includes('-')) {
-      if (isNgContainer(normalizedTag) || isNgContent(normalizedTag)) {
+      if (
+        isNgContainer(normalizedTag) ||
+        isNgContent(normalizedTag) ||
+        isNgTemplate(normalizedTag)
+      ) {
         return true;
       }
 

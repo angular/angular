@@ -36,7 +36,7 @@ import {
   Variable,
   ViewportDeferredTrigger,
 } from '../../render3/r3_ast';
-import {DirectiveOwner} from '../../render3/view/t2_api';
+import {DirectiveOwner, MatchSource} from '../../render3/view/t2_api';
 import {TcbDirectiveMetadata} from '../api';
 import {TcbOp} from './base';
 import {TcbBoundaryOp} from './boundary';
@@ -599,10 +599,8 @@ export class Scope {
         }
       } else if (isExplicitNgTemplate(node) && this.tcb.env.config.checkTypeOfNgTemplateBindings) {
         // `ng-template` has no DOM properties, so if no directive matched the node at all,
-        // its bindings cannot have any effect and are reported against the schema (e.g. a
-        // directive that is missing from the component's `imports`). If any directive matched,
-        // the node is not checked, since a binding may exist solely to trigger directive
-        // matching via its selector.
+        // all of its bindings are reported against the schema (e.g. a directive that is
+        // missing from the component's `imports`).
         this.opQueue.push(
           new TcbUnclaimedInputsOp(this.tcb, this, node.inputs, node, claimedInputs),
         );
@@ -680,24 +678,33 @@ export class Scope {
         for (const propertyName of dir.inputs.propertyNames) {
           claimedInputs.add(propertyName);
         }
-        if (explicitNgTemplate && dir.selector !== null) {
-          const selectors = CssSelector.parse(dir.selector);
-          for (const selector of selectors) {
-            for (let i = 0; i < selector.attrs.length; i += 2) {
-              claimedInputs.add(selector.attrs[i]);
+      }
+
+      this.opQueue.push(new TcbUnclaimedInputsOp(this.tcb, this, node.inputs, node, claimedInputs));
+
+      const schemaClaimedInputs = new Set<string>(claimedInputs);
+      if (explicitNgTemplate) {
+        for (const dir of directives) {
+          if (dir.matchSource === MatchSource.Selector && dir.selector !== null) {
+            const selectors = CssSelector.parse(dir.selector);
+            for (const selector of selectors) {
+              for (let i = 0; i < selector.attrs.length; i += 2) {
+                schemaClaimedInputs.add(selector.attrs[i]);
+              }
             }
           }
         }
       }
 
-      this.opQueue.push(new TcbUnclaimedInputsOp(this.tcb, this, node.inputs, node, claimedInputs));
       // Check the element against the DOM schema unless it is matched by an Angular component
       // or by a directive that explicitly targets the element's tag name (such as `<router-outlet>`).
       // Directives that only match attributes (like `[formControl]`) do not claim the element name.
       // Explicit `<ng-template>` nodes are never checked as elements.
       const checkElement =
         node instanceof Element && this.requiresUnknownElementCheck(node, directives);
-      this.opQueue.push(new TcbDomSchemaCheckerOp(this.tcb, node, checkElement, claimedInputs));
+      this.opQueue.push(
+        new TcbDomSchemaCheckerOp(this.tcb, node, checkElement, schemaClaimedInputs),
+      );
     }
   }
 
@@ -938,15 +945,36 @@ export class Scope {
           this.opQueue.push(new TcbDomSchemaCheckerOp(this.tcb, node, checkElement, claimedInputs));
         }
       } else if (isExplicitNgTemplate(node) && this.tcb.env.config.checkTypeOfNgTemplateBindings) {
-        // Only check `ng-template` bindings if no directive matched the node at all. A binding
-        // may be used solely to trigger directive matching via its selector, which is valid at
-        // runtime since `ng-template` has no underlying DOM element.
-        const directives = this.tcb.boundTarget.getDirectivesOfNode(node);
-        if (directives === null || directives.length === 0) {
-          this.opQueue.push(
-            new TcbDomSchemaCheckerOp(this.tcb, node, /* checkElement */ false, new Set<string>()),
-          );
+        const schemaClaimedInputs = new Set<string>();
+        let directives = this.tcb.boundTarget.getDirectivesOfNode(node);
+
+        for (const dirNode of node.directives) {
+          const directiveResults = this.tcb.boundTarget.getDirectivesOfNode(dirNode);
+
+          if (directiveResults !== null && directiveResults.length > 0) {
+            directives ??= [];
+            directives.push(...directiveResults);
+          }
         }
+
+        if (directives !== null && directives.length > 0) {
+          for (const dir of directives) {
+            for (const propertyName of dir.inputs.propertyNames) {
+              schemaClaimedInputs.add(propertyName);
+            }
+            if (dir.matchSource === MatchSource.Selector && dir.selector !== null) {
+              const selectors = CssSelector.parse(dir.selector);
+              for (const selector of selectors) {
+                for (let i = 0; i < selector.attrs.length; i += 2) {
+                  schemaClaimedInputs.add(selector.attrs[i]);
+                }
+              }
+            }
+          }
+        }
+        this.opQueue.push(
+          new TcbDomSchemaCheckerOp(this.tcb, node, /* checkElement */ false, schemaClaimedInputs),
+        );
       }
 
       this.appendDeepSchemaChecks(node.children);

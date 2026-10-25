@@ -7,6 +7,7 @@
  */
 
 import {BindingType} from '../../expression_parser/ast';
+import {splitNsName} from '../../ml_parser/tags';
 import {Component, Element, HostElement, Template} from '../../render3/r3_ast';
 import {DomElementSchemaRegistry} from '../../schema/dom_element_schema_registry';
 const REGISTRY = new DomElementSchemaRegistry();
@@ -97,7 +98,7 @@ export class TcbDomSchemaCheckerOp extends TcbOp {
       return node.name;
     }
     if (node instanceof Template) {
-      return node.tagName!;
+      return splitNsName(node.tagName!)[1];
     }
     return getComponentTagName(node);
   }
