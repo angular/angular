@@ -1847,6 +1847,9 @@ export interface ServiceDecorator {
 export function setTestabilityGetter(getter: GetTestability): void;
 
 // @public
+export function settledResourceValue<T>(source: Resource<T>): Signal<T | undefined>;
+
+// @public
 export type Signal<T> = (() => T) & {
     [SIGNAL]: unknown;
 };

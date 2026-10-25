@@ -647,6 +647,10 @@ class ResourceWrappedError extends Error {
  * Chains the current params off of the value of another resource, returning the value
  * of the other resource only when its status is `resolved` or `local`, or propagating status to
  * the current resource by throwing the appropriate status code when the value is not available.
+ *
+ * This throwing protocol is only handled by resource params evaluation. Keep this helper alongside
+ * the resource params context; it must not become a standalone public API.
+ * TODO: Make this function file-local once Signal Forms no longer needs the `ɵchain` export.
  */
 export function chain<T>(resource: Resource<T>): T {
   switch (resource.status()) {
