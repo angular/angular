@@ -49,6 +49,7 @@ pub struct QueryEngine<Fs: ResourceResolverFs + Clone + 'static> {
     pub(crate) resolver: Arc<ResolverGeneric<Fs>>,
     pub(crate) resource_registry: Arc<ResourceRegistry>,
     pub(crate) entrypoints: Arc<std::sync::RwLock<Vec<PathBuf>>>,
+    pub(crate) tsconfig_dts_files: RwLock<Vec<PathBuf>>,
     pub(crate) interner: Arc<FileIdInterner>,
     pub(crate) reverse_index: RwLock<HashMap<FileId, HashSet<QueryKey>>>,
     pub(crate) cache: crate::QueryCache<QueryKey, CachedResult>,
@@ -107,6 +108,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             resolver,
             resource_registry,
             entrypoints,
+            tsconfig_dts_files: RwLock::new(Vec::new()),
             interner: Arc::new(FileIdInterner::new()),
             reverse_index: RwLock::new(HashMap::new()),
             cache: crate::QueryCache::new(),
@@ -265,6 +267,9 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                 )),
                 QueryKey::ProgramFiles => Arc::new(QueryValue::ProgramFiles(
                     self.program_files_body(&child_ctx).await,
+                )),
+                QueryKey::AmbientModuleFiles => Arc::new(QueryValue::AmbientModuleFiles(
+                    self.ambient_module_files_body(&child_ctx),
                 )),
             };
             let deps = child_ctx.dependencies();
@@ -624,6 +629,35 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         }
 
         Arc::new(program_files)
+    }
+
+    /// Index the tsconfig's `.d.ts` files by the ambient modules they may declare, from a textual
+    /// scan of each file rather than a parse, so that resolving an import against ambient modules
+    /// only parses the few files that can declare it. The `.d.ts` paths are canonicalized here,
+    /// lazily, rather than when the tsconfig is read. Every scanned file is a recorded dependency,
+    /// since an edit to any of them may add or remove a declaration, and so is the list itself.
+    fn ambient_module_files_body(
+        self: &Arc<Self>,
+        ctx: &QueryContext<Fs>,
+    ) -> Arc<crate::query::keys::AmbientModuleFiles> {
+        ctx.record_file(ROOTS_FILE_ID);
+        let dts_files: Vec<PathBuf> = self.tsconfig_dts_files.read().unwrap().clone();
+        let mut index = crate::query::keys::AmbientModuleFiles::new();
+        for path in dts_files {
+            let path = self.fs.canonicalize(&path).unwrap_or(path);
+            let file_id = self.intern_path(&path);
+            ctx.record_file(file_id);
+            let Ok(source) = self.fs.read_to_string(&self.lookup_path(file_id)) else {
+                continue;
+            };
+            for specifier in ambient_module_names(&source) {
+                let files = index.entry(specifier.to_string()).or_default();
+                if files.last() != Some(&file_id) {
+                    files.push(file_id);
+                }
+            }
+        }
+        Arc::new(index)
     }
 
     /// Build the component → owning-NgModule mapping across every file of the program (the
@@ -1220,44 +1254,52 @@ pub fn resolve_symbol_value_kind<'a, Fs: ResourceResolverFs + Clone + 'static>(
         else {
             return SymbolValueKind::Unresolved;
         };
-        if decl.is_none() && is_imported_from_missing_module(&file_path, &name, ctx).await {
-            return SymbolValueKind::TypeOnly;
+        if decl.is_none() {
+            if let Some(kind) = classify_unresolvable_import(&file_path, &name, ctx).await {
+                return kind;
+            }
         }
         classify_declaration(decl, &file_path, ctx).await
     }
     .boxed()
 }
 
-/// Returns `true` when `name` is bound by an import declaration in `file_path` whose module
-/// specifier cannot be resolved (leaving the symbol without any value declaration). Ignores
-/// `@angular/*` specifiers so unit tests that omit `@angular/core` `.d.ts` stubs still treat
-/// framework symbols like `ElementRef` as values.
-async fn is_imported_from_missing_module<Fs: ResourceResolverFs + Clone + 'static>(
+/// Classifies `name` when `file_path` imports it from a specifier that is no file on disk, which
+/// leaves the chase nothing to follow; `None` when `name` is not such an import.
+///
+/// A `declare module '<specifier>'` block in one of the tsconfig's `.d.ts` files is the module
+/// then. Without one the module is missing and its symbols have no value — except under
+/// `@angular/*`, which unit tests omitting the `@angular/core` `.d.ts` stubs still expect to be
+/// values like `ElementRef`.
+async fn classify_unresolvable_import<Fs: ResourceResolverFs + Clone + 'static>(
     file_path: &Path,
     name: &str,
     ctx: &QueryContext<Fs>,
-) -> bool {
+) -> Option<SymbolValueKind> {
     let syntax = ctx
         .analyze_file_syntax(ctx.engine.intern_path(file_path))
         .await;
-    for decl in &syntax.import_declarations {
-        if decl.specifier.starts_with("@angular/") {
-            continue;
-        }
-        if decl
+    let (specifier, binding) = syntax.import_declarations.iter().find_map(|decl| {
+        let binding = decl
             .bindings
             .iter()
-            .any(|b| b.local == name && !b.is_type)
-        {
-            return crate::evaluator::cross_file::resolve_specifier(
-                ctx.engine.resolver.as_ref(),
-                file_path,
-                &decl.specifier,
-            )
-            .is_none();
-        }
+            .find(|binding| binding.local == name && !binding.is_type)?;
+        Some((decl.specifier.as_str(), binding))
+    })?;
+    if crate::evaluator::cross_file::resolve_specifier(
+        ctx.engine.resolver.as_ref(),
+        file_path,
+        specifier,
+    )
+    .is_some()
+    {
+        return None;
     }
-    false
+    let member = binding.imported.as_deref().unwrap_or(name);
+    if let Some(kind) = resolve_ambient_module_member(specifier, member, ctx).await {
+        return Some(kind);
+    }
+    (!specifier.starts_with("@angular/")).then_some(SymbolValueKind::TypeOnly)
 }
 
 fn find_namespace_import_specifier<'a>(syntax: &'a FileData, ns_prefix: &str) -> Option<&'a str> {
@@ -1285,33 +1327,27 @@ async fn resolve_qualified_symbol_value_kind<Fs: ResourceResolverFs + Clone + 's
     let file_id = ctx.engine.intern_path(&file_path);
     let syntax = ctx.analyze_file_syntax(file_id).await;
     let Some(specifier) = find_namespace_import_specifier(&syntax, ns_prefix) else {
+        // `ns` is a named or default import: `ns.member` is a member of the namespace the module
+        // exports under that name, or of the module itself when a default import binds an
+        // `export =` module.
         for decl in &syntax.import_declarations {
             for binding in &decl.bindings {
-                if binding.local == ns_prefix && !binding.is_type {
-                    if let Some(imported_ns) = binding.imported.as_deref() {
-                        if let Some(target_file) =
-                            crate::evaluator::cross_file::resolve_specifier(
-                                ctx.engine.resolver.as_ref(),
-                                &file_path,
-                                &decl.specifier,
-                            )
-                        {
-                            let full_member = if imported_ns == "default" {
-                                member_name.to_string()
-                            } else {
-                                format!("{imported_ns}.{member_name}")
-                            };
-                            if let Some(kind) = resolve_export_equals_namespace_member(
-                                &target_file,
-                                &full_member,
-                                ctx,
-                            )
-                            .await
-                            {
-                                return kind;
-                            }
-                        }
-                    }
+                if binding.local != ns_prefix || binding.is_type {
+                    continue;
+                }
+                let Some(imported_ns) = binding.imported.as_deref() else {
+                    continue;
+                };
+                let member_path = if imported_ns == "default" {
+                    member_name.to_string()
+                } else {
+                    format!("{imported_ns}.{member_name}")
+                };
+                if let Some(kind) =
+                    resolve_namespace_module_member(&file_path, &decl.specifier, &member_path, ctx)
+                        .await
+                {
+                    return kind;
                 }
             }
         }
@@ -1324,7 +1360,9 @@ async fn resolve_qualified_symbol_value_kind<Fs: ResourceResolverFs + Clone + 's
             &file_path,
             specifier,
         ) else {
-            return SymbolValueKind::Unresolved;
+            return resolve_ambient_module_member(specifier, member_name, ctx)
+                .await
+                .unwrap_or(SymbolValueKind::Unresolved);
         };
         // `member_name` is `inner.X`: `inner` is a namespace `target_file` exports, and one it
         // binds with `import type * as` or exports with `export type` hands on no value.
@@ -1357,18 +1395,261 @@ async fn resolve_qualified_symbol_value_kind<Fs: ResourceResolverFs + Clone + 's
         }
     }
 
-    // Fallback for CommonJS / Closure `declare namespace foo { ... } export = foo;` ambient `.d.ts`
-    // modules where `cross_file_resolve` returns `Ok(None)` because it only tracks ES module exports.
-    let Some(target_file) = crate::evaluator::cross_file::resolve_specifier(
-        ctx.engine.resolver.as_ref(),
-        &file_path,
-        specifier,
-    ) else {
-        return SymbolValueKind::Unresolved;
-    };
-    resolve_export_equals_namespace_member(&target_file, member_name, ctx)
+    resolve_namespace_module_member(&file_path, specifier, member_name, ctx)
         .await
         .unwrap_or(SymbolValueKind::Unresolved)
+}
+
+/// Classifies `member_path` as `specifier`, imported from `file_path`, exports it through the
+/// module shapes `cross_file_resolve` cannot chase, since it only tracks ES module exports: a
+/// `.d.ts` on disk whose exports are the members of a `declare namespace foo { ... } export = foo;`,
+/// or an ambient `declare module` standing in for a specifier that is no file at all.
+async fn resolve_namespace_module_member<Fs: ResourceResolverFs + Clone + 'static>(
+    file_path: &Path,
+    specifier: &str,
+    member_path: &str,
+    ctx: &QueryContext<Fs>,
+) -> Option<SymbolValueKind> {
+    let target_file = crate::evaluator::cross_file::resolve_specifier(
+        ctx.engine.resolver.as_ref(),
+        file_path,
+        specifier,
+    );
+    match target_file {
+        Some(target_file) => {
+            resolve_export_equals_namespace_member(&target_file, member_path, ctx).await
+        }
+        None => resolve_ambient_module_member(specifier, member_path, ctx).await,
+    }
+}
+
+/// Resolves a member inside a `declare namespace N { ... } export = N;` ambient `.d.ts` file.
+async fn resolve_export_equals_namespace_member<Fs: ResourceResolverFs + Clone + 'static>(
+    target_file: &Path,
+    member_path: &str,
+    ctx: &QueryContext<Fs>,
+) -> Option<SymbolValueKind> {
+    let file_id = ctx.engine.intern_path(target_file);
+    let parsed = ctx.parse_file(file_id).await;
+    let guard = parsed.lock().unwrap();
+    let dep = guard.borrow_dependent();
+    let stmts = &dep.program.body;
+    let scoping = dep.semantic.scoping();
+    let root_scope = scoping.root_scope_id();
+
+    if let Some(target) = export_equals_target(stmts) {
+        let path = format!("{target}.{member_path}");
+        if let Some(kind) = resolve_namespace_path(stmts, root_scope, scoping, &path) {
+            return Some(kind);
+        }
+    }
+    // `inner.X` may also name a namespace the file declares beside the `export =` target.
+    if !member_path.contains('.') {
+        return None;
+    }
+    resolve_namespace_path(stmts, root_scope, scoping, member_path)
+}
+
+/// Classifies `member` as the `declare module '<specifier>'` blocks in the tsconfig's `.d.ts`
+/// files export it, or `None` when none of them declares the module. TS merges same-named
+/// blocks, so a value declared by any of them wins, then a type, then the bare fact that the
+/// module exists with exports this reader cannot see (as with a bodiless `declare module 'x';`).
+async fn resolve_ambient_module_member<Fs: ResourceResolverFs + Clone + 'static>(
+    specifier: &str,
+    member: &str,
+    ctx: &QueryContext<Fs>,
+) -> Option<SymbolValueKind> {
+    // Only the files the index finds a `declare module '<specifier>'` in are parsed, so a
+    // specifier no file declares (a typo, an uninstalled package) costs a map lookup.
+    let index = ctx.ambient_module_files().await;
+    let candidates = index.get(specifier)?;
+    let mut kind = None;
+    for &file_id in candidates {
+        let parsed = ctx.parse_file(file_id).await;
+        let guard = parsed.lock().unwrap();
+        let dep = guard.borrow_dependent();
+        for stmt in &dep.program.body {
+            let oxc_ast::ast::Statement::TSExternalModuleDeclaration(decl) = stmt else {
+                continue;
+            };
+            if decl.id.value.as_str() != specifier {
+                continue;
+            }
+            match resolve_in_ambient_module(decl, dep, member) {
+                Some(SymbolValueKind::Value) => return Some(SymbolValueKind::Value),
+                Some(SymbolValueKind::TypeOnly) => kind = Some(SymbolValueKind::TypeOnly),
+                _ => kind = kind.or(Some(SymbolValueKind::Unresolved)),
+            }
+        }
+    }
+    kind
+}
+
+/// The quoted names following each `module` keyword in `source`, which covers every
+/// `declare module '<specifier>'` without parsing. Over-matching (say, inside a comment) only
+/// adds a candidate file that the AST check then rejects.
+fn ambient_module_names(source: &str) -> impl Iterator<Item = &str> {
+    const KEYWORD: &str = "module";
+    let is_ident = |c: char| c.is_alphanumeric() || c == '_' || c == '$';
+    source.match_indices(KEYWORD).filter_map(move |(start, _)| {
+        if source[..start].chars().next_back().is_some_and(is_ident) {
+            return None;
+        }
+        let rest = source[start + KEYWORD.len()..].trim_start();
+        let quote = rest.chars().next().filter(|c| matches!(c, '\'' | '"'))?;
+        let body = &rest[1..];
+        let name = &body[..body.find(quote)?];
+        (!name.contains('\n')).then_some(name)
+    })
+}
+
+/// Classifies `member` as the ambient module `decl` exports it.
+fn resolve_in_ambient_module(
+    decl: &oxc_ast::ast::TSExternalModuleDeclaration<'_>,
+    dep: &crate::ParsedFileDependent<'_>,
+    member: &str,
+) -> Option<SymbolValueKind> {
+    let block = decl.body.as_ref()?;
+    let scope = decl.scope_id.get()?;
+    let stmts = &block.body;
+    let path = match (export_equals_target(stmts), member) {
+        (Some(target), "default") => target,
+        (Some(target), member) => format!("{target}.{member}"),
+        (None, "default") => default_export_name(stmts)?,
+        (None, member) => member.to_string(),
+    };
+    let path = expand_import_equals(stmts, &path);
+    let scoping = dep.semantic.scoping();
+    resolve_namespace_path(stmts, scope, scoping, &path).or_else(|| {
+        resolve_namespace_path(&dep.program.body, scoping.root_scope_id(), scoping, &path)
+    })
+}
+
+/// Classifies the binding `path` names: `A.B.X` is `X` in the namespaces `A.B` that `stmts`
+/// declare, a bare `X` a binding of `scope` itself. `None` when nothing binds it, or only
+/// something without a value of its own, like an `import X = ...` alias.
+fn resolve_namespace_path(
+    stmts: &[oxc_ast::ast::Statement<'_>],
+    scope: oxc_syntax::scope::ScopeId,
+    scoping: &oxc_semantic::Scoping,
+    path: &str,
+) -> Option<SymbolValueKind> {
+    use oxc_syntax::symbol::SymbolFlags;
+
+    let (namespaces, leaf) = path.rsplit_once('.').unwrap_or(("", path));
+    let mut scopes = Vec::new();
+    let mut has_import_equals = false;
+    if namespaces.is_empty() {
+        scopes.push(scope);
+        has_import_equals = contains_import_equals(stmts);
+    } else {
+        let namespaces: Vec<&str> = namespaces.split('.').collect();
+        collect_namespace_scopes(stmts, &namespaces, &mut scopes, &mut has_import_equals);
+    }
+    // Same-named namespace declarations merge, so the leaf's flags are the union over all of them.
+    let flags = scopes
+        .into_iter()
+        .filter_map(|scope_id| scoping.get_binding(scope_id, leaf.into()))
+        .map(|symbol_id| scoping.symbol_flags(symbol_id))
+        .reduce(|a, b| a | b)?;
+
+    if flags.intersects(SymbolFlags::Value) && !flags.contains(SymbolFlags::ConstEnum) {
+        return Some(SymbolValueKind::Value);
+    }
+    // A namespace that re-exports through `import X = ...` aliases may hand on values these flags do
+    // not show, so its types are left unverified rather than declared type-only.
+    if !has_import_equals
+        && flags.intersects(
+            SymbolFlags::Interface
+                | SymbolFlags::TypeAlias
+                | SymbolFlags::TypeParameter
+                | SymbolFlags::ConstEnum,
+        )
+    {
+        return Some(SymbolValueKind::TypeOnly);
+    }
+    None
+}
+
+/// The dotted name an `export = A.B;` in `stmts` assigns, if there is one.
+fn export_equals_target(stmts: &[oxc_ast::ast::Statement<'_>]) -> Option<String> {
+    stmts.iter().find_map(|stmt| match stmt {
+        oxc_ast::ast::Statement::TSExportAssignment(assign) => {
+            extract_dotted_identifier_path(&assign.expression)
+        }
+        _ => None,
+    })
+}
+
+/// The name an `export default` in `stmts` publishes: a declaration's own, or a bare identifier.
+fn default_export_name(stmts: &[oxc_ast::ast::Statement<'_>]) -> Option<String> {
+    use oxc_ast::ast::ExportDefaultDeclarationKind;
+
+    stmts.iter().find_map(|stmt| {
+        let oxc_ast::ast::Statement::ExportDefaultDeclaration(export) = stmt else {
+            return None;
+        };
+        let name = match &export.declaration {
+            ExportDefaultDeclarationKind::ClassDeclaration(class) => &class.id.as_ref()?.name,
+            ExportDefaultDeclarationKind::FunctionDeclaration(function) => {
+                &function.id.as_ref()?.name
+            }
+            ExportDefaultDeclarationKind::TSInterfaceDeclaration(interface) => &interface.id.name,
+            expression => match expression.as_expression()? {
+                oxc_ast::ast::Expression::Identifier(ident) => &ident.name,
+                _ => return None,
+            },
+        };
+        Some(name.to_string())
+    })
+}
+
+/// The `import X = ...` declaration `stmt` is, exported or not.
+fn import_equals_declaration<'s, 'a>(
+    stmt: &'s oxc_ast::ast::Statement<'a>,
+) -> Option<&'s oxc_ast::ast::TSImportEqualsDeclaration<'a>> {
+    match stmt {
+        oxc_ast::ast::Statement::TSImportEqualsDeclaration(decl) => Some(decl.as_ref()),
+        oxc_ast::ast::Statement::ExportDeclaration(export) => match &export.declaration {
+            oxc_ast::ast::Declaration::TSImportEqualsDeclaration(decl) => Some(decl.as_ref()),
+            _ => None,
+        },
+        _ => None,
+    }
+}
+
+fn contains_import_equals(stmts: &[oxc_ast::ast::Statement<'_>]) -> bool {
+    stmts
+        .iter()
+        .any(|stmt| import_equals_declaration(stmt).is_some())
+}
+
+/// The dotted name an `import name = A.B.C;` in `stmts` aliases, if there is one. `require()`
+/// forms and type-only aliases are not followed.
+fn import_equals_target(stmts: &[oxc_ast::ast::Statement<'_>], name: &str) -> Option<String> {
+    let decl = stmts
+        .iter()
+        .filter_map(|stmt| import_equals_declaration(stmt))
+        .find(|decl| decl.id.name.as_str() == name && !decl.import_kind.is_type())?;
+    match &decl.module_reference {
+        oxc_ast::ast::TSModuleReference::IdentifierReference(ident) => Some(ident.name.to_string()),
+        oxc_ast::ast::TSModuleReference::QualifiedName(qualified) => {
+            Some(crate::analyzer::utils::qualified_name_to_string(qualified))
+        }
+        oxc_ast::ast::TSModuleReference::ExternalModuleReference(_) => None,
+    }
+}
+
+/// Rewrites the head of `path` through an `import Head = A.B.C;` alias in `stmts`, if there is one.
+fn expand_import_equals(stmts: &[oxc_ast::ast::Statement<'_>], path: &str) -> String {
+    let (head, rest) = path.split_once('.').unwrap_or((path, ""));
+    let Some(target) = import_equals_target(stmts, head) else {
+        return path.to_string();
+    };
+    if rest.is_empty() {
+        return target;
+    }
+    format!("{target}.{rest}")
 }
 
 fn extract_dotted_identifier_path(expr: &oxc_ast::ast::Expression<'_>) -> Option<String> {
@@ -1380,78 +1661,6 @@ fn extract_dotted_identifier_path(expr: &oxc_ast::ast::Expression<'_>) -> Option
         }
         _ => None,
     }
-}
-
-/// Resolves a member inside a `declare namespace N { ... } export = N;` ambient `.d.ts` file.
-async fn resolve_export_equals_namespace_member<Fs: ResourceResolverFs + Clone + 'static>(
-    target_file: &Path,
-    member_path: &str,
-    ctx: &QueryContext<Fs>,
-) -> Option<SymbolValueKind> {
-    use oxc_syntax::symbol::SymbolFlags;
-
-    let file_id = ctx.engine.intern_path(target_file);
-    let parsed = ctx.parse_file(file_id).await;
-    let guard = parsed.lock().unwrap();
-    let dep = guard.borrow_dependent();
-
-    let export_equals_path = dep.program.body.iter().find_map(|stmt| match stmt {
-        oxc_ast::ast::Statement::TSExportAssignment(assign) => {
-            extract_dotted_identifier_path(&assign.expression)
-        }
-        _ => None,
-    });
-
-    let segments: Vec<&str> = member_path.split('.').collect();
-    let (&leaf_name, member_ns_prefix) = segments.split_last()?;
-
-    let mut candidate_ns_paths: Vec<Vec<&str>> = Vec::new();
-    if let Some(eq_path) = export_equals_path.as_deref() {
-        let mut full_ns: Vec<&str> = eq_path.split('.').collect();
-        full_ns.extend_from_slice(member_ns_prefix);
-        candidate_ns_paths.push(full_ns);
-    }
-    if !member_ns_prefix.is_empty() {
-        candidate_ns_paths.push(member_ns_prefix.to_vec());
-    }
-
-    let scoping = dep.semantic.scoping();
-    for ns_path in candidate_ns_paths {
-        let mut scopes = Vec::new();
-        let mut has_import_equals = false;
-        collect_namespace_scopes(
-            &dep.program.body,
-            &ns_path,
-            &mut scopes,
-            &mut has_import_equals,
-        );
-        let mut combined_flags = SymbolFlags::empty();
-        let mut found_any = false;
-        for scope_id in scopes {
-            if let Some(symbol_id) = scoping.get_binding(scope_id, leaf_name.into()) {
-                combined_flags |= scoping.symbol_flags(symbol_id);
-                found_any = true;
-            }
-        }
-        if found_any {
-            if combined_flags.intersects(SymbolFlags::Value)
-                && !combined_flags.contains(SymbolFlags::ConstEnum)
-            {
-                return Some(SymbolValueKind::Value);
-            }
-            if !has_import_equals
-                && combined_flags.intersects(
-                    SymbolFlags::Interface
-                        | SymbolFlags::TypeAlias
-                        | SymbolFlags::TypeParameter
-                        | SymbolFlags::ConstEnum,
-                )
-            {
-                return Some(SymbolValueKind::TypeOnly);
-            }
-        }
-    }
-    None
 }
 
 fn collect_namespace_scopes<'a>(
@@ -1496,19 +1705,7 @@ fn collect_from_namespace_decl<'a>(
                 out.push(scope_id);
             }
             if let oxc_ast::ast::TSNamespaceDeclarationBody::TSModuleBlock(block) = body {
-                if block.body.iter().any(|stmt| {
-                    matches!(stmt, oxc_ast::ast::Statement::TSImportEqualsDeclaration(_))
-                        || matches!(
-                            stmt,
-                            oxc_ast::ast::Statement::ExportDeclaration(export)
-                                if matches!(
-                                    export.declaration,
-                                    oxc_ast::ast::Declaration::TSImportEqualsDeclaration(_)
-                                )
-                        )
-                }) {
-                    *has_import_equals = true;
-                }
+                *has_import_equals |= contains_import_equals(&block.body);
             }
         }
         (
@@ -1529,6 +1726,75 @@ mod tests {
     use oxc_resolver::ResolveOptions;
     use std::path::Path;
     
+    #[test]
+    fn test_ambient_module_names() {
+        let source = r#"
+            declare module 'single' { export const a: number; }
+            declare module "double";
+            declare module'tight' {}
+            declare
+              module   'multi-line' {}
+            declare namespace module {}
+            export const modules = 'not-a-module';
+            submodule 'not-a-module-either';
+            module.exports = 'nor-this';
+        "#;
+        let names: Vec<&str> = ambient_module_names(source).collect();
+        assert_eq!(names, vec!["single", "double", "tight", "multi-line"]);
+    }
+
+    #[test]
+    fn test_ambient_module_lookup_parses_only_declaring_files() {
+        let fs = create_test_fs(&[
+            (
+                "/project/ambient.d.ts",
+                "declare module 'ambient-pkg' { export class Client {} }",
+            ),
+            (
+                "/project/unrelated.d.ts",
+                "export declare class Unrelated {}",
+            ),
+        ]);
+        let resolver = Arc::new(ResolverGeneric::new_with_file_system(
+            fs.clone(),
+            ResolveOptions::default(),
+        ));
+        let engine = QueryEngine::new_default(
+            fs,
+            resolver,
+            Arc::new(ResourceRegistry::default()),
+            Arc::new(std::sync::RwLock::new(Vec::new())),
+        );
+        *engine.tsconfig_dts_files.write().unwrap() = vec![
+            PathBuf::from("/project/ambient.d.ts"),
+            PathBuf::from("/project/unrelated.d.ts"),
+        ];
+        let ambient_id = engine.intern_path("/project/ambient.d.ts");
+        let unrelated_id = engine.intern_path("/project/unrelated.d.ts");
+        let is_parsed = |file_id| engine.cache.get(&QueryKey::ParseFile(file_id)).is_some();
+
+        let ctx = QueryContext::new(engine.clone());
+        let missing = futures::executor::block_on(resolve_ambient_module_member(
+            "missing-pkg",
+            "Client",
+            &ctx,
+        ));
+        assert_eq!(missing, None);
+        assert!(!is_parsed(ambient_id) && !is_parsed(unrelated_id));
+        // Either file may yet gain a `declare module 'missing-pkg'`.
+        let deps = ctx.dependencies();
+        assert!(deps.contains(&ambient_id) && deps.contains(&unrelated_id));
+
+        let ctx = QueryContext::new(engine.clone());
+        let found = futures::executor::block_on(resolve_ambient_module_member(
+            "ambient-pkg",
+            "Client",
+            &ctx,
+        ));
+        assert_eq!(found, Some(SymbolValueKind::Value));
+        assert!(is_parsed(ambient_id) && !is_parsed(unrelated_id));
+    }
+
     #[test]
     fn test_intern_path_canonicalizes_root_dirs_paths() {
         for merged_first in [false, true] {

@@ -42,6 +42,9 @@ pub enum QueryKey {
     /// imports. Whole-program questions iterate this, never the roots alone: a CLI app's tsconfig
     /// names only `main.ts`, and lazy feature modules are reached only via `loadChildren`.
     ProgramFiles,
+    /// Singleton: the tsconfig's `.d.ts` files that may declare each ambient module, keyed by
+    /// the `declare module '<specifier>'` name, found by a textual scan rather than a parse.
+    AmbientModuleFiles,
 }
 
 impl QueryKey {
@@ -58,13 +61,17 @@ impl QueryKey {
             | Self::NgModuleImportsScope(_)
             | Self::ComponentMapping
             | Self::NgModuleScopeRegistry
-            | Self::ProgramFiles => None,
+            | Self::ProgramFiles
+            | Self::AmbientModuleFiles => None,
         }
     }
 }
 
 /// `enumerateExportsOfModule`'s `exportMap`, keyed by `(declaring file, declared name)`.
 pub type ModuleExportMap = std::collections::HashMap<(FileId, String), String>;
+
+/// Ambient module specifier → the `.d.ts` files that may declare it, in tsconfig order.
+pub type AmbientModuleFiles = std::collections::HashMap<String, Vec<FileId>>;
 
 #[derive(Clone, Debug)]
 pub struct NgModuleImportsScopeData {
@@ -96,6 +103,8 @@ pub enum QueryValue {
     /// The program's files ([`QueryKey::ProgramFiles`]), roots first in tsconfig order, then the
     /// files they import in breadth-first discovery order.
     ProgramFiles(Arc<Vec<FileId>>),
+    /// Candidate files per ambient module specifier ([`QueryKey::AmbientModuleFiles`]).
+    AmbientModuleFiles(Arc<AmbientModuleFiles>),
 }
 
 impl std::fmt::Debug for QueryValue {
@@ -120,6 +129,7 @@ impl std::fmt::Debug for QueryValue {
             }
             Self::ScopeRegistry(_) => write!(f, "ScopeRegistry"),
             Self::ProgramFiles(v) => write!(f, "ProgramFiles({} files)", v.len()),
+            Self::AmbientModuleFiles(v) => write!(f, "AmbientModuleFiles({} modules)", v.len()),
         }
     }
 }
