@@ -47,6 +47,8 @@ export function getDiagnosticPath(tsconfigPath: string): string {
  * deterministic; the sort is stable, so a file's diagnostics sharing a span keep their
  * reporting order.
  *
+ * Diagnostics anchored on a `.d.ts` file are left out, see `targetsDeclarationFile`.
+ *
  * Compiler option diagnostics (`verifyCompilerOptions`) are serialized separately under
  * `optionDiagnostics` so downstream consumers reading `diagnostics` for per-file reporting
  * do not mix option diagnostics into file diagnostics.
@@ -57,8 +59,12 @@ export function serializeDiagnostics(
   optionDiagnostics: readonly nga.NgDiagnostic[] = [],
 ): string {
   const allDiagnostics: Array<nga.NgDiagnostic> = [];
-  for (const diags of diagnosticsMap.values()) {
-    allDiagnostics.push(...diags);
+  for (const [analyzedPath, diags] of diagnosticsMap) {
+    for (const diag of diags) {
+      if (!targetsDeclarationFile(diag, analyzedPath)) {
+        allDiagnostics.push(diag);
+      }
+    }
   }
   allDiagnostics.sort(
     (a, b) =>
@@ -79,6 +85,23 @@ export function serializeDiagnostics(
     ) + '\n'
   );
 }
+
+/**
+ * Whether `diag` is reported against a `.d.ts` file. `analyzedPath` (the `diagnosticsMap` key)
+ * is the file a diagnostic without its own `filePath` belongs to.
+ *
+ * The analyzer anchors some diagnostics on a declaration in a dependency, e.g. `NG1010` for an
+ * `@NgModule` that imports a non-class from a `.d.ts` is reported on that declaration, like
+ * ngtsc's `createValueHasWrongTypeError(entry.node, ...)`. ngtsc keeps such diagnostics in
+ * `NgCompiler.getDiagnostics()`, but a build that asks for the diagnostics of each source file
+ * of the compilation unit (`getDiagnosticsForFile`) never sees them, and that is what the
+ * `.ngdiag.json` consumers do. `diagnosticsMap` keeps them so that `getDiagnostics()`
+ * consumers still can.
+ */
+function targetsDeclarationFile(diag: nga.NgDiagnostic, analyzedPath: string): boolean {
+  return (diag.filePath ?? analyzedPath).endsWith('.d.ts');
+}
+
 export interface IAnalyzer {
   analyze(): AsyncIterable<nga.CompilationChunk>;
   analyzeOptimized(): AsyncIterable<nga.CompilationChunk>;
