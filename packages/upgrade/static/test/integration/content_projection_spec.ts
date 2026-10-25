@@ -72,6 +72,77 @@ withEachNg1Version(() => {
       });
     }));
 
+    it('should not compile content that `ng-transclude` added to the host element', async () => {
+      @Component({template: '<ng-content></ng-content>'})
+      class Ng2Component {}
+
+      @NgModule({imports: [BrowserModule, UpgradeModule]})
+      class Ng2Module {
+        ngDoBootstrap() {}
+      }
+
+      const evaluated = jasmine.createSpy('evaluated');
+      const ng1Module = angular
+        .module_('ng1', [])
+        .component('ng1', {transclude: true, template: '<ng2 ng-transclude></ng2>'})
+        .directive('ng2', downgradeComponent({component: Ng2Component}))
+        .run([
+          '$rootScope',
+          ($rootScope: angular.IRootScopeService) => {
+            $rootScope['evaluated'] = evaluated;
+            $rootScope['user'] = {
+              name: 'Alice',
+              avatarUrl: '/avatars/alice.png?{{ $root.evaluated() }}',
+            };
+          },
+        ]);
+
+      const element = html(
+        '<div><ng1><img ng-src="{{ user.avatarUrl }}">{{ user.name }}</ng1></div>',
+      );
+      await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+
+      expect(evaluated).not.toHaveBeenCalled();
+      expect(multiTrim(element.textContent)).toBe('Alice');
+    });
+
+    it('should not compile content that a directive on the host element wrote while it was linked', async () => {
+      @Component({template: '<ng-content></ng-content>'})
+      class Ng2Component {}
+
+      @NgModule({imports: [BrowserModule, UpgradeModule]})
+      class Ng2Module {
+        ngDoBootstrap() {}
+      }
+
+      const evaluated = jasmine.createSpy('evaluated');
+      const ng1Module = angular
+        .module_('ng1', [])
+        .directive('ng1Label', () => ({
+          link: {
+            pre: (
+              scope: angular.IScope,
+              element: angular.IAugmentedJQuery,
+              attrs: angular.IAttributes,
+            ) => (element[0].textContent = attrs['ng1Label']),
+          },
+        }))
+        .directive('ng2', downgradeComponent({component: Ng2Component}))
+        .run([
+          '$rootScope',
+          ($rootScope: angular.IRootScopeService) => {
+            $rootScope['evaluated'] = evaluated;
+            $rootScope['value'] = '{{ $root.evaluated() }}';
+          },
+        ]);
+
+      const element = html('<div><ng2 ng1-label="{{ value }}">label</ng2></div>');
+      await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+
+      expect(evaluated).not.toHaveBeenCalled();
+      expect(multiTrim(element.textContent)).toBe('label');
+    });
+
     it('should correctly project structural directives', waitForAsync(() => {
       @Component({
         selector: 'ng2',
@@ -111,6 +182,27 @@ withEachNg1Version(() => {
         expect(multiTrim(document.body.textContent)).toBe('ng2-a( 123 )ng2-b( 456 )ng2-c( 789 )');
       });
     }));
+
+    it('should project content that uses multi-element directives', async () => {
+      @Component({template: '[<ng-content></ng-content>]'})
+      class Ng2Component {}
+
+      @NgModule({imports: [BrowserModule, UpgradeModule]})
+      class Ng2Module {
+        ngDoBootstrap() {}
+      }
+
+      const ng1Module = angular
+        .module_('ng1', [])
+        .directive('ng2', downgradeComponent({component: Ng2Component}));
+
+      const element = html(
+        '<ng2><b ng-repeat-start="i in [1, 2]">{{ i }}</b><i ng-repeat-end>;</i></ng2>',
+      );
+
+      await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      expect(multiTrim(element.textContent)).toBe('[1;2;]');
+    });
 
     it('should instantiate ng1 in ng2 template and project content', waitForAsync(() => {
       @Component({
