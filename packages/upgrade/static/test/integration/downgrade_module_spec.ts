@@ -740,6 +740,45 @@ withEachNg1Version(() => {
         });
       }));
 
+      it('should compile and link projected content when the component is created asynchronously', async () => {
+        @Component({template: '[<ng-content></ng-content>]'})
+        class Ng2Component {}
+
+        @NgModule({imports: [BrowserModule]})
+        class Ng2Module {
+          ngDoBootstrap() {}
+        }
+
+        const ng1Module = angular
+          .module_('ng1', [downgradeModule(Ng2Module)])
+          .directive('ng2', downgradeComponent({component: Ng2Component, propagateDigest}))
+          .run([
+            '$rootScope',
+            ($rootScope: angular.IRootScopeService) => {
+              $rootScope['items'] = ['a', 'b'];
+              $rootScope['show'] = true;
+            },
+          ]);
+
+        const element = html(`
+          <div>
+            <ng2><b ng-repeat-start="item in items">{{ item }}</b><i ng-repeat-end>;</i><u ng-if="show">!</u></ng2>
+          </div>
+        `);
+        const $injector = angular.bootstrap(element, [ng1Module.name]);
+        const $rootScope = $injector.get($ROOT_SCOPE) as angular.IRootScopeService;
+
+        await ($injector.get(LAZY_MODULE_REF) as LazyModuleRef).promise;
+        $rootScope.$digest();
+        expect(multiTrim(element.textContent)).toBe('[a;b;!]');
+
+        $rootScope.$apply(() => {
+          $rootScope['items'] = ['c'];
+          $rootScope['show'] = false;
+        });
+        expect(multiTrim(element.textContent)).toBe('[c;]');
+      });
+
       it('should support using an upgraded service', waitForAsync(() => {
         @Injectable()
         class Ng2Service {

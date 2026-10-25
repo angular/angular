@@ -65,9 +65,20 @@ export class DowngradeComponentAdapter {
     this.componentScope = scope.$new();
   }
 
-  compileContents(): Node[][] {
+  compileContents(template: Node[]): Node[][] {
+    if (!template.length) {
+      // There is no template to compile, so whatever is in the element was put there by AngularJS
+      // (e.g. through `ng-transclude`): project it as it is.
+      const projectableNodes = this.groupProjectableNodes(this.element.contents!());
+      projectableNodes.forEach((nodes) =>
+        nodes.forEach((node) => this.element[0].removeChild(node)),
+      );
+      this.element.empty!();
+      return projectableNodes;
+    }
+
     const compiledProjectableNodes: Node[][] = [];
-    const projectableNodes: Node[][] = this.groupProjectableNodes();
+    const projectableNodes: Node[][] = this.groupProjectableNodes(template);
     const linkFns = projectableNodes.map((nodes) => this.$compile(nodes));
 
     this.element.empty!();
@@ -347,9 +358,9 @@ export class DowngradeComponentAdapter {
     }
   }
 
-  private groupProjectableNodes() {
+  private groupProjectableNodes(nodes: Node[]) {
     let ngContentSelectors = reflectComponentType(this.component)?.ngContentSelectors ?? [];
-    return groupNodesBySelector(ngContentSelectors, this.element.contents!());
+    return groupNodesBySelector(ngContentSelectors, nodes);
   }
 }
 
