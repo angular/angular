@@ -266,6 +266,10 @@ export function isOptionsObj(
 
 export function assertControlPresent(parent: any, isGroup: boolean, key: string | number): void {
   const controls = parent.controls as {[key: string | number]: AbstractControl<any>};
+  // An enumerable own control also proves that the group is not empty, without listing all keys.
+  if (isGroup && Object.prototype.propertyIsEnumerable.call(controls, key)) {
+    return;
+  }
   const collection = isGroup ? Object.keys(controls) : controls;
   if (!collection.length) {
     throw new RuntimeError(

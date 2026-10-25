@@ -375,6 +375,63 @@ import {
         expect(c2.value).toEqual('two');
       });
 
+      it('should not enumerate all controls for every supplied value', () => {
+        const controls = Object.fromEntries(
+          Array.from({length: 128}, (_, i) => [`field${i}`, new FormControl('')]),
+        );
+        const group = new FormGroup(controls);
+        const value = Object.fromEntries(Object.keys(controls).map((key) => [key, 'updated']));
+        const keys = spyOn(Object, 'keys').and.callThrough();
+
+        group.setValue(value);
+
+        const controlEnumerations = keys.calls.allArgs().filter(([object]) => object === controls);
+        expect(controlEnumerations.length).toBeLessThan(10);
+        expect(group.value).toEqual(value);
+      });
+
+      it('should support a control named propertyIsEnumerable', () => {
+        const group = new FormGroup({propertyIsEnumerable: new FormControl('')});
+
+        group.setValue({propertyIsEnumerable: 'updated'});
+
+        expect(group.value).toEqual({propertyIsEnumerable: 'updated'});
+      });
+
+      it('should preserve the no-controls error when all controls are non-enumerable', () => {
+        Object.defineProperty(g.controls, 'one', {enumerable: false});
+        Object.defineProperty(g.controls, 'two', {enumerable: false});
+
+        expect(() => g.setValue({one: 'one', two: 'two'})).toThrowError(
+          /no form controls registered with this group/,
+        );
+        expect(c.value).toBe('');
+        expect(c2.value).toBe('');
+      });
+
+      it('should update a non-enumerable control when the group has enumerable controls', () => {
+        Object.defineProperty(g.controls, 'one', {enumerable: false});
+
+        g.setValue({one: 'one', two: 'two'});
+
+        expect(c.value).toBe('one');
+        expect(c2.value).toBe('two');
+        expect(g.value).toEqual({two: 'two'});
+      });
+
+      it('should recheck the current controls after a child emits', () => {
+        c.valueChanges.subscribe(() => {
+          g.removeControl('one', {emitEvent: false});
+          g.removeControl('two', {emitEvent: false});
+        });
+
+        expect(() => g.setValue({one: 'one', two: 'two'})).toThrowError(
+          /no form controls registered with this group/,
+        );
+        expect(c.value).toBe('one');
+        expect(c2.value).toBe('');
+      });
+
       it('should set child control values if disabled', () => {
         c2.disable();
         g.setValue({'one': 'one', 'two': 'two'});
