@@ -7,7 +7,7 @@
  */
 
 import {runBenchmark, verifyNoBrowserErrors} from '../../../utilities/index.js';
-import {$} from 'protractor';
+import {$, $$} from 'protractor';
 
 interface Worker {
   id: string;
@@ -53,6 +53,15 @@ const SwapWorker: Worker = {
   },
 };
 
+const Prepend10KWorker: Worker = {
+  id: 'prepend10K',
+  prepare: async () => {
+    await $('#create10KRows').click();
+    expect(await $$('tbody>tr').count()).toBe(10_000);
+  },
+  work: () => $('#prepend').click(),
+};
+
 // In order to make sure that we don't change the ids of the benchmarks, we need to
 // determine the current test package name from the Bazel target. This is necessary
 // because previous to the Bazel conversion, the benchmark test ids contained the test
@@ -64,7 +73,14 @@ const testPackageName = process.env['JS_BINARY__TARGET']!.split(':')[0].split('/
 describe('js-web-frameworks benchmark perf', () => {
   afterEach(verifyNoBrowserErrors);
 
-  [Create1KWorker, Delete1KWorker, UpdateWorker, SelectWorker, SwapWorker].forEach((worker) => {
+  [
+    Create1KWorker,
+    Delete1KWorker,
+    UpdateWorker,
+    SelectWorker,
+    SwapWorker,
+    Prepend10KWorker,
+  ].forEach((worker) => {
     describe(worker.id, () => {
       it(`should run benchmark for ${testPackageName}`, async () => {
         await runTableBenchmark({
