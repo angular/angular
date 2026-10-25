@@ -1,6 +1,6 @@
 import * as webdriver from 'selenium-webdriver';
-import {AppPage} from './app.po';
-import {createWebDriver, verifyNoBrowserErrors} from './driver-util';
+import {AppPage} from './app.po.ts';
+import {createWebDriver, verifyNoBrowserErrors} from './driver-util.ts';
 
 describe('cli-signal-inputs App', () => {
   let driver: webdriver.WebDriver;

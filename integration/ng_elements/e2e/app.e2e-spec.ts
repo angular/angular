@@ -1,5 +1,5 @@
-import {By, until, WebElement} from 'selenium-webdriver';
-import {getWebDriver, quitWebDriver} from './driver-util';
+import {By, until, type WebElement} from 'selenium-webdriver';
+import {getWebDriver, quitWebDriver} from './driver-util.ts';
 
 describe('Element E2E Tests', function () {
   let driver: ReturnType<typeof getWebDriver>;

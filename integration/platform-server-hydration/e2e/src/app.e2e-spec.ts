@@ -5,7 +5,7 @@ import {
   navigateTo,
   quitWebDriver,
   verifyNoBrowserErrors,
-} from './util';
+} from './util.ts';
 
 describe('App E2E Tests', () => {
   let driver: webdriver.WebDriver;

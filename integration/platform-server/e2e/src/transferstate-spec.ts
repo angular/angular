@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {bootstrapClientApp, getElement, navigateTo, verifyNoBrowserErrors} from './util';
+import {bootstrapClientApp, getElement, navigateTo, verifyNoBrowserErrors} from './util.ts';
 
 describe('TransferState', () => {
   beforeEach(async () => {
