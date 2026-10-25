@@ -50,6 +50,12 @@
       "enabled": false,
       "matchDepNames": ["tailwindcss"],
       "matchUpdateTypes": ["major"]
+    },
+    {
+      "matchFileNames": ["packages/zone.js/package.json"],
+      "matchPackageNames": ["@types/jasmine", "jasmine", "jasmine-core"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
     }
   ]
 }
