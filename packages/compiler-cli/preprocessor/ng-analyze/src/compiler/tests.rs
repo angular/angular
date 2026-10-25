@@ -1510,28 +1510,37 @@ fn app_module_scope_failed(meta: &AnalysisResult) -> bool {
 
 #[test]
 fn test_ngmodule_non_class_reference_from_dts_reports_ng1010_on_dts() {
-    let decl = "export declare const NotAClass: unknown;\n";
-    let meta = analyze_app_module_importing_non_class(&[("/project/decl.d.ts", decl)], "./decl");
+    for annotation in ["unknown", "NotAClassDecorator"] {
+        let decl = format!(
+            "export interface NotAClassDecorator {{}}\nexport declare const NotAClass: {annotation};\n"
+        );
+        let meta = analyze_app_module_importing_non_class(
+            &[("/project/decl.d.ts", decl.as_str())],
+            "./decl",
+        );
 
-    assert!(
-        app_module_scope_failed(&meta),
-        "AppModule analysis must fail"
-    );
-    let ng1010: Vec<_> = meta.diagnostics.iter().filter(|d| d.code == 1010).collect();
-    assert_eq!(ng1010.len(), 1, "{:?}", meta.diagnostics);
-    let diag = ng1010[0];
-    assert_eq!(diag.file_path.as_deref(), Some("/project/decl.d.ts"));
-    assert_eq!(
-        diag.message_text,
-        "Value at position 0 in the NgModule.imports of AppModule is not a class\n  \
-         Value is a reference to 'NotAClass'."
-    );
-    let start = decl.find("NotAClass").unwrap() as u32;
-    let span = diag.span.as_ref().expect("NG1010 span");
-    assert_eq!(
-        (span.start, span.end),
-        (start, start + "NotAClass".len() as u32)
-    );
+        assert!(
+            app_module_scope_failed(&meta),
+            "AppModule analysis must fail ({annotation})"
+        );
+        let ng1010: Vec<_> = meta.diagnostics.iter().filter(|d| d.code == 1010).collect();
+        assert_eq!(ng1010.len(), 1, "{annotation}: {:?}", meta.diagnostics);
+        let diag = ng1010[0];
+        assert_eq!(diag.file_path.as_deref(), Some("/project/decl.d.ts"));
+        assert_eq!(
+            diag.message_text,
+            "Value at position 0 in the NgModule.imports of AppModule is not a class\n  \
+             Value is a reference to 'NotAClass'.",
+            "{annotation}"
+        );
+        let start = decl.find("NotAClass:").unwrap() as u32;
+        let span = diag.span.as_ref().expect("NG1010 span");
+        assert_eq!(
+            (span.start, span.end),
+            (start, start + "NotAClass".len() as u32),
+            "{annotation}"
+        );
+    }
 }
 
 /// The same mistake with a declaration in a source file of the compilation is still NG1010,

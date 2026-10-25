@@ -1142,6 +1142,30 @@ fn test_declared_readonly_tuple_evaluation() {
 }
 
 #[test]
+fn test_declared_variable_type_reference_resolves_to_class_only() {
+    let value = eval_source("class C {}\ndeclare const X: C;\nX;");
+    let ResolvedValue::Reference(reference) = value.unwrap_named() else {
+        panic!("expected Reference, got {value:?}");
+    };
+    assert_eq!(reference.name, "C");
+    assert_eq!(reference.kind, DeclKind::Class);
+
+    for source in [
+        "interface I {}\ndeclare const X: I;\nX;",
+        "type T = {a: string};\ndeclare const X: T;\nX;",
+        "enum E {A}\ndeclare const X: E;\nX;",
+        "declare const X: Function;\nX;",
+    ] {
+        let value = eval_source(source);
+        let ResolvedValue::Reference(reference) = value.unwrap_named() else {
+            panic!("expected Reference for {source:?}, got {value:?}");
+        };
+        assert_eq!(reference.name, "X", "{source:?}");
+        assert_eq!(reference.kind, DeclKind::Variable, "{source:?}");
+    }
+}
+
+#[test]
 fn test_unsupported_type_operator_evaluation() {
     let source = r#"
         const X = 42;
@@ -1358,4 +1382,25 @@ fn array_shape_around_an_imported_spread() {
     assert_eq!(reference_names(&value), ["A"]);
     let value = complete_list_consumer(&format!("{LIST_IMPORTS}[C, ...LIST].length;"));
     assert_number(&value, 3.0);
+}
+
+#[test]
+fn declared_variable_typed_with_an_import_resolves_to_class_only() {
+    let value = complete_across_files(
+        &[
+            ("/app/c.ts", "export class C {}"),
+            ("/app/consumer.ts", "import { C } from './c';\ndeclare const X: C;\n[X];"),
+        ],
+        "/app/consumer.ts",
+    );
+    assert_eq!(reference_names(&value), ["C"]);
+
+    let value = complete_across_files(
+        &[
+            ("/app/i.ts", "export interface I {}"),
+            ("/app/consumer.ts", "import { I } from './i';\ndeclare const X: I;\n[X];"),
+        ],
+        "/app/consumer.ts",
+    );
+    assert_eq!(reference_names(&value), ["X"]);
 }

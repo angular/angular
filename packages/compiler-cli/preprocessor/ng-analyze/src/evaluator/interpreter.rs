@@ -579,7 +579,7 @@ impl<'a, 'e, 'i> Interpreter<'a, 'e, 'i> {
             return return_type_val;
         }
 
-        match &type_ref.type_name {
+        let res = match &type_ref.type_name {
             TSTypeName::IdentifierReference(ident) => {
                 let res = if let Some(ref_id) = ident.reference_id.get() {
                     self.visit_reference(ref_id, &ident.name, type_ref.span, scope)
@@ -606,6 +606,12 @@ impl<'a, 'e, 'i> Interpreter<'a, 'e, 'i> {
             TSTypeName::ThisExpression(_) => {
                 self.dynamic(type_ref.span, DynamicReason::UnsupportedSyntax)
             }
+        };
+
+        match res {
+            ResolvedValue::Reference(ref r) if r.kind == DeclKind::Class => res,
+            ResolvedValue::Incomplete(_) => self.propagate_failure(type_ref.span, res),
+            _ => self.dynamic(type_ref.span, DynamicReason::UnsupportedSyntax),
         }
     }
 

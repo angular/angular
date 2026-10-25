@@ -25,7 +25,7 @@ import {
   type ExtendedTemplateDiagnosticName,
   verifyExtendedDiagnosticsOptions,
 } from '../src/compiler_options.js';
-import type {Diagnostic} from '../src/diagnostic.js';
+import {type Diagnostic, flattenNgDiagnosticMessage} from '../src/diagnostic.js';
 import {
   EXTENDED_ERROR_DETAILS_PAGE_BASE_URL,
   ExtendedTemplateCheckerImpl,
@@ -366,6 +366,36 @@ describe('extendedDiagnostics configuration validation', () => {
     expect(report.diagnostics).toEqual([]);
     expect(report.optionDiagnostics.length).toBe(1);
     expect(report.optionDiagnostics[0].code).toBe(4003);
+  });
+
+  it('keeps diagnostics anchored on .d.ts files out of .ngdiag.json but in diagnosticsMap', async () => {
+    const session = await createIncrementalSession({
+      '/app.ts': `
+        import {NgModule} from '@angular/core';
+
+        @NgModule({
+          imports: [NgModule],
+        })
+        export class MyModule {}
+      `,
+    });
+    try {
+      expect(await session.compileCurrent()).toEqual([]);
+
+      const collected = [...session.compiler.diagnosticsMap.values()].flat();
+      expect(collected.length).toBe(1);
+      expect(collected[0].code).toBe(1010);
+      expect(collected[0].filePath).toMatch(/\.d\.ts$/);
+      expect(collected[0].filePath).not.toBe('/app.ts');
+      expect(flattenNgDiagnosticMessage(collected[0])).toContain(
+        'Value at position 0 in the NgModule.imports of MyModule is not a class',
+      );
+      expect(flattenNgDiagnosticMessage(collected[0])).toContain(
+        "Value is a reference to 'NgModule'.",
+      );
+    } finally {
+      session.close();
+    }
   });
 });
 

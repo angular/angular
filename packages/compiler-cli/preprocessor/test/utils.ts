@@ -562,16 +562,20 @@ export async function runPipeline(
     }
   }
 
-  const hasDiagnostics =
-    compiler.optionDiagnostics.length > 0 ||
-    [...compiler.diagnosticsMap.values()].some((diags) => diags.length > 0);
-  if (hasDiagnostics) {
-    const diagPath = getDiagnosticPath(tsconfigFile.path);
-    const diagContent = serializeDiagnostics(
-      tsconfigFile.path,
-      compiler.diagnosticsMap,
-      compiler.optionDiagnostics,
-    );
+  const diagPath = getDiagnosticPath(tsconfigFile.path);
+  const diagContent = serializeDiagnostics(
+    tsconfigFile.path,
+    compiler.diagnosticsMap,
+    compiler.optionDiagnostics,
+  );
+  const serializedDiagnostics = JSON.parse(diagContent) as {
+    diagnostics: unknown[];
+    optionDiagnostics?: unknown[];
+  };
+  if (
+    serializedDiagnostics.diagnostics.length > 0 ||
+    (serializedDiagnostics.optionDiagnostics?.length ?? 0) > 0
+  ) {
     outputs.push({
       path: diagPath,
       content: await formatContent(diagPath, diagContent),
