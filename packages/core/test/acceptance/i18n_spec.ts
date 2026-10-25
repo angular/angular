@@ -3603,6 +3603,34 @@ describe('runtime i18n', () => {
     expect(textContent.replace(/\s+/g, ' ').trim()).toEqual(`before| 10 seconds |after.`);
   });
 
+  it('should warn with a descriptive message for a binding on an element inside an ICU', () => {
+    const warnSpy = spyOn(console, 'warn');
+
+    @Component({
+      template: `
+        <div i18n>
+          {count, plural, =0 {just now} other {one <b [title]="title">minute</b> ago}}
+        </div>
+      `,
+    })
+    class MyApp {
+      count = 1;
+      title = 'Angular';
+    }
+
+    const fixture = TestBed.createComponent(MyApp);
+    fixture.detectChanges();
+
+    // The binding is ignored, but the rest of the ICU case is rendered.
+    expect(fixture.nativeElement.textContent.replace(/\s+/g, ' ').trim()).toEqual('one minute ago');
+    expect(fixture.nativeElement.querySelector('b').getAttribute('title')).toBeNull();
+    expect(warnSpy).toHaveBeenCalledOnceWith(
+      jasmine.stringMatching(
+        /NG0700: ICU expressions cannot contain bindings or structural directives\. The attribute "\[title\]" on the <b> element inside an ICU expression is not supported and will be ignored/,
+      ),
+    );
+  });
+
   it('should render attributes defined in ICUs', () => {
     // NOTE: This test is extracted from g3.
     @Component({

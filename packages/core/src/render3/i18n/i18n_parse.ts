@@ -10,6 +10,7 @@ import '../../util/ng_i18n_closure_mode';
 
 import {XSS_SECURITY_URL} from '../../error_details_base_url';
 import {checkSecurityContext, SecurityContext} from '../../sanitization/dom_security_schema';
+import {formatRuntimeError, RuntimeErrorCode} from '../../errors';
 import {getTemplateContent, VALID_ATTRS, VALID_ELEMENTS} from '../../sanitization/html_sanitizer';
 import {getInertBodyHelper} from '../../sanitization/inert_body';
 import {
@@ -814,6 +815,21 @@ function walkIcuTree(
           const elAttrs = element.attributes;
           for (let i = 0; i < elAttrs.length; i++) {
             const attr = elAttrs.item(i)!;
+            if (ngDevMode && isBindingLikeAttributeName(attr.name)) {
+              // Directives and bindings are not supported inside ICU expressions, since ICU
+              // content is processed at runtime as plain HTML. Such attributes are dropped
+              // below as unknown attributes; explain why instead of reporting them as unsafe.
+              console.warn(
+                formatRuntimeError(
+                  RuntimeErrorCode.INVALID_I18N_STRUCTURE,
+                  `ICU expressions cannot contain bindings or structural directives. ` +
+                    `The attribute "${attr.name}" on the <${tagName}> element inside an ICU ` +
+                    `expression is not supported and will be ignored. ` +
+                    `Only static attributes are allowed inside ICU cases.`,
+                ),
+              );
+              continue;
+            }
             const lowerAttrName = attr.name.toLowerCase();
             const hasBinding = !!attr.value.match(BINDING_REGEXP);
             const namespaceUri = element.namespaceURI;
@@ -1009,4 +1025,18 @@ function i18nResolveSanitizer(attrName: string, tagName?: string): SanitizerFn |
     default:
       return null;
   }
+}
+
+/**
+ * Whether an attribute name uses an Angular binding syntax (`[prop]`, `(event)`, `*structural`,
+ * `#ref`, `@trigger`) rather than being a plain HTML attribute.
+ */
+function isBindingLikeAttributeName(attrName: string): boolean {
+  return (
+    attrName.startsWith('[') ||
+    attrName.startsWith('(') ||
+    attrName.startsWith('*') ||
+    attrName.startsWith('#') ||
+    attrName.startsWith('@')
+  );
 }
