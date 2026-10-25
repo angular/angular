@@ -18,6 +18,8 @@ export * from './required';
 export * from './standard_schema';
 export * from './validate';
 export * from './validate_async';
+export * from './validate_async_loader';
 export * from './validate_http';
+export * from './validate_resource';
 export * from './validate_tree';
 export * from './validation_errors';
