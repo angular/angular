@@ -39,7 +39,7 @@ export function shouldSkipInNgp(fullSpecName: string): boolean {
   const normalized = fullSpecName.replace(/\s+/g, ' ').trim();
   return (
     NGP_KNOWN_TYPECHECK_FAILURES.has(normalized) ||
-    NGP_KNOWN_EXTENDED_CHECK_FAILURES.has(normalized) ||
+    NGP_REQUIRES_TYPE_CHECKER.has(normalized) ||
     NGP_KNOWN_NGTSC_FAILURES.has(normalized) ||
     NGP_POTENTIAL_BREAKING_CHANGES.has(normalized)
   );
@@ -99,10 +99,19 @@ const NGP_KNOWN_TYPECHECK_FAILURES: ReadonlySet<string> = new Set([
 ]);
 
 /**
- * Known failures in `//packages/compiler-cli/src/ngtsc/typecheck/extended/test/checks/*:test_ngp`
- * (#673, #677 - TypeChecker-backed extended template diagnostics not yet implemented in NGP).
+ * Tests that rely on a TypeScript `TypeChecker` during analysis or template semantics checking,
+ * which `ngp` does not have at preprocessing time.
  */
-const NGP_KNOWN_EXTENDED_CHECK_FAILURES: ReadonlySet<string> = new Set([
+const NGP_REQUIRES_TYPE_CHECKER: ReadonlySet<string> = new Set([
+  // Detecting writes to read-only `@let` or `@for` variables in two-way bindings (NG8005)
+  // requires a TypeChecker (`isSignalReference`) to distinguish non-signal variables from
+  // `WritableSignal` variables (since `[(dir)]="signalVar"` is valid).
+  'ngtsc type checking @let declarations should not be able to write to let declaration in a two-way binding',
+  'ngtsc type checking for loop blocks should not be able to write to loop template variables in a two-way binding',
+
+  // TypeChecker-backed extended template diagnostics (#673, #677) in
+  // `//packages/compiler-cli/src/ngtsc/typecheck/extended/test/checks/*:test_ngp` and `ngtsc_spec`.
+  'ngtsc extended template checks should produce nullish coalescing not nullable warning',
   '@let declarations should produce a warning when a signal aliased via @let is not invoked in interpolation',
   '@let declarations should produce a warning when a signal aliased via @let is used in @if',
   '@let declarations should produce a warning when a signal aliased via @let is used in a bound attribute',
@@ -417,7 +426,6 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'ngtsc @defer block block-specific deferredImports type checking should report an error when a pipe declared in a keyed block is used in an unnamed defer block',
   'ngtsc behavioral tests cycle detection should detect a simple cycle and fatally error if doing partial-compilation',
   'ngtsc compilation of standalone types component-side should compile a standalone component in a cycle with its module',
-  'ngtsc extended template checks should produce nullish coalescing not nullable warning',
   'ngtsc incremental compilation (semantic changes) NgModule declarations should not recompile components when a non-matching directive is added in scope',
   'ngtsc incremental compilation (semantic changes) NgModule declarations should recompile components when a matching directive is added in the direct scope',
   'ngtsc incremental compilation (semantic changes) NgModule declarations should recompile components when a matching directive is added in the transitive scope',
@@ -457,7 +465,6 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'ngtsc incremental compilation with errors should recover from an error even across multiple NgModules',
   'ngtsc incremental compilation with errors should recover from an error in a component that is part of a module',
   "ngtsc incremental compilation with errors should recover from an error in a component's metadata",
-  'ngtsc type checking @let declarations should not be able to write to let declaration in a two-way binding',
   'ngtsc type checking @let declarations should produce a single diagnostic if a @let declaration invokes itself',
   'ngtsc type checking @let declarations should produce a single diagnostic if a @let declaration refers to properties on itself',
   'ngtsc type checking @let declarations should report @let declaration used in the expression of a @if block before it is defined',
@@ -471,7 +478,6 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'ngtsc type checking for loop blocks should not allow usages of local references within the same template inside the tracking expression',
   'ngtsc type checking for loop blocks should not allow usages of parent loop variables inside the tracking expression',
   'ngtsc type checking for loop blocks should not allow usages of parent template variables inside the tracking expression',
-  'ngtsc type checking for loop blocks should not be able to write to loop template variables in a two-way binding',
   'ngtsc type checking for loop blocks should type check a @for loop without a `track` expression',
   'ngtsc type checking foreign component template semantics should detect a conflict between a @content block and property binding in an external template',
   'ngtsc type checking foreign component template semantics should detect a conflict between a @content block name and a static attribute',
