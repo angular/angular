@@ -117,6 +117,15 @@ export const VALID_ATTRS: BooleanRecord = merge(URI_ATTRS, HTML_ATTRS, ARIA_ATTR
 // don't want to preserve the content, if the elements themselves are going to be removed.
 const SKIP_TRAVERSING_CONTENT_IF_INVALID_ELEMENTS = tagSet('script,style,template');
 
+// NOTE: These regexes intentionally use HTML ASCII whitespace `[\t\n\f\r ]` (not `\s`) and `/i`
+// without `/u` (strictly ASCII case-insensitive). Using `\s` would allow non-ASCII whitespace like
+// `rel="x&#160;noopener"` to bypass `noopener` injection, and adding `/u` would fold non-ASCII
+// characters like U+212A (`K`) into `SAFE_TARGET_REGEXP`.
+const SAFE_TARGET_REGEXP = /^_(?:blank|self|parent|top)$/i;
+const OPENER_TOKEN_REGEXP = /(?:^|[\t\n\f\r ])opener(?:$|[\t\n\f\r ])/i;
+const NOOPENER_TOKEN_REGEXP = /(?:^|[\t\n\f\r ])no(?:opener|referrer)(?:$|[\t\n\f\r ])/i;
+const HTML_SPACE_REGEXP = /[\t\n\f\r ]+/;
+
 /**
  * SanitizingHtmlSerializer serializes a DOM fragment, stripping out any unsafe elements and unsafe
  * attributes.
@@ -186,6 +195,19 @@ class SanitizingHtmlSerializer {
     }
     this.buf.push('<');
     this.buf.push(tagName);
+    let addNoopener = false;
+    if (tagName === 'a' || tagName === 'area') {
+      // Browsers only apply an implicit `noopener` when `target` is an ASCII
+      // case-insensitive match for `_blank` (while empty, `_self`, `_parent`,
+      // and `_top` do not open a new auxiliary browsing context). Custom target
+      // names (e.g. `target="foo"` or `target=" _blank"`) open a new browsing
+      // context with `window.opener` populated unless `noopener` or `noreferrer`
+      // is explicitly present in `rel`.
+      const target = element.getAttribute('target');
+      if (target && !SAFE_TARGET_REGEXP.test(target)) {
+        addNoopener = true;
+      }
+    }
     const elAttrs = element.attributes;
     for (let i = 0; i < elAttrs.length; i++) {
       const elAttr = elAttrs.item(i);
@@ -198,10 +220,37 @@ class SanitizingHtmlSerializer {
       let value = elAttr!.value;
       // TODO(martinprobst): Special case image URIs for data:image/...
       if (URI_ATTRS[lower]) value = _sanitizeUrl(value);
+      if (lower === 'rel') {
+        const sanitizedRel = this.sanitizeRel(value, addNoopener);
+        addNoopener = false;
+        if (sanitizedRel === null) {
+          continue;
+        }
+        value = sanitizedRel;
+      }
       this.buf.push(' ', attrName, '="', encodeEntities(value), '"');
+    }
+    if (addNoopener) {
+      this.buf.push(' rel="noopener"');
     }
     this.buf.push('>');
     return true;
+  }
+
+  private sanitizeRel(value: string, addNoopener: boolean): string | null {
+    const hasOpener = OPENER_TOKEN_REGEXP.test(value);
+    const needsNoopener = addNoopener && !NOOPENER_TOKEN_REGEXP.test(value);
+    if (!hasOpener && !needsNoopener) {
+      return value;
+    }
+    if (hasOpener) {
+      this.sanitizedSomething = true;
+    }
+    const tokens = value.split(HTML_SPACE_REGEXP).filter((t) => t && !OPENER_TOKEN_REGEXP.test(t));
+    if (needsNoopener) {
+      tokens.push('noopener');
+    }
+    return tokens.length === 0 ? null : tokens.join(' ');
   }
 
   private endElement(current: Element) {
