@@ -127,6 +127,7 @@ describe('Signal Forms array removal orphan repro', () => {
     }
   });
   it('should handle validateAsync resolving after the field is orphaned', async () => {
+    const loads: {params: string; abortSignal: AbortSignal}[] = [];
     const validationResolvers: ((value: any) => void)[] = [];
     const validationPromises: Promise<any>[] = [];
 
@@ -151,7 +152,8 @@ describe('Signal Forms array removal orphan repro', () => {
             factory: (params) =>
               resource({
                 params,
-                loader: ({abortSignal}) => {
+                loader: ({params, abortSignal}) => {
+                  loads.push({params, abortSignal});
                   const p = new Promise<any>((resolve, reject) => {
                     validationResolvers.push(resolve);
                     abortSignal.addEventListener('abort', () => {
@@ -190,6 +192,10 @@ describe('Signal Forms array removal orphan repro', () => {
     }));
     // Force CD synchronously to trigger structure removal and orphan the node
     appRef.tick();
+
+    // Removing 'two' aborts its in-flight load and leaves the load for 'one' running.
+    const aborted = Object.fromEntries(loads.map((l) => [l.params, l.abortSignal.aborted]));
+    expect(aborted).toEqual({one: false, two: true});
 
     // 2. Resolve both validation promises to flush microtasks and clear the tasks
     for (const resolve of validationResolvers) {
