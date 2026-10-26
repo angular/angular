@@ -4393,6 +4393,7 @@ impl ClassData {
             }
         };
         Ok(ComponentMetadata {
+            class_name: self.class_name.clone(),
             decorator_name: c.directive.decorator_name.clone(),
             imports: self.to_wire_refs(&c.imports, cx).or_else(|| {
                 (!c.parsed_imports.is_empty()).then(|| {

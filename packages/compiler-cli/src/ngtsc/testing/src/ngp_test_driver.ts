@@ -472,16 +472,18 @@ export function performNgpCompilationSync(params: {
       if (typeCheckIdMap) {
         for (const cls of fileResult.classes) {
           const component = cls.component;
-          if (!cls.className || !component) {
+          if (!component?.className) {
             continue;
           }
-          const tcId = typeCheckIdMap.get(`${cls.className}@${cls.span.start}`);
+          const tcId = typeCheckIdMap.get(`${component.className}@${cls.span.start}`);
           if (!tcId) {
             continue;
           }
           if (component.templateUrl?.resolvedPath) {
             templateTargetByTypeCheckId.set(tcId, {
               fsPath: fromPosixPath(fs, component.templateUrl.resolvedPath),
+              className: component.className,
+              declarationSpan: component.templateUrlSpan,
             });
           } else if (component.templateContentSpan == null && component.template != null) {
             // An inline template computed by an expression (ngtsc's `indirect` source mapping):
@@ -489,12 +491,14 @@ export function performNgpCompilationSync(params: {
             // synthetic source file named after the component (see `makeTemplateDiagnostic`).
             templateTargetByTypeCheckId.set(tcId, {
               sourceFile: ts.createSourceFile(
-                `${fsFilePath} (${cls.className} template)`,
+                `${fsFilePath} (${component.className} template)`,
                 component.template,
                 ts.ScriptTarget.Latest,
                 /* setParentNodes */ false,
                 ts.ScriptKind.JSX,
               ),
+              className: component.className,
+              declarationSpan: component.templateSpan,
             });
           }
         }
@@ -1101,7 +1105,7 @@ function findClosestPrecedingNode(
   return bestNode;
 }
 
-export function getTemplateSpanFromTcbLocation(
+function getTemplateSpanFromTcbLocation(
   tcbCode: string,
   targetPos: number,
 ): {start: number; end: number} | null {
@@ -1134,9 +1138,12 @@ export function getTemplateSpanFromTcbLocation(
  * the component file: an external template file, or a synthetic source file holding the text of
  * an indirect inline template.
  */
-export type TemplateDiagnosticTarget = {fsPath: AbsoluteFsPath} | {sourceFile: ts.SourceFile};
+type TemplateDiagnosticTarget = ({fsPath: AbsoluteFsPath} | {sourceFile: ts.SourceFile}) & {
+  className?: string;
+  declarationSpan?: {start: number; end: number};
+};
 
-export function translateTcbDiagnostic(
+function translateTcbDiagnostic(
   diag: ts.Diagnostic,
   tcbSf: ts.SourceFile,
   tcbCode: string,
@@ -1200,11 +1207,40 @@ export function translateTcbDiagnostic(
     return null;
   }
 
+  let relatedInformation = diag.relatedInformation;
+  if (target?.className && target?.declarationSpan) {
+    const componentSf = getOriginalSourceFile(originFsPath);
+    if (componentSf) {
+      let typeForMessage: string;
+      if (diag.category === ts.DiagnosticCategory.Warning) {
+        typeForMessage = 'Warning';
+      } else if (diag.category === ts.DiagnosticCategory.Suggestion) {
+        typeForMessage = 'Suggestion';
+      } else if (diag.category === ts.DiagnosticCategory.Message) {
+        typeForMessage = 'Message';
+      } else {
+        typeForMessage = 'Error';
+      }
+      relatedInformation = [
+        ...(relatedInformation ?? []),
+        {
+          category: ts.DiagnosticCategory.Message,
+          code: 0,
+          file: componentSf,
+          start: target.declarationSpan.start,
+          length: Math.max(0, target.declarationSpan.end - target.declarationSpan.start),
+          messageText: `${typeForMessage} occurs in the template of component ${target.className}.`,
+        },
+      ];
+    }
+  }
+
   return {
     ...diag,
     file: targetSf,
     start: span.start,
     length: Math.max(0, span.end - span.start),
+    relatedInformation,
   };
 }
 

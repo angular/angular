@@ -107,7 +107,9 @@ export interface TcbResult {
  * component's source file.
  */
 export interface TcbTemplateSource {
+  className?: string;
   templateFile?: string;
+  templateUrlExpression?: {start: number; end: number};
   templateExpression?: {start: number; end: number};
 }
 
@@ -122,15 +124,32 @@ export const TCB_TEMPLATE_SOURCES_COMMENT_PREFIX = 'ngp-tcb-template-sources:';
 function getTcbTemplateSource(
   component: nga.ComponentMetadata | undefined,
 ): TcbTemplateSource | null {
-  // Same classification as the processor's `templateDiagnosticLocation`.
-  if (component?.templateUrl != null) {
-    return {templateFile: component.templateUrl.resolvedPath};
-  }
-  const expressionSpan = component?.templateSpan;
-  if (component?.templateContentSpan != null || expressionSpan == null) {
+  if (!component) {
     return null;
   }
-  return {templateExpression: {start: expressionSpan.start, end: expressionSpan.end}};
+  // Same classification as the processor's `templateDiagnosticLocation`.
+  if (component.templateUrl != null) {
+    return {
+      ...(component.className ? {className: component.className} : {}),
+      templateFile: component.templateUrl.resolvedPath,
+      ...(component.templateUrlSpan
+        ? {
+            templateUrlExpression: {
+              start: component.templateUrlSpan.start,
+              end: component.templateUrlSpan.end,
+            },
+          }
+        : {}),
+    };
+  }
+  const expressionSpan = component.templateSpan;
+  if (component.templateContentSpan != null || expressionSpan == null) {
+    return null;
+  }
+  return {
+    ...(component.className ? {className: component.className} : {}),
+    templateExpression: {start: expressionSpan.start, end: expressionSpan.end},
+  };
 }
 
 function serializeTcbTemplateSources(templateSources: Record<string, TcbTemplateSource>): string {

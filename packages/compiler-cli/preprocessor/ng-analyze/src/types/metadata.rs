@@ -325,6 +325,8 @@ pub struct ComponentImportEntryMetadata {
 #[serde(rename_all = "camelCase")]
 pub struct ComponentMetadata {
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub class_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub decorator_name: Option<String>,
     pub selector: Option<String>,
     pub imports: Option<Vec<ReferenceMetadata>>,

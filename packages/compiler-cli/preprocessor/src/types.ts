@@ -206,6 +206,7 @@ export interface ComponentImportEntryMetadata {
 }
 
 export interface ComponentMetadata {
+  className?: string;
   decoratorName?: string;
   selector?: string;
   imports?: Array<ReferenceMetadata>;
