@@ -277,6 +277,23 @@ describe('binary operator @ts-ignore', () => {
     const rhs = o.not(o.variable('b')).bigger(o.literal(2));
     expect(emitStmt(lhs.plus(rhs))).toEqual('// @ts-ignore\n((!a > 1) + (!b > 2));');
   });
+
+  it('should add @ts-ignore when comparing typeof with an invalid typeof literal', () => {
+    const invalid = o.typeofExpr(o.variable('a')).identical(o.literal('foobar'));
+    expect(emitStmt(invalid)).toEqual(`// @ts-ignore\n(typeof a === 'foobar');`);
+
+    const valid = o.typeofExpr(o.variable('a')).identical(o.literal('object'));
+    expect(emitStmt(valid)).toEqual(`(typeof a === 'object');`);
+  });
+
+  it('should add @ts-ignore for invalid in binary expressions with literals', () => {
+    const inExpr = new o.BinaryOperatorExpr(
+      o.BinaryOperator.In,
+      o.literal('foo'),
+      o.literal('foobar'),
+    );
+    expect(emitStmt(inExpr)).toEqual(`// @ts-ignore\n('foo' in 'foobar');`);
+  });
 });
 
 describe('ExpressionPrinter @angular/core import rewriting', () => {

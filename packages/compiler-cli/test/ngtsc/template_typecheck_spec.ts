@@ -7874,9 +7874,11 @@ suppress
         );
 
         const diags = env.driveDiagnostics();
-        expect(diags.map((d) => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
-          `Property 'does_not_exist' does not exist on type 'Main'.`,
+        expect(
+          diags.map((d) => ts.flattenDiagnosticMessageText(d.messageText, '')).sort(),
+        ).toEqual([
           `@for loop must have a "track" expression`,
+          `Property 'does_not_exist' does not exist on type 'Main'.`,
         ]);
       });
     });
