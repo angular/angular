@@ -1472,7 +1472,7 @@ async fn resolve_ambient_module_member<Fs: ResourceResolverFs + Clone + 'static>
             let oxc_ast::ast::Statement::TSExternalModuleDeclaration(decl) = stmt else {
                 continue;
             };
-            if decl.id.value.as_str() != specifier {
+            if crate::analyzer::utils::js_str_to_string_lossy(decl.id.value) != specifier {
                 continue;
             }
             match resolve_in_ambient_module(decl, dep, member) {
