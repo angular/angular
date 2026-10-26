@@ -722,11 +722,30 @@ export function processFileSync(
       );
       if (foreignComponentDiagnostics.length > 0) {
         for (const diagnostic of foreignComponentDiagnostics) {
-          fileDiagnostics.push(
-            diagnostic.span
+          const relatedInformation = diagnostic.relatedInformation?.map((rel) => ({
+            ...rel,
+            ...templateDiagnosticLocation(component, filePath, rel.span),
+          }));
+          if (
+            component.templateUrl != null &&
+            component.templateUrlSpan != null &&
+            classMeta.className != null
+          ) {
+            relatedInformation?.push({
+              filePath,
+              span: {
+                start: component.templateUrlSpan.start,
+                end: component.templateUrlSpan.end,
+              },
+              messageText: `Error occurs in the template of component ${classMeta.className}.`,
+            });
+          }
+          fileDiagnostics.push({
+            ...(diagnostic.span
               ? {...diagnostic, ...templateDiagnosticLocation(component, filePath, diagnostic.span)}
-              : diagnostic,
-          );
+              : diagnostic),
+            ...(relatedInformation !== undefined ? {relatedInformation} : {}),
+          });
         }
         continue;
       }
