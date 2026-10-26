@@ -12,6 +12,7 @@ import {
   provideRouter,
   Event,
   Router,
+  RouterOutlet,
   UrlSerializer,
   DefaultUrlSerializer,
   UrlTree,
@@ -32,7 +33,7 @@ import {
   provideLocationMocks,
   MOCK_PLATFORM_LOCATION_CONFIG,
 } from '@angular/common/testing';
-import {inject} from '@angular/core';
+import {Component, DestroyRef, inject} from '@angular/core';
 
 /// <reference types="dom-navigation" />
 
@@ -509,5 +510,56 @@ if (typeof window !== 'undefined' && 'navigation' in window && !isFirefox()) {
         expect(routerEvents).toEqual([]);
       }),
     );
+
+    /**
+     * Cancels the navigations that nothing intercepted and that would load a new document, so the
+     * test page stays where it is. Returns the URLs of those navigations.
+     */
+    function preventCrossDocumentNavigations(): string[] {
+      const urls: string[] = [];
+      const intercept = spyOn(NavigateEvent.prototype, 'intercept').and.callThrough();
+      const controller = new AbortController();
+      TestBed.inject(PlatformNavigation).addEventListener(
+        'navigate',
+        (e: NavigateEvent) => {
+          const intercepted = intercept.calls.all().some((call) => call.object === e);
+          if (!intercepted && !e.destination.sameDocument) {
+            urls.push(e.destination.url);
+            e.preventDefault();
+          }
+        },
+        {signal: controller.signal},
+      );
+      TestBed.inject(DestroyRef).onDestroy(() => controller.abort());
+      return urls;
+    }
+
+    it('should restore the URL without reloading the page when activation fails', async () => {
+      @Component({template: '<router-outlet />', imports: [RouterOutlet]})
+      class RootCmp {}
+
+      @Component({template: ''})
+      class ThrowingCmp {
+        constructor() {
+          throw new Error('error during activation');
+        }
+      }
+
+      router.resetConfig([
+        {path: 'throwing', component: ThrowingCmp},
+        {path: '**', children: []},
+      ]);
+      const fixture = TestBed.createComponent(RootCmp);
+      await fixture.whenStable();
+      const urlBefore = window.location.href;
+      const crossDocumentNavigations = preventCrossDocumentNavigations();
+
+      // The URL is committed right before activation, so the router has to restore it.
+      await expectAsync(router.navigateByUrl('/throwing')).toBeRejected();
+      await timeout();
+
+      expect(crossDocumentNavigations).toEqual([]);
+      expect(window.location.href).toBe(urlBefore);
+    });
   });
 }
