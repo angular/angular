@@ -302,6 +302,9 @@ export function buildTypeCheckingConfig(
   if (options.strictUnclaimedEventNames !== undefined) {
     typeCheckingConfig.checkUnclaimedEventNames = options.strictUnclaimedEventNames;
   }
+  if (options.strictUnknownElements !== undefined) {
+    typeCheckingConfig.checkUnknownElements = options.strictUnknownElements;
+  }
   typeCheckingConfig.typeCheckHostBindings = options.typeCheckHostBindings ?? true;
   typeCheckingConfig.usePoisonedData =
     usePoisonedData || Boolean(options._compilePoisonedComponents);
