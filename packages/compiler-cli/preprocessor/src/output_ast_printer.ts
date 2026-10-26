@@ -58,6 +58,17 @@ const EQUALITY_OPERATORS = new Set([
   o.BinaryOperator.NotIdentical,
 ]);
 
+const VALID_TYPEOF_VALUES = new Set([
+  'string',
+  'number',
+  'bigint',
+  'boolean',
+  'symbol',
+  'undefined',
+  'object',
+  'function',
+]);
+
 function isNeverNullish(expression: o.Expression): boolean {
   if (expression instanceof o.ParenthesizedExpr) {
     return isNeverNullish(expression.expr);
@@ -80,9 +91,19 @@ function isNonBooleanLiteral(expression: o.Expression): boolean {
   return expression instanceof o.LiteralExpr && typeof expression.value !== 'boolean';
 }
 
+function isInvalidTypeofLiteral(expression: o.Expression): boolean {
+  return (
+    expression instanceof o.LiteralExpr &&
+    (typeof expression.value !== 'string' || !VALID_TYPEOF_VALUES.has(expression.value))
+  );
+}
+
 function binaryNeedsTsIgnore(expression: o.BinaryOperatorExpr): boolean {
   if (expression.operator === o.BinaryOperator.NullishCoalesce) {
     return isNeverNullish(expression.lhs);
+  }
+  if (expression.operator === o.BinaryOperator.In) {
+    return expression.rhs instanceof o.LiteralExpr;
   }
   if (NUMERIC_OPERATORS.has(expression.operator)) {
     return expression.lhs instanceof o.NotExpr || expression.rhs instanceof o.NotExpr;
@@ -90,7 +111,9 @@ function binaryNeedsTsIgnore(expression: o.BinaryOperatorExpr): boolean {
   if (EQUALITY_OPERATORS.has(expression.operator)) {
     return (
       (expression.lhs instanceof o.NotExpr && isNonBooleanLiteral(expression.rhs)) ||
-      (expression.rhs instanceof o.NotExpr && isNonBooleanLiteral(expression.lhs))
+      (expression.rhs instanceof o.NotExpr && isNonBooleanLiteral(expression.lhs)) ||
+      (expression.lhs instanceof o.TypeofExpr && isInvalidTypeofLiteral(expression.rhs)) ||
+      (expression.rhs instanceof o.TypeofExpr && isInvalidTypeofLiteral(expression.lhs))
     );
   }
   return false;
