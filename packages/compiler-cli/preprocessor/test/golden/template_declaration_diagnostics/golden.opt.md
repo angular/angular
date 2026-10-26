@@ -94,7 +94,7 @@ function _tcb1(this: i0.DynamicTemplateComponent) {
   }
 }
 
-/*ngp-tcb-template-sources:{"tcb1":{"templateExpression":{"start":105,"end":139}}}*/
+/*ngp-tcb-template-sources:{"tcb1":{"className":"DynamicTemplateComponent","templateExpression":{"start":105,"end":139}}}*/
 
 ```
 
@@ -177,7 +177,7 @@ function _tcb1(this: i0.MissingLinkStylesheetTemplateLiteralComponent) {
   }
 }
 
-/*ngp-tcb-template-sources:{"tcb1":{"templateFile":"/missing-link-stylesheet-template-literal.component.html"}}*/
+/*ngp-tcb-template-sources:{"tcb1":{"className":"MissingLinkStylesheetTemplateLiteralComponent","templateFile":"/missing-link-stylesheet-template-literal.component.html","templateUrlExpression":{"start":313,"end":372}}}*/
 
 ```
 

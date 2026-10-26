@@ -338,6 +338,9 @@ const NGP_POTENTIAL_BREAKING_CHANGES: ReadonlySet<string> = new Set([
   'selectorless should resolve local reference to selectorless directive',
   'selectorless should treat unclaimed inputs as DOM property bindings on component nodes',
   'selectorless should treat unclaimed outputs as DOM events on component nodes',
+
+  // Tests TypeScript `structureIsReused` across in-memory ngtsc incremental compilations.
+  'ngtsc type checking stability should allow for complete program reuse during incremental compilations',
 ]);
 
 /**
@@ -475,8 +478,6 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'ngtsc type checking for loop blocks should not allow usages of parent loop variables inside the tracking expression',
   'ngtsc type checking for loop blocks should not allow usages of parent template variables inside the tracking expression',
   'ngtsc type checking should error on invalid instanceof binary expressions',
-  'ngtsc type checking should report a diagnostic when binding an incompatible type to an input inherited through an intermediate variable declaration in .d.ts',
-  'ngtsc type checking stability should allow for complete program reuse during incremental compilations',
   'ngtsc type checking tagged template literals should produce diagnostics for invalid tag function',
   'signal forms should report unsupported two-way bindings on a field',
 ]);

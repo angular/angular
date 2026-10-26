@@ -13,7 +13,7 @@ function _tcb1(this: i0.AppComponent) {
   }
 }
 
-/*ngp-tcb-template-sources:{"tcb1":{"templateFile":"/extra/app/app.component.html"}}*/
+/*ngp-tcb-template-sources:{"tcb1":{"className":"AppComponent","templateFile":"/extra/app/app.component.html","templateUrlExpression":{"start":96,"end":118}}}*/
 
 ```
 

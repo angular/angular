@@ -77,7 +77,7 @@ runInEachFileSystem(() => {
     });
 
     it(`should produce nullish coalescing not nullable warning`, () => {
-      env.tsconfig({strict: true}); // TODO: remove when #70090 is merged
+      env.tsconfig({strictTemplates: true}, {strict: true}); // TODO: remove when #70090 is merged
       env.write(
         'test.ts',
         `

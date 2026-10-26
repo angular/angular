@@ -13,7 +13,7 @@ function _tcb1(this: i0.TestComponent) {
   }
 }
 
-/*ngp-tcb-template-sources:{"tcb1":{"templateExpression":{"start":133,"end":153}}}*/
+/*ngp-tcb-template-sources:{"tcb1":{"className":"TestComponent","templateExpression":{"start":133,"end":153}}}*/
 
 ```
 

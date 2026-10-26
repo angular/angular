@@ -7878,12 +7878,12 @@ suppress
         );
 
         const diags = env.driveDiagnostics();
-        expect(
-          diags.map((d) => ts.flattenDiagnosticMessageText(d.messageText, '')).sort(),
-        ).toEqual([
-          `@for loop must have a "track" expression`,
-          `Property 'does_not_exist' does not exist on type 'Main'.`,
-        ]);
+        expect(diags.map((d) => ts.flattenDiagnosticMessageText(d.messageText, '')).sort()).toEqual(
+          [
+            `@for loop must have a "track" expression`,
+            `Property 'does_not_exist' does not exist on type 'Main'.`,
+          ],
+        );
       });
     });
 
@@ -10569,10 +10569,14 @@ suppress
     });
 
     it('should report a diagnostic when binding an incompatible type to an input inherited through an intermediate variable declaration in .d.ts', () => {
-      env.tsconfig({
-        paths: {'external': ['./dist/external']},
-        strictTemplates: true,
-      });
+      env.tsconfig(
+        {
+          strictTemplates: true,
+        },
+        {
+          paths: {'external': ['./dist/external']},
+        },
+      );
       env.write(
         'dist/external/index.d.ts',
         `
