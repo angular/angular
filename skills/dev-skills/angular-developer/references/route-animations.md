@@ -40,10 +40,25 @@ Use the `::view-transition-old()` and `::view-transition-new()` pseudo-elements.
 Use `onViewTransitionCreated` to skip transitions or customize behavior based on the navigation context.
 
 ```ts
+// Mark the route that should skip the transition.
+{
+  path: 'no-animation',
+  component: NoAnimationPage,
+  data: { skipTransition: true },
+}
+```
+
+```ts
+// For a simple primary-outlet route tree, inspect the deepest destination route.
 withViewTransitions({
-  onViewTransitionCreated: ({transition, from, to}) => {
-    // Skip animation for specific routes
-    if (to.url === '/no-animation') {
+  onViewTransitionCreated: ({transition, to}) => {
+    let target = to;
+
+    while (target.firstChild) {
+      target = target.firstChild;
+    }
+
+    if (target.data['skipTransition']) {
       transition.skipTransition();
     }
   },
