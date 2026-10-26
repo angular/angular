@@ -6,13 +6,18 @@
  */
 
 import * as i0 from './test.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.TestComponent) {
   if (true) {
     '' + this.name /*188,192*/ /*188,192*/;
+    i1.ɵassertNotSignal(0, this.name);
+    i1.ɵassertNotCallable(1, this.name);
   }
 }
+
+/*ngp-tcb-extended-checks:[{"typeCheckId":"tcb1","code":8109,"category":"warning","message":"NG8109: name is a function and should be invoked: name(). Find more at https://angular.dev/extended-diagnostics/NG8109","start":188,"end":192},{"typeCheckId":"tcb1","code":8117,"category":"warning","message":"NG8117: Function in text interpolation should be invoked: name(). Find more at https://angular.dev/extended-diagnostics/NG8117","start":188,"end":192}]*/
 
 ```
 

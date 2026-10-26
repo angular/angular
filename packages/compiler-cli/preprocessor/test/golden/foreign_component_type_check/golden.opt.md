@@ -142,13 +142,17 @@ export class MisplacedContentComponent {
  */
 
 import * as i0 from './missing-foreign-imports.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.MissingForeignImportsComponent) {
   if (true) {
     this.size; /*222,226*/ /*222,226*/
+    i1.ɵassertNotSignal(0, this.size);
   }
 }
+
+/*ngp-tcb-extended-checks:[{"typeCheckId":"tcb1","code":8109,"category":"warning","message":"NG8109: size is a function and should be invoked: size(). Find more at https://angular.dev/extended-diagnostics/NG8109","start":222,"end":226}]*/
 
 /* Diagnostics:
  - (206, 230) 'Widget' is not a known element:

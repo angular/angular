@@ -7,6 +7,7 @@
 
 import * as i0 from 'google3/list';
 import * as i1 from 'google3/my/common/ng_for_of';
+import * as i2 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.ListComponent) {
@@ -17,9 +18,12 @@ function _tcb1(this: i0.ListComponent) {
     {
       var _t3 /*193,197*/ = _t2.$implicit; /*189,198*/
       '' + _t3 /*211,215*/;
+      i2.ɵassertNotSignal(0, _t3);
     }
   }
 }
+
+/*ngp-tcb-extended-checks:[{"typeCheckId":"tcb1","code":8109,"category":"warning","message":"NG8109: item is a function and should be invoked: item(). Find more at https://angular.dev/extended-diagnostics/NG8109","start":211,"end":215}]*/
 
 ```
 

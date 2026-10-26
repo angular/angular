@@ -243,13 +243,18 @@ export class CompB {
  */
 
 import * as i0 from './c.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.CompC) {
   if (true) {
     '' + this.val /*137,140*/ /*137,140*/;
+    i1.ɵassertNotSignal(0, this.val);
+    i1.ɵassertNotCallable(1, this.val);
   }
 }
+
+/*ngp-tcb-extended-checks:[{"typeCheckId":"tcb1","code":8109,"category":"warning","message":"NG8109: val is a function and should be invoked: val(). Find more at https://angular.dev/extended-diagnostics/NG8109","start":137,"end":140},{"typeCheckId":"tcb1","code":8117,"category":"warning","message":"NG8117: Function in text interpolation should be invoked: val(). Find more at https://angular.dev/extended-diagnostics/NG8117","start":137,"end":140}]*/
 
 ```
 

@@ -7,6 +7,7 @@
 
 import * as i0 from './app';
 import * as i1 from './my-dir';
+import * as i2 from '@angular/core';
 
 const _ctor1: <T = unknown>(init: Pick<i1.MyIf<T>, 'myIf' | 'myIfInvocation'>) => i1.MyIf<T> =
   null!;
@@ -37,6 +38,9 @@ function _tcb1(this: i0.AppComponent) {
     ) {
       var _t3 /*227,231*/ = _t2.myIf /*201,205*/; /*201,233*/
       '' + _t3 /*272,276*/.name /*277,281*/ /*272,281*/;
+      i2.ɵassertNotSignal(0, _t3.name);
+      i2.ɵassertNotSignal(1, _t3);
+      i2.ɵassertNotCallable(4, _t3.name);
     }
     var _t4 /*T:DIR:0*/ /*299,346*/ = _ctor2({
       'invalidGuards':
@@ -48,9 +52,14 @@ function _tcb1(this: i0.AppComponent) {
     {
       var _t6 /*340,344*/ = _t5.invalidGuards /*305,318*/; /*305,344*/
       '' + _t6 /*355,359*/.name /*360,364*/ /*355,364*/;
+      i2.ɵassertNotSignal(2, _t6.name);
+      i2.ɵassertNotSignal(3, _t6);
+      i2.ɵassertNotCallable(5, _t6.name);
     }
   }
 }
+
+/*ngp-tcb-extended-checks:[{"typeCheckId":"tcb1","code":8109,"category":"warning","message":"NG8109: name is a function and should be invoked: name(). Find more at https://angular.dev/extended-diagnostics/NG8109","start":277,"end":281},{"typeCheckId":"tcb1","code":8109,"category":"warning","message":"NG8109: user is a function and should be invoked: user(). Find more at https://angular.dev/extended-diagnostics/NG8109","start":272,"end":276,"skipIfTriggered":0},{"typeCheckId":"tcb1","code":8109,"category":"warning","message":"NG8109: name is a function and should be invoked: name(). Find more at https://angular.dev/extended-diagnostics/NG8109","start":360,"end":364},{"typeCheckId":"tcb1","code":8109,"category":"warning","message":"NG8109: user is a function and should be invoked: user(). Find more at https://angular.dev/extended-diagnostics/NG8109","start":355,"end":359,"skipIfTriggered":2},{"typeCheckId":"tcb1","code":8117,"category":"warning","message":"NG8117: Function in text interpolation should be invoked: name(). Find more at https://angular.dev/extended-diagnostics/NG8117","start":277,"end":281},{"typeCheckId":"tcb1","code":8117,"category":"warning","message":"NG8117: Function in text interpolation should be invoked: name(). Find more at https://angular.dev/extended-diagnostics/NG8117","start":360,"end":364}]*/
 
 ```
 

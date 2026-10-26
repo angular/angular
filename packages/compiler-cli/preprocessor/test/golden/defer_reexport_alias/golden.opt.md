@@ -7,6 +7,7 @@
 
 import * as i0 from './network_activity';
 import * as i1 from './ng_for_of';
+import * as i2 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.NetworkActivityComponent) {
@@ -17,9 +18,12 @@ function _tcb1(this: i0.NetworkActivityComponent) {
     {
       var _t3 /*214,218*/ = _t2.$implicit; /*210,219*/
       '' + _t3 /*232,236*/;
+      i2.ɵassertNotSignal(0, _t3);
     }
   }
 }
+
+/*ngp-tcb-extended-checks:[{"typeCheckId":"tcb1","code":8109,"category":"warning","message":"NG8109: item is a function and should be invoked: item(). Find more at https://angular.dev/extended-diagnostics/NG8109","start":232,"end":236}]*/
 
 ```
 

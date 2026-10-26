@@ -6,6 +6,7 @@
  */
 
 import * as i0 from './app.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.AppComponent) {
@@ -27,9 +28,12 @@ function _tcb2(this: i0.VarComponent) {
 function _tcb3(this: i0.BoundAndInvalidComponent) {
   if (true) {
     this.ctxValue; /*630,638*/ /*630,638*/
+    i1.ɵassertNotSignal(0, this.ctxValue);
     undefined; /*640,649*/
   }
 }
+
+/*ngp-tcb-extended-checks:[{"typeCheckId":"tcb3","code":8109,"category":"warning","message":"NG8109: ctxValue is a function and should be invoked: ctxValue(). Find more at https://angular.dev/extended-diagnostics/NG8109","start":630,"end":638}]*/
 
 ```
 

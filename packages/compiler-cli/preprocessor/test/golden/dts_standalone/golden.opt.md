@@ -7,6 +7,7 @@
 
 import * as i0 from './app';
 import * as i1 from './my-dir';
+import * as i2 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.AppComponent) {
@@ -20,8 +21,14 @@ function _tcb1(this: i0.AppComponent) {
     '' +
       _t3 /*311,315*/.myProp /*316,322*/ /*311,322*/ +
       _t4 /*329,333*/.myProp /*334,340*/ /*329,340*/;
+    i2.ɵassertNotSignal(0, _t3.myProp);
+    i2.ɵassertNotSignal(1, _t4.myProp);
+    i2.ɵassertNotCallable(2, _t3.myProp);
+    i2.ɵassertNotCallable(3, _t4.myProp);
   }
 }
+
+/*ngp-tcb-extended-checks:[{"typeCheckId":"tcb1","code":8109,"category":"warning","message":"NG8109: myProp is a function and should be invoked: myProp(). Find more at https://angular.dev/extended-diagnostics/NG8109","start":316,"end":322},{"typeCheckId":"tcb1","code":8109,"category":"warning","message":"NG8109: myProp is a function and should be invoked: myProp(). Find more at https://angular.dev/extended-diagnostics/NG8109","start":334,"end":340},{"typeCheckId":"tcb1","code":8117,"category":"warning","message":"NG8117: Function in text interpolation should be invoked: myProp(). Find more at https://angular.dev/extended-diagnostics/NG8117","start":316,"end":322},{"typeCheckId":"tcb1","code":8117,"category":"warning","message":"NG8117: Function in text interpolation should be invoked: myProp(). Find more at https://angular.dev/extended-diagnostics/NG8117","start":334,"end":340}]*/
 
 ```
 

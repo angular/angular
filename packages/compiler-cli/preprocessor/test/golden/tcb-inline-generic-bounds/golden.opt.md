@@ -5,6 +5,8 @@
  * @generated
  */
 
+import * as i0 from '@angular/core';
+
 import { Component } from '@angular/core';
 
 interface LocalInterface {
@@ -24,8 +26,11 @@ export class AppComponent<T extends LocalInterface> {
 function _tcb1<T extends LocalInterface>(this: AppComponent<T>) {
   if (true) {
     '' + this.prop /*147,151*/ /*147,151*/.foo /*152,155*/ /*147,155*/;
+    i0.ɵassertNotSignal(0, this.prop.foo);
+    i0.ɵassertNotCallable(1, this.prop.foo);
   }
 }
+/*ngp-tcb-extended-checks:[{"typeCheckId":"tcb1","code":8109,"category":"warning","message":"NG8109: foo is a function and should be invoked: foo(). Find more at https://angular.dev/extended-diagnostics/NG8109","start":152,"end":155},{"typeCheckId":"tcb1","code":8117,"category":"warning","message":"NG8117: Function in text interpolation should be invoked: foo(). Find more at https://angular.dev/extended-diagnostics/NG8117","start":152,"end":155}]*/
 
 ```
 

@@ -14,8 +14,10 @@ import {
   isNgTemplate,
   KeyedRead,
   NonNullAssert,
+  OutOfBandDiagnosticCategory,
   ParenthesizedExpression,
   ParseSourceSpan,
+  PropertyRead,
   SafeCall,
   SafeKeyedRead,
   SafePropertyRead,
@@ -27,6 +29,35 @@ import {
 import type {ExtendedTemplateDiagnosticName, NgpCompilerOptions} from '../compiler_options.js';
 import type {Diagnostic, DiagnosticRelatedInformation} from '../diagnostic.js';
 import type {TcbTargetInput} from '../tcb.js';
+
+export type TcbExtendedCheckKind = 'notSignal' | 'notCallable' | 'notTrackCallable';
+
+/**
+ * Describes a type-dependent extended template diagnostic candidate whose condition is evaluated
+ * via a type-level probe call injected into the generated `.ngtypecheck.ts` file.
+ */
+export interface TcbExtendedCheckCandidate {
+  /** Extended diagnostic code (e.g. `8109`, `8111`, `8115`, `8117`). */
+  code: number;
+  /** Configured diagnostic category (`Warning` or `Error`). */
+  category: OutOfBandDiagnosticCategory;
+  /** Formatted extended diagnostic message (`NG8xxx: ...`). */
+  message: string;
+  /** Template source span start offset where the diagnostic is reported. */
+  start: number;
+  /** Template source span end offset where the diagnostic is reported. */
+  end: number;
+  /** Type-level assertion kind to inject in the generated TCB. */
+  kind: TcbExtendedCheckKind;
+  /** Template expression whose TCB counterpart should be probed. */
+  expr: PropertyRead | SafePropertyRead;
+  /**
+   * Optional candidate that supersedes this candidate if both trigger (used by NG8109 so
+   * `mySignal.name` prefers reporting the outer signal if `.name` itself is a signal, and falls
+   * back to reporting `mySignal` otherwise).
+   */
+  skipIfTriggered?: TcbExtendedCheckCandidate;
+}
 
 const versionSubDomain = VERSION.major !== '0' ? `v${VERSION.major}.` : '';
 export const EXTENDED_ERROR_DETAILS_PAGE_BASE_URL = `https://${versionSubDomain}angular.dev/extended-diagnostics`;
@@ -74,6 +105,18 @@ export interface TemplateContext<Code extends number = number> {
     message: string,
     relatedInformation?: readonly DiagnosticRelatedInformation[],
   ): Diagnostic;
+
+  /**
+   * Registers a type-dependent extended diagnostic candidate to be emitted as a type-level
+   * assertion probe in the component's generated Type-Check Block (`.ngtypecheck.ts`).
+   */
+  addExtendedCheckCandidate?(params: {
+    kind: TcbExtendedCheckKind;
+    expr: PropertyRead | SafePropertyRead;
+    sourceSpan: ParseSourceSpan | AbsoluteSourceSpan | {start: number; end: number};
+    message: string;
+    skipIfTriggered?: TcbExtendedCheckCandidate;
+  }): TcbExtendedCheckCandidate | undefined;
 }
 
 /**

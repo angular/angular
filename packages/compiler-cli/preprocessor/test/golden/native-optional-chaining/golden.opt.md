@@ -6,13 +6,17 @@
  */
 
 import * as i0 from './app.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.AppComponent) {
   if (true) {
     '' + this.obj /*107,110*/ /*107,110*/?.foo /*112,115*/ /*107,115*/?.bar /*117,120*/ /*107,120*/;
+    i1.ɵassertNotCallable(0, this.obj?.foo?.bar);
   }
 }
+
+/*ngp-tcb-extended-checks:[{"typeCheckId":"tcb1","code":8117,"category":"warning","message":"NG8117: Function in text interpolation should be invoked: bar(). Find more at https://angular.dev/extended-diagnostics/NG8117","start":117,"end":120}]*/
 
 ```
 

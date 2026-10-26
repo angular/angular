@@ -23,6 +23,7 @@ import {
   collectMemberMethods,
   getRenameTextAndSpanAtPosition,
   getTargetDetailsAtTemplatePosition,
+  isTcbExtendedCheckReference,
 } from './references_and_rename_utils.js';
 import {getTcbPath, offsetToPosition} from '../../src/tcb_ls_util.js';
 import {canonicalizePath} from './utils.js';
@@ -574,8 +575,12 @@ export class RenameBuilder {
           return null;
         }
 
+        const tcbSfCache = new Map<string, ts.SourceFile | null>();
         for (const ref of refs) {
           if (ref.uri.includes('.ngtypecheck.ts')) {
+            if (isTcbExtendedCheckReference(ref, this.hybridCompiler, tcbSfCache)) {
+              continue;
+            }
             const mapped = await convertToTemplateDocumentSpan(
               ref,
               this.hybridCompiler,
@@ -645,8 +650,12 @@ export class RenameBuilder {
       const allLocations: Location[] = [];
       const seenKeys = new Set<string>();
 
+      const tcbSfCache = new Map<string, ts.SourceFile | null>();
       for (const ref of refs) {
         if (ref.uri.includes('.ngtypecheck.ts')) {
+          if (isTcbExtendedCheckReference(ref, this.hybridCompiler, tcbSfCache)) {
+            continue;
+          }
           const mapped = await convertToTemplateDocumentSpan(
             ref,
             this.hybridCompiler,

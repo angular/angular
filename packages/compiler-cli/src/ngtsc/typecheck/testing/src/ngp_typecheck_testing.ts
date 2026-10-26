@@ -156,10 +156,16 @@ export function compileTargetsWithNgp(
           isStandalone && componentImports.length > 0
             ? `, imports: [${componentImports.join(', ')}]`
             : '';
+        const foreignComponents = target.foreignComponents ?? [];
+        const foreignImportsProp =
+          isStandalone && foreignComponents.length > 0
+            ? `, foreignImports: [${foreignComponents.map((f) => `ɵngpForeignImport(${f})`).join(', ')}]`
+            : '';
         const selector =
           (selfDecl?.type === 'directive' ? selfDecl.selector : null) ??
           (clsName === 'TestComponent' ? 'test-cmp' : `test-cmp-${clsName.toLowerCase()}`);
-        const compDecorator = `@ɵNgpComponent({selector: ${JSON.stringify(selector)}, templateUrl: './${clsName}.html', standalone: ${isStandalone}${importsProp}})\n`;
+        const tsIgnorePrefix = foreignImportsProp ? '// @ts-ignore\n' : '';
+        const compDecorator = `${tsIgnorePrefix}@ɵNgpComponent({selector: ${JSON.stringify(selector)}, templateUrl: './${clsName}.html', standalone: ${isStandalone}${importsProp}${foreignImportsProp}})\n`;
         replacements.push({
           start: stmt.getStart(sf),
           end: stmt.getStart(sf),
@@ -195,8 +201,13 @@ export function compileTargetsWithNgp(
         updated = `import * as ɵNgpCore from '@angular/core';\n` + updated;
       }
     } else {
+      const foreignHelper =
+        target.foreignComponents && target.foreignComponents.length > 0
+          ? 'declare function ɵngpForeignImport(component: any): any;\n'
+          : '';
       updated =
         `import {Component as ɵNgpComponent, Directive as ɵNgpDirective, Pipe as ɵNgpPipe, Input as ɵNgpInput, input as ɵngpInput, model as ɵngpModel} from '@angular/core';\n` +
+        foreignHelper +
         externalImports.join('\n') +
         '\n' +
         updated;

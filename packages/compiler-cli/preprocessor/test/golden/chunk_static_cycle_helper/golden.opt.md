@@ -152,13 +152,18 @@ i0.ɵɵsetComponentScope(CompA, [CompB], []);
  */
 
 import * as i0 from './b.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.CompB) {
   if (true) {
     '' + this.message /*140,147*/ /*140,147*/;
+    i1.ɵassertNotSignal(0, this.message);
+    i1.ɵassertNotCallable(1, this.message);
   }
 }
+
+/*ngp-tcb-extended-checks:[{"typeCheckId":"tcb1","code":8109,"category":"warning","message":"NG8109: message is a function and should be invoked: message(). Find more at https://angular.dev/extended-diagnostics/NG8109","start":140,"end":147},{"typeCheckId":"tcb1","code":8117,"category":"warning","message":"NG8117: Function in text interpolation should be invoked: message(). Find more at https://angular.dev/extended-diagnostics/NG8117","start":140,"end":147}]*/
 
 ```
 

@@ -94,10 +94,12 @@ export class SameNameComp {
  */
 
 import * as i0 from './tree.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.TreeComponent) {
   if (true) {
+    i1.ɵassertNotSignal(0, this.child);
     if (this.child /*289,294*/ /*289,294*/) {
       var _t1 /*T:DIR:0*/ /*304,341*/ = null! as i0.TreeComponent; /*T:VAE*/
       _t1.child /*320,325*/ =
@@ -109,6 +111,7 @@ function _tcb1(this: i0.TreeComponent) {
 /*tcb2*/
 function _tcb2(this: i0.ForwardTreeComponent) {
   if (true) {
+    i1.ɵassertNotSignal(1, this.child);
     if (this.child /*548,553*/ /*548,553*/) {
       var _t1 /*T:DIR:0*/ /*563,608*/ = null! as i0.ForwardTreeComponent; /*T:VAE*/
       _t1.child /*587,592*/ =
@@ -122,6 +125,8 @@ function _tcb3(this: i0.SameNameComp) {
   if (true) {
   }
 }
+
+/*ngp-tcb-extended-checks:[{"typeCheckId":"tcb1","code":8109,"category":"warning","message":"NG8109: child is a function and should be invoked: child(). Find more at https://angular.dev/extended-diagnostics/NG8109","start":289,"end":294},{"typeCheckId":"tcb2","code":8109,"category":"warning","message":"NG8109: child is a function and should be invoked: child(). Find more at https://angular.dev/extended-diagnostics/NG8109","start":548,"end":553}]*/
 
 ```
 

@@ -15,8 +15,10 @@ import ts from 'typescript';
 
 import {
   buildTypeCheckingConfig,
+  classifyTcbExtendedCheckDiagnostic,
   HybridCompiler,
   IndexerBoundTemplate,
+  parseTcbExtendedChecks,
   verifyCompilerOptions,
   WasmAnalyzer,
   type ClassEntity,
@@ -712,8 +714,74 @@ export function performNgpCompilationSync(params: {
     if (!tcbSf) {
       continue;
     }
+    const extendedChecks = parseTcbExtendedChecks(tcbCode);
     const rawTcbDiags = tsProgram.getSemanticDiagnostics(tcbSf);
-    for (const diag of rawTcbDiags) {
+    const triggeredProbeIds = new Set<number>();
+    const classifications = rawTcbDiags.map((diag) => {
+      if (diag.start === undefined) {
+        return {kind: 'normal' as const};
+      }
+      const cls = classifyTcbExtendedCheckDiagnostic(
+        tcbSf,
+        diag.code,
+        diag.start,
+        diag.length ?? 0,
+      );
+      if (cls.kind === 'probe') {
+        triggeredProbeIds.add(cls.probeId);
+      }
+      return cls;
+    });
+
+    for (let i = 0; i < rawTcbDiags.length; i++) {
+      const diag = rawTcbDiags[i];
+      const cls = classifications[i];
+      if (cls.kind === 'suppress') {
+        continue;
+      }
+      if (cls.kind === 'probe') {
+        const entry = extendedChecks[cls.probeId];
+        if (
+          !entry ||
+          (entry.skipIfTriggered !== undefined && triggeredProbeIds.has(entry.skipIfTriggered))
+        ) {
+          continue;
+        }
+        const target = templateTargetByTypeCheckId.get(entry.typeCheckId);
+        const targetSf =
+          target !== undefined && 'sourceFile' in target
+            ? target.sourceFile
+            : getOriginalSourceFile(target?.fsPath ?? originFsPath);
+        if (!targetSf) {
+          continue;
+        }
+        const category =
+          entry.category === 'warning'
+            ? ts.DiagnosticCategory.Warning
+            : ts.DiagnosticCategory.Error;
+        const code =
+          entry.code > 0 && entry.code < 90000
+            ? ngErrorCode(entry.code as unknown as ErrorCode)
+            : entry.code;
+        allDiagnostics.push({
+          file: targetSf,
+          start: entry.start,
+          length: Math.max(0, entry.end - entry.start),
+          messageText: entry.message,
+          category,
+          code,
+          source: 'ngtsc',
+          relatedInformation: attachTemplateDeclarationRelatedInfo(
+            undefined,
+            category,
+            target,
+            originFsPath,
+            getOriginalSourceFile,
+          ),
+        });
+        continue;
+      }
+
       const mapped = translateTcbDiagnostic(
         diag,
         tcbSf,
@@ -1143,6 +1211,43 @@ type TemplateDiagnosticTarget = ({fsPath: AbsoluteFsPath} | {sourceFile: ts.Sour
   declarationSpan?: {start: number; end: number};
 };
 
+function attachTemplateDeclarationRelatedInfo(
+  relatedInformation: ts.DiagnosticRelatedInformation[] | undefined,
+  category: ts.DiagnosticCategory,
+  target: TemplateDiagnosticTarget | undefined,
+  originFsPath: AbsoluteFsPath,
+  getOriginalSourceFile: (fsPath: AbsoluteFsPath) => ts.SourceFile | undefined,
+): ts.DiagnosticRelatedInformation[] | undefined {
+  if (!target?.className || !target?.declarationSpan) {
+    return relatedInformation;
+  }
+  const componentSf = getOriginalSourceFile(originFsPath);
+  if (!componentSf) {
+    return relatedInformation;
+  }
+  let typeForMessage: string;
+  if (category === ts.DiagnosticCategory.Warning) {
+    typeForMessage = 'Warning';
+  } else if (category === ts.DiagnosticCategory.Suggestion) {
+    typeForMessage = 'Suggestion';
+  } else if (category === ts.DiagnosticCategory.Message) {
+    typeForMessage = 'Message';
+  } else {
+    typeForMessage = 'Error';
+  }
+  return [
+    ...(relatedInformation ?? []),
+    {
+      category: ts.DiagnosticCategory.Message,
+      code: 0,
+      file: componentSf,
+      start: target.declarationSpan.start,
+      length: Math.max(0, target.declarationSpan.end - target.declarationSpan.start),
+      messageText: `${typeForMessage} occurs in the template of component ${target.className}.`,
+    },
+  ];
+}
+
 function translateTcbDiagnostic(
   diag: ts.Diagnostic,
   tcbSf: ts.SourceFile,
@@ -1207,33 +1312,13 @@ function translateTcbDiagnostic(
     return null;
   }
 
-  let relatedInformation = diag.relatedInformation;
-  if (target?.className && target?.declarationSpan) {
-    const componentSf = getOriginalSourceFile(originFsPath);
-    if (componentSf) {
-      let typeForMessage: string;
-      if (diag.category === ts.DiagnosticCategory.Warning) {
-        typeForMessage = 'Warning';
-      } else if (diag.category === ts.DiagnosticCategory.Suggestion) {
-        typeForMessage = 'Suggestion';
-      } else if (diag.category === ts.DiagnosticCategory.Message) {
-        typeForMessage = 'Message';
-      } else {
-        typeForMessage = 'Error';
-      }
-      relatedInformation = [
-        ...(relatedInformation ?? []),
-        {
-          category: ts.DiagnosticCategory.Message,
-          code: 0,
-          file: componentSf,
-          start: target.declarationSpan.start,
-          length: Math.max(0, target.declarationSpan.end - target.declarationSpan.start),
-          messageText: `${typeForMessage} occurs in the template of component ${target.className}.`,
-        },
-      ];
-    }
-  }
+  const relatedInformation = attachTemplateDeclarationRelatedInfo(
+    diag.relatedInformation,
+    diag.category,
+    target,
+    originFsPath,
+    getOriginalSourceFile,
+  );
 
   return {
     ...diag,

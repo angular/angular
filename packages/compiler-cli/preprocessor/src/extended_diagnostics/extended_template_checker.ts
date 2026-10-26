@@ -22,7 +22,12 @@ import type {
 } from '../compiler_options.js';
 import type {Diagnostic, DiagnosticRelatedInformation} from '../diagnostic.js';
 import type {TcbTargetInput} from '../tcb.js';
-import type {TemplateCheck, TemplateCheckFactory, TemplateContext} from './api.js';
+import type {
+  TcbExtendedCheckCandidate,
+  TemplateCheck,
+  TemplateCheckFactory,
+  TemplateContext,
+} from './api.js';
 
 /**
  * Interface to generate extended template diagnostics from the component templates.
@@ -38,6 +43,16 @@ export interface ExtendedTemplateChecker {
     component: TcbTargetInput,
     boundTarget: BoundTarget<TcbDirectiveMetadata>,
   ): Diagnostic[];
+
+  /**
+   * Run `TemplateCheck`s for a component and return both static `Diagnostic`s and TCB extended
+   * check candidates to inject into `.ngtypecheck.ts`.
+   */
+  getDiagnosticsAndCandidatesForComponent(
+    typeCheckId: TypeCheckId,
+    component: TcbTargetInput,
+    boundTarget: BoundTarget<TcbDirectiveMetadata>,
+  ): {diagnostics: Diagnostic[]; candidates: TcbExtendedCheckCandidate[]};
 }
 
 /**
@@ -83,10 +98,21 @@ export class ExtendedTemplateCheckerImpl implements ExtendedTemplateChecker {
     component: TcbTargetInput,
     boundTarget: BoundTarget<TcbDirectiveMetadata>,
   ): Diagnostic[] {
+    return this.getDiagnosticsAndCandidatesForComponent(typeCheckId, component, boundTarget)
+      .diagnostics;
+  }
+
+  getDiagnosticsAndCandidatesForComponent(
+    typeCheckId: TypeCheckId,
+    component: TcbTargetInput,
+    boundTarget: BoundTarget<TcbDirectiveMetadata>,
+  ): {diagnostics: Diagnostic[]; candidates: TcbExtendedCheckCandidate[]} {
     const template = component.templateNodes;
     const diagnostics: Diagnostic[] = [];
+    const candidates: TcbExtendedCheckCandidate[] = [];
 
     for (const [check, category] of this.templateChecks.entries()) {
+      const seenCandidates = new Map<string, TcbExtendedCheckCandidate>();
       const ctx: TemplateContext<number> = {
         boundTarget,
         makeTemplateDiagnostic: (
@@ -106,12 +132,45 @@ export class ExtendedTemplateCheckerImpl implements ExtendedTemplateChecker {
             ...(relatedInformation ? {relatedInformation} : {}),
           };
         },
+        addExtendedCheckCandidate: ({kind, expr, sourceSpan, message, skipIfTriggered}) => {
+          const start =
+            sourceSpan instanceof ParseSourceSpan ? sourceSpan.start.offset : sourceSpan.start;
+          const end =
+            sourceSpan instanceof ParseSourceSpan ? sourceSpan.end.offset : sourceSpan.end;
+          const key = JSON.stringify([
+            check.code,
+            category,
+            kind,
+            expr.sourceSpan.start,
+            expr.sourceSpan.end,
+            start,
+            end,
+            message,
+          ]);
+          const existing = seenCandidates.get(key);
+          if (existing !== undefined) {
+            return existing;
+          }
+          const candidate: TcbExtendedCheckCandidate = {
+            code: check.code,
+            category,
+            message,
+            start,
+            end,
+            kind,
+            expr,
+            ...(skipIfTriggered ? {skipIfTriggered} : {}),
+          };
+          seenCandidates.set(key, candidate);
+          candidates.push(candidate);
+          return candidate;
+        },
       };
 
       diagnostics.push(...deduplicateDiagnostics(check.run(ctx, component, template)));
     }
 
-    return diagnostics;
+    return {diagnostics, candidates};
   }
 }
 

@@ -6,11 +6,14 @@
  */
 
 import * as i0 from './app.module';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.MyComponent) {
   if (true) {
     '' + this.compInput /*269,278*/ /*269,278*/;
+    i1.ɵassertNotSignal(0, this.compInput);
+    i1.ɵassertNotCallable(1, this.compInput);
   }
 }
 
@@ -23,6 +26,8 @@ function _tcb2(this: i0.AppRoot) {
     _t2.dirInput /*855,863*/ = 'world' /*866,873*/; /*854,874*/
   }
 }
+
+/*ngp-tcb-extended-checks:[{"typeCheckId":"tcb1","code":8109,"category":"warning","message":"NG8109: compInput is a function and should be invoked: compInput(). Find more at https://angular.dev/extended-diagnostics/NG8109","start":269,"end":278},{"typeCheckId":"tcb1","code":8117,"category":"warning","message":"NG8117: Function in text interpolation should be invoked: compInput(). Find more at https://angular.dev/extended-diagnostics/NG8117","start":269,"end":278}]*/
 
 ```
 

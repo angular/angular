@@ -20,7 +20,7 @@ import {
   type TmplAstVariable,
   type TypeCheckId,
 } from '@angular/compiler';
-import {createAnalyzer} from '../api.js';
+import {createAnalyzer, parseTcbExtendedChecks} from '../api.js';
 import {
   type ExtendedTemplateDiagnosticName,
   verifyExtendedDiagnosticsOptions,
@@ -1379,5 +1379,120 @@ export class CondComp {}
         end: 19,
       },
     ]);
+  });
+
+  describe('TCB type-level extended diagnostic probes (NG8109, NG8111, NG8115, NG8117)', () => {
+    it('emits probes and serialized metadata in .ngtypecheck.ts before ngp-tcb-template-sources', async () => {
+      const tsconfig = {
+        compilerOptions: {
+          strict: true,
+          target: 'es2022',
+          module: 'es2022',
+          moduleResolution: 'bundler',
+          experimentalDecorators: true,
+        },
+        files: ['/app.ts'],
+        angularCompilerOptions: {
+          strictTemplates: true,
+          extendedDiagnostics: {
+            checks: {
+              unusedStandaloneImports: 'suppress',
+              uninvokedFunctionInEventBinding: 'error',
+            },
+          },
+        },
+      };
+      const outputs = await runPipeline(
+        [
+          {path: '/tsconfig.json', content: JSON.stringify(tsconfig, null, 2)},
+          {
+            path: '/app.html',
+            content:
+              '<div>{{ count }}</div><button (click)="handleClick"></button>@for (item of items; track trackItem) {}',
+          },
+          {
+            path: '/app.ts',
+            content: `
+              import {Component, signal} from '@angular/core';
+              @Component({
+                selector: 'app-root',
+                templateUrl: './app.html',
+              })
+              export class AppComponent {
+                count = signal(0);
+                items = [1, 2];
+                handleClick() {}
+                trackItem(index: number, item: number) { return item; }
+              }
+            `,
+          },
+        ],
+        {optimize: true, format: false},
+      );
+
+      const tcbFile = outputs.find((f) => f.path.endsWith('/app.ngtypecheck.ts'));
+      expect(tcbFile).toBeDefined();
+      const tcbCode = tcbFile!.content;
+
+      expect(tcbCode).toContain('.ɵassertNotSignal(');
+      expect(tcbCode).toContain('.ɵassertNotCallable(');
+      expect(tcbCode.trimEnd().endsWith('*/')).toBeTrue();
+      const extIdx = tcbCode.lastIndexOf('/*ngp-tcb-extended-checks:');
+      const srcIdx = tcbCode.lastIndexOf('/*ngp-tcb-template-sources:');
+      expect(extIdx).toBeGreaterThan(-1);
+      expect(srcIdx).toBeGreaterThan(extIdx);
+
+      const entries = parseTcbExtendedChecks(tcbCode);
+      const codes = entries.map((e) => e.code);
+      expect(codes).toContain(8109);
+      expect(codes).toContain(8111);
+      expect(codes).toContain(8115);
+      expect(codes).toContain(8117);
+      const eventEntry = entries.find((e) => e.code === 8111);
+      expect(eventEntry?.category).toBe('error');
+    });
+
+    it('omits probes when the corresponding check is configured as suppress', async () => {
+      const tsconfig = {
+        compilerOptions: {
+          strict: true,
+          target: 'es2022',
+          module: 'es2022',
+          moduleResolution: 'bundler',
+          experimentalDecorators: true,
+        },
+        files: ['/app.ts'],
+        angularCompilerOptions: {
+          strictTemplates: true,
+          extendedDiagnostics: {
+            defaultCategory: 'suppress',
+          },
+        },
+      };
+      const outputs = await runPipeline(
+        [
+          {path: '/tsconfig.json', content: JSON.stringify(tsconfig, null, 2)},
+          {
+            path: '/app.ts',
+            content: `
+              import {Component, signal} from '@angular/core';
+              @Component({
+                selector: 'app-root',
+                template: '{{ count }}',
+              })
+              export class AppComponent {
+                count = signal(0);
+              }
+            `,
+          },
+        ],
+        {optimize: true, format: false},
+      );
+
+      const tcbFile = outputs.find((f) => f.path.endsWith('/app.ngtypecheck.ts'));
+      expect(tcbFile).toBeDefined();
+      expect(tcbFile!.content).not.toContain('ɵassertNot');
+      expect(parseTcbExtendedChecks(tcbFile!.content)).toEqual([]);
+    });
   });
 });

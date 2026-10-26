@@ -6,14 +6,18 @@
  */
 
 import * as i0 from './ng_content_selectors_diagnostics';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.MyApp) {
   if (true) {
+    i1.ɵassertNotSignal(0, this.show);
     if (this.show /*186,190*/ /*186,190*/) {
     }
   }
 }
+
+/*ngp-tcb-extended-checks:[{"typeCheckId":"tcb1","code":8109,"category":"warning","message":"NG8109: show is a function and should be invoked: show(). Find more at https://angular.dev/extended-diagnostics/NG8109","start":186,"end":190}]*/
 
 /* Diagnostics:
  - (202, 207) Node matches the "div" slot of the "HasContent" component, but will not be projected into the specific slot because the surrounding @if has more than one node at its root. To project the node in the right slot, you can:

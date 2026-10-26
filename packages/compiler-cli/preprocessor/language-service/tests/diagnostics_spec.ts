@@ -374,4 +374,121 @@ describe('Diagnostics Mapping', () => {
       expect(tcb.code).toContain('hostOutput');
     });
   });
+
+  it('should remap extended-check probe TS2345 diagnostics and suppress secondary probe diagnostics', async () => {
+    const env = new TestEnv(facade, new TestFileManager(testWorkspacePath));
+    const appHtmlContent = '<div>{{ count }}</div>';
+    const appTsContent = `
+      import {Component, signal} from '@angular/core';
+      @Component({
+        selector: 'app-cmp',
+        templateUrl: './ext_probe_app.html',
+      })
+      export class AppCmp {
+        count = signal(0);
+      }
+    `;
+
+    await env.createFile('ext_probe_app.html', appHtmlContent);
+
+    await env.run('app_ext_probe_diagnostics_test.ts', appTsContent, async (ls, _filePath) => {
+      const htmlPath = path.join(testWorkspacePath, 'ext_probe_app.html');
+      const tcb = await ls.getTcb(htmlPath, {line: 0, character: 0});
+      expect(tcb).toBeTruthy();
+      if (!tcb) return;
+
+      const probeMatch = /\b\w+\.ɵassertNotSignal\((\d+),\s*(.+?)\);/.exec(tcb.code);
+      expect(probeMatch).toBeTruthy();
+      if (!probeMatch) return;
+
+      const argText = probeMatch[2];
+      const argStartOffset = probeMatch.index + probeMatch[0].indexOf(argText);
+      const argEndOffset = argStartOffset + argText.length;
+
+      const tcbDoc = TextDocument.create(tcb.filePath, 'typescript', 0, tcb.code);
+      const probeDiag = {
+        range: {
+          start: tcbDoc.positionAt(argStartOffset),
+          end: tcbDoc.positionAt(argEndOffset),
+        },
+        code: 2345,
+        message:
+          "Argument of type 'WritableSignal<number>' is not assignable to parameter of type 'never'.",
+        severity: DiagnosticSeverity.Error,
+      };
+      const secondaryProbeDiag = {
+        range: {
+          start: tcbDoc.positionAt(argStartOffset),
+          end: tcbDoc.positionAt(argStartOffset + 4),
+        },
+        code: 2339,
+        message: "Property 'count' does not exist on type 'AppCmp'.",
+        severity: DiagnosticSeverity.Error,
+      };
+
+      const result = await ls.handleDiagnostics({
+        filePath: tcb.filePath,
+        diagnostics: [probeDiag, secondaryProbeDiag],
+      });
+
+      expect(result).toBeTruthy();
+      const keys = Object.keys(result!);
+      expect(keys.length).toBe(1);
+      const diags = result![keys[0]];
+      expect(diags.length).toBe(1);
+      expect(diags[0].code).toBe(8109);
+      expect(diags[0].severity).toBe(DiagnosticSeverity.Warning);
+      expect(diags[0].message).toContain(
+        'NG8109: count is a function and should be invoked: count()',
+      );
+
+      const htmlDoc = TextDocument.create(`file://${htmlPath}`, 'html', 0, appHtmlContent);
+      const expectedStart = htmlDoc.positionAt(appHtmlContent.indexOf('count'));
+      const expectedEnd = htmlDoc.positionAt(appHtmlContent.indexOf('count') + 'count'.length);
+      expect(diags[0].range.start).toEqual(expectedStart);
+      expect(diags[0].range.end).toEqual(expectedEnd);
+    });
+  });
+
+  it('should report uninvoked signal and function extended diagnostics end-to-end with TS 7', async () => {
+    const env = new TestEnv(facade, new TestFileManager(testWorkspacePath), connection);
+    const appHtmlContent = '<button [title]="label" (click)="onClick">Save</button>';
+    const appTsContent = `
+      import {Component, signal} from '@angular/core';
+      @Component({
+        selector: 'app-cmp',
+        templateUrl: './ext_probe_ts7_app.html',
+      })
+      export class AppCmp {
+        label = signal('hello');
+        onClick(): void {}
+      }
+    `;
+
+    await env.createFile('ext_probe_ts7_app.html', appHtmlContent);
+
+    await env.run('app_ext_probe_ts7_test.ts', appTsContent, async (ls, _filePath) => {
+      const htmlPath = path.join(testWorkspacePath, 'ext_probe_ts7_app.html');
+      const tcb = await ls.getTcb(htmlPath, {line: 0, character: 0});
+      expect(tcb).toBeTruthy();
+      if (!tcb) return;
+
+      await facade.ensureDocument(tcb.filePath, tcb.code);
+      const tsgoDiagnostics = await facade.getDiagnostics(tcb.filePath);
+      const result = await ls.handleDiagnostics({
+        filePath: tcb.filePath,
+        diagnostics: tsgoDiagnostics,
+      });
+
+      expect(result).toBeTruthy();
+      const keys = Object.keys(result!);
+      expect(keys.length).toBe(1);
+      const diags = result![keys[0]];
+      const codes = diags.map((d) => d.code).sort();
+      expect(codes).toEqual([8109, 8111]);
+      for (const diag of diags) {
+        expect(diag.severity).toBe(DiagnosticSeverity.Warning);
+      }
+    });
+  });
 });

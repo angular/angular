@@ -30,13 +30,19 @@ import {
 import type {ExtendedDiagnosticsOptions, NgpCompilerOptions} from './compiler_options.js';
 import {Diagnostic} from './diagnostic.js';
 import {RegistryDomSchemaChecker} from './dom_schema_checker.js';
-import {runExtendedDiagnostics} from './extended_diagnostics.js';
+import {runExtendedDiagnosticsAndCandidates} from './extended_diagnostics.js';
 
 import MagicString from 'magic-string';
 
 import {makeClassKey} from './compiler-utils.js';
 import {OutOfBandDiagnosticRecorderImpl} from './oob.js';
 import {adaptTcbInput, ExtendedTcbTypeParameter} from './tcb_adapter.js';
+import {
+  injectExtendedCheckProbes,
+  serializeTcbExtendedChecks,
+  TCB_EXTENDED_CHECKS_COMMENT_PREFIX,
+  type TcbExtendedCheckEntry,
+} from './tcb_ls_util.js';
 import {requiresInlineDeclaration, requiresInlineTypeCheckBlock} from './tcb_util.js';
 import {getTemplateSemanticsDiagnostics} from './template_semantics.js';
 import * as nga from './types.js';
@@ -84,9 +90,12 @@ export interface TcbResult {
   // TypeCheckId -> where the TCB's template spans point, for TCBs whose template spans don't index
   // into the component's source file.
   templateSources: Record<string, TcbTemplateSource>;
+  extendedChecks?: TcbExtendedCheckEntry[];
   diagnostics: Diagnostic[];
   isInline: boolean;
 }
+
+export {TCB_EXTENDED_CHECKS_COMMENT_PREFIX, type TcbExtendedCheckEntry};
 
 /**
  * Which file the span comments (`/*start,end*\/`) of a type-check block's template bindings index
@@ -653,6 +662,7 @@ export function generateTcbCode(
   const domSchemaChecker = new RegistryDomSchemaChecker();
   const semanticsDiagnostics: Diagnostic[] = [];
   const extendedDiagnostics: Diagnostic[] = [];
+  const extendedChecks: TcbExtendedCheckEntry[] = [];
 
   let code = '';
   let functionStrings = '';
@@ -695,18 +705,28 @@ export function generateTcbCode(
       semanticsDiagnostics.push(
         ...getTemplateSemanticsDiagnostics(typeCheckId, comp.templateNodes, tcbMeta.boundTarget),
       );
-      extendedDiagnostics.push(
-        ...runExtendedDiagnostics(
-          typeCheckId,
-          comp,
-          tcbMeta.boundTarget,
-          filePath,
-          config.extendedDiagnostics,
-          undefined,
-          config.checkTemplateBodies,
-          config.unusedStandaloneImports,
-        ),
+      const extResult = runExtendedDiagnosticsAndCandidates(
+        typeCheckId,
+        comp,
+        tcbMeta.boundTarget,
+        filePath,
+        config.extendedDiagnostics,
+        undefined,
+        config.checkTemplateBodies,
+        config.unusedStandaloneImports,
       );
+      extendedDiagnostics.push(...extResult.diagnostics);
+      if (extResult.candidates.length > 0) {
+        const injected = injectExtendedCheckProbes(
+          tcbString,
+          typeCheckId,
+          extResult.candidates,
+          extendedChecks.length,
+          () => importManager.addImport('@angular/core'),
+        );
+        tcbString = injected.code;
+        extendedChecks.push(...injected.entries);
+      }
     }
 
     functionStrings += tcbString + '\n\n';
@@ -733,6 +753,7 @@ export function generateTcbCode(
     imports: importsStr,
     tcbMap,
     templateSources,
+    extendedChecks,
     diagnostics: [
       ...domSchemaChecker.diagnostics,
       ...oobRecorder.diagnostics,
@@ -752,7 +773,9 @@ export function combineTcbContent(
   const importsStr = tcbResult.imports || '';
   const separator = importsStr ? '\n' : '';
   const tcbHeader = generatedComment + importsStr + separator;
-  const tcbFooter = serializeTcbTemplateSources(tcbResult.templateSources);
+  const tcbFooter =
+    serializeTcbExtendedChecks(tcbResult.extendedChecks || []) +
+    serializeTcbTemplateSources(tcbResult.templateSources);
 
   if (tcbResult.isInline) {
     const {sourceContent, classes} = inlineInfo;

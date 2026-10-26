@@ -6,6 +6,7 @@
  */
 
 import * as i0 from './host_binding_sanitizers';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.AmbiguousUrlDir) {
@@ -94,9 +95,13 @@ function _tcb9(this: i0.PlainDir) {
 function _tcb10(this: i0.TemplateBindingsCmp) {
   if (true) {
     this.evil; /*3875,3879*/ /*3875,3879*/
+    i1.ɵassertNotSignal(0, this.evil);
     this.evil; /*3906,3910*/ /*3906,3910*/
+    i1.ɵassertNotSignal(1, this.evil);
   }
 }
+
+/*ngp-tcb-extended-checks:[{"typeCheckId":"tcb10","code":8109,"category":"warning","message":"NG8109: evil is a function and should be invoked: evil(). Find more at https://angular.dev/extended-diagnostics/NG8109","start":3875,"end":3879},{"typeCheckId":"tcb10","code":8109,"category":"warning","message":"NG8109: evil is a function and should be invoked: evil(). Find more at https://angular.dev/extended-diagnostics/NG8109","start":3906,"end":3910}]*/
 
 /* Diagnostics:
  - (2429, 2441) Can't bind to 'formAction' since it isn't a known property of 'ng-directive'.

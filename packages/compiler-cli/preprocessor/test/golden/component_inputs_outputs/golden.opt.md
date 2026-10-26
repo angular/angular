@@ -242,6 +242,7 @@ export class AppComponent {
  */
 
 import * as i0 from './greeting.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.GreetingComponent) {
@@ -251,8 +252,12 @@ function _tcb1(this: i0.GreetingComponent) {
         .name /*163,167*/
         () /*163,169*/ +
       this.count /*182,187*/ /*182,187*/;
+    i1.ɵassertNotSignal(0, this.count);
+    i1.ɵassertNotCallable(1, this.count);
   }
 }
+
+/*ngp-tcb-extended-checks:[{"typeCheckId":"tcb1","code":8109,"category":"warning","message":"NG8109: count is a function and should be invoked: count(). Find more at https://angular.dev/extended-diagnostics/NG8109","start":182,"end":187},{"typeCheckId":"tcb1","code":8117,"category":"warning","message":"NG8117: Function in text interpolation should be invoked: count(). Find more at https://angular.dev/extended-diagnostics/NG8117","start":182,"end":187}]*/
 
 ```
 

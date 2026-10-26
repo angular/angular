@@ -40,6 +40,7 @@ import {
   getTemplateLocationFromTcbLocation,
   offsetToPosition,
   positionToOffset,
+  isInTcbExtendedCheckProbe,
   isTcbFunction,
   getTcbPath,
 } from '../../src/tcb_ls_util.js';
@@ -454,6 +455,32 @@ export function createLocationKey(ds: Location | {uri: string; range: Range}): s
   return `${ds.uri}:${ds.range.start.line}:${ds.range.start.character}:${ds.range.end.line}:${ds.range.end.character}`;
 }
 
+export function isTcbExtendedCheckReference(
+  shimLocation: Location,
+  hybridCompiler: HybridCompiler,
+  tcbSfCache?: Map<string, ts.SourceFile | null>,
+): boolean {
+  const rawUri = shimLocation.uri;
+  const filePath = rawUri.startsWith('file:') ? fileURLToPath(rawUri) : rawUri;
+  if (!filePath.endsWith('.ngtypecheck.ts')) {
+    return false;
+  }
+
+  let tcbSf = tcbSfCache?.get(filePath);
+  if (tcbSf === undefined) {
+    const tsFilePath = filePath.replace(/(\.ts)?\.ngtypecheck\.ts$/, '.ts');
+    const tcbCode = hybridCompiler.getTcbForFile(tsFilePath);
+    tcbSf = tcbCode ? ts.createSourceFile(filePath, tcbCode, ts.ScriptTarget.Latest, true) : null;
+    tcbSfCache?.set(filePath, tcbSf);
+  }
+  if (!tcbSf) {
+    return false;
+  }
+
+  const startOffset = positionToOffset(tcbSf.text, shimLocation.range.start);
+  return isInTcbExtendedCheckProbe(tcbSf, startOffset);
+}
+
 export async function convertToTemplateDocumentSpan(
   shimLocation: Location,
   hybridCompiler: HybridCompiler,
@@ -474,6 +501,9 @@ export async function convertToTemplateDocumentSpan(
 
   const tcbSf = ts.createSourceFile(filePath, tcbCode, ts.ScriptTarget.Latest, true);
   const startOffset = positionToOffset(tcbCode, shimLocation.range.start);
+  if (isInTcbExtendedCheckProbe(tcbSf, startOffset)) {
+    return null;
+  }
   const tcbNode = findTightestNode(tcbSf, startOffset);
 
   if (

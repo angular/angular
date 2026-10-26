@@ -134,13 +134,18 @@ export class AppComponent {
  */
 
 import * as i0 from './io_array.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.IoArrayComponent) {
   if (true) {
     '' + this.name /*125,129*/ /*125,129*/;
+    i1.ɵassertNotSignal(0, this.name);
+    i1.ɵassertNotCallable(1, this.name);
   }
 }
+
+/*ngp-tcb-extended-checks:[{"typeCheckId":"tcb1","code":8109,"category":"warning","message":"NG8109: name is a function and should be invoked: name(). Find more at https://angular.dev/extended-diagnostics/NG8109","start":125,"end":129},{"typeCheckId":"tcb1","code":8117,"category":"warning","message":"NG8117: Function in text interpolation should be invoked: name(). Find more at https://angular.dev/extended-diagnostics/NG8117","start":125,"end":129}]*/
 
 ```
 

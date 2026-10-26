@@ -6,6 +6,7 @@
  */
 
 import * as i0 from './app.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.LocalizeSimpleCmp) {
@@ -17,7 +18,11 @@ function _tcb1(this: i0.LocalizeSimpleCmp) {
 function _tcb2(this: i0.LocalizeInterpolationCmp) {
   if (true) {
     '' + this.name /*390,394*/ /*390,394*/;
+    i1.ɵassertNotSignal(0, this.name);
+    i1.ɵassertNotCallable(2, this.name);
     '' + this.count /*431,436*/ /*431,436*/;
+    i1.ɵassertNotSignal(1, this.count);
+    i1.ɵassertNotCallable(3, this.count);
   }
 }
 
@@ -31,8 +36,14 @@ function _tcb3(this: i0.LocalizeAttributesCmp) {
 function _tcb4(this: i0.LocalizeNamedPlaceholderCmp) {
   if (true) {
     '' + this.valueA /*882,888*/ /*882,888*/ + this.valueB /*918,924*/ /*918,924*/;
+    i1.ɵassertNotSignal(4, this.valueA);
+    i1.ɵassertNotSignal(5, this.valueB);
+    i1.ɵassertNotCallable(6, this.valueA);
+    i1.ɵassertNotCallable(7, this.valueB);
   }
 }
+
+/*ngp-tcb-extended-checks:[{"typeCheckId":"tcb2","code":8109,"category":"warning","message":"NG8109: name is a function and should be invoked: name(). Find more at https://angular.dev/extended-diagnostics/NG8109","start":390,"end":394},{"typeCheckId":"tcb2","code":8109,"category":"warning","message":"NG8109: count is a function and should be invoked: count(). Find more at https://angular.dev/extended-diagnostics/NG8109","start":431,"end":436},{"typeCheckId":"tcb2","code":8117,"category":"warning","message":"NG8117: Function in text interpolation should be invoked: name(). Find more at https://angular.dev/extended-diagnostics/NG8117","start":390,"end":394},{"typeCheckId":"tcb2","code":8117,"category":"warning","message":"NG8117: Function in text interpolation should be invoked: count(). Find more at https://angular.dev/extended-diagnostics/NG8117","start":431,"end":436},{"typeCheckId":"tcb4","code":8109,"category":"warning","message":"NG8109: valueA is a function and should be invoked: valueA(). Find more at https://angular.dev/extended-diagnostics/NG8109","start":882,"end":888},{"typeCheckId":"tcb4","code":8109,"category":"warning","message":"NG8109: valueB is a function and should be invoked: valueB(). Find more at https://angular.dev/extended-diagnostics/NG8109","start":918,"end":924},{"typeCheckId":"tcb4","code":8117,"category":"warning","message":"NG8117: Function in text interpolation should be invoked: valueA(). Find more at https://angular.dev/extended-diagnostics/NG8117","start":882,"end":888},{"typeCheckId":"tcb4","code":8117,"category":"warning","message":"NG8117: Function in text interpolation should be invoked: valueB(). Find more at https://angular.dev/extended-diagnostics/NG8117","start":918,"end":924}]*/
 
 ```
 

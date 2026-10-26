@@ -8,16 +8,18 @@
 
 import ts from 'typescript';
 import {HybridCompiler} from '../../src/hybrid_compiler.js';
-import {Diagnostic, Position} from 'vscode-languageserver';
+import {Diagnostic, DiagnosticSeverity, Position} from 'vscode-languageserver';
 import * as path from 'node:path';
 import {URI} from 'vscode-uri';
 
 import {
+  classifyTcbExtendedCheckDiagnostic,
   positionToOffset,
   offsetToPosition,
   getTemplateLocationFromTcbLocation,
   getTcbPath,
   isTcbFunction,
+  parseTcbExtendedChecks,
 } from '../../src/tcb_ls_util.js';
 import {hasIgnoreForDiagnosticsMarker} from '../../src/comments.js';
 import {makeClassKey} from '../../src/compiler-utils.js';
@@ -171,8 +173,74 @@ export function mapDiagnostics(
     }
   }
   const fileContentCache = new Map<string, string | null>();
+  const getCachedContent = (filePath: string): string | null => {
+    let content = fileContentCache.get(filePath) ?? null;
+    if (content === null && !fileContentCache.has(filePath)) {
+      try {
+        content = hybridCompiler.getFileContent(filePath);
+      } catch {
+        content = null;
+      }
+      fileContentCache.set(filePath, content);
+    }
+    return content;
+  };
 
-  for (const diag of diagnostics) {
+  const extendedChecks = parseTcbExtendedChecks(tcbCode);
+  const triggeredProbeIds = new Set<number>();
+  const classifications = diagnostics.map((diag) => {
+    const startOffset = positionToOffset(tcbCode, diag.range.start);
+    const endOffset = positionToOffset(tcbCode, diag.range.end);
+    const cls = classifyTcbExtendedCheckDiagnostic(
+      tcbSf,
+      diag.code,
+      startOffset,
+      Math.max(0, endOffset - startOffset),
+    );
+    if (cls.kind === 'probe') {
+      triggeredProbeIds.add(cls.probeId);
+    }
+    return cls;
+  });
+
+  for (let i = 0; i < diagnostics.length; i++) {
+    const diag = diagnostics[i];
+    const cls = classifications[i];
+    if (cls.kind === 'suppress') {
+      continue;
+    }
+    if (cls.kind === 'probe') {
+      const entry = extendedChecks[cls.probeId];
+      if (
+        !entry ||
+        (entry.skipIfTriggered !== undefined && triggeredProbeIds.has(entry.skipIfTriggered))
+      ) {
+        continue;
+      }
+      const templateFilePath = path.normalize(
+        typeCheckIdToTemplateMap.get(entry.typeCheckId) || tsFilePath,
+      );
+      const content = getCachedContent(templateFilePath);
+      if (content === null) {
+        continue;
+      }
+      if (!results[templateFilePath]) {
+        results[templateFilePath] = [];
+      }
+      results[templateFilePath].push({
+        range: {
+          start: offsetToPosition(content, entry.start),
+          end: offsetToPosition(content, entry.end),
+        },
+        severity:
+          entry.category === 'warning' ? DiagnosticSeverity.Warning : DiagnosticSeverity.Error,
+        code: entry.code,
+        source: 'angular',
+        message: entry.message,
+      });
+      continue;
+    }
+
     if (!shouldReportDiagnostic(diag)) {
       continue;
     }
@@ -190,16 +258,7 @@ export function mapDiagnostics(
     }
 
     const templateFilePath = mappedLocation.templateUrl;
-    let content = fileContentCache.get(templateFilePath) ?? null;
-    if (content === null && !fileContentCache.has(templateFilePath)) {
-      try {
-        content = hybridCompiler.getFileContent(templateFilePath);
-      } catch (e) {
-        content = null;
-      }
-      fileContentCache.set(templateFilePath, content);
-    }
-
+    const content = getCachedContent(templateFilePath);
     if (content === null) {
       continue;
     }
@@ -231,16 +290,7 @@ export function mapDiagnostics(
             typeCheckIdToTemplateMap,
           );
           if (mappedLoc) {
-            let relContent = fileContentCache.get(mappedLoc.templateUrl) ?? null;
-            if (relContent === null && !fileContentCache.has(mappedLoc.templateUrl)) {
-              try {
-                relContent = hybridCompiler.getFileContent(mappedLoc.templateUrl);
-              } catch (e) {
-                relContent = null;
-              }
-              fileContentCache.set(mappedLoc.templateUrl, relContent);
-            }
-
+            const relContent = getCachedContent(mappedLoc.templateUrl);
             if (typeof relContent === 'string') {
               return [
                 {

@@ -126,11 +126,14 @@ export class AppComponent {
  */
 
 import * as i0 from './generic.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1<T>(this: i0.GenericComponent<T>) {
   if (true) {
     '' + this.value /*107,112*/ /*107,112*/;
+    i1.ɵassertNotSignal(0, this.value);
+    i1.ɵassertNotCallable(1, this.value);
   }
 }
 
@@ -138,8 +141,12 @@ function _tcb1<T>(this: i0.GenericComponent<T>) {
 function _tcb2<T extends object = {}>(this: i0.DefaultGenericComponent<T>) {
   if (true) {
     '' + this.value /*309,314*/ /*309,314*/;
+    i1.ɵassertNotSignal(2, this.value);
+    i1.ɵassertNotCallable(3, this.value);
   }
 }
+
+/*ngp-tcb-extended-checks:[{"typeCheckId":"tcb1","code":8109,"category":"warning","message":"NG8109: value is a function and should be invoked: value(). Find more at https://angular.dev/extended-diagnostics/NG8109","start":107,"end":112},{"typeCheckId":"tcb1","code":8117,"category":"warning","message":"NG8117: Function in text interpolation should be invoked: value(). Find more at https://angular.dev/extended-diagnostics/NG8117","start":107,"end":112},{"typeCheckId":"tcb2","code":8109,"category":"warning","message":"NG8109: value is a function and should be invoked: value(). Find more at https://angular.dev/extended-diagnostics/NG8109","start":309,"end":314},{"typeCheckId":"tcb2","code":8117,"category":"warning","message":"NG8117: Function in text interpolation should be invoked: value(). Find more at https://angular.dev/extended-diagnostics/NG8117","start":309,"end":314}]*/
 
 ```
 

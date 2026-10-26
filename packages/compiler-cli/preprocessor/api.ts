@@ -32,6 +32,13 @@ export {WasmAnalyzer, type WasmInner} from './src/analyzer_wasm.js';
 export type {ClassEntity} from './src/indexer_api.js';
 export {IndexerBoundTemplate} from './src/indexing/indexer.js';
 export {buildTypeCheckingConfig, type NgpTypeCheckingConfig} from './src/tcb.js';
+export {
+  classifyTcbExtendedCheckDiagnostic,
+  parseTcbExtendedChecks,
+  TCB_EXTENDED_CHECKS_COMMENT_PREFIX,
+  type TcbExtendedCheckDiagnosticClassification,
+  type TcbExtendedCheckEntry,
+} from './src/tcb_ls_util.js';
 export {verifyCompilerOptions, type NgpCompilerOptions} from './src/compiler_options.js';
 export type {
   AnalyzerOptions,

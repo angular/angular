@@ -18,7 +18,7 @@
  * skipping.
  *
  * Tracked compiler gap categories & GitHub issues (https://github.com/alxhub/ng-hybrid-preprocessor):
- * - Extended Template Diagnostics (NG8102, NG8107, NG8109, NG8111, NG8115, NG8117): #673, #677
+ * - Extended Template Diagnostics (NG8102, NG8107): #673, #677
  * - Template Type-Checking (TCB) & Host Binding Type-Checking: #678-#683, #694-#696
  * - Angular Diagnostic Error Codes (NG1xxx-NG11xxx): #684-#692
  * - Decorator Metadata Type-Checking: #693
@@ -112,10 +112,6 @@ const NGP_REQUIRES_TYPE_CHECKER: ReadonlySet<string> = new Set([
   // TypeChecker-backed extended template diagnostics (#673, #677) in
   // `//packages/compiler-cli/src/ngtsc/typecheck/extended/test/checks/*:test_ngp` and `ngtsc_spec`.
   'ngtsc extended template checks should produce nullish coalescing not nullable warning',
-  '@let declarations should produce a warning when a signal aliased via @let is not invoked in interpolation',
-  '@let declarations should produce a warning when a signal aliased via @let is used in @if',
-  '@let declarations should produce a warning when a signal aliased via @let is used in a bound attribute',
-  '@let declarations should produce a warning when an instance property of a signal aliased via @let is accessed in interpolation',
   'NullishCoalescingNotNullableCheck does not warn for pipe arguments when parens are used',
   'NullishCoalescingNotNullableCheck should produce nullish coalescing warning',
   'NullishCoalescingNotNullableCheck should produce nullish coalescing warning for classes with inline TCBs',
@@ -126,74 +122,14 @@ const NGP_REQUIRES_TYPE_CHECKER: ReadonlySet<string> = new Set([
   'OptionalChainNotNullableCheck should produce optional chain warning for method call',
   'OptionalChainNotNullableCheck should produce optional chain warning for property access',
   'OptionalChainNotNullableCheck should respect configured diagnostic category',
-  'Uninvoked function in text interpolation compiler check should produce a warning when a function is not invoked in text interpolation',
-  'Uninvoked function in text interpolation compiler check should produce a warning when a property method is not invoked in text interpolation (with and without safe navigation)',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a function in a chain is not invoked',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a function in a function is not invoked',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a function in an event binding is not invoked',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a function is not',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a function that returns a function is not invoked',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a nested function in a conditional is not invoked',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a nested function in an event binding is not invoked',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a nested function that uses key read in an event binding is not invoked',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when no function in a conditional is not invoked',
-  'UninvokedTrackFunctionCheck should produce a diagnostic when a track function in a @for block is not invoked',
-  'UninvokedTrackFunctionCheck should produce a warning when track is a method on an item',
-  'UninvokedTrackFunctionCheck should produce a warning when track is a regular function on an object',
-  'UninvokedTrackFunctionCheck should produce a warning when track is an arrow function property on component',
-  'should produce a warning if the template contains a directive with the same input name, but on a different node',
-  'should produce a warning when a computed signal is not invoked',
-  'should produce a warning when a model signal is not invoked',
-  "should produce a warning when a property named 'asReadonly' of a not invoked signal is used in an @if control flow expression (negate=false)",
-  "should produce a warning when a property named 'asReadonly' of a not invoked signal is used in an @if control flow expression (negate=true)",
-  "should produce a warning when a property named 'asReadonly' of a not invoked signal is used in an @switch control flow (negate=false)",
-  "should produce a warning when a property named 'asReadonly' of a not invoked signal is used in an @switch control flow (negate=true)",
-  "should produce a warning when a property named 'asReadonly' of a not invoked signal is used in interpolation",
-  "should produce a warning when a property named 'length' of a not invoked signal is used in an @if control flow expression (negate=false)",
-  "should produce a warning when a property named 'length' of a not invoked signal is used in an @if control flow expression (negate=true)",
-  "should produce a warning when a property named 'length' of a not invoked signal is used in an @switch control flow (negate=false)",
-  "should produce a warning when a property named 'length' of a not invoked signal is used in an @switch control flow (negate=true)",
-  "should produce a warning when a property named 'length' of a not invoked signal is used in interpolation",
-  "should produce a warning when a property named 'name' of a not invoked signal is used in an @if control flow expression (negate=false)",
-  "should produce a warning when a property named 'name' of a not invoked signal is used in an @if control flow expression (negate=true)",
-  "should produce a warning when a property named 'name' of a not invoked signal is used in an @switch control flow (negate=false)",
-  "should produce a warning when a property named 'name' of a not invoked signal is used in an @switch control flow (negate=true)",
-  "should produce a warning when a property named 'name' of a not invoked signal is used in interpolation",
-  "should produce a warning when a property named 'prototype' of a not invoked signal is used in an @if control flow expression (negate=false)",
-  "should produce a warning when a property named 'prototype' of a not invoked signal is used in an @if control flow expression (negate=true)",
-  "should produce a warning when a property named 'prototype' of a not invoked signal is used in an @switch control flow (negate=false)",
-  "should produce a warning when a property named 'prototype' of a not invoked signal is used in an @switch control flow (negate=true)",
-  "should produce a warning when a property named 'prototype' of a not invoked signal is used in interpolation",
-  "should produce a warning when a property named 'set' of a not invoked signal is used in an @if control flow expression (negate=false)",
-  "should produce a warning when a property named 'set' of a not invoked signal is used in an @if control flow expression (negate=true)",
-  "should produce a warning when a property named 'set' of a not invoked signal is used in an @switch control flow (negate=false)",
-  "should produce a warning when a property named 'set' of a not invoked signal is used in an @switch control flow (negate=true)",
-  "should produce a warning when a property named 'set' of a not invoked signal is used in interpolation",
-  "should produce a warning when a property named 'update' of a not invoked signal is used in an @if control flow expression (negate=false)",
-  "should produce a warning when a property named 'update' of a not invoked signal is used in an @if control flow expression (negate=true)",
-  "should produce a warning when a property named 'update' of a not invoked signal is used in an @switch control flow (negate=false)",
-  "should produce a warning when a property named 'update' of a not invoked signal is used in an @switch control flow (negate=true)",
-  "should produce a warning when a property named 'update' of a not invoked signal is used in interpolation",
-  'should produce a warning when a readonly signal is not invoked',
-  'should produce a warning when a required input signal is not invoked',
-  'should produce a warning when a required model signal is not invoked',
-  'should produce a warning when a signal in a nested property read is not invoked',
-  'should produce a warning when a signal is not invoked',
-  'should produce a warning when a signal is not invoked in a conditional style binding branch',
-  'should produce a warning when a signal is not invoked in a non-null asserted style binding expression',
-  'should produce a warning when a signal is not invoked in a parenthesized style binding expression',
-  'should produce a warning when a signal is not invoked in a prefixed-not property binding expression',
-  'should produce a warning when a signal is not invoked in an svg:ng-template',
-  'should produce a warning when an input signal is not invoked',
-  'should produce a warning when nested signal is not invoked on interpolated binding',
-  'should produce a warning when signal is invoked in attribute binding interpolation',
-  'should produce a warning when signal is not invoked on interpolated binding',
-  "should produce a warning when signal isn't invoked on animation binding",
-  "should produce a warning when signal isn't invoked on attribute binding",
-  "should produce a warning when signal isn't invoked on class binding",
-  "should produce a warning when signal isn't invoked on dom property binding",
-  "should produce a warning when signal isn't invoked on style binding",
   'should produce optional chain warning for chained property access',
+  // The test source contains invalid TypeScript object-literal syntax
+  // (`{ nested2?: { source() { return { decrement() } { } } } }`) rejected by Oxc during analysis.
+  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a nested function in a conditional is not invoked',
+  // Distinguishing a 0-parameter method declaration on a loop item (`{getId(): string}`) from a
+  // 0-parameter callable property (`Field<T>`, `() => string`) requires `ts.SymbolFlags.Method`,
+  // which cannot be expressed via type-level assignability in `.ngtypecheck.ts` alone.
+  'UninvokedTrackFunctionCheck should produce a warning when track is a method on an item',
 ]);
 
 /**

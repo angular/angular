@@ -7,6 +7,7 @@
 
 import * as i0 from './app.component';
 import * as i1 from './test.pipe';
+import * as i2 from '@angular/core';
 
 var _pipe1 = null! as i1.TestPipe;
 
@@ -17,8 +18,11 @@ function _tcb1(this: i0.AppComponent) {
       /*231,239*/ this.data /*224,228*/ /*224,228*/,
     ) /*224,239*/; /*206,240*/
     '' + _t1 /*278,288*/;
+    i2.ɵassertNotSignal(0, _t1);
   }
 }
+
+/*ngp-tcb-extended-checks:[{"typeCheckId":"tcb1","code":8109,"category":"warning","message":"NG8109: pipedValue is a function and should be invoked: pipedValue(). Find more at https://angular.dev/extended-diagnostics/NG8109","start":278,"end":288}]*/
 
 ```
 
