@@ -278,6 +278,9 @@ export function buildTypeCheckingConfig(
   if (options.strictLiteralTypes !== undefined) {
     typeCheckingConfig.strictLiteralTypes = options.strictLiteralTypes;
   }
+  if (options.strictUnclaimedEventNames !== undefined) {
+    typeCheckingConfig.checkUnclaimedEventNames = options.strictUnclaimedEventNames;
+  }
   typeCheckingConfig.typeCheckHostBindings = options.typeCheckHostBindings ?? true;
   typeCheckingConfig.usePoisonedData =
     usePoisonedData || Boolean(options._compilePoisonedComponents);
