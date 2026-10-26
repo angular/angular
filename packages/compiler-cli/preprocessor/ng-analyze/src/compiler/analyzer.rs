@@ -123,6 +123,7 @@ pub struct Analyzer {
     tsconfig_path: PathBuf,
     entrypoints: Arc<RwLock<Vec<PathBuf>>>,
     current_cancel_token: RwLock<Option<CancellationToken>>,
+    merged_compiler_options: serde_json::Map<String, serde_json::Value>,
 }
 
 /// Every setting an [`Analyzer`] is built from, after merging explicit [`AnalyzerOptions`] over
@@ -149,6 +150,7 @@ struct EffectiveConfig {
     use_poisoned_data: bool,
     strict_injection_parameters: bool,
     implicit_standalone: bool,
+    merged_compiler_options: serde_json::Map<String, serde_json::Value>,
 }
 
 impl EffectiveConfig {
@@ -211,6 +213,7 @@ impl EffectiveConfig {
                 .strict_injection_parameters
                 .unwrap_or(resolved.strict_injection_parameters),
             implicit_standalone: resolved.implicit_standalone,
+            merged_compiler_options: resolved.merged_compiler_options,
             tsconfig_path,
         })
     }
@@ -304,7 +307,12 @@ impl Analyzer {
             tsconfig_path: config.tsconfig_path,
             entrypoints: entrypoints_lock,
             current_cancel_token: RwLock::new(None),
+            merged_compiler_options: config.merged_compiler_options,
         }
+    }
+
+    pub fn merged_compiler_options(&self) -> &serde_json::Map<String, serde_json::Value> {
+        &self.merged_compiler_options
     }
 
     pub fn analyze_core<S: Spawner>(
@@ -806,6 +814,11 @@ impl Analyzer {
         url: String,
     ) -> Option<crate::ResolvedResource> {
         self.read_resource_core(containing_file, url)
+    }
+
+    #[cfg_attr(feature = "napi", napi)]
+    pub fn get_compiler_options(&self) -> String {
+        serde_json::to_string(&self.merged_compiler_options).unwrap_or_else(|_| "{}".to_string())
     }
 
     fn run_coordinator_helper<S: Spawner>(

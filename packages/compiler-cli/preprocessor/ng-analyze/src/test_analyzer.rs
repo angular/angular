@@ -82,6 +82,11 @@ impl TestAnalyzer {
         self.analyzer.get_metadata_for_file(file_path)
     }
 
+    #[cfg_attr(feature = "napi", napi)]
+    pub fn get_compiler_options(&self) -> String {
+        self.analyzer.get_compiler_options()
+    }
+
     #[cfg(feature = "napi")]
     #[napi]
     pub fn get_file_content(&self, file_path: String) -> napi::Result<String> {

@@ -19,17 +19,32 @@ ts_project(
         ],
         exclude = [
             "serve.ts",
+            "src/comments.ts",
             "src/diagnostics.ts",
+            "src/tcb_ls_util.ts",
         ],
     ),
     tsconfig = ":tsconfig",
     deps = [
         "//:node_modules/@types/node",
         "//:node_modules/magic-string",
+        "//packages/compiler",
+        "//packages/compiler-cli/preprocessor/ng-analyze:wasm",
+        "//packages/compiler-cli/private:hybrid_preprocessor",
+    ],
+)
+
+ts_project(
+    name = "ls_utils",
+    srcs = [
+        "src/comments.ts",
+        "src/tcb_ls_util.ts",
+    ],
+    tsconfig = ":tsconfig",
+    deps = [
+        ":preprocessor",
         "//:node_modules/typescript",
         "//packages/compiler",
-        "//packages/compiler-cli",
-        "//packages/compiler-cli/preprocessor/ng-analyze:wasm",
     ],
 )
 
