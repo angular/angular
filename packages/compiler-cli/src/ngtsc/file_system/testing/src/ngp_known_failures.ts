@@ -474,13 +474,10 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'ngtsc type checking for loop blocks should not allow usages of local references within the same template inside the tracking expression',
   'ngtsc type checking for loop blocks should not allow usages of parent loop variables inside the tracking expression',
   'ngtsc type checking for loop blocks should not allow usages of parent template variables inside the tracking expression',
-  'ngtsc type checking should check split two way binding',
-  'ngtsc type checking should detect a duplicate variable declaration',
   'ngtsc type checking should error on invalid instanceof binary expressions',
   'ngtsc type checking should report a diagnostic when binding an incompatible type to an input inherited through an intermediate variable declaration in .d.ts',
   'ngtsc type checking stability should allow for complete program reuse during incremental compilations',
   'ngtsc type checking tagged template literals should produce diagnostics for invalid tag function',
-  'ngtsc type checking when input and output go to different directives',
   'signal forms should report unsupported two-way bindings on a field',
 ]);
 
