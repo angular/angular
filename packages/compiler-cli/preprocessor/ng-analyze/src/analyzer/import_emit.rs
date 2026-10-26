@@ -46,6 +46,12 @@ pub trait ReferenceEmitStrategy: Send + Sync {
         consumer_path: &Path,
         specifier: &str,
     ) -> String;
+
+    /// True when this strategy routes package imports through `owning_reference` (like ngtsc's
+    /// `AbsoluteModuleStrategy`), rather than workspace-prefixed file paths.
+    fn uses_owning_reference(&self) -> bool {
+        false
+    }
 }
 
 /// APF (Angular Package Format) and standard Node relative import strategy.
@@ -152,6 +158,7 @@ impl ReferenceEmitStrategy for ApfImportStrategy {
                     .get(&consumer)
                     .cloned()
                     .or_else(|| Some(reference.name.clone())),
+                invalid_reason: None,
             }
         } else {
             let local_alias = reference.aliases.get(&consumer).cloned();
@@ -164,6 +171,7 @@ impl ReferenceEmitStrategy for ApfImportStrategy {
                 consumer_import,
                 typecheck_import,
                 local_alias,
+                invalid_reason: None,
             }
         }
     }
@@ -175,6 +183,10 @@ impl ReferenceEmitStrategy for ApfImportStrategy {
         specifier: &str,
     ) -> String {
         self.resolve_specifier_from_paths(declaring_path, consumer_path, specifier)
+    }
+
+    fn uses_owning_reference(&self) -> bool {
+        true
     }
 }
 
@@ -268,6 +280,7 @@ impl ReferenceEmitStrategy for PrefixImportStrategy {
                     .get(&consumer)
                     .cloned()
                     .or_else(|| Some(reference.name.clone())),
+                invalid_reason: None,
             }
         } else {
             let local_alias = reference.aliases.get(&consumer).cloned();
@@ -280,6 +293,7 @@ impl ReferenceEmitStrategy for PrefixImportStrategy {
                 consumer_import,
                 typecheck_import,
                 local_alias,
+                invalid_reason: None,
             }
         }
     }

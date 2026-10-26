@@ -821,6 +821,8 @@ export interface ReferenceMetadata {
   typecheckImport?: ImportableRef;
   /** Identifier in the consumer file's lexical scope (for same-file declarations or local aliases). */
   localAlias?: string;
+  /** Reason the target could not be imported from its owning package. */
+  invalidReason?: string;
 }
 
 /** Wire form of `ResolvedHostDirective`. */

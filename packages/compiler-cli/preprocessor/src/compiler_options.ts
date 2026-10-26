@@ -125,6 +125,7 @@ export interface NgpCompilerOptions {
   preserveWhitespaces?: boolean;
   _enableHmr?: boolean;
   _compilePoisonedComponents?: boolean;
+  _enableTemplateTypeChecker?: boolean;
 
   // i18n (`I18nOptions`).
   enableI18nLegacyMessageIdFormat?: boolean;

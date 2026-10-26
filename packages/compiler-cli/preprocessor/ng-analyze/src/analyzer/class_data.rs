@@ -4390,6 +4390,7 @@ impl ClassData {
                 consumer_import,
                 typecheck_import,
                 local_alias: Some(i.local_name.clone()),
+                invalid_reason: None,
             }
         };
         Ok(ComponentMetadata {

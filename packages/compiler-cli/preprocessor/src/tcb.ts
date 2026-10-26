@@ -184,6 +184,8 @@ export function buildTypeCheckingConfig(
   enableTemplateTypeChecker: boolean = false,
   usePoisonedData = false,
 ): NgpTypeCheckingConfig {
+  enableTemplateTypeChecker =
+    enableTemplateTypeChecker || Boolean(options._enableTemplateTypeChecker);
   const strictTemplates = options.strictTemplates !== false;
 
   let typeCheckingConfig: NgpTypeCheckingConfig;

@@ -71,6 +71,7 @@ async fn project_reference<Fs: ResourceResolverFs + Clone + 'static>(
 async fn resolve_host_directives_for_class<Fs: ResourceResolverFs + Clone + 'static>(
     ctx: &QueryCtx<Fs>,
     class_info: &crate::ClassInfo,
+    parent_owning: Option<&OwningReference>,
     consumer_file: crate::query::FileId,
     consumer_path: &Path,
     ancestors: &mut Vec<ReferenceId>,
@@ -85,6 +86,7 @@ async fn resolve_host_directives_for_class<Fs: ResourceResolverFs + Clone + 'sta
             ctx,
             hd,
             &declaring_file_path,
+            parent_owning,
             consumer_file,
             consumer_path,
             ancestors,
@@ -164,6 +166,7 @@ async fn resolve_host_directive<Fs: ResourceResolverFs + Clone + 'static>(
     ctx: &QueryCtx<Fs>,
     hd: &crate::types::analysis::HostDirectiveEntry,
     declaring_file_path: &Path,
+    parent_owning: Option<&OwningReference>,
     consumer_file: crate::query::FileId,
     consumer_path: &Path,
     ancestors: &mut Vec<ReferenceId>,
@@ -179,7 +182,7 @@ async fn resolve_host_directive<Fs: ResourceResolverFs + Clone + 'static>(
         return None;
     }
 
-    let reference = crate::types::analysis::Reference {
+    let mut reference = crate::types::analysis::Reference {
         file: decl_file_id,
         name: symbol_name,
         owning_reference: decl.owning_reference.clone(),
@@ -187,13 +190,58 @@ async fn resolve_host_directive<Fs: ResourceResolverFs + Clone + 'static>(
         is_default_export: decl.exported_as_default,
     };
 
+    let mut invalid_reason = None;
+    if reference.owning_reference.is_none() && crate::utils::is_dts(declaring_file_path) {
+        if let Some(owning) = parent_owning {
+            let package_entry_path = crate::evaluator::cross_file::resolve_specifier(
+                ctx.engine.resolver.as_ref(),
+                consumer_path,
+                owning.specifier(),
+            )
+            .or_else(|| {
+                crate::evaluator::cross_file::resolve_specifier(
+                    ctx.engine.resolver.as_ref(),
+                    declaring_file_path,
+                    owning.specifier(),
+                )
+            });
+            if let Some(entry_path) = package_entry_path {
+                let package_entry = ctx.engine.intern_path(&entry_path);
+                let exports = ctx.module_export_map(package_entry).await;
+                let decl_key = (decl_file_id, reference.name.clone());
+                if let Some(export_name) = exports.get(&decl_key) {
+                    reference.owning_reference = Some(OwningReference::from_source_specifier(
+                        owning.specifier(),
+                        export_name.clone(),
+                    ));
+                } else {
+                    invalid_reason = Some(format!(
+                        "The symbol is not exported from {} (module '{}').",
+                        entry_path.display(),
+                        owning.specifier()
+                    ));
+                }
+            }
+        }
+    }
+
+    let next_owning = reference.owning_reference.as_ref().or(parent_owning);
     let flattened = flatten_class_info(hd_class_info.clone(), ctx).await;
-    let decl_data = DeclarationData::from_class_info(reference, &hd_class_info, &flattened, false)?;
+    let decl_data =
+        DeclarationData::from_class_info(reference.clone(), &hd_class_info, &flattened, false)?;
     let mut directive =
         contextualize_declaration(ctx, &decl_data, consumer_file, consumer_path).await;
+    if let Some(reason) = invalid_reason {
+        if ctx.engine.reference_strategy.uses_owning_reference() {
+            directive.ref_meta.consumer_import = None;
+            directive.ref_meta.typecheck_import = None;
+            directive.ref_meta.invalid_reason = Some(reason);
+        }
+    }
     directive.resolved_host_directives = Box::pin(resolve_host_directives_for_class(
         ctx,
         &flattened,
+        next_owning,
         consumer_file,
         consumer_path,
         ancestors,
@@ -416,6 +464,7 @@ async fn resolve_own_host_directives<Fs: ResourceResolverFs + Clone + 'static>(
     resolve_host_directives_for_class(
         ctx,
         &flattened,
+        None,
         reference_id.file,
         file_path,
         &mut Vec::new(),
@@ -452,6 +501,7 @@ async fn resolve_host_directives_for_declaration<Fs: ResourceResolverFs + Clone 
     resolve_host_directives_for_class(
         ctx,
         &flattened,
+        decl.reference.owning_reference.as_ref(),
         consumer_file,
         consumer_path,
         &mut Vec::new(),
@@ -956,6 +1006,7 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
                     contextual_decl.resolved_host_directives = resolve_host_directives_for_class(
                         ctx,
                         &flattened,
+                        decl.reference.owning_reference.as_ref(),
                         reference_id.file,
                         file_path,
                         &mut Vec::new(),
@@ -1124,6 +1175,7 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
                     contextual_decl.resolved_host_directives = resolve_host_directives_for_class(
                         ctx,
                         &flattened,
+                        decl.reference.owning_reference.as_ref(),
                         reference_id.file,
                         file_path,
                         &mut Vec::new(),

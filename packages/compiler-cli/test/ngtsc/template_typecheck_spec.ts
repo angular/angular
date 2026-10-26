@@ -5774,11 +5774,15 @@ suppress
       });
 
       it('generates diagnostic when the library does not export the host directive', () => {
-        env.tsconfig({
-          paths: {'post': ['./dist/post']},
-          strictTemplates: true,
-          _enableTemplateTypeChecker: true,
-        });
+        env.tsconfig(
+          {
+            strictTemplates: true,
+            _enableTemplateTypeChecker: true,
+          },
+          {
+            paths: {'post': ['./dist/post']},
+          },
+        );
 
         // export post module and component but not the host directive. This is not valid. We won't
         // be able to import the host directive for template type checking.
