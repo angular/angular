@@ -12,7 +12,7 @@ A common pattern when working with user-provided prompts is to separate the user
 
 This setup ensures the resource's **`loader`** function only runs when the user explicitly submits their prompt, not on every keystroke. You can use additional signal parameters, like a `sessionId` or `userId` (which can be useful for creating persistent LLM sessions), in the `loader` field. This way, the request always uses these parameters' current values without re-triggering the asynchronous function defined in the `loader` field.
 
-Many AI SDKs provide helper methods for making API calls. For example, the Genkit client library exposes a `runFlow` method for calling Genkit flows, which you can call from a resource's `loader`. For other APIs, you can use the [`httpResource`](guide/signals/resource#reactive-data-fetching-with-httpresource).
+Many AI SDKs provide helper methods for making API calls. For example, the Genkit client library (`genkit/beta/client`) exposes a `runFlow` method for calling Genkit flows, which you can call from a resource's `loader`. For other APIs, you can use the [`httpResource`](guide/signals/resource#reactive-data-fetching-with-httpresource).
 
 The following example shows a `resource` that fetches parts of an AI-generated story. The `loader` is triggered only when the `storyInput` signal changes.
 
@@ -101,21 +101,20 @@ characters = resource({
   stream: async () => {
     const data = signal<ResourceStreamItem<string>>({value: ''});
     // Calls a Genkit streaming flow using the streamFlow method
-    // exposed by the Genkit client SDK
+    // exposed by the Genkit client SDK (`genkit/beta/client`)
     const response = streamFlow({
       url: '/streamCharacters',
       input: 10,
     });
 
     (async () => {
-      for await (const chunk of response.stream) {
-        data.update((prev) => {
-          if ('value' in prev) {
-            return {value: `${prev.value} ${chunk}`};
-          } else {
-            return {error: chunk as unknown as Error};
-          }
-        });
+      try {
+        for await (const chunk of response.stream) {
+          data.update((prev) => ('value' in prev ? {value: prev.value + chunk} : prev));
+        }
+      } catch (error) {
+        // Surface stream failures through the resource's error state
+        data.set({error: error as Error});
       }
     })();
 
@@ -139,9 +138,9 @@ The `characters` member is updated asynchronously and can be displayed in the te
 On the server side, in `server.ts` for example, the defined endpoint sends the data to be streamed to the client. The following code uses Gemini with the Genkit framework but this technique is applicable to other APIs that support streaming responses from LLMs:
 
 ```ts
-import {startFlowServer} from '@genkit-ai/express';
-import {genkit} from 'genkit/beta';
-import {googleAI, gemini20Flash} from '@genkit-ai/googleai';
+import {expressHandler} from '@genkit-ai/express';
+import {googleAI} from '@genkit-ai/google-genai';
+import {genkit, z} from 'genkit';
 
 const ai = genkit({plugins: [googleAI()]});
 
@@ -154,24 +153,23 @@ export const streamCharacters = ai.defineFlow(
   },
   async (count, {sendChunk}) => {
     const {response, stream} = ai.generateStream({
-      model: gemini20Flash,
+      model: googleAI.model('gemini-flash-latest'),
       config: {
         temperature: 1,
       },
       prompt: `Generate ${count} different RPG game characters.`,
     });
 
-    (async () => {
-      for await (const chunk of stream) {
-        sendChunk(chunk.content[0].text!);
-      }
-    })();
+    for await (const chunk of stream) {
+      sendChunk(chunk.text);
+    }
 
     return (await response).text;
   },
 );
 
-startFlowServer({
-  flows: [streamCharacters],
-});
+// Register the flow route on the Express app created in `server.ts`,
+// before the handler that renders the Angular application.
+app.use(express.json());
+app.post('/streamCharacters', expressHandler(streamCharacters));
 ```
