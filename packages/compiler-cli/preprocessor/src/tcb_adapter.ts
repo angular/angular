@@ -482,7 +482,9 @@ function declarationToMetadata(
   consumerPath?: string,
 ): TcbDirectiveMetadata {
   const isSameFile = consumerPath !== undefined && filePath === consumerPath;
-  const isLocal = (requiresInline && isSameFile) || !decl.ref.typecheckImport;
+  const isLocal =
+    (requiresInline && isSameFile) ||
+    (!decl.ref.typecheckImport && !decl.ref.invalidReason);
   const moduleName = isLocal ? null : (decl.ref.typecheckImport?.specifier ?? null);
   const symbolName = isLocal ? decl.name : (decl.ref.typecheckImport?.symbol ?? decl.name);
   const fields = decl.flattenedFields ?? decl.fields ?? [];
@@ -496,7 +498,7 @@ function declarationToMetadata(
       name: symbolName,
       moduleName,
       isLocal,
-      unexportedDiagnostic: null,
+      unexportedDiagnostic: decl.ref.invalidReason ?? null,
       nodeFilePath: filePath,
       nodeNameSpan: decl.nameSpan,
     },

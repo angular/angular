@@ -686,6 +686,9 @@ pub struct ReferenceMetadata {
     /// Identifier in the consumer file's lexical scope (for same-file declarations or local aliases).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub local_alias: Option<String>,
+    /// Reason the target could not be imported from its owning package.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub invalid_reason: Option<String>,
 }
 
 impl ReferenceMetadata {
@@ -694,6 +697,7 @@ impl ReferenceMetadata {
             consumer_import: None,
             typecheck_import: None,
             local_alias: Some(name),
+            invalid_reason: None,
         }
     }
 
@@ -710,6 +714,7 @@ impl ReferenceMetadata {
             consumer_import: importable.clone(),
             typecheck_import: importable,
             local_alias: reference.aliases.get(&consumer).cloned(),
+            invalid_reason: None,
         }
     }
 }
