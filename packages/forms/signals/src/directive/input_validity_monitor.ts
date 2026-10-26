@@ -19,9 +19,10 @@ import {
 /**
  * Service that monitors validity state changes on native form elements.
  *
- * It works by dynamically installing a CSS transition on `input, textarea` `:valid`
- * and `:invalid` states, which allows us to intercept a `transitionstart` event
- * whenever the native validity state changes without an `input` event (e.g. clearing a date input).
+ * It works by dynamically installing a CSS animation on the `:valid` and `:invalid` states of
+ * `input` and `textarea` elements. Each state uses a differently named animation, so a validity
+ * change restarts the animation and fires an `animationstart` event, even when no `input` event
+ * fires (e.g. clearing a date input).
  */
 @Injectable({providedIn: 'root', useClass: forwardRef(() => AnimationInputValidityMonitor)})
 export abstract class InputValidityMonitor {
@@ -51,7 +52,7 @@ export class AnimationInputValidityMonitor extends InputValidityMonitor implemen
 
     const rootNode = element.getRootNode() as Document | ShadowRoot;
     if (!this.injectedStyles.has(rootNode)) {
-      this.injectedStyles.set(rootNode, this.createTransitionStyle(rootNode));
+      this.injectedStyles.set(rootNode, this.createAnimationStyle(rootNode));
     }
 
     const onAnimationStart = (event: Event) => {
@@ -73,7 +74,7 @@ export class AnimationInputValidityMonitor extends InputValidityMonitor implemen
     return element.validity?.badInput ?? false;
   }
 
-  private createTransitionStyle(rootNode: Document | ShadowRoot): HTMLStyleElement {
+  private createAnimationStyle(rootNode: Document | ShadowRoot): HTMLStyleElement {
     const element = this.document.createElement('style');
     if (this.cspNonce) {
       element.nonce = this.cspNonce;
