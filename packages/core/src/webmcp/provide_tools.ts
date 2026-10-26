@@ -26,8 +26,14 @@ import type {ToolDescriptor} from './types';
  *     or route providers.
  * @experimental
  */
-export function provideExperimentalWebMcpTools<const InputSchema extends JsonSchemaForInference>(
-  tools: ToolDescriptor<InputSchema>[],
+export function provideExperimentalWebMcpTools<
+  const InputSchemas extends readonly JsonSchemaForInference[],
+>(
+  // A tuple-mapped type is used instead of `ToolDescriptor<InputSchema>[]` so that each tool
+  // infers its own `InputSchema` from its own `inputSchema` property. With a single shared
+  // generic, TypeScript unifies the schemas of heterogeneous tools and the `execute` callbacks
+  // lose their argument types (see #70125).
+  tools: {[K in keyof InputSchemas]: ToolDescriptor<InputSchemas[K]>},
 ): EnvironmentProviders {
   return makeEnvironmentProviders([
     provideEnvironmentInitializer(() => {
