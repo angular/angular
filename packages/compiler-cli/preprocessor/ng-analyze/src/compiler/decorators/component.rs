@@ -193,7 +193,7 @@ async fn resolve_host_directive<Fs: ResourceResolverFs + Clone + 'static>(
         contextualize_declaration(ctx, &decl_data, consumer_file, consumer_path).await;
     directive.resolved_host_directives = Box::pin(resolve_host_directives_for_class(
         ctx,
-        &hd_class_info,
+        &flattened,
         consumer_file,
         consumer_path,
         ancestors,
@@ -410,11 +410,12 @@ async fn resolve_own_host_directives<Fs: ResourceResolverFs + Clone + 'static>(
     reference_id: ReferenceId,
     class_name: Option<&str>,
 ) -> Option<Vec<ResolvedHostDirective>> {
-    let syntax_file = ctx.analyze_file_syntax(reference_id.file).await;
-    let class_info = syntax_file.class_index.get(class_name?)?;
+    let evaluated = ctx.analyze_file_evaluated(reference_id.file).await;
+    let class_info = evaluated.class_index.get(class_name?)?;
+    let flattened = flatten_class_info(class_info.clone(), ctx).await;
     resolve_host_directives_for_class(
         ctx,
-        class_info,
+        &flattened,
         reference_id.file,
         file_path,
         &mut Vec::new(),
@@ -447,9 +448,10 @@ async fn resolve_host_directives_for_declaration<Fs: ResourceResolverFs + Clone 
 ) -> Option<Vec<ResolvedHostDirective>> {
     let evaluated = ctx.analyze_file_evaluated(decl.reference.file).await;
     let class_info = evaluated.class_index.get(&decl.reference.name)?;
+    let flattened = flatten_class_info(class_info.clone(), ctx).await;
     resolve_host_directives_for_class(
         ctx,
-        class_info,
+        &flattened,
         consumer_file,
         consumer_path,
         &mut Vec::new(),
@@ -953,7 +955,7 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
                         contextualize_declaration(ctx, &decl, reference_id.file, file_path).await;
                     contextual_decl.resolved_host_directives = resolve_host_directives_for_class(
                         ctx,
-                        &class_info,
+                        &flattened,
                         reference_id.file,
                         file_path,
                         &mut Vec::new(),
@@ -1121,7 +1123,7 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
                         contextualize_declaration(ctx, &decl, reference_id.file, file_path).await;
                     contextual_decl.resolved_host_directives = resolve_host_directives_for_class(
                         ctx,
-                        &class_info,
+                        &flattened,
                         reference_id.file,
                         file_path,
                         &mut Vec::new(),

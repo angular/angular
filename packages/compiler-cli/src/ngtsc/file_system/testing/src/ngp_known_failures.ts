@@ -475,8 +475,6 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'ngtsc type checking for loop blocks should not allow usages of parent loop variables inside the tracking expression',
   'ngtsc type checking for loop blocks should not allow usages of parent template variables inside the tracking expression',
   'ngtsc type checking host directives generates diagnostic when the library does not export the host directive',
-  'ngtsc type checking host directives should check bindings to inherited host directive inputs 2',
-  'ngtsc type checking host directives should check bindings to inherited host directive outputs 2',
   'ngtsc type checking input coercion should allow any value to be assigned if the transform function has no parameters',
   'ngtsc type checking legacy schema checking with the DOM schema should report unknown element error when matched only by an attribute directive',
   'ngtsc type checking should check split two way binding',
