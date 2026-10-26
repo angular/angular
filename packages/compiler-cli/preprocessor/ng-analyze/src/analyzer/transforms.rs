@@ -48,6 +48,9 @@ pub fn transform_type_from_params(
     params: &oxc_ast::ast::FormalParameters<'_>,
 ) -> Option<oxc_span::Span> {
     use oxc_span::GetSpan;
+    if params.items.is_empty() && params.rest.is_none() {
+        return Some(oxc_span::Span::default());
+    }
     let param = params.items.first()?;
     let type_ann = param.type_annotation.as_ref()?;
     Some(type_ann.type_annotation.span())

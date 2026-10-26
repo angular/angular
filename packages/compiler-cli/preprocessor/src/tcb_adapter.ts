@@ -50,16 +50,15 @@ export function createInputPropertyMapping(
         required: item.required,
       };
 
-      if (
-        item.transform !== undefined &&
-        item.transform.kind === 'type' &&
-        item.transform.typeSpan &&
-        inlineContent
-      ) {
-        mapping.transformType = inlineContent.substring(
-          item.transform.typeSpan.start,
-          item.transform.typeSpan.end,
-        );
+      if (item.transform !== undefined && item.transform.kind === 'type' && inlineContent) {
+        if (item.transform.typeSpan) {
+          mapping.transformType = inlineContent.substring(
+            item.transform.typeSpan.start,
+            item.transform.typeSpan.end,
+          );
+        } else if (item.transform.span.end > item.transform.span.start) {
+          mapping.transformType = 'unknown';
+        }
       }
 
       obj[classProp] = mapping;
