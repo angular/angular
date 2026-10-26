@@ -474,7 +474,6 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'ngtsc type checking for loop blocks should not allow usages of local references within the same template inside the tracking expression',
   'ngtsc type checking for loop blocks should not allow usages of parent loop variables inside the tracking expression',
   'ngtsc type checking for loop blocks should not allow usages of parent template variables inside the tracking expression',
-  'ngtsc type checking legacy schema checking with the DOM schema should report unknown element error when matched only by an attribute directive',
   'ngtsc type checking should check split two way binding',
   'ngtsc type checking should detect a duplicate variable declaration',
   'ngtsc type checking should error on invalid instanceof binary expressions',

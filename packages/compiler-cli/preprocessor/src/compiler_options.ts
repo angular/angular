@@ -101,6 +101,7 @@ export interface NgpCompilerOptions {
   strictContextGenerics?: boolean;
   strictLiteralTypes?: boolean;
   strictUnclaimedEventNames?: boolean;
+  strictUnknownElements?: boolean;
   typeCheckHostBindings?: boolean;
 
   // Diagnostics (`DiagnosticOptions`).
