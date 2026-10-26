@@ -695,12 +695,14 @@ export function processFileSync(
           if (start === end) {
             end++;
           }
-          fileDiagnostics.push({
-            category: 1,
-            code: 5002,
-            messageText: error.msg,
-            ...templateDiagnosticLocation(component, filePath, {start, end}),
-          });
+          fileDiagnostics.push(
+            withTemplateDiagnosticLocation(component, filePath, {
+              category: 1,
+              code: 5002,
+              messageText: error.msg,
+              span: {start, end},
+            }),
+          );
         }
         continue;
       }
@@ -722,30 +724,7 @@ export function processFileSync(
       );
       if (foreignComponentDiagnostics.length > 0) {
         for (const diagnostic of foreignComponentDiagnostics) {
-          const relatedInformation = diagnostic.relatedInformation?.map((rel) => ({
-            ...rel,
-            ...templateDiagnosticLocation(component, filePath, rel.span),
-          }));
-          if (
-            component.templateUrl != null &&
-            component.templateUrlSpan != null &&
-            classMeta.className != null
-          ) {
-            relatedInformation?.push({
-              filePath,
-              span: {
-                start: component.templateUrlSpan.start,
-                end: component.templateUrlSpan.end,
-              },
-              messageText: `Error occurs in the template of component ${classMeta.className}.`,
-            });
-          }
-          fileDiagnostics.push({
-            ...(diagnostic.span
-              ? {...diagnostic, ...templateDiagnosticLocation(component, filePath, diagnostic.span)}
-              : diagnostic),
-            ...(relatedInformation !== undefined ? {relatedInformation} : {}),
-          });
+          fileDiagnostics.push(withTemplateDiagnosticLocation(component, filePath, diagnostic));
         }
         continue;
       }
@@ -1950,36 +1929,20 @@ export function processFileSync(
         }
       }
 
-      const span = {start: diag.start, end: diag.end};
-      const loc = diag.sourceFilePath
-        ? {filePath: diag.sourceFilePath, span}
-        : component
-          ? templateDiagnosticLocation(component, filePath, span)
-          : {filePath, span};
-
-      const relatedInformation: nga.NgRelatedInformation[] | undefined =
-        diag.relatedInformation?.map((rel) => {
-          const relSpan = {start: rel.start, end: rel.end};
-          const relLoc = rel.sourceFilePath
-            ? {filePath: rel.sourceFilePath, span: relSpan}
-            : component
-              ? templateDiagnosticLocation(component, filePath, relSpan)
-              : {filePath, span: relSpan};
-          return {
+      fileDiagnostics.push(
+        withTemplateDiagnosticLocation(component, filePath, {
+          category: diag.category === OutOfBandDiagnosticCategory.Warning ? 0 : 1,
+          code: diag.code ?? 8000,
+          messageText: diag.message,
+          sourceFilePath: diag.sourceFilePath,
+          span: {start: diag.start, end: diag.end},
+          relatedInformation: diag.relatedInformation?.map((rel) => ({
             messageText: rel.message,
-            filePath: relLoc.filePath,
-            span: relLoc.span,
-          };
-        });
-
-      fileDiagnostics.push({
-        category: diag.category === OutOfBandDiagnosticCategory.Warning ? 0 : 1,
-        code: diag.code ?? 8000,
-        messageText: diag.message,
-        filePath: loc.filePath,
-        span: loc.span,
-        ...(relatedInformation && relatedInformation.length > 0 ? {relatedInformation} : {}),
-      });
+            sourceFilePath: rel.sourceFilePath,
+            span: {start: rel.start, end: rel.end},
+          })),
+        }),
+      );
     }
   }
 
@@ -3460,4 +3423,80 @@ function templateDiagnosticLocation(
   // `template` expression. `NgDiagnostic` cannot carry a synthetic file, so only the expression
   // location is reported.
   return {filePath, span: {start: expressionSpan.start, end: expressionSpan.end}};
+}
+
+/**
+ * Maps a template diagnostic and its `relatedInformation` to their target template locations, and
+ * for external templates (`templateUrl`), appends the secondary `relatedInformation` entry pointing
+ * to `component.templateUrlSpan` in the component's source file (mirroring ngtsc's
+ * `makeTemplateDiagnostic`).
+ */
+function withTemplateDiagnosticLocation(
+  component: nga.ComponentMetadata | undefined,
+  filePath: string,
+  diag: {
+    category: number;
+    code: number;
+    messageText: string;
+    sourceFilePath?: string;
+    span?: {start: number; end: number};
+    relatedInformation?: Array<{
+      messageText: string;
+      sourceFilePath?: string;
+      span: {start: number; end: number};
+    }>;
+  },
+): nga.NgDiagnostic {
+  const hasExplicitFile = Boolean(diag.sourceFilePath);
+  const loc = diag.span
+    ? hasExplicitFile
+      ? {filePath: diag.sourceFilePath!, span: diag.span}
+      : component
+        ? templateDiagnosticLocation(component, filePath, diag.span)
+        : {filePath, span: diag.span}
+    : {filePath: diag.sourceFilePath ?? filePath, span: undefined};
+
+  let relatedInformation: nga.NgRelatedInformation[] | undefined = diag.relatedInformation?.map(
+    (rel) => {
+      const relLoc = rel.sourceFilePath
+        ? {filePath: rel.sourceFilePath, span: rel.span}
+        : component
+          ? templateDiagnosticLocation(component, filePath, rel.span)
+          : {filePath, span: rel.span};
+      return {
+        messageText: rel.messageText,
+        filePath: relLoc.filePath,
+        span: relLoc.span,
+      };
+    },
+  );
+
+  if (
+    !hasExplicitFile &&
+    component?.templateUrl != null &&
+    component.templateUrlSpan != null &&
+    component.className != null
+  ) {
+    const typeForMessage = diag.category === 0 ? 'Warning' : 'Error';
+    relatedInformation = [
+      ...(relatedInformation ?? []),
+      {
+        filePath,
+        span: {
+          start: component.templateUrlSpan.start,
+          end: component.templateUrlSpan.end,
+        },
+        messageText: `${typeForMessage} occurs in the template of component ${component.className}.`,
+      },
+    ];
+  }
+
+  return {
+    category: diag.category,
+    code: diag.code,
+    messageText: diag.messageText,
+    filePath: loc.filePath,
+    ...(loc.span !== undefined ? {span: loc.span} : {}),
+    ...(relatedInformation && relatedInformation.length > 0 ? {relatedInformation} : {}),
+  };
 }
