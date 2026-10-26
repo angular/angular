@@ -19,7 +19,7 @@ function _tcb2(this: i0.BadFooterComponent) {
   }
 }
 
-/*ngp-tcb-template-sources:{"tcb1":{"templateFile":"/app/footer.html"}}*/
+/*ngp-tcb-template-sources:{"tcb1":{"className":"FooterComponent","templateFile":"/app/footer.html","templateUrlExpression":{"start":183,"end":202}}}*/
 
 ```
 
@@ -166,7 +166,7 @@ function _tcb1(this: i0.HeaderComponent) {
   }
 }
 
-/*ngp-tcb-template-sources:{"tcb1":{"templateFile":"/app/header_templates/default_header.html"}}*/
+/*ngp-tcb-template-sources:{"tcb1":{"className":"HeaderComponent","templateFile":"/app/header_templates/default_header.html","templateUrlExpression":{"start":169,"end":188}}}*/
 
 ```
 

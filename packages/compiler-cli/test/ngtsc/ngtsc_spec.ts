@@ -3385,7 +3385,7 @@ runInEachFileSystem((os: string) => {
       });
 
       it('should produce a diangostic if the transform function first parameter has no arguments', () => {
-        env.tsconfig({noImplicitAny: false});
+        env.tsconfig({}, {noImplicitAny: false});
         env.write(
           '/test.ts',
           `
@@ -3974,7 +3974,7 @@ runInEachFileSystem((os: string) => {
         });
 
         it('should report an error when no type is present', () => {
-          env.tsconfig({strictInjectionParameters: true, noImplicitAny: false});
+          env.tsconfig({strictInjectionParameters: true}, {noImplicitAny: false});
           env.write(
             `test.ts`,
             `

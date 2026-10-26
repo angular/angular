@@ -156,11 +156,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     this.pushDiagnostic(id, errorMsg, startSourceSpan, OutOfBandDiagnosticCategory.Error, 8013);
   }
 
-  duplicateTemplateVar(
-    id: TypeCheckId,
-    variable: TmplAstVariable,
-    firstDecl: TmplAstVariable,
-  ) {
+  duplicateTemplateVar(id: TypeCheckId, variable: TmplAstVariable, firstDecl: TmplAstVariable) {
     this.pushDiagnostic(
       id,
       `Cannot redeclare variable '${variable.name}' as it was previously declared elsewhere for the same template.`,

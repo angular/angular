@@ -865,6 +865,10 @@ describe('extended template diagnostics', () => {
             filePath: '/app.html',
             messageText: "'item' is declared here.",
           }),
+          jasmine.objectContaining({
+            filePath: '/app.ts',
+            messageText: 'Error occurs in the template of component App.',
+          }),
         ],
       }),
     );

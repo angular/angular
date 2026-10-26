@@ -77,7 +77,17 @@ export class ContentBlocksComponent {
       "span": {
         "start": 348,
         "end": 367
-      }
+      },
+      "relatedInformation": [
+        {
+          "messageText": "Child nodes are defined here.",
+          "filePath": "/bindings.component.ts",
+          "span": {
+            "start": 368,
+            "end": 377
+          }
+        }
+      ]
     },
     {
       "filePath": "/content-blocks.component.ts",
@@ -87,7 +97,17 @@ export class ContentBlocksComponent {
       "span": {
         "start": 369,
         "end": 402
-      }
+      },
+      "relatedInformation": [
+        {
+          "messageText": "The @content block 'header' was first defined here.",
+          "filePath": "/content-blocks.component.ts",
+          "span": {
+            "start": 330,
+            "end": 362
+          }
+        }
+      ]
     },
     {
       "filePath": "/content-blocks.component.ts",
@@ -97,7 +117,17 @@ export class ContentBlocksComponent {
       "span": {
         "start": 409,
         "end": 461
-      }
+      },
+      "relatedInformation": [
+        {
+          "messageText": "The property 'label' is defined here.",
+          "filePath": "/content-blocks.component.ts",
+          "span": {
+            "start": 307,
+            "end": 322
+          }
+        }
+      ]
     },
     {
       "filePath": "/content-blocks.component.ts",
