@@ -182,9 +182,14 @@ describe('debounce', () => {
       expect(street.value()).toBe('2000 N Shoreline Blvd');
       expect(street.controlValue()).toBe('2000 N Shoreline Blvd');
 
-      // Wait for the debounced update, which should be ignored.
-      await debounceResult.resolve;
+      // Resolve the debounced update, which should be ignored.
+      const valueSet = spyOn(street.value, 'set').and.callThrough();
+      debounceResult.resolve();
+      await debounceResult.promise;
       expect(street.value()).toBe('2000 N Shoreline Blvd');
+      expect(valueSet.calls.allArgs())
+        .withContext('value.set() calls from the late debounce')
+        .toEqual([]);
     });
 
     describe('abort signal', () => {

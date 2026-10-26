@@ -47,6 +47,39 @@ lets an abort listener write a signal
     debouncing flag after the abort: Expected true to be false.
 ```
 
+## The existing direct-write spec
+
+[`test/node/api/debounce.spec.ts`](../test/node/api/debounce.spec.ts) already has a spec for this
+flow: "should be ignored if value is directly set before it resolves". It awaited
+`debounceResult.resolve` without calling it, so the debounce never resolved and the spec passed
+without reaching the late resolve. This branch calls `resolve()` and checks that the late debounce
+doesn't write the model:
+
+```diff
+-      // Wait for the debounced update, which should be ignored.
+-      await debounceResult.resolve;
++      // Resolve the debounced update, which should be ignored.
++      const valueSet = spyOn(street.value, 'set').and.callThrough();
++      debounceResult.resolve();
++      await debounceResult.promise;
+       expect(street.value()).toBe('2000 N Shoreline Blvd');
++      expect(valueSet.calls.allArgs())
++        .withContext('value.set() calls from the late debounce')
++        .toEqual([]);
+```
+
+It fails, which makes 7 failures in the node target:
+
+```text
+debounce by function should be ignored if value is directly set before it resolves
+    value.set() calls from the late debounce:
+        Unexpected $[0] = [ '2000 N Shoreline Blvd' ] in array.
+```
+
+The value assertion still passes, because the late `sync()` writes the value that's already
+current. The spec's name already states the contract: the late debounce is ignored, not just
+harmless. Both measured fix options skip that `sync()`, so they make this spec pass.
+
 ## Root cause
 
 `FieldNode.pendingSync` is a `linkedSignal` whose computation aborts the previous controller
