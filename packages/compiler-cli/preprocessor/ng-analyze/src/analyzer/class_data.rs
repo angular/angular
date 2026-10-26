@@ -3326,9 +3326,9 @@ impl TransformData {
             } => TransformMetadata {
                 kind: "type".to_string(),
                 span: crate::types::metadata::SpanMetadata::new(*value_span, converter),
-                type_span: Some(crate::types::metadata::SpanMetadata::new(
-                    *type_span, converter,
-                )),
+                type_span: (!type_span.is_empty()).then(|| {
+                    crate::types::metadata::SpanMetadata::new(*type_span, converter)
+                }),
             },
             TransformData::Expression(span) => TransformMetadata {
                 kind: "expression".to_string(),
@@ -3550,6 +3550,13 @@ fn prepare_members(
                             let _ = writeln!(
                                 prepared.coercion_members,
                                 "{NG_ACCEPT_INPUT_TYPE_PREFIX}{}: {type_str};",
+                                coercion_member_key(&i.name)
+                            );
+                        }
+                        Some(TransformData::Type { value_span, .. }) if !value_span.is_empty() => {
+                            let _ = writeln!(
+                                prepared.coercion_members,
+                                "{NG_ACCEPT_INPUT_TYPE_PREFIX}{}: unknown;",
                                 coercion_member_key(&i.name)
                             );
                         }
