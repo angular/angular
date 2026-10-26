@@ -841,6 +841,28 @@ describe('FieldNode', () => {
         expect(f[1] === second).toBeTrue();
       });
     });
+
+    describe('keyInParent', () => {
+      it('should be the numeric index for array elements', () => {
+        const value = signal({items: [{name: 'a'}, {name: 'b'}], tags: ['x', 'y']});
+        const f = form(value, {injector: TestBed.inject(Injector)});
+
+        expect(f.items[0]().keyInParent()).toBe(0);
+        expect(f.items[1]().keyInParent()).toBe(1);
+        expect(f.tags[1]().keyInParent()).toBe(1);
+
+        const second = f.items[1];
+        value.update((v) => ({...v, items: [v.items[1], v.items[0]]}));
+        expect(second().keyInParent()).toBe(0);
+      });
+
+      it('should be the property name for object properties', () => {
+        const f = form(signal({items: [{name: 'a'}]}), {injector: TestBed.inject(Injector)});
+
+        expect(f.items().keyInParent()).toBe('items');
+        expect(f.items[0].name().keyInParent()).toBe('name');
+      });
+    });
   });
 
   describe('names', () => {
