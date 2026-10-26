@@ -36,7 +36,7 @@ import {
   type TcbDirectiveMetadata,
   type TypeCheckId,
 } from '@angular/compiler';
-import {Diagnostic} from './diagnostic.js';
+import {Diagnostic, DiagnosticRelatedInformation} from './diagnostic.js';
 
 export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecorder<Diagnostic> {
   private _diagnostics: Diagnostic[] = [];
@@ -51,6 +51,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     span: ParseSourceSpan | AbsoluteSourceSpan,
     category: OutOfBandDiagnosticCategory = OutOfBandDiagnosticCategory.Error,
     code?: number,
+    relatedInformation?: readonly DiagnosticRelatedInformation[],
   ) {
     let start: number;
     let end: number;
@@ -70,6 +71,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
       end,
       category,
       code,
+      ...(relatedInformation && relatedInformation.length > 0 ? {relatedInformation} : {}),
     });
   }
 
@@ -154,13 +156,24 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     this.pushDiagnostic(id, errorMsg, startSourceSpan, OutOfBandDiagnosticCategory.Error, 8013);
   }
 
-  duplicateTemplateVar(id: TypeCheckId, variable: TmplAstVariable) {
+  duplicateTemplateVar(
+    id: TypeCheckId,
+    variable: TmplAstVariable,
+    firstDecl: TmplAstVariable,
+  ) {
     this.pushDiagnostic(
       id,
       `Cannot redeclare variable '${variable.name}' as it was previously declared elsewhere for the same template.`,
-      variable.keySpan,
+      variable.sourceSpan,
       OutOfBandDiagnosticCategory.Error,
       8006,
+      [
+        {
+          message: `The variable '${firstDecl.name}' was first declared here.`,
+          start: firstDecl.sourceSpan.start.offset,
+          end: firstDecl.sourceSpan.end.offset,
+        },
+      ],
     );
   }
 
@@ -190,7 +203,43 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     );
   }
 
-  splitTwoWayBinding(id: TypeCheckId, input: TmplAstBoundAttribute) {
+  splitTwoWayBinding(
+    id: TypeCheckId,
+    input: TmplAstBoundAttribute,
+    output: TmplAstBoundEvent,
+    inputConsumer: Pick<TcbDirectiveMetadata, 'name' | 'isComponent' | 'ref'>,
+    outputConsumer: Pick<TcbDirectiveMetadata, 'name' | 'isComponent' | 'ref'> | TmplAstElement,
+  ) {
+    const relatedInformation: DiagnosticRelatedInformation[] = [];
+
+    if (inputConsumer.ref.nodeNameSpan && inputConsumer.ref.nodeFilePath) {
+      relatedInformation.push({
+        message: `The property half of the binding is to the '${inputConsumer.name}' ${inputConsumer.isComponent ? 'component' : 'directive'}.`,
+        start: inputConsumer.ref.nodeNameSpan.start,
+        end: inputConsumer.ref.nodeNameSpan.end,
+        sourceFilePath: inputConsumer.ref.nodeFilePath,
+      });
+    }
+
+    if (outputConsumer instanceof TmplAstElement) {
+      let message = `The event half of the binding is to a native event called '${input.name}' on the <${outputConsumer.name}> DOM element.`;
+      if (!inputConsumer.ref.nodeFilePath?.endsWith('.d.ts')) {
+        message += `\n \n Are you missing an output declaration called '${output.name}'?`;
+      }
+      relatedInformation.push({
+        message,
+        start: outputConsumer.sourceSpan.start.offset + 1,
+        end: outputConsumer.sourceSpan.start.offset + outputConsumer.name.length + 1,
+      });
+    } else if (outputConsumer.ref.nodeNameSpan && outputConsumer.ref.nodeFilePath) {
+      relatedInformation.push({
+        message: `The event half of the binding is to the '${outputConsumer.name}' ${outputConsumer.isComponent ? 'component' : 'directive'}.`,
+        start: outputConsumer.ref.nodeNameSpan.start,
+        end: outputConsumer.ref.nodeNameSpan.end,
+        sourceFilePath: outputConsumer.ref.nodeFilePath,
+      });
+    }
+
     this.pushDiagnostic(
       id,
       `The property and event halves of the two-way binding '${input.name}' are not bound ` +
@@ -199,6 +248,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
       input.keySpan,
       OutOfBandDiagnosticCategory.Error,
       8007,
+      relatedInformation,
     );
   }
 
