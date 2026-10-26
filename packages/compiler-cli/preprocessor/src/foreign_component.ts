@@ -88,13 +88,19 @@ class ForeignComponentFeatureAnalyzer extends TmplAstRecursiveVisitor {
     super();
   }
 
-  private report(code: number, sourceSpan: ParseSourceSpan, messageText: string): void {
+  private report(
+    code: number,
+    sourceSpan: ParseSourceSpan,
+    messageText: string,
+    relatedInformation?: nga.NgRelatedInformation[],
+  ): void {
     this.diagnostics.push({
       category: 1,
       code,
       messageText,
       filePath: this.filePath,
       span: {start: sourceSpan.start.offset, end: sourceSpan.end.offset},
+      ...(relatedInformation !== undefined ? {relatedInformation} : {}),
     });
   }
 
@@ -168,6 +174,16 @@ class ForeignComponentFeatureAnalyzer extends TmplAstRecursiveVisitor {
       CONFLICTING_CONTENT_AND_PROPERTY,
       conflictingSource.sourceSpan,
       `A foreign component cannot have both a '${CHILDREN}' property and child nodes.`,
+      [
+        {
+          filePath: this.filePath,
+          span: {
+            start: firstChild.sourceSpan.start.offset,
+            end: firstChild.sourceSpan.end.offset,
+          },
+          messageText: 'Child nodes are defined here.',
+        },
+      ],
     );
   }
 
@@ -285,11 +301,22 @@ class ForeignComponentFeatureAnalyzer extends TmplAstRecursiveVisitor {
     }
 
     if (seen.has(block.name)) {
+      const firstDecl = seen.get(block.name)!;
       this.report(
         CONFLICTING_CONTENT_DECLARATION,
         block.sourceSpan,
         `A @content block with the name '${block.name}' has already been defined for this ` +
           'component.',
+        [
+          {
+            filePath: this.filePath,
+            span: {
+              start: firstDecl.sourceSpan.start.offset,
+              end: firstDecl.sourceSpan.end.offset,
+            },
+            messageText: `The @content block '${block.name}' was first defined here.`,
+          },
+        ],
       );
     } else {
       seen.set(block.name, block);
@@ -310,6 +337,16 @@ class ForeignComponentFeatureAnalyzer extends TmplAstRecursiveVisitor {
         block.sourceSpan,
         `A @content block with the name '${block.name}' conflicts with a property on the ` +
           'parent component.',
+        [
+          {
+            filePath: this.filePath,
+            span: {
+              start: conflict.sourceSpan.start.offset,
+              end: conflict.sourceSpan.end.offset,
+            },
+            messageText: `The property '${block.name}' is defined here.`,
+          },
+        ],
       );
     }
 
