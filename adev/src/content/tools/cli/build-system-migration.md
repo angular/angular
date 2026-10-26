@@ -22,7 +22,7 @@ New applications will use this new build system by default via the `application`
 ## For existing applications
 
 Both automated and manual procedures are available depending on the requirements of the project.
-Starting with v18, the update process will ask if you would like to migrate existing applications to use the new build system via the automated migration.
+Since v18, the update process to a new major version asks if you would like to migrate existing applications to use the new build system via the automated migration.
 Prior to migrating, please consider reviewing the [Known Issues](#known-issues) section as it may contain relevant information for your project.
 
 HELPFUL: Remember to remove any CommonJS assumptions in the application server code if using SSR such as `require`, `__filename`, `__dirname`, or other constructs from the [CommonJS module scope](https://nodejs.org/api/modules.html#the-module-scope). All application code should be ESM compatible. This does not apply to third-party dependencies.
@@ -33,8 +33,8 @@ The automated migration will adjust both the application configuration within `a
 While many changes can be automated and most applications will not require any further changes, each application is unique and there may be some manual changes required.
 After the migration, please attempt a build of the application as there could be new errors that will require adjustments within the code.
 The errors will attempt to provide solutions to the problem when possible and the later sections of this guide describe some of the more common situations that you may encounter.
-When updating to Angular v18 via `ng update`, you will be asked to execute the migration.
-This migration is entirely optional for v18 and can also be run manually at anytime after an update via the following command:
+When updating to a new major version via `ng update`, you will be asked to execute the migration.
+This migration is entirely optional and can also be run manually at anytime after an update via the following command:
 
 ```shell
 
@@ -68,7 +68,7 @@ If the `application` builder is difficult for your project to adopt, `browser-es
 
 #### Manual migration to the compatibility builder
 
-A builder named `browser-esbuild` is available within the `@angular-devkit/build-angular` package that is present in an Angular CLI generated application.
+A builder named `browser-esbuild` is available within the `@angular-devkit/build-angular` package that applications using the `browser` builder already depend on.
 You can try out the new build system for applications that use the `browser` builder.
 If using a custom builder, please refer to the documentation for that builder on possible migration options.
 
@@ -98,8 +98,8 @@ Changing the `builder` field is the only change you will need to make.
 
 #### Manual migration to the new `application` builder
 
-A builder named `application` is also available within the `@angular-devkit/build-angular` package that is present in an Angular CLI generated application.
-This builder is the default for all new applications created via `ng new`.
+A builder named `application` is also available within the `@angular-devkit/build-angular` package.
+New applications created via `ng new` use the same builder from the `@angular/build` package (`@angular/build:application`).
 
 The following is what you would typically find in `angular.json` for an application:
 
@@ -252,9 +252,9 @@ However, excluding specific dependencies is recommended instead since rebuild ti
 One of the main benefits of the application build system is the improved build and rebuild speed.
 However, the new application build system also provides additional features not present in the `browser` builder.
 
-IMPORTANT: The new features of the `application` builder described here are incompatible with the `karma` test builder by default because it is using the `browser` builder internally.
-Users can opt-in to use the `application` builder by setting the `builderMode` option to `application` for the `karma` builder.
-This option is currently in developer preview.
+IMPORTANT: The new features of the `application` builder described here are incompatible with the `@angular-devkit/build-angular:karma` test builder by default because it is using the `browser` builder internally.
+Users can opt-in to use the `application` builder by setting the `builderMode` option to `application` for that builder.
+The `@angular/build:karma` and `@angular/build:unit-test` builders always use the `application` builder.
 If you notice any issues, please report them [here](https://github.com/angular/angular-cli/issues).
 
 ### Build-time value replacement with `define`
@@ -392,8 +392,8 @@ For the import attribute, the following loader values are supported:
 - `dataurl` - inlines the content as a [data URL](https://developer.mozilla.org/docs/Web/HTTP/Basics_of_HTTP/Data_URIs).
 - `base64` - inlines the content as a Base64-encoded string.
 
-An additional requirement to use import attributes is that the TypeScript `module` option must be set to `esnext` to allow TypeScript to successfully build the application code.
-Once `ES2025` is available within TypeScript, this change will no longer be needed.
+An additional requirement to use import attributes is that the TypeScript `module` option must be set to `esnext` or `preserve` to allow TypeScript to successfully build the application code.
+New projects use `preserve` by default, so no change is needed.
 
 At this time, TypeScript does not support type definitions that are based on import attribute values.
 The use of `@ts-expect-error`/`@ts-ignore` or the use of individual type definition files (assuming the file is only imported with the same loader attribute) is currently required.
