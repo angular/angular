@@ -97,16 +97,12 @@ Instead, they are being loaded from the service worker's cache.
 Notice that all of the files the browser needs to render this application are cached.
 The `ngsw-config.json` boilerplate configuration is set up to cache the specific resources used by the CLI:
 
-- `index.html`
-- `favicon.ico`
+- `index.html` (and `index.csr.html` for applications with server-side rendering or prerendering)
+- `favicon.ico` and `manifest.webmanifest`
 - Build artifacts (JS and CSS bundles)
-- Anything under `assets`
-- Images and fonts directly under the configured `outputPath` (by default `./dist/<project-name>/`) or `resourcesOutputPath`.
-  See the documentation for `ng build` for more information about these options.
+- Images and fonts anywhere in the browser output (by default `./dist/<project-name>/browser/`)
 
 IMPORTANT: The generated `ngsw-config.json` includes a limited list of cacheable fonts and images extensions. In some cases, you might want to modify the glob pattern to suit your needs.
-
-IMPORTANT: If `resourcesOutputPath` or `assets` paths are modified after the generation of configuration file, you need to change the paths manually in `ngsw-config.json`.
 
 ### Making changes to your application
 
@@ -120,8 +116,8 @@ Make a change to the application, and watch the service worker install the updat
    This should also close the Developer Tools.
 
 1. Shut down `http-server` (Ctrl-c).
-1. Open `src/app/app.component.html` for editing.
-1. Change the text `Welcome to {{title}}!` to `Bienvenue à {{title}}!`.
+1. Open `src/app/app.html` for editing.
+1. Change the text `Hello, {{ title() }}` to `Bienvenue à {{ title() }}!`.
 1. Build and run the server again:
 
 ```shell

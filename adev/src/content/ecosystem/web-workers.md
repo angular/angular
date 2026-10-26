@@ -14,7 +14,7 @@ ng generate web-worker <location>
 ```
 
 You can add a web worker anywhere in your application.
-For example, to add a web worker to the root component, `src/app/app.component.ts`, run the following command.
+For example, to add a web worker to the root component, `src/app/app.ts`, run the following command.
 
 ```shell
 ng generate web-worker app
@@ -32,9 +32,9 @@ The command performs the following actions.
    });
    ```
 
-1. Adds the following scaffold code to `src/app/app.component.ts` to use the worker.
+1. Adds the following scaffold code to `src/app/app.ts` to use the worker.
 
-   ```ts {header:"src/app/app.component.ts"}
+   ```ts {header:"src/app/app.ts"}
    if (typeof Worker !== 'undefined') {
      // Create a new
      const worker = new Worker(new URL('./app.worker', import.meta.url));
