@@ -216,7 +216,7 @@ If you haven't used `sizes` before, a good place to start is to set it based on 
 
 If you find that the above does not cover your desired image behavior, see the documentation on [advanced sizes values](#advanced-sizes-values).
 
-Note that `NgOptimizedImage` automatically prepends `"auto"` to the provided `sizes` value. This is an optimization that increases the accuracy of srcset selection on browsers which support `sizes="auto"`, and is ignored by browsers which do not.
+Note that for lazy-loaded images, `NgOptimizedImage` automatically prepends `"auto"` to the provided `sizes` value. This is an optimization that increases the accuracy of srcset selection on browsers which support `sizes="auto"`, and is ignored by browsers which do not. Images that are not lazy-loaded, such as `priority` images, keep the `sizes` value as provided.
 
 By default, the responsive breakpoints are:
 
@@ -267,7 +267,7 @@ By default, `NgOptimizedImage` sets `loading=lazy` for all images that are not m
 
 By default, `NgOptimizedImage` sets `decoding="auto"` for all images. This allows the browser to decide the optimal time to decode an image after it has been fetched. When an image is marked as `priority`, Angular automatically sets `decoding="sync"` to ensure the image is decoded and painted as early as possible helping improve **Largest Contentful Paint (LCP)** performance.
 
-You can still override this behavior by explicitly setting the `decoding` attribute.  
+You can override the default `auto` for non-priority images by explicitly setting the `decoding` attribute. Priority images always use `decoding="sync"`.  
 [See the documentation for the standard image `decoding` attribute for details](https://developer.mozilla.org/docs/Web/HTML/Element/img#decoding).
 
 ```html
