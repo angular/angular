@@ -328,6 +328,26 @@ impl InputTransformSite {
             || self.issue.is_some()
             || matches!(self.target, TransformTarget::NotAFunction(_))
     }
+
+    /// Problem reported by ngtsc's `parseDecoratorInputTransformFunction` in
+    /// `emitDeclarationOnly` mode for inline arrow/function expressions.
+    pub fn emit_declaration_only_issue(&self) -> Option<ValueIssue> {
+        let TransformTarget::Inline(facts) = &self.target else {
+            return None;
+        };
+        let message = match &facts.first_param {
+            FirstParam::Untyped => "Input transform function first parameter must have a type",
+            FirstParam::Rest => {
+                "Input transform function first parameter cannot be a spread parameter"
+            }
+            FirstParam::Absent | FirstParam::Typed { .. } => return None,
+        };
+        Some(ValueIssue::wrong_type_with_detail(
+            self.value_span,
+            message,
+            "Value could not be determined statically.",
+        ))
+    }
 }
 
 fn classify_transform(

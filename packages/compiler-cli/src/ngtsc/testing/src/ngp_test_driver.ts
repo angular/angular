@@ -324,6 +324,7 @@ export function performNgpCompilationSync(params: {
         rootDirs,
         preserveSymlinks: Boolean(options.preserveSymlinks),
         allowJs: Boolean(options.allowJs),
+        emitDeclarationOnly: Boolean(options.emitDeclarationOnly),
       },
       angularCompilerOptions: {
         _generateExtraImportsInLocalMode: Boolean(rawOpts['_generateExtraImportsInLocalMode']),
@@ -331,6 +332,9 @@ export function performNgpCompilationSync(params: {
         workspaceName: analyzerWorkspaceName,
         _useHostForImportGeneration: useHostForImportGeneration,
         _angularCoreVersion: rawOpts['_angularCoreVersion'],
+        _experimentalAllowEmitDeclarationOnly: Boolean(
+          rawOpts['_experimentalAllowEmitDeclarationOnly'],
+        ),
       },
       files: rootNames.map((r) => toPosixPath(fs.resolve(basePath, r))),
     });

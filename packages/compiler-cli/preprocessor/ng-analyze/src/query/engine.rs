@@ -64,6 +64,7 @@ pub struct QueryEngine<Fs: ResourceResolverFs + Clone + 'static> {
     pub use_poisoned_data: bool,
     pub strict_injection_parameters: bool,
     pub implicit_standalone: bool,
+    pub emit_declaration_only: bool,
 }
 
 impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
@@ -88,6 +89,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             false,
             false,
             true,
+            false,
         )
     }
 
@@ -106,6 +108,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         use_poisoned_data: bool,
         strict_injection_parameters: bool,
         implicit_standalone: bool,
+        emit_declaration_only: bool,
     ) -> Arc<Self> {
         Arc::new(Self {
             fs,
@@ -126,6 +129,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             use_poisoned_data,
             strict_injection_parameters,
             implicit_standalone,
+            emit_declaration_only,
         })
     }
 
@@ -163,6 +167,8 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             mode,
             strict_standalone: self.strict_standalone,
             strict_injection_parameters: self.strict_injection_parameters,
+            emit_declaration_only: self.emit_declaration_only
+                && mode == crate::analyzer::WireMode::Syntax,
         }
     }
 

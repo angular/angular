@@ -162,6 +162,7 @@ struct EffectiveConfig {
     use_poisoned_data: bool,
     strict_injection_parameters: bool,
     implicit_standalone: bool,
+    emit_declaration_only: bool,
 }
 
 impl EffectiveConfig {
@@ -226,6 +227,7 @@ impl EffectiveConfig {
         let implicit_standalone = options
             .implicit_standalone
             .unwrap_or_else(|| tsconfig_flag(|r| r.implicit_standalone, true));
+        let emit_declaration_only = tsconfig_flag(|r| r.emit_declaration_only, false);
 
         let (tsconfig_files, tsconfig_root_dirs, tsconfig_workspace_name) = match resolved {
             Some(r) => (r.files, r.compiler_options.root_dirs, r.workspace_name),
@@ -273,6 +275,7 @@ impl EffectiveConfig {
             use_poisoned_data,
             strict_injection_parameters,
             implicit_standalone,
+            emit_declaration_only,
             tsconfig_path,
         })
     }
@@ -365,6 +368,7 @@ impl Analyzer {
             config.use_poisoned_data,
             config.strict_injection_parameters,
             config.implicit_standalone,
+            config.emit_declaration_only,
         );
         *engine.tsconfig_dts_files.write().unwrap() = dts_files;
 
@@ -917,6 +921,7 @@ impl Analyzer {
         let r3_symbols_path = self.engine.r3_symbols_file();
         let cx = crate::analyzer::WireContext {
             mode: crate::analyzer::WireMode::Semantic,
+            emit_declaration_only: false,
             source_text: &source_text,
             converter: &file_data.converter,
             reference_strategy: &*self.engine.reference_strategy,
@@ -1024,6 +1029,7 @@ impl Analyzer {
                     let declaring_exports = ctx.declaring_export_names(&semantic_res).await;
                     let cx = crate::analyzer::WireContext {
                         mode: crate::analyzer::WireMode::Semantic,
+                        emit_declaration_only: false,
                         source_text: &source_text,
                         converter: &semantic_res.converter,
                         reference_strategy: &*engine.reference_strategy,
@@ -1063,6 +1069,7 @@ impl Analyzer {
                     let declaring_exports = ctx.declaring_export_names(&syntax_res).await;
                     let cx = crate::analyzer::WireContext {
                         mode: crate::analyzer::WireMode::Syntax,
+                        emit_declaration_only: engine.emit_declaration_only,
                         source_text: &source_text,
                         converter: &syntax_res.converter,
                         reference_strategy: &*engine.reference_strategy,
@@ -1697,6 +1704,7 @@ mod chunk_order_tests {
             let r3_symbols_path = engine.r3_symbols_file();
             let cx = crate::analyzer::WireContext {
                 mode: crate::analyzer::WireMode::Semantic,
+                emit_declaration_only: false,
                 source_text: &source_text,
                 converter: &semantic.converter,
                 reference_strategy: &*engine.reference_strategy,

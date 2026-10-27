@@ -124,6 +124,8 @@ pub struct ClassData {
     /// Spans of ALL recognized Angular decorators on the class (kept even for decorators the
     /// classification dropped — wire parity).
     pub ng_decorator_spans: Vec<oxc_span::Span>,
+    /// Spans of non-Angular decorators applied to the class.
+    pub non_ng_decorator_spans: Vec<oxc_span::Span>,
     /// Spans the processor deletes to strip Angular class and member decorators, including
     /// trailing whitespace. Separate from `ng_decorator_spans`, which diagnostics use.
     pub decorator_removal_spans: Vec<oxc_span::Span>,
@@ -271,6 +273,7 @@ pub struct DirectiveData {
     /// Stage 2 can chase cross-file arrays and aliases before it is projected onto the wire.
     pub host_directives: Option<Resolved<Vec<HostDirectiveEntry>>>,
     pub host_directives_span: Option<oxc_span::Span>,
+    pub unsupported_host_directive_spans: Vec<oxc_span::Span>,
     /// The directive's own `hostDirectives`, resolved in stage 2 — what ngtsc's
     /// `TypeCheckScopeRegistry` puts in `directivesOnHost` ahead of the directive itself when
     /// type-checking its host bindings. Components keep theirs on
@@ -466,6 +469,7 @@ impl Default for DirectiveData {
             host_properties: Vec::new(),
             host_directives: None,
             host_directives_span: None,
+            unsupported_host_directive_spans: Vec::new(),
             resolved_host_directives: None,
             host_directive_diagnostics: Vec::new(),
             providers_span: None,
@@ -1607,11 +1611,14 @@ pub struct ValidationContext {
     pub strict_standalone: bool,
     /// `angularCompilerOptions.strictInjectionParameters`.
     pub strict_injection_parameters: bool,
+    /// `compilerOptions.emitDeclarationOnly && angularCompilerOptions._experimentalAllowEmitDeclarationOnly`.
+    pub emit_declaration_only: bool,
 }
 
 /// Pure data object holding the context needed for wire serialization.
 pub struct WireContext<'a> {
     pub mode: WireMode,
+    pub emit_declaration_only: bool,
     pub source_text: &'a str,
     pub converter: &'a crate::utils::Utf8ToUtf16,
     pub reference_strategy: &'a dyn crate::analyzer::import_emit::ReferenceEmitStrategy,
@@ -2019,6 +2026,19 @@ impl ClassData {
         converter: &crate::utils::Utf8ToUtf16,
         diagnostics: &mut Vec<crate::NgDiagnostic>,
     ) {
+        if cx.emit_declaration_only && !self.non_ng_decorator_spans.is_empty() {
+            for span in &self.non_ng_decorator_spans {
+                push_error(
+                    diagnostics,
+                    file_path,
+                    converter,
+                    "1005",
+                    *span,
+                    "In experimental declaration-only emission mode, Angular does not support custom decorators. Ensure all class decorators are from Angular.".to_string(),
+                );
+            }
+            return;
+        }
         for issue in &self.decorator_issues {
             push_issue(diagnostics, file_path, converter, issue);
         }
@@ -2038,10 +2058,10 @@ impl ClassData {
         }
         match &self.decorator {
             DecoratorData::Component(c) => {
-                self.validate_directive(&c.directive, false, file_path, converter, diagnostics);
+                self.validate_directive(&c.directive, false, cx, file_path, converter, diagnostics);
                 self.validate_host_directives(
                     &c.directive,
-                    cx.mode,
+                    cx,
                     file_path,
                     converter,
                     diagnostics,
@@ -2057,8 +2077,8 @@ impl ClassData {
                 );
             }
             DecoratorData::Directive(d) => {
-                self.validate_directive(d, true, file_path, converter, diagnostics);
-                self.validate_host_directives(d, cx.mode, file_path, converter, diagnostics);
+                self.validate_directive(d, true, cx, file_path, converter, diagnostics);
+                self.validate_host_directives(d, cx, file_path, converter, diagnostics);
                 self.validate_declared_directive_selector(
                     d,
                     cx.mode,
@@ -2326,6 +2346,7 @@ impl ClassData {
         &self,
         d: &DirectiveData,
         is_directive: bool,
+        cx: ValidationContext,
         file_path: &std::path::Path,
         converter: &crate::utils::Utf8ToUtf16,
         diagnostics: &mut Vec<crate::NgDiagnostic>,
@@ -2371,6 +2392,14 @@ impl ClassData {
             .input_transforms
             .iter()
             .filter_map(|site| site.issue.as_ref());
+        let decl_only_transform_issues: Vec<ValueIssue> = if cx.emit_declaration_only {
+            d.input_transforms
+                .iter()
+                .filter_map(super::transforms::InputTransformSite::emit_declaration_only_issue)
+                .collect()
+        } else {
+            Vec::new()
+        };
         for issue in d
             .io_issues
             .iter()
@@ -2378,6 +2407,7 @@ impl ClassData {
             .chain(&query_predicate_issues)
             .chain(&host_issues)
             .chain(transform_issues)
+            .chain(&decl_only_transform_issues)
         {
             push_issue(diagnostics, file_path, converter, issue);
         }
@@ -2501,12 +2531,25 @@ impl ClassData {
     fn validate_host_directives(
         &self,
         d: &DirectiveData,
-        mode: WireMode,
+        cx: ValidationContext,
         file_path: &std::path::Path,
         converter: &crate::utils::Utf8ToUtf16,
         diagnostics: &mut Vec<crate::NgDiagnostic>,
     ) {
-        if mode != WireMode::Semantic {
+        if cx.emit_declaration_only {
+            for span in &d.unsupported_host_directive_spans {
+                push_error(
+                    diagnostics,
+                    file_path,
+                    converter,
+                    "11003",
+                    *span,
+                    "In experimental declaration-only emission mode, host directive cannot be an expression. Use an identifier instead".to_string(),
+                );
+            }
+            return;
+        }
+        if cx.mode != WireMode::Semantic {
             return;
         }
         if let (Some(host_directives), Some(span)) = (&d.host_directives, d.host_directives_span) {
@@ -4270,10 +4313,13 @@ impl ClassData {
     /// a local binding or through a generated import.
     fn to_wire_host_directives(
         &self,
-        slot: &Option<Resolved<Vec<HostDirectiveEntry>>>,
+        d: &DirectiveData,
         cx: &WireContext,
     ) -> Option<Vec<HostDirectiveMetadata>> {
-        let slot = slot.as_ref()?;
+        if cx.emit_declaration_only && !d.unsupported_host_directive_spans.is_empty() {
+            return None;
+        }
+        let slot = d.host_directives.as_ref()?;
         let entries = slot.get_optional()?;
         let file_id = self.reference_id.file;
         let current_file_path = cx.path_lookup.map(|lookup| lookup(file_id));
@@ -4318,7 +4364,7 @@ impl ClassData {
             host_metadata: self
                 .read_optional_field(d.host_expr.as_deref(), cx, "directive.host")?
                 .map(|host| host_metadata_wire(host, cx.source_text, cx.converter)),
-            host_directives: self.to_wire_host_directives(&d.host_directives, cx),
+            host_directives: self.to_wire_host_directives(d, cx),
             resolved_host_directives: d.resolved_host_directives.as_ref().map(|hds| {
                 hds.iter()
                     .map(|hd| ResolvedHostDirectiveMetadata::to_wire(hd, cx.path_lookup))
@@ -4574,7 +4620,7 @@ impl ClassData {
             host_metadata: self
                 .read_optional_field(c.directive.host_expr.as_deref(), cx, "component.host")?
                 .map(|host| host_metadata_wire(host, cx.source_text, cx.converter)),
-            host_directives: self.to_wire_host_directives(&c.directive.host_directives, cx),
+            host_directives: self.to_wire_host_directives(&c.directive, cx),
             providers_span: c
                 .directive
                 .providers_span

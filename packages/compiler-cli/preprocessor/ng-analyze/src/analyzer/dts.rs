@@ -520,6 +520,7 @@ fn extract_class_metadata(
         let class_data = ClassData {
             reference_id,
             ng_decorator_spans: Vec::new(),
+            non_ng_decorator_spans: Vec::new(),
             decorator_removal_spans: Vec::new(),
             nocollapse_insertions: Vec::new(),
             span: class.span,
@@ -719,6 +720,7 @@ fn extract_class_metadata(
         let class_data = ClassData {
             reference_id,
             ng_decorator_spans: Vec::new(),
+            non_ng_decorator_spans: Vec::new(),
             decorator_removal_spans: Vec::new(),
             nocollapse_insertions: Vec::new(),
             span: class.span,
