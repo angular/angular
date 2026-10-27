@@ -488,6 +488,8 @@ pub struct DirectiveMetadata {
     pub declaring_ng_module: Option<DeclaringNgModule>,
     #[serde(default)]
     pub is_jit: bool,
+    #[serde(default)]
+    pub is_poisoned: bool,
 }
 
 #[cfg_attr(feature = "napi", napi(object))]

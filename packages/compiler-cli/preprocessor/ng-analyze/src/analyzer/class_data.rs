@@ -309,10 +309,23 @@ pub struct DirectiveData {
     pub duplicate_declaring_ng_modules: Vec<crate::query::ReferenceId>,
     pub duplicate_declaration_context: Vec<crate::NgRelatedInformation>,
     pub is_jit: bool,
+    pub is_poisoned: bool,
     pub decorator_name: Option<String>,
 }
 
 impl DirectiveData {
+    /// True when `hostDirectives` has been evaluated and has a structural shape error
+    /// (which in ngtsc throws a `FatalDiagnosticError` during `analyze()`).
+    pub fn has_host_directives_shape_error(&self) -> bool {
+        let Some(host_directives) = &self.host_directives else {
+            return false;
+        };
+        if host_directives.contains_incomplete() {
+            return false;
+        }
+        crate::evaluator::host_directives_shape_error(host_directives.raw()).is_some()
+    }
+
     /// The `exportAs` names, when the property evaluated to a string.
     pub fn export_as_names(&self) -> Option<Vec<String>> {
         self.export_as
@@ -489,6 +502,7 @@ impl Default for DirectiveData {
             duplicate_declaring_ng_modules: Vec::new(),
             duplicate_declaration_context: Vec::new(),
             is_jit: false,
+            is_poisoned: false,
             decorator_name: None,
         }
     }
@@ -2049,13 +2063,19 @@ impl ClassData {
         {
             return;
         }
-        for issue in &self.di_issues {
-            push_issue(diagnostics, file_path, converter, issue);
+        let has_hd_shape_err = cx.mode == WireMode::Semantic
+            && self
+                .directive_part()
+                .is_some_and(|d| d.has_host_directives_shape_error());
+        if !has_hd_shape_err {
+            for issue in &self.di_issues {
+                push_issue(diagnostics, file_path, converter, issue);
+            }
         }
         self.validate_constructor_param_decorators(file_path, converter, diagnostics);
         self.validate_constructor_dependencies(cx, file_path, converter, diagnostics);
         self.validate_service_constructor_di(file_path, converter, diagnostics);
-        if cx.strict_standalone {
+        if cx.strict_standalone && !has_hd_shape_err {
             self.validate_strict_standalone(file_path, converter, diagnostics);
         }
         match &self.decorator {
@@ -2068,34 +2088,38 @@ impl ClassData {
                     converter,
                     diagnostics,
                 );
-                self.validate_component(c, cx.mode, file_path, converter, diagnostics);
-                self.validate_unique_declaration(
-                    "Component",
-                    &c.directive.duplicate_declaring_ng_modules,
-                    &c.directive.duplicate_declaration_context,
-                    file_path,
-                    converter,
-                    diagnostics,
-                );
+                if cx.mode != WireMode::Semantic || !c.directive.has_host_directives_shape_error() {
+                    self.validate_component(c, cx.mode, file_path, converter, diagnostics);
+                    self.validate_unique_declaration(
+                        "Component",
+                        &c.directive.duplicate_declaring_ng_modules,
+                        &c.directive.duplicate_declaration_context,
+                        file_path,
+                        converter,
+                        diagnostics,
+                    );
+                }
             }
             DecoratorData::Directive(d) => {
                 self.validate_directive(d, true, cx, file_path, converter, diagnostics);
                 self.validate_host_directives(d, cx, file_path, converter, diagnostics);
-                self.validate_declared_directive_selector(
-                    d,
-                    cx.mode,
-                    file_path,
-                    converter,
-                    diagnostics,
-                );
-                self.validate_unique_declaration(
-                    "Directive",
-                    &d.duplicate_declaring_ng_modules,
-                    &d.duplicate_declaration_context,
-                    file_path,
-                    converter,
-                    diagnostics,
-                );
+                if cx.mode != WireMode::Semantic || !d.has_host_directives_shape_error() {
+                    self.validate_declared_directive_selector(
+                        d,
+                        cx.mode,
+                        file_path,
+                        converter,
+                        diagnostics,
+                    );
+                    self.validate_unique_declaration(
+                        "Directive",
+                        &d.duplicate_declaring_ng_modules,
+                        &d.duplicate_declaration_context,
+                        file_path,
+                        converter,
+                        diagnostics,
+                    );
+                }
             }
             DecoratorData::Pipe(p) => {
                 self.validate_pipe(p, file_path, converter, diagnostics);
@@ -4391,6 +4415,7 @@ impl ClassData {
                 .map(|s| crate::types::metadata::SpanMetadata::new(s, cx.converter)),
             declaring_ng_module,
             is_jit: d.is_jit,
+            is_poisoned: d.is_poisoned,
         })
     }
 
