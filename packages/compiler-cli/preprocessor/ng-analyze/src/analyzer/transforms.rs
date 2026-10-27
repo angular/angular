@@ -74,6 +74,15 @@ pub enum FirstParam {
     Rest,
     Typed {
         type_span: Span,
+        /// Raw source text of the first parameter's type annotation in its declaring file.
+        type_text: String,
+        /// True when the type uses only built-in/ambient TypeScript types and does not reference
+        /// any symbol bound in the declaring file's scope, `import(...)` type, `typeof` query, or
+        /// `this` type, so it can be emitted verbatim in any consumer file.
+        is_self_contained: bool,
+        /// True when the type can be emitted verbatim at class scope in the declaring file itself
+        /// (no `this` type or function-scoped `typeof` parameter reference).
+        is_emittable_in_file: bool,
         /// The first type it references that is declared in its file but not exported from it.
         unexported: Option<UnexportedType>,
     },
@@ -131,31 +140,82 @@ impl FunctionFacts {
 fn typed_param(ty: &TSType<'_>, semantic: &Semantic<'_>) -> FirstParam {
     let mut finder = UnexportedTypeFinder {
         semantic,
+        is_self_contained: true,
+        is_emittable_in_file: true,
         found: None,
     };
     finder.visit_ts_type(ty);
+    let span = ty.span();
+    let type_text = semantic
+        .source_text()
+        .get(span.start as usize..span.end as usize)
+        .unwrap_or_default()
+        .to_string();
     FirstParam::Typed {
-        type_span: ty.span(),
+        type_span: span,
+        type_text,
+        is_self_contained: finder.is_self_contained,
+        is_emittable_in_file: finder.is_emittable_in_file,
         unexported: finder.found,
     }
 }
 
 /// Finds the type references ngtsc's `assertEmittableInputType` rejects within the context file:
-/// identifiers naming a declaration of the file that it does not statically export.
+/// identifiers naming a declaration of the file that it does not statically export. Also tracks
+/// whether the type is self-contained across files (`is_self_contained`) and emittable at class
+/// scope in the declaring file (`is_emittable_in_file`).
 struct UnexportedTypeFinder<'s, 'a> {
     semantic: &'s Semantic<'a>,
+    is_self_contained: bool,
+    is_emittable_in_file: bool,
     found: Option<UnexportedType>,
 }
 
 impl<'a> Visit<'a> for UnexportedTypeFinder<'_, 'a> {
     fn visit_ts_type_reference(&mut self, it: &TSTypeReference<'a>) {
-        if self.found.is_some() {
-            return;
-        }
-        if let TSTypeName::IdentifierReference(ident) = &it.type_name {
-            self.check(ident);
+        if self.found.is_none() {
+            if let TSTypeName::IdentifierReference(ident) = &it.type_name {
+                self.check(ident);
+            }
         }
         walk::walk_ts_type_reference(self, it);
+    }
+
+    fn visit_identifier_reference(&mut self, ident: &IdentifierReference<'a>) {
+        let scoping = self.semantic.scoping();
+        if let Some(symbol_id) = ident
+            .reference_id
+            .get()
+            .and_then(|id| scoping.get_reference(id).symbol_id())
+        {
+            self.is_self_contained = false;
+            if scoping
+                .symbol_flags(symbol_id)
+                .intersects(SymbolFlags::FunctionScopedVariable)
+            {
+                self.is_emittable_in_file = false;
+            }
+        }
+    }
+
+    fn visit_ts_import_type(&mut self, it: &oxc_ast::ast::TSImportType<'a>) {
+        self.is_self_contained = false;
+        walk::walk_ts_import_type(self, it);
+    }
+
+    fn visit_ts_type_query(&mut self, it: &oxc_ast::ast::TSTypeQuery<'a>) {
+        self.is_self_contained = false;
+        walk::walk_ts_type_query(self, it);
+    }
+
+    fn visit_ts_this_type(&mut self, _it: &oxc_ast::ast::TSThisType) {
+        self.is_self_contained = false;
+        self.is_emittable_in_file = false;
+    }
+
+    fn visit_this_expression(&mut self, _it: &oxc_ast::ast::ThisExpression) {
+        self.is_self_contained = false;
+        self.is_emittable_in_file = false;
     }
 }
 
@@ -283,6 +343,9 @@ pub struct InputTransformSite {
     pub conflicting_coercion: bool,
     /// The first problem with the transform function, found by Stage 2.
     pub issue: Option<ValueIssue>,
+    /// The resolved first-parameter type string for `ngAcceptInputType_<input>` when Stage 2 can
+    /// emit the parameter type directly (mirroring ngtsc's full-compilation `Reference(firstParam.type)`).
+    pub resolved_type: Option<String>,
 }
 
 /// What a transform evaluates to, as far as ngtsc's reflector can read a function from it.
@@ -319,6 +382,7 @@ impl InputTransformSite {
             target: classify_transform(expr, eval)?,
             conflicting_coercion: false,
             issue: None,
+            resolved_type: None,
         })
     }
 
@@ -375,7 +439,7 @@ fn classify_transform(
         ResolvedValue::Reference(_) | ResolvedValue::Dynamic(_) => {
             TransformTarget::NotAFunction(wrong_type_detail(&value))
         }
-        ResolvedValue::Incomplete(_) => imported_function(expr, eval),
+        ResolvedValue::Incomplete(incomplete) => imported_function(incomplete, expr, eval),
         ResolvedValue::KnownFn(_) | ResolvedValue::Synthetic(_) => TransformTarget::Unknown,
         _ => return Err(wrong_type_detail(&value)),
     };
@@ -393,8 +457,27 @@ fn declared_elsewhere(dynamic: &crate::evaluator::value::DynamicValue) -> bool {
     }
 }
 
-/// The import an identifier transform names, which Stage 2 resolves to its declaration.
-fn imported_function(expr: &Expression<'_>, eval: &EvalInput<'_, '_>) -> TransformTarget {
+/// The import a transform expression names, which Stage 2 resolves to its declaration.
+fn imported_function(
+    incomplete: &crate::evaluator::value::IncompleteValue,
+    expr: &Expression<'_>,
+    eval: &EvalInput<'_, '_>,
+) -> TransformTarget {
+    if incomplete.transparent {
+        if let crate::evaluator::value::IncompleteDep::Reference(target) = &incomplete.dep {
+            let export_name = match &target.symbol {
+                ImportKind::Named(name) => Some(name.clone()),
+                ImportKind::Default => Some("default".to_string()),
+                ImportKind::Namespace => None,
+            };
+            if let Some(export_name) = export_name {
+                return TransformTarget::Imported {
+                    specifier: target.specifier.clone(),
+                    export_name,
+                };
+            }
+        }
+    }
     let Expression::Identifier(ident) = expr else {
         return TransformTarget::Unknown;
     };
@@ -450,6 +533,12 @@ impl InputTransformSite {
                 let Some((facts, declared)) =
                     imported_function_facts(specifier, export_name, file_path, ctx).await
                 else {
+                    if specifier == "@angular/core"
+                        && matches!(export_name.as_str(), "booleanAttribute" | "numberAttribute")
+                        && !self.conflicting_coercion
+                    {
+                        self.resolved_type = Some("unknown".to_string());
+                    }
                     return;
                 };
                 let facts = match facts {
@@ -470,14 +559,36 @@ impl InputTransformSite {
             }
             TransformTarget::Unknown => return,
         };
-        self.issue = self.definition_issue(&facts, detail, declared);
+        self.issue = self.definition_issue(&facts, detail, &declared);
+        if self.issue.is_none() && !self.conflicting_coercion {
+            self.resolved_type = match (&facts.first_param, &declared) {
+                (FirstParam::Absent, _) => Some("unknown".to_string()),
+                (
+                    FirstParam::Typed {
+                        type_text,
+                        is_emittable_in_file: true,
+                        ..
+                    },
+                    Declared::InFile,
+                ) if !type_text.is_empty() => Some(type_text.clone()),
+                (
+                    FirstParam::Typed {
+                        type_text,
+                        is_self_contained: true,
+                        ..
+                    },
+                    Declared::OtherFile | Declared::Declarations,
+                ) if !type_text.is_empty() => Some(type_text.clone()),
+                _ => None,
+            };
+        }
     }
 
     fn definition_issue(
         &self,
         facts: &FunctionFacts,
         detail: String,
-        declared: Declared,
+        declared: &Declared,
     ) -> Option<ValueIssue> {
         let wrong_type = |message: &str| {
             Some(ValueIssue::wrong_type_with_detail(
@@ -511,6 +622,7 @@ impl InputTransformSite {
             FirstParam::Typed {
                 type_span,
                 unexported,
+                ..
             } => (*type_span, unexported.as_ref()?),
         };
         match declared {

@@ -3569,11 +3569,11 @@ fn prepare_members(
                 // locate, which would splice a malformed `: ;` member.
                 if !i.is_signal {
                     use std::fmt::Write;
-                    let invalid_site = d
+                    let site = d
                         .input_transforms
                         .iter()
-                        .find(|site| site.input == i.name && site.is_invalid());
-                    if let Some(site) = invalid_site {
+                        .rfind(|site| site.input == i.name);
+                    if let Some(site) = site.filter(|s| s.is_invalid()) {
                         if !site.conflicting_coercion {
                             let _ = writeln!(
                                 prepared.coercion_members,
@@ -3604,12 +3604,22 @@ fn prepare_members(
                             );
                         }
                         Some(TransformData::Expression(span)) if !span.is_empty() => {
-                            let expr_str = &source_text[span.start as usize..span.end as usize];
-                            let _ = writeln!(
-                                prepared.coercion_members,
-                                "{NG_ACCEPT_INPUT_TYPE_PREFIX}{}: Parameters<typeof {expr_str}>[0];",
-                                coercion_member_key(&i.name)
-                            );
+                            if let Some(resolved_type) =
+                                site.and_then(|s| s.resolved_type.as_deref())
+                            {
+                                let _ = writeln!(
+                                    prepared.coercion_members,
+                                    "{NG_ACCEPT_INPUT_TYPE_PREFIX}{}: {resolved_type};",
+                                    coercion_member_key(&i.name)
+                                );
+                            } else {
+                                let expr_str = &source_text[span.start as usize..span.end as usize];
+                                let _ = writeln!(
+                                    prepared.coercion_members,
+                                    "{NG_ACCEPT_INPUT_TYPE_PREFIX}{}: Parameters<typeof {expr_str}>[0];",
+                                    coercion_member_key(&i.name)
+                                );
+                            }
                         }
                         _ => {}
                     }
