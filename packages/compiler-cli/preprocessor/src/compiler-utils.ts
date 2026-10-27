@@ -397,7 +397,6 @@ export function buildDeps(
   usesInheritance: boolean,
   o: typeof outputAst,
   s: MagicString,
-  complianceMode: boolean = false,
 ):
   | Array<{
       token: outputAst.Expression;
@@ -430,11 +429,10 @@ export function buildDeps(
       // ngtsc's valueReferenceToExpression() emits a named-import type reference as an
       // `ExternalExpr` (kind IMPORTED), which the import manager prints through the module's
       // namespace import — e.g. `i0.ElementRef` for a token imported from `@angular/core`.
-      // We scope this to `@angular/core` by default (and all imported tokens in compliance mode);
-      // other named imports keep their bare local name in `.ng.ts` goldens.
       // https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L71-L82
+      // TODO: Re-evaluate whether using namespace imports here is desirable, matching ngtsc behavior for now.
       token =
-        param.typeModule != null && (param.typeModule === '@angular/core' || complianceMode)
+        param.typeModule != null
           ? o.importExpr(new o.ExternalReference(param.typeModule, typeName))
           : o.variable(typeName);
     } else {

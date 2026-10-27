@@ -4,6 +4,8 @@ import { Directive, Optional, Self } from '@angular/core';
 import { MatFormFieldControl, ShadowedByPrivateImport } from './public-api';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './public-api';
 
 export class FooDirective {
   constructor(
@@ -15,8 +17,8 @@ export class FooDirective {
     function FooDirective_Factory(__ngFactoryType__: any): any {
       /* @ts-ignore */
       return new (__ngFactoryType__ || FooDirective)(
-        i0.ɵɵdirectiveInject(MatFormFieldControl, 10),
-        i0.ɵɵdirectiveInject(ShadowedByPrivateImport),
+        i0.ɵɵdirectiveInject(i1.MatFormFieldControl, 10),
+        i0.ɵɵdirectiveInject(i1.ShadowedByPrivateImport),
       );
     };
   // @ts-ignore
@@ -39,8 +41,8 @@ export class FooDirective {
         FooDirective,
         [{ type: Directive, args: [{ selector: '[foo]' }] }],
         (): any => [
-          { type: MatFormFieldControl, decorators: [{ type: Optional }, { type: Self }] },
-          { type: ShadowedByPrivateImport },
+          { type: i1.MatFormFieldControl, decorators: [{ type: Optional }, { type: Self }] },
+          { type: i1.ShadowedByPrivateImport },
         ],
         null,
       );

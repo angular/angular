@@ -21,6 +21,8 @@ import { Component } from '@angular/core';
 import { ActionsSubject } from '@ngrx/store';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from '@ngrx/store';
 
 export class AppComponent {
   constructor(private actions$: ActionsSubject) {}
@@ -29,7 +31,7 @@ export class AppComponent {
     __ngFactoryType__: any,
   ): any {
     /* @ts-ignore */
-    return new (__ngFactoryType__ || AppComponent)(i0.ɵɵdirectiveInject(ActionsSubject));
+    return new (__ngFactoryType__ || AppComponent)(i0.ɵɵdirectiveInject(i1.ActionsSubject));
   };
   // @ts-ignore
   static ɵcmp: i0.ɵɵComponentDeclaration<
@@ -75,7 +77,7 @@ export class AppComponent {
             ],
           },
         ],
-        (): any => [{ type: ActionsSubject }],
+        (): any => [{ type: i1.ActionsSubject }],
         null,
       );
   }

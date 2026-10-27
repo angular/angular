@@ -13,7 +13,6 @@ import {
   FactoryTarget,
   OutOfBandDiagnosticCategory,
   ParseTemplateOptions,
-  ParsedTemplate,
   R3ClassDebugInfo,
   R3ClassMetadataCtorParameter,
   R3CompiledExpression,
@@ -51,6 +50,7 @@ import {
 import MagicString, {type SourceMap} from 'magic-string';
 import * as fsSync from 'node:fs';
 import * as path from 'path';
+import {hasAnimations} from './animations.js';
 import {
   buildDeps,
   buildHostDirectives,
@@ -79,7 +79,6 @@ import {
   ParsedComponentTemplate,
   getOrCreateFileAnalysis,
 } from './file_analysis.js';
-import {hasAnimations} from './animations.js';
 import {analyzeForeignComponentFeatures} from './foreign_component.js';
 import {extractHmrMetadata, getHmrUpdateDeclaration} from './hmr.js';
 import type {IAnalyzer} from './hybrid_compiler.js';
@@ -545,13 +544,7 @@ export function processFileSync(
 
     // Build deps from constructor params
     // Use empty array for no-arg constructors (null means "inherit from parent")
-    const deps = buildDeps(
-      constructorParams,
-      classMeta.usesInheritance,
-      o,
-      s,
-      ctx.complianceMode ?? false,
-    );
+    const deps = buildDeps(constructorParams, classMeta.usesInheritance, o, s);
 
     // Avoid duplicate `ɵfac` generation when a class carries multiple decorators (e.g. `@Component` + `@Injectable`).
     // https://github.com/angular/angular/blob/d27e2c2/packages/compiler-cli/src/ngtsc/transform/src/compilation.ts#L710-L718
@@ -2254,15 +2247,15 @@ function buildCtorParametersExpr(
   constructorParams: nga.ConstructorParamMetadata[] | undefined,
   s: MagicString,
   options?: {
-    useCoreNamespace?: boolean;
-    complianceMode?: boolean;
+    omitEmptyDecorators?: boolean;
+    useNamespaceImports?: boolean;
   },
 ): R3ClassMetadataCtorParameter[] | null {
   if (constructorParams == null) {
     return null;
   }
-  const useCoreNamespace = options?.useCoreNamespace ?? false;
-  const complianceMode = options?.complianceMode ?? false;
+  const omitEmptyDecorators = options?.omitEmptyDecorators ?? false;
+  const useNamespaceImports = options?.useNamespaceImports ?? false;
   return constructorParams.map((param) => {
     const typeName = param.isTypeOnly ? undefined : param.typeName;
     let decorators: o.Expression | null = null;
@@ -2272,10 +2265,7 @@ function buildCtorParametersExpr(
         .map((d) => buildDecoratorMetadataExpr(d.name, d.argsSpan, d.argsString, s, []));
       decorators = o.literalArr(ngDecorators);
     }
-    const useNamespaceImport =
-      typeName != null &&
-      param.typeModule != null &&
-      ((useCoreNamespace && param.typeModule === '@angular/core') || complianceMode);
+    const useNamespaceImport = useNamespaceImports && typeName != null && param.typeModule != null;
     return {
       type:
         typeName == null
@@ -2603,8 +2593,7 @@ function buildSetClassMetadata(
     type: o.variable(className),
     decorators: o.literalArr(decoratorObjs),
     ctorParameters: buildCtorParametersExpr(classMeta.constructorParams, s, {
-      useCoreNamespace: true,
-      complianceMode,
+      useNamespaceImports: true,
     }),
     propDecorators: buildPropDecoratorsExpr(classMeta, s, className, guards),
   };
