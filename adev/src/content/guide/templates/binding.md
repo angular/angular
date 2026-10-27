@@ -54,7 +54,7 @@ Continuing the theme example, if a user clicks on a button that updates the `the
 
 You can use text interpolation anywhere you would normally write text in HTML.
 
-All expression values are converted to a string. Objects and arrays are converted using the value’s `toString` method.
+Expression values are converted to a string. `null` and `undefined` render as an empty string. Objects and arrays are converted using the value’s `toString` method.
 
 ## Binding dynamic properties and attributes
 
@@ -103,7 +103,7 @@ When you need to set HTML attributes that do not have corresponding DOM properti
 
 In this example, every time `listRole` changes, Angular automatically sets the `role` attribute of the `<ul>` element by calling `setAttribute`.
 
-If the value of an attribute binding is `null`, Angular removes the attribute by calling `removeAttribute`.
+If the value of an attribute binding is `null` or `undefined`, Angular removes the attribute by calling `removeAttribute`.
 
 ### Text interpolation in properties and attributes
 
@@ -164,7 +164,7 @@ The above example renders the following DOM:
 <button class="highlighted"> ... </button>
 ```
 
-Angular ignores any string values that are not valid CSS class names.
+Angular splits a string value on whitespace and ignores empty strings.
 
 When using static CSS classes, directly binding `class`, and binding specific classes, Angular intelligently combines all of the classes in the rendered result.
 
@@ -258,6 +258,6 @@ Angular supports binding string values to ARIA attributes.
 </button>
 ```
 
-Angular writes the string value to the element’s `aria-label` attribute and removes it when the bound value is `null`.
+Angular writes the string value to the element’s `aria-label` attribute and removes it when the bound value is `null` or `undefined`.
 
 Some ARIA features expose DOM properties or directive inputs that accept structured values (such as element references). Use standard property bindings for those cases. See the [accessibility guide](/best-practices/a11y#aria-attributes-and-properties) for examples and additional guidance.
