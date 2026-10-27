@@ -6,6 +6,7 @@
  */
 
 import * as i0 from './app.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.AppComponent) {
@@ -179,6 +180,7 @@ export class AppComponent {
  */
 
 import * as i0 from './barrel';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.BarrelItemComponent) {
@@ -267,6 +269,7 @@ export class BarrelItemComponent {
  */
 
 import * as i0 from './button.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.ButtonComponent) {
@@ -359,6 +362,7 @@ export class ButtonComponent {
  */
 
 import * as i0 from './card.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.CardComponent) {
@@ -451,6 +455,7 @@ export class CardComponent {
  */
 
 import * as i0 from './feature.module';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.FeatureInnerComponent) {
@@ -588,6 +593,7 @@ export class FeatureModule {
  */
 
 import * as i0 from './icons';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.IconComponent) {
@@ -676,6 +682,7 @@ export class IconComponent {
  */
 
 import * as i0 from './other';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.OtherUnusedComponent) {

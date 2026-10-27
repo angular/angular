@@ -6,6 +6,7 @@
  */
 
 import * as i0 from './foreign-host.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.ForeignHostComponent) {
@@ -106,6 +107,7 @@ export class ForeignHostComponent {
  */
 
 import * as i0 from './misplaced-content.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.MisplacedContentComponent) {
@@ -142,6 +144,7 @@ export class MisplacedContentComponent {
  */
 
 import * as i0 from './missing-foreign-imports.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.MissingForeignImportsComponent) {

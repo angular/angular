@@ -6,6 +6,7 @@
  */
 
 import * as i0 from './bad-expression.directive';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.BadExpressionDirective) {
@@ -82,6 +83,7 @@ export class BadExpressionDirective {
  */
 
 import * as i0 from './dynamic-listener.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.DynamicListenerComponent) {

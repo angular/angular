@@ -6,6 +6,7 @@
  */
 
 import * as i0 from './c1.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.C1) {
@@ -78,6 +79,7 @@ export class C1 {
  */
 
 import * as i0 from './c2.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.C2) {

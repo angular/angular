@@ -6,6 +6,7 @@
  */
 
 import * as i0 from './a_second';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.ASecondComp) {
@@ -149,6 +150,7 @@ i0.ɵɵsetComponentScope(ASecondComp, [ZFirstComp], []);
  */
 
 import * as i0 from './z_first';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.ZFirstComp) {

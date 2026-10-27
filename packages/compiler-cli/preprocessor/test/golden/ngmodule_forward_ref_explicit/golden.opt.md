@@ -64,6 +64,7 @@ export class AppModule {
  */
 
 import * as i0 from './external.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.ExternalComponent) {

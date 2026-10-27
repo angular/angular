@@ -66,6 +66,7 @@ i0.ɵɵsetComponentScope(CompA, [CompB, DirWithHost], []);
  */
 
 import * as i0 from './comp-a.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.CompA) {
@@ -157,6 +158,7 @@ export class CompA {
  */
 
 import * as i0 from './comp-b.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.CompB) {

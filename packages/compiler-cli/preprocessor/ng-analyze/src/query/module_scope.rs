@@ -26,6 +26,7 @@ pub(crate) async fn duplicate_declaration_context<Fs: ResourceResolverFs + Clone
     modules
         .iter()
         .filter_map(|&module| {
+            ctx.record_ngmodule_scope_deps(&registry, module);
             let module_path = ctx.engine.lookup_path(module.file);
             registry.duplicate_declaration_context(
                 module,
@@ -38,7 +39,7 @@ pub(crate) async fn duplicate_declaration_context<Fs: ResourceResolverFs + Clone
 }
 
 /// What `getScopeOfModuleReference` concluded about one source NgModule.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct NgModuleScopeOutcome {
     /// `compilation.isPoisoned`.
     pub is_poisoned: bool,
@@ -51,7 +52,7 @@ pub struct NgModuleScopeOutcome {
 
 /// Per-module facts other handlers read back (`makeDuplicateDeclarationError`,
 /// `makeNotStandaloneDiagnostic`).
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 struct ModuleRecord {
     name: String,
     name_span: SpanMetadata,
@@ -66,6 +67,7 @@ struct ModuleRecord {
 pub struct NgModuleScopeRegistry {
     outcomes: HashMap<ReferenceId, NgModuleScopeOutcome>,
     records: HashMap<ReferenceId, ModuleRecord>,
+    module_dependencies: HashMap<ReferenceId, HashSet<FileId>>,
 }
 
 impl NgModuleScopeRegistry {
@@ -77,6 +79,22 @@ impl NgModuleScopeRegistry {
         self.outcomes
             .get(&module)
             .is_some_and(|outcome| outcome.is_poisoned || outcome.failed)
+    }
+
+    pub fn module_dependencies(&self, module: ReferenceId) -> Option<&HashSet<FileId>> {
+        self.module_dependencies.get(&module)
+    }
+
+    pub fn changed_module_files(&self, other: &Self) -> HashSet<FileId> {
+        let mut changed = HashSet::new();
+        for &module in self.outcomes.keys().chain(other.outcomes.keys()) {
+            if self.outcomes.get(&module) != other.outcomes.get(&module)
+                || self.records.get(&module) != other.records.get(&module)
+            {
+                changed.insert(module.file);
+            }
+        }
+        changed
     }
 
     pub fn duplicate_declaration_context(
@@ -258,21 +276,26 @@ type PreparedLists = [Vec<Result<ScopeEntry, ScopeEntryRejection>>; 3];
 async fn prepare_module<Fs: ResourceResolverFs + Clone + 'static>(
     ctx: &QueryContext<Fs>,
     module: ReferenceId,
-) -> (ReferenceId, PreparedLists) {
-    let syntax = ctx.analyze_file_syntax(module.file).await;
+) -> (ReferenceId, PreparedLists, HashSet<FileId>) {
+    let mod_ctx = QueryContext::new(ctx.engine.clone());
+    mod_ctx.record_file(module.file);
+    let syntax = mod_ctx.analyze_file_syntax(module.file).await;
     let Some(ng_module) = syntax
         .classes
         .iter()
         .find(|class| class.reference_id == module)
         .and_then(|class| class.as_ng_module())
     else {
-        return (module, PreparedLists::default());
+        let deps = mod_ctx.dependencies();
+        ctx.extend_dependencies(deps.iter().copied());
+        return (module, PreparedLists::default(), deps);
     };
     let flatten = |slot: &Option<Resolved<Vec<crate::types::analysis::Reference>>>| {
         let slot = slot.clone();
+        let mod_ctx = &mod_ctx;
         async move {
             match &slot {
-                Some(slot) => scope_entries(slot, ctx).await,
+                Some(slot) => scope_entries(slot, mod_ctx).await,
                 None => Vec::new(),
             }
         }
@@ -282,7 +305,9 @@ async fn prepare_module<Fs: ResourceResolverFs + Clone + 'static>(
         flatten(&ng_module.imports),
         flatten(&ng_module.exports),
     );
-    (module, [declarations, imports, exports])
+    let deps = mod_ctx.dependencies();
+    ctx.extend_dependencies(deps.iter().copied());
+    (module, [declarations, imports, exports], deps)
 }
 
 /// The key the registry files `reference` under.
@@ -384,9 +409,18 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         );
 
         let mut structurally_broken = HashSet::new();
-        for by_name in mapping.duplicate_declarations.values() {
+        let mut registry = NgModuleScopeRegistry::default();
+        for (&decl_file, by_name) in &mapping.duplicate_declarations {
             for modules in by_name.values() {
                 structurally_broken.extend(modules.iter().copied());
+                for &m in modules {
+                    let deps = registry.module_dependencies.entry(m).or_default();
+                    deps.insert(decl_file);
+                    deps.extend(modules.iter().map(|other| other.file));
+                    if let Some(fdeps) = mapping.file_dependencies.get(&decl_file) {
+                        deps.extend(fdeps.iter().copied());
+                    }
+                }
             }
         }
 
@@ -404,12 +438,20 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             .collect();
 
         // Phase 1 (parallel): per-module analysis.
-        let prepared: HashMap<ReferenceId, PreparedLists> = futures::future::join_all(
+        let prepared_with_deps = futures::future::join_all(
             modules.iter().map(|&module| prepare_module(ctx, module)),
         )
-        .await
-        .into_iter()
-        .collect();
+        .await;
+        let mut prepared: HashMap<ReferenceId, PreparedLists> =
+            HashMap::with_capacity(prepared_with_deps.len());
+        for (module, lists, deps) in prepared_with_deps {
+            prepared.insert(module, lists);
+            registry
+                .module_dependencies
+                .entry(module)
+                .or_default()
+                .extend(deps);
+        }
 
         // Phase 2 (ordered): scope resolution.
         let mut resolver = Resolver {
@@ -418,7 +460,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             dts_cache: HashMap::new(),
             prepared,
             structurally_broken,
-            registry: NgModuleScopeRegistry::default(),
+            registry,
         };
         for module in modules {
             resolver.get_scope_of_module(module).await;
@@ -521,6 +563,11 @@ impl<'a, Fs: ResourceResolverFs + Clone + 'static> Resolver<'a, Fs> {
     }
 
     async fn resolve_module(&mut self, module: ReferenceId) -> State {
+        self.registry
+            .module_dependencies
+            .entry(module)
+            .or_default()
+            .insert(module.file);
         let syntax = self.env.ctx.analyze_file_syntax(module.file).await;
         let Some(class) = syntax
             .classes
@@ -561,7 +608,18 @@ impl<'a, Fs: ResourceResolverFs + Clone + 'static> Resolver<'a, Fs> {
             };
             let entries = match prepared.as_mut() {
                 Some(prepared) => std::mem::take(&mut prepared[index]),
-                None => scope_entries(slot, self.env.ctx).await,
+                None => {
+                    let mod_ctx = QueryContext::new(self.env.ctx.engine.clone());
+                    let out = scope_entries(slot, &mod_ctx).await;
+                    let deps = mod_ctx.dependencies();
+                    self.env.ctx.extend_dependencies(deps.iter().copied());
+                    self.registry
+                        .module_dependencies
+                        .entry(module)
+                        .or_default()
+                        .extend(deps);
+                    out
+                }
             };
             let mut position = 0usize;
             let mut accepted = Vec::with_capacity(entries.len());
@@ -656,6 +714,11 @@ impl<'a, Fs: ResourceResolverFs + Clone + 'static> Resolver<'a, Fs> {
                         return State::Failed;
                     }
                 };
+                self.registry
+                    .module_dependencies
+                    .entry(module)
+                    .or_default()
+                    .insert(entry.reference.file);
                 if entry.reference.kind != DeclKind::Class || entry.reference.member.is_some() {
                     let name_span = self.env.declaration_name_span(&entry.reference, None).await;
                     diagnostics.push(NgDiagnostic::error(
@@ -748,7 +811,7 @@ impl<'a, Fs: ResourceResolverFs + Clone + 'static> Resolver<'a, Fs> {
             let info = self.env.class_info(&entry.reference).await;
             let key = decl_key(&entry.reference);
             match self
-                .get_exported_scope(info.as_ref(), ListKind::Import, &mut diagnostics)
+                .get_exported_scope(module, info.as_ref(), ListKind::Import, &mut diagnostics)
                 .await
             {
                 ExportedScope::Cycle => {
@@ -903,7 +966,7 @@ impl<'a, Fs: ResourceResolverFs + Clone + 'static> Resolver<'a, Fs> {
             let key = decl_key(&entry.reference);
             let info = self.env.class_info(&entry.reference).await;
             match self
-                .get_exported_scope(info.as_ref(), ListKind::Export, &mut diagnostics)
+                .get_exported_scope(module, info.as_ref(), ListKind::Export, &mut diagnostics)
                 .await
             {
                 ExportedScope::Cycle => {
@@ -1021,6 +1084,7 @@ impl<'a, Fs: ResourceResolverFs + Clone + 'static> Resolver<'a, Fs> {
     /// `.d.ts`, or `NotAModule` when the reference is not a registered NgModule.
     async fn get_exported_scope(
         &mut self,
+        caller: ReferenceId,
         info: Option<&ClassInfo>,
         kind: ListKind,
         diagnostics: &mut Vec<NgDiagnostic>,
@@ -1028,20 +1092,41 @@ impl<'a, Fs: ResourceResolverFs + Clone + 'static> Resolver<'a, Fs> {
         let Some(info) = info.filter(|info| info.class_type == ClassType::NgModule) else {
             return ExportedScope::NotAModule;
         };
-        if self.env.is_dts(info.reference_id.file) {
-            return match self.resolve_dts_module(info.reference_id).await {
-                Some(scope) => ExportedScope::Scope {
-                    is_poisoned: scope.is_poisoned,
-                    exported: scope.exported.clone(),
-                },
+        let target_module = info.reference_id;
+        self.registry
+            .module_dependencies
+            .entry(caller)
+            .or_default()
+            .insert(target_module.file);
+        if self.env.is_dts(target_module.file) {
+            return match self.resolve_dts_module(target_module).await {
+                Some(scope) => {
+                    let exported = scope.exported.clone();
+                    let deps = self.registry.module_dependencies.entry(caller).or_default();
+                    for (decl_file, _) in &exported {
+                        deps.insert(*decl_file);
+                    }
+                    ExportedScope::Scope {
+                        is_poisoned: scope.is_poisoned,
+                        exported,
+                    }
+                }
                 None => ExportedScope::NotAModule,
             };
         }
-        match self.get_scope_of_module(info.reference_id).await {
+        let state = self.get_scope_of_module(target_module).await;
+        if let Some(target_deps) = self.registry.module_dependencies.get(&target_module).cloned() {
+            self.registry
+                .module_dependencies
+                .entry(caller)
+                .or_default()
+                .extend(target_deps);
+        }
+        match state {
             State::InProgress => {
                 diagnostics.push(NgDiagnostic::error(
                     kind.code(),
-                    self.env.file_path(info.reference_id.file),
+                    self.env.file_path(target_module.file),
                     info.name_span,
                     format!("NgModule \"{}\" field contains a cycle", kind.noun()),
                 ));
@@ -1150,8 +1235,9 @@ impl<'a, Fs: ResourceResolverFs + Clone + 'static> ScopeEnv<'a, Fs> {
             ClassType::Directive => "directive",
             _ => "pipe",
         };
-        let mapping = self.ctx.component_mapping().await;
+        let mapping = self.ctx.component_mapping_for(key.0).await;
         let hint = mapping.get(key.0, &key.1).and_then(|declaring| {
+            self.ctx.record_ngmodule_scope_deps(registry, declaring);
             let module_path = self.file_path(declaring.file);
             registry.not_standalone_hint(declaring, key, &module_path)
         });
@@ -1562,7 +1648,9 @@ pub(crate) async fn validate_standalone_imports<Fs: ResourceResolverFs + Clone +
                 if registry.is_none() {
                     registry = Some(ctx.ngmodule_scope_registry().await);
                 }
-                if registry.as_ref().unwrap().is_poisoned(info.reference_id) {
+                let reg = registry.as_ref().unwrap();
+                ctx.record_ngmodule_scope_deps(reg, info.reference_id);
+                if reg.is_poisoned(info.reference_id) {
                     out.is_poisoned = true;
                 }
             }

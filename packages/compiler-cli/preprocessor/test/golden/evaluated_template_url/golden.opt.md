@@ -6,6 +6,7 @@
  */
 
 import * as i0 from './footer.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.FooterComponent) {
@@ -159,6 +160,7 @@ export class BadFooterComponent {
  */
 
 import * as i0 from './header.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.HeaderComponent) {

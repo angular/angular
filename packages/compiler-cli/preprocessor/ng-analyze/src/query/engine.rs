@@ -34,6 +34,12 @@ const R3_SYMBOLS_FILE_NAME: &str = "r3_symbols.ts";
 /// interned, so it never maps to a path.
 pub(crate) const ROOTS_FILE_ID: FileId = FileId::MAX;
 
+/// A pseudo [`FileId`] standing for the files a module specifier could have resolved to but did
+/// not, because they did not exist (TypeScript's "failed lookup locations"). Queries in which a
+/// specifier failed to resolve record it as a dependency, so creating or deleting a file
+/// ([`QueryEngine::invalidate_module_resolution`]) re-runs exactly those. Never interned.
+pub(crate) const UNRESOLVED_IMPORTS_FILE_ID: FileId = FileId::MAX - 1;
+
 /// The unified query engine.
 ///
 /// Every "question" the analyzer answers is a [`QueryKey`]; [`QueryEngine::query`] returns a cached,
@@ -54,6 +60,9 @@ pub struct QueryEngine<Fs: ResourceResolverFs + Clone + 'static> {
     pub(crate) reverse_index: RwLock<HashMap<FileId, HashSet<QueryKey>>>,
     pub(crate) cache: crate::QueryCache<QueryKey, CachedResult>,
     pub(crate) static_import_graph: RwLock<Option<Arc<StaticImportGraph>>>,
+    pub(crate) last_component_mapping: Mutex<Option<Arc<NgModuleComponentMap>>>,
+    pub(crate) last_scope_registry:
+        Mutex<Option<Arc<crate::query::module_scope::NgModuleScopeRegistry>>>,
     pub(crate) reference_strategy: Arc<dyn crate::analyzer::import_emit::ReferenceEmitStrategy>,
     /// Explicit `r3_symbols.ts`; when unset, a root file with that name is used.
     pub(crate) r3_symbols_file: Option<PathBuf>,
@@ -117,6 +126,8 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             reverse_index: RwLock::new(HashMap::new()),
             cache: crate::QueryCache::new(),
             static_import_graph: RwLock::new(None),
+            last_component_mapping: Mutex::new(None),
+            last_scope_registry: Mutex::new(None),
             reference_strategy,
             r3_symbols_file,
             generate_extra_imports_in_local_mode,
@@ -215,6 +226,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         // TODO(parity): avoid evicting ComponentMapping on changes that do not affect @Component/@NgModule declarations.
         evicted_keys.insert(QueryKey::ComponentMapping);
         evicted_keys.insert(QueryKey::NgModuleScopeRegistry);
+        evicted_keys.insert(QueryKey::LocalExtraImports);
 
         let evicted_vec: Vec<QueryKey> = evicted_keys.into_iter().collect();
 
@@ -228,9 +240,118 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         actually_evicted
     }
 
+    /// Evict only the syntactic/semantic/wire queries of `path` after an external template or
+    /// stylesheet it references changed, preserving `ParseFile`, `ComponentMapping`,
+    /// `NgModuleScopeRegistry`, and all other files' cached queries.
+    pub fn invalidate_resource_owner(&self, path: &Path) -> Vec<QueryKey> {
+        let file_id = self.interner.get_if_interned(path).or_else(|| {
+            self.fs
+                .resolve_root_dirs_backing_path(path)
+                .and_then(|backing| self.interner.get_if_interned(backing))
+        });
+        let Some(file_id) = file_id else {
+            return Vec::new();
+        };
+        let keys = [
+            QueryKey::AnalyzeFileSyntax(file_id),
+            QueryKey::AnalyzeFileEvaluated(file_id),
+            QueryKey::AnalyzeFileSemantic(file_id),
+            QueryKey::AnalyzeFileWire {
+                file_id,
+                is_optimized: true,
+            },
+            QueryKey::AnalyzeFileWire {
+                file_id,
+                is_optimized: false,
+            },
+        ];
+        let mut actually_evicted = Vec::new();
+        for key in keys {
+            if self.cache.remove(&key).is_some() {
+                actually_evicted.push(key);
+            }
+        }
+        actually_evicted
+    }
+
+    /// Evict semantic, scope, and wire queries that depend on any of `file_ids` when a
+    /// whole-program singleton (`ComponentMapping` or `NgModuleScopeRegistry`) changes its
+    /// conclusion for `file_ids`, while keeping `ParseFile` and `AnalyzeFileSyntax` cached.
+    pub(crate) fn evict_semantic_dependents(&self, file_ids: impl IntoIterator<Item = FileId>) {
+        let mut keys_to_evict = HashSet::new();
+        let r_guard = self.reverse_index.read().ok();
+        for file_id in file_ids {
+            keys_to_evict.insert(QueryKey::AnalyzeFileSemantic(file_id));
+            keys_to_evict.insert(QueryKey::AnalyzeFileWire {
+                file_id,
+                is_optimized: true,
+            });
+            keys_to_evict.insert(QueryKey::AnalyzeFileWire {
+                file_id,
+                is_optimized: false,
+            });
+            if let Some(ref r_index) = r_guard {
+                if let Some(deps) = r_index.get(&file_id) {
+                    for &key in deps {
+                        match key {
+                            QueryKey::AnalyzeFileSemantic(_)
+                            | QueryKey::AnalyzeFileWire { .. }
+                            | QueryKey::NgModuleExportsScope(_)
+                            | QueryKey::NgModuleImportsScope(_) => {
+                                keys_to_evict.insert(key);
+                            }
+                            _ => {}
+                        }
+                    }
+                }
+            }
+        }
+        drop(r_guard);
+        for key in keys_to_evict {
+            self.cache.remove(&key);
+        }
+    }
+
+    /// Re-evaluate whole-program singletons if they were invalidated since a previous build so
+    /// any diff-based evictions happen before per-file semantic/wire queries read the cache.
+    pub async fn ensure_singletons_fresh(self: &Arc<Self>, is_optimized: bool) {
+        if !is_optimized && !self.generate_extra_imports_in_local_mode {
+            return;
+        }
+        let had_mapping = self
+            .last_component_mapping
+            .lock()
+            .map(|g| g.is_some())
+            .unwrap_or(false);
+        if had_mapping && self.cache.get(&QueryKey::ComponentMapping).is_none() {
+            let _ = QueryContext::new(self.clone()).component_mapping().await;
+        }
+        if is_optimized {
+            let had_registry = self
+                .last_scope_registry
+                .lock()
+                .map(|g| g.is_some())
+                .unwrap_or(false);
+            if had_registry && self.cache.get(&QueryKey::NgModuleScopeRegistry).is_none() {
+                let _ = QueryContext::new(self.clone())
+                    .ngmodule_scope_registry()
+                    .await;
+            }
+        }
+    }
+
     /// Purge every cached query that read the compilation root list, after the roots changed.
     pub fn invalidate_roots(&self) -> Vec<QueryKey> {
         self.invalidate_file_id(ROOTS_FILE_ID)
+    }
+
+    /// Forget module resolution results after files were created or deleted: the resolver caches
+    /// whether each path it probed exists, and a specifier that failed to resolve may resolve now
+    ///
+    /// Must not run while a resolution is in progress.
+    pub fn invalidate_module_resolution(&self) -> Vec<QueryKey> {
+        self.resolver.clear_cache();
+        self.invalidate_file_id(UNRESOLVED_IMPORTS_FILE_ID)
     }
 
     /// Request a query. If not already cached, the body is spawned onto the executor and a shared
@@ -242,7 +363,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
     }
 
     /// Dispatch a query key to its computation. Each arm may request sub-queries via `self`.
-    fn execute(self: Arc<Self>, key: QueryKey) -> BoxFuture<'static, Arc<CachedResult>> {
+    pub(crate) fn execute(self: Arc<Self>, key: QueryKey) -> BoxFuture<'static, Arc<CachedResult>> {
         async move {
             let child_ctx = QueryContext::new(self.clone());
             let res = match key {
@@ -254,6 +375,13 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                 )),
                 QueryKey::AnalyzeFileEvaluated(file_id) => Arc::new(QueryValue::Evaluated(
                     self.analyze_file_evaluated_body(file_id, &child_ctx).await,
+                )),
+                QueryKey::AnalyzeFileWire {
+                    file_id,
+                    is_optimized,
+                } => Arc::new(QueryValue::Wire(
+                    self.analyze_file_wire_body(file_id, is_optimized, &child_ctx)
+                        .await,
                 )),
                 QueryKey::ParseFile(file_id) => Arc::new(QueryValue::ParsedFile(
                     self.parse_file_body(file_id, &child_ctx).await,
@@ -267,17 +395,40 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                 QueryKey::ModuleExportMap(file_id) => Arc::new(QueryValue::ExportMap(
                     self.module_export_map_body(file_id, &child_ctx).await,
                 )),
-                QueryKey::ComponentMapping => Arc::new(QueryValue::ComponentMap(
-                    self.component_mapping_body(&child_ctx).await,
-                )),
-                QueryKey::NgModuleScopeRegistry => Arc::new(QueryValue::ScopeRegistry(
-                    self.ngmodule_scope_registry_body(&child_ctx).await,
-                )),
+                QueryKey::ComponentMapping => {
+                    let mapping = self.component_mapping_body(&child_ctx).await;
+                    if let Ok(mut prev_guard) = self.last_component_mapping.lock() {
+                        if let Some(prev) = prev_guard.as_ref() {
+                            let changed = mapping.changed_files(prev);
+                            if !changed.is_empty() {
+                                self.evict_semantic_dependents(changed);
+                            }
+                        }
+                        *prev_guard = Some(mapping.clone());
+                    }
+                    Arc::new(QueryValue::ComponentMap(mapping))
+                }
+                QueryKey::NgModuleScopeRegistry => {
+                    let registry = self.ngmodule_scope_registry_body(&child_ctx).await;
+                    if let Ok(mut prev_guard) = self.last_scope_registry.lock() {
+                        if let Some(prev) = prev_guard.as_ref() {
+                            let changed = registry.changed_module_files(prev);
+                            if !changed.is_empty() {
+                                self.evict_semantic_dependents(changed);
+                            }
+                        }
+                        *prev_guard = Some(registry.clone());
+                    }
+                    Arc::new(QueryValue::ScopeRegistry(registry))
+                }
                 QueryKey::ProgramFiles => Arc::new(QueryValue::ProgramFiles(
                     self.program_files_body(&child_ctx).await,
                 )),
                 QueryKey::AmbientModuleFiles => Arc::new(QueryValue::AmbientModuleFiles(
                     self.ambient_module_files_body(&child_ctx),
+                )),
+                QueryKey::LocalExtraImports => Arc::new(QueryValue::LocalExtraImports(
+                    self.local_extra_imports_body(&child_ctx).await,
                 )),
             };
             let deps = child_ctx.dependencies();
@@ -302,7 +453,11 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         path: impl AsRef<Path>,
     ) -> Arc<FileData> {
         let file_id = self.intern_path(path);
-        futures::executor::block_on(QueryContext::new(self.clone()).analyze_file_semantic(file_id))
+        let me = self.clone();
+        futures::executor::block_on(async move {
+            me.ensure_singletons_fresh(true).await;
+            QueryContext::new(me).analyze_file_semantic(file_id).await
+        })
     }
 
     #[cfg(target_arch = "wasm32")]
@@ -311,13 +466,53 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         path: impl AsRef<Path>,
     ) -> Arc<FileData> {
         let file_id = self.intern_path(path);
-        let shared = self.query(QueryKey::AnalyzeFileSemantic(file_id));
+        let me = self.clone();
+        let mut fut = Box::pin(async move {
+            me.ensure_singletons_fresh(true).await;
+            QueryContext::new(me).analyze_file_semantic(file_id).await
+        });
         loop {
-            if let Some(value) = shared.clone().now_or_never() {
-                return match &*value.value {
-                    QueryValue::Semantic(r) => r.clone(),
-                    _ => unreachable!("AnalyzeFileSemantic must yield Semantic"),
-                };
+            if let Some(value) = (&mut fut).now_or_never() {
+                return value;
+            }
+            crate::compiler::analyzer::step_local_pool();
+        }
+    }
+
+    /// Synchronously drive `AnalyzeFileWire` to completion.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn analyze_file_wire_blocking(
+        self: &Arc<Self>,
+        path: impl AsRef<Path>,
+        is_optimized: bool,
+    ) -> Arc<crate::query::keys::WireFileResult> {
+        let file_id = self.intern_path(path);
+        let me = self.clone();
+        futures::executor::block_on(async move {
+            me.ensure_singletons_fresh(is_optimized).await;
+            QueryContext::new(me)
+                .analyze_file_wire(file_id, is_optimized)
+                .await
+        })
+    }
+
+    #[cfg(target_arch = "wasm32")]
+    pub fn analyze_file_wire_blocking(
+        self: &Arc<Self>,
+        path: impl AsRef<Path>,
+        is_optimized: bool,
+    ) -> Arc<crate::query::keys::WireFileResult> {
+        let file_id = self.intern_path(path);
+        let me = self.clone();
+        let mut fut = Box::pin(async move {
+            me.ensure_singletons_fresh(is_optimized).await;
+            QueryContext::new(me)
+                .analyze_file_wire(file_id, is_optimized)
+                .await
+        });
+        loop {
+            if let Some(value) = (&mut fut).now_or_never() {
+                return value;
             }
             crate::compiler::analyzer::step_local_pool();
         }
@@ -511,6 +706,8 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             let mut resolved_sources = Vec::new();
             for specifier in specifiers {
                 let Ok(resolution) = self.resolver.resolve(file_dir, specifier) else {
+                    // Creating the file this specifier names must re-run this query.
+                    ctx.record_file(UNRESOLVED_IMPORTS_FILE_ID);
                     continue;
                 };
                 let resolved = resolution.into_path_buf();
@@ -602,6 +799,65 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             .await
     }
 
+    async fn analyze_file_wire_body(
+        self: &Arc<Self>,
+        file_id: FileId,
+        is_optimized: bool,
+        ctx: &QueryContext<Fs>,
+    ) -> Arc<crate::query::keys::WireFileResult> {
+        let parse_res = ctx.parse_file(file_id).await;
+        let source_text = parse_res.lock().unwrap().borrow_owner().source_text.clone();
+        let path_lookup = |id| self.lookup_path(id);
+        let r3_symbols_path = self.r3_symbols_file();
+        let (projected, chunk_info) = if is_optimized {
+            let semantic_res = ctx.analyze_file_semantic(file_id).await;
+            let chunk_info =
+                crate::compiler::analyzer::extract_chunk_info(&semantic_res, self, ctx).await;
+            let declaring_exports = ctx.declaring_export_names(&semantic_res).await;
+            let cx = crate::analyzer::WireContext {
+                mode: crate::analyzer::WireMode::Semantic,
+                source_text: &source_text,
+                converter: &semantic_res.converter,
+                reference_strategy: &*self.reference_strategy,
+                path_lookup: Some(&path_lookup),
+                declaring_exports: &declaring_exports,
+                r3_symbols_path: r3_symbols_path.as_deref(),
+            };
+            (semantic_res.to_wire(&cx), chunk_info)
+        } else {
+            let syntax = ctx.analyze_file_syntax(file_id).await;
+            let mut syntax_res = (*syntax).clone();
+            for class in &mut syntax_res.classes {
+                class.complete_selector(ctx).await;
+                class.complete_styles(ctx).await;
+                class.complete_resource_urls(ctx).await;
+                class.complete_isolated_type_tuples(ctx).await;
+            }
+            if self.generate_extra_imports_in_local_mode {
+                self.populate_local_compilation_extra_imports(&mut syntax_res, ctx)
+                    .await;
+            }
+            syntax_res.validate(self.validation_context(crate::analyzer::WireMode::Syntax));
+            let chunk_info = if self.generate_extra_imports_in_local_mode {
+                crate::compiler::analyzer::extract_chunk_info(&syntax_res, self, ctx).await
+            } else {
+                crate::compiler::analyzer::FileChunkInfo::default()
+            };
+            let declaring_exports = ctx.declaring_export_names(&syntax_res).await;
+            let cx = crate::analyzer::WireContext {
+                mode: crate::analyzer::WireMode::Syntax,
+                source_text: &source_text,
+                converter: &syntax_res.converter,
+                reference_strategy: &*self.reference_strategy,
+                path_lookup: Some(&path_lookup),
+                declaring_exports: &declaring_exports,
+                r3_symbols_path: r3_symbols_path.as_deref(),
+            };
+            (syntax_res.to_wire(&cx), chunk_info)
+        };
+        Arc::new((projected.map_err(|err| err.to_string()), chunk_info))
+    }
+
     /// Tsconfig root files plus every local TS source reachable through static and dynamic imports
     /// ([`FileData::program_dependencies`], the same edges the streaming coordinator follows), in
     /// deterministic BFS order. This is the TS `Program` ngtsc analyzes: its
@@ -690,26 +946,36 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                     continue;
                 }
                 if let Some(ref declarations_resolved) = module.declarations {
+                    let mod_ctx = QueryContext::new(self.clone());
+                    mod_ctx.record_file(result.file_id);
                     let mut completed = declarations_resolved.clone();
                     completed
-                        .complete_with(ctx, crate::analyzer::resolvers::angular_foreign_resolvers())
+                        .complete_with(
+                            &mod_ctx,
+                            crate::analyzer::resolvers::angular_foreign_resolvers(),
+                        )
                         .await;
                     if let Some(references) = completed.get_optional() {
                         let mut resolve_futures = Vec::new();
                         for r in &references {
                             resolve_futures
-                                .push((r, crate::query::scope::resolve_reference_async(r, ctx)));
+                                .push((r, crate::query::scope::resolve_reference_async(r, &mod_ctx)));
                         }
                         let (items, futures): (Vec<_>, Vec<_>) =
                             resolve_futures.into_iter().unzip();
                         let results = futures::future::join_all(futures).await;
+                        let mod_deps = mod_ctx.dependencies();
+                        ctx.extend_dependencies(mod_deps.iter().copied());
 
                         for (r, resolved_info) in items.into_iter().zip(results) {
                             if resolved_info.is_none() {
                                 continue;
                             }
                             mapping.register_declaration(r.file, r.name(), class.reference_id);
+                            mapping.record_file_dependencies(r.file, mod_deps.iter().copied());
                         }
+                    } else {
+                        ctx.extend_dependencies(mod_ctx.dependencies());
                     }
                 }
             }
@@ -718,75 +984,16 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         Arc::new(mapping)
     }
 
-    /// Populate local-compilation side-effect imports for non-standalone declarations in
-    /// `local_result` (mirroring ngtsc's `LocalCompilationExtraImportsTracker`).
-    ///
-    /// Global extra imports are entrypoint `@NgModule.imports` entries that resolve outside the
-    /// compilation unit: ngtsc's `DynamicValue` entries, here `IncompleteDep::Reference` holes plus
-    /// the `parsed_imports` fallback. Entries resolving into the unit are skipped (the NgModule
-    /// scope covers them). Scoped to the root list, not `ProgramFiles`, because ngtsc cannot see
-    /// into other units while this compiler follows imports into their sources.
-    pub async fn populate_local_compilation_extra_imports(
+    async fn local_extra_imports_body(
         self: &Arc<Self>,
-        local_result: &mut FileData,
         ctx: &QueryContext<Fs>,
-    ) {
-        let mut has_component_candidate = false;
-        let mut has_directive_or_pipe_candidate = false;
-        for class in &local_result.classes {
-            match &class.decorator {
-                DecoratorData::Component(c) if !c.directive.standalone => {
-                    has_component_candidate = true;
-                }
-                DecoratorData::Directive(d) if !d.standalone => {
-                    has_directive_or_pipe_candidate = true;
-                }
-                DecoratorData::Pipe(p) if !p.standalone.unwrap_or(true) => {
-                    has_directive_or_pipe_candidate = true;
-                }
-                _ => {}
-            }
-        }
-
-        if !has_component_candidate && !has_directive_or_pipe_candidate {
-            return;
-        }
-
+    ) -> Arc<crate::query::keys::LocalExtraImportsData> {
         ctx.record_file(ROOTS_FILE_ID);
         let entrypoints: Vec<PathBuf> = self.entrypoints.read().unwrap().clone();
         let entrypoints_ids: HashSet<FileId> = entrypoints
             .iter()
             .map(|path| self.intern_path(path))
             .collect();
-
-        if has_directive_or_pipe_candidate {
-            let mapping = ctx.component_mapping().await;
-            for class in &mut local_result.classes {
-                let Some(class_name) = &class.class_name else {
-                    continue;
-                };
-                let Some(module_ref) = mapping
-                    .get(class.reference_id.file, class_name)
-                    .filter(|module_ref| entrypoints_ids.contains(&module_ref.file))
-                else {
-                    continue;
-                };
-                match &mut class.decorator {
-                    DecoratorData::Directive(d) if !d.standalone => {
-                        d.declaring_ng_module = Some(module_ref);
-                    }
-                    DecoratorData::Pipe(p) if !p.standalone.unwrap_or(true) => {
-                        p.declaring_ng_module = Some(module_ref);
-                    }
-                    _ => {}
-                }
-            }
-        }
-
-        if !has_component_candidate {
-            return;
-        }
-
         let entrypoints_set: HashSet<PathBuf> = entrypoints
             .iter()
             .map(|path| crate::fs::normalize_path(path).into_owned())
@@ -833,9 +1040,12 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                         .resolve(&ep_dir, &specifier)
                         .ok()
                         .map(|resolution| resolution.into_path_buf())
-                        .map(|path| self.fs.canonicalize(&path).unwrap_or(path))
                         .is_some_and(|path| {
                             entrypoints_set.contains(crate::fs::normalize_path(&path).as_ref())
+                                || self.fs.canonicalize(&path).is_ok_and(|canon| {
+                                    entrypoints_set
+                                        .contains(crate::fs::normalize_path(&canon).as_ref())
+                                })
                         });
                     if is_local_entrypoint {
                         continue;
@@ -845,6 +1055,77 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                     }
                 }
             }
+        }
+
+        Arc::new(crate::query::keys::LocalExtraImportsData {
+            entrypoints_ids,
+            global_extra_imports,
+        })
+    }
+
+    /// Populate local-compilation side-effect imports for non-standalone declarations in
+    /// `local_result` (mirroring ngtsc's `LocalCompilationExtraImportsTracker`).
+    ///
+    /// Global extra imports are entrypoint `@NgModule.imports` entries that resolve outside the
+    /// compilation unit: ngtsc's `DynamicValue` entries, here `IncompleteDep::Reference` holes plus
+    /// the `parsed_imports` fallback. Entries resolving into the unit are skipped (the NgModule
+    /// scope covers them). Scoped to the root list, not `ProgramFiles`, because ngtsc cannot see
+    /// into other units while this compiler follows imports into their sources.
+    pub async fn populate_local_compilation_extra_imports(
+        self: &Arc<Self>,
+        local_result: &mut FileData,
+        ctx: &QueryContext<Fs>,
+    ) {
+        let mut has_component_candidate = false;
+        let mut has_directive_or_pipe_candidate = false;
+        for class in &local_result.classes {
+            match &class.decorator {
+                DecoratorData::Component(c) if !c.directive.standalone => {
+                    has_component_candidate = true;
+                }
+                DecoratorData::Directive(d) if !d.standalone => {
+                    has_directive_or_pipe_candidate = true;
+                }
+                DecoratorData::Pipe(p) if !p.standalone.unwrap_or(true) => {
+                    has_directive_or_pipe_candidate = true;
+                }
+                _ => {}
+            }
+        }
+
+        if !has_component_candidate && !has_directive_or_pipe_candidate {
+            return;
+        }
+
+        let extra_imports_data = ctx.local_extra_imports().await;
+        let entrypoints_ids = &extra_imports_data.entrypoints_ids;
+
+        if has_directive_or_pipe_candidate {
+            let mapping = ctx.component_mapping_for(local_result.file_id).await;
+            for class in &mut local_result.classes {
+                let Some(class_name) = &class.class_name else {
+                    continue;
+                };
+                let Some(module_ref) = mapping
+                    .get(class.reference_id.file, class_name)
+                    .filter(|module_ref| entrypoints_ids.contains(&module_ref.file))
+                else {
+                    continue;
+                };
+                match &mut class.decorator {
+                    DecoratorData::Directive(d) if !d.standalone => {
+                        d.declaring_ng_module = Some(module_ref);
+                    }
+                    DecoratorData::Pipe(p) if !p.standalone.unwrap_or(true) => {
+                        p.declaring_ng_module = Some(module_ref);
+                    }
+                    _ => {}
+                }
+            }
+        }
+
+        if !has_component_candidate {
+            return;
         }
 
         let file_path = local_result.file_path.clone();
@@ -860,8 +1141,8 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                 reference_id,
                 class_name.as_deref(),
                 component,
-                &global_extra_imports,
-                &entrypoints_ids,
+                &extra_imports_data.global_extra_imports,
+                entrypoints_ids,
             )
             .await;
         }
@@ -972,7 +1253,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                 )
                 .await;
             } else if let DecoratorData::Directive(directive) = &mut class.decorator {
-                let mapping = ctx.component_mapping().await;
+                let mapping = ctx.component_mapping_for(reference_id.file).await;
                 (
                     directive.declaring_ng_module,
                     directive.duplicate_declaring_ng_modules,
@@ -994,7 +1275,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                 )
                 .await;
             } else if let DecoratorData::Pipe(pipe) = &mut class.decorator {
-                let mapping = ctx.component_mapping().await;
+                let mapping = ctx.component_mapping_for(reference_id.file).await;
                 (
                     pipe.declaring_ng_module,
                     pipe.duplicate_declaring_ng_modules,
@@ -1077,11 +1358,15 @@ pub struct StaticImportGraph {
 
 impl StaticImportGraph {
     pub fn has_path(&self, start: FileId, target: FileId) -> bool {
-        if start == target {
-            return true;
-        }
+        self.has_path_with_deps(start, target).0
+    }
+
+    pub fn has_path_with_deps(&self, start: FileId, target: FileId) -> (bool, HashSet<FileId>) {
         let mut visited = HashSet::new();
         visited.insert(start);
+        if start == target {
+            return (true, visited);
+        }
         let mut queue = std::collections::VecDeque::new();
         queue.push_back(start);
 
@@ -1089,7 +1374,8 @@ impl StaticImportGraph {
             if let Some(deps) = self.edges.get(&current) {
                 for &dep in deps {
                     if dep == target {
-                        return true;
+                        visited.insert(dep);
+                        return (true, visited);
                     }
                     if visited.insert(dep) {
                         queue.push_back(dep);
@@ -1097,7 +1383,7 @@ impl StaticImportGraph {
                 }
             }
         }
-        false
+        (false, visited)
     }
 }
 
@@ -2195,11 +2481,15 @@ mod tests {
             let _ = engine.invalidate_file(Path::new(&path_str));
         }
         let _ = engine.invalidate_roots();
+        // `@angular/core` is not resolvable in this file system, so every file also depends on
+        // the failed-resolution pseudo-file.
+        let _ = engine.invalidate_module_resolution();
 
         let r_index = engine.reverse_index.read().unwrap();
         assert!(
             r_index.is_empty(),
-            "Reverse index should be clean after fully invalidating all interned files and roots"
+            "Reverse index should be clean after fully invalidating all interned files, roots and \
+             failed module resolutions"
         );
     }
 

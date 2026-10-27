@@ -14,6 +14,7 @@ import * as i5 from '../components/tree.component';
 import * as i6 from '../components/tree/index';
 import * as i7 from '../components/legacy_module';
 import * as i8 from '../components/dts_list';
+import * as i9 from '@angular/core';
 
 const _ctor1: <T extends i2.SelectionModel<unknown> = i2.SelectionModel<i2.DefaultItem>>(
   init: Pick<i1.MatSelectionList<T>, 'value'>,
@@ -255,6 +256,7 @@ export class FilterDirective<T extends SelectionModel<U>, U extends DefaultItem 
 
 import * as i0 from './models';
 import * as i1 from './legacy_module';
+import * as i2 from '@angular/core';
 
 /*tcb1*/
 function _tcb1<T extends i0.SelectionModel<unknown> = i0.SelectionModel<i0.DefaultItem>>(
@@ -394,6 +396,7 @@ export class LegacyModule {
 
 import * as i0 from './models';
 import * as i1 from './list.component';
+import * as i2 from '@angular/core';
 
 /*tcb1*/
 function _tcb1<T extends i0.SelectionModel<unknown> = i0.SelectionModel<i0.DefaultItem>>(
@@ -480,6 +483,7 @@ export class MatSelectionList<T extends SelectionModel<unknown> = SelectionModel
  */
 
 import * as i0 from './local_item.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1<T extends i0.LocalItemType = i0.LocalItemType>(this: i0.LocalItemComponent<T>) {
@@ -568,6 +572,7 @@ export class LocalItemComponent<T extends LocalItemType = LocalItemType> {
 
 import * as i0 from './tree/index';
 import * as i1 from './tree.component';
+import * as i2 from '@angular/core';
 
 /*tcb1*/
 function _tcb1<T extends i0.TreeNode<i0.DefaultNodeData> = i0.TreeNode<i0.DefaultNodeData>>(

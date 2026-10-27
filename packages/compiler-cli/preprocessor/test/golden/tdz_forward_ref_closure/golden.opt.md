@@ -64,6 +64,7 @@ export class ForwardRefModule {
 
 import * as i0 from './forward_ref_panel';
 import * as i1 from 'app/panels/forward_ref_panel';
+import * as i2 from '@angular/core';
 
 var _pipe1 = null! as i1.ForwardRefPipe;
 

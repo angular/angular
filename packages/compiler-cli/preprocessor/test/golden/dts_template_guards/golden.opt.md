@@ -7,6 +7,7 @@
 
 import * as i0 from './app';
 import * as i1 from './my-dir';
+import * as i2 from '@angular/core';
 
 const _ctor1: <T = unknown>(init: Pick<i1.MyIf<T>, 'myIf'>) => i1.MyIf<T> = null!;
 const _ctor2: <T = unknown>(

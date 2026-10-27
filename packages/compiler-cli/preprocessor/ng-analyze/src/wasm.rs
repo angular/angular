@@ -15,6 +15,17 @@ pub struct WasmAnalyzer {
     receivers: BTreeMap<u32, mpsc::UnboundedReceiver<Result<CompilationChunk, String>>>,
 }
 
+#[derive(serde::Serialize)]
+#[serde(tag = "event")]
+enum WasmStreamEvent<'a> {
+    #[serde(rename = "analysisResult")]
+    AnalysisResult { id: u32, data: &'a CompilationChunk },
+    #[serde(rename = "analysisComplete")]
+    AnalysisComplete { id: u32 },
+    #[serde(rename = "analysisError")]
+    AnalysisError { id: u32, error: &'a str },
+}
+
 impl WasmAnalyzer {
     fn try_poll_receiver(&mut self, id: u32) -> Option<String> {
         let Some(rx) = self.receivers.get_mut(&id) else {
@@ -25,36 +36,16 @@ impl WasmAnalyzer {
         };
         let Some(res) = res_opt else {
             self.receivers.remove(&id);
-            let Ok(json) = serde_json::to_string(&serde_json::json!({
-                "event": "analysisComplete",
-                "id": id
-            })) else {
-                return None;
-            };
-            return Some(json);
+            return serde_json::to_string(&WasmStreamEvent::AnalysisComplete { id }).ok();
         };
 
         match res {
             Ok(chunk) => {
-                let Ok(json) = serde_json::to_string(&serde_json::json!({
-                    "event": "analysisResult",
-                    "id": id,
-                    "data": chunk
-                })) else {
-                    return None;
-                };
-                Some(json)
+                serde_json::to_string(&WasmStreamEvent::AnalysisResult { id, data: &chunk }).ok()
             }
             Err(e) => {
                 self.receivers.remove(&id);
-                let Ok(json) = serde_json::to_string(&serde_json::json!({
-                    "event": "analysisError",
-                    "id": id,
-                    "error": e
-                })) else {
-                    return None;
-                };
-                Some(json)
+                serde_json::to_string(&WasmStreamEvent::AnalysisError { id, error: &e }).ok()
             }
         }
     }
@@ -169,6 +160,11 @@ impl WasmAnalyzer {
     pub fn read_resource(&self, containing_file: String, url: String) -> Option<String> {
         let res = self.analyzer.read_resource_core(containing_file, url)?;
         serde_json::to_string(&res).ok()
+    }
+
+    pub fn canonical_paths(&self, paths_json: &str) -> Result<String, String> {
+        let paths: Vec<String> = serde_json::from_str(paths_json).map_err(|e| e.to_string())?;
+        serde_json::to_string(&self.analyzer.canonical_paths_core(paths)).map_err(|e| e.to_string())
     }
 
     pub fn pump(&mut self) -> Option<String> {

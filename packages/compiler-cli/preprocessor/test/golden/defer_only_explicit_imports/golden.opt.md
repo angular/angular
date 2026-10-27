@@ -6,6 +6,7 @@
  */
 
 import * as i0 from './comp-a';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.CompA) {
@@ -88,6 +89,7 @@ export class CompA {
  */
 
 import * as i0 from './comp-b';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.CompB) {
@@ -170,6 +172,7 @@ export class CompB {
  */
 
 import * as i0 from './explicit.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.ExplicitComponent) {
@@ -285,6 +288,7 @@ export class ExplicitComponent {
  */
 
 import * as i0 from './implicit.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.ImplicitComponent) {

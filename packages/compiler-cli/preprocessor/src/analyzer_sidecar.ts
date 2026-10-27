@@ -301,6 +301,10 @@ export class SidecarAnalyzer implements IAnalyzer {
     return this.callRpc<ResolvedResource | null>('readResource', {containingFile, url});
   }
 
+  async canonicalPaths(paths: string[]): Promise<string[]> {
+    return this.callRpc<string[]>('canonicalPaths', paths);
+  }
+
   getMetadataForFileSync(filePath: string): AnalysisResult | null {
     throw new Error('Synchronous AST lookups are not supported in Sidecar mode');
   }

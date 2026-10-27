@@ -37,6 +37,12 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryContext<Fs> {
         }
     }
 
+    pub fn extend_dependencies(&self, deps: impl IntoIterator<Item = FileId>) {
+        if let Ok(mut guard) = self.dependencies.lock() {
+            guard.extend(deps);
+        }
+    }
+
     pub fn dependencies(&self) -> HashSet<FileId> {
         if let Ok(guard) = self.dependencies.lock() {
             guard.clone()
@@ -54,6 +60,34 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryContext<Fs> {
         match &*cached.value {
             QueryValue::Semantic(r) => r.clone(),
             _ => unreachable!("AnalyzeFileSemantic must yield Semantic"),
+        }
+    }
+
+    pub async fn analyze_file_wire(
+        &self,
+        file_id: FileId,
+        is_optimized: bool,
+    ) -> Arc<crate::query::keys::WireFileResult> {
+        use futures::FutureExt;
+        let key = QueryKey::AnalyzeFileWire {
+            file_id,
+            is_optimized,
+        };
+        let cached = if let Some(shared) = self.engine.cache.get(&key) {
+            shared.await
+        } else {
+            let res = self.engine.clone().execute(key).await;
+            let (remote, handle) = futures::future::ready(res.clone()).remote_handle();
+            let _ = remote.now_or_never();
+            self.engine.cache.insert(key, handle.shared());
+            res
+        };
+        if let Ok(mut guard) = self.dependencies.lock() {
+            guard.extend(cached.dependencies.iter().copied());
+        }
+        match &*cached.value {
+            QueryValue::Wire(r) => r.clone(),
+            _ => unreachable!("AnalyzeFileWire must yield Wire"),
         }
     }
 
@@ -171,30 +205,73 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryContext<Fs> {
         }
     }
 
+    pub fn record_component_mapping_deps(&self, mapping: &NgModuleComponentMap, file_id: FileId) {
+        self.record_file(file_id);
+        if let Some(deps) = mapping.file_dependencies.get(&file_id) {
+            self.extend_dependencies(deps.iter().copied());
+        }
+    }
+
     pub async fn component_mapping(&self) -> Arc<NgModuleComponentMap> {
+        self.record_file(crate::query::engine::ROOTS_FILE_ID);
         let key = QueryKey::ComponentMapping;
         let cached = self.engine.query(key).await;
-        if let Ok(mut guard) = self.dependencies.lock() {
-            guard.extend(cached.dependencies.iter().copied());
-        }
         match &*cached.value {
             QueryValue::ComponentMap(r) => r.clone(),
             _ => unreachable!("ComponentMapping must yield ComponentMap"),
         }
     }
 
+    pub async fn component_mapping_for(&self, file_id: FileId) -> Arc<NgModuleComponentMap> {
+        let mapping = self.component_mapping().await;
+        self.record_component_mapping_deps(&mapping, file_id);
+        mapping
+    }
+
+    pub fn record_ngmodule_scope_deps(
+        &self,
+        registry: &crate::query::module_scope::NgModuleScopeRegistry,
+        module: ReferenceId,
+    ) {
+        self.record_file(module.file);
+        if let Some(deps) = registry.module_dependencies(module) {
+            self.extend_dependencies(deps.iter().copied());
+        }
+    }
+
     pub async fn ngmodule_scope_registry(
         &self,
     ) -> Arc<crate::query::module_scope::NgModuleScopeRegistry> {
+        self.record_file(crate::query::engine::ROOTS_FILE_ID);
         let key = QueryKey::NgModuleScopeRegistry;
         let cached = self.engine.query(key).await;
-        if let Ok(mut guard) = self.dependencies.lock() {
-            guard.extend(cached.dependencies.iter().copied());
-        }
         match &*cached.value {
             QueryValue::ScopeRegistry(r) => r.clone(),
             _ => unreachable!("NgModuleScopeRegistry must yield ScopeRegistry"),
         }
+    }
+
+    pub async fn ngmodule_scope_registry_for(
+        &self,
+        module: ReferenceId,
+    ) -> Arc<crate::query::module_scope::NgModuleScopeRegistry> {
+        let registry = self.ngmodule_scope_registry().await;
+        self.record_ngmodule_scope_deps(&registry, module);
+        registry
+    }
+
+    pub async fn local_extra_imports(&self) -> Arc<crate::query::keys::LocalExtraImportsData> {
+        let key = QueryKey::LocalExtraImports;
+        let cached = self.engine.query(key).await;
+        self.record_file(crate::query::engine::ROOTS_FILE_ID);
+        let data = match &*cached.value {
+            QueryValue::LocalExtraImports(r) => r.clone(),
+            _ => unreachable!("LocalExtraImports must yield LocalExtraImports"),
+        };
+        for (ep_id, _) in &data.global_extra_imports {
+            self.record_file(*ep_id);
+        }
+        data
     }
 
     /// Tsconfig roots plus their import closure, including dynamic imports ([`QueryKey::ProgramFiles`]).
@@ -225,7 +302,9 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryContext<Fs> {
     pub async fn has_path(&self, start: FileId, target: FileId) -> bool {
         self.record_file(crate::query::engine::ROOTS_FILE_ID);
         let graph = self.engine.get_or_build_import_graph().await;
-        graph.has_path(start, target)
+        let (found, visited) = graph.has_path_with_deps(start, target);
+        self.extend_dependencies(visited);
+        found
     }
 }
 

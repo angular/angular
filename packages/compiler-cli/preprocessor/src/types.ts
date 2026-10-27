@@ -34,6 +34,7 @@ export declare class Analyzer {
   analyzeOptimizedDelta(): AnalysisIterator;
   getMetadataForFile(filePath: string): AnalysisResult | null;
   getFileContent(filePath: string): string;
+  canonicalPaths(paths: Array<string>): Array<string>;
 }
 
 /** Test analyzer that uses virtual filesystem for in-memory testing */
@@ -43,6 +44,7 @@ export declare class TestAnalyzer {
   getFileContent(filePath: string): string;
   getTsFileForTemplate(templatePath: string): Array<TemplateUsage> | null;
   readResource(containingFile: string, url: string): ResolvedResource | null;
+  canonicalPaths(paths: Array<string>): Array<string>;
   updateFileContent(updates: Array<FileUpdate>): Array<string>;
   invalidateFiles(updates: Array<FileInvalidation>): Array<string>;
   setEntryPoints(entryPoints: Array<string>): Array<string>;
@@ -73,6 +75,12 @@ export interface AnalysisResult {
   signalDebugNames: Array<SignalDebugNameMetadata>;
   r3SymbolsSpecifier?: string;
   topLevelValueBindings?: Array<string>;
+  /**
+   * Resolved paths of the local TS files this file statically imports, in the same form as
+   * `filePath`. Consumers use these as the file's dependency edges (e.g. incremental re-emit
+   * decisions) without resolving module specifiers themselves.
+   */
+  staticDependencies?: Array<string>;
 }
 
 /**

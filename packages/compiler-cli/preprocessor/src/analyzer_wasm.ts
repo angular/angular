@@ -34,6 +34,8 @@ export interface WasmInner {
   get_ts_file_for_template?(templatePath: string): string | undefined;
   readResource?(containingFile: string, url: string): string | undefined;
   read_resource?(containingFile: string, url: string): string | undefined;
+  canonicalPaths?(pathsJson: string): string;
+  canonical_paths?(pathsJson: string): string;
   closeStream?(id: number): void;
   close_stream?(id: number): void;
 }
@@ -207,16 +209,23 @@ export class WasmAnalyzer implements IAnalyzer {
   }
 
   async updateFileContent(updates: {filePath: string; content: string}[]): Promise<string[]> {
+    return Promise.resolve(this.updateFileContentSync(updates));
+  }
+
+  updateFileContentSync(updates: {filePath: string; content: string}[]): string[] {
     const jsonStr = JSON.stringify(updates);
     const fn = this.inner.updateFileContent ?? this.inner.update_file_content;
     if (!fn) {
       throw new Error('WasmInner does not support updateFileContent');
     }
-    const res = fn.call(this.inner, jsonStr);
-    return Promise.resolve(JSON.parse(res) as string[]);
+    return JSON.parse(fn.call(this.inner, jsonStr)) as string[];
   }
 
   async invalidateFiles(updates: nga.FileInvalidation[]): Promise<string[]> {
+    return Promise.resolve(this.invalidateFilesSync(updates));
+  }
+
+  invalidateFilesSync(updates: nga.FileInvalidation[]): string[] {
     const stringNames = ['Created', 'Deleted', 'Changed'];
     const mapped = updates.map((u) => ({
       filePath: u.filePath,
@@ -230,8 +239,7 @@ export class WasmAnalyzer implements IAnalyzer {
     if (!fn) {
       throw new Error('WasmInner does not support invalidateFiles');
     }
-    const res = fn.call(this.inner, jsonStr);
-    return Promise.resolve(JSON.parse(res) as string[]);
+    return JSON.parse(fn.call(this.inner, jsonStr)) as string[];
   }
 
   async setEntryPoints(entryPoints: string[]): Promise<string[]> {
@@ -262,6 +270,18 @@ export class WasmAnalyzer implements IAnalyzer {
     }
     const res = fn.call(this.inner, containingFile, url);
     return res ? (JSON.parse(res) as nga.ResolvedResource) : null;
+  }
+
+  async canonicalPaths(paths: string[]): Promise<string[]> {
+    return Promise.resolve(this.canonicalPathsSync(paths));
+  }
+
+  canonicalPathsSync(paths: string[]): string[] {
+    const fn = this.inner.canonicalPaths ?? this.inner.canonical_paths;
+    if (!fn) {
+      throw new Error('WasmInner does not support canonicalPaths');
+    }
+    return JSON.parse(fn.call(this.inner, JSON.stringify(paths))) as string[];
   }
 
   getMetadataForFileSync(filePath: string): nga.AnalysisResult | null {
@@ -299,6 +319,21 @@ export class WasmAnalyzer implements IAnalyzer {
       this.startOptional(
         this.inner.analyze_optimized ?? this.inner.analyzeOptimized,
         'analyzeOptimized',
+      ),
+    );
+  }
+
+  analyzeDeltaSync(): Generator<nga.CompilationChunk, void, unknown> {
+    return this.consumeStreamSync(() =>
+      this.startOptional(this.inner.analyze_delta ?? this.inner.analyzeDelta, 'analyzeDelta'),
+    );
+  }
+
+  analyzeOptimizedDeltaSync(): Generator<nga.CompilationChunk, void, unknown> {
+    return this.consumeStreamSync(() =>
+      this.startOptional(
+        this.inner.analyze_optimized_delta ?? this.inner.analyzeOptimizedDelta,
+        'analyzeOptimizedDelta',
       ),
     );
   }

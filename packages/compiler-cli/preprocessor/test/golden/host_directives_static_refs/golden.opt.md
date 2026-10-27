@@ -94,6 +94,7 @@ export const freeRef = forwardRef;
  */
 
 import * as i0 from './test';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.C1) {

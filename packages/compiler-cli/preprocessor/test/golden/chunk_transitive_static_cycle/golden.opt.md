@@ -6,6 +6,7 @@
  */
 
 import * as i0 from './a.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.CompA) {
@@ -159,6 +160,7 @@ i0.ɵɵsetComponentScope(CompB, [CompC], []);
  */
 
 import * as i0 from './b.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.CompB) {
@@ -243,6 +245,7 @@ export class CompB {
  */
 
 import * as i0 from './c.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.CompC) {

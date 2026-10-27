@@ -6,6 +6,7 @@
  */
 
 import * as i0 from './feature.module';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.FeatureComponent) {
@@ -142,6 +143,7 @@ export class FeatureModule {
  */
 
 import * as i0 from './main';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.AppComponent) {

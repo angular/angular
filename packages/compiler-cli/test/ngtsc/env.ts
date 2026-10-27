@@ -32,6 +32,7 @@ import {NgtscProgram} from '../../src/ngtsc/program';
 import {DeclarationNode} from '../../src/ngtsc/reflection';
 import {
   isNgpTestMode,
+  NgpCompilationSession,
   NgtscTestCompilerHost,
   normalizeNgpOutputFile,
   performNgpCompilationSync,
@@ -58,12 +59,19 @@ type TsCompilerOptions = Partial<
 >;
 
 /**
+ * The NGP compilation of the environment currently compiling repeatedly. Tests set up one
+ * environment at a time, so setting up the next releases this one's analyzer.
+ */
+let activeNgpSession: NgpCompilationSession | null = null;
+
+/**
  * Manages a temporary testing directory structure and environment for testing ngtsc by feeding it
  * TypeScript code.
  */
 export class NgtscTestEnvironment {
   private multiCompileHostExt: MultiCompileHostExt | null = null;
   private oldProgram: Program | null = null;
+  private ngpSession: NgpCompilationSession | null = null;
   private lastTsProgram: ts.Program | null = null;
   private changedResources: Set<string> | null = null;
   private commandLineArgs: string[];
@@ -80,6 +88,9 @@ export class NgtscTestEnvironment {
    * Set up a new testing environment.
    */
   static setup(files: Folder = {}, workingDir?: AbsoluteFsPath): NgtscTestEnvironment {
+    activeNgpSession?.dispose();
+    activeNgpSession = null;
+
     const fs = getFileSystem();
     if (fs instanceof MockFileSystem) {
       fs.init(files);
@@ -155,6 +166,10 @@ export class NgtscTestEnvironment {
     this.changedResources = new Set();
     this.multiCompileHostExt = new MultiCompileHostExt(this.fs);
     setWrapHostForTest(makeWrapHost(this.multiCompileHostExt));
+    if (isNgpTestMode()) {
+      activeNgpSession?.dispose();
+      this.ngpSession = activeNgpSession = new NgpCompilationSession();
+    }
   }
 
   /**
@@ -223,6 +238,7 @@ export class NgtscTestEnvironment {
     const absFilePath = this.fs.resolve(this.basePath, fileName);
     if (this.multiCompileHostExt !== null) {
       this.multiCompileHostExt.invalidate(absFilePath);
+      this.ngpSession?.recordChangedFile(absFilePath, /* created */ !this.fs.exists(absFilePath));
       if (!fileName.endsWith('.ts')) {
         this.changedResources!.add(absFilePath);
       }
@@ -237,6 +253,7 @@ export class NgtscTestEnvironment {
       throw new Error(`Not caching files - call enableMultipleCompilations()`);
     }
     this.multiCompileHostExt.invalidate(absFilePath);
+    this.ngpSession?.recordChangedFile(absFilePath);
     if (!fileName.endsWith('.ts')) {
       this.changedResources!.add(absFilePath);
     }
@@ -293,6 +310,7 @@ export class NgtscTestEnvironment {
         complianceMode: true,
         customTransformers,
         writeFileCallback,
+        session: this.ngpSession ?? undefined,
       });
       this.lastTsProgram = result.tsProgram;
       const errors = result.diagnostics.filter((d) => d.category === ts.DiagnosticCategory.Error);
@@ -355,6 +373,7 @@ export class NgtscTestEnvironment {
         emit: true,
         complianceMode: true,
         writeFileCallback,
+        session: this.ngpSession ?? undefined,
       });
       this.lastTsProgram = result.tsProgram;
       if (expectedExitCode !== undefined) {

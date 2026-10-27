@@ -6,6 +6,7 @@
  */
 
 import * as i0 from './pipes';
+import * as i1 from '@angular/core';
 
 var _pipe1 = null! as i0.MyPipe;
 var _pipe2 = null! as i0.MyPurePipe;
