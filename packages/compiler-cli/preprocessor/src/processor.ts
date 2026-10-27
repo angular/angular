@@ -468,12 +468,15 @@ export function processFileSync(
     // expansion, coercion marking, and query ordering.
     const {inputs, outputs, queries, viewQueries} = classMeta;
 
-    for (const span of classMeta.removalSpans) {
-      s.remove(span.start, span.end);
+    const isJit = Boolean(component?.isJit || directive?.isJit || ngModule?.isJit);
+    if (!isJit || !ctx.emitDeclarationOnly) {
+      for (const span of classMeta.removalSpans) {
+        s.remove(span.start, span.end);
+      }
     }
 
     // Stripping the decorators stops tsickle from tagging statics `@nocollapse`; add it back.
-    if (ctx.isClosureCompilerEnabled) {
+    if (ctx.isClosureCompilerEnabled && !isJit) {
       for (const insertion of classMeta.nocollapseInsertions) {
         s.appendLeft(insertion.position, insertion.text);
       }
@@ -481,53 +484,57 @@ export function processFileSync(
 
     if (!className) continue;
 
-    if (component?.isJit || directive?.isJit || ngModule?.isJit) {
-      const coreNamespace = printer.getOrCreateNamespace('@angular/core');
-      for (const input of inputs) {
-        if (input.isSignal && input.propertySpan) {
-          const inputArgsObj: string[] = [
-            'isSignal: true',
-            `alias: ${JSON.stringify(input.alias ?? input.name)}`,
-            `required: ${input.required ? 'true' : 'false'}`,
-          ];
-          const inputArgs = `({${inputArgsObj.join(', ')}} as any)`;
-          s.appendLeft(input.propertySpan.start, `@${coreNamespace}.Input(${inputArgs}) `);
+    if (isJit) {
+      if (!ctx.emitDeclarationOnly) {
+        const coreNamespace = printer.getOrCreateNamespace('@angular/core');
+        for (const input of inputs) {
+          if (input.isSignal && input.propertySpan) {
+            const inputArgsObj: string[] = [
+              'isSignal: true',
+              `alias: ${JSON.stringify(input.alias ?? input.name)}`,
+              `required: ${input.required ? 'true' : 'false'}`,
+            ];
+            const inputArgs = `({${inputArgsObj.join(', ')}} as any)`;
+            s.appendLeft(input.propertySpan.start, `@${coreNamespace}.Input(${inputArgs}) `);
+          }
         }
-      }
 
-      for (const output of outputs) {
-        if (output.isSignal && output.propertySpan) {
-          const outputArg = JSON.stringify(output.alias ?? output.name);
-          s.appendLeft(output.propertySpan.start, `@${coreNamespace}.Output(${outputArg}) `);
+        for (const output of outputs) {
+          if (output.isSignal && output.propertySpan) {
+            const outputArg = JSON.stringify(output.alias ?? output.name);
+            s.appendLeft(output.propertySpan.start, `@${coreNamespace}.Output(${outputArg}) `);
+          }
         }
-      }
 
-      const allSignalQueries = [...(queries ?? []), ...(viewQueries ?? [])].filter(
-        (q) => q.isSignal && q.propertySpan,
-      );
-      for (const query of allSignalQueries) {
-        const decoratorName = query.isView
-          ? query.first
-            ? 'ViewChild'
-            : 'ViewChildren'
-          : query.first
-            ? 'ContentChild'
-            : 'ContentChildren';
-        const rawPred = s.original.slice(query.predicateSpan.start, query.predicateSpan.end);
-        // A signal query has selectors exactly when its locator is string-literal-like.
-        const predicateStr = query.predicateSelectors
-          ? rawPred
-          : `${coreNamespace}.forwardRef(() => ${rawPred})`;
-        const optionsObj: string[] = [];
-        if (query.optionsSpan) {
-          optionsObj.push(`...${s.original.slice(query.optionsSpan.start, query.optionsSpan.end)}`);
-        }
-        optionsObj.push('isSignal: true');
-        const optionsStr = `({${optionsObj.join(', ')}} as any)`;
-        s.appendLeft(
-          query.propertySpan!.start,
-          `@${coreNamespace}.${decoratorName}(${predicateStr}, ${optionsStr}) `,
+        const allSignalQueries = [...(queries ?? []), ...(viewQueries ?? [])].filter(
+          (q) => q.isSignal && q.propertySpan,
         );
+        for (const query of allSignalQueries) {
+          const decoratorName = query.isView
+            ? query.first
+              ? 'ViewChild'
+              : 'ViewChildren'
+            : query.first
+              ? 'ContentChild'
+              : 'ContentChildren';
+          const rawPred = s.original.slice(query.predicateSpan.start, query.predicateSpan.end);
+          // A signal query has selectors exactly when its locator is string-literal-like.
+          const predicateStr = query.predicateSelectors
+            ? rawPred
+            : `${coreNamespace}.forwardRef(() => ${rawPred})`;
+          const optionsObj: string[] = [];
+          if (query.optionsSpan) {
+            optionsObj.push(
+              `...${s.original.slice(query.optionsSpan.start, query.optionsSpan.end)}`,
+            );
+          }
+          optionsObj.push('isSignal: true');
+          const optionsStr = `({${optionsObj.join(', ')}} as any)`;
+          s.appendLeft(
+            query.propertySpan!.start,
+            `@${coreNamespace}.${decoratorName}(${predicateStr}, ${optionsStr}) `,
+          );
+        }
       }
 
       if (!ctx.emitDeclarationOnly && constructorParams && constructorParams.length > 0) {
@@ -537,6 +544,38 @@ export function processFileSync(
           span.end - 1,
           `\n  ${nocollapse}static ctorParameters = ${printer.print(ctorExpr)};\n`,
         );
+      }
+
+      if (
+        !ctx.emitDeclarationOnly &&
+        classMeta.memberDecorators &&
+        classMeta.memberDecorators.length > 0
+      ) {
+        const propDecoratorsMap = new Map<
+          string,
+          {key: string; quoted: boolean; value: o.Expression}
+        >();
+        for (const member of classMeta.memberDecorators) {
+          if (member.isStringLiteral) continue;
+          const ngDecorators = member.decorators
+            .filter((d) => d.isAngular)
+            .map((d) => buildDecoratorMetadataExpr(d.name, d.argsSpan, d.argsString, s, []));
+          if (ngDecorators.length > 0) {
+            propDecoratorsMap.set(member.propertyName, {
+              key: member.propertyName,
+              quoted: false,
+              value: o.literalArr(ngDecorators),
+            });
+          }
+        }
+        if (propDecoratorsMap.size > 0) {
+          const propExpr = o.literalMap(Array.from(propDecoratorsMap.values()));
+          const nocollapse = ctx.isClosureCompilerEnabled ? '/** @nocollapse */\n  ' : '';
+          s.appendLeft(
+            span.end - 1,
+            `\n  ${nocollapse}static propDecorators = ${printer.print(propExpr)};\n`,
+          );
+        }
       }
 
       continue;
