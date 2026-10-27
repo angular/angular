@@ -164,8 +164,6 @@ export default class ApiReferenceList {
         replaceUrl: true,
         preserveFragment: true,
         scroll: 'manual',
-        // Keeps focus in the filter field with the Navigation API integration.
-        focusReset: 'manual',
       });
     });
   }
