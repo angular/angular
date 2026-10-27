@@ -5,6 +5,7 @@ import { Component, Directive, Inject, InjectionToken, Optional } from '@angular
 import * as i0 from '@angular/core';
 
 export class DepService {}
+export interface SomeInterface {}
 export const TOKEN = new InjectionToken<string>('TOKEN');
 
 function CustomParamDec(): ParameterDecorator {
@@ -20,12 +21,28 @@ export class JitCtorComponent {
   constructor(
     @Optional() @Inject(TOKEN) public token: string,
     count: number,
-    @CustomParamDec() public dep: DepService,
+    visible: boolean,
+    nullableLabel: string | null,
+    items: string[],
+    callback: () => void,
+    config: object,
+    iface: SomeInterface,
+    untyped = 'fallback',
+    @Optional() untypedOptional = 'opt',
+    @CustomParamDec() public dep: DepService = new DepService(),
   ) {}
 
   static ctorParameters = (): any => [
-    { type: undefined, decorators: [{ type: Optional }, { type: Inject, args: [TOKEN] }] },
+    { type: String, decorators: [{ type: Optional }, { type: Inject, args: [TOKEN] }] },
+    { type: Number },
+    { type: Boolean },
+    { type: String },
+    { type: Array },
+    { type: Function },
+    { type: Object },
     { type: undefined },
+    null,
+    { type: undefined, decorators: [{ type: Optional }] },
     { type: DepService },
   ];
 }

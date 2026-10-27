@@ -522,6 +522,7 @@ pub struct CtorParamDi {
     pub name_span: oxc_span::Span,
     pub type_span: Option<oxc_span::Span>,
     pub type_name: Option<String>,
+    pub jit_type_name: Option<&'static str>,
     pub type_info: TypeRefInfo,
     pub has_explicit_token: bool,
 }
@@ -556,6 +557,8 @@ pub(crate) fn constructor_params_di<'a>(
             Ok((name, info)) => (Some(name), info),
             Err(reason) => (None, TypeRefInfo::unavailable(reason)),
         };
+        let jit_type_name = type_annotation
+            .and_then(|annotation| extract_jit_builtin_type_name(&annotation.type_annotation));
         let has_explicit_token = decorators.iter().any(|decorator| {
             matches!(
                 get_canonical_decorator_name(decorator, semantic, angular_imports),
@@ -568,6 +571,7 @@ pub(crate) fn constructor_params_di<'a>(
             type_span: type_annotation
                 .map(|annotation| unwrap_union_type(&annotation.type_annotation).span()),
             type_name,
+            jit_type_name,
             type_info,
             has_explicit_token,
         }
@@ -722,6 +726,8 @@ pub fn get_constructor_params<'a>(
 
         params.push(crate::ConstructorParamMetadata {
             type_name,
+            jit_type_name: di.jit_type_name.map(String::from),
+            has_type: di.type_span.is_some(),
             type_module,
             is_type_only,
             is_value_verified,
@@ -943,6 +949,40 @@ fn unwrap_union_type<'a>(ts_type: &'a oxc_ast::ast::TSType<'a>) -> &'a oxc_ast::
         return non_null_types[0];
     }
     ts_type
+}
+
+/// Boxed runtime constructor identifier emitted by `ngtsc`'s `downlevel_decorators_transform`
+/// (`typeReferenceToExpression`) for non-`TSTypeReference` parameter types on `jit: true` classes.
+/// https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/transform/jit/src/downlevel_decorators_transform.ts#L192-L235
+fn extract_jit_builtin_type_name(ts_type: &oxc_ast::ast::TSType<'_>) -> Option<&'static str> {
+    use oxc_ast::ast::{TSLiteral, TSType};
+
+    match ts_type {
+        TSType::TSFunctionType(_) | TSType::TSConstructorType(_) => Some("Function"),
+        TSType::TSArrayType(_) | TSType::TSTupleType(_) => Some("Array"),
+        TSType::TSTypePredicate(_) | TSType::TSBooleanKeyword(_) => Some("Boolean"),
+        TSType::TSStringKeyword(_) => Some("String"),
+        TSType::TSObjectKeyword(_) => Some("Object"),
+        TSType::TSNumberKeyword(_) => Some("Number"),
+        TSType::TSLiteralType(lit) => match &lit.literal {
+            TSLiteral::BooleanLiteral(_) => Some("Boolean"),
+            TSLiteral::StringLiteral(_) => Some("String"),
+            TSLiteral::NumericLiteral(_) => Some("Number"),
+            _ => None,
+        },
+        TSType::TSUnionType(union) => {
+            let mut non_null = union
+                .types
+                .iter()
+                .filter(|t| !matches!(t, TSType::TSNullKeyword(_)));
+            let single = non_null.next()?;
+            if non_null.next().is_some() {
+                return None;
+            }
+            extract_jit_builtin_type_name(single)
+        }
+        _ => None,
+    }
 }
 
 // TypeScript built-in types from lib.es5.d.ts (and friends) that have no runtime value
@@ -1290,5 +1330,93 @@ mod tests {
                 "not strictly sorted: {list:?}"
             );
         }
+    }
+
+    #[test]
+    fn constructor_params_extract_jit_builtin_types_and_has_type() {
+        let source = r#"
+            import {Component, Optional} from '@angular/core';
+            export interface MyInterface {}
+            export class DepService {}
+
+            @Component({ template: '', jit: true })
+            export class TestCmp {
+                constructor(
+                    a: string,
+                    b: boolean,
+                    c: number,
+                    d: object,
+                    e: string[],
+                    f: [string, number],
+                    g: () => void,
+                    h: new () => DepService,
+                    i: 'lit',
+                    j: true,
+                    k: 42,
+                    l: string | null,
+                    m: string | undefined,
+                    n: string | number,
+                    o: MyInterface,
+                    p: any,
+                    q: DepService,
+                    untyped,
+                    @Optional() untypedOptional,
+                    ...rest: number[]
+                ) {}
+            }
+        "#;
+        let fs = crate::test_utils::create_test_fs(&[
+            ("/tsconfig.json", r#"{ "files": ["test.ts"] }"#),
+            ("/test.ts", source),
+        ]);
+        let results = crate::test_utils::run_analyzer(fs, "/tsconfig.json", false);
+        let class = results[0]
+            .classes
+            .iter()
+            .find(|c| c.class_name.as_deref() == Some("TestCmp"))
+            .expect("TestCmp metadata");
+        let params = class.constructor_params.as_ref().expect("constructor_params");
+
+        let summary: Vec<(&str, Option<&str>, Option<&str>, bool)> = [
+            "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q",
+            "untyped", "untypedOptional", "rest",
+        ]
+        .into_iter()
+        .zip(params.iter())
+        .map(|(label, p)| {
+            (
+                label,
+                p.type_name.as_deref(),
+                p.jit_type_name.as_deref(),
+                p.has_type,
+            )
+        })
+        .collect();
+
+        assert_eq!(
+            summary,
+            vec![
+                ("a", None, Some("String"), true),
+                ("b", None, Some("Boolean"), true),
+                ("c", None, Some("Number"), true),
+                ("d", None, Some("Object"), true),
+                ("e", None, Some("Array"), true),
+                ("f", None, Some("Array"), true),
+                ("g", None, Some("Function"), true),
+                ("h", None, Some("Function"), true),
+                ("i", None, Some("String"), true),
+                ("j", None, Some("Boolean"), true),
+                ("k", None, Some("Number"), true),
+                ("l", None, Some("String"), true),
+                ("m", None, None, true),
+                ("n", None, None, true),
+                ("o", Some("MyInterface"), None, true),
+                ("p", None, None, true),
+                ("q", Some("DepService"), None, true),
+                ("untyped", None, None, false),
+                ("untypedOptional", None, None, false),
+                ("rest", None, Some("Array"), true),
+            ]
+        );
     }
 }

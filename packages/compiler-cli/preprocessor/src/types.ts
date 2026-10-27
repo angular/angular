@@ -319,6 +319,16 @@ export interface ComponentMetadata {
 export interface ConstructorParamMetadata {
   typeName?: string;
   /**
+   * Boxed runtime constructor name (`String`, `Boolean`, `Number`, `Object`, `Array`, `Function`)
+   * for non-`TSTypeReference` parameter types, mirroring `ngtsc`'s `downlevel_decorators_transform`
+   * for `jit: true` `static ctorParameters`.
+   */
+  jitTypeName?: string;
+  /**
+   * Whether the parameter carries a TypeScript type annotation in source.
+   */
+  hasType: boolean;
+  /**
    * Module specifier the type was imported from, when the type resolves to a (non-aliased)
    * named import (e.g. `@angular/core` for `ElementRef`). `None` for locally declared types.
    * Used so DI tokens that reference an imported symbol are emitted through the matching
