@@ -149,10 +149,10 @@ All properties are optional. Implement only what your control needs.
 
 Track when users interact with your control:
 
-| Property  | Purpose                                          |
-| --------- | ------------------------------------------------ |
-| `touched` | Whether the user has interacted with the field   |
-| `dirty`   | Whether the value differs from its initial state |
+| Property  | Purpose                                                               |
+| --------- | --------------------------------------------------------------------- |
+| `touched` | Whether the user has interacted with the field                        |
+| `dirty`   | Whether the user has modified the value, even if they changed it back |
 
 #### Validation state
 
@@ -383,7 +383,7 @@ export class App {
 }
 ```
 
-IMPORTANT: Emit `touch` on `blur` (when focus leaves the control), not on `focus`. Without the `touch` output the field never registers as blurred, so `debounce('blur')` has no effect on your control.
+IMPORTANT: Emit `touch` on `blur` (when focus leaves the control), not on `focus`. If your control doesn't emit `touch`, the field is never marked as touched, and `debounce('blur')` never writes the value your control emits to the form model.
 
 ## Value transformation
 
