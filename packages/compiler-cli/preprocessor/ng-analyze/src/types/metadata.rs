@@ -930,6 +930,7 @@ pub struct DecoratedMemberMetadata {
     pub property_name: String,
     /// Whether the member name must be quoted (the name node is a string literal).
     pub is_string_literal: bool,
+    pub member_span: SpanMetadata,
     pub decorators: Vec<DecoratorMetadata>,
 }
 

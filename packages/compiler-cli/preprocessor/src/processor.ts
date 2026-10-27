@@ -2377,8 +2377,11 @@ function buildPropDecoratorsExpr(
         }
         seenMemberNames.add(member.propertyName);
       }
-      const offset = member.decorators[0]?.decoratorSpan?.start;
-      const entry = getOrCreateEntry(member.propertyName, member.isStringLiteral, offset);
+      const entry = getOrCreateEntry(
+        member.propertyName,
+        member.isStringLiteral,
+        member.memberSpan.start,
+      );
       const ngDecorators = member.decorators
         .filter((d) => d.isAngular)
         .map((d) => buildDecoratorMetadataExpr(d.name, d.argsSpan, d.argsString, s, guards));
