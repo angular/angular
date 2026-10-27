@@ -69,8 +69,8 @@ runInEachFileSystem(() => {
         env.driveMain();
 
         const jsContents = env.getContents('test.js');
-        expect(cleanNewLines(jsContents)).toContain(
-          `signal('Hello World', /* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testSignal" }] : /* istanbul ignore next */ []))`,
+        expect(cleanNewLines(jsContents)).toMatch(
+          /signal\(['"]Hello World['"], (?:\/\* @ts-ignore \*\/ )?\.\.\.\(ngDevMode \? \[\{ debugName: "testSignal" \}\] : \/\* istanbul ignore next \*\/ \[\]\)\)/,
         );
       });
 
@@ -119,8 +119,8 @@ runInEachFileSystem(() => {
           env.driveMain();
 
           const jsContents = env.getContents('test.js');
-          expect(cleanNewLines(jsContents)).toContain(
-            `signal('Hello World', { ...(ngDevMode ? { debugName: "testSignal" } : /* istanbul ignore next */ {}), equal: () => true })`,
+          expect(cleanNewLines(jsContents)).toMatch(
+            /signal\(['"]Hello World['"], \{ \.\.\.\(ngDevMode \? \{ debugName: "testSignal" \} : \/\* istanbul ignore next \*\/ \{\}\), equal: \(\) => true \}\)/,
           );
         });
 
@@ -161,8 +161,8 @@ runInEachFileSystem(() => {
           env.driveMain();
 
           const jsContents = env.getContents('test.js');
-          expect(cleanNewLines(jsContents)).toContain(
-            `signal('Hello World', /* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testSignal" }] : /* istanbul ignore next */ [])`,
+          expect(cleanNewLines(jsContents)).toMatch(
+            /signal\(['"]Hello World['"], (?:\/\* @ts-ignore \*\/ )?\.\.\.\(ngDevMode \? \[\{ debugName: "testSignal" \}\] : \/\* istanbul ignore next \*\/ \[\]\)/,
           );
         });
 
@@ -228,8 +228,8 @@ runInEachFileSystem(() => {
           env.driveMain();
 
           const jsContents = env.getContents('test.js');
-          expect(cleanNewLines(jsContents)).toContain(
-            `signal('Hello World', { ...(ngDevMode ? { debugName: "testSignal" } : /* istanbul ignore next */ {}), equal: () => true })`,
+          expect(cleanNewLines(jsContents)).toMatch(
+            /signal\(['"]Hello World['"], \{ \.\.\.\(ngDevMode \? \{ debugName: "testSignal" \} : \/\* istanbul ignore next \*\/ \{\}\), equal: \(\) => true \}\)/,
           );
         });
 
@@ -280,8 +280,8 @@ runInEachFileSystem(() => {
           env.driveMain();
 
           const jsContents = env.getContents('test.js');
-          expect(cleanNewLines(jsContents)).toContain(
-            `signal('Hello World', /* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testSignal" }] : /* istanbul ignore next */ [])`,
+          expect(cleanNewLines(jsContents)).toMatch(
+            /signal\(['"]Hello World['"], (?:\/\* @ts-ignore \*\/ )?\.\.\.\(ngDevMode \? \[\{ debugName: "testSignal" \}\] : \/\* istanbul ignore next \*\/ \[\]\)/,
           );
         });
 
@@ -356,8 +356,8 @@ runInEachFileSystem(() => {
           env.driveMain();
 
           const jsContents = env.getContents('test.js');
-          expect(cleanNewLines(jsContents)).toContain(
-            `signal('Hello World', { ...(ngDevMode ? { debugName: "testSignal" } : /* istanbul ignore next */ {}), equal: () => true })`,
+          expect(cleanNewLines(jsContents)).toMatch(
+            /signal\(['"]Hello World['"], \{ \.\.\.\(ngDevMode \? \{ debugName: "testSignal" \} : \/\* istanbul ignore next \*\/ \{\}\), equal: \(\) => true \}\)/,
           );
         });
 
@@ -811,11 +811,11 @@ runInEachFileSystem(() => {
         );
         env.driveMain();
         const jsContents = env.getContents('test.js');
-        expect(cleanNewLines(jsContents)).toContain(
-          `model('Hello World', /* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testModel" }] : /* istanbul ignore next */ []))`,
+        expect(cleanNewLines(jsContents)).toMatch(
+          /model\(['"]Hello World['"], (?:\/\* @ts-ignore \*\/ )?\.\.\.\(ngDevMode \? \[\{ debugName: "testModel" \}\] : \/\* istanbul ignore next \*\/ \[\]\)\)/,
         );
-        expect(cleanNewLines(jsContents)).toContain(
-          `model(/* @ts-ignore */ ...(ngDevMode ? [undefined, { debugName: "testModel2" }] : /* istanbul ignore next */ []))`,
+        expect(cleanNewLines(jsContents)).toMatch(
+          /model\((?:\/\* @ts-ignore \*\/ )?\.\.\.\(ngDevMode \? \[undefined, \{ debugName: "testModel2" \}\] : \/\* istanbul ignore next \*\/ \[\]\)\)/,
         );
       });
 
@@ -900,8 +900,8 @@ runInEachFileSystem(() => {
           env.driveMain();
 
           const jsContents = env.getContents('test.js');
-          expect(cleanNewLines(jsContents)).toContain(
-            `model.required({ ...(ngDevMode ? { debugName: "testModel" } : /* istanbul ignore next */ {}), alias: 'testModelAlias' })`,
+          expect(cleanNewLines(jsContents)).toMatch(
+            /model\.required\(\{ \.\.\.\(ngDevMode \? \{ debugName: "testModel" \} : \/\* istanbul ignore next \*\/ \{\}\), alias: ['"]testModelAlias['"] \}\)/,
           );
         });
 
@@ -1113,8 +1113,8 @@ runInEachFileSystem(() => {
           env.driveMain();
 
           const jsContents = env.getContents('test.js');
-          expect(cleanNewLines(jsContents)).toContain(
-            `input.required({ ...(ngDevMode ? { debugName: "testInput" } : /* istanbul ignore next */ {}), alias: 'testInputAlias' })`,
+          expect(cleanNewLines(jsContents)).toMatch(
+            /input\.required\(\{ \.\.\.\(ngDevMode \? \{ debugName: "testInput" \} : \/\* istanbul ignore next \*\/ \{\}\), alias: ['"]testInputAlias['"] \}\)/,
           );
         });
 
@@ -1252,11 +1252,11 @@ runInEachFileSystem(() => {
         env.driveMain();
 
         const jsContents = env.getContents('test.js');
-        expect(cleanNewLines(jsContents)).toContain(
-          `viewChild('foo', /* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testViewChild" }] : /* istanbul ignore next */ []))`,
+        expect(cleanNewLines(jsContents)).toMatch(
+          /viewChild\(['"]foo['"], (?:\/\* @ts-ignore \*\/ )?\.\.\.\(ngDevMode \? \[\{ debugName: "testViewChild" \}\] : \/\* istanbul ignore next \*\/ \[\]\)\)/,
         );
-        expect(cleanNewLines(jsContents)).toContain(
-          `viewChild(ChildComponent, /* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testViewChildComponent" }] : /* istanbul ignore next */ []))`,
+        expect(cleanNewLines(jsContents)).toMatch(
+          /viewChild\(ChildComponent, (?:\/\* @ts-ignore \*\/ )?\.\.\.\(ngDevMode \? \[\{ debugName: "testViewChildComponent" \}\] : \/\* istanbul ignore next \*\/ \[\]\)\)/,
         );
       });
 
@@ -1384,8 +1384,8 @@ runInEachFileSystem(() => {
           env.driveMain();
 
           const jsContents = env.getContents('test.js');
-          expect(cleanNewLines(jsContents)).toContain(
-            `viewChild.required('foo', /* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testViewChild" }] : /* istanbul ignore next */ []))`,
+          expect(cleanNewLines(jsContents)).toMatch(
+            /viewChild\.required\(['"]foo['"], (?:\/\* @ts-ignore \*\/ )?\.\.\.\(ngDevMode \? \[\{ debugName: "testViewChild" \}\] : \/\* istanbul ignore next \*\/ \[\]\)\)/,
           );
         });
 
@@ -1405,8 +1405,8 @@ runInEachFileSystem(() => {
           env.driveMain();
 
           const jsContents = env.getContents('test.js');
-          expect(cleanNewLines(jsContents)).toContain(
-            `viewChild.required('foo', { ...(ngDevMode ? { debugName: "testViewChild" } : /* istanbul ignore next */ {}), read: ElementRef })`,
+          expect(cleanNewLines(jsContents)).toMatch(
+            /viewChild\.required\(['"]foo['"], \{ \.\.\.\(ngDevMode \? \{ debugName: "testViewChild" \} : \/\* istanbul ignore next \*\/ \{\}\), read: ElementRef \}\)/,
           );
         });
 
@@ -1536,8 +1536,8 @@ runInEachFileSystem(() => {
         env.driveMain();
 
         const jsContents = env.getContents('test.js');
-        expect(cleanNewLines(jsContents)).toContain(
-          `viewChildren('foo', /* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testViewChildren" }] : /* istanbul ignore next */ []))`,
+        expect(cleanNewLines(jsContents)).toMatch(
+          /viewChildren\(['"]foo['"], (?:\/\* @ts-ignore \*\/ )?\.\.\.\(ngDevMode \? \[\{ debugName: "testViewChildren" \}\] : \/\* istanbul ignore next \*\/ \[\]\)\)/,
         );
       });
 
@@ -1664,8 +1664,8 @@ runInEachFileSystem(() => {
         env.driveMain();
 
         const jsContents = env.getContents('test.js');
-        expect(cleanNewLines(jsContents)).toContain(
-          `contentChild('foo', /* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testContentChild" }] : /* istanbul ignore next */ []))`,
+        expect(cleanNewLines(jsContents)).toMatch(
+          /contentChild\(['"]foo['"], (?:\/\* @ts-ignore \*\/ )?\.\.\.\(ngDevMode \? \[\{ debugName: "testContentChild" \}\] : \/\* istanbul ignore next \*\/ \[\]\)\)/,
         );
       });
 
@@ -1773,8 +1773,8 @@ runInEachFileSystem(() => {
           env.driveMain();
 
           const jsContents = env.getContents('test.js');
-          expect(cleanNewLines(jsContents)).toContain(
-            `contentChild.required('foo', /* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testContentChild" }] : /* istanbul ignore next */ []))`,
+          expect(cleanNewLines(jsContents)).toMatch(
+            /contentChild\.required\(['"]foo['"], (?:\/\* @ts-ignore \*\/ )?\.\.\.\(ngDevMode \? \[\{ debugName: "testContentChild" \}\] : \/\* istanbul ignore next \*\/ \[\]\)\)/,
           );
         });
 
@@ -1794,8 +1794,8 @@ runInEachFileSystem(() => {
           env.driveMain();
 
           const jsContents = env.getContents('test.js');
-          expect(cleanNewLines(jsContents)).toContain(
-            `contentChild.required('foo', { ...(ngDevMode ? { debugName: "testContentChild" } : /* istanbul ignore next */ {}), read: ElementRef })`,
+          expect(cleanNewLines(jsContents)).toMatch(
+            /contentChild\.required\(['"]foo['"], \{ \.\.\.\(ngDevMode \? \{ debugName: "testContentChild" \} : \/\* istanbul ignore next \*\/ \{\}\), read: ElementRef \}\)/,
           );
         });
 
@@ -1927,8 +1927,8 @@ runInEachFileSystem(() => {
         env.driveMain();
 
         const jsContents = env.getContents('test.js');
-        expect(cleanNewLines(jsContents)).toContain(
-          `contentChildren('foo', /* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testContentChildren" }] : /* istanbul ignore next */ []))`,
+        expect(cleanNewLines(jsContents)).toMatch(
+          /contentChildren\(['"]foo['"], (?:\/\* @ts-ignore \*\/ )?\.\.\.\(ngDevMode \? \[\{ debugName: "testContentChildren" \}\] : \/\* istanbul ignore next \*\/ \[\]\)\)/,
         );
       });
 
@@ -2256,7 +2256,7 @@ runInEachFileSystem(() => {
         );
         env.driveMain();
         const jsContents = env.getContents('test.js');
-        expect(jsContents).toContain(`debugName: 'customName'`);
+        expect(jsContents).toMatch(/debugName: ['"]customName['"]/);
         expect(jsContents).not.toContain('debugName: "testEffect"');
       });
 
@@ -3041,12 +3041,8 @@ runInEachFileSystem(() => {
         );
         env.driveMain();
         const jsContents = cleanNewLines(env.getContents('test.js'));
-        expect(jsContents).toContain(
-          'resource({ ' +
-            '...(ngDevMode ? { debugName: "testResource" } : /* istanbul ignore next */ {}), ' +
-            `defaultValue: 'foo', ` +
-            `loader: async () => 'bar' ` +
-            '})',
+        expect(jsContents).toMatch(
+          /resource\(\{ \.\.\.\(ngDevMode \? \{ debugName: "testResource" \} : \/\* istanbul ignore next \*\/ \{\}\), defaultValue: ['"]foo['"], loader: async \(\) => ['"]bar['"],? ?\}\)/,
         );
       });
 
@@ -3119,12 +3115,8 @@ runInEachFileSystem(() => {
           );
           env.driveMain();
           const jsContents = cleanNewLines(env.getContents('test.js'));
-          expect(jsContents).toContain(
-            'resource({ ' +
-              '...(ngDevMode ? { debugName: "testResource" } : /* istanbul ignore next */ {}), ' +
-              `defaultValue: 'foo', ` +
-              `loader: async () => 'bar' ` +
-              '})',
+          expect(jsContents).toMatch(
+            /resource\(\{ \.\.\.\(ngDevMode \? \{ debugName: "testResource" \} : \/\* istanbul ignore next \*\/ \{\}\), defaultValue: ['"]foo['"], loader: async \(\) => ['"]bar['"],? ?\}\)/,
           );
         });
 
@@ -3210,12 +3202,8 @@ runInEachFileSystem(() => {
           );
           env.driveMain();
           const jsContents = cleanNewLines(env.getContents('test.js'));
-          expect(jsContents).toContain(
-            'resource({ ' +
-              '...(ngDevMode ? { debugName: "testResource" } : /* istanbul ignore next */ {}), ' +
-              `defaultValue: 'foo', ` +
-              `loader: async () => 'bar' ` +
-              '})',
+          expect(jsContents).toMatch(
+            /resource\(\{ \.\.\.\(ngDevMode \? \{ debugName: "testResource" \} : \/\* istanbul ignore next \*\/ \{\}\), defaultValue: ['"]foo['"], loader: async \(\) => ['"]bar['"],? ?\}\)/,
           );
         });
 
@@ -3310,8 +3298,8 @@ runInEachFileSystem(() => {
         );
         env.driveMain();
         const jsContents = env.getContents('test.js');
-        expect(cleanNewLines(jsContents)).toContain(
-          `httpResource(() => '/api', /* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testHttpResource" }] : /* istanbul ignore next */ []))`,
+        expect(cleanNewLines(jsContents)).toMatch(
+          /httpResource\(\(\) => ['"]\/api['"], (?:\/\* @ts-ignore \*\/ )?\.\.\.\(ngDevMode \? \[\{ debugName: "testHttpResource" \}\] : \/\* istanbul ignore next \*\/ \[\]\)\)/,
         );
       });
 
@@ -3368,8 +3356,8 @@ runInEachFileSystem(() => {
           );
           env.driveMain();
           const jsContents = cleanNewLines(env.getContents('test.js'));
-          expect(jsContents).toContain(
-            `httpResource(() => '/api', /* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testHttpResource" }] : /* istanbul ignore next */ []))`,
+          expect(jsContents).toMatch(
+            /httpResource\(\(\) => ['"]\/api['"], (?:\/\* @ts-ignore \*\/ )?\.\.\.\(ngDevMode \? \[\{ debugName: "testHttpResource" \}\] : \/\* istanbul ignore next \*\/ \[\]\)\)/,
           );
         });
 
@@ -3438,8 +3426,8 @@ runInEachFileSystem(() => {
           );
           env.driveMain();
           const jsContents = cleanNewLines(env.getContents('test.js'));
-          expect(jsContents).toContain(
-            `httpResource(() => '/api', /* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testHttpResource" }] : /* istanbul ignore next */ []))`,
+          expect(jsContents).toMatch(
+            /httpResource\(\(\) => ['"]\/api['"], (?:\/\* @ts-ignore \*\/ )?\.\.\.\(ngDevMode \? \[\{ debugName: "testHttpResource" \}\] : \/\* istanbul ignore next \*\/ \[\]\)\)/,
           );
         });
 
