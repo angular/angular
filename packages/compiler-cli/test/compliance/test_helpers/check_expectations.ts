@@ -80,18 +80,14 @@ export async function checkExpectations(
     );
 
     let generated = rawGenerated;
-    try {
-      generated = await prettier.format(rawGenerated, {
-        parser: 'babel',
-        printWidth: 100,
-        singleQuote: false,
-        trailingComma: 'none',
-        arrowParens: 'avoid',
-        quoteProps: 'preserve',
-      });
-    } catch {
-      // Keep rawGenerated if Prettier cannot parse it.
-    }
+    generated = await prettier.format(rawGenerated, {
+      parser: 'babel',
+      printWidth: 100,
+      singleQuote: false,
+      trailingComma: 'none',
+      arrowParens: 'avoid',
+      quoteProps: 'preserve',
+    });
 
     expectEmit(
       generated,

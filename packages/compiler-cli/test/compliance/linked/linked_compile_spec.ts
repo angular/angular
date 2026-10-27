@@ -120,12 +120,12 @@ function applyLinker(
   if (result.code == null) {
     throw fail('Babel transform result does not have any code');
   }
-  const linkedCode = result.code
-    .replace(/\bthis && this\.(__decorate|__metadata|__param)\b/g, '(this && this.$1)')
-    .replace(
-      /decorator\(target, key, paramIndex\);\s*\};/g,
-      'decorator(target, key, paramIndex); }',
-    );
+  // `@babel/generator` strips the parens around `(this && this.__decorate)` that Prettier
+  // preserves in the `full compile` golden.
+  const linkedCode = result.code.replace(
+    /\bthis && this\.(__decorate|__metadata|__param)\b/g,
+    '(this && this.$1)',
+  );
   const linkedSourceMap = result.map
     ? ({...result.map, file: result.map.file ?? undefined} as RawSourceMap)
     : undefined;
