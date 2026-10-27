@@ -174,6 +174,7 @@ fn run_async_compiler_test<Fs: crate::ResourceResolverFs + Clone + 'static>(
             let r3_symbols_path = engine.r3_symbols_file();
             let cx = crate::analyzer::WireContext {
                 mode: crate::analyzer::WireMode::Semantic,
+                emit_declaration_only: false,
                 source_text: &source_text,
                 converter: &resolved.converter,
                 reference_strategy: &*engine.reference_strategy,

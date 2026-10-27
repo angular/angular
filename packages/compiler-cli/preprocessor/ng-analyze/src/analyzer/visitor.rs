@@ -391,6 +391,7 @@ fn classify(
     ClassData {
         reference_id,
         ng_decorator_spans: common.ng_decorator_spans,
+        non_ng_decorator_spans: common.non_ng_decorator_spans,
         decorator_removal_spans: common.decorator_removal_spans,
         nocollapse_insertions: common.nocollapse_insertions,
         span: common.span,
@@ -480,6 +481,7 @@ fn try_parse_component<'a, Fs: ResourceResolverFs>(
 /// `process_class` assigns).
 struct ParsedCommon {
     ng_decorator_spans: Vec<oxc_span::Span>,
+    non_ng_decorator_spans: Vec<oxc_span::Span>,
     decorator_removal_spans: Vec<oxc_span::Span>,
     nocollapse_insertions: Vec<super::closure_nocollapse::NoCollapseInsertion>,
     span: oxc_span::Span,
@@ -675,6 +677,7 @@ fn process_class_common<'a, Fs: ResourceResolverFs>(
     // Class decorators lead the removal list, followed by the member decorators.
     let mut decorator_removal_spans = Vec::new();
     let mut decorator_function_spans = Vec::new();
+    let mut non_ng_decorator_spans = Vec::new();
     for decorator in &class.decorators {
         if ng_decorator_spans.contains(&decorator.span) {
             super::collect_decorator_references(
@@ -689,6 +692,8 @@ fn process_class_common<'a, Fs: ResourceResolverFs>(
                 decorator,
                 semantic.source_text(),
             ));
+        } else {
+            non_ng_decorator_spans.push(decorator.span);
         }
     }
     decorator_removal_spans.extend(member_removal_spans);
@@ -758,6 +763,7 @@ fn process_class_common<'a, Fs: ResourceResolverFs>(
     Some(ParsedClass {
         common: ParsedCommon {
             ng_decorator_spans,
+            non_ng_decorator_spans,
             decorator_removal_spans,
             nocollapse_insertions,
             span: class.span,

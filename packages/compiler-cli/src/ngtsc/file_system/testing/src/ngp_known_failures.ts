@@ -349,13 +349,6 @@ const NGP_POTENTIAL_BREAKING_CHANGES: ReadonlySet<string> = new Set([
  * Xi18n, ComponentIndex, and diagnostic/TCB gaps #677-#696).
  */
 const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
-  'declaration-only emission should emit type declarations when using an inputs array entry with a transform function referenced via a constant',
-  'declaration-only emission should produce a diagnostic when using an @Input decorator with an inline transform function missing a parameter type',
-  'declaration-only emission should show correct error message when using an expression resolving to an external reference in a simple host directive on a component',
-  'declaration-only emission should show correct error message when using an expression resolving to an external reference in a simple host directive on a directive',
-  'declaration-only emission should show correct error message when using an expression resolving to an external reference in host directive object on a component',
-  'declaration-only emission should show correct error message when using an expression resolving to an external reference in host directive object on a directive',
-  'declaration-only emission should show correct error message when using custom decorators',
   'import generation should report an error when a library entry-point does not export the symbol',
   'import generation should report an error when using a directive outside of rootDirs',
   'local compilation @defer should handle `@Component.imports` field',

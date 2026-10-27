@@ -18,6 +18,7 @@ pub struct ResolvedTsConfig {
     pub strict_injection_parameters: bool,
     pub use_host_for_import_generation: bool,
     pub implicit_standalone: bool,
+    pub emit_declaration_only: bool,
 }
 
 pub fn load_and_resolve_tsconfig(
@@ -107,6 +108,10 @@ pub fn load_and_resolve_tsconfig(
             .use_host_for_import_generation
             .unwrap_or(false),
         implicit_standalone: extended_options.implicit_standalone.unwrap_or(true),
+        emit_declaration_only: extended_options.emit_declaration_only.unwrap_or(false)
+            && extended_options
+                .allow_emit_declaration_only
+                .unwrap_or(false),
     })
 }
 
@@ -283,6 +288,8 @@ struct ExtendedOptions {
     strict_injection_parameters: Option<bool>,
     use_host_for_import_generation: Option<bool>,
     implicit_standalone: Option<bool>,
+    emit_declaration_only: Option<bool>,
+    allow_emit_declaration_only: Option<bool>,
 }
 
 fn core_version_supports_implicit_standalone(version: &str) -> bool {
@@ -399,6 +406,21 @@ fn resolve_extended_options_recursive(
             .map(core_version_supports_implicit_standalone)
     });
 
+    let mut current_emit_declaration_only = parsed_json.as_ref().ok().and_then(|json| {
+        json.pointer("/compilerOptions/emitDeclarationOnly")
+            .and_then(|v| v.as_bool())
+    });
+
+    let mut current_allow_emit_declaration_only = parsed_json.as_ref().ok().and_then(|json| {
+        json.pointer("/angularCompilerOptions/_experimentalAllowEmitDeclarationOnly")
+            .or_else(|| {
+                json.pointer(
+                    "/bazelOptions/angularCompilerOptions/_experimentalAllowEmitDeclarationOnly",
+                )
+            })
+            .and_then(|v| v.as_bool())
+    });
+
     let base_dir = abs_path.parent().unwrap_or(Path::new("."));
 
     let mut current_root_dirs = tsconfig.compiler_options.root_dirs.clone().map(|dirs| {
@@ -421,6 +443,8 @@ fn resolve_extended_options_recursive(
         && current_strict_injection_parameters.is_some()
         && current_use_host_for_import_generation.is_some()
         && current_implicit_standalone.is_some()
+        && current_emit_declaration_only.is_some()
+        && current_allow_emit_declaration_only.is_some()
     {
         visited.remove(&canonical);
         return Ok(ExtendedOptions {
@@ -435,6 +459,8 @@ fn resolve_extended_options_recursive(
             strict_injection_parameters: current_strict_injection_parameters,
             use_host_for_import_generation: current_use_host_for_import_generation,
             implicit_standalone: current_implicit_standalone,
+            emit_declaration_only: current_emit_declaration_only,
+            allow_emit_declaration_only: current_allow_emit_declaration_only,
         });
     }
 
@@ -452,6 +478,8 @@ fn resolve_extended_options_recursive(
             strict_injection_parameters: current_strict_injection_parameters,
             use_host_for_import_generation: current_use_host_for_import_generation,
             implicit_standalone: current_implicit_standalone,
+            emit_declaration_only: current_emit_declaration_only,
+            allow_emit_declaration_only: current_allow_emit_declaration_only,
         });
     };
 
@@ -513,6 +541,12 @@ fn resolve_extended_options_recursive(
         if let Some(implicit_standalone) = res.implicit_standalone {
             inherited.implicit_standalone = Some(implicit_standalone);
         }
+        if let Some(emit_declaration_only) = res.emit_declaration_only {
+            inherited.emit_declaration_only = Some(emit_declaration_only);
+        }
+        if let Some(allow_emit_declaration_only) = res.allow_emit_declaration_only {
+            inherited.allow_emit_declaration_only = Some(allow_emit_declaration_only);
+        }
     }
     if current_root_dirs.is_none() {
         current_root_dirs = inherited.root_dirs;
@@ -547,6 +581,12 @@ fn resolve_extended_options_recursive(
     if current_implicit_standalone.is_none() {
         current_implicit_standalone = inherited.implicit_standalone;
     }
+    if current_emit_declaration_only.is_none() {
+        current_emit_declaration_only = inherited.emit_declaration_only;
+    }
+    if current_allow_emit_declaration_only.is_none() {
+        current_allow_emit_declaration_only = inherited.allow_emit_declaration_only;
+    }
 
     visited.remove(&canonical);
     Ok(ExtendedOptions {
@@ -561,6 +601,8 @@ fn resolve_extended_options_recursive(
         strict_injection_parameters: current_strict_injection_parameters,
         use_host_for_import_generation: current_use_host_for_import_generation,
         implicit_standalone: current_implicit_standalone,
+        emit_declaration_only: current_emit_declaration_only,
+        allow_emit_declaration_only: current_allow_emit_declaration_only,
     })
 }
 
