@@ -347,17 +347,20 @@ Angular provides several methods on `AbstractControl` to manage validators at ru
 ### Adding and removing validators
 
 The [`addValidators`](api/forms/AbstractControl#addValidators) and [`removeValidators`](api/forms/AbstractControl#removeValidators) methods allow you to modify a control's validators after initialization.
+Angular matches validators by reference, so you must pass the same function to `removeValidators` that you passed to `addValidators`.
 
 ```ts
+private readonly usPostalCode = Validators.pattern(/^\d{5}$/);
+
 onCountryChange(country: string) {
     const postalCodeControl = this.profileForm.get('postalCode');
 
     if (country === 'US') {
       // Add validators for US postal codes
-      postalCodeControl.addValidators([Validators.required, Validators.pattern(/^\d{5}$/)]);
+      postalCodeControl.addValidators([Validators.required, this.usPostalCode]);
     } else {
       // Remove validators when not US
-      postalCodeControl.removeValidators([Validators.required]);
+      postalCodeControl.removeValidators([Validators.required, this.usPostalCode]);
     }
 
     postalCodeControl.updateValueAndValidity();
