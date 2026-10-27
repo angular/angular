@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
+import * as prettier from 'prettier';
 import {ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 
 import {getBuildOutputDirectory, getRootDirectory} from './compile_test';
@@ -35,14 +36,15 @@ const EXTRA_CHECK_FUNCTIONS: Record<string, ExtraCheckFunction> = {
  *   TODO: Remove this option. This only exists until we fix:
  *         https://github.com/angular/angular/issues/51647.
  */
-export function checkExpectations(
+export async function checkExpectations(
   fs: ReadonlyFileSystem,
   testPath: string,
   failureMessage: string,
   expectedFiles: ExpectedFile[],
   extraChecks: ExtraCheck[],
   skipMappingCheck = false,
-): void {
+  isLinkedCompilation = false,
+): Promise<void> {
   const builtDirectory = getBuildOutputDirectory(fs);
   for (const expectedFile of expectedFiles) {
     const expectedPath = fs.resolve(getRootDirectory(fs), expectedFile.expected);
@@ -64,23 +66,36 @@ export function checkExpectations(
       error.stack = '';
       throw error;
     }
-    const generated = fs.readFile(generatedPath);
-    let expected = fs.readFile(expectedPath);
-    expected = replaceMacros(expected);
+    const rawGenerated = fs.readFile(generatedPath);
+    const rawExpected = fs.readFile(expectedPath);
+    const allowPartial = /\/\/\s*SOURCE:/.test(rawExpected);
+    let expected = replaceMacros(rawExpected);
     expected = stripAndCheckMappings(
       fs,
-      generated,
+      rawGenerated,
       generatedPath,
       expected,
       expectedPath,
       /** skipMappingCheck */ !!skipMappingCheck,
     );
 
+    let generated = rawGenerated;
+    generated = await prettier.format(rawGenerated, {
+      parser: 'babel',
+      printWidth: 100,
+      singleQuote: false,
+      trailingComma: 'none',
+      arrowParens: 'avoid',
+      quoteProps: 'preserve',
+    });
+
     expectEmit(
       generated,
       expected,
       `When checking against expected file "${testPath}/${expectedFile.expected}"\n` +
         failureMessage,
+      undefined,
+      {isLinkedCompilation, allowPartial},
     );
 
     runExtraChecks(testPath, generated, extraChecks);

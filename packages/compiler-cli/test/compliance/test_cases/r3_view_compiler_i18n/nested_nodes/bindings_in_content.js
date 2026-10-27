@@ -1,37 +1,188 @@
-decls: 7,
-vars: 5,
-consts: () => {
-  __i18nMsg__('My i18n block #{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {original_code: {'interpolation': '{{ one }}'}}, {})
-  __i18nMsg__('My i18n block #{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {original_code: {'interpolation': '{{ two | uppercase }}'}}, {})
-  __i18nMsg__('My i18n block #{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {original_code: {'interpolation': '{{ three + four + five }}'}}, {})
-  return [
-    $i18n_0$,
-    $i18n_1$,
-    $i18n_2$
-  ];
-},
-template: function MyComponent_Template(rf, ctx) {
-  if (rf & 1) {
-    $r3$.ɵɵelementStart(0, "div");
-    $r3$.ɵɵi18n(1, 0);
-    $r3$.ɵɵelementEnd();
-    $r3$.ɵɵelementStart(2, "div");
-    $r3$.ɵɵi18n(3, 1);
-    $r3$.ɵɵpipe(4, "uppercase");
-    $r3$.ɵɵelementEnd();
-    $r3$.ɵɵelementStart(5, "div");
-    $r3$.ɵɵi18n(6, 2);
-    $r3$.ɵɵelementEnd();
-  }
-  if (rf & 2) {
-    $r3$.ɵɵadvance();
-    $r3$.ɵɵi18nExp(ctx.one);
-    $r3$.ɵɵi18nApply(1);
-    $r3$.ɵɵadvance(3);
-    $r3$.ɵɵi18nExp($r3$.ɵɵpipeBind1(4, 3, ctx.two));
-    $r3$.ɵɵi18nApply(3);
-    $r3$.ɵɵadvance(2);
-    $r3$.ɵɵi18nExp(ctx.three + ctx.four + ctx.five);
-    $r3$.ɵɵi18nApply(6);
-  }
+import { Component, NgModule, Pipe } from "@angular/core";
+import * as i0 from "@angular/core";
+export class UppercasePipe {
+  transform(v) {}
+  static ɵfac = function UppercasePipe_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || UppercasePipe)();
+  };
+  static ɵpipe = /*@__PURE__*/ i0.ɵɵdefinePipe({
+    name: "uppercase",
+    type: UppercasePipe,
+    pure: true,
+    standalone: false
+  });
 }
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) &&
+    i0.ɵsetClassMetadata(
+      UppercasePipe,
+      [
+        {
+          type: Pipe,
+          args: [
+            {
+              name: "uppercase",
+              standalone: false
+            }
+          ]
+        }
+      ],
+      null,
+      null
+    );
+})();
+export class MyComponent {
+  one = 1;
+  two = 2;
+  three = 3;
+  four = 4;
+  five = 5;
+  static ɵfac = function MyComponent_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || MyComponent)();
+  };
+  static ɵcmp = /*@__PURE__*/ i0.ɵɵdefineComponent({
+    type: MyComponent,
+    selectors: [["my-component"]],
+    standalone: false,
+    decls: 7,
+    vars: 5,
+    consts: () => {
+      let i18n_0;
+      if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
+        /**
+         * @suppress {msgDescriptions}
+         */
+        const MSG_EXTERNAL_572579892698764378$$BINDINGS_IN_CONTENT_TS_0 =
+          /* @ts-ignore */
+          goog.getMsg(
+            "My i18n block #{$interpolation}",
+            { "interpolation": "\uFFFD0\uFFFD" },
+            { original_code: { "interpolation": "{{ one }}" } }
+          );
+        i18n_0 = MSG_EXTERNAL_572579892698764378$$BINDINGS_IN_CONTENT_TS_0;
+      } else {
+        /* @ts-ignore */
+        i18n_0 = $localize`My i18n block #${"\uFFFD0\uFFFD"}:INTERPOLATION:`;
+      }
+      let i18n_1;
+      if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
+        /**
+         * @suppress {msgDescriptions}
+         */
+        const MSG_EXTERNAL_609623417156596326$$BINDINGS_IN_CONTENT_TS_1 =
+          /* @ts-ignore */
+          goog.getMsg(
+            "My i18n block #{$interpolation}",
+            { "interpolation": "\uFFFD0\uFFFD" },
+            { original_code: { "interpolation": "{{ two | uppercase }}" } }
+          );
+        i18n_1 = MSG_EXTERNAL_609623417156596326$$BINDINGS_IN_CONTENT_TS_1;
+      } else {
+        /* @ts-ignore */
+        i18n_1 = $localize`My i18n block #${"\uFFFD0\uFFFD"}:INTERPOLATION:`;
+      }
+      let i18n_2;
+      if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
+        /**
+         * @suppress {msgDescriptions}
+         */
+        const MSG_EXTERNAL_3998119318957372120$$BINDINGS_IN_CONTENT_TS_2 =
+          /* @ts-ignore */
+          goog.getMsg(
+            "My i18n block #{$interpolation}",
+            { "interpolation": "\uFFFD0\uFFFD" },
+            { original_code: { "interpolation": "{{ three + four + five }}" } }
+          );
+        i18n_2 = MSG_EXTERNAL_3998119318957372120$$BINDINGS_IN_CONTENT_TS_2;
+      } else {
+        /* @ts-ignore */
+        i18n_2 = $localize`My i18n block #${"\uFFFD0\uFFFD"}:INTERPOLATION:`;
+      }
+      return [i18n_0, i18n_1, i18n_2];
+    },
+    template: function MyComponent_Template(rf, ctx) {
+      if (rf & 1) {
+        i0.ɵɵelementStart(0, "div");
+        i0.ɵɵi18n(1, 0);
+        i0.ɵɵelementEnd();
+        i0.ɵɵelementStart(2, "div");
+        i0.ɵɵi18n(3, 1);
+        i0.ɵɵpipe(4, "uppercase");
+        i0.ɵɵelementEnd();
+        i0.ɵɵelementStart(5, "div");
+        i0.ɵɵi18n(6, 2);
+        i0.ɵɵelementEnd();
+      }
+      if (rf & 2) {
+        i0.ɵɵadvance();
+        i0.ɵɵi18nExp(ctx.one);
+        i0.ɵɵi18nApply(1);
+        i0.ɵɵadvance(3);
+        i0.ɵɵi18nExp(i0.ɵɵpipeBind1(4, 3, ctx.two));
+        i0.ɵɵi18nApply(3);
+        i0.ɵɵadvance(2);
+        i0.ɵɵi18nExp(ctx.three + ctx.four + ctx.five);
+        i0.ɵɵi18nApply(6);
+      }
+    },
+    dependencies: [UppercasePipe],
+    encapsulation: 2
+  });
+}
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) &&
+    i0.ɵsetClassMetadata(
+      MyComponent,
+      [
+        {
+          type: Component,
+          args: [
+            {
+              selector: "my-component",
+              template: `
+  <div i18n>My i18n block #{{ one }}</div>
+  <div i18n>My i18n block #{{ two | uppercase }}</div>
+  <div i18n>My i18n block #{{ three + four + five }}</div>
+  `,
+              standalone: false
+            }
+          ]
+        }
+      ],
+      null,
+      null
+    );
+})();
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) &&
+    i0.ɵsetClassDebugInfo(MyComponent, {
+      className: "MyComponent",
+      filePath: "bindings_in_content.ts",
+      lineNumber: 20
+    });
+})();
+export class MyModule {
+  static ɵfac = function MyModule_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || MyModule)();
+  };
+  static ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
+  static ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
+}
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) &&
+    i0.ɵsetClassMetadata(
+      MyModule,
+      [
+        {
+          type: NgModule,
+          args: [{ declarations: [MyComponent, UppercasePipe] }]
+        }
+      ],
+      null,
+      null
+    );
+})();
+(function () {
+  (typeof ngJitMode === "undefined" || ngJitMode) &&
+    i0.ɵɵsetNgModuleScope(MyModule, { declarations: [MyComponent, UppercasePipe] });
+})();

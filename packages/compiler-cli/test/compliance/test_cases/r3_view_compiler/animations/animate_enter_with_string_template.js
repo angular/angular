@@ -1,6 +1,10 @@
+import { Component } from "@angular/core";
+import * as i0 from "@angular/core";
 export class MyComponent {
-  // ...
-  static ɵcmp = /* @__PURE__ */i0.ɵɵdefineComponent({
+  static ɵfac = function MyComponent_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || MyComponent)();
+  };
+  static ɵcmp = /*@__PURE__*/ i0.ɵɵdefineComponent({
     type: MyComponent,
     selectors: [["my-component"]],
     decls: 3,
@@ -16,3 +20,34 @@ export class MyComponent {
     encapsulation: 2
   });
 }
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) &&
+    i0.ɵsetClassMetadata(
+      MyComponent,
+      [
+        {
+          type: Component,
+          args: [
+            {
+              selector: "my-component",
+              template: `
+    <div>
+      <p animate.enter="slide">Sliding Content</p>
+    </div>
+  `
+            }
+          ]
+        }
+      ],
+      null,
+      null
+    );
+})();
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) &&
+    i0.ɵsetClassDebugInfo(MyComponent, {
+      className: "MyComponent",
+      filePath: "animate_enter_with_string.ts",
+      lineNumber: 11
+    });
+})();

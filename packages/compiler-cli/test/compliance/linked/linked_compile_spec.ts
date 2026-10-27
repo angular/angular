@@ -111,7 +111,7 @@ function applyLinker(
     generatorOpts: {
       // Keep escaped unicode sequences (e.g. `\uFFFD`) in golden-linked output.
       // Babel 8 may emit raw non-ASCII characters with default jsesc settings.
-      jsescOption: {minimal: false},
+      jsescOption: {minimal: false, quotes: 'double'},
     },
   });
   if (result === null) {
@@ -120,11 +120,17 @@ function applyLinker(
   if (result.code == null) {
     throw fail('Babel transform result does not have any code');
   }
+  // `@babel/generator` strips the parens around `(this && this.__decorate)` that Prettier
+  // preserves in the `full compile` golden.
+  const linkedCode = result.code.replace(
+    /\bthis && this\.(__decorate|__metadata|__param)\b/g,
+    '(this && this.$1)',
+  );
   const linkedSourceMap = result.map
     ? ({...result.map, file: result.map.file ?? undefined} as RawSourceMap)
     : undefined;
   return {
-    linkedSource: result.code,
+    linkedSource: linkedCode,
     linkedSourceMap,
   };
 }
