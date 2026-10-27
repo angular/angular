@@ -19,7 +19,7 @@ function CustomParamDec(): ParameterDecorator {
 })
 export class JitCtorComponent {
   constructor(
-    @Optional() @Inject(TOKEN) public token: string,
+    public token: string,
     count: number,
     visible: boolean,
     nullableLabel: string | null,
@@ -28,7 +28,7 @@ export class JitCtorComponent {
     config: object,
     iface: SomeInterface,
     untyped = 'fallback',
-    @Optional() untypedOptional = 'opt',
+    untypedOptional = 'opt',
     @CustomParamDec() public dep: DepService = new DepService(),
   ) {}
 

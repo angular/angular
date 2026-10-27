@@ -611,6 +611,7 @@ pub(crate) fn constructor_params_di<'a>(
     Some(params)
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn get_constructor_params<'a>(
     class: &oxc_ast::ast::Class<'a>,
     params_di: &[CtorParamDi],
@@ -618,6 +619,7 @@ pub fn get_constructor_params<'a>(
     converter: &Utf8ToUtf16,
     import_map: &std::collections::HashMap<String, ImportedSymbol>,
     angular_imports: &crate::analyzer::imports::AngularImports,
+    jit_removal_spans: &mut Vec<oxc_span::Span>,
     mut top_level_reads: Option<&mut TopLevelReads<'_, 'a, '_>>,
 ) -> Option<ConstructorParams> {
     let target_method = constructor_method(class, false)?;
@@ -680,6 +682,10 @@ pub fn get_constructor_params<'a>(
                     top_level_reads.as_deref_mut(),
                     None,
                 );
+                jit_removal_spans.push(self::utils::decorator_removal_span(
+                    decorator,
+                    semantic.source_text(),
+                ));
             }
 
             // Flag unrecognized @angular/core decorators on constructor parameters (NG1005).
@@ -759,6 +765,7 @@ pub fn get_member_decorators<'a>(
     source_text: &str,
     later_references: &mut Vec<oxc_span::Span>,
     removal_spans: &mut Vec<oxc_span::Span>,
+    jit_removal_spans: &mut Vec<oxc_span::Span>,
     mut top_level_reads: Option<&mut TopLevelReads<'_, 'a, '_>>,
 ) -> Vec<crate::DecoratedMemberMetadata> {
     use oxc_ast::ast::{ClassElement, PropertyKey};
@@ -808,7 +815,11 @@ pub fn get_member_decorators<'a>(
                         top_level_reads.as_deref_mut(),
                         None,
                     );
-                    removal_spans.push(self::utils::decorator_removal_span(decorator, source_text));
+                    let removal_span = self::utils::decorator_removal_span(decorator, source_text);
+                    removal_spans.push(removal_span);
+                    if !matches!(key, PropertyKey::StringLiteral(_)) {
+                        jit_removal_spans.push(removal_span);
+                    }
                 }
                 // `args` is intentionally omitted as an optimization, because `ɵsetClassMetadata`
                 // emission in TypeScript only requires `args_span` for verbatim source slicing.
