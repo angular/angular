@@ -508,6 +508,7 @@ export interface DirectiveMetadata {
   argsSpan?: SpanMetadata;
   declaringNgModule?: DeclaringNgModule;
   isJit: boolean;
+  isPoisoned: boolean;
 }
 
 export enum ExpressionValueKindMetadata {
