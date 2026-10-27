@@ -653,6 +653,39 @@ describe('styling', () => {
     expectStyle(div).toEqual({'color': 'red', 'width': '20px'});
   });
 
+  it('should deliver events from an output named class while [class] is bound', async () => {
+    @Directive({
+      selector: '[dir-with-class-output]',
+    })
+    class DirectiveWithClassOutput {
+      @Output('class') classOutput = new EventEmitter<string>();
+    }
+
+    @Component({
+      template: `
+        <div
+          dir-with-class-output
+          class="s1"
+          [class]="classBinding()"
+          (class)="received.push($event)"
+        ></div>
+      `,
+      imports: [DirectiveWithClassOutput],
+    })
+    class Cmp {
+      @ViewChild(DirectiveWithClassOutput) dir!: DirectiveWithClassOutput;
+      classBinding = signal('d1');
+      received: string[] = [];
+    }
+
+    const fixture = TestBed.createComponent(Cmp);
+    await fixture.whenStable();
+    fixture.componentInstance.dir.classOutput.emit('e1');
+
+    expect(fixture.componentInstance.received).toEqual(['e1']);
+    expectClass(fixture.nativeElement.querySelector('div')).toEqual({'s1': true, 'd1': true});
+  });
+
   it('should not treat a host directive output exposed as class as shadowing [class]', async () => {
     @Directive()
     class HostDir {
