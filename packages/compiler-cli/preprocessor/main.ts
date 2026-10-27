@@ -116,7 +116,13 @@ import {run} from './ngp.js';
       angularCompilerOptions?.onlyPublishPublicTypingsForNgModules === true;
 
     const workspaceName = angularCompilerOptions?.workspaceName || bazelOptions?.workspaceName;
-    const rootDirs = angularCompilerOptions?.rootDirs || bazelOptions?.rootDirs;
+    // `readConfiguration` already makes `compilerOptions.rootDirs` absolute, so this only affects
+    // the raw `bazelOptions.rootDirs` fallback. Relative entries resolve against the tsconfig
+    // directory, as they do for TypeScript and the analyzer.
+    const rawRootDirs: string[] | undefined =
+      angularCompilerOptions?.rootDirs || bazelOptions?.rootDirs;
+    const tsconfigDir = path.dirname(tsconfigPath);
+    const rootDirs = rawRootDirs?.map((d) => path.resolve(tsconfigDir, d));
     const enableHmr = angularCompilerOptions?._enableHmr;
     // Left undefined when unset so the analyzer falls back to the tsconfig's own value.
     const useHostForImportGeneration =
@@ -160,8 +166,6 @@ import {run} from './ngp.js';
     const optionDiagnostics = verifyCompilerOptions(angularCompilerOptions ?? {});
     const compiler = new HybridCompiler(innerAnalyzer, {
       optimize,
-      // Where `writeDiagnosticsFile` writes the `.ngdiag.json` file; nothing is written without it.
-      tsconfigPath,
       tcbConfig,
       optionDiagnostics,
       legacyOptionalChaining: angularCompilerOptions?.legacyOptionalChaining,
@@ -187,7 +191,7 @@ import {run} from './ngp.js';
     });
 
     console.log('Processing files...');
-    await run(compiler, {outDir, rootDir, inPlace});
+    await run(compiler, {outDir, rootDir, inPlace, tsconfigPath});
   } catch (e) {
     console.error('Fatal Execution Error:', e);
     process.exit(1);

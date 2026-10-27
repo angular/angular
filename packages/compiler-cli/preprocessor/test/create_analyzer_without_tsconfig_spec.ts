@@ -40,7 +40,6 @@ describe('createAnalyzer without a tsconfig', () => {
 
     const compiler = new HybridCompiler(analyzer, {
       optimize: false,
-      virtualFiles,
       rootDirs: ['/app'],
     });
     const processed = await compiler.processFile(COMP_PATH, COMP_CONTENT);
@@ -66,5 +65,46 @@ describe('createAnalyzer without a tsconfig', () => {
         entryPoints: ['src/my_comp.ts'],
       }),
     ).toBeRejectedWithError(/must be an absolute path when no tsconfig is given/);
+  });
+
+  it('collects diagnostics via HybridCompiler.getDiagnostics() without a tsconfig', async () => {
+    const nonStandaloneContent = `import {Component} from '@angular/core';
+
+@Component({
+  selector: 'my-comp',
+  standalone: false,
+  template: '<div>Hello</div>',
+})
+export class MyComp {}
+`;
+    const analyzer = await createAnalyzer({
+      backend: 'wasm',
+      wasmBinding: resolveWasmBinding(),
+      virtualFiles: {[COMP_PATH]: nonStandaloneContent},
+      optimize: true,
+      entryPoints: [COMP_PATH],
+      strictStandalone: true,
+      defaultHost: {
+        rootDirs: ['/app'],
+        nodeModulesPathOverride: resolveFixtureNodeModules(),
+      },
+    });
+
+    try {
+      const compiler = new HybridCompiler(analyzer, {
+        optimize: true,
+        rootDirs: ['/app'],
+      });
+      for await (const chunk of compiler.analyzeOptimized()) {
+        const chunkContext = await compiler.prepareChunk(chunk);
+        for (const file of chunk.files) {
+          await compiler.processFile(file.filePath, nonStandaloneContent, file, chunkContext);
+        }
+      }
+      const diagnostics = compiler.getDiagnostics();
+      expect(diagnostics.map((d) => d.code)).toContain(2023);
+    } finally {
+      analyzer.close();
+    }
   });
 });

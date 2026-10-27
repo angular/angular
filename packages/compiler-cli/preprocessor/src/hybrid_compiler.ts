@@ -13,9 +13,6 @@ import {
   ParseTemplateOptions,
   TcbDirectiveMetadata,
 } from '@angular/compiler';
-import * as fsSync from 'node:fs';
-import * as fs from 'node:fs/promises';
-import * as path from 'path';
 import {makeClassKey} from './compiler-utils.js';
 import {verifyExtendedDiagnosticsOptions} from './compiler_options.js';
 import {DependencyTemplates} from './dependency_templates.js';
@@ -41,13 +38,9 @@ export function getDiagnosticPath(tsconfigPath: string): string {
 }
 
 /**
- * Serialize collected diagnostics to the `.ngdiag.json` payload. The map is keyed by
- * completion order of the parallel analysis chunks, which varies from run to run (and across
- * transports), so entries are sorted (file path, then span start) to keep the serialized file
- * deterministic; the sort is stable, so a file's diagnostics sharing a span keep their
- * reporting order.
- *
- * Diagnostics anchored on a `.d.ts` file are left out, see `targetsDeclarationFile`.
+ * Serialize diagnostics to the `.ngdiag.json` payload. `diagnostics` is the output of
+ * `HybridCompiler.getDiagnostics()`, which already leaves out diagnostics anchored on a `.d.ts`
+ * file and orders the rest deterministically.
  *
  * Compiler option diagnostics (`verifyCompilerOptions`) are serialized separately under
  * `optionDiagnostics` so downstream consumers reading `diagnostics` for per-file reporting
@@ -55,22 +48,9 @@ export function getDiagnosticPath(tsconfigPath: string): string {
  */
 export function serializeDiagnostics(
   tsconfigPath: string,
-  diagnosticsMap: ReadonlyMap<string, nga.NgDiagnostic[]>,
+  diagnostics: readonly nga.NgDiagnostic[],
   optionDiagnostics: readonly nga.NgDiagnostic[] = [],
 ): string {
-  const allDiagnostics: Array<nga.NgDiagnostic> = [];
-  for (const [analyzedPath, diags] of diagnosticsMap) {
-    for (const diag of diags) {
-      if (!targetsDeclarationFile(diag, analyzedPath)) {
-        allDiagnostics.push(diag);
-      }
-    }
-  }
-  allDiagnostics.sort(
-    (a, b) =>
-      (a.filePath ?? '').localeCompare(b.filePath ?? '') ||
-      (a.span?.start ?? -1) - (b.span?.start ?? -1),
-  );
   return (
     JSON.stringify(
       {
@@ -78,7 +58,7 @@ export function serializeDiagnostics(
         ...(optionDiagnostics.length > 0
           ? {optionDiagnostics: optionDiagnostics.map(formatSerializedDiagnostic)}
           : {}),
-        diagnostics: allDiagnostics.map(formatSerializedDiagnostic),
+        diagnostics: diagnostics.map(formatSerializedDiagnostic),
       },
       null,
       2,
@@ -95,11 +75,15 @@ export function serializeDiagnostics(
  * ngtsc's `createValueHasWrongTypeError(entry.node, ...)`. ngtsc keeps such diagnostics in
  * `NgCompiler.getDiagnostics()`, but a build that asks for the diagnostics of each source file
  * of the compilation unit (`getDiagnosticsForFile`) never sees them, and that is what the
- * `.ngdiag.json` consumers do. `diagnosticsMap` keeps them so that `getDiagnostics()`
- * consumers still can.
+ * `.ngdiag.json` consumers do. `diagnosticsMap` keeps them so that
+ * `getDiagnostics({includeDeclarationFiles: true})` consumers still can.
  */
 function targetsDeclarationFile(diag: nga.NgDiagnostic, analyzedPath: string): boolean {
   return (diag.filePath ?? analyzedPath).endsWith('.d.ts');
+}
+
+function isAbsolutePosixOrWindowsPath(p: string): boolean {
+  return p.startsWith('/') || /^[a-zA-Z]:\//.test(p);
 }
 
 export interface IAnalyzer {
@@ -138,10 +122,8 @@ export interface IAnalyzer {
 }
 export interface HybridCompilerOptions {
   optimize?: boolean;
-  tsconfigPath?: string;
   tcbConfig?: NgpTypeCheckingConfig;
   optionDiagnostics?: nga.NgDiagnostic[];
-  virtualFiles?: Record<string, string>;
   templateParseOptions?: Partial<ParseTemplateOptions>;
   legacyOptionalChaining?: boolean;
   isClosureCompilerEnabled?: boolean;
@@ -171,11 +153,18 @@ export interface HybridCompilerOptions {
    * enables `emitHmrUpdateModule`. The analyzer must run with `enableHmr` as well.
    */
   enableHmr?: boolean;
-  /** Project root used to compute the relative `filePath` emitted in `ɵsetClassDebugInfo`. */
+  /**
+   * Absolute project root used to compute the relative `filePath` emitted in `ɵsetClassDebugInfo`
+   * and HMR component IDs.
+   */
   rootDir?: string;
   /** If true, runs in compliance mode (emits trailing setClassMetadata to match Angular compiler goldens). */
   complianceMode?: boolean;
   workspaceName?: string;
+  /**
+   * Absolute root directories used to compute the shortest project-relative `filePath` for
+   * `ɵsetClassDebugInfo` and HMR component IDs.
+   */
   rootDirs?: string[];
 }
 
@@ -184,10 +173,8 @@ export class HybridCompiler {
   /** Bound targets and TCBs per file, keyed by `AnalysisResult.filePath`. */
   readonly fileCache = new Map<string, FileAnalysis>();
   readonly optimize: boolean;
-  readonly tsconfigPath?: string;
   readonly diagnosticsMap = new Map<string, nga.NgDiagnostic[]>();
   readonly optionDiagnostics: nga.NgDiagnostic[] = [];
-  readonly virtualFiles?: Record<string, string>;
   tcbConfig: NgpTypeCheckingConfig;
   readonly templateParseOptions: Partial<ParseTemplateOptions>;
   readonly legacyOptionalChaining: boolean;
@@ -210,8 +197,6 @@ export class HybridCompiler {
 
   constructor(analyzer: IAnalyzer, options: HybridCompilerOptions = {}) {
     this.optimize = options.optimize ?? true;
-    this.tsconfigPath = options.tsconfigPath;
-    this.virtualFiles = options.virtualFiles;
     this.templateParseOptions = {
       preserveWhitespaces: options.preserveWhitespaces ?? false,
       preserveSignificantWhitespace: options.i18nPreserveWhitespaceForLegacyExtraction ?? true,
@@ -256,64 +241,61 @@ export class HybridCompiler {
     if (this.optionDiagnostics.length > 0) {
       this.tcbConfig = {...this.tcbConfig, disabledExtendedDiagnostics: true};
     }
-    this.rootDir = options.rootDir;
+    if (options.rootDir !== undefined) {
+      const norm = options.rootDir.replace(/\\/g, '/');
+      if (!isAbsolutePosixOrWindowsPath(norm)) {
+        throw new Error(`'${options.rootDir}' in 'rootDir' must be an absolute path`);
+      }
+      this.rootDir = norm;
+    }
     this.complianceMode = options.complianceMode ?? false;
     this.workspaceName = options.workspaceName;
     if (options.rootDirs) {
-      const baseDir = options.rootDir
-        ? options.rootDir.replace(/\\/g, '/')
-        : options.tsconfigPath
-          ? path.posix.dirname(options.tsconfigPath.replace(/\\/g, '/'))
-          : '/';
       this.rootDirs = options.rootDirs.map((d) => {
         const norm = d.replace(/\\/g, '/');
-        if (norm.startsWith('/') || /^[a-zA-Z]:/.test(norm)) {
-          return norm;
+        if (!isAbsolutePosixOrWindowsPath(norm)) {
+          throw new Error(`'${d}' in 'rootDirs' must be an absolute path`);
         }
-        return path.posix.join(baseDir, norm);
+        return norm;
       });
     } else {
       this.rootDirs = undefined;
     }
   }
 
-  async writeDiagnosticsFile(): Promise<void> {
-    if (!this.tsconfigPath) {
-      return;
+  /**
+   * Returns the collected per-file diagnostics. `diagnosticsMap` is keyed by completion order of
+   * the parallel analysis chunks, which varies from run to run (and across transports), so the
+   * result is sorted (file path, then span start) to keep consumers such as the `.ngdiag.json`
+   * deterministic; the sort is stable, so a file's diagnostics sharing a span keep their
+   * reporting order.
+   *
+   * Diagnostics anchored on `.d.ts` files are excluded unless `includeDeclarationFiles` is
+   * `true` (see `targetsDeclarationFile`).
+   *
+   * Compiler option diagnostics (`this.optionDiagnostics`) are kept separate so per-file
+   * diagnostic consumers do not mix option diagnostics into file diagnostics.
+   */
+  getDiagnostics(options?: {includeDeclarationFiles?: boolean}): nga.NgDiagnostic[] {
+    const includeDeclarationFiles = options?.includeDeclarationFiles ?? false;
+    const allDiagnostics: Array<nga.NgDiagnostic> = [];
+    for (const [analyzedPath, diags] of this.diagnosticsMap) {
+      for (const diag of diags) {
+        if (includeDeclarationFiles || !targetsDeclarationFile(diag, analyzedPath)) {
+          allDiagnostics.push(diag);
+        }
+      }
     }
-    const diagPath = getDiagnosticPath(this.tsconfigPath);
-    const content = serializeDiagnostics(
-      this.tsconfigPath,
-      this.diagnosticsMap,
-      this.optionDiagnostics,
+    allDiagnostics.sort(
+      (a, b) =>
+        (a.filePath ?? '').localeCompare(b.filePath ?? '') ||
+        (a.span?.start ?? -1) - (b.span?.start ?? -1),
     );
-    if (this.virtualFiles) {
-      this.virtualFiles[diagPath] = content;
-    } else {
-      await fs.writeFile(diagPath, content, 'utf-8');
-    }
-  }
-
-  writeDiagnosticsFileSync(): void {
-    if (!this.tsconfigPath) {
-      return;
-    }
-    const diagPath = getDiagnosticPath(this.tsconfigPath);
-    const content = serializeDiagnostics(
-      this.tsconfigPath,
-      this.diagnosticsMap,
-      this.optionDiagnostics,
-    );
-    if (this.virtualFiles) {
-      this.virtualFiles[diagPath] = content;
-    } else {
-      fsSync.writeFileSync(diagPath, content, 'utf-8');
-    }
+    return allDiagnostics;
   }
 
   async prepareChunk(chunk: nga.CompilationChunk): Promise<ChunkContext> {
     this.recordChunkDiagnostics(chunk);
-    await this.writeDiagnosticsFile();
 
     const metadataMap = chunkMetadataMap(chunk);
     const boundFiles = await Promise.all(
@@ -327,7 +309,6 @@ export class HybridCompiler {
 
   prepareChunkSync(chunk: nga.CompilationChunk): ChunkContext {
     this.recordChunkDiagnostics(chunk);
-    this.writeDiagnosticsFileSync();
 
     const metadataMap = chunkMetadataMap(chunk);
     const boundFiles = chunk.files.map((file) => ({

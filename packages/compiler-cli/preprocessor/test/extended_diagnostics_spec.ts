@@ -139,8 +139,6 @@ async function createIncrementalSession(
 
   const compiler = new HybridCompiler(analyzer, {
     optimize: true,
-    tsconfigPath: '/tsconfig.json',
-    virtualFiles: {},
     tcbConfig: buildTypeCheckingConfig(
       buildTsconfig(initialFiles, currentOptions).angularCompilerOptions,
     ),
@@ -161,7 +159,7 @@ async function createIncrementalSession(
         }
       }
     }
-    const diagContent = serializeDiagnostics('/tsconfig.json', compiler.diagnosticsMap);
+    const diagContent = serializeDiagnostics('/tsconfig.json', compiler.getDiagnostics());
     return (JSON.parse(diagContent).diagnostics ?? []) as DiagEntry[];
   }
 
@@ -381,8 +379,9 @@ describe('extendedDiagnostics configuration validation', () => {
     });
     try {
       expect(await session.compileCurrent()).toEqual([]);
+      expect(session.compiler.getDiagnostics()).toEqual([]);
 
-      const collected = [...session.compiler.diagnosticsMap.values()].flat();
+      const collected = session.compiler.getDiagnostics({includeDeclarationFiles: true});
       expect(collected.length).toBe(1);
       expect(collected[0].code).toBe(1010);
       expect(collected[0].filePath).toMatch(/\.d\.ts$/);
