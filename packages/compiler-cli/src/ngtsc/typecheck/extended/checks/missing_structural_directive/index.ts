@@ -71,11 +71,11 @@ class MissingStructuralDirectiveCheck extends TemplateCheckWithVisitor<ErrorCode
     );
     if (!customStructuralDirective) return [];
 
-    const symbol = ctx.templateTypeChecker.getSymbolOfNode(node, component);
+    const directives = ctx.templateTypeChecker.getDirectivesOfNode(component, node);
     // Check if there's a directive that matches the structural directive we're checking.
     // The structural directive *foo desugars to [foo], so we need to check if any
     // directive's selector would match the attribute [foo].
-    const hasStructuralDirective = symbol?.directives.some((dir) =>
+    const hasStructuralDirective = directives?.some((dir) =>
       dir.selector?.includes(`[${customStructuralDirective.name}]`),
     );
     if (hasStructuralDirective) return [];

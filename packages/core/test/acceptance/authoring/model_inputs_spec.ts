@@ -7,7 +7,6 @@
  */
 
 import {
-  ChangeDetectionStrategy,
   Component,
   Directive,
   EventEmitter,
@@ -139,13 +138,12 @@ describe('model inputs', () => {
     }
 
     @Component({
-      template: '<div [value]="value" dir></div>',
+      template: '<div [value]="value()" dir></div>',
       imports: [Dir],
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       @ViewChild(Dir) dir!: Dir;
-      value = 1;
+      value = signal(1);
     }
 
     const fixture = TestBed.createComponent(App);
@@ -153,20 +151,19 @@ describe('model inputs', () => {
     fixture.detectChanges();
 
     // Initial value.
-    expect(host.value).toBe(1);
+    expect(host.value()).toBe(1);
     expect(host.dir.value()).toBe(1);
 
     // Changing the value from within the directive.
     host.dir.value.set(2);
     fixture.detectChanges();
-    expect(host.value).toBe(1);
+    expect(host.value()).toBe(1);
     expect(host.dir.value()).toBe(2);
 
     // Changing the value from the outside.
-    host.value = 3;
-    fixture.changeDetectorRef.markForCheck();
+    host.value.set(3);
     fixture.detectChanges();
-    expect(host.value).toBe(3);
+    expect(host.value()).toBe(3);
     expect(host.dir.value()).toBe(3);
   });
 

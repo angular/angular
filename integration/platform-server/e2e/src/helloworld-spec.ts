@@ -4,7 +4,7 @@ import {
   isElementPresent,
   navigateTo,
   verifyNoBrowserErrors,
-} from './util';
+} from './util.ts';
 
 describe('Hello world E2E Tests', () => {
   beforeEach(async () => {

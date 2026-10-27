@@ -32,7 +32,7 @@ import {
   provideLocationMocks,
   MOCK_PLATFORM_LOCATION_CONFIG,
 } from '@angular/common/testing';
-import {inject} from '@angular/core';
+import {inject, Provider} from '@angular/core';
 
 /// <reference types="dom-navigation" />
 
@@ -154,7 +154,9 @@ describe('withPlatformNavigation feature', () => {
         {once: true},
       );
 
-      navigation.navigate('/blocked');
+      const navRes = navigation.navigate('/blocked');
+      navRes.committed.catch(() => {});
+      navRes.finished.catch(() => {});
       await timeout();
       expect(navigation.transition).not.toBeNull();
       expect(router.currentNavigation()).not.toBeNull();
@@ -197,6 +199,40 @@ describe('withPlatformNavigation feature', () => {
       }
       await navPromise;
       expect(navigateEvents.length).toBe(1);
+    });
+
+    it('handles redirects during traversal navigations by committing and replacing', async () => {
+      router.resetConfig([
+        {path: 'first', children: []},
+        {path: 'second', children: []},
+        {path: 'redirected', children: []},
+        {path: '**', children: []},
+      ]);
+
+      await router.navigateByUrl('/first');
+      await timeout();
+      await router.navigateByUrl('/second');
+      await timeout();
+
+      expect(navigation.entries().length).toBe(3);
+      expect(navigation.currentEntry!.url).toContain('/second');
+
+      router.resetConfig([
+        {path: 'first', canActivate: [() => inject(Router).parseUrl('/redirected')], children: []},
+        {path: 'second', children: []},
+        {path: 'redirected', children: []},
+        {path: '**', children: []},
+      ]);
+
+      const backRes = navigation.back();
+      backRes.committed.catch(() => {});
+      backRes.finished.catch(() => {});
+      await timeout();
+      await navigation.transition?.finished;
+
+      expect(router.url).toBe('/redirected');
+      expect(navigation.currentEntry!.url).toContain('/redirected');
+      expect(navigation.currentEntry!.index).toBe(1);
     });
   });
 
@@ -448,5 +484,111 @@ if (typeof window !== 'undefined' && 'navigation' in window && !isFirefox()) {
       await timeout(3);
       expect(routerEvents).toEqual([]);
     });
+
+    /**
+     * Cancels the next `navigate` event so the browser doesn't download the file.
+     * The listener is added after the router's own listener, so the router has already handled
+     * the event when it runs.
+     */
+    function preventNextNavigation() {
+      TestBed.inject(PlatformNavigation).addEventListener(
+        'navigate',
+        (e: NavigateEvent) => e.preventDefault(),
+        {once: true},
+      );
+    }
+
+    it(
+      'should not convert downloads to SPA navigations',
+      withBody('<a href="/file.txt" download>download</a>', async () => {
+        preventNextNavigation();
+        const routerEvents: Event[] = [];
+        router.events.subscribe((e) => routerEvents.push(e));
+        document.querySelector('a')!.click();
+        await timeout();
+        expect(routerEvents).toEqual([]);
+      }),
+    );
+  });
+
+  describe('focusReset with real platform navigation', () => {
+    const navigation = window.navigation as Navigation;
+
+    async function setup(providers: Provider[] = []) {
+      TestBed.configureTestingModule({
+        providers: [
+          provideRouter(
+            [
+              {
+                path: 'guarded',
+                canActivate: [() => inject(Router).parseUrl('/search?q=redirected')],
+                children: [],
+              },
+              {path: '**', children: []},
+            ],
+            withExperimentalPlatformNavigation(),
+          ),
+          {provide: PlatformLocation, useClass: BrowserPlatformLocation},
+          {provide: PlatformNavigation, useFactory: () => navigation},
+          ...providers,
+        ],
+      });
+      const router = TestBed.inject(Router);
+      router.initialNavigation();
+      await timeout();
+      return router;
+    }
+
+    it(
+      'resets focus by default',
+      withBody('<input>', async () => {
+        const router = await setup();
+        const input = document.querySelector('input')!;
+        input.focus();
+        expect(document.activeElement).toBe(input);
+
+        // Each test uses its own URL: these tests share the page URL, and navigating to the
+        // current URL again would be skipped by the router.
+        await router.navigate(['/search'], {queryParams: {q: 'default'}});
+        // The browser resets focus when it finishes the navigate event, after the next render.
+        await navigation.transition?.finished;
+
+        expect(router.url).toBe('/search?q=default');
+        expect(document.activeElement).toBe(document.body);
+      }),
+    );
+
+    it(
+      "keeps focus with focusReset: 'manual'",
+      withBody('<input>', async () => {
+        const router = await setup();
+        const input = document.querySelector('input')!;
+        input.focus();
+        expect(document.activeElement).toBe(input);
+
+        await router.navigate(['/search'], {queryParams: {q: 'manual'}, focusReset: 'manual'});
+        await navigation.transition?.finished;
+
+        expect(router.url).toBe('/search?q=manual');
+        expect(document.activeElement).toBe(input);
+      }),
+    );
+
+    it(
+      "keeps focusReset: 'manual' when a guard redirects",
+      withBody('<input>', async () => {
+        // Without precommitHandler, the browser navigation is created for the redirect.
+        const router = await setup([{provide: PRECOMMIT_HANDLER_SUPPORTED, useValue: false}]);
+        const input = document.querySelector('input')!;
+        input.focus();
+        expect(document.activeElement).toBe(input);
+
+        await router.navigateByUrl('/guarded', {focusReset: 'manual'});
+        await navigation.transition?.finished;
+
+        expect(router.url).toBe('/search?q=redirected');
+        expect(document.activeElement).toBe(input);
+      }),
+    );
   });
 }

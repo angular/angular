@@ -20,7 +20,7 @@ let cdAnalyzerUnsubscriber: (() => void) | undefined;
 let cdAnalyzerDispose: (() => void) | undefined;
 
 export function loadCdDataStream(messageBus: MessageBus<Events>): () => void {
-  return getConfig().onChange('cdDataStream', (enabled) => {
+  return getConfig().onValue('cdDataStream', (enabled) => {
     if (enabled) {
       const {analyzer, disposeFn} = getCdAnalyzer();
       cdAnalyzerDispose = disposeFn;
@@ -42,7 +42,7 @@ function emitLatestCdData(cdAnalyzer: CdAnalyzer, messageBus: MessageBus<Events>
 function serializeCdData(data: CdData[]): CdElementData[] {
   return data.map((value) => ({
     element: value.elementPosition,
-    cdCount: value.cdPassDurations.length,
-    lastCdPassDuration: value.cdPassDurations[value.cdPassDurations.length - 1] ?? 0,
+    cdCount: value.cdCount,
+    lastCdPassDuration: value.lastCdPassDuration,
   }));
 }

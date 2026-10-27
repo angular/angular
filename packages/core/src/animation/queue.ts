@@ -38,11 +38,11 @@ export const ANIMATION_QUEUE = new InjectionToken<AnimationQueue>(
 );
 
 export function addToAnimationQueue(
+  animationQueue: AnimationQueue,
   injector: Injector,
   animationFns: VoidFunction | VoidFunction[],
   animationData?: AnimationLViewData,
 ) {
-  const animationQueue = injector.get(ANIMATION_QUEUE);
   if (Array.isArray(animationFns)) {
     for (const animateFn of animationFns) {
       animationQueue.queue.add(animateFn);
@@ -62,10 +62,9 @@ export function addToAnimationQueue(
 }
 
 export function removeAnimationsFromQueue(
-  injector: Injector,
+  animationQueue: AnimationQueue,
   animationFns: VoidFunction | VoidFunction[],
 ) {
-  const animationQueue = injector.get(ANIMATION_QUEUE);
   if (Array.isArray(animationFns)) {
     for (const animateFn of animationFns) {
       animationQueue.queue.delete(animateFn);
@@ -113,7 +112,9 @@ export function queueEnterAnimations(
   injector: Injector,
   enterAnimations: Map<number, EnterNodeAnimations>,
 ) {
+  const queue = injector.get(ANIMATION_QUEUE);
+
   for (const [_, nodeAnimations] of enterAnimations) {
-    addToAnimationQueue(injector, nodeAnimations.animateFns);
+    addToAnimationQueue(queue, injector, nodeAnimations.animateFns);
   }
 }

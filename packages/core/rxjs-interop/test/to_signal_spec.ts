@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {BehaviorSubject, Observable, ReplaySubject, Subject} from 'rxjs';
+import {ReactiveNode, SIGNAL} from '../../primitives/signals';
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   EnvironmentInjector,
@@ -15,18 +16,8 @@ import {
   runInInjectionContext,
   Signal,
 } from '../../src/core';
-import {toSignal} from '../src';
 import {TestBed} from '../../testing';
-import {
-  BehaviorSubject,
-  Observable,
-  Observer,
-  ReplaySubject,
-  Subject,
-  Subscribable,
-  Unsubscribable,
-} from 'rxjs';
-import {ReactiveNode, SIGNAL} from '../../primitives/signals';
+import {toSignal} from '../src';
 
 describe('toSignal()', () => {
   it(
@@ -302,10 +293,9 @@ describe('toSignal()', () => {
   });
 
   describe('in a @Component', () => {
-    it('should support `toSignal` as a class member initializer', () => {
+    it('should support `toSignal` as a class member initializer', async () => {
       @Component({
         template: '{{counter()}}',
-        standalone: false,
       })
       class TestCmp {
         // Component creation should not run inside the template effect/consumer,
@@ -315,12 +305,12 @@ describe('toSignal()', () => {
       }
 
       const fixture = TestBed.createComponent(TestCmp);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(fixture.nativeElement.textContent).toBe('');
 
       fixture.componentInstance.counter$.next(2);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(fixture.nativeElement.textContent).toBe('2');
     });

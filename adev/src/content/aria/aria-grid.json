@@ -156,7 +156,7 @@
         },
         {
           "name": "active",
-          "type": "Signal<any>",
+          "type": "Signal<boolean>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -166,7 +166,7 @@
         },
         {
           "name": "id",
-          "type": "InputSignal<any>",
+          "type": "InputSignal<string>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -205,7 +205,7 @@
         },
         {
           "name": "focusTarget",
-          "type": "InputSignal<any>",
+          "type": "InputSignal<ElementResolver<HTMLElement>>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -509,7 +509,7 @@
         },
         {
           "name": "tabIndex",
-          "type": "InputSignal<undefined>",
+          "type": "InputSignalWithTransform<number | undefined, string | number | undefined>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -522,7 +522,7 @@
         },
         {
           "name": "activeDescendant",
-          "type": "Signal<any>",
+          "type": "Signal<string | undefined>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -656,7 +656,7 @@
         },
         {
           "name": "active",
-          "type": "Signal<any>",
+          "type": "Signal<boolean>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -676,7 +676,7 @@
         },
         {
           "name": "id",
-          "type": "InputSignal<any>",
+          "type": "InputSignal<string>",
           "memberType": "property",
           "memberTags": [
             "readonly",

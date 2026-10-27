@@ -16,8 +16,8 @@ export abstract class GraphRenderer<T, U> {
   abstract root: U | null;
 
   protected nodeClickListeners: ((pointerEvent: PointerEvent, internalNode: U) => void)[] = [];
-  protected nodeMouseoverListeners: ((pointerEvent: PointerEvent, internalNode: U) => void)[] = [];
-  protected nodeMouseoutListeners: ((pointerEvent: PointerEvent, internalNode: U) => void)[] = [];
+  protected nodeMouseoverListeners: ((event: MouseEvent, internalNode: U) => void)[] = [];
+  protected nodeMouseoutListeners: ((event: MouseEvent, internalNode: U) => void)[] = [];
 
   cleanup(): void {
     this.nodeClickListeners = [];
@@ -33,11 +33,11 @@ export abstract class GraphRenderer<T, U> {
     this.nodeClickListeners.push(cb);
   }
 
-  onNodeMouseover(cb: (pointerEvent: PointerEvent, internalNode: U) => void): void {
+  onNodeMouseover(cb: (event: MouseEvent, internalNode: U) => void): void {
     this.nodeMouseoverListeners.push(cb);
   }
 
-  onNodeMouseout(cb: (pointerEvent: PointerEvent, internalNode: U) => void): void {
+  onNodeMouseout(cb: (event: MouseEvent, internalNode: U) => void): void {
     this.nodeMouseoutListeners.push(cb);
   }
 }

@@ -156,7 +156,6 @@ describe('standalone components, directives, and pipes', () => {
     class LibModule {}
 
     @Component({
-      selector: 'app-cmpt',
       template: `<standalone-cmp standalone-dir></standalone-cmp
         >{{ 'standalone' | standalonePipe }}`,
       standalone: false,
@@ -254,7 +253,6 @@ describe('standalone components, directives, and pipes', () => {
     class MyModuleB {}
 
     @Component({
-      selector: 'duplicate-selector',
       template: `ComponentA: {{ service ? 'service found' : 'service not found' }}`,
       imports: [MyModuleA],
     })
@@ -263,7 +261,6 @@ describe('standalone components, directives, and pipes', () => {
     }
 
     @Component({
-      selector: 'duplicate-selector',
       template: `ComponentB: {{ service ? 'service found' : 'service not found' }}`,
       imports: [MyModuleB],
     })
@@ -272,7 +269,6 @@ describe('standalone components, directives, and pipes', () => {
     }
 
     @Component({
-      selector: 'app-cmp',
       template: `
         <ng-container [ngComponentOutlet]="ComponentA" />
         <ng-container [ngComponentOutlet]="ComponentB" />
@@ -475,7 +471,6 @@ describe('standalone components, directives, and pipes', () => {
     @NgModule({exports: [ModuleWithAService]})
     class ExportingModule {}
     @Component({
-      selector: 'standalone',
       imports: [ExportingModule],
       template: `({{ service.value }})`,
     })
@@ -500,7 +495,6 @@ describe('standalone components, directives, and pipes', () => {
     }
 
     @Component({
-      selector: 'standalone',
       template: `<div red>{{ '' | blue }}</div>`,
       imports: [[RedIdDirective, [BluePipe]]],
     })
@@ -525,7 +519,6 @@ describe('standalone components, directives, and pipes', () => {
     const DirAndPipe = [RedIdDirective, BluePipe] as const;
 
     @Component({
-      selector: 'standalone',
       template: `<div red>{{ '' | blue }}</div>`,
       imports: [DirAndPipe],
     })
@@ -557,7 +550,6 @@ describe('standalone components, directives, and pipes', () => {
     class BlueBModule {}
 
     @Component({
-      selector: 'standalone',
       template: `<test-red><test-blue>orange</test-blue></test-red>`,
       imports: [RedComponent, RedComponent, BlueAModule, BlueBModule],
     })
@@ -572,7 +564,6 @@ describe('standalone components, directives, and pipes', () => {
 
   it('should error when forwardRef does not resolve to a truthy value', () => {
     @Component({
-      selector: 'test',
       imports: [forwardRef(() => null)],
       template: '',
     })
@@ -693,7 +684,6 @@ describe('standalone components, directives, and pipes', () => {
 
   it('should support forwardRef imports', () => {
     @Component({
-      selector: 'test',
       imports: [forwardRef(() => StandaloneComponent)],
       template: `(<other-standalone></other-standalone>)`,
     })
@@ -850,7 +840,6 @@ describe('standalone components, directives, and pipes', () => {
       }
 
       @Component({
-        selector: 'regular',
         standalone: false,
       })
       class RegularCmp extends StandaloneCmp {}
@@ -866,21 +855,21 @@ describe('standalone components, directives, and pipes', () => {
 
   describe('isStandalone()', () => {
     it('should return `true` if component is standalone', () => {
-      @Component({selector: 'standalone-cmp'})
+      @Component({})
       class StandaloneCmp {}
 
       expect(isStandalone(StandaloneCmp)).toBeTrue();
     });
 
     it('should return `true` if component is standalone (with `standalone:true`)', () => {
-      @Component({selector: 'standalone-cmp'})
+      @Component({})
       class StandaloneCmp {}
 
       expect(isStandalone(StandaloneCmp)).toBeTrue();
     });
 
     it('should return `false` if component is not standalone', () => {
-      @Component({selector: 'standalone-cmp', standalone: false})
+      @Component({standalone: false})
       class StandaloneCmp {}
 
       expect(isStandalone(StandaloneCmp)).toBeFalse();

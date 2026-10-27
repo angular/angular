@@ -50,6 +50,17 @@ describe('AbstractEmitter', () => {
     it('does not escape class (but it probably should)', () => {
       expect(escapeIdentifier('class', false)).toEqual('class');
     });
+    it('should escape non-ascii and control characters when escapeNonAscii is true', () => {
+      expect(escapeIdentifier('Jos\u00e9 & \ud83d\ude0a', true, true)).toEqual(
+        `'Jos\\u00E9 & \\uD83D\\uDE0A'`,
+      );
+      expect(escapeIdentifier('\ufffd0\ufffd', true, true)).toEqual(`'\\uFFFD0\\uFFFD'`);
+      expect(escapeIdentifier('a\tb\0c\x009', true, true)).toEqual(`'a\\tb\\0c\\x009'`);
+    });
+    it('should not escape unquoted legal identifiers when escapeNonAscii is true', () => {
+      expect(escapeIdentifier('fooBar', false, true)).toEqual('fooBar');
+      expect(escapeIdentifier('foo-bar\u00e9', false, true)).toEqual(`'foo-bar\\u00E9'`);
+    });
   });
 
   describe('visitLiteralMapExpr', () => {
@@ -87,6 +98,118 @@ describe('AbstractEmitter', () => {
       ]);
 
       expect(emitExpr(expr)).toBe('{...rest,\n// comment\na: 1}');
+    });
+  });
+
+  describe('visitParenthesizedExpr', () => {
+    const a = o.variable('a');
+    const b = o.variable('b');
+    const f = o.variable('f');
+    const x = o.variable('x');
+
+    it('should parenthesize a double negation before a method call', () => {
+      const expr = new o.ParenthesizedExpr(o.not(o.not(a.prop('b')))).prop('toString').callFn([]);
+      expect(emitExpr(expr)).toBe('(!!a.b).toString()');
+    });
+
+    it('should parenthesize a negation before a property read', () => {
+      expect(emitExpr(new o.ParenthesizedExpr(o.not(a)).prop('b'))).toBe('(!a).b');
+    });
+
+    it('should parenthesize a negation before a keyed read', () => {
+      expect(emitExpr(new o.ParenthesizedExpr(o.not(a)).key(o.variable('k')))).toBe('(!a)[k]');
+    });
+
+    it('should parenthesize a negation before a call', () => {
+      expect(emitExpr(new o.ParenthesizedExpr(o.not(f)).callFn([]))).toBe('(!f)()');
+    });
+
+    it('should parenthesize a typeof expression before a property read', () => {
+      expect(emitExpr(new o.ParenthesizedExpr(o.typeofExpr(a)).prop('length'))).toBe(
+        '(typeof a).length',
+      );
+    });
+
+    it('should parenthesize a void expression before a property read', () => {
+      expect(emitExpr(new o.ParenthesizedExpr(new o.VoidExpr(a)).prop('b'))).toBe('(void a).b');
+    });
+
+    it('should parenthesize a negation on the left side of an exponentiation', () => {
+      expect(emitExpr(new o.ParenthesizedExpr(o.not(a)).power(o.literal(2)))).toBe('((!a) ** 2)');
+    });
+
+    it('should parenthesize a typeof expression on the left side of an exponentiation', () => {
+      expect(emitExpr(new o.ParenthesizedExpr(o.typeofExpr(a)).power(o.literal(2)))).toBe(
+        '((typeof a) ** 2)',
+      );
+    });
+
+    it('should parenthesize a number literal before a method call', () => {
+      expect(emitExpr(new o.ParenthesizedExpr(o.literal(1)).prop('toString').callFn([]))).toBe(
+        '(1).toString()',
+      );
+    });
+
+    it('should parenthesize an arrow function before a property read', () => {
+      expect(emitExpr(new o.ParenthesizedExpr(o.arrowFn([], x)).prop('name'))).toBe(
+        '(() => x).name',
+      );
+    });
+
+    it('should parenthesize an arrow function in a binary expression', () => {
+      expect(emitExpr(new o.ParenthesizedExpr(o.arrowFn([], x)).or(b))).toBe('((() => x) || b)');
+    });
+
+    it('should parenthesize a call used as the class of an instantiation', () => {
+      expect(emitExpr(new o.InstantiateExpr(new o.ParenthesizedExpr(f.callFn([])), []))).toBe(
+        'new (f())()',
+      );
+    });
+
+    it('should not double-parenthesize expressions that parenthesize themselves', () => {
+      expect(emitExpr(new o.ParenthesizedExpr(a.or(b)).prop('c'))).toBe('(a || b).c');
+      expect(emitExpr(new o.ParenthesizedExpr(new o.ConditionalExpr(a, b, x)).prop('c'))).toBe(
+        '(a ? b : x).c',
+      );
+      expect(emitExpr(new o.ParenthesizedExpr(new o.ParenthesizedExpr(o.not(a))).prop('b'))).toBe(
+        '(!a).b',
+      );
+    });
+
+    it('should parenthesize a negative number before a method call', () => {
+      const unaryMinus = new o.UnaryOperatorExpr(o.UnaryOperator.Minus, o.literal(1));
+      expect(emitExpr(new o.ParenthesizedExpr(unaryMinus).prop('toString').callFn([]))).toBe(
+        '(-1).toString()',
+      );
+      expect(emitExpr(unaryMinus.prop('toString').callFn([]))).toBe('(-1).toString()');
+      expect(emitExpr(new o.ParenthesizedExpr(o.literal(-1)).prop('toString').callFn([]))).toBe(
+        '(-1).toString()',
+      );
+    });
+
+    it('should parenthesize a conditional expression before a method call', () => {
+      const conditional = new o.ConditionalExpr(a, b, x);
+      expect(emitExpr(new o.ParenthesizedExpr(conditional).prop('toString').callFn([]))).toBe(
+        '(a ? b : x).toString()',
+      );
+      expect(emitExpr(conditional.prop('toString').callFn([]))).toBe('(a ? b : x).toString()');
+    });
+
+    it('should parenthesize a binary expression before a method call', () => {
+      const sum = a.plus(b);
+      expect(emitExpr(new o.ParenthesizedExpr(sum).prop('toString').callFn([]))).toBe(
+        '(a + b).toString()',
+      );
+      expect(emitExpr(sum.prop('toString').callFn([]))).toBe('(a + b).toString()');
+    });
+
+    it('should not add redundant parentheses around an if statement condition', () => {
+      const ctx = EmitterVisitorContext.createRoot();
+      new o.IfStmt(new o.ParenthesizedExpr(a.or(b)), [new o.ExpressionStatement(x)]).visitStatement(
+        new TestJsEmitter(false),
+        ctx,
+      );
+      expect(ctx.toSource()).toBe('if (a || b) { x; }');
     });
   });
 });

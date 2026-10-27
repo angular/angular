@@ -91,14 +91,14 @@ export interface Hooks {
  */
 export abstract class Profiler {
   /** @internal */
-  protected _inChangeDetection = false;
+  protected inChangeDetection = false;
 
   changeDetection$ = new Subject<void>();
 
-  private _hooks: Partial<Hooks>[] = [];
+  private hooks: Partial<Hooks>[] = [];
 
   constructor(config: Partial<Hooks> = {}) {
-    this._hooks.push(config);
+    this.hooks.push(config);
   }
 
   abstract destroy(): void;
@@ -106,15 +106,15 @@ export abstract class Profiler {
   abstract onIndexForest(newNodes: NodeArray, removedNodes: NodeArray): void;
 
   subscribe(config: Partial<Hooks>): void {
-    this._hooks.push(config);
+    this.hooks.push(config);
   }
 
   unsubscribe(config: Partial<Hooks>): void {
-    this._hooks.splice(this._hooks.indexOf(config), 1);
+    this.hooks.splice(this.hooks.indexOf(config), 1);
   }
 
   /** @internal */
-  protected _onCreate(
+  protected onCreate(
     _: DirectiveInstance,
     hook: Node,
     id: number | undefined,
@@ -124,11 +124,11 @@ export abstract class Profiler {
     if (id === undefined || position === undefined) {
       return;
     }
-    this._invokeCallback('onCreate', [_, hook, id, node, position]);
+    this.invokeCallback('onCreate', [_, hook, id, node, position]);
   }
 
   /** @internal */
-  protected _onDestroy(
+  protected onDestroy(
     _: DirectiveInstance,
     hook: Node,
     id: number | undefined,
@@ -138,11 +138,11 @@ export abstract class Profiler {
     if (id === undefined || position === undefined) {
       return;
     }
-    this._invokeCallback('onDestroy', [_, hook, id, node, position]);
+    this.invokeCallback('onDestroy', [_, hook, id, node, position]);
   }
 
   /** @internal */
-  protected _onChangeDetectionStart(
+  protected onChangeDetectionStart(
     _: ComponentInstance,
     hook: Node,
     id: number | undefined,
@@ -151,11 +151,11 @@ export abstract class Profiler {
     if (id === undefined || position === undefined) {
       return;
     }
-    this._invokeCallback('onChangeDetectionStart', [_, hook, id, position]);
+    this.invokeCallback('onChangeDetectionStart', [_, hook, id, position]);
   }
 
   /** @internal */
-  protected _onChangeDetectionEnd(
+  protected onChangeDetectionEnd(
     _: ComponentInstance,
     hook: Node,
     id: number | undefined,
@@ -164,11 +164,11 @@ export abstract class Profiler {
     if (id === undefined || position === undefined) {
       return;
     }
-    this._invokeCallback('onChangeDetectionEnd', [_, hook, id, position]);
+    this.invokeCallback('onChangeDetectionEnd', [_, hook, id, position]);
   }
 
   /** @internal */
-  protected _onLifecycleHookStart(
+  protected onLifecycleHookStart(
     componentOrDirective: DirectiveInstance,
     hook: keyof LifecycleProfile | 'unknown',
     node: Node,
@@ -179,7 +179,7 @@ export abstract class Profiler {
       return;
     }
     const a = arguments;
-    this._invokeCallback('onLifecycleHookStart', [
+    this.invokeCallback('onLifecycleHookStart', [
       componentOrDirective,
       hook,
       node,
@@ -189,7 +189,7 @@ export abstract class Profiler {
   }
 
   /** @internal */
-  protected _onLifecycleHookEnd(
+  protected onLifecycleHookEnd(
     componentOrDirective: DirectiveInstance,
     hook: keyof LifecycleProfile | 'unknown',
     node: Node,
@@ -199,11 +199,11 @@ export abstract class Profiler {
     if (id === undefined || hook === 'unknown') {
       return;
     }
-    this._invokeCallback('onLifecycleHookEnd', [componentOrDirective, hook, node, id, isComponent]);
+    this.invokeCallback('onLifecycleHookEnd', [componentOrDirective, hook, node, id, isComponent]);
   }
 
   /** @internal */
-  protected _onOutputStart(
+  protected onOutputStart(
     componentOrDirective: DirectiveInstance,
     hook: string,
     node: Node,
@@ -213,11 +213,11 @@ export abstract class Profiler {
     if (id === undefined) {
       return;
     }
-    this._invokeCallback('onOutputStart', [componentOrDirective, hook, node, id, isComponent]);
+    this.invokeCallback('onOutputStart', [componentOrDirective, hook, node, id, isComponent]);
   }
 
   /** @internal */
-  protected _onOutputEnd(
+  protected onOutputEnd(
     componentOrDirective: DirectiveInstance,
     hook: string,
     node: Node,
@@ -227,12 +227,12 @@ export abstract class Profiler {
     if (id === undefined) {
       return;
     }
-    this._invokeCallback('onOutputEnd', [componentOrDirective, hook, node, id, isComponent]);
+    this.invokeCallback('onOutputEnd', [componentOrDirective, hook, node, id, isComponent]);
   }
 
   /** @internal */
-  private _invokeCallback<K extends keyof Hooks>(name: K, args: Parameters<Hooks[K]>): void {
-    this._hooks.forEach((config) => {
+  private invokeCallback<K extends keyof Hooks>(name: K, args: Parameters<Hooks[K]>): void {
+    this.hooks.forEach((config) => {
       const cb = (config as Hooks)[name];
       if (typeof cb === 'function') {
         (cb as Function).apply(null, args);

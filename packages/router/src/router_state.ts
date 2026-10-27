@@ -166,17 +166,25 @@ export class ActivatedRoute {
   // ===== Resource integration ======
   // =================================
 
+  /** @internal */
+  _ownResources?: ResourceResult;
+  /** @internal */
+  _ownRawResourcesSignal?: WritableSignal<ResourceResult | undefined>;
+  /** @internal */
+  _resourceContextSignal?: Signal<ResourceResult>;
+
   // Note for framework developers: Unlike `data` and `params`, the `resources` property
   // is assigned once when the route is first initialized and its reference remains stable
   // for the entire lifetime of the `ActivatedRoute` instance. Do NOT replace or swap this
   // reference during pending navigations or route reuse, as doing so breaks reactivity
   // for components subscribed to the underlying resource signals.
   /**
-   * A map of resources for this route.
+   * A map of resources for this route, including resources inherited from ancestor routes.
    *
    * @developerPreview 22.2
    */
   resources?: ResourceResult;
+
   /** @internal */
   _localInjector?: EnvironmentInjector;
   /** @internal */
@@ -325,8 +333,12 @@ export function getInherited(
       (!parent.component && !parent.routeConfig?.loadComponent))
   ) {
     inherited = {
-      params: {...parent.params, ...route.params},
-      data: {...parent.data, ...route.data},
+      // Reuse the parent's frozen params when the route adds none of its own.
+      params:
+        Object.keys(route.params).length === 0
+          ? parent.params
+          : Object.freeze({...parent.params, ...route.params}),
+      data: Object.freeze({...parent.data, ...route.data}),
       resolve: {
         // Snapshots are created with data inherited from parent and guards (i.e. canActivate) can
         // change data because it's not frozen...
@@ -345,8 +357,8 @@ export function getInherited(
     };
   } else {
     inherited = {
-      params: {...route.params},
-      data: {...route.data},
+      params: Object.freeze({...route.params}),
+      data: Object.freeze({...route.data}),
       resolve: {...route.data, ...(route._resolvedData ?? {})},
     };
   }
@@ -397,8 +409,10 @@ export class ActivatedRouteSnapshot {
   _queryParamMap?: ParamMap;
   /** @internal */
   readonly _environmentInjector: EnvironmentInjector;
+
   /**
-   * The result of running the route's resources function.
+   * The result of running the route's resources function, including resources
+   * inherited from ancestor routes.
    * @developerPreview 22.2
    */
   resources?: ResourceResult;

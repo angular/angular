@@ -25,6 +25,6 @@ Use the following commands to apply specific syntax updates. You can scope these
 
 The Standalone migration is an interactive, multi-step refactoring. You **MUST** perform this in three discrete stages, verifying that the application builds and runs correctly after each stage completes:
 
-1. **Phase 1**: Run `ng generate @angular/core:standalone` and select the option to **Convert all components, directives, and pipes to standalone**.
+1. **Phase 1**: Run `ng generate @angular/core:standalone` and select the option to **Convert all components, directives and pipes to standalone**.
 2. **Phase 2**: Verify the build with `ng build`. Run the command again and select **Remove unnecessary NgModule classes**.
-3. **Phase 3**: Verify the build with `ng build`. Run the final pass and select **Bootstrap the project using standalone APIs**.
+3. **Phase 3**: Verify the build with `ng build`. Run the final pass and select **Bootstrap the application using standalone APIs**.

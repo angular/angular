@@ -2,15 +2,16 @@
 
 TIP: This guide assumes you're familiar with [component and directive outputs](guide/components/outputs).
 
-The `@angular/rxjs-interop` package offers two APIs related to component and directive outputs.
+The `@angular/core/rxjs-interop` package offers two APIs related to component and directive outputs.
 
-## Creating an output based on an RxJs Observable
+## Creating an output based on an RxJS Observable
 
 The `outputFromObservable` lets you create a component or directive output that emits based on an RxJS observable:
 
 ```ts {highlight:[9]}
 import {Directive} from '@angular/core';
 import {outputFromObservable} from '@angular/core/rxjs-interop';
+import {Observable} from 'rxjs';
 
 @Directive(/* ... */)
 class Draggable {
@@ -33,6 +34,7 @@ The `outputToObservable` function lets you create an RxJS observable from a comp
 
 ```ts {highlight:[11]}
 import {outputToObservable} from '@angular/core/rxjs-interop';
+import {Component, output} from '@angular/core';
 
 @Component(/*...*/)
 class CustomSlider {

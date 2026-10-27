@@ -1,0 +1,118 @@
+# /out/test.ngtypecheck.ts
+```ts
+/**
+ * TCB for /test.ts
+ * @generated
+ */
+
+import * as i0 from './test';
+
+/*tcb1*/
+function _tcb1(this: i0.AppComponent) {
+  if (true) {
+    var _t1 /*T:DIR:0*/ /*420,434*/ = null! as i0.FullDir; /*T:VAE*/
+  }
+}
+
+```
+
+# /out/test.ts
+```ts
+import { Component, Directive, TemplateRef } from '@angular/core';
+// @ts-ignore
+import * as i0 from '@angular/core';
+
+function AppComponent_div_0_Template(rf: number, ctx: any): any {
+  if (rf & 1) {
+    i0.ɵɵelement(0, 'div');
+  }
+}
+
+class BaseDir {}
+
+@Directive({
+  selector: '[fullDir]',
+  jit: false,
+})
+export class FullDir extends BaseDir {
+  constructor(private templateRef: TemplateRef<any>) {
+    super();
+  }
+
+  ngOnChanges() {}
+
+  static ctorParameters = (): any => [{ type: TemplateRef }];
+}
+
+@Directive({
+  selector: '[jitDir]',
+  jit: true,
+  standalone: true,
+})
+export class JitDir {}
+
+export class AppComponent {
+  // @ts-ignore
+  static ɵfac: i0.ɵɵFactoryDeclaration<AppComponent, never> = function AppComponent_Factory(
+    __ngFactoryType__: any,
+  ): any {
+    return new (__ngFactoryType__ || AppComponent)();
+  };
+  // @ts-ignore
+  static ɵcmp: i0.ɵɵComponentDeclaration<
+    AppComponent,
+    'app-root',
+    never,
+    {},
+    {},
+    never,
+    never,
+    true,
+    never
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      decls: 1,
+      vars: 0,
+      consts: [[4, 'fullDir']],
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵtemplate(0, AppComponent_div_0_Template, 1, 0, 'div', 0);
+        }
+      },
+      dependencies: [FullDir],
+      encapsulation: 2,
+    });
+  static {
+    (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        AppComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: 'app-root',
+                template: '<div *fullDir></div>',
+                imports: [FullDir],
+              },
+            ],
+          },
+        ],
+        null,
+        null,
+      );
+  }
+}
+((): any => {
+  (typeof ngDevMode === 'undefined' || ngDevMode) &&
+    i0.ɵsetClassDebugInfo(AppComponent, {
+      className: 'AppComponent',
+      filePath: 'test.ts',
+      lineNumber: 29,
+    });
+})();
+
+```

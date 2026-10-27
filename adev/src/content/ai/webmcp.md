@@ -1,6 +1,6 @@
 # WebMCP
 
-Web Model Context Protocol (WebMCP) is an [emerging web standard](https://github.com/webmachinelearning/webmcp/) that allows web applications to expose structured tools directly to AI agents running natively in the browser. Tools defined by an application allow AI assistants to interact with it directly, providing additional capabilities to the agent and reducing the need for DOM interactions.
+WebMCP is a [proposed web standard](https://github.com/webmachinelearning/webmcp/) that allows web applications to expose structured tools directly to AI agents running natively in the browser. Tools defined by an application allow AI assistants to interact with it directly, providing additional capabilities to the agent and reducing the need for DOM interactions.
 
 For example, an application to register a new user might provide a WebMCP tool for a browser's AI agent to create the user directly rather than requiring the agent to go through a complex wizard UI via DOM interactions.
 
@@ -231,7 +231,7 @@ In this example, Angular generates a WebMCP tool with a JSON schema which:
 
 Beyond inferring the input schema, Angular also connects the WebMCP tool to the form's validation logic and submission handler. This means the agent will observe any validation errors triggered by its inputs or any failures which happen during submission, allowing it to self-correct and potentially retry.
 
-NOTE: Async validators are _not_ triggered and should be handled by the submission action.
+NOTE: By default, async validators don't block submission: the submission action runs before they finish, so their errors aren't reported to the agent. Handle these checks in the submission action instead.
 
 #### Constraints
 

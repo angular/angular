@@ -65,6 +65,16 @@ export interface ResourceContext {
    * @developerPreview 22.2
    */
   data: Signal<Record<string, any>>;
+  /**
+   * Resources inherited from ancestor routes, keyed by name.
+   *
+   * Read this signal inside a reactive context such as a resource's `params` function (for example,
+   * with `chain(ctx.resources()['user'])`) rather than synchronously in the `resources` function
+   * body, as ancestor `resources` functions may still be initializing asynchronously.
+   *
+   * @developerPreview 22.2
+   */
+  resources: Signal<ResourceResult>;
 }
 
 /**
@@ -738,6 +748,7 @@ export interface Route {
    *
    */
   canDeactivate?: Array<CanDeactivateFn<any> | DeprecatedGuard>;
+  // 3p-only-start
   /**
    * An array of `CanLoadFn` or DI tokens used to look up `CanLoad()`
    * handlers, in order to determine if the current user is allowed to
@@ -748,6 +759,7 @@ export interface Route {
    * @deprecated Use `canMatch` instead
    */
   canLoad?: Array<CanLoadFn | DeprecatedGuard>;
+  // 3p-only-end
   /**
    * Additional developer-defined data provided to the component via
    * `ActivatedRoute`. By default, no additional data is passed.
@@ -1673,4 +1685,19 @@ export interface NavigationBehaviorOptions {
    * @see InMemoryScrollingOptions
    */
   readonly scroll?: 'manual' | 'after-transition';
+
+  /**
+   * Configures whether the browser resets focus when the navigation is complete. It only applies
+   * when the router uses the browser Navigation API (`withExperimentalPlatformNavigation`).
+   *
+   * - When 'after-transition' (the default), the browser moves focus to the first element with the
+   * `autofocus` attribute, or to the `<body>`.
+   * - When 'manual', the browser doesn't reset focus. For example, a search field that updates a
+   * query parameter as the user types keeps focus.
+   *
+   * @see [NavigateEvent#intercept](https://developer.mozilla.org/docs/Web/API/NavigateEvent/intercept)
+   *
+   * @experimental 22.3
+   */
+  readonly focusReset?: 'manual' | 'after-transition';
 }

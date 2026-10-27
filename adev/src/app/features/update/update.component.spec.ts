@@ -33,6 +33,18 @@ describe('UpdateComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should read the versions and level from the query param inputs', async () => {
+    const queryParamFixture = TestBed.createComponent(UpdateComponent);
+    queryParamFixture.componentRef.setInput('v', '20.0-21.0');
+    queryParamFixture.componentRef.setInput('l', '3');
+    await queryParamFixture.whenStable();
+
+    const queryParamComponent = queryParamFixture.componentInstance;
+    expect(queryParamComponent['from']().name).toBe('20.0');
+    expect(queryParamComponent['to']().name).toBe('21.0');
+    expect(queryParamComponent['level']()).toBe(3);
+  });
+
   describe('getComplexityLevelName', () => {
     it('should return "Basic" for ApplicationComplexity.Basic', () => {
       expect(component['getComplexityLevelName'](ApplicationComplexity.Basic)).toBe('Basic');

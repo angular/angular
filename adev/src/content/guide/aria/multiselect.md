@@ -1,5 +1,4 @@
-<docs-decorative-header title="Multiselect">
-</docs-decorative-header>
+# Multiselect
 
 ## Overview
 

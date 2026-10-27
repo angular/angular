@@ -7,7 +7,7 @@ Angular Router allows you to read and use information associated with a route to
 `ActivatedRoute` is a service from `@angular/router` that provides all the information associated with the current route.
 
 ```angular-ts
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 
 @Component({
@@ -26,11 +26,11 @@ The `ActivatedRoute` can provide different information about the route. Some com
 
 | Property      | Details                                                                                                                           |
 | :------------ | :-------------------------------------------------------------------------------------------------------------------------------- |
-| `url`         | An `Observable` of the route paths, represented as an array of strings for each part of the route path.                           |
+| `url`         | An `Observable` of the route paths, represented as an array of `UrlSegment` objects for each part of the route path.              |
 | `data`        | An `Observable` that contains the `data` object provided for the route. Also contains any resolved values from the resolve guard. |
 | `params`      | An `Observable` that contains the required and optional parameters specific to the route.                                         |
 | `queryParams` | An `Observable` that contains the query parameters available to all routes.                                                       |
-| `resources`   | An optional record of `Resource` instances defined on the route (when `withRouterResources` is enabled).                          |
+| `resources`   | An optional record of read-only `Resource` instances defined on or inherited by the route (requires `withRouterResources()`).     |
 
 Check out the [`ActivatedRoute` API docs](/api/router/ActivatedRoute) for a complete list of what you can access with in the route.
 
@@ -43,11 +43,12 @@ Route snapshots contain essential information about the route, including its par
 Here’s an example of how you’d access a route snapshot:
 
 ```angular-ts
-import {ActivatedRoute, ActivatedRouteSnapshot} from '@angular/router';
+import {Component, inject} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
 
 @Component(/* ... */)
 export class UserProfile {
-  readonly userId: string;
+  readonly userId: string | null;
   private route = inject(ActivatedRoute);
 
   constructor() {
@@ -59,7 +60,7 @@ export class UserProfile {
     // Access multiple route elements
     const snapshot = this.route.snapshot;
     console.log({
-      url: snapshot.url, // https://www.angular.dev
+      url: snapshot.url, // Array of UrlSegments matched by this route
       // Route parameters object: {id: '123'}
       params: snapshot.params,
       // Query parameters object: {role: 'admin', status: 'active'}
@@ -138,6 +139,7 @@ You can access query parameters with `route.queryParams`.
 Here is an example of a `ProductList` that updates the query parameters that affect how it displays a list of products:
 
 ```angular-ts
+import {Component, inject} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
@@ -255,9 +257,7 @@ If you need to add multiple classes onto the element, you can use either a space
 <a routerLink="/user/bob" [routerLinkActive]="['class1', 'class2']">Bob</a>
 ```
 
-When you specify a value for routerLinkActive, you are also defining the same value for `ariaCurrentWhenActive`. This makes sure that visually impaired users (which may not perceive the different styling being applied) can also identify the active button.
-
-If you want to define a different value for aria, you’ll need to explicitly set the value using the `ariaCurrentWhenActive` directive.
+Setting `routerLinkActive` alone does not set `aria-current`. Set the `ariaCurrentWhenActive` input, as in the example above, so that visually impaired users (which may not perceive the different styling being applied) can also identify the active link.
 
 ### Route matching strategy
 

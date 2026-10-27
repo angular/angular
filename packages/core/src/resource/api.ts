@@ -68,7 +68,8 @@ export interface ResourceParamsContext {
  * dependencies. `value()` will continue to return the previously fetched value during the reloading
  * operation.
  *
- * `error` - Loading failed with an error. `value()` will be `undefined`.
+ * `error` - Loading failed with an error. Reading `value()` will throw; use `hasValue()` or
+ * `error()` to check first.
  *
  * `resolved` - Loading has completed and the resource has the value returned from the loader.
  *
@@ -282,8 +283,7 @@ export interface StreamingResourceOptions<T, R> extends BaseResourceOptions<T, R
  * @publicApi 22.0
  */
 export type ResourceOptions<T, R> = (
-  | PromiseResourceOptions<T, R>
-  | StreamingResourceOptions<T, R>
+  PromiseResourceOptions<T, R> | StreamingResourceOptions<T, R>
 ) & {
   /**
    * A debug name for the reactive node. Used in Angular DevTools to identify the node.
@@ -331,5 +331,4 @@ export interface DebouncedOptions<T> {
  * @experimental 22.0
  */
 export type DebounceTimer<T> =
-  | number
-  | ((value: T, lastValue: ResourceSnapshot<T>) => Promise<void> | void);
+  number | ((value: T, lastValue: ResourceSnapshot<T>) => Promise<void> | void);

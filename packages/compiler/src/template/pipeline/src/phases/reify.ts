@@ -154,7 +154,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
                 })),
               )
             : null;
-        const propsExpr = propsMap !== null ? o.arrowFn([], propsMap) : null;
+        const propsExpr = propsMap !== null ? o.arrowFn([], propsMap, o.DYNAMIC_TYPE) : null;
         ir.OpList.replace(
           op,
           ng.foreignComponent(op.handle.slot!, o.literal(op.constIndex), propsExpr, op.sourceSpan),
@@ -962,7 +962,7 @@ function reifyListenerHandler(
     params.push(new o.FnParam('$event', o.DYNAMIC_TYPE));
   }
 
-  return o.fn(params, handlerStmts, undefined, undefined, name);
+  return o.fn(params, handlerStmts, o.DYNAMIC_TYPE, undefined, name);
 }
 
 /** Reifies the tracking expression of a `RepeaterCreateOp`. */
@@ -982,8 +982,8 @@ function reifyTrackBy(unit: CompilationUnit, op: ir.RepeaterCreateOp): o.Express
     // If there are no additional ops related to the tracking function, we just need
     // to turn it into a function that returns the result of the expression.
     fn = op.usesComponentInstance
-      ? o.fn(params, [new o.ReturnStatement(op.track)])
-      : o.arrowFn(params, op.track);
+      ? o.fn(params, [new o.ReturnStatement(op.track)], o.DYNAMIC_TYPE)
+      : o.arrowFn(params, op.track, o.DYNAMIC_TYPE);
   } else {
     // Otherwise first we need to reify the track-related ops.
     reifyUpdateOperations(unit, op.trackByOps);
@@ -1003,8 +1003,8 @@ function reifyTrackBy(unit: CompilationUnit, op: ir.RepeaterCreateOp): o.Express
       op.usesComponentInstance ||
       statements.length !== 1 ||
       !(statements[0] instanceof o.ReturnStatement)
-        ? o.fn(params, statements)
-        : o.arrowFn(params, statements[0].value);
+        ? o.fn(params, statements, o.DYNAMIC_TYPE)
+        : o.arrowFn(params, statements[0].value, o.DYNAMIC_TYPE);
   }
 
   op.trackByFn = unit.job.pool.getSharedFunctionReference(fn, '_forTrack');
@@ -1039,7 +1039,7 @@ function getArrowFunctionFactory(
       new o.FnParam(expr.contextName, o.DYNAMIC_TYPE),
       new o.FnParam(expr.currentViewName, o.DYNAMIC_TYPE),
     ],
-    o.arrowFn(expr.parameters, body),
+    o.arrowFn(expr.parameters, body, o.DYNAMIC_TYPE),
     o.DYNAMIC_TYPE,
   );
 }

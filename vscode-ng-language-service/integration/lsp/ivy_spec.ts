@@ -23,7 +23,6 @@ import {
 } from '../../common/requests';
 import {
   APP_COMPONENT,
-  APP_COMPONENT_MODULE,
   APP_COMPONENT_MODULE_URI,
   APP_COMPONENT_URI,
   BAR_COMPONENT,
@@ -349,6 +348,78 @@ export class AppComponent {
     expect(response).toContain({startLine: 26, endLine: 27}); // loading
     expect(response).toContain({startLine: 30, endLine: 31}); // for
     expect(response).toContain({startLine: 32, endLine: 33}); // empty
+  });
+
+  it('provides selection ranges that follow control flow blocks', async () => {
+    openTextDocument(
+      client,
+      APP_COMPONENT,
+      `
+import {Component} from '@angular/core';
+
+@Component({
+  selector: 'my-app',
+  template: \`<div>@if (name) {<span>{{name}}</span>}</div>\`,
+})
+export class AppComponent {
+  name = 'Angular';
+}`,
+    );
+    const response = (await client.sendRequest(lsp.SelectionRangeRequest.type, {
+      textDocument: {
+        uri: APP_COMPONENT_URI,
+      },
+      // Inside `name` of the `{{name}}` interpolation.
+      positions: [{line: 5, character: 40}],
+    })) as lsp.SelectionRange[];
+    expect(Array.isArray(response)).toBe(true);
+    expect(response.length).toEqual(1);
+    const chain: lsp.Range[] = [];
+    let current: lsp.SelectionRange | undefined = response[0];
+    while (current !== undefined) {
+      chain.push(current.range);
+      current = current.parent;
+    }
+    expect(chain).toEqual([
+      // name
+      {start: {line: 5, character: 38}, end: {line: 5, character: 42}},
+      // {{name}}
+      {start: {line: 5, character: 36}, end: {line: 5, character: 44}},
+      // <span>{{name}}</span>
+      {start: {line: 5, character: 30}, end: {line: 5, character: 51}},
+      // @if (name) {<span>{{name}}</span>}
+      {start: {line: 5, character: 18}, end: {line: 5, character: 52}},
+      // <div>@if (name) {<span>{{name}}</span>}</div>
+      {start: {line: 5, character: 13}, end: {line: 5, character: 58}},
+    ]);
+    // The chain stops at the template boundary: the editor merges it with the
+    // ranges of its own TypeScript provider.
+  });
+
+  it('returns null for selection ranges outside of templates', async () => {
+    openTextDocument(
+      client,
+      APP_COMPONENT,
+      `
+import {Component} from '@angular/core';
+
+@Component({
+  selector: 'my-app',
+  template: \`<div>{{name}}</div>\`,
+})
+export class AppComponent {
+  name = 'Angular';
+}`,
+    );
+    const response = await client.sendRequest(lsp.SelectionRangeRequest.type, {
+      textDocument: {
+        uri: APP_COMPONENT_URI,
+      },
+      // Inside `name = 'Angular'` in the class body.
+      positions: [{line: 8, character: 4}],
+    });
+    // The editor falls back to its built-in TypeScript provider.
+    expect(response).toBeNull();
   });
 
   it('provides document symbols for TypeScript files (default: filtered to components)', async () => {

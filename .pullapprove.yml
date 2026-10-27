@@ -144,6 +144,7 @@ groups:
           'packages/service-worker/**/{*,.*}',
           'packages/upgrade/**/{*,.*}',
           'vscode-ng-language-service/**/{*,.*}',
+          'ngp-vscode-ng-language-service/**/{*,.*}',
         ])
     reviewers:
       users:

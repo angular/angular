@@ -7,13 +7,16 @@
  */
 
 import ts from 'typescript';
-
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../../src/ngtsc/testing';
 
 import {NgtscTestEnvironment} from './env';
 
 const testFiles = loadStandardTestFiles();
+
+function extractMessage(diag: ts.Diagnostic) {
+  return typeof diag.messageText === 'string' ? diag.messageText : diag.messageText.messageText;
+}
 
 runInEachFileSystem(() => {
   describe('initializer-based input() API', () => {
@@ -54,10 +57,8 @@ runInEachFileSystem(() => {
       `,
       );
       const diagnostics = env.driveDiagnostics();
-      expect(diagnostics).toEqual([
-        jasmine.objectContaining({
-          messageText: `Using @Input with a signal input is not allowed.`,
-        }),
+      expect(diagnostics.map(extractMessage)).toEqual([
+        `Using @Input with a signal input is not allowed.`,
       ]);
     });
 
@@ -76,10 +77,8 @@ runInEachFileSystem(() => {
       `,
       );
       const diagnostics = env.driveDiagnostics();
-      expect(diagnostics).toEqual([
-        jasmine.objectContaining({
-          messageText: 'Input "data" is also declared as non-signal in @Directive.',
-        }),
+      expect(diagnostics.map(extractMessage)).toEqual([
+        'Input "data" is also declared as non-signal in @Directive.',
       ]);
     });
 
@@ -100,10 +99,8 @@ runInEachFileSystem(() => {
       `,
       );
       const diagnostics = env.driveDiagnostics();
-      expect(diagnostics).toEqual([
-        jasmine.objectContaining({
-          messageText: 'Alias needs to be a string that is statically analyzable.',
-        }),
+      expect(diagnostics.map(extractMessage)).toEqual([
+        'Alias needs to be a string that is statically analyzable.',
       ]);
     });
 
@@ -124,10 +121,8 @@ runInEachFileSystem(() => {
       `,
       );
       const diagnostics = env.driveDiagnostics();
-      expect(diagnostics).toEqual([
-        jasmine.objectContaining({
-          messageText: 'Argument needs to be an object literal that is statically analyzable.',
-        }),
+      expect(diagnostics.map(extractMessage)).toEqual([
+        'Argument needs to be an object literal that is statically analyzable.',
       ]);
     });
 
@@ -144,10 +139,8 @@ runInEachFileSystem(() => {
       `,
       );
       const diagnostics = env.driveDiagnostics();
-      expect(diagnostics).toEqual([
-        jasmine.objectContaining({
-          messageText: 'Input "data" is incorrectly declared as static member of "TestDir".',
-        }),
+      expect(diagnostics.map(extractMessage)).toEqual([
+        'Input "data" is incorrectly declared as static member of "TestDir".',
       ]);
     });
 
@@ -185,11 +178,7 @@ runInEachFileSystem(() => {
       `,
       );
       const diagnostics = env.driveDiagnostics();
-      expect(diagnostics[0].messageText).toEqual(
-        jasmine.objectContaining({
-          messageText: 'No overload matches this call.',
-        }),
-      );
+      expect(extractMessage(diagnostics[0])).toContain('No overload matches this call.');
     });
 
     it('should handle a transform and required input', () => {
@@ -207,9 +196,10 @@ runInEachFileSystem(() => {
       `,
       );
       env.driveMain();
+      const dts = env.getContents('test.d.ts').replace(/\s+/g, ' ');
       expect(env.getContents('test.js')).toContain(`inputs: { data: [1, "data"] }`);
-      expect(env.getContents('test.d.ts')).toContain('"required": true; "isSignal": true;');
-      expect(env.getContents('test.d.ts'))
+      expect(dts).toContain('"required": true; "isSignal": true;');
+      expect(dts)
         .withContext(
           'Expected no coercion member as input signal captures the write type of the transform',
         )
@@ -256,7 +246,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(`Type 'number' is not assignable to type 'string'.`);
+      expect(extractMessage(diags[0])).toBe(`Type 'number' is not assignable to type 'string'.`);
     });
 
     describe('type checking', () => {
@@ -284,7 +274,7 @@ runInEachFileSystem(() => {
 
         const diagnostics = env.driveDiagnostics();
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics[0].messageText).toBe(
+        expect(extractMessage(diagnostics[0])).toBe(
           `Type 'boolean' is not assignable to type 'number'.`,
         );
       });
@@ -315,7 +305,7 @@ runInEachFileSystem(() => {
 
         const diagnostics = env.driveDiagnostics();
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics[0].messageText).toBe(
+        expect(extractMessage(diagnostics[0])).toBe(
           `Type 'boolean' is not assignable to type 'string | number'.`,
         );
       });
@@ -402,7 +392,7 @@ runInEachFileSystem(() => {
 
         const diagnostics = env.driveDiagnostics();
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics[0].messageText).toBe(
+        expect(extractMessage(diagnostics[0])).toBe(
           `Required input 'data' from directive TestDir must be specified.`,
         );
       });
@@ -426,13 +416,9 @@ runInEachFileSystem(() => {
 
         const diagnostics = env.driveDiagnostics();
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics).toEqual([
-          jasmine.objectContaining<ts.Diagnostic>({
-            messageText: jasmine.objectContaining<ts.DiagnosticMessageChain>({
-              messageText: `Cannot use "input" on a class member that is declared as ES private.`,
-            }),
-          }),
-        ]);
+        expect(extractMessage(diagnostics[0])).toContain(
+          `Cannot use "input" on a class member that is declared as ES private`,
+        );
       });
 
       it('should error when declared using a `private` field', () => {
@@ -452,13 +438,9 @@ runInEachFileSystem(() => {
 
         const diagnostics = env.driveDiagnostics();
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics).toEqual([
-          jasmine.objectContaining<ts.Diagnostic>({
-            messageText: jasmine.objectContaining<ts.DiagnosticMessageChain>({
-              messageText: `Cannot use "input" on a class member that is declared as private.`,
-            }),
-          }),
-        ]);
+        expect(extractMessage(diagnostics[0])).toContain(
+          `Cannot use "input" on a class member that is declared as private.`,
+        );
       });
 
       it('should allow declaring using a `protected` field', () => {
@@ -530,9 +512,10 @@ runInEachFileSystem(() => {
       env.driveMain();
       const js = env.getContents('test.js');
       expect(js).toContain('import * as i0 from "@angular/core";');
-      expect(js).toContain(`i0.ɵsetClassMetadata(TestDir, [{
-        type: Directive
-    }], null, { data: [{ type: i0.Input, args: [{ isSignal: true, alias: "data", required: false }] }] });`);
+      expect(js).toContain(`i0.ɵsetClassMetadata(TestDir`);
+      expect(js).toMatch(
+        /data: \[{ type: i0\.Input, args: \[{ isSignal: true, alias: ['"]data['"], required: false }]/,
+      );
     });
   });
 });

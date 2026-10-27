@@ -1,4 +1,4 @@
-import {bootstrapClientApp, getElement, navigateTo, verifyNoBrowserErrors} from './util';
+import {bootstrapClientApp, getElement, navigateTo, verifyNoBrowserErrors} from './util.ts';
 
 describe('Defer E2E Tests', () => {
   beforeEach(async () => {

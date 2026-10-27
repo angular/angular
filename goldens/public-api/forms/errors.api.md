@@ -13,6 +13,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     FORM_CONTROL_NAME_INSIDE_MODEL_GROUP = 1051,
     // (undocumented)
+    FORM_CONTROL_NAME_MISSING_CONTROL = -1055,
+    // (undocumented)
     FORM_CONTROL_NAME_MISSING_PARENT = 1050,
     // (undocumented)
     FORM_GROUP_MISSING_INSTANCE = 1052,

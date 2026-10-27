@@ -263,6 +263,9 @@ export class FormField<T> {
     afterRenderEffect(
       {
         write: () => {
+          if ((this.state() as unknown as FieldNode).structure.isOrphaned()) {
+            return;
+          }
           for (const [className, computation] of classes) {
             const active = computation();
             if (bindingUpdated(bindings, className, active)) {
@@ -335,9 +338,13 @@ export class FormField<T> {
           this as FormField<unknown>,
         ]);
         onCleanup(() => {
-          fieldNode.nodeState.formFieldBindings.update((controls) =>
-            controls.filter((c) => c !== this),
-          );
+          const remaining = fieldNode.nodeState.formFieldBindings().filter((c) => c !== this);
+          fieldNode.nodeState.formFieldBindings.set(remaining);
+          // Once the last control is gone, nothing can blur anymore, so write any value still
+          // waiting for a blur debounce (e.g. `debounce(path, 'blur')`).
+          if (remaining.length === 0 && !fieldNode.structure.isOrphaned()) {
+            fieldNode.flushSync();
+          }
         });
       },
       {injector: this.injector},

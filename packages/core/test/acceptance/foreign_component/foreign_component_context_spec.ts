@@ -65,7 +65,6 @@ function Consumer(): Node[] {
 describe('foreign component context', () => {
   it('should be undefined when not provided', async () => {
     @Component({
-      selector: 'no-ctx-cmp',
       template: `<Consumer />`,
       // @ts-ignore
       foreignImports: [microImport(Consumer)],
@@ -80,7 +79,6 @@ describe('foreign component context', () => {
 
   it('should receive root context when provided', async () => {
     @Component({
-      selector: 'test-cmp',
       // @ts-ignore
       foreignImports: [microImport(Consumer)],
       providers: [provideForeignRootContext(() => 'Hello, world!')],
@@ -96,7 +94,6 @@ describe('foreign component context', () => {
 
   it('should pass parent context to static children', async () => {
     @Component({
-      selector: 'test-app',
       template: `
         <Provider context="Parent context">
           <Consumer />
@@ -124,7 +121,6 @@ describe('foreign component context', () => {
     }
 
     @Component({
-      selector: 'test-app',
       template: `
         <DynamicProvider context="Parent context">
           @content (children; let _) {
@@ -145,7 +141,6 @@ describe('foreign component context', () => {
 
   it('should receive context from nearest ancestor', async () => {
     @Component({
-      selector: 'test-app',
       template: `
         <Provider context="Outer context">
           <Provider context="Inner context">

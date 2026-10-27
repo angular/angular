@@ -307,14 +307,13 @@ export function ɵɵdeferHydrateWhen(rawValue: unknown) {
 
   if (!shouldAttachTrigger(TriggerType.Hydrate, lView, tNode)) return;
 
-  // TODO(incremental-hydration): audit all defer instructions to reduce unnecessary work by
-  // moving function calls inside their relevant control flow blocks
   const bindingIndex = nextBindingIndex();
-  const tView = getTView();
-  const hydrateTriggers = getHydrateTriggers(tView, tNode);
-  hydrateTriggers.set(DeferBlockTrigger.When, null);
 
   if (bindingUpdated(lView, bindingIndex, rawValue)) {
+    const tView = getTView();
+    const hydrateTriggers = getHydrateTriggers(tView, tNode);
+    hydrateTriggers.set(DeferBlockTrigger.When, null);
+
     if (typeof ngServerMode !== 'undefined' && ngServerMode) {
       // We are on the server and SSR for defer blocks is enabled.
       triggerDeferBlock(TriggerType.Hydrate, lView, tNode);
@@ -564,7 +563,7 @@ export function ɵɵdeferHydrateOnTimer(delay: number) {
  * @param walkUpTimes Number of times to walk up/down the tree hierarchy to find the trigger.
  * @codeGenApi
  */
-export function ɵɵdeferOnHover(triggerIndex: number, walkUpTimes?: number) {
+export function ɵɵdeferOnHover(triggerIndex: number | null, walkUpTimes?: number) {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
@@ -600,7 +599,7 @@ export function ɵɵdeferOnHover(triggerIndex: number, walkUpTimes?: number) {
  * @param walkUpTimes Number of times to walk up/down the tree hierarchy to find the trigger.
  * @codeGenApi
  */
-export function ɵɵdeferPrefetchOnHover(triggerIndex: number, walkUpTimes?: number) {
+export function ɵɵdeferPrefetchOnHover(triggerIndex: number | null, walkUpTimes?: number) {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
@@ -661,7 +660,7 @@ export function ɵɵdeferHydrateOnHover() {
  * @param walkUpTimes Number of times to walk up/down the tree hierarchy to find the trigger.
  * @codeGenApi
  */
-export function ɵɵdeferOnInteraction(triggerIndex: number, walkUpTimes?: number) {
+export function ɵɵdeferOnInteraction(triggerIndex: number | null, walkUpTimes?: number) {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
@@ -697,7 +696,7 @@ export function ɵɵdeferOnInteraction(triggerIndex: number, walkUpTimes?: numbe
  * @param walkUpTimes Number of times to walk up/down the tree hierarchy to find the trigger.
  * @codeGenApi
  */
-export function ɵɵdeferPrefetchOnInteraction(triggerIndex: number, walkUpTimes?: number) {
+export function ɵɵdeferPrefetchOnInteraction(triggerIndex: number | null, walkUpTimes?: number) {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
@@ -759,7 +758,7 @@ export function ɵɵdeferHydrateOnInteraction() {
  * @codeGenApi
  */
 export function ɵɵdeferOnViewport(
-  triggerIndex: number,
+  triggerIndex: number | null,
   walkUpTimes?: number | null,
   options?: IntersectionObserverInit,
 ) {
@@ -807,7 +806,7 @@ export function ɵɵdeferOnViewport(
  * @codeGenApi
  */
 export function ɵɵdeferPrefetchOnViewport(
-  triggerIndex: number,
+  triggerIndex: number | null,
   walkUpTimes?: number | null,
   options?: IntersectionObserverInit,
 ) {

@@ -256,6 +256,7 @@ export const appConfig: ApplicationConfig = {
 Available registration strategies:
 
 - **`'registerWhenStable:timeout'`** (default: `'registerWhenStable:30000'`) - Register as soon as the application stabilizes (no pending micro-/macro-tasks) but no later than the specified timeout in milliseconds
+  The timeout is required. Without it, `'registerWhenStable'` registers the service worker immediately.
 - **`'registerImmediately'`** - Register the service worker immediately
 - **`'registerWithDelay:timeout'`** - Register with a delay of the specified timeout in milliseconds
 
@@ -284,6 +285,8 @@ export const delayedConfig: ApplicationConfig = {
 You can also provide an Observable factory function for custom registration timing:
 
 ```ts
+import {ApplicationConfig, isDevMode} from '@angular/core';
+import {provideServiceWorker} from '@angular/service-worker';
 import {timer} from 'rxjs';
 
 export const customConfig: ApplicationConfig = {

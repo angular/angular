@@ -1,35 +1,21 @@
-load("@bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
 load("@npm//:defs.bzl", "npm_link_all_packages")
-load("@npm//vscode-ng-language-service/integration/project:ng-packagr/package_json.bzl", ng_packagr_bin = "bin")
+load("@rules_angular//src/architect:ng_config.bzl", "ng_config")
+
+package(default_visibility = ["//vscode-ng-language-service/integration:__subpackages__"])
 
 npm_link_all_packages(name = "node_modules")
 
-copy_to_bin(
-    name = "project_srcs",
-    srcs = glob(["**"]),
-)
-
-ng_packagr_bin.ng_packagr(
-    name = "dist",
-    srcs = [
-        ":node_modules",
-        ":project_srcs",
-    ],
-    args = [
-        "-p",
-        "libs/post/ng-package.json",
-        "-c",
-        "libs/post/tsconfig.json",
-    ],
-    chdir = package_name(),
-    out_dirs = ["dist"],
+ng_config(
+    name = "ng_config",
 )
 
 filegroup(
     name = "project",
     srcs = [
-        ":dist",
-        ":project_srcs",
+        ":ng_config",
+        "//vscode-ng-language-service/integration/project/app:srcs",
+        "//vscode-ng-language-service/integration/project/libs/post",
+        "//vscode-ng-language-service/integration/project/libs/post:srcs",
     ],
     visibility = ["//vscode-ng-language-service/integration:__subpackages__"],
 )

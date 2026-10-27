@@ -1,7 +1,6 @@
 import {ApplicationRef, inject, Service} from '@angular/core';
 import {SwUpdate} from '@angular/service-worker';
-import {concat, interval} from 'rxjs';
-import {first} from 'rxjs/operators';
+import {concat, interval, first} from 'rxjs';
 
 @Service()
 export class CheckForUpdateService {

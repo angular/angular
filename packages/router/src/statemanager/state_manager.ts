@@ -15,6 +15,7 @@ import {
   Event,
   isRedirectingEvent,
   NavigationCancel,
+  NavigationCancellationCode,
   NavigationEnd,
   NavigationError,
   NavigationSkipped,
@@ -233,8 +234,15 @@ export class HistoryStateManager extends StateManager {
       if (this.urlUpdateStrategy === 'deferred' && !currentTransition.extras.skipLocationChange) {
         this.setBrowserUrl(this.createBrowserPath(currentTransition), currentTransition);
       }
-    } else if (e instanceof NavigationCancel && !isRedirectingEvent(e)) {
-      this.restoreHistory(currentTransition);
+    } else if (e instanceof NavigationCancel) {
+      if (!isRedirectingEvent(e)) {
+        this.restoreHistory(currentTransition);
+      } else if (
+        e.code === NavigationCancellationCode.Redirect &&
+        this.routerState === currentTransition.targetRouterState
+      ) {
+        this.resetInternalState(currentTransition);
+      }
     } else if (e instanceof NavigationError) {
       this.restoreHistory(currentTransition, true);
     } else if (e instanceof NavigationEnd) {

@@ -125,10 +125,6 @@ $width-breakpoint: 950px;
   }
 }
 
-.adev-console-section {
-  display: block;
-}
-
 .adev-preview-section {
   height: 100%;
 
@@ -163,41 +159,6 @@ $width-breakpoint: 950px;
   }
   span {
     color: var(--primary-contrast);
-  }
-}
-
-.adev-alert {
-  position: absolute;
-  inset: 0;
-  border-radius: 0.25rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: color-mix(var(--page-background) 50%, transparent);
-  backdrop-filter: blur(3px);
-  height: 100%;
-  width: 100%;
-  z-index: 100;
-
-  h2 {
-    margin-block: 0;
-  }
-
-  p {
-    margin-block-end: 1rem;
-  }
-
-  div {
-    display: flex;
-    flex-direction: column;
-    max-width: 300px;
-    border: 1px solid var(--quinary-contrast);
-    border-radius: 0.25rem;
-    background-color: color-mix(in srgb, var(--page-background) 90%, transparent);
-    button {
-      align-self: flex-end;
-    }
-    padding: 1.5rem;
   }
 }
 

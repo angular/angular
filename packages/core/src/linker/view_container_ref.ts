@@ -266,7 +266,7 @@ export abstract class ViewContainerRef {
   /**
    * Moves a view to a new location in this container.
    * @param viewRef The view to move.
-   * @param index The 0-based index of the new location.
+   * @param currentIndex The 0-based index of the new location.
    * @returns The moved `ViewRef` instance.
    */
   abstract move(viewRef: ViewRef, currentIndex: number): ViewRef;

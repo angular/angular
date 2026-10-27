@@ -7,6 +7,7 @@
  */
 
 import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
+import {isNgpTestMode, normalizeNgpOutputFile} from '../../../src/ngtsc/testing';
 
 /**
  * Check that the content of each emitted type declaration file matches the content of their
@@ -21,6 +22,15 @@ export function checkTypeDeclarations(fs: FileSystem, emittedFiles: AbsoluteFsPa
   if (!emittedDeclarationFiles.length) {
     throw new Error('No type declarations emitted.');
   }
+  const normalize = isNgpTestMode()
+    ? (text: string): string => {
+        let normalized = normalizeNgpOutputFile(text);
+        if (normalized.includes('import * as i0 from "@angular/core"')) {
+          normalized = normalized.replace(/import\("@angular\/core"\)\./g, 'i0.');
+        }
+        return normalized.replace(/\s+/g, ' ').trim();
+      }
+    : (text: string): string => text.trim();
   const diff = emittedDeclarationFiles
     .map((file) => ({
       expectedFilename: getReferenceFileForTypeDeclaration(fs, file),
@@ -32,7 +42,7 @@ export function checkTypeDeclarations(fs: FileSystem, emittedFiles: AbsoluteFsPa
     }))
     .find(
       ({expectedFile, generatedFile}) =>
-        expectedFile.content.trim() !== generatedFile.content.trim(),
+        normalize(expectedFile.content) !== normalize(generatedFile.content),
     );
 
   if (diff) {

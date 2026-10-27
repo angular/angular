@@ -47,3 +47,11 @@ adev/src/content/examples/schematics-for-libraries/projects/my-lib/package.json
 
 CHANGELOG.md
 CHANGELOG_ARCHIVE.md
+
+# Ignore NGP test fixture markdown files
+packages/compiler-cli/preprocessor/test/golden/**
+
+# Ignore NGP language service test workspaces
+packages/compiler-cli/preprocessor/language-service/tests/test-workspace/**
+ngp-vscode-ng-language-service/tests/test-workspace/**
+ngp-vscode-ng-language-service/e2e/test-workspace/**

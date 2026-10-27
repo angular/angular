@@ -6,98 +6,75 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {CommonModule, NgFor, NgIf, NgTemplateOutlet} from '@angular/common';
 import {By} from '@angular/platform-browser';
-import {
-  Component,
-  Directive,
-  provideZoneChangeDetection,
-  ChangeDetectionStrategy,
-} from '../../src/core';
+import {Component, Directive, signal} from '../../src/core';
 import {TestBed} from '../../testing';
 
 describe('@angular/common integration', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [provideZoneChangeDetection()],
-    });
-  });
   describe('NgForOf', () => {
     @Directive({
       selector: '[dir]',
-      standalone: false,
     })
     class MyDirective {}
 
     @Component({
       selector: 'app-child',
       template: '<div dir>comp text</div>',
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [MyDirective],
     })
     class ChildComponent {}
 
     @Component({
-      selector: 'app-root',
       template: '',
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [NgFor, ChildComponent],
     })
     class AppComponent {
-      items: string[] = ['first', 'second'];
+      items = signal(['first', 'second']);
     }
 
-    beforeEach(() => {
-      TestBed.configureTestingModule({declarations: [AppComponent, ChildComponent, MyDirective]});
-    });
-
-    it('should update a loop', () => {
+    it('should update a loop', async () => {
       TestBed.overrideTemplate(
         AppComponent,
-        '<ul><li *ngFor="let item of items">{{item}}</li></ul>',
+        '<ul><li *ngFor="let item of items()">{{item}}</li></ul>',
       );
       const fixture = TestBed.createComponent(AppComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       let listItems = Array.from(
         (fixture.nativeElement as HTMLUListElement).querySelectorAll('li'),
       );
       expect(listItems.map((li) => li.textContent)).toEqual(['first', 'second']);
 
-      // change detection cycle, no model changes
-      fixture.detectChanges();
-      listItems = Array.from((fixture.nativeElement as HTMLUListElement).querySelectorAll('li'));
-      expect(listItems.map((li) => li.textContent)).toEqual(['first', 'second']);
-
       // remove the last item
       const items = fixture.componentInstance.items;
-      items.length = 1;
+      items.set(['first']);
       fixture.detectChanges();
 
       listItems = Array.from((fixture.nativeElement as HTMLUListElement).querySelectorAll('li'));
       expect(listItems.map((li) => li.textContent)).toEqual(['first']);
 
       // change an item
-      items[0] = 'one';
-      fixture.detectChanges();
+      items()[0] = 'one';
+      fixture.changeDetectorRef.markForCheck();
+      await fixture.whenStable();
       listItems = Array.from((fixture.nativeElement as HTMLUListElement).querySelectorAll('li'));
       expect(listItems.map((li) => li.textContent)).toEqual(['one']);
 
       // add an item
-      items.push('two');
-      fixture.detectChanges();
+      items.set(['one', 'two']);
+      await fixture.whenStable();
       listItems = Array.from((fixture.nativeElement as HTMLUListElement).querySelectorAll('li'));
       expect(listItems.map((li) => li.textContent)).toEqual(['one', 'two']);
     });
 
-    it('should support ngForOf context variables', () => {
+    it('should support ngForOf context variables', async () => {
       TestBed.overrideTemplate(
         AppComponent,
-        '<ul><li *ngFor="let item of items; index as myIndex; count as myCount">{{myIndex}} of {{myCount}}: {{item}}</li></ul>',
+        '<ul><li *ngFor="let item of items(); index as myIndex; count as myCount">{{myIndex}} of {{myCount}}: {{item}}</li></ul>',
       );
       const fixture = TestBed.createComponent(AppComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       let listItems = Array.from(
         (fixture.nativeElement as HTMLUListElement).querySelectorAll('li'),
@@ -106,8 +83,8 @@ describe('@angular/common integration', () => {
 
       // add an item in the middle
       const items = fixture.componentInstance.items;
-      items.splice(1, 0, 'middle');
-      fixture.detectChanges();
+      items.set(['first', 'middle', 'second']);
+      await fixture.whenStable();
       listItems = Array.from((fixture.nativeElement as HTMLUListElement).querySelectorAll('li'));
       expect(listItems.map((li) => li.textContent)).toEqual([
         '0 of 3: first',
@@ -116,10 +93,13 @@ describe('@angular/common integration', () => {
       ]);
     });
 
-    it('should instantiate directives inside directives properly in an ngFor', () => {
-      TestBed.overrideTemplate(AppComponent, '<app-child *ngFor="let item of items"></app-child>');
+    it('should instantiate directives inside directives properly in an ngFor', async () => {
+      TestBed.overrideTemplate(
+        AppComponent,
+        '<app-child *ngFor="let item of items()"></app-child>',
+      );
       const fixture = TestBed.createComponent(AppComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const children = fixture.debugElement.queryAll(By.directive(ChildComponent));
 
@@ -136,8 +116,8 @@ describe('@angular/common integration', () => {
 
       // add an item
       const items = fixture.componentInstance.items;
-      items.push('third');
-      fixture.detectChanges();
+      items.set(['first', 'second', 'third']);
+      await fixture.whenStable();
 
       const childrenAfterAdd = fixture.debugElement.queryAll(By.directive(ChildComponent));
 
@@ -151,33 +131,30 @@ describe('@angular/common integration', () => {
       expect(directive).not.toBeNull();
     });
 
-    it('should retain parent view listeners when the NgFor destroy views', () => {
+    it('should retain parent view listeners when the NgFor destroy views', async () => {
       @Component({
-        selector: 'app-toggle',
         template: `<button (click)="toggle()">Toggle List</button>
           <ul>
-            <li *ngFor="let item of items">{{ item }}</li>
+            <li *ngFor="let item of items()">{{ item }}</li>
           </ul>`,
-        standalone: false,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [NgFor],
       })
       class ToggleComponent {
         private _data: number[] = [1, 2, 3];
-        items: number[] = [];
+        items = signal<number[]>([]);
 
         toggle() {
-          if (this.items.length) {
-            this.items = [];
+          if (this.items().length) {
+            this.items.set([]);
           } else {
-            this.items = this._data;
+            this.items.set(this._data);
           }
         }
       }
 
-      TestBed.configureTestingModule({declarations: [ToggleComponent]});
       const fixture = TestBed.createComponent(ToggleComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       // no elements in the list
       let listItems = Array.from(
@@ -187,7 +164,7 @@ describe('@angular/common integration', () => {
 
       // this will fill the list
       fixture.componentInstance.toggle();
-      fixture.detectChanges();
+      await fixture.whenStable();
       listItems = Array.from((fixture.nativeElement as HTMLUListElement).querySelectorAll('li'));
       expect(listItems.length).toBe(3);
       expect(listItems.map((li) => li.textContent)).toEqual(['1', '2', '3']);
@@ -195,39 +172,35 @@ describe('@angular/common integration', () => {
       // now toggle via the button
       const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
       button.click();
-      fixture.detectChanges();
+      await fixture.whenStable();
       listItems = Array.from((fixture.nativeElement as HTMLUListElement).querySelectorAll('li'));
       expect(listItems.length).toBe(0);
 
       // toggle again
       button.click();
-      fixture.detectChanges();
+      await fixture.whenStable();
       listItems = Array.from((fixture.nativeElement as HTMLUListElement).querySelectorAll('li'));
       expect(listItems.length).toBe(3);
     });
 
     it('should support multiple levels of embedded templates', () => {
       @Component({
-        selector: 'app-multi',
         template: `<ul>
-          <li *ngFor="let row of items">
+          <li *ngFor="let row of items()">
             <span *ngFor="let cell of row.data"
-              >{{ cell }} - {{ row.value }} - {{ items.length }}</span
+              >{{ cell }} - {{ row.value }} - {{ items().length }}</span
             >
           </li>
         </ul>`,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [NgFor],
       })
       class MultiLevelComponent {
-        items: any[] = [
+        items = signal([
           {data: ['1', '2'], value: 'first'},
           {data: ['3', '4'], value: 'second'},
-        ];
+        ]);
       }
 
-      TestBed.configureTestingModule({declarations: [MultiLevelComponent]});
       const fixture = TestBed.createComponent(MultiLevelComponent);
       fixture.detectChanges();
 
@@ -246,7 +219,7 @@ describe('@angular/common integration', () => {
 
       // remove the last item
       const items = fixture.componentInstance.items;
-      items.length = 1;
+      items.set(items().slice(0, 1));
       fixture.detectChanges();
 
       listItems = Array.from((fixture.nativeElement as HTMLUListElement).querySelectorAll('li'));
@@ -255,7 +228,9 @@ describe('@angular/common integration', () => {
       expect(spanItems.map((span) => span.textContent)).toEqual(['1 - first - 1', '2 - first - 1']);
 
       // change an item
-      items[0].data[0] = 'one';
+      items.update((items) =>
+        items.map((item, index) => (index === 0 ? {...item, data: ['one', '2']} : item)),
+      );
       fixture.detectChanges();
 
       listItems = Array.from((fixture.nativeElement as HTMLUListElement).querySelectorAll('li'));
@@ -267,7 +242,7 @@ describe('@angular/common integration', () => {
       ]);
 
       // add an item
-      items[1] = {data: ['three', '4'], value: 'third'};
+      items.update((items) => [...items, {data: ['three', '4'], value: 'third'}]);
       fixture.detectChanges();
 
       listItems = Array.from((fixture.nativeElement as HTMLUListElement).querySelectorAll('li'));
@@ -286,16 +261,14 @@ describe('@angular/common integration', () => {
 
     it('should support multiple levels of embedded templates with listeners', () => {
       @Component({
-        selector: 'app-multi',
         template: `<div *ngFor="let row of items">
           <p *ngFor="let cell of row.data">
             <span (click)="onClick(row.value, name)"></span>
             {{ row.value }} - {{ name }}
           </p>
         </div>`,
-        standalone: false,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [CommonModule],
       })
       class MultiLevelWithListenerComponent {
         items: any[] = [{data: ['1'], value: 'first'}];
@@ -307,7 +280,6 @@ describe('@angular/common integration', () => {
         }
       }
 
-      TestBed.configureTestingModule({declarations: [MultiLevelWithListenerComponent]});
       const fixture = TestBed.createComponent(MultiLevelWithListenerComponent);
       fixture.detectChanges();
 
@@ -327,32 +299,28 @@ describe('@angular/common integration', () => {
       expect(fixture.componentInstance.events).toEqual(['first', 'app', 'first', 'new name']);
     });
 
-    it('should support skipping contexts', () => {
+    it('should support skipping contexts', async () => {
       @Component({
-        selector: 'app-multi',
-        template: `<div *ngFor="let row of items">
+        template: `<div *ngFor="let row of items()">
           <div *ngFor="let cell of row">
-            <span *ngFor="let span of cell.data">{{ cell.value }} - {{ name }}</span>
+            <span *ngFor="let span of cell.data">{{ cell.value }} - {{ name() }}</span>
           </div>
         </div>`,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [NgFor],
       })
       class SkippingContextComponent {
-        name = 'app';
-        items: any[] = [
+        name = signal('app');
+        items = signal([
           [
             // row
             {value: 'one', data: ['1', '2']}, // cell
           ],
           [{value: 'two', data: ['3', '4']}],
-        ];
+        ]);
       }
 
-      TestBed.configureTestingModule({declarations: [SkippingContextComponent]});
       const fixture = TestBed.createComponent(SkippingContextComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const elements = fixture.nativeElement.querySelectorAll('span');
       expect(elements.length).toBe(4);
@@ -361,8 +329,8 @@ describe('@angular/common integration', () => {
       expect(elements[2].textContent).toBe('two - app');
       expect(elements[3].textContent).toBe('two - app');
 
-      fixture.componentInstance.name = 'other';
-      fixture.detectChanges();
+      fixture.componentInstance.name.set('other');
+      await fixture.whenStable();
       expect(elements[0].textContent).toBe('one - other');
       expect(elements[1].textContent).toBe('one - other');
       expect(elements[2].textContent).toBe('two - other');
@@ -371,7 +339,6 @@ describe('@angular/common integration', () => {
 
     it('should support context for 9+ levels of embedded templates', () => {
       @Component({
-        selector: 'app-multi',
         template: `<div *ngFor="let item0 of items">
           <span *ngFor="let item1 of item0.data">
             <span *ngFor="let item2 of item1.data">
@@ -395,9 +362,8 @@ describe('@angular/common integration', () => {
             </span>
           </span>
         </div>`,
-        standalone: false,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [CommonModule],
       })
       class NineLevelsComponent {
         value = 'App';
@@ -505,7 +471,6 @@ describe('@angular/common integration', () => {
         ];
       }
 
-      TestBed.configureTestingModule({declarations: [NineLevelsComponent]});
       const fixture = TestBed.createComponent(NineLevelsComponent);
       fixture.detectChanges();
 
@@ -527,24 +492,20 @@ describe('@angular/common integration', () => {
   });
 
   describe('ngIf', () => {
-    it('should support sibling ngIfs', () => {
+    it('should support sibling ngIfs', async () => {
       @Component({
-        selector: 'app-multi',
         template: `
-          <div *ngIf="showing">{{ valueOne }}</div>
-          <div *ngIf="showing">{{ valueTwo }}</div>
+          <div *ngIf="showing()">{{ valueOne() }}</div>
+          <div *ngIf="showing()">{{ valueTwo() }}</div>
         `,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [NgIf],
       })
       class SimpleConditionComponent {
-        showing = true;
-        valueOne = 'one';
-        valueTwo = 'two';
+        showing = signal(true);
+        valueOne = signal('one');
+        valueTwo = signal('two');
       }
 
-      TestBed.configureTestingModule({declarations: [SimpleConditionComponent]});
       const fixture = TestBed.createComponent(SimpleConditionComponent);
       fixture.detectChanges();
 
@@ -553,33 +514,29 @@ describe('@angular/common integration', () => {
       expect(elements[0].textContent).toBe('one');
       expect(elements[1].textContent).toBe('two');
 
-      fixture.componentInstance.valueOne = '$$one$$';
-      fixture.componentInstance.valueTwo = '$$two$$';
-      fixture.detectChanges();
+      fixture.componentInstance.valueOne.set('$$one$$');
+      fixture.componentInstance.valueTwo.set('$$two$$');
+      await fixture.whenStable();
       expect(elements[0].textContent).toBe('$$one$$');
       expect(elements[1].textContent).toBe('$$two$$');
     });
 
-    it('should handle nested ngIfs with no intermediate context vars', () => {
+    it('should handle nested ngIfs with no intermediate context vars', async () => {
       @Component({
-        selector: 'app-multi',
-        template: `<div *ngIf="showing">
-          <div *ngIf="outerShowing">
-            <div *ngIf="innerShowing">{{ name }}</div>
+        template: `<div *ngIf="showing()">
+          <div *ngIf="outerShowing()">
+            <div *ngIf="innerShowing()">{{ name() }}</div>
           </div>
         </div> `,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [NgIf],
       })
       class NestedConditionsComponent {
-        showing = true;
-        outerShowing = true;
-        innerShowing = true;
-        name = 'App name';
+        showing = signal(true);
+        outerShowing = signal(true);
+        innerShowing = signal(true);
+        name = signal('App name');
       }
 
-      TestBed.configureTestingModule({declarations: [NestedConditionsComponent]});
       const fixture = TestBed.createComponent(NestedConditionsComponent);
       fixture.detectChanges();
 
@@ -587,66 +544,58 @@ describe('@angular/common integration', () => {
       expect(elements.length).toBe(3);
       expect(elements[2].textContent).toBe('App name');
 
-      fixture.componentInstance.name = 'Other name';
-      fixture.detectChanges();
+      fixture.componentInstance.name.set('Other name');
+      await fixture.whenStable();
       expect(elements[2].textContent).toBe('Other name');
     });
   });
 
   describe('NgTemplateOutlet', () => {
-    it('should create and remove embedded views (ng-template)', () => {
+    it('should create and remove embedded views (ng-template)', async () => {
       @Component({
-        selector: 'app-multi',
         template: `<ng-template #tpl>from tpl</ng-template>
-          <ng-template [ngTemplateOutlet]="showing ? tpl : null"></ng-template> `,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+          <ng-template [ngTemplateOutlet]="showing() ? tpl : null"></ng-template> `,
+        imports: [NgTemplateOutlet],
       })
       class EmbeddedViewsComponent {
-        showing = false;
+        showing = signal(false);
       }
 
-      TestBed.configureTestingModule({declarations: [EmbeddedViewsComponent]});
       const fixture = TestBed.createComponent(EmbeddedViewsComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(fixture.nativeElement.textContent).not.toBe('from tpl');
 
-      fixture.componentInstance.showing = true;
-      fixture.detectChanges();
+      fixture.componentInstance.showing.set(true);
+      await fixture.whenStable();
       expect(fixture.nativeElement.textContent).toBe('from tpl');
 
-      fixture.componentInstance.showing = false;
-      fixture.detectChanges();
+      fixture.componentInstance.showing.set(false);
+      await fixture.whenStable();
       expect(fixture.nativeElement.textContent).not.toBe('from tpl');
     });
 
-    it('should create and remove embedded views (ng-container)', () => {
+    it('should create and remove embedded views (ng-container)', async () => {
       @Component({
-        selector: 'app-multi',
         template: `<ng-template #tpl>from tpl</ng-template>
-          <ng-container [ngTemplateOutlet]="showing ? tpl : null"></ng-container> `,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+          <ng-container [ngTemplateOutlet]="showing() ? tpl : null"></ng-container> `,
+        imports: [NgTemplateOutlet],
       })
       class NgContainerComponent {
-        showing = false;
+        showing = signal(false);
       }
 
-      TestBed.configureTestingModule({declarations: [NgContainerComponent]});
       const fixture = TestBed.createComponent(NgContainerComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(fixture.nativeElement.textContent).not.toBe('from tpl');
 
-      fixture.componentInstance.showing = true;
-      fixture.detectChanges();
+      fixture.componentInstance.showing.set(true);
+      await fixture.whenStable();
       expect(fixture.nativeElement.textContent).toBe('from tpl');
 
-      fixture.componentInstance.showing = false;
-      fixture.detectChanges();
+      fixture.componentInstance.showing.set(false);
+      await fixture.whenStable();
       expect(fixture.nativeElement.textContent).not.toBe('from tpl');
     });
   });

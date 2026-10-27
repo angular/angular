@@ -13,7 +13,12 @@ import {DocEntry} from './entities.mjs';
 import {isCliEntry, isHiddenEntry} from './entities/categorization.mjs';
 import {getRenderable} from './processing.mjs';
 import {renderEntry} from './rendering.mjs';
-import {setCurrentSymbol, setSymbolMembers, setSymbols} from './symbol-context.mjs';
+import {
+  setCurrentSymbol,
+  setSymbolEntryTypes,
+  setSymbolMembers,
+  setSymbols,
+} from './symbol-context.mjs';
 import {setDefinedRoutes} from './defined-routes-context.mjs';
 import {CliCommandRenderable, DocEntryRenderable} from './entities/renderables.mjs';
 import {initHighlighter} from '../../shared/shiki.mjs';
@@ -153,6 +158,13 @@ async function main() {
     // Setting the symbols are a global context for the rendering templates of this entry
     setSymbols(collection.symbols);
     setSymbolMembers(buildSymbolMembersIndex(collection.entries));
+    setSymbolEntryTypes(
+      new Map(
+        collection.entries
+          .filter((entry): entry is DocEntry => 'entryType' in entry)
+          .map((entry) => [entry.name, entry.entryType]),
+      ),
+    );
 
     const renderableEntries: (DocEntryRenderable | CliCommandRenderable)[] = [];
     for (const entry of extractedEntries) {

@@ -10,6 +10,7 @@ import '../../util/ng_i18n_closure_mode';
 
 import {XSS_SECURITY_URL} from '../../error_details_base_url';
 import {checkSecurityContext, SecurityContext} from '../../sanitization/dom_security_schema';
+import {formatRuntimeError, RuntimeErrorCode} from '../../errors';
 import {getTemplateContent, VALID_ATTRS, VALID_ELEMENTS} from '../../sanitization/html_sanitizer';
 import {getInertBodyHelper} from '../../sanitization/inert_body';
 import {
@@ -28,6 +29,7 @@ import {
   assertString,
 } from '../../util/assert';
 import {CharCode} from '../../util/char_code';
+import {getFirstChild, getNextSibling, getNodeName} from '../../util/dom';
 import {loadIcuContainerVisitor} from './i18n_icu_container_visitor';
 
 import {getDocument} from '../interfaces/document';
@@ -77,7 +79,7 @@ import {splitNsName} from '../util/tags';
 import {NAMESPACE_URIS} from '../namespaces';
 
 const BINDING_REGEXP = /�(\d+):?\d*�/gi;
-const ICU_REGEXP = /({\s*�\d+:?\d*�\s*,\s*\S{6}\s*,[\s\S]*})/gi;
+const ICU_REGEXP = /({\s*�\d+:?\d*�\s*,\s*\S{6}\s*,[\s\S]*})/i;
 const NESTED_ICU = /�(\d+)�/;
 const ICU_BLOCK_REGEXP = /^\s*(�\d+:?\d*�)\s*,\s*(select|plural)\s*,/;
 
@@ -801,19 +803,34 @@ function walkIcuTree(
   depth: number,
 ): number {
   let bindingMask = 0;
-  let currentNode = parentNode.firstChild;
+  let currentNode = getFirstChild(parentNode);
   while (currentNode) {
     const newIndex = allocExpando(tView, lView, 1, null);
     switch (currentNode.nodeType) {
       case Node.ELEMENT_NODE:
         const element = currentNode as Element;
-        const tagName = element.tagName.toLowerCase();
+        const tagName = getNodeName(element).toLowerCase();
         if (Object.hasOwn(VALID_ELEMENTS, tagName)) {
           addCreateNodeAndAppend(create, ELEMENT_MARKER, tagName, parentIdx, newIndex);
           tView.data[newIndex] = tagName;
           const elAttrs = element.attributes;
           for (let i = 0; i < elAttrs.length; i++) {
             const attr = elAttrs.item(i)!;
+            if (ngDevMode && isBindingLikeAttributeName(attr.name)) {
+              // Directives and bindings are not supported inside ICU expressions, since ICU
+              // content is processed at runtime as plain HTML. Such attributes are dropped
+              // below as unknown attributes; explain why instead of reporting them as unsafe.
+              console.warn(
+                formatRuntimeError(
+                  RuntimeErrorCode.INVALID_I18N_STRUCTURE,
+                  `ICU expressions cannot contain bindings or structural directives. ` +
+                    `The attribute "${attr.name}" on the <${tagName}> element inside an ICU ` +
+                    `expression is not supported and will be ignored. ` +
+                    `Only static attributes are allowed inside ICU cases.`,
+                ),
+              );
+              continue;
+            }
             const lowerAttrName = attr.name.toLowerCase();
             const hasBinding = !!attr.value.match(BINDING_REGEXP);
             const namespaceUri = element.namespaceURI;
@@ -922,7 +939,7 @@ function walkIcuTree(
         }
         break;
     }
-    currentNode = currentNode.nextSibling;
+    currentNode = getNextSibling(currentNode);
   }
   return bindingMask;
 }
@@ -1009,4 +1026,18 @@ function i18nResolveSanitizer(attrName: string, tagName?: string): SanitizerFn |
     default:
       return null;
   }
+}
+
+/**
+ * Whether an attribute name uses an Angular binding syntax (`[prop]`, `(event)`, `*structural`,
+ * `#ref`, `@trigger`) rather than being a plain HTML attribute.
+ */
+function isBindingLikeAttributeName(attrName: string): boolean {
+  return (
+    attrName.startsWith('[') ||
+    attrName.startsWith('(') ||
+    attrName.startsWith('*') ||
+    attrName.startsWith('#') ||
+    attrName.startsWith('@')
+  );
 }

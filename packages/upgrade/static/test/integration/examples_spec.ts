@@ -15,7 +15,6 @@ import {
   Input,
   NgModule,
 } from '@angular/core';
-import {waitForAsync} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {downgradeComponent, UpgradeComponent, UpgradeModule} from '../../../static';
@@ -37,7 +36,7 @@ withEachNg1Version(() => {
     it('should have AngularJS loaded', () =>
       expect(angular.getAngularJSGlobal().version.major).toBe(1));
 
-    it('should verify UpgradeAdapter example', waitForAsync(() => {
+    it('should verify UpgradeAdapter example', async () => {
       // This is wrapping (upgrading) an AngularJS component to be used in an Angular
       // component
       @Directive({
@@ -94,9 +93,8 @@ withEachNg1Version(() => {
       const element = html('<ng2 name="World">project</ng2>');
 
       // Let's use a helper function to make this simpler
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
-        expect(multiTrim(element.textContent)).toBe('ng2[ng1[Hello World!](transclude)](project)');
-      });
-    }));
+      await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      expect(multiTrim(element.textContent)).toBe('ng2[ng1[Hello World!](transclude)](project)');
+    });
   });
 });

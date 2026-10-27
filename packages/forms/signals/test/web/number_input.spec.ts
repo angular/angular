@@ -138,6 +138,34 @@ describe('numeric inputs', () => {
       expect(fixture.componentInstance.f().errors()).toEqual([]);
     });
 
+    it('should not overwrite DOM input value on change detection when model remains NaN', () => {
+      @Component({
+        imports: [FormField],
+        template: `<input type="number" [formField]="f" />`,
+      })
+      class TestCmp {
+        readonly data = signal<number>(NaN);
+        readonly f = form(this.data);
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+      expect(input.value).toBe('');
+
+      input.value = '15000';
+      act(() => {
+        fixture.componentInstance.f().markAsTouched();
+      });
+
+      expect(input.value).toBe('15000');
+
+      act(() => {
+        input.dispatchEvent(new Event('input'));
+      });
+
+      expect(fixture.componentInstance.f().value()).toBe(15000);
+    });
+
     it('should update model to null when user clears input', () => {
       @Component({
         imports: [FormField],

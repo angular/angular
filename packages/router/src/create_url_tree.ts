@@ -189,6 +189,9 @@ function tree(
 ): UrlTree {
   const qp: Params = {};
   for (const [key, value] of Object.entries(queryParams ?? {})) {
+    if (value === null || value === undefined) {
+      continue;
+    }
     // This retains old behavior where each item in the array was stringified individually This
     // helps remove special-case handling for empty and single-item arrays where the default
     // serializer removes empty arrays when serialized then parsed or converts them to non-arrays

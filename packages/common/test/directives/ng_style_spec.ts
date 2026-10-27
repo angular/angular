@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy} from '@angular/compiler';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NgStyle} from '../../index';
@@ -245,10 +244,8 @@ describe('NgStyle', () => {
 
   it('should be available as a standalone directive', async () => {
     @Component({
-      selector: 'test-component',
       imports: [NgStyle],
       template: `<div [ngStyle]="{'width.px': expr}"></div>`,
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {
       expr = 400;
@@ -262,10 +259,8 @@ describe('NgStyle', () => {
 });
 
 @Component({
-  selector: 'test-cmp',
   template: '',
   imports: [NgStyle],
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class TestComponent {
   expr: any;

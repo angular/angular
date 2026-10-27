@@ -123,7 +123,7 @@ export function getTriggerElement(triggerLView: LView, triggerIndex: number): El
 export function registerDomTrigger<O>(
   initialLView: LView,
   tNode: TNode,
-  triggerIndex: number,
+  triggerIndex: number | null,
   walkUpTimes: number | undefined | null,
   registerFn: (
     element: Element,
@@ -172,7 +172,8 @@ export function registerDomTrigger<O>(
     poll.destroy();
 
     // It's possible that the trigger's view was destroyed before we resolved the trigger element.
-    if (isDestroyed(triggerLView)) {
+    // The trigger index can be null if the defer block is invalid.
+    if (isDestroyed(triggerLView) || triggerIndex === null) {
       return;
     }
 

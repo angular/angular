@@ -211,19 +211,20 @@ onError: (error) => {
 
 ### HTTP options
 
-Customize the HTTP request with the `options` parameter:
+Customize the HTTP request by returning an `HttpResourceRequest` object from the `request` function:
 
 ```ts
 import {HttpHeaders} from '@angular/common/http';
+import {validateHttp} from '@angular/forms/signals';
 
 validateHttp(schemaPath.field, {
-  request: ({value}) => `/api/validate?value=${value()}`,
-  options: {
+  request: ({value}) => ({
+    url: `/api/validate?value=${value()}`,
     headers: new HttpHeaders({
       Authorization: 'Bearer token',
     }),
     timeout: 5000,
-  },
+  }),
   onSuccess: (response: {valid: boolean}) =>
     response.valid
       ? null
@@ -445,7 +446,7 @@ With `'blur'`, the model keeps its previous value while the user is typing. Sync
 For timing logic that a duration or `'blur'` can't express, pass a `Debouncer` function. The function receives the field context and an [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal), and returns a `Promise<void>` that resolves when the model should update:
 
 ```ts
-import {debounce, type Debouncer} from '@angular/forms/signals';
+import {debounce, type Debouncer, form} from '@angular/forms/signals';
 
 const shorterWhenLonger: Debouncer<string> = ({value}, abortSignal) => {
   // Shorter queries get a longer delay since the user is likely still typing.
@@ -597,7 +598,7 @@ When async validation runs, the field's `pending()` signal returns `true`. Durin
 - `valid()` returns `false`
 - `invalid()` returns `false`
 - `errors()` returns an empty array
-- `submit()` waits for validation to complete
+- `submit()` does not wait for it; by default the `action` runs anyway (see [`ignoreValidators`](guide/forms/signals/form-submission#controlling-validation-gating-with-ignorevalidators))
 
 Show the pending state in your template to provide feedback:
 
@@ -635,6 +636,7 @@ Async validation only runs after synchronous validation passes. This prevents un
 
 ```ts
 import {form, required, minLength, validateHttp} from '@angular/forms/signals';
+import {model} from '@angular/core';
 
 form(model, (schemaPath) => {
   // 1. These synchronous validation rules run first
@@ -673,6 +675,7 @@ Always validate format before making async requests. This catches errors instant
 
 ```ts
 import {form, required, email, validateHttp} from '@angular/forms/signals';
+import {model} from '@angular/core';
 
 form(model, (schemaPath) => {
   // Validate format first

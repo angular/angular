@@ -295,7 +295,6 @@ describe('AsyncPipe', () => {
 
   it('should be available as a standalone pipe', async () => {
     @Component({
-      selector: 'test-component',
       imports: [AsyncPipe],
       template: '{{ value | async }}',
     })

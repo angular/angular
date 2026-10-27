@@ -193,8 +193,7 @@ Field state provides reactive signals for each field's value, making it suitable
 
 TIP: Field state includes many more signals beyond `value()`, such as validation state (e.g., valid, invalid, errors), interaction tracking (e.g., touched, dirty), and visibility (e.g., hidden, disabled).
 
-<!-- TODO: UNCOMMENT BELOW WHEN GUIDE IS AVAILABLE -->
-<!-- See the [Field State Management guide](guide/forms/signals/field-state-management) for complete coverage. -->
+See the [Field State Management guide](guide/forms/signals/field-state-management) for complete coverage.
 
 ## Updating form models programmatically
 
@@ -265,6 +264,40 @@ export class UserProfileComponent {
 ```
 
 The form fields automatically update when the model changes, displaying the fetched data without additional code.
+
+### Example: Synchronizing to a service
+
+For some use cases, a service may store a form model:
+
+```ts
+@Service()
+export class FormService {
+  private readonly formModel = signal<UserFormModel>({ name: '', birthday: null });
+  public readonly model = this.formModel.asReadonly();
+
+  public syncFormModel(value: UserFormModel) {
+    this.formModel.set(value);
+  }
+
+  // Model set synchronously or asynchronously elsewhere in service
+}
+
+@Component(...)
+export class UserForm {
+  private readonly formService = inject(FormService);
+
+  private readonly formModel = linkedSignal(() => this.formService.model(), {
+    set: (value) => this.formService.syncFormModel(value),
+  });
+
+  protected readonly form = form(this.formModel);
+}
+```
+
+`linkedSignal`'s computation function reads the service's form model, and the `set` function
+in the options allows syncing the component's form model to the service's form model. The
+form fields automatically update when the service's model changes, as well as automatically
+update the service's form model when the form fields update the component's form model.
 
 ## Two-way data binding
 
@@ -425,7 +458,6 @@ Array items containing objects automatically receive tracking identities, which 
 
 This guide covered creating models and updating values. Related guides explore other aspects of Signal Forms:
 
-<!-- TODO: UNCOMMENT WHEN THE GUIDES ARE AVAILABLE -->
 <docs-pill-row>
   <docs-pill href="guide/forms/signals/field-state-management" title="Field state management" />
   <docs-pill href="guide/forms/signals/validation" title="Validation" />

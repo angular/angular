@@ -51,15 +51,6 @@
     transform: rotate(360deg);
   }
 }
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-}
 @keyframes slide-up {
   from {
     opacity: 0;
@@ -133,38 +124,6 @@
     letter-spacing: 0.05em;
     color: var(--tertiary-contrast);
   }
-}
-
-.dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-
-  &.pulse {
-    animation: pulse 2s infinite;
-  }
-  &.bg-zinc-300 {
-    background-color: var(--quinary-contrast);
-  }
-  &.bg-orange-500 {
-    background-color: var(--symbolic-yellow);
-  }
-  &.bg-blue-500 {
-    background-color: var(--bright-blue);
-  }
-  &.bg-emerald-500 {
-    background-color: var(--super-green);
-  }
-}
-.divider {
-  height: 1rem;
-  width: 1px;
-  background-color: var(--senary-contrast);
-}
-.progress-percentage {
-  font-size: 11px;
-  font-weight: bold;
-  color: var(--electric-violet);
 }
 
 .main-layout {

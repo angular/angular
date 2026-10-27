@@ -98,7 +98,8 @@ To import and use a component, you need to:
 Here's an example of a `UserProfile` component importing a `ProfilePhoto` component:
 
 ```angular-ts {header: "user-profile.ts"}
-import {ProfilePhoto} from 'profile-photo.ts';
+import {Component} from '@angular/core';
+import {ProfilePhoto} from './profile-photo';
 
 @Component({
   selector: 'user-profile',

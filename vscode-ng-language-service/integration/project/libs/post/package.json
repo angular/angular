@@ -1,6 +1,11 @@
 {
   "name": "post",
   "version": "0.0.1",
+  "exports": {
+    ".": {
+      "default": "./src/index.ts"
+    }
+  },
   "peerDependencies": {
     "@angular/core": "^22.2.0-next"
   },

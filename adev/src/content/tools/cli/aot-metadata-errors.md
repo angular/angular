@@ -125,6 +125,7 @@ export class MyComponent {}
 You'd also get this error if you imported `someTemplate` from some other module and neglected to initialize it there.
 
 ```ts
+import {Component} from '@angular/core';
 // ERROR - not initialized there either
 import {someTemplate} from './config';
 
@@ -256,7 +257,7 @@ Here's an illustrative example.
 
 ```ts
 // CORRECTED
-import { Inject } from '@angular/core';
+import {Inject, InjectionToken, Component} from '@angular/core';
 
 export const WINDOW = new InjectionToken('Window');
 export function _window() { return window; }
@@ -278,7 +279,7 @@ uses the `@Inject(WINDOW)` to generate the injection code.
 Angular does something similar with the `DOCUMENT` token so you can inject the browser's `document` object \(or an abstraction of it, depending upon the platform in which the application runs\).
 
 ```ts
-import { Inject }   from '@angular/core';
+import {Inject, Component} from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 
 @Component({ … })

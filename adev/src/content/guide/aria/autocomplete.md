@@ -1,5 +1,4 @@
-<docs-decorative-header title="Autocomplete">
-</docs-decorative-header>
+# Autocomplete
 
 ## Overview
 

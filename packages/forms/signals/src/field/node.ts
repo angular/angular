@@ -117,8 +117,7 @@ export class FieldNode implements FieldState<unknown> {
    * first focusable binding in the DOM for any descendant node of this one.
    */
   private getBindingForFocus():
-    | (FormField<unknown> & {focus: (options?: FocusOptions) => void})
-    | undefined {
+    (FormField<unknown> & {focus: (options?: FocusOptions) => void}) | undefined {
     // First try to focus one of our own bindings.
     const own = this.formFieldBindings()
       .filter(
@@ -411,7 +410,7 @@ export class FieldNode implements FieldState<unknown> {
   /**
    * If there is a pending sync, abort it and sync immediately.
    */
-  private flushSync() {
+  flushSync() {
     const pending = this.pendingSync();
     if (pending && !pending.signal.aborted) {
       pending.abort();

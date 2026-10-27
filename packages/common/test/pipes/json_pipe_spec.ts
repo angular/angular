@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy} from '@angular/compiler';
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/private/testing/matchers';
 import {JsonPipe} from '../../index';
@@ -56,7 +55,6 @@ describe('JsonPipe', () => {
 
   describe('integration', () => {
     @Component({
-      selector: 'test-comp',
       template: '{{data | json}}',
       imports: [JsonPipe],
       changeDetection: ChangeDetectionStrategy.Eager,
@@ -81,7 +79,6 @@ describe('JsonPipe', () => {
 
   it('should be available as a standalone pipe', async () => {
     @Component({
-      selector: 'test-component',
       imports: [JsonPipe],
       template: '{{ value | json }}',
     })

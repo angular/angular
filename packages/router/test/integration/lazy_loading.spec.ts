@@ -61,7 +61,7 @@ import {
 import {getLoadedComponent} from '../../src/utils/config';
 import {of, delay} from 'rxjs';
 
-export function lazyLoadingIntegrationSuite(browserAPI: 'navigation' | 'history') {
+export async function lazyLoadingIntegrationSuite(browserAPI: 'navigation' | 'history') {
   describe('lazy loading', () => {
     it('works', async () => {
       const router = TestBed.inject(Router);

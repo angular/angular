@@ -48,7 +48,7 @@ export function makeStateKey<T = void>(key: string): StateKey<T> {
   return key as StateKey<T>;
 }
 
-function createDictionary<T>(): Record<string, T> {
+export function createDictionary<T>(): Record<string, T> {
   // StateKey can be any string, including names of special Object prototype properties.
   return Object.create(null);
 }
@@ -59,8 +59,6 @@ function createDictionary<T>(): Record<string, T> {
  *
  * The `TransferState` is available as an injectable token.
  * On the client, just inject this token using DI and use it, it will be lazily initialized.
- * On the server it's already included if `renderApplication` function is used. Otherwise, import
- * the `ServerTransferStateModule` module to make the `TransferState` available.
  *
  * The values in the store are serialized/deserialized using JSON.stringify/JSON.parse. So only
  * boolean, number, string, null and non-class objects will be serialized and deserialized in a

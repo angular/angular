@@ -19,7 +19,7 @@
     "emoji-regex": "~11.0.0",
     "fflate": "^0.8.2",
     "jsdom": "~30.1.0",
-    "marked": "~18.0.0",
+    "marked": "~18.1.0",
     "mermaid": "^12.0.0",
     "shiki": "^4.0.0",
     "tinyglobby": "^0.2.12"

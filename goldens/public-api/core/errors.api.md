@@ -44,6 +44,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     DUPLICATE_NG_MODULE_ID = 921,
     // (undocumented)
+    EVENT_REPLAY_CONTRACT_ALREADY_CONSUMED = 511,
+    // (undocumented)
     EXPORT_NOT_FOUND = -301,
     // (undocumented)
     EXPRESSION_CHANGED_AFTER_CHECKED = -100,
@@ -198,7 +200,7 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     UNSAFE_ATTRIBUTE_BINDING = -910,
     // (undocumented)
-    UNSAFE_VALUE_IN_RESOURCE_URL = 904,
+    UNSAFE_VALUE_IN_RESOURCE_URL = -904,
     // (undocumented)
     UNSAFE_VALUE_IN_SCRIPT = 905,
     // (undocumented)

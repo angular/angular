@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {LEGACY_OPTIONAL_CHAINING_DEFAULT, TypeCheckingConfig} from '@angular/compiler';
+import {
+  generateIndexerAnalysis,
+  IndexedComponent,
+  IndexingContext,
+  LEGACY_OPTIONAL_CHAINING_DEFAULT,
+  NodeAdapter,
+  TypeCheckingConfig,
+} from '@angular/compiler';
 import ts from 'typescript';
 
 import {
@@ -63,8 +70,6 @@ import {
   IncrementalState,
 } from '../../incremental';
 import {SemanticSymbol} from '../../incremental/semantic_graph';
-import {generateAnalysis, IndexedComponent, IndexingContext} from '../../indexer';
-import {NodeAdapter} from '../../indexer/src/api';
 import {
   CompoundMetadataReader,
   CompoundMetadataRegistry,
@@ -924,9 +929,9 @@ export class NgCompiler {
    *
    * See the `indexing` package for more details.
    */
-  getIndexedComponents(): Map<DeclarationNode, IndexedComponent> {
+  getIndexedComponents(): Map<DeclarationNode, IndexedComponent<DeclarationNode>> {
     const compilation = this.ensureAnalyzed();
-    const context = new IndexingContext();
+    const context = new IndexingContext<DeclarationNode>();
     compilation.traitCompiler.index(context);
 
     const adapter: NodeAdapter<DeclarationNode> = {
@@ -938,7 +943,7 @@ export class NgCompiler {
       },
     };
 
-    return generateAnalysis(context, adapter);
+    return generateIndexerAnalysis(context, adapter);
   }
 
   /**
@@ -1089,33 +1094,37 @@ export class NgCompiler {
     let typeCheckingConfig: TypeCheckingConfig;
     if (strictTemplates) {
       typeCheckingConfig = {
-        applyTemplateContextGuards: strictTemplates,
-        checkQueries: false,
+        applyTemplateContextGuards: true,
         checkTemplateBodies: true,
         alwaysCheckSchemaInTemplateBodies: true,
-        checkTypeOfInputBindings: strictTemplates,
+        checkTypeOfInputBindings: true,
         honorAccessModifiersForInputBindings: false,
         checkControlFlowBodies: true,
-        strictNullInputBindings: strictTemplates,
-        checkTypeOfAttributes: strictTemplates,
+        strictNullInputBindings: true,
+        checkTypeOfAttributes: true,
         // Even in full template type-checking mode, DOM binding checks are not quite ready yet.
         checkTypeOfDomBindings: false,
-        checkTypeOfOutputEvents: strictTemplates,
-        checkTypeOfAnimationEvents: strictTemplates,
+        checkTypeOfOutputEvents: true,
+        checkTypeOfAnimationEvents: true,
         // Checking of DOM events currently has an adverse effect on developer experience,
         // e.g. for `<input (blur)="update($event.target.value)">` enabling this check results in:
         // - error TS2531: Object is possibly 'null'.
         // - error TS2339: Property 'value' does not exist on type 'EventTarget'.
-        checkTypeOfDomEvents: strictTemplates,
+        checkTypeOfDomEvents: true,
+
+        // TODO: Enable those 2 flags by default in v23
         checkUnclaimedEventNames: false, // 3p-only
-        // g3-only checkUnclaimedEventNames: strictTemplates,
-        checkTypeOfDomReferences: strictTemplates,
+        // g3-only checkUnclaimedEventNames: true,
+        checkUnknownElements: false, // 3p-only
+        // g3-only checkUnknownElements: true,
+
+        checkTypeOfDomReferences: true,
         // Non-DOM references have the correct type in View Engine so there is no strictness flag.
         checkTypeOfNonDomReferences: true,
         // Pipes are checked in View Engine so there is no strictness flag.
         checkTypeOfPipes: true,
-        strictSafeNavigationTypes: strictTemplates,
-        useContextGenericType: strictTemplates,
+        strictSafeNavigationTypes: true,
+        useContextGenericType: true,
         strictLiteralTypes: true,
         enableTemplateTypeChecker: this.enableTemplateTypeChecker,
         useInlineTypeConstructors,
@@ -1129,7 +1138,6 @@ export class NgCompiler {
     } else {
       typeCheckingConfig = {
         applyTemplateContextGuards: false,
-        checkQueries: false,
         checkTemplateBodies: false,
         checkControlFlowBodies: false,
         // Enable deep schema checking in "basic" template type-checking mode only if Closure
@@ -1158,6 +1166,7 @@ export class NgCompiler {
           this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
         allowSignalsInTwoWayBindings,
         allowDomEventAssertion,
+        checkUnknownElements: false,
       };
     }
 
@@ -1208,6 +1217,9 @@ export class NgCompiler {
     if (this.options.extendedDiagnostics?.checks?.unusedStandaloneImports !== undefined) {
       typeCheckingConfig.unusedStandaloneImports =
         this.options.extendedDiagnostics.checks.unusedStandaloneImports;
+    }
+    if (this.options.strictUnknownElements !== undefined) {
+      typeCheckingConfig.checkUnknownElements = this.options.strictUnknownElements;
     }
 
     return typeCheckingConfig;

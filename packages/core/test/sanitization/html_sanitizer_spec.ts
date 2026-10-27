@@ -237,6 +237,8 @@ describe('HTML sanitizer', () => {
       sanitizeHtml(defaultDoc, '<input name="nextSibling" form="a">A<form id="a"></form>');
     const firstChild = () =>
       sanitizeHtml(defaultDoc, '<object form="a" id="firstChild"></object>B<form id="a"></form>');
+    const nestedFirstChild = () =>
+      sanitizeHtml(defaultDoc, '<form><b>C</b><input name="firstChild"></form>');
 
     // Note: we have a different behavior here in a real browser and when running in Node,
     // when Domino is used to emulate DOM:
@@ -254,13 +256,15 @@ describe('HTML sanitizer', () => {
     // depending on a platform.
     if (isBrowser) {
       // Running in a real browser
-      const errorMsg = 'Failed to sanitize html because the element is clobbered: ';
+      const errorMsg = 'Action failed because the element is clobbered: ';
       expect(nextSibling).toThrowError(`${errorMsg}<input name="nextSibling" form="a">`);
       expect(firstChild).toThrowError(`${errorMsg}<object form="a" id="firstChild"></object>`);
+      expect(nestedFirstChild).toThrowError(`${errorMsg}<input name="firstChild">`);
     } else {
       // Running in Node, using Domino DOM emulation
       expect(nextSibling()).toBe('A');
       expect(firstChild()).toBe('B');
+      expect(nestedFirstChild()).toBe('<b>C</b>');
     }
   });
 

@@ -7,7 +7,7 @@
  */
 
 import * as html from '../ml_parser/ast';
-import {isNgContent} from '../ml_parser/tags';
+import {isNgContent, splitNsName} from '../ml_parser/tags';
 
 const NG_CONTENT_SELECT_ATTR = 'select';
 const LINK_ELEMENT = 'link';
@@ -15,7 +15,7 @@ const LINK_STYLE_REL_ATTR = 'rel';
 const LINK_STYLE_HREF_ATTR = 'href';
 const LINK_STYLE_REL_VALUE = 'stylesheet';
 const STYLE_ELEMENT = 'style';
-const SCRIPT_ELEMENTS: ReadonlySet<string> = new Set([':math:script', ':svg:script', 'script']);
+const SCRIPT_ELEMENT = 'script';
 const NG_NON_BINDABLE_ATTR = 'ngNonBindable';
 const NG_PROJECT_AS = 'ngProjectAs';
 
@@ -47,12 +47,14 @@ export function preparseElement(ast: html.Element): PreparsedElement {
   selectAttr ||= '*';
 
   const nodeName = ast.name.toLowerCase();
+  // Custom namespaces fall back to HTML, where script elements are executable.
+  const nodeNameWithoutNamespace = splitNsName(nodeName)[1];
   let type = PreparsedElementType.OTHER;
   if (isNgContent(nodeName)) {
     type = PreparsedElementType.NG_CONTENT;
   } else if (STYLE_ELEMENT === nodeName) {
     type = PreparsedElementType.STYLE;
-  } else if (SCRIPT_ELEMENTS.has(nodeName)) {
+  } else if (SCRIPT_ELEMENT === nodeNameWithoutNamespace) {
     type = PreparsedElementType.SCRIPT;
   } else if (nodeName == LINK_ELEMENT && relAttr == LINK_STYLE_REL_VALUE) {
     type = PreparsedElementType.STYLESHEET;

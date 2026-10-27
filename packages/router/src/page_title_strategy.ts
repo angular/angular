@@ -72,9 +72,9 @@ export class DefaultTitleStrategy extends TitleStrategy {
   }
 
   /**
-   * Sets the title of the browser to the given value.
+   * Sets the title of the browser to the title built from the given router state.
    *
-   * @param title The `pageTitle` from the deepest primary route.
+   * @param snapshot The current router state. The title is taken from the deepest primary route.
    */
   override updateTitle(snapshot: RouterStateSnapshot): void {
     const title = this.buildTitle(snapshot);

@@ -109,7 +109,7 @@ export function setTNodeInsertBeforeIndex(tNode: TNode, index: number) {
       index,
     ];
   } else {
-    assertEqual(Array.isArray(insertBeforeIndex), true, 'Expecting array here');
+    ngDevMode && assertEqual(Array.isArray(insertBeforeIndex), true, 'Expecting array here');
     (insertBeforeIndex as number[]).push(index);
   }
 }
@@ -157,6 +157,13 @@ export function getInstructionFromIcuCreateOpCode(mergedCode: number): number {
 export function icuCreateOpCode(opCode: IcuCreateOpCode, parentIdx: number, refIdx: number) {
   ngDevMode && assertGreaterThanOrEqual(parentIdx, 0, 'Missing parent index');
   ngDevMode && assertGreaterThan(refIdx, 0, 'Missing ref index');
+
+  // Note that we intentionally retain the error here in production,
+  // because the value can change based on the locale.
+  if (parentIdx > IcuCreateOpCode.MAX_PARENT || refIdx > IcuCreateOpCode.MAX_REF) {
+    throw new Error('ICU node index out of range (too many nodes in ICU case)');
+  }
+
   return (
     opCode | (parentIdx << IcuCreateOpCode.SHIFT_PARENT) | (refIdx << IcuCreateOpCode.SHIFT_REF)
   );

@@ -131,15 +131,19 @@ export class AfterRenderImpl {
       // Mark the view for traversal to ensure we eventually schedule the afterNextRender.
       markAncestorsForTraversal(view);
       view[FLAGS] |= LViewFlags.HasChildViewsToRefresh;
-    } else if (!this.executing) {
-      this.addSequence(sequence);
     } else {
-      this.deferredRegistrations.add(sequence);
+      this.addSequence(sequence);
     }
   }
 
   addSequence(sequence: AfterRenderSequence): void {
-    this.sequences.add(sequence);
+    if (this.executing) {
+      // Defer registrations made while hooks are running. Otherwise the sequence could start
+      // in the current pass with its earlier phases already skipped. See #61715.
+      this.deferredRegistrations.add(sequence);
+    } else {
+      this.sequences.add(sequence);
+    }
     // Trigger an `ApplicationRef.tick()` if one is not already pending/running, because we have a
     // new render hook that needs to run.
     this.scheduler.notify(NotificationSource.RenderHook);

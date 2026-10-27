@@ -13,6 +13,7 @@ import {headingRender} from './transformations/heading.mjs';
 import {imageRender} from './transformations/image.mjs';
 import {linkRender} from './transformations/link.mjs';
 import {listRender} from './transformations/list.mjs';
+import {paragraphRender} from './transformations/paragraph.mjs';
 import {tableRender} from './transformations/table.mjs';
 import {textRender} from './transformations/text.mjs';
 
@@ -87,6 +88,7 @@ export class AdevDocsRenderer extends Renderer {
   override link = linkRender;
   override table = tableRender;
   override list = listRender;
+  override paragraph = paragraphRender;
   override image = imageRender;
   override text = textRender;
   override heading = headingRender;

@@ -30,7 +30,8 @@
 | `NG0602`  | [Disallowed function call inside reactive context](errors/NG0602)                    |
 | `NG0750`  | [@defer dependencies failed to load](errors/NG0750)                                  |
 | `NG0751`  | [@defer behavior when HMR is enabled](errors/NG0751)                                 |
-| `NG0910`  | [Unsafe bindings on an iframe element](errors/NG0910)                                |
+| `NG0904`  | [Unsafe value used in a resource URL context](errors/NG0904)                         |
+| `NG0910`  | [Unsafe bindings on an element](errors/NG0910)                                       |
 | `NG0912`  | [Component ID generation collision](errors/NG0912)                                   |
 | `NG0913`  | [Runtime Performance Warnings](errors/NG0913)                                        |
 | `NG0919`  | [Circular Dependency Detected](errors/NG0919)                                        |
@@ -40,6 +41,7 @@
 | `NG0956`  | [Tracking expression caused re-creation of the DOM structure](errors/NG0956)         |
 | `NG0991`  | [Resource completed before producing a value](errors/NG0991)                         |
 | `NG01002` | [Missing Control Value](errors/NG01002)                                              |
+| `NG01055` | [Missing control for `formControlName`](errors/NG01055)                              |
 | `NG01101` | [Wrong Async Validator Return Type](errors/NG01101)                                  |
 | `NG01203` | [Missing value accessor](errors/NG01203)                                             |
 | `NG01902` | [Orphan field in signal forms](errors/NG01902)                                       |
@@ -51,19 +53,21 @@
 | `NG05000` | [Hydration with unsupported Zone.js instance.](errors/NG05000)                       |
 | `NG05104` | [Root element was not found.](errors/NG05104)                                        |
 | `NG05106` | [Insertion reference node not found](errors/NG05106)                                 |
+| `NG05201` | [Unsafe resource URL passed to DomSanitizer](errors/NG05201)                         |
 | `NG05703` | [Suspicious URL origin change during SSR](errors/NG05703)                            |
 
 ## Compiler errors
 
-| Code     | Name                                                       |
-| :------- | :--------------------------------------------------------- |
-| `NG1001` | [Argument Not Literal](errors/NG1001)                      |
-| `NG2003` | [Missing Token](errors/NG2003)                             |
-| `NG2009` | [Invalid Shadow DOM selector](errors/NG2009)               |
-| `NG3003` | [Import Cycle Detected](errors/NG3003)                     |
-| `NG6100` | [NgModule.id Set to module.id anti-pattern](errors/NG6100) |
-| `NG8001` | [Invalid Element](errors/NG8001)                           |
-| `NG8002` | [Invalid Attribute](errors/NG8002)                         |
-| `NG8003` | [Missing Reference Target](errors/NG8003)                  |
-| `NG8023` | [Multiple Components Match Same Element](errors/NG8023)    |
-| `NG8024` | [Conflicting Host Directive Binding](errors/NG8024)        |
+| Code     | Name                                                        |
+| :------- | :---------------------------------------------------------- |
+| `NG1001` | [Argument Not Literal](errors/NG1001)                       |
+| `NG2003` | [Missing Token](errors/NG2003)                              |
+| `NG2009` | [Invalid Shadow DOM selector](errors/NG2009)                |
+| `NG3003` | [Import Cycle Detected](errors/NG3003)                      |
+| `NG6100` | [NgModule.id Set to module.id anti-pattern](errors/NG6100)  |
+| `NG8001` | [Invalid Element](errors/NG8001)                            |
+| `NG8002` | [Invalid Attribute](errors/NG8002)                          |
+| `NG8003` | [Missing Reference Target](errors/NG8003)                   |
+| `NG8011` | [Control Flow Preventing Content Projection](errors/NG8011) |
+| `NG8023` | [Multiple Components Match Same Element](errors/NG8023)     |
+| `NG8024` | [Conflicting Host Directive Binding](errors/NG8024)         |

@@ -146,6 +146,26 @@ describe('nodejs EventEmitter', () => {
       expect(emitter.listeners('test1').length).toEqual(0);
     });
   });
+  it('should remove all listeners for non-word event names without a type parameter', () => {
+    zoneA.run(() => {
+      const eventNames = [
+        'tenant:notification',
+        'tenant.notification',
+        'tenant-notification',
+        'tenant\u2603notification',
+      ];
+      for (const eventName of eventNames) {
+        emitter.on(eventName, shouldNotRun);
+      }
+
+      emitter.removeAllListeners();
+
+      for (const eventName of eventNames) {
+        expect(emitter.listeners(eventName).length).toEqual(0);
+        emitter.emit(eventName);
+      }
+    });
+  });
   it('should remove once listener after emit', () => {
     zoneA.run(() => {
       emitter.once('test', expectZoneA);

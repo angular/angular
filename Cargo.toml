@@ -1,0 +1,5 @@
+[workspace]
+members = [
+    "packages/compiler-cli/preprocessor/ng-analyze",
+]
+resolver = "3"

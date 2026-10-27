@@ -7,7 +7,7 @@
  */
 
 import {ɵDebugSignalGraph as InternalDebugSignalGraph} from '@angular/core';
-import {debounceTime} from 'rxjs/operators';
+import {debounceTime} from 'rxjs';
 import {
   ComponentExplorerViewQuery,
   ComponentType,
@@ -620,7 +620,8 @@ const getTransferStateCallback = (messageBus: MessageBus<Events>) => () => {
     return;
   }
 
-  const merged: Record<string, TransferStateValue> = {};
+  // Keys can name `Object.prototype` properties like `__proto__`, so use a null-prototype map.
+  const merged: Record<string, TransferStateValue> = Object.create(null);
   let collected = false;
 
   for (const rootNode of forest) {

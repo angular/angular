@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {getSymbolUrl as sharedGetSymbolUrl} from '../../shared/linking.mjs';
+import {
+  getSymbolUrl as sharedGetSymbolUrl,
+  resolveSymbolUrl as sharedResolveSymbolUrl,
+} from '../../shared/linking.mjs';
 
 /**
  * API pages are generated each package at a time.
@@ -25,6 +28,8 @@ let symbols: Record<string, string> = {};
  */
 let symbolMembers: Map<string, Set<string>> = new Map();
 
+let symbolEntryTypes: Map<string, string> = new Map();
+
 // This is used to store the currently processed symbol (usually a class or an interface)
 let currentSymbol: string | undefined;
 export function setCurrentSymbol(symbol: string): void {
@@ -32,11 +37,11 @@ export function setCurrentSymbol(symbol: string): void {
 }
 
 /** Convert Record<string, string> to ApiEntries format */
-export function getSymbolsAsApiEntries(): Record<string, {moduleName: string}> {
-  const result: Record<string, {moduleName: string}> = {};
+export function getSymbolsAsApiEntries(): Record<string, {moduleName: string; entryType?: string}> {
+  const result: Record<string, {moduleName: string; entryType?: string}> = {};
 
   for (const symbol in symbols) {
-    result[symbol] = {moduleName: symbols[symbol]};
+    result[symbol] = {moduleName: symbols[symbol], entryType: symbolEntryTypes.get(symbol)};
   }
 
   return result;
@@ -48,6 +53,10 @@ export function getCurrentSymbol(): string | undefined {
 
 export function setSymbols(newSymbols: Record<string, string>): void {
   symbols = newSymbols;
+}
+
+export function setSymbolEntryTypes(newSymbolEntryTypes: Map<string, string>): void {
+  symbolEntryTypes = newSymbolEntryTypes;
 }
 
 /** Set the index of known members per symbol for the currently processed package. */
@@ -62,6 +71,10 @@ export function getSymbolMembers(symbol: string): Set<string> | undefined {
 
 export function getSymbolUrl(symbol: string): string | undefined {
   return sharedGetSymbolUrl(symbol, getSymbolsAsApiEntries());
+}
+
+export function resolveSymbolUrl(symbol: string): string | undefined {
+  return sharedResolveSymbolUrl(symbol, getSymbolsAsApiEntries());
 }
 
 export function unknownSymbolMessage(link: string, symbol: string): string {

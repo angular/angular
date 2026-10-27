@@ -3,7 +3,7 @@ function MyApp_Template(rf, ctx) {
     $r3$.ɵɵtext(0);
     $r3$.ɵɵdomTemplate(1, MyApp_Defer_1_Template, 1, 1)(2, MyApp_DeferPlaceholder_2_Template, 3, 0);
     $r3$.ɵɵdefer(3, 1, null, null, 2);
-    $r3$.ɵɵdeferPrefetchOnViewport(0, -1, {rootMargin: "123px", threshold: 59});
+    $r3$.ɵɵdeferPrefetchOnViewport(0, -1, {rootMargin: "123px", scrollMargin: "456px", threshold: 59});
     $r3$.ɵɵdeferOnIdle();
   }
   if (rf & 2) {

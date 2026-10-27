@@ -718,6 +718,7 @@ describe('type check blocks', () => {
     expect(tcb(TEMPLATE, DIRECTIVES)).toContain(
       'var _t1 = null! as i0.Dir; ' +
         'var _t2 = null! as (typeof _t1)["fieldA"]; ' +
+        'null! as typeof _t1.fieldA; ' +
         '_t2 = (((this).foo)); ',
     );
   });
@@ -1180,7 +1181,6 @@ describe('type check blocks', () => {
     ];
     const BASE_CONFIG: TypeCheckingConfig = {
       applyTemplateContextGuards: true,
-      checkQueries: false,
       checkTemplateBodies: true,
       checkControlFlowBodies: true,
       alwaysCheckSchemaInTemplateBodies: true,
@@ -1205,6 +1205,7 @@ describe('type check blocks', () => {
       unusedStandaloneImports: 'warning',
       allowSignalsInTwoWayBindings: true,
       allowDomEventAssertion: true,
+      checkUnknownElements: true,
     };
 
     describe('config.applyTemplateContextGuards', () => {
@@ -1969,7 +1970,7 @@ describe('type check blocks', () => {
 
     it('should generate options for `viewport` trigger', () => {
       const TEMPLATE = `
-        @defer (on viewport({rootMargin: '123px'})) {
+        @defer (on viewport({rootMargin: '123px', scrollMargin: '456px'})) {
           {{main()}}
         } @placeholder {
           <div>{{placeholder()}}</div>
@@ -1977,7 +1978,7 @@ describe('type check blocks', () => {
       `;
 
       expect(tcb(TEMPLATE)).toContain(
-        'new IntersectionObserver(null!, ({ "rootMargin": "123px" })); "" + ((this).main()); "" + ((this).placeholder());',
+        'new IntersectionObserver(null!, ({ "rootMargin": "123px", "scrollMargin": "456px" })); "" + ((this).main()); "" + ((this).placeholder());',
       );
     });
   });

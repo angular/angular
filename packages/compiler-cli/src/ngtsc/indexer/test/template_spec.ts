@@ -6,30 +6,28 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {BoundTarget} from '@angular/compiler';
-
 import {
   AbsoluteSourceSpan,
   AbstractBoundTemplate,
   AttributeIdentifier,
+  BoundTarget,
   DirectiveHostIdentifier,
   ElementIdentifier,
+  getIndexerTemplateIdentifiers as getTemplateIdentifiersAndErrors,
   IdentifierKind,
   LetDeclarationIdentifier,
   ReferenceIdentifier,
   TemplateNodeIdentifier,
   TopLevelIdentifier,
   VariableIdentifier,
-} from '..';
+} from '@angular/compiler';
 import {runInEachFileSystem} from '../../file_system/testing';
-import {ComponentMeta} from '../src/context';
-import {getTemplateIdentifiers as getTemplateIdentifiersAndErrors} from '../src/template';
+import {getBoundTemplate, getComponentDeclaration} from './util';
 
-import * as util from './util';
 import {DeclarationNode} from '../../reflection';
 
 function bind(template: string, enableSelectorless = false) {
-  return util.getBoundTemplate(template, {
+  return getBoundTemplate(template, {
     preserveWhitespaces: true,
     leadingTriviaChars: [],
     enableSelectorless,
@@ -162,7 +160,7 @@ runInEachFileSystem(() => {
             span: new AbsoluteSourceSpan(24, 27),
             target: null,
           },
-        ] as TopLevelIdentifier[]),
+        ] as TopLevelIdentifier<DeclarationNode>[]),
       );
     });
 
@@ -249,14 +247,14 @@ runInEachFileSystem(() => {
       it('should discover variables in bound attributes', () => {
         const template = '<div #div [value]="div.innerText"></div>';
         const refs = getTemplateIdentifiers(bind(template));
-        const elementReference: ElementIdentifier = {
+        const elementReference: ElementIdentifier<DeclarationNode> = {
           name: 'div',
           kind: IdentifierKind.Element,
           span: new AbsoluteSourceSpan(1, 4),
           attributes: new Set(),
           usedDirectives: new Set(),
         };
-        const reference: ReferenceIdentifier = {
+        const reference: ReferenceIdentifier<DeclarationNode> = {
           name: 'div',
           kind: IdentifierKind.Reference,
           span: new AbsoluteSourceSpan(6, 9),
@@ -297,7 +295,7 @@ runInEachFileSystem(() => {
               span: new AbsoluteSourceSpan(25, 29),
               target: null,
             },
-          ] as TopLevelIdentifier[]),
+          ] as TopLevelIdentifier<DeclarationNode>[]),
         );
       });
 
@@ -364,7 +362,7 @@ runInEachFileSystem(() => {
               span: new AbsoluteSourceSpan(18, 21),
               target: null,
             },
-          ] as TopLevelIdentifier[]),
+          ] as TopLevelIdentifier<DeclarationNode>[]),
         );
       });
 
@@ -381,7 +379,7 @@ runInEachFileSystem(() => {
               span: new AbsoluteSourceSpan(20, 23),
               target: null,
             },
-          ] as TopLevelIdentifier[]),
+          ] as TopLevelIdentifier<DeclarationNode>[]),
         );
       });
 
@@ -464,7 +462,7 @@ runInEachFileSystem(() => {
     it('should discover references', () => {
       const template = '<div #foo>';
       const refs = getTemplateIdentifiers(bind(template));
-      const elementReference: ElementIdentifier = {
+      const elementReference: ElementIdentifier<DeclarationNode> = {
         name: 'div',
         kind: IdentifierKind.Element,
         span: new AbsoluteSourceSpan(1, 4),
@@ -481,14 +479,14 @@ runInEachFileSystem(() => {
             span: new AbsoluteSourceSpan(6, 9),
             target: {node: elementReference, directive: null},
           },
-        ] as TopLevelIdentifier[]),
+        ] as TopLevelIdentifier<DeclarationNode>[]),
       );
     });
 
     it('should discover nested references', () => {
       const template = '<div><span #foo></span></div>';
       const refs = getTemplateIdentifiers(bind(template));
-      const elementReference: ElementIdentifier = {
+      const elementReference: ElementIdentifier<DeclarationNode> = {
         name: 'span',
         kind: IdentifierKind.Element,
         span: new AbsoluteSourceSpan(6, 10),
@@ -505,21 +503,21 @@ runInEachFileSystem(() => {
             span: new AbsoluteSourceSpan(12, 15),
             target: {node: elementReference, directive: null},
           },
-        ] as TopLevelIdentifier[]),
+        ] as TopLevelIdentifier<DeclarationNode>[]),
       );
     });
 
     it('should discover references used in an interpolation', () => {
       const template = `<div #foo>{{foo.className}}</div>`;
       const refs = getTemplateIdentifiers(bind(template));
-      const elementIdentifier: ElementIdentifier = {
+      const elementIdentifier: ElementIdentifier<DeclarationNode> = {
         name: 'div',
         kind: IdentifierKind.Element,
         span: new AbsoluteSourceSpan(1, 4),
         attributes: new Set(),
         usedDirectives: new Set(),
       };
-      const referenceIdentifier: ReferenceIdentifier = {
+      const referenceIdentifier: ReferenceIdentifier<DeclarationNode> = {
         name: 'foo',
         kind: IdentifierKind.Reference,
         span: new AbsoluteSourceSpan(6, 9),
@@ -537,21 +535,21 @@ runInEachFileSystem(() => {
             span: new AbsoluteSourceSpan(12, 15),
             target: referenceIdentifier,
           },
-        ] as TopLevelIdentifier[]),
+        ] as TopLevelIdentifier<DeclarationNode>[]),
       );
     });
 
     it('should discover forward references', () => {
       const template = `{{foo}}<div #foo></div>`;
       const refs = getTemplateIdentifiers(bind(template));
-      const elementIdentifier: ElementIdentifier = {
+      const elementIdentifier: ElementIdentifier<DeclarationNode> = {
         name: 'div',
         kind: IdentifierKind.Element,
         span: new AbsoluteSourceSpan(8, 11),
         attributes: new Set(),
         usedDirectives: new Set(),
       };
-      const referenceIdentifier: ReferenceIdentifier = {
+      const referenceIdentifier: ReferenceIdentifier<DeclarationNode> = {
         name: 'foo',
         kind: IdentifierKind.Reference,
         span: new AbsoluteSourceSpan(13, 16),
@@ -569,14 +567,14 @@ runInEachFileSystem(() => {
             span: new AbsoluteSourceSpan(2, 5),
             target: referenceIdentifier,
           },
-        ] as TopLevelIdentifier[]),
+        ] as TopLevelIdentifier<DeclarationNode>[]),
       );
     });
 
     it('should generate information directive targets', () => {
-      const declB = util.getComponentDeclaration('class B {}', 'B');
+      const declB = getComponentDeclaration('class B {}', 'B');
       const template = '<div #foo b-selector>';
-      const boundTemplate = util.getBoundTemplate(template, {}, [
+      const boundTemplate = getBoundTemplate(template, {}, [
         {selector: '[b-selector]', declaration: declB},
       ]);
 
@@ -586,7 +584,7 @@ runInEachFileSystem(() => {
       expect(fooRef).toBeDefined();
       expect(fooRef!.kind).toBe(IdentifierKind.Reference);
 
-      fooRef = fooRef as ReferenceIdentifier;
+      fooRef = fooRef as ReferenceIdentifier<DeclarationNode>;
       expect(fooRef.target).toBeDefined();
       expect(fooRef.target!.node.kind).toBe(IdentifierKind.Element);
       expect(fooRef.target!.node.name).toBe('div');
@@ -597,14 +595,14 @@ runInEachFileSystem(() => {
     it('should discover references used in an event binding', () => {
       const template = `<div #foo (ngSubmit)="do(foo)"></div>`;
       const refs = getTemplateIdentifiers(bind(template));
-      const elementIdentifier: ElementIdentifier = {
+      const elementIdentifier: ElementIdentifier<DeclarationNode> = {
         name: 'div',
         kind: IdentifierKind.Element,
         span: new AbsoluteSourceSpan(1, 4),
         attributes: new Set(),
         usedDirectives: new Set(),
       };
-      const referenceIdentifier: ReferenceIdentifier = {
+      const referenceIdentifier: ReferenceIdentifier<DeclarationNode> = {
         name: 'foo',
         kind: IdentifierKind.Reference,
         span: new AbsoluteSourceSpan(6, 9),
@@ -622,7 +620,7 @@ runInEachFileSystem(() => {
             span: new AbsoluteSourceSpan(25, 28),
             target: referenceIdentifier,
           },
-        ] as TopLevelIdentifier[]),
+        ] as TopLevelIdentifier<DeclarationNode>[]),
       );
     });
   });
@@ -640,7 +638,7 @@ runInEachFileSystem(() => {
             kind: IdentifierKind.Variable,
             span: new AbsoluteSourceSpan(17, 20),
           },
-        ] as TopLevelIdentifier[]),
+        ] as TopLevelIdentifier<DeclarationNode>[]),
       );
     });
 
@@ -656,7 +654,7 @@ runInEachFileSystem(() => {
             kind: IdentifierKind.Variable,
             span: new AbsoluteSourceSpan(17, 20),
           },
-        ] as TopLevelIdentifier[]),
+        ] as TopLevelIdentifier<DeclarationNode>[]),
       );
     });
 
@@ -672,7 +670,7 @@ runInEachFileSystem(() => {
             kind: IdentifierKind.Variable,
             span: new AbsoluteSourceSpan(23, 26),
           },
-        ] as TopLevelIdentifier[]),
+        ] as TopLevelIdentifier<DeclarationNode>[]),
       );
     });
 
@@ -707,7 +705,7 @@ runInEachFileSystem(() => {
             span: new AbsoluteSourceSpan(53, 54),
             target: iIdentifier,
           },
-        ] as TopLevelIdentifier[]),
+        ] as TopLevelIdentifier<DeclarationNode>[]),
       );
     });
 
@@ -730,7 +728,7 @@ runInEachFileSystem(() => {
             span: new AbsoluteSourceSpan(42, 45),
             target: variableIdentifier,
           },
-        ] as TopLevelIdentifier[]),
+        ] as TopLevelIdentifier<DeclarationNode>[]),
       );
     });
   });
@@ -775,7 +773,7 @@ runInEachFileSystem(() => {
       expect(refs.size).toBe(1);
 
       const [ref] = Array.from(refs);
-      expect(ref as ElementIdentifier).toEqual({
+      expect(ref as ElementIdentifier<DeclarationNode>).toEqual({
         name: 'test-selector',
         kind: IdentifierKind.Element,
         span: new AbsoluteSourceSpan(1, 14),
@@ -790,7 +788,7 @@ runInEachFileSystem(() => {
       expect(refs.size).toBe(1);
 
       const [ref] = Array.from(refs);
-      expect(ref as ElementIdentifier).toEqual({
+      expect(ref as ElementIdentifier<DeclarationNode>).toEqual({
         name: 'img',
         kind: IdentifierKind.Element,
         span: new AbsoluteSourceSpan(1, 4),
@@ -805,7 +803,7 @@ runInEachFileSystem(() => {
       expect(refs.size).toBe(1);
 
       const [ref] = Array.from(refs);
-      expect(ref as ElementIdentifier).toEqual({
+      expect(ref as ElementIdentifier<DeclarationNode>).toEqual({
         name: 'test-selector',
         kind: IdentifierKind.Element,
         span: new AbsoluteSourceSpan(1, 14),
@@ -820,7 +818,7 @@ runInEachFileSystem(() => {
       expect(refs.size).toBe(1);
 
       const [ref] = Array.from(refs);
-      expect(ref as ElementIdentifier).toEqual({
+      expect(ref as ElementIdentifier<DeclarationNode>).toEqual({
         name: 'test-selector',
         kind: IdentifierKind.Element,
         span: new AbsoluteSourceSpan(1, 14),
@@ -848,7 +846,7 @@ runInEachFileSystem(() => {
       const refs = getTemplateIdentifiers(bind(template));
 
       const [ref] = Array.from(refs);
-      const attrs = (ref as ElementIdentifier).attributes;
+      const attrs = (ref as ElementIdentifier<DeclarationNode>).attributes;
       expect(attrs).toEqual(
         new Set<AttributeIdentifier>([
           {
@@ -866,11 +864,11 @@ runInEachFileSystem(() => {
     });
 
     it('should generate information about used directives', () => {
-      const declA = util.getComponentDeclaration('class A {}', 'A');
-      const declB = util.getComponentDeclaration('class B {}', 'B');
-      const declC = util.getComponentDeclaration('class C {}', 'C');
+      const declA = getComponentDeclaration('class A {}', 'A');
+      const declB = getComponentDeclaration('class B {}', 'B');
+      const declC = getComponentDeclaration('class C {}', 'C');
       const template = '<a-selector b-selector></a-selector>';
-      const boundTemplate = util.getBoundTemplate(template, {}, [
+      const boundTemplate = getBoundTemplate(template, {}, [
         {selector: 'a-selector', declaration: declA},
         {selector: '[b-selector]', declaration: declB},
         {selector: ':not(never-selector)', declaration: declC},
@@ -878,7 +876,7 @@ runInEachFileSystem(() => {
 
       const refs = getTemplateIdentifiers(boundTemplate);
       const [ref] = Array.from(refs);
-      const usedDirectives = (ref as ElementIdentifier).usedDirectives;
+      const usedDirectives = (ref as ElementIdentifier<DeclarationNode>).usedDirectives;
       expect(usedDirectives).toEqual(
         new Set([
           {
@@ -914,7 +912,7 @@ runInEachFileSystem(() => {
       expect(refs.size).toBe(1);
 
       const [ref] = Array.from(refs);
-      expect(ref as TemplateNodeIdentifier).toEqual({
+      expect(ref as TemplateNodeIdentifier<DeclarationNode>).toEqual({
         name: 'ng-template',
         kind: IdentifierKind.Template,
         span: new AbsoluteSourceSpan(1, 12),
@@ -942,7 +940,7 @@ runInEachFileSystem(() => {
       const refs = getTemplateIdentifiers(bind(template));
 
       const [ref] = Array.from(refs);
-      const attrs = (ref as TemplateNodeIdentifier).attributes;
+      const attrs = (ref as TemplateNodeIdentifier<DeclarationNode>).attributes;
       expect(attrs).toEqual(
         new Set<AttributeIdentifier>([
           {
@@ -960,17 +958,17 @@ runInEachFileSystem(() => {
     });
 
     it('should generate information about used directives', () => {
-      const declB = util.getComponentDeclaration('class B {}', 'B');
-      const declC = util.getComponentDeclaration('class C {}', 'C');
+      const declB = getComponentDeclaration('class B {}', 'B');
+      const declC = getComponentDeclaration('class C {}', 'C');
       const template = '<ng-template b-selector>';
-      const boundTemplate = util.getBoundTemplate(template, {}, [
+      const boundTemplate = getBoundTemplate(template, {}, [
         {selector: '[b-selector]', declaration: declB},
         {selector: ':not(never-selector)', declaration: declC},
       ]);
 
       const refs = getTemplateIdentifiers(boundTemplate);
       const [ref] = Array.from(refs);
-      const usedDirectives = (ref as ElementIdentifier).usedDirectives;
+      const usedDirectives = (ref as ElementIdentifier<DeclarationNode>).usedDirectives;
       expect(usedDirectives).toEqual(
         new Set([
           {
@@ -1009,11 +1007,11 @@ runInEachFileSystem(() => {
 
   describe('selectorless', () => {
     it('should generate information about selectorless component nodes', () => {
-      const compDecl = util.getComponentDeclaration('class Comp {}', 'Comp');
-      const fooDecl = util.getComponentDeclaration('class Foo {}', 'Foo');
-      const barDecl = util.getComponentDeclaration('class Bar {}', 'Bar');
+      const compDecl = getComponentDeclaration('class Comp {}', 'Comp');
+      const fooDecl = getComponentDeclaration('class Foo {}', 'Foo');
+      const barDecl = getComponentDeclaration('class Bar {}', 'Bar');
       const template = '<Comp @Foo @Bar([input]="value")/>';
-      const boundTemplate = util.getBoundTemplate(
+      const boundTemplate = getBoundTemplate(
         template,
         {
           enableSelectorless: true,
@@ -1073,10 +1071,10 @@ runInEachFileSystem(() => {
     });
 
     it('should generate information about selectorless directives used on a plain element', () => {
-      const fooDecl = util.getComponentDeclaration('class Foo {}', 'Foo');
-      const barDecl = util.getComponentDeclaration('class Bar {}', 'Bar');
+      const fooDecl = getComponentDeclaration('class Foo {}', 'Foo');
+      const barDecl = getComponentDeclaration('class Bar {}', 'Bar');
       const template = '<div @Foo @Bar([input]="value")></div>';
-      const boundTemplate = util.getBoundTemplate(
+      const boundTemplate = getBoundTemplate(
         template,
         {
           enableSelectorless: true,
@@ -1130,10 +1128,10 @@ runInEachFileSystem(() => {
     });
 
     it('should discover references to selectorless components and directives', () => {
-      const compDecl = util.getComponentDeclaration('class Comp {}', 'Comp');
-      const fooDecl = util.getComponentDeclaration('class Foo {}', 'Foo');
+      const compDecl = getComponentDeclaration('class Comp {}', 'Comp');
+      const fooDecl = getComponentDeclaration('class Foo {}', 'Foo');
       const template = '<Comp #comp @Foo(#foo)/>';
-      const boundTemplate = util.getBoundTemplate(
+      const boundTemplate = getBoundTemplate(
         template,
         {
           enableSelectorless: true,
@@ -1146,8 +1144,8 @@ runInEachFileSystem(() => {
 
       const refs = Array.from(getTemplateIdentifiers(boundTemplate));
       const [compRef, fooRef] = refs as [
-        DirectiveHostIdentifier,
-        DirectiveHostIdentifier,
+        DirectiveHostIdentifier<DeclarationNode>,
+        DirectiveHostIdentifier<DeclarationNode>,
         ...unknown[],
       ];
 
@@ -1203,9 +1201,9 @@ runInEachFileSystem(() => {
           myInput: string;
         }
       `;
-      const compDecl = util.getComponentDeclaration(comp, 'MyComp');
+      const compDecl = getComponentDeclaration(comp, 'MyComp');
       const template = '<my-comp [myInput]="foo"></my-comp>';
-      const boundTemplate = util.getBoundTemplate(template, {}, [
+      const boundTemplate = getBoundTemplate(template, {}, [
         {
           selector: 'my-comp',
           declaration: compDecl,
@@ -1230,9 +1228,9 @@ runInEachFileSystem(() => {
           myOutput: any;
         }
       `;
-      const compDecl = util.getComponentDeclaration(comp, 'MyComp');
+      const compDecl = getComponentDeclaration(comp, 'MyComp');
       const template = '<my-comp (myOutput)="handle()"></my-comp>';
-      const boundTemplate = util.getBoundTemplate(template, {}, [
+      const boundTemplate = getBoundTemplate(template, {}, [
         {
           selector: 'my-comp',
           declaration: compDecl,
@@ -1257,9 +1255,9 @@ runInEachFileSystem(() => {
           myInput: string;
         }
       `;
-      const compDecl = util.getComponentDeclaration(comp, 'MyComp');
+      const compDecl = getComponentDeclaration(comp, 'MyComp');
       const template = '<my-comp myInput="staticVal"></my-comp>';
-      const boundTemplate = util.getBoundTemplate(template, {}, [
+      const boundTemplate = getBoundTemplate(template, {}, [
         {
           selector: 'my-comp',
           declaration: compDecl,
@@ -1285,9 +1283,9 @@ runInEachFileSystem(() => {
           dirOutput: any;
         }
       `;
-      const dirDecl = util.getComponentDeclaration(dir, 'MyDir');
+      const dirDecl = getComponentDeclaration(dir, 'MyDir');
       const template = '<div myDir [dirInput]="foo" (dirOutput)="handle()"></div>';
-      const boundTemplate = util.getBoundTemplate(template, {}, [
+      const boundTemplate = getBoundTemplate(template, {}, [
         {
           selector: '[myDir]',
           declaration: dirDecl,
@@ -1318,7 +1316,7 @@ runInEachFileSystem(() => {
     it('should not discover input or output identifiers for native element bindings and events', () => {
       const template =
         '<button [disabled]="isDisabled" (click)="handleClick()" title="nativeTitle"></button>';
-      const boundTemplate = util.getBoundTemplate(template);
+      const boundTemplate = getBoundTemplate(template);
       const refs = Array.from(getTemplateIdentifiers(boundTemplate));
 
       const inputOrOutputRefs = refs.filter(
@@ -1333,9 +1331,9 @@ runInEachFileSystem(() => {
           transform(v: any) { return v; }
         }
       `;
-      const pipeDecl = util.getComponentDeclaration(pipe, 'MyPipe');
+      const pipeDecl = getComponentDeclaration(pipe, 'MyPipe');
       const template = '{{ foo | myPipe }}';
-      const boundTemplate = util.getBoundTemplate(
+      const boundTemplate = getBoundTemplate(
         template,
         {},
         [],
@@ -1360,7 +1358,7 @@ runInEachFileSystem(() => {
 
     it('should handle unresolvable pipes gracefully', () => {
       const template = '{{ foo | unknownPipe }}';
-      const boundTemplate = util.getBoundTemplate(template);
+      const boundTemplate = getBoundTemplate(template);
       const refs = Array.from(getTemplateIdentifiers(boundTemplate));
 
       expect(refs).toContain({

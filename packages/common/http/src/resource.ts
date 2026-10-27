@@ -213,7 +213,6 @@ export interface HttpResourceFn {
  * such as `httpResource.text`.
  *
  * @publicApi 22.0
- * @initializerApiFunction
  */
 export const httpResource: HttpResourceFn = (() => {
   const jsonFn = makeHttpResourceFn<unknown>('json') as HttpResourceFn;
@@ -314,7 +313,7 @@ function normalizeRequest(
     {
       headers,
       params,
-      reportProgress: unwrappedRequest.reportProgress,
+      reportDownloadProgress: unwrappedRequest.reportProgress,
       withCredentials: unwrappedRequest.withCredentials,
       keepalive: unwrappedRequest.keepalive,
       cache: unwrappedRequest.cache as RequestCache,

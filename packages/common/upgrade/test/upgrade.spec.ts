@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject, TestBed} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {UpgradeModule} from '@angular/upgrade/static';
 import {CommonModule} from '../../index';
 
@@ -88,10 +88,11 @@ describe('LocationProvider', () => {
     upgradeModule.$injector = {get: injectorFactory()};
   });
 
-  it('should instantiate LocationProvider', inject([$locationShim], ($location: $locationShim) => {
+  it('should instantiate LocationProvider', () => {
+    const $location = TestBed.inject($locationShim);
     expect($location).toBeDefined();
     expect($location instanceof $locationShim).toBe(true);
-  }));
+  });
 });
 
 describe('LocationHtml5Url', function () {
@@ -114,9 +115,9 @@ describe('LocationHtml5Url', function () {
     upgradeModule.$injector = {get: injectorFactory()};
   });
 
-  beforeEach(inject([$locationShim], (loc: $locationShim) => {
-    $location = loc;
-  }));
+  beforeEach(() => {
+    $location = TestBed.inject($locationShim);
+  });
 
   it('should set the URL', () => {
     $location.url('');
@@ -194,9 +195,9 @@ describe('NewUrl', function () {
     upgradeModule.$injector = {get: injectorFactory()};
   });
 
-  beforeEach(inject([$locationShim], (loc: $locationShim) => {
-    $location = loc;
-  }));
+  beforeEach(() => {
+    $location = TestBed.inject($locationShim);
+  });
 
   // Sets the default most of these tests rely on
   function setupUrl(url = '/path/b?search=a&b=c&d#hash') {
@@ -492,9 +493,9 @@ describe('New URL Parsing with appBaseHref', () => {
     upgradeModule.$injector = {get: injectorFactory()};
   });
 
-  beforeEach(inject([$locationShim], (loc: $locationShim) => {
-    $location = loc;
-  }));
+  beforeEach(() => {
+    $location = TestBed.inject($locationShim);
+  });
 
   it('should prepend path with basePath', function () {
     $location.$$parse('http://server/base/abc?a');
@@ -523,9 +524,9 @@ describe('New URL Parsing', () => {
     upgradeModule.$injector = {get: injectorFactory()};
   });
 
-  beforeEach(inject([$locationShim], (loc: $locationShim) => {
-    $location = loc;
-  }));
+  beforeEach(() => {
+    $location = TestBed.inject($locationShim);
+  });
 
   it('should parse new url', function () {
     $location.$$parse('http://host.com/base');
@@ -568,9 +569,9 @@ describe('New URL Parsing', () => {
   describe('state', function () {
     let mock$rootScope: $rootScopeMock;
 
-    beforeEach(inject([UpgradeModule], (ngUpgrade: UpgradeModule) => {
-      mock$rootScope = ngUpgrade.$injector.get('$rootScope');
-    }));
+    beforeEach(() => {
+      mock$rootScope = TestBed.inject(UpgradeModule).$injector.get('$rootScope');
+    });
 
     it('should set $$state and return itself', function () {
       expect(($location as any).$$state).toEqual(null);
@@ -651,9 +652,9 @@ describe('$location.onChange()', () => {
     mock$rootScope = upgradeModule.$injector.get('$rootScope');
   });
 
-  beforeEach(inject([$locationShim], (loc: $locationShim) => {
-    $location = loc;
-  }));
+  beforeEach(() => {
+    $location = TestBed.inject($locationShim);
+  });
 
   it('should have onChange method', () => {
     expect(typeof $location.onChange).toBe('function');

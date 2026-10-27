@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {APP_ID as APP_ID_TOKEN, PLATFORM_ID} from '../src/core';
+import {APP_ID as APP_ID_TOKEN, Injector, PLATFORM_ID} from '../src/core';
 import {TestBed} from '../testing';
 
 import {DOCUMENT} from '../src/document';
 import {makeStateKey, TransferState} from '../src/transfer_state';
+import {getTransferState} from '../src/render3/util/transfer_state_utils';
 
 function removeScriptTag(doc: Document, id: string) {
   let node = doc.getElementById(id);
@@ -234,5 +235,15 @@ describe('TransferState', () => {
       cached: true,
     });
     expect(transferState.get(makeStateKey<string>('constructor'), null)).toBe('state');
+  });
+
+  it('exposes keys that name object prototype properties through getTransferState', () => {
+    addScriptTag(doc, APP_ID, '{"__proto__":{"cached":true},"constructor":"state"}');
+    const state = getTransferState(TestBed.inject(Injector));
+
+    expect(Object.keys(state)).toEqual(['__proto__', 'constructor']);
+    expect(state['__proto__']).toEqual({cached: true});
+    expect(state['constructor']).toBe('state');
+    expect(Object.getPrototypeOf(state)).toBeNull();
   });
 });

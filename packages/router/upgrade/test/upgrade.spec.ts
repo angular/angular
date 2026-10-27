@@ -8,7 +8,7 @@
 
 import {Location} from '@angular/common';
 import {$locationShim, UrlCodec} from '@angular/common/upgrade';
-import {fakeAsync, flush, TestBed} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {Router, RouterModule} from '../../index';
 import {setUpLocationSync} from '../../upgrade';
 import {UpgradeModule} from '@angular/upgrade/static';
@@ -169,7 +169,7 @@ describe('setUpLocationSync', () => {
     }
   });
 
-  it('should not duplicate navigations triggered by Angular router', fakeAsync(() => {
+  it('should not duplicate navigations triggered by Angular router', async () => {
     spyOn(TestBed.inject(UrlCodec), 'parse').and.returnValue({
       pathname: '',
       href: '',
@@ -186,20 +186,19 @@ describe('setUpLocationSync', () => {
     // Inject location shim so its urlChangeListener subscribes
     TestBed.inject($locationShim);
 
-    router.navigateByUrl('/1');
     location.normalize.and.returnValue('/1');
-    flush();
+    await router.navigateByUrl('/1');
     expect(router.navigateByUrl).toHaveBeenCalledTimes(1);
     expect($rootScope.$broadcast.calls.argsFor(0)[0]).toEqual('$locationChangeStart');
     expect($rootScope.$broadcast.calls.argsFor(1)[0]).toEqual('$locationChangeSuccess');
     $rootScope.$broadcast.calls.reset();
     router.navigateByUrl.calls.reset();
 
-    location.go('/2');
     location.normalize.and.returnValue('/2');
-    flush();
+    location.go('/2');
     expect($rootScope.$broadcast.calls.argsFor(0)[0]).toEqual('$locationChangeStart');
     expect($rootScope.$broadcast.calls.argsFor(1)[0]).toEqual('$locationChangeSuccess');
     expect(router.navigateByUrl).toHaveBeenCalledTimes(1);
-  }));
+    await router.navigateByUrl.calls.mostRecent().returnValue;
+  });
 });

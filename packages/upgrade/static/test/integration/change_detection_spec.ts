@@ -19,9 +19,9 @@ import {
   provideZoneChangeDetection,
   SimpleChanges,
 } from '@angular/core';
-import {waitForAsync} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {timeout} from '@angular/private/testing';
 import {downgradeComponent, UpgradeComponent, UpgradeModule} from '../../../static';
 
 import * as angular from '../../../src/common/src/angular1';
@@ -34,7 +34,7 @@ withEachNg1Version(() => {
     beforeEach(() => destroyPlatform());
     afterEach(() => destroyPlatform());
 
-    it('should not break if a $digest is already in progress', waitForAsync(() => {
+    it('should not break if a $digest is already in progress', async () => {
       const element = html('<my-app></my-app>');
 
       @Component({
@@ -58,45 +58,41 @@ withEachNg1Version(() => {
         .module_('ng1', [])
         .directive('myApp', downgradeComponent({component: AppComponent}));
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
-        const $rootScope = upgrade.$injector.get('$rootScope') as angular.IRootScopeService;
-        const ngZone: NgZone = upgrade.ngZone;
+      const upgrade = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      const $rootScope = upgrade.$injector.get('$rootScope') as angular.IRootScopeService;
+      const ngZone: NgZone = upgrade.ngZone;
 
-        // Wrap in a setTimeout to ensure all bootstrap operations have completed.
-        setTimeout(
-          // Run inside the Angular zone, so that operations such as emitting
-          // `onMicrotaskEmpty` do not trigger entering/existing the zone (and thus another
-          // `$digest`). This also closer simulates what would happen in a real app.
-          () =>
-            ngZone.run(() => {
-              const digestSpy = spyOn($rootScope, '$digest').and.callThrough();
+      // Wrap in a setTimeout to ensure all bootstrap operations have completed.
+      await timeout();
+      // Run inside the Angular zone, so that operations such as emitting
+      // `onMicrotaskEmpty` do not trigger entering/existing the zone (and thus another
+      // `$digest`). This also closer simulates what would happen in a real app.
+      ngZone.run(() => {
+        const digestSpy = spyOn($rootScope, '$digest').and.callThrough();
 
-              // Step 1: Ensure `$digest` is run on `onMicrotaskEmpty`.
-              ngZone.onMicrotaskEmpty.emit(null);
-              expect(digestSpy).toHaveBeenCalledTimes(1);
+        // Step 1: Ensure `$digest` is run on `onMicrotaskEmpty`.
+        ngZone.onMicrotaskEmpty.emit(null);
+        expect(digestSpy).toHaveBeenCalledTimes(1);
 
-              digestSpy.calls.reset();
+        digestSpy.calls.reset();
 
-              // Step 2: Cause the issue.
-              $rootScope.$apply(() => ngZone.onMicrotaskEmpty.emit(null));
+        // Step 2: Cause the issue.
+        $rootScope.$apply(() => ngZone.onMicrotaskEmpty.emit(null));
 
-              // With the fix, `$digest` will only be run once (for `$apply()`).
-              // Without the fix, `$digest()` would have been run an extra time
-              // (`onMicrotaskEmpty`).
-              expect(digestSpy).toHaveBeenCalledTimes(1);
+        // With the fix, `$digest` will only be run once (for `$apply()`).
+        // Without the fix, `$digest()` would have been run an extra time
+        // (`onMicrotaskEmpty`).
+        expect(digestSpy).toHaveBeenCalledTimes(1);
 
-              digestSpy.calls.reset();
+        digestSpy.calls.reset();
 
-              // Step 3: Ensure that `$digest()` is still executed on `onMicrotaskEmpty`.
-              ngZone.onMicrotaskEmpty.emit(null);
-              expect(digestSpy).toHaveBeenCalledTimes(1);
-            }),
-          0,
-        );
+        // Step 3: Ensure that `$digest()` is still executed on `onMicrotaskEmpty`.
+        ngZone.onMicrotaskEmpty.emit(null);
+        expect(digestSpy).toHaveBeenCalledTimes(1);
       });
-    }));
+    });
 
-    it('should interleave scope and component expressions', waitForAsync(() => {
+    it('should interleave scope and component expressions', async () => {
       const log: string[] = [];
       const l = (value: string) => {
         log.push(value);
@@ -152,15 +148,14 @@ withEachNg1Version(() => {
         });
 
       const element = html("<div>{{reset(); l('1A');}}<ng2>{{l('1B')}}</ng2>{{l('1C')}}</div>");
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
-        expect(document.body.textContent).toEqual('1A;2A;ng1a;2B;ng1b;2C;1C;');
-        expect(log).toEqual(['1A', '1C', '2A', '2B', '2C', 'ng1a', 'ng1b']);
-      });
-    }));
+      await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      expect(document.body.textContent).toEqual('1A;2A;ng1a;2B;ng1b;2C;1C;');
+      expect(log).toEqual(['1A', '1C', '2A', '2B', '2C', 'ng1a', 'ng1b']);
+    });
 
-    it('should propagate changes to a downgraded component inside the ngZone', waitForAsync(() => {
+    it('should propagate changes to a downgraded component inside the ngZone', async () => {
       const element = html('<my-app></my-app>');
-      let appComponent: AppComponent;
+      let appComponent!: AppComponent;
 
       @Component({
         selector: 'my-app',
@@ -215,10 +210,10 @@ withEachNg1Version(() => {
         .module_('ng1', [])
         .directive('myApp', downgradeComponent({component: AppComponent}));
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
-        appComponent.value = 5;
-      });
-    }));
+      await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      appComponent.value = 5;
+      await timeout();
+    });
 
     // This test demonstrates https://github.com/angular/angular/issues/6385
     // which was invalidly fixed by https://github.com/angular/angular/pull/6386

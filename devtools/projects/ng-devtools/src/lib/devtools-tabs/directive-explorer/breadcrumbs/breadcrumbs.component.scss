@@ -1,0 +1,27 @@
+@use '../../../../styles/typography';
+
+:host {
+  display: block;
+
+  ng-horizontal-scroller {
+    --horizontal-scroller-height: 22px;
+  }
+
+  .breadcrumb {
+    @extend %monospaced;
+    background-color: transparent;
+    color: var(--color-tree-node-element-name);
+    padding-inline: 0.5rem;
+    border: none;
+    height: 100%;
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--color-tree-node-hovered);
+    }
+
+    &.selected {
+      background-color: var(--color-tree-node-highlighted);
+    }
+  }
+}

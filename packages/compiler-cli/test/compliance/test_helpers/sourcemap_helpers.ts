@@ -8,6 +8,7 @@
 import {AbsoluteFsPath, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 import {ConsoleLogger, LogLevel} from '../../../src/ngtsc/logging';
 import {SourceFileLoader} from '../../../src/ngtsc/sourcemaps';
+import {isNgpTestMode, normalizeNgpSourceMapSegment} from '../../../src/ngtsc/testing';
 
 /**
  * Check the source-mappings of the generated source file against mappings stored in the expected
@@ -179,17 +180,21 @@ function getMappedSegments(
  * @returns An error message if a matching segment cannot be found, or null if it can.
  */
 function checkMapping(mappings: SegmentMapping[], expected: SegmentMapping): string | null {
+  // NGP's printer emits code slightly differently from ngtsc's TypeScript emit; only the generated
+  // side is relaxed, the source side must match exactly.
+  const normalize = isNgpTestMode() ? normalizeNgpSourceMapSegment : (code: string) => code;
+  const expectedGenerated = normalize(expected.generated);
   if (
     mappings.some(
       (m) =>
-        m.generated === expected.generated &&
+        normalize(m.generated) === expectedGenerated &&
         m.source === expected.source &&
         m.sourceUrl === expected.sourceUrl,
     )
   ) {
     return null;
   }
-  const matchingGenerated = mappings.filter((m) => m.generated === expected.generated);
+  const matchingGenerated = mappings.filter((m) => normalize(m.generated) === expectedGenerated);
   const matchingSource = mappings.filter((m) => m.source === expected.source);
 
   const message = [

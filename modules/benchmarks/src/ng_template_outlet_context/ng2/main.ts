@@ -12,7 +12,6 @@ import {bootstrapApplication} from '@angular/platform-browser';
 
 @Component({
   selector: 'deep',
-  standalone: true,
   imports: [NgIf],
   template: `<deep *ngIf="depth > 1" [depth]="depth - 1" /> Level: {{ depth }}`,
 })
@@ -22,7 +21,6 @@ class Deep {
 
 @Component({
   selector: 'app-component',
-  standalone: true,
   imports: [NgTemplateOutlet, Deep],
   template: `
     <button id="swapOutFull" (click)="swapOutFull()">Swap out full context</button>

@@ -84,6 +84,11 @@ Angular supports the following operators from standard JavaScript.
 | Spread in object literals     | `{...obj, foo: 'bar'}`                         |
 | Spread in array literals      | `[...arr, 1, 2, 3]`                            |
 | Rest in function calls        | `fn(...args)`                                  |
+| Arrow function                | `items.filter((i) => i.active)`                |
+
+NOTE: Assignment and increment/decrement operators are only valid in [event listener statements](#event-listener-statements). Using them in a binding or interpolation is a compile error, unless they are inside an arrow function.
+
+Arrow functions must have an expression body. Pipes cannot be used inside an arrow function, but you can pass an arrow function as an argument to a pipe.
 
 Angular expressions additionally also support the following non-standard operators:
 
@@ -128,12 +133,12 @@ When referring to component class members, `this` is always implied. However, if
 
 Generally speaking, declarations are not supported in Angular expressions. This includes, but is not limited to:
 
-| Declarations    | Example(s)                                  |
-| --------------- | ------------------------------------------- |
-| Variables       | `let label = 'abc'`, `const item = 'apple'` |
-| Functions       | `function myCustomFunction() { }`           |
-| Arrow Functions | `() => { }`                                 |
-| Classes         | `class Rectangle { }`                       |
+| Declarations                      | Example(s)                                  |
+| --------------------------------- | ------------------------------------------- |
+| Variables                         | `let label = 'abc'`, `const item = 'apple'` |
+| Functions                         | `function myCustomFunction() { }`           |
+| Arrow functions with block bodies | `() => { }`                                 |
+| Classes                           | `class Rectangle { }`                       |
 
 ## Event listener statements
 

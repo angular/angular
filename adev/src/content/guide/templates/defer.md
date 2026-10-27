@@ -168,8 +168,9 @@ You can customize the `idle` trigger by providing your own `IdleService` impleme
 ```ts
 @Service()
 class CustomIdleService implements IdleService {
-  requestOnIdle(callback: (deadline?: IdleDeadline) => void, options?: IdleRequestOptions) {
+  requestOnIdle(callback: (deadline?: IdleDeadline) => void, options?: IdleRequestOptions): number {
     // Custom idle scheduling logic can be implemented here.
+    return requestIdleCallback(callback, options);
   }
 
   cancelOnIdle(id: number) {
@@ -211,12 +212,14 @@ If you want to customize the options of the `IntersectionObserver`, the `viewpor
 <div #greeting>Hello!</div>
 
 <!-- With options and a trigger -->
-@defer (on viewport({trigger: greeting, rootMargin: '100px', threshold: 0.5})) {
+@defer (
+  on viewport({trigger: greeting, rootMargin: '100px', scrollMargin: '50px', threshold: 0.5})
+) {
   <greetings-cmp />
 }
 
 <!-- With options and an implied trigger -->
-@defer (on viewport({rootMargin: '100px', threshold: 0.5})) {
+@defer (on viewport({rootMargin: '100px', scrollMargin: '50px', threshold: 0.5})) {
   <greetings-cmp />
 } @placeholder {
   <div>Implied trigger</div>
@@ -392,6 +395,7 @@ export {OtherComponent} from './other.component';
 ```
 
 ```typescript {header: "parent.component.ts"}
+import {Component} from '@angular/core';
 import {HeavyComponent} from './index'; // pulls in OtherComponent too
 
 @Component({

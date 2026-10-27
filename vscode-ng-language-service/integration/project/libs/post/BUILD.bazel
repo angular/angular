@@ -1,0 +1,20 @@
+load("@bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
+load("@rules_angular//src/architect:ng_library.bzl", "ng_library")
+
+package(default_visibility = ["//vscode-ng-language-service/integration:__subpackages__"])
+
+ng_library(
+    name = "post",
+    ng_config = "//vscode-ng-language-service/integration/project:ng_config",
+    node_modules = "//vscode-ng-language-service/integration/project:node_modules",
+)
+
+copy_to_bin(
+    name = "srcs",
+    srcs = glob(
+        ["**"],
+        exclude = [
+            "BUILD.bazel",
+        ],
+    ),
+)

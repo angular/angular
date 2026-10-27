@@ -109,3 +109,9 @@ export function ngDebugSignalPropertiesInspectionApiIsSupported(): boolean {
     })
   );
 }
+
+/** Checks whether Signal Watch API is supported within window.ng */
+export function ngDebugSignalWatchApiIsSupported(): boolean {
+  const ng = ngDebugClient();
+  return ngDebugApiIsSupported(ng, 'toggleWatchSignal');
+}

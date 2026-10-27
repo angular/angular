@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {NgIf} from '@angular/common';
-import {ChangeDetectionStrategy} from '@angular/compiler';
-import {Component, Renderer2, ViewEncapsulation} from '@angular/core';
+import {Component, Renderer2, signal, ViewEncapsulation} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {isNode} from '@angular/private/testing';
 import {expect} from '@angular/private/testing/matchers';
@@ -235,23 +234,19 @@ describe('DefaultDomRendererV2', () => {
     it('works for components without encapsulation emulated', async () => {
       const fixture = TestBed.createComponent(SomeAppForCleanUp);
       const compInstance = fixture.componentInstance;
-      compInstance.showEmulatedComponents = true;
-
-      fixture.changeDetectorRef.markForCheck();
+      compInstance.showEmulatedComponents.set(true);
       await fixture.whenStable();
       // verify style is in DOM
       expect(await styleCount(fixture, '.emulated')).toBe(1);
 
       // Remove a single instance of the component.
-      compInstance.componentOneInstanceHidden = true;
-      fixture.changeDetectorRef.markForCheck();
+      compInstance.componentOneInstanceHidden.set(true);
       await fixture.whenStable();
       // Verify style is still in DOM
       expect(await styleCount(fixture, '.emulated')).toBe(1);
 
       // Hide all instances of the component
-      compInstance.componentTwoInstanceHidden = true;
-      fixture.changeDetectorRef.markForCheck();
+      compInstance.componentTwoInstanceHidden.set(true);
       await fixture.whenStable();
 
       // Verify style is still in DOM
@@ -261,23 +256,19 @@ describe('DefaultDomRendererV2', () => {
     it('works for components without encapsulation none', async () => {
       const fixture = TestBed.createComponent(SomeAppForCleanUp);
       const compInstance = fixture.componentInstance;
-      compInstance.showEmulatedComponents = false;
-
-      fixture.changeDetectorRef.markForCheck();
+      compInstance.showEmulatedComponents.set(false);
       await fixture.whenStable();
       // verify style is in DOM
       expect(await styleCount(fixture, '.none')).toBe(1);
 
       // Remove a single instance of the component.
-      compInstance.componentOneInstanceHidden = true;
-      fixture.changeDetectorRef.markForCheck();
+      compInstance.componentOneInstanceHidden.set(true);
       await fixture.whenStable();
       // Verify style is still in DOM
       expect(await styleCount(fixture, '.none')).toBe(1);
 
       // Hide all instances of the component
-      compInstance.componentTwoInstanceHidden = true;
-      fixture.changeDetectorRef.markForCheck();
+      compInstance.componentTwoInstanceHidden.set(true);
       await fixture.whenStable();
 
       // Verify style is still in DOM
@@ -289,22 +280,19 @@ describe('DefaultDomRendererV2', () => {
     it('works for components without encapsulation emulated', async () => {
       const fixture = TestBed.createComponent(SomeAppForCleanUp);
       const compInstance = fixture.componentInstance;
-      compInstance.showEmulatedComponents = true;
-      fixture.changeDetectorRef.markForCheck();
+      compInstance.showEmulatedComponents.set(true);
       await fixture.whenStable();
       // verify style is in DOM
       expect(await styleCount(fixture, '.emulated')).toBe(1);
 
       // Remove a single instance of the component.
-      compInstance.componentOneInstanceHidden = true;
-      fixture.changeDetectorRef.markForCheck();
+      compInstance.componentOneInstanceHidden.set(true);
       await fixture.whenStable();
       // Verify style is still in DOM
       expect(await styleCount(fixture, '.emulated')).toBe(1);
 
       // Hide all instances of the component
-      compInstance.componentTwoInstanceHidden = true;
-      fixture.changeDetectorRef.markForCheck();
+      compInstance.componentTwoInstanceHidden.set(true);
       await fixture.whenStable();
 
       // Verify style is not in DOM
@@ -314,23 +302,19 @@ describe('DefaultDomRendererV2', () => {
     it('works for components without encapsulation none', async () => {
       const fixture = TestBed.createComponent(SomeAppForCleanUp);
       const compInstance = fixture.componentInstance;
-      compInstance.showEmulatedComponents = false;
-
-      fixture.changeDetectorRef.markForCheck();
+      compInstance.showEmulatedComponents.set(false);
       await fixture.whenStable();
       // verify style is in DOM
       expect(await styleCount(fixture, '.none')).toBe(1);
 
       // Remove a single instance of the component.
-      compInstance.componentOneInstanceHidden = true;
-      fixture.changeDetectorRef.markForCheck();
+      compInstance.componentOneInstanceHidden.set(true);
       await fixture.whenStable();
       // Verify style is still in DOM
       expect(await styleCount(fixture, '.none')).toBe(1);
 
       // Hide all instances of the component
-      compInstance.componentTwoInstanceHidden = true;
-      fixture.changeDetectorRef.markForCheck();
+      compInstance.componentTwoInstanceHidden.set(true);
       await fixture.whenStable();
 
       // Verify style is not in DOM
@@ -374,7 +358,6 @@ describe('DefaultDomRendererV2', () => {
     describe('with provided namespace', () => {
       it('should replace `%NS%` in styles for `Emulated` encapsulation', async () => {
         @Component({
-          selector: 'cmp-namespace-emulated',
           template: '',
           styles: `
             :host {
@@ -397,7 +380,6 @@ describe('DefaultDomRendererV2', () => {
 
       it('should replace `%NS%` in styles for `None` encapsulation', async () => {
         @Component({
-          selector: 'cmp-namespace-none',
           template: '',
           styles: `
             :host {
@@ -420,7 +402,6 @@ describe('DefaultDomRendererV2', () => {
 
       it('should replace `%NS%` in styles for `ShadowDom` encapsulation', async () => {
         @Component({
-          selector: 'cmp-namespace-shadow',
           template: '',
           styles: `
             :host {
@@ -451,7 +432,6 @@ describe('DefaultDomRendererV2', () => {
     describe('with default (empty) namespace', () => {
       it('should replace `%NS%` in styles for `Emulated` encapsulation', async () => {
         @Component({
-          selector: 'cmp-namespace-emulated',
           template: '',
           styles: `
             :host {
@@ -474,7 +454,6 @@ describe('DefaultDomRendererV2', () => {
 
       it('should replace `%NS%` in styles for `None` encapsulation', async () => {
         @Component({
-          selector: 'cmp-namespace-none',
           template: '',
           styles: `
             :host {
@@ -497,7 +476,6 @@ describe('DefaultDomRendererV2', () => {
 
       it('should replace `%NS%` in styles for `ShadowDom` encapsulation', async () => {
         @Component({
-          selector: 'cmp-namespace-shadow',
           template: '',
           styles: `
             :host {
@@ -528,7 +506,6 @@ describe('DefaultDomRendererV2', () => {
     describe('style property bindings namespacing', () => {
       it('should namespace style property bindings starting with `--`', async () => {
         @Component({
-          selector: 'cmp-style-prop-namespace',
           template: `<div [style.--foo]="'blue'"></div>`,
           standalone: true,
         })
@@ -549,7 +526,6 @@ describe('DefaultDomRendererV2', () => {
       // TODO: Enforce this in v23.
       xit('should throw an error if style property binding starts with `--global-` with a single hyphen', () => {
         @Component({
-          selector: 'cmp-style-prop-error',
           template: `<div [style.--global-foo]="'blue'"></div>`,
           standalone: true,
         })
@@ -565,7 +541,6 @@ describe('DefaultDomRendererV2', () => {
 
       it('should namespace styles set via Renderer2.setStyle/removeStyle', () => {
         @Component({
-          selector: 'cmp-renderer-set-style',
           template: '',
           standalone: true,
         })
@@ -762,48 +737,40 @@ class CmpEncapsulationShadow {}
 class CmpEncapsulationIsolatedShadowWithChildren {}
 
 @Component({
-  selector: 'some-app',
   template: `
     <cmp-shadow></cmp-shadow>
     <cmp-emulated></cmp-emulated>
     <cmp-none></cmp-none>
   `,
   imports: [CmpEncapsulationShadow, CmpEncapsulationEmulated, CmpEncapsulationNone],
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class SomeApp {}
 
 @Component({
-  selector: 'shadow-parent-app-with-children',
   template: ` <cmp-shadow-children></cmp-shadow-children> `,
   imports: [CmpEncapsulationIsolatedShadowWithChildren],
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class IsolatedShadowComponentParentApp {}
 
 @Component({
-  selector: 'test-cmp',
   template: '',
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class TestCmp {
   constructor(public renderer: Renderer2) {}
 }
 
 @Component({
-  selector: 'some-app',
   template: `
-    <cmp-emulated *ngIf="!componentOneInstanceHidden && showEmulatedComponents"></cmp-emulated>
-    <cmp-emulated *ngIf="!componentTwoInstanceHidden && showEmulatedComponents"></cmp-emulated>
+    <cmp-emulated *ngIf="!componentOneInstanceHidden() && showEmulatedComponents()"></cmp-emulated>
+    <cmp-emulated *ngIf="!componentTwoInstanceHidden() && showEmulatedComponents()"></cmp-emulated>
 
-    <cmp-none *ngIf="!componentOneInstanceHidden && !showEmulatedComponents"></cmp-none>
-    <cmp-none *ngIf="!componentTwoInstanceHidden && !showEmulatedComponents"></cmp-none>
+    <cmp-none *ngIf="!componentOneInstanceHidden() && !showEmulatedComponents()"></cmp-none>
+    <cmp-none *ngIf="!componentTwoInstanceHidden() && !showEmulatedComponents()"></cmp-none>
   `,
   imports: [NgIf, CmpEncapsulationEmulated, CmpEncapsulationNone],
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class SomeAppForCleanUp {
-  componentOneInstanceHidden = false;
-  componentTwoInstanceHidden = false;
-  showEmulatedComponents = true;
+  componentOneInstanceHidden = signal(false);
+  componentTwoInstanceHidden = signal(false);
+  showEmulatedComponents = signal(true);
 }

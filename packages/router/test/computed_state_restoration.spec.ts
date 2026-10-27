@@ -528,7 +528,6 @@ async function createRoot<T>(router: Router, type: Type<T>): Promise<ComponentFi
 }
 
 @Component({
-  selector: 'simple-cmp',
   template: `simple`,
 })
 class SimpleCmp {}
@@ -537,14 +536,12 @@ class SimpleCmp {}
 class ModuleWithSimpleCmpAsRoute {}
 
 @Component({
-  selector: 'root-cmp',
   template: `<router-outlet></router-outlet>`,
   imports: [RouterOutlet],
 })
 class RootCmp {}
 
 @Component({
-  selector: 'throwing-cmp',
   template: '',
 })
 class ThrowingCmp {

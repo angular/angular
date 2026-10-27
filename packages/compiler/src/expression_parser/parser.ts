@@ -467,6 +467,11 @@ export class Parser {
       const char = input.charCodeAt(i);
       const nextChar = input.charCodeAt(i + 1);
 
+      if (char === chars.$BACKSLASH) {
+        i++;
+        continue;
+      }
+
       if (char === chars.$SLASH && nextChar == chars.$SLASH && outerQuote == null) return i;
 
       if (outerQuote === char) {
@@ -1693,8 +1698,26 @@ class _ParseAST {
           this.error('Template literal interpolation cannot be empty');
         }
         expressions.push(expression);
+        // Expect the closing brace before decrementing `rbracesExpected` so that, if the brace is
+        // missing, error recovery stops at this interpolation's brace instead of skipping the rest
+        // of the literal.
+        this.expectCharacter(chars.$RBRACE);
         this.rbracesExpected--;
+      } else if (token.isError()) {
+        // The lexer produces an error token if the template literal isn't terminated.
+        // Report it directly and advance. `this.error` would skip over the same token again and
+        // report it twice.
+        this.errors.push(
+          getParseError(
+            token.toString()!,
+            this.input,
+            this.getErrorLocationText(this.index),
+            this.parseSourceSpan,
+          ),
+        );
+        this.advance();
       } else {
+        // Skip over any leftover tokens of an interpolation that was already reported as invalid.
         this.advance();
       }
     }

@@ -27,10 +27,10 @@ See more details in the section [below](#vscode-extension).
 **Before**
 
 ```angular-ts
-import {Component, ContentChild} from '@angular/core';
+import {Component, ContentChild, ElementRef} from '@angular/core';
 
 @Component({
-  template: `Has ref: {{ someRef ? 'Yes' : 'No' }}`,
+  template: `Has ref: {{ ref ? 'Yes' : 'No' }}`,
 })
 export class MyComponent {
   @ContentChild('someRef') ref: ElementRef | undefined = undefined;
@@ -46,10 +46,10 @@ export class MyComponent {
 **After**
 
 ```angular-ts
-import {Component, contentChild} from '@angular/core';
+import {Component, contentChild, ElementRef} from '@angular/core';
 
 @Component({
-  template: `Has ref: {{ someRef() ? 'Yes' : 'No' }}`,
+  template: `Has ref: {{ ref() ? 'Yes' : 'No' }}`,
 })
 export class MyComponent {
   readonly ref = contentChild<ElementRef>('someRef');

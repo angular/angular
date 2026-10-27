@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {FileSystem} from '../../../src/ngtsc/file_system';
+import {shouldSkipComplianceInNgp} from '../../../src/ngtsc/file_system/testing';
 
 import {checkErrors, checkNoUnexpectedErrors} from './check_errors';
 import {checkExpectations} from './check_expectations';
@@ -66,7 +67,8 @@ export function runTests(
       }
 
       describe(`[${test.relativePath}]/${counter++}`, () => {
-        const itFn = test.focusTest ? fit : test.excludeTest ? xit : it;
+        const skipInNgp = shouldSkipComplianceInNgp(type, test.relativePath, test.description);
+        const itFn = test.focusTest ? fit : test.excludeTest || skipInNgp ? xit : it;
         itFn(test.description, () => {
           if (type === 'linked compile' && test.compilerOptions?.['target'] === 'ES5') {
             throw new Error(

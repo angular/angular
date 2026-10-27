@@ -435,6 +435,14 @@ describe('R3 template transform', () => {
       ]);
     });
 
+    it('should parse bound classes with dots in the name', () => {
+      expectFromHtml('<div [class.px-3.5]="v" [class.a.b.c]="w"></div>').toEqual([
+        ['Element', 'div'],
+        ['BoundAttribute', BindingType.Class, 'px-3.5', 'v'],
+        ['BoundAttribute', BindingType.Class, 'a.b.c', 'w'],
+      ]);
+    });
+
     it('should parse mixed case bound styles', () => {
       expectFromHtml('<div [style.someStyle]="v"></div>').toEqual([
         ['Element', 'div'],
@@ -454,6 +462,15 @@ describe('R3 template transform', () => {
         ['BoundAttribute', BindingType.Class, 'data-active:text-green-300/80', 'expr2'],
         ['BoundAttribute', BindingType.Class, `data-[size='large']:p-8`, 'expr3'],
       ]);
+    });
+
+    it('should not attach i18n metadata for bound properties named after Object.prototype members', () => {
+      const {nodes} = parse('<div [valueOf]="v" [constructor]="c" *toString="s"></div>');
+      const template = nodes[0] as t.Template;
+      expect(template.templateAttrs[0].i18n).toBeUndefined();
+      const element = template.children[0] as t.Element;
+      expect(element.inputs[0].i18n).toBeUndefined();
+      expect(element.inputs[1].i18n).toBeUndefined();
     });
   });
 
@@ -966,6 +983,17 @@ describe('R3 template transform', () => {
       expectFromHtml('<script></script>a').toEqual([['Text', 'a']]);
     });
 
+    it('should ignore <script> elements inherited into custom namespaces', () => {
+      expectFromHtml(
+        '<xhtml:div xmlns:xhtml="http://www.w3.org/1999/xhtml"><script [textContent]="evil"></script><span>safe</span></xhtml:div>',
+      ).toEqual([
+        ['Element', ':xhtml:div'],
+        ['TextAttribute', ':xmlns:xhtml', 'http://www.w3.org/1999/xhtml'],
+        ['Element', ':xhtml:span'],
+        ['Text', 'safe'],
+      ]);
+    });
+
     it('should ignore <style> elements', () => {
       expectFromHtml('<style></style>a').toEqual([['Text', 'a']]);
     });
@@ -1033,6 +1061,17 @@ describe('R3 template transform', () => {
         ['Element', 'div'],
         ['TextAttribute', 'ngNonBindable', ''],
         ['Text', 'a'],
+      ]);
+    });
+
+    it('should ignore custom-namespaced <script> elements inside of elements with ngNonBindable', () => {
+      expectFromHtml(
+        '<foo:div ngNonBindable><script>evil</script><span>safe</span></foo:div>',
+      ).toEqual([
+        ['Element', ':foo:div'],
+        ['TextAttribute', 'ngNonBindable', ''],
+        ['Element', ':foo:span'],
+        ['Text', 'safe'],
       ]);
     });
 
@@ -1423,10 +1462,14 @@ describe('R3 template transform', () => {
 
     it('should parse a viewport trigger with an options parameter', () => {
       expectFromHtml(
-        '@defer (on viewport({trigger: foo, rootMargin: "123px", threshold: [1, 2, 3]})){hello}',
+        '@defer (on viewport({trigger: foo, rootMargin: "123px", scrollMargin: "456px", threshold: [1, 2, 3]})){hello}',
       ).toEqual([
         ['DeferredBlock'],
-        ['ViewportDeferredTrigger', 'foo', '{rootMargin: "123px", threshold: [1, 2, 3]}'],
+        [
+          'ViewportDeferredTrigger',
+          'foo',
+          '{rootMargin: "123px", scrollMargin: "456px", threshold: [1, 2, 3]}',
+        ],
         ['Text', 'hello'],
       ]);
     });

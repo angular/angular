@@ -7,7 +7,6 @@
  */
 
 import {
-  ChangeDetectionStrategy,
   Component,
   Directive,
   forwardRef,
@@ -62,18 +61,17 @@ describe('ControlValueAccessor', () => {
     template: `
       <input
         [value]="value"
-        [disabled]="disabled"
+        [disabled]="disabled()"
         (blur)="onBlur()"
         (input)="onInput($event.target.value)"
       />
     `,
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: CustomControl, multi: true}],
-    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class CustomControl implements ControlValueAccessor {
     value = '';
     writeCount = 0;
-    disabled = false;
+    disabled = signal(false);
 
     private onChangeFn?: (value: string) => void;
     private onTouchedFn?: () => void;
@@ -92,7 +90,7 @@ describe('ControlValueAccessor', () => {
     }
 
     setDisabledState(disabled: boolean): void {
-      this.disabled = disabled;
+      this.disabled.set(disabled);
     }
 
     onBlur() {
@@ -502,7 +500,6 @@ describe('ControlValueAccessor', () => {
     }
 
     @Component({
-      selector: 'app-root',
       imports: [CustomControl, FormField],
       template: `<signal-custom-control [formField]="f" />`,
     })
@@ -521,7 +518,6 @@ describe('ControlValueAccessor', () => {
 
   it('should pick custom CVA over default CVA when both are present', () => {
     @Component({
-      selector: 'app-root',
       // Import ReactiveFormsModule to provide the non-standalone DefaultValueAccessor directive.
       // The selector for DefaultValueAccessor matches `[ngDefaultControl]`.
       imports: [FormField, CustomControl, ReactiveFormsModule],

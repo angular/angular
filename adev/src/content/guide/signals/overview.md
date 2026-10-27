@@ -131,7 +131,7 @@ Angular automatically enters a reactive context when:
 - Executing an `effect`, `afterRenderEffect` callback.
 - Evaluating a `computed` signal.
 - Evaluating a `linkedSignal`.
-- Evaluating a `resource`'s params or loader function.
+- Evaluating a `resource`'s params function.
 - Rendering a component template (including bindings in the [host property](guide/components/host-elements#binding-to-the-host-element)).
 
 During these operations, Angular creates a _live_ connection. If a tracked signal changes, Angular will _eventually_ re-run the consumer.
@@ -235,6 +235,7 @@ When you read a signal within an `OnPush` component's template, Angular tracks t
 When creating a signal, you can optionally provide an equality function, which will be used to check whether the new value is actually different than the previous one.
 
 ```ts
+import {signal} from '@angular/core';
 import isEqual from 'lodash/isEqual';
 
 const data = signal(['test'], {equal: isEqual});
@@ -275,3 +276,8 @@ isWritableSignal(doubled); // false
 ## Using signals with RxJS
 
 See [RxJS interop with Angular signals](ecosystem/rxjs-interop) for details on interoperability between signals and RxJS.
+
+## Debugging signals
+
+Angular DevTools can visualize the signal graph of a component or directive, showing how its signals, computeds, effects, and other reactive nodes depend on each other.
+See [Debug the signal graph](tools/devtools/signals) to learn how to open, read, and inspect the graph.

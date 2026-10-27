@@ -18,23 +18,23 @@ import {Events, MessageBus} from '../../../protocol';
   imports: [DevToolsComponent],
 })
 export class AppComponent implements OnInit, OnDestroy {
-  private _cd = inject(ChangeDetectorRef);
-  private readonly _messageBus = inject<MessageBus<Events>>(MessageBus);
-  private readonly _deepLinkInstanceId = inject(DEEP_LINK_INSTANCE_ID);
+  private cd = inject(ChangeDetectorRef);
+  private readonly messageBus = inject<MessageBus<Events>>(MessageBus);
+  private readonly deepLinkInstanceId = inject(DEEP_LINK_INSTANCE_ID);
   private onProfilingStartedListener = () => {
-    this._messageBus.emit('setConfig', [{performanceTrack: true}]);
+    this.messageBus.emit('setConfig', [{performanceTrack: true}]);
   };
   private onProfilingStoppedListener = () => {
-    this._messageBus.emit('setConfig', [{performanceTrack: false}]);
+    this.messageBus.emit('setConfig', [{performanceTrack: false}]);
   };
 
-  private readonly _deepLinkListener = (event: MessageEvent) => {
+  private readonly deepLinkListener = (event: MessageEvent) => {
     if (event.origin !== window.location.origin) return;
     if (
       event.data?.type === 'angular-devtools-deep-link' &&
       typeof event.data.instanceId === 'number'
     ) {
-      this._deepLinkInstanceId.set(event.data.instanceId);
+      this.deepLinkInstanceId.set(event.data.instanceId);
     }
   };
 
@@ -47,9 +47,9 @@ export class AppComponent implements OnInit, OnDestroy {
     chromeDevToolsPerformance?.onProfilingStopped?.addListener?.(this.onProfilingStoppedListener);
 
     // Listen for deep link messages from the devtools page (devtools.ts)
-    window.addEventListener('message', this._deepLinkListener);
+    window.addEventListener('message', this.deepLinkListener);
 
-    this._cd.detectChanges();
+    this.cd.detectChanges();
   }
   ngOnDestroy(): void {
     const chromeDevToolsPerformance = chrome.devtools.performance;
@@ -59,6 +59,6 @@ export class AppComponent implements OnInit, OnDestroy {
     chromeDevToolsPerformance?.onProfilingStopped?.removeListener?.(
       this.onProfilingStoppedListener,
     );
-    window.removeEventListener('message', this._deepLinkListener);
+    window.removeEventListener('message', this.deepLinkListener);
   }
 }

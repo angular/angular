@@ -8,25 +8,25 @@
 
 import {NodeInjector} from '../../../core/src/render3/di';
 import {getDirectives} from '../../../core/src/render3/util/discovery_utils';
+import type {DebugSignalGraphEdge, DebugSignalGraphNode} from '../../primitives/devtools';
 import {
+  ApplicationRef,
   Component,
   Directive,
+  Injectable,
+  Injector,
+  afterRenderEffect,
   computed,
   effect,
   inject,
-  Injectable,
-  signal,
-  Injector,
-  ApplicationRef,
-  afterRenderEffect,
   linkedSignal,
+  signal,
 } from '../../src/core';
 import {
   getFrameworkDIDebugData,
   setupFrameworkInjectorProfiler,
 } from '../../src/render3/debug/framework_injector_profiler';
 import {setInjectorProfiler} from '../../src/render3/debug/injector_profiler';
-import type {DebugSignalGraphEdge, DebugSignalGraphNode} from '../../primitives/devtools';
 import {getSignalGraph, toggleWatchSignal} from '../../src/render3/util/signal_debug';
 import {TestBed} from '../../testing';
 
@@ -60,7 +60,7 @@ describe('getSignalGraph', () => {
   }
 
   it('should return the signal graph for a component with signals', async () => {
-    @Component({selector: 'component-with-signals', template: `{{ primitiveSignal() }}`})
+    @Component({template: `{{ primitiveSignal() }}`})
     class WithSignals {
       primitiveSignal = signal(123, {debugName: 'primitiveSignal'});
     }
@@ -88,7 +88,7 @@ describe('getSignalGraph', () => {
   });
 
   it('should return the signal graph for a component with effects', async () => {
-    @Component({selector: 'component-with-effect', template: ``})
+    @Component({template: ``})
     class WithEffect {
       stateFromEffect = 0;
       primitiveSignal = signal(123, {debugName: 'primitiveSignal'});
@@ -133,7 +133,7 @@ describe('getSignalGraph', () => {
   });
 
   it('should return the signal graph for a component with a computed', async () => {
-    @Component({selector: 'component-with-computed', template: `{{ computedSignal() }}`})
+    @Component({template: `{{ computedSignal() }}`})
     class WithComputed {
       primitiveSignal = signal(123, {debugName: 'primitiveSignal'});
       primitiveSignal2 = signal(456, {debugName: 'primitiveSignal2'});
@@ -193,7 +193,7 @@ describe('getSignalGraph', () => {
   });
 
   it('should return the signal graph for a component with unused reactive nodes', async () => {
-    @Component({selector: 'component-with-unused-signal', template: ``})
+    @Component({template: ``})
     class WithUnusedReactiveNodes {
       primitiveSignal = signal(123, {debugName: 'primitiveSignal'});
       computedSignal = computed(() => this.primitiveSignal() * this.primitiveSignal(), {
@@ -213,7 +213,7 @@ describe('getSignalGraph', () => {
   });
 
   it('should return the signal graph for a component with no component effect signal dependencies', async () => {
-    @Component({selector: 'component-with-zero-effect', template: ``})
+    @Component({template: ``})
     class WithNoEffectSignalDependencies {
       primitiveSignal = signal(123, {debugName: 'primitiveSignal'});
       primitiveSignalEffect = effect(() => {}, {debugName: 'primitiveSignalEffect'});
@@ -231,7 +231,7 @@ describe('getSignalGraph', () => {
   });
 
   it('should return the signal graph for a component with no signal dependencies in the template or component effects', async () => {
-    @Component({selector: 'component-with-no-effect-dependencies', template: ``})
+    @Component({template: ``})
     class WithNoEffectDependencies {}
     const fixture = TestBed.createComponent(WithNoEffectDependencies);
 
@@ -254,7 +254,7 @@ describe('getSignalGraph', () => {
 
     @Component({
       providers: [ExternalService],
-      selector: 'component-with-external-service',
+
       template: `{{ externalService.oneTwoThree() }}`,
     })
     class WithExternalService {
@@ -319,7 +319,6 @@ describe('getSignalGraph', () => {
     }
 
     @Component({
-      selector: 'component-with-directive',
       template: `<div id="element-with-directive" myDirective></div>`,
       imports: [MyDirective],
     })
@@ -385,7 +384,6 @@ describe('getSignalGraph', () => {
     }
 
     @Component({
-      selector: 'component-with-multiple-directives',
       template: `<div id="element-with-directives" myDirectiveA myDirectiveB></div>`,
       imports: [MyDirectiveA, MyDirectiveB],
     })
@@ -501,7 +499,7 @@ describe('getSignalGraph', () => {
     it('should expose the computation of a computed', async () => {
       const computation = () => 1;
 
-      @Component({selector: 'with-computed', template: `{{ computedSignal() }}`})
+      @Component({template: `{{ computedSignal() }}`})
       class WithComputed {
         computedSignal = computed(computation, {debugName: 'computedSignal'});
       }
@@ -519,7 +517,7 @@ describe('getSignalGraph', () => {
     it('should expose the computation of a linkedSignal', async () => {
       const computation = (source: number) => source * 2;
 
-      @Component({selector: 'with-linked-signal', template: `{{ linked() }}`})
+      @Component({template: `{{ linked() }}`})
       class WithLinkedSignal {
         source = signal(1, {debugName: 'source'});
         linked = linkedSignal({
@@ -543,7 +541,7 @@ describe('getSignalGraph', () => {
     it('should expose the callback of an effect', async () => {
       const effectFn = () => {};
 
-      @Component({selector: 'with-effect', template: ``})
+      @Component({template: ``})
       class WithEffect {
         constructor() {
           effect(effectFn, {debugName: 'myEffect'});
@@ -563,7 +561,7 @@ describe('getSignalGraph', () => {
     it('should expose the user callback of an afterRenderEffect phase', async () => {
       const phaseFn = () => {};
 
-      @Component({selector: 'with-after-render-effect', template: ``})
+      @Component({template: ``})
       class WithAfterRenderEffect {
         constructor() {
           afterRenderEffect(phaseFn);
@@ -584,7 +582,7 @@ describe('getSignalGraph', () => {
       const earlyReadFn = () => {};
       const writeFn = () => {};
 
-      @Component({selector: 'with-after-render-effect-object', template: ``})
+      @Component({template: ``})
       class WithAfterRenderEffectObject {
         constructor() {
           afterRenderEffect({earlyRead: earlyReadFn, write: writeFn});
@@ -662,7 +660,7 @@ describe('toggleWatchSignal', () => {
   });
 
   it('should dispose the watch when toggled off', async () => {
-    @Component({selector: 'component-with-disposed-watch', template: `{{ mySignal() }}`})
+    @Component({template: `{{ mySignal() }}`})
     class App {
       mySignal = signal('initial');
     }

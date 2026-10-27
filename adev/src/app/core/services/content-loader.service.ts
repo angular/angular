@@ -9,8 +9,7 @@
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {Service, inject} from '@angular/core';
 import {DocContent, DocsContentLoader} from '@angular/docs';
-import {firstValueFrom} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {firstValueFrom, map} from 'rxjs';
 
 @Service({autoProvided: false})
 export class ContentLoader implements DocsContentLoader {

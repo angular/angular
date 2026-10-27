@@ -71,7 +71,7 @@
     {
       "name": "exclude",
       "type": "array",
-      "description": "Specifies glob patterns of files to exclude from testing, relative to the project root."
+      "description": "Specifies glob patterns of files to exclude from testing, relative to the project source root."
     },
     {
       "name": "filter",
@@ -95,7 +95,7 @@
         "**/*.spec.ts",
         "**/*.test.ts"
       ],
-      "description": "Specifies glob patterns of files to include for testing, relative to the project root. This option also has special handling for directory paths (includes all test files within) and file paths (includes the corresponding test file if one exists)."
+      "description": "Specifies glob patterns of files to include for testing, relative to the project source root. This option also has special handling for directory paths (includes all test files within) and file paths (includes the corresponding test file if one exists)."
     },
     {
       "name": "isolate",
@@ -111,7 +111,12 @@
     {
       "name": "output-file",
       "type": "string",
-      "description": "Specifies a file path for the test report, applying only to the first reporter. To configure output files for multiple reporters, use the tuple format `['reporter-name', { outputFile: '...' }]` within the `reporters` option. When not provided, output is written to the console."
+      "description": "Specifies a file path for the test report. This path is used by every configured reporter that writes to a file. To write a separate file for each reporter, use the tuple format `['reporter-name', { outputFile: '...' }]` within the `reporters` option. When not provided, output is written to the console."
+    },
+    {
+      "name": "polyfills",
+      "type": "array",
+      "description": "A list of polyfills to include in the build. Can be a full path for a file, relative to the current workspace or module specifier. Example: 'zone.js'. If not specified, polyfills will be inherited from the build target."
     },
     {
       "name": "progress",
@@ -121,7 +126,7 @@
     {
       "name": "project",
       "type": "string",
-      "description": "The name of the project to build. Can be an application or a library.",
+      "description": "The name of the project to run the command for. Can be an application or a library.",
       "positional": 0
     },
     {

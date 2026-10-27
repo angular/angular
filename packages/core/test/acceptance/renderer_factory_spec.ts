@@ -33,10 +33,10 @@ import {
   provideZoneChangeDetection,
   Renderer2,
   RendererFactory2,
+  signal,
   RendererStyleFlags2,
   RendererType2,
   ViewEncapsulation,
-  ChangeDetectionStrategy,
 } from '../../src/core';
 import {RElement} from '../../src/render3/interfaces/renderer_dom';
 import {NoopNgZone} from '../../src/zone/ng_zone';
@@ -54,9 +54,6 @@ describe('renderer factory lifecycle', () => {
   @Component({
     selector: 'some-component',
     template: `foo`,
-    standalone: false,
-
-    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class SomeComponent implements DoCheck {
     ngOnInit() {
@@ -68,11 +65,7 @@ describe('renderer factory lifecycle', () => {
   }
 
   @Component({
-    selector: 'some-component-with-error',
     template: `With error`,
-    standalone: false,
-
-    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class SomeComponentWhichThrows {
     ngOnInit() {
@@ -81,11 +74,9 @@ describe('renderer factory lifecycle', () => {
   }
 
   @Component({
-    selector: 'lol',
     template: `<some-component></some-component>`,
-    standalone: false,
 
-    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [SomeComponent],
   })
   class TestComponent implements DoCheck {
     ngOnInit() {
@@ -125,7 +116,6 @@ describe('renderer factory lifecycle', () => {
     logs = [];
 
     TestBed.configureTestingModule({
-      declarations: [SomeComponent, SomeComponentWhichThrows, TestComponent],
       providers: [
         {
           provide: RendererFactory2,
@@ -167,8 +157,6 @@ describe('renderer factory lifecycle', () => {
       styles: ['.some-css-class { color: red; }'],
       template: '...',
       encapsulation: ViewEncapsulation.ShadowDom,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class StyledComp {}
 
@@ -186,8 +174,6 @@ describe('renderer factory lifecycle', () => {
       @Component({
         template: '',
         animations: [animA, animB],
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AnimComp {}
 
@@ -204,8 +190,6 @@ describe('renderer factory lifecycle', () => {
       @Component({
         template: '...',
         animations: [],
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AnimComp {}
 
@@ -219,8 +203,6 @@ describe('renderer factory lifecycle', () => {
       @Component({
         template: '<div @fooAnimation></div>',
         animations: [],
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AnimComp {}
 
@@ -251,14 +233,11 @@ describe('renderer factory lifecycle', () => {
 
   it('should not invoke renderer destroy method for embedded views', () => {
     @Component({
-      selector: 'comp',
       imports: [CommonModule],
       template: `
         <div>Root view</div>
         <div *ngIf="visible">Child view</div>
       `,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       visible = true;
@@ -315,7 +294,6 @@ describe('animation renderer factory', () => {
     MockAnimationDriver.log = [];
 
     TestBed.configureTestingModule({
-      declarations: [SomeComponentWithAnimation, SomeComponent],
       providers: [
         {
           provide: RendererFactory2,
@@ -327,10 +305,9 @@ describe('animation renderer factory', () => {
   });
 
   @Component({
-    selector: 'some-component',
     template: `
       <div
-        [@myAnimation]="exp"
+        [@myAnimation]="exp()"
         (@myAnimation.start)="callback($event)"
         (@myAnimation.done)="callback($event)"
       >
@@ -354,12 +331,9 @@ describe('animation renderer factory', () => {
         options: {},
       },
     ],
-    standalone: false,
-
-    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class SomeComponentWithAnimation {
-    exp: string | undefined;
+    exp = signal<string | undefined>(undefined);
 
     callback(event: AnimationEvent) {
       eventLogs.push(`${event.fromState ? event.fromState : event.toState} - ${event.phaseName}`);
@@ -367,11 +341,7 @@ describe('animation renderer factory', () => {
   }
 
   @Component({
-    selector: 'some-component',
     template: 'foo',
-    standalone: false,
-
-    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class SomeComponent {}
 
@@ -391,8 +361,7 @@ describe('animation renderer factory', () => {
         /<div class="ng-tns-c\d+-0 ng-trigger ng-trigger-myAnimation">\s+foo\s+<\/div>/,
       );
 
-      fixture.componentInstance.exp = 'on';
-      fixture.changeDetectorRef.markForCheck();
+      fixture.componentInstance.exp.set('on');
       fixture.detectChanges();
 
       const [player] = getAnimationLog();
@@ -448,11 +417,7 @@ function getAnimationRendererFactory2(document: Document): RendererFactory2 {
 
 describe('custom renderer', () => {
   @Component({
-    selector: 'some-component',
     template: `<div><span></span></div>`,
-    standalone: false,
-
-    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class SomeComponent {}
 
@@ -477,7 +442,6 @@ describe('custom renderer', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [SomeComponent],
       providers: [
         {
           provide: RendererFactory2,
@@ -498,47 +462,37 @@ describe('custom renderer', () => {
 
 describe('Renderer2 destruction hooks', () => {
   @Component({
-    selector: 'some-component',
     template: `
-      <span *ngIf="isContentVisible">A</span>
-      <span *ngIf="isContentVisible">B</span>
-      <span *ngIf="isContentVisible">C</span>
+      <span *ngIf="isContentVisible()">A</span>
+      <span *ngIf="isContentVisible()">B</span>
+      <span *ngIf="isContentVisible()">C</span>
     `,
-    standalone: false,
-
-    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [CommonModule],
   })
   class SimpleApp {
-    isContentVisible = true;
+    isContentVisible = signal(true);
   }
 
   @Component({
     selector: 'basic-comp',
     template: 'comp(<ng-content></ng-content>)',
-    standalone: false,
-
-    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class BasicComponent {}
 
   @Component({
-    selector: 'some-component',
     template: `
-      <basic-comp *ngIf="isContentVisible">A</basic-comp>
-      <basic-comp *ngIf="isContentVisible">B</basic-comp>
-      <basic-comp *ngIf="isContentVisible">C</basic-comp>
+      <basic-comp *ngIf="isContentVisible()">A</basic-comp>
+      <basic-comp *ngIf="isContentVisible()">B</basic-comp>
+      <basic-comp *ngIf="isContentVisible()">C</basic-comp>
     `,
-    standalone: false,
-
-    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [CommonModule, BasicComponent],
   })
   class AppWithComponents {
-    isContentVisible = true;
+    isContentVisible = signal(true);
   }
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [SimpleApp, AppWithComponents, BasicComponent],
       providers: [
         {
           provide: RendererFactory2,
@@ -555,8 +509,7 @@ describe('Renderer2 destruction hooks', () => {
 
     expect(fixture.nativeElement.textContent).toBe('ABC');
 
-    fixture.componentInstance.isContentVisible = false;
-    fixture.changeDetectorRef.markForCheck();
+    fixture.componentInstance.isContentVisible.set(false);
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('');
@@ -568,8 +521,7 @@ describe('Renderer2 destruction hooks', () => {
 
     expect(fixture.nativeElement.textContent).toBe('comp(A)comp(B)comp(C)');
 
-    fixture.componentInstance.isContentVisible = false;
-    fixture.changeDetectorRef.markForCheck();
+    fixture.componentInstance.isContentVisible.set(false);
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('');

@@ -48,7 +48,6 @@ describe('RouterPreloader', () => {
   useAutoTick();
   @Component({
     template: '',
-    standalone: false,
   })
   class LazyLoadedCmp {}
 
@@ -75,7 +74,6 @@ describe('RouterPreloader', () => {
 
   describe('configurations with canLoad guard', () => {
     @NgModule({
-      declarations: [LazyLoadedCmp],
       providers: [
         {
           provide: ROUTES,
@@ -138,7 +136,6 @@ describe('RouterPreloader', () => {
       const testModule = TestBed.inject(NgModuleRef) as any;
       const events: Array<RouteConfigLoadStart | RouteConfigLoadEnd> = [];
       @NgModule({
-        declarations: [LazyLoadedCmp],
         imports: [RouterModule.forChild([{path: 'LoadedModule2', component: LazyLoadedCmp}])],
       })
       class LoadedModule2 {}
@@ -311,9 +308,7 @@ describe('RouterPreloader', () => {
       return new DelayedPreLoad();
     };
 
-    @NgModule({
-      declarations: [LazyLoadedCmp],
-    })
+    @NgModule({})
     class SharedModule {}
 
     @NgModule({
@@ -610,7 +605,6 @@ describe('RouterPreloader', () => {
 
   describe('should ignore errors', () => {
     @NgModule({
-      declarations: [LazyLoadedCmp],
       imports: [RouterModule.forChild([{path: 'LoadedModule1', component: LazyLoadedCmp}])],
     })
     class LoadedModule {}
@@ -647,7 +641,6 @@ describe('RouterPreloader', () => {
   describe('should copy loaded configs', () => {
     const configs = [{path: 'LoadedModule1', component: LazyLoadedCmp}];
     @NgModule({
-      declarations: [LazyLoadedCmp],
       providers: [{provide: ROUTES, multi: true, useValue: configs}],
     })
     class LoadedModule {}
@@ -681,7 +674,6 @@ describe('RouterPreloader', () => {
 
   describe("should work with lazy loaded modules that don't provide RouterModule.forChild()", () => {
     @NgModule({
-      declarations: [LazyLoadedCmp],
       providers: [
         {
           provide: ROUTES,

@@ -76,6 +76,10 @@ export class AppOperationsMock extends ApplicationOperations {
     return [];
   }
 
+  override onSignalBreakpointsCleared(callback: () => void): () => void {
+    return () => {};
+  }
+
   override viewSourceFromRouter(name: string, type: string, target: Frame): void {
     throw new Error('Method not implemented.');
   }

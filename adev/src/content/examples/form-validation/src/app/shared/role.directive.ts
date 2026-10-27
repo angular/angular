@@ -5,9 +5,8 @@ import {
   NG_ASYNC_VALIDATORS,
   ValidationErrors,
 } from '@angular/forms';
-import {catchError, map} from 'rxjs/operators';
 import {ActorsService} from './actors.service';
-import {Observable, of} from 'rxjs';
+import {Observable, of, catchError, map} from 'rxjs';
 
 // #docregion async-validator
 @Service()

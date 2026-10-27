@@ -83,7 +83,15 @@ export abstract class RouteReuseStrategy {
   /** Retrieves the previously stored route */
   abstract retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle | null;
 
-  /** Determines if a route should be reused */
+  /**
+   * Determines if a route should be reused.
+   *
+   * Note: Recreating a component by returning `false` does not automatically rerun guards or
+   * resolvers; rerun behavior for an unchanged route configuration is controlled by
+   * {@link RunGuardsAndResolvers}.
+   *
+   * @see {@link RunGuardsAndResolvers}
+   */
   abstract shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean;
 
   /**

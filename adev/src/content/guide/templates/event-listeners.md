@@ -93,7 +93,7 @@ Angular also allows you to specify [Code values for keyboard events](https://dev
 
 ```angular-html
 <!-- Matches alt and left shift -->
-<input type="text" (keydown.code.alt.shiftleft)="updateField($event)" />
+<input type="text" (keydown.code.alt.shift.shiftleft)="updateField($event)" />
 ```
 
 This can be useful for handling keyboard events consistently across different operating systems. For example, when using the Alt key on macOS devices, the `key` property reports the key based on the character already modified by the Alt key. This means that a combination like Alt + S reports a `key` value of `'ß'`. The `code` property, however, corresponds to the physical or virtual button pressed rather than the character produced.
@@ -162,15 +162,15 @@ export class DebounceEventPlugin extends EventManagerPlugin {
   override addEventListener(element: HTMLElement, eventName: string, handler: Function) {
     // Parse the event: e.g., "click.debounce.500"
     // event: "click", delay: 500
-    const [event, method, delay = 300] = eventName.split('.');
+    const [event, , delay = '300'] = eventName.split('.');
 
-    let timeoutId: number;
+    let timeoutId: ReturnType<typeof setTimeout>;
 
-    const listener = (event: Event) => {
+    const listener = (e: Event) => {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
-        handler(event);
-      }, delay);
+        handler(e);
+      }, Number(delay));
     };
 
     element.addEventListener(event, listener);
@@ -187,8 +187,7 @@ export class DebounceEventPlugin extends EventManagerPlugin {
 Register your custom plugin using the `EVENT_MANAGER_PLUGINS` token in your application's providers:
 
 ```ts
-import {bootstrapApplication} from '@angular/platform-browser';
-import {EVENT_MANAGER_PLUGINS} from '@angular/platform-browser';
+import {bootstrapApplication, EVENT_MANAGER_PLUGINS} from '@angular/platform-browser';
 import {App} from './app';
 import {DebounceEventPlugin} from './debounce-event-plugin';
 

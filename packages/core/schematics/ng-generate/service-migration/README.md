@@ -33,10 +33,28 @@ import {Service} from '@angular/core';
 export class MyService {}
 ```
 
+A class declared without options is not provided automatically, so the migration keeps that behavior
+with `autoProvided: false`:
+
+```ts
+// Before
+import {Injectable} from '@angular/core';
+
+@Injectable()
+export class MyService {}
+
+// After
+import {Service} from '@angular/core';
+
+@Service({autoProvided: false})
+export class MyService {}
+```
+
 ### Limitations
 
 To avoid introducing breakages into your app, the schematic will skip the following classes:
 
-- Using constructor-based dependency injection.
+- Using constructor-based dependency injection, either on the class itself or on the closest
+  ancestor that defines a constructor.
 - Passing any options into `@Injectable` aside from `providedIn`.
 - Passing anything aside from `root` into `providedIn`.

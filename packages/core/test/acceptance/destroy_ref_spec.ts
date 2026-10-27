@@ -14,8 +14,7 @@ import {
   Directive,
   EnvironmentInjector,
   inject,
-  provideZoneChangeDetection,
-  ChangeDetectionStrategy,
+  signal,
 } from '../../src/core';
 import {TestBed} from '../../testing';
 
@@ -79,19 +78,11 @@ describe('DestroyRef', () => {
   });
 
   describe('for node injector', () => {
-    beforeEach(() => {
-      TestBed.configureTestingModule({
-        providers: [provideZoneChangeDetection()],
-      });
-    });
     it('should inject cleanup context in components', () => {
       let destroyed = false;
 
       @Component({
-        selector: 'test',
         template: ``,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestCmp {
         constructor(destroyCtx: DestroyRef) {
@@ -119,14 +110,11 @@ describe('DestroyRef', () => {
       }
 
       @Component({
-        selector: 'test',
         imports: [WithCleanupDirective],
         // note: we are trying to register a LView-level cleanup _before_ TView-level one (event
         // listener)
         template: `<div withCleanup></div>
           <button (click)="noop()"></button>`,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestCmp {
         noop() {}
@@ -153,21 +141,18 @@ describe('DestroyRef', () => {
       }
 
       @Component({
-        selector: 'test',
         imports: [WithCleanupDirective, NgIf],
-        template: `<ng-template [ngIf]="show"><div withCleanup></div></ng-template>`,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: `<ng-template [ngIf]="show()"><div withCleanup></div></ng-template>`,
       })
       class TestCmp {
-        show = true;
+        show = signal(true);
       }
 
       const fixture = TestBed.createComponent(TestCmp);
       fixture.detectChanges();
       expect(destroyed).toBe(false);
 
-      fixture.componentInstance.show = false;
+      fixture.componentInstance.show.set(false);
       fixture.detectChanges();
       expect(destroyed).toBe(true);
     });
@@ -177,8 +162,6 @@ describe('DestroyRef', () => {
       @Component({
         selector: 'child',
         template: '',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Child {
         constructor() {
@@ -187,17 +170,15 @@ describe('DestroyRef', () => {
       }
       @Component({
         imports: [Child, NgIf],
-        template: '<child *ngIf="showChild"></child>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: '<child *ngIf="showChild()"></child>',
       })
       class Parent {
-        showChild = true;
+        showChild = signal(true);
       }
       const fixture = TestBed.createComponent(Parent);
       fixture.detectChanges();
       expect(onDestroySpy).not.toHaveBeenCalled();
-      fixture.componentInstance.showChild = false;
+      fixture.componentInstance.showChild.set(false);
       fixture.detectChanges();
       expect(onDestroySpy).toHaveBeenCalled();
     });
@@ -207,10 +188,7 @@ describe('DestroyRef', () => {
     let destroyed = false;
 
     @Component({
-      selector: 'test',
       template: ``,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestCmp {
       unRegFn: () => void;
@@ -234,10 +212,7 @@ describe('DestroyRef', () => {
     const onDestroyCallback = () => onDestroyCalls++;
 
     @Component({
-      selector: 'test',
       template: ``,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestCmp {
       unRegFn: () => void;
@@ -263,10 +238,7 @@ describe('DestroyRef', () => {
 
   it('should throw when trying to register destroy callback on destroyed LView', () => {
     @Component({
-      selector: 'test',
       template: ``,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestCmp {
       constructor(public destroyRef: DestroyRef) {}
@@ -285,10 +257,7 @@ describe('DestroyRef', () => {
     const destroyedLog: string[] = [];
 
     @Component({
-      selector: 'test',
       template: ``,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestCmp {
       constructor(destroyCtx: DestroyRef) {

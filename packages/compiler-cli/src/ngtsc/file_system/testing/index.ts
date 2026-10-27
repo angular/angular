@@ -16,3 +16,8 @@ export {
   runInEachFileSystem,
   TestFile,
 } from './src/test_helper';
+export {
+  isNgpSkipEnabled,
+  shouldSkipComplianceInNgp,
+  shouldSkipInNgp,
+} from './src/ngp_known_failures';

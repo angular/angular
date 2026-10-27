@@ -26,10 +26,11 @@
       "enabled": false
     },
     {
-      "matchManagers": ["bazel", "bazel-module", "bazelisk", "npm"],
+      "matchManagers": ["bazel", "bazel-module", "bazelisk", "cargo", "npm"],
       "postUpgradeTasks": {
         "commands": [
           "pnpm install --frozen-lockfile",
+          "bash -c \"pnpm bazel mod deps --lockfile_mode=update || true\"",
           "pnpm ng-dev misc sync-module-bazel",
           "pnpm bazel run //.github/actions/deploy-docs-site:main",
           "pnpm bazel run //packages/common:base_currencies_file",
@@ -49,6 +50,12 @@
       "enabled": false,
       "matchDepNames": ["tailwindcss"],
       "matchUpdateTypes": ["major"]
+    },
+    {
+      "matchFileNames": ["packages/zone.js/package.json"],
+      "matchPackageNames": ["@types/jasmine", "jasmine", "jasmine-core"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
     }
   ]
 }

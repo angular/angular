@@ -106,3 +106,13 @@ Note that this is not necessarily a rejection of the goals or direction of any o
 
 You are welcome to open a smaller subset of issues/PRs in accordance with [our policy](/contributing-docs/spam.md) focused on the most important and impactful contributions and we will do our best to prioritize a response as soon as possible.
 ```
+
+## Angular: Rust-based Compiler / Preprocessor Not Accepting External Contributions
+
+```
+Thank you for your interest in Angular! The new Rust-based compiler code (`packages/compiler-cli/preprocessor` and the prototype language service in `ngp-vscode-ng-language-service`) is an early-stage project currently under rapid active development by the Angular team.
+
+We are not accepting issues, feature requests, or pull requests for these packages from external contributors at this time.
+
+Thank you for your understanding!
+```

@@ -149,7 +149,7 @@ The schematic automates the following transformations in your test files (`.spec
 - Replaces `jasmine.any` with `expect.any`.
 - Replaces `jasmine.createSpy` with `vi.fn`.
 - Updates `beforeAll`, `beforeEach`, `afterAll`, and `afterEach` to their Vitest equivalents.
-- Converts `fail()` to Vitest's `vi.fail()`.
+- Converts `fail()` to Vitest's `expect.fail()`.
 - Adjusts expectations to match Vitest APIs
 - Adds TODO comments for code that cannot be automatically converted
 

@@ -26,9 +26,9 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
-import {fakeAsync, tick, waitForAsync} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {timeout} from '@angular/private/testing';
 import {downgradeComponent, UpgradeComponent, UpgradeModule} from '../../../static';
 
 import * as angular from '../../../src/common/src/angular1';
@@ -46,7 +46,7 @@ withEachNg1Version(() => {
     beforeEach(() => destroyPlatform());
     afterEach(() => destroyPlatform());
 
-    it('should bind properties, events', waitForAsync(() => {
+    it('should bind properties, events', async () => {
       const ng1Module = angular.module_('ng1', []).run(($rootScope: angular.IScope) => {
         $rootScope['name'] = 'world';
         $rootScope['dataA'] = 'A';
@@ -158,25 +158,24 @@ withEachNg1Version(() => {
              | modelA: {{modelA}}; modelB: {{modelB}}; eventA: {{eventA}}; eventB: {{eventB}};
            </div>`);
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
-        expect(multiTrim(document.body.textContent)).toEqual(
-          'ignore: -; ' +
-            'literal: Text; interpolate: Hello world; ' +
-            'oneWayA: A; oneWayB: B; twoWayA: newA; twoWayB: newB; (2) | ' +
-            'modelA: newA; modelB: newB; eventA: aFired; eventB: bFired;',
-        );
+      const upgrade = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      expect(multiTrim(document.body.textContent)).toEqual(
+        'ignore: -; ' +
+          'literal: Text; interpolate: Hello world; ' +
+          'oneWayA: A; oneWayB: B; twoWayA: newA; twoWayB: newB; (2) | ' +
+          'modelA: newA; modelB: newB; eventA: aFired; eventB: bFired;',
+      );
 
-        $apply(upgrade, 'name = "everyone"');
-        expect(multiTrim(document.body.textContent)).toEqual(
-          'ignore: -; ' +
-            'literal: Text; interpolate: Hello everyone; ' +
-            'oneWayA: A; oneWayB: B; twoWayA: newA; twoWayB: newB; (3) | ' +
-            'modelA: newA; modelB: newB; eventA: aFired; eventB: bFired;',
-        );
-      });
-    }));
+      $apply(upgrade, 'name = "everyone"');
+      expect(multiTrim(document.body.textContent)).toEqual(
+        'ignore: -; ' +
+          'literal: Text; interpolate: Hello everyone; ' +
+          'oneWayA: A; oneWayB: B; twoWayA: newA; twoWayB: newB; (3) | ' +
+          'modelA: newA; modelB: newB; eventA: aFired; eventB: bFired;',
+      );
+    });
 
-    it('should bind properties to signal inputs', waitForAsync(() => {
+    it('should bind properties to signal inputs', async () => {
       const ng1Module = angular.module_('ng1', []).run(($rootScope: angular.IScope) => {
         $rootScope['name'] = 'world';
       });
@@ -213,15 +212,14 @@ withEachNg1Version(() => {
           <ng2 literal="Text" message="Hello {{name}}"></ng2>
         </div>`);
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
-        expect(multiTrim(document.body.textContent)).toEqual('Message: Hello world');
+      const upgrade = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      expect(multiTrim(document.body.textContent)).toEqual('Message: Hello world');
 
-        $apply(upgrade, 'name = "everyone"');
-        expect(multiTrim(document.body.textContent)).toEqual('Message: Hello everyone');
-      });
-    }));
+      $apply(upgrade, 'name = "everyone"');
+      expect(multiTrim(document.body.textContent)).toEqual('Message: Hello everyone');
+    });
 
-    it('should propagate AngularJS→Angular changes through model() signals', waitForAsync(() => {
+    it('should propagate AngularJS→Angular changes through model() signals', async () => {
       const ng1Module = angular.module_('ng1', []).run(($rootScope: angular.IScope) => {
         $rootScope['value'] = 'initial';
       });
@@ -253,20 +251,19 @@ withEachNg1Version(() => {
           | value: {{value}}
         </div>`);
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
-        expect(multiTrim(document.body.textContent)).toEqual('Value: initial | value: initial');
+      const upgrade = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      expect(multiTrim(document.body.textContent)).toEqual('Value: initial | value: initial');
 
-        $apply(upgrade, 'value = "updated"');
-        expect(multiTrim(document.body.textContent)).toEqual('Value: updated | value: updated');
-      });
-    }));
+      $apply(upgrade, 'value = "updated"');
+      expect(multiTrim(document.body.textContent)).toEqual('Value: updated | value: updated');
+    });
 
-    it('should propagate Angular→AngularJS changes through model() signals', waitForAsync(() => {
+    it('should propagate Angular→AngularJS changes through model() signals', async () => {
       const ng1Module = angular.module_('ng1', []).run(($rootScope: angular.IScope) => {
         $rootScope['value'] = 'initial';
       });
 
-      let componentInstance: Ng2Component;
+      let componentInstance!: Ng2Component;
 
       @Component({
         selector: 'ng2',
@@ -298,17 +295,16 @@ withEachNg1Version(() => {
           | value: {{value}}
         </div>`);
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
-        expect(multiTrim(document.body.textContent)).toEqual('Value: initial | value: initial');
+      const upgrade = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      expect(multiTrim(document.body.textContent)).toEqual('Value: initial | value: initial');
 
-        $apply(upgrade, () => componentInstance.value.set('from-angular'));
-        expect(multiTrim(document.body.textContent)).toEqual(
-          'Value: from-angular | value: from-angular',
-        );
-      });
-    }));
+      $apply(upgrade, () => componentInstance.value.set('from-angular'));
+      expect(multiTrim(document.body.textContent)).toEqual(
+        'Value: from-angular | value: from-angular',
+      );
+    });
 
-    it('should bind properties to onpush components', waitForAsync(() => {
+    it('should bind properties to onpush components', async () => {
       const ng1Module = angular.module_('ng1', []).run(($rootScope: angular.IScope) => {
         $rootScope['dataB'] = 'B';
       });
@@ -342,14 +338,13 @@ withEachNg1Version(() => {
             <ng2 [one-way-b]="dataB"></ng2>
           </div>`);
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
-        expect(multiTrim(document.body.textContent)).toEqual('oneWayB: B');
-        $apply(upgrade, 'dataB= "everyone"');
-        expect(multiTrim(document.body.textContent)).toEqual('oneWayB: everyone');
-      });
-    }));
+      const upgrade = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      expect(multiTrim(document.body.textContent)).toEqual('oneWayB: B');
+      $apply(upgrade, 'dataB= "everyone"');
+      expect(multiTrim(document.body.textContent)).toEqual('oneWayB: everyone');
+    });
 
-    it('should support two-way binding and event listener', waitForAsync(() => {
+    it('should support two-way binding and event listener', async () => {
       const listenerSpy = jasmine.createSpy('$rootScope.listener');
       const ng1Module = angular.module_('ng1', []).run(($rootScope: angular.IScope) => {
         $rootScope['value'] = 'world';
@@ -396,14 +391,13 @@ withEachNg1Version(() => {
           </div>
         `);
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
-        expect(multiTrim(element.textContent)).toEqual('model: newC; | value: newC');
-        expect(listenerSpy).toHaveBeenCalledWith('newC');
-      });
-    }));
+      await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      expect(multiTrim(element.textContent)).toEqual('model: newC; | value: newC');
+      expect(listenerSpy).toHaveBeenCalledWith('newC');
+    });
 
-    it('should run change-detection on every digest (by default)', waitForAsync(() => {
-      let ng2Component: Ng2Component;
+    it('should run change-detection on every digest (by default)', async () => {
+      let ng2Component!: Ng2Component;
 
       @Component({
         selector: 'ng2',
@@ -431,49 +425,51 @@ withEachNg1Version(() => {
       const ng1Module = angular
         .module_('ng1', [])
         .directive('ng2', downgradeComponent({component: Ng2Component}))
-        .run(($rootScope: angular.IRootScopeService) => {
-          $rootScope['value1'] = 0;
-          $rootScope['value2'] = 0;
-        });
+        .run([
+          $ROOT_SCOPE,
+          ($rootScope: angular.IRootScopeService) => {
+            $rootScope['value1'] = 0;
+            $rootScope['value2'] = 0;
+          },
+        ]);
 
       const element = html('<ng2 [value1]="value1" value2="{{ value2 }}"></ng2>');
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
-        const $rootScope = upgrade.$injector.get('$rootScope') as angular.IRootScopeService;
+      const upgrade = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      const $rootScope = upgrade.$injector.get('$rootScope') as angular.IRootScopeService;
 
-        expect(element.textContent).toBe('0 | 0');
+      expect(element.textContent).toBe('0 | 0');
 
-        // Digest should invoke CD
-        $rootScope.$digest();
-        $rootScope.$digest();
-        expect(element.textContent).toBe('0 | 0');
+      // Digest should invoke CD
+      $rootScope.$digest();
+      $rootScope.$digest();
+      expect(element.textContent).toBe('0 | 0');
 
-        // Internal changes should be detected on digest
-        ng2Component.value1 = 1;
-        ng2Component.value2 = 2;
-        $rootScope.$digest();
-        expect(element.textContent).toBe('1 | 2');
+      // Internal changes should be detected on digest
+      ng2Component.value1 = 1;
+      ng2Component.value2 = 2;
+      $rootScope.$digest();
+      expect(element.textContent).toBe('1 | 2');
 
-        // Digest should propagate change in prop-bound input
-        $rootScope.$apply('value1 = 3');
-        expect(element.textContent).toBe('3 | 2');
+      // Digest should propagate change in prop-bound input
+      $rootScope.$apply('value1 = 3');
+      expect(element.textContent).toBe('3 | 2');
 
-        // Digest should propagate change in attr-bound input
-        ng2Component.value1 = 4;
-        $rootScope.$apply('value2 = 5');
-        expect(element.textContent).toBe('4 | 5');
+      // Digest should propagate change in attr-bound input
+      ng2Component.value1 = 4;
+      $rootScope.$apply('value2 = 5');
+      expect(element.textContent).toBe('4 | 5');
 
-        // Digest should propagate changes that happened before the digest
-        $rootScope['value1'] = 6;
-        expect(element.textContent).toBe('4 | 5');
+      // Digest should propagate changes that happened before the digest
+      $rootScope['value1'] = 6;
+      expect(element.textContent).toBe('4 | 5');
 
-        $rootScope.$digest();
-        expect(element.textContent).toBe('6 | 5');
-      });
-    }));
+      $rootScope.$digest();
+      expect(element.textContent).toBe('6 | 5');
+    });
 
-    it('should not run change-detection on every digest when opted out', waitForAsync(() => {
-      let ng2Component: Ng2Component;
+    it('should not run change-detection on every digest when opted out', async () => {
+      let ng2Component!: Ng2Component;
 
       @Component({
         selector: 'ng2',
@@ -501,46 +497,48 @@ withEachNg1Version(() => {
       const ng1Module = angular
         .module_('ng1', [])
         .directive('ng2', downgradeComponent({component: Ng2Component, propagateDigest: false}))
-        .run(($rootScope: angular.IRootScopeService) => {
-          $rootScope['value1'] = 0;
-          $rootScope['value2'] = 0;
-        });
+        .run([
+          $ROOT_SCOPE,
+          ($rootScope: angular.IRootScopeService) => {
+            $rootScope['value1'] = 0;
+            $rootScope['value2'] = 0;
+          },
+        ]);
 
       const element = html('<ng2 [value1]="value1" value2="{{ value2 }}"></ng2>');
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
-        const $rootScope = upgrade.$injector.get('$rootScope') as angular.IRootScopeService;
+      const upgrade = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      const $rootScope = upgrade.$injector.get('$rootScope') as angular.IRootScopeService;
 
-        expect(element.textContent).toBe('0 | 0');
+      expect(element.textContent).toBe('0 | 0');
 
-        // Digest should not invoke CD
-        $rootScope.$digest();
-        $rootScope.$digest();
-        expect(element.textContent).toBe('0 | 0');
+      // Digest should not invoke CD
+      $rootScope.$digest();
+      $rootScope.$digest();
+      expect(element.textContent).toBe('0 | 0');
 
-        // Digest should not invoke CD, even if component values have changed (internally)
-        ng2Component.value1 = 1;
-        ng2Component.value2 = 2;
-        $rootScope.$digest();
-        expect(element.textContent).toBe('0 | 0');
+      // Digest should not invoke CD, even if component values have changed (internally)
+      ng2Component.value1 = 1;
+      ng2Component.value2 = 2;
+      $rootScope.$digest();
+      expect(element.textContent).toBe('0 | 0');
 
-        // Digest should invoke CD, if prop-bound input has changed
-        $rootScope.$apply('value1 = 3');
-        expect(element.textContent).toBe('3 | 2');
+      // Digest should invoke CD, if prop-bound input has changed
+      $rootScope.$apply('value1 = 3');
+      expect(element.textContent).toBe('3 | 2');
 
-        // Digest should invoke CD, if attr-bound input has changed
-        ng2Component.value1 = 4;
-        $rootScope.$apply('value2 = 5');
-        expect(element.textContent).toBe('4 | 5');
+      // Digest should invoke CD, if attr-bound input has changed
+      ng2Component.value1 = 4;
+      $rootScope.$apply('value2 = 5');
+      expect(element.textContent).toBe('4 | 5');
 
-        // Digest should invoke CD, if input has changed before the digest
-        $rootScope['value1'] = 6;
-        $rootScope.$digest();
-        expect(element.textContent).toBe('6 | 5');
-      });
-    }));
+      // Digest should invoke CD, if input has changed before the digest
+      $rootScope['value1'] = 6;
+      $rootScope.$digest();
+      expect(element.textContent).toBe('6 | 5');
+    });
 
-    it('should still run normal Angular change-detection regardless of `propagateDigest`', fakeAsync(() => {
+    it('should still run normal Angular change-detection regardless of `propagateDigest`', async () => {
       @Component({
         selector: 'ng2',
         template: '{{ value }}',
@@ -550,7 +548,7 @@ withEachNg1Version(() => {
       class Ng2Component {
         value = 'foo';
         constructor() {
-          setTimeout(() => (this.value = 'bar'), 1000);
+          setTimeout(() => (this.value = 'bar'));
         }
       }
 
@@ -569,15 +567,14 @@ withEachNg1Version(() => {
 
       const element = html('<ng2-a></ng2-a> | <ng2-b></ng2-b>');
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
-        expect(element.textContent).toBe('foo | foo');
+      await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      expect(element.textContent).toBe('foo | foo');
 
-        tick(1000);
-        expect(element.textContent).toBe('bar | bar');
-      });
-    }));
+      await timeout();
+      expect(element.textContent).toBe('bar | bar');
+    });
 
-    it('should initialize inputs in time for `ngOnChanges`', waitForAsync(() => {
+    it('should initialize inputs in time for `ngOnChanges`', async () => {
       @Component({
         selector: 'ng2',
         template: ` ngOnChangesCount: {{ ngOnChangesCount }} | firstChangesCount:
@@ -623,24 +620,26 @@ withEachNg1Version(() => {
            <ng2 foo="qux" ng-if="true"></ng2>
          `);
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
-        const nodes = element.querySelectorAll('ng2');
-        const expectedTextWith = (value: string) =>
-          `ngOnChangesCount: 1 | firstChangesCount: 1 | initialValue: ${value}`;
+      await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      const nodes = element.querySelectorAll('ng2');
+      const expectedTextWith = (value: string) =>
+        `ngOnChangesCount: 1 | firstChangesCount: 1 | initialValue: ${value}`;
 
-        expect(multiTrim(nodes[0].textContent)).toBe(expectedTextWith('foo'));
-        expect(multiTrim(nodes[1].textContent)).toBe(expectedTextWith('bar'));
-        expect(multiTrim(nodes[2].textContent)).toBe(expectedTextWith('baz'));
-        expect(multiTrim(nodes[3].textContent)).toBe(expectedTextWith('qux'));
-      });
-    }));
+      expect(multiTrim(nodes[0].textContent)).toBe(expectedTextWith('foo'));
+      expect(multiTrim(nodes[1].textContent)).toBe(expectedTextWith('bar'));
+      expect(multiTrim(nodes[2].textContent)).toBe(expectedTextWith('baz'));
+      expect(multiTrim(nodes[3].textContent)).toBe(expectedTextWith('qux'));
+    });
 
-    it('should bind to ng-model', waitForAsync(() => {
-      const ng1Module = angular.module_('ng1', []).run(($rootScope: angular.IScope) => {
-        $rootScope['modelA'] = 'A';
-      });
+    it('should bind to ng-model', async () => {
+      const ng1Module = angular.module_('ng1', []).run([
+        $ROOT_SCOPE,
+        ($rootScope: angular.IScope) => {
+          $rootScope['modelA'] = 'A';
+        },
+      ]);
 
-      let ng2Instance: Ng2;
+      let ng2Instance!: Ng2;
       @Component({
         selector: 'ng2',
         template: '<span>{{_value}}</span>',
@@ -681,33 +680,30 @@ withEachNg1Version(() => {
         ngDoBootstrap() {}
       }
 
-      platformBrowserDynamic()
-        .bootstrapModule(Ng2Module)
-        .then((ref) => {
-          const adapter = ref.injector.get(UpgradeModule) as UpgradeModule;
-          adapter.bootstrap(element, [ng1Module.name]);
-          const $rootScope = adapter.$injector.get('$rootScope');
+      const ref = await platformBrowserDynamic().bootstrapModule(Ng2Module);
+      const adapter = ref.injector.get(UpgradeModule) as UpgradeModule;
+      adapter.bootstrap(element, [ng1Module.name]);
+      const $rootScope = adapter.$injector.get('$rootScope');
 
-          expect(multiTrim(document.body.textContent)).toEqual('A | A');
+      expect(multiTrim(document.body.textContent)).toEqual('A | A');
 
-          $rootScope.modelA = 'B';
-          $rootScope.$apply();
-          expect(multiTrim(document.body.textContent)).toEqual('B | B');
+      $rootScope.modelA = 'B';
+      $rootScope.$apply();
+      expect(multiTrim(document.body.textContent)).toEqual('B | B');
 
-          ng2Instance.doChange('C');
-          expect($rootScope.modelA).toBe('C');
-          expect(multiTrim(document.body.textContent)).toEqual('C | C');
+      ng2Instance.doChange('C');
+      expect($rootScope.modelA).toBe('C');
+      expect(multiTrim(document.body.textContent)).toEqual('C | C');
 
-          const downgradedElement = <Element>document.body.querySelector('ng2');
-          expect(downgradedElement.classList.contains('ng-touched')).toBe(false);
+      const downgradedElement = <Element>document.body.querySelector('ng2');
+      expect(downgradedElement.classList.contains('ng-touched')).toBe(false);
 
-          ng2Instance.doTouch();
-          $rootScope.$apply();
-          expect(downgradedElement.classList.contains('ng-touched')).toBe(true);
-        });
-    }));
+      ng2Instance.doTouch();
+      $rootScope.$apply();
+      expect(downgradedElement.classList.contains('ng-touched')).toBe(true);
+    });
 
-    it('should properly run cleanup when ng1 directive is destroyed', waitForAsync(() => {
+    it('should properly run cleanup when ng1 directive is destroyed', async () => {
       let destroyed = false;
       @Component({
         selector: 'ng2',
@@ -733,46 +729,41 @@ withEachNg1Version(() => {
         })
         .directive('ng2', downgradeComponent({component: Ng2Component}));
       const element = html('<ng1></ng1>');
-      platformBrowserDynamic()
-        .bootstrapModule(Ng2Module)
-        .then((ref) => {
-          const adapter = ref.injector.get(UpgradeModule) as UpgradeModule;
-          adapter.bootstrap(element, [ng1Module.name]);
+      const ref = await platformBrowserDynamic().bootstrapModule(Ng2Module);
+      const adapter = ref.injector.get(UpgradeModule) as UpgradeModule;
+      adapter.bootstrap(element, [ng1Module.name]);
 
-          const ng2Element = angular.element(element.querySelector('ng2') as Element);
-          const ng2Descendants = Array.from(element.querySelectorAll('ng2 li')).map(
-            angular.element,
-          );
-          let ng2ElementDestroyed = false;
-          let ng2DescendantsDestroyed = [false, false];
+      const ng2Element = angular.element(element.querySelector('ng2') as Element);
+      const ng2Descendants = Array.from(element.querySelectorAll('ng2 li')).map(angular.element);
+      let ng2ElementDestroyed = false;
+      let ng2DescendantsDestroyed = [false, false];
 
-          ng2Element.data!('test', 42);
-          ng2Descendants.forEach((elem, i) => elem.data!('test', i));
-          ng2Element.on!('$destroy', () => (ng2ElementDestroyed = true));
-          ng2Descendants.forEach((elem, i) =>
-            elem.on!('$destroy', () => (ng2DescendantsDestroyed[i] = true)),
-          );
+      ng2Element.data!('test', 42);
+      ng2Descendants.forEach((elem, i) => elem.data!('test', i));
+      ng2Element.on!('$destroy', () => (ng2ElementDestroyed = true));
+      ng2Descendants.forEach((elem, i) =>
+        elem.on!('$destroy', () => (ng2DescendantsDestroyed[i] = true)),
+      );
 
-          expect(element.textContent).toBe('test1test2');
-          expect(destroyed).toBe(false);
-          expect(ng2Element.data!('test')).toBe(42);
-          ng2Descendants.forEach((elem, i) => expect(elem.data!('test')).toBe(i));
-          expect(ng2ElementDestroyed).toBe(false);
-          expect(ng2DescendantsDestroyed).toEqual([false, false]);
+      expect(element.textContent).toBe('test1test2');
+      expect(destroyed).toBe(false);
+      expect(ng2Element.data!('test')).toBe(42);
+      ng2Descendants.forEach((elem, i) => expect(elem.data!('test')).toBe(i));
+      expect(ng2ElementDestroyed).toBe(false);
+      expect(ng2DescendantsDestroyed).toEqual([false, false]);
 
-          const $rootScope = adapter.$injector.get('$rootScope');
-          $rootScope.$apply('destroyIt = true');
+      const $rootScope = adapter.$injector.get('$rootScope');
+      $rootScope.$apply('destroyIt = true');
 
-          expect(element.textContent).toBe('');
-          expect(destroyed).toBe(true);
-          expect(ng2Element.data!('test')).toBeUndefined();
-          ng2Descendants.forEach((elem) => expect(elem.data!('test')).toBeUndefined());
-          expect(ng2ElementDestroyed).toBe(true);
-          expect(ng2DescendantsDestroyed).toEqual([true, true]);
-        });
-    }));
+      expect(element.textContent).toBe('');
+      expect(destroyed).toBe(true);
+      expect(ng2Element.data!('test')).toBeUndefined();
+      ng2Descendants.forEach((elem) => expect(elem.data!('test')).toBeUndefined());
+      expect(ng2ElementDestroyed).toBe(true);
+      expect(ng2DescendantsDestroyed).toEqual([true, true]);
+    });
 
-    it('should properly run cleanup with multiple levels of nesting', waitForAsync(() => {
+    it('should properly run cleanup with multiple levels of nesting', async () => {
       let destroyed = false;
 
       @Component({
@@ -823,18 +814,17 @@ withEachNg1Version(() => {
 
       const element = html('<ng2-outer [destroy-it]="destroyIt"></ng2-outer>');
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
-        expect(element.textContent).toBe('test');
-        expect(destroyed).toBe(false);
+      const upgrade = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      expect(element.textContent).toBe('test');
+      expect(destroyed).toBe(false);
 
-        $apply(upgrade, 'destroyIt = true');
+      $apply(upgrade, 'destroyIt = true');
 
-        expect(element.textContent).toBe('');
-        expect(destroyed).toBe(true);
-      });
-    }));
+      expect(element.textContent).toBe('');
+      expect(destroyed).toBe(true);
+    });
 
-    it('should destroy the AngularJS app when `PlatformRef` is destroyed', waitForAsync(() => {
+    it('should destroy the AngularJS app when `PlatformRef` is destroyed', async () => {
       @Component({
         selector: 'ng2',
         template: '<span>NG2</span>',
@@ -859,46 +849,45 @@ withEachNg1Version(() => {
       const element = html('<div><ng1></ng1></div>');
       const platformRef = platformBrowserDynamic();
 
-      platformRef.bootstrapModule(Ng2Module).then((ref) => {
-        const upgrade = ref.injector.get(UpgradeModule);
-        upgrade.bootstrap(element, [ng1Module.name]);
+      const ref = await platformRef.bootstrapModule(Ng2Module);
+      const upgrade = ref.injector.get(UpgradeModule);
+      upgrade.bootstrap(element, [ng1Module.name]);
 
-        const $rootScope: angular.IRootScopeService = upgrade.$injector.get($ROOT_SCOPE);
-        const rootScopeDestroySpy = spyOn($rootScope, '$destroy');
+      const $rootScope: angular.IRootScopeService = upgrade.$injector.get($ROOT_SCOPE);
+      const rootScopeDestroySpy = spyOn($rootScope, '$destroy');
 
-        const appElem = angular.element(element);
-        const ng1Elem = angular.element(element.querySelector('ng1') as Element);
-        const ng2Elem = angular.element(element.querySelector('ng2') as Element);
-        const ng2ChildElem = angular.element(element.querySelector('ng2 span') as Element);
+      const appElem = angular.element(element);
+      const ng1Elem = angular.element(element.querySelector('ng1') as Element);
+      const ng2Elem = angular.element(element.querySelector('ng2') as Element);
+      const ng2ChildElem = angular.element(element.querySelector('ng2 span') as Element);
 
-        // Attach data to all elements.
-        appElem.data!('testData', 1);
-        ng1Elem.data!('testData', 2);
-        ng2Elem.data!('testData', 3);
-        ng2ChildElem.data!('testData', 4);
+      // Attach data to all elements.
+      appElem.data!('testData', 1);
+      ng1Elem.data!('testData', 2);
+      ng2Elem.data!('testData', 3);
+      ng2ChildElem.data!('testData', 4);
 
-        // Verify data can be retrieved.
-        expect(appElem.data!('testData')).toBe(1);
-        expect(ng1Elem.data!('testData')).toBe(2);
-        expect(ng2Elem.data!('testData')).toBe(3);
-        expect(ng2ChildElem.data!('testData')).toBe(4);
+      // Verify data can be retrieved.
+      expect(appElem.data!('testData')).toBe(1);
+      expect(ng1Elem.data!('testData')).toBe(2);
+      expect(ng2Elem.data!('testData')).toBe(3);
+      expect(ng2ChildElem.data!('testData')).toBe(4);
 
-        expect(rootScopeDestroySpy).not.toHaveBeenCalled();
+      expect(rootScopeDestroySpy).not.toHaveBeenCalled();
 
-        // Destroy `PlatformRef`.
-        platformRef.destroy();
+      // Destroy `PlatformRef`.
+      platformRef.destroy();
 
-        // Verify `$rootScope` has been destroyed and data has been cleaned up.
-        expect(rootScopeDestroySpy).toHaveBeenCalled();
+      // Verify `$rootScope` has been destroyed and data has been cleaned up.
+      expect(rootScopeDestroySpy).toHaveBeenCalled();
 
-        expect(appElem.data!('testData')).toBeUndefined();
-        expect(ng1Elem.data!('testData')).toBeUndefined();
-        expect(ng2Elem.data!('testData')).toBeUndefined();
-        expect(ng2ChildElem.data!('testData')).toBeUndefined();
-      });
-    }));
+      expect(appElem.data!('testData')).toBeUndefined();
+      expect(ng1Elem.data!('testData')).toBeUndefined();
+      expect(ng2Elem.data!('testData')).toBeUndefined();
+      expect(ng2ChildElem.data!('testData')).toBeUndefined();
+    });
 
-    it('should work when compiled outside the dom (by fallback to the root ng2.injector)', waitForAsync(() => {
+    it('should work when compiled outside the dom (by fallback to the root ng2.injector)', async () => {
       @Component({
         selector: 'ng2',
         template: 'test',
@@ -936,15 +925,14 @@ withEachNg1Version(() => {
         .directive('ng2', downgradeComponent({component: Ng2Component}));
 
       const element = html('<ng1></ng1>');
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
-        // the fact that the body contains the correct text means that the
-        // downgraded component was able to access the moduleInjector
-        // (since there is no other injector in this system)
-        expect(multiTrim(document.body.textContent)).toEqual('test');
-      });
-    }));
+      await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      // the fact that the body contains the correct text means that the
+      // downgraded component was able to access the moduleInjector
+      // (since there is no other injector in this system)
+      expect(multiTrim(document.body.textContent)).toEqual('test');
+    });
 
-    it('should allow attribute selectors for downgraded components', waitForAsync(() => {
+    it('should allow attribute selectors for downgraded components', async () => {
       @Component({
         selector: '[itWorks]',
         template: 'It works',
@@ -964,12 +952,11 @@ withEachNg1Version(() => {
 
       const element = html('<works-component></works-component>');
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
-        expect(multiTrim(document.body.textContent)).toBe('It works');
-      });
-    }));
+      await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      expect(multiTrim(document.body.textContent)).toBe('It works');
+    });
 
-    it('should allow attribute selectors for components in ng2', waitForAsync(() => {
+    it('should allow attribute selectors for components in ng2', async () => {
       @Component({
         selector: '[itWorks]',
         template: 'It works',
@@ -1000,12 +987,11 @@ withEachNg1Version(() => {
 
       const element = html('<root-component></root-component>');
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
-        expect(multiTrim(document.body.textContent)).toBe('It works!');
-      });
-    }));
+      await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      expect(multiTrim(document.body.textContent)).toBe('It works!');
+    });
 
-    it('should respect hierarchical dependency injection for ng2', waitForAsync(() => {
+    it('should respect hierarchical dependency injection for ng2', async () => {
       @Component({
         selector: 'parent',
         template: 'parent(<ng-content></ng-content>)',
@@ -1038,12 +1024,11 @@ withEachNg1Version(() => {
 
       const element = html('<parent><child></child></parent>');
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
-        expect(multiTrim(document.body.textContent)).toBe('parent(child)');
-      });
-    }));
+      await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      expect(multiTrim(document.body.textContent)).toBe('parent(child)');
+    });
 
-    it('should be compiled synchronously, if possible', waitForAsync(() => {
+    it('should be compiled synchronously, if possible', async () => {
       @Component({
         selector: 'ng2A',
         template: '<ng-content></ng-content>',
@@ -1074,13 +1059,12 @@ withEachNg1Version(() => {
 
       const element = html('<ng2-a><ng2-b></ng2-b></ng2-a>');
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-        expect(element.textContent).toBe('Ng2 template');
-      });
-    }));
+      await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      expect(element.textContent).toBe('Ng2 template');
+    });
 
-    it('should work with ng2 lazy loaded components', waitForAsync(() => {
-      let componentInjector: Injector;
+    it('should work with ng2 lazy loaded components', async () => {
+      let componentInjector!: Injector;
 
       @Component({
         selector: 'ng2',
@@ -1122,22 +1106,21 @@ withEachNg1Version(() => {
 
       const element = html('<ng2></ng2>');
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
-        const modInjector = upgrade.injector;
-        // Emulate the router lazy loading a module and creating a component
-        const compiler = modInjector.get(Compiler);
-        const modFactory = compiler.compileModuleSync(LazyLoadedModule);
-        const childMod = modFactory.create(modInjector);
-        const lazyCmp = createComponent(LazyLoadedComponent, {
-          environmentInjector: childMod.injector,
-          elementInjector: componentInjector,
-        });
-
-        expect(lazyCmp.instance.module.injector === childMod.injector).toBe(true);
+      const upgrade = await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      const modInjector = upgrade.injector;
+      // Emulate the router lazy loading a module and creating a component
+      const compiler = modInjector.get(Compiler);
+      const modFactory = compiler.compileModuleSync(LazyLoadedModule);
+      const childMod = modFactory.create(modInjector);
+      const lazyCmp = createComponent(LazyLoadedComponent, {
+        environmentInjector: childMod.injector,
+        elementInjector: componentInjector,
       });
-    }));
 
-    it('should throw if `downgradedModule` is specified', waitForAsync(() => {
+      expect(lazyCmp.instance.module.injector === childMod.injector).toBe(true);
+    });
+
+    it('should throw if `downgradedModule` is specified', async () => {
       @Component({
         selector: 'ng2',
         template: '',
@@ -1160,7 +1143,7 @@ withEachNg1Version(() => {
 
       const element = html('<ng2></ng2>');
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(
+      await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(
         () => {
           throw new Error('Expected bootstraping to fail.');
         },
@@ -1172,14 +1155,14 @@ withEachNg1Version(() => {
               "downgrading more than one Angular module (via 'downgradeModule()').",
           ),
       );
-    }));
+    });
   });
 
   describe('standalone', () => {
     beforeEach(() => destroyPlatform());
     afterEach(() => destroyPlatform());
 
-    it('should downgrade a standalone component using NgModule APIs', waitForAsync(() => {
+    it('should downgrade a standalone component using NgModule APIs', async () => {
       @Component({
         selector: 'ng2',
         template: 'Hi from Angular!',
@@ -1199,9 +1182,8 @@ withEachNg1Version(() => {
       }
 
       const element = html('<ng2></ng2>');
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-        expect(element.textContent).toBe('Hi from Angular!');
-      });
-    }));
+      await bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      expect(element.textContent).toBe('Hi from Angular!');
+    });
   });
 });

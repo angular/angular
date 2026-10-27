@@ -56,6 +56,7 @@ describe('BreakpointManager', () => {
     mockRuntime = {
       id: EXTENSION_ID,
       getURL: (path: string) => `${EXTENSION_URL_PREFIX}${path}`,
+      sendMessage: jasmine.createSpy('sendMessage').and.resolveTo(undefined),
       onMessage: {
         addListener: (fn: Function) => runtimeMessageListeners.push(fn),
       },
@@ -318,7 +319,7 @@ describe('BreakpointManager', () => {
       expect(response.error).toContain('CDP evaluation error');
     });
 
-    it('returns error response when removeSignalBreakpoint fails for non-existent breakpoint', async () => {
+    it('succeeds as a no-op when removeSignalBreakpoint is called for non-existent breakpoint', async () => {
       const deferred = createDeferred<{success: boolean; error?: string}>();
       const sendResponse = jasmine.createSpy('sendResponse').and.callFake(deferred.resolve);
 
@@ -332,8 +333,25 @@ describe('BreakpointManager', () => {
       expect(handled).toBeTrue();
 
       const response = await deferred.promise;
+      expect(response.success).toBeTrue();
+    });
+
+    it('returns error response when removeSignalBreakpoint receives an invalid position payload', async () => {
+      const deferred = createDeferred<{success: boolean; error?: string}>();
+      const sendResponse = jasmine.createSpy('sendResponse').and.callFake(deferred.resolve);
+
+      const message = {
+        action: 'removeSignalBreakpoint',
+        tabId: 123,
+        position: null,
+      };
+
+      const handled = runtimeMessageListeners[0](message, validSender, sendResponse);
+      expect(handled).toBeTrue();
+
+      const response = await deferred.promise;
       expect(response.success).toBeFalse();
-      expect(response.error).toContain('No active breakpoints for this tab');
+      expect(response.error).toContain('Invalid signal position payload');
     });
   });
 
@@ -348,7 +366,7 @@ describe('BreakpointManager', () => {
       expect(fakeDebugger.attachedTargets.has(tabId)).toBeFalse();
     });
 
-    it('cleans up active breakpoints when debugger is detached externally', async () => {
+    it('cleans up active breakpoints and notifies DevTools panel when debugger is detached externally', async () => {
       const tabId = 123;
       await manager.setBreakpoint(tabId, validPosition);
       expect(manager.getActiveBreakpoints(tabId).length).toBe(1);
@@ -357,6 +375,13 @@ describe('BreakpointManager', () => {
       fakeDebugger.emitDetach({tabId});
 
       expect(manager.getActiveBreakpoints(tabId).length).toBe(0);
+      expect(mockRuntime.sendMessage).toHaveBeenCalledWith({
+        action: 'signalBreakpointsCleared',
+        tabId,
+      });
+
+      // Subsequent removeBreakpoint call after detach should succeed as a no-op
+      await expectAsync(manager.removeBreakpoint(tabId, validPosition)).toBeResolved();
     });
 
     it('cleans up active breakpoint entry even if removeBreakpoint command fails', async () => {

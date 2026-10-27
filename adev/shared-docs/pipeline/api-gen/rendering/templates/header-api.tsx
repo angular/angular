@@ -82,7 +82,7 @@ function statusTag(entry: DocEntryRenderable) {
 
   if (entry.deprecated) {
     tag = (
-      <div className={`${HEADER_ENTRY_LABEL} type-stable full`}>
+      <div className={`${HEADER_ENTRY_LABEL} type-deprecated full`}>
         {tagInVersionString('deprecated', entry.deprecated)}
       </div>
     );

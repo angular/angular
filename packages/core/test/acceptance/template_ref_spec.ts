@@ -8,7 +8,6 @@
 
 import {NgIf, NgTemplateOutlet} from '@angular/common';
 import {
-  ChangeDetectionStrategy,
   Component,
   Injector,
   provideNgReflectAttributes,
@@ -269,8 +268,6 @@ describe('TemplateRef', () => {
         <ng-template #templateRef let-name="name">{{ name }}</ng-template>
         <ng-container #containerRef></ng-container>
       `,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       @ViewChild('templateRef') templateRef!: TemplateRef<any>;
@@ -288,7 +285,7 @@ describe('TemplateRef', () => {
       expect(fixture.nativeElement.textContent).toBe('Frodo');
 
       context.name = 'Bilbo';
-      fixture.changeDetectorRef.markForCheck();
+      viewRef.markForCheck();
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toBe('Bilbo');
@@ -304,7 +301,7 @@ describe('TemplateRef', () => {
       expect(fixture.nativeElement.textContent).toBe('Frodo');
 
       viewRef.context = {name: 'Bilbo'};
-      fixture.changeDetectorRef.markForCheck();
+      viewRef.markForCheck();
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toBe('Bilbo');
@@ -341,7 +338,7 @@ describe('TemplateRef', () => {
       expect(events).toEqual(['Frodo']);
 
       viewRef.context = {name: 'Bilbo'};
-      fixture.changeDetectorRef.markForCheck();
+      viewRef.markForCheck();
       fixture.detectChanges();
       button.click();
       expect(events).toEqual(['Frodo', 'Bilbo']);
@@ -358,7 +355,7 @@ describe('TemplateRef', () => {
       spyOn(console, 'warn');
 
       viewRef.context = {name: 'Bilbo'};
-      fixture.changeDetectorRef.markForCheck();
+      viewRef.markForCheck();
       fixture.detectChanges();
 
       expect(console.warn).toHaveBeenCalledTimes(1);

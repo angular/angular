@@ -24,6 +24,7 @@ describe('supported-apis', () => {
         'profiler',
         'routes',
         'signalPropertiesInspection',
+        'signalWatch',
         'signals',
         'transferState',
       ]);
@@ -36,6 +37,21 @@ describe('supported-apis', () => {
       const supported = getSupportedApis();
 
       expect(supported.signals).toBeTrue();
+      expect(supported.dependencyInjection).toBeFalse();
+      expect(supported.profiler).toBeFalse();
+      expect(supported.routes).toBeFalse();
+      expect(supported.signalPropertiesInspection).toBeFalse();
+      expect(supported.signalWatch).toBeFalse();
+      expect(supported.transferState).toBeFalse();
+    });
+
+    it('should only report signalWatch when toggleWatchSignal API is available', () => {
+      (globalThis as any).ng = {toggleWatchSignal: () => {}};
+
+      const supported = getSupportedApis();
+
+      expect(supported.signalWatch).toBeTrue();
+      expect(supported.signals).toBeFalse();
       expect(supported.dependencyInjection).toBeFalse();
       expect(supported.profiler).toBeFalse();
       expect(supported.routes).toBeFalse();

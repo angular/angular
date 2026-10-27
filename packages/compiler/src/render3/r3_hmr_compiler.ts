@@ -81,6 +81,7 @@ export function compileHmrInitializer(meta: R3HmrMetadata): o.Expression {
   const replaceCallback = o.arrowFn(
     [new o.FnParam(moduleName, o.DYNAMIC_TYPE)],
     defaultRead.and(replaceCall),
+    o.DYNAMIC_TYPE,
   );
 
   // getReplaceMetadataURL(id, timestamp, import.meta.url)
@@ -107,7 +108,7 @@ export function compileHmrInitializer(meta: R3HmrMetadata): o.Expression {
         .callFn([replaceCallback])
         .toStmt(),
     ],
-    null,
+    o.DYNAMIC_TYPE,
     o.StmtModifier.Final,
   );
 
@@ -119,6 +120,7 @@ export function compileHmrInitializer(meta: R3HmrMetadata): o.Expression {
       .prop('id')
       .identical(o.variable(idName))
       .and(o.variable(importCallbackName).callFn([o.variable(dataName).prop('timestamp')])),
+    o.DYNAMIC_TYPE,
   );
 
   // Cmp_HmrLoad(Date.now());
@@ -155,6 +157,7 @@ export function compileHmrInitializer(meta: R3HmrMetadata): o.Expression {
         // ngDevMode && import.meta.hot && import.meta.hot.on(...)
         devOnlyGuardedExpression(hotRead.and(hotListener)).toStmt(),
       ],
+      o.DYNAMIC_TYPE,
     )
     .callFn([]);
 }
@@ -207,7 +210,7 @@ export function compileHmrUpdateCallback(
     `${meta.className}_UpdateMetadata`,
     params,
     body,
-    null,
+    o.DYNAMIC_TYPE,
     o.StmtModifier.Final,
   );
 }

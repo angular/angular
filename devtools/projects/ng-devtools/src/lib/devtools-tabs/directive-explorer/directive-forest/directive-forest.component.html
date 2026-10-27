@@ -13,7 +13,7 @@
     [node]="node"
     [selectedNode]="selectedNode()"
     [highlightedId]="highlightIdInTreeFromElement()"
-    [treeControl]="treeControl"
+    [expansionModel]="expansionModel"
     [textMatches]="matchedNodes().get(idx) ?? []"
     [nodeCdData]="mappedCdData().get(node.original.original)"
     (selectNode)="selectAndEnsureVisible($event)"

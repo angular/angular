@@ -1441,6 +1441,7 @@ function convertAst(
       o.arrowFn(
         ast.parameters.map((arg) => new o.FnParam(arg.name, o.DYNAMIC_TYPE)),
         convertAst(ast.body, job, baseSourceSpan),
+        o.DYNAMIC_TYPE,
       ),
     );
   } else {
@@ -2164,7 +2165,10 @@ function ingestControlFlowInsertionPoint(
       }
     }
 
-    const tagName = root instanceof t.Element ? root.name : root.tagName;
+    // Strip the namespace (e.g. `:svg:svg`), because content projection matches against the
+    // plain tag name.
+    const rawTagName = root instanceof t.Element ? root.name : root.tagName;
+    const tagName = rawTagName ? splitNsName(rawTagName)[1] : null;
 
     // Don't pass along `ng-template` tag name since it enables directive matching.
     return tagName === NG_TEMPLATE_TAG_NAME ? null : tagName;

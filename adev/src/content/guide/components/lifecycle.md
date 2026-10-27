@@ -250,7 +250,7 @@ communicate across phases, a phase function may return a result value that can b
 next phase.
 
 ```ts
-import {Component, ElementRef, afterNextRender} from '@angular/core';
+import {Component, ElementRef, afterNextRender, inject} from '@angular/core';
 
 @Component(/* ... */)
 export class UserProfile {

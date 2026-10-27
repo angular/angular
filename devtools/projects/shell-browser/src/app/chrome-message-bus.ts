@@ -20,15 +20,15 @@ type AnyEventCallback<Ev> = <E extends keyof Ev>(topic: E, args: Parameters<Ev[E
 type ListenerFn = (msg: ChromeMessage<Events, keyof Events>) => void;
 
 export class ChromeMessageBus extends MessageBus<Events> {
-  private _disconnected = false;
-  private _listeners: ListenerFn[] = [];
+  private disconnected = false;
+  private listeners: ListenerFn[] = [];
 
-  constructor(private _port: chrome.runtime.Port) {
+  constructor(private port: chrome.runtime.Port) {
     super();
 
-    _port.onDisconnect.addListener(() => {
+    port.onDisconnect.addListener(() => {
       // console.log('Disconnected the port');
-      this._disconnected = true;
+      this.disconnected = true;
     });
   }
 
@@ -36,11 +36,11 @@ export class ChromeMessageBus extends MessageBus<Events> {
     const listener = (msg: ChromeMessage<Events, keyof Events>): void => {
       cb(msg.topic, msg.args);
     };
-    this._port.onMessage.addListener(listener);
-    this._listeners.push(listener);
+    this.port.onMessage.addListener(listener);
+    this.listeners.push(listener);
     return () => {
-      this._listeners.splice(this._listeners.indexOf(listener), 1);
-      this._port.onMessage.removeListener(listener);
+      this.listeners.splice(this.listeners.indexOf(listener), 1);
+      this.port.onMessage.removeListener(listener);
     };
   }
 
@@ -50,11 +50,11 @@ export class ChromeMessageBus extends MessageBus<Events> {
         (cb as any).apply(null, msg.args);
       }
     };
-    this._port.onMessage.addListener(listener);
-    this._listeners.push(listener);
+    this.port.onMessage.addListener(listener);
+    this.listeners.push(listener);
     return () => {
-      this._listeners.splice(this._listeners.indexOf(listener), 1);
-      this._port.onMessage.removeListener(listener);
+      this.listeners.splice(this.listeners.indexOf(listener), 1);
+      this.port.onMessage.removeListener(listener);
     };
   }
 
@@ -62,17 +62,17 @@ export class ChromeMessageBus extends MessageBus<Events> {
     const listener = (msg: ChromeMessage<Events, keyof Events>) => {
       if (msg.topic === topic) {
         (cb as any).apply(null, msg.args);
-        this._port.onMessage.removeListener(listener);
+        this.port.onMessage.removeListener(listener);
       }
     };
-    this._port.onMessage.addListener(listener);
+    this.port.onMessage.addListener(listener);
   }
 
   override emit<E extends keyof Events>(topic: E, args?: Parameters<Events[E]>): boolean {
-    if (this._disconnected) {
+    if (this.disconnected) {
       return false;
     }
-    this._port.postMessage({
+    this.port.postMessage({
       topic,
       args,
       __ignore_ng_zone__: true,
@@ -82,7 +82,7 @@ export class ChromeMessageBus extends MessageBus<Events> {
   }
 
   override destroy(): void {
-    this._listeners.forEach((l) => this._port.onMessage.removeListener(l));
-    this._listeners = [];
+    this.listeners.forEach((l) => this.port.onMessage.removeListener(l));
+    this.listeners = [];
   }
 }

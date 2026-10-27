@@ -7,13 +7,16 @@
  */
 
 import ts from 'typescript';
-
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../../src/ngtsc/testing';
 
 import {NgtscTestEnvironment} from './env';
 
 const testFiles = loadStandardTestFiles();
+
+function extractMessage(diag: ts.Diagnostic) {
+  return typeof diag.messageText === 'string' ? diag.messageText : diag.messageText.messageText;
+}
 
 runInEachFileSystem(() => {
   describe('initializer-based output() API', () => {
@@ -39,7 +42,7 @@ runInEachFileSystem(() => {
       env.driveMain();
 
       const js = env.getContents('test.js');
-      const dts = env.getContents('test.d.ts');
+      const dts = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(js).toContain(`outputs: { click: "click" }`);
       expect(dts).toContain('{ "click": "click"; ');
@@ -61,7 +64,7 @@ runInEachFileSystem(() => {
       env.driveMain();
 
       const js = env.getContents('test.js');
-      const dts = env.getContents('test.d.ts');
+      const dts = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(js).toContain(`outputs: { click: "click" }`);
       expect(dts).toContain('{ "click": "click"; ');
@@ -82,7 +85,7 @@ runInEachFileSystem(() => {
       env.driveMain();
 
       const js = env.getContents('test.js');
-      const dts = env.getContents('test.d.ts');
+      const dts = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(js).toContain(`outputs: { click: "publicClick" }`);
       expect(dts).toContain('{ "click": "publicClick"; ');
@@ -105,7 +108,7 @@ runInEachFileSystem(() => {
       env.driveMain();
 
       const js = env.getContents('test.js');
-      const dts = env.getContents('test.d.ts');
+      const dts = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(js).toContain(`outputs: { click: "publicClick" }`);
       expect(dts).toContain('{ "click": "publicClick"; ');
@@ -126,11 +129,10 @@ runInEachFileSystem(() => {
         );
         const diagnostics = env.driveDiagnostics();
 
-        expect(diagnostics).toEqual([
-          jasmine.objectContaining({
-            messageText: 'Using "@Output" with "output()" is not allowed.',
-          }),
-        ]);
+        expect(diagnostics.length).toBe(1);
+        expect(extractMessage(diagnostics[0])).toContain(
+          'Using "@Output" with "output()" is not allowed.',
+        );
       });
 
       it('should fail when outputFromObservable() is used with @Output decorator', () => {
@@ -148,11 +150,10 @@ runInEachFileSystem(() => {
         );
         const diagnostics = env.driveDiagnostics();
 
-        expect(diagnostics).toEqual([
-          jasmine.objectContaining({
-            messageText: 'Using "@Output" with "output()" is not allowed.',
-          }),
-        ]);
+        expect(diagnostics.length).toBe(1);
+        expect(extractMessage(diagnostics[0])).toContain(
+          'Using "@Output" with "output()" is not allowed.',
+        );
       });
 
       it('should fail if used with output declared in @Directive metadata', () => {
@@ -172,11 +173,10 @@ runInEachFileSystem(() => {
         );
         const diagnostics = env.driveDiagnostics();
 
-        expect(diagnostics).toEqual([
-          jasmine.objectContaining({
-            messageText: 'Output "click" is unexpectedly declared in @Directive as well.',
-          }),
-        ]);
+        expect(diagnostics.length).toBe(1);
+        expect(extractMessage(diagnostics[0])).toContain(
+          'Output "click" is unexpectedly declared in @Directive as well.',
+        );
       });
 
       it('should fail if used with output declared in @Component metadata', () => {
@@ -197,11 +197,10 @@ runInEachFileSystem(() => {
         );
         const diagnostics = env.driveDiagnostics();
 
-        expect(diagnostics).toEqual([
-          jasmine.objectContaining({
-            messageText: 'Output "click" is unexpectedly declared in @Component as well.',
-          }),
-        ]);
+        expect(diagnostics.length).toBe(1);
+        expect(extractMessage(diagnostics[0])).toContain(
+          'Output "click" is unexpectedly declared in @Component as well.',
+        );
       });
 
       it('should fail if declared on a static member', () => {
@@ -221,11 +220,10 @@ runInEachFileSystem(() => {
         );
         const diagnostics = env.driveDiagnostics();
 
-        expect(diagnostics).toEqual([
-          jasmine.objectContaining({
-            messageText: 'Output is incorrectly declared on a static class member.',
-          }),
-        ]);
+        expect(diagnostics.length).toBe(1);
+        expect(extractMessage(diagnostics[0])).toContain(
+          'Output is incorrectly declared on a static class member.',
+        );
       });
 
       it('should fail if `.required` method is used (even though not supported via types)', () => {
@@ -246,9 +244,8 @@ runInEachFileSystem(() => {
         );
         const diagnostics = env.driveDiagnostics();
 
-        expect(diagnostics).toEqual([
-          jasmine.objectContaining({messageText: 'Output does not support ".required()".'}),
-        ]);
+        expect(diagnostics.length).toBe(1);
+        expect(extractMessage(diagnostics[0])).toContain('Output does not support ".required()".');
       });
 
       it('should report an error when using an ES private field', () => {
@@ -269,13 +266,9 @@ runInEachFileSystem(() => {
         const diagnostics = env.driveDiagnostics();
 
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics).toEqual([
-          jasmine.objectContaining<ts.Diagnostic>({
-            messageText: jasmine.objectContaining<ts.DiagnosticMessageChain>({
-              messageText: `Cannot use "output" on a class member that is declared as ES private.`,
-            }),
-          }),
-        ]);
+        expect(extractMessage(diagnostics[0])).toContain(
+          `Cannot use "output" on a class member that is declared as ES private.`,
+        );
       });
 
       it('should report an error when using a `private` field', () => {
@@ -296,13 +289,9 @@ runInEachFileSystem(() => {
         const diagnostics = env.driveDiagnostics();
 
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics).toEqual([
-          jasmine.objectContaining<ts.Diagnostic>({
-            messageText: jasmine.objectContaining<ts.DiagnosticMessageChain>({
-              messageText: `Cannot use "output" on a class member that is declared as private.`,
-            }),
-          }),
-        ]);
+        expect(extractMessage(diagnostics[0])).toContain(
+          `Cannot use "output" on a class member that is declared as private.`,
+        );
       });
 
       it('should allow an output using a `protected` field', () => {
@@ -340,10 +329,8 @@ runInEachFileSystem(() => {
       env.driveMain();
       const js = env.getContents('test.js');
       expect(js).toContain('import * as i0 from "@angular/core";');
-      expect(js).toContain(`i0.ɵsetClassMetadata(TestDir, [{
-        type: Component,
-        args: [{ selector: 'test', template: '' }]
-    }], null, { click: [{ type: i0.Output, args: ["click"] }] });`);
+      expect(js).toContain('i0.ɵsetClassMetadata(TestDir');
+      expect(js).toMatch(/click: \[{ type: i0\.Output, args: \[['"]click['"]] }]/);
     });
   });
 });

@@ -8,7 +8,6 @@
 
 import {ViewEncapsulation} from '@angular/compiler';
 import {
-  ChangeDetectionStrategy,
   Component,
   ComponentRef,
   computed,
@@ -51,12 +50,11 @@ describe('signal inputs', () => {
     }
 
     @Component({
-      template: `<input-comp [input]="value" />`,
+      template: `<input-comp [input]="value()" />`,
       imports: [InputComp],
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestCmp {
-      value = 1;
+      value = signal(1);
     }
 
     const fixture = TestBed.createComponent(TestCmp);
@@ -64,8 +62,7 @@ describe('signal inputs', () => {
 
     expect(fixture.nativeElement.textContent).toBe('input:1');
 
-    fixture.componentInstance.value = 2;
-    fixture.changeDetectorRef.markForCheck();
+    fixture.componentInstance.value.set(2);
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('input:2');
@@ -82,12 +79,11 @@ describe('signal inputs', () => {
     }
 
     @Component({
-      template: `<input-comp [input]="value" />`,
+      template: `<input-comp [input]="value()" />`,
       imports: [InputComp],
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestCmp {
-      value = 1;
+      value = signal(1);
     }
 
     const fixture = TestBed.createComponent(TestCmp);
@@ -95,8 +91,7 @@ describe('signal inputs', () => {
 
     expect(fixture.nativeElement.textContent).toBe('changed:computed-1');
 
-    fixture.componentInstance.value = 2;
-    fixture.changeDetectorRef.markForCheck();
+    fixture.componentInstance.value.set(2);
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('changed:computed-2');
@@ -120,12 +115,11 @@ describe('signal inputs', () => {
     }
 
     @Component({
-      template: `<input-comp [input]="value" />`,
+      template: `<input-comp [input]="value()" />`,
       imports: [InputComp],
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestCmp {
-      value = 1;
+      value = signal(1);
     }
 
     const fixture = TestBed.createComponent(TestCmp);
@@ -135,8 +129,7 @@ describe('signal inputs', () => {
 
     expect(effectLog).toEqual([1]);
 
-    fixture.componentInstance.value = 2;
-    fixture.changeDetectorRef.markForCheck();
+    fixture.componentInstance.value.set(2);
     fixture.detectChanges();
 
     expect(effectLog).toEqual([1, 2]);
@@ -207,12 +200,11 @@ describe('signal inputs', () => {
     class InputComp extends BaseDir {}
 
     @Component({
-      template: `<input-comp [input]="value" />`,
+      template: `<input-comp [input]="value()" />`,
       imports: [InputComp],
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestCmp {
-      value = 1;
+      value = signal(1);
     }
 
     const fixture = TestBed.createComponent(TestCmp);
@@ -220,8 +212,7 @@ describe('signal inputs', () => {
 
     expect(fixture.nativeElement.textContent).toBe('input:1');
 
-    fixture.componentInstance.value = 2;
-    fixture.changeDetectorRef.markForCheck();
+    fixture.componentInstance.value.set(2);
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('input:2');
@@ -237,11 +228,10 @@ describe('signal inputs', () => {
     @Component({
       template: '<div [(value)]="value" dir></div>',
       imports: [Dir],
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       @ViewChild(Dir) dir!: Dir;
-      value = 1;
+      value = signal(1);
     }
 
     const fixture = TestBed.createComponent(App);
@@ -249,21 +239,19 @@ describe('signal inputs', () => {
     fixture.detectChanges();
 
     // Initial value.
-    expect(host.value).toBe(1);
+    expect(host.value()).toBe(1);
     expect(host.dir.value()).toBe(1);
 
     // Changing the value from within the directive.
     host.dir.valueChange.emit(2);
-    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
-    expect(host.value).toBe(2);
+    expect(host.value()).toBe(2);
     expect(host.dir.value()).toBe(2);
 
     // Changing the value from the outside.
-    host.value = 3;
-    fixture.changeDetectorRef.markForCheck();
+    host.value.set(3);
     fixture.detectChanges();
-    expect(host.value).toBe(3);
+    expect(host.value()).toBe(3);
     expect(host.dir.value()).toBe(3);
   });
 
@@ -320,10 +308,10 @@ describe('signal inputs', () => {
     it('should support signal inputs', async () => {
       const styles = `
         .slide-in {
-          animation: slide-in 250ms;
+          animation: slide-in 1ms;
         }
         .fade-in {
-          animation: fade-in 500ms;
+          animation: fade-in 2ms;
         }
         @keyframes slide-in {
           from {
@@ -383,10 +371,10 @@ describe('signal inputs', () => {
     it('should support content projection', async () => {
       const animateStyles = `
         .fade-in {
-          animation: fade 250ms forwards;
+          animation: fade 1ms forwards;
         }
         .fade-out {
-          animation: fade 500ms reverse;
+          animation: fade 2ms reverse;
         }
         @keyframes fade {
           from {

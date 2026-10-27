@@ -7,6 +7,8 @@
 // @public
 export const enum RuntimeErrorCode {
     // (undocumented)
+    CANNOT_READ_RESOURCES_SYNCHRONOUSLY = 4020,
+    // (undocumented)
     EMPTY_PATH_WITH_PARAMS = 4009,
     // (undocumented)
     ERROR_PARSING_URL = 4018,
@@ -36,6 +38,8 @@ export const enum RuntimeErrorCode {
     OUTLET_ALREADY_ACTIVATED = 4013,
     // (undocumented)
     OUTLET_NOT_ACTIVATED = 4012,
+    // (undocumented)
+    PROTOCOL_RELATIVE_URL_NOT_ALLOWED = 4019,
     // (undocumented)
     ROOT_SEGMENT_MATRIX_PARAMS = 4003,
     // (undocumented)

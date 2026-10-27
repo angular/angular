@@ -69,6 +69,34 @@ describe('resolveUrl', () => {
       expect(() => resolveUrl(url, 'http://test.com')).toThrowError(/NG05703/);
     });
 
+    it('should throw on protocol-relative URLs when allowProtocolRelative is false or default', () => {
+      const urls = [
+        '//attacker.example/collect',
+        '///attacker.example/collect',
+        '/.//attacker.example/collect',
+        '/..//attacker.example/collect',
+        '/.\\/attacker.example/collect',
+        'http://test.com/.//attacker.example/collect',
+      ];
+
+      for (const url of urls) {
+        expect(() => resolveUrl(url, 'http://test.com')).toThrowError(/NG05702/);
+      }
+    });
+
+    it('should allow protocol-relative URLs when allowProtocolRelative is true', () => {
+      const url = resolveUrl('//attacker.example/collect', 'http://test.com', {
+        allowProtocolRelative: true,
+      });
+      expect(url.href).toBe('http://attacker.example/collect');
+      expect(url.origin).toBe('http://attacker.example');
+
+      const dotUrl = resolveUrl('/.//attacker.example/collect', 'http://test.com', {
+        allowProtocolRelative: true,
+      });
+      expect(dotUrl.href).toBe('http://test.com//attacker.example/collect');
+    });
+
     it('should not trim unicode whitespace into protocol-relative URLs', () => {
       const urls = ['\u00A0//attacker.example/collect', '\uFEFF//attacker.example/collect'];
 

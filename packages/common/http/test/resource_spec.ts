@@ -191,6 +191,8 @@ describe('httpResource', () => {
     );
     TestBed.tick();
     const req = backend.expectOne('/data');
+    expect(req.request.reportDownloadProgress).toBe(true);
+    expect(req.request.reportProgress).toBe(false);
     req.event({
       type: HttpEventType.DownloadProgress,
       loaded: 100,
@@ -248,7 +250,7 @@ describe('httpResource', () => {
     expect(req.request.responseType).toEqual('json');
     expect(req.request.withCredentials).toEqual(true);
     expect(req.request.context.get(CTX_TOKEN)).toEqual('bar');
-    expect(req.request.reportProgress).toEqual(true);
+    expect(req.request.reportDownloadProgress).toEqual(true);
     expect(req.request.keepalive).toBe(true);
     expect(req.request.transferCache).toEqual({includeHeaders: ['Y-Tag']});
     expect(req.request.timeout).toBe(1234);

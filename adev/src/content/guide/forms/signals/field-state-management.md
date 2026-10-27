@@ -108,7 +108,7 @@ When checking validity in code, use `invalid()` instead of `!valid()` if you wan
 
 ### Reading validation errors
 
-Access the array of validation errors with `errors()`. Each error object contains:
+Access the array of validation errors with `errors()`, or an individual error with `getError()`. Each error object contains:
 
 | Property    | Description                                                     |
 | ----------- | --------------------------------------------------------------- |
@@ -118,7 +118,7 @@ Access the array of validation errors with `errors()`. Each error object contain
 
 NOTE: The `message` property is optional. Validators can provide custom error messages, but if not specified, you may need to map error `kind` values to your own messages.
 
-Here's an example of how to display errors in your template:
+Here's an example of how to display errors in your template by an array of validation errors:
 
 ```angular-ts
 @Component({
@@ -137,6 +137,24 @@ Here's an example of how to display errors in your template:
 ```
 
 This approach loops through all errors for a field, displaying each error message to the user.
+
+Here's an example of how to display an error in your template with `getError()`:
+
+```angular-ts
+@Component({
+  template: `
+    <input type="email" [formField]="loginForm.email" />
+
+    @if (loginForm.email().getError('required'); as error) {
+      <div class="errors">
+        <p>{{ error.message }}</p>
+      </div>
+    }
+  `
+})
+```
+
+`getError()` accepts any string for an error's `kind`, and recognizes build-in validation error kinds (e.g., "required", "email", "minLength").
 
 ### Pending validation
 
@@ -690,7 +708,8 @@ While field state typically updates through user interactions (typing, focusing,
 Signal Forms provides a `FormRoot` directive that simplifies form submission. It automatically prevents the default browser form submission behavior and sets the `novalidate` attribute on the `<form>` element.
 
 ```angular-ts
-import {FormField, FormRoot} from '@angular/forms/signals';
+import {FormField, FormRoot, form, required, email} from '@angular/forms/signals';
+import {Component, signal} from '@angular/core';
 
 @Component({
   imports: [FormRoot, FormField],
@@ -876,7 +895,6 @@ export class PasswordInput implements FormValueControl<string> {
 
 This guide covered validation and availability status handling, interaction tracking and field state propagation. Related guides explore other aspects of Signal Forms:
 
-<!-- TODO: UNCOMMENT WHEN THE GUIDES ARE AVAILABLE -->
 <docs-pill-row>
   <docs-pill href="guide/forms/signals/models" title="Form models" />
   <docs-pill href="guide/forms/signals/validation" title="Validation" />

@@ -379,6 +379,7 @@ export interface SupportedApis {
   signals: boolean;
   transferState: boolean;
   signalPropertiesInspection: boolean;
+  signalWatch: boolean;
 }
 
 export type TransferStateValue =

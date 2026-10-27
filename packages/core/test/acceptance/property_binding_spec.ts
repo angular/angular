@@ -10,35 +10,26 @@ import {CommonModule} from '@angular/common';
 import {By, DomSanitizer, SafeUrl} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {
-  ChangeDetectionStrategy,
   Component,
   Directive,
   EventEmitter,
   Input,
   Output,
-  provideZoneChangeDetection,
+  signal,
   ViewContainerRef,
+  WritableSignal,
 } from '../../src/core';
 import {TestBed} from '../../testing';
 
 describe('property bindings', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [provideZoneChangeDetection()],
-    });
-  });
   it('should support bindings to properties', () => {
     @Component({
       template: `<span [id]="id"></span>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       id: string | undefined;
     }
 
-    TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
     const spanEl = fixture.nativeElement.querySelector('span');
 
@@ -50,252 +41,245 @@ describe('property bindings', () => {
     expect(spanEl.id).toBe('testId');
   });
 
-  it('should update bindings when value changes', () => {
+  it('should not set `src` to "undefined" string for img/video elements when bound to undefined', () => {
     @Component({
-      template: `<a [title]="title"></a>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
+      template: `
+        <img [src]="imgSrc" />
+        <video [src]="videoSrc"></video>
+      `,
     })
     class Comp {
-      title = 'Hello';
+      imgSrc: string | undefined;
+      videoSrc: string | undefined;
     }
 
-    TestBed.configureTestingModule({declarations: [Comp]});
+    const fixture = TestBed.createComponent(Comp);
+    fixture.detectChanges();
+
+    const img = fixture.nativeElement.querySelector('img') as HTMLImageElement;
+    const video = fixture.nativeElement.querySelector('video') as HTMLVideoElement;
+
+    // Both should have their src attribute set to an empty string, not "undefined"
+    // (Wait, actually they might not have the attribute if the property is set to '', but `img.src` should not contain 'undefined')
+    expect(img.getAttribute('src')).not.toBe('undefined');
+    expect(img.getAttribute('src')).toBe('');
+    expect(video.getAttribute('src')).not.toBe('undefined');
+    expect(video.getAttribute('src')).toBe('');
+  });
+
+  it('should update bindings when value changes', async () => {
+    @Component({
+      template: `<a [title]="title()"></a>`,
+    })
+    class Comp {
+      title = signal('Hello');
+    }
+
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
     let a = fixture.debugElement.query(By.css('a')).nativeElement;
     expect(a.title).toBe('Hello');
 
-    fixture.componentInstance.title = 'World';
-    fixture.detectChanges();
+    fixture.componentInstance.title.set('World');
+    await fixture.whenStable();
     expect(a.title).toBe('World');
   });
 
-  it('should not update bindings when value does not change', () => {
+  it('should not update bindings when value does not change', async () => {
     @Component({
-      template: `<a [title]="title"></a>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
+      template: `<a [title]="title()"></a>`,
     })
     class Comp {
-      title = 'Hello';
+      title = signal('Hello');
     }
 
-    TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
-    fixture.detectChanges();
+    await fixture.whenStable();
     let a = fixture.debugElement.query(By.css('a')).nativeElement;
     expect(a.title).toBe('Hello');
 
-    fixture.detectChanges();
+    fixture.changeDetectorRef.markForCheck();
+    await fixture.whenStable();
     expect(a.title).toBe('Hello');
   });
 
-  it('should bind to properties whose names do not correspond to their attribute names', () => {
+  it('should bind to properties whose names do not correspond to their attribute names', async () => {
     @Component({
-      template: '<label [for]="forValue"></label>',
-
-      changeDetection: ChangeDetectionStrategy.Eager,
+      template: '<label [for]="forValue()"></label>',
     })
     class MyComp {
-      forValue?: string;
+      forValue = signal('some-input');
     }
 
     const fixture = TestBed.createComponent(MyComp);
     const labelNode = fixture.debugElement.query(By.css('label'));
 
-    fixture.componentInstance.forValue = 'some-input';
-    fixture.detectChanges();
-
+    await fixture.whenStable();
     expect(labelNode.nativeElement.getAttribute('for')).toBe('some-input');
 
-    fixture.componentInstance.forValue = 'some-textarea';
-    fixture.detectChanges();
-
+    fixture.componentInstance.forValue.set('some-textarea');
+    await fixture.whenStable();
     expect(labelNode.nativeElement.getAttribute('for')).toBe('some-textarea');
   });
 
   it(
     'should not map properties whose names do not correspond to their attribute names, ' +
       'if they correspond to inputs',
-    () => {
+    async () => {
       @Component({
         template: '',
         selector: 'my-comp',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComp {
         @Input() for!: string;
       }
 
       @Component({
-        template: '<my-comp [for]="forValue"></my-comp>',
+        template: '<my-comp [for]="forValue()"></my-comp>',
         imports: [MyComp],
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
-        forValue?: string;
+        forValue = signal('hello');
       }
 
       const fixture = TestBed.createComponent(App);
+      await fixture.whenStable();
       const myCompNode = fixture.debugElement.query(By.directive(MyComp));
-      fixture.componentInstance.forValue = 'hello';
-      fixture.detectChanges();
       expect(myCompNode.nativeElement.getAttribute('for')).toBeFalsy();
       expect(myCompNode.componentInstance.for).toBe('hello');
 
-      fixture.componentInstance.forValue = 'hej';
-      fixture.detectChanges();
+      fixture.componentInstance.forValue.set('hej');
+      await fixture.whenStable();
       expect(myCompNode.nativeElement.getAttribute('for')).toBeFalsy();
       expect(myCompNode.componentInstance.for).toBe('hej');
     },
   );
 
-  it('should bind ARIA properties', () => {
+  it('should bind ARIA properties', async () => {
     @Component({
-      template: '<button [ariaLabel]="label" [ariaHasPopup]="hasPopup"></button>',
-
-      changeDetection: ChangeDetectionStrategy.Eager,
+      template: '<button [ariaLabel]="label()" [ariaHasPopup]="hasPopup()"></button>',
     })
     class MyComp {
-      label?: string;
-      hasPopup?: string;
+      label = signal('Open');
+      hasPopup = signal('menu');
     }
 
     const fixture = TestBed.createComponent(MyComp);
     const button = fixture.debugElement.query(By.css('button')).nativeElement as HTMLButtonElement;
 
-    fixture.componentInstance.label = 'Open';
-    fixture.componentInstance.hasPopup = 'menu';
-    fixture.detectChanges();
-
+    fixture.componentInstance.label.set('Open');
+    await fixture.whenStable();
     expect(button.ariaLabel).toBe('Open');
     expect(button.ariaHasPopup).toBe('menu');
 
-    fixture.componentInstance.label = 'Close';
-    fixture.detectChanges();
+    fixture.componentInstance.label.set('Close');
+    await fixture.whenStable();
 
     expect(button.ariaLabel).toBe('Close');
   });
 
-  it('should bind interpolated ARIA attributes', () => {
+  it('should bind interpolated ARIA attributes', async () => {
     @Component({
-      template: '<button aria-label="{{label}} menu"></button>',
-
-      changeDetection: ChangeDetectionStrategy.Eager,
+      template: '<button aria-label="{{label()}} menu"></button>',
     })
     class MyComp {
-      label?: string;
+      label = signal('Open');
     }
 
     const fixture = TestBed.createComponent(MyComp);
     const button = fixture.debugElement.query(By.css('button')).nativeElement;
 
-    fixture.componentInstance.label = 'Open';
-    fixture.detectChanges();
+    fixture.componentInstance.label.set('Open');
+    await fixture.whenStable();
 
     expect(button.getAttribute('aria-label')).toBe('Open menu');
 
-    fixture.componentInstance.label = 'Close';
-    fixture.detectChanges();
+    fixture.componentInstance.label.set('Close');
+    await fixture.whenStable();
 
     expect(button.getAttribute('aria-label')).toBe('Close menu');
   });
 
   describe('should bind to ARIA attribute names', () => {
-    it('on HTML elements', () => {
+    it('on HTML elements', async () => {
       @Component({
-        template: '<button [aria-label]="label"></button>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: '<button [aria-label]="label()"></button>',
       })
       class MyComp {
-        label?: string;
+        label = signal('Open');
       }
 
       const fixture = TestBed.createComponent(MyComp);
       const button = fixture.debugElement.query(By.css('button')).nativeElement;
 
-      fixture.componentInstance.label = 'Open';
-      fixture.detectChanges();
+      fixture.componentInstance.label.set('Open');
+      await fixture.whenStable();
 
       expect(button.getAttribute('aria-label')).toBe('Open');
 
-      fixture.componentInstance.label = 'Close';
-      fixture.detectChanges();
+      fixture.componentInstance.label.set('Close');
+      await fixture.whenStable();
 
       expect(button.getAttribute('aria-label')).toBe('Close');
     });
 
-    it('on component elements', () => {
+    it('on component elements', async () => {
       @Component({
         selector: 'button[fancy]',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: '',
       })
       class FancyButton {}
 
       @Component({
-        template: '<button fancy [aria-label]="label"></button>',
+        template: '<button fancy [aria-label]="label()"></button>',
         imports: [FancyButton],
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComp {
-        label?: string;
+        label = signal('Open');
       }
 
       const fixture = TestBed.createComponent(MyComp);
       const button = fixture.debugElement.query(By.css('button')).nativeElement;
 
-      fixture.componentInstance.label = 'Open';
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(button.getAttribute('aria-label')).toBe('Open');
 
-      fixture.componentInstance.label = 'Close';
-      fixture.detectChanges();
+      fixture.componentInstance.label.set('Close');
+      await fixture.whenStable();
 
       expect(button.getAttribute('aria-label')).toBe('Close');
     });
   });
 
-  it('should no bind to ARIA properties if they correspond to inputs', () => {
+  it('should no bind to ARIA properties if they correspond to inputs', async () => {
     @Component({
       template: '',
       selector: 'my-comp',
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyComp {
       @Input() ariaLabel?: string;
     }
 
     @Component({
-      template: '<my-comp [ariaLabel]="label"></my-comp>',
+      template: '<my-comp [ariaLabel]="label()"></my-comp>',
       imports: [MyComp],
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
-      label = 'a';
+      label = signal('a');
     }
 
     const fixture = TestBed.createComponent(App);
     const myCompNode = fixture.debugElement.query(By.directive(MyComp));
 
-    fixture.componentInstance.label = 'a';
-    fixture.detectChanges();
+    fixture.componentInstance.label.set('a');
+    await fixture.whenStable();
 
     expect(myCompNode.nativeElement.getAttribute('aria-label')).toBeFalsy();
     expect(myCompNode.componentInstance.ariaLabel).toBe('a');
 
-    fixture.componentInstance.label = 'b';
-    fixture.detectChanges();
+    fixture.componentInstance.label.set('b');
+    await fixture.whenStable();
 
     expect(myCompNode.nativeElement.getAttribute('aria-label')).toBeFalsy();
     expect(myCompNode.componentInstance.ariaLabel).toBe('b');
@@ -304,67 +288,61 @@ describe('property bindings', () => {
   it(
     'should not bind to ARIA properties by their corresponding attribute names, if they ' +
       'correspond to inputs',
-    () => {
+    async () => {
       @Component({
         template: '',
         selector: 'my-comp',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComp {
         @Input({alias: 'aria-label'}) myAriaLabel?: string;
       }
 
       @Component({
-        template: '<my-comp [aria-label]="label"></my-comp>',
+        template: '<my-comp [aria-label]="label()"></my-comp>',
         imports: [MyComp],
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
-        label = 'a';
+        label = signal('a');
       }
 
       const fixture = TestBed.createComponent(App);
       const myCompNode = fixture.debugElement.query(By.directive(MyComp));
 
-      fixture.componentInstance.label = 'a';
-      fixture.detectChanges();
+      fixture.componentInstance.label.set('a');
+      await fixture.whenStable();
 
       expect(myCompNode.nativeElement.getAttribute('aria-label')).toBeFalsy();
       expect(myCompNode.componentInstance.myAriaLabel).toBe('a');
 
-      fixture.componentInstance.label = 'b';
-      fixture.detectChanges();
+      fixture.componentInstance.label.set('b');
+      await fixture.whenStable();
 
       expect(myCompNode.nativeElement.getAttribute('aria-label')).toBeFalsy();
       expect(myCompNode.componentInstance.myAriaLabel).toBe('b');
     },
   );
 
-  it('should use the sanitizer in bound properties', () => {
+  it('should use the sanitizer in bound properties', async () => {
     @Component({
-      template: ` <a [href]="url"> </a> `,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
+      template: ` <a [href]="url()"> </a> `,
     })
     class App {
-      url: string | SafeUrl = 'javascript:alert("haha, I am taking over your computer!!!");';
+      url: WritableSignal<string | SafeUrl> = signal(
+        'javascript:alert("haha, I am taking over your computer!!!");',
+      );
     }
 
-    TestBed.configureTestingModule({declarations: [App]});
     const fixture = TestBed.createComponent(App);
-    fixture.detectChanges();
+    await fixture.whenStable();
     const a = fixture.nativeElement.querySelector('a');
 
     expect(a.href.indexOf('unsafe:')).toBe(0);
 
     const domSanitzer: DomSanitizer = TestBed.inject(DomSanitizer);
-    fixture.componentInstance.url = domSanitzer.bypassSecurityTrustUrl(
-      'javascript:alert("the developer wanted this");',
+    fixture.componentInstance.url.set(
+      domSanitzer.bypassSecurityTrustUrl('javascript:alert("the developer wanted this");'),
     );
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(a.href.indexOf('unsafe:')).toBe(-1);
   });
@@ -372,49 +350,39 @@ describe('property bindings', () => {
   it('should not stringify non-string values', () => {
     @Component({
       template: `<input [required]="isRequired" />`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       isRequired = false;
     }
 
-    TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
 
     expect(fixture.debugElement.query(By.css('input')).nativeElement.required).toBe(false);
   });
 
-  it('should support interpolation for properties', () => {
+  it('should support interpolation for properties', async () => {
     @Component({
-      template: `<span id="{{ '_' + id + '_' }}"></span>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
+      template: `<span id="{{ '_' + id() + '_' }}"></span>`,
     })
     class Comp {
-      id: string | undefined;
+      id = signal('testId');
     }
 
-    TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
     const spanEl = fixture.nativeElement.querySelector('span');
 
-    fixture.componentInstance.id = 'testId';
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(spanEl.id).toBe('_testId_');
 
-    fixture.componentInstance.id = 'otherId';
-    fixture.detectChanges();
+    fixture.componentInstance.id.set('otherId');
+    await fixture.whenStable();
     expect(spanEl.id).toBe('_otherId_');
   });
 
   describe('input properties', () => {
     @Directive({
       selector: '[myButton]',
-      standalone: false,
     })
     class MyButton {
       @Input() disabled: boolean | undefined;
@@ -422,7 +390,6 @@ describe('property bindings', () => {
 
     @Directive({
       selector: '[otherDir]',
-      standalone: false,
     })
     class OtherDir {
       @Input() id: number | undefined;
@@ -431,7 +398,6 @@ describe('property bindings', () => {
 
     @Directive({
       selector: '[otherDisabledDir]',
-      standalone: false,
     })
     class OtherDisabledDir {
       @Input() disabled: boolean | undefined;
@@ -439,30 +405,28 @@ describe('property bindings', () => {
 
     @Directive({
       selector: '[idDir]',
-      standalone: false,
     })
     class IdDir {
       @Input('id') idNumber: string | undefined;
     }
 
-    it('should check input properties before setting (directives)', () => {
+    it('should check input properties before setting (directives)', async () => {
       @Component({
-        template: `<button myButton otherDir [id]="id" [disabled]="isDisabled">Click me</button>`,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: `<button myButton otherDir [id]="id()" [disabled]="isDisabled()">
+          Click me
+        </button>`,
+        imports: [MyButton, OtherDir],
       })
       class App {
-        id = 0;
-        isDisabled = true;
+        id = signal(0);
+        isDisabled = signal(true);
       }
 
-      TestBed.configureTestingModule({declarations: [App, MyButton, OtherDir]});
       const fixture = TestBed.createComponent(App);
       const button = fixture.debugElement.query(By.directive(MyButton)).injector.get(MyButton);
       const otherDir = fixture.debugElement.query(By.directive(OtherDir)).injector.get(OtherDir);
       const buttonEl = fixture.nativeElement.children[0];
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(buttonEl.getAttribute('mybutton')).toBe('');
       expect(buttonEl.getAttribute('otherdir')).toBe('');
@@ -471,9 +435,9 @@ describe('property bindings', () => {
       expect(button.disabled).toEqual(true);
       expect(otherDir.id).toEqual(0);
 
-      fixture.componentInstance.isDisabled = false;
-      fixture.componentInstance.id = 1;
-      fixture.detectChanges();
+      fixture.componentInstance.isDisabled.set(false);
+      fixture.componentInstance.id.set(1);
+      await fixture.whenStable();
 
       expect(buttonEl.getAttribute('mybutton')).toBe('');
       expect(buttonEl.getAttribute('otherdir')).toBe('');
@@ -483,124 +447,109 @@ describe('property bindings', () => {
       expect(otherDir.id).toEqual(1);
     });
 
-    it('should support mixed element properties and input properties', () => {
+    it('should support mixed element properties and input properties', async () => {
       @Component({
-        template: `<button myButton [id]="id" [disabled]="isDisabled">Click me</button>`,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: `<button myButton [id]="id()" [disabled]="isDisabled()">Click me</button>`,
+        imports: [MyButton],
       })
       class App {
-        isDisabled = true;
-        id = 0;
+        isDisabled = signal(true);
+        id = signal(0);
       }
 
-      TestBed.configureTestingModule({declarations: [App, MyButton]});
       const fixture = TestBed.createComponent(App);
       const button = fixture.debugElement.query(By.directive(MyButton)).injector.get(MyButton);
       const buttonEl = fixture.nativeElement.children[0];
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(buttonEl.getAttribute('id')).toBe('0');
       expect(buttonEl.hasAttribute('disabled')).toBe(false);
       expect(button.disabled).toEqual(true);
 
-      fixture.componentInstance.isDisabled = false;
-      fixture.componentInstance.id = 1;
-      fixture.detectChanges();
+      fixture.componentInstance.isDisabled.set(false);
+      fixture.componentInstance.id.set(1);
+      await fixture.whenStable();
 
       expect(buttonEl.getAttribute('id')).toBe('1');
       expect(buttonEl.hasAttribute('disabled')).toBe(false);
       expect(button.disabled).toEqual(false);
     });
 
-    it('should check that property is not an input property before setting (component)', () => {
+    it('should check that property is not an input property before setting (component)', async () => {
       @Component({
         selector: 'comp',
         template: '',
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Comp {
         @Input() id: number | undefined;
       }
 
       @Component({
-        template: `<comp [id]="id"></comp>`,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: `<comp [id]="id()"></comp>`,
+        imports: [Comp],
       })
       class App {
-        id = 1;
+        id = signal(1);
       }
 
-      TestBed.configureTestingModule({declarations: [App, Comp]});
       const fixture = TestBed.createComponent(App);
       const compDebugEl = fixture.debugElement.query(By.directive(Comp));
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(compDebugEl.nativeElement.hasAttribute('id')).toBe(false);
       expect(compDebugEl.componentInstance.id).toEqual(1);
 
-      fixture.componentInstance.id = 2;
-      fixture.detectChanges();
+      fixture.componentInstance.id.set(2);
+      await fixture.whenStable();
 
       expect(compDebugEl.nativeElement.hasAttribute('id')).toBe(false);
       expect(compDebugEl.componentInstance.id).toEqual(2);
     });
 
-    it('should support two input properties with the same name', () => {
+    it('should support two input properties with the same name', async () => {
       @Component({
-        template: `<button myButton otherDisabledDir [disabled]="isDisabled">Click me</button>`,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: `<button myButton otherDisabledDir [disabled]="isDisabled()">Click me</button>`,
+        imports: [MyButton, OtherDisabledDir],
       })
       class App {
-        isDisabled = true;
+        isDisabled = signal(true);
       }
 
-      TestBed.configureTestingModule({declarations: [App, MyButton, OtherDisabledDir]});
       const fixture = TestBed.createComponent(App);
       const button = fixture.debugElement.query(By.directive(MyButton)).injector.get(MyButton);
       const otherDisabledDir = fixture.debugElement
         .query(By.directive(OtherDisabledDir))
         .injector.get(OtherDisabledDir);
       const buttonEl = fixture.nativeElement.children[0];
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(buttonEl.hasAttribute('disabled')).toBe(false);
       expect(button.disabled).toEqual(true);
       expect(otherDisabledDir.disabled).toEqual(true);
 
-      fixture.componentInstance.isDisabled = false;
-      fixture.detectChanges();
+      fixture.componentInstance.isDisabled.set(false);
+      await fixture.whenStable();
 
       expect(buttonEl.hasAttribute('disabled')).toBe(false);
       expect(button.disabled).toEqual(false);
       expect(otherDisabledDir.disabled).toEqual(false);
     });
 
-    it('should set input property if there is an output first', () => {
+    it('should set input property if there is an output first', async () => {
       @Component({
-        template: `<button otherDir [id]="id" (click)="onClick()">Click me</button>`,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        template: `<button otherDir [id]="id()" (click)="onClick()">Click me</button>`,
+        imports: [OtherDir],
       })
       class App {
-        id = 1;
+        id = signal(1);
         counter = 0;
         onClick = () => this.counter++;
       }
 
-      TestBed.configureTestingModule({declarations: [App, OtherDir]});
       const fixture = TestBed.createComponent(App);
       const otherDir = fixture.debugElement.query(By.directive(OtherDir)).injector.get(OtherDir);
       const buttonEl = fixture.nativeElement.children[0];
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(buttonEl.hasAttribute('id')).toBe(false);
       expect(otherDir.id).toEqual(1);
@@ -608,35 +557,30 @@ describe('property bindings', () => {
       otherDir.clickStream.next();
       expect(fixture.componentInstance.counter).toEqual(1);
 
-      fixture.componentInstance.id = 2;
-      fixture.detectChanges();
+      fixture.componentInstance.id.set(2);
+      await fixture.whenStable();
       expect(otherDir.id).toEqual(2);
     });
 
-    it('should support unrelated element properties at same index in if-else block', () => {
+    it('should support unrelated element properties at same index in if-else block', async () => {
       @Component({
         template: `
-          <button idDir [id]="id1">Click me</button>
-          <button *ngIf="condition" [id]="id2">Click me too (2)</button>
-          <button *ngIf="!condition" otherDir [id]="id3">Click me too (3)</button>
+          <button idDir [id]="id1()">Click me</button>
+          <button *ngIf="condition()" [id]="id2()">Click me too (2)</button>
+          <button *ngIf="!condition()" otherDir [id]="id3()">Click me too (3)</button>
         `,
-        standalone: false,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [CommonModule, OtherDir, IdDir],
       })
       class App {
-        condition = true;
-        id1 = 'one';
-        id2 = 'two';
-        id3 = 3;
+        condition = signal(true);
+        id1 = signal('one');
+        id2 = signal('two');
+        id3 = signal(3);
       }
 
-      TestBed.configureTestingModule({
-        declarations: [App, IdDir, OtherDir],
-        imports: [CommonModule],
-      });
       const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
+      await fixture.whenStable();
       let buttonElements = fixture.nativeElement.querySelectorAll('button');
       const idDir = fixture.debugElement.query(By.directive(IdDir)).injector.get(IdDir);
 
@@ -646,9 +590,9 @@ describe('property bindings', () => {
       expect(buttonElements[1].textContent).toBe('Click me too (2)');
       expect(idDir.idNumber).toBe('one');
 
-      fixture.componentInstance.condition = false;
-      fixture.componentInstance.id1 = 'four';
-      fixture.detectChanges();
+      fixture.componentInstance.condition.set(false);
+      fixture.componentInstance.id1.set('four');
+      await fixture.whenStable();
 
       const otherDir = fixture.debugElement.query(By.directive(OtherDir)).injector.get(OtherDir);
       buttonElements = fixture.nativeElement.querySelectorAll('button');
@@ -660,32 +604,34 @@ describe('property bindings', () => {
       expect(otherDir.id).toBe(3);
     });
 
-    it('should support input bindings named "field"', () => {
+    it('should support input bindings named "field"', async () => {
       // Angular has specialized support for binding to form controls (e.g. `[field]="field"`).
       // This test ensures that `[field]` property bindings can still target other inputs bearing
       // the same name.
 
       @Directive({selector: '[field]'})
       class Field {
-        @Input() field = 'Default control value';
+        @Input() field: string | undefined = 'Default control value';
       }
 
       @Component({
-        template: ` <div [field]="value"></div> `,
+        template: ` <div [field]="value()"></div> `,
         imports: [Field],
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
-        value?: string;
+        value = signal<string | undefined>(undefined);
       }
 
       const fixture = TestBed.createComponent(App);
       const control = fixture.debugElement.query(By.directive(Field)).injector.get(Field);
+      // Yes, because CD hasnt run yet.
       expect(control.field).toBe('Default control value');
 
-      fixture.componentInstance.value = 'Bound control value';
-      fixture.detectChanges();
+      await fixture.whenStable();
+      expect(control.field).toBe(undefined);
+
+      fixture.componentInstance.value.set('Bound control value');
+      await fixture.whenStable();
 
       expect(control.field).toBe('Bound control value');
     });
@@ -695,7 +641,6 @@ describe('property bindings', () => {
     @Directive({
       selector: '[myDir]',
       exportAs: 'myDir',
-      standalone: false,
     })
     class MyDir {
       @Input() role: string | undefined;
@@ -705,7 +650,6 @@ describe('property bindings', () => {
 
     @Directive({
       selector: '[myDirB]',
-      standalone: false,
     })
     class MyDirB {
       @Input('role') roleB: string | undefined;
@@ -714,13 +658,11 @@ describe('property bindings', () => {
     it('should set input property based on attribute if existing', () => {
       @Component({
         template: `<div role="button" myDir></div>`,
-        standalone: false,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [MyDir],
       })
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App, MyDir]});
       const fixture = TestBed.createComponent(App);
       const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
       const divElement = fixture.nativeElement.children[0];
@@ -731,41 +673,37 @@ describe('property bindings', () => {
       expect(myDir.role).toEqual('button');
     });
 
-    it('should set input property and attribute if both defined', () => {
+    it('should set input property and attribute if both defined', async () => {
       @Component({
-        template: `<div role="button" [role]="role" myDir></div>`,
-        standalone: false,
+        template: `<div role="button" [role]="role()" myDir></div>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [MyDir],
       })
       class App {
-        role = 'listbox';
+        role = signal('listbox');
       }
 
-      TestBed.configureTestingModule({declarations: [App, MyDir]});
       const fixture = TestBed.createComponent(App);
       const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
       const divElement = fixture.nativeElement.children[0];
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(divElement.getAttribute('role')).toBe('button');
       expect(myDir.role).toEqual('listbox');
 
-      fixture.componentInstance.role = 'button';
-      fixture.detectChanges();
+      fixture.componentInstance.role.set('button');
+      await fixture.whenStable();
       expect(myDir.role).toEqual('button');
     });
 
     it('should set two directive input properties based on same attribute', () => {
       @Component({
         template: `<div role="button" myDir myDirB></div>`,
-        standalone: false,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [MyDir, MyDirB],
       })
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App, MyDir, MyDirB]});
       const fixture = TestBed.createComponent(App);
       const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
       const myDirB = fixture.debugElement.query(By.directive(MyDirB)).injector.get(MyDirB);
@@ -780,13 +718,11 @@ describe('property bindings', () => {
     it('should process two attributes on same directive', () => {
       @Component({
         template: `<div role="button" dir="rtl" myDir></div>`,
-        standalone: false,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [MyDir],
       })
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App, MyDir]});
       const fixture = TestBed.createComponent(App);
       const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
       const divElement = fixture.nativeElement.children[0];
@@ -801,16 +737,14 @@ describe('property bindings', () => {
     it('should process attributes and outputs properly together', () => {
       @Component({
         template: `<div role="button" (change)="onChange()" myDir></div>`,
-        standalone: false,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [MyDir],
       })
       class App {
         counter = 0;
         onChange = () => this.counter++;
       }
 
-      TestBed.configureTestingModule({declarations: [App, MyDir]});
       const fixture = TestBed.createComponent(App);
       const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
       const divElement = fixture.nativeElement.children[0];
@@ -829,13 +763,11 @@ describe('property bindings', () => {
           <div role="button" dir="rtl" myDir></div>
           <div role="listbox" myDirB></div>
         `,
-        standalone: false,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [MyDir, MyDirB],
       })
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App, MyDir, MyDirB]});
       const fixture = TestBed.createComponent(App);
       const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
       const myDirB = fixture.debugElement.query(By.directive(MyDirB)).injector.get(MyDirB);
@@ -856,24 +788,21 @@ describe('property bindings', () => {
       expect(myDirB.roleB).toEqual('listbox');
     });
 
-    it('should support attributes at same index inside an if-else block', () => {
+    it('should support attributes at same index inside an if-else block', async () => {
       @Component({
         template: `
           <div role="listbox" myDir></div>
-          <div role="button" myDirB *ngIf="condition"></div>
-          <div role="menu" *ngIf="!condition"></div>
+          <div role="button" myDirB *ngIf="condition()"></div>
+          <div role="menu" *ngIf="!condition()"></div>
         `,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [CommonModule, MyDir, MyDirB],
       })
       class App {
-        condition = true;
+        condition = signal(true);
       }
 
-      TestBed.configureTestingModule({declarations: [App, MyDir, MyDirB], imports: [CommonModule]});
       const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
       const myDirB = fixture.debugElement.query(By.directive(MyDirB)).injector.get(MyDirB);
       let divElements = fixture.nativeElement.querySelectorAll('div');
@@ -885,8 +814,8 @@ describe('property bindings', () => {
       expect(myDirB.roleB).toEqual('button');
       expect((myDirB as any).role).toBeUndefined();
 
-      fixture.componentInstance.condition = false;
-      fixture.detectChanges();
+      fixture.componentInstance.condition.set(false);
+      await fixture.whenStable();
 
       divElements = fixture.nativeElement.querySelectorAll('div');
       expect(divElements.length).toBe(2);
@@ -901,9 +830,8 @@ describe('property bindings', () => {
       @Component({
         selector: 'comp',
         template: `<div role="button" myDir #dir="myDir"></div>role: {{dir.role}}`,
-        standalone: false,
-      
-        changeDetection: ChangeDetectionStrategy.Eager,})
+        
+       imports: [MyDir]})
       class Comp {}
 
       // prettier-ignore
@@ -911,12 +839,10 @@ describe('property bindings', () => {
         template: `
           <comp *ngFor="let i of [0, 1]"></comp>
         `,
-        standalone: false,
-      
-        changeDetection: ChangeDetectionStrategy.Eager,})
+        
+       imports: [CommonModule, Comp]})
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App, MyDir, Comp], imports: [CommonModule]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -947,15 +873,11 @@ describe('property bindings', () => {
       template: '',
       animations: [trigger('trigger', [state('void', style({opacity: 0}))])],
       host: {'[@trigger]': '"void"'},
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyComp {}
 
     @Directive({
       selector: '[my-dir]',
-      standalone: false,
     })
     class MyDir {
       constructor(public viewContainerRef: ViewContainerRef) {}
@@ -963,14 +885,12 @@ describe('property bindings', () => {
 
     @Component({
       template: '<my-comp my-dir></my-comp>',
-      standalone: false,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [MyComp, MyDir],
     })
     class App {}
 
     TestBed.configureTestingModule({
-      declarations: [App, MyDir, MyComp],
       imports: [NoopAnimationsModule],
     });
 
@@ -983,13 +903,9 @@ describe('property bindings', () => {
   it('should allow quoted binding syntax inside property binding', () => {
     @Component({
       template: `<span [id]="'{{ id }}'"></span>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {}
 
-    TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('span').id).toBe('{{ id }}');
@@ -998,13 +914,9 @@ describe('property bindings', () => {
   it('should allow quoted binding syntax with escaped quotes inside property binding', () => {
     @Component({
       template: `<span [id]="'{{ \\' }}'"></span>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {}
 
-    TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('span').id).toBe("{{ ' }}");

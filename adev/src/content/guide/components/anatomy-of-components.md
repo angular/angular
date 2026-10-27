@@ -63,6 +63,7 @@ To use a component, [directive](guide/directives), or [pipe](guide/templates/pip
 it to the `imports` array in the `@Component` decorator:
 
 ```ts
+import {Component} from '@angular/core';
 import {ProfilePhoto} from './profile-photo';
 
 @Component({

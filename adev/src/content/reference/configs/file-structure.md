@@ -12,7 +12,7 @@ ng new my-project
 
 When you run this command, the CLI installs the necessary Angular npm packages and other dependencies in a new workspace, with a root-level application named _my-project_.
 
-By default, `ng new` creates an initial skeleton application at the root level of the workspace, along with its end-to-end tests.
+By default, `ng new` creates an initial skeleton application at the root level of the workspace.
 The skeleton is for a simple welcome application that is ready to run and easy to modify.
 The root-level application has the same name as the workspace, and the source files reside in the `src/` subfolder of the workspace.
 
@@ -47,7 +47,7 @@ The top level of the workspace contains workspace-wide configuration files, conf
 ## Application project files
 
 By default, the CLI command `ng new my-app` creates a workspace folder named "my-app" and generates a new application skeleton in a `src/` folder at the top level of the workspace.
-A newly generated application contains source files for a root module, with a root component and template.
+A newly generated application contains source files for a root component and template.
 
 When the workspace file structure is in place, you can use the `ng generate` command on the command line to add functionality and data to the application.
 This initial root-level application is the _default app_ for CLI commands (unless you change the default after creating [additional apps](#multiple-projects)).
@@ -63,7 +63,6 @@ Subfolders contain the application source and application-specific configuration
 | Application support files | Purpose                                                                                                                                                                                                                           |
 | :------------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `app/`                    | Contains the component files in which your application logic and data are defined. See details below.                                                                                                                             |
-| `favicon.ico`             | An icon to use for this application in the bookmark bar.                                                                                                                                                                          |
 | `index.html`              | The main HTML page that is served when someone visits your site. The CLI automatically adds all JavaScript and CSS files when building your app, so you typically don't need to add any `<script>` or`<link>` tags here manually. |
 | `main.ts`                 | The main entry point for your application.                                                                                                                                                                                        |
 | `styles.css`              | Global CSS styles applied to the entire application.                                                                                                                                                                              |
@@ -71,15 +70,15 @@ Subfolders contain the application source and application-specific configuration
 Inside the `src` folder, the `app` folder contains your project's logic and data.
 Angular components, templates, and styles go here.
 
-| `src/app/` files        | Purpose                                                                                                                                                                                                                                                                            |
-| :---------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `app.config.ts`         | Defines the application configuration that tells Angular how to assemble the application. As you add more providers to the app, they should be declared here.<br><br>_Only generated when using the `--standalone` option._                                                        |
-| `app.component.ts`      | Defines the application's root component, named `AppComponent`. The view associated with this root component becomes the root of the view hierarchy as you add components and services to your application.                                                                        |
-| `app.component.html`    | Defines the HTML template associated with `AppComponent`.                                                                                                                                                                                                                          |
-| `app.component.css`     | Defines the CSS stylesheet for `AppComponent`.                                                                                                                                                                                                                                     |
-| `app.component.spec.ts` | Defines a unit test for `AppComponent`.                                                                                                                                                                                                                                            |
-| `app.module.ts`         | Defines the root module, named `AppModule`, that tells Angular how to assemble the application. Initially declares only the `AppComponent`. As you add more components to the app, they must be declared here.<br><br>_Only generated when using the `--standalone false` option._ |
-| `app.routes.ts`         | Defines the application's routing configuration.                                                                                                                                                                                                                                   |
+| `src/app/` files | Purpose                                                                                                                                                                                                                                                                             |
+| :--------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `app.config.ts`  | Defines the application configuration that tells Angular how to assemble the application. As you add more providers to the app, they should be declared here.<br><br>_Only generated when using the `--standalone` option._                                                         |
+| `app.ts`         | Defines the application's root component, named `App`. The view associated with this root component becomes the root of the view hierarchy as you add components and services to your application.                                                                                  |
+| `app.html`       | Defines the HTML template associated with `App`.                                                                                                                                                                                                                                    |
+| `app.css`        | Defines the CSS stylesheet for `App`.                                                                                                                                                                                                                                               |
+| `app.spec.ts`    | Defines a unit test for `App`.                                                                                                                                                                                                                                                      |
+| `app-module.ts`  | Defines the root module, named `AppModule`, that tells Angular how to assemble the application. Initially declares only the `App` component. As you add more components to the app, they must be declared here.<br><br>_Only generated when using the `--standalone false` option._ |
+| `app.routes.ts`  | Defines the application's routing configuration.                                                                                                                                                                                                                                    |
 
 ### Application configuration files
 

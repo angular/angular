@@ -1,0 +1,229 @@
+# /out/minimap.ngtypecheck.ts
+```ts
+/**
+ * TCB for /minimap.ts
+ * @generated
+ */
+
+import * as i0 from './minimap';
+
+/*tcb1*/
+function _tcb1(this: i0.DummyComponent) {
+  if (true) {
+  }
+}
+
+/*tcb2*/
+function _tcb2(this: i0.AppComponent) {
+  if (true) {
+  }
+}
+
+/* Diagnostics:
+ - (166, 173) All imports are unused
+*/
+
+```
+
+# /out/minimap.ts
+```ts
+import { Component, NgModule } from '@angular/core';
+import { CdkScrollable, DragDropModule } from '@angular/cdk/drag-drop';
+// @ts-ignore
+import * as i0 from '@angular/core';
+
+export class DummyComponent {
+  // @ts-ignore
+  static ɵfac: i0.ɵɵFactoryDeclaration<DummyComponent, never> = function DummyComponent_Factory(
+    __ngFactoryType__: any,
+  ): any {
+    return new (__ngFactoryType__ || DummyComponent)();
+  };
+  // @ts-ignore
+  static ɵcmp: i0.ɵɵComponentDeclaration<
+    DummyComponent,
+    'dummy-cmp',
+    never,
+    {},
+    {},
+    never,
+    never,
+    true,
+    never
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: DummyComponent,
+      selectors: [['dummy-cmp']],
+      decls: 2,
+      vars: 0,
+      template: function DummyComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵdomElementStart(0, 'div');
+          i0.ɵɵtext(1, 'Dummy');
+          i0.ɵɵdomElementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
+  static {
+    (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        DummyComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: 'dummy-cmp',
+                imports: [CdkScrollable],
+                template: '<div>Dummy</div>',
+              },
+            ],
+          },
+        ],
+        null,
+        null,
+      );
+  }
+}
+((): any => {
+  (typeof ngDevMode === 'undefined' || ngDevMode) &&
+    i0.ɵsetClassDebugInfo(DummyComponent, {
+      className: 'DummyComponent',
+      filePath: 'minimap.ts',
+      lineNumber: 9,
+    });
+})();
+
+export class AppComponent {
+  // @ts-ignore
+  static ɵfac: i0.ɵɵFactoryDeclaration<AppComponent, never> = function AppComponent_Factory(
+    __ngFactoryType__: any,
+  ): any {
+    return new (__ngFactoryType__ || AppComponent)();
+  };
+  // @ts-ignore
+  static ɵcmp: i0.ɵɵComponentDeclaration<
+    AppComponent,
+    'app-root',
+    never,
+    {},
+    {},
+    never,
+    never,
+    false,
+    never
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineComponent({
+      type: AppComponent,
+      selectors: [['app-root']],
+      standalone: false,
+      decls: 2,
+      vars: 0,
+      template: function AppComponent_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0.ɵɵelementStart(0, 'div');
+          i0.ɵɵtext(1, 'Hello');
+          i0.ɵɵelementEnd();
+        }
+      },
+      encapsulation: 2,
+    });
+  static {
+    (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        AppComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: 'app-root',
+                standalone: false,
+                template: '<div>Hello</div>',
+              },
+            ],
+          },
+        ],
+        null,
+        null,
+      );
+  }
+}
+((): any => {
+  (typeof ngDevMode === 'undefined' || ngDevMode) &&
+    i0.ɵsetClassDebugInfo(AppComponent, {
+      className: 'AppComponent',
+      filePath: 'minimap.ts',
+      lineNumber: 16,
+    });
+})();
+
+export class TestModule {
+  // @ts-ignore
+  static ɵfac: i0.ɵɵFactoryDeclaration<TestModule, never> = function TestModule_Factory(
+    __ngFactoryType__: any,
+  ): any {
+    return new (__ngFactoryType__ || TestModule)();
+  };
+  // @ts-ignore
+  static ɵmod: i0.ɵɵNgModuleDeclaration<
+    TestModule,
+    [typeof AppComponent],
+    [typeof DragDropModule],
+    never
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: TestModule });
+  // @ts-ignore
+  static ɵinj: i0.ɵɵInjectorDeclaration<TestModule> =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [DragDropModule] });
+  static {
+    (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        TestModule,
+        [
+          {
+            type: NgModule,
+            args: [
+              {
+                imports: [DragDropModule],
+                declarations: [AppComponent],
+              },
+            ],
+          },
+        ],
+        null,
+        null,
+      );
+  }
+}
+(function (): any {
+  (typeof ngJitMode === 'undefined' || ngJitMode) &&
+    i0.ɵɵsetNgModuleScope(TestModule, { declarations: [AppComponent], imports: [DragDropModule] });
+})();
+
+```
+
+# /tsconfig.ngdiag.json
+```json
+{
+  "tsconfigPath": "/tsconfig.json",
+  "diagnostics": [
+    {
+      "filePath": "/minimap.ts",
+      "category": "warning",
+      "code": 8113,
+      "messageText": "All imports are unused",
+      "span": {
+        "start": 166,
+        "end": 173
+      }
+    }
+  ]
+}
+
+```

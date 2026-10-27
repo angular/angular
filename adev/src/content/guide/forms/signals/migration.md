@@ -68,12 +68,26 @@ In the template, use standard reactive syntax by binding the underlying control:
     @if (f.password().touched() && f.password().invalid()) {
       <div class="error-list">
         @for (error of f.password().errors(); track error) {
-          <p>{{ error.message || error.kind }}</p>
+          <p>{{ errorMessage(error) }}</p>
         }
       </div>
     }
   </div>
 </form>
+```
+
+Errors from the existing validators are `CompatValidationError`s. They don't set `message`; the error object returned by the validator is available as `context` instead:
+
+```typescript
+import {ValidationError} from '@angular/forms/signals';
+import {CompatValidationError} from '@angular/forms/signals/compat';
+
+errorMessage(error: ValidationError) {
+  if (error instanceof CompatValidationError) {
+    return (error.context as {message?: string} | null)?.message ?? error.kind;
+  }
+  return error.message ?? error.kind;
+}
 ```
 
 <docs-code-multifile preview path="adev/src/content/examples/signal-forms/src/compat-form-control-integration/app/app.ts">
@@ -90,6 +104,7 @@ You can also wrap an entire `FormGroup`. This is common when a reusable sub-sect
 import {signal} from '@angular/core';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
 import {compatForm} from '@angular/forms/signals/compat';
+import {required} from '@angular/forms/signals';
 
 // 1. An existing address group with its own validation logic
 const addressGroup = new FormGroup({
@@ -316,6 +331,7 @@ Attempting to call disable/enable would throw an error.
 
 ```typescript {avoid}
 import {signal, effect} from '@angular/core';
+import {SignalFormControl} from '@angular/forms/signals/compat';
 
 export class UserProfile {
   readonly emailControl = new SignalFormControl('');
@@ -421,6 +437,7 @@ If you want to preserve this behavior, you can provide the `NG_STATUS_CLASSES` p
 ```typescript
 import {provideSignalFormsConfig} from '@angular/forms/signals';
 import {NG_STATUS_CLASSES} from '@angular/forms/signals/compat';
+import {bootstrapApplication} from '@angular/platform-browser';
 
 bootstrapApplication(App, {
   providers: [
@@ -435,6 +452,7 @@ You can also provide your own custom configuration to apply whatever classes you
 
 ```typescript
 import {provideSignalFormsConfig} from '@angular/forms/signals';
+import {bootstrapApplication} from '@angular/platform-browser';
 
 bootstrapApplication(App, {
   providers: [
@@ -503,7 +521,7 @@ import {BasicInput} from './basic-input';
     </form>
     <p>Text: {{ reactiveFormGroup.value.reactiveControlName }}</p>
   `,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, BasicInput],
 })
 export class ExampleComponent {
   readonly reactiveFormGroup = new FormGroup({

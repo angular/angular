@@ -253,11 +253,6 @@ export interface TypeCheckingConfig {
   alwaysCheckSchemaInTemplateBodies: boolean;
 
   /**
-   * Whether to check resolvable queries.
-   */
-  checkQueries: false;
-
-  /**
    * Whether to check if control flow syntax will prevent a node from being projected.
    */
   controlFlowPreventingContentProjection: 'error' | 'warning' | 'suppress';
@@ -296,4 +291,9 @@ export interface TypeCheckingConfig {
    * Whether to descend into the bodies of control flow blocks (`@if`, `@switch` and `@for`).
    */
   checkControlFlowBodies: boolean;
+
+  /**
+   * Whether to validate unknown element tags even when matched by attribute directives.
+   */
+  checkUnknownElements: boolean;
 }

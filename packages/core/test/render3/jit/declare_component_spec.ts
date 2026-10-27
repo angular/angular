@@ -8,6 +8,7 @@
 
 import {core} from '@angular/compiler';
 import {
+  AbstractType,
   ChangeDetectionStrategy,
   Component,
   Directive,
@@ -15,7 +16,6 @@ import {
   forwardRef,
   Pipe,
   Type,
-  AbstractType,
   ViewEncapsulation,
   ɵɵngDeclareComponent,
 } from '../../../src/core';
@@ -306,6 +306,7 @@ describe('component declaration jit compilation', () => {
       version: '18.0.0',
       type: TestClass,
       template: '<div></div>',
+      changeDetection: ChangeDetectionStrategy.OnPush,
     }) as ComponentDef<TestClass>;
 
     expectComponentDef(def, {

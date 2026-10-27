@@ -27,7 +27,7 @@ let hydrationOverlaysEnabled = false;
 let profilerSubs: Subscription | undefined;
 
 export function loadHydrationOverlays(): () => void {
-  return getConfig().onChange('hydrationOverlays', (enabled) => {
+  return getConfig().onValue('hydrationOverlays', (enabled) => {
     if (enabled) {
       enableHydrationOverlays();
     } else {
@@ -138,7 +138,7 @@ function findErrorNodesForHydrationOverlay(
       return {node: node.nativeElement!, status: node.hydration};
     }
     if (node.children.length) {
-      return findNodesForHydrationOverlay(node.children);
+      return findErrorNodesForHydrationOverlay(node.children);
     }
     return [];
   });

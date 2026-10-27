@@ -215,6 +215,23 @@ describe('jsdoc transforms', () => {
       expect(entryFn).toThrowError(/Forbidden relative link: cli\/build ng build/);
     });
 
+    it('should throw on a bare absolute @see link', () => {
+      const entryFn = () =>
+        addHtmlAdditionalLinks({
+          jsdocTags: [
+            {
+              name: 'see',
+              comment: 'https://developer.mozilla.org/en-US/docs/Web/API/History_API',
+            },
+          ],
+          moduleName: 'test',
+        });
+
+      expect(entryFn).toThrowError(
+        /Invalid @see tag: "https:\/\/developer\.mozilla\.org\/en-US\/docs\/Web\/API\/History_API"/,
+      );
+    });
+
     it('should throw on a miscased absolute @link to a known API symbol', () => {
       setSymbols({RouterModule: 'router'});
 
@@ -248,6 +265,35 @@ describe('jsdoc transforms', () => {
         });
 
       expect(entryFn).toThrowError(/Broken link.*RouterModule has no member named 'forBogus'/);
+    });
+
+    it('should not treat an unknown name as a member of the current symbol', () => {
+      setCurrentSymbol('RouterEvent');
+      setSymbols({RouterEvent: 'router'});
+      setSymbolMembers(new Map([['RouterEvent', new Set(['id', 'url'])]]));
+
+      const entryFn = () =>
+        addHtmlAdditionalLinks({
+          jsdocTags: [{name: 'see', comment: '{@link Event}'}],
+          moduleName: 'test',
+        });
+
+      expect(entryFn).toThrow(
+        'WARNING: {@link Event} is invalid, Event or RouterEvent.Event is unknown in this context',
+      );
+    });
+
+    it('should link symbols that are only exempt from auto-linking', () => {
+      setCurrentSymbol('AnimationPlayer');
+      setSymbols({AnimationPlayer: 'animations', animate: 'animations'});
+      setSymbolMembers(new Map([['AnimationPlayer', new Set(['play'])]]));
+
+      const entry = addHtmlAdditionalLinks({
+        jsdocTags: [{name: 'see', comment: '{@link animate}'}],
+        moduleName: 'test',
+      });
+
+      expect(entry.additionalLinks[0].url).toBe('/api/animations/animate');
     });
 
     it('should throw on a miscased #member fragment for a known API symbol', () => {

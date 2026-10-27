@@ -34,9 +34,9 @@ import {
   Type,
   ViewRef,
 } from '@angular/core';
-import {fakeAsync, tick, waitForAsync} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {timeout} from '@angular/private/testing';
 import {downgradeComponent, downgradeModule, UpgradeComponent} from '../../../static';
 
 import * as angular from '../../../src/common/src/angular1';
@@ -60,7 +60,7 @@ withEachNg1Version(() => {
       beforeEach(() => destroyPlatform());
       afterEach(() => destroyPlatform());
 
-      it('should support multiple downgraded modules', waitForAsync(() => {
+      it('should support multiple downgraded modules', async () => {
         @Component({
           selector: 'ng2A',
           template: 'a',
@@ -124,10 +124,11 @@ withEachNg1Version(() => {
         angular.bootstrap(element, [ng1Module.name]);
 
         // Wait for the module to be bootstrapped.
-        setTimeout(() => expect(element.textContent).toBe('a | b'));
-      }));
+        await timeout();
+        expect(element.textContent).toBe('a | b');
+      });
 
-      it('should support downgrading modules by providing NgModule class to `downgradeModule` call', waitForAsync(() => {
+      it('should support downgrading modules by providing NgModule class to `downgradeModule` call', async () => {
         @Component({
           selector: 'ng2A',
           template: 'a',
@@ -183,10 +184,11 @@ withEachNg1Version(() => {
         angular.bootstrap(element, [ng1Module.name]);
 
         // Wait for the module to be bootstrapped.
-        setTimeout(() => expect(element.textContent).toBe('a | b'));
-      }));
+        await timeout();
+        expect(element.textContent).toBe('a | b');
+      });
 
-      it('should support nesting components from different downgraded modules', waitForAsync(() => {
+      it('should support nesting components from different downgraded modules', async () => {
         @Directive({
           selector: 'ng1A',
           standalone: false,
@@ -264,20 +266,19 @@ withEachNg1Version(() => {
         const $rootScope = $injector.get($ROOT_SCOPE) as angular.IRootScopeService;
 
         // Wait for module A to be bootstrapped.
-        setTimeout(() => {
-          // Wait for the upgraded component's `ngOnInit()`.
-          setTimeout(() => {
-            expect(element.textContent).toBe('ng2A(ng1A())');
+        await timeout();
+        // Wait for the upgraded component's `ngOnInit()`.
+        await timeout();
+        expect(element.textContent).toBe('ng2A(ng1A())');
 
-            $rootScope.$apply('showB = true');
+        $rootScope.$apply('showB = true');
 
-            // Wait for module B to be bootstrapped.
-            setTimeout(() => expect(element.textContent).toBe('ng2A(ng1A(ng2B))'));
-          });
-        });
-      }));
+        // Wait for module B to be bootstrapped.
+        await timeout();
+        expect(element.textContent).toBe('ng2A(ng1A(ng2B))');
+      });
 
-      it('should support nesting components from different downgraded modules (via projection)', waitForAsync(() => {
+      it('should support nesting components from different downgraded modules (via projection)', async () => {
         @Component({
           selector: 'ng2A',
           template: 'ng2A(<ng-content></ng-content>)',
@@ -344,17 +345,17 @@ withEachNg1Version(() => {
         const $rootScope = $injector.get($ROOT_SCOPE) as angular.IRootScopeService;
 
         // Wait for module A to be bootstrapped.
-        setTimeout(() => {
-          expect(element.textContent).toBe('ng2A()');
+        await timeout();
+        expect(element.textContent).toBe('ng2A()');
 
-          $rootScope.$apply('showB = true');
+        $rootScope.$apply('showB = true');
 
-          // Wait for module B to be bootstrapped.
-          setTimeout(() => expect(element.textContent).toBe('ng2A(ng2B)'));
-        });
-      }));
+        // Wait for module B to be bootstrapped.
+        await timeout();
+        expect(element.textContent).toBe('ng2A(ng2B)');
+      });
 
-      it('should support manually setting up a root module for all downgraded modules', fakeAsync(() => {
+      it('should support manually setting up a root module for all downgraded modules', async () => {
         @Injectable({providedIn: 'root'})
         class CounterService {
           private static counter = 0;
@@ -447,23 +448,26 @@ withEachNg1Version(() => {
         const $injector = angular.bootstrap(element, [ng1Module.name]);
         const $rootScope = $injector.get($ROOT_SCOPE) as angular.IRootScopeService;
 
-        tick(); // Wait for module A to be bootstrapped.
+        await timeout(); // Wait for module A to be bootstrapped.
+        await timeout(); // Wait for `$evalAsync()` to run change detection.
         expect(multiTrim(element.textContent)).toBe('ng2A(Counter:1 | )');
 
         // Nested component B should use the same `CounterService` instance.
         $rootScope.$apply('showB1 = true');
 
-        tick(); // Wait for module B to be bootstrapped.
+        await timeout(); // Wait for module B to be bootstrapped.
+        await timeout(); // Wait for `$evalAsync()` to run change detection.
         expect(multiTrim(element.children[0].textContent)).toBe('ng2A(Counter:1 | Counter:1)');
 
         // Top-level component B should use the same `CounterService` instance.
         $rootScope.$apply('showB2 = true');
-        tick();
+        await timeout();
+        await timeout();
 
         expect(multiTrim(element.children[1].textContent)).toBe('Counter:1');
-      }));
+      });
 
-      it('should correctly traverse the injector tree of downgraded components', waitForAsync(() => {
+      it('should correctly traverse the injector tree of downgraded components', async () => {
         @Component({
           selector: 'ng2A',
           template: 'ng2A(<ng-content></ng-content>)',
@@ -532,24 +536,23 @@ withEachNg1Version(() => {
         const $rootScope = $injector.get($ROOT_SCOPE) as angular.IRootScopeService;
 
         // Wait for the module to be bootstrapped.
-        setTimeout(() => {
-          expect(multiTrim(element.textContent)).toBe('ng2A()');
+        await timeout();
+        expect(multiTrim(element.textContent)).toBe('ng2A()');
 
-          // Nested component B.
-          $rootScope.$apply('showB1 = true');
-          expect(multiTrim(element.children[0].textContent)).toBe(
-            'ng2A( FOO:CompB-foo BAR:CompA-bar BAZ:Mod-baz QUX:Plat-qux )',
-          );
+        // Nested component B.
+        $rootScope.$apply('showB1 = true');
+        expect(multiTrim(element.children[0].textContent)).toBe(
+          'ng2A( FOO:CompB-foo BAR:CompA-bar BAZ:Mod-baz QUX:Plat-qux )',
+        );
 
-          // Standalone component B.
-          $rootScope.$apply('showB2 = true');
-          expect(multiTrim(element.children[1].textContent)).toBe(
-            'FOO:CompB-foo BAR:Mod-bar BAZ:Mod-baz QUX:Plat-qux',
-          );
-        });
-      }));
+        // Standalone component B.
+        $rootScope.$apply('showB2 = true');
+        expect(multiTrim(element.children[1].textContent)).toBe(
+          'FOO:CompB-foo BAR:Mod-bar BAZ:Mod-baz QUX:Plat-qux',
+        );
+      });
 
-      it('should correctly traverse the injector tree of downgraded components (from different modules)', waitForAsync(() => {
+      it('should correctly traverse the injector tree of downgraded components (from different modules)', async () => {
         @Component({
           selector: 'ng2A',
           template: 'ng2A(<ng-content></ng-content>)',
@@ -652,31 +655,29 @@ withEachNg1Version(() => {
         const $rootScope = $injector.get($ROOT_SCOPE) as angular.IRootScopeService;
 
         // Wait for module A to be bootstrapped.
-        setTimeout(() => {
-          expect(multiTrim(element.textContent)).toBe('ng2A()');
+        await timeout();
+        expect(multiTrim(element.textContent)).toBe('ng2A()');
 
-          // Nested component B.
-          $rootScope.$apply('showB1 = true');
+        // Nested component B.
+        $rootScope.$apply('showB1 = true');
 
-          // Wait for module B to be bootstrapped.
-          setTimeout(() => {
-            // It is debatable, whether the order of traversal should be:
-            // CompB > CompA > ModB > ModA > Plat (similar to how lazy-loaded components
-            // work)
-            expect(multiTrim(element.children[0].textContent)).toBe(
-              'ng2A( FOO:CompB-foo BAR:CompA-bar BAZ:ModB-baz QUX:Plat-qux QUUX:Plat-quux )',
-            );
+        // Wait for module B to be bootstrapped.
+        await timeout();
+        // It is debatable, whether the order of traversal should be:
+        // CompB > CompA > ModB > ModA > Plat (similar to how lazy-loaded components
+        // work)
+        expect(multiTrim(element.children[0].textContent)).toBe(
+          'ng2A( FOO:CompB-foo BAR:CompA-bar BAZ:ModB-baz QUX:Plat-qux QUUX:Plat-quux )',
+        );
 
-            // Standalone component B.
-            $rootScope.$apply('showB2 = true');
-            expect(multiTrim(element.children[1].textContent)).toBe(
-              'FOO:CompB-foo BAR:ModB-bar BAZ:ModB-baz QUX:Plat-qux QUUX:Plat-quux',
-            );
-          });
-        });
-      }));
+        // Standalone component B.
+        $rootScope.$apply('showB2 = true');
+        expect(multiTrim(element.children[1].textContent)).toBe(
+          'FOO:CompB-foo BAR:ModB-bar BAZ:ModB-baz QUX:Plat-qux QUUX:Plat-quux',
+        );
+      });
 
-      it('should support downgrading a component and propagate inputs', waitForAsync(() => {
+      it('should support downgrading a component and propagate inputs', async () => {
         @Component({
           selector: 'ng2A',
           template: 'a({{ value }}) | <ng2B [value]="value"></ng2B>',
@@ -732,15 +733,54 @@ withEachNg1Version(() => {
         expect(() => $injector.get(INJECTOR_KEY)).toThrowError();
 
         // Wait for the module to be bootstrapped.
-        setTimeout(() => {
-          expect(() => $injector.get(INJECTOR_KEY)).not.toThrow();
+        await timeout();
+        expect(() => $injector.get(INJECTOR_KEY)).not.toThrow();
 
-          // Wait for `$evalAsync()` to propagate inputs.
-          setTimeout(() => expect(element.textContent).toBe('a(1) | b(1)'));
+        // Wait for `$evalAsync()` to propagate inputs.
+        await timeout();
+        expect(element.textContent).toBe('a(1) | b(1)');
+      });
+
+      it('should compile and link projected content when the component is created asynchronously', async () => {
+        @Component({template: '[<ng-content></ng-content>]'})
+        class Ng2Component {}
+
+        @NgModule({imports: [BrowserModule]})
+        class Ng2Module {
+          ngDoBootstrap() {}
+        }
+
+        const ng1Module = angular
+          .module_('ng1', [downgradeModule(Ng2Module)])
+          .directive('ng2', downgradeComponent({component: Ng2Component, propagateDigest}))
+          .run([
+            '$rootScope',
+            ($rootScope: angular.IRootScopeService) => {
+              $rootScope['items'] = ['a', 'b'];
+              $rootScope['show'] = true;
+            },
+          ]);
+
+        const element = html(`
+          <div>
+            <ng2><b ng-repeat-start="item in items">{{ item }}</b><i ng-repeat-end>;</i><u ng-if="show">!</u></ng2>
+          </div>
+        `);
+        const $injector = angular.bootstrap(element, [ng1Module.name]);
+        const $rootScope = $injector.get($ROOT_SCOPE) as angular.IRootScopeService;
+
+        await ($injector.get(LAZY_MODULE_REF) as LazyModuleRef).promise;
+        $rootScope.$digest();
+        expect(multiTrim(element.textContent)).toBe('[a;b;!]');
+
+        $rootScope.$apply(() => {
+          $rootScope['items'] = ['c'];
+          $rootScope['show'] = false;
         });
-      }));
+        expect(multiTrim(element.textContent)).toBe('[c;]');
+      });
 
-      it('should support using an upgraded service', waitForAsync(() => {
+      it('should support using an upgraded service', async () => {
         @Injectable()
         class Ng2Service {
           constructor(@Inject('ng1Value') private ng1Value: string) {}
@@ -797,15 +837,15 @@ withEachNg1Version(() => {
         expect(() => $injector.get(INJECTOR_KEY)).toThrowError();
 
         // Wait for the module to be bootstrapped.
-        setTimeout(() => {
-          expect(() => $injector.get(INJECTOR_KEY)).not.toThrow();
+        await timeout();
+        expect(() => $injector.get(INJECTOR_KEY)).not.toThrow();
 
-          // Wait for `$evalAsync()` to propagate inputs.
-          setTimeout(() => expect(element.textContent).toBe('foo-bar'));
-        });
-      }));
+        // Wait for `$evalAsync()` to propagate inputs.
+        await timeout();
+        expect(element.textContent).toBe('foo-bar');
+      });
 
-      it('should create components inside the Angular zone', waitForAsync(() => {
+      it('should create components inside the Angular zone', async () => {
         @Component({
           selector: 'ng2',
           template: 'In the zone: {{ inTheZone }}',
@@ -839,13 +879,13 @@ withEachNg1Version(() => {
         angular.bootstrap(element, [ng1Module.name]);
 
         // Wait for the module to be bootstrapped.
-        setTimeout(() => {
-          // Wait for `$evalAsync()` to propagate inputs.
-          setTimeout(() => expect(element.textContent).toBe('In the zone: true'));
-        });
-      }));
+        await timeout();
+        // Wait for `$evalAsync()` to propagate inputs.
+        await timeout();
+        expect(element.textContent).toBe('In the zone: true');
+      });
 
-      it('should destroy components inside the Angular zone', waitForAsync(() => {
+      it('should destroy components inside the Angular zone', async () => {
         let destroyedInTheZone = false;
 
         @Component({
@@ -881,14 +921,13 @@ withEachNg1Version(() => {
         const $rootScope = $injector.get($ROOT_SCOPE) as angular.IRootScopeService;
 
         // Wait for the module to be bootstrapped.
-        setTimeout(() => {
-          $rootScope.$apply('hideNg2 = true');
-          expect(destroyedInTheZone).toBe(true);
-        });
-      }));
+        await timeout();
+        $rootScope.$apply('hideNg2 = true');
+        expect(destroyedInTheZone).toBe(true);
+      });
 
-      it('should propagate input changes inside the Angular zone', waitForAsync(() => {
-        let ng2Component: Ng2Component;
+      it('should propagate input changes inside the Angular zone', async () => {
+        let ng2Component!: Ng2Component;
 
         @Component({
           selector: 'ng2',
@@ -933,30 +972,28 @@ withEachNg1Version(() => {
         const $injector = angular.bootstrap(element, [ng1Module.name]);
         const $rootScope = $injector.get($ROOT_SCOPE) as angular.IRootScopeService;
 
-        setTimeout(() => {
-          // Wait for the module to be bootstrapped.
-          setTimeout(() => {
-            // Wait for `$evalAsync()` to propagate inputs.
-            const expectToBeInNgZone = () => expect(NgZone.isInAngularZone()).toBe(true);
-            const changesSpy = spyOn(ng2Component, 'ngOnChanges').and.callFake(expectToBeInNgZone);
+        // Wait for the module to be bootstrapped.
+        await timeout();
+        // Wait for `$evalAsync()` to propagate inputs.
+        await timeout();
+        const expectToBeInNgZone = () => expect(NgZone.isInAngularZone()).toBe(true);
+        const changesSpy = spyOn(ng2Component, 'ngOnChanges').and.callFake(expectToBeInNgZone);
 
-            expect(ng2Component.attrInput).toBe('bar');
-            expect(ng2Component.propInput).toBe('bar');
+        expect(ng2Component.attrInput).toBe('bar');
+        expect(ng2Component.propInput).toBe('bar');
 
-            $rootScope.$apply('attrVal = "baz"');
-            expect(ng2Component.attrInput).toBe('baz');
-            expect(ng2Component.propInput).toBe('bar');
-            expect(changesSpy).toHaveBeenCalledTimes(1);
+        $rootScope.$apply('attrVal = "baz"');
+        expect(ng2Component.attrInput).toBe('baz');
+        expect(ng2Component.propInput).toBe('bar');
+        expect(changesSpy).toHaveBeenCalledTimes(1);
 
-            $rootScope.$apply('propVal = "qux"');
-            expect(ng2Component.attrInput).toBe('baz');
-            expect(ng2Component.propInput).toBe('qux');
-            expect(changesSpy).toHaveBeenCalledTimes(2);
-          });
-        });
-      }));
+        $rootScope.$apply('propVal = "qux"');
+        expect(ng2Component.attrInput).toBe('baz');
+        expect(ng2Component.propInput).toBe('qux');
+        expect(changesSpy).toHaveBeenCalledTimes(2);
+      });
 
-      it('should create and destroy nested, asynchronously instantiated components inside the Angular zone', waitForAsync(() => {
+      it('should create and destroy nested, asynchronously instantiated components inside the Angular zone', async () => {
         let createdInTheZone = false;
         let destroyedInTheZone = false;
 
@@ -1005,22 +1042,21 @@ withEachNg1Version(() => {
         const $rootScope = $injector.get($ROOT_SCOPE) as angular.IRootScopeService;
 
         // Wait for the module to be bootstrapped.
-        setTimeout(() => {
-          // Create nested component asynchronously.
-          expect(createdInTheZone).toBe(false);
+        await timeout();
+        // Create nested component asynchronously.
+        expect(createdInTheZone).toBe(false);
 
-          $rootScope.$apply('showNg2 = true');
-          expect(createdInTheZone).toBe(true);
+        $rootScope.$apply('showNg2 = true');
+        expect(createdInTheZone).toBe(true);
 
-          // Destroy nested component asynchronously.
-          expect(destroyedInTheZone).toBe(false);
+        // Destroy nested component asynchronously.
+        expect(destroyedInTheZone).toBe(false);
 
-          $rootScope.$apply('showNg2 = false');
-          expect(destroyedInTheZone).toBe(true);
-        });
-      }));
+        $rootScope.$apply('showNg2 = false');
+        expect(destroyedInTheZone).toBe(true);
+      });
 
-      it('should wire up the component for change detection', waitForAsync(() => {
+      it('should wire up the component for change detection', async () => {
         @Component({
           selector: 'ng2',
           template: '{{ count }}<button (click)="increment()"></button>',
@@ -1053,23 +1089,21 @@ withEachNg1Version(() => {
         const element = html('<ng2></ng2>');
         angular.bootstrap(element, [ng1Module.name]);
 
-        setTimeout(() => {
-          // Wait for the module to be bootstrapped.
-          setTimeout(() => {
-            // Wait for `$evalAsync()` to propagate inputs.
-            const button = element.querySelector('button')!;
-            expect(element.textContent).toBe('0');
+        // Wait for the module to be bootstrapped.
+        await timeout();
+        // Wait for `$evalAsync()` to propagate inputs.
+        await timeout();
+        const button = element.querySelector('button')!;
+        expect(element.textContent).toBe('0');
 
-            button.click();
-            expect(element.textContent).toBe('1');
+        button.click();
+        expect(element.textContent).toBe('1');
 
-            button.click();
-            expect(element.textContent).toBe('2');
-          });
-        });
-      }));
+        button.click();
+        expect(element.textContent).toBe('2');
+      });
 
-      it('should wire up nested, asynchronously instantiated components for change detection', waitForAsync(() => {
+      it('should wire up nested, asynchronously instantiated components for change detection', async () => {
         @Component({
           selector: 'test',
           template: '{{ count }}<button (click)="increment()"></button>',
@@ -1113,24 +1147,23 @@ withEachNg1Version(() => {
         const $rootScope = $injector.get($ROOT_SCOPE) as angular.IRootScopeService;
 
         // Wait for the module to be bootstrapped.
-        setTimeout(() => {
-          // Create nested component asynchronously.
-          $rootScope.$apply('showNg2 = true');
-          const button = element.querySelector('button')!;
+        await timeout();
+        // Create nested component asynchronously.
+        $rootScope.$apply('showNg2 = true');
+        const button = element.querySelector('button')!;
 
-          expect(element.textContent).toBe('0');
+        expect(element.textContent).toBe('0');
 
-          button.click();
-          expect(element.textContent).toBe('1');
+        button.click();
+        expect(element.textContent).toBe('1');
 
-          button.click();
-          expect(element.textContent).toBe('2');
-        });
-      }));
+        button.click();
+        expect(element.textContent).toBe('2');
+      });
 
-      it('should run the lifecycle hooks in the correct order', waitForAsync(() => {
+      it('should run the lifecycle hooks in the correct order', async () => {
         const logs: string[] = [];
-        let rootScope: angular.IRootScopeService;
+        let rootScope!: angular.IRootScopeService;
 
         @Component({
           selector: 'ng2',
@@ -1209,112 +1242,106 @@ withEachNg1Version(() => {
         const element = html('<div><ng2 value="{{ value }}" ng-if="!hideNg2">Content</ng2></div>');
         angular.bootstrap(element, [ng1Module.name]);
 
-        setTimeout(() => {
-          // Wait for the module to be bootstrapped.
-          setTimeout(() => {
-            // Wait for `$evalAsync()` to propagate inputs.
-            const button = element.querySelector('button')!;
+        // Wait for the module to be bootstrapped.
+        await timeout();
+        // Wait for `$evalAsync()` to propagate inputs.
+        await timeout();
+        const button = element.querySelector('button')!;
 
-            // Once initialized.
-            expect(multiTrim(element.textContent)).toBe('bar Content');
-            expect(logs).toEqual([
-              // `ngOnChanges()` call triggered directly through the `inputChanges`
-              // $watcher.
-              'OnChanges(bar)',
-              // Initial CD triggered directly through the `detectChanges()` or
-              // `inputChanges`
-              // $watcher (for `propagateDigest` true/false respectively).
-              'OnInit(bar)',
-              'DoCheck(bar)',
-              'AfterContentInit(bar)',
-              'AfterContentChecked(bar)',
-              'AfterViewInit(bar)',
-              'AfterViewChecked(bar)',
-              ...(propagateDigest
-                ? [
-                    // CD triggered directly through the `detectChanges()` $watcher (2nd
-                    // $digest).
-                    'DoCheck(bar)',
-                    'AfterContentChecked(bar)',
-                    'AfterViewChecked(bar)',
-                  ]
-                : []),
-              // CD triggered due to entering/leaving the NgZone (in `downgradeFn()`).
-              'DoCheck(bar)',
-              'AfterContentChecked(bar)',
-              'AfterViewChecked(bar)',
-            ]);
-            logs.length = 0;
+        // Once initialized.
+        expect(multiTrim(element.textContent)).toBe('bar Content');
+        expect(logs).toEqual([
+          // `ngOnChanges()` call triggered directly through the `inputChanges`
+          // $watcher.
+          'OnChanges(bar)',
+          // Initial CD triggered directly through the `detectChanges()` or
+          // `inputChanges`
+          // $watcher (for `propagateDigest` true/false respectively).
+          'OnInit(bar)',
+          'DoCheck(bar)',
+          'AfterContentInit(bar)',
+          'AfterContentChecked(bar)',
+          'AfterViewInit(bar)',
+          'AfterViewChecked(bar)',
+          ...(propagateDigest
+            ? [
+                // CD triggered directly through the `detectChanges()` $watcher (2nd
+                // $digest).
+                'DoCheck(bar)',
+                'AfterContentChecked(bar)',
+                'AfterViewChecked(bar)',
+              ]
+            : []),
+          // CD triggered due to entering/leaving the NgZone (in `downgradeFn()`).
+          'DoCheck(bar)',
+          'AfterContentChecked(bar)',
+          'AfterViewChecked(bar)',
+        ]);
+        logs.length = 0;
 
-            // Change inputs and run `$digest`.
-            rootScope.$apply('value = "baz"');
-            expect(multiTrim(element.textContent)).toBe('baz Content');
-            expect(logs).toEqual([
-              // `ngOnChanges()` call triggered directly through the `inputChanges`
-              // $watcher.
-              'OnChanges(baz)',
-              // `propagateDigest: true` (3 CD runs):
-              //   - CD triggered due to entering/leaving the NgZone (in `inputChanges`
-              //   $watcher).
-              //   - CD triggered directly through the `detectChanges()` $watcher.
-              //   - CD triggered due to entering/leaving the NgZone (in `detectChanges`
-              //   $watcher).
-              // `propagateDigest: false` (2 CD runs):
-              //   - CD triggered directly through the `inputChanges` $watcher.
-              //   - CD triggered due to entering/leaving the NgZone (in `inputChanges`
-              //   $watcher).
-              'DoCheck(baz)',
-              'AfterContentChecked(baz)',
-              'AfterViewChecked(baz)',
-              'DoCheck(baz)',
-              'AfterContentChecked(baz)',
-              'AfterViewChecked(baz)',
-              ...(propagateDigest
-                ? ['DoCheck(baz)', 'AfterContentChecked(baz)', 'AfterViewChecked(baz)']
-                : []),
-            ]);
-            logs.length = 0;
+        // Change inputs and run `$digest`.
+        rootScope.$apply('value = "baz"');
+        expect(multiTrim(element.textContent)).toBe('baz Content');
+        expect(logs).toEqual([
+          // `ngOnChanges()` call triggered directly through the `inputChanges`
+          // $watcher.
+          'OnChanges(baz)',
+          // `propagateDigest: true` (3 CD runs):
+          //   - CD triggered due to entering/leaving the NgZone (in `inputChanges`
+          //   $watcher).
+          //   - CD triggered directly through the `detectChanges()` $watcher.
+          //   - CD triggered due to entering/leaving the NgZone (in `detectChanges`
+          //   $watcher).
+          // `propagateDigest: false` (2 CD runs):
+          //   - CD triggered directly through the `inputChanges` $watcher.
+          //   - CD triggered due to entering/leaving the NgZone (in `inputChanges`
+          //   $watcher).
+          'DoCheck(baz)',
+          'AfterContentChecked(baz)',
+          'AfterViewChecked(baz)',
+          'DoCheck(baz)',
+          'AfterContentChecked(baz)',
+          'AfterViewChecked(baz)',
+          ...(propagateDigest
+            ? ['DoCheck(baz)', 'AfterContentChecked(baz)', 'AfterViewChecked(baz)']
+            : []),
+        ]);
+        logs.length = 0;
 
-            // Run `$digest` (without changing inputs).
-            rootScope.$digest();
-            expect(multiTrim(element.textContent)).toBe('baz Content');
-            expect(logs).toEqual(
-              propagateDigest
-                ? [
-                    // CD triggered directly through the `detectChanges()` $watcher.
-                    'DoCheck(baz)',
-                    'AfterContentChecked(baz)',
-                    'AfterViewChecked(baz)',
-                    // CD triggered due to entering/leaving the NgZone (in the above
-                    // $watcher).
-                    'DoCheck(baz)',
-                    'AfterContentChecked(baz)',
-                    'AfterViewChecked(baz)',
-                  ]
-                : [],
-            );
-            logs.length = 0;
+        // Run `$digest` (without changing inputs).
+        rootScope.$digest();
+        expect(multiTrim(element.textContent)).toBe('baz Content');
+        expect(logs).toEqual(
+          propagateDigest
+            ? [
+                // CD triggered directly through the `detectChanges()` $watcher.
+                'DoCheck(baz)',
+                'AfterContentChecked(baz)',
+                'AfterViewChecked(baz)',
+                // CD triggered due to entering/leaving the NgZone (in the above
+                // $watcher).
+                'DoCheck(baz)',
+                'AfterContentChecked(baz)',
+                'AfterViewChecked(baz)',
+              ]
+            : [],
+        );
+        logs.length = 0;
 
-            // Trigger change detection (without changing inputs).
-            button.click();
-            expect(multiTrim(element.textContent)).toBe('qux Content');
-            expect(logs).toEqual([
-              'DoCheck(qux)',
-              'AfterContentChecked(qux)',
-              'AfterViewChecked(qux)',
-            ]);
-            logs.length = 0;
+        // Trigger change detection (without changing inputs).
+        button.click();
+        expect(multiTrim(element.textContent)).toBe('qux Content');
+        expect(logs).toEqual(['DoCheck(qux)', 'AfterContentChecked(qux)', 'AfterViewChecked(qux)']);
+        logs.length = 0;
 
-            // Destroy the component.
-            rootScope.$apply('hideNg2 = true');
-            expect(logs).toEqual(['OnDestroy(qux)']);
-            logs.length = 0;
-          });
-        });
-      }));
+        // Destroy the component.
+        rootScope.$apply('hideNg2 = true');
+        expect(logs).toEqual(['OnDestroy(qux)']);
+        logs.length = 0;
+      });
 
-      it('should detach hostViews from the ApplicationRef once destroyed', waitForAsync(() => {
-        let ng2Component: Ng2Component;
+      it('should detach hostViews from the ApplicationRef once destroyed', async () => {
+        let ng2Component!: Ng2Component;
 
         @Component({
           selector: 'ng2',
@@ -1350,25 +1377,22 @@ withEachNg1Version(() => {
         const $injector = angular.bootstrap(element, [ng1Module.name]);
         const $rootScope = $injector.get($ROOT_SCOPE) as angular.IRootScopeService;
 
-        setTimeout(() => {
-          // Wait for the module to be bootstrapped.
-          setTimeout(() => {
-            // Wait for the hostView to be attached (during the `$digest`).
-            const hostView: ViewRef = (
-              ng2Component.appRef.attachView as jasmine.Spy
-            ).calls.mostRecent().args[0];
+        // Wait for the module to be bootstrapped.
+        await timeout();
+        // Wait for the hostView to be attached (during the `$digest`).
+        await timeout();
+        const hostView: ViewRef = (ng2Component.appRef.attachView as jasmine.Spy).calls.mostRecent()
+          .args[0];
 
-            expect(hostView.destroyed).toBe(false);
+        expect(hostView.destroyed).toBe(false);
 
-            $rootScope.$apply('hideNg2 = true');
+        $rootScope.$apply('hideNg2 = true');
 
-            expect(hostView.destroyed).toBe(true);
-            expect(ng2Component.appRef.detachView).toHaveBeenCalledWith(hostView);
-          });
-        });
-      }));
+        expect(hostView.destroyed).toBe(true);
+        expect(ng2Component.appRef.detachView).toHaveBeenCalledWith(hostView);
+      });
 
-      it('should properly run cleanup when a downgraded component is destroyed', waitForAsync(() => {
+      it('should properly run cleanup when a downgraded component is destroyed', async () => {
         let destroyed = false;
 
         @Component({
@@ -1403,41 +1427,38 @@ withEachNg1Version(() => {
         const $injector = angular.bootstrap(element, [ng1Module.name]);
         const $rootScope = $injector.get($ROOT_SCOPE) as angular.IRootScopeService;
 
-        setTimeout(() => {
-          // Wait for the module to be bootstrapped.
-          const ng2Element = angular.element(element.querySelector('ng2') as Element);
-          const ng2Descendants = Array.from(element.querySelectorAll('ng2 li')).map(
-            angular.element,
-          );
-          let ng2ElementDestroyed = false;
-          let ng2DescendantsDestroyed = [false, false];
+        // Wait for the module to be bootstrapped.
+        await timeout();
+        const ng2Element = angular.element(element.querySelector('ng2') as Element);
+        const ng2Descendants = Array.from(element.querySelectorAll('ng2 li')).map(angular.element);
+        let ng2ElementDestroyed = false;
+        let ng2DescendantsDestroyed = [false, false];
 
-          ng2Element.data!('test', 42);
-          ng2Descendants.forEach((elem, i) => elem.data!('test', i));
-          ng2Element.on!('$destroy', () => (ng2ElementDestroyed = true));
-          ng2Descendants.forEach((elem, i) =>
-            elem.on!('$destroy', () => (ng2DescendantsDestroyed[i] = true)),
-          );
+        ng2Element.data!('test', 42);
+        ng2Descendants.forEach((elem, i) => elem.data!('test', i));
+        ng2Element.on!('$destroy', () => (ng2ElementDestroyed = true));
+        ng2Descendants.forEach((elem, i) =>
+          elem.on!('$destroy', () => (ng2DescendantsDestroyed[i] = true)),
+        );
 
-          expect(element.textContent).toBe('test1test2');
-          expect(destroyed).toBe(false);
-          expect(ng2Element.data!('test')).toBe(42);
-          ng2Descendants.forEach((elem, i) => expect(elem.data!('test')).toBe(i));
-          expect(ng2ElementDestroyed).toBe(false);
-          expect(ng2DescendantsDestroyed).toEqual([false, false]);
+        expect(element.textContent).toBe('test1test2');
+        expect(destroyed).toBe(false);
+        expect(ng2Element.data!('test')).toBe(42);
+        ng2Descendants.forEach((elem, i) => expect(elem.data!('test')).toBe(i));
+        expect(ng2ElementDestroyed).toBe(false);
+        expect(ng2DescendantsDestroyed).toEqual([false, false]);
 
-          $rootScope.$apply('hideNg2 = true');
+        $rootScope.$apply('hideNg2 = true');
 
-          expect(element.textContent).toBe('');
-          expect(destroyed).toBe(true);
-          expect(ng2Element.data!('test')).toBeUndefined();
-          ng2Descendants.forEach((elem) => expect(elem.data!('test')).toBeUndefined());
-          expect(ng2ElementDestroyed).toBe(true);
-          expect(ng2DescendantsDestroyed).toEqual([true, true]);
-        });
-      }));
+        expect(element.textContent).toBe('');
+        expect(destroyed).toBe(true);
+        expect(ng2Element.data!('test')).toBeUndefined();
+        ng2Descendants.forEach((elem) => expect(elem.data!('test')).toBeUndefined());
+        expect(ng2ElementDestroyed).toBe(true);
+        expect(ng2DescendantsDestroyed).toEqual([true, true]);
+      });
 
-      it('should only retrieve the Angular zone once (and cache it for later use)', fakeAsync(() => {
+      it('should only retrieve the Angular zone once (and cache it for later use)', async () => {
         let count = 0;
         let getNgZoneCount = 0;
 
@@ -1483,8 +1504,9 @@ withEachNg1Version(() => {
         const $rootScope = $injector.get($ROOT_SCOPE) as angular.IRootScopeService;
 
         $rootScope.$apply('showNg2 = true');
-        tick(0); // Wait for the module to be bootstrapped and `$evalAsync()` to
-        // propagate inputs.
+        // Wait for the module to be bootstrapped and `$evalAsync()` to propagate inputs.
+        await timeout();
+        await timeout();
 
         const injector = ($injector.get(LAZY_MODULE_REF) as LazyModuleRef).injector!;
         const injectorGet = injector.get;
@@ -1499,14 +1521,14 @@ withEachNg1Version(() => {
         expect(element.textContent).toBe('');
 
         $rootScope.$apply('showNg2 = true');
-        tick(0); // Wait for `$evalAsync()` to propagate inputs.
+        await timeout(); // Wait for `$evalAsync()` to propagate inputs.
         expect(element.textContent).toBe('Count: 2 | In the zone: true');
 
         $rootScope.$destroy();
-      }));
+      });
 
-      it("should give access to both injectors in the Angular module's constructor", waitForAsync(() => {
-        let $injectorFromNg2: angular.IInjectorService | null = null;
+      it("should give access to both injectors in the Angular module's constructor", async () => {
+        let $injectorFromNg2 = null as angular.IInjectorService | null;
 
         @Component({
           selector: 'ng2',
@@ -1540,10 +1562,11 @@ withEachNg1Version(() => {
         const $injectorFromNg1 = angular.bootstrap(element, [ng1Module.name]);
 
         // Wait for the module to be bootstrapped.
-        setTimeout(() => expect($injectorFromNg2).toBe($injectorFromNg1));
-      }));
+        await timeout();
+        expect($injectorFromNg2).toBe($injectorFromNg1);
+      });
 
-      it('should destroy the AngularJS app when `PlatformRef` is destroyed', waitForAsync(() => {
+      it('should destroy the AngularJS app when `PlatformRef` is destroyed', async () => {
         @Component({
           selector: 'ng2',
           template: '<span>NG2</span>',
@@ -1572,42 +1595,41 @@ withEachNg1Version(() => {
         const element = html('<div><ng1></ng1></div>');
         const $injector = angular.bootstrap(element, [ng1Module.name]);
 
-        setTimeout(() => {
-          // Wait for the module to be bootstrapped.
-          const $rootScope: angular.IRootScopeService = $injector.get($ROOT_SCOPE);
-          const rootScopeDestroySpy = spyOn($rootScope, '$destroy');
+        // Wait for the module to be bootstrapped.
+        await timeout();
+        const $rootScope: angular.IRootScopeService = $injector.get($ROOT_SCOPE);
+        const rootScopeDestroySpy = spyOn($rootScope, '$destroy');
 
-          const appElem = angular.element(element);
-          const ng1Elem = angular.element(element.querySelector('ng1') as Element);
-          const ng2Elem = angular.element(element.querySelector('ng2') as Element);
-          const ng2ChildElem = angular.element(element.querySelector('ng2 span') as Element);
+        const appElem = angular.element(element);
+        const ng1Elem = angular.element(element.querySelector('ng1') as Element);
+        const ng2Elem = angular.element(element.querySelector('ng2') as Element);
+        const ng2ChildElem = angular.element(element.querySelector('ng2 span') as Element);
 
-          // Attach data to all elements.
-          appElem.data!('testData', 1);
-          ng1Elem.data!('testData', 2);
-          ng2Elem.data!('testData', 3);
-          ng2ChildElem.data!('testData', 4);
+        // Attach data to all elements.
+        appElem.data!('testData', 1);
+        ng1Elem.data!('testData', 2);
+        ng2Elem.data!('testData', 3);
+        ng2ChildElem.data!('testData', 4);
 
-          // Verify data can be retrieved.
-          expect(appElem.data!('testData')).toBe(1);
-          expect(ng1Elem.data!('testData')).toBe(2);
-          expect(ng2Elem.data!('testData')).toBe(3);
-          expect(ng2ChildElem.data!('testData')).toBe(4);
+        // Verify data can be retrieved.
+        expect(appElem.data!('testData')).toBe(1);
+        expect(ng1Elem.data!('testData')).toBe(2);
+        expect(ng2Elem.data!('testData')).toBe(3);
+        expect(ng2ChildElem.data!('testData')).toBe(4);
 
-          expect(rootScopeDestroySpy).not.toHaveBeenCalled();
+        expect(rootScopeDestroySpy).not.toHaveBeenCalled();
 
-          // Destroy `PlatformRef`.
-          getPlatform()?.destroy();
+        // Destroy `PlatformRef`.
+        getPlatform()?.destroy();
 
-          // Verify `$rootScope` has been destroyed and data has been cleaned up.
-          expect(rootScopeDestroySpy).toHaveBeenCalled();
+        // Verify `$rootScope` has been destroyed and data has been cleaned up.
+        expect(rootScopeDestroySpy).toHaveBeenCalled();
 
-          expect(appElem.data!('testData')).toBeUndefined();
-          expect(ng1Elem.data!('testData')).toBeUndefined();
-          expect(ng2Elem.data!('testData')).toBeUndefined();
-          expect(ng2ChildElem.data!('testData')).toBeUndefined();
-        });
-      }));
+        expect(appElem.data!('testData')).toBeUndefined();
+        expect(ng1Elem.data!('testData')).toBeUndefined();
+        expect(ng2Elem.data!('testData')).toBeUndefined();
+        expect(ng2ChildElem.data!('testData')).toBeUndefined();
+      });
 
       describe('(common error)', () => {
         let Ng2CompA: Type<any>;
@@ -1668,7 +1690,7 @@ withEachNg1Version(() => {
         // Explicitly clean up after each test to prevent that.
         afterEach(() => setTempInjectorRef(null!));
 
-        it('should throw if no downgraded module is included', waitForAsync(() => {
+        it('should throw if no downgraded module is included', async () => {
           const ng1Module = angular
             .module_('ng1', [])
             .value($EXCEPTION_HANDLER, errorSpy)
@@ -1710,9 +1732,10 @@ withEachNg1Version(() => {
             ),
             '<ng2-b>',
           );
-        }));
+          await timeout();
+        });
 
-        it('should throw if the corresponding downgraded module is not included', waitForAsync(() => {
+        it('should throw if the corresponding downgraded module is not included', async () => {
           const ng1Module = angular
             .module_('ng1', [downModA])
             .value($EXCEPTION_HANDLER, errorSpy)
@@ -1746,9 +1769,10 @@ withEachNg1Version(() => {
             ),
             '<ng2-b>',
           );
-        }));
+          await timeout();
+        });
 
-        it('should throw if `downgradedModule` is not specified and there are multiple downgraded modules', waitForAsync(() => {
+        it('should throw if `downgradedModule` is not specified and there are multiple downgraded modules', async () => {
           const ng1Module = angular
             .module_('ng1', [downModA, downModB])
             .value($EXCEPTION_HANDLER, errorSpy)
@@ -1782,7 +1806,8 @@ withEachNg1Version(() => {
             ),
             '<ng2-b>',
           );
-        }));
+          await timeout();
+        });
       });
     });
   });

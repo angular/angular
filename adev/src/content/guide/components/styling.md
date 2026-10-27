@@ -142,3 +142,122 @@ reference CSS files. Additionally, your CSS may
 use [the `@import`at-rule](https://developer.mozilla.org/docs/Web/CSS/@import) to reference
 CSS files. Angular treats these references as _external_ styles. External styles are not affected by
 emulated view encapsulation.
+
+## Namespacing CSS custom properties
+
+Angular can add a prefix to the CSS custom properties (also called CSS variables) that your
+component styles declare and read. Custom properties inherit down the DOM tree, so when something
+outside your application defines a custom property such as `--primary-color` on an ancestor
+element, your components read that value. This matters when your application shares a page with another
+application or with markup you do not control. Angular does not namespace custom properties until
+you ask it to, and an application that owns its page does not need namespacing.
+
+To scope the custom properties in your component styles to your application, add
+[`provideCssVarNamespacing`](api/platform-browser/provideCssVarNamespacing) to your application's
+providers. It uses the application's [`APP_ID`](api/core/APP_ID) as the namespace:
+
+```ts {header: "app.config.ts"}
+import {APP_ID, ApplicationConfig} from '@angular/core';
+import {provideCssVarNamespacing} from '@angular/platform-browser';
+
+export const appConfig: ApplicationConfig = {
+  providers: [{provide: APP_ID, useValue: 'my-app'}, provideCssVarNamespacing()],
+};
+```
+
+Angular prefixes the custom properties in your component styles with that namespace followed by an
+underscore, so `--primary-color` becomes `--my-app_primary-color`. The prefix applies to
+declarations, `var()` references, `@property` rules, and style bindings such as
+`[style.--primary-color]`, including the style bindings a component declares in its `host` object.
+
+`APP_ID` is `ng` unless you set it, so give each application on the page its own `APP_ID`.
+Otherwise, the applications share a prefix and collide again. To use a namespace that differs from
+the application id, pass it to `provideCssVarNamespacing`. Angular appends the underscore itself:
+`provideCssVarNamespacing('my-app_')` produces `--my-app__primary-color`.
+
+Angular namespaces the styles it compiles into a component: the `styles` and `styleUrl` of the
+component, the styles you [write in a `<style>` element](#defining-styles-in-templates) in its
+template, stylesheets its template references with a relative `<link rel="stylesheet">`, and
+the styles of a component that uses `ViewEncapsulation.None`. Angular does not namespace a stylesheet the browser
+loads at runtime, such as a global stylesheet your build configuration lists or an
+[external style](#referencing-external-style-files) that your build does not inline.
+
+Namespacing applies to every component Angular compiles, including the components of the libraries
+you install. When a library's styles read a custom property that a global stylesheet defines, such
+as the properties of a theme, the reference no longer matches, the browser uses the `var()`
+fallback if there is one or otherwise
+[the property's inherited or initial value](https://www.w3.org/TR/css-variables-1/#invalid-variables),
+and nothing reports an error. Before you enable namespacing in an
+existing application, review the custom properties that cross between your global stylesheets and
+your components.
+
+IMPORTANT: Angular rewrites custom property names only in the styles and bindings it compiles.
+Everywhere else keeps the name you write, and nothing reports the mismatch.
+
+Angular does not rewrite the name in:
+
+- Static style attributes, such as `style="--primary-color: red"`, including the `style` entry of a
+  component's `host` object.
+- Object and string style bindings, such as `[style]="{'--primary-color': color}"`,
+  `[style]="'--primary-color: red'"` and `ngStyle`, including the `[style]` entry of a component's
+  `host` object.
+- Custom property names inside a binding's value, such as
+  `[style.border-color]="'var(--primary-color)'"`.
+- Calls to `Renderer2.setStyle`.
+
+Each of these produces a property that your namespaced styles no longer read. Namespace those
+names yourself, as described in
+[Using namespaced properties in TypeScript](#using-namespaced-properties-in-typescript).
+
+### Opting out of namespacing
+
+To declare or read a custom property that Angular does not namespace, such as one defined in a
+global stylesheet, prefix its name with `--global--`. Angular removes `--global` and leaves the
+remaining `--` and the rest of the name unchanged:
+
+```css
+:host {
+  /* Declares --accent-color and reads --brand-color, not --my-app_brand-color. */
+  --global--accent-color: navy;
+  color: var(--global--brand-color);
+}
+```
+
+Write two hyphens after `global`. A single hyphen, as in `--global-brand-color`, does not opt out,
+and Angular namespaces that name like any other. Avoid names that start with `--global-` followed
+by anything but a second hyphen; a future major version is planned to reject them at build time.
+Angular removes `--global` in every application, including applications that never configure a
+namespace.
+
+### Using namespaced properties in TypeScript
+
+Prefer a style binding such as `[style.--primary-color]`, which Angular namespaces for you. When
+you go through a DOM API instead, pass the name you wrote in your styles to
+[`CssVarNamespacer`](api/platform-browser/CssVarNamespacer), including the leading `--`:
+
+```angular-ts {header: "profile-photo.ts"}
+import {Component, ElementRef, inject} from '@angular/core';
+import {CssVarNamespacer} from '@angular/platform-browser';
+
+@Component({
+  selector: 'profile-photo',
+  template: `<img src="profile-photo.jpg" alt="Your profile photo" />`,
+  styles: `
+    img {
+      border: 2px solid var(--primary-color);
+    }
+  `,
+})
+export class ProfilePhoto {
+  private readonly host: HTMLElement = inject(ElementRef).nativeElement;
+  private readonly cssVarNamespacer = inject(CssVarNamespacer);
+
+  setPrimaryColor(color: string): void {
+    this.host.style.setProperty(this.cssVarNamespacer.namespace('--primary-color'), color);
+  }
+}
+```
+
+Use the plain name for a property you declared with `--global--`, since Angular never namespaces
+those. For everything else, `namespace` returns the name unchanged when an application configures
+no namespace, so a library can call it for the custom properties its own styles declare.

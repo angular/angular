@@ -1,10 +1,13 @@
 import * as webdriver from 'selenium-webdriver';
 
 export class AppPage {
-  constructor(
-    private driver: webdriver.WebDriver,
-    private baseUrl: string,
-  ) {}
+  private driver: webdriver.WebDriver;
+  private baseUrl: string;
+
+  constructor(driver: webdriver.WebDriver, baseUrl: string) {
+    this.driver = driver;
+    this.baseUrl = baseUrl;
+  }
 
   async navigateTo(): Promise<void> {
     await this.driver.get(this.baseUrl);

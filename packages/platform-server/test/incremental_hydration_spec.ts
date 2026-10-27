@@ -341,6 +341,33 @@ describe('platform-server partial hydration integration', () => {
         // which contains parent id (which is not needed for top-level blocks).
         expect(ssrContents).toContain('"__nghDeferData__":{"d0":{"r":1,"s":2}}}');
       });
+
+      it('should serialize blocks whose only hydrate trigger is `hydrate when`', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            @defer (hydrate when shouldHydrate) {
+              Hello world!
+            } @placeholder {
+              <span>Placeholder</span>
+            }
+          `,
+        })
+        class SimpleComponent {
+          shouldHydrate = false;
+        }
+
+        const appId = 'custom-app-id';
+        const providers = [{provide: APP_ID, useValue: appId}];
+
+        const html = await ssr(SimpleComponent, {
+          envProviders: providers,
+        });
+
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('"__nghDeferData__":{"d0":{"r":1,"s":2}}}');
+      });
     });
 
     describe('basic hydration behavior', () => {
@@ -1285,7 +1312,9 @@ describe('platform-server partial hydration integration', () => {
             selector: 'app',
             template: `
               <main>
-                @defer (hydrate on viewport({rootMargin: '123px', threshold: 0.5})) {
+                @defer (
+                  hydrate on viewport({rootMargin: '123px', scrollMargin: '456px', threshold: 0.5})
+                ) {
                   <article>defer block rendered!</article>
                 } @placeholder {
                   <span>Outer block placeholder</span>
@@ -1303,7 +1332,7 @@ describe('platform-server partial hydration integration', () => {
           const ssrContents = getAppContents(html);
 
           expect(ssrContents).toContain(
-            '"__nghDeferData__":{"d0":{"r":1,"s":2,"t":[{"trigger":2,"intersectionObserverOptions":{"rootMargin":"123px","threshold":0.5}}]}}',
+            '"__nghDeferData__":{"d0":{"r":1,"s":2,"t":[{"trigger":2,"intersectionObserverOptions":{"rootMargin":"123px","scrollMargin":"456px","threshold":0.5}}]}}',
           );
 
           // Internal cleanup before we do server->client transition in this test.
@@ -1319,7 +1348,11 @@ describe('platform-server partial hydration integration', () => {
           await appRef.whenStable();
 
           expect(activeObservers.length).toBe(1);
-          expect(activeObservers[0].options).toEqual({rootMargin: '123px', threshold: 0.5});
+          expect(activeObservers[0].options).toEqual({
+            rootMargin: '123px',
+            scrollMargin: '456px',
+            threshold: 0.5,
+          });
         });
 
         it('should create an IntersectionObserver for a nested routed viewport block', async () => {
@@ -2281,7 +2314,7 @@ describe('platform-server partial hydration integration', () => {
       class SimpleComponent {}
 
       const fixture = TestBed.createComponent(SimpleComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       // Verify that `hydrate when true` doesn't trigger rendering of the main
       // content in client-only use-cases (expecting to see placeholder content).
@@ -2951,7 +2984,7 @@ describe('platform-server partial hydration integration', () => {
         // Represents content created dynamically via `ViewContainerRef.createComponent()`
         // -- NOT a `@defer` block -- so its dehydrated view carries no `DEFER_BLOCK_ID`.
         @Component({
-          selector: 'dynamic-cmp',
+          selector: 'app',
           template: `<p id="dynamic-content">Dynamically created</p>`,
         })
         class DynamicCmp {}
@@ -3032,7 +3065,10 @@ describe('platform-server partial hydration integration', () => {
       'should not remove a dehydrated view that a PendingTasks-guarded ' +
         'createComponent() inside the hydrating @defer block is about to claim',
       async () => {
-        @Component({selector: 'late-cmp', template: `<p id="late-content">Late content</p>`})
+        @Component({
+          selector: 'app',
+          template: `<p id="late-content">Late content</p>`,
+        })
         class LateCmp {}
 
         // Creates `LateCmp` after a slow dynamic import, holding a pending task the whole time.
@@ -3366,7 +3402,10 @@ describe('platform-server partial hydration integration', () => {
       'should not remove the server-rendered DOM of a lazy route that is still loading ' +
         'when a @defer block in the app shell hydrates',
       async () => {
-        @Component({selector: 'routed-page', template: `<p id="routed-content">Routed page</p>`})
+        @Component({
+          selector: 'app',
+          template: `<p id="routed-content">Routed page</p>`,
+        })
         class RoutedPage {}
 
         @Component({

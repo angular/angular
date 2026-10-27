@@ -21,6 +21,7 @@ import {
   computed,
   assertInInjectionContext,
   reflectComponentType,
+  untracked,
 } from '@angular/core';
 import {Router} from './router';
 import type {ActivatedRoute} from './router_state';
@@ -200,6 +201,7 @@ export function createResourceOutletBindingEffects(
       continue;
     }
 
+    componentRef.setInput(templateName, untracked(resource.value));
     const effectRef = effect(
       () => {
         componentRef.setInput(templateName, resource.value());

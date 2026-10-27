@@ -17,7 +17,6 @@ import {toObservable} from '../../rxjs-interop';
 import {
   AfterViewInit,
   ApplicationRef,
-  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   computed,
@@ -166,7 +165,6 @@ describe('reactivity', () => {
       let cleanupCount = 0;
 
       @Component({
-        selector: 'test-cmp',
         template: '',
       })
       class Cmp {
@@ -244,7 +242,6 @@ describe('reactivity', () => {
       let didRun = false;
 
       @Component({
-        selector: 'test-cmp',
         template: '',
       })
       class Cmp implements AfterViewInit {
@@ -658,7 +655,6 @@ describe('reactivity', () => {
       }
 
       @Component({
-        selector: 'test-cmp',
         imports: [WithInput],
         template: `<with-input [in]="'A'" />|<with-input [in]="'B'" />`,
       })
@@ -683,7 +679,6 @@ describe('reactivity', () => {
       }
 
       @Component({
-        selector: 'test-cmp',
         imports: [WithConstructor],
         template: `<with-constructor />`,
       })
@@ -709,7 +704,6 @@ describe('reactivity', () => {
       }
 
       @Component({
-        selector: 'test-cmp',
         imports: [WithInputSetter],
         template: `
           <with-input-setter [testInput]="'binding'" />|<with-input-setter testInput="static" />
@@ -737,7 +731,6 @@ describe('reactivity', () => {
       }
 
       @Component({
-        selector: 'test-cmp',
         imports: [WithQuery],
         template: `<with-query><div #item></div></with-query>`,
       })
@@ -752,7 +745,6 @@ describe('reactivity', () => {
       const state = signal('initial');
 
       @Component({
-        selector: 'with-query-setter',
         template: '<div #el></div>',
       })
       class WithQuerySetter {
@@ -767,7 +759,6 @@ describe('reactivity', () => {
       }
 
       @Component({
-        selector: 'test-cmp',
         template: ``,
       })
       class Cmp {
@@ -799,7 +790,6 @@ describe('reactivity', () => {
 
     it('should allow toObservable subscription in template (with async pipe)', () => {
       @Component({
-        selector: 'test-cmp',
         imports: [AsyncPipe],
         template: '{{counter$ | async}}',
       })
@@ -816,7 +806,6 @@ describe('reactivity', () => {
 
     it('should assign a debugName to the underlying node for an effect', async () => {
       @Component({
-        selector: 'test-cmp',
         template: '',
       })
       class Cmp {
@@ -832,7 +821,6 @@ describe('reactivity', () => {
 
     it('should disallow writing to signals within computed', () => {
       @Component({
-        selector: 'with-input',
         template: '{{comp()}}',
       })
       class WriteComputed {
@@ -850,7 +838,6 @@ describe('reactivity', () => {
 
     it('should disallow writing to signals within a template', () => {
       @Component({
-        selector: 'with-input',
         template: '{{func()}}',
       })
       class WriteComputed {
@@ -865,11 +852,63 @@ describe('reactivity', () => {
       expect(() => fixture.detectChanges()).toThrowError(/NG0600.*template/);
     });
 
+    it('should name the component and the signal when writing within a template', async () => {
+      @Component({
+        selector: 'write-in-template',
+        template: '@if (true) {{{write()}}}',
+      })
+      class WriteInTemplate {
+        sig = signal(0, {debugName: 'count'});
+        write() {
+          this.sig.set(1);
+        }
+      }
+
+      const fixture = TestBed.createComponent(WriteInTemplate);
+
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(
+        /^NG0600: Writing to signals is not allowed while Angular renders the template \(eg\. interpolations\)\. Template location: 'WriteInTemplate' component\. Signal: 'count'\. Find more at/,
+      );
+    });
+
+    it('should name the signal when writing within computed', async () => {
+      @Component({
+        selector: 'write-in-computed',
+        template: '{{comp()}}',
+      })
+      class WriteInComputed {
+        sig = signal(0, {debugName: 'count'});
+        comp = computed(() => this.sig.set(1));
+      }
+
+      const fixture = TestBed.createComponent(WriteInComputed);
+
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(
+        /^NG0600: Writing to signals is not allowed in a `computed`\. Signal: 'count'\. Find more at/,
+      );
+    });
+
+    it('should keep the message short when the signal has no debugName', async () => {
+      @Component({
+        selector: 'write-in-computed',
+        template: '{{comp()}}',
+      })
+      class WriteInComputed {
+        sig = signal(0);
+        comp = computed(() => this.sig.set(1));
+      }
+
+      const fixture = TestBed.createComponent(WriteInComputed);
+
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(
+        /^NG0600: Writing to signals is not allowed in a `computed`\. Find more at/,
+      );
+    });
+
     describe('effects created in components should first run after ngOnInit', () => {
       it('when created during bootstrapping', () => {
         let log: string[] = [];
         @Component({
-          selector: 'test-cmp',
           template: '',
         })
         class TestCmp {
@@ -893,7 +932,6 @@ describe('reactivity', () => {
         @Component({
           selector: 'test-cmp',
           template: '',
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class TestCmp {
           ngOnInitRan = false;
@@ -907,17 +945,15 @@ describe('reactivity', () => {
         }
 
         @Component({
-          selector: 'driver-cmp',
           imports: [TestCmp],
           template: `
-            @if (cond) {
+            @if (cond()) {
               <test-cmp />
             }
           `,
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class DriverCmp {
-          cond = false;
+          cond = signal(false);
         }
 
         const fixture = TestBed.createComponent(DriverCmp);
@@ -925,8 +961,7 @@ describe('reactivity', () => {
         expect(log).toEqual([]);
 
         // Toggle the @if, which should create and run the effect.
-        fixture.componentInstance.cond = true;
-        fixture.changeDetectorRef.markForCheck();
+        fixture.componentInstance.cond.set(true);
         fixture.detectChanges();
         expect(log).toEqual(['init', 'effect']);
       });
@@ -934,7 +969,6 @@ describe('reactivity', () => {
       it('when created dynamically', () => {
         let log: string[] = [];
         @Component({
-          selector: 'test-cmp',
           template: '',
         })
         class TestCmp {
@@ -949,7 +983,6 @@ describe('reactivity', () => {
         }
 
         @Component({
-          selector: 'driver-cmp',
           template: '',
         })
         class DriverCmp {
@@ -981,7 +1014,6 @@ describe('reactivity', () => {
         }
 
         @Component({
-          selector: 'test-cmp',
           template: '',
           providers: [EffectService],
         })
@@ -1001,7 +1033,6 @@ describe('reactivity', () => {
       it('if multiple effects are created', () => {
         let log: string[] = [];
         @Component({
-          selector: 'test-cmp',
           template: '',
         })
         class TestCmp {
@@ -1028,7 +1059,6 @@ describe('reactivity', () => {
     describe('should disallow creating an effect context', () => {
       it('inside template effect', () => {
         @Component({
-          standalone: false,
           template: '{{someFn()}}',
         })
         class Cmp {
@@ -1053,7 +1083,6 @@ describe('reactivity', () => {
 
       it('inside an effect', () => {
         @Component({
-          standalone: false,
           template: '',
         })
         class Cmp {
@@ -1094,7 +1123,6 @@ describe('reactivity', () => {
       const source = signal('initial');
 
       @Component({
-        selector: 'test-cmp',
         template: `{{ dynamic() }}{{ source() }}`,
       })
       class TestCmp {

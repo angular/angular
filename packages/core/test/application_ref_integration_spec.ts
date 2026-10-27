@@ -11,6 +11,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
 import {
   ApplicationRef,
+  ChangeDetectionStrategy,
   Component,
   DoCheck,
   NgModule,
@@ -22,7 +23,6 @@ import {
 } from '../src/core';
 import {getTestBed} from '../testing';
 
-import {ChangeDetectionStrategy} from '@angular/compiler';
 import {NgModuleFactory} from '../src/render3/ng_module_ref';
 
 describe('ApplicationRef bootstrap', () => {

@@ -109,7 +109,7 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(dtsContent).toContain(
         'static ɵmod: i0.ɵɵNgModuleDeclaration<CompModule, never, [typeof i1.Comp], never>;',
@@ -131,7 +131,7 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(dtsContent).toContain(
         'static ɵmod: i0.ɵɵNgModuleDeclaration<CompModule, never, [ReturnType<typeof i1.FooModule.forRoot>], never>;',
@@ -153,7 +153,7 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(dtsContent).toContain(
         'static ɵmod: i0.ɵɵNgModuleDeclaration<CompModule, never, [ReturnType<typeof i1.provideFoo>], never>;',
@@ -176,7 +176,7 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(dtsContent).toContain(
         'static ɵmod: i0.ɵɵNgModuleDeclaration<CompModule, never, [typeof i1.BarModule, ReturnType<typeof i2.FooModule.forRoot>], never>;',
@@ -198,7 +198,7 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(dtsContent).toContain(
         'static ɵmod: i0.ɵɵNgModuleDeclaration<CompModule, never, never, [ReturnType<typeof i1.FooModule.forRoot>]>;',
@@ -225,7 +225,7 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(dtsContent).toContain(
         'static ɵmod: i0.ɵɵNgModuleDeclaration<CompModule, never, [[typeof BarModule]], never>;',
@@ -253,7 +253,7 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(dtsContent).toContain(
         'static ɵmod: i0.ɵɵNgModuleDeclaration<CompModule, never, [[typeof BarModule], ReturnType<typeof i1.provideFoo>], never>;',
@@ -300,7 +300,7 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(dtsContent).toContain(
         'static ɵmod: i0.ɵɵNgModuleDeclaration<CompModule, never, [typeof i1.FooModule], never>;',
@@ -322,7 +322,7 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(dtsContent).toContain(
         'static ɵmod: i0.ɵɵNgModuleDeclaration<CompModule, never, never, [typeof i1.Comp]>;',
@@ -364,7 +364,7 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(dtsContent).toContain(
         'static ɵcmp: i0.ɵɵComponentDeclaration<HostComp, "host-comp", never, {}, {}, never, never, true, [{ directive: typeof i1.Dir; inputs: {}; outputs: {}; }]>;',
@@ -390,7 +390,7 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(dtsContent).toContain(
         'static ɵcmp: i0.ɵɵComponentDeclaration<HostComp, "host-comp", never, {}, {}, never, never, true, [{ directive: typeof i1.Dir; inputs: {}; outputs: {}; }]>;',
@@ -413,7 +413,7 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(dtsContent).toContain(
         'static ɵdir: i0.ɵɵDirectiveDeclaration<HostDir, "[host-dir]", never, {}, {}, never, never, true, [{ directive: typeof i1.Dir; inputs: {}; outputs: {}; }]>;',
@@ -438,7 +438,7 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(dtsContent).toContain(
         'static ɵdir: i0.ɵɵDirectiveDeclaration<HostDir, "[host-dir]", never, {}, {}, never, never, true, [{ directive: typeof i1.Dir; inputs: {}; outputs: {}; }]>;',
@@ -462,10 +462,10 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
-      expect(dtsContent).toContain(
-        'static ɵcmp: i0.ɵɵComponentDeclaration<HostComp, "host-comp", never, {}, {}, never, never, true, [{ directive: typeof n.Dir; inputs: {}; outputs: {}; }]>;',
+      expect(dtsContent).toMatch(
+        /static ɵcmp: i0\.ɵɵComponentDeclaration<HostComp, "host-comp", never, \{\}, \{\}, never, never, true, \[\{ directive: typeof \w+\.Dir; inputs: \{\}; outputs: \{\}; \}\]>;/,
       );
     });
 
@@ -490,7 +490,7 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
       expect(dtsContent).toContain(
         'static ɵcmp: i0.ɵɵComponentDeclaration<HostComp, "host-comp", never, {}, {}, never, never, true, [{ directive: typeof i1.Dir; inputs: { "a": "b"; }; outputs: { "c": "d"; }; }]>;',
@@ -516,10 +516,10 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
-      expect(dtsContent).toContain(
-        'static ɵcmp: i0.ɵɵComponentDeclaration<HostComp, "host-comp", never, {}, {}, never, never, true, [{ directive: typeof DirIndirect; inputs: {}; outputs: {}; }]>;',
+      expect(dtsContent).toMatch(
+        /static ɵcmp: i0\.ɵɵComponentDeclaration<HostComp, "host-comp", never, \{\}, \{\}, never, never, true, \[\{ directive: typeof (?:DirIndirect|\w+\.Dir); inputs: \{\}; outputs: \{\}; \}\]>;/,
       );
     });
 
@@ -544,10 +544,10 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
-      expect(dtsContent).toContain(
-        'static ɵcmp: i0.ɵɵComponentDeclaration<HostComp, "host-comp", never, {}, {}, never, never, true, [{ directive: typeof DirIndirect; inputs: {}; outputs: {}; }]>;',
+      expect(dtsContent).toMatch(
+        /static ɵcmp: i0\.ɵɵComponentDeclaration<HostComp, "host-comp", never, \{\}, \{\}, never, never, true, \[\{ directive: typeof (?:DirIndirect|\w+\.Dir); inputs: \{\}; outputs: \{\}; \}\]>;/,
       );
     });
 
@@ -569,10 +569,10 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
-      expect(dtsContent).toContain(
-        'static ɵdir: i0.ɵɵDirectiveDeclaration<HostDir, "[host-dir]", never, {}, {}, never, never, true, [{ directive: typeof DirIndirect; inputs: {}; outputs: {}; }]>;',
+      expect(dtsContent).toMatch(
+        /static ɵdir: i0\.ɵɵDirectiveDeclaration<HostDir, "\[host-dir\]", never, \{\}, \{\}, never, never, true, \[\{ directive: typeof (?:DirIndirect|\w+\.Dir); inputs: \{\}; outputs: \{\}; \}\]>;/,
       );
     });
 
@@ -596,10 +596,10 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
-      expect(dtsContent).toContain(
-        'static ɵdir: i0.ɵɵDirectiveDeclaration<HostDir, "[host-dir]", never, {}, {}, never, never, true, [{ directive: typeof DirIndirect; inputs: {}; outputs: {}; }]>;',
+      expect(dtsContent).toMatch(
+        /static ɵdir: i0\.ɵɵDirectiveDeclaration<HostDir, "\[host-dir\]", never, \{\}, \{\}, never, never, true, \[\{ directive: typeof (?:DirIndirect|\w+\.Dir); inputs: \{\}; outputs: \{\}; \}\]>;/,
       );
     });
 
@@ -624,10 +624,10 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
-      expect(dtsContent).toContain(
-        'static ɵcmp: i0.ɵɵComponentDeclaration<HostComp, "host-comp", never, {}, {}, never, never, true, [{ directive: typeof DIR.Dir; inputs: {}; outputs: {}; }]>;',
+      expect(dtsContent).toMatch(
+        /static ɵcmp: i0\.ɵɵComponentDeclaration<HostComp, "host-comp", never, \{\}, \{\}, never, never, true, \[\{ directive: typeof \w+\.Dir; inputs: \{\}; outputs: \{\}; \}\]>;/,
       );
     });
 
@@ -654,10 +654,10 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
-      expect(dtsContent).toContain(
-        'static ɵcmp: i0.ɵɵComponentDeclaration<HostComp, "host-comp", never, {}, {}, never, never, true, [{ directive: typeof DIR.Dir; inputs: {}; outputs: {}; }]>;',
+      expect(dtsContent).toMatch(
+        /static ɵcmp: i0\.ɵɵComponentDeclaration<HostComp, "host-comp", never, \{\}, \{\}, never, never, true, \[\{ directive: typeof \w+\.Dir; inputs: \{\}; outputs: \{\}; \}\]>;/,
       );
     });
 
@@ -681,10 +681,10 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
-      expect(dtsContent).toContain(
-        'static ɵdir: i0.ɵɵDirectiveDeclaration<HostDir, "[host-dir]", never, {}, {}, never, never, true, [{ directive: typeof DIR.Dir; inputs: {}; outputs: {}; }]>;',
+      expect(dtsContent).toMatch(
+        /static ɵdir: i0\.ɵɵDirectiveDeclaration<HostDir, "\[host-dir\]", never, \{\}, \{\}, never, never, true, \[\{ directive: typeof \w+\.Dir; inputs: \{\}; outputs: \{\}; \}\]>;/,
       );
     });
 
@@ -710,14 +710,14 @@ runInEachFileSystem(() => {
       );
 
       env.driveMain();
-      const dtsContent = env.getContents('test.d.ts');
+      const dtsContent = env.getContents('test.d.ts').replace(/\s+/g, ' ');
 
-      expect(dtsContent).toContain(
-        'static ɵdir: i0.ɵɵDirectiveDeclaration<HostDir, "[host-dir]", never, {}, {}, never, never, true, [{ directive: typeof DIR.Dir; inputs: {}; outputs: {}; }]>;',
+      expect(dtsContent).toMatch(
+        /static ɵdir: i0\.ɵɵDirectiveDeclaration<HostDir, "\[host-dir\]", never, \{\}, \{\}, never, never, true, \[\{ directive: typeof \w+\.Dir; inputs: \{\}; outputs: \{\}; \}\]>;/,
       );
     });
 
-    it('should show correct error message when using an expression resovling to an external reference in a simple host directive on a component', () => {
+    it('should show correct error message when using an expression resolving to an external reference in a simple host directive on a component', () => {
       env.write(
         'test.ts',
         `
@@ -744,7 +744,7 @@ runInEachFileSystem(() => {
       );
     });
 
-    it('should show correct error message when using an expression resovling to an external reference in host directive object on a component', () => {
+    it('should show correct error message when using an expression resolving to an external reference in host directive object on a component', () => {
       env.write(
         'test.ts',
         `
@@ -773,7 +773,7 @@ runInEachFileSystem(() => {
       );
     });
 
-    it('should show correct error message when using an expression resovling to an external reference in a simple host directive on a directive', () => {
+    it('should show correct error message when using an expression resolving to an external reference in a simple host directive on a directive', () => {
       env.write(
         'test.ts',
         `
@@ -799,7 +799,7 @@ runInEachFileSystem(() => {
       );
     });
 
-    it('should show correct error message when using an expression resovling to an external reference in host directive object on a directive', () => {
+    it('should show correct error message when using an expression resolving to an external reference in host directive object on a directive', () => {
       env.write(
         'test.ts',
         `
@@ -857,6 +857,34 @@ runInEachFileSystem(() => {
         @Component({template: '', selector: 'comp'})
         export class Comp {
           @Input({ transform: (v: string) => !!v }) decoratedInput!: boolean;
+        }
+        `,
+      );
+
+      env.driveMain();
+      const dtsContent = env.getContents('test.d.ts');
+
+      expect(dtsContent).toContain('static ngAcceptInputType_decoratedInput: string;');
+    });
+
+    it('should emit type declarations when using an inputs array entry with a transform function referenced via a constant', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+
+        const INPUT_CONFIG = {
+          name: 'decoratedInput',
+          transform: (v: string) => !!v,
+        };
+
+        @Component({
+          template: '',
+          selector: 'comp',
+          inputs: [INPUT_CONFIG],
+        })
+        export class Comp {
+          decoratedInput!: boolean;
         }
         `,
       );

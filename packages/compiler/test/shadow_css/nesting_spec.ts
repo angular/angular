@@ -465,4 +465,11 @@ describe('ShadowCss nesting', () => {
       '.foo[contenta] .bar { .baz { color: red; } }',
     );
   });
+
+  it('should not let a previous ::ng-deep rule affect the next one', () => {
+    // An empty rule body leaves nothing to reset the global regex's `lastIndex`.
+    expect(
+      shim('.foo ::ng-deep .bar {}\n::ng-deep .baz { .qux { color: red; } }', 'contenta'),
+    ).toEqualCss('.foo[contenta] .bar {} .baz { .qux { color: red; } }');
+  });
 });

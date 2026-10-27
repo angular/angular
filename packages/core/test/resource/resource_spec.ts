@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {timeout} from '@angular/private/testing';
 import {
   ApplicationRef,
   ɵCACHE_ACTIVE as CACHE_ACTIVE,
@@ -25,6 +24,7 @@ import {
   signal,
   TransferState,
 } from '../../src/core';
+import {promiseWithResolvers} from '../../src/util/promise_with_resolvers';
 import {TestBed} from '../../testing';
 
 abstract class MockBackend<T, R> {
@@ -52,7 +52,7 @@ abstract class MockBackend<T, R> {
       entry.reject(reason);
     }
 
-    return timeout();
+    return flushMicrotasks();
   }
 
   async flush(): Promise<void> {
@@ -64,7 +64,7 @@ abstract class MockBackend<T, R> {
     this.pending.clear();
 
     await Promise.all(allPending);
-    await timeout();
+    await flushMicrotasks();
   }
 
   protected abstract prepareResponse(request: T): R;
@@ -132,7 +132,7 @@ describe('resource', () => {
     });
 
     TestBed.tick();
-    await timeout();
+    await flushMicrotasks();
 
     expect(prevStatus).toBe('idle');
   });
@@ -343,7 +343,7 @@ describe('resource', () => {
     const res = resource({
       params: request,
       loader: async ({params}) => {
-        const p = Promise.withResolvers<number>();
+        const p = promiseWithResolvers<number>();
         resolve.push(() => p.resolve(params));
         return p.promise;
       },
@@ -361,7 +361,7 @@ describe('resource', () => {
 
     // Resolve the first load.
     resolve[0]();
-    await timeout();
+    await flushMicrotasks();
 
     // The resource should still be loading. Ticking (triggering the 2nd effect)
     // should not change the loading status.
@@ -372,7 +372,7 @@ describe('resource', () => {
 
     // Resolve the second load.
     resolve[1]?.();
-    await timeout();
+    await flushMicrotasks();
 
     // We should see the resolved value.
     expect(res.status()).toBe('resolved');
@@ -824,7 +824,6 @@ describe('resource', () => {
 
   it('should allow stream from input()', async () => {
     @Component({
-      selector: 'test',
       template: `{{ res.value() }}`,
     })
     class TestComponent {
@@ -1032,6 +1031,46 @@ describe('resource', () => {
     expect(echoResource.error()).toEqual(undefined);
   });
 
+  it('should not reload when a signal read in params changes but params returns the same value', async () => {
+    const routeParams = signal<{id: string; tab: string}>({id: '1', tab: 'overview'});
+    let loadCount = 0;
+
+    const userResource = resource({
+      params: () => routeParams().id,
+      loader: async ({params: id}) => {
+        loadCount++;
+        return `user-${id}-${loadCount}`;
+      },
+      injector: TestBed.inject(Injector),
+    });
+
+    await flushMicrotasks();
+    expect(loadCount).toBe(1);
+    expect(userResource.value()).toBe('user-1-1');
+
+    // Updating `routeParams` with a new object that has the same `id` should not re-run the loader
+    routeParams.set({id: '1', tab: 'orders'});
+    await flushMicrotasks();
+    expect(loadCount).toBe(1);
+    expect(userResource.value()).toBe('user-1-1');
+
+    // Even after a manual reload(), a subsequent signal update with the same `id` should not trigger another reload
+    userResource.reload();
+    await flushMicrotasks();
+    expect(loadCount).toBe(2);
+    expect(userResource.value()).toBe('user-1-2');
+
+    routeParams.set({id: '1', tab: 'settings'});
+    await flushMicrotasks();
+    expect(loadCount).toBe(2);
+    expect(userResource.value()).toBe('user-1-2');
+
+    routeParams.set({id: '2', tab: 'settings'});
+    await flushMicrotasks();
+    expect(loadCount).toBe(3);
+    expect(userResource.value()).toBe('user-2-3');
+  });
+
   describe('types', () => {
     it('should narrow hasValue() when the value can be undefined', () => {
       const result: ResourceRef<number | undefined> = resource({
@@ -1108,6 +1147,10 @@ describe('resource', () => {
   });
 });
 
+function flushMicrotasks(): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, 0));
+}
+
 function extractError(fn: () => unknown): Error | undefined {
   try {
     fn();
@@ -1142,7 +1185,7 @@ describe('with TransferState', () => {
     expect(testResource.value()).toBe(123);
 
     // Should prevent loader from running
-    await timeout();
+    await flushMicrotasks();
     expect(testResource.value()).toBe(123);
   });
 
@@ -1158,7 +1201,7 @@ describe('with TransferState', () => {
 
     expect(testResource.status()).toBe('loading');
 
-    await timeout();
+    await flushMicrotasks();
 
     expect(testResource.status()).toBe('resolved');
     expect(testResource.value()).toBe(789);
@@ -1175,7 +1218,7 @@ describe('with TransferState', () => {
       injector: TestBed.inject(Injector),
     });
 
-    await timeout();
+    await flushMicrotasks();
 
     expect(testResource.status()).toBe('resolved');
     expect(testResource.value()).toBe(101112);

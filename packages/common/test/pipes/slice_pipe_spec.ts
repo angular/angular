@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy} from '@angular/compiler';
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/private/testing/matchers';
 import {SlicePipe} from '../../index';
@@ -92,7 +91,6 @@ describe('SlicePipe', () => {
 
   describe('integration', () => {
     @Component({
-      selector: 'test-comp',
       template: '{{(data | slice:1).join(",") }}',
       imports: [SlicePipe],
       changeDetection: ChangeDetectionStrategy.Eager,
@@ -117,10 +115,8 @@ describe('SlicePipe', () => {
 
   it('should be available as a standalone pipe', async () => {
     @Component({
-      selector: 'test-component',
       imports: [SlicePipe],
       template: '{{ title | slice:0:5 }}',
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {
       title = 'Hello World!';

@@ -5,23 +5,24 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {ParseSourceFile} from '@angular/compiler';
-
+import {
+  AbstractBoundTemplate,
+  generateIndexerAnalysis,
+  getIndexerTemplateIdentifiers,
+  IndexingContext,
+  NodeAdapter,
+  ParseSourceFile,
+} from '@angular/compiler';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {ClassDeclaration, DeclarationNode} from '../../reflection';
-import {IndexingContext} from '../src/context';
-import {getTemplateIdentifiers} from '../src/template';
-import {generateAnalysis} from '../src/transform';
-
-import * as util from './util';
-import {AbstractBoundTemplate, NodeAdapter} from '../src/api';
+import {getBoundTemplate, getComponentDeclaration} from './util';
 import ts from 'typescript';
 
 /**
  * Adds information about a component to a context.
  */
 function populateContext(
-  context: IndexingContext,
+  context: IndexingContext<DeclarationNode>,
   component: ClassDeclaration,
   selector: string,
   template: string,
@@ -49,13 +50,13 @@ const adapter: NodeAdapter<DeclarationNode> = {
 };
 
 runInEachFileSystem(() => {
-  describe('generateAnalysis', () => {
+  describe('generateIndexerAnalysis', () => {
     it('should emit component and template analysis information', () => {
-      const context = new IndexingContext();
-      const decl = util.getComponentDeclaration('class C {}', 'C');
+      const context = new IndexingContext<DeclarationNode>();
+      const decl = getComponentDeclaration('class C {}', 'C');
       const template = '<div>{{foo}}</div>';
-      populateContext(context, decl, 'c-selector', template, util.getBoundTemplate(template));
-      const analysis = generateAnalysis(context, adapter);
+      populateContext(context, decl, 'c-selector', template, getBoundTemplate(template));
+      const analysis = generateIndexerAnalysis(context, adapter);
 
       expect(analysis.size).toBe(1);
 
@@ -65,7 +66,7 @@ runInEachFileSystem(() => {
         selector: 'c-selector',
         fileUrl: decl.getSourceFile().fileName,
         template: {
-          identifiers: getTemplateIdentifiers(util.getBoundTemplate('<div>{{foo}}</div>'))
+          identifiers: getIndexerTemplateIdentifiers(getBoundTemplate('<div>{{foo}}</div>'))
             .identifiers,
           fileUrl: decl.getSourceFile().fileName,
         },
@@ -74,18 +75,18 @@ runInEachFileSystem(() => {
     });
 
     it('should give inline templates the component source file', () => {
-      const context = new IndexingContext();
-      const decl = util.getComponentDeclaration('class C {}', 'C');
+      const context = new IndexingContext<DeclarationNode>();
+      const decl = getComponentDeclaration('class C {}', 'C');
       const template = '<div>{{foo}}</div>';
       populateContext(
         context,
         decl,
         'c-selector',
         '<div>{{foo}}</div>',
-        util.getBoundTemplate(template),
+        getBoundTemplate(template),
         /* inline template */ true,
       );
-      const analysis = generateAnalysis(context, adapter);
+      const analysis = generateIndexerAnalysis(context, adapter);
 
       expect(analysis.size).toBe(1);
 
@@ -95,11 +96,11 @@ runInEachFileSystem(() => {
     });
 
     it('should give external templates their own source file', () => {
-      const context = new IndexingContext();
-      const decl = util.getComponentDeclaration('class C {}', 'C');
+      const context = new IndexingContext<DeclarationNode>();
+      const decl = getComponentDeclaration('class C {}', 'C');
       const template = '<div>{{foo}}</div>';
-      populateContext(context, decl, 'c-selector', template, util.getBoundTemplate(template));
-      const analysis = generateAnalysis(context, adapter);
+      populateContext(context, decl, 'c-selector', template, getBoundTemplate(template));
+      const analysis = generateIndexerAnalysis(context, adapter);
 
       expect(analysis.size).toBe(1);
 

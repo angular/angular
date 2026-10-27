@@ -48,10 +48,10 @@ By default, all redirects use the `prefix` strategy.
 ```ts
 export const routes: Routes = [
   // This redirect route is equivalent to…
-  { path: 'news', redirectTo: 'blog },
+  {path: 'news', redirectTo: 'blog'},
 
   // This explicitly defined route redirect pathMatch
-  { path: 'news', redirectTo: 'blog', pathMatch: 'prefix' },
+  {path: 'news', redirectTo: 'blog', pathMatch: 'prefix'},
 ];
 ```
 
@@ -103,13 +103,14 @@ import {Menu} from './menu';
 export const routes: Routes = [
   {
     path: 'restaurant/:location/menu',
+    pathMatch: 'full',
     redirectTo: (activatedRouteSnapshot) => {
       const location = activatedRouteSnapshot.params['location'];
       const currentHour = new Date().getHours();
 
       // Check if user requested a specific meal via query parameter
       if (activatedRouteSnapshot.queryParams['meal']) {
-        return `/restaurant/${location}/menu/${queryParams['meal']}`;
+        return `/restaurant/${location}/menu/${activatedRouteSnapshot.queryParams['meal']}`;
       }
 
       // Auto-redirect based on time of day

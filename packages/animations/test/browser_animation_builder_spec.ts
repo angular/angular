@@ -6,28 +6,28 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {
-  animate,
-  AnimationBuilder,
-  style,
-  ɵBrowserAnimationBuilder as BrowserAnimationBuilder,
-} from '../src/animations';
-import {AnimationDriver} from '../browser';
-import {MockAnimationDriver} from '../browser/testing';
-import {
   Component,
-  NgZone,
-  RendererFactory2,
-  ViewChild,
   DOCUMENT,
   NgModule,
+  NgZone,
   provideZonelessChangeDetection,
+  RendererFactory2,
+  ViewChild,
 } from '@angular/core';
-import {fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {ɵAsyncAnimationRendererFactory as AsyncAnimationRendererFactory} from '@angular/platform-browser/animations/async';
 import {BrowserTestingModule, platformBrowserTesting} from '@angular/platform-browser/testing';
 import {isNode} from '@angular/private/testing';
+import {AnimationDriver} from '../browser';
+import {MockAnimationDriver} from '../browser/testing';
+import {
+  animate,
+  AnimationBuilder,
+  ɵBrowserAnimationBuilder as BrowserAnimationBuilder,
+  style,
+} from '../src/animations';
 
 @NgModule({
   providers: [provideZonelessChangeDetection()],
@@ -47,30 +47,24 @@ describe('BrowserAnimationBuilder', () => {
     });
   });
 
-  it('should inject AnimationBuilder into a component', () => {
+  it('should inject AnimationBuilder into a component', async () => {
     @Component({
-      selector: 'ani-cmp',
       template: '...',
-      standalone: false,
     })
     class Cmp {
       constructor(public builder: AnimationBuilder) {}
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp]});
-
     const fixture = TestBed.createComponent(Cmp);
     const cmp = fixture.componentInstance;
 
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(cmp.builder instanceof BrowserAnimationBuilder).toBeTruthy();
   });
 
-  it("should listen on start and done on the animation builder's player after it has been reset", fakeAsync(() => {
+  it("should listen on start and done on the animation builder's player after it has been reset", async () => {
     @Component({
-      selector: 'ani-cmp',
       template: '...',
-      standalone: false,
     })
     class Cmp {
       @ViewChild('target') public target: any;
@@ -87,11 +81,9 @@ describe('BrowserAnimationBuilder', () => {
       }
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp]});
-
     const fixture = TestBed.createComponent(Cmp);
     const cmp = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const player = cmp.build();
 
@@ -102,46 +94,44 @@ describe('BrowserAnimationBuilder', () => {
     player.onDone(() => finishedCount++);
 
     player.init();
-    flushMicrotasks();
+    await Promise.resolve();
     expect(startedCount).toEqual(0);
     expect(finishedCount).toEqual(0);
 
     player.play();
-    flushMicrotasks();
+    await Promise.resolve();
     expect(startedCount).toEqual(1);
     expect(finishedCount).toEqual(0);
 
     player.finish();
-    flushMicrotasks();
+    await Promise.resolve();
     expect(startedCount).toEqual(1);
     expect(finishedCount).toEqual(1);
 
     player.play();
     player.finish();
-    flushMicrotasks();
+    await Promise.resolve();
     expect(startedCount).toEqual(1);
     expect(finishedCount).toEqual(1);
 
-    [0, 1, 2, 3].forEach((i) => {
+    for (const i of [0, 1, 2, 3]) {
       player.reset();
 
       player.play();
-      flushMicrotasks();
+      await Promise.resolve();
       expect(startedCount).toEqual(i + 2);
       expect(finishedCount).toEqual(i + 1);
 
       player.finish();
-      flushMicrotasks();
+      await Promise.resolve();
       expect(startedCount).toEqual(i + 2);
       expect(finishedCount).toEqual(i + 2);
-    });
-  }));
+    }
+  });
 
-  it("should listen on start and done on the animation builder's player", fakeAsync(() => {
+  it("should listen on start and done on the animation builder's player", async () => {
     @Component({
-      selector: 'ani-cmp',
       template: '...',
-      standalone: false,
     })
     class Cmp {
       @ViewChild('target') public target: any;
@@ -158,11 +148,9 @@ describe('BrowserAnimationBuilder', () => {
       }
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp]});
-
     const fixture = TestBed.createComponent(Cmp);
     const cmp = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const player = cmp.build();
 
@@ -176,35 +164,33 @@ describe('BrowserAnimationBuilder', () => {
     player.onDestroy(() => (destroyed = true));
 
     player.init();
-    flushMicrotasks();
+    await Promise.resolve();
     expect(started).toBeFalsy();
     expect(finished).toBeFalsy();
     expect(destroyed).toBeFalsy();
 
     player.play();
-    flushMicrotasks();
+    await Promise.resolve();
     expect(started).toBeTruthy();
     expect(finished).toBeFalsy();
     expect(destroyed).toBeFalsy();
 
     player.finish();
-    flushMicrotasks();
+    await Promise.resolve();
     expect(started).toBeTruthy();
     expect(finished).toBeTruthy();
     expect(destroyed).toBeFalsy();
 
     player.destroy();
-    flushMicrotasks();
+    await Promise.resolve();
     expect(started).toBeTruthy();
     expect(finished).toBeTruthy();
     expect(destroyed).toBeTruthy();
-  }));
+  });
 
-  it('should update `hasStarted()` on `play()` and `reset()`', fakeAsync(() => {
+  it('should update `hasStarted()` on `play()` and `reset()`', async () => {
     @Component({
-      selector: 'ani-another-cmp',
       template: '...',
-      standalone: false,
     })
     class CmpAnother {
       @ViewChild('target') public target: any;
@@ -221,25 +207,23 @@ describe('BrowserAnimationBuilder', () => {
       }
     }
 
-    TestBed.configureTestingModule({declarations: [CmpAnother]});
-
     const fixture = TestBed.createComponent(CmpAnother);
     const cmp = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const player = cmp.build();
 
     expect(player.hasStarted()).toBeFalsy();
-    flushMicrotasks();
+    await Promise.resolve();
 
     player.play();
-    flushMicrotasks();
+    await Promise.resolve();
     expect(player.hasStarted()).toBeTruthy();
 
     player.reset();
-    flushMicrotasks();
+    await Promise.resolve();
     expect(player.hasStarted()).toBeFalsy();
-  }));
+  });
 
   describe('without Animations enabled', () => {
     beforeEach(() => {
@@ -287,11 +271,9 @@ describe('BrowserAnimationBuilder', () => {
       });
     });
 
-    it('should be able to build', () => {
+    it('should be able to build', async () => {
       @Component({
-        selector: 'ani-cmp',
         template: '...',
-        standalone: false,
       })
       class Cmp {
         @ViewChild('target') public target: any;
@@ -305,11 +287,9 @@ describe('BrowserAnimationBuilder', () => {
         }
       }
 
-      TestBed.configureTestingModule({declarations: [Cmp]});
-
       const fixture = TestBed.createComponent(Cmp);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
       cmp.build();
     });
   });

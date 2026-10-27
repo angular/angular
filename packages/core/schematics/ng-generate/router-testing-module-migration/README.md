@@ -1,32 +1,72 @@
-# RouterTestingModule Migration
+# RouterTestingModule migration
 
-This migration automatically converts deprecated `RouterTestingModule` usages to the recommended modern APIs.
+This schematic converts deprecated `RouterTestingModule` usages in tests to `RouterModule`.
 
-## What it does
+## How to run this migration?
 
-- Replaces `RouterTestingModule.withRoutes([...])` with `RouterModule.forRoot([...])` for NgModule tests
-- Replaces `RouterTestingModule` with `RouterModule.forRoot([])` when no routes are provided
-- For standalone tests (detected by presence of `providers`), moves to `provideRouter([...])` instead
-- Updates import statements to use `@angular/router` instead of `@angular/router/testing`
-- Preserves other imports and test configuration
-
-## Files
-
-- `router_testing_module_migration.ts` - Main migration logic using TsurgeFunnelMigration
-- `index.ts` - Entry point for the schematic
-- `../../test/router_testing_to_provide_router_spec.ts` - Comprehensive test suite
-- `MIGRATION_NOTES.md` - Detailed documentation with examples
-- `BUILD.bazel` - Bazel build configuration
-
-## Running the migration
-
-The migration runs automatically as part of `ng update @angular/core` for v21.0.0+.
-
-To run manually:
+The migration can be run using the following command:
 
 ```bash
-ng update @angular/core --migrate-only router-testing-to-provide-router
+ng generate @angular/core:router-testing-module-migration
 ```
+
+By default, the migration will go over the entire application. If you want to apply this migration to a subset of the files, you can pass the path argument as shown below:
+
+```bash
+ng generate @angular/core:router-testing-module-migration --path src/app/sub-component
+```
+
+### How does it work?
+
+The schematic looks at `*.spec.ts` files only. In each one it replaces `RouterTestingModule` in the `imports` of a `TestBed` configuration, adds the `RouterModule` import from `@angular/router`, and drops `RouterTestingModule` from the `@angular/router/testing` import. Your other entries and the rest of the test configuration are kept, with `RouterModule` appended to the end of the `imports` array.
+
+Example:
+
+```ts
+// Before
+import {RouterTestingModule} from '@angular/router/testing';
+
+TestBed.configureTestingModule({
+  imports: [RouterTestingModule.withRoutes(routes)],
+});
+
+// After
+import {RouterModule} from '@angular/router';
+
+TestBed.configureTestingModule({
+  imports: [RouterModule.forRoot(routes)],
+});
+```
+
+When no routes are given, or the routes array is empty and no options are passed, `RouterTestingModule` becomes `RouterModule` on its own:
+
+```ts
+// Before
+import {RouterTestingModule} from '@angular/router/testing';
+
+TestBed.configureTestingModule({
+  imports: [RouterTestingModule],
+});
+
+// After
+import {RouterModule} from '@angular/router';
+
+TestBed.configureTestingModule({
+  imports: [RouterModule],
+});
+```
+
+Router options passed to `withRoutes` are carried over:
+
+```ts
+// Before
+imports: [RouterTestingModule.withRoutes(routes, {initialNavigation: 'enabledBlocking'})],
+
+// After
+imports: [RouterModule.forRoot(routes, {initialNavigation: 'enabledBlocking'})],
+```
+
+The schematic also adds `provideLocationMocks()` to the providers of tests that read `SpyLocation.urlChanges`, because `RouterModule` does not set up the location mocks that `RouterTestingModule` did.
 
 ## Related
 

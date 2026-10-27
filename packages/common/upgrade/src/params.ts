@@ -29,35 +29,35 @@ export abstract class UrlCodec {
   /**
    * Encodes the search string from the provided string or object
    *
-   * @param path The path string or object
+   * @param search The search string or object
    */
   abstract encodeSearch(search: string | {[k: string]: unknown}): string;
 
   /**
    * Decodes the search objects from the provided string
    *
-   * @param path The path string
+   * @param search The search string
    */
   abstract decodeSearch(search: string): {[k: string]: unknown};
 
   /**
    * Encodes the hash from the provided string
    *
-   * @param path The hash string
+   * @param hash The hash string
    */
   abstract encodeHash(hash: string): string;
 
   /**
    * Decodes the hash from the provided string
    *
-   * @param path The hash string
+   * @param hash The hash string
    */
   abstract decodeHash(hash: string): string;
 
   /**
    * Normalizes the URL from the provided string
    *
-   * @param path The URL string
+   * @param href The URL string
    */
   abstract normalize(href: string): string;
 
@@ -66,7 +66,7 @@ export abstract class UrlCodec {
    *
    * @param path The URL path
    * @param search The search object
-   * @param hash The has string
+   * @param hash The hash string
    * @param baseUrl The base URL for the URL
    */
   abstract normalize(

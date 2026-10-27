@@ -29,6 +29,7 @@ describe('SUPPORTED_APIS', () => {
       routes: false,
       signals: true,
       signalPropertiesInspection: false,
+      signalWatch: true,
       transferState: true,
     });
 
@@ -38,6 +39,7 @@ describe('SUPPORTED_APIS', () => {
       routes: false,
       signals: true,
       signalPropertiesInspection: false,
+      signalWatch: true,
       transferState: true,
     });
   });
@@ -49,6 +51,7 @@ describe('SUPPORTED_APIS', () => {
       routes: true,
       signals: true,
       signalPropertiesInspection: true,
+      signalWatch: true,
       transferState: true,
     });
 
@@ -59,6 +62,7 @@ describe('SUPPORTED_APIS', () => {
         routes: true,
         signals: true,
         signalPropertiesInspection: true,
+        signalWatch: true,
         transferState: true,
       });
     }).toThrowError();

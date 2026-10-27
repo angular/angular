@@ -8,6 +8,7 @@ Instead of using regular anchor elements `<a>` with an `href` attribute, you add
 
 ```angular-ts
 import {RouterLink} from '@angular/router';
+import {Component} from '@angular/core';
 
 @Component({
   template: `
@@ -80,6 +81,7 @@ You can use the `router.navigate()` method to programmatically navigate between 
 
 ```angular-ts
 import {Router} from '@angular/router';
+import {Component, inject} from '@angular/core';
 
 @Component({
   selector: 'app-dashboard',
@@ -112,6 +114,7 @@ You can also build dynamic navigation paths relative to your component’s locat
 
 ```angular-ts
 import {Router, ActivatedRoute} from '@angular/router';
+import {Component, inject} from '@angular/core';
 
 @Component({
   selector: 'app-user-detail',
@@ -245,6 +248,23 @@ export class ProductList {
   // Create a UrlTree to display in the address bar
   displayUrl: UrlTree = this.router.createUrlTree(['/products', 'widget']);
 }
+```
+
+## Controlling scrolling with RouterLink
+
+When in-memory scrolling is enabled with `withInMemoryScrolling({scrollPositionRestoration: 'enabled'})` (or `'top'`), the router scrolls to the top of the page after a link is clicked, even when the link only changes a query parameter. The `RouterLink` directive supports a `scroll` input that lets a single link opt out:
+
+```angular-html
+<!-- Switches tabs without scrolling back to the top of the page -->
+<a routerLink="/products/42" [queryParams]="{tab: 'reviews'}" scroll="manual">Reviews</a>
+```
+
+With `scroll="manual"`, the router does not scroll for that navigation. The default, `'after-transition'`, scrolls according to the router's scrolling configuration.
+
+The same option is available for programmatic navigation:
+
+```ts
+router.navigateByUrl('/products/42?tab=reviews', {scroll: 'manual'});
 ```
 
 ## Next steps

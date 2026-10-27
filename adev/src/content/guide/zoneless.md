@@ -132,9 +132,9 @@ If a template depends on reactive forms state, connect forms observables to a ch
 
 ### Using Zoneless in `TestBed`
 
-`TestBed` uses Zone-based change detection by default when `zone.js` is loaded via the `polyfills`.
+`TestBed` uses zoneless change detection by default, even when `zone.js` is loaded via the `polyfills`.
 
-If `zone.js` is not present, `TestBed` runs zoneless by default. To force zoneless mode when `zone.js` is loaded, add `provideZonelessChangeDetection()`:
+To use Zone-based change detection in a test, add `provideZoneChangeDetection()` to the `TestBed` providers. Adding `provideZonelessChangeDetection()` is optional:
 
 ```typescript
 TestBed.configureTestingModule({
@@ -163,9 +163,16 @@ change notification (i.e. `fixture.componentInstance.someValue = 'newValue';`).
 If the component is used in production, this issue should be addressed by updating
 the component to use signals for state or call `ChangeDetectorRef.markForCheck()`.
 If the component is only used as a test wrapper and never used in an application,
-it is acceptable to use `fixture.changeDetectorRef.markForCheck()`.
+it is acceptable to use `ChangeDetectionStrategy.Eager` for it and call `fixture.changeDetectorRef.markForCheck()`.
+
+IMPORTANT: `fixture.changeDetectorRef` belongs to the fixture's host view, so its `markForCheck()`
+doesn't refresh the template of an `OnPush` component. Your application components shouldn't need it
+in tests. If a test needs it, the component usually isn't fully reactive or
+[zoneless compatible](#requirements-for-zoneless-compatibility).
 
 ### Debug-mode check to ensure updates are detected
+
+IMPORTANT: `provideCheckNoChangesConfig` is in [developer preview](reference/releases#developer-preview).
 
 Angular also provides an additional tool to help verify that an application is making
 updates to state in a zoneless-compatible way. `provideCheckNoChangesConfig({exhaustive: true, interval: <milliseconds>})`
