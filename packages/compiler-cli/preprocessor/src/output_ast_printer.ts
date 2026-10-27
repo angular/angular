@@ -105,6 +105,9 @@ function binaryNeedsTsIgnore(expression: o.BinaryOperatorExpr): boolean {
   if (expression.operator === o.BinaryOperator.In) {
     return expression.rhs instanceof o.LiteralExpr;
   }
+  if (expression.operator === o.BinaryOperator.InstanceOf) {
+    return expression.lhs instanceof o.LiteralExpr;
+  }
   if (NUMERIC_OPERATORS.has(expression.operator)) {
     return expression.lhs instanceof o.NotExpr || expression.rhs instanceof o.NotExpr;
   }
@@ -532,6 +535,9 @@ class EmitterVisitor extends AbstractEmitterVisitor {
     expr: o.TaggedTemplateLiteralExpr,
     ctx: EmitterVisitorContext,
   ): void {
+    if (this.printTypes && expr.tag instanceof o.LiteralExpr) {
+      ctx.addUniqueSingleLineComment(' @ts-ignore');
+    }
     withSpan(ctx, expr.sourceSpan, () => super.visitTaggedTemplateLiteralExpr(expr, ctx));
   }
 

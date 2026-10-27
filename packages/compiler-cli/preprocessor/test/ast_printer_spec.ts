@@ -294,6 +294,15 @@ describe('binary operator @ts-ignore', () => {
     );
     expect(emitStmt(inExpr)).toEqual(`// @ts-ignore\n('foo' in 'foobar');`);
   });
+
+  it('should add @ts-ignore for invalid instanceof binary expressions with literals', () => {
+    const instanceOfExpr = new o.BinaryOperatorExpr(
+      o.BinaryOperator.InstanceOf,
+      o.literal('foo'),
+      o.variable('Bar'),
+    );
+    expect(emitStmt(instanceOfExpr)).toEqual(`// @ts-ignore\n('foo' instanceof Bar);`);
+  });
 });
 
 describe('ExpressionPrinter @angular/core import rewriting', () => {
