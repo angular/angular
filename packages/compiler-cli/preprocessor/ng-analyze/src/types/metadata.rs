@@ -1072,4 +1072,6 @@ pub struct ClassMetadata {
     pub uses_on_changes: bool,
     pub is_exported: bool,
     pub has_non_exported_bounds: bool,
+    #[serde(default)]
+    pub has_non_angular_class_decorators: bool,
 }

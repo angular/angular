@@ -44,26 +44,26 @@ export class AboveComponent {
       },
       encapsulation: 2,
     });
-  static {
-    (typeof ngDevMode === 'undefined' || ngDevMode) &&
-      i0.ɵsetClassMetadata(
-        AboveComponent,
-        [
-          {
-            type: Component,
-            args: [
-              {
-                selector: 'above-cmp',
-                template: '<div>Above</div>',
-              },
-            ],
-          },
-        ],
-        null,
-        null,
-      );
-  }
 }
+((): any => {
+  (typeof ngDevMode === 'undefined' || ngDevMode) &&
+    i0.ɵsetClassMetadata(
+      AboveComponent,
+      [
+        {
+          type: Component,
+          args: [
+            {
+              selector: 'above-cmp',
+              template: '<div>Above</div>',
+            },
+          ],
+        },
+      ],
+      null,
+      null,
+    );
+})();
 ((): any => {
   (typeof ngDevMode === 'undefined' || ngDevMode) &&
     i0.ɵsetClassDebugInfo(AboveComponent, {
@@ -108,26 +108,26 @@ export class BelowComponent {
       },
       encapsulation: 2,
     });
-  static {
-    (typeof ngDevMode === 'undefined' || ngDevMode) &&
-      i0.ɵsetClassMetadata(
-        BelowComponent,
-        [
-          {
-            type: Component,
-            args: [
-              {
-                selector: 'below-cmp',
-                template: '<div>Below</div>',
-              },
-            ],
-          },
-        ],
-        null,
-        null,
-      );
-  }
 }
+((): any => {
+  (typeof ngDevMode === 'undefined' || ngDevMode) &&
+    i0.ɵsetClassMetadata(
+      BelowComponent,
+      [
+        {
+          type: Component,
+          args: [
+            {
+              selector: 'below-cmp',
+              template: '<div>Below</div>',
+            },
+          ],
+        },
+      ],
+      null,
+      null,
+    );
+})();
 ((): any => {
   (typeof ngDevMode === 'undefined' || ngDevMode) &&
     i0.ɵsetClassDebugInfo(BelowComponent, {
@@ -171,26 +171,26 @@ export class BareDecoratorComponent {
       },
       encapsulation: 2,
     });
-  static {
-    (typeof ngDevMode === 'undefined' || ngDevMode) &&
-      i0.ɵsetClassMetadata(
-        BareDecoratorComponent,
-        [
-          {
-            type: Component,
-            args: [
-              {
-                selector: 'bare-cmp',
-                template: '<div>Bare</div>',
-              },
-            ],
-          },
-        ],
-        null,
-        null,
-      );
-  }
 }
+((): any => {
+  (typeof ngDevMode === 'undefined' || ngDevMode) &&
+    i0.ɵsetClassMetadata(
+      BareDecoratorComponent,
+      [
+        {
+          type: Component,
+          args: [
+            {
+              selector: 'bare-cmp',
+              template: '<div>Bare</div>',
+            },
+          ],
+        },
+      ],
+      null,
+      null,
+    );
+})();
 ((): any => {
   (typeof ngDevMode === 'undefined' || ngDevMode) &&
     i0.ɵsetClassDebugInfo(BareDecoratorComponent, {
@@ -235,26 +235,26 @@ export class SandwichComponent {
       },
       encapsulation: 2,
     });
-  static {
-    (typeof ngDevMode === 'undefined' || ngDevMode) &&
-      i0.ɵsetClassMetadata(
-        SandwichComponent,
-        [
-          {
-            type: Component,
-            args: [
-              {
-                selector: 'sandwich-cmp',
-                template: '<div>Sandwich</div>',
-              },
-            ],
-          },
-        ],
-        null,
-        null,
-      );
-  }
 }
+((): any => {
+  (typeof ngDevMode === 'undefined' || ngDevMode) &&
+    i0.ɵsetClassMetadata(
+      SandwichComponent,
+      [
+        {
+          type: Component,
+          args: [
+            {
+              selector: 'sandwich-cmp',
+              template: '<div>Sandwich</div>',
+            },
+          ],
+        },
+      ],
+      null,
+      null,
+    );
+})();
 ((): any => {
   (typeof ngDevMode === 'undefined' || ngDevMode) &&
     i0.ɵsetClassDebugInfo(SandwichComponent, {
@@ -310,26 +310,26 @@ export class ConstPoolComponent {
       },
       encapsulation: 2,
     });
-  static {
-    (typeof ngDevMode === 'undefined' || ngDevMode) &&
-      i0.ɵsetClassMetadata(
-        ConstPoolComponent,
-        [
-          {
-            type: Component,
-            args: [
-              {
-                selector: 'const-pool-cmp',
-                template: '<ng-content select="header"></ng-content><div #el></div>',
-              },
-            ],
-          },
-        ],
-        null,
-        { el: [{ type: ViewChild, args: ['el'] }] },
-      );
-  }
 }
+((): any => {
+  (typeof ngDevMode === 'undefined' || ngDevMode) &&
+    i0.ɵsetClassMetadata(
+      ConstPoolComponent,
+      [
+        {
+          type: Component,
+          args: [
+            {
+              selector: 'const-pool-cmp',
+              template: '<ng-content select="header"></ng-content><div #el></div>',
+            },
+          ],
+        },
+      ],
+      null,
+      { el: [{ type: ViewChild, args: ['el'] }] },
+    );
+})();
 ((): any => {
   (typeof ngDevMode === 'undefined' || ngDevMode) &&
     i0.ɵsetClassDebugInfo(ConstPoolComponent, {

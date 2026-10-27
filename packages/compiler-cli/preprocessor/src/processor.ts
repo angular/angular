@@ -2062,8 +2062,10 @@ function appendCompiledClass(
   }
 
   if (classMetadataStmt !== null) {
-    const metadata = printSetClassMetadata(classMetadataStmt, printer, ctx.complianceMode);
-    if (ctx.complianceMode) {
+    const emitOutsideClass =
+      !!ctx.complianceMode || !!compiled.classMeta.hasNonAngularClassDecorators;
+    const metadata = printSetClassMetadata(classMetadataStmt, printer, emitOutsideClass);
+    if (emitOutsideClass) {
       out.appendRight(span.end, '\n' + metadata);
     } else {
       out.appendLeft(span.end - 1, metadata);
@@ -2640,15 +2642,16 @@ function buildSetClassMetadata(
 }
 
 /**
- * Prints a `ɵsetClassMetadata` statement: as the trailing statement ngtsc emits in compliance
- * mode, or as a static block inside the class otherwise.
+ * Prints a `ɵsetClassMetadata` statement: as a trailing statement after the class declaration
+ * (in compliance mode or when non-Angular class decorators are present), or as a static block
+ * inside the class otherwise.
  */
 function printSetClassMetadata(
   statement: o.Statement,
   printer: ExpressionPrinter,
-  complianceMode: boolean = false,
+  emitOutsideClass: boolean = false,
 ): string {
-  if (complianceMode || !(statement instanceof o.ExpressionStatement)) {
+  if (emitOutsideClass || !(statement instanceof o.ExpressionStatement)) {
     return printer.printStatement(statement);
   }
   const stmts = stripIife(statement.expr);

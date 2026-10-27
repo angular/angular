@@ -4062,6 +4062,7 @@ impl ClassData {
             uses_on_changes: self.uses_on_changes,
             is_exported: self.is_exported,
             has_non_exported_bounds: self.has_non_exported_bounds,
+            has_non_angular_class_decorators: !self.non_ng_decorator_spans.is_empty(),
         };
         Ok(metadata)
     }
