@@ -367,8 +367,6 @@ export function performNgpCompilationSync(params: {
   try {
     compiler = new HybridCompiler(analyzer, {
       optimize,
-      tsconfigPath: posixTsconfigPath,
-      virtualFiles,
       tcbConfig,
       optionDiagnostics,
       templateParseOptions: {
@@ -1353,8 +1351,6 @@ export function createNgpBoundTemplate(
   try {
     const compiler = new HybridCompiler(analyzer, {
       optimize: true,
-      tsconfigPath: posixTsconfigPath,
-      virtualFiles,
       templateParseOptions: options,
     });
     for (const chunk of compiler.analyzeOptimizedSync()) {

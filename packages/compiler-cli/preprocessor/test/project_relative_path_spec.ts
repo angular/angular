@@ -41,8 +41,6 @@ export class MyComp {}
     });
     const compiler = new HybridCompiler(analyzer, {
       optimize: false,
-      tsconfigPath: '/workspace/tsconfig.json',
-      virtualFiles,
       rootDirs: ['/workspace', '/workspace/bazel-out/k8-fastbuild/bin'],
       // Intentionally omit `rootDir`.
     });
@@ -83,8 +81,6 @@ export class MyComp {}
     });
     const compiler = new HybridCompiler(analyzer, {
       optimize: false,
-      tsconfigPath: '/workspace/tsconfig.json',
-      virtualFiles,
       enableHmr: true,
       rootDir: '/workspace',
       rootDirs: ['/workspace', '/workspace/bazel-out/k8-fastbuild/bin'],
@@ -104,11 +100,36 @@ export class MyComp {}
     expect(hmrUpdateModule!).not.toContain('bazel-out/k8-fastbuild/bin/pkg/my_comp.ts');
   });
 
-  it('resolves relative rootDirs against dirname(tsconfigPath) when rootDir is not provided', () => {
+  it('rejects relative rootDir and rootDirs', () => {
+    expect(
+      () =>
+        new HybridCompiler({} as IAnalyzer, {
+          rootDirs: ['.', 'bazel-out/k8-fastbuild/bin'],
+        }),
+    ).toThrowError(/'\.' in 'rootDirs' must be an absolute path/);
+
+    expect(
+      () =>
+        new HybridCompiler({} as IAnalyzer, {
+          rootDir: 'relative/root',
+        }),
+    ).toThrowError(/'relative\/root' in 'rootDir' must be an absolute path/);
+  });
+
+  it('accepts Windows absolute rootDir and rootDirs and normalizes them to posix', () => {
     const compiler = new HybridCompiler({} as IAnalyzer, {
-      tsconfigPath: '/workspace/tsconfig.json',
-      rootDirs: ['.', 'bazel-out/k8-fastbuild/bin'],
+      rootDir: 'C:\\workspace',
+      rootDirs: ['C:\\workspace', 'D:/other/root'],
     });
-    expect(compiler.rootDirs).toEqual(['/workspace', '/workspace/bazel-out/k8-fastbuild/bin']);
+    expect(compiler.rootDir).toBe('C:/workspace');
+    expect(compiler.rootDirs).toEqual(['C:/workspace', 'D:/other/root']);
+
+    // Drive-relative paths (`C:foo`) are not absolute.
+    expect(
+      () =>
+        new HybridCompiler({} as IAnalyzer, {
+          rootDir: 'C:workspace',
+        }),
+    ).toThrowError(/'C:workspace' in 'rootDir' must be an absolute path/);
   });
 });

@@ -84,6 +84,16 @@ describe('ngp CLI (main.ts)', () => {
       const generatedSourcePath = path.join(outDir, 'test.ts');
       expect(await pathExists(generatedSourcePath)).toBe(true);
       expect(await pathExists(`${generatedSourcePath}.map`)).toBe(true);
+
+      // `run()` writes the diagnostics file next to the tsconfig, not under `--out`.
+      const diagPath = path.join(tempDir, 'tsconfig.ngdiag.json');
+      expect(await pathExists(diagPath)).toBe(true);
+      const diag = JSON.parse(await fs.readFile(diagPath, 'utf-8')) as {
+        tsconfigPath: string;
+        diagnostics: unknown[];
+      };
+      expect(diag.tsconfigPath).toBe(tsconfigPath);
+      expect(diag.diagnostics).toEqual([]);
     } finally {
       await fs.rm(outDir, {recursive: true, force: true});
     }

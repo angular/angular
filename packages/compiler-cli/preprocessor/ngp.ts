@@ -10,7 +10,7 @@
 
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import {HybridCompiler} from './src/hybrid_compiler.js';
+import {getDiagnosticPath, HybridCompiler, serializeDiagnostics} from './src/hybrid_compiler.js';
 import {AnalysisResult} from './src/types.js';
 import {ChunkContext} from './src/file_analysis.js';
 
@@ -18,10 +18,12 @@ export interface RunOptions {
   outDir: string | null;
   rootDir: string;
   inPlace?: boolean;
+  /** When set, writes `<tsconfig>.ngdiag.json` from `compiler.getDiagnostics()`. */
+  tsconfigPath?: string;
 }
 
 export async function run(compiler: HybridCompiler, options: RunOptions): Promise<void> {
-  const {outDir, rootDir} = options;
+  const {outDir, rootDir, tsconfigPath} = options;
   const results =
     compiler.optimize && !compiler.emitDeclarationOnly
       ? compiler.analyzeOptimized()
@@ -36,14 +38,30 @@ export async function run(compiler: HybridCompiler, options: RunOptions): Promis
           processFile(file, outDir, compiler, options, chunkContext, rootDir),
         ),
       );
-      await compiler.writeDiagnosticsFile();
+      await writeDiagnosticsFile(compiler, tsconfigPath);
     }
     // Also write when the analyzer produced no chunks so that option diagnostics (which don't
     // depend on any file) still make it into the `.ngdiag.json`.
-    await compiler.writeDiagnosticsFile();
+    await writeDiagnosticsFile(compiler, tsconfigPath);
   } finally {
     compiler.analyzer.close();
   }
+}
+
+async function writeDiagnosticsFile(
+  compiler: HybridCompiler,
+  tsconfigPath: string | undefined,
+): Promise<void> {
+  if (!tsconfigPath) {
+    return;
+  }
+  const diagPath = getDiagnosticPath(tsconfigPath);
+  const content = serializeDiagnostics(
+    tsconfigPath,
+    compiler.getDiagnostics(),
+    compiler.optionDiagnostics,
+  );
+  await fs.writeFile(diagPath, content, 'utf-8');
 }
 
 async function processFile(
