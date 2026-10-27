@@ -14,8 +14,10 @@ import {
   computed,
   Directive,
   ElementRef,
+  EventEmitter,
   HostBinding,
   Input,
+  Output,
   Renderer2,
   signal,
   ViewChild,
@@ -610,6 +612,93 @@ describe('styling', () => {
     const div = fixture.nativeElement.querySelector('div');
     expect(div.style.cssText).toEqual('color: red;');
     expect(div.getAttribute('shadow-style')).toEqual('color: red; width: 100px;');
+  });
+
+  it('should not treat outputs named class or style as shadowing [class] and [style]', async () => {
+    @Directive({
+      selector: '[dir-with-styling-outputs]',
+    })
+    class DirectiveWithStylingOutputs {
+      @Output('class') classOutput = new EventEmitter<string>();
+      @Output('style') styleOutput = new EventEmitter<string>();
+    }
+
+    @Component({
+      template: `
+        <div
+          dir-with-styling-outputs
+          class="s1"
+          style="color: red;"
+          [class]="classBinding()"
+          [style]="styleBinding()"
+        ></div>
+      `,
+      imports: [DirectiveWithStylingOutputs],
+    })
+    class Cmp {
+      classBinding = signal('d1');
+      styleBinding = signal('width: 10px;');
+    }
+
+    const fixture = TestBed.createComponent(Cmp);
+    await fixture.whenStable();
+    const div = fixture.nativeElement.querySelector('div');
+    expectClass(div).toEqual({'s1': true, 'd1': true});
+    expectStyle(div).toEqual({'color': 'red', 'width': '10px'});
+
+    fixture.componentInstance.classBinding.set('d2');
+    fixture.componentInstance.styleBinding.set('width: 20px;');
+    await fixture.whenStable();
+    expectClass(div).toEqual({'s1': true, 'd2': true});
+    expectStyle(div).toEqual({'color': 'red', 'width': '20px'});
+  });
+
+  it('should not treat a host directive output exposed as class as shadowing [class]', async () => {
+    @Directive()
+    class HostDir {
+      @Output() changed = new EventEmitter<string>();
+    }
+
+    @Directive({
+      selector: '[dir-exposing-class-output]',
+      hostDirectives: [{directive: HostDir, outputs: ['changed: class']}],
+    })
+    class DirectiveExposingClassOutput {}
+
+    @Component({
+      template: `<div dir-exposing-class-output class="s1" [class]="classBinding()"></div>`,
+      imports: [DirectiveExposingClassOutput],
+    })
+    class Cmp {
+      classBinding = signal('d1');
+    }
+
+    const fixture = TestBed.createComponent(Cmp);
+    await fixture.whenStable();
+    expectClass(fixture.nativeElement.querySelector('div')).toEqual({'s1': true, 'd1': true});
+  });
+
+  it('should bind [class] as input to directive that also has an output named class', async () => {
+    @Directive({
+      selector: '[dir-shadows-class-input]',
+    })
+    class DirectiveShadowsClassInput {
+      @Input('class') klass = '';
+      @Output('class') classOutput = new EventEmitter<string>();
+    }
+
+    @Component({
+      template: `<div dir-shadows-class-input class="s1" [class]="'d1'"></div>`,
+      imports: [DirectiveShadowsClassInput],
+    })
+    class Cmp {
+      @ViewChild(DirectiveShadowsClassInput) dir!: DirectiveShadowsClassInput;
+    }
+
+    const fixture = TestBed.createComponent(Cmp);
+    await fixture.whenStable();
+    expect(fixture.nativeElement.querySelector('div').className).toEqual('s1');
+    expect(fixture.componentInstance.dir.klass).toEqual('s1 d1');
   });
 
   it('should prevent circular ExpressionChangedAfterItHasBeenCheckedError on shadow inputs', () => {
