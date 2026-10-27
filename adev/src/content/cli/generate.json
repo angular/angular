@@ -107,7 +107,7 @@
           "aliases": [
             "s"
           ],
-          "description": "Include the styles for the root component directly within the `app.ts` file. Only CSS styles can be included inline. By default, a separate stylesheet file (e.g., `app.css`) is created."
+          "description": "Include the styles for the root component directly within the `app.ts` file. By default, a separate stylesheet file (e.g., `app.css`) is created."
         },
         {
           "name": "inline-template",
