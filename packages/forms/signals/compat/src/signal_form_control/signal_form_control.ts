@@ -98,6 +98,17 @@ export class SignalFormControl<T> extends AbstractControl {
   constructor(value: T, schemaOrOptions?: SchemaFn<T> | FormOptions<T>, options?: FormOptions<T>) {
     super(null, null);
 
+    const rawOptions =
+      typeof schemaOrOptions === 'object' && schemaOrOptions !== null
+        ? {...schemaOrOptions, ...options}
+        : options;
+    if (
+      (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      (rawOptions as any)?.updateOn &&
+      (rawOptions as any).updateOn !== 'change'
+    ) {
+      throw unsupportedUpdateOnError((rawOptions as any).updateOn);
+    }
     const [model, schema, opts] = normalizeFormArgs<T>([signal(value), schemaOrOptions, options]);
     this.sourceValue = model;
     this.initialValue = value;
@@ -403,6 +414,17 @@ export class SignalFormControl<T> extends AbstractControl {
     this.propagateToParent(opts, (parent) => parent.markAsUntouched(opts));
   }
 
+  override setParent(parent: FormGroup | FormArray | null): void {
+    super.setParent(parent);
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && parent && parent.updateOn !== 'change') {
+      throw unsupportedUpdateOnError(parent.updateOn, true);
+    }
+  }
+
+  override get updateOn(): 'change' | 'blur' | 'submit' {
+    return 'change';
+  }
+
   override updateValueAndValidity(_opts?: Object): void {}
 
   /** @internal */
@@ -574,6 +596,14 @@ function unsupportedValidatorsError(): Error {
   return unsupportedFeatureError(
     ngDevMode &&
       'Dynamically adding and removing validators is not supported in signal forms. Instead use the "applyWhen" rule to conditionally apply validators based on a signal.',
+  );
+}
+
+function unsupportedUpdateOnError(updateOn: string, isInherited = false): Error {
+  const source = isInherited ? ' inherited from its parent' : '';
+  return unsupportedFeatureError(
+    (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      `SignalFormControl does not support the "updateOn: '${updateOn}'" option${source}. `,
   );
 }
 
