@@ -637,6 +637,17 @@ describe('SignalFormControl', () => {
         /Setting untouched directly is not supported. Instead use reset\(\)/,
       );
     });
+
+    it('should throw error when updateOn option is passed directly to constructor', () => {
+      expect(() => createSignalFormControl(10, {updateOn: 'blur'} as any)).toThrowError(
+        /SignalFormControl does not support the "updateOn: 'blur'" option/,
+      );
+    });
+
+    it('should return "change" for updateOn', () => {
+      const form = createSignalFormControl(10);
+      expect(form.updateOn).toBe('change');
+    });
   });
 
   describe('callback registration', () => {
