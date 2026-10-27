@@ -1583,6 +1583,178 @@ pub(crate) async fn validate_standalone_imports<Fs: ResourceResolverFs + Clone +
     out
 }
 
+/// Validate the evaluated `deferredImports` of a standalone component in `component_file`: ngtsc's
+/// `validateStandaloneImports(..., true /* isDeferredImport */)` (`annotations/component/src/handler.ts`).
+pub(crate) async fn validate_standalone_deferred_imports<
+    Fs: ResourceResolverFs + Clone + 'static,
+>(
+    ctx: &QueryContext<Fs>,
+    component_file: FileId,
+    deferred_imports: &ResolvedValue,
+    deferred_imports_span: Option<Span>,
+) -> StandaloneImportsValidation {
+    let env = ScopeEnv { ctx };
+    let file_path = env.file_path(component_file);
+    let mut out = StandaloneImportsValidation::default();
+
+    let mut items = Vec::new();
+    match deferred_imports.unwrap_named() {
+        ResolvedValue::Map(map) => {
+            for (_block_name, block_val) in map.iter() {
+                collect_component_import_items(
+                    component_file,
+                    block_val,
+                    None,
+                    deferred_imports_span,
+                    &mut items,
+                );
+            }
+        }
+        ResolvedValue::Array(_) => {
+            collect_component_import_items(
+                component_file,
+                deferred_imports,
+                None,
+                deferred_imports_span,
+                &mut items,
+            );
+        }
+        _ => {}
+    }
+
+    if items.is_empty() {
+        return out;
+    }
+
+    let mut registry: Option<Arc<NgModuleScopeRegistry>> = None;
+    let mut seen_refs = Vec::new();
+
+    for item in items {
+        let (entry, entry_expr_span) = match item {
+            ComponentImportItem::Reference { entry, expr_span } => {
+                if seen_refs.contains(&entry.reference) {
+                    continue;
+                }
+                seen_refs.push(entry.reference.clone());
+                (entry, expr_span)
+            }
+            ComponentImportItem::WrongType { span, value } => {
+                out.is_poisoned = true;
+                if let Some(span) = span.or(deferred_imports_span) {
+                    out.diagnostics.push(NgDiagnostic::error(
+                        // VALUE_HAS_WRONG_TYPE
+                        1010,
+                        file_path.clone(),
+                        env.wire_span(component_file, span).await,
+                        crate::evaluator::wrong_type_message(
+                            "'imports' must be an array of components, directives, pipes, or \
+                             NgModules.",
+                            &value,
+                        ),
+                    ));
+                }
+                continue;
+            }
+            ComponentImportItem::ModuleWithProviders { span } => {
+                out.is_poisoned = true;
+                if let Some(span) = span.or(deferred_imports_span) {
+                    out.diagnostics.push(NgDiagnostic::error(
+                        // COMPONENT_UNKNOWN_IMPORT
+                        2012,
+                        file_path.clone(),
+                        env.wire_span(component_file, span).await,
+                        "Component imports contains a ModuleWithProviders value, likely the \
+                         result of a 'Module.forRoot()'-style call. These calls are not used to \
+                         configure components and are not valid in standalone component imports - \
+                         consider importing them in the application bootstrap instead."
+                            .to_string(),
+                    ));
+                }
+                continue;
+            }
+            ComponentImportItem::ModuleWithProvidersMissingGeneric {
+                file,
+                span,
+                symbol_name,
+            } => {
+                out.is_poisoned = true;
+                out.diagnostics.push(NgDiagnostic::error(
+                    // NGMODULE_MODULE_WITH_PROVIDERS_MISSING_GENERIC
+                    6005,
+                    env.file_path(file),
+                    env.wire_span(file, span).await,
+                    format!(
+                        "{symbol_name} returns a ModuleWithProviders type without a generic type \
+                         argument. Please add a generic type argument to the ModuleWithProviders \
+                         type. If this occurrence is in library code you don't control, please \
+                         contact the library authors."
+                    ),
+                ));
+                continue;
+            }
+        };
+
+        let Some(span) = env
+            .diagnostic_span(
+                component_file,
+                &entry,
+                entry_expr_span.or(deferred_imports_span),
+            )
+            .await
+        else {
+            continue;
+        };
+        if entry.reference.kind != DeclKind::Class || entry.reference.member.is_some() {
+            out.is_poisoned = true;
+            out.diagnostics.push(NgDiagnostic::error(
+                // VALUE_HAS_WRONG_TYPE
+                1010,
+                file_path.clone(),
+                span,
+                format!(
+                    "'imports' must be an array of components, directives, pipes, or NgModules.\n  \
+                     Value is a reference to '{}'.",
+                    entry.reference.name
+                ),
+            ));
+            continue;
+        }
+
+        let info = env.class_info(&entry.reference).await;
+        match info.as_ref().map(|info| info.class_type) {
+            Some(ClassType::Component | ClassType::Directive | ClassType::Pipe) => {
+                let info = info.as_ref().unwrap();
+                if is_standalone_class(info, env.is_dts(entry.reference.file)) {
+                    continue;
+                }
+                out.is_poisoned = true;
+                let key = decl_key(&entry.reference);
+                if registry.is_none() {
+                    registry = Some(ctx.ngmodule_scope_registry().await);
+                }
+                let registry = registry.as_ref().unwrap();
+                out.diagnostics.push(
+                    env.not_standalone_diagnostic(registry, info, &key, file_path.clone(), span)
+                        .await,
+                );
+            }
+            _ => {
+                out.is_poisoned = true;
+                out.diagnostics.push(NgDiagnostic::error(
+                    // COMPONENT_UNKNOWN_DEFERRED_IMPORT
+                    2022,
+                    file_path.clone(),
+                    span,
+                    "Component deferred imports must be standalone components, directives or \
+                     pipes."
+                        .to_string(),
+                ));
+            }
+        }
+    }
+    out
+}
+
 /// `DtsMetadataReader.extractReferencesFromResolvedValue`: every element must be a class
 /// reference for the metadata to be complete.
 fn exports_resolve_to_classes(value: &ResolvedValue) -> bool {

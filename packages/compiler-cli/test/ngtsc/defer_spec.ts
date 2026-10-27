@@ -1113,18 +1113,18 @@ runInEachFileSystem(() => {
         // Expect that all deferrableImports to become dynamic imports.
         // Other imported symbols remain eager.
         expect(cleanNewLines(jsContents)).toMatch(
-          /const AppCmp_Defer_1_DepsFn = \(\) => \[ ?(?:\/\* @ts-ignore \*\/ )?import\("\.\/deferred-a"\)\.then\(\(?m\)? => m\.DeferredCmpA\) ?\];/,
+          /const AppCmp_Defer_1_DepsFn = \(\) => \[ ?(?:\/\* @ts-ignore \*\/ )?import\(["']\.\/deferred-a["']\)\.then\(\(?m\)? => m\.DeferredCmpA\) ?\];/,
         );
         expect(cleanNewLines(jsContents)).toMatch(
-          /const AppCmp_Defer_4_DepsFn = \(\) => \[ ?(?:\/\* @ts-ignore \*\/ )?import\("\.\/deferred-b"\)\.then\(\(?m\)? => m\.DeferredCmpB\) ?\];/,
+          /const AppCmp_Defer_4_DepsFn = \(\) => \[ ?(?:\/\* @ts-ignore \*\/ )?import\(["']\.\/deferred-b["']\)\.then\(\(?m\)? => m\.DeferredCmpB\) ?\];/,
         );
 
         // Make sure there are no eager imports present in the output.
-        expect(jsContents).not.toContain(`from './deferred-a'`);
-        expect(jsContents).not.toContain(`from './deferred-b'`);
+        expect(jsContents).not.toMatch(/from ["']\.\/deferred-a["']/);
+        expect(jsContents).not.toMatch(/from ["']\.\/deferred-b["']/);
 
         // Eager dependencies retain their imports.
-        expect(jsContents).toContain(`from './eager-a';`);
+        expect(jsContents).toMatch(/from ["']\.\/eager-a["'];/);
 
         // Defer blocks would have their own dependency functions in full mode.
         expect(jsContents).toContain('ɵɵdefer(1, 0, AppCmp_Defer_1_DepsFn);');
@@ -1132,7 +1132,7 @@ runInEachFileSystem(() => {
 
         // Expect `ɵsetClassMetadataAsync` to contain dynamic imports too.
         expect(cleanNewLines(jsContents)).toMatch(
-          /ɵsetClassMetadataAsync\(AppCmp, \(\) => \[ ?(?:\/\* @ts-ignore \*\/ )?import\("\.\/deferred-a"\)\.then\(\(?m\)? => m\.DeferredCmpA\), (?:\/\* @ts-ignore \*\/ )?import\("\.\/deferred-b"\)\.then\(\(?m\)? => m\.DeferredCmpB\) ?\], \(DeferredCmpA, DeferredCmpB\) => \{/,
+          /ɵsetClassMetadataAsync\(AppCmp, \(\) => \[ ?(?:\/\* @ts-ignore \*\/ )?import\(["']\.\/deferred-a["']\)\.then\(\(?m\)? => m\.DeferredCmpA\), (?:\/\* @ts-ignore \*\/ )?import\(["']\.\/deferred-b["']\)\.then\(\(?m\)? => m\.DeferredCmpB\) ?\], \(DeferredCmpA, DeferredCmpB\) => \{/,
         );
       });
 
