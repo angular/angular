@@ -114,7 +114,7 @@ export class TestTransformsComponent {
       encapsulation: 2,
     });
   // @ts-ignore
-  declare static ngAcceptInputType_decoratorInput: Parameters<typeof myBooleanTransform>[0];
+  declare static ngAcceptInputType_decoratorInput: string | boolean;
   // @ts-ignore
   declare static ngAcceptInputType_aliasedInput: unknown;
   // @ts-ignore
