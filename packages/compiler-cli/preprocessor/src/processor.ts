@@ -33,7 +33,6 @@ import {
   compileClassDebugInfo,
   compileComponentClassMetadata,
   compileComponentFromMetadata,
-  compileCtorParameters,
   compileDeferResolverFunction,
   compileDirectiveFromMetadata,
   compileFactoryFunction,
@@ -533,17 +532,12 @@ export function processFileSync(
       }
 
       if (!ctx.emitDeclarationOnly && constructorParams && constructorParams.length > 0) {
-        const ctorParams = buildCtorParametersExpr(constructorParams, s, {
-          omitEmptyDecorators: true,
-        });
-        if (ctorParams) {
-          const ctorExpr = compileCtorParameters(ctorParams, /* allowSuppressions */ true);
-          const nocollapse = ctx.isClosureCompilerEnabled ? '/** @nocollapse */\n  ' : '';
-          s.appendLeft(
-            span.end - 1,
-            `\n  ${nocollapse}static ctorParameters = ${printer.print(ctorExpr)};\n`,
-          );
-        }
+        const ctorExpr = buildJitCtorParametersExpr(constructorParams, s);
+        const nocollapse = ctx.isClosureCompilerEnabled ? '/** @nocollapse */\n  ' : '';
+        s.appendLeft(
+          span.end - 1,
+          `\n  ${nocollapse}static ctorParameters = ${printer.print(ctorExpr)};\n`,
+        );
       }
 
       continue;
@@ -2260,7 +2254,6 @@ function buildCtorParametersExpr(
   constructorParams: nga.ConstructorParamMetadata[] | undefined,
   s: MagicString,
   options?: {
-    omitEmptyDecorators?: boolean;
     useCoreNamespace?: boolean;
     complianceMode?: boolean;
   },
@@ -2268,7 +2261,6 @@ function buildCtorParametersExpr(
   if (constructorParams == null) {
     return null;
   }
-  const omitEmptyDecorators = options?.omitEmptyDecorators ?? false;
   const useCoreNamespace = options?.useCoreNamespace ?? false;
   const complianceMode = options?.complianceMode ?? false;
   return constructorParams.map((param) => {
@@ -2278,9 +2270,7 @@ function buildCtorParametersExpr(
       const ngDecorators = param.decorators
         .filter((d) => d.isAngular)
         .map((d) => buildDecoratorMetadataExpr(d.name, d.argsSpan, d.argsString, s, []));
-      if (!omitEmptyDecorators || ngDecorators.length > 0) {
-        decorators = o.literalArr(ngDecorators);
-      }
+      decorators = o.literalArr(ngDecorators);
     }
     const useNamespaceImport =
       typeName != null &&
@@ -2300,6 +2290,50 @@ function buildCtorParametersExpr(
       suppressTypeErrors: typeName != null && !param.isValueVerified,
     };
   });
+}
+
+/**
+ * Build the `() => [...]` callback assigned to `static ctorParameters` on `jit: true` classes,
+ * mirroring `ngtsc`'s `createCtorParametersClassProperty` in `downlevel_decorators_transform.ts`:
+ * primitive/built-in parameter types emit their boxed constructors (`String`, `Boolean`, `Number`,
+ * `Object`, `Array`, `Function`), and untyped, undecorated parameters emit `null`.
+ * https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/transform/jit/src/downlevel_decorators_transform.ts#L108-L154
+ */
+function buildJitCtorParametersExpr(
+  constructorParams: nga.ConstructorParamMetadata[],
+  s: MagicString,
+): o.Expression {
+  const params = constructorParams.map((param): o.Expression => {
+    const ngDecorators = param.decorators
+      .filter((d) => d.isAngular)
+      .map((d) => buildDecoratorMetadataExpr(d.name, d.argsSpan, d.argsString, s, []));
+
+    if (!param.hasType && ngDecorators.length === 0) {
+      return o.literal(null);
+    }
+
+    const valueRefTypeName = param.isTypeOnly ? undefined : param.typeName;
+    const resolvedTypeName = valueRefTypeName ?? param.jitTypeName;
+    const typeProp = new o.LiteralMapPropertyAssignment(
+      'type',
+      resolvedTypeName == null ? o.literal(undefined) : o.variable(resolvedTypeName),
+      /* quoted */ false,
+    );
+
+    if (valueRefTypeName != null && !param.isValueVerified) {
+      typeProp.leadingComments = [o.leadingComment('@ts-ignore', true, true)];
+    }
+
+    const entries: o.LiteralMapEntry[] = [typeProp];
+    if (ngDecorators.length > 0) {
+      entries.push(
+        new o.LiteralMapPropertyAssignment('decorators', o.literalArr(ngDecorators), false),
+      );
+    }
+    return new o.LiteralMapExpr(entries);
+  });
+
+  return o.arrowFn([], o.literalArr(params), o.DYNAMIC_TYPE);
 }
 
 /**

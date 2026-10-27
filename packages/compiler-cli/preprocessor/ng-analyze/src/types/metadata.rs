@@ -859,6 +859,17 @@ pub struct HostListenerMetadata {
 pub struct ConstructorParamMetadata {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub type_name: Option<String>,
+    /// Boxed runtime constructor name (`String`, `Boolean`, `Number`, `Object`, `Array`,
+    /// `Function`) for non-`TSTypeReference` parameter types (primitives, literals, arrays/tuples,
+    /// functions/constructors, type predicates, and nullable `T | null` unions), mirroring
+    /// `ngtsc`'s `downlevel_decorators_transform` for `jit: true` `static ctorParameters`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub jit_type_name: Option<String>,
+    /// Whether the parameter carries a TypeScript type annotation in source (`param.type != null`
+    /// in `downlevel_decorators_transform`). Untyped, undecorated parameters emit `null` in
+    /// `jit: true` `static ctorParameters`, whereas typed parameters whose type has no runtime
+    /// value emit `{ type: undefined }`.
+    pub has_type: bool,
     /// Module specifier the type was imported from, when the type resolves to a (non-aliased)
     /// named import (e.g. `@angular/core` for `ElementRef`). `None` for locally declared types.
     /// Used so DI tokens that reference an imported symbol are emitted through the matching

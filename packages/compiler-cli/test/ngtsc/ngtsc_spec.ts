@@ -985,6 +985,43 @@ runInEachFileSystem((os: string) => {
       expect(env.getContents('test.js')).not.toContain('NonJitModule.ctorParameters');
     });
 
+    it('should synthesize boxed primitive/built-in types and null for untyped params in `jit: true` ctorParameters', () => {
+      env.tsconfig({noImplicitAny: false});
+      env.write(
+        'test.ts',
+        `
+        import {Component, Optional} from '@angular/core';
+
+        export interface SomeInterface {}
+
+        @Component({
+          template: '{{ view }}',
+          jit: true,
+        })
+        export class TestHostComponent {
+          constructor(
+            public view: string,
+            public visible: boolean,
+            count: number,
+            nullable: string | null,
+            items: string[],
+            fn: () => void,
+            obj: object,
+            iface: SomeInterface,
+            untyped,
+            @Optional() untypedOptional,
+          ) {}
+        }
+      `,
+      );
+
+      env.driveMain();
+
+      expect(trim(env.getContents('test.js'))).toMatch(
+        /TestHostComponent\.ctorParameters = \(\) => \[\s*\{ type: String \},\s*\{ type: Boolean \},\s*\{ type: Number \},\s*\{ type: String \},\s*\{ type: Array \},\s*\{ type: Function \},\s*\{ type: Object \},\s*\{ type: undefined \},\s*null,\s*\{ type: undefined, decorators: \[\{ type: Optional \}\] \},?\s*\];/,
+      );
+    });
+
     // This test triggers the Tsickle compiler which asserts that the file-paths
     // are valid for the real OS. When on non-Windows systems it doesn't like paths
     // that start with `C:`.
