@@ -479,7 +479,6 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'ngtsc type checking for loop blocks should not allow usages of parent template variables inside the tracking expression',
   'ngtsc type checking should error on invalid instanceof binary expressions',
   'ngtsc type checking tagged template literals should produce diagnostics for invalid tag function',
-  'signal forms should report unsupported two-way bindings on a field',
 ]);
 
 /**
