@@ -1052,6 +1052,20 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
             def_eval
                 .complete_with(ctx, crate::analyzer::resolvers::angular_foreign_resolvers())
                 .await;
+            let validation = crate::query::module_scope::validate_standalone_deferred_imports(
+                ctx,
+                reference_id.file,
+                def_eval.raw(),
+                component.deferred_imports_span,
+            )
+            .await;
+            component.import_diagnostics.extend(validation.diagnostics);
+            if validation.is_poisoned {
+                component.is_poisoned = true;
+            }
+            if component.is_poisoned && !ctx.engine.use_poisoned_data {
+                return;
+            }
             match def_eval.raw() {
                 crate::evaluator::ResolvedValue::Map(map) => {
                     let mut by_block = std::collections::HashMap::new();
