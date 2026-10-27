@@ -4,6 +4,8 @@ import { Component, Injectable } from '@angular/core';
 import { MyService } from './types.ts'; // Explicit extension
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './types.ts';
 
 export class TestService {
   constructor(private myService: MyService) {}
@@ -12,7 +14,7 @@ export class TestService {
     __ngFactoryType__: any,
   ): any {
     /* @ts-ignore */
-    return new (__ngFactoryType__ || TestService)(i0.ɵɵinject(MyService));
+    return new (__ngFactoryType__ || TestService)(i0.ɵɵinject(i1.MyService));
   };
   // @ts-ignore
   static ɵprov: i0.ɵɵInjectableDeclaration<any> =
@@ -26,7 +28,7 @@ export class TestService {
         (): any => [
           {
             /* @ts-ignore */
-            type: MyService,
+            type: i1.MyService,
           },
         ],
         null,
@@ -41,7 +43,7 @@ export class TestComponent {
     __ngFactoryType__: any,
   ): any {
     /* @ts-ignore */
-    return new (__ngFactoryType__ || TestComponent)(i0.ɵɵdirectiveInject(MyService));
+    return new (__ngFactoryType__ || TestComponent)(i0.ɵɵdirectiveInject(i1.MyService));
   };
   // @ts-ignore
   static ɵcmp: i0.ɵɵComponentDeclaration<
@@ -86,7 +88,7 @@ export class TestComponent {
         (): any => [
           {
             /* @ts-ignore */
-            type: MyService,
+            type: i1.MyService,
           },
         ],
         null,

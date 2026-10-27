@@ -69,6 +69,8 @@ import { Injectable } from '@angular/core';
 import { LoggerService } from './logger.service';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './logger.service';
 
 export class DataService {
   constructor(private logger: LoggerService) {}
@@ -77,7 +79,7 @@ export class DataService {
     __ngFactoryType__: any,
   ): any {
     /* @ts-ignore */
-    return new (__ngFactoryType__ || DataService)(i0.ɵɵinject(LoggerService));
+    return new (__ngFactoryType__ || DataService)(i0.ɵɵinject(i1.LoggerService));
   };
   // @ts-ignore
   static ɵprov: i0.ɵɵInjectableDeclaration<any> =
@@ -95,7 +97,7 @@ export class DataService {
         (): any => [
           {
             /* @ts-ignore */
-            type: LoggerService,
+            type: i1.LoggerService,
           },
         ],
         null,

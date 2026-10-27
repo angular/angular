@@ -16,6 +16,12 @@ import { ForwardedAsType, ForwardedDirect } from './forward';
 import { PkgAsType, PkgValue } from 'pkg';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './barrel';
+// @ts-ignore
+import * as i2 from './forward';
+// @ts-ignore
+import * as i3 from 'pkg';
 
 export class BarrelService {
   constructor(
@@ -40,20 +46,20 @@ export class BarrelService {
   ): any {
     /* @ts-ignore */
     return new (__ngFactoryType__ || BarrelService)(
-      i0.ɵɵinject(ImportedAsType),
-      i0.ɵɵinject(Direct),
-      i0.ɵɵinject(ExportedAsType),
-      i0.ɵɵinject(Renamed),
-      i0.ɵɵinject(InlineExportedAsType),
-      i0.ɵɵinject(ReexportedAsType),
-      i0.ɵɵinject(DeclaredAsType),
-      i0.ɵɵinject(RenamedType),
-      i0.ɵɵinject(ForwardedAsType),
-      i0.ɵɵinject(ForwardedDirect),
+      i0.ɵɵinject(i1.ImportedAsType),
+      i0.ɵɵinject(i1.Direct),
+      i0.ɵɵinject(i1.ExportedAsType),
+      i0.ɵɵinject(i1.Renamed),
+      i0.ɵɵinject(i1.InlineExportedAsType),
+      i0.ɵɵinject(i1.ReexportedAsType),
+      i0.ɵɵinject(i1.DeclaredAsType),
+      i0.ɵɵinject(i1.RenamedType),
+      i0.ɵɵinject(i2.ForwardedAsType),
+      i0.ɵɵinject(i2.ForwardedDirect),
       i0.ɵɵinject(barrel.ExportedAsType),
       i0.ɵɵinject(barrel.Direct),
-      i0.ɵɵinject(PkgAsType),
-      i0.ɵɵinject(PkgValue),
+      i0.ɵɵinject(i3.PkgAsType),
+      i0.ɵɵinject(i3.PkgValue),
     );
   };
   // @ts-ignore
@@ -72,35 +78,35 @@ export class BarrelService {
         (): any => [
           {
             /* @ts-ignore */
-            type: ImportedAsType,
+            type: i1.ImportedAsType,
           },
-          { type: Direct },
+          { type: i1.Direct },
           {
             /* @ts-ignore */
-            type: ExportedAsType,
+            type: i1.ExportedAsType,
           },
-          { type: Renamed },
+          { type: i1.Renamed },
           {
             /* @ts-ignore */
-            type: InlineExportedAsType,
-          },
-          {
-            /* @ts-ignore */
-            type: ReexportedAsType,
+            type: i1.InlineExportedAsType,
           },
           {
             /* @ts-ignore */
-            type: DeclaredAsType,
+            type: i1.ReexportedAsType,
           },
           {
             /* @ts-ignore */
-            type: RenamedType,
+            type: i1.DeclaredAsType,
           },
           {
             /* @ts-ignore */
-            type: ForwardedAsType,
+            type: i1.RenamedType,
           },
-          { type: ForwardedDirect },
+          {
+            /* @ts-ignore */
+            type: i2.ForwardedAsType,
+          },
+          { type: i2.ForwardedDirect },
           {
             /* @ts-ignore */
             type: barrel.ExportedAsType,
@@ -108,9 +114,9 @@ export class BarrelService {
           { type: barrel.Direct },
           {
             /* @ts-ignore */
-            type: PkgAsType,
+            type: i3.PkgAsType,
           },
-          { type: PkgValue },
+          { type: i3.PkgValue },
         ],
         null,
       );
