@@ -1,0 +1,40 @@
+load("//tools:defaults.bzl", "http_server", "ts_project", "webdriver_test")
+
+package(default_visibility = ["//visibility:public"])
+
+http_server(
+    name = "devserver",
+    testonly = True,
+    additional_root_paths = [
+        "_main/adev/dist/browser",
+    ],
+    relax_cors = True,
+    tags = [
+        "manual",
+    ],
+    deps = ["//adev:build"],
+)
+
+ts_project(
+    name = "e2e_tests_lib",
+    testonly = True,
+    srcs = glob(["**/*.spec.ts"]),
+    tsconfig = ":tsconfig.json",
+    deps = [
+        "//:node_modules/@types/jasmine",
+        "//:node_modules/@types/selenium-webdriver",
+        "//:node_modules/selenium-webdriver",
+        "//packages/examples/test-utils",
+    ],
+)
+
+webdriver_test(
+    name = "webdriver_tests",
+    server = ":devserver",
+    tags = [
+        "requires-network",
+    ],
+    deps = [
+        ":e2e_tests_lib",
+    ],
+)
