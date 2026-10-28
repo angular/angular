@@ -7,11 +7,10 @@
  */
 
 // g3-only-start
-// import type {
-//   ModelContextTool,
-//   ModelContextToolFromSchema,
-//   ToolExecuteCallbackOptions,
-// } from 'webmcp-types';
+// import type {WebMCP} from 'webmcp-types';
+// type ModelContextTool = WebMCP.ModelContextTool;
+// type ModelContextToolFromSchema<T extends object> = WebMCP.ModelContextToolFromSchema<T>;
+// type ToolExecuteCallbackOptions = WebMCP.ToolExecuteCallbackOptions;
 // g3-only-end
 // 3p-only-start
 import type {

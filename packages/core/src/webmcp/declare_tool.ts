@@ -6,7 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-// g3-only import type {ModelContext, ModelContextTool} from 'webmcp-types';
+// g3-only-start
+// import type {WebMCP} from 'webmcp-types';
+// type ModelContext = WebMCP.ModelContext;
+// type ModelContextTool = WebMCP.ModelContextTool;
+// g3-only-end
 import type {ModelContext, ModelContextTool} from '../../third_party/webmcp-types'; // 3p-only
 import {assertInInjectionContext, inject, Injector, runInInjectionContext} from '../di';
 import {DestroyRef} from '../linker';
