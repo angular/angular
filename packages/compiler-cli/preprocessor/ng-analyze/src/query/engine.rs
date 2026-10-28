@@ -416,10 +416,10 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                 .with_class_table(true)
                 .build(program);
 
-            // Only treat unrecoverable parse errors as fatal. When `ret.fatal_error` is false, the
+            // Only treat unrecoverable parse errors as fatal. When `ret.panicked` is false, the
             // parser has recovered and produced a complete AST that we can analyze.
             // We can rely on TS to perform the final verification downstream.
-            let errors = if ret.fatal_error {
+            let errors = if ret.panicked {
                 ret.diagnostics.into_iter().map(|e| e.to_string()).collect()
             } else {
                 Vec::new()
@@ -1486,7 +1486,7 @@ async fn resolve_ambient_module_member<Fs: ResourceResolverFs + Clone + 'static>
             let oxc_ast::ast::Statement::TSExternalModuleDeclaration(decl) = stmt else {
                 continue;
             };
-            if crate::analyzer::utils::js_str_to_string_lossy(decl.id.value) != specifier {
+            if decl.id.value.as_str() != specifier {
                 continue;
             }
             match resolve_in_ambient_module(decl, dep, member) {

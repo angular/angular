@@ -7,7 +7,6 @@
 //! binding in value position yields an [`IncompleteValue`] hole, which the async semantic
 //! driver resolves between locks and feeds back through the [`ResolvedEnv`] on a re-run.
 
-use crate::analyzer::utils::js_str_to_string_lossy;
 use crate::analyzer::{ImportKind, ImportedSymbol};
 use crate::evaluator::foreign::{ForeignFunctionResolver, FunctionTarget, TypeNameRef};
 use crate::evaluator::value::{
@@ -115,9 +114,7 @@ pub fn evaluate_node_id(
         AstKind::BooleanLiteral(b) => Some(ResolvedValue::Boolean(b.value)),
         AstKind::NullLiteral(_) => Some(ResolvedValue::Null),
         AstKind::NumericLiteral(n) => Some(ResolvedValue::Number(n.value)),
-        AstKind::StringLiteral(s) => Some(ResolvedValue::String(
-            js_str_to_string_lossy(s.value).into_owned(),
-        )),
+        AstKind::StringLiteral(s) => Some(ResolvedValue::String(s.value.to_string())),
         AstKind::TemplateLiteral(t) => Some(interp.visit_template(t, &scope)),
         AstKind::IdentifierReference(ident) => {
             let ref_id = ident.reference_id.get()?;
@@ -452,7 +449,7 @@ impl<'a, 'e, 'i> Interpreter<'a, 'e, 'i> {
         let Some(qualifier) = &import_type.qualifier else {
             return self.dynamic(import_type.span, DynamicReason::UnsupportedSyntax);
         };
-        let specifier = js_str_to_string_lossy(import_type.source.value).into_owned();
+        let specifier = import_type.source.value.to_string();
         self.resolve_import_type_qualifier(qualifier, &specifier, import_type.span, scope)
     }
 
@@ -503,9 +500,7 @@ impl<'a, 'e, 'i> Interpreter<'a, 'e, 'i> {
         match &literal.literal {
             TSLiteral::BooleanLiteral(b) => ResolvedValue::Boolean(b.value),
             TSLiteral::NumericLiteral(n) => ResolvedValue::Number(n.value),
-            TSLiteral::StringLiteral(s) => {
-                ResolvedValue::String(js_str_to_string_lossy(s.value).into_owned())
-            }
+            TSLiteral::StringLiteral(s) => ResolvedValue::String(s.value.to_string()),
             TSLiteral::TemplateLiteral(t) => self.visit_template(t, scope),
             TSLiteral::UnaryExpression(u) => {
                 self.visit_unary(u.operator, &u.argument, u.span, scope)
@@ -812,9 +807,7 @@ impl<'a, 'e, 'i> Interpreter<'a, 'e, 'i> {
             Expression::BooleanLiteral(b) => ResolvedValue::Boolean(b.value),
             Expression::NullLiteral(_) => ResolvedValue::Null,
             Expression::NumericLiteral(n) => ResolvedValue::Number(n.value),
-            Expression::StringLiteral(s) => {
-                ResolvedValue::String(js_str_to_string_lossy(s.value).into_owned())
-            }
+            Expression::StringLiteral(s) => ResolvedValue::String(s.value.to_string()),
             Expression::TemplateLiteral(t) => self.visit_template(t, scope),
             Expression::Identifier(ident) => {
                 let res = if let Some(ref_id) = ident.reference_id.get() {
@@ -998,7 +991,7 @@ impl<'a, 'e, 'i> Interpreter<'a, 'e, 'i> {
         let mut result = String::new();
         for (i, quasi) in t.quasis.iter().enumerate() {
             match &quasi.value.cooked {
-                Some(cooked) => result.push_str(&js_str_to_string_lossy(*cooked)),
+                Some(cooked) => result.push_str(cooked.as_str()),
                 None => result.push_str(quasi.value.raw.as_str()),
             }
             let Some(expr) = t.expressions.get(i) else {
@@ -1355,7 +1348,7 @@ impl<'a, 'e, 'i> Interpreter<'a, 'e, 'i> {
             let name = match &member.id {
                 TSEnumMemberName::Identifier(ident) => ident.name.to_string(),
                 TSEnumMemberName::String(s) | TSEnumMemberName::ComputedString(s) => {
-                    js_str_to_string_lossy(s.value).into_owned()
+                    s.value.to_string()
                 }
                 TSEnumMemberName::ComputedTemplateString(t) => {
                     let ResolvedValue::String(s) = self.visit_template(t, scope) else {

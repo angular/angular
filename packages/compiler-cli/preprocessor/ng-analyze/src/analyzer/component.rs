@@ -16,8 +16,7 @@ use crate::evaluator::{evaluate_expression, EvalInput, Resolved, ResolvedValue};
 use super::imports::{resolve_imports_expression, ImportInfo, ImportedSymbol};
 
 use super::utils::{
-    extract_bool, extract_property_key, extract_schemas, extract_string, js_str_to_string_lossy,
-    resolve_local_expression,
+    extract_bool, extract_property_key, extract_schemas, extract_string, resolve_local_expression,
 };
 
 #[allow(clippy::too_many_arguments)]
@@ -264,7 +263,7 @@ fn parse_component_metadata<'a, Fs: ResourceResolverFs>(
                                     Some(id.name.to_string())
                                 }
                                 oxc_ast::ast::PropertyKey::StringLiteral(s) => {
-                                    Some(js_str_to_string_lossy(s.value).into_owned())
+                                    Some(s.value.to_string())
                                 }
                                 _ => None,
                             };

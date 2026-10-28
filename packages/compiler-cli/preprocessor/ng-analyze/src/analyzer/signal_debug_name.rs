@@ -64,9 +64,9 @@ fn imports_signal_package(program: &Program<'_>) -> bool {
         let oxc_ast::ast::Statement::ImportDeclaration(decl) = stmt else {
             return false;
         };
-        let specifier = super::utils::js_str_to_string_lossy(decl.source.value);
-        is_package_or_entry_point(&specifier, crate::utils::ANGULAR_CORE)
-            || is_package_or_entry_point(&specifier, "@angular/common")
+        let specifier = decl.source.value.as_str();
+        is_package_or_entry_point(specifier, crate::utils::ANGULAR_CORE)
+            || is_package_or_entry_point(specifier, "@angular/common")
     })
 }
 
@@ -232,7 +232,7 @@ fn is_angular_import(ident: &IdentifierReference<'_>, semantic: &Semantic<'_>) -
     let Some(package) = package_of_signal_function(ident.name.as_str()) else {
         return false;
     };
-    is_package_or_entry_point(&specifier, package)
+    is_package_or_entry_point(specifier, package)
 }
 
 /// Where the `debugName` goes in `call`, or `None` if the options argument isn't an object literal
