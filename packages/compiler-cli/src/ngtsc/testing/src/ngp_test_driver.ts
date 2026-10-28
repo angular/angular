@@ -325,6 +325,10 @@ export function performNgpCompilationSync(params: {
         preserveSymlinks: Boolean(options.preserveSymlinks),
         allowJs: Boolean(options.allowJs),
         emitDeclarationOnly: Boolean(options.emitDeclarationOnly),
+        ...(options.baseUrl !== undefined
+          ? {baseUrl: toPosixPath(fs.resolve(basePath, options.baseUrl))}
+          : {}),
+        ...(options.paths ? {paths: options.paths} : {}),
       },
       angularCompilerOptions: {
         _generateExtraImportsInLocalMode: Boolean(rawOpts['_generateExtraImportsInLocalMode']),

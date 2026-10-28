@@ -695,7 +695,7 @@ export class UpcasePipe {}
         let class = find_class(&results, "UpcasePipe").expect("UpcasePipe should exist");
         assert!(class.pipe.is_some());
         let pipe = class.pipe.as_ref().unwrap();
-        assert_eq!(pipe.name, "upcase");
+        assert_eq!(pipe.name.as_deref(), Some("upcase"));
         assert_eq!(pipe.pure, Some(true));
     }
 

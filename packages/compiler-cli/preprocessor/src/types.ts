@@ -798,7 +798,7 @@ export interface OutputMetadata {
 
 export interface PipeMetadata {
   decoratorName?: string;
-  name: string;
+  name?: string | null;
   pure?: boolean;
   standalone?: boolean;
   argsSpan?: SpanMetadata;

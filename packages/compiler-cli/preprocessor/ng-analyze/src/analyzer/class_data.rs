@@ -3783,10 +3783,7 @@ impl ClassData {
                 });
                 pipe = Some(PipeMetadata {
                     decorator_name: p.decorator_name.clone(),
-                    name: self
-                        .read_optional_string(&p.name, cx, "pipe.name")?
-                        .or_else(|| self.class_name.clone())
-                        .unwrap_or_default(),
+                    name: self.read_optional_string(&p.name, cx, "pipe.name")?,
                     pure: self.read_optional_field(p.pure.as_ref(), cx, "pipe.pure")?,
                     standalone: p.standalone,
                     args_span: p
@@ -4209,13 +4206,18 @@ impl ClassData {
             .path_lookup
             .map(|lookup| lookup(r.file))
             .unwrap_or_default();
-        cx.reference_strategy.emit(
+        let mut emitted = cx.reference_strategy.emit(
             r,
             file_id,
             current_file_path,
             &target_path,
             cx.declaring_export_name(r.file, &r.name),
-        )
+        );
+        if r.owning_reference.is_some() && emitted.typecheck_import.is_some() {
+            emitted.consumer_import = emitted.typecheck_import.clone();
+            emitted.local_alias = None;
+        }
+        emitted
     }
 
     fn to_wire_isolated_tuple(
