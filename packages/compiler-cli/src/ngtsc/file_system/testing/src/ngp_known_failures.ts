@@ -322,9 +322,4 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'ngtsc behavioral tests cycle detection should detect a simple cycle and fatally error if doing partial-compilation',
   'ngtsc compilation of standalone types component-side should compile a standalone component in a cycle with its module',
   'ngtsc incremental compilation template type-checking should retain default imports that have been converted into a value expression',
-  'ngtsc type checking for loop blocks should not allow usages of aliased `if` block variables inside the tracking expression',
-  'ngtsc type checking for loop blocks should not allow usages of local references outside of the template in the tracking expression',
-  'ngtsc type checking for loop blocks should not allow usages of local references within the same template inside the tracking expression',
-  'ngtsc type checking for loop blocks should not allow usages of parent loop variables inside the tracking expression',
-  'ngtsc type checking for loop blocks should not allow usages of parent template variables inside the tracking expression',
 ]);
