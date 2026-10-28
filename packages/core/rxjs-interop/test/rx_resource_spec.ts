@@ -18,6 +18,7 @@ import {
   signal,
   TransferState,
 } from '../../src/core';
+import {ReactiveNode, SIGNAL} from '../../primitives/signals';
 import {TestBed} from '../../testing';
 import {rxResource} from '../src';
 
@@ -40,6 +41,17 @@ describe('rxResource()', () => {
     // Value should be available synchronously (because the observable emits synchronously)
     expect(res.value()).toBe(1);
     expect(res.status()).toBe('resolved');
+  });
+
+  it('should set debugName when a debugName is provided', () => {
+    const res = rxResource({
+      stream: () => of(1),
+      injector: TestBed.inject(Injector),
+      debugName: 'counter',
+    });
+    const node = res.value[SIGNAL] as ReactiveNode;
+
+    expect(node.debugName).toBe('Resource#counter.value');
   });
 
   it('should cancel the fetch when a new request comes in', async () => {
