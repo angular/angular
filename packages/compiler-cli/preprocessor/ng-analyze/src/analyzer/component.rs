@@ -1,6 +1,5 @@
 use crate::ResourceResolverFs;
 use oxc_ast::ast::{Decorator, Expression, ObjectPropertyKind};
-use oxc_resolver::ResolverGeneric;
 use oxc_semantic::Semantic;
 use oxc_span::GetSpan;
 use std::collections::HashMap;
@@ -19,12 +18,8 @@ use super::utils::{
     extract_bool, extract_property_key, extract_schemas, extract_string, resolve_local_expression,
 };
 
-#[allow(clippy::too_many_arguments)]
-pub fn parse_decorator<'a, Fs: ResourceResolverFs>(
+pub fn parse_decorator<'a>(
     decorator: &Decorator<'a>,
-    file_path: &Path,
-    fs: &Fs,
-    resolver: &ResolverGeneric<Fs>,
     semantic: &Semantic<'a>,
     import_map: &HashMap<String, ImportedSymbol>,
     angular_imports: &crate::analyzer::imports::AngularImports,
@@ -73,9 +68,6 @@ pub fn parse_decorator<'a, Fs: ResourceResolverFs>(
         decorator.span,
         semantic,
         import_map,
-        file_path,
-        fs,
-        resolver,
         directive_data,
         eval,
     )
@@ -148,15 +140,11 @@ fn direct_template_content_span(expr: &Expression<'_>) -> Option<oxc_span::Span>
     ))
 }
 
-#[allow(clippy::too_many_arguments)]
-fn parse_component_metadata<'a, Fs: ResourceResolverFs>(
+fn parse_component_metadata<'a>(
     obj: &'a oxc_ast::ast::ObjectExpression<'a>,
     decorator_span: oxc_span::Span,
     semantic: &Semantic<'a>,
     import_map: &HashMap<String, ImportedSymbol>,
-    file_path: &Path,
-    fs: &Fs,
-    resolver: &ResolverGeneric<Fs>,
     directive_data: DirectiveData,
     eval: &EvalInput<'a, '_>,
 ) -> Option<ComponentData> {
@@ -341,25 +329,9 @@ fn parse_component_metadata<'a, Fs: ResourceResolverFs>(
         }
     }
 
-    let resource_resolver = crate::ResourceResolver::new(fs, resolver);
     let default_span = data.directive.args_span.unwrap_or(decorator_span);
-
-    process_component_styles(
-        style_url,
-        style_urls,
-        &mut data,
-        &resource_resolver,
-        file_path,
-        default_span,
-    );
-
-    process_component_template_url(
-        template_url,
-        &mut data,
-        &resource_resolver,
-        file_path,
-        eval.file,
-    );
+    record_component_styles(style_url, style_urls, &mut data, default_span);
+    data.pending_template_url = template_url;
 
     Some(data)
 }
@@ -435,12 +407,10 @@ fn collect_style_urls_sources<'a>(
     }
 }
 
-fn process_component_styles<Fs: ResourceResolverFs>(
+fn record_component_styles(
     style_url: Option<StyleUrlSource>,
     style_urls: Option<Vec<StyleUrlSource>>,
     data: &mut ComponentData,
-    resource_resolver: &crate::ResourceResolver<'_, Fs>,
-    file_path: &Path,
     default_span: oxc_span::Span,
 ) {
     let literal_span = |source: &StyleUrlSource| match source {
@@ -462,13 +432,43 @@ fn process_component_styles<Fs: ResourceResolverFs>(
     if style_url.is_none() && style_urls.is_none() {
         return;
     }
-    let sources: Vec<StyleUrlSource> = style_url
-        .into_iter()
-        .chain(style_urls.into_iter().flatten())
-        .collect();
-    load_style_urls(&sources, data, resource_resolver, file_path);
-    if sources.iter().any(StyleUrlSource::contains_incomplete) {
-        data.pending_style_urls = Some(sources);
+    data.pending_style_urls = Some(
+        style_url
+            .into_iter()
+            .chain(style_urls.into_iter().flatten())
+            .collect(),
+    );
+}
+
+/// Stage 1 resource pass: resolve and read every `templateUrl` and `styleUrl(s)` whose expression
+/// already evaluated within this file, leaving expressions that still reference constants from
+/// other files parked on `pending_template_url` / `pending_style_urls` for Stage 2.
+///
+/// Runs outside the `ParsedFile` mutex guard so resource resolution and file reads do not hold the
+/// AST lock.
+pub(crate) fn load_syntax_resources<Fs: ResourceResolverFs>(
+    classes: &mut [crate::analyzer::ClassData],
+    resource_resolver: &crate::ResourceResolver<'_, Fs>,
+    file_path: &Path,
+    eval_file: crate::query::FileId,
+) {
+    for class in classes {
+        let Some(data) = class.as_component_mut() else {
+            continue;
+        };
+        if let Some(sources) = data.pending_style_urls.take() {
+            load_style_urls(&sources, data, resource_resolver, file_path);
+            if sources.iter().any(StyleUrlSource::contains_incomplete) {
+                data.pending_style_urls = Some(sources);
+            }
+        }
+        if let Some(source) = data.pending_template_url.take() {
+            if source.url.contains_incomplete() {
+                data.pending_template_url = Some(source);
+            } else {
+                load_template_url(&source, data, resource_resolver, file_path, eval_file);
+            }
+        }
     }
 }
 
@@ -568,25 +568,6 @@ fn load_url<Fs: ResourceResolverFs>(
         crate::fs::path_to_string(resource.resolved_path),
         resource.content,
     )
-}
-
-/// Stage 1 for `templateUrl`: load it now when it evaluated within this file, or park it for
-/// Stage 2 (and the local pipeline) when it still names a constant from another file.
-fn process_component_template_url<Fs: ResourceResolverFs>(
-    template_url: Option<TemplateUrlSource>,
-    data: &mut ComponentData,
-    resource_resolver: &crate::ResourceResolver<'_, Fs>,
-    file_path: &Path,
-    eval_file: crate::query::FileId,
-) {
-    let Some(source) = template_url else {
-        return;
-    };
-    if source.url.contains_incomplete() {
-        data.pending_template_url = Some(source);
-        return;
-    }
-    load_template_url(&source, data, resource_resolver, file_path, eval_file);
 }
 
 /// Read the template `source` names, relative to the component's own `file_path`, into

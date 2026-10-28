@@ -1,10 +1,8 @@
 use std::collections::HashSet;
 use std::path::Path;
 
-use crate::ResourceResolverFs;
 use oxc_ast::ast::{Class, ClassElement, ExportDefaultDeclarationKind, Program, Statement};
 use oxc_ast_visit::utf8_to_utf16::Utf8ToUtf16;
-use oxc_resolver::ResolverGeneric;
 use oxc_semantic::Semantic;
 use oxc_syntax::module_record::{ExportExportName, ExportImportName, ModuleRecord};
 
@@ -29,13 +27,11 @@ use super::{
 };
 
 /// Visitor that collects Angular decorated classes (non-optimized mode)
-pub struct ClassVisitor<'a, Fs: ResourceResolverFs> {
+pub struct ClassVisitor<'a> {
     source_text: &'a str,
     converter: &'a Utf8ToUtf16,
     file_path: &'a Path,
     file_id: crate::query::FileId,
-    fs: &'a Fs,
-    resolver: &'a ResolverGeneric<Fs>,
     import_map: &'a std::collections::HashMap<String, ImportedSymbol>,
     angular_imports: &'a crate::analyzer::imports::AngularImports,
     semantic: &'a Semantic<'a>,
@@ -51,7 +47,7 @@ pub struct ClassVisitor<'a, Fs: ResourceResolverFs> {
     diagnostics: Vec<crate::NgDiagnostic>,
 }
 
-impl<'a, Fs: ResourceResolverFs> ClassVisitor<'a, Fs> {
+impl<'a> ClassVisitor<'a> {
     #[allow(clippy::too_many_arguments)]
     pub fn new(
         source_text: &'a str,
@@ -59,8 +55,6 @@ impl<'a, Fs: ResourceResolverFs> ClassVisitor<'a, Fs> {
         semantic: &'a Semantic<'a>,
         file_path: &'a Path,
         file_id: crate::query::FileId,
-        fs: &'a Fs,
-        resolver: &'a ResolverGeneric<Fs>,
         import_map: &'a std::collections::HashMap<String, ImportedSymbol>,
         angular_imports: &'a crate::analyzer::imports::AngularImports,
         local_exported_names: &'a HashSet<&'a str>,
@@ -75,8 +69,6 @@ impl<'a, Fs: ResourceResolverFs> ClassVisitor<'a, Fs> {
             semantic,
             file_path,
             file_id,
-            fs,
-            resolver,
             import_map,
             angular_imports,
             local_exported_names,
@@ -179,9 +171,6 @@ impl<'a, Fs: ResourceResolverFs> ClassVisitor<'a, Fs> {
             class,
             node_id,
             self.converter,
-            self.file_path,
-            self.fs,
-            self.resolver,
             self.import_map,
             self.angular_imports,
             self.semantic,
@@ -454,29 +443,6 @@ pub struct RegistrationInfo {
     pub has_non_exported_bounds: bool,
 }
 
-#[allow(clippy::too_many_arguments)]
-fn try_parse_component<'a, Fs: ResourceResolverFs>(
-    decorator: &oxc_ast::ast::Decorator<'a>,
-    semantic: &Semantic<'a>,
-    import_map: &std::collections::HashMap<String, ImportedSymbol>,
-    file_path: &Path,
-    fs: &Fs,
-    resolver: &ResolverGeneric<Fs>,
-    angular_imports: &crate::analyzer::imports::AngularImports,
-    eval: &crate::evaluator::EvalInput<'a, '_>,
-) -> Option<ComponentData> {
-    component::parse_decorator(
-        decorator,
-        file_path,
-        fs,
-        resolver,
-        semantic,
-        import_map,
-        angular_imports,
-        eval,
-    )
-}
-
 /// Class-body facts shared by every classification (everything except `symbol_id`, which
 /// `process_class` assigns).
 struct ParsedCommon {
@@ -553,13 +519,10 @@ impl ParsedClass {
 }
 
 #[allow(clippy::too_many_arguments)]
-fn process_class_common<'a, Fs: ResourceResolverFs>(
+fn process_class_common<'a>(
     class: &Class<'a>,
     class_node_id: oxc_semantic::NodeId,
     converter: &Utf8ToUtf16,
-    file_path: &Path,
-    fs: &Fs,
-    resolver: &ResolverGeneric<Fs>,
     import_map: &std::collections::HashMap<String, ImportedSymbol>,
     angular_imports: &crate::analyzer::imports::AngularImports,
     semantic: &Semantic<'a>,
@@ -626,16 +589,9 @@ fn process_class_common<'a, Fs: ResourceResolverFs>(
             service = Some(facts);
             ng_decorator_spans.push(decorator.span);
         }
-        if let Some(parsed) = try_parse_component(
-            decorator,
-            semantic,
-            import_map,
-            file_path,
-            fs,
-            resolver,
-            angular_imports,
-            eval,
-        ) {
+        if let Some(parsed) =
+            component::parse_decorator(decorator, semantic, import_map, angular_imports, eval)
+        {
             component = Some(parsed);
             ng_decorator_spans.push(decorator.span);
         }
@@ -892,9 +848,11 @@ fn declaration_statement_start(
     }
 }
 
-/// Everything derivable from a single file: the decorated classes (each component carrying its own
-/// parsed imports) plus the curated facts (registrations, re-exports). This is the complete
-/// single-file pass ([`analyze_file`]); the semantic query layers cross-file resolution on top of it.
+/// Everything derivable from a single file's AST: the decorated classes (each component carrying
+/// its own parsed imports) plus the curated facts (registrations, re-exports). Produced by
+/// [`analyze_parsed`] without touching the filesystem; `templateUrl`/`styleUrl(s)` are recorded
+/// on each component's `pending_*` fields and loaded by a subsequent
+/// [`super::load_syntax_resources`] pass. The semantic query layers cross-file resolution on top.
 pub struct ParsedFileAnalysis {
     pub classes: Vec<ClassData>,
     pub registrations: Vec<RegistrationInfo>,
@@ -936,23 +894,30 @@ struct ClassVisitorOutput {
     diagnostics: Vec<crate::NgDiagnostic>,
 }
 
+/// The single-file syntactic pass over an already-parsed file: every decorated class, the
+/// symbol/registration tables, re-exports, and the raw static/dynamic import specifiers.
+///
+/// This is deliberately a pure AST/semantic walk — it performs no module resolution and no
+/// filesystem reads beyond what `is_core` already captured — so the caller can run it while
+/// holding the `ParsedFile` lock and release that lock before any I/O. Component `templateUrl`
+/// and `styleUrl(s)` expressions are only *recorded* (on `pending_template_url` /
+/// `pending_style_urls`); the caller must follow up with [`super::load_syntax_resources`] to
+/// complete Stage 1, otherwise `template`, `template_url` and `style_urls` stay unset.
 #[allow(clippy::too_many_arguments)]
-pub fn analyze_parsed<Fs: ResourceResolverFs>(
+pub fn analyze_parsed(
     path: &Path,
     file_id: crate::query::FileId,
     source_text: &str,
     program: &oxc_ast::ast::Program<'_>,
     module_record: &oxc_syntax::module_record::ModuleRecord<'_>,
     semantic: &Semantic<'_>,
-    fs: &Fs,
-    resolver: &ResolverGeneric<Fs>,
     converter: &Utf8ToUtf16,
+    is_core: bool,
     compile_non_exported_classes: bool,
     enable_hmr: bool,
     implicit_standalone: bool,
 ) -> ParsedFileAnalysis {
     let import_map = super::imports::extract_import_map(module_record);
-    let is_core = super::imports::detect_is_core(path, fs);
     let angular_imports = super::imports::extract_angular_imports(module_record, semantic, is_core);
     let local_exported_names = get_local_exported_names(module_record);
     let file_exports = extract_file_exports(module_record, program);
@@ -963,8 +928,6 @@ pub fn analyze_parsed<Fs: ResourceResolverFs>(
         semantic,
         path,
         file_id,
-        fs,
-        resolver,
         &import_map,
         &angular_imports,
         &local_exported_names,
@@ -3569,5 +3532,186 @@ export class Cmp {
         let content_queries: Vec<&str> =
             c.queries.iter().map(|q| q.property_name.as_str()).collect();
         assert_eq!(content_queries, vec!["parenthesizedQuery"]);
+    }
+
+    #[test]
+    fn test_analyze_parsed_defers_resource_loading_to_stage1_pass() {
+        let source = r#"
+import { Component } from '@angular/core';
+import { EXTRA_CSS } from './styles';
+import type { Foo } from './foo';
+
+export const loadLazy = (): Promise<Foo> => import('./lazy').then(m => m.foo);
+
+@Component({
+    selector: 'my-comp',
+    templateUrl: './app.html',
+    styleUrl: './base.css',
+    styleUrls: ['./extra.css', EXTRA_CSS],
+    standalone: true,
+})
+export class Cmp {}
+"#;
+
+        let allocator = oxc_allocator::Allocator::default();
+        let ret = oxc_parser::Parser::new(&allocator, source, oxc_span::SourceType::ts()).parse();
+        let semantic_ret = oxc_semantic::SemanticBuilder::new()
+            .with_build_nodes(true)
+            .with_class_table(true)
+            .build(&ret.program);
+        let converter = Utf8ToUtf16::new(source);
+        let file_path = Path::new("/test/app.ts");
+
+        let mut analysis = analyze_parsed(
+            file_path,
+            0,
+            source,
+            &ret.program,
+            &ret.module_record,
+            &semantic_ret.semantic,
+            &converter,
+            false,
+            false,
+            false,
+            true,
+        );
+
+        assert_eq!(
+            analysis.static_dependencies,
+            vec!["@angular/core".to_string(), "./styles".to_string()]
+        );
+        assert_eq!(
+            analysis.dynamic_dependencies,
+            vec!["./foo".to_string(), "./lazy".to_string()]
+        );
+
+        let comp = analysis.classes[0]
+            .as_component()
+            .expect("Cmp should be a component");
+        assert!(comp.template.is_none());
+        assert!(comp.template_url.is_none());
+        assert!(comp.pending_template_url.is_some());
+        assert!(comp.style_urls.is_none());
+        assert!(comp.styles_from_urls.is_none());
+        assert_eq!(comp.pending_style_urls.as_ref().unwrap().len(), 3);
+        assert!(comp.style_conflict_span.is_some());
+
+        let fs = create_test_fs(&[
+            ("/test/app.html", "<p>hi</p>"),
+            ("/test/base.css", ".base {}"),
+            ("/test/extra.css", ".extra {}"),
+        ]);
+        let resolver = crate::utils::create_resolver_with_fs(None, fs.clone(), false, None);
+        let resource_resolver = crate::ResourceResolver::new(&fs, &resolver);
+        crate::analyzer::load_syntax_resources(
+            &mut analysis.classes,
+            &resource_resolver,
+            file_path,
+            0,
+        );
+
+        let comp = analysis.classes[0]
+            .as_component()
+            .expect("Cmp should be a component");
+        assert!(comp.pending_template_url.is_none());
+        let tpl_url = comp
+            .template_url
+            .as_ref()
+            .expect("template_url should be loaded");
+        assert_eq!(tpl_url.url, "./app.html");
+        assert!(tpl_url.resolved_path.ends_with("/test/app.html"));
+        assert!(!tpl_url.is_missing);
+        assert_eq!(
+            comp.template.as_ref().and_then(|t| t.get_optional()),
+            Some("<p>hi</p>".to_string())
+        );
+        assert_eq!(
+            comp.styles_from_urls.as_deref(),
+            Some(&[".base {}".to_string(), ".extra {}".to_string()][..])
+        );
+        // `EXTRA_CSS` is an imported constant, so `pending_style_urls` stays parked for Stage 2.
+        assert_eq!(comp.pending_style_urls.as_ref().unwrap().len(), 3);
+    }
+
+    #[test]
+    fn test_load_syntax_resources_parks_cross_file_template_url_per_class() {
+        let source = r#"
+import { Component } from '@angular/core';
+import { SHARED_TEMPLATE } from './paths';
+
+@Component({
+    selector: 'cross-file',
+    templateUrl: SHARED_TEMPLATE,
+    standalone: true,
+})
+export class CrossFileCmp {}
+
+@Component({
+    selector: 'literal',
+    templateUrl: './literal.html',
+    standalone: true,
+})
+export class LiteralCmp {}
+"#;
+
+        let allocator = oxc_allocator::Allocator::default();
+        let ret = oxc_parser::Parser::new(&allocator, source, oxc_span::SourceType::ts()).parse();
+        let semantic_ret = oxc_semantic::SemanticBuilder::new()
+            .with_build_nodes(true)
+            .with_class_table(true)
+            .build(&ret.program);
+        let converter = Utf8ToUtf16::new(source);
+        let file_path = Path::new("/test/app.ts");
+
+        let mut analysis = analyze_parsed(
+            file_path,
+            0,
+            source,
+            &ret.program,
+            &ret.module_record,
+            &semantic_ret.semantic,
+            &converter,
+            false,
+            false,
+            false,
+            true,
+        );
+        assert_eq!(analysis.classes.len(), 2);
+        for class in &analysis.classes {
+            let comp = class.as_component().expect("component");
+            assert!(comp.pending_template_url.is_some());
+            assert!(comp.template_url.is_none());
+            assert!(comp.template.is_none());
+        }
+
+        let fs = create_test_fs(&[("/test/literal.html", "<b>lit</b>")]);
+        let resolver = crate::utils::create_resolver_with_fs(None, fs.clone(), false, None);
+        let resource_resolver = crate::ResourceResolver::new(&fs, &resolver);
+        crate::analyzer::load_syntax_resources(
+            &mut analysis.classes,
+            &resource_resolver,
+            file_path,
+            0,
+        );
+
+        // The cross-file `templateUrl` is left parked for Stage 2 and nothing is loaded for it.
+        let cross_file = analysis.classes[0].as_component().expect("component");
+        assert!(cross_file.pending_template_url.is_some());
+        assert!(cross_file.template_url.is_none());
+        assert!(cross_file.template.is_none());
+
+        // A sibling class in the same file with a literal `templateUrl` is loaded independently.
+        let literal = analysis.classes[1].as_component().expect("component");
+        assert!(literal.pending_template_url.is_none());
+        let tpl_url = literal
+            .template_url
+            .as_ref()
+            .expect("template_url should be loaded");
+        assert_eq!(tpl_url.url, "./literal.html");
+        assert!(!tpl_url.is_missing);
+        assert_eq!(
+            literal.template.as_ref().and_then(|t| t.get_optional()),
+            Some("<b>lit</b>".to_string())
+        );
     }
 }

@@ -1052,18 +1052,20 @@ pub struct ComponentData {
     /// The evaluated `templateUrl`, loaded. `None` while [`Self::pending_template_url`] is
     /// set, and `None` for good when the property evaluated to something other than a string.
     pub template_url: Option<UrlData>,
-    /// The `templateUrl` expression, kept only while it still waits on a constant from another
-    /// file. Stage 2 (and local compilation, which evaluates it like ngtsc's does) completes it
-    /// and loads `template_url` and `template` from the result.
+    /// The `templateUrl` expression recorded during AST extraction before
+    /// `load_syntax_resources` runs, and retained afterward only when it still waits on a
+    /// constant from another file. Stage 2 (and local compilation, which evaluates it like
+    /// ngtsc's does) completes any remaining entry and loads `template_url` and `template`.
     pub pending_template_url: Option<TemplateUrlSource>,
     /// `@Component.styles` as the partial evaluator sees it.
     pub styles: Option<Resolved<crate::evaluator::ComponentStyles>>,
     pub styles_span: Option<oxc_span::Span>,
     pub styles_from_urls: Option<Vec<String>>,
     pub style_urls: Option<Vec<UrlData>>,
-    /// The `styleUrl`/`styleUrls` expressions, kept only while one of them still waits on a
-    /// constant from another file. Stage 2 completes them and reloads `style_urls` and
-    /// `styles_from_urls` from the result.
+    /// The `styleUrl`/`styleUrls` expressions recorded during AST extraction before
+    /// `load_syntax_resources` runs, and retained afterward only when at least one entry still
+    /// waits on a constant from another file. Stage 2 completes them and reloads `style_urls`
+    /// and `styles_from_urls` from the result.
     pub pending_style_urls: Option<Vec<StyleUrlSource>>,
     /// `styleUrl`/`styleUrls` values that did not evaluate to strings.
     pub style_url_issues: Vec<ValueIssue>,
