@@ -21,7 +21,7 @@ import {
 import {Select, SelectOption, TextField} from '@angular/docs';
 import {FormField, form} from '@angular/forms/signals';
 import {MatChipListbox, MatChipOption} from '@angular/material/chips';
-import {Params, Router} from '@angular/router';
+import {NavigationExtras, Params, Router} from '@angular/router';
 import ApiItemLabel from '../api-item-label/api-item-label.component';
 import ApiItemsSection from '../api-items-section/api-items-section.component';
 import {ApiItemType} from '../interfaces/api-item-type';
@@ -164,7 +164,10 @@ export default class ApiReferenceList {
         replaceUrl: true,
         preserveFragment: true,
         scroll: 'manual',
-      });
+        // Keeps focus in the filter field with the Navigation API integration. `focusReset` isn't
+        // in the router's public types on this branch, but the router reads it.
+        focusReset: 'manual',
+      } as NavigationExtras);
     });
   }
 
