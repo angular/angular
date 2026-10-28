@@ -12,7 +12,7 @@ import {
   createCanvas,
   drawLabels,
   drawOverlay,
-  getAbsoluteBoundingClientRect,
+  createRectWithScroll,
   Rect,
   toCSSColor,
   ViewportData,
@@ -46,33 +46,33 @@ describe('Rendering utils', () => {
     });
   });
 
-  describe('getAbsoluteBoundingClientRect', () => {
+  describe('createRectWithScroll', () => {
     it('should truncate the rect values', () => {
-      const el = document.createElement('div');
-      spyOn(el, 'getBoundingClientRect').and.returnValue(new DOMRect(10.7, 20.3, 100.9, 50.6));
-
-      expect(getAbsoluteBoundingClientRect(el)).toEqual({x: 10, y: 20, width: 100, height: 50});
-    });
-
-    it('should offset the rect by the page scroll position', () => {
-      const spacer = document.createElement('div');
-      spacer.style.height = '3000px';
-      document.body.appendChild(spacer);
-      window.scrollTo(0, 200);
-
-      const el = document.createElement('div');
-      spyOn(el, 'getBoundingClientRect').and.returnValue(new DOMRect(10, 20, 100, 50));
-
-      expect(getAbsoluteBoundingClientRect(el)).toEqual({
+      expect(createRectWithScroll(new DOMRect(10.7, 20.3, 100.9, 50.6))).toEqual({
         x: 10,
-        y: 20 + window.scrollY,
+        y: 20,
         width: 100,
         height: 50,
+        scrollX: 0,
+        scrollY: 0,
       });
-      expect(window.scrollY).toBe(200);
+    });
+
+    it('should store the rect along with the page scroll position', () => {
+      document.body.style.width = '2000px';
+      document.body.style.height = '2000px';
+      window.scrollTo(30, 200);
+
+      expect(createRectWithScroll(new DOMRect(10, 20, 100, 50))).toEqual({
+        x: 10,
+        y: 20,
+        width: 100,
+        height: 50,
+        scrollX: 30,
+        scrollY: 200,
+      });
 
       window.scrollTo(0, 0);
-      spacer.remove();
     });
   });
 

@@ -51,9 +51,16 @@ export class HighlightImpl<
   }
 
   updateLabel(labelId: keyof T, ...props: Parameters<T[keyof T]>) {
+    if (this.destroyed) {
+      debugLog.warn('Cannot display a destroyed highlight.');
+      return;
+    }
+
     this.props[labelId] = props;
 
-    this.renderer.renderHighlight(this);
+    if (this.displayed) {
+      this.renderer.renderHighlight(this);
+    }
   }
 
   destroy() {
@@ -76,11 +83,11 @@ export class HighlightImpl<
   }
 
   display() {
-    if (this.displayed) {
-      return;
-    }
     if (this.destroyed) {
       debugLog.warn('Cannot display a destroyed highlight.');
+      return;
+    }
+    if (this.displayed) {
       return;
     }
 

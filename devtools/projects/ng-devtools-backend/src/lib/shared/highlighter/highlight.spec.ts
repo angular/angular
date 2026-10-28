@@ -98,6 +98,8 @@ describe('HighlightImpl', () => {
   describe('updateLabel', () => {
     it('should update the label props and re-render', () => {
       const highlight = createHighlight();
+      highlight.display();
+      renderer.renderHighlight.calls.reset();
 
       highlight.updateLabel('title', 'Bar');
 
