@@ -51,7 +51,11 @@ import {ReferenceEmitEnvironment} from './reference_emit_environment';
 import {TypeCheckShimGenerator} from './shim';
 import {DirectiveSourceManager} from './source';
 import {adaptTypeCheckBlockMetadata} from './tcb_adapter';
-import {requiresInlineTypeCheckBlock, TcbInliningRequirement} from './tcb_util';
+import {
+  ensureTypeCheckFilePreparationImports,
+  requiresInlineTypeCheckBlock,
+  TcbInliningRequirement,
+} from './tcb_util';
 import {TCB_FUNCTION_PREFIX, TypeCheckFile} from './type_check_file';
 import {generateInlineTypeCtor, requiresInlineTypeCtor} from './type_constructor';
 
@@ -395,7 +399,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
 
       if (this.inlining === InliningMode.CopySourceToTcb) {
         // Still set the original file path to force local references for symbols from this file.
-        shimData.file.copiedSourceOriginPath = absoluteFromSourceFile(sourceFile);
+        shimData.file.setCopiedSourceOrigin(sourceFile);
       }
     } else if (
       inliningRequirement === TcbInliningRequirement.ShouldInlineForGenericBounds &&
@@ -454,19 +458,13 @@ export class TypeCheckContextImpl implements TypeCheckContext {
   /**
    * Applies operations to a file.
    */
-  private executeOperations(targetSf: ts.SourceFile, opsSourceSf: ts.SourceFile): string {
+  private executeOperations(
+    targetSf: ts.SourceFile,
+    opsSourceSf: ts.SourceFile,
+    importManager: ImportManager,
+  ): string {
     // Use a `ts.Printer` to generate source code.
     const printer = ts.createPrinter({omitTrailingSemicolon: true});
-
-    // Imports may need to be added to the file to support type-checking of directives
-    // used in the template within it.
-    const importManager = new ImportManager({
-      // This minimizes noticeable changes with older versions of `ImportManager`.
-      forceGenerateNamespacesForNewImports: true,
-      // Type check block code affects code completion and fix suggestions.
-      // We want to encourage single quotes for now, like we always did.
-      shouldUseSingleQuotes: () => true,
-    });
 
     // Execute ops.
     // Each Op has a splitPoint index into the text where it needs to be inserted.
@@ -479,6 +477,12 @@ export class TypeCheckContextImpl implements TypeCheckContext {
         };
       });
 
+    if (targetSf !== opsSourceSf) {
+      ensureTypeCheckFilePreparationImports(
+        new ReferenceEmitEnvironment(importManager, this.refEmitter, targetSf),
+      );
+    }
+
     const {newImports, updatedImports} = importManager.finalize();
 
     // Capture new imports
@@ -486,7 +490,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       newImports.get(targetSf.fileName)!.forEach((newImport) => {
         updates.push({
           pos: 0,
-          text: printer.printNode(ts.EmitHint.Unspecified, newImport, targetSf),
+          text: printer.printNode(ts.EmitHint.Unspecified, newImport, targetSf) + '\n',
         });
       });
     }
@@ -524,7 +528,16 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     if (this.inlining !== InliningMode.InlineOps || !this.opMap.has(sf)) {
       return null;
     }
-    return this.executeOperations(sf, sf);
+    // Imports may need to be added to the file to support type-checking of directives
+    // used in the template within it.
+    const importManager = new ImportManager({
+      // This minimizes noticeable changes with older versions of `ImportManager`.
+      forceGenerateNamespacesForNewImports: true,
+      // Type check block code affects code completion and fix suggestions.
+      // We want to encourage single quotes for now, like we always did.
+      shouldUseSingleQuotes: () => true,
+    });
+    return this.executeOperations(sf, sf, importManager);
   }
 
   /**
@@ -532,13 +545,12 @@ export class TypeCheckContextImpl implements TypeCheckContext {
    */
   private generateCopiedShimContent(
     originalSf: ts.SourceFile,
-    shimFileName: string,
+    shimFile: TypeCheckFile,
   ): string | null {
     if (this.inlining !== InliningMode.CopySourceToTcb || !this.opMap.has(originalSf)) {
       return null;
     }
-    const fakeSf = ts.createSourceFile(shimFileName, originalSf.text, ts.ScriptTarget.Latest, true);
-    return this.executeOperations(fakeSf, originalSf);
+    return this.executeOperations(shimFile.contextFile, originalSf, shimFile.importManager);
   }
 
   finalize(): Map<AbsoluteFsPath, FileUpdate> {
@@ -558,6 +570,15 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     for (const [sfPath, pendingFileData] of this.fileMap) {
       // For each input file, consider generation operations for each of its shims.
       for (const pendingShimData of pendingFileData.shimData.values()) {
+        // Set the source content on the shim file before rendering!
+        const originalSf = pendingFileData.sourceFile;
+        if (originalSf !== undefined) {
+          const transformedText = this.generateCopiedShimContent(originalSf, pendingShimData.file);
+          if (transformedText !== null) {
+            pendingShimData.file.setSourceContent(transformedText);
+          }
+        }
+
         const genesisDiagnostics = [
           ...pendingShimData.domSchemaChecker.diagnostics,
           ...pendingShimData.oobRecorder.diagnostics,
@@ -573,18 +594,6 @@ export class TypeCheckContextImpl implements TypeCheckContext {
           path: pendingShimData.file.fileName,
           data: pendingShimData.data,
         });
-
-        // Set the source content on the shim file before rendering!
-        const originalSf = pendingFileData.sourceFile;
-        if (originalSf !== undefined) {
-          const transformedText = this.generateCopiedShimContent(
-            originalSf,
-            pendingShimData.file.fileName,
-          );
-          if (transformedText !== null) {
-            pendingShimData.file.setSourceContent(transformedText);
-          }
-        }
 
         const sfText = pendingShimData.file.render();
         updates.set(pendingShimData.file.fileName, {
