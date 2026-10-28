@@ -38,6 +38,11 @@ export interface RxResourceOptions<T, R> extends BaseResourceOptions<T, R> {
    * resource.
    */
   stream: (params: ResourceLoaderParams<R>) => Observable<T>;
+
+  /**
+   * A debug name for the reactive node. Used in Angular DevTools to identify the node.
+   */
+  debugName?: string;
 }
 
 /**
