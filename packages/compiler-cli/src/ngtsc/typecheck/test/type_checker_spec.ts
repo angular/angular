@@ -362,6 +362,26 @@ runInEachFileSystem(() => {
         expect(updatedSf.text).toContain('function _tcb_');
       });
 
+      it('should inline the type check block when the component is at the end of the file', () => {
+        const {program, templateTypeChecker, programStrategy} = setup(
+          [
+            {
+              fileName,
+              source: source.trim(),
+              templates: {'Cmp': template},
+              declarations,
+            },
+          ],
+          {inliningMode: InliningMode.InlineOps, config: {enableTemplateTypeChecker: true}},
+        );
+        const sf = getSourceFileOrError(program, fileName);
+        const diags = templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
+        expect(diags.length).toBe(0);
+
+        const updatedSf = getSourceFileOrError(programStrategy.getProgram(), fileName);
+        expect(updatedSf.text).toContain('function _tcb_');
+      });
+
       it('should produce a diagnostic when inlining is unsupported', () => {
         const {program, templateTypeChecker} = setup(
           [{fileName, source, templates: {'Cmp': template}, declarations}],
