@@ -146,6 +146,11 @@ ng_application(
     env = {
         "NG_BUILD_PARTIAL_SSR": "1",
     },
+    execution_requirements = {
+        # RBE significantly slows down the build because the CLI executes multiple CPU-intensive instances of esbuild.
+        # Furthermore, the current RBE machine pool lacks high-spec machines.
+        "no-remote-exec": "1",
+    },
     ng_config = ":ng_config",
     node_modules = ":node_modules",
     project_name = "angular-dev",
@@ -156,9 +161,6 @@ ng_application(
     tags = [
         # Tagged as manual as both build and build.production use the same output directory.
         "manual",
-        # RBE significantly slows down the build because the CLI executes multiple CPU-intensive instances of esbuild.
-        # Furthermore, the current RBE machine pool lacks high-spec machines.
-        "no-remote-exec",
     ],
 )
 
@@ -172,6 +174,11 @@ ng_application(
     env = {
         "NG_BUILD_OPTIMIZE_CHUNKS": "1",
     },
+    execution_requirements = {
+        # RBE significantly slows down the build because the CLI executes multiple CPU-intensive instances of esbuild.
+        # Furthermore, the current RBE machine pool lacks high-spec machines.
+        "no-remote-exec": "1",
+    },
     ng_config = ":ng_config",
     node_modules = ":node_modules",
     project_name = "angular-dev",
@@ -182,9 +189,6 @@ ng_application(
     tags = [
         # Tagged as manual as both build and build.production use the same output directory.
         "manual",
-        # RBE significantly slows down the build because the CLI executes multiple CPU-intensive instances of esbuild.
-        # Furthermore, the current RBE machine pool lacks high-spec machines.
-        "no-remote-exec",
     ],
 )
 
