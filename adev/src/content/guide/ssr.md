@@ -417,6 +417,38 @@ To configure this, update your `angular.json` file as follows:
 }
 ```
 
+### URLs with or without a trailing slash
+
+The `format` of the `prerender` option decides which file Angular writes for each route, and with it the URL at which a static host serves the page directly. For a route with the path `about`:
+
+| `format`              | Prerendered file   | Served directly at |
+| --------------------- | ------------------ | ------------------ |
+| `directory` (default) | `about/index.html` | `/about/`          |
+| `file`                | `about.html`       | `/about`           |
+
+Use `directory` for URLs with a trailing slash, and `file` for URLs without one.
+
+```json
+{
+  "projects": {
+    "your-app": {
+      "architect": {
+        "build": {
+          "options": {
+            "outputMode": "static",
+            "prerender": {
+              "format": "file"
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+NOTE: Not all hosting providers serve `about.html` directly at `/about`. The `format` option is only considered when the build does not produce a server.
+
 ## Caching data when using HttpClient
 
 `HttpClient` caches outgoing network requests when running on the server. This information is serialized and transferred to the browser as part of the initial HTML sent from the server. In the browser, `HttpClient` checks whether it has data in the cache and if so, reuses it instead of making a new HTTP request during initial application rendering. `HttpClient` stops using the cache once an application becomes [stable](api/core/ApplicationRef#isStable) while running in a browser.
