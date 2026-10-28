@@ -1,6 +1,6 @@
 use self::utils::{
     expression_to_string, extract_decorator_name, get_canonical_decorator_name, get_decorator_args,
-    is_angular_decorator, js_str_to_string_lossy,
+    is_angular_decorator,
 };
 use crate::types::metadata::SpanMetadata;
 
@@ -1273,7 +1273,7 @@ fn extract_decorator_args<'a>(
         match arg {
             oxc_ast::ast::Argument::StringLiteral(lit) => {
                 decorator_args.push(crate::DecoratorArg {
-                    value: js_str_to_string_lossy(lit.value).into_owned(),
+                    value: lit.value.to_string(),
                     is_literal: true,
                 });
             }

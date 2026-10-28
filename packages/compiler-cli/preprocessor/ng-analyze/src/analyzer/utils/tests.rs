@@ -743,23 +743,3 @@ type T1 = a.b.c;
     let leftmost = get_leftmost_identifier_in_qualified(qualified).expect("should find leftmost");
     assert_eq!(leftmost.name.as_str(), "a");
 }
-
-#[test]
-fn test_js_str_to_string_lossy() {
-    let allocator = Allocator::default();
-    let source = r#""a\uFFFDb"; "a\uD83D\uDE00b"; "a\uD83Db"; "a\uDE00b";"#;
-    let ret = Parser::new(&allocator, source, SourceType::default()).parse();
-    let values: Vec<_> = ret
-        .program
-        .directives
-        .iter()
-        .map(|directive| js_str_to_string_lossy(directive.expression.value))
-        .collect();
-
-    // Well-formed values, including surrogate pairs, are borrowed unchanged.
-    assert!(matches!(&values[0], Cow::Borrowed("a\u{FFFD}b")));
-    assert!(matches!(&values[1], Cow::Borrowed("a\u{1F600}b")));
-    // Lone surrogates are encoded as U+FFFD followed by the code unit in hex.
-    assert_eq!(values[2], "a\u{FFFD}d83db");
-    assert_eq!(values[3], "a\u{FFFD}de00b");
-}

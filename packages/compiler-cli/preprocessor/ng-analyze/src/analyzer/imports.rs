@@ -1,4 +1,4 @@
-use crate::analyzer::utils::{js_str_to_string_lossy, unwrap_forward_ref_evaluated};
+use crate::analyzer::utils::unwrap_forward_ref_evaluated;
 use crate::resource_loader::ResourceResolverFs;
 use oxc_ast::ast::{
     ArrayExpression, ArrayExpressionElement, BindingPattern, Expression, ImportDeclaration,
@@ -117,18 +117,18 @@ pub fn extract_imports(
         match stmt {
             Statement::ImportDeclaration(decl) => {
                 if !is_type_only_import_declaration(decl) {
-                    runtime_specifiers.insert(js_str_to_string_lossy(decl.source.value));
+                    runtime_specifiers.insert(decl.source.value.as_str());
                 }
             }
             Statement::ExportFromDeclaration(decl) if !decl.export_kind.is_type() => {
                 let has_runtime_export = decl.specifiers.is_empty()
                     || decl.specifiers.iter().any(|s| !s.export_kind.is_type());
                 if has_runtime_export {
-                    runtime_specifiers.insert(js_str_to_string_lossy(decl.source.value));
+                    runtime_specifiers.insert(decl.source.value.as_str());
                 }
             }
             Statement::ExportAllDeclaration(decl) if !decl.export_kind.is_type() => {
-                runtime_specifiers.insert(js_str_to_string_lossy(decl.source.value));
+                runtime_specifiers.insert(decl.source.value.as_str());
             }
             _ => {}
         }
@@ -169,9 +169,7 @@ pub fn extract_dynamic_imports(semantic: &Semantic<'_>) -> Vec<String> {
             AstKind::ImportExpression(import) => {
                 crate::analyzer::utils::extract_literal_string(&import.source)
             }
-            AstKind::TSImportType(import_type) => {
-                Some(js_str_to_string_lossy(import_type.source.value).into_owned())
-            }
+            AstKind::TSImportType(import_type) => Some(import_type.source.value.to_string()),
             _ => None,
         })
         .collect()
@@ -433,7 +431,7 @@ pub fn collect_import_declarations(
                 decl.span.start,
                 extend_past_line_end(source_text, decl.span.end),
             ),
-            specifier: js_str_to_string_lossy(decl.source.value).into_owned(),
+            specifier: decl.source.value.to_string(),
             bindings: collect_import_bindings(decl, semantic, dependency_refs),
         })
         .collect()
