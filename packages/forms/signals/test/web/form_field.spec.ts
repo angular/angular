@@ -5591,12 +5591,10 @@ describe('field directive', () => {
       const input = fix.nativeElement.firstChild as HTMLInputElement;
       const cmp = fix.componentInstance as TestCmp;
 
-      // 1. Start with a valid date, pristine.
       expect(cmp.f().value()).toBe('2024-01-01');
       expect(cmp.f().dirty()).toBe(false);
 
-      // 2. Transition to bad input state. This clears the native value, so an `input` event fires
-      //    and the field is dirtied even though the parse failed and the model value is unchanged.
+      // Bad input empties `value`, which fires `input`; the parse fails but the field is edited.
       act(() => {
         validityMonitor.setInputState(input, '', true);
       });
@@ -5604,19 +5602,17 @@ describe('field directive', () => {
       expect(cmp.f().value()).toBe('2024-01-01');
       expect(cmp.f().dirty()).toBe(true);
 
-      // 3. Native UI clears the date to empty WITHOUT an `input` event
-      //    (only the validity-monitor callback fires).
+      // Native UI clears the date without an `input` event.
       act(() => {
         validityMonitor.setInputState(input, '', false);
       });
 
-      // 4. Value is cleared and, because the value actually changed, the field is dirty.
       expect(cmp.f().errors()).toEqual([]);
       expect(cmp.f().value()).toBe('');
       expect(cmp.f().dirty()).toBe(true);
     });
 
-    it('should mark the field dirty when a parse error is cleared without changing the value', () => {
+    it('should mark the field dirty when only the validity state changes', () => {
       @Component({
         imports: [FormField],
         template: `<input type="date" [formField]="f" />`,
@@ -5632,13 +5628,11 @@ describe('field directive', () => {
 
       expect(cmp.f().dirty()).toBe(false);
 
-      // The user types a date the input can't parse. The model value never leaves `''`.
+      // A partial date sets `badInput` without changing `value`, so no `input` event fires.
       act(() => validityMonitor.setInputState(input, '', true));
       expect(cmp.f().errors()).toEqual([jasmine.objectContaining({kind: 'parse'})]);
-      expect(cmp.f().dirty()).toBe(false);
+      expect(cmp.f().dirty()).toBe(true);
 
-      // Clearing that bad input resolves the parse error without changing the value. It is still a
-      // user edit, so the field is dirtied.
       act(() => validityMonitor.setInputState(input, '', false));
       expect(cmp.f().errors()).toEqual([]);
       expect(cmp.f().value()).toBe('');
@@ -5662,8 +5656,7 @@ describe('field directive', () => {
       expect(input.value).toBe('5');
       expect(cmp.f().dirty()).toBe(false);
 
-      // Typing `e` into a number input empties `value` and flags `badInput`, so the parse fails
-      // and no value ever reaches the model. The user still edited the field.
+      // Typing `e` into a number input fails to parse, so no value reaches the model.
       act(() => validityMonitor.setInputState(input, '', true));
 
       expect(cmp.f().errors()).toEqual([jasmine.objectContaining({kind: 'parse'})]);
@@ -5689,8 +5682,7 @@ describe('field directive', () => {
       expect(field().dirty()).toBe(false);
       expect(field().touched()).toBe(false);
 
-      // The browser runs the `:valid` / `:invalid` animation as soon as the input is rendered. An
-      // empty required date renders as `:invalid`, so `ng-invalid` fires without any interaction.
+      // The validity animation fires on render, without any interaction.
       act(() => {
         input.dispatchEvent(
           new AnimationEvent('animationstart', {animationName: 'ng-invalid', bubbles: true}),
@@ -5717,8 +5709,6 @@ describe('field directive', () => {
       expect(input.value).toBe('2024-01-01');
       expect(field().dirty()).toBe(false);
 
-      // `valueAsDate` hands back a new `Date` on every read, so the sync triggered by the initial
-      // animation must compare the instant rather than the object identity.
       act(() => {
         input.dispatchEvent(
           new AnimationEvent('animationstart', {animationName: 'ng-valid', bubbles: true}),
@@ -5729,8 +5719,6 @@ describe('field directive', () => {
       expect(field().value()).toEqual(new Date('2024-01-01T00:00:00.000Z'));
     });
 
-    // An invalid `Date` has a `NaN` timestamp, and `NaN === NaN` is false, so comparing instants
-    // alone reports a change on every sync and dirties the field on load. See #69632.
     it('should not be dirty when the initial validity animation fires on an invalid Date model', () => {
       @Component({
         imports: [FormField],
@@ -5753,13 +5741,9 @@ describe('field directive', () => {
       });
 
       expect(field().dirty()).toBe(false);
-      // The model keeps the value the app supplied; the sync must not silently null it out.
       expect(Number.isNaN((field().value() as Date).getTime())).toBe(true);
     });
 
-    // A string the input can't parse as a date is rejected outright, so the DOM value stays empty
-    // while the model still holds the original string. Comparing the two as values reports a change
-    // on every sync and dirties the field on load. See #69632.
     it('should not be dirty when the initial validity animation fires on an unparseable string model', () => {
       @Component({
         imports: [FormField],
@@ -5773,7 +5757,6 @@ describe('field directive', () => {
       const input = fix.nativeElement.firstChild as HTMLInputElement;
       const field = fix.componentInstance.f;
 
-      // The browser refuses a value it can't parse as a date, leaving the input empty.
       expect(input.value).toBe('');
       expect(field().dirty()).toBe(false);
 
@@ -5784,13 +5767,10 @@ describe('field directive', () => {
       });
 
       expect(field().dirty()).toBe(false);
-      // The model keeps the value the app supplied; the sync must not silently empty it.
       expect(field().value()).toBe('invalid-date');
     });
 
-    // A `Date` can hold more precision than any of these inputs keeps: `date` drops the time,
-    // `month` the day, `time` the date, and `week` snaps to the start of the week. The value read
-    // back therefore differs from the model through no action of the user. See #69632.
+    // Each input type keeps less precision than a `Date`, so the DOM value differs from the model.
     it('should not be dirty when the initial validity animation fires on a Date the input truncates', () => {
       @Component({
         imports: [FormField],
@@ -5831,7 +5811,6 @@ describe('field directive', () => {
       });
 
       expect(fields.map((field) => field().dirty())).toEqual([false, false, false, false]);
-      // Each model keeps its full instant rather than the truncated value the input displays.
       const instant = new Date('2024-03-15T12:34:56.000Z').getTime();
       expect(fields.map((field) => (field().value() as Date).getTime())).toEqual([
         instant,
@@ -5841,12 +5820,7 @@ describe('field directive', () => {
       ]);
     });
 
-    // The initial `:valid` / `:invalid` animation fires for every input type we track validity on,
-    // not just `date`, so none of them may dirty their field on load. See #69632.
-    //
-    // The types are spelled out statically: a template built by interpolating the type into a
-    // template literal is not statically analyzable, so the compiler would emit the raw
-    // `type="${type}"` text and the browser would silently fall back to a `text` input.
+    // Types are written out: an interpolated `type` would compile to a plain `text` input.
     it('should not be dirty when the initial validity animation fires on any date-like input', () => {
       @Component({
         imports: [FormField],
@@ -5869,9 +5843,7 @@ describe('field directive', () => {
       ) as HTMLInputElement[];
       const fields = [cmp.f.date, cmp.f.datetimeLocal, cmp.f.month, cmp.f.time, cmp.f.week];
 
-      // Guards against the interpolation trap described above. This reads the attribute rather
-      // than `input.type` because browsers report `text` for types they don't implement (Firefox
-      // does so for `month` and `week`), which would make the assertion browser-dependent.
+      // Read the attribute: Firefox reports `text` as `input.type` for `month` and `week`.
       expect(inputs.map((i) => i.getAttribute('type'))).toEqual([
         'date',
         'datetime-local',

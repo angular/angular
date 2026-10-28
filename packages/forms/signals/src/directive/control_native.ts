@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {
-  untracked,
   type ɵControlDirectiveHost as ControlDirectiveHost,
   type Signal,
   type WritableSignal,
@@ -42,9 +41,13 @@ export function nativeControlCreate(
 ): () => void {
   let updateMode = false;
   const input = parent.nativeFormElement;
-  // The DOM's own string, recorded after each write. The browser rejects values it can't parse and
-  // truncates ones it can't represent, so comparing model values reads those as edits (#69632).
-  let lastWrittenDomValue = input.value;
+  // Last DOM state we handled. Read from the DOM, since the browser may reject or truncate writes.
+  let lastDomValue = input.value;
+  let lastBadInput = false;
+  const recordDomState = () => {
+    lastDomValue = input.value;
+    lastBadInput = isInput(input) && validityMonitor.isBadInput(input);
+  };
 
   // TODO: (perf) ok to always create this?
   const parser = createParser(
@@ -58,10 +61,9 @@ export function nativeControlCreate(
   );
 
   parseErrorsSource.set(parser.errors);
-  // Records what the DOM kept, which may differ from what we asked it to hold.
   const writeNativeControlValue = (value: unknown) => {
     setNativeControlValue(input, value);
-    lastWrittenDomValue = input.value;
+    recordDomState();
   };
 
   parent.onReset = () => {
@@ -75,35 +77,29 @@ export function nativeControlCreate(
   // See https://github.com/angular/angular/issues/61839.
   const nativeEl = host.nativeElement;
   // Pass undefined as the raw value since the parse function doesn't care about it.
-  const onInput = () => {
-    // An `input` event means the user edited, even if parsing then fails and no value reaches
-    // `controlValue`.
+  const onUserEdit = () => {
+    recordDomState();
+    // Dirty here: a value that fails to parse never reaches `controlValue`.
     parent.state().markAsDirty();
     parser.setRawValue(undefined);
   };
-  nativeEl.addEventListener('input', onInput);
+  nativeEl.addEventListener('input', onUserEdit);
   const onBlur = () => parent.state().markAsTouched();
   nativeEl.addEventListener('blur', onBlur);
 
   parent.destroyRef.onDestroy(() => {
-    nativeEl.removeEventListener('input', onInput);
+    nativeEl.removeEventListener('input', onUserEdit);
     nativeEl.removeEventListener('blur', onBlur);
   });
 
   // TODO: move extraction to first update pass?
   if (isInput(input) && inputRequiresValidityTracking(input)) {
     validityMonitor.watchValidity(parent.destroyRef, input, () => {
-      // The `:valid` / `:invalid` animation fires on render, which is not an edit: if the DOM still
-      // holds what we wrote, nothing changed. `badInput` and a pending parse error are exempt —
-      // both mean the user edited while `value` stayed empty.
-      if (
-        untracked(parser.errors).length === 0 &&
-        !validityMonitor.isBadInput(input) &&
-        input.value === lastWrittenDomValue
-      ) {
+      // The validity animation also fires on render; only a changed DOM state is a user edit.
+      if (input.value === lastDomValue && validityMonitor.isBadInput(input) === lastBadInput) {
         return;
       }
-      parser.setRawValue(undefined);
+      onUserEdit();
     });
   }
 
