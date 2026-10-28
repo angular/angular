@@ -38,10 +38,9 @@ export async function run(compiler: HybridCompiler, options: RunOptions): Promis
           processFile(file, outDir, compiler, options, chunkContext, rootDir),
         ),
       );
-      await writeDiagnosticsFile(compiler, tsconfigPath);
     }
-    // Also write when the analyzer produced no chunks so that option diagnostics (which don't
-    // depend on any file) still make it into the `.ngdiag.json`.
+    // Unconditional: even when the analyzer produced no chunks, option diagnostics (which don't
+    // depend on any file) still have to make it into the `.ngdiag.json`.
     await writeDiagnosticsFile(compiler, tsconfigPath);
   } finally {
     compiler.analyzer.close();

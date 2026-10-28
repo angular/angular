@@ -35,25 +35,33 @@ describe('createAnalyzer without a tsconfig', () => {
       },
     });
 
-    const metadata = await analyzer.getMetadataForFile(COMP_PATH);
-    expect(metadata?.classes.map((c) => c.className)).toEqual(['MyComp']);
+    try {
+      const metadata = await analyzer.getMetadataForFile(COMP_PATH);
+      expect(metadata?.classes.map((c) => c.className)).toEqual(['MyComp']);
 
-    const compiler = new HybridCompiler(analyzer, {
-      optimize: false,
-      rootDirs: ['/app'],
-    });
-    const processed = await compiler.processFile(COMP_PATH, COMP_CONTENT);
-    expect(processed.magicString.toString()).toContain('ɵɵdefineComponent');
+      const compiler = new HybridCompiler(analyzer, {
+        optimize: false,
+        rootDirs: ['/app'],
+      });
+      const processed = await compiler.processFile(COMP_PATH, COMP_CONTENT);
+      expect(processed.magicString.toString()).toContain('ɵɵdefineComponent');
+    } finally {
+      analyzer.close();
+    }
   });
 
   it('reports the loaded backend for the options-only form', async () => {
-    const {backend} = await createAnalyzerWithInfo({
+    const {analyzer, backend} = await createAnalyzerWithInfo({
       backend: 'wasm',
       wasmBinding: resolveWasmBinding(),
       virtualFiles: {[COMP_PATH]: COMP_CONTENT},
       entryPoints: [COMP_PATH],
     });
-    expect(backend).toBe('wasm');
+    try {
+      expect(backend).toBe('wasm');
+    } finally {
+      analyzer.close();
+    }
   });
 
   it('rejects relative entry points', async () => {
