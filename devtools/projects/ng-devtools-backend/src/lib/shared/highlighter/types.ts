@@ -42,7 +42,8 @@ export interface HighlightLabel<T extends LabelContentFn> {
    * - `outset` – the label is rendered outside the highlight.
    * - `inset` – the label is rendered inside the highlight, if there is enough space to fit.
    * Else, it fall backs to `outset` mode.
-   * - `strict-inset` – the label is rendered always inside the highlight.
+   * - `strict-inset` – the label is rendered always inside the highlight and acts as `static`
+   * irrespective of `labelsType` setting.
    * If there isn't enough space, the label won't be displayed.
    */
   offset: 'inset' | 'outset' | 'strict-inset';

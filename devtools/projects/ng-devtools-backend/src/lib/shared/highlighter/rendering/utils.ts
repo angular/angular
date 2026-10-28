@@ -30,7 +30,14 @@ export interface ViewportData extends Dimensions {
   scrollY: number;
 }
 
+/** Represents a normalized rect with coordinates relative to viewport. */
 export type Rect = Coor & Dimensions;
+
+/** Represents a rect with scroll data collected at the moment of creation. */
+export type RectWithScroll = Rect & {
+  scrollX: number;
+  scrollY: number;
+};
 
 const LABEL_PADDING = 2;
 const SVG_SIZE = 12;
@@ -48,11 +55,11 @@ export function createCanvas(canvasId: string): {
   if (!canvas) {
     canvas = document.createElement('canvas');
     canvas.id = canvasId;
-    canvas.style.position = 'absolute';
+    canvas.style.position = 'fixed';
     canvas.style.display = 'block';
     canvas.style.pointerEvents = 'none';
     canvas.style.width = '100%';
-    canvas.style.height = 'auto';
+    canvas.style.height = '100%';
     canvas.style.top = '0';
     canvas.style.left = '0';
     canvas.style.zIndex = '2147483647';
@@ -81,15 +88,31 @@ export function toCSSColor([red, green, blue]: RgbColor, alpha = 1): string {
   return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
 }
 
-/** Returns a `Rect` based on `getBoundingClientRect` + the scroll positions. */
-export function getAbsoluteBoundingClientRect(target: Element): Rect {
-  const {width, height, x, y} = target.getBoundingClientRect();
-
+/** Returns a rect with scroll data collected at the moment of creation. */
+export function createRectWithScroll({width, height, x, y}: DOMRect): RectWithScroll {
   return {
     width: ~~width,
     height: ~~height,
-    x: ~~(x + window.scrollX),
-    y: ~~(y + window.scrollY),
+    x: ~~x,
+    y: ~~y,
+    scrollX: ~~window.scrollX,
+    scrollY: ~~window.scrollY,
+  };
+}
+
+/**
+ * Converts a `RectWithScroll` to a normalized `Rect`
+ * with coordinates relative to the viewport.
+ */
+export function normalizeRect(
+  {x, y, scrollX, scrollY, width, height}: RectWithScroll,
+  viewport: ViewportData,
+): Rect {
+  return {
+    width,
+    height,
+    x: x + (scrollX - viewport.scrollX),
+    y: y + (scrollY - viewport.scrollY),
   };
 }
 
@@ -254,17 +277,6 @@ function calculateLabelPos(
   const isInset = labelOffset === 'inset';
   const isStrictInset = labelOffset === 'strict-inset';
 
-  // If the label type is set to `sticky`, we determine the max X and Y
-  // based on the viewport and current scroll. This way, the labels are kept
-  // always visible.
-  let maxX = Infinity;
-  let maxY = Infinity;
-
-  if (labelType === 'sticky') {
-    maxX = viewport.width + viewport.scrollX - labelSize.width;
-    maxY = viewport.height + viewport.scrollY - labelSize.height;
-  }
-
   if (isInset || isStrictInset) {
     const isRectTooSmall = labelSize.width > rect.width || labelSize.height > rect.height;
 
@@ -279,24 +291,34 @@ function calculateLabelPos(
         // the rendering of that label.
         return null;
       }
+    } else {
+      y = rect.y + rect.height - labelSize.height;
     }
-
-    const originY = rect.y + rect.height - labelSize.height;
-    y = isInset ? Math.min(originY, maxY) : originY;
   }
+
   if (labelOffset === 'outset' || insetFallback) {
-    y = Math.min(rect.y + rect.height, maxY);
+    y = rect.y + rect.height;
   }
 
   switch (labelX) {
     case 'left':
-      x = Math.min(rect.x, maxX);
+      x = rect.x;
       break;
     case 'center':
-      x = Math.min(rect.x + (rect.width / 2 - labelSize.width / 2), maxX);
+      x = rect.x + (rect.width / 2 - labelSize.width / 2);
       break;
     case 'right':
-      x = Math.min(rect.x + rect.width - labelSize.width, maxX);
+      x = rect.x + rect.width - labelSize.width;
+  }
+
+  // If the label type is set to `sticky`, we determine the max X and Y
+  // based on the viewport. This way, the labels are kept always visible.
+  if (labelType === 'sticky' && !isStrictInset) {
+    const maxX = viewport.width - labelSize.width;
+    const maxY = viewport.height - labelSize.height;
+
+    x = Math.max(Math.min(x, maxX), 0);
+    y = Math.max(Math.min(y, maxY), 0);
   }
 
   return {x, y};

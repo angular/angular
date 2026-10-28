@@ -7,7 +7,15 @@
  */
 
 import {Highlight} from '../types';
-import {drawLabels, drawOverlay, Rect, setCanvasOpacity, ViewportData} from './utils';
+import {
+  drawLabels,
+  drawOverlay,
+  normalizeRect,
+  Rect,
+  RectWithScroll,
+  setCanvasOpacity,
+  ViewportData,
+} from './utils';
 
 export const OVERLAY_FADE_OUT_DUR = 300;
 
@@ -24,7 +32,7 @@ export const OVERLAY_FADE_OUT_DUR = 300;
 type RenderOpState = 'non-executed' | 'in-progress' | 'standby' | 'completed';
 
 interface RenderOpUpdate {
-  rect?: Rect;
+  rect?: RectWithScroll | null;
   viewport?: ViewportData;
 }
 
@@ -48,7 +56,7 @@ export abstract class RenderOp {
   constructor(
     public readonly highlight: Highlight,
     protected readonly ctx: CanvasRenderingContext2D,
-    protected rect: Rect,
+    protected rect: RectWithScroll | null,
     protected viewport: ViewportData,
   ) {}
 
@@ -56,17 +64,13 @@ export abstract class RenderOp {
     return this.stateInternal;
   }
 
+  get currentRect(): RectWithScroll | null {
+    return this.rect;
+  }
+
   /** Tells whether the highlight is visible in the viewport. */
-  get isVisible() {
-    const rect = this.rect;
-    const viewport = this.viewport;
-
-    const xAxis =
-      viewport.scrollX - rect.width < rect.x && rect.x < viewport.width + viewport.scrollX;
-    const yAxis =
-      viewport.scrollY - rect.height < rect.y && rect.y < viewport.height + viewport.scrollY;
-
-    return xAxis && yAxis;
+  isVisible(): this is {rect: Rect} {
+    return !!this.rect;
   }
 
   protected get template() {
@@ -79,10 +83,10 @@ export abstract class RenderOp {
 
   /** Update the highlight rect and/or the viewport data. */
   update({rect, viewport}: RenderOpUpdate) {
-    if (rect) {
+    if (rect !== undefined) {
       this.rect = rect;
     }
-    if (viewport) {
+    if (viewport !== undefined) {
       this.viewport = viewport;
     }
   }
@@ -93,10 +97,11 @@ export class StaticHighlightRenderOp extends RenderOp {
   override render(timestamp: number) {
     this.start = timestamp;
 
-    if (this.isVisible) {
+    if (this.isVisible()) {
+      const normRect = normalizeRect(this.rect, this.viewport);
       setCanvasOpacity(this.ctx, 1);
-      drawOverlay(this.ctx, this.template, this.rect);
-      drawLabels(this.ctx, this.template, this.props, this.rect, this.viewport);
+      drawOverlay(this.ctx, this.template, normRect);
+      drawLabels(this.ctx, this.template, this.props, normRect, this.viewport);
     }
 
     // Static highlights are directly marked as `standby`
@@ -118,7 +123,7 @@ export class DynamicTtlBoundHighlightRenderOp extends RenderOp {
 
     const timePassed = timestamp - this.start;
 
-    if (this.isVisible) {
+    if (this.isVisible()) {
       // Calculate the diff between the fade out start timestamp and the passed time.
       const fadeOutTimePassDiff = timePassed - this.fadeOutStart;
       let opacity: number;
@@ -131,9 +136,10 @@ export class DynamicTtlBoundHighlightRenderOp extends RenderOp {
         opacity = 1 - progress;
       }
 
+      const normRect = normalizeRect(this.rect, this.viewport);
       setCanvasOpacity(this.ctx, opacity);
-      drawOverlay(this.ctx, this.template, this.rect);
-      drawLabels(this.ctx, this.template, this.props, this.rect, this.viewport);
+      drawOverlay(this.ctx, this.template, normRect);
+      drawLabels(this.ctx, this.template, this.props, normRect, this.viewport);
     }
 
     if (timePassed >= this.template.ttl!) {
