@@ -15,7 +15,7 @@ import {
 } from '@angular/compiler';
 import ts from 'typescript';
 
-import {AbsoluteFsPath} from '../../file_system';
+import {AbsoluteFsPath, absoluteFromSourceFile} from '../../file_system';
 import {Reference, ReferenceEmitter} from '../../imports';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
@@ -42,6 +42,20 @@ export class TypeCheckFile extends Environment {
   private sourceContent: string = '';
   get hasCopiedSource() {
     return this.copiedSourceOriginPath !== undefined;
+  }
+
+  setCopiedSourceOrigin(sourceFile: ts.SourceFile) {
+    const originPath = absoluteFromSourceFile(sourceFile);
+    if (this.copiedSourceOriginPath === originPath) {
+      return;
+    }
+    this.copiedSourceOriginPath = originPath;
+    this.contextFile = ts.createSourceFile(
+      this.contextFile.fileName,
+      sourceFile.text,
+      ts.ScriptTarget.Latest,
+      true,
+    );
   }
 
   setSourceContent(text: string) {
@@ -101,30 +115,29 @@ export class TypeCheckFile extends Environment {
   }
 
   render(): string {
-    // NOTE: We are conditionally adding imports whenever we discover signal inputs. This has a
-    // risk of changing the import graph of the TypeScript program, degrading incremental program
-    // re-use due to program structure changes. For type check block files, we are ensuring an
-    // import to e.g. `@angular/core` always exists to guarantee a stable graph.
-    ensureTypeCheckFilePreparationImports(this);
-
-    const importChanges = this.importManager.finalize();
-    if (importChanges.updatedImports.size > 0) {
-      throw new Error(
-        'AssertionError: Expected no imports to be updated for a new type check file.',
-      );
-    }
-
-    const printer = ts.createPrinter();
     let source = this.sourceContent;
 
-    const newImports = importChanges.newImports.get(this.contextFile.fileName);
-    if (newImports !== undefined) {
-      if (source.length > 0 && !source.endsWith('\n')) {
-        source += '\n';
+    if (!this.hasCopiedSource) {
+      // NOTE: We are conditionally adding imports whenever we discover signal inputs. This has a
+      // risk of changing the import graph of the TypeScript program, degrading incremental program
+      // re-use due to program structure changes. For type check block files, we are ensuring an
+      // import to e.g. `@angular/core` always exists to guarantee a stable graph.
+      ensureTypeCheckFilePreparationImports(this);
+
+      const importChanges = this.importManager.finalize();
+      if (importChanges.updatedImports.size > 0) {
+        throw new Error(
+          'AssertionError: Expected no imports to be updated for a new type check file.',
+        );
       }
-      source += newImports
-        .map((i) => printer.printNode(ts.EmitHint.Unspecified, i, this.contextFile))
-        .join('\n');
+
+      const printer = ts.createPrinter();
+      const newImports = importChanges.newImports.get(this.contextFile.fileName);
+      if (newImports !== undefined) {
+        source += newImports
+          .map((i) => printer.printNode(ts.EmitHint.Unspecified, i, this.contextFile))
+          .join('\n');
+      }
     }
 
     source += '\n';

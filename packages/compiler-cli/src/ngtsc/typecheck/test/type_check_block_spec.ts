@@ -2661,6 +2661,143 @@ describe('type check blocks', () => {
       const cleanShimText = removeSpans(shimSf.text);
       expect(cleanShimText).toContain('"" + (((this).hello');
     });
+
+    it('should not produce conflicting or duplicate imports when using external directives and signal inputs in CopySourceToTcb mode', () => {
+      const TEMPLATE = '<div externalDir [data]="123"></div>';
+      const EXTERNAL_DIR: TestDirective = {
+        type: 'directive',
+        name: 'ExternalDir',
+        selector: '[externalDir]',
+        file: absoluteFrom('/dir.ts'),
+        inputs: {
+          data: {
+            isSignal: true,
+            bindingPropertyName: 'data',
+            classPropertyName: 'data',
+            required: true,
+            transform: null,
+          },
+        },
+      };
+
+      const {templateTypeChecker, program, programStrategy} = setup(
+        [
+          {
+            fileName: absoluteFrom('/dir.ts'),
+            source: `export class ExternalDir { data: any; }`,
+          },
+          {
+            fileName: absoluteFrom('/existing.ts'),
+            source: `export const existing = 1;`,
+          },
+          {
+            fileName: absoluteFrom('/app.ts'),
+            templates: {'AppComponent': TEMPLATE},
+            declarations: [EXTERNAL_DIR],
+            // Non-exported class forces inlining / CopySourceToTcb.
+            // Also include an existing `i0` namespace import to verify that the shared
+            // ImportManager avoids colliding with identifiers from the copied source.
+            source: `
+              import {Component} from '@angular/core';
+              import * as i0 from './existing';
+              class AppComponent {
+                existing = i0.existing;
+              }
+            `,
+          },
+        ],
+        {
+          inliningMode: InliningMode.CopySourceToTcb,
+        },
+      );
+
+      const appSf = getSourceFileOrError(program, absoluteFrom('/app.ts'));
+      const diagnostics = templateTypeChecker.getDiagnosticsForFile(appSf, OptimizeFor.SingleFile);
+      expect(diagnostics).toEqual([]);
+
+      const typeCheckProgram = programStrategy.getProgram();
+      const shimSf = getSourceFileOrError(
+        typeCheckProgram,
+        TypeCheckShimGenerator.shimFor(absoluteFrom('/app.ts')),
+      );
+
+      // Verify that the generated shim has no syntax or semantic errors.
+      expect(typeCheckProgram.getSyntacticDiagnostics(shimSf)).toEqual([]);
+      expect(typeCheckProgram.getSemanticDiagnostics(shimSf)).toEqual([]);
+
+      const cleanShimText = removeSpans(shimSf.text);
+
+      // Verify that `./dir` is imported with `i0_1` (avoiding collision with existing `i0`) followed
+      // by a newline, and `@angular/core` re-uses the existing import from the copied source rather
+      // than emitting a second `@angular/core` import declaration.
+      expect(cleanShimText).toContain(`import * as i0_1 from './dir'\n`);
+      expect(cleanShimText).toContain(
+        `import { Component, ɵINPUT_SIGNAL_BRAND_WRITE_TYPE } from '@angular/core';`,
+      );
+      expect(cleanShimText).not.toContain(`import * as i0 from '@angular/core'`);
+      expect(cleanShimText).toContain('null! as i0_1.ExternalDir');
+      expect(cleanShimText).toContain('_t1.data[ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]');
+    });
+
+    it('should not produce conflicting namespace imports in CopySourceToTcb mode when source has no imports', () => {
+      const TEMPLATE = '<div externalDir [data]="123"></div>';
+      const EXTERNAL_DIR: TestDirective = {
+        type: 'directive',
+        name: 'ExternalDir',
+        selector: '[externalDir]',
+        file: absoluteFrom('/dir.ts'),
+        inputs: {
+          data: {
+            isSignal: true,
+            bindingPropertyName: 'data',
+            classPropertyName: 'data',
+            required: true,
+            transform: null,
+          },
+        },
+      };
+
+      const {templateTypeChecker, program, programStrategy} = setup(
+        [
+          {
+            fileName: absoluteFrom('/dir.ts'),
+            source: `export class ExternalDir { data: any; }`,
+          },
+          {
+            fileName: absoluteFrom('/app.ts'),
+            templates: {'AppComponent': TEMPLATE},
+            declarations: [EXTERNAL_DIR],
+            source: `
+              class AppComponent {}
+            `,
+          },
+        ],
+        {
+          inliningMode: InliningMode.CopySourceToTcb,
+        },
+      );
+
+      const appSf = getSourceFileOrError(program, absoluteFrom('/app.ts'));
+      const diagnostics = templateTypeChecker.getDiagnosticsForFile(appSf, OptimizeFor.SingleFile);
+      expect(diagnostics).toEqual([]);
+
+      const typeCheckProgram = programStrategy.getProgram();
+      const shimSf = getSourceFileOrError(
+        typeCheckProgram,
+        TypeCheckShimGenerator.shimFor(absoluteFrom('/app.ts')),
+      );
+
+      expect(typeCheckProgram.getSyntacticDiagnostics(shimSf)).toEqual([]);
+      expect(typeCheckProgram.getSemanticDiagnostics(shimSf)).toEqual([]);
+
+      const cleanShimText = removeSpans(shimSf.text);
+      expect(cleanShimText).toContain(
+        `import * as i0 from './dir'\nimport * as i1 from '@angular/core'\n`,
+      );
+      expect(cleanShimText).not.toContain(`import * as i0 from '@angular/core'`);
+      expect(cleanShimText).toContain('null! as i0.ExternalDir');
+      expect(cleanShimText).toContain('_t1.data[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]');
+    });
   });
 
   describe('selectorless', () => {
