@@ -117,38 +117,54 @@ export class WasmAnalyzer implements IAnalyzer {
   };
 
   analyze(): AsyncGenerator<nga.CompilationChunk, void, unknown> {
-    return this.consumeStream(() => this.inner.analyze());
+    return this.consumeStream(() => this.invoke(this.inner.analyze, 'analyze'));
   }
 
   analyzeOptimized(): AsyncGenerator<nga.CompilationChunk, void, unknown> {
     return this.consumeStream(() =>
-      this.startOptional(
-        this.inner.analyze_optimized ?? this.inner.analyzeOptimized,
-        'analyzeOptimized',
-      ),
+      this.invoke(this.inner.analyze_optimized ?? this.inner.analyzeOptimized, 'analyzeOptimized'),
     );
   }
 
   analyzeDelta(): AsyncGenerator<nga.CompilationChunk, void, unknown> {
     return this.consumeStream(() =>
-      this.startOptional(this.inner.analyze_delta ?? this.inner.analyzeDelta, 'analyzeDelta'),
+      this.invoke(this.inner.analyze_delta ?? this.inner.analyzeDelta, 'analyzeDelta'),
     );
   }
 
   analyzeOptimizedDelta(): AsyncGenerator<nga.CompilationChunk, void, unknown> {
     return this.consumeStream(() =>
-      this.startOptional(
+      this.invoke(
         this.inner.analyze_optimized_delta ?? this.inner.analyzeOptimizedDelta,
         'analyzeOptimizedDelta',
       ),
     );
   }
 
-  private startOptional(start: (() => number) | undefined, name: string): number {
-    if (!start) {
+  /**
+   * Calls the engine export `fn` with `args`; `name` identifies it when an older engine build
+   * does not have it.
+   *
+   * The engine's fallible exports return `Result<_, String>`, which wasm-bindgen throws across
+   * the boundary as a bare string rather than an `Error`. The N-API adapter receives
+   * `napi::Error`s and the sidecar adapter constructs `Error`s from the RPC payload, so this is
+   * the one backend whose failures would otherwise reach `IAnalyzer` consumers as non-`Error`
+   * values. Anything thrown is wrapped in an `Error` here; `Error` instances (wasm-bindgen's own
+   * `TypeError`s, Rust panics surfacing as `RuntimeError`) pass through unchanged.
+   */
+  private invoke<A extends unknown[], R>(
+    fn: ((...args: A) => R) | undefined,
+    name: string,
+    ...args: A
+  ): R {
+    if (!fn) {
       throw new Error(`WasmInner does not support ${name}`);
     }
-    return start.call(this.inner);
+    try {
+      return fn.apply(this.inner, args);
+    } catch (e) {
+      throw e instanceof Error ? e : new Error(String(e));
+    }
   }
 
   /**
@@ -207,13 +223,12 @@ export class WasmAnalyzer implements IAnalyzer {
   }
 
   async updateFileContent(updates: {filePath: string; content: string}[]): Promise<string[]> {
-    const jsonStr = JSON.stringify(updates);
-    const fn = this.inner.updateFileContent ?? this.inner.update_file_content;
-    if (!fn) {
-      throw new Error('WasmInner does not support updateFileContent');
-    }
-    const res = fn.call(this.inner, jsonStr);
-    return Promise.resolve(JSON.parse(res) as string[]);
+    const res = this.invoke(
+      this.inner.updateFileContent ?? this.inner.update_file_content,
+      'updateFileContent',
+      JSON.stringify(updates),
+    );
+    return JSON.parse(res) as string[];
   }
 
   async invalidateFiles(updates: nga.FileInvalidation[]): Promise<string[]> {
@@ -225,21 +240,20 @@ export class WasmAnalyzer implements IAnalyzer {
           ? (stringNames[u.updateType] ?? u.updateType)
           : u.updateType,
     }));
-    const jsonStr = JSON.stringify(mapped);
-    const fn = this.inner.invalidateFiles ?? this.inner.invalidate_files;
-    if (!fn) {
-      throw new Error('WasmInner does not support invalidateFiles');
-    }
-    const res = fn.call(this.inner, jsonStr);
-    return Promise.resolve(JSON.parse(res) as string[]);
+    const res = this.invoke(
+      this.inner.invalidateFiles ?? this.inner.invalidate_files,
+      'invalidateFiles',
+      JSON.stringify(mapped),
+    );
+    return JSON.parse(res) as string[];
   }
 
   async setEntryPoints(entryPoints: string[]): Promise<string[]> {
-    const fn = this.inner.setEntryPoints ?? this.inner.set_entry_points;
-    if (!fn) {
-      throw new Error('WasmInner does not support setEntryPoints');
-    }
-    const res = fn.call(this.inner, JSON.stringify(entryPoints));
+    const res = this.invoke(
+      this.inner.setEntryPoints ?? this.inner.set_entry_points,
+      'setEntryPoints',
+      JSON.stringify(entryPoints),
+    );
     return JSON.parse(res) as string[];
   }
 
@@ -256,50 +270,48 @@ export class WasmAnalyzer implements IAnalyzer {
   }
 
   readResourceSync(containingFile: string, url: string): nga.ResolvedResource | null {
-    const fn = this.inner.readResource ?? this.inner.read_resource;
-    if (!fn) {
-      throw new Error('WasmInner does not support readResource');
-    }
-    const res = fn.call(this.inner, containingFile, url);
+    const res = this.invoke(
+      this.inner.readResource ?? this.inner.read_resource,
+      'readResource',
+      containingFile,
+      url,
+    );
     return res ? (JSON.parse(res) as nga.ResolvedResource) : null;
   }
 
   getMetadataForFileSync(filePath: string): nga.AnalysisResult | null {
-    const fn = this.inner.getMetadataForFile ?? this.inner.get_metadata_for_file;
-    if (!fn) {
-      throw new Error('WasmInner does not support getMetadataForFile');
-    }
-    const res = fn.call(this.inner, filePath);
+    const res = this.invoke(
+      this.inner.getMetadataForFile ?? this.inner.get_metadata_for_file,
+      'getMetadataForFile',
+      filePath,
+    );
     return res ? (JSON.parse(res) as nga.AnalysisResult) : null;
   }
 
   getFileContentSync(filePath: string): string {
-    const fn = this.inner.getFileContent ?? this.inner.get_file_content;
-    if (!fn) {
-      throw new Error('WasmInner does not support getFileContent');
-    }
-    return fn.call(this.inner, filePath);
+    return this.invoke(
+      this.inner.getFileContent ?? this.inner.get_file_content,
+      'getFileContent',
+      filePath,
+    );
   }
 
   getTsFileForTemplateSync(templatePath: string): nga.TemplateUsage[] | null {
-    const fn = this.inner.getTsFileForTemplate ?? this.inner.get_ts_file_for_template;
-    if (!fn) {
-      throw new Error('WasmInner does not support getTsFileForTemplate');
-    }
-    const res = fn.call(this.inner, templatePath);
+    const res = this.invoke(
+      this.inner.getTsFileForTemplate ?? this.inner.get_ts_file_for_template,
+      'getTsFileForTemplate',
+      templatePath,
+    );
     return res ? (JSON.parse(res) as nga.TemplateUsage[]) : null;
   }
 
   analyzeSync(): Generator<nga.CompilationChunk, void, unknown> {
-    return this.consumeStreamSync(() => this.inner.analyze());
+    return this.consumeStreamSync(() => this.invoke(this.inner.analyze, 'analyze'));
   }
 
   analyzeOptimizedSync(): Generator<nga.CompilationChunk, void, unknown> {
     return this.consumeStreamSync(() =>
-      this.startOptional(
-        this.inner.analyze_optimized ?? this.inner.analyzeOptimized,
-        'analyzeOptimized',
-      ),
+      this.invoke(this.inner.analyze_optimized ?? this.inner.analyzeOptimized, 'analyzeOptimized'),
     );
   }
 
