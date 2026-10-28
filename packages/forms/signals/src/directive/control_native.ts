@@ -32,8 +32,6 @@ import {
 } from './native';
 import {observeSelectMutations} from './select';
 
-const EXPONENT_PREFIX_REGEXP = /^\s*[+-]?(?:\d+(?:\.\d*)?|\.\d+)[eE]/;
-
 export function nativeControlCreate(
   host: ControlDirectiveHost,
   parent: FormField<unknown>,
@@ -163,9 +161,11 @@ export function nativeControlCreate(
       if (!(isFocused && (isBadInput || isIntermediate(input.value, controlValue)))) {
         setNativeControlValue(input, controlValue);
         hasPendingValueWrite = false;
-      } else if (controlValue !== lastEditedValue) {
+      } else {
         // Only defer external updates; the user's own edit is already displayed.
-        hasPendingValueWrite = true;
+        // Assign unconditionally so a later update that restores `lastEditedValue` clears a
+        // stale deferral. `Object.is` keeps -0 and +0 distinct, matching signal equality.
+        hasPendingValueWrite = !Object.is(controlValue, lastEditedValue);
       }
     }
 
@@ -174,20 +174,22 @@ export function nativeControlCreate(
 }
 
 function isIntermediate(inputValue: string, controlValue: unknown): boolean {
-  // These heuristics describe an in-progress decimal number (a lone sign, a trailing decimal
-  // point, or a value that parses to the same number the model already has). A plain string
-  // model can legitimately hold text that happens to end in "." (e.g. "draft."), so restrict
-  // them to non-string models to avoid blocking external string updates while focused.
-  if (typeof controlValue === 'string') return false;
-  if (EXPONENT_PREFIX_REGEXP.test(inputValue)) return false;
-  if (inputValue === '+' || inputValue === '-' || inputValue === '.' || inputValue === '-.')
+  // Numeric fields use `number | null`. Any other model value, including a plain string that
+  // happens to end in ".", must accept external updates immediately.
+  if (typeof controlValue !== 'number' && controlValue !== null) return false;
+  // Lone signs and a leading dot are not yet a parseable number.
+  if (
+    inputValue === '+' ||
+    inputValue === '-' ||
+    inputValue === '.' ||
+    inputValue === '-.' ||
+    inputValue === '+.'
+  ) {
     return true;
-  if (inputValue.endsWith('.')) return true;
-  if (typeof controlValue === 'number' && !Number.isNaN(controlValue)) {
-    const parsed = parseDecimalNumber(inputValue);
-    if (parsed === controlValue && inputValue !== String(controlValue)) {
-      return true;
-    }
   }
-  return false;
+  // Keep spellings that parse but are not the canonical `String` form (`-0`, `1.0`, `+1`).
+  // Compare against the parsed value, not the current model, so an external update does not
+  // make a still-unfinished edit look complete.
+  const parsed = parseDecimalNumber(inputValue);
+  return parsed !== undefined && inputValue !== String(parsed);
 }

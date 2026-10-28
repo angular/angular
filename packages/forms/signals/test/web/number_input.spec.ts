@@ -720,7 +720,7 @@ describe('text input with numeric model', () => {
   });
 
   for (const inputValue of ['hello.', 'ten.']) {
-    it(`should preserve non-exponent text ${inputValue} until blur after an external update`, async () => {
+    it(`should apply external model updates while focused for non-numeric text ${inputValue}`, async () => {
       @Component({
         imports: [FormField],
         template: `<input type="text" inputmode="decimal" [formField]="f" />`,
@@ -745,6 +745,36 @@ describe('text input with numeric model', () => {
 
       fixture.componentInstance.data.set(1000);
       await fixture.whenStable();
+
+      expect(input.value).toBe('1000');
+      expect(fixture.componentInstance.data()).toBe(1000);
+      expect(fixture.componentInstance.f().errors()).toEqual([]);
+    });
+  }
+
+  for (const inputValue of ['-0', '1.0', '+1', '+.']) {
+    it(`should defer an external model update until blur while editing ${inputValue}`, async () => {
+      @Component({
+        imports: [FormField],
+        template: `<input type="text" inputmode="decimal" [formField]="f" />`,
+      })
+      class TestCmp {
+        readonly data = signal<number | null>(1);
+        readonly f = form(this.data);
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      await fixture.whenStable();
+      const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+      input.focus();
+      input.value = inputValue;
+      input.dispatchEvent(new Event('input'));
+      await fixture.whenStable();
+
+      expect(input.value).toBe(inputValue);
+
+      fixture.componentInstance.data.set(1000);
+      await fixture.whenStable();
       expect(input.value).toBe(inputValue);
 
       input.blur();
@@ -753,6 +783,70 @@ describe('text input with numeric model', () => {
       expect(fixture.componentInstance.data()).toBe(1000);
     });
   }
+
+  it('should drop a deferred write when an external update restores the last edited value', async () => {
+    @Component({
+      imports: [FormField],
+      template: `<input type="text" inputmode="decimal" [formField]="f" />`,
+    })
+    class TestCmp {
+      readonly data = signal<number | null>(1);
+      readonly f = form(this.data);
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    await fixture.whenStable();
+    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+    input.focus();
+    input.value = '1.';
+    input.dispatchEvent(new Event('input'));
+    await fixture.whenStable();
+
+    fixture.componentInstance.data.set(42);
+    await fixture.whenStable();
+    expect(input.value).toBe('1.');
+
+    fixture.componentInstance.data.set(1);
+    await fixture.whenStable();
+    expect(input.value).toBe('1.');
+
+    input.blur();
+    await fixture.whenStable();
+    expect(input.value).toBe('1.');
+    expect(fixture.componentInstance.data()).toBe(1);
+  });
+
+  it('should defer an external +0 while a focused field shows -0', async () => {
+    @Component({
+      imports: [FormField],
+      template: `<input type="text" inputmode="decimal" [formField]="f" />`,
+    })
+    class TestCmp {
+      readonly data = signal<number | null>(0);
+      readonly f = form(this.data);
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    await fixture.whenStable();
+    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+    input.focus();
+    input.value = '-0';
+    input.dispatchEvent(new Event('input'));
+    await fixture.whenStable();
+
+    expect(input.value).toBe('-0');
+    expect(Object.is(fixture.componentInstance.data(), -0)).toBe(true);
+
+    fixture.componentInstance.data.set(0);
+    await fixture.whenStable();
+    expect(input.value).toBe('-0');
+    expect(Object.is(fixture.componentInstance.data(), 0)).toBe(true);
+
+    input.blur();
+    await fixture.whenStable();
+    expect(input.value).toBe('0');
+    expect(Object.is(fixture.componentInstance.data(), 0)).toBe(true);
+  });
 
   for (const exponentValue of [
     '1e',
