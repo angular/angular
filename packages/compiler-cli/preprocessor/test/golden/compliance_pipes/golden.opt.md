@@ -135,7 +135,7 @@ export class PipeWithoutName implements PipeTransform {
     return new (__ngFactoryType__ || PipeWithoutName)();
   };
   // @ts-ignore
-  static ɵpipe: i0.ɵɵPipeDeclaration<PipeWithoutName, 'PipeWithoutName', true> =
+  static ɵpipe: i0.ɵɵPipeDeclaration<PipeWithoutName, null, true> =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefinePipe({ name: 'PipeWithoutName', type: PipeWithoutName, pure: true });
   static {

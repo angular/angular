@@ -595,7 +595,7 @@ export function processFileSync(
           value: o.variable(className),
           type: o.variable(className),
         },
-        pipeName: pipe.name,
+        pipeName: pipe.name ?? null,
         pure: pipe.pure ?? true,
         isStandalone: pipe.standalone ?? true,
         typeArgumentCount: classMeta?.typeParameters?.length ?? 0,
@@ -2872,11 +2872,12 @@ function compileNgModuleDef(
     if (!tuple) {
       return null;
     }
+
     const elementExprs = tuple.elements.map((el): o.Expression => {
       switch (el.kind) {
         case 'typeof': {
           if (el.references && el.references.length > 0) {
-            return new o.TypeofExpr(refToExpression(el.references[0]));
+            return new o.TypeofExpr(refToTypeExpression(el.references[0]));
           }
           if (el.span && sourceText !== undefined) {
             return new o.TypeofExpr(
@@ -2896,7 +2897,7 @@ function compileNgModuleDef(
         }
         case 'referenceTuple': {
           return o.literalArr(
-            (el.references ?? []).map((ref) => new o.TypeofExpr(refToExpression(ref))),
+            (el.references ?? []).map((ref) => new o.TypeofExpr(refToTypeExpression(ref))),
           );
         }
         case 'never':

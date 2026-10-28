@@ -72,7 +72,7 @@ export class DynamicPipe implements PipeTransform {
     return new (__ngFactoryType__ || DynamicPipe)();
   };
   // @ts-ignore
-  static ɵpipe: i0.ɵɵPipeDeclaration<DynamicPipe, 'DynamicPipe', true> =
+  static ɵpipe: i0.ɵɵPipeDeclaration<DynamicPipe, null, true> =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefinePipe({ name: 'DynamicPipe', type: DynamicPipe, pure: true });
   static {

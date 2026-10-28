@@ -45,18 +45,6 @@ export function shouldSkipInNgp(fullSpecName: string): boolean {
   );
 }
 
-export function shouldSkipComplianceInNgp(
-  mode: string,
-  relativePath: string,
-  description: string,
-): boolean {
-  if (!isNgpSkipEnabled()) {
-    return false;
-  }
-  const key = `${mode}::${relativePath.trim()}::${description.replace(/\s+/g, ' ').trim()}`;
-  return NGP_KNOWN_COMPLIANCE_FAILURES.has(key);
-}
-
 /**
  * Known failures in `//packages/compiler-cli/src/ngtsc/typecheck/test:test_ngp`
  * (#678-#682, #690, plus `TemplateTypeChecker` IDE metadata queries).
@@ -438,16 +426,4 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'ngtsc type checking for loop blocks should not allow usages of local references within the same template inside the tracking expression',
   'ngtsc type checking for loop blocks should not allow usages of parent loop variables inside the tracking expression',
   'ngtsc type checking for loop blocks should not allow usages of parent template variables inside the tracking expression',
-]);
-
-/**
- * Known failures in `//packages/compiler-cli/test/compliance/full:full_ngp`,
- * `//packages/compiler-cli/test/compliance/local:local_ngp`, and
- * `//packages/compiler-cli/test/compliance/declaration-only:declaration-only_ngp`.
- */
-const NGP_KNOWN_COMPLIANCE_FAILURES: ReadonlySet<string> = new Set([
-  'declaration-only emit::r3_compiler_compliance/components_and_directives/pipes::should handle a pipe that does not have a name',
-  'declaration-only emit::r3_compiler_compliance/components_and_directives::should not use reexport names inside declarations when a direct export is available',
-  'full compile::r3_compiler_compliance/components_and_directives::should not use reexport names inside declarations when a direct export is available',
-  'full compile::r3_view_compiler_bindings/host_bindings::should handle host bindings with quoted names',
 ]);

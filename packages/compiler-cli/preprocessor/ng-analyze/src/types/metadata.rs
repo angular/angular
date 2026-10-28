@@ -264,7 +264,8 @@ pub struct DeclaringNgModule {
 pub struct PipeMetadata {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub decorator_name: Option<String>,
-    pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
     pub pure: Option<bool>,
     pub standalone: Option<bool>,
     pub args_span: Option<SpanMetadata>,

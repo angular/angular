@@ -10,14 +10,10 @@ export {Folder, MockFileSystem} from './src/mock_file_system';
 export {MockFileSystemNative} from './src/mock_file_system_native';
 export {MockFileSystemPosix} from './src/mock_file_system_posix';
 export {MockFileSystemWindows} from './src/mock_file_system_windows';
+export {isNgpSkipEnabled, shouldSkipInNgp} from './src/ngp_known_failures';
 export {
   initMockFileSystem,
   lockMockFileSystem,
   runInEachFileSystem,
   TestFile,
 } from './src/test_helper';
-export {
-  isNgpSkipEnabled,
-  shouldSkipComplianceInNgp,
-  shouldSkipInNgp,
-} from './src/ngp_known_failures';
