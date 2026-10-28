@@ -6,7 +6,7 @@ function MyApp_ng_template_0_Template(rf, ctx) {
   }
   if (rf & 2) {
     const ctx_r0 = i0.ɵɵnextContext();
-    i0.ɵɵtextInterpolate1(" ", undefined, " ");
+    i0.ɵɵtextInterpolate1(" ", i0.ɵɵinvalid(), " ");
     ctx_r0.value * 2;
   }
 }
