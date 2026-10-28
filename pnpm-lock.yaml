@@ -775,6 +775,9 @@ importers:
         specifier: ^2.0.4
         version: 2.0.4
     devDependencies:
+      '@playwright/test':
+        specifier: 1.64.1
+        version: 1.64.1
       autoprefixer:
         specifier: 10.6.1
         version: 10.6.1(postcss@8.5.31)
@@ -4134,6 +4137,11 @@ packages:
   '@pkgr/core@0.3.6':
     resolution: {integrity: sha512-SEeaJLb3qBNF/OaXnaR1NmmBbFYk1zC0ZH/52fATcRPLFg/p791YrcyFFy44Bo9sLaGuSuLp5Q6axbb/O+v/RA==}
     engines: {node: ^14.18.0 || >=16.0.0}
+
+  '@playwright/test@1.64.1':
+    resolution: {integrity: sha512-IaYGml/nSOiZWROfPtuIL7neuu9qDOZ3TNvNljUIrhDMxiGTgPjzj/g9p9RxpS2tSepPDRY+UwAaEeiKtUvIAg==}
+    engines: {node: '>=20'}
+    hasBin: true
 
   '@pnpm/config.env-replace@1.1.0':
     resolution: {integrity: sha512-htyl8TWnKL7K/ESFa1oW2UB5lVDxuF5DpM7tBi6Hu2LNL3mWkIzNLG6N4zoCUP1lCKNxWy/3iu8mS8MvToGd6w==}
@@ -9337,6 +9345,11 @@ packages:
     engines: {node: '>=20'}
     hasBin: true
 
+  playwright@1.64.1:
+    resolution: {integrity: sha512-HCrVhHr5QQuwYoswEUGTb7gGp522yflbv/ST8nF4sFWGuLjQCt17Q/EubpGGSNKYn1tsTCPZxqHhHCfVURu7UA==}
+    engines: {node: '>=20'}
+    hasBin: true
+
   plugin-error@2.0.1:
     resolution: {integrity: sha512-zMakqvIDyY40xHOvzXka0kUvf40nYIuwRE8dWhti2WtjQZ31xAgBZBhxsK7vK3QbRXS1Xms/LO7B5cuAsfB2Gg==}
     engines: {node: '>=10.13.0'}
@@ -14473,6 +14486,10 @@ snapshots:
     optional: true
 
   '@pkgr/core@0.3.6': {}
+
+  '@playwright/test@1.64.1':
+    dependencies:
+      playwright: 1.64.1
 
   '@pnpm/config.env-replace@1.1.0': {}
 
@@ -20301,6 +20318,10 @@ snapshots:
       find-up: 4.1.0
 
   playwright-core@1.64.1: {}
+
+  playwright@1.64.1:
+    dependencies:
+      playwright-core: 1.64.1
 
   plugin-error@2.0.1:
     dependencies:
