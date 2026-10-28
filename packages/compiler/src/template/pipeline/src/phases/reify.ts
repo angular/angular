@@ -921,6 +921,8 @@ function reifyIrExpression(unit: CompilationUnit, expr: o.Expression): o.Express
         unit.job.pool.getSharedFunctionReference(getArrowFunctionFactory(unit, expr), 'arrowFn'),
         o.variable(CONTEXT_NAME),
       );
+    case ir.ExpressionKind.InvalidExpr:
+      return ng.invalid(expr.sourceSpan);
     default:
       throw new Error(
         `AssertionError: Unsupported reification of ir.Expression kind: ${

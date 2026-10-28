@@ -107,6 +107,7 @@ export {
   ɵɵviewQuery,
   ɵɵviewQuerySignal,
   ɵɵreference,
+  ɵɵinvalid,
   ɵɵrepeater,
   ɵɵrepeaterCreate,
   ɵɵrepeaterTrackByIdentity,
