@@ -9,10 +9,15 @@
 import {runOutsideAngular} from '../../utils/general';
 import {Highlight} from '../types';
 import {DynamicTtlBoundHighlightRenderOp, RenderOp, StaticHighlightRenderOp} from './operations';
-import {createCanvas, getAbsoluteBoundingClientRect, getViewportData, ViewportData} from './utils';
+import {
+  createCanvas,
+  createRectWithScroll,
+  getViewportData,
+  RectWithScroll,
+  ViewportData,
+} from './utils';
 
 export const CANVAS_ID = 'ng-devtools-highlighter-canvas';
-const WINDOW_RESIZE_DEBOUNCE = 100;
 
 /**
  * Provides HTML5 Canvas rendering medium for highlights.
@@ -30,6 +35,7 @@ export class Renderer {
   private readonly targets = new WeakMap<Element, Set<Highlight>>();
   private viewportData: ViewportData = getViewportData();
   private elementResizeObserver!: ResizeObserver;
+  private elementIntersectionObserver!: IntersectionObserver;
   private cleanUpFn?: () => void;
   private lastFrame?: ReturnType<typeof requestAnimationFrame>;
 
@@ -54,27 +60,45 @@ export class Renderer {
       return;
     }
 
-    const rect = getAbsoluteBoundingClientRect(targetEl);
-    let op: RenderOp;
-
-    if (!highlight.template.ttl) {
-      op = new StaticHighlightRenderOp(highlight, this.ctx, rect, this.viewportData);
-    } else {
-      op = new DynamicTtlBoundHighlightRenderOp(highlight, this.ctx, rect, this.viewportData);
-    }
-
-    this.operations.set(highlight, op);
+    let currentRect: RectWithScroll | null = null;
 
     // Since an element might have multiple highlights,
     // we keep track of them to know when to observe or
-    // unobserve from the `ResizeObserver`.
+    // unobserve from our Observers.
     let highlights = this.targets.get(targetEl);
     if (!highlights) {
       highlights = new Set();
       this.targets.set(targetEl, highlights);
+
+      // Attaching the object to the intersection observer
+      // will determine whether the rect is withing the viewport
+      // and will render the highlight, if true.
+      this.elementIntersectionObserver.observe(targetEl);
       this.elementResizeObserver.observe(targetEl);
+    } else {
+      // If the target is already observed, we can
+      // use one of the existing rects for the new op.
+      const [arbitraryHighlight] = highlights;
+      const arbitraryOp = this.operations.get(arbitraryHighlight);
+      currentRect = arbitraryOp?.currentRect ?? null;
     }
+
     highlights.add(highlight);
+
+    let op: RenderOp;
+
+    if (!highlight.template.ttl) {
+      op = new StaticHighlightRenderOp(highlight, this.ctx, currentRect, this.viewportData);
+    } else {
+      op = new DynamicTtlBoundHighlightRenderOp(
+        highlight,
+        this.ctx,
+        currentRect,
+        this.viewportData,
+      );
+    }
+
+    this.operations.set(highlight, op);
 
     this.render();
   }
@@ -99,120 +123,102 @@ export class Renderer {
    * @returns A clean up function that unlistens all events.
    */
   private initEvents(): () => void {
-    const root = document.documentElement;
-    let rootResizeObserver: ResizeObserver;
-    let rootMutationObserver: MutationObserver;
-    let elementFrame: ReturnType<typeof requestAnimationFrame> = 0;
-    let rootFrame: ReturnType<typeof requestAnimationFrame> = 0;
-    let scrollTimeout: ReturnType<typeof setTimeout>;
-    let lastSize: {width: number; height: number} = {
-      width: 0,
-      height: 0,
-    };
-
-    // We use this handler for all changes that
-    // happen to the root element.
-    const rootUpdatesHandler = () => {
-      if (rootFrame) {
-        cancelAnimationFrame(rootFrame);
-      }
-      rootFrame = requestAnimationFrame(() => {
-        const width = root.scrollWidth;
-        const height = root.scrollHeight;
-        const {width: lastWidth, height: lastHeight} = lastSize;
-
-        if (width !== lastWidth || height !== lastHeight) {
-          this.updateCanvasSize();
-          this.updateViewportData();
-          this.updateHighlightsData('full');
-          this.render();
+    // Used for updating the viewport data and canvas size and scaling.
+    const windowChangeHandler = (shouldUpdateCanvasSize: boolean) => {
+      let windowChangeScheduled = false;
+      return () => {
+        if (windowChangeScheduled) {
+          return;
         }
+        windowChangeScheduled = true;
 
-        lastSize = {width, height};
-      });
-    };
-
-    // The scroll handler takes care of viewport data updates.
-    const scrollHandler = () => {
-      if (scrollTimeout) {
-        clearTimeout(scrollTimeout);
-      }
-      scrollTimeout = setTimeout(() => {
         requestAnimationFrame(() => {
-          this.updateViewportData();
-          this.updateHighlightsData('viewport');
+          if (shouldUpdateCanvasSize) {
+            this.updateCanvasSize();
+          }
+          this.viewportData = getViewportData();
+          this.updateHighlightsViewportData();
           this.render();
+
+          windowChangeScheduled = false;
         });
-      }, WINDOW_RESIZE_DEBOUNCE);
+      };
     };
+
+    const forEachTargetOp = <T extends {target: Element}>(
+      entries: T[],
+      cb: (entry: T, op: RenderOp) => void,
+    ) => {
+      for (const e of entries) {
+        const highlights = this.targets.get(e.target);
+        if (!highlights) {
+          continue;
+        }
+        for (const h of highlights) {
+          const op = this.operations.get(h);
+          if (op) {
+            cb(e, op);
+          }
+        }
+      }
+    };
+
+    const windowScrollHandler = windowChangeHandler(false);
+    const windowResizeHandler = windowChangeHandler(true);
 
     // Wrap Zone.js monkey-patched code for Zone-based apps.
     runOutsideAngular(() => {
-      // NOTE: Along with the obvious `ResizeObserver`, we also
-      // `observe` to a `MutationObserver`. It covers some specific
-      // cases where absolutely-positioned content might change page
-      // scroll area without affecting the size of the root element.
-      rootResizeObserver = new ResizeObserver(rootUpdatesHandler);
-      rootMutationObserver = new MutationObserver(rootUpdatesHandler);
+      window.addEventListener('scroll', windowScrollHandler);
+      window.addEventListener('resize', windowResizeHandler);
 
-      rootResizeObserver.observe(root);
-      rootResizeObserver.observe(document.body);
-      rootMutationObserver.observe(root, {childList: true, subtree: true, attributes: true});
-
-      window.addEventListener('scroll', scrollHandler);
-
-      this.elementResizeObserver = new ResizeObserver(() => {
-        if (elementFrame) {
-          return;
-        }
-
-        elementFrame = requestAnimationFrame(() => {
-          elementFrame = 0;
-          this.updateHighlightsData('full');
-          this.render();
+      // Detects when the target is inside the viewport and
+      // provides the available `boundingRectClient`, therefore,
+      // making the highlight visible until the target leaves
+      // of the viewport (=> removing the rect => hiding it).
+      this.elementIntersectionObserver = new IntersectionObserver((entries) => {
+        forEachTargetOp(entries, (e, op) => {
+          op.update({
+            rect: e.isIntersecting ? createRectWithScroll(e.boundingClientRect) : null,
+          });
         });
+
+        this.render();
+      });
+
+      // Triggered when a target resizes. All affected
+      // targets get their rect updates using standard
+      // `getBoundingClientRect`.
+      this.elementResizeObserver = new ResizeObserver((entries) => {
+        forEachTargetOp(entries, (e, op) => {
+          if (op.isVisible()) {
+            op.update({rect: createRectWithScroll(e.target.getBoundingClientRect())});
+          }
+        });
+
+        this.render();
       });
     });
 
     return () => {
-      if (scrollTimeout) {
-        clearTimeout(scrollTimeout);
-      }
-      if (rootFrame) {
-        cancelAnimationFrame(rootFrame);
-      }
-      if (elementFrame) {
-        cancelAnimationFrame(elementFrame);
-      }
-      rootResizeObserver.disconnect();
-      rootMutationObserver.disconnect();
       this.elementResizeObserver.disconnect();
-      window.removeEventListener('scroll', scrollHandler);
+      this.elementIntersectionObserver.disconnect();
+      window.removeEventListener('scroll', windowScrollHandler);
+      window.removeEventListener('resize', windowResizeHandler);
     };
   }
 
   /**
-   * Update the highlights render ops.
-   * @param config Use `full` for a full update (rect and viewport),
-   * or `viewport` to update only the viewport data.
+   * Update the viewport data of the render ops.
    */
-  private updateHighlightsData(config: 'full' | 'viewport') {
-    const fullData = config === 'full';
-
+  private updateHighlightsViewportData() {
     for (const highlight of this.operations.keys()) {
       const targetEl = highlight.targetElement.deref();
 
-      // Get the updated positions of all target elements.
       if (targetEl) {
-        const rect = fullData ? getAbsoluteBoundingClientRect(targetEl) : undefined;
         const op = this.operations.get(highlight);
-        op!.update({rect, viewport: this.viewportData});
+        op!.update({viewport: this.viewportData});
       }
     }
-  }
-
-  private updateViewportData() {
-    this.viewportData = getViewportData();
   }
 
   /**
@@ -220,14 +226,11 @@ export class Renderer {
    * the root page element and the screen DPR.
    */
   private updateCanvasSize() {
-    const width = document.documentElement.scrollWidth;
-    const height = document.documentElement.scrollHeight;
+    const width = this.canvas.clientWidth;
+    const height = this.canvas.clientHeight;
 
     this.canvas.width = width * this.dpr;
     this.canvas.height = height * this.dpr;
-
-    // Width is set by CSS (100%)
-    this.canvas.style.height = `${height}px`;
 
     // Normalize the coordinate system to use CSS pixels
     this.ctx.scale(this.dpr, this.dpr);
@@ -248,6 +251,7 @@ export class Renderer {
       if (!highlights?.size) {
         this.targets.delete(targetEl);
         this.elementResizeObserver.unobserve(targetEl);
+        this.elementIntersectionObserver.unobserve(targetEl);
       }
     }
     this.operations.delete(highlight);

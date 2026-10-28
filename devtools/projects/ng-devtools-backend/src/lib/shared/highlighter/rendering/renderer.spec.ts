@@ -39,11 +39,10 @@ function nextFrame(): Promise<void> {
   return new Promise((resolve) => requestAnimationFrame(() => resolve()));
 }
 
-async function waitFor(predicate: () => boolean): Promise<void> {
+// Giving super tight timeout since rAF is not mocked.
+// Adjust the tests so that they fit within it.
+async function waitFor(predicate: () => boolean, timeout = 100): Promise<void> {
   const start = performance.now();
-  // Giving super tight timeout since rAF is not mocked.
-  // Adjust the tests so that they fit within it.
-  const timeout = 30;
 
   while (!predicate()) {
     if (performance.now() - start > timeout) {
@@ -56,17 +55,21 @@ async function waitFor(predicate: () => boolean): Promise<void> {
 describe('Renderer', () => {
   let renderer: Renderer;
 
-  function createTarget(rect = DEF_TARGET_RECT): HTMLElement {
+  function createTarget({x, y, width, height} = DEF_TARGET_RECT): HTMLElement {
     const el = document.createElement('div');
     el.style.position = 'absolute';
-    el.style.top = '0';
-    el.style.left = '0';
+    el.style.left = `${x}px`;
+    el.style.top = `${y}px`;
+    el.style.width = `${width}px`;
+    el.style.height = `${height}px`;
 
     document.body.appendChild(el);
-    spyOn(el, 'getBoundingClientRect').and.returnValue(rect);
+    targets.push(el);
 
     return el;
   }
+
+  let targets: HTMLElement[] = [];
 
   beforeEach(() => {
     renderer = new Renderer();
@@ -74,6 +77,8 @@ describe('Renderer', () => {
 
   afterEach(() => {
     renderer.destroy();
+    targets.forEach((t) => t.remove());
+    targets = [];
   });
 
   it('should append a transparent canvas to the body', () => {
@@ -94,9 +99,9 @@ describe('Renderer', () => {
     const highlight = createMockHighlight(createTemplate(), {name: ['Foo']}, createTarget());
 
     renderer.renderHighlight(highlight);
-    await nextFrame();
+    // Firefox needs a slightly longer timeout
+    await waitFor(() => isPixelRenderedAt(INSIDE_DEF_RECT_PX), 200);
 
-    expect(isPixelRenderedAt(INSIDE_DEF_RECT_PX)).toBeTrue();
     expect(isPixelRenderedAt(OUTSIDE_DEF_RECT_PX)).toBeFalse();
   });
 
@@ -104,9 +109,7 @@ describe('Renderer', () => {
     const highlight = createMockHighlight(createTemplate(), {name: ['Foo']}, createTarget());
 
     renderer.renderHighlight(highlight);
-    await nextFrame();
-
-    expect(isPixelRenderedAt(INSIDE_DEF_RECT_PX)).toBeTrue();
+    await waitFor(() => isPixelRenderedAt(INSIDE_DEF_RECT_PX));
 
     renderer.removeHighlight(highlight);
     await nextFrame();
@@ -127,10 +130,7 @@ describe('Renderer', () => {
     // 1st: The two highlights must be visible
     renderer.renderHighlight(foo);
     renderer.renderHighlight(bar);
-    await nextFrame();
-
-    expect(isPixelRenderedAt(fooPixel)).toBeTrue();
-    expect(isPixelRenderedAt(barPixel)).toBeTrue();
+    await waitFor(() => isPixelRenderedAt(fooPixel) && isPixelRenderedAt(barPixel));
 
     // 2nd. Foo removed. Only bar should be visible
     renderer.removeHighlight(foo);
@@ -144,20 +144,28 @@ describe('Renderer', () => {
   });
 
   it('should remove a TTL-bound highlight once it has faded out', async () => {
-    const highlight = createMockHighlight(
-      createTemplate({ttl: 10}),
-      {name: ['Foo']},
-      createTarget(),
-    );
+    // The TTL should be long enough for the `IntersectionObserver`
+    // to provide the rect before the highlight expires.
+    const ttl = 100;
+    const highlight = createMockHighlight(createTemplate({ttl}), {name: ['Foo']}, createTarget());
 
     renderer.renderHighlight(highlight);
-    await nextFrame();
+    await waitFor(() => isPixelRenderedAt(INSIDE_DEF_RECT_PX));
 
-    expect(isPixelRenderedAt(INSIDE_DEF_RECT_PX)).toBeTrue();
     expect(highlight.destroy).not.toHaveBeenCalled();
 
-    await waitFor(() => highlight.destroy.calls.any());
+    await waitFor(() => highlight.destroy.calls.any(), ttl * 2);
 
     expect(isPixelRenderedAt(INSIDE_DEF_RECT_PX)).toBeFalse();
+  });
+
+  it('should disconnect the observers on destroy', () => {
+    const ioDisconnect = spyOn(IntersectionObserver.prototype, 'disconnect').and.callThrough();
+    const roDisconnect = spyOn(ResizeObserver.prototype, 'disconnect').and.callThrough();
+
+    renderer.destroy();
+
+    expect(ioDisconnect).toHaveBeenCalled();
+    expect(roDisconnect).toHaveBeenCalled();
   });
 });
