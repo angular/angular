@@ -31,12 +31,14 @@ pub mod utils;
 mod visitor;
 
 pub use class_data::*;
+pub(crate) use component::load_syntax_resources;
 pub use dts::analyze_dts;
 pub use import_emit::{
     strip_extension_str, ApfImportStrategy, PrefixImportStrategy, ReferenceEmitStrategy,
 };
 pub use imports::{
-    extract_import_map, FileExportInfo, ImportDeclarationInfo, ImportKind, ImportedSymbol,
+    detect_is_core, extract_import_map, FileExportInfo, ImportDeclarationInfo, ImportKind,
+    ImportedSymbol,
 };
 pub use resolver::{flatten_class_info, resolve_declaration_async, resolve_to_dts};
 pub use visitor::{analyze_parsed, ParsedFileAnalysis, RegistrationInfo};

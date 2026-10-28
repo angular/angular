@@ -443,25 +443,24 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         ctx: &QueryContext<Fs>,
     ) -> Arc<FileData> {
         let parsed = ctx.parse_file(file_id).await;
-
-        let guard = parsed.lock().unwrap();
-
-        let owner = guard.borrow_owner();
-        let file_path = owner.file_path.clone();
-        let source_text = &owner.source_text;
-
-        let dep = guard.borrow_dependent();
-        let converter = Arc::new(crate::utils::Utf8ToUtf16::new(source_text));
+        let file_path = self.lookup_path(file_id);
 
         if crate::utils::is_dts(&file_path) {
-            let result = crate::analyzer::analyze_dts(
-                dep.program,
-                source_text,
-                file_id,
-                &dep.module_record,
-                &dep.semantic,
-                &converter,
-            );
+            let (converter, result, errors) = {
+                let guard = parsed.lock().unwrap();
+                let source_text = &guard.borrow_owner().source_text;
+                let dep = guard.borrow_dependent();
+                let converter = Arc::new(crate::utils::Utf8ToUtf16::new(source_text));
+                let result = crate::analyzer::analyze_dts(
+                    dep.program,
+                    source_text,
+                    file_id,
+                    &dep.module_record,
+                    &dep.semantic,
+                    &converter,
+                );
+                (converter, result, dep.errors.clone())
+            };
             let (class_index, symbol_index) =
                 class_index_from_registrations(&file_path, &result.registrations);
             return Arc::new(FileData {
@@ -479,7 +478,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                 di_facts: Arc::new(crate::analyzer::di_facts::index_di_facts(result.di_facts)),
                 function_facts: Arc::new(result.function_facts),
                 file_exports: Arc::new(result.exports),
-                errors: dep.errors.clone(),
+                errors,
                 diagnostics: Vec::new(),
                 source_file_validator_diagnostics: Vec::new(),
                 signal_debug_names: Vec::new(),
@@ -488,19 +487,34 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             });
         }
 
-        let analysis = crate::analyzer::analyze_parsed(
+        let is_core = crate::analyzer::detect_is_core(&file_path, &self.fs);
+        let (converter, mut analysis, errors) = {
+            let guard = parsed.lock().unwrap();
+            let source_text = &guard.borrow_owner().source_text;
+            let dep = guard.borrow_dependent();
+            let converter = Arc::new(crate::utils::Utf8ToUtf16::new(source_text));
+            let analysis = crate::analyzer::analyze_parsed(
+                &file_path,
+                file_id,
+                source_text,
+                dep.program,
+                &dep.module_record,
+                &dep.semantic,
+                &converter,
+                is_core,
+                self.compile_non_exported_classes,
+                self.enable_hmr,
+                self.implicit_standalone,
+            );
+            (converter, analysis, dep.errors.clone())
+        };
+
+        let resource_resolver = crate::ResourceResolver::new(&self.fs, self.resolver.as_ref());
+        crate::analyzer::load_syntax_resources(
+            &mut analysis.classes,
+            &resource_resolver,
             &file_path,
             file_id,
-            source_text,
-            dep.program,
-            &dep.module_record,
-            &dep.semantic,
-            &self.fs,
-            self.resolver.as_ref(),
-            &converter,
-            self.compile_non_exported_classes,
-            self.enable_hmr,
-            self.implicit_standalone,
         );
 
         self.resource_registry
@@ -545,7 +559,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             di_facts: Arc::new(crate::analyzer::di_facts::index_di_facts(analysis.di_facts)),
             function_facts: Arc::new(analysis.function_facts),
             file_exports: Arc::new(analysis.file_exports),
-            errors: dep.errors.clone(),
+            errors,
             diagnostics: analysis.diagnostics,
             source_file_validator_diagnostics: analysis.source_file_validator_diagnostics,
             signal_debug_names: analysis.signal_debug_names,

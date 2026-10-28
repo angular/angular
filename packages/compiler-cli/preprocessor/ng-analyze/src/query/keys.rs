@@ -16,7 +16,10 @@ pub struct CachedResult {
 pub enum QueryKey {
     /// Cross-file semantic analysis for a file (Stage 2).
     AnalyzeFileSemantic(FileId),
-    /// Single-file syntactic extraction (`analyzer::analyze_parsed`) and resource registration.
+    /// Single-file syntactic extraction (`analyzer::analyze_parsed`, run under the `ParseFile`
+    /// lock), followed — with the lock released — by the Stage 1 resource pass
+    /// (`analyzer::load_syntax_resources`), resource registration, and resolution of the file's
+    /// import specifiers to on-disk TS sources.
     AnalyzeFileSyntax(FileId),
     /// [`QueryKey::AnalyzeFileSyntax`] with consumer-visible declaration metadata (selectors, pipe
     /// names, `exportAs`, inputs/outputs) completed across files via the partial evaluator, and the
