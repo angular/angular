@@ -35,22 +35,22 @@ import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
 import {
   HostBindingsContext,
-  TemplateDiagnostic,
   SourceMapping,
+  TemplateContext,
+  TemplateDiagnostic,
   TypeCheckableDirectiveMeta,
   TypeCheckBlockMetadata,
   TypeCheckContext,
-  TemplateContext,
 } from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
-import {adaptTypeCheckBlockMetadata} from './tcb_adapter';
 import {RegistryDomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {OutOfBandDiagnosticRecorderImpl} from './oob';
 import {ReferenceEmitEnvironment} from './reference_emit_environment';
 import {TypeCheckShimGenerator} from './shim';
 import {DirectiveSourceManager} from './source';
+import {adaptTypeCheckBlockMetadata} from './tcb_adapter';
 import {requiresInlineTypeCheckBlock, TcbInliningRequirement} from './tcb_util';
 import {TCB_FUNCTION_PREFIX, TypeCheckFile} from './type_check_file';
 import {generateInlineTypeCtor, requiresInlineTypeCtor} from './type_constructor';
@@ -722,7 +722,7 @@ class InlineTcbOp implements Op {
    * Type check blocks are inserted immediately after the end of the directive class.
    */
   get splitPoint(): number {
-    return this.ref.node.end + 1;
+    return this.ref.node.end;
   }
 
   execute(im: ImportManager, tcbSf: ts.SourceFile, refEmitter: ReferenceEmitter): string {
