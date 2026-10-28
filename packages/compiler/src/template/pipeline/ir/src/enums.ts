@@ -497,6 +497,11 @@ export enum ExpressionKind {
    * Definition of an arrow function inside of an expression.
    */
   ArrowFunction,
+
+  /**
+   * Placeholder for an expression that is not valid in the specific context.
+   */
+  InvalidExpr,
 }
 
 export enum VariableFlags {
@@ -509,6 +514,7 @@ export enum VariableFlags {
    */
   AlwaysInline = 0b0001,
 }
+
 /**
  * Distinguishes between different kinds of `SemanticVariable`s.
  */

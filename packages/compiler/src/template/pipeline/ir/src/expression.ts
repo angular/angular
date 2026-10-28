@@ -56,7 +56,8 @@ export type Expression =
   | ContextLetReferenceExpr
   | StoreLetExpr
   | TrackContextExpr
-  | ArrowFunctionExpr;
+  | ArrowFunctionExpr
+  | InvalidExpr;
 
 /**
  * Transformer type which converts expressions into general `o.Expression`s (which may be an
@@ -1169,6 +1170,26 @@ export class ArrowFunctionExpr
     expr.ops = this.ops;
     return expr;
   }
+}
+
+export class InvalidExpr extends ExpressionBase {
+  override readonly kind = ExpressionKind.InvalidExpr;
+
+  override visitExpression(visitor: o.ExpressionVisitor, context: any): any {}
+
+  override isEquivalent(e: Expression): boolean {
+    return e instanceof InvalidExpr;
+  }
+
+  override isConstant() {
+    return true;
+  }
+
+  override clone(): InvalidExpr {
+    return new InvalidExpr();
+  }
+
+  override transformInternalExpressions(): void {}
 }
 
 /**

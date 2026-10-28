@@ -105,6 +105,7 @@ export const angularCoreEnv: {[name: string]: unknown} = (() => ({
   'ɵɵcontentQuery': r3.ɵɵcontentQuery,
   'ɵɵcontentQuerySignal': r3.ɵɵcontentQuerySignal,
   'ɵɵreference': r3.ɵɵreference,
+  'ɵɵinvalid': r3.ɵɵinvalid,
   'ɵɵclassMap': r3.ɵɵclassMap,
   'ɵɵstyleMap': r3.ɵɵstyleMap,
   'ɵɵstyleProp': r3.ɵɵstyleProp,

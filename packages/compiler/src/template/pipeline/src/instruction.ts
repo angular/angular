@@ -287,6 +287,10 @@ export function resetView(returnValue: o.Expression): o.Expression {
   return o.importExpr(Identifiers.resetView).callFn([returnValue]);
 }
 
+export function invalid(sourceSpan: ParseSourceSpan | null): o.Expression {
+  return o.importExpr(Identifiers.invalid).callFn([], sourceSpan);
+}
+
 export function text(
   slot: number,
   initialValue: string,
