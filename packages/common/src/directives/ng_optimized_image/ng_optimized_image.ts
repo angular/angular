@@ -852,19 +852,90 @@ function assertNotBase64Image(dir: NgOptimizedImage) {
 }
 
 /**
- * Verifies that the 'sizes' only includes responsive values.
+ * Matches the dimensions used in a source size value and captures their unit,
+ * e.g. `px` for `500px` or `vw` for `33.3vw`. Unitless numbers are not matched.
+ */
+const SOURCE_SIZE_DIMENSION = /(?:\d*\.)?\d+([a-z]+|%)/gi;
+
+/**
+ * Verifies that the `sizes` attribute is not purely pixel-based.
+ *
+ * Setting `sizes` switches the automatic `srcset` generation to responsive mode, which emits a
+ * width descriptor for each configured breakpoint. A fixed-size image (e.g. `sizes="500px"`) is
+ * better served by omitting `sizes`: the `srcset` then gets exact `1x`/`2x` density descriptors
+ * based on the `width` input, instead of candidates snapped to the nearest breakpoint.
+ *
+ * Pixel values mixed with other values (e.g. `sizes="(max-width: 768px) 100vw, 370px"`) are
+ * allowed, since the user is intentionally using responsive mode with a pixel fallback.
  */
 function assertNoComplexSizes(dir: NgOptimizedImage) {
-  let sizes = dir.sizes;
-  if (sizes?.match(/((\)|,)\s|^)\d+px/)) {
+  const sizes = dir.sizes;
+  if (!sizes) {
+    return;
+  }
+
+  let hasPixelValues = false;
+  let hasOtherValues = false;
+  for (const value of getSourceSizeValues(sizes)) {
+    const units = Array.from(value.matchAll(SOURCE_SIZE_DIMENSION), (match) =>
+      match[1].toLowerCase(),
+    );
+    // Percentages are not valid in `sizes`, so a value using them counts as neither kind.
+    // The same goes for `auto`, which the directive prepends to lazy-loaded images anyway.
+    if (units.some((unit) => unit !== 'px' && unit !== '%')) {
+      hasOtherValues = true;
+    } else if (units.length > 0 && !units.includes('%')) {
+      hasPixelValues = true;
+    }
+  }
+
+  if (hasPixelValues && !hasOtherValues) {
     throw new RuntimeError(
       RuntimeErrorCode.INVALID_INPUT,
-      `${imgDirectiveDetails(dir.ngSrc, false)} \`sizes\` was set to a string including ` +
-        `pixel values. For automatic \`srcset\` generation, \`sizes\` must only include responsive ` +
-        `values, such as \`sizes="50vw"\` or \`sizes="(min-width: 768px) 50vw, 100vw"\`. ` +
-        `To fix this, modify the \`sizes\` attribute, or provide your own \`ngSrcset\` value directly.`,
+      `${imgDirectiveDetails(dir.ngSrc, false)} \`sizes\` was set to a string that only ` +
+        `includes pixel values. For automatic \`srcset\` generation, \`sizes\` must include ` +
+        `responsive values, such as \`sizes="50vw"\` or \`sizes="(min-width: 768px) 50vw, 100vw"\`. ` +
+        `Pixel values can be mixed with responsive values, for example ` +
+        `\`sizes="(max-width: 768px) 100vw, 370px"\`. ` +
+        `To fix this, remove the \`sizes\` attribute for fixed-size images, include responsive ` +
+        `values in \`sizes\`, or provide your own \`ngSrcset\` value directly.`,
     );
   }
+}
+
+/**
+ * Extracts the source size values from a `sizes` attribute, i.e. the length that follows the
+ * optional media condition of each comma-separated entry (`['100vw', '370px']` for
+ * `sizes="(max-width: 768px) 100vw, 370px"`). Media conditions are left out, so that the
+ * units they use are not mistaken for the units of the image slot.
+ */
+function getSourceSizeValues(sizes: string): string[] {
+  return (
+    splitOutsideParens(sizes, /,/)
+      .map((sourceSize) => splitOutsideParens(sourceSize.trim(), /\s/).pop()!)
+      // An entry that ends with a parenthesized group is a media condition without a value.
+      .filter((value) => !value.startsWith('('))
+  );
+}
+
+/** Splits a string on the given separator, skipping the separators nested in parentheses. */
+function splitOutsideParens(input: string, separator: RegExp): string[] {
+  const parts: string[] = [];
+  let depth = 0;
+  let start = 0;
+  for (let i = 0; i < input.length; i++) {
+    const char = input[i];
+    if (char === '(') {
+      depth++;
+    } else if (char === ')' && depth > 0) {
+      depth--;
+    } else if (depth === 0 && separator.test(char)) {
+      parts.push(input.slice(start, i));
+      start = i + 1;
+    }
+  }
+  parts.push(input.slice(start));
+  return parts;
 }
 
 function assertValidPlaceholder(dir: NgOptimizedImage, imageLoader: ImageLoader) {
