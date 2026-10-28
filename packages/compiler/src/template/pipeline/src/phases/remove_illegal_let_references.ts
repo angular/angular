@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
 import {CompilationJob} from '../compilation';
 
@@ -16,7 +15,7 @@ import {CompilationJob} from '../compilation';
  * E.g. the naming phase can fail because we resolved the variable here, but the variable doesn't
  * exist anymore because the optimization phase removed it since it's invalid. To avoid surfacing
  * confusing errors to users in the case where template type checking isn't running (e.g. in JIT
- * mode) this phase detects illegal forward references and replaces them with `undefined`.
+ * mode) this phase detects illegal forward references and replaces them with a placeholder.
  * Eventually users will see the proper error from the template type checker.
  */
 export function removeIllegalLetReferences(job: CompilationJob): void {
@@ -36,7 +35,9 @@ export function removeIllegalLetReferences(job: CompilationJob): void {
         ir.transformExpressionsInOp(
           current,
           (expr) =>
-            expr instanceof ir.LexicalReadExpr && expr.name === name ? o.literal(undefined) : expr,
+            expr instanceof ir.LexicalReadExpr && expr.name === name
+              ? new ir.InvalidExpr(expr.sourceSpan)
+              : expr,
           ir.VisitorContextFlag.None,
         );
         current = current.prev;
