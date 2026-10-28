@@ -295,7 +295,30 @@ export function buildHostMetadata(
       bindingName.startsWith('[') || bindingName.startsWith('(') ? bindingName : `[${bindingName}]`;
     // Ensure names that aren't valid identifiers (e.g. `is-a`) are emitted as quoted property reads.
     // https://github.com/angular/angular/blob/c1829f6/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L685-L689
-    hostObj[key] = getSafePropertyAccessString('this', binding.memberName.text!);
+    const hostPropertyValue = getSafePropertyAccessString('this', binding.memberName.text!);
+    if (diagCtx) {
+      const propertyKey = key.startsWith('[') && key.endsWith(']') ? key.slice(1, -1) : bindingName;
+      const errors = verifyHostBindings(
+        {
+          attributes: {},
+          listeners: {},
+          properties: {[propertyKey]: hostPropertyValue},
+          specialAttributes: {},
+        },
+        createHostSourceSpan(diagCtx),
+      );
+      if (errors.length > 0) {
+        diagCtx.diagnostics.push({
+          category: 1,
+          code: 5001,
+          messageText: errors.map((e) => e.msg).join('\n'),
+          filePath: diagCtx.filePath,
+          span: binding.decoratorSpan ?? diagCtx.hostSpan,
+        });
+        continue;
+      }
+    }
+    hostObj[key] = hostPropertyValue;
   }
 
   // Add @HostListener decorators as event bindings
@@ -319,7 +342,14 @@ export function buildHostMetadata(
   // `@angular/compiler` does not.
   // https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L2049-L2058
   try {
-    return parseHostBindings(hostObj);
+    const parsed = parseHostBindings(hostObj);
+    if (!diagCtx) {
+      const errors = verifyHostBindings(parsed, createDummySourceSpan(''));
+      if (errors.length > 0) {
+        throw new Error(errors.map((e) => e.msg).join('\n'));
+      }
+    }
+    return parsed;
   } catch (e) {
     const message = e instanceof Error ? e.message : String(e);
     throw new Error(

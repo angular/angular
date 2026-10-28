@@ -431,6 +431,30 @@ describe('HtmlParser', () => {
         ]);
       });
 
+      it('should report an error for attributes starting with a colon', () => {
+        const {errors} = parser.parse(
+          '<div :onclick="alert(1)" :[onclick]="alert(1)" :href="javascript:alert(1)"></div>',
+          'TestComp',
+        );
+        expect(humanizeErrors(errors)).toEqual([
+          [
+            ':onclick',
+            "Invalid attribute name ':onclick'. Attribute names cannot start with a colon.",
+            '0:5',
+          ],
+          [
+            ':[onclick]',
+            "Invalid attribute name ':[onclick]'. Attribute names cannot start with a colon.",
+            '0:25',
+          ],
+          [
+            ':href',
+            "Invalid attribute name ':href'. Attribute names cannot start with a colon.",
+            '0:47',
+          ],
+        ]);
+      });
+
       it('should support a prematurely terminated interpolation in attribute', () => {
         const {errors, rootNodes} = parser.parse('<div p="{{ abc"><span></span>', 'TestComp');
         expect(humanizeNodes(rootNodes, true)).toEqual([

@@ -5779,6 +5779,74 @@ runInEachFileSystem((os: string) => {
       expect(trim(jsContents)).toContain(trim(hostBindingsFn));
     });
 
+    it('should report diagnostics for invalid @HostBinding decorator attribute names', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Directive, HostBinding} from '@angular/core';
+
+        @Directive({selector: '[test1]'})
+        export class Dir1 {
+          @HostBinding('attr.onclick') onClick = 'alert(1)';
+        }
+
+        @Directive({selector: '[test2]'})
+        export class Dir2 {
+          @HostBinding('attr.:onclick') colonOnClick = 'alert(1)';
+        }
+
+        @Directive({selector: '[test3]'})
+        export class Dir3 {
+          @HostBinding('attr.::onclick') doubleColonOnClick = 'alert(1)';
+        }
+
+        @Directive({selector: '[test4]'})
+        export class Dir4 {
+          @HostBinding('attr.svg:onclick') svgOnClick = 'alert(1)';
+        }
+
+        @Directive({selector: '[test5]'})
+        export class Dir5 {
+          @HostBinding('attr.:href') colonHref = 'javascript:alert(1)';
+        }
+
+        @Directive({selector: '[test6]'})
+        export class Dir6 {
+          @HostBinding('attr.::href') doubleColonHref = 'javascript:alert(1)';
+        }
+      `,
+      );
+
+      const errors = env.driveDiagnostics();
+      const messages = errors.map((e) => ts.flattenDiagnosticMessageText(e.messageText, '\n'));
+      expect(messages).toEqual([
+        "Binding to event attribute 'onclick' is disallowed for security reasons, please use (click)=...",
+        "Invalid attribute name ':onclick'. Attribute names cannot start with a colon.",
+        "Invalid attribute name '::onclick'. Attribute names cannot start with a colon.",
+        "Binding to event attribute 'svg:onclick' is disallowed for security reasons, please use (click)=...",
+        "Invalid attribute name ':href'. Attribute names cannot start with a colon.",
+        "Invalid attribute name '::href'. Attribute names cannot start with a colon.",
+      ]);
+    });
+
+    it('should allow @HostBinding with colon variant class and style bindings', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Directive, HostBinding} from '@angular/core';
+
+        @Directive({selector: '[test]'})
+        export class Dir {
+          @HostBinding('class.hover:online') isOnline = true;
+          @HostBinding('style.color:only') colorOnly = 'red';
+        }
+      `,
+      );
+
+      const errors = env.driveDiagnostics();
+      expect(errors.length).toBe(0);
+    });
+
     it('should use proper default value for preserveWhitespaces config param', () => {
       env.tsconfig(); // default is `false`
       env.write(

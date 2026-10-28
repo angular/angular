@@ -12,7 +12,7 @@ import * as e from '../../../expression_parser/ast';
 import * as i18n from '../../../i18n/i18n_ast';
 import {splitNsName} from '../../../ml_parser/tags';
 import * as o from '../../../output/output_ast';
-import {ParseSourceSpan} from '../../../parse_util';
+import {ParseError, ParseSourceSpan} from '../../../parse_util';
 import * as t from '../../../render3/r3_ast';
 import {
   DeferBlockDepsEmitMode,
@@ -129,6 +129,23 @@ export function ingestHostBinding(
     }
     if (property.isAnimation) {
       bindingKind = ir.BindingKind.Animation;
+    }
+    if (bindingKind === ir.BindingKind.Attribute) {
+      const report = domSchema.validateAttribute(property.name);
+      if (report.error) {
+        bindingParser.errors.push(new ParseError(property.sourceSpan, report.msg!));
+      }
+    } else if (
+      bindingKind === ir.BindingKind.Property &&
+      !property.name.startsWith('class.') &&
+      !property.name.startsWith('style.') &&
+      !property.name.startsWith('class!') &&
+      !property.name.startsWith('style!')
+    ) {
+      const report = domSchema.validateProperty(property.name);
+      if (report.error) {
+        bindingParser.errors.push(new ParseError(property.sourceSpan, report.msg!));
+      }
     }
     const securityContexts = calcHostBindingSecurityContexts(
       bindingParser,
