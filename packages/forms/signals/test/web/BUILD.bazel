@@ -12,7 +12,6 @@ ng_project(
         "//packages/core/testing",
         "//packages/forms",
         "//packages/forms:node_modules/@mcp-b/webmcp-polyfill",
-        "//packages/forms:node_modules/@mcp-b/webmcp-types",
         "//packages/forms:node_modules/@standard-schema/spec",
         "//packages/forms:node_modules/zod",
         "//packages/forms/signals",

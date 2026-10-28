@@ -547,7 +547,7 @@ export class DebugNode {
 }
 
 // @public
-export function declareExperimentalWebMcpTool<const InputSchema extends JsonSchemaForInference>(tool: WebMcpToolDescriptor<InputSchema>, injector?: Injector): Promise<void>;
+export function declareExperimentalWebMcpTool<const InputSchema extends object>(tool: WebMcpToolDescriptor<InputSchema>, injector?: Injector): Promise<void>;
 
 // @public
 export const DEFAULT_CURRENCY_CODE: InjectionToken<string>;
@@ -1520,7 +1520,7 @@ export function provideCheckNoChangesConfig(options: {
 export function provideEnvironmentInitializer(initializerFn: () => void): EnvironmentProviders;
 
 // @public
-export function provideExperimentalWebMcpTools<const InputSchema extends JsonSchemaForInference>(tools: WebMcpToolDescriptor<InputSchema>[]): EnvironmentProviders;
+export function provideExperimentalWebMcpTools<const InputSchema extends object>(tools: WebMcpToolDescriptor<InputSchema>[]): EnvironmentProviders;
 
 // @public
 export function provideIdleServiceWith(useExisting: AbstractType<IdleService> | InjectionToken<IdleService>): EnvironmentProviders;
@@ -2153,21 +2153,16 @@ export abstract class ViewRef extends ChangeDetectorRef {
 }
 
 // @public
-export interface WebMcpClient {
-    signal: AbortSignal;
-}
+export type WebMcpClient = ToolExecuteCallbackOptions;
 
 // @public
-export interface WebMcpToolDescriptor<InputSchema extends JsonSchemaForInference> {
-    annotations?: Annotations;
-    description: string;
+export interface WebMcpToolDescriptor<InputSchema extends object = object> extends Omit<ModelContextTool, 'execute'> {
     execute: WebMcpToolExecute<InputSchema>;
-    inputSchema: InputSchema;
-    name: string;
+    inputSchema?: InputSchema;
 }
 
 // @public
-export type WebMcpToolExecute<InputSchema extends JsonSchemaForInference> = (args: InferArgsFromInputSchema<InputSchema>, client: WebMcpClient) => unknown;
+export type WebMcpToolExecute<InputSchema extends object = object> = ModelContextToolFromSchema<InputSchema>['execute'];
 
 // @public
 export interface WritableResource<T> extends Resource<T> {

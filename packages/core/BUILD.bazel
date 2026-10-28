@@ -49,8 +49,7 @@ ng_project(
         "//packages/core/src/interface",
         "//packages/core/src/reflection",
         "//packages/core/src/util",
-        "//packages/core/third_party/@mcp-b/webmcp-types",
-        "//packages/core/third_party/@modelcontextprotocol/server",
+        "//packages/core/third_party/webmcp-types",
     ],
 )
 
@@ -67,22 +66,18 @@ ng_package(
         "//packages/core/resources",
     ],
     externals = [
-        # Don't bundle vendored `@mcp-b/webmcp-types` dependency.
-        "../third_party/@mcp-b/webmcp-types",
-        "../../third_party/@mcp-b/webmcp-types",
-        "../third_party/@modelcontextprotocol/server",
-        "../../third_party/@modelcontextprotocol/server",
+        # Don't bundle vendored `webmcp-types` dependency.
+        "../third_party/webmcp-types",
+        "../../third_party/webmcp-types",
     ],
     nested_packages = [
         "//packages/core/schematics:npm_package",
-        "//packages/core/third_party/@mcp-b/webmcp-types",
-        "//packages/core/third_party/@modelcontextprotocol/server",
+        "//packages/core/third_party/webmcp-types",
     ],
     package = "@angular/core",
     substitutions = {
-        # Link `@mcp-b/webmcp-types` to the vendored package.
-        "\\./third_party/@mcp-b/webmcp-types": "../third_party/@mcp-b/webmcp-types/index.js",
-        "\\./third_party/@modelcontextprotocol/server": "../third_party/@modelcontextprotocol/server/index.js",
+        # Link `webmcp-types` to the vendored package.
+        "\\./third_party/webmcp-types": "../third_party/webmcp-types/index.js",
     },
     tags = [
         "release-with-framework",

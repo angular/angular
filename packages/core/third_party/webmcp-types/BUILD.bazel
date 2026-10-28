@@ -1,0 +1,25 @@
+load("//tools:defaults.bzl", "js_library")
+
+genrule(
+    name = "sources",
+    srcs = ["//packages/core:node_modules/webmcp-types/dir"],
+    outs = [
+        "dist/index.d.ts",
+        "LICENSE",
+    ],
+    cmd = """
+        readonly SRC_DIR="$(location //packages/core:node_modules/webmcp-types/dir)"
+        mkdir -p "$$(dirname "$(location dist/index.d.ts)")"
+        cp "$${SRC_DIR}/index.d.ts" "$(location dist/index.d.ts)"
+        cp "$${SRC_DIR}/LICENSE" "$(location LICENSE)"
+    """,
+)
+
+js_library(
+    name = "webmcp-types",
+    srcs = [
+        "index.d.ts",
+        ":sources",
+    ],
+    visibility = ["//packages/core:__subpackages__"],
+)
