@@ -466,6 +466,43 @@ export declare class TestComp {
 }
 
 /****************************************************************************************************
+ * PARTIAL FILE: arrow_function_nested_parameter_scope.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class TestComp {
+    y = 100;
+    twice(fn) {
+        return fn(1) * 2;
+    }
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: TestComp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    {{(x => twice(y => y * 2) + y)(1)}}
+    {{(x => twice(y => y) + twice(z => y))(1)}}
+  `, isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    {{(x => twice(y => y * 2) + y)(1)}}
+    {{(x => twice(y => y) + twice(z => y))(1)}}
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: arrow_function_nested_parameter_scope.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class TestComp {
+    y: number;
+    twice(fn: (value: number) => number): number;
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestComp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestComp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
  * PARTIAL FILE: arrow_function_safe_access.js
  ****************************************************************************************************/
 import { Component } from '@angular/core';
