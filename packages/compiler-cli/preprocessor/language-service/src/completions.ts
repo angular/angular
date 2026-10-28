@@ -70,7 +70,7 @@ import {isBoundEventWithSyntheticHandler, isWithin} from './utils.js';
 import {HybridCompiler} from '../../src/hybrid_compiler.js';
 import {TsGoFacade} from './facade.js';
 import {getSetup, SetupResult} from './type_checker_setup.js';
-import {offsetToPosition} from '../../src/tcb_ls_util.js';
+import {offsetToPosition} from './tcb_ls_util.js';
 
 export enum CompletionNodeContext {
   None,

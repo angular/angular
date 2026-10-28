@@ -19,7 +19,7 @@ import {
   createNgTemplateQuickInfo,
 } from './quick_info_built_ins.js';
 import {getTextSpanOfNode, getDirectiveMatchesForAttribute, isWithin} from './utils.js';
-import {offsetToPosition} from '../../src/tcb_ls_util.js';
+import {offsetToPosition} from './tcb_ls_util.js';
 import {
   PropertyRead,
   TmplAstVariable,

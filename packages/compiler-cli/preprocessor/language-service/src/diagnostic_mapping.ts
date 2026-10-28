@@ -18,8 +18,8 @@ import {
   getTemplateLocationFromTcbLocation,
   getTcbPath,
   isTcbFunction,
-} from '../../src/tcb_ls_util.js';
-import {hasIgnoreForDiagnosticsMarker} from '../../src/comments.js';
+} from './tcb_ls_util.js';
+import {hasIgnoreForDiagnosticsMarker} from './comments.js';
 import {makeClassKey} from '../../src/compiler-utils.js';
 
 /**

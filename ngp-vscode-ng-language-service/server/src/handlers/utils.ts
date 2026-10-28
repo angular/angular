@@ -10,7 +10,7 @@ import {Position, TextDocuments} from 'vscode-languageserver';
 import {TextDocument} from 'vscode-languageserver-textdocument';
 import {fileURLToPath} from 'node:url';
 import {LanguageService} from '../../../../packages/compiler-cli/preprocessor/language-service/src/language_service.js';
-import {positionToOffset} from '../../../../packages/compiler-cli/preprocessor/src/tcb_ls_util.js';
+import {positionToOffset} from '../../../../packages/compiler-cli/preprocessor/language-service/src/tcb_ls_util.js';
 
 export interface HandlerContext {
   languageService: LanguageService;

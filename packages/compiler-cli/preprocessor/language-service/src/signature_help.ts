@@ -21,7 +21,7 @@ import {TemplateTypeChecker} from './type_checker.js';
 import {TsGoFacade} from './facade.js';
 import {getSetup} from './type_checker_setup.js';
 import {SymbolKind} from './symbols.js';
-import {getTcbPath, offsetToPosition} from '../../src/tcb_ls_util.js';
+import {getTcbPath, offsetToPosition} from './tcb_ls_util.js';
 import {findTightestNode} from './references_and_rename_utils.js';
 
 /**

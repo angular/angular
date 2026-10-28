@@ -17,7 +17,7 @@ import {
   getTemplateLocationFromTcbLocation,
   positionToOffset,
   offsetToPosition,
-} from '../../src/tcb_ls_util.js';
+} from './tcb_ls_util.js';
 import {
   PropertyRead,
   TmplAstVariable,

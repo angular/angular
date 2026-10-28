@@ -24,7 +24,7 @@ import {
   getRenameTextAndSpanAtPosition,
   getTargetDetailsAtTemplatePosition,
 } from './references_and_rename_utils.js';
-import {getTcbPath, offsetToPosition} from '../../src/tcb_ls_util.js';
+import {getTcbPath, offsetToPosition} from './tcb_ls_util.js';
 import {canonicalizePath} from './utils.js';
 import {SymbolKind} from './symbols.js';
 
