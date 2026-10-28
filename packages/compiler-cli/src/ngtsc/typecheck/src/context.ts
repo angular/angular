@@ -722,7 +722,7 @@ class InlineTcbOp implements Op {
    * Type check blocks are inserted immediately after the end of the directive class.
    */
   get splitPoint(): number {
-    return this.ref.node.end + 1;
+    return this.ref.node.end;
   }
 
   execute(im: ImportManager, tcbSf: ts.SourceFile, refEmitter: ReferenceEmitter): string {
