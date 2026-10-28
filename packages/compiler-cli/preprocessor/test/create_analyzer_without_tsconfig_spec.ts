@@ -80,20 +80,6 @@ function resolvedDeclarationNames(metadata: AnalysisResult | null): string[] {
   return metadata?.classes[0]?.component?.resolvedDeclarations?.map((d) => d.name) ?? [];
 }
 
-/**
- * The message `promise` rejects with. The wasm-bindgen engine throws bare strings (its methods
- * return `Result<_, String>`), which `toBeRejectedWithError` does not accept, while the N-API and
- * sidecar adapters throw `Error`s; this reads the message from either.
- */
-async function rejectionMessage(promise: Promise<unknown>): Promise<string> {
-  try {
-    await promise;
-  } catch (e) {
-    return e instanceof Error ? e.message : String(e);
-  }
-  throw new Error('Expected the promise to be rejected');
-}
-
 describe('createAnalyzer without a tsconfig', () => {
   it('analyzes the program closure of explicit entry points', async () => {
     const virtualFiles = {[COMP_PATH]: COMP_CONTENT};
@@ -267,7 +253,7 @@ export class MyComp {}
       const finalMeta = await analyzer.getMetadataForFile(COMP_PATH);
       expect(resolvedDeclarationNames(finalMeta)).not.toContain('HighlightDir');
 
-      expect(await rejectionMessage(analyzer.setEntryPoints(['src/my_comp.ts']))).toMatch(
+      await expectAsync(analyzer.setEntryPoints(['src/my_comp.ts'])).toBeRejectedWithError(
         /must be absolute paths/,
       );
     } finally {
