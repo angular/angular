@@ -760,7 +760,7 @@ export function ɵɵdeferHydrateOnInteraction() {
 export function ɵɵdeferOnViewport(
   triggerIndex: number | null,
   walkUpTimes?: number | null,
-  options?: IntersectionObserverInit,
+  options?: unknown,
 ) {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
@@ -794,7 +794,7 @@ export function ɵɵdeferOnViewport(
       onViewportWrapper,
       () => triggerDeferBlock(TriggerType.Regular, lView, tNode),
       TriggerType.Regular,
-      options,
+      options as IntersectionObserverInit,
     );
   }
 }
@@ -808,7 +808,7 @@ export function ɵɵdeferOnViewport(
 export function ɵɵdeferPrefetchOnViewport(
   triggerIndex: number | null,
   walkUpTimes?: number | null,
-  options?: IntersectionObserverInit,
+  options?: unknown,
 ) {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
@@ -842,7 +842,7 @@ export function ɵɵdeferPrefetchOnViewport(
       onViewportWrapper,
       () => triggerPrefetching(tDetails, lView, tNode),
       TriggerType.Prefetch,
-      options,
+      options as IntersectionObserverInit,
     );
   }
 }
@@ -851,7 +851,7 @@ export function ɵɵdeferPrefetchOnViewport(
  * Creates runtime data structures for the `on viewport` hydrate trigger.
  * @codeGenApi
  */
-export function ɵɵdeferHydrateOnViewport(options?: IntersectionObserverInit) {
+export function ɵɵdeferHydrateOnViewport(options?: unknown) {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
