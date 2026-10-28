@@ -300,12 +300,12 @@ function setupSelectorMatchedInputsOrOutputs<T>(
       let bindings: NodeInputBindings | NodeOutputBindings;
       if (mode === BindingType.Inputs) {
         bindings = tNode.inputs ??= {};
+        setShadowStylingInputFlags(tNode, publicName);
       } else {
         bindings = tNode.outputs ??= {};
       }
       bindings[publicName] ??= [];
       bindings[publicName].push(directiveIndex);
-      setShadowStylingInputFlags(tNode, publicName);
     }
   }
 }
@@ -331,12 +331,12 @@ function setupHostDirectiveInputsOrOutputs(
       let bindings: HostDirectiveInputs | HostDirectiveOutputs;
       if (mode === BindingType.Inputs) {
         bindings = tNode.hostDirectiveInputs ??= {};
+        setShadowStylingInputFlags(tNode, publicName);
       } else {
         bindings = tNode.hostDirectiveOutputs ??= {};
       }
       bindings[publicName] ??= [];
       bindings[publicName].push(directiveIndex, initialName);
-      setShadowStylingInputFlags(tNode, publicName);
     }
   }
 }
