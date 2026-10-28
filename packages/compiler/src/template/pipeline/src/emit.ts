@@ -70,6 +70,7 @@ import {reify} from './phases/reify';
 import {removeEmptyBindings} from './phases/remove_empty_bindings';
 import {removeI18nContexts} from './phases/remove_i18n_contexts';
 import {removeIllegalLetReferences} from './phases/remove_illegal_let_references';
+import {removeIllegalTrackReferences} from './phases/remove_illegal_track_references';
 import {removeUnusedI18nAttributesOps} from './phases/remove_unused_i18n_attrs';
 import {resolveBoundaries} from './phases/resolve_boundaries';
 import {resolveContexts} from './phases/resolve_contexts';
@@ -147,6 +148,7 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: generateTrackVariables},
   {kind: Kind.Tmpl, fn: removeIllegalLetReferences},
   {kind: Kind.Both, fn: resolveNames},
+  {kind: Kind.Tmpl, fn: removeIllegalTrackReferences},
   {kind: Kind.Tmpl, fn: resolveDeferTargetNames},
   {kind: Kind.Tmpl, fn: transformTwoWayBindingSet},
   {kind: Kind.Tmpl, fn: optimizeTrackFns},
