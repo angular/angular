@@ -8,7 +8,7 @@
 
 import {ApplicationRef, Component, input, linkedSignal, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {form, provideExperimentalWebMcpForms, required} from '@angular/forms/signals';
+import {applyEach, form, provideExperimentalWebMcpForms, required} from '@angular/forms/signals';
 import {cleanupWebMCPPolyfill, initializeWebMCPPolyfill} from '@mcp-b/webmcp-polyfill';
 import type {ChromeModelContextExtensions, ModelContext} from '@mcp-b/webmcp-types';
 import {REGISTER_WEBMCP_FORM, RegisterWebMcpForm} from '../../src/webmcp/tokens';
@@ -186,6 +186,97 @@ describe('Signal Forms WebMCP Integration', () => {
       expect(JSON.parse(result!)).toEqual({
         content: [{type: 'text', text: 'Form submitted successfully.'}],
       });
+    });
+
+    it('should require every property of array items in the schema', async () => {
+      const model = signal({todos: [{title: 'a', done: true, tags: [{label: 'x', color: 'red'}]}]});
+
+      TestBed.runInInjectionContext(() => {
+        form(
+          model,
+          (p) => {
+            applyEach(p.todos, (todo) => {
+              required(todo.title);
+            });
+          },
+          {
+            experimentalWebMcpTool: {
+              name: 'arrayItemsTool',
+              description: 'A test for array item schemas',
+            },
+          },
+        );
+      });
+      await TestBed.inject(ApplicationRef).whenStable();
+
+      const tool = (await getModelContext().getTools()).find((t) => t.name === 'arrayItemsTool')!;
+      // Arrays are replaced as a whole, so the agent has to send every property of every item.
+      expect(tool.inputSchema).toEqual({
+        type: 'object',
+        properties: {
+          todos: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                title: {type: 'string'},
+                done: {type: 'boolean'},
+                tags: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {label: {type: 'string'}, color: {type: 'string'}},
+                    required: ['label', 'color'],
+                    additionalProperties: false,
+                  },
+                },
+              },
+              required: ['title', 'done', 'tags'],
+              additionalProperties: false,
+            },
+          },
+        },
+        required: [],
+        additionalProperties: false,
+      });
+    });
+
+    it('should keep the current value of properties omitted by the agent', async () => {
+      const model = signal({
+        name: 'Alice',
+        age: 25,
+        address: {city: 'Sunnyvale', zip: 94089},
+        hobbies: ['reading'],
+      });
+
+      const submitSpy = jasmine.createSpy('submitSpy').and.returnValue(Promise.resolve(undefined));
+
+      TestBed.runInInjectionContext(() => {
+        form(model, {
+          experimentalWebMcpTool: {
+            name: 'testFormPartialTool',
+            description: 'A test form partial update tool',
+          },
+          submission: {
+            action: submitSpy,
+          },
+        });
+      });
+      await TestBed.inject(ApplicationRef).whenStable();
+
+      // None of these properties are `required`, so the schema allows omitting them.
+      await executeTool(
+        'testFormPartialTool',
+        JSON.stringify({name: 'Bob', address: {city: 'Paris'}}),
+      );
+
+      expect(model()).toEqual({
+        name: 'Bob',
+        age: 25,
+        address: {city: 'Paris', zip: 94089},
+        hobbies: ['reading'],
+      });
+      expect(submitSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should return a failure message if form validation fails', async () => {
