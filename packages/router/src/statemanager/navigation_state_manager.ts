@@ -458,6 +458,12 @@ export class NavigationStateManager extends StateManager {
       : (this.currentNavigation.routerTransition?.extras.scroll ?? 'after-transition');
     const interceptOptions: NavigationInterceptOptions = {
       scroll,
+      // `focusReset` isn't part of the public `NavigationBehaviorOptions` on this branch. It's read
+      // here so angular.dev can keep focus in the API reference filter.
+      focusReset: (
+        this.currentNavigation.routerTransition?.extras as
+          {focusReset?: NavigationFocusReset} | undefined
+      )?.focusReset,
     };
 
     const {
