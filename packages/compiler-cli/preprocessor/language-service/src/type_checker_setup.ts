@@ -13,7 +13,7 @@ import {isPositionInHostBinding} from './utils.js';
 import {makeClassKey} from '../../src/compiler-utils.js';
 import {ClassMetadata} from '../../src/types.js';
 
-import {positionToOffset} from '../../src/tcb_ls_util.js';
+import {positionToOffset} from './tcb_ls_util.js';
 
 export interface SetupResult {
   tsFilePath: string;

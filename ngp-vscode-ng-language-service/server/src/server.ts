@@ -39,7 +39,7 @@ import * as rpc from 'vscode-jsonrpc/node';
 import {API} from '@typescript/native-preview/unstable/async';
 import {TsGoFacade} from '../../../packages/compiler-cli/preprocessor/language-service/src/facade';
 import {fileURLToPath} from 'node:url';
-import {getTcbPath} from '../../../packages/compiler-cli/preprocessor/src/tcb_ls_util.js';
+import {getTcbPath} from '../../../packages/compiler-cli/preprocessor/language-service/src/tcb_ls_util.js';
 import {
   FileInvalidation,
   FileUpdateType,

@@ -42,8 +42,8 @@ import {
   positionToOffset,
   isTcbFunction,
   getTcbPath,
-} from '../../src/tcb_ls_util.js';
-import {readSpanComment} from '../../src/comments.js';
+} from './tcb_ls_util.js';
+import {readSpanComment} from './comments.js';
 import {isWithin, getDirectiveMatchesForAttribute, canonicalizePath} from './utils.js';
 import {makeClassKey} from '../../src/compiler-utils.js';
 import {ClassMetadata} from '../../src/types.js';

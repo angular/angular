@@ -7,7 +7,12 @@
  */
 
 import ts from 'typescript';
-export {getLineStarts, positionToOffset, lineNumberAtOffset, offsetToPosition} from './tcb_util.js';
+export {
+  getLineStarts,
+  positionToOffset,
+  lineNumberAtOffset,
+  offsetToPosition,
+} from '../../src/tcb_util.js';
 
 const SPAN_COMMENT_REGEX = /\/\*(\d+),(\d+)\*\//g;
 

@@ -22,7 +22,7 @@ import {
   ClassDeclaration,
 } from '@angular/compiler-cli/private/hybrid_analysis';
 import ts from 'typescript';
-import {getTcbPath, isTcbFunction, offsetToPosition} from '../../src/tcb_ls_util.js';
+import {getTcbPath, isTcbFunction, offsetToPosition} from './tcb_ls_util.js';
 import * as compiler from '@angular/compiler';
 
 class HybridSymbolDirectiveMeta implements SymbolDirectiveMeta {

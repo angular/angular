@@ -13,7 +13,7 @@ import * as rpc from 'vscode-jsonrpc/node';
 import {Location} from 'vscode-languageserver';
 import {TsGoFacade} from '../src/facade';
 
-import {positionToOffset} from '../../src/tcb_ls_util.js';
+import {positionToOffset} from '../src/tcb_ls_util.js';
 import {TestFileManager} from './test_file_manager';
 import {TestEnv, getTestWorkspacePath, startTestServer} from './test_helpers';
 
