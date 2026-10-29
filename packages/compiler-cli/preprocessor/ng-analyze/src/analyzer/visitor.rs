@@ -914,11 +914,11 @@ struct ClassVisitorOutput {
 /// symbol/registration tables, re-exports, and the raw static/dynamic import specifiers.
 ///
 /// This is deliberately a pure AST/semantic walk — it performs no module resolution and no
-/// filesystem reads beyond what `is_core` already captured — so the caller can run it while
-/// holding the `ParsedFile` lock and release that lock before any I/O. Component `templateUrl`
-/// and `styleUrl(s)` expressions are only *recorded* (on `pending_template_url` /
-/// `pending_style_urls`); the caller must follow up with [`super::load_syntax_resources`] to
-/// complete Stage 1, otherwise `template`, `template_url` and `style_urls` stay unset.
+/// filesystem reads — so the caller can run it while holding the `ParsedFile` lock and release
+/// that lock before any I/O. Component `templateUrl` and `styleUrl(s)` expressions are only
+/// *recorded* (on `pending_template_url` / `pending_style_urls`); the caller must follow up with
+/// [`super::load_syntax_resources`] to complete Stage 1, otherwise `template`, `template_url` and
+/// `style_urls` stay unset.
 #[allow(clippy::too_many_arguments)]
 pub fn analyze_parsed(
     path: &Path,
@@ -3289,12 +3289,8 @@ export class MyService {
     fn test_core_reports_any_unrecognized_param_decorator() {
         let fs = create_test_fs(&[
             (
-                "/test/package.json",
-                r#"{"name": "@angular/core", "version": "0.0.0"}"#,
-            ),
-            (
                 "/test/tsconfig.json",
-                r#"{"compilerOptions": {}, "files": ["app.ts"]}"#,
+                r#"{"compilerOptions": {}, "angularCompilerOptions": {"_isAngularCoreCompilation": true}, "files": ["app.ts"]}"#,
             ),
             (
                 "/test/di.ts",

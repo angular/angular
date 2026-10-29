@@ -37,10 +37,9 @@ pub use import_emit::{
     strip_extension_str, ApfImportStrategy, PrefixImportStrategy, ReferenceEmitStrategy,
 };
 pub use imports::{
-    detect_is_core, extract_import_map, FileExportInfo, ImportDeclarationInfo, ImportKind,
-    ImportedSymbol,
+    extract_import_map, FileExportInfo, ImportDeclarationInfo, ImportKind, ImportedSymbol,
 };
-pub use resolver::{flatten_class_info, resolve_declaration_async, resolve_to_dts};
+pub use resolver::{flatten_class_info, resolve_declaration_async};
 pub use visitor::{analyze_parsed, ParsedFileAnalysis, RegistrationInfo};
 
 /// Span covering a decorator's argument list (first arg start..last arg end), or `None` when the

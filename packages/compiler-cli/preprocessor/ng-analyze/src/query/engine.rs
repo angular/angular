@@ -40,6 +40,12 @@ pub(crate) const ROOTS_FILE_ID: FileId = FileId::MAX;
 /// ([`QueryEngine::invalidate_module_resolution`]) re-runs exactly those. Never interned.
 pub(crate) const UNRESOLVED_IMPORTS_FILE_ID: FileId = FileId::MAX - 1;
 
+/// A pseudo [`FileId`] standing for which root, if any, is `r3_symbols.ts` (the fallback of
+/// [`QueryEngine::r3_symbols_file`]). Queries that read it record it as a dependency, so roots
+/// that add, remove or replace that file ([`QueryEngine::invalidate_r3_symbols_root`]) re-run
+/// exactly those, while other root changes leave them cached. Never interned.
+pub(crate) const R3_SYMBOLS_ROOT_FILE_ID: FileId = FileId::MAX - 2;
+
 /// The unified query engine.
 ///
 /// Every "question" the analyzer answers is a [`QueryKey`]; [`QueryEngine::query`] returns a cached,
@@ -71,6 +77,11 @@ pub struct QueryEngine<Fs: ResourceResolverFs + Clone + 'static> {
     pub(crate) reference_strategy: Arc<dyn crate::analyzer::import_emit::ReferenceEmitStrategy>,
     /// Explicit `r3_symbols.ts`; when unset, a root file with that name is used.
     pub(crate) r3_symbols_file: Option<PathBuf>,
+    /// Cached lookup of `r3_symbols.ts` in [`Self::entrypoints`], cleared when roots change.
+    pub(crate) r3_symbols_root: RwLock<Option<Option<PathBuf>>>,
+    /// Whether this compilation builds `@angular/core` itself, when configured; when unset, it is
+    /// detected from `r3_symbols.ts` ([`Self::is_angular_core_compilation`]).
+    pub(crate) angular_core_compilation: Option<bool>,
     pub generate_extra_imports_in_local_mode: bool,
     pub compile_non_exported_classes: bool,
     pub enable_hmr: bool,
@@ -97,6 +108,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             entrypoints,
             reference_strategy,
             None,
+            None,
             false,
             true,
             false,
@@ -117,6 +129,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         entrypoints: Arc<std::sync::RwLock<Vec<PathBuf>>>,
         reference_strategy: Arc<dyn crate::analyzer::import_emit::ReferenceEmitStrategy>,
         r3_symbols_file: Option<PathBuf>,
+        angular_core_compilation: Option<bool>,
         generate_extra_imports_in_local_mode: bool,
         compile_non_exported_classes: bool,
         enable_hmr: bool,
@@ -143,6 +156,8 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             last_program_files: Mutex::new(HashSet::new()),
             reference_strategy,
             r3_symbols_file,
+            r3_symbols_root: RwLock::new(None),
+            angular_core_compilation,
             generate_extra_imports_in_local_mode,
             compile_non_exported_classes,
             enable_hmr,
@@ -204,7 +219,11 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         if let Some(explicit) = &self.r3_symbols_file {
             return Some(explicit.clone());
         }
-        self.entrypoints
+        if let Some(cached) = self.r3_symbols_root.read().unwrap().as_ref() {
+            return cached.clone();
+        }
+        let found = self
+            .entrypoints
             .read()
             .unwrap()
             .iter()
@@ -212,7 +231,35 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                 path.file_name()
                     .is_some_and(|name| name == R3_SYMBOLS_FILE_NAME)
             })
-            .cloned()
+            .cloned();
+        *self.r3_symbols_root.write().unwrap() = Some(found.clone());
+        found
+    }
+
+    /// [`Self::r3_symbols_file`], recording on `ctx` when it falls back to the roots so that the
+    /// calling query re-runs once they add, remove or replace `r3_symbols.ts`.
+    pub(crate) fn r3_symbols_file_tracked(&self, ctx: &QueryContext<Fs>) -> Option<PathBuf> {
+        if self.r3_symbols_file.is_none() {
+            ctx.record_file(R3_SYMBOLS_ROOT_FILE_ID);
+        }
+        self.r3_symbols_file()
+    }
+
+    /// Whether this compilation builds `@angular/core` itself (ngtsc's `isCore`): the configured
+    /// [`Self::angular_core_compilation`] if any, otherwise whether `r3_symbols.ts` exports
+    /// `ITS_JUST_ANGULAR = true` (ngtsc's `isAngularCorePackage`), in which case the calling query
+    /// depends on that file and on the roots naming it.
+    /// https://github.com/angular/angular/blob/4f6d294917/packages/compiler-cli/src/ngtsc/core/src/compiler.ts#L1320-L1321
+    async fn is_angular_core_compilation(&self, ctx: &QueryContext<Fs>) -> bool {
+        if let Some(configured) = self.angular_core_compilation {
+            return configured;
+        }
+        let Some(r3_symbols_file) = self.r3_symbols_file_tracked(ctx) else {
+            return false;
+        };
+        let parsed = ctx.parse_file(self.intern_path(r3_symbols_file)).await;
+        let guard = parsed.lock().unwrap();
+        crate::analyzer::utils::exports_its_just_angular(guard.borrow_dependent().program)
     }
 
     fn get_interned_file_id(&self, path: &Path) -> Option<FileId> {
@@ -235,7 +282,10 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
 
     /// Record that `file_id`'s wire analysis must be re-emitted on the next delta stream.
     fn mark_file_dirty(&self, file_id: FileId) {
-        if file_id == ROOTS_FILE_ID || file_id == UNRESOLVED_IMPORTS_FILE_ID {
+        if file_id == ROOTS_FILE_ID
+            || file_id == UNRESOLVED_IMPORTS_FILE_ID
+            || file_id == R3_SYMBOLS_ROOT_FILE_ID
+        {
             return;
         }
         if let Ok(mut guard) = self.dirty_wire_files.lock() {
@@ -389,7 +439,15 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
 
     /// Purge every cached query that read the compilation root list, after the roots changed.
     pub fn invalidate_roots(&self) -> Vec<QueryKey> {
+        *self.r3_symbols_root.write().unwrap() = None;
         self.invalidate_file_id(ROOTS_FILE_ID)
+    }
+
+    /// Purge every cached query that read which root is `r3_symbols.ts`, after the roots changed
+    /// that.
+    pub fn invalidate_r3_symbols_root(&self) -> Vec<QueryKey> {
+        *self.r3_symbols_root.write().unwrap() = None;
+        self.invalidate_file_id(R3_SYMBOLS_ROOT_FILE_ID)
     }
 
     /// Forget module resolution results after files were created or deleted: the resolver caches
@@ -660,7 +718,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             });
         }
 
-        let is_core = crate::analyzer::detect_is_core(&file_path, &self.fs);
+        let is_core = self.is_angular_core_compilation(ctx).await;
         let (converter, mut analysis, errors) = {
             let guard = parsed.lock().unwrap();
             let source_text = &guard.borrow_owner().source_text;
@@ -806,12 +864,15 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         let parse_res = ctx.parse_file(file_id).await;
         let source_text = parse_res.lock().unwrap().borrow_owner().source_text.clone();
         let path_lookup = |id| self.lookup_path(id);
-        let r3_symbols_path = self.r3_symbols_file();
         let (projected, chunk_info) = if is_optimized {
             let semantic_res = ctx.analyze_file_semantic(file_id).await;
             let chunk_info =
                 crate::compiler::analyzer::extract_chunk_info(&semantic_res, self, ctx).await;
             let declaring_exports = ctx.declaring_export_names(&semantic_res).await;
+            let r3_symbols_path = semantic_res
+                .is_core
+                .then(|| self.r3_symbols_file_tracked(ctx))
+                .flatten();
             let cx = crate::analyzer::WireContext {
                 mode: crate::analyzer::WireMode::Semantic,
                 emit_declaration_only: false,
@@ -848,6 +909,10 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                 crate::compiler::analyzer::FileChunkInfo::default()
             };
             let declaring_exports = ctx.declaring_export_names(&syntax_res).await;
+            let r3_symbols_path = syntax_res
+                .is_core
+                .then(|| self.r3_symbols_file_tracked(ctx))
+                .flatten();
             let cx = crate::analyzer::WireContext {
                 mode: crate::analyzer::WireMode::Syntax,
                 emit_declaration_only: self.emit_declaration_only,
@@ -2492,12 +2557,15 @@ mod tests {
         // `@angular/core` is not resolvable in this file system, so every file also depends on
         // the failed-resolution pseudo-file.
         let _ = engine.invalidate_module_resolution();
+        // Nothing configures whether this compilation is `@angular/core`, so every file also
+        // depends on the `r3_symbols.ts` root lookup that detects it.
+        let _ = engine.invalidate_r3_symbols_root();
 
         let r_index = engine.reverse_index.read().unwrap();
         assert!(
             r_index.is_empty(),
-            "Reverse index should be clean after fully invalidating all interned files, roots and \
-             failed module resolutions"
+            "Reverse index should be clean after fully invalidating all interned files, roots, \
+             failed module resolutions and the `r3_symbols.ts` root lookup"
         );
     }
 

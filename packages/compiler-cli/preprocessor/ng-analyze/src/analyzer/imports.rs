@@ -1,5 +1,4 @@
 use crate::analyzer::utils::unwrap_forward_ref_evaluated;
-use crate::resource_loader::ResourceResolverFs;
 use oxc_ast::ast::{
     ArrayExpression, ArrayExpressionElement, BindingPattern, Expression, ImportDeclaration,
     ImportDeclarationSpecifier, Program, Statement,
@@ -1011,81 +1010,6 @@ pub fn extract_angular_imports(
     }
 }
 
-#[derive(serde::Deserialize)]
-struct PackageManifest<'a> {
-    #[serde(borrow)]
-    name: Option<&'a str>,
-}
-
-fn parse_package_is_core(contents: &str) -> bool {
-    serde_json::from_str::<PackageManifest>(contents)
-        .ok()
-        .and_then(|m| m.name)
-        .map(|name| name == "@angular/core")
-        .unwrap_or(false)
-}
-
-/// Detect whether the file being analyzed belongs to `@angular/core` (`isCore` compilation mode).
-///
-/// Unlike ngtsc which searches an in-memory whole-program `ts.Program` for `r3_symbols.ts`'s
-/// `ITS_JUST_ANGULAR` constant (`isAngularCorePackage`), this analyzer operates in a stateless,
-/// per-file/delta model. Walking up to the nearest `package.json` manifest (`name === "@angular/core"`)
-/// provides an accurate, stateless equivalent that is immune to `rootDirs`/path aliasing. Findings
-/// and intermediate directories are memoized on [`ResourceResolverFs`].
-/// https://github.com/angular/angular/blob/c1829f6/packages/compiler-cli/src/ngtsc/core/src/compiler.ts#L1724-L1758
-pub fn detect_is_core<Fs: ResourceResolverFs>(path: &std::path::Path, fs: &Fs) -> bool {
-    let Some(start_dir) = path.parent() else {
-        return false;
-    };
-
-    if let Some(&cached) = fs.is_core_cache().read().unwrap().get(start_dir) {
-        return cached;
-    }
-
-    let mut visited = Vec::new();
-    let mut current = Some(start_dir);
-    let mut result = false;
-
-    while let Some(dir) = current {
-        visited.push(dir);
-        let manifest = dir.join("package.json");
-        let Ok(contents) = fs.read_to_string(&manifest) else {
-            current = dir.parent();
-            if let Some(parent_dir) = current {
-                if let Some(&cached) = fs.is_core_cache().read().unwrap().get(parent_dir) {
-                    result = cached;
-                    break;
-                }
-            }
-            continue;
-        };
-        result = parse_package_is_core(&contents);
-        break;
-    }
-
-    let mut cache = fs.is_core_cache().write().unwrap();
-    for dir in visited {
-        cache.insert(dir.to_path_buf(), result);
-    }
-    result
-}
-
-/// The uncached directory walk backing [`detect_is_core`]. Split out so the cache lookup in
-/// `detect_is_core` stays trivial and this remains directly unit-testable.
-#[cfg(test)]
-fn detect_is_core_uncached<Fs: oxc_resolver::FileSystem>(path: &std::path::Path, fs: &Fs) -> bool {
-    let mut dir = path.parent();
-    while let Some(current) = dir {
-        let manifest = current.join("package.json");
-        let Ok(contents) = fs.read_to_string(&manifest) else {
-            dir = current.parent();
-            continue;
-        };
-        return parse_package_is_core(&contents);
-    }
-    false
-}
-
 pub fn resolved_value_to_super_class(
     value: &crate::evaluator::ResolvedValue,
 ) -> Option<crate::DeclarationTuple> {
@@ -2007,50 +1931,5 @@ mod tests {
         let source = "import { A } from 'a';\nnamespace Ns {\n  export class Foo {}\n}\nimport { B } from 'b';\n";
         let end = imports_end_of(source);
         assert_eq!(&source[..end as usize], "import { A } from 'a';");
-    }
-
-    #[test]
-    fn test_detect_is_core_nested_dirs_and_cache() {
-        use crate::fs::OverlayFileSystem;
-        // Uniquely-namespaced paths so this test does not collide with the process-global
-        // cache entries of any other (potentially concurrent) test.
-        let core_pkg = std::path::PathBuf::from("/detect_is_core_test/core/package.json");
-        let other_pkg = std::path::PathBuf::from("/detect_is_core_test/other/package.json");
-
-        let fs = OverlayFileSystem::new_with_overlay();
-        fs.upsert_file(
-            core_pkg.clone(),
-            r#"{ "name": "@angular/core" }"#.to_string(),
-        );
-        fs.upsert_file(other_pkg, r#"{ "name": "@angular/common" }"#.to_string());
-
-        // Files inside the `@angular/core` package resolve to is_core = true, including from a
-        // nested subdirectory that must walk up to the same manifest.
-        assert!(detect_is_core(
-            std::path::Path::new("/detect_is_core_test/core/src/a.ts"),
-            &fs
-        ));
-        assert!(detect_is_core(
-            std::path::Path::new("/detect_is_core_test/core/src/nested/c.ts"),
-            &fs
-        ));
-        // A sibling non-core package resolves to false.
-        assert!(!detect_is_core(
-            std::path::Path::new("/detect_is_core_test/other/src/d.ts"),
-            &fs
-        ));
-
-        // Prove memoization: after the "/detect_is_core_test/core/src" directory has been resolved
-        // once, deleting the manifest does NOT change the cached answer (no second read happens),
-        // while the uncached walker — which re-reads — now correctly sees no manifest.
-        fs.remove_virtual_file(&core_pkg);
-        assert!(detect_is_core(
-            std::path::Path::new("/detect_is_core_test/core/src/b.ts"),
-            &fs
-        ));
-        assert!(!detect_is_core_uncached(
-            std::path::Path::new("/detect_is_core_test/core/src/b.ts"),
-            &fs
-        ));
     }
 }

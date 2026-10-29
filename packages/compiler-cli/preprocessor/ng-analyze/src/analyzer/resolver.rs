@@ -1,21 +1,7 @@
 use crate::{ClassInfo, DeclarationTuple, ResourceResolverFs};
 use futures::future::{BoxFuture, FutureExt};
-use oxc_resolver::ResolverGeneric;
 use std::collections::HashSet;
-use std::path::{Path, PathBuf};
-
-/// Try to resolve a specifier to a .d.ts file.
-/// Handles cases where imports reference .js files but actual files are .d.ts.
-pub fn resolve_to_dts<Fs: ResourceResolverFs>(
-    resolver: &ResolverGeneric<Fs>,
-    file_path: &Path,
-    source: &str,
-) -> Option<PathBuf> {
-    resolver
-        .resolve_dts(file_path, source)
-        .ok()
-        .map(|res| res.into_path_buf())
-}
+use std::path::Path;
 
 /// Asynchronously resolves a component, directive, or pipe declaration from its import specifier.
 ///
