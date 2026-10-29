@@ -30,6 +30,11 @@ export interface ToObservableOptions {
    * will be used.
    */
   injector?: Injector;
+
+  /**
+   * A debug name for the underlying `effect`. Used in Angular DevTools to identify the effect.
+   */
+  debugName?: string;
 }
 
 /**
@@ -65,7 +70,13 @@ export function toObservable<T>(source: Signal<T>, options?: ToObservableOptions
       }
       untracked(() => subject.next(value));
     },
-    {injector, manualCleanup: true},
+    {
+      injector,
+      manualCleanup: true,
+      ...(ngDevMode
+        ? {debugName: `toObservable${options?.debugName ? '#' + options.debugName : ''}.effect`}
+        : undefined),
+    },
   );
 
   injector.get(DestroyRef).onDestroy(() => {

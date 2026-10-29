@@ -15,6 +15,12 @@ import {
   Signal,
   signal,
 } from '../../src/core';
+import {
+  getFrameworkDIDebugData,
+  setupFrameworkInjectorProfiler,
+} from '../../src/render3/debug/framework_injector_profiler';
+import {setInjectorProfiler} from '../../src/render3/debug/injector_profiler';
+import {getSignalGraph} from '../../src/render3/util/signal_debug';
 import {toObservable} from '../src';
 import {ComponentFixture, TestBed} from '../../testing';
 import {take, toArray} from 'rxjs/operators';
@@ -54,6 +60,32 @@ describe('toObservable()', () => {
     await flushEffects();
 
     expect(await counterValues).toEqual([0, 1, 3]);
+  });
+
+  describe('debugName', () => {
+    beforeEach(() => {
+      // `getSignalGraph` finds effects through the framework injector profiler.
+      setInjectorProfiler(null);
+      setupFrameworkInjectorProfiler();
+    });
+
+    afterEach(() => {
+      getFrameworkDIDebugData().reset();
+      setInjectorProfiler(null);
+    });
+
+    it('should name the underlying effect when a debugName is provided', async () => {
+      @Component({template: ''})
+      class WithObservable {
+        readonly counter$ = toObservable(signal(0), {debugName: 'counter'});
+      }
+
+      const cmpFixture = TestBed.createComponent(WithObservable);
+      await cmpFixture.whenStable();
+
+      const labels = getSignalGraph(cmpFixture.componentRef.injector).nodes.map((n) => n.label);
+      expect(labels).toContain('toObservable#counter.effect');
+    });
   });
 
   it('should propagate errors from the signal', async () => {

@@ -39,6 +39,7 @@ export function toObservable<T>(source: Signal<T>, options?: ToObservableOptions
 
 // @public
 export interface ToObservableOptions {
+    debugName?: string;
     injector?: Injector;
 }
 
