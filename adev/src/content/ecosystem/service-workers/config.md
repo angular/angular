@@ -381,4 +381,8 @@ IMPORTANT: The `freshness` strategy usually results in more requests sent to the
 
 ### `applicationMaxAge`
 
-This optional property enables you to configure how long the service worker will cache any requests. Within the `maxAge`, files will be served from cache. Beyond it, all requests will only be served from the network, including asset and data requests.
+This optional property enables you to configure how long the service worker serves an application version from its cache. The age is measured from the time you built the application, not from the time the files were cached on the device.
+
+Within the `applicationMaxAge`, the service worker serves files from the cache. Beyond it, the service worker sends all requests to the network, including asset and data requests, even if no newer version exists. The application does not work offline until a new build is deployed and the device has fetched it.
+
+If you omit `applicationMaxAge`, there is no maximum age and the service worker serves cached versions regardless of how old they are.
