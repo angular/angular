@@ -35,6 +35,18 @@ pub fn extract_transform_type(expr: &Expression<'_>) -> Option<ExtractedTransfor
     }
 }
 
+/// Like [`extract_transform_type`], but records inline arrow/function expressions even when their
+/// first parameter has no type annotation (with an empty `type_span` meaning `unknown`), so local
+/// compilation still emits the runtime transform function and `ngAcceptInputType_*: unknown`.
+pub fn extract_decorator_transform_type(expr: &Expression<'_>) -> ExtractedTransformType {
+    match expr {
+        Expression::ArrowFunctionExpression(_) | Expression::FunctionExpression(_) => {
+            ExtractedTransformType::Type(extract_transform_type_from_expr(expr).unwrap_or_default())
+        }
+        _ => ExtractedTransformType::Expression(expr.span()),
+    }
+}
+
 fn extract_transform_type_from_expr(expr: &Expression<'_>) -> Option<oxc_span::Span> {
     let params = match expr {
         Expression::ArrowFunctionExpression(arrow) => &arrow.params,

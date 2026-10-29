@@ -2210,7 +2210,9 @@ runInEachFileSystem(() => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
 
-        expect(jsContents).toContain('inputs: { x: [2, "x", "x", v => v + \'TRANSFORMED!\'] }');
+        expect(jsContents).toMatch(
+          /inputs: \{ x: \[2, "x", "x", v => v \+ ['"]TRANSFORMED!['"]\] \}/,
+        );
       });
     });
 

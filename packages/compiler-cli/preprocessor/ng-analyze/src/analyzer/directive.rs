@@ -985,8 +985,20 @@ mod tests {
         assert_eq!(text(type_span), "boolean | string");
         assert_eq!(text(value_span), "(v: boolean | string) => v !== false");
 
-        // As on `@Input({transform})`, an untyped inline function records no transform.
-        assert!(inputs[1].transform.is_none());
+        // As on `@Input({transform})`, an untyped inline function records its value span with an
+        // empty type span so local compilation still emits the transform and `unknown` coercion.
+        let Some(TransformData::Type {
+            type_span,
+            value_span,
+        }) = inputs[1].transform
+        else {
+            panic!(
+                "expected an untyped inline transform, got {:?}",
+                inputs[1].transform
+            );
+        };
+        assert!(type_span.is_empty());
+        assert_eq!(text(value_span), "(v) => v");
 
         let Some(TransformData::Expression(span)) = inputs[2].transform else {
             panic!(
