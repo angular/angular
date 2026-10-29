@@ -288,6 +288,10 @@ export function expandBoundAttributesForField(
   }
 
   for (const name of formControlInputFields) {
+    if (name === 'pattern' && isControlValueAccessorLike(directive)) {
+      continue;
+    }
+
     const input = getSyntheticFieldBoundInput(
       directive,
       name,

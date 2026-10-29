@@ -81,11 +81,11 @@ export interface ControlDirectiveHost<_TPassthroughInput extends string | undefi
    * @param inputName Name of the input to update.
    * @param value New value to write to the input.
    * @param writePredicate Optional predicate function that receives the current value of the
-   * input to decide if the value should be written.
+   * input and the target directive instance to decide if the value should be written.
    */
   setInputOnDirectives(
     inputName: string,
     value: unknown,
-    writePredicate?: (currentValue: unknown) => boolean,
+    writePredicate?: (currentValue: unknown, directive: unknown) => boolean,
   ): boolean;
 }

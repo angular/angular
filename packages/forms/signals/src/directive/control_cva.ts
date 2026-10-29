@@ -14,7 +14,13 @@ import {
   type WritableSignal,
   type ɵControlDirectiveHost as ControlDirectiveHost,
 } from '@angular/core';
-import {NG_VALIDATORS, type Validator, Validators, type ValidatorFn} from '@angular/forms';
+import {
+  type ControlValueAccessor,
+  NG_VALIDATORS,
+  type Validator,
+  Validators,
+  type ValidatorFn,
+} from '@angular/forms';
 import {reactiveErrorsToSignalErrors} from '../compat/validation_errors';
 import {type ValidationError} from '../api/rules';
 import {
@@ -102,7 +108,12 @@ export function cvaControlCreate(
         const propertyWasSet = host.setInputOnDirectives(
           name,
           value,
-          name === 'name' ? isDefinedPredicate : undefined,
+          name === 'name'
+            ? isDefinedPredicate
+            : name === 'pattern'
+              ? (_currentValue, directive) =>
+                  directive !== parent.controlValueAccessor && !isControlValueAccessor(directive)
+              : undefined,
         );
 
         if (name === 'disabled' && parent.controlValueAccessor!.setDisabledState) {
@@ -123,4 +134,14 @@ export function cvaControlCreate(
 
 function isDefinedPredicate(value: unknown): boolean {
   return value == null;
+}
+
+function isControlValueAccessor(v: unknown): v is ControlValueAccessor {
+  return (
+    typeof v === 'object' &&
+    v !== null &&
+    typeof (v as ControlValueAccessor).writeValue === 'function' &&
+    typeof (v as ControlValueAccessor).registerOnChange === 'function' &&
+    typeof (v as ControlValueAccessor).registerOnTouched === 'function'
+  );
 }

@@ -1344,6 +1344,67 @@ describe('ControlValueAccessor', () => {
         act(() => fixture.componentInstance.pattern.set(/b*/));
         expect(dir.pattern()).toEqual([/b*/]);
       });
+
+      it('should not write to `pattern` input on a CustomControl CVA', () => {
+        @Component({
+          selector: 'custom-control-with-pattern',
+          template: '<input [(ngModel)]="value" [pattern]="pattern" />',
+          providers: [
+            {provide: NG_VALUE_ACCESSOR, useExisting: CustomControlWithPattern, multi: true},
+          ],
+          imports: [FormsModule],
+        })
+        class CustomControlWithPattern extends CustomControl {
+          @Input() pattern = '';
+        }
+
+        @Component({
+          imports: [FormField, CustomControlWithPattern],
+          template: `<custom-control-with-pattern [formField]="f" />`,
+        })
+        class TestCmp {
+          readonly f = form(signal('abc'));
+          readonly control = viewChild.required(CustomControlWithPattern);
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const control = fixture.componentInstance.control();
+
+        // Should not have been overwritten with []
+        expect(control.pattern).toBe('');
+      });
+
+      it('should preserve explicit `pattern` input on a CustomControl CVA', () => {
+        @Component({
+          selector: 'custom-control-with-pattern',
+          template: '<input [(ngModel)]="value" [pattern]="pattern" />',
+          providers: [
+            {provide: NG_VALUE_ACCESSOR, useExisting: CustomControlWithPattern, multi: true},
+          ],
+          imports: [FormsModule],
+        })
+        class CustomControlWithPattern extends CustomControl {
+          @Input() pattern = '';
+        }
+
+        @Component({
+          imports: [FormField, CustomControlWithPattern],
+          template: `<custom-control-with-pattern [formField]="f" [pattern]="patternOverride()" />`,
+        })
+        class TestCmp {
+          readonly f = form(signal('abc'));
+          readonly control = viewChild.required(CustomControlWithPattern);
+          readonly patternOverride = signal('[a-z]+');
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const control = fixture.componentInstance.control();
+
+        expect(control.pattern).toBe('[a-z]+');
+
+        act(() => fixture.componentInstance.patternOverride.set('[0-9]+'));
+        expect(control.pattern).toBe('[0-9]+');
+      });
     });
   });
 

@@ -785,6 +785,36 @@ runInEachFileSystem(() => {
       expect(diags.length).toBe(0);
     });
 
+    it('should not synthesize pattern binding on a directive that is a ControlValueAccessor', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, Directive, Input, signal} from '@angular/core';
+          import {ControlValueAccessor} from '@angular/forms';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Directive({selector: '[customCva]'})
+          export class CustomCva implements ControlValueAccessor {
+            @Input() pattern = '';
+            writeValue() {}
+            registerOnChange() {}
+            registerOnTouched() {}
+          }
+
+          @Component({
+            template: '<input customCva [formField]="f"/>',
+            imports: [FormField, CustomCva]
+          })
+          export class Comp {
+            f = form(signal(''));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
     it('should infer an input with a dynamic `type` as being any of the other types', () => {
       env.write(
         'test.ts',
