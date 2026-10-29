@@ -2513,7 +2513,7 @@ runInEachFileSystem(() => {
           );
 
           // Make sure there are no eager imports present in the output.
-          expect(jsContents).not.toContain(`from './deferred-deps'`);
+          expect(jsContents).not.toMatch(/from ['"]\.\/deferred-deps['"]/);
 
           // Defer instructions use per-component dependency function.
           expect(jsContents).toContain('ɵɵdefer(1, 0, AppCmpA_Defer_1_DepsFn)');
