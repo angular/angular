@@ -389,6 +389,9 @@ export interface IsActiveMatchOptions {
 }
 
 // @public
+export type LazyRouteConfig = Omit<Route, 'path' | 'pathMatch' | 'matcher' | 'outlet' | 'data' | 'redirectTo' | 'loadConfig' | 'children' | 'loadChildren' | 'loadComponent'>;
+
+// @public
 export type LoadChildren = LoadChildrenCallback;
 
 // @public
@@ -693,6 +696,7 @@ export interface Route {
     data?: Data;
     loadChildren?: LoadChildren;
     loadComponent?: () => Type<unknown> | Observable<Type<unknown> | DefaultExport<Type<unknown>>> | Promise<Type<unknown> | DefaultExport<Type<unknown>>>;
+    loadConfig?: () => LazyRouteConfig | Promise<LazyRouteConfig | DefaultExport<LazyRouteConfig>>;
     matcher?: UrlMatcher;
     outlet?: string;
     path?: string;

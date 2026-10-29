@@ -692,7 +692,7 @@ export async function lazyLoadingIntegrationSuite(browserAPI: 'navigation' | 'hi
       await advance(fixture);
 
       expect(recordedError.message).toContain(
-        `Invalid configuration of route 'lazy/loaded'. One of the following must be provided: component, loadComponent, redirectTo, children or loadChildren`,
+        `Invalid configuration of route 'lazy/loaded'. One of the following must be provided: component, loadComponent, loadConfig, redirectTo, children or loadChildren`,
       );
     });
 
