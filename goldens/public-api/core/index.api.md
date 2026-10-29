@@ -1774,12 +1774,13 @@ export { ResponseInit_2 as ResponseInit }
 export function runInInjectionContext<ReturnT>(injector: Injector, fn: () => ReturnT): ReturnT;
 
 // @public
-export abstract class Sanitizer {
+abstract class Sanitizer_2 {
     // (undocumented)
     abstract sanitize(context: SecurityContext, value: {} | string | null): string | null;
     // (undocumented)
     static ɵprov: _angular_core.ɵɵInjectableDeclaration<null>;
 }
+export { Sanitizer_2 as Sanitizer }
 
 // @public
 export interface SchemaMetadata {
