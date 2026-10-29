@@ -4109,6 +4109,61 @@ describe('field directive', () => {
       expect(fixture.componentInstance).toBeDefined();
     });
 
+    it('should accept InputSignalWithTransform without undefined for min and max', () => {
+      @Component({selector: 'custom-control', template: ``})
+      class CustomControl implements FormValueControl<number | null> {
+        readonly value = model<number | null>(null);
+        readonly min = input(0, {transform: numberAttribute});
+        readonly max = input(0, {transform: numberAttribute});
+      }
+
+      @Component({
+        imports: [FormField, CustomControl],
+        template: `<custom-control [formField]="f" />`,
+      })
+      class TestCmp {
+        readonly minValue = signal<number | undefined>(1);
+        readonly f = form(signal<number | null>(5), (p) => {
+          min(p, () => this.minValue());
+          max(p, 10);
+        });
+        readonly customControl = viewChild.required(CustomControl);
+      }
+
+      const comp = act(() => TestBed.createComponent(TestCmp)).componentInstance;
+      expect(comp.customControl().min()).toBe(1);
+      expect(comp.customControl().max()).toBe(10);
+
+      // Removing the constraint binds `undefined`, which the transform handles.
+      act(() => comp.minValue.set(undefined));
+      expect(comp.customControl().min()).toBeNaN();
+    });
+
+    it('should accept InputSignalWithTransform without undefined for minLength and maxLength', () => {
+      @Component({selector: 'custom-control', template: ``})
+      class CustomControl implements FormValueControl<string> {
+        readonly value = model('');
+        readonly minLength = input(0, {transform: numberAttribute});
+        readonly maxLength = input(0, {transform: numberAttribute});
+      }
+
+      @Component({
+        imports: [FormField, CustomControl],
+        template: `<custom-control [formField]="f" />`,
+      })
+      class TestCmp {
+        readonly f = form(signal('abc'), (p) => {
+          minLength(p, 2);
+          maxLength(p, 5);
+        });
+        readonly customControl = viewChild.required(CustomControl);
+      }
+
+      const comp = act(() => TestBed.createComponent(TestCmp)).componentInstance;
+      expect(comp.customControl().minLength()).toBe(2);
+      expect(comp.customControl().maxLength()).toBe(5);
+    });
+
     it('should accept custom transform for arrays', () => {
       @Component({selector: 'custom-control', template: ``})
       class CustomControl implements FormValueControl<string> {
