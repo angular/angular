@@ -50,11 +50,14 @@ export class MyComp {
     /*@__PURE__*/ i0.ɵɵdefineComponent({
       type: MyComp,
       selectors: [['my-comp']],
-      hostVars: 5,
+      hostVars: 7,
       hostBindings: function MyComp_HostBindings(rf: number, ctx: any): any {
         if (rf & 2) {
           i0.ɵɵattribute('role', ctx.role);
-          i0.ɵɵclassProp('ready', ctx.isReady)('is-active', ctx.active);
+          i0.ɵɵclassProp('ready', ctx.isReady)('is-active', ctx.active)(
+            'from-import',
+            ctx.imported,
+          );
         }
       },
       decls: 0,

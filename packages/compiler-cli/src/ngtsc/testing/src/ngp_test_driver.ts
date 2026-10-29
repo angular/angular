@@ -420,6 +420,9 @@ export function performNgpCompilationSync(params: {
         ...(options.paths ? {paths: options.paths} : {}),
       },
       angularCompilerOptions: {
+        generateExtraImportsInLocalMode: Boolean(
+          rawOpts['generateExtraImportsInLocalMode'] ?? rawOpts['_generateExtraImportsInLocalMode'],
+        ),
         _generateExtraImportsInLocalMode: Boolean(rawOpts['_generateExtraImportsInLocalMode']),
         compileNonExportedClasses: rawOpts['compileNonExportedClasses'] !== false,
         workspaceName: analyzerWorkspaceName,

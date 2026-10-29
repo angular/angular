@@ -1152,12 +1152,10 @@ export function processFileSync(
           }
         }
 
-        if (!standalone) {
-          filteredDeclarations = [];
-          usedDeclarations.length = 0;
-          metaToDecl.clear();
-          pipeNameToDecl.clear();
-        }
+        filteredDeclarations = [];
+        usedDeclarations.length = 0;
+        metaToDecl.clear();
+        pipeNameToDecl.clear();
       }
 
       // Local bindings this component reaches only from inside a `@defer` block. Needed before

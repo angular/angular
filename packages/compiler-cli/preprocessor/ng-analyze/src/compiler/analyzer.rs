@@ -1601,13 +1601,19 @@ pub(crate) async fn extract_chunk_info<Fs: ResourceResolverFs + Clone + 'static>
                     }
                 }
             }
-            crate::analyzer::DecoratorData::Component(c) if !c.directive.standalone => {
+            crate::analyzer::DecoratorData::Component(c)
+                if !c.directive.standalone || c.directive.declaring_ng_module.is_some() =>
+            {
                 has_non_standalone = true;
             }
-            crate::analyzer::DecoratorData::Directive(d) if !d.standalone => {
+            crate::analyzer::DecoratorData::Directive(d)
+                if !d.standalone || d.declaring_ng_module.is_some() =>
+            {
                 has_non_standalone = true;
             }
-            crate::analyzer::DecoratorData::Pipe(p) if !p.standalone.unwrap_or(true) => {
+            crate::analyzer::DecoratorData::Pipe(p)
+                if !p.standalone.unwrap_or(true) || p.declaring_ng_module.is_some() =>
+            {
                 has_non_standalone = true;
             }
             _ => {}
@@ -1757,28 +1763,23 @@ enum ClassOwner {
 }
 
 fn get_class_owner(class: &crate::ClassMetadata) -> ClassOwner {
-    let is_non_standalone = if let Some(comp) = &class.component {
-        !comp.standalone
-    } else if let Some(dir) = &class.directive {
-        !dir.standalone
-    } else if let Some(pipe) = &class.pipe {
-        !pipe.standalone.unwrap_or(true)
-    } else {
-        false
-    };
-
-    if !is_non_standalone {
-        return ClassOwner::Other;
-    }
-
     let declaring = if let Some(comp) = &class.component {
+        if comp.standalone && comp.declaring_ng_module.is_none() {
+            return ClassOwner::Other;
+        }
         &comp.declaring_ng_module
     } else if let Some(dir) = &class.directive {
+        if dir.standalone && dir.declaring_ng_module.is_none() {
+            return ClassOwner::Other;
+        }
         &dir.declaring_ng_module
     } else if let Some(pipe) = &class.pipe {
+        if pipe.standalone.unwrap_or(true) && pipe.declaring_ng_module.is_none() {
+            return ClassOwner::Other;
+        }
         &pipe.declaring_ng_module
     } else {
-        unreachable!()
+        return ClassOwner::Other;
     };
 
     let Some(r) = declaring else {
