@@ -137,7 +137,13 @@ export function invokeListeners(event: Event, currentTarget: Element | null) {
 export type EventCallback = (event?: any) => any;
 
 /** Utility type used to make it harder to swap a wrapped and unwrapped callback. */
-export type WrappedEventCallback = EventCallback & {__wrapped: boolean};
+export type WrappedEventCallback = EventCallback & {
+  __wrapped: boolean;
+  /** The original listener before `wrapListener` wraps it. */
+  __ngOriginalListener__?: EventCallback;
+  /** Native event name, set only when it's different from the bound one (e.g. `.silent` is dropped) */
+  __ngNativeEventName__?: string;
+};
 
 /**
  * Represents a signature of a function that disables event replay feature
