@@ -64327,7 +64327,7 @@ function createPrompt(view) {
           }
         });
       };
-      if ("readableFlowing" in input) {
+      if ("readableFlowing" in input && input.isTTY) {
         const immediate = nativeSetImmediate(startCycle);
         cleanups.add(() => nativeClearImmediate(immediate));
       } else {
@@ -64619,7 +64619,7 @@ var ExternalEditor = class {
   constructor(text = "", fileOptions = {}) {
     this.text = text;
     this.fileOptions = fileOptions;
-    this.editor = parseEditorCommand(process.env["VISUAL"] ?? process.env["EDITOR"] ?? (process.platform.startsWith("win") ? "notepad" : "vim"));
+    this.editor = parseEditorCommand(process.env["VISUAL"] || process.env["EDITOR"] || (process.platform.startsWith("win") ? "notepad" : "vim"));
   }
   run() {
     this.createTempFile();
@@ -65319,7 +65319,7 @@ var dist_default10 = createPrompt((config, done) => {
   } else if (!config.mask) {
     formattedValue += cursorHide;
   }
-  const content = [prefix, message, formattedValue].filter(Boolean).join(" ");
+  const content = [prefix, message, formattedValue].join(" ");
   const bottomContent = [
     errorMsg ? theme.style.error(errorMsg) : "",
     toggleMask && status === "idle" ? theme.style.keysHelpTip([["ctrl+t", "toggle visibility"]]) : ""
@@ -65904,7 +65904,7 @@ content-type/dist/index.js:
      *)
   *)
 
-@angular/ng-dev/bundles/chunk-E5VB5JIZ.mjs:
+@angular/ng-dev/bundles/chunk-RJ2YUADA.mjs:
   (*! Bundled license information:
   
   content-type/dist/index.js:
