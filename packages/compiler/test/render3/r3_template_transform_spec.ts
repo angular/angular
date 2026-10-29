@@ -513,6 +513,46 @@ describe('R3 template transform', () => {
         ['BoundEvent', 0, 'animateXYZ', null, 'animateFn()'],
       ]);
     });
+
+    function errorsFor(template: string): string[] {
+      return parse(template, {ignoreError: true}).errors.map((error) => error.msg);
+    }
+
+    it('should report animate bindings that are not supported animations', () => {
+      const unsupported = (name: string) =>
+        `Unsupported animation binding "${name}". ` +
+        `The supported animation bindings are "animate.enter" and "animate.leave".`;
+
+      expect(errorsFor('<div animate.entr="foo"></div>')).toEqual([unsupported('animate.entr')]);
+      expect(errorsFor('<div animate.entr="{{foo}}"></div>')).toEqual([
+        unsupported('animate.entr'),
+      ]);
+      expect(errorsFor(`<div [animate.entr]="'foo'"></div>`)).toEqual([
+        unsupported('animate.entr'),
+      ]);
+      expect(errorsFor(`<div bind-animate.entr="'foo'"></div>`)).toEqual([
+        unsupported('animate.entr'),
+      ]);
+      expect(errorsFor('<div (animate.entr)="animateFn($event)"></div>')).toEqual([
+        unsupported('animate.entr'),
+      ]);
+      expect(errorsFor('<div on-animate.entr="animateFn($event)"></div>')).toEqual([
+        unsupported('animate.entr'),
+      ]);
+      expect(errorsFor('<div animate.move="foo"></div>')).toEqual([unsupported('animate.move')]);
+    });
+
+    it('should report two-way bindings on animate bindings', () => {
+      const twoWay = (name: string) =>
+        `Unsupported two-way binding on "${name}". Animations can only be bound with a static ` +
+        `value, a property binding or an event binding.`;
+
+      expect(errorsFor('<div [(animate.enter)]="foo"></div>')).toEqual([twoWay('animate.enter')]);
+      expect(errorsFor('<div bindon-animate.leave="foo"></div>')).toEqual([
+        twoWay('animate.leave'),
+      ]);
+      expect(errorsFor('<div [(animate.entr)]="foo"></div>')).toEqual([twoWay('animate.entr')]);
+    });
   });
 
   describe('templates', () => {

@@ -18,6 +18,7 @@ import {
   ExternalReference,
   ForwardRefHandling,
   getSafePropertyAccessString,
+  getUnsupportedAnimationBindingError,
   HostBindingDecorator,
   HostListenerDecorator,
   HostObjectLiteralBinding,
@@ -606,6 +607,17 @@ export function extractDecoratorQueryMetadata(
   };
 }
 
+/**
+ * Reports a `@HostBinding` or `@HostListener` name that starts with `animate.` but isn't a
+ * supported animation. Unlike the `host` object, these names don't go through `verifyHostBindings`.
+ */
+function assertSupportedAnimationBinding(name: string, node: ts.Node): void {
+  const error = getUnsupportedAnimationBindingError(name);
+  if (error !== null) {
+    throw new FatalDiagnosticError(ErrorCode.HOST_BINDING_PARSE_ERROR, node, error);
+  }
+}
+
 function extractHostBindings(
   members: ClassMember[],
   evaluator: PartialEvaluator,
@@ -671,6 +683,7 @@ function extractHostBindings(
           }
 
           hostPropertyName = resolved;
+          assertSupportedAnimationBinding(hostPropertyName, decorator.args[0]);
         }
 
         if (ts.isDecorator(decorator.node)) {
@@ -739,6 +752,7 @@ function extractHostBindings(
           }
 
           eventName = resolved;
+          assertSupportedAnimationBinding(eventName, decorator.args[0]);
 
           if (decorator.args.length === 2) {
             const expression = decorator.args[1];
