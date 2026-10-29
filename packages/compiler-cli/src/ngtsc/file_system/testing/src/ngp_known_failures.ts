@@ -50,9 +50,6 @@ export function shouldSkipInNgp(fullSpecName: string): boolean {
  * (#678-#682, #690, plus `TemplateTypeChecker` IDE metadata queries).
  */
 const NGP_KNOWN_TYPECHECK_FAILURES: ReadonlySet<string> = new Set([
-  'host directives should produce a diagnostic for host directive inputs and outputs that have not been exposed',
-  'template diagnostics checks bindings to regular element',
-  'template diagnostics infers generic pipe return types correctly and avoids expanding to strict undefined errors',
   'template diagnostics should disallow binding to event properties starting with on',
   'template diagnostics should support type-narrowing for methods with type guards',
   'template parse failures should handle TypeScript parse failures gracefully',
