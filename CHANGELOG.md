@@ -1,3 +1,65 @@
+<a name="22.2.4"></a>
+# 22.2.4 (2026-10-29)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [bc600a2fc2](https://github.com/angular/angular/commit/bc600a2fc259d14d8a3f6055fc4c42639dbae191) | fix | avoid treating attributes with object prototype names as being translated |
+| [1a7ebad7a5](https://github.com/angular/angular/commit/1a7ebad7a580496e2b8f120924cc68cc6d35fc7f) | fix | default to Eager change detection for pre-v22 libraries in JIT |
+| [4e4df4a696](https://github.com/angular/angular/commit/4e4df4a696aa426885af44afbcb13ee58014455d) | fix | report errors for malformed template literal interpolations |
+| [00229e112d](https://github.com/angular/angular/commit/00229e112d538210a2fb60f6e6780c15aa78a90d) | fix | skip escaped characters when looking for comments in expressions |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4b82200c4e](https://github.com/angular/angular/commit/4b82200c4e08f4100d202c25cac0039ff2543dbd) | fix | require @jridgewell/sourcemap-codec 1.6.0 or later |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [570679134b](https://github.com/angular/angular/commit/570679134bde4b8cae04c805b742b99419da746b) | fix | avoid mutating shared ICU case queue during i18n hydration |
+| [fe02c34c3c](https://github.com/angular/angular/commit/fe02c34c3ce22784e1eb2afb2b8d842df6ffbeb4) | fix | avoid reloading a resource when params is unchanged |
+| [d3c72743a9](https://github.com/angular/angular/commit/d3c72743a9da84866f95776bf36d74b3d0492bdd) | fix | catch view effect errors in targeted change detection mode |
+| [b8102ebeb4](https://github.com/angular/angular/commit/b8102ebeb4891e5f8d4cc48ad28661616fbfc12f) | fix | check every i18n attribute translation for ICUs |
+| [57ae1d1bb6](https://github.com/angular/angular/commit/57ae1d1bb6e37ed5d08dd0bae85f27f784ae5c39) | fix | guard against integer overflow in i18n |
+| [84a398bec2](https://github.com/angular/angular/commit/84a398bec2c48831fe77397c7b789ebc21c3a543) | fix | improve the warning for bindings on elements inside ICU expressions |
+| [be85e4eb74](https://github.com/angular/angular/commit/be85e4eb749e14f78b5fd2b385912759ee35ddc6) | fix | keep prototype-named keys in getTransferState |
+| [c1b8b0a914](https://github.com/angular/angular/commit/c1b8b0a914594514f5a6822cf1e931c112feeb54) | perf | avoid reading linked signal debug names in production |
+| [e79a9199a5](https://github.com/angular/angular/commit/e79a9199a5ae910cbd050e954c4b2c3b75f066ae) | perf | guard i18n insertion assertion with ngDevMode |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1586cc72ab](https://github.com/angular/angular/commit/1586cc72ab34b2e5a2741b6b28458425c2111d82) | fix | annotate field context helpers with this: void |
+| [41b189752e](https://github.com/angular/angular/commit/41b189752e24d6d3afe2f3a651e044eaab19e299) | fix | don&apos;t crash when formControlName has no matching control |
+| [122663145b](https://github.com/angular/angular/commit/122663145b865a9f825ad8a01fd589e2ef743b88) | fix | reject unsupported updateOn in SignalFormControl |
+| [a02ad167dc](https://github.com/angular/angular/commit/a02ad167dc7a8fe02f6c5055506028223f287d06) | perf | match multi-select identities in a single pass |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2251098d52](https://github.com/angular/angular/commit/2251098d520c8825965cecabe54792a0c9949fcc) | fix | account for multiple cache control headers |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [646e9723db](https://github.com/angular/angular/commit/646e9723db196d2a403f23c3e274aa4c258e8dfa) | fix | resolve symbols for inputs with restricted access |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6c631a5359](https://github.com/angular/angular/commit/6c631a5359b600f877171c628a7d84c3fafd102a) | feat | migrate static string and array ngClass bindings to class |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6ccbb0f6aa](https://github.com/angular/angular/commit/6ccbb0f6aa74770e7fb6d40988dc289c06b1787f) | fix | don&apos;t intercept downloads with the Navigation API |
+| [d1da1a7c4c](https://github.com/angular/angular/commit/d1da1a7c4ccb0b0648bd58fcf90d864eb8894582) | fix | drop null query params in createUrlTreeFromSnapshot |
+| [12b553bc28](https://github.com/angular/angular/commit/12b553bc282a0eeaa2e7e99562ee594821098bbc) | fix | escape colons in parenthesized primary child segments |
+| [b8383a1987](https://github.com/angular/angular/commit/b8383a1987ab25a402112f5de3208de2073cde74) | fix | properly handle redirects during traversal navigations with Navigation API |
+| [702ba3a2eb](https://github.com/angular/angular/commit/702ba3a2eb60e537b2398815ba6f83777d0572bc) | fix | remove previous classes when routerLinkActive changes |
+| [2f0e2ac5e7](https://github.com/angular/angular/commit/2f0e2ac5e7fbf91cbec2399cb2fb069cc03d4e27) | fix | respect guard order when a guard throws a RedirectCommand |
+| [ea8cdc4c6b](https://github.com/angular/angular/commit/ea8cdc4c6b4776832bf73a8f8cca7a729b2d58d9) | fix | skip split when piercing empty path outlets |
+| [6c995a5a6d](https://github.com/angular/angular/commit/6c995a5a6dc0cd8f4a083a09cc7b726f664a0fd3) | fix | unsubscribe from route data when outlet deactivates |
+### upgrade
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ecaec13db4](https://github.com/angular/angular/commit/ecaec13db4fde7ceb0104105ee356bf00596f3d6) | fix | only compile the template contents of a downgraded component |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="22.2.3"></a>
 # 22.2.3 (2026-10-14)
 ### common
