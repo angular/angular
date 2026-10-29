@@ -1765,49 +1765,29 @@ impl ClassData {
         ctx: &crate::query::QueryContext<Fs>,
     ) {
         let foreign = crate::analyzer::resolvers::angular_foreign_resolvers();
-        match &mut self.decorator {
-            DecoratorData::Component(c) => {
-                if let Some(export_as) = &mut c.directive.export_as {
-                    export_as.complete_with(ctx, foreign).await;
-                }
-                for name in c.directive.host_binding_names_mut() {
-                    name.complete_with(ctx, foreign).await;
-                }
-                for name in c.directive.host_listener_event_names_mut() {
-                    name.complete_with(ctx, foreign).await;
-                }
-                if let Some(template) = &mut c.template {
-                    template.complete_with(ctx, foreign).await;
-                }
-                if !ctx.engine.emit_declaration_only {
-                    complete_unsupported_host_directives(
-                        &mut c.directive.unsupported_host_directives,
-                        ctx,
-                        foreign,
-                    )
-                    .await;
-                }
+        if let Some(d) = self.directive_part_mut() {
+            if let Some(export_as) = &mut d.export_as {
+                export_as.complete_with(ctx, foreign).await;
             }
-            DecoratorData::Directive(d) => {
-                if let Some(export_as) = &mut d.export_as {
-                    export_as.complete_with(ctx, foreign).await;
-                }
-                for name in d.host_binding_names_mut() {
-                    name.complete_with(ctx, foreign).await;
-                }
-                for name in d.host_listener_event_names_mut() {
-                    name.complete_with(ctx, foreign).await;
-                }
-                if !ctx.engine.emit_declaration_only {
-                    complete_unsupported_host_directives(
-                        &mut d.unsupported_host_directives,
-                        ctx,
-                        foreign,
-                    )
-                    .await;
-                }
+            for name in d.host_binding_names_mut() {
+                name.complete_with(ctx, foreign).await;
             }
-            _ => {}
+            for name in d.host_listener_event_names_mut() {
+                name.complete_with(ctx, foreign).await;
+            }
+            if !ctx.engine.emit_declaration_only {
+                complete_unsupported_host_directives(
+                    &mut d.unsupported_host_directives,
+                    ctx,
+                    foreign,
+                )
+                .await;
+            }
+        }
+        if let Some(c) = self.as_component_mut() {
+            if let Some(template) = &mut c.template {
+                template.complete_with(ctx, foreign).await;
+            }
         }
     }
 
@@ -2555,32 +2535,33 @@ impl ClassData {
         // ngtsc evaluates `exportAs` and rejects anything that is not statically a string.
         if let (Some(span), Some(ref export_as)) = (d.export_as_span, &d.export_as) {
             if export_as.get_optional().is_none() {
-                if cx.mode == WireMode::Syntax {
-                    if let Some(unresolved_span) = local_unresolved_const_span(export_as.raw()) {
-                        push_error(
-                            diagnostics,
-                            file_path,
-                            converter,
-                            "11001",
-                            unresolved_span,
-                            "Unresolved identifier found for exportAs field! Did you import this \
-                             identifier from a file outside of the compilation unit? This is not \
-                             allowed when Angular compiler runs in local mode. Possible \
-                             solutions: 1) Move the declarations into a file within the \
-                             compilation unit, 2) Inline the selector"
-                                .to_string(),
-                        );
-                        return;
-                    }
+                let unresolved_span = (cx.mode == WireMode::Syntax)
+                    .then(|| local_unresolved_const_span(export_as.raw()))
+                    .flatten();
+                if let Some(unresolved_span) = unresolved_span {
+                    push_error(
+                        diagnostics,
+                        file_path,
+                        converter,
+                        "11001",
+                        unresolved_span,
+                        "Unresolved identifier found for exportAs field! Did you import this \
+                         identifier from a file outside of the compilation unit? This is not \
+                         allowed when Angular compiler runs in local mode. Possible \
+                         solutions: 1) Move the declarations into a file within the \
+                         compilation unit, 2) Inline the selector"
+                            .to_string(),
+                    );
+                } else {
+                    push_error(
+                        diagnostics,
+                        file_path,
+                        converter,
+                        "1010",
+                        span,
+                        "exportAs must be a string".to_string(),
+                    );
                 }
-                push_error(
-                    diagnostics,
-                    file_path,
-                    converter,
-                    "1010",
-                    span,
-                    "exportAs must be a string".to_string(),
-                );
             }
         }
 
@@ -2636,7 +2617,7 @@ impl ClassData {
                              compilation unit, 2) Inline the argument"
                                 .to_string(),
                         );
-                        return;
+                        continue;
                     }
                 }
                 if name.contains_incomplete() {
@@ -2653,6 +2634,10 @@ impl ClassData {
             }
         }
 
+        // ngtsc rejects @HostListener event names that do not resolve to a string, and @HostListener
+        // second arguments that cannot be statically resolved to a string array.
+        // https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L719-L754
+        // https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L1092-L1107
         for listener in &d.host_listeners {
             if listener.resolved_event_name.get_optional().is_none() {
                 if cx.mode == WireMode::Syntax {
@@ -2672,7 +2657,7 @@ impl ClassData {
                              within the compilation unit, 2) Inline the argument"
                                 .to_string(),
                         );
-                        return;
+                        continue;
                     }
                 }
                 if listener.resolved_event_name.contains_incomplete() {
@@ -2689,13 +2674,9 @@ impl ClassData {
                         .map_or(listener.decorator_span, |name| name.span),
                     "@HostListener's event name argument must be a string".to_string(),
                 );
+                continue;
             }
-        }
 
-        // ngtsc rejects @HostListener arguments that cannot be statically resolved to a string array.
-        // https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L743-L754
-        // https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L1092-L1107
-        for listener in &d.host_listeners {
             for err in &listener.args_errors {
                 match err {
                     HostListenerArgsError::NotStringArray(span) => {
@@ -3293,6 +3274,10 @@ fn local_unresolved_const_span(
     use crate::analyzer::ImportKind;
     use crate::evaluator::{DynamicReason, IncompleteDep, ResolvedValue, UnresolvedReference};
 
+    // Only a bare identifier produces `DynamicValueReason.UNKNOWN_IDENTIFIER` in ngtsc: wrapping
+    // expressions (even parentheses or `as` assertions) hit `StaticInterpreter.visitExpression`'s
+    // postlude and wrap into `DynamicValue.fromDynamicInput(...)`, where `isFromUnknownIdentifier`
+    // is false and ngtsc falls back to NG1010.
     let is_direct_import = |u: &UnresolvedReference, span: oxc_span::Span| {
         !u.is_namespace_member
             && !matches!(u.symbol, ImportKind::Namespace)

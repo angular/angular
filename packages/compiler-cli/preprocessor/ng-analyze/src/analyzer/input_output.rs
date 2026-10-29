@@ -356,7 +356,7 @@ fn signal_options(arg: Option<&Argument>, out: &mut MemberIo) -> Option<InputOpt
     Some(InputOptions {
         alias,
         required: false,
-        transform: object_literal_transform(obj),
+        transform: signal_object_literal_transform(obj),
     })
 }
 
@@ -373,6 +373,24 @@ pub(crate) fn transform_property<'o, 'a>(
 }
 
 pub(crate) fn object_literal_transform(
+    obj: &oxc_ast::ast::ObjectExpression<'_>,
+) -> Option<TransformData> {
+    let value = transform_property(obj)?;
+    let t_type = crate::analyzer::transforms::extract_decorator_transform_type(value);
+    Some(match t_type {
+        crate::analyzer::transforms::ExtractedTransformType::Type(type_span) => {
+            TransformData::Type {
+                type_span,
+                value_span: value.span(),
+            }
+        }
+        crate::analyzer::transforms::ExtractedTransformType::Expression(span) => {
+            TransformData::Expression(span)
+        }
+    })
+}
+
+fn signal_object_literal_transform(
     obj: &oxc_ast::ast::ObjectExpression<'_>,
 ) -> Option<TransformData> {
     let value = transform_property(obj)?;
@@ -1077,7 +1095,19 @@ mod tests {
         assert_eq!(inputs.len(), 7);
 
         assert_eq!(inputs[0].name, "noType");
-        assert!(inputs[0].transform.is_none());
+        let nt = inputs[0].transform.as_ref().unwrap();
+        let TransformData::Type {
+            type_span,
+            value_span,
+        } = nt
+        else {
+            panic!("Expected Type variant")
+        };
+        assert!(type_span.is_empty());
+        assert_eq!(
+            &source[value_span.start as usize..value_span.end as usize],
+            "(v) => v"
+        );
 
         assert_eq!(inputs[1].name, "unionType");
         let ut = inputs[1].transform.as_ref().unwrap();
