@@ -65,7 +65,7 @@ export class HighlightDirective {
   static ɵfac: i0.ɵɵFactoryDeclaration<HighlightDirective, never> =
     function HighlightDirective_Factory(__ngFactoryType__: any): any {
       /* @ts-ignore */
-      return new (__ngFactoryType__ || HighlightDirective)(i0.ɵɵdirectiveInject(i0.ElementRef));
+      return new (__ngFactoryType__ || HighlightDirective)(i0.ɵɵdirectiveInject(ElementRef));
     };
   // @ts-ignore
   static ɵdir: i0.ɵɵDirectiveDeclaration<
@@ -101,7 +101,7 @@ export class HighlightDirective {
         (): any => [
           {
             /* @ts-ignore */
-            type: i0.ElementRef,
+            type: ElementRef,
           },
         ],
         null,

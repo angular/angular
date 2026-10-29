@@ -4,8 +4,6 @@ import { Component } from '@angular/core';
 import { MyType } from './types';
 // @ts-ignore
 import * as i0 from '@angular/core';
-// @ts-ignore
-import * as i1 from './types';
 
 export class AppComponent {
   constructor(private myType: MyType) {}
@@ -14,7 +12,7 @@ export class AppComponent {
     __ngFactoryType__: any,
   ): any {
     /* @ts-ignore */
-    return new (__ngFactoryType__ || AppComponent)(i0.ɵɵdirectiveInject(i1.MyType));
+    return new (__ngFactoryType__ || AppComponent)(i0.ɵɵdirectiveInject(MyType));
   };
   // @ts-ignore
   static ɵcmp: i0.ɵɵComponentDeclaration<
@@ -61,7 +59,7 @@ export class AppComponent {
         (): any => [
           {
             /* @ts-ignore */
-            type: i1.MyType,
+            type: MyType,
           },
         ],
         null,
@@ -85,8 +83,6 @@ import { Injectable, Inject } from '@angular/core';
 import { LoggerConfig, LogFormat, Logger } from './config';
 // @ts-ignore
 import * as i0 from '@angular/core';
-// @ts-ignore
-import * as i1 from './config';
 
 // Local interface — type-only, no runtime value
 interface LocalConfig {
@@ -102,7 +98,7 @@ export class InvalidDepsService {
   static ɵfac: i0.ɵɵFactoryDeclaration<InvalidDepsService, never> =
     function InvalidDepsService_Factory(__ngFactoryType__: any): any {
       /* @ts-ignore */
-      return new (__ngFactoryType__ || InvalidDepsService)(i0.ɵɵinject(i1.LoggerConfig));
+      return new (__ngFactoryType__ || InvalidDepsService)(i0.ɵɵinject(LoggerConfig));
     };
   // @ts-ignore
   static ɵprov: i0.ɵɵInjectableDeclaration<any> =
@@ -120,7 +116,7 @@ export class InvalidDepsService {
         (): any => [
           {
             /* @ts-ignore */
-            type: i1.LoggerConfig,
+            type: LoggerConfig,
           },
         ],
         null,
@@ -164,7 +160,7 @@ export class ValidDepsService {
     __ngFactoryType__: any,
   ): any {
     /* @ts-ignore */
-    return new (__ngFactoryType__ || ValidDepsService)(i0.ɵɵinject(i1.Logger));
+    return new (__ngFactoryType__ || ValidDepsService)(i0.ɵɵinject(Logger));
   };
   // @ts-ignore
   static ɵprov: i0.ɵɵInjectableDeclaration<any> =
@@ -182,7 +178,7 @@ export class ValidDepsService {
         (): any => [
           {
             /* @ts-ignore */
-            type: i1.Logger,
+            type: Logger,
           },
         ],
         null,
@@ -228,10 +224,7 @@ export class MixedDepsService {
     __ngFactoryType__: any,
   ): any {
     /* @ts-ignore */
-    return new (__ngFactoryType__ || MixedDepsService)(
-      i0.ɵɵinject(i1.Logger),
-      i0.ɵɵinject(i1.LogFormat),
-    );
+    return new (__ngFactoryType__ || MixedDepsService)(i0.ɵɵinject(Logger), i0.ɵɵinject(LogFormat));
   };
   // @ts-ignore
   static ɵprov: i0.ɵɵInjectableDeclaration<any> =
@@ -249,11 +242,11 @@ export class MixedDepsService {
         (): any => [
           {
             /* @ts-ignore */
-            type: i1.Logger,
+            type: Logger,
           },
           {
             /* @ts-ignore */
-            type: i1.LogFormat,
+            type: LogFormat,
           },
         ],
         null,

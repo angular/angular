@@ -5150,7 +5150,7 @@ runInEachFileSystem((os: string) => {
       env.driveMain();
       const jsContents = env.getContents('test.js');
       expect(jsContents).toMatch(
-        /FooCmp\.ɵfac = function FooCmp_Factory\(__ngFactoryType__\) \{ (?:\/\* @ts-ignore \*\/\s*)?return new \(__ngFactoryType__ \|\| FooCmp\)\(i0\.ɵɵinjectAttribute\("test"\), i0\.ɵɵdirectiveInject\(i0\.ChangeDetectorRef\), i0\.ɵɵdirectiveInject\(i0\.ElementRef\), i0\.ɵɵdirectiveInject\(i0\.Injector\), i0\.ɵɵdirectiveInject\(i0\.Renderer2\), i0\.ɵɵdirectiveInject\(i0\.TemplateRef\), i0\.ɵɵdirectiveInject\(i0\.ViewContainerRef\)\); \}/,
+        /FooCmp\.ɵfac = function FooCmp_Factory\(__ngFactoryType__\) \{ (?:\/\* @ts-ignore \*\/\s*)?return new \(__ngFactoryType__ \|\| FooCmp\)\(i0\.ɵɵinjectAttribute\("test"\), i0\.ɵɵdirectiveInject\((?:i0\.)?ChangeDetectorRef\), i0\.ɵɵdirectiveInject\((?:i0\.)?ElementRef\), i0\.ɵɵdirectiveInject\((?:i0\.)?Injector\), i0\.ɵɵdirectiveInject\((?:i0\.)?Renderer2\), i0\.ɵɵdirectiveInject\((?:i0\.)?TemplateRef\), i0\.ɵɵdirectiveInject\((?:i0\.)?ViewContainerRef\)\); \}/,
       );
     });
 

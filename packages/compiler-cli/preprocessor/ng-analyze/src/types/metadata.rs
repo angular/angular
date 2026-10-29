@@ -873,12 +873,6 @@ pub struct ConstructorParamMetadata {
     /// `jit: true` `static ctorParameters`, whereas typed parameters whose type has no runtime
     /// value emit `{ type: undefined }`.
     pub has_type: bool,
-    /// Module specifier the type was imported from, when the type resolves to a (non-aliased)
-    /// named import (e.g. `@angular/core` for `ElementRef`). `None` for locally declared types.
-    /// Used so DI tokens that reference an imported symbol are emitted through the matching
-    /// namespace import (e.g. `i0.ElementRef`), mirroring ngtsc's import manager.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub type_module: Option<String>,
     pub is_type_only: bool,
     /// Whether `type_name` was resolved to a declaration that has a runtime value, either in this
     /// file or by chasing the import across files. References we could not resolve at all —

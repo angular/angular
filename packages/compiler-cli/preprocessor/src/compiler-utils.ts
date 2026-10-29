@@ -424,20 +424,7 @@ export function buildDeps(
     // unions, inline types, no annotation), which ngtsc also treats as UNAVAILABLE.
     const typeName = param.isTypeOnly ? null : (param.typeName ?? null);
     let tokenResolved = typeName !== null;
-    let token: outputAst.Expression;
-    if (typeName !== null) {
-      // ngtsc's valueReferenceToExpression() emits a named-import type reference as an
-      // `ExternalExpr` (kind IMPORTED), which the import manager prints through the module's
-      // namespace import — e.g. `i0.ElementRef` for a token imported from `@angular/core`.
-      // https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L71-L82
-      // TODO: Re-evaluate whether using namespace imports here is desirable, matching ngtsc behavior for now.
-      token =
-        param.typeModule != null
-          ? o.importExpr(new o.ExternalReference(param.typeModule, typeName))
-          : o.variable(typeName);
-    } else {
-      token = o.literal(null);
-    }
+    let token: outputAst.Expression = typeName !== null ? o.variable(typeName) : o.literal(null);
     let attributeNameType: outputAst.Expression | null = null;
     let host = false;
     let optional = false;

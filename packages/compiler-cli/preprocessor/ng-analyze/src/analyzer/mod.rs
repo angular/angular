@@ -651,17 +651,6 @@ pub fn get_constructor_params<'a>(
         let type_name = di.type_name.clone();
         let mut decorators = Vec::new();
 
-        // Non-aliased named imports record their source module for namespaced DI token emission
-        // (e.g. `i0.ElementRef`).
-        let type_module = type_name.as_deref().and_then(|name| {
-            import_map.get(name).and_then(|sym| match &sym.kind {
-                crate::analyzer::ImportKind::Named(original) if original == name => {
-                    Some(sym.source.clone())
-                }
-                _ => None,
-            })
-        });
-
         for decorator in ast_decorators {
             let Some(name) = extract_decorator_name(decorator) else {
                 continue;
@@ -736,7 +725,6 @@ pub fn get_constructor_params<'a>(
             type_name,
             jit_type_name: di.jit_type_name.map(String::from),
             has_type: di.type_span.is_some(),
-            type_module,
             is_type_only,
             is_value_verified,
             decorators,
