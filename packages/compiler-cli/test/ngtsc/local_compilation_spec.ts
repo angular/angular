@@ -1047,8 +1047,8 @@ runInEachFileSystem(() => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
 
-        expect(jsContents).toContain(
-          `MainComponent.ɵfac = function MainComponent_Factory(__ngFactoryType__) { /* @ts-ignore */\nreturn new (__ngFactoryType__ || MainComponent)(i0.ɵɵdirectiveInject(i1.SomeService1), i0.ɵɵdirectiveInject(SomeService2), i0.ɵɵdirectiveInject(i2.SomeService3), i0.ɵɵdirectiveInject(i3.nested.SomeService4), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN)); };`,
+        expect(jsContents).toMatch(
+          /MainComponent\.ɵfac = function MainComponent_Factory\(__ngFactoryType__\) \{ \/\* @ts-ignore \*\/\nreturn new \(__ngFactoryType__ \|\| MainComponent\)\(i0\.ɵɵdirectiveInject\((?:i1\.)?SomeService1\), i0\.ɵɵdirectiveInject\(SomeService2\), i0\.ɵɵdirectiveInject\((?:i2|SomeWhere3)\.SomeService3\), i0\.ɵɵdirectiveInject\((?:i3|SomeWhere4)\.nested\.SomeService4\), i0\.ɵɵinjectAttribute\(['"]title['"]\), i0\.ɵɵdirectiveInject\(MESSAGE_TOKEN\)\); \};/,
         );
       });
 
@@ -1083,8 +1083,8 @@ runInEachFileSystem(() => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
 
-        expect(jsContents).toContain(
-          `MainComponent.ɵfac = function MainComponent_Factory(__ngFactoryType__) { /* @ts-ignore */\nreturn new (__ngFactoryType__ || MainComponent)(i0.ɵɵdirectiveInject(i1.SomeService1), i0.ɵɵdirectiveInject(SomeService2), i0.ɵɵdirectiveInject(i2.SomeService3), i0.ɵɵdirectiveInject(i3.nested.SomeService4), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN)); };`,
+        expect(jsContents).toMatch(
+          /MainComponent\.ɵfac = function MainComponent_Factory\(__ngFactoryType__\) \{ \/\* @ts-ignore \*\/\nreturn new \(__ngFactoryType__ \|\| MainComponent\)\(i0\.ɵɵdirectiveInject\((?:i1\.)?SomeService1\), i0\.ɵɵdirectiveInject\(SomeService2\), i0\.ɵɵdirectiveInject\((?:i2|SomeWhere3)\.SomeService3\), i0\.ɵɵdirectiveInject\((?:i3|SomeWhere4)\.nested\.SomeService4\), i0\.ɵɵinjectAttribute\(['"]title['"]\), i0\.ɵɵdirectiveInject\(MESSAGE_TOKEN\)\); \};/,
         );
       });
 
@@ -1123,8 +1123,8 @@ runInEachFileSystem(() => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
 
-        expect(jsContents).toContain(
-          `MainDirective.ɵfac = function MainDirective_Factory(__ngFactoryType__) { /* @ts-ignore */\nreturn new (__ngFactoryType__ || MainDirective)(i0.ɵɵdirectiveInject(i1.SomeService1), i0.ɵɵdirectiveInject(SomeService2), i0.ɵɵdirectiveInject(i2.SomeService3), i0.ɵɵdirectiveInject(i3.nested.SomeService4), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN)); };`,
+        expect(jsContents).toMatch(
+          /MainDirective\.ɵfac = function MainDirective_Factory\(__ngFactoryType__\) \{ \/\* @ts-ignore \*\/\nreturn new \(__ngFactoryType__ \|\| MainDirective\)\(i0\.ɵɵdirectiveInject\((?:i1\.)?SomeService1\), i0\.ɵɵdirectiveInject\(SomeService2\), i0\.ɵɵdirectiveInject\((?:i2|SomeWhere3)\.SomeService3\), i0\.ɵɵdirectiveInject\((?:i3|SomeWhere4)\.nested\.SomeService4\), i0\.ɵɵinjectAttribute\(['"]title['"]\), i0\.ɵɵdirectiveInject\(MESSAGE_TOKEN\)\); \};/,
         );
       });
 
@@ -1156,8 +1156,8 @@ runInEachFileSystem(() => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
 
-        expect(jsContents).toContain(
-          `MainDirective.ɵfac = function MainDirective_Factory(__ngFactoryType__) { /* @ts-ignore */\nreturn new (__ngFactoryType__ || MainDirective)(i0.ɵɵdirectiveInject(i1.SomeService1), i0.ɵɵdirectiveInject(SomeService2), i0.ɵɵdirectiveInject(i2.SomeService3), i0.ɵɵdirectiveInject(i3.nested.SomeService4), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN)); };`,
+        expect(jsContents).toMatch(
+          /MainDirective\.ɵfac = function MainDirective_Factory\(__ngFactoryType__\) \{ \/\* @ts-ignore \*\/\nreturn new \(__ngFactoryType__ \|\| MainDirective\)\(i0\.ɵɵdirectiveInject\((?:i1\.)?SomeService1\), i0\.ɵɵdirectiveInject\(SomeService2\), i0\.ɵɵdirectiveInject\((?:i2|SomeWhere3)\.SomeService3\), i0\.ɵɵdirectiveInject\((?:i3|SomeWhere4)\.nested\.SomeService4\), i0\.ɵɵinjectAttribute\(['"]title['"]\), i0\.ɵɵdirectiveInject\(MESSAGE_TOKEN\)\); \};/,
         );
       });
 
@@ -1195,8 +1195,8 @@ runInEachFileSystem(() => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
 
-        expect(jsContents).toContain(
-          `MainPipe.ɵfac = function MainPipe_Factory(__ngFactoryType__) { /* @ts-ignore */\nreturn new (__ngFactoryType__ || MainPipe)(i0.ɵɵdirectiveInject(i1.SomeService1, 16), i0.ɵɵdirectiveInject(SomeService2, 16), i0.ɵɵdirectiveInject(i2.SomeService3, 16), i0.ɵɵdirectiveInject(i3.nested.SomeService4, 16), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN, 16)); };`,
+        expect(jsContents).toMatch(
+          /MainPipe\.ɵfac = function MainPipe_Factory\(__ngFactoryType__\) \{ \/\* @ts-ignore \*\/\nreturn new \(__ngFactoryType__ \|\| MainPipe\)\(i0\.ɵɵdirectiveInject\((?:i1\.)?SomeService1, 16\), i0\.ɵɵdirectiveInject\(SomeService2, 16\), i0\.ɵɵdirectiveInject\((?:i2|SomeWhere3)\.SomeService3, 16\), i0\.ɵɵdirectiveInject\((?:i3|SomeWhere4)\.nested\.SomeService4, 16\), i0\.ɵɵinjectAttribute\(['"]title['"]\), i0\.ɵɵdirectiveInject\(MESSAGE_TOKEN, 16\)\); \};/,
         );
       });
 
@@ -1228,8 +1228,8 @@ runInEachFileSystem(() => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
 
-        expect(jsContents).toContain(
-          `MainPipe.ɵfac = function MainPipe_Factory(__ngFactoryType__) { /* @ts-ignore */\nreturn new (__ngFactoryType__ || MainPipe)(i0.ɵɵdirectiveInject(i1.SomeService1, 16), i0.ɵɵdirectiveInject(SomeService2, 16), i0.ɵɵdirectiveInject(i2.SomeService3, 16), i0.ɵɵdirectiveInject(i3.nested.SomeService4, 16), i0.ɵɵinjectAttribute('title'), i0.ɵɵdirectiveInject(MESSAGE_TOKEN, 16)); };`,
+        expect(jsContents).toMatch(
+          /MainPipe\.ɵfac = function MainPipe_Factory\(__ngFactoryType__\) \{ \/\* @ts-ignore \*\/\nreturn new \(__ngFactoryType__ \|\| MainPipe\)\(i0\.ɵɵdirectiveInject\((?:i1\.)?SomeService1, 16\), i0\.ɵɵdirectiveInject\(SomeService2, 16\), i0\.ɵɵdirectiveInject\((?:i2|SomeWhere3)\.SomeService3, 16\), i0\.ɵɵdirectiveInject\((?:i3|SomeWhere4)\.nested\.SomeService4, 16\), i0\.ɵɵinjectAttribute\(['"]title['"]\), i0\.ɵɵdirectiveInject\(MESSAGE_TOKEN, 16\)\); \};/,
         );
       });
 
@@ -1263,8 +1263,8 @@ runInEachFileSystem(() => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
 
-        expect(jsContents).toContain(
-          `MainService.ɵfac = function MainService_Factory(__ngFactoryType__) { /* @ts-ignore */\nreturn new (__ngFactoryType__ || MainService)(i0.ɵɵinject(i1.SomeService1), i0.ɵɵinject(SomeService2), i0.ɵɵinject(i2.SomeService3), i0.ɵɵinject(i3.nested.SomeService4), i0.ɵɵinjectAttribute('title'), i0.ɵɵinject(MESSAGE_TOKEN)); };`,
+        expect(jsContents).toMatch(
+          /MainService\.ɵfac = function MainService_Factory\(__ngFactoryType__\) \{ \/\* @ts-ignore \*\/\nreturn new \(__ngFactoryType__ \|\| MainService\)\(i0\.ɵɵinject\((?:i1\.)?SomeService1\), i0\.ɵɵinject\(SomeService2\), i0\.ɵɵinject\((?:i2|SomeWhere3)\.SomeService3\), i0\.ɵɵinject\((?:i3|SomeWhere4)\.nested\.SomeService4\), i0\.ɵɵinjectAttribute\(['"]title['"]\), i0\.ɵɵinject\(MESSAGE_TOKEN\)\); \};/,
         );
       });
 
@@ -1297,8 +1297,8 @@ runInEachFileSystem(() => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
 
-        expect(jsContents).toContain(
-          `MainModule.ɵfac = function MainModule_Factory(__ngFactoryType__) { /* @ts-ignore */\nreturn new (__ngFactoryType__ || MainModule)(i0.ɵɵinject(i1.SomeService1), i0.ɵɵinject(SomeService2), i0.ɵɵinject(i2.SomeService3), i0.ɵɵinject(i3.nested.SomeService4), i0.ɵɵinjectAttribute('title'), i0.ɵɵinject(MESSAGE_TOKEN)); };`,
+        expect(jsContents).toMatch(
+          /MainModule\.ɵfac = function MainModule_Factory\(__ngFactoryType__\) \{ \/\* @ts-ignore \*\/\nreturn new \(__ngFactoryType__ \|\| MainModule\)\(i0\.ɵɵinject\((?:i1\.)?SomeService1\), i0\.ɵɵinject\(SomeService2\), i0\.ɵɵinject\((?:i2|SomeWhere3)\.SomeService3\), i0\.ɵɵinject\((?:i3|SomeWhere4)\.nested\.SomeService4\), i0\.ɵɵinjectAttribute\(['"]title['"]\), i0\.ɵɵinject\(MESSAGE_TOKEN\)\); \};/,
         );
       });
 
@@ -1524,7 +1524,7 @@ runInEachFileSystem(() => {
         // the object literal across multiple lines, the comment stays on the line immediately
         // before `type:`.
         expect(jsContents).toMatch(
-          /\(\) => \[\{\s*\/\* @ts-ignore \*\/\n\s*type: i1\.SomeService1 \}, \{\s*\/\* @ts-ignore \*\/\n\s*type: SomeService2,\s*decorators: \[\{\s*type: Optional\s*\}\]\s*\}\], null\)/,
+          /\(\) => \[\{\s*\/\* @ts-ignore \*\/\n\s*type: (?:i1\.)?SomeService1\s*\}, \{\s*\/\* @ts-ignore \*\/\n\s*type: SomeService2,\s*decorators: \[\{\s*type: Optional\s*\}\]\s*\}\], null\)/,
         );
       });
 
@@ -2057,11 +2057,11 @@ runInEachFileSystem(() => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
 
-        expect(jsContents).toContain(
-          'features: [i0.ɵɵHostDirectivesFeature(function () { return [DirectiveB]; })]',
+        expect(jsContents).toMatch(
+          /features: \[i0\.ɵɵHostDirectivesFeature\(function \(\) \{\s*return \[DirectiveB\];\s*\}\)\]/,
         );
-        expect(jsContents).toContain(
-          'features: [i0.ɵɵHostDirectivesFeature(function () { return [{ directive: DirectiveA, inputs: ["value", "value"] }]; })]',
+        expect(jsContents).toMatch(
+          /features: \[i0\.ɵɵHostDirectivesFeature\(function \(\) \{\s*return \[\{ directive: DirectiveA, inputs: \["value", "value"\] \}\];\s*\}\)\]/,
         );
       });
 
@@ -2186,7 +2186,9 @@ runInEachFileSystem(() => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
 
-        expect(jsContents).toContain('inputs: { x: [2, "x", "x", (v) => v + \'TRANSFORMED!\'] }');
+        expect(jsContents).toMatch(
+          /inputs: \{ x: \[2, "x", "x", \(v\) => v \+ ['"]TRANSFORMED!['"]\] \}/,
+        );
       });
 
       it('should not check inline function param type', () => {
@@ -2334,7 +2336,7 @@ runInEachFileSystem(() => {
         // and do not generate defer dependency functions for `@defer` instructions.
 
         // Eager imports are retained in the output.
-        expect(jsContents).toContain(`from './deferred-a'`);
+        expect(jsContents).toMatch(/from ['"]\.\/deferred-a['"]/);
 
         // Defer instructions do not have a dependency function,
         // since all dependencies were defined in `@Component.imports`.
@@ -2425,11 +2427,11 @@ runInEachFileSystem(() => {
         );
 
         // Make sure there are no eager imports present in the output.
-        expect(jsContents).not.toContain(`from './deferred-a'`);
-        expect(jsContents).not.toContain(`from './deferred-b'`);
+        expect(jsContents).not.toMatch(/from ['"]\.\/deferred-a['"]/);
+        expect(jsContents).not.toMatch(/from ['"]\.\/deferred-b['"]/);
 
         // Eager dependencies retain their imports.
-        expect(jsContents).toContain(`from './eager-a';`);
+        expect(jsContents).toMatch(/from ['"]\.\/eager-a['"];/);
 
         // All defer instructions use the same dependency function.
         expect(jsContents).toContain('ɵɵdefer(1, 0, AppCmp_Defer_1_DepsFn);');
