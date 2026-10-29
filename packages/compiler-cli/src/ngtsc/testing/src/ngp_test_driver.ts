@@ -42,8 +42,6 @@ import {isInHostBindingTcb} from '../../typecheck/src/tcb_util';
 import {getTokenAtPosition} from '../../util/src/typescript';
 import {NgtscTestCompilerHost} from './compiler_host';
 
-const SPAN_COMMENT_REGEX = /\/\*(\d+),(\d+)\*\//g;
-
 /**
  * Workspace name under which ngtsc's test `FileNameToModuleNameHost` (`test/ngtsc/env.ts`) names
  * modules when `_useHostForImportGeneration` is set, and the specifier prefix it strips again on
@@ -711,9 +709,7 @@ export function performNgpCompilationSync(params: {
   }
 
   // 3. Collect and map TCB semantic diagnostics from .ngtypecheck.ts files
-  for (const [tcbFsPath, {code: tcbCode, originFsPath}] of hasOptionErrors
-    ? []
-    : tcbFileMap.entries()) {
+  for (const [tcbFsPath, {originFsPath}] of hasOptionErrors ? [] : tcbFileMap.entries()) {
     const tcbSf = tsProgram.getSourceFile(tcbFsPath);
     if (!tcbSf) {
       continue;
@@ -723,7 +719,6 @@ export function performNgpCompilationSync(params: {
       const mapped = translateTcbDiagnostic(
         diag,
         tcbSf,
-        tcbCode,
         originFsPath,
         templateTargetByTypeCheckId,
         getOriginalSourceFile,
@@ -1111,34 +1106,6 @@ function findClosestPrecedingNode(
   return bestNode;
 }
 
-function getTemplateSpanFromTcbLocation(
-  tcbCode: string,
-  targetPos: number,
-): {start: number; end: number} | null {
-  let closestMatch: RegExpExecArray | null = null;
-  let minDistance = Infinity;
-
-  for (const match of tcbCode.matchAll(SPAN_COMMENT_REGEX)) {
-    const commentPos = match.index!;
-    const distance = Math.abs(commentPos - targetPos);
-    if (distance < minDistance) {
-      minDistance = distance;
-      closestMatch = match;
-    } else {
-      break;
-    }
-  }
-
-  if (!closestMatch) {
-    return null;
-  }
-
-  return {
-    start: parseInt(closestMatch[1], 10),
-    end: parseInt(closestMatch[2], 10),
-  };
-}
-
 /**
  * Where diagnostics for a component's template are reported when its spans aren't offsets into
  * the component file: an external template file, or a synthetic source file holding the text of
@@ -1152,7 +1119,6 @@ type TemplateDiagnosticTarget = ({fsPath: AbsoluteFsPath} | {sourceFile: ts.Sour
 function translateTcbDiagnostic(
   diag: ts.Diagnostic,
   tcbSf: ts.SourceFile,
-  tcbCode: string,
   originFsPath: AbsoluteFsPath,
   templateTargetByTypeCheckId: ReadonlyMap<string, TemplateDiagnosticTarget>,
   getOriginalSourceFile: (fsPath: AbsoluteFsPath) => ts.SourceFile | undefined,
@@ -1188,15 +1154,9 @@ function translateTcbDiagnostic(
     currentNode = currentNode.parent;
   }
 
-  if (typeCheckId === undefined) {
-    // Diagnostic is outside a _tcb function (e.g., in an inline TCB's copied class body)
-    return null;
-  }
-
-  if (!span) {
-    span = getTemplateSpanFromTcbLocation(tcbCode, diag.start);
-  }
-  if (!span) {
+  if (typeCheckId === undefined || !span) {
+    // Diagnostic is outside a _tcb function (e.g., in an inline TCB's copied class body) or on
+    // synthetic TCB prelude code with no source span comment (matching ngtsc's `findSourceLocation`).
     return null;
   }
 
