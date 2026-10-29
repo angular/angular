@@ -1,5 +1,10 @@
 {
   "schematics": {
+    "ng-template-unclaimed-bindings": {
+      "version": "22.1.0",
+      "description": "Removes property bindings on '<ng-template>' elements that are not matched by any directive. Such bindings had no effect at runtime and are now reported as compile-time errors (NG8002).",
+      "factory": "./bundles/ng-template-unclaimed-bindings.cjs#migrate"
+    },
     "change-detection-eager": {
       "version": "22.0.0",
       "description": "Adds `ChangeDetectionStrategy.Eager` to all components.",
@@ -39,6 +44,11 @@
       "version": "22.0.0",
       "description": "Wraps optional chaining expressions in $safeNavigationMigration().",
       "factory": "./bundles/safe-optional-chaining.cjs#migrate"
+    },
+    "ng-template-unclaimed-bindings": {
+      "version": "22.1.0",
+      "description": "Removes property bindings on <ng-template> elements that are not claimed by any directive, which are now reported as compile errors.",
+      "factory": "./bundles/ng-template-unclaimed-bindings.cjs#migrate"
     }
   }
 }
