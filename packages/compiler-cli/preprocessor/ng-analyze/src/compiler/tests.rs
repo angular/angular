@@ -7534,3 +7534,69 @@ fn test_ambient_constructors_and_injectable_options() {
         ]
     );
 }
+
+#[test]
+fn test_local_compilation_unsupported_host_directive_expression() {
+    let source = r#"
+        import { Component, forwardRef } from '@angular/core';
+        import { ExternalDirective } from 'some_where';
+        import { KnownDirective } from './known';
+
+        @Component({
+            selector: 'bad-comp',
+            template: '',
+            hostDirectives: [forwardRef(() => ExternalDirective)],
+        })
+        export class BadComp {}
+
+        @Component({
+            selector: 'good-comp',
+            template: '',
+            hostDirectives: [forwardRef(() => KnownDirective)],
+        })
+        export class GoodComp {}
+    "#;
+    let known = r#"
+        import { Directive } from '@angular/core';
+        @Directive({ selector: '[known]' })
+        export class KnownDirective {}
+    "#;
+    let mut virtual_files = HashMap::new();
+    virtual_files.insert("/project/app.ts".to_string(), source.to_string());
+    virtual_files.insert("/project/known.ts".to_string(), known.to_string());
+    virtual_files.insert(
+        "/project/tsconfig.json".to_string(),
+        r#"{"files": ["app.ts", "known.ts"]}"#.to_string(),
+    );
+    let analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
+        optimize: Some(false),
+        virtual_files: Some(virtual_files),
+        ..Default::default()
+    })
+    .unwrap();
+    let iterator = analyzer.analyze().unwrap();
+    let mut app_meta = None;
+    while let Some(chunk) = futures::executor::block_on(iterator.next()).unwrap() {
+        for file in chunk.files {
+            if file.file_path == "/project/app.ts" {
+                app_meta = Some(file);
+            }
+        }
+    }
+    let meta = app_meta.expect("app.ts metadata");
+    assert_eq!(meta.diagnostics.len(), 1, "{:?}", meta.diagnostics);
+    let diag = &meta.diagnostics[0];
+    assert_eq!(diag.code, 11003);
+    assert_eq!(
+        diag.message_text,
+        "In local compilation mode, host directive cannot be an expression. Use an identifier instead"
+    );
+    let span = diag.span.as_ref().expect("span");
+    assert_eq!(
+        &source[span.start as usize..span.end as usize],
+        "forwardRef(() => ExternalDirective)"
+    );
+    assert!(meta.classes[0].component.as_ref().unwrap().host_directives.is_none());
+    assert!(meta.classes[1].component.as_ref().unwrap().host_directives.is_some());
+}

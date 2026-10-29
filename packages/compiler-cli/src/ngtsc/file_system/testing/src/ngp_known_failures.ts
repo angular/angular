@@ -317,8 +317,6 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'import generation should report an error when a library entry-point does not export the symbol',
   'import generation should report an error when using a directive outside of rootDirs',
   'local compilation custom decorator should produce diagnostic for each custom decorator',
-  'local compilation host directives should generate component hostDirectives definition without input and output',
-  'local compilation host directives should produce fatal diagnostics for host directives with forward references of externally imported directive',
   'local compilation input transform should not check inline function param type',
   'ngtsc @defer block @Component.deferredImports block-specific deferredImports mapping should report error when defer block has no name parameter but deferredImports is an object',
   'ngtsc @defer block @Component.deferredImports block-specific deferredImports mapping should report error when name parameter references missing block in deferredImports',
