@@ -1728,6 +1728,47 @@ impl ClassData {
             .await;
     }
 
+    /// Complete the remaining constant-evaluated fields that ngtsc evaluates in local compilation
+    /// mode (`exportAs`, `@Component.template`, `@HostBinding` arguments, and `@HostListener`
+    /// event names) so cross-file constants within the compilation unit resolve and external
+    /// imports demote to `UnresolvedImport` for `NG11001` validation.
+    pub async fn complete_local_compilation_constants<
+        Fs: crate::ResourceResolverFs + Clone + 'static,
+    >(
+        &mut self,
+        ctx: &crate::query::QueryContext<Fs>,
+    ) {
+        let foreign = crate::analyzer::resolvers::angular_foreign_resolvers();
+        match &mut self.decorator {
+            DecoratorData::Component(c) => {
+                if let Some(export_as) = &mut c.directive.export_as {
+                    export_as.complete_with(ctx, foreign).await;
+                }
+                for name in c.directive.host_binding_names_mut() {
+                    name.complete_with(ctx, foreign).await;
+                }
+                for name in c.directive.host_listener_event_names_mut() {
+                    name.complete_with(ctx, foreign).await;
+                }
+                if let Some(template) = &mut c.template {
+                    template.complete_with(ctx, foreign).await;
+                }
+            }
+            DecoratorData::Directive(d) => {
+                if let Some(export_as) = &mut d.export_as {
+                    export_as.complete_with(ctx, foreign).await;
+                }
+                for name in d.host_binding_names_mut() {
+                    name.complete_with(ctx, foreign).await;
+                }
+                for name in d.host_listener_event_names_mut() {
+                    name.complete_with(ctx, foreign).await;
+                }
+            }
+            _ => {}
+        }
+    }
+
     pub async fn complete_resource_urls<Fs: crate::ResourceResolverFs + Clone + 'static>(
         &mut self,
         ctx: &crate::query::QueryContext<Fs>,
@@ -2383,6 +2424,24 @@ impl ClassData {
     ) {
         if let (Some(span), Some(ref sel)) = (d.selector_span, &d.selector) {
             let Some(ref s) = sel.get_optional() else {
+                if cx.mode == WireMode::Syntax {
+                    if let Some(unresolved_span) = local_unresolved_const_span(sel.raw()) {
+                        push_error(
+                            diagnostics,
+                            file_path,
+                            converter,
+                            "11001",
+                            unresolved_span,
+                            "Unresolved identifier found for @Component.selector field! Did you \
+                             import this identifier from a file outside of the compilation unit? \
+                             This is not allowed when Angular compiler runs in local mode. \
+                             Possible solutions: 1) Move the declarations into a file within the \
+                             compilation unit, 2) Inline the selector"
+                                .to_string(),
+                        );
+                        return;
+                    }
+                }
                 push_error(
                     diagnostics,
                     file_path,
@@ -2443,16 +2502,35 @@ impl ClassData {
         }
 
         // ngtsc evaluates `exportAs` and rejects anything that is not statically a string.
-        let export_as = d.export_as.as_ref().map(Resolved::get_optional);
-        if let (Some(span), Some(None)) = (d.export_as_span, export_as) {
-            push_error(
-                diagnostics,
-                file_path,
-                converter,
-                "1010",
-                span,
-                "exportAs must be a string".to_string(),
-            );
+        if let (Some(span), Some(ref export_as)) = (d.export_as_span, &d.export_as) {
+            if export_as.get_optional().is_none() {
+                if cx.mode == WireMode::Syntax {
+                    if let Some(unresolved_span) = local_unresolved_const_span(export_as.raw()) {
+                        push_error(
+                            diagnostics,
+                            file_path,
+                            converter,
+                            "11001",
+                            unresolved_span,
+                            "Unresolved identifier found for exportAs field! Did you import this \
+                             identifier from a file outside of the compilation unit? This is not \
+                             allowed when Angular compiler runs in local mode. Possible \
+                             solutions: 1) Move the declarations into a file within the \
+                             compilation unit, 2) Inline the selector"
+                                .to_string(),
+                        );
+                        return;
+                    }
+                }
+                push_error(
+                    diagnostics,
+                    file_path,
+                    converter,
+                    "1010",
+                    span,
+                    "exportAs must be a string".to_string(),
+                );
+            }
         }
 
         // ngtsc evaluates the `standalone` flag and rejects anything that is not
@@ -2491,12 +2569,28 @@ impl ClassData {
                 continue;
             };
 
-            // TODO(parity): the single-file pipeline drops such a binding instead of binding
-            // it under the imported name.
-            if name.contains_incomplete() {
-                continue;
-            }
             if name.get_optional().is_none() {
+                if cx.mode == WireMode::Syntax {
+                    if let Some(unresolved_span) = local_unresolved_const_span(name.raw()) {
+                        push_error(
+                            diagnostics,
+                            file_path,
+                            converter,
+                            "11001",
+                            unresolved_span,
+                            "Unresolved identifier found for @HostBinding's argument! Did you \
+                             import this identifier from a file outside of the compilation unit? \
+                             This is not allowed when Angular compiler runs in local mode. \
+                             Possible solutions: 1) Move the declaration into a file within the \
+                             compilation unit, 2) Inline the argument"
+                                .to_string(),
+                        );
+                        return;
+                    }
+                }
+                if name.contains_incomplete() {
+                    continue;
+                }
                 push_error(
                     diagnostics,
                     file_path,
@@ -2509,10 +2603,30 @@ impl ClassData {
         }
 
         for listener in &d.host_listeners {
-            if listener.resolved_event_name.contains_incomplete() {
-                continue;
-            }
             if listener.resolved_event_name.get_optional().is_none() {
+                if cx.mode == WireMode::Syntax {
+                    if let Some(unresolved_span) =
+                        local_unresolved_const_span(listener.resolved_event_name.raw())
+                    {
+                        push_error(
+                            diagnostics,
+                            file_path,
+                            converter,
+                            "11001",
+                            unresolved_span,
+                            "Unresolved identifier found for @HostListener's event name argument! \
+                             Did you import this identifier from a file outside of the \
+                             compilation unit? This is not allowed when Angular compiler runs in \
+                             local mode. Possible solutions: 1) Move the declaration into a file \
+                             within the compilation unit, 2) Inline the argument"
+                                .to_string(),
+                        );
+                        return;
+                    }
+                }
+                if listener.resolved_event_name.contains_incomplete() {
+                    continue;
+                }
                 push_error(
                     diagnostics,
                     file_path,
@@ -2672,19 +2786,20 @@ impl ClassData {
             }
         }
 
-        self.validate_template_declaration(c, file_path, converter, diagnostics);
-        self.validate_component_styles(c, file_path, converter, diagnostics);
+        self.validate_template_declaration(c, mode, file_path, converter, diagnostics);
+        self.validate_component_styles(c, mode, file_path, converter, diagnostics);
         self.validate_component_imports(c, file_path, converter, diagnostics);
         self.validate_shadow_dom_selector(c, file_path, converter, diagnostics);
     }
 
-    /// `@Component.styles` must evaluate to a string or an array of strings (`NG1010`).
+    /// `@Component.styles` must evaluate to a string or an array of strings (`NG1010`), or
+    /// `NG11001` in local compilation when an unresolved identifier is encountered.
     // TODO(parity): ngtsc chains the reason (e.g. "Value could not be determined statically.")
     // under the message.
-    // TODO(parity): local compilation should report NG11001 for unresolved identifiers.
     fn validate_component_styles(
         &self,
         c: &ComponentData,
+        mode: WireMode,
         file_path: &std::path::Path,
         converter: &crate::utils::Utf8ToUtf16,
         diagnostics: &mut Vec<crate::NgDiagnostic>,
@@ -2695,6 +2810,25 @@ impl ClassData {
         let Err(error) = crate::evaluator::ComponentStyles::parse(styles.raw()) else {
             return;
         };
+        if mode == WireMode::Syntax {
+            if let Some(unresolved_span) = local_unresolved_styles_span(styles.raw()) {
+                push_error(
+                    diagnostics,
+                    file_path,
+                    converter,
+                    "11001",
+                    unresolved_span,
+                    "Unresolved identifier found for @Component.styles field! Did you import \
+                     this identifier from a file outside of the compilation unit? This is not \
+                     allowed when Angular compiler runs in local mode. Possible solutions: \
+                     1) Move the declarations into a file within the compilation unit, \
+                     2) Inline the styles, 3) Move the styles into separate files and include it \
+                     using @Component.styleUrls"
+                        .to_string(),
+                );
+                return;
+            }
+        }
         let message = match error {
             crate::evaluator::ComponentStylesError::NotStringOrArray => {
                 "Failed to resolve @Component.styles to a string or an array of strings".to_string()
@@ -2823,6 +2957,7 @@ impl ClassData {
     fn validate_template_declaration(
         &self,
         c: &ComponentData,
+        mode: WireMode,
         file_path: &std::path::Path,
         converter: &crate::utils::Utf8ToUtf16,
         diagnostics: &mut Vec<crate::NgDiagnostic>,
@@ -2847,20 +2982,36 @@ impl ClassData {
         } else if let Some(span) = c.template_span {
             // An inline template that did not statically resolve to a string. Only checked
             // when `templateUrl` is absent, matching the reference's precedence.
-            let dynamic = c
-                .template
-                .as_ref()
-                .map(|t| t.get_optional().is_none())
-                .unwrap_or(false);
-            if dynamic {
-                push_error(
-                    diagnostics,
-                    file_path,
-                    converter,
-                    "1010",
-                    span,
-                    "template must be a string".to_string(),
-                );
+            if let Some(ref template) = c.template {
+                if template.get_optional().is_none() {
+                    if mode == WireMode::Syntax
+                        && local_unresolved_const_span(template.raw()).is_some()
+                    {
+                        push_error(
+                            diagnostics,
+                            file_path,
+                            converter,
+                            "11001",
+                            span,
+                            "Unresolved identifier found for @Component.template field! Did you \
+                             import this identifier from a file outside of the compilation unit? \
+                             This is not allowed when Angular compiler runs in local mode. \
+                             Possible solutions: 1) Move the declaration into a file within the \
+                             compilation unit, 2) Inline the template, 3) Move the template into \
+                             a separate .html file and include it using @Component.templateUrl"
+                                .to_string(),
+                        );
+                    } else {
+                        push_error(
+                            diagnostics,
+                            file_path,
+                            converter,
+                            "1010",
+                            span,
+                            "template must be a string".to_string(),
+                        );
+                    }
+                }
             }
         } else if c.directive.args_span.is_some() {
             // Metadata object present but declares neither `template` nor `templateUrl`.
@@ -3077,6 +3228,62 @@ fn check_custom_element_selector_for_errors(selector: &str) -> Option<&'static s
     }
 
     None
+}
+
+/// Returns the unresolved identifier span when `value` corresponds to ngtsc's
+/// `value instanceof DynamicValue && value.isFromUnknownIdentifier()` in local compilation mode.
+fn local_unresolved_const_span(
+    value: &crate::evaluator::ResolvedValue,
+) -> Option<oxc_span::Span> {
+    use crate::analyzer::ImportKind;
+    use crate::evaluator::{DynamicReason, IncompleteDep, ResolvedValue, UnresolvedReference};
+
+    let is_direct_import = |u: &UnresolvedReference, span: oxc_span::Span| {
+        !u.is_namespace_member
+            && !matches!(u.symbol, ImportKind::Namespace)
+            && u.local_name
+                .as_ref()
+                .is_some_and(|name| name.len() as u32 == span.size())
+    };
+
+    match value.unwrap_named() {
+        ResolvedValue::Dynamic(d) => match &d.reason {
+            DynamicReason::UnknownIdentifier(_) => Some(d.span),
+            DynamicReason::UnresolvedImport(u) if is_direct_import(u, d.span) => Some(d.span),
+            DynamicReason::DynamicInput(inner)
+                if matches!(
+                    &inner.reason,
+                    DynamicReason::UnresolvedImport(u)
+                        if u.importer == d.file && is_direct_import(u, d.span)
+                ) =>
+            {
+                Some(d.span)
+            }
+            _ => None,
+        },
+        ResolvedValue::Incomplete(hole)
+            if hole.transparent
+                && hole.identifiers.len() <= 1
+                && matches!(
+                    &hole.dep,
+                    IncompleteDep::Reference(u) if is_direct_import(u, hole.span)
+                ) =>
+        {
+            Some(hole.span)
+        }
+        _ => None,
+    }
+}
+
+fn local_unresolved_styles_span(
+    value: &crate::evaluator::ResolvedValue,
+) -> Option<oxc_span::Span> {
+    match value.unwrap_named() {
+        crate::evaluator::ResolvedValue::Array(items) => {
+            items.iter().find_map(local_unresolved_const_span)
+        }
+        other => local_unresolved_const_span(other),
+    }
 }
 
 /// Build an error-severity `NgDiagnostic` carrying the given `NG` code and push it onto the

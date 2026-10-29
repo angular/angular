@@ -2617,9 +2617,8 @@ fn test_unresolvable_selector_in_non_optimized_mode() {
         .find(|f| f.file_path.contains("app.component.ts"))
         .expect("app.component.ts in chunk");
 
-    // TODO(parity): ngtsc reports NG11001 for imports outside the compilation unit.
     assert_eq!(app_meta.diagnostics.len(), 1);
-    assert_eq!(app_meta.diagnostics[0].code, 1010);
+    assert_eq!(app_meta.diagnostics[0].code, 11001);
 }
 
 /// A component whose `styles` use template-literal arithmetic, an imported constant, an
