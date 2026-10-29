@@ -27,6 +27,8 @@ export interface ParsedComponentTemplate extends ParsedTemplate {
 
 export interface FileAnalysis {
   filePath: string;
+  sourceContent?: string;
+  boundFingerprint?: string;
   tcb?: string | null;
   parsedTemplates: Map<string, ParsedComponentTemplate>;
   preparedTcbData?: PreparedTcbData | null;

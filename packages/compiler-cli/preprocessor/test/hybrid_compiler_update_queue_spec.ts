@@ -49,6 +49,12 @@ class ScriptedAnalyzer implements IAnalyzer {
   private updateCount = 0;
   private invalidateCount = 0;
 
+  // Optional engine capabilities a test may opt into.
+  canonicalPaths?: IAnalyzer['canonicalPaths'];
+  canonicalPathsSync?: IAnalyzer['canonicalPathsSync'];
+  updateFileContentSync?: IAnalyzer['updateFileContentSync'];
+  invalidateFilesSync?: IAnalyzer['invalidateFilesSync'];
+
   async *analyze(): AsyncGenerator<CompilationChunk> {}
   async *analyzeOptimized(): AsyncGenerator<CompilationChunk> {}
 
@@ -270,6 +276,51 @@ for (const {optimize} of [{optimize: true}, {optimize: false}]) {
       const analysis = await compiler.ensureBound('/app/service.ts');
       expect(analysis.preparedTcbData).toBeNull();
       expect(getFileContentCalled).toBe(false);
+    });
+
+    describe('records changes under the paths results carry', () => {
+      // The host reports paths through a symlinked directory; results use the resolved one.
+      const canonicalize = (paths: string[]) => paths.map((p) => p.replace('/link/', '/real/'));
+
+      function createAnalyzer(): ScriptedAnalyzer {
+        const analyzer = new ScriptedAnalyzer();
+        analyzer.canonicalPaths = async (paths) => canonicalize(paths);
+        analyzer.canonicalPathsSync = canonicalize;
+        analyzer.updateFileContentSync = (updates) => updates.map((u) => u.filePath);
+        analyzer.invalidateFilesSync = (updates) => updates.map((u) => u.filePath);
+        return analyzer;
+      }
+
+      it('for asynchronous updates', async () => {
+        const compiler = new HybridCompiler(createAnalyzer(), {optimize});
+        const recordChanges = spyOn(compiler.incremental, 'recordChanges').and.callThrough();
+
+        await compiler.updateFileContent([{filePath: '/link/a.ts', content: 'next'}]);
+        await compiler.invalidateFiles([
+          {filePath: '/link/b.html', updateType: FileUpdateType.Changed},
+          {filePath: '/link/c.ts', updateType: FileUpdateType.Deleted},
+        ]);
+
+        expect(recordChanges.calls.allArgs()).toEqual([
+          [['/real/a.ts'], []],
+          [['/real/b.html'], ['/real/c.ts']],
+        ]);
+      });
+
+      it('for synchronous updates', () => {
+        const compiler = new HybridCompiler(createAnalyzer(), {optimize});
+        const recordChanges = spyOn(compiler.incremental, 'recordChanges').and.callThrough();
+
+        compiler.updateFileContentSync([{filePath: '/link/a.ts', content: 'next'}]);
+        compiler.invalidateFilesSync([
+          {filePath: '/link/c.ts', updateType: FileUpdateType.Deleted},
+        ]);
+
+        expect(recordChanges.calls.allArgs()).toEqual([
+          [['/real/a.ts'], []],
+          [[], ['/real/c.ts']],
+        ]);
+      });
     });
   });
 }

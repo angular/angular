@@ -6,6 +6,7 @@
  */
 
 import * as i0 from './test';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1<T>(this: i0.ChildComponent<T>) {

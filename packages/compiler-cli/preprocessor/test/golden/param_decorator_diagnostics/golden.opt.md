@@ -62,6 +62,7 @@ export class ForeignParamDirective {
  */
 
 import * as i0 from './unexpected-core.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.UnexpectedCoreComponent) {

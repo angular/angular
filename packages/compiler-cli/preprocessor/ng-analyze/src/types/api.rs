@@ -103,6 +103,11 @@ pub struct AnalysisResult {
     pub r3_symbols_specifier: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub top_level_value_bindings: Option<Vec<String>>,
+    /// Resolved paths of the local TS files this file statically imports, in the same form as
+    /// `file_path`. Consumers use these as the file's dependency edges (e.g. incremental
+    /// re-emit decisions) without resolving module specifiers themselves.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub static_dependencies: Vec<String>,
 }
 
 /// Options for constructing an [`crate::Analyzer`].
@@ -352,6 +357,9 @@ pub struct CompilationChunk {
     pub files: Vec<AnalysisResult>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub static_edges: Option<HashMap<String, Vec<FileId>>>,
+    /// Files that were in the program on the previous analysis pass and are no longer reachable.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub removed_files: Option<Vec<String>>,
 }
 
 #[cfg_attr(feature = "napi", napi(object))]

@@ -338,6 +338,20 @@ fn handle_rpc_request(req: RpcRequest, analyzer: &mut Option<Analyzer>) -> RpcRe
                 error: None,
             }
         }
+        "canonicalPaths" => {
+            let Ok(paths) = serde_json::from_value::<Vec<String>>(req.params) else {
+                return RpcResponse {
+                    id: req.id,
+                    result: None,
+                    error: Some("Invalid canonicalPaths params".to_string()),
+                };
+            };
+            RpcResponse {
+                id: req.id,
+                result: Some(serde_json::to_value(a.canonical_paths_core(paths)).unwrap()),
+                error: None,
+            }
+        }
 
         _ => RpcResponse {
             id: req.id,

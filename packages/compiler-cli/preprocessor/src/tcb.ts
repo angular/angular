@@ -722,6 +722,12 @@ export function generateTcbCode(
     const preludeStatements = sharedEnv!.getFileLevelStatements();
     const preludeStr = printStatements(preludeStatements);
     code += preludeStr + '\n' + functionStrings;
+
+    // Mirrors ngtsc's `ensureTypeCheckFilePreparationImports`: signal input checking adds an
+    // `@angular/core` import on demand, which would change the TypeScript import graph (and so
+    // defeat complete program reuse) the first time a signal input appears. Seeded after the TCBs
+    // are generated so it never shifts the aliases they already use.
+    importManager.addImport(R3Identifiers.InputSignalBrandWriteType.moduleName);
   } else {
     code += functionStrings;
   }

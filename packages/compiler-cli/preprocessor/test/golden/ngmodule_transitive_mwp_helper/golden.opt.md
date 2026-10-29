@@ -107,6 +107,7 @@ export function provideFeature(): ModuleWithProviders<FeatureModule> {
  */
 
 import * as i0 from './middle';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.MiddleComp) {

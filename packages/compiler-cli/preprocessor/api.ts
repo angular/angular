@@ -33,6 +33,8 @@ export type {ClassEntity} from './src/indexer_api.js';
 export {IndexerBoundTemplate} from './src/indexing/indexer.js';
 export {buildTypeCheckingConfig, type NgpTypeCheckingConfig} from './src/tcb.js';
 export {verifyCompilerOptions, type NgpCompilerOptions} from './src/compiler_options.js';
+export {IncrementalEmitTracker} from './src/incremental.js';
+export {FileUpdateType} from './src/types.js';
 export type {
   AnalyzerOptions,
   DefaultHostConfig,

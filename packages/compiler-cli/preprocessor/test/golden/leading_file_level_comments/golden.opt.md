@@ -7,6 +7,7 @@
 
 import * as i0 from './test';
 import * as i1 from '@angular/common';
+import * as i2 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.ReexportFirstComponent) {
@@ -111,6 +112,7 @@ export class ReexportFirstComponent {
  */
 
 import * as i0 from './test2';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.ImportFirstComponent) {
@@ -183,6 +185,7 @@ export class ImportFirstComponent {
  */
 
 import * as i0 from './test3';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.EnumFirstComponent) {
@@ -264,6 +267,7 @@ export class EnumFirstComponent {
  */
 
 import * as i0 from './test4';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.ReferenceFirstComponent) {
@@ -339,6 +343,7 @@ export class ReferenceFirstComponent {
 
 import * as i0 from './test5';
 import * as i1 from '@angular/common';
+import * as i2 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.TrailingImportComponent) {

@@ -6,6 +6,7 @@
  */
 
 import * as i0 from './ngmodule_schemas';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.MyCompCustomElements) {

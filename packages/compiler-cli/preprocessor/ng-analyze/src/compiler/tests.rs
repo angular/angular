@@ -5197,6 +5197,83 @@ fn test_invalidate_files_dts_invalidates_dependents() {
     assert!(invalidated.contains(&app_wire_path), "{invalidated:?}");
 }
 
+#[test]
+fn test_invalidate_files_created_file_resolves_failed_import() {
+    let dir = tempfile::TempDir::new().unwrap();
+    let root = dir.path().canonicalize().unwrap();
+    let root_str = root.to_string_lossy().into_owned();
+    let lib_path = root.join("lib.ts");
+    let app_path = format!("{root_str}/app.ts");
+
+    let analyzer = consumer_analyzer(&root_str, "./lib", HashMap::new());
+    assert_eq!(imported_lib_dir_selector(&analyzer, &app_path), None);
+
+    std::fs::write(&lib_path, lib_source("[libNew]")).unwrap();
+    analyzer
+        .invalidate_files(vec![FileInvalidation {
+            file_path: lib_path.to_string_lossy().into_owned(),
+            update_type: FileUpdateType::Created,
+        }])
+        .unwrap();
+
+    assert_eq!(
+        imported_lib_dir_selector(&analyzer, &app_path).as_deref(),
+        Some("[libNew]"),
+        "the import of the created file must resolve"
+    );
+}
+
+#[test]
+fn test_update_file_content_created_file_resolves_failed_import() {
+    let analyzer = consumer_analyzer("/project", "./lib", HashMap::new());
+    assert_eq!(
+        imported_lib_dir_selector(&analyzer, "/project/app.ts"),
+        None
+    );
+
+    analyzer
+        .update_file_content(vec![FileUpdate {
+            file_path: "/project/lib.ts".to_string(),
+            content: lib_source("[libNew]"),
+        }])
+        .unwrap();
+
+    assert_eq!(
+        imported_lib_dir_selector(&analyzer, "/project/app.ts").as_deref(),
+        Some("[libNew]"),
+        "the import of the created file must resolve"
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn test_canonical_paths_resolves_symlinked_host_paths() {
+    let dir = tempfile::TempDir::new().unwrap();
+    let real = dir.path().canonicalize().unwrap().join("real");
+    std::fs::create_dir(&real).unwrap();
+    std::fs::write(real.join("lib.ts"), lib_source("[lib]")).unwrap();
+    let link = dir.path().join("link");
+    std::os::unix::fs::symlink(&real, &link).unwrap();
+    let real_str = real.to_string_lossy().into_owned();
+    let link_str = link.to_string_lossy().into_owned();
+
+    let analyzer = consumer_analyzer(&real_str, "./lib", HashMap::new());
+    let canonical = analyzer.canonical_paths(vec![
+        format!("{link_str}/lib.ts"),
+        format!("{link_str}/deleted.ts"),
+        format!("{real_str}/app.ts"),
+    ]);
+
+    assert_eq!(
+        canonical,
+        vec![
+            format!("{real_str}/lib.ts"),
+            format!("{real_str}/deleted.ts"),
+            format!("{real_str}/app.ts"),
+        ]
+    );
+}
+
 /// The Angular CLI's `tsconfig.app.json` lists only `main.ts`; the NgModule and everything it
 /// declares join the program because `main.ts` imports them. `C1`'s template matches `D`, which
 /// `MModule` declares next to it.

@@ -4,7 +4,7 @@ use super::metadata::{
 };
 use crate::evaluator::Resolved;
 use crate::query::{FileId, ReferenceId};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
@@ -450,6 +450,9 @@ pub struct NgModuleComponentMap {
     pub component_to_module: HashMap<FileId, HashMap<String, ReferenceId>>,
     /// Classes declared by multiple NgModules (excluded from `component_to_module` and reported as NG6007).
     pub duplicate_declarations: HashMap<FileId, HashMap<String, Vec<ReferenceId>>>,
+    /// Per-declared-file dependencies: every file read while evaluating and resolving the
+    /// `@NgModule.declarations` of modules that declare a class in `FileId`.
+    pub file_dependencies: HashMap<FileId, HashSet<FileId>>,
 }
 
 impl NgModuleComponentMap {
@@ -523,6 +526,38 @@ impl NgModuleComponentMap {
             .or_default()
             .insert(class_name.to_string(), vec![first, ng_module]);
     }
+
+    /// Record the files read while resolving a declaration targeting `file_id`.
+    pub fn record_file_dependencies(
+        &mut self,
+        file_id: FileId,
+        deps: impl IntoIterator<Item = FileId>,
+    ) {
+        self.file_dependencies
+            .entry(file_id)
+            .or_default()
+            .extend(deps);
+    }
+
+    /// Files whose single or duplicate `@NgModule` declarations changed between `self` and `other`.
+    pub fn changed_files(&self, other: &Self) -> HashSet<FileId> {
+        let mut changed = HashSet::new();
+        for &file_id in self
+            .component_to_module
+            .keys()
+            .chain(self.duplicate_declarations.keys())
+            .chain(other.component_to_module.keys())
+            .chain(other.duplicate_declarations.keys())
+        {
+            if self.component_to_module.get(&file_id) != other.component_to_module.get(&file_id)
+                || self.duplicate_declarations.get(&file_id)
+                    != other.duplicate_declarations.get(&file_id)
+            {
+                changed.insert(file_id);
+            }
+        }
+        changed
+    }
 }
 
 /// Internal per-file analysis result shared by [`crate::QueryKey::AnalyzeFileSyntax`] and
@@ -555,6 +590,7 @@ pub struct FileData {
     pub(crate) function_facts: Arc<HashMap<String, crate::analyzer::transforms::FunctionFacts>>,
     /// Re-export table (`export … from …`).
     pub(crate) file_exports: Arc<crate::analyzer::FileExportInfo>,
+    #[cfg_attr(not(test), allow(dead_code))]
     pub(crate) errors: Vec<String>,
     pub(crate) diagnostics: Vec<crate::NgDiagnostic>,
     pub(crate) source_file_validator_diagnostics: Vec<crate::NgDiagnostic>,
@@ -577,6 +613,22 @@ impl FileData {
         self.resolved_dependencies
             .iter()
             .chain(&self.dynamic_dependencies)
+    }
+
+    /// Whether any class in this file could require `@NgModule` chunk grouping (either an
+    /// `@NgModule` or a non-standalone / dynamically-standalone component, directive, or pipe).
+    pub(crate) fn may_have_non_standalone_class(&self) -> bool {
+        self.classes.iter().any(|class| match &class.decorator {
+            crate::analyzer::DecoratorData::NgModule(m) => !m.is_jit,
+            crate::analyzer::DecoratorData::Component(c) => {
+                !c.directive.standalone || c.directive.standalone_dynamic
+            }
+            crate::analyzer::DecoratorData::Directive(d) => {
+                !d.standalone || d.standalone_dynamic
+            }
+            crate::analyzer::DecoratorData::Pipe(p) => !p.standalone.unwrap_or(false),
+            _ => false,
+        })
     }
 
     /// Project analysis into the serialized wire shape using the provided `WireContext`.
@@ -612,6 +664,11 @@ impl FileData {
                 .collect(),
             r3_symbols_specifier: self.r3_symbols_specifier(cx.r3_symbols_path),
             top_level_value_bindings: self.top_level_value_bindings.clone(),
+            static_dependencies: self
+                .resolved_dependencies
+                .iter()
+                .map(|path| path.to_string_lossy().into_owned())
+                .collect(),
         })
     }
 

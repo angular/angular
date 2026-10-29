@@ -7,6 +7,7 @@
 
 import * as i0 from './app.component';
 import * as i1 from './generic.component';
+import * as i2 from '@angular/core';
 
 const _ctor1: <T = any>(init: Pick<i1.GenericComponent<T>, 'value'>) => i1.GenericComponent<T> =
   null!;
@@ -126,6 +127,7 @@ export class AppComponent {
  */
 
 import * as i0 from './generic.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1<T>(this: i0.GenericComponent<T>) {

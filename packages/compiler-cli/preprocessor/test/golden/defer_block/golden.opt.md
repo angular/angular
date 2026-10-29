@@ -7,6 +7,7 @@
 
 import * as i0 from './app.component';
 import * as i1 from './test.pipe';
+import * as i2 from '@angular/core';
 
 var _pipe1 = null! as i1.TestPipe;
 
@@ -146,6 +147,7 @@ export class AppComponent {
  */
 
 import * as i0 from './deferred.cmp';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.DeferredComponent) {

@@ -302,26 +302,28 @@ export function adaptTcbInput(
     createForeignComponentMatcher(target.foreignImports),
   );
   const host = config.typeCheckHostBindings === false ? null : adaptHostElement(target, content);
+  const ownHostDirective = host
+    ? declarationToMetadata(target.ownDeclaration, filePath, requiresInline, content, filePath)
+    : null;
   const boundTarget = binder.bind({
     template: target.templateNodes,
     host: host
       ? {
           node: host,
-          directives: [
-            ...hostDirectivesOnTarget,
-            declarationToMetadata(
-              target.ownDeclaration,
-              filePath,
-              requiresInline,
-              content,
-              filePath,
-            ),
-          ],
+          directives: [...hostDirectivesOnTarget, ownHostDirective!],
         }
       : undefined,
   });
   // Monkey-patch missing method in reference compiler
   boundTarget.getConflictingHostDirectiveBindings ??= () => null;
+  (
+    boundTarget as {
+      getTemplateUsedDirectives?: () => TcbDirectiveMetadata[];
+    }
+  ).getTemplateUsedDirectives = () =>
+    ownHostDirective
+      ? boundTarget.getUsedDirectives().filter((d) => d !== ownHostDirective)
+      : boundTarget.getUsedDirectives();
 
   let pipes = null as Map<string, TcbPipeMetadata> | null;
 

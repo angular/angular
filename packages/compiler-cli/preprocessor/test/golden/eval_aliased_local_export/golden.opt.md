@@ -6,6 +6,7 @@
  */
 
 import * as i0 from './app.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.AppComponent) {
@@ -149,6 +150,7 @@ export class BarDirective {
  */
 
 import * as i0 from './baz.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.BazComponent) {
@@ -237,6 +239,7 @@ export class BazComponent {
  */
 
 import * as i0 from './foo.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.FooComponent) {
