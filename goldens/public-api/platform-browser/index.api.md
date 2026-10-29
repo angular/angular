@@ -19,7 +19,7 @@ import { NgZone } from '@angular/core';
 import { PlatformRef } from '@angular/core';
 import { Predicate } from '@angular/core';
 import { Provider } from '@angular/core';
-import { Sanitizer } from '@angular/core';
+import { Sanitizer as Sanitizer_2 } from '@angular/core';
 import { SecurityContext } from '@angular/core';
 import { StaticProvider } from '@angular/core';
 import { Type } from '@angular/core';
@@ -67,7 +67,7 @@ export class CssVarNamespacer {
 export function disableDebugTools(): void;
 
 // @public
-export abstract class DomSanitizer implements Sanitizer {
+export abstract class DomSanitizer implements Sanitizer_2 {
     abstract bypassSecurityTrustHtml(value: string): SafeHtml;
     abstract bypassSecurityTrustResourceUrl(value: string): SafeResourceUrl;
     abstract bypassSecurityTrustScript(value: string): SafeScript;
