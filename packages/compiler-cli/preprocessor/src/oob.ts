@@ -41,6 +41,12 @@ import {Diagnostic, DiagnosticRelatedInformation} from './diagnostic.js';
 export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecorder<Diagnostic> {
   private _diagnostics: Diagnostic[] = [];
 
+  /**
+   * Tracks which `BindingPipe` nodes have already been recorded as invalid, so only one diagnostic
+   * is ever produced per node.
+   */
+  private readonly recordedPipes = new Set<BindingPipe>();
+
   get diagnostics(): ReadonlyArray<Diagnostic> {
     return this._diagnostics;
   }
@@ -90,6 +96,10 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
   }
 
   missingPipe(id: TypeCheckId, ast: BindingPipe) {
+    if (this.recordedPipes.has(ast)) {
+      return;
+    }
+
     this.pushDiagnostic(
       id,
       `No pipe found with name '${ast.name}'.`,
@@ -97,6 +107,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
       OutOfBandDiagnosticCategory.Error,
       8004,
     );
+    this.recordedPipes.add(ast);
   }
 
   deferredPipeUsedEagerly(
@@ -105,6 +116,10 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     currentBlockName: string | null = null,
     declaredBlocks: string[] | null = null,
   ) {
+    if (this.recordedPipes.has(ast)) {
+      return;
+    }
+
     let errorMsg: string;
     if (currentBlockName !== null && declaredBlocks !== null && declaredBlocks.length > 0) {
       errorMsg =
@@ -120,6 +135,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     }
 
     this.pushDiagnostic(id, errorMsg, ast.nameSpan, OutOfBandDiagnosticCategory.Error, 8012);
+    this.recordedPipes.add(ast);
   }
 
   deferredComponentUsedEagerly(
