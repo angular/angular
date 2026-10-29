@@ -820,9 +820,13 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         } else {
             let syntax = ctx.analyze_file_syntax(file_id).await;
             let mut syntax_res = (*syntax).clone();
+            // ngtsc's local compilation still evaluates imported constants for `selector`,
+            // `exportAs`, `template`, `styles`, `templateUrl`, `styleUrl(s)`, and host
+            // bindings/listeners; only scope resolution is off.
             for class in &mut syntax_res.classes {
                 class.complete_selector(ctx).await;
                 class.complete_styles(ctx).await;
+                class.complete_local_compilation_constants(ctx).await;
                 class.complete_resource_urls(ctx).await;
                 class.complete_isolated_type_tuples(ctx).await;
             }
