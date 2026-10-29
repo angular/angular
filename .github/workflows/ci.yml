@@ -115,6 +115,10 @@ jobs:
         run: pnpm bazel test //adev/...
       - name: Build adev in fast mode to ensure it continues to work
         run: pnpm bazel build //adev:build
+      - name: Install Playwright browsers
+        run: pnpm --dir adev playwright install --with-deps chromium
+      - name: Run E2E tests
+        run: pnpm adev:test:e2e
 
   vscode-ng-language-service:
     runs-on:

@@ -46,6 +46,7 @@
     "devtools:release": "node devtools/tools/release.mts",
     "adev": "[[ -n $CI ]] && echo 'Cannot run this pnpm script on CI' && exit 1 || ibazel run //adev:build.serve",
     "adev:build": "[[ -n $CI ]] && echo 'Cannot run this pnpm script on CI' && exit 1 || bazel build //adev:build",
+    "adev:test:e2e": "pnpm --dir adev test:e2e",
     "dev": "pnpm --filter=dev-app dev",
     "dev:prod": "pnpm --filter=dev-app dev:prod",
     "dev:build": "pnpm --filter=dev-app dev:build",

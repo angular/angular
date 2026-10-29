@@ -63,3 +63,8 @@ baseline.json
 
 # Cargo target directory
 target/
+
+# Playwright
+/adev/test-results/
+/adev/playwright-report/
+
