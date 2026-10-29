@@ -87,4 +87,50 @@ describe('email validator', () => {
 
     expect(f().errors()).toEqual([]);
   });
+
+  it('should treat null and undefined values as valid', () => {
+    const model = signal<string | null | undefined>(null);
+    const f = form(
+      model,
+      (p) => {
+        email(p);
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+
+    expect(f().errors()).toEqual([]);
+    model.set(undefined);
+    expect(f().errors()).toEqual([]);
+    model.set('invalid-email');
+    expect(f().errors()).toEqual([emailError({fieldTree: f})]);
+    model.set('valid@example.com');
+    expect(f().errors()).toEqual([]);
+    model.set(null);
+    expect(f().errors()).toEqual([]);
+  });
+
+  it('supports nullable fields in a model', () => {
+    interface UserModel {
+      email: string | null;
+    }
+    const model = signal<UserModel>({email: null});
+    const f = form(
+      model,
+      (p) => {
+        email(p.email);
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+
+    expect(f.email().errors()).toEqual([]);
+
+    f.email().value.set('bad');
+    expect(f.email().errors()).toEqual([emailError({fieldTree: f.email})]);
+
+    f.email().value.set('good@example.com');
+    expect(f.email().errors()).toEqual([]);
+
+    f.email().value.set(null);
+    expect(f.email().errors()).toEqual([]);
+  });
 });

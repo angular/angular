@@ -9,6 +9,7 @@
 import {signal, WritableSignal} from '@angular/core';
 import {
   createMetadataKey,
+  email,
   FieldTree,
   form,
   LimitKey,
@@ -19,6 +20,7 @@ import {
   MAX_DATE,
   MAX_NUMBER,
   metadata,
+  pattern,
   provideSignalFormsConfig,
   ReadonlyFieldState,
   required,
@@ -224,6 +226,37 @@ function typeVerificationOnlyDoNotRunMe() {
             // @ts-expect-error
             () => MAX_DATE,
           );
+        });
+      });
+    });
+
+    describe('email and pattern validators', () => {
+      it('should allow nullable string fields', () => {
+        interface UserFormModel {
+          str: string;
+          nullableStr: string | null;
+          num: number;
+        }
+
+        schema<UserFormModel>((p) => {
+          email(p.str);
+          email(p.nullableStr);
+
+          pattern(p.str, /^[a-z]+$/);
+          pattern(p.nullableStr, /^[a-z]+$/);
+
+          // @ts-expect-error
+          email(p.num);
+
+          // @ts-expect-error
+          pattern(p.num, /^[0-9]+$/);
+        });
+
+        // Also test root signal with string | null | undefined
+        const rootModel: WritableSignal<string | null | undefined> = null!;
+        form(rootModel, (p) => {
+          email(p);
+          pattern(p, /^[a-z]+$/);
         });
       });
     });

@@ -52,24 +52,29 @@ const EMAIL_REGEXP =
  * @param config Optional, allows providing any of the following options:
  *  - `error`: Custom validation error(s) to be used instead of the default `emailError()`
  *    or a function that receives the `FieldContext` and returns custom validation error(s).
+ * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *
  * @see [Signal Form Email Validation](guide/forms/signals/validation#email)
  * @category validation
  * @publicApi 22.0
  */
-export function email<TPathKind extends PathKind = PathKind.Root>(
-  path: SchemaPath<string, SchemaPathRules.Supported, TPathKind>,
-  config?: BaseValidatorConfig<string, TPathKind>,
+export function email<
+  TValue extends string | null | undefined,
+  TPathKind extends PathKind = PathKind.Root,
+>(
+  path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
+  config?: BaseValidatorConfig<TValue, TPathKind>,
 ) {
   validate(path, (ctx) => {
     if (config?.when && !config.when(ctx)) {
       return undefined;
     }
-    if (isEmpty(ctx.value())) {
+    const value = ctx.value();
+    if (isEmpty(value)) {
       return undefined;
     }
-    if (!EMAIL_REGEXP.test(ctx.value())) {
+    if (!EMAIL_REGEXP.test(value as string)) {
       if (config?.error) {
         return getOption(config.error, ctx);
       } else {

@@ -183,4 +183,50 @@ describe('pattern validator', () => {
       expect(f.name().errors()).toEqual([]);
     });
   });
+
+  it('should treat null and undefined values as valid', () => {
+    const model = signal<string | null | undefined>(null);
+    const f = form(
+      model,
+      (p) => {
+        pattern(p, /^[a-z]+$/);
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+
+    expect(f().errors()).toEqual([]);
+    model.set(undefined);
+    expect(f().errors()).toEqual([]);
+    model.set('123');
+    expect(f().errors()).toEqual([patternError(/^[a-z]+$/, {fieldTree: f})]);
+    model.set('abc');
+    expect(f().errors()).toEqual([]);
+    model.set(null);
+    expect(f().errors()).toEqual([]);
+  });
+
+  it('supports nullable fields in a model', () => {
+    interface UserModel {
+      code: string | null;
+    }
+    const model = signal<UserModel>({code: null});
+    const f = form(
+      model,
+      (p) => {
+        pattern(p.code, /^\d{4}$/);
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+
+    expect(f.code().errors()).toEqual([]);
+
+    f.code().value.set('abc');
+    expect(f.code().errors()).toEqual([patternError(/^\d{4}$/, {fieldTree: f.code})]);
+
+    f.code().value.set('1234');
+    expect(f.code().errors()).toEqual([]);
+
+    f.code().value.set(null);
+    expect(f.code().errors()).toEqual([]);
+  });
 });

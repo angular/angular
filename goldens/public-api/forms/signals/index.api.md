@@ -114,7 +114,7 @@ export interface DisabledReason {
 }
 
 // @public
-export function email<TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<string, SchemaPathRules.Supported, TPathKind>, config?: BaseValidatorConfig<string, TPathKind>): void;
+export function email<TValue extends string | null | undefined, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind>): void;
 
 // @public
 export function emailError(options: WithFieldTree<ValidationErrorOptions>): EmailValidationError;
@@ -544,7 +544,7 @@ export namespace PathKind {
 export const PATTERN: MetadataKey<Signal<RegExp[]>, RegExp | undefined, RegExp[]>;
 
 // @public
-export function pattern<TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<string, SchemaPathRules.Supported, TPathKind>, pattern: RegExp | LogicFn<string | undefined, RegExp | undefined, TPathKind>, config?: BaseValidatorConfig<string, TPathKind>): void;
+export function pattern<TValue extends string | null | undefined, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, pattern: RegExp | LogicFn<TValue, RegExp | undefined, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind>): void;
 
 // @public
 export function patternError(pattern: RegExp, options: WithFieldTree<ValidationErrorOptions>): PatternValidationError;

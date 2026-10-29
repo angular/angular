@@ -22,16 +22,20 @@ import {patternError} from './validation_errors';
  * @param config Optional, allows providing any of the following options:
  *  - `error`: Custom validation error(s) to be used instead of the default `patternError()`
  *    or a function that receives the `FieldContext` and returns custom validation error(s).
+ * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *
  * @see [Signal Form Pattern Validation](guide/forms/signals/validation#pattern)
  * @category validation
  * @publicApi 22.0
  */
-export function pattern<TPathKind extends PathKind = PathKind.Root>(
-  path: SchemaPath<string, SchemaPathRules.Supported, TPathKind>,
-  pattern: RegExp | LogicFn<string | undefined, RegExp | undefined, TPathKind>,
-  config?: BaseValidatorConfig<string, TPathKind>,
+export function pattern<
+  TValue extends string | null | undefined,
+  TPathKind extends PathKind = PathKind.Root,
+>(
+  path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
+  pattern: RegExp | LogicFn<TValue, RegExp | undefined, TPathKind>,
+  config?: BaseValidatorConfig<TValue, TPathKind>,
 ) {
   const PATTERN_MEMO = metadata(path, createMetadataKey<RegExp | undefined>(), (ctx) => {
     if (config?.when && !config.when(ctx)) {
@@ -41,14 +45,15 @@ export function pattern<TPathKind extends PathKind = PathKind.Root>(
   });
   metadata(path, PATTERN, ({state}) => state.metadata(PATTERN_MEMO)!());
   validate(path, (ctx) => {
-    if (isEmpty(ctx.value())) {
+    const value = ctx.value();
+    if (isEmpty(value)) {
       return undefined;
     }
     const pattern = ctx.state.metadata(PATTERN_MEMO)!();
     if (pattern === undefined) {
       return undefined;
     }
-    if (!pattern.test(ctx.value())) {
+    if (!pattern.test(value as string)) {
       if (config?.error) {
         return getOption(config.error, ctx);
       } else {
