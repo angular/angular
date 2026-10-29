@@ -516,6 +516,19 @@ function synthesizeDtsStaticDeclaration(
       }
     }
   }
+  if (decl.ngTemplateGuards) {
+    for (const guard of decl.ngTemplateGuards) {
+      const guardName = `ngTemplateGuard_${guard.inputName}`;
+      if (!declaredPropNames.has(guardName)) {
+        missingPropDecls.push(
+          guard.type === 'binding'
+            ? `  static ${guardName}: 'binding';`
+            : `  static ${guardName}(dir: any, expr: any): boolean;`,
+        );
+        declaredPropNames.add(guardName);
+      }
+    }
+  }
   const inputsType = `{ ${inputProps.join('; ')} }`;
   const outputProps: string[] = [];
   if (decl.outputs) {

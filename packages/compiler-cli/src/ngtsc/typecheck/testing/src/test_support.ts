@@ -139,6 +139,7 @@ export function ngIfDts(): TestFile {
     contents: `
     export declare class NgIf<T> {
       ngIf: T;
+      static ngTemplateGuard_ngIf: 'binding';
       static ngTemplateContextGuard<T>(dir: NgIf<T>, ctx: any): ctx is NgIfContext<Exclude<T, false|0|''|null|undefined>>
     }
 
