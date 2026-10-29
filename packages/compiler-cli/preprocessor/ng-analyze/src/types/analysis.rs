@@ -639,7 +639,10 @@ impl FileData {
         let classes = self
             .classes
             .iter()
-            .filter(|c| !(cx.emit_declaration_only && !c.non_ng_decorator_spans.is_empty()))
+            .filter(|c| {
+                !((cx.emit_declaration_only || cx.experimental_local_compilation)
+                    && !c.non_ng_decorator_spans.is_empty())
+            })
             .map(|c| c.to_wire(cx))
             .collect::<Result<Vec<_>, _>>()?;
 

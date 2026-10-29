@@ -19,6 +19,7 @@ pub struct ResolvedTsConfig {
     pub use_host_for_import_generation: bool,
     pub implicit_standalone: bool,
     pub emit_declaration_only: bool,
+    pub experimental_local_compilation: bool,
 }
 
 pub fn load_and_resolve_tsconfig(
@@ -112,6 +113,9 @@ pub fn load_and_resolve_tsconfig(
             && extended_options
                 .allow_emit_declaration_only
                 .unwrap_or(false),
+        experimental_local_compilation: extended_options
+            .experimental_local_compilation
+            .unwrap_or(false),
     })
 }
 
@@ -290,6 +294,7 @@ struct ExtendedOptions {
     implicit_standalone: Option<bool>,
     emit_declaration_only: Option<bool>,
     allow_emit_declaration_only: Option<bool>,
+    experimental_local_compilation: Option<bool>,
 }
 
 fn core_version_supports_implicit_standalone(version: &str) -> bool {
@@ -421,6 +426,13 @@ fn resolve_extended_options_recursive(
             .and_then(|v| v.as_bool())
     });
 
+    let mut current_experimental_local_compilation = parsed_json.as_ref().ok().and_then(|json| {
+        json.pointer("/angularCompilerOptions/compilationMode")
+            .or_else(|| json.pointer("/bazelOptions/angularCompilerOptions/compilationMode"))
+            .and_then(|v| v.as_str())
+            .map(|mode| mode == "experimental-local" || mode == "local")
+    });
+
     let base_dir = abs_path.parent().unwrap_or(Path::new("."));
 
     let mut current_root_dirs = tsconfig.compiler_options.root_dirs.clone().map(|dirs| {
@@ -445,6 +457,7 @@ fn resolve_extended_options_recursive(
         && current_implicit_standalone.is_some()
         && current_emit_declaration_only.is_some()
         && current_allow_emit_declaration_only.is_some()
+        && current_experimental_local_compilation.is_some()
     {
         visited.remove(&canonical);
         return Ok(ExtendedOptions {
@@ -461,6 +474,7 @@ fn resolve_extended_options_recursive(
             implicit_standalone: current_implicit_standalone,
             emit_declaration_only: current_emit_declaration_only,
             allow_emit_declaration_only: current_allow_emit_declaration_only,
+            experimental_local_compilation: current_experimental_local_compilation,
         });
     }
 
@@ -480,6 +494,7 @@ fn resolve_extended_options_recursive(
             implicit_standalone: current_implicit_standalone,
             emit_declaration_only: current_emit_declaration_only,
             allow_emit_declaration_only: current_allow_emit_declaration_only,
+            experimental_local_compilation: current_experimental_local_compilation,
         });
     };
 
@@ -547,6 +562,9 @@ fn resolve_extended_options_recursive(
         if let Some(allow_emit_declaration_only) = res.allow_emit_declaration_only {
             inherited.allow_emit_declaration_only = Some(allow_emit_declaration_only);
         }
+        if let Some(experimental_local_compilation) = res.experimental_local_compilation {
+            inherited.experimental_local_compilation = Some(experimental_local_compilation);
+        }
     }
     if current_root_dirs.is_none() {
         current_root_dirs = inherited.root_dirs;
@@ -587,6 +605,9 @@ fn resolve_extended_options_recursive(
     if current_allow_emit_declaration_only.is_none() {
         current_allow_emit_declaration_only = inherited.allow_emit_declaration_only;
     }
+    if current_experimental_local_compilation.is_none() {
+        current_experimental_local_compilation = inherited.experimental_local_compilation;
+    }
 
     visited.remove(&canonical);
     Ok(ExtendedOptions {
@@ -603,6 +624,7 @@ fn resolve_extended_options_recursive(
         implicit_standalone: current_implicit_standalone,
         emit_declaration_only: current_emit_declaration_only,
         allow_emit_declaration_only: current_allow_emit_declaration_only,
+        experimental_local_compilation: current_experimental_local_compilation,
     })
 }
 

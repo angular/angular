@@ -1656,12 +1656,15 @@ pub struct ValidationContext {
     pub strict_injection_parameters: bool,
     /// `compilerOptions.emitDeclarationOnly && angularCompilerOptions._experimentalAllowEmitDeclarationOnly`.
     pub emit_declaration_only: bool,
+    /// `angularCompilerOptions.compilationMode === 'experimental-local'`.
+    pub experimental_local_compilation: bool,
 }
 
 /// Pure data object holding the context needed for wire serialization.
 pub struct WireContext<'a> {
     pub mode: WireMode,
     pub emit_declaration_only: bool,
+    pub experimental_local_compilation: bool,
     pub source_text: &'a str,
     pub converter: &'a crate::utils::Utf8ToUtf16,
     pub reference_strategy: &'a dyn crate::analyzer::import_emit::ReferenceEmitStrategy,
@@ -2126,7 +2129,14 @@ impl ClassData {
         converter: &crate::utils::Utf8ToUtf16,
         diagnostics: &mut Vec<crate::NgDiagnostic>,
     ) {
-        if cx.emit_declaration_only && !self.non_ng_decorator_spans.is_empty() {
+        if (cx.emit_declaration_only || cx.experimental_local_compilation)
+            && !self.non_ng_decorator_spans.is_empty()
+        {
+            let mode_name = if cx.emit_declaration_only {
+                "experimental declaration-only emission"
+            } else {
+                "local compilation"
+            };
             for span in &self.non_ng_decorator_spans {
                 push_error(
                     diagnostics,
@@ -2134,7 +2144,9 @@ impl ClassData {
                     converter,
                     "1005",
                     *span,
-                    "In experimental declaration-only emission mode, Angular does not support custom decorators. Ensure all class decorators are from Angular.".to_string(),
+                    format!(
+                        "In {mode_name} mode, Angular does not support custom decorators. Ensure all class decorators are from Angular."
+                    ),
                 );
             }
             return;

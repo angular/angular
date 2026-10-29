@@ -175,6 +175,7 @@ fn run_async_compiler_test<Fs: crate::ResourceResolverFs + Clone + 'static>(
             let cx = crate::analyzer::WireContext {
                 mode: crate::analyzer::WireMode::Semantic,
                 emit_declaration_only: false,
+                experimental_local_compilation: false,
                 source_text: &source_text,
                 converter: &resolved.converter,
                 reference_strategy: &*engine.reference_strategy,
@@ -7600,3 +7601,59 @@ fn test_local_compilation_unsupported_host_directive_expression() {
     assert!(meta.classes[0].component.as_ref().unwrap().host_directives.is_none());
     assert!(meta.classes[1].component.as_ref().unwrap().host_directives.is_some());
 }
+
+#[test]
+fn test_local_compilation_custom_decorators_diagnostic() {
+    let source = r#"
+        import { Component } from '@angular/core';
+        import { customDecorator1, customDecorator2 } from './some-where';
+
+        @customDecorator1('hello')
+        @Component({
+            template: ExternalString,
+        })
+        @customDecorator2
+        export class Main {}
+    "#;
+    let mut virtual_files = HashMap::new();
+    virtual_files.insert("/project/app.ts".to_string(), source.to_string());
+    virtual_files.insert(
+        "/project/tsconfig.json".to_string(),
+        r#"{"files": ["app.ts"], "angularCompilerOptions": {"compilationMode": "experimental-local"}}"#
+            .to_string(),
+    );
+    let analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
+        optimize: Some(false),
+        virtual_files: Some(virtual_files),
+        ..Default::default()
+    })
+    .unwrap();
+    let iterator = analyzer.analyze().unwrap();
+    let chunk = futures::executor::block_on(iterator.next())
+        .unwrap()
+        .expect("chunk");
+    let meta = &chunk.files[0];
+    assert!(
+        meta.classes.is_empty(),
+        "classes with custom decorators should skip trait compilation in experimental-local mode"
+    );
+    assert_eq!(meta.diagnostics.len(), 2, "{:?}", meta.diagnostics);
+    for (diag, expected_span) in meta
+        .diagnostics
+        .iter()
+        .zip(["@customDecorator1('hello')", "@customDecorator2"])
+    {
+        assert_eq!(diag.code, 1005);
+        assert_eq!(
+            diag.message_text,
+            "In local compilation mode, Angular does not support custom decorators. Ensure all class decorators are from Angular."
+        );
+        let span = diag.span.as_ref().expect("span");
+        assert_eq!(
+            &source[span.start as usize..span.end as usize],
+            expected_span
+        );
+    }
+}
+
