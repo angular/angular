@@ -30,7 +30,7 @@
     }
   },
   "dependencies": {
-    "@babel/core": "8.0.7",
+    "@babel/core": "8.0.9",
     "@jridgewell/sourcemap-codec": "^1.6.0",
     "reflect-metadata": "^0.2.0",
     "chokidar": "^6.0.0",
