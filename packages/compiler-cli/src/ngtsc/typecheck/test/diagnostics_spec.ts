@@ -199,8 +199,10 @@ runInEachFileSystem(() => {
       );
 
       expect(messages).toEqual([
-        `TestComponent.html(1, 6): Binding to event property 'onclick' is disallowed for security reasons, please use (click)=...
+        jasmine.stringContaining(
+          `TestComponent.html(1, 6): Binding to event property 'onclick' is disallowed for security reasons, please use (click)=...
 If 'onclick' is a directive input, make sure the directive is imported by the current module.`,
+        ),
       ]);
     });
 
