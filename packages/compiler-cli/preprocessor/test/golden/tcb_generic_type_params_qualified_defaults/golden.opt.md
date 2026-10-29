@@ -9,6 +9,7 @@ import * as i0 from './app.component';
 import * as i1 from './proto.component';
 import * as i2 from './models';
 import * as i3 from './teleport';
+import * as i4 from '@angular/core';
 
 const _ctor1: <
   T extends i2.ProtoFormatType[TFormat] = any,
@@ -127,6 +128,7 @@ export class AppComponent {
 
 import * as i0 from './models';
 import * as i1 from './proto.component';
+import * as i2 from '@angular/core';
 
 /*tcb1*/
 function _tcb1<

@@ -778,7 +778,7 @@ async fn optimize_component_scope<Fs: ResourceResolverFs + Clone + 'static>(
             component.is_poisoned = true;
         }
 
-        let mapping = ctx.component_mapping().await;
+        let mapping = ctx.component_mapping_for(reference_id.file).await;
 
         // An anonymous component (no class name) can't be keyed into the module mapping; it is
         // treated the same as "not found". So is a component declared by more than one NgModule:
@@ -804,7 +804,11 @@ async fn optimize_component_scope<Fs: ResourceResolverFs + Clone + 'static>(
         let module_meta = ctx.analyze_file_syntax(module_ref.file).await;
         component.directive.declaring_ng_module = Some(module_ref);
 
-        if ctx.ngmodule_scope_registry().await.is_poisoned(module_ref) {
+        if ctx
+            .ngmodule_scope_registry_for(module_ref)
+            .await
+            .is_poisoned(module_ref)
+        {
             component.is_poisoned = true;
         }
         if component.is_poisoned && !ctx.engine.use_poisoned_data {
@@ -864,10 +868,14 @@ async fn optimize_component_scope<Fs: ResourceResolverFs + Clone + 'static>(
             .iter()
             .any(|c| c.as_ng_module().is_some())
         {
-            let mapping = ctx.component_mapping().await;
+            let mapping = ctx.component_mapping_for(reference_id.file).await;
             let (module_entry, _) = mapping.declaring_ng_modules(reference_id.file, class_name);
             if let Some(module_ref) = module_entry {
-                if ctx.ngmodule_scope_registry().await.is_poisoned(module_ref) {
+                if ctx
+                    .ngmodule_scope_registry_for(module_ref)
+                    .await
+                    .is_poisoned(module_ref)
+                {
                     component.is_poisoned = true;
                 }
             }
@@ -1340,7 +1348,7 @@ pub async fn populate_local_component_extra_imports<Fs: ResourceResolverFs + Clo
         return;
     }
 
-    let mapping = ctx.component_mapping().await;
+    let mapping = ctx.component_mapping_for(reference_id.file).await;
     // Skip anonymous components and modules outside the compilation unit (ngtsc's
     // `LocalModuleScopeRegistry` never sees those).
     let Some(module_ref) = class_name

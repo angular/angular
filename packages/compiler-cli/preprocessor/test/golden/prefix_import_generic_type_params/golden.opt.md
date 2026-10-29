@@ -12,6 +12,7 @@ import * as i3 from 'repo/widgets/filter.directive';
 import * as i4 from 'repo/widgets/local_config.component';
 import * as i5 from 'repo/widgets/nested_view.component';
 import * as i6 from 'repo/widgets/nested/index';
+import * as i7 from '@angular/core';
 
 const _ctor1: <T = any, P extends i2.FilterConfig<T> = i2.FilterConfig<T>>(
   init: Pick<i1.FilterBarComponent<T, P>, 'config'>,
@@ -167,6 +168,7 @@ export class DashboardComponent {
 
 import * as i0 from 'repo/widgets/filter_model';
 import * as i1 from 'repo/widgets/filter_bar.component';
+import * as i2 from '@angular/core';
 
 /*tcb1*/
 function _tcb1<T, P extends i0.FilterConfig<T> = i0.FilterConfig<T>>(
@@ -307,6 +309,7 @@ export class FilterDirective<T, P extends FilterConfig<T> = FilterConfig<T>> {
  */
 
 import * as i0 from 'repo/widgets/local_config.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1<T extends i0.LocalConfig = i0.LocalConfig>(this: i0.LocalConfigComponent<T>) {
@@ -395,6 +398,7 @@ export class LocalConfigComponent<T extends LocalConfig = LocalConfig> {
 
 import * as i0 from 'repo/widgets/nested/index';
 import * as i1 from 'repo/widgets/nested_view.component';
+import * as i2 from '@angular/core';
 
 /*tcb1*/
 function _tcb1<T extends i0.NestedData<string> = i0.NestedData<string>>(

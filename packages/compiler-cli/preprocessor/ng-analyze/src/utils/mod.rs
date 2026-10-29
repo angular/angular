@@ -53,6 +53,12 @@ impl<K: Eq + std::hash::Hash + Clone, V: 'static> QueryCache<K, V> {
         shared
     }
 
+    /// Insert a precomputed SharedQuery into the cache.
+    pub fn insert(&self, key: K, shared: crate::SharedQuery<V>) {
+        let mut write = self.map.write().unwrap();
+        write.insert(key, shared);
+    }
+
     /// Remove a key from the cache.
     pub fn remove(&self, key: &K) -> Option<crate::SharedQuery<V>> {
         let mut write = self.map.write().unwrap();

@@ -6,6 +6,7 @@
  */
 
 import * as i0 from './a.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.AComponent) {
@@ -94,6 +95,7 @@ export class AComponent {
  */
 
 import * as i0 from './app.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.AppComponent) {
@@ -293,6 +295,7 @@ export class BModule {
  */
 
 import * as i0 from './legacy.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.LegacyComponent) {

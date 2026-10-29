@@ -67,10 +67,18 @@ export class NapiAnalyzer implements IAnalyzer {
   }
 
   async updateFileContent(updates: {filePath: string; content: string}[]): Promise<string[]> {
+    return this.updateFileContentSync(updates);
+  }
+
+  updateFileContentSync(updates: {filePath: string; content: string}[]): string[] {
     return this.analyzer.updateFileContent(updates);
   }
 
   async invalidateFiles(updates: nga.FileInvalidation[]): Promise<string[]> {
+    return this.invalidateFilesSync(updates);
+  }
+
+  invalidateFilesSync(updates: nga.FileInvalidation[]): string[] {
     return this.analyzer.invalidateFiles(updates);
   }
 
@@ -92,6 +100,14 @@ export class NapiAnalyzer implements IAnalyzer {
 
   readResourceSync(containingFile: string, url: string): nga.ResolvedResource | null {
     return this.analyzer.readResource(containingFile, url) ?? null;
+  }
+
+  async canonicalPaths(paths: string[]): Promise<string[]> {
+    return this.canonicalPathsSync(paths);
+  }
+
+  canonicalPathsSync(paths: string[]): string[] {
+    return this.analyzer.canonicalPaths(paths);
   }
 
   getMetadataForFileSync(filePath: string): nga.AnalysisResult | null {

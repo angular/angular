@@ -488,6 +488,7 @@ fn chase_symbol_declaration<'a, Fs: ResourceResolverFs + Clone + 'static>(
                 ChaseTarget::Wildcards(wildcards) => {
                     let mut type_only_fallback: Option<ChasedExport> = None;
                     let mut saw_cycle = false;
+                    let mut unmatched_deps = HashSet::new();
                     for wildcard_source in &wildcards {
                         let Some(resolved_path) = resolve_specifier(
                             ctx.engine.resolver.as_ref(),
@@ -503,8 +504,9 @@ fn chase_symbol_declaration<'a, Fs: ResourceResolverFs + Clone + 'static>(
                             &name,
                         );
                         let resolved_id = ctx.engine.intern_path(&resolved_path);
+                        let branch_ctx = crate::QueryCtx::new(ctx.engine.clone());
                         match chase_symbol_declaration(
-                            ctx,
+                            &branch_ctx,
                             resolved_path,
                             name.clone(),
                             next_owning,
@@ -517,19 +519,28 @@ fn chase_symbol_declaration<'a, Fs: ResourceResolverFs + Clone + 'static>(
                             Ok(Some(mut result)) => {
                                 result.record_export_hop(resolved_id, name.clone());
                                 if !result.is_type_only() {
+                                    ctx.extend_dependencies(branch_ctx.dependencies());
                                     return Ok(Some(result));
                                 }
+                                unmatched_deps.extend(branch_ctx.dependencies());
                                 if type_only_fallback.is_none() {
                                     type_only_fallback = Some(result);
                                 }
                             }
                             Err(ChaseSymbolError::CycleDetected) => {
+                                unmatched_deps.extend(branch_ctx.dependencies());
                                 saw_cycle = true;
                             }
-                            Err(err) => return Err(err),
-                            Ok(None) => {}
+                            Err(err) => {
+                                ctx.extend_dependencies(branch_ctx.dependencies());
+                                return Err(err);
+                            }
+                            Ok(None) => {
+                                unmatched_deps.extend(branch_ctx.dependencies());
+                            }
                         }
                     }
+                    ctx.extend_dependencies(unmatched_deps);
                     if let Some(fallback) = type_only_fallback {
                         return Ok(Some(fallback));
                     }

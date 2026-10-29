@@ -48,6 +48,7 @@ export class FormatPipe implements PipeTransform {
  */
 
 import * as i0 from 'repo/button.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.ButtonComponent) {
@@ -137,6 +138,7 @@ export class ButtonComponent {
 
 import * as i0 from 'repo/app/parent.component';
 import * as i1 from 'repo/pipes/format.pipe';
+import * as i2 from '@angular/core';
 
 var _pipe1 = null! as i1.FormatPipe;
 

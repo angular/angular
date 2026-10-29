@@ -11,6 +11,7 @@ import * as i2 from './models';
 import * as i3 from './local-list.component';
 import * as i4 from './generic-dir.directive';
 import * as i5 from './dts-list';
+import * as i6 from '@angular/core';
 
 const _ctor1: <T extends i2.SelectionModel<unknown> = i2.SelectionModel<i2.DefaultItem>>(
   init: Pick<i1.MatSelectionList<T>, 'value'>,
@@ -211,6 +212,7 @@ export class GenericDir<T extends CustomModel<U>, U extends DefaultItem = Defaul
 
 import * as i0 from './models';
 import * as i1 from './list.component';
+import * as i2 from '@angular/core';
 
 /*tcb1*/
 function _tcb1<T extends i0.SelectionModel<unknown> = i0.SelectionModel<i0.DefaultItem>>(
@@ -297,6 +299,7 @@ export class MatSelectionList<T extends SelectionModel<unknown> = SelectionModel
  */
 
 import * as i0 from './local-list.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1<T extends i0.LocalModel = i0.LocalModel>(this: i0.MatLocalList<T>) {

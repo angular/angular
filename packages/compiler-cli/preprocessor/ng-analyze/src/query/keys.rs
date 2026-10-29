@@ -27,6 +27,11 @@ pub enum QueryKey {
     /// Invariant: depends only on the evaluator (syntax/parse queries), never on scopes or semantic
     /// analysis, so any query may read it without forming a cycle.
     AnalyzeFileEvaluated(FileId),
+    /// Wire-projected [`crate::AnalysisResult`] and chunk grouping info for a file.
+    AnalyzeFileWire {
+        file_id: FileId,
+        is_optimized: bool,
+    },
     /// Parsed AST and semantic index for a source file in a self-contained arena.
     ParseFile(FileId),
     /// All declarations (components/directives/pipes) transitively exported by an NgModule.
@@ -48,6 +53,8 @@ pub enum QueryKey {
     /// Singleton: the tsconfig's `.d.ts` files that may declare each ambient module, keyed by
     /// the `declare module '<specifier>'` name, found by a textual scan rather than a parse.
     AmbientModuleFiles,
+    /// Singleton: entrypoint IDs and global extra imports for `generateExtraImportsInLocalMode`.
+    LocalExtraImports,
 }
 
 impl QueryKey {
@@ -58,6 +65,7 @@ impl QueryKey {
             Self::AnalyzeFileSemantic(file_id)
             | Self::AnalyzeFileSyntax(file_id)
             | Self::AnalyzeFileEvaluated(file_id)
+            | Self::AnalyzeFileWire { file_id, .. }
             | Self::ParseFile(file_id)
             | Self::ModuleExportMap(file_id) => Some(file_id),
             Self::NgModuleExportsScope(_)
@@ -65,7 +73,8 @@ impl QueryKey {
             | Self::ComponentMapping
             | Self::NgModuleScopeRegistry
             | Self::ProgramFiles
-            | Self::AmbientModuleFiles => None,
+            | Self::AmbientModuleFiles
+            | Self::LocalExtraImports => None,
         }
     }
 }
@@ -75,6 +84,17 @@ pub type ModuleExportMap = std::collections::HashMap<(FileId, String), String>;
 
 /// Ambient module specifier → the `.d.ts` files that may declare it, in tsconfig order.
 pub type AmbientModuleFiles = std::collections::HashMap<String, Vec<FileId>>;
+
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct LocalExtraImportsData {
+    pub entrypoints_ids: HashSet<FileId>,
+    pub global_extra_imports: Vec<(FileId, String)>,
+}
+
+pub type WireFileResult = (
+    Result<crate::AnalysisResult, String>,
+    crate::compiler::analyzer::FileChunkInfo,
+);
 
 #[derive(Clone, Debug)]
 pub struct NgModuleImportsScopeData {
@@ -91,6 +111,8 @@ pub enum QueryValue {
     Evaluated(Arc<FileData>),
     /// Cross-file resolved analysis ([`QueryKey::AnalyzeFileSemantic`]).
     Semantic(Arc<FileData>),
+    /// Wire-projected file result ([`QueryKey::AnalyzeFileWire`]).
+    Wire(Arc<WireFileResult>),
     /// Parsed source file ([`QueryKey::ParseFile`]).
     ParsedFile(Arc<Mutex<ParsedFile>>),
     /// An NgModule exports scope.
@@ -108,6 +130,8 @@ pub enum QueryValue {
     ProgramFiles(Arc<Vec<FileId>>),
     /// Candidate files per ambient module specifier ([`QueryKey::AmbientModuleFiles`]).
     AmbientModuleFiles(Arc<AmbientModuleFiles>),
+    /// Cached entrypoint IDs and global extra imports ([`QueryKey::LocalExtraImports`]).
+    LocalExtraImports(Arc<LocalExtraImportsData>),
 }
 
 impl std::fmt::Debug for QueryValue {
@@ -116,6 +140,7 @@ impl std::fmt::Debug for QueryValue {
             Self::Syntax(v) => write!(f, "Syntax({})", v.file_path.display()),
             Self::Evaluated(v) => write!(f, "Evaluated({})", v.file_path.display()),
             Self::Semantic(v) => write!(f, "Semantic({})", v.file_path.display()),
+            Self::Wire(_) => write!(f, "Wire"),
             Self::ParsedFile(_) => write!(f, "ParsedFile"),
             Self::Scope(v) => write!(f, "Scope({} decls)", v.len()),
             Self::ImportsScope(v) => {
@@ -133,6 +158,9 @@ impl std::fmt::Debug for QueryValue {
             Self::ScopeRegistry(_) => write!(f, "ScopeRegistry"),
             Self::ProgramFiles(v) => write!(f, "ProgramFiles({} files)", v.len()),
             Self::AmbientModuleFiles(v) => write!(f, "AmbientModuleFiles({} modules)", v.len()),
+            Self::LocalExtraImports(v) => {
+                write!(f, "LocalExtraImports({} imports)", v.global_extra_imports.len())
+            }
         }
     }
 }

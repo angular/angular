@@ -163,6 +163,7 @@ export interface ProcessedFile {
   tcb?: TcbResult | null;
   diagnostics?: nga.NgDiagnostic[];
   hmrUpdateModule?: string | null;
+  referencedStyleFiles?: string[];
 }
 
 /** The result for a file with nothing to compile, whose output is its original text. */
@@ -374,6 +375,7 @@ export function processFileSync(
   };
   const s = new MagicString(content);
   const fileDiagnostics: nga.NgDiagnostic[] = [];
+  const referencedStyleFiles: string[] = [];
   let hmrUpdateModule: string | null | undefined;
 
   const result = metadata || ctx.analyzer.getMetadataForFileSync(filePath);
@@ -817,6 +819,10 @@ export function processFileSync(
           } catch {
             resource = null;
           }
+        }
+
+        if (resource !== null) {
+          referencedStyleFiles.push(resource.resolvedPath);
         }
 
         if (externalRuntimeStyles && resource !== null) {
@@ -1934,27 +1940,36 @@ export function processFileSync(
     out.appendRight(importsEnd, prefix + topOfFileStatements + '\n');
   }
 
-  const tcbTargets =
-    ctx.optimize && !ctx.emitDeclarationOnly
-      ? buildTcbTargets(
-          filePath,
-          content,
-          classes,
-          templatesByClass,
+  const analysis = getOrCreateFileAnalysis(ctx.fileCache, filePath);
+  let prepared: ReturnType<typeof prepareTcbTargets>;
+  if (ctx.optimize && !ctx.emitDeclarationOnly) {
+    if (analysis.preparedTcbData !== undefined && analysis.sourceContent === content) {
+      prepared = analysis.preparedTcbData;
+    } else {
+      const tcbTargets = buildTcbTargets(
+        filePath,
+        content,
+        classes,
+        templatesByClass,
+        ctx.templateParseOptions,
+        ctx.tcbConfig,
+        new DependencyTemplates(
+          ctx.analyzer,
+          ctx.fileCache,
           ctx.templateParseOptions,
-          ctx.tcbConfig,
-          new DependencyTemplates(
-            ctx.analyzer,
-            ctx.fileCache,
-            ctx.templateParseOptions,
-            ctx.metadataMap,
-          ),
-        )
-      : [];
-  const prepared =
-    ctx.optimize && tcbTargets.length > 0
-      ? prepareTcbTargets(filePath, tcbTargets, content, ctx.tcbConfig, classes)
-      : null;
+          ctx.metadataMap,
+        ),
+      );
+      prepared =
+        tcbTargets.length > 0
+          ? prepareTcbTargets(filePath, tcbTargets, content, ctx.tcbConfig, classes)
+          : null;
+      analysis.preparedTcbData = prepared;
+      analysis.sourceContent = content;
+    }
+  } else {
+    prepared = null;
+  }
   const tcb = prepared
     ? (generateTcbCode(filePath, prepared, ctx.tcbConfig) ?? undefined)
     : undefined;
@@ -1963,11 +1978,7 @@ export function processFileSync(
     ? {...tcb, code: combineTcbContent(tcb, filePath, {sourceContent: content, classes})}
     : undefined;
   if (returnTcb) {
-    const analysis = getOrCreateFileAnalysis(ctx.fileCache, filePath);
     analysis.tcb = returnTcb.code;
-    if (prepared) {
-      analysis.preparedTcbData = prepared;
-    }
   }
 
   if (tcb?.diagnostics && tcb.diagnostics.length > 0) {
@@ -2010,6 +2021,7 @@ export function processFileSync(
     tcb: returnTcb,
     diagnostics: fileDiagnostics,
     hmrUpdateModule,
+    referencedStyleFiles: referencedStyleFiles.length > 0 ? referencedStyleFiles : undefined,
   };
 }
 

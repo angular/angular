@@ -7,6 +7,7 @@
 
 import * as i0 from 'google3/list';
 import * as i1 from 'google3/my/common/ng_for_of';
+import * as i2 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.ListComponent) {

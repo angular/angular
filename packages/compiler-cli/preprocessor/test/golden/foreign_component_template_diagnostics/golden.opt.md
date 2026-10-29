@@ -6,6 +6,7 @@
  */
 
 import * as i0 from './bindings.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.BindingsComponent) {
@@ -50,6 +51,7 @@ export class BindingsComponent {
  */
 
 import * as i0 from './content-blocks.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.ContentBlocksComponent) {

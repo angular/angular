@@ -7,6 +7,7 @@
 
 import * as i0 from './app';
 import * as i1 from './highlight';
+import * as i2 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.App) {
@@ -139,6 +140,7 @@ export class App {
  */
 
 import * as i0 from './card';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.Card) {
@@ -262,6 +264,7 @@ export class Highlight {
  */
 
 import * as i0 from './legacy';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.LegacyItem) {

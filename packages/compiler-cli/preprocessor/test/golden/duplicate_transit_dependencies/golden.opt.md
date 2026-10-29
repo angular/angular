@@ -7,6 +7,7 @@
 
 import * as i0 from './app.component';
 import * as i1 from './first.module';
+import * as i2 from '@angular/core';
 
 var _pipe1 = null! as i1.TransitPipe;
 

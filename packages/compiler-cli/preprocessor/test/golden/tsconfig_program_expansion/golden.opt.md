@@ -6,6 +6,7 @@
  */
 
 import * as i0 from './app.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.AppComponent) {
@@ -97,6 +98,7 @@ export class AppComponent {
  */
 
 import * as i0 from './excluded_but_imported';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.ExcludedButImportedComponent) {
@@ -183,6 +185,7 @@ export class ExcludedButImportedComponent {
  */
 
 import * as i0 from './imported';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.ImportedComponent) {

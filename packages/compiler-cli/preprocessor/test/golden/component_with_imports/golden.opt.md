@@ -6,6 +6,7 @@
  */
 
 import * as i0 from './hello.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.HelloComponent) {
@@ -146,6 +147,7 @@ export class HighlightDirective {
 
 import * as i0 from './parent.component';
 import * as i1 from './upcase.pipe';
+import * as i2 from '@angular/core';
 
 var _pipe1 = null! as i1.UpcasePipe;
 

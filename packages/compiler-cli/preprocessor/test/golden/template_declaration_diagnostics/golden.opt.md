@@ -6,6 +6,7 @@
  */
 
 import * as i0 from './dynamic-template-url.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.DynamicTemplateUrlComponent) {
@@ -87,6 +88,7 @@ export class DynamicTemplateUrlComponent {
  */
 
 import * as i0 from './dynamic-template.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.DynamicTemplateComponent) {
@@ -170,6 +172,7 @@ export class DynamicTemplateComponent {
  */
 
 import * as i0 from './missing-link-stylesheet-template-literal.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.MissingLinkStylesheetTemplateLiteralComponent) {
@@ -264,6 +267,7 @@ export class MissingLinkStylesheetTemplateLiteralComponent {
  */
 
 import * as i0 from './missing-link-stylesheet.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.MissingLinkStylesheetComponent) {
@@ -351,6 +355,7 @@ export class MissingLinkStylesheetComponent {
  */
 
 import * as i0 from './missing-template.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.MissingTemplateComponent) {

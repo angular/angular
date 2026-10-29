@@ -7,6 +7,7 @@
 
 import * as i0 from './app';
 import * as i1 from './pipes';
+import * as i2 from '@angular/core';
 
 var _pipe1 = null! as i1.ShoutPipe;
 var _pipe2 = null! as i1.WhisperPipe;

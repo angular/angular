@@ -7,6 +7,7 @@
 
 import * as i0 from './app';
 import * as i1 from './tooltip';
+import * as i2 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.App) {
@@ -207,6 +208,7 @@ export class LegacyModule {
 
 import * as i0 from './legacy';
 import * as i1 from './tooltip';
+import * as i2 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.LegacyApp) {
@@ -304,6 +306,7 @@ export class LegacyApp {
  */
 
 import * as i0 from './menu';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.Menu) {

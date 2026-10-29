@@ -8,6 +8,7 @@
 import * as i0 from './app';
 import * as i1 from './child';
 import * as i2 from './widget';
+import * as i3 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.AppComponent) {
@@ -202,6 +203,7 @@ export class BaseDirective {
  */
 
 import * as i0 from './child';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.ChildComponent) {
@@ -294,6 +296,7 @@ export class ChildComponent extends AliasedBase {
  */
 
 import * as i0 from './widget';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.Widget) {

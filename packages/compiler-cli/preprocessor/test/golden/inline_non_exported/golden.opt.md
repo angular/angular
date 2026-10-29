@@ -239,6 +239,7 @@ export class ExportedAppComponent {
  */
 
 import * as i0 from './app.exported-later';
+import * as i1 from '@angular/core';
 
 var _pipe1 = null! as i0.MyPipe;
 

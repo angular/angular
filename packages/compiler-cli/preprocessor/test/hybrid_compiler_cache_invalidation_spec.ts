@@ -137,4 +137,58 @@ describe('HybridCompiler fileCache invalidation', () => {
       compiler.analyzer.close();
     }
   });
+
+  it('drops the entry of a file that only the delta pass after an update finds stale', async () => {
+    // `cmp.ts` does not import `mod.ts`, so adding `Dir` to the module's declarations does not
+    // invalidate it through the import graph: the engine only finds it when it diffs its
+    // component mapping and scope registry at the start of the delta pass that `updateFileContent`
+    // runs. Readers must not be served the old entry in between that pass and the next `compile()`.
+    const moduleSource = (declarations: string) => `
+      import {NgModule} from '@angular/core';
+      import {Cmp} from './cmp';
+      import {Dir} from './Shared/dir';
+      @NgModule({declarations: [${declarations}]})
+      export class Mod {}
+    `;
+    const {compiler, root} = await createCompiler('ngmodule_scope', [
+      {
+        path: 'tsconfig.json',
+        content: JSON.stringify({
+          compilerOptions: {},
+          files: ['cmp.ts', 'Shared/dir.ts', 'mod.ts'],
+        }),
+      },
+      {
+        path: 'Shared/dir.ts',
+        content: directiveSource('first').replace("'[dir]'}", "'[dir]', standalone: false}"),
+      },
+      {
+        path: 'cmp.ts',
+        content: `
+          import {Component} from '@angular/core';
+          @Component({selector: 'app-cmp', standalone: false, template: '<div dir [first]="value"></div>'})
+          export class Cmp {
+            value = 'x';
+          }
+        `,
+      },
+      {path: 'mod.ts', content: moduleSource('Cmp')},
+    ]);
+    try {
+      const cmpPath = path.join(root, 'cmp.ts');
+      expect(compiler.getTcbForFile(cmpPath)).not.toContain('_t1.first');
+      const key = compiler.getClassMetadata(cmpPath)!.filePath;
+      expect(compiler.fileCache.has(key)).toBe(true);
+
+      const modPath = path.join(root, 'mod.ts');
+      const updated = moduleSource('Cmp, Dir');
+      await fs.writeFile(modPath, updated);
+      await compiler.updateFileContent([{filePath: modPath, content: updated}]);
+
+      expect(compiler.fileCache.has(key)).toBe(false);
+      expect(compiler.getTcbForFile(cmpPath)).toContain('_t1.first');
+    } finally {
+      compiler.analyzer.close();
+    }
+  });
 });

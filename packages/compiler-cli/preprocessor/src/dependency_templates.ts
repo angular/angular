@@ -231,6 +231,71 @@ function classIdOf(decl: nga.DeclarationMetadata): ClassId {
 }
 
 /**
+ * Fingerprints what `template` contributes to the components that use its component: its
+ * `<ng-content>` tags, in order, which are all that `withNgContentSelectors` reads off it. Two
+ * templates with the same signature yield the same `ngContentSelectors`, so a consumer only
+ * has to be re-bound when a dependency's signature changes, not on every edit to its template.
+ *
+ * This scans the text rather than parsing it, as it runs for every analyzed component. The scan
+ * skips HTML comments and honors quoted attribute values, so a `>` inside `select="div > span"`
+ * does not end the tag early. It may still pick up an `<ng-content>` that the parser would not
+ * treat as one (e.g. inside a `<script>`), which only costs a spurious re-binding.
+ */
+export function ngContentSignature(template: string): string {
+  const tags: string[] = [];
+  const length = template.length;
+  let i = 0;
+  while (i < length) {
+    const start = template.indexOf('<', i);
+    if (start === -1) {
+      break;
+    }
+    if (template.startsWith('<!--', start)) {
+      const end = template.indexOf('-->', start + 4);
+      i = end === -1 ? length : end + 3;
+      continue;
+    }
+    if (!isNgContentTagStart(template, start)) {
+      i = start + 1;
+      continue;
+    }
+    // Scan to the `>` closing the tag, skipping quoted attribute values.
+    let end = start + NG_CONTENT_TAG.length;
+    let quote: string | null = null;
+    while (end < length) {
+      const char = template[end];
+      if (quote !== null) {
+        if (char === quote) {
+          quote = null;
+        }
+      } else if (char === '"' || char === "'") {
+        quote = char;
+      } else if (char === '>') {
+        break;
+      }
+      end++;
+    }
+    tags.push(template.slice(start, end + 1));
+    i = end + 1;
+  }
+  return tags.join('\n');
+}
+
+const NG_CONTENT_TAG = '<ng-content';
+
+/** Whether an `<ng-content` tag starts at `index`, rather than e.g. `<ng-container`. */
+function isNgContentTagStart(template: string, index: number): boolean {
+  const end = index + NG_CONTENT_TAG.length;
+  if (template.slice(index, end).toLowerCase() !== NG_CONTENT_TAG) {
+    return false;
+  }
+  if (end >= template.length) {
+    return true;
+  }
+  return /[\s/>]/.test(template[end]);
+}
+
+/**
  * The cached template of the class `id`, without needing its class span (which is what the cache
  * is keyed by, through `makeClassKey(className, span.start)`, but is not known before the
  * declaring file's metadata is). Entries are matched on the name span start recorded when they

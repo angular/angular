@@ -6,6 +6,7 @@
  */
 
 import * as i0 from './module';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.ModuleChild) {
@@ -209,6 +210,7 @@ export class ChildModule {
  */
 
 import * as i0 from './standalone';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.Child) {

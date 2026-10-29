@@ -6,6 +6,7 @@
  */
 
 import * as i0 from './app.component';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.AppComponent) {
@@ -156,6 +157,7 @@ export class AppComponent {
  */
 
 import * as i0 from './deferred.cmp';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.DeferredComponent) {
@@ -241,6 +243,7 @@ export class DeferredComponent {
  */
 
 import * as i0 from './queried.cmp';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.QueriedComponent) {
@@ -327,6 +330,7 @@ export class QueriedComponent {
  */
 
 import * as i0 from './twins.cmp';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.DeferredTwin) {

@@ -9,6 +9,7 @@ import * as i0 from './app.component';
 import * as i1 from './pipe-a';
 import * as i2 from './pipe-b';
 import * as i3 from './pipe-nested';
+import * as i4 from '@angular/core';
 
 var _pipe1 = null! as i1.PipeA;
 var _pipe2 = null! as i2.PipeB;
@@ -210,6 +211,7 @@ export class AppComponent {
  */
 
 import * as i0 from './cmp-a';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.CmpA) {
@@ -283,6 +285,7 @@ export class CmpA {
  */
 
 import * as i0 from './cmp-b';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.CmpB) {
@@ -356,6 +359,7 @@ export class CmpB {
  */
 
 import * as i0 from './cmp-nested';
+import * as i1 from '@angular/core';
 
 /*tcb1*/
 function _tcb1(this: i0.CmpNested) {

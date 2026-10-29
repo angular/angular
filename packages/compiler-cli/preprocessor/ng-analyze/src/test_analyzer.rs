@@ -110,6 +110,11 @@ impl TestAnalyzer {
         self.analyzer.read_resource(containing_file, url)
     }
 
+    #[cfg_attr(feature = "napi", napi)]
+    pub fn canonical_paths(&self, paths: Vec<String>) -> Vec<String> {
+        self.analyzer.canonical_paths(paths)
+    }
+
     #[cfg(feature = "napi")]
     #[napi]
     pub fn update_file_content(&self, updates: Vec<FileUpdate>) -> napi::Result<Vec<String>> {

@@ -22,7 +22,7 @@ pub async fn optimize_ng_module<Fs: ResourceResolverFs + Clone + 'static>(
     // `NgModuleScopeRegistry` singleton and read back here. Like `ComponentMapping`
     // for directives/pipes, this makes every NgModule's semantic query wait for one program-wide
     // pass. See the `TODO(parity)` on `ComponentMapping` in `invalidate_file_id`.
-    let registry = ctx.ngmodule_scope_registry().await;
+    let registry = ctx.ngmodule_scope_registry_for(reference_id).await;
     if let Some(outcome) = registry.outcome(reference_id) {
         ng_module.scope_diagnostics = outcome.diagnostics.clone();
         if outcome.failed {
