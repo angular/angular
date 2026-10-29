@@ -404,7 +404,7 @@ To configure this, update your `angular.json` file as follows:
 ```json
 {
   "projects": {
-    "your-app": {
+    "my-app": {
       "architect": {
         "build": {
           "options": {
@@ -417,21 +417,21 @@ To configure this, update your `angular.json` file as follows:
 }
 ```
 
-### URLs with or without a trailing slash
+### Prerendered file output format
 
-The `format` of the `prerender` option decides which file Angular writes for each route, and with it the URL at which a static host serves the page directly. For a route with the path `about`:
+The `format` property of the `prerender` option controls the file structure Angular writes for each prerendered route. For a route with the path `about`:
 
-| `format`              | Prerendered file   | Served directly at |
-| --------------------- | ------------------ | ------------------ |
-| `directory` (default) | `about/index.html` | `/about/`          |
-| `file`                | `about.html`       | `/about`           |
+| `format`              | Prerendered file   |
+| --------------------- | ------------------ |
+| `directory` (default) | `about/index.html` |
+| `file`                | `about.html`       |
 
-Use `directory` for URLs with a trailing slash, and `file` for URLs without one.
+Depending on your static hosting provider, you can set `format` to `"file"` if your host requires `<route>.html` files to serve routes without redirecting to a trailing slash.
 
 ```json
 {
   "projects": {
-    "your-app": {
+    "my-app": {
       "architect": {
         "build": {
           "options": {
@@ -447,7 +447,7 @@ Use `directory` for URLs with a trailing slash, and `file` for URLs without one.
 }
 ```
 
-NOTE: Not all hosting providers serve `about.html` directly at `/about`. The `format` option is only considered when the build does not produce a server.
+NOTE: The `format` option is only considered when the build does not produce a server.
 
 ## Caching data when using HttpClient
 
