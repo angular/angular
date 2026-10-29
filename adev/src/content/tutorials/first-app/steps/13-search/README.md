@@ -26,7 +26,7 @@ In this step, you'll update the `Home` class to store data in a new array proper
 
 1. The `filteredLocationList` should contain the total set of housing locations values by default when the page loads. Update the `constructor` for the `Home` to set the value.
 
-   <docs-code header="Set the value of filteredLocationList" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[29,32]"/>
+   <docs-code header="Set the value of filteredLocationList" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[30,33]"/>
 
 </docs-step>
 
@@ -69,7 +69,7 @@ The template has been updated to bind the `filterResults` function to the `click
 
 </docs-workflow>
 
-SUMMARY: In this lesson, you updated your app to use template variables to interact with template values, and add search functionality using event binding and array functions.
+SUMMARY: In this lesson, you used template variables to interact with template values, and added search functionality using event binding and array functions.
 
 For more information about the topics covered in this lesson, visit:
 
