@@ -37,7 +37,18 @@ export class MyDir {
       selectors: [['', 'myDir', '']],
       hostBindings: function MyDir_HostBindings(rf: number, ctx: any): any {
         if (rf & 1) {
-          i0.ɵɵlistener('focus', function MyDir_focus_HostBindingHandler(): any {
+          i0.ɵɵlistener(
+            'customClick',
+            function MyDir_customClick_HostBindingHandler($event: any): any {
+              return ctx.handleClick($event);
+            },
+          )(
+            'resize',
+            function MyDir_resize_HostBindingHandler(): any {
+              return ctx.onResize();
+            },
+            i0.ɵɵresolveWindow,
+          )('focus', function MyDir_focus_HostBindingHandler(): any {
             return ctx.onFocus();
           });
         }

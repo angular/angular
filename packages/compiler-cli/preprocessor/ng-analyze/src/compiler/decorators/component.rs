@@ -1330,7 +1330,7 @@ fn rebase_relative_specifier(
     }
 }
 
-/// Populates side-effect imports for a non-standalone component in local compilation mode,
+/// Populates side-effect imports for an NgModule-declared component in local compilation mode,
 /// mirroring ngtsc's `LocalCompilationExtraImportsTracker`.
 ///
 /// Local mode omits static `ɵcmp` dependency lists, stripping module-graph edges needed by
@@ -1344,13 +1344,9 @@ pub async fn populate_local_component_extra_imports<Fs: ResourceResolverFs + Clo
     global_extra_imports: &[(crate::query::FileId, String)],
     entrypoints_ids: &std::collections::HashSet<crate::query::FileId>,
 ) {
-    if component.directive.standalone {
-        return;
-    }
-
     let mapping = ctx.component_mapping_for(reference_id.file).await;
-    // Skip anonymous components and modules outside the compilation unit (ngtsc's
-    // `LocalModuleScopeRegistry` never sees those).
+    // Skip anonymous components, standalone components not declared in an `@NgModule`, and modules
+    // outside the compilation unit (ngtsc's `LocalModuleScopeRegistry` never sees those).
     let Some(module_ref) = class_name
         .and_then(|name| mapping.get(reference_id.file, name))
         .filter(|module_ref| entrypoints_ids.contains(&module_ref.file))

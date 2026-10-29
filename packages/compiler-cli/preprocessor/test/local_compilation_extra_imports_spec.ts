@@ -62,6 +62,35 @@ describe('generateExtraImportsInLocalMode', () => {
       expect(source).withContext(path).toEqual(off.get(path)!);
     }
   });
+
+  it('should emit extra imports for an NgModule-declared component even when standalone: false is omitted', async () => {
+    const implicitStandaloneMain: TestFile = {
+      path: '/app/components/main.component.ts',
+      content: `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'main-comp',
+          template: '<sibling></sibling><ext-comp></ext-comp>',
+        })
+        export class MainComp {}
+      `,
+    };
+    const files = [
+      tsconfig(true),
+      MODULE,
+      implicitStandaloneMain,
+      SIBLING,
+      SELF_CONTAINED,
+      STANDALONE,
+      EXTERNAL,
+    ];
+    const outputs = await runPipeline(files, {optimize: false, format: false});
+    const out = new Map(outputs.map((o) => [o.path, o.content]));
+    const main = out.get('/out/app/components/main.component.ts')!;
+
+    expect(sideEffectImports(main)).toEqual(['../../ext/external', './sibling.component']);
+  });
 });
 
 const EXTERNAL: TestFile = {

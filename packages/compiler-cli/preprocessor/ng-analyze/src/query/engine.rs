@@ -1061,7 +1061,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         })
     }
 
-    /// Populate local-compilation side-effect imports for non-standalone declarations in
+    /// Populate local-compilation side-effect imports for NgModule-declared classes in
     /// `local_result` (mirroring ngtsc's `LocalCompilationExtraImportsTracker`).
     ///
     /// Global extra imports are entrypoint `@NgModule.imports` entries that resolve outside the
@@ -1076,15 +1076,17 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
     ) {
         let mut has_component_candidate = false;
         let mut has_directive_or_pipe_candidate = false;
+        // Do not gate candidates on `!standalone`: in ngtsc, `LocalModuleScopeRegistry` registers
+        // every entry in `@NgModule.declarations` regardless of `standalone`, and
+        // `CompoundComponentScopeReader` checks `LocalModuleScopeRegistry` before
+        // `StandaloneComponentScopeReader`. Classes not declared in any entrypoint `@NgModule`
+        // will miss in `component_mapping` below and remain untouched.
         for class in &local_result.classes {
             match &class.decorator {
-                DecoratorData::Component(c) if !c.directive.standalone => {
+                DecoratorData::Component(_) => {
                     has_component_candidate = true;
                 }
-                DecoratorData::Directive(d) if !d.standalone => {
-                    has_directive_or_pipe_candidate = true;
-                }
-                DecoratorData::Pipe(p) if !p.standalone.unwrap_or(true) => {
+                DecoratorData::Directive(_) | DecoratorData::Pipe(_) => {
                     has_directive_or_pipe_candidate = true;
                 }
                 _ => {}
@@ -1111,10 +1113,10 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                     continue;
                 };
                 match &mut class.decorator {
-                    DecoratorData::Directive(d) if !d.standalone => {
+                    DecoratorData::Directive(d) => {
                         d.declaring_ng_module = Some(module_ref);
                     }
-                    DecoratorData::Pipe(p) if !p.standalone.unwrap_or(true) => {
+                    DecoratorData::Pipe(p) => {
                         p.declaring_ng_module = Some(module_ref);
                     }
                     _ => {}

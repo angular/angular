@@ -628,7 +628,7 @@ export class HybridCompiler {
         const eagerDecls = [...eagerDirDecls, ...eagerPipeDecls];
         eagerlyUsedDeclarations.set(`${file.filePath}#${className}`, eagerDecls);
 
-        if (classMeta.component.standalone) {
+        if (classMeta.component.standalone && !classMeta.component.declaringNgModule) {
           continue;
         }
 
