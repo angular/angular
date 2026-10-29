@@ -11,7 +11,7 @@ export class BaseDir {
     __ngFactoryType__: any,
   ): any {
     /* @ts-ignore */
-    return new (__ngFactoryType__ || BaseDir)(i0.ɵɵdirectiveInject(i0.ElementRef));
+    return new (__ngFactoryType__ || BaseDir)(i0.ɵɵdirectiveInject(ElementRef));
   };
   // @ts-ignore
   static ɵdir: i0.ɵɵDirectiveDeclaration<
@@ -44,7 +44,7 @@ export class BaseDir {
         (): any => [
           {
             /* @ts-ignore */
-            type: i0.ElementRef,
+            type: ElementRef,
           },
         ],
         null,
@@ -113,7 +113,7 @@ export class ChildWithCtorDir extends BaseDir {
     __ngFactoryType__: any,
   ): any {
     /* @ts-ignore */
-    return new (__ngFactoryType__ || ChildWithCtorDir)(i0.ɵɵdirectiveInject(i0.ElementRef));
+    return new (__ngFactoryType__ || ChildWithCtorDir)(i0.ɵɵdirectiveInject(ElementRef));
   };
   // @ts-ignore
   static ɵdir: i0.ɵɵDirectiveDeclaration<
@@ -150,7 +150,7 @@ export class ChildWithCtorDir extends BaseDir {
         (): any => [
           {
             /* @ts-ignore */
-            type: i0.ElementRef,
+            type: ElementRef,
           },
         ],
         null,

@@ -129,6 +129,9 @@ export function normalizeNgpEmitForComparison(
   // `tsc` runs, so `tsc` elides those imports. Either disable `emitDecoratorMetadata` in compliance
   // tests that do not test decorator metadata, or preserve decorator-metadata imports in NGP.
   if (options?.pruneUnusedImports) {
+    const rewrittenNamespaces = new Set<string>();
+    normalized = normalizeCtorDiNamespaceImports(normalized, rewrittenNamespaces);
+
     const bodyWithoutImports = normalized.replace(
       /^[ \t]*import\s+(?:type\s+)?(?:\*\s+as\s+\w+|\{[^}]*\}|\w+)\s+from\s+['"][^'"]+['"];?[ \t]*\r?\n?/gm,
       '',
@@ -149,6 +152,19 @@ export function normalizeNgpEmitForComparison(
         return kept.length === 0 ? '' : `import { ${kept.join(', ')} } from ${moduleQuote};\n`;
       },
     );
+    if (rewrittenNamespaces.size > 0) {
+      normalized = normalized.replace(
+        /^[ \t]*import\s*\*\s*as\s*(i\d+)\s+from\s+['"][^'"]+['"];?[ \t]*\r?\n?/gm,
+        (fullMatch, ns: string) => {
+          if (!rewrittenNamespaces.has(ns)) {
+            return fullMatch;
+          }
+          return new RegExp(`(?<![.\\w$])${ns}(?![\\w$])`).test(bodyWithoutImports)
+            ? fullMatch
+            : '';
+        },
+      );
+    }
   }
 
   // TODO(ngp-parity): When a class has both non-Angular decorators (e.g. `@CustomClassDecorator()`)
@@ -292,4 +308,44 @@ function normalizeDtsNamedImportsInStaticDeclarations(content: string): string {
     out = out.slice(0, start) + text + out.slice(end);
   }
   return out;
+}
+
+/**
+ * In JS output, `ngp` references non-aliased named imports directly (`ElementRef`, `SomeService`)
+ * for constructor DI tokens in `ɵfac` and `ɵsetClassMetadata`, whereas `ngtsc` synthesizes a
+ * namespace import (`import * as iN from "..."`) and emits `iN.ElementRef` / `iN.SomeService`.
+ * Rewrites those constructor DI positions in `ngtsc` compliance goldens so comparisons match.
+ */
+function normalizeCtorDiNamespaceImports(code: string, rewrittenNamespaces: Set<string>): string {
+  const modToNs = new Map<string, string>();
+  for (const [, ns, mod] of code.matchAll(
+    /^[ \t]*import\s*\*\s*as\s*(i\d+)\s+from\s*['"]([^'"]+)['"]/gm,
+  )) {
+    modToNs.set(mod, ns);
+  }
+  if (modToNs.size === 0) return code;
+
+  const qualifiedNamed = new Set<string>();
+  for (const [, specs, mod] of code.matchAll(
+    /^[ \t]*import\s*\{([^}]*)\}\s*from\s*['"]([^'"]+)['"]/gm,
+  )) {
+    const ns = modToNs.get(mod);
+    if (!ns) continue;
+    for (const raw of specs.split(',')) {
+      const spec = raw.trim();
+      if (spec && !spec.startsWith('type ') && !/\s+as\s+/.test(spec)) {
+        qualifiedNamed.add(`${ns}.${spec}`);
+      }
+    }
+  }
+  if (qualifiedNamed.size === 0) return code;
+
+  return code.replace(
+    /(\.ɵɵ(?:directiveInject|inject)\(\s*|\btype:\s*)(i\d+)\.([A-Za-z_$][\w$]*)(?!\s*,\s*args\b)/g,
+    (match, prefix: string, ns: string, sym: string) => {
+      if (!qualifiedNamed.has(`${ns}.${sym}`)) return match;
+      rewrittenNamespaces.add(ns);
+      return prefix + sym;
+    },
+  );
 }

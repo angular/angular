@@ -9,7 +9,7 @@
 import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
 
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
-import {loadStandardTestFiles} from '../../src/ngtsc/testing';
+import {isNgpTestMode, loadStandardTestFiles} from '../../src/ngtsc/testing';
 
 import {NgtscTestEnvironment} from './env';
 
@@ -769,7 +769,14 @@ runInEachFileSystem(() => {
         expect(cleanNewLines(jsContents)).toMatch(
           /\(\) => \[ ?(?:\/\* @ts-ignore \*\/ )?import\("\.\/cmp"\)\.then\(\(?m\)? => m\.Cmp\) ?\]/,
         );
-        expect(jsContents).not.toContain('import { Cmp }');
+        if (isNgpTestMode()) {
+          // `TestCmp` also injects `Cmp` via constructor DI (`ɵɵdirectiveInject(Cmp)`), so `ngp`
+          // retains the named `import { Cmp }` instead of synthesizing `import * as i1`.
+          expect(jsContents).toContain('import { Cmp }');
+          expect(jsContents).not.toContain('import * as i1');
+        } else {
+          expect(jsContents).not.toContain('import { Cmp }');
+        }
       });
 
       it('should retain symbols used in types and eagerly', () => {

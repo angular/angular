@@ -538,6 +538,12 @@ export function processFileSync(
       }
 
       if (!ctx.emitDeclarationOnly && constructorParams && constructorParams.length > 0) {
+        for (const param of constructorParams) {
+          const hasNgDecorators = param.decorators.some((d) => d.isAngular);
+          if ((param.hasType || hasNgDecorators) && !param.isTypeOnly && param.typeName != null) {
+            eagerlyBoundNames.add(param.typeName.split('.')[0]);
+          }
+        }
         const ctorExpr = buildJitCtorParametersExpr(constructorParams, s);
         const nocollapse = ctx.isClosureCompilerEnabled ? '/** @nocollapse */\n  ' : '';
         s.appendLeft(
@@ -584,6 +590,16 @@ export function processFileSync(
     // Build deps from constructor params
     // Use empty array for no-arg constructors (null means "inherit from parent")
     const deps = buildDeps(constructorParams, classMeta.usesInheritance, o, s);
+    const usesCtorDepsInFactory = Boolean(
+      pipe || component || directive || ngModule || (injectable && !service),
+    );
+    if (usesCtorDepsInFactory && Array.isArray(deps)) {
+      for (const dep of deps) {
+        if (dep.token instanceof o.ReadVarExpr) {
+          eagerlyBoundNames.add(dep.token.name.split('.')[0]);
+        }
+      }
+    }
 
     // Avoid duplicate `ɵfac` generation when a class carries multiple decorators (e.g. `@Component` + `@Injectable`).
     // https://github.com/angular/angular/blob/d27e2c2/packages/compiler-cli/src/ngtsc/transform/src/compilation.ts#L710-L718
@@ -1799,6 +1815,14 @@ export function processFileSync(
         ctx.isClosureCompilerEnabled ?? false,
       );
       compiledClass.classMetadataStmt = classMetadataStmt;
+      for (const param of constructorParams ?? []) {
+        if (!param.isTypeOnly && param.typeName != null) {
+          const rootName = param.typeName.split('.')[0];
+          if (!perComponentDeferredDeps.some((d) => d.symbolName === rootName)) {
+            eagerlyBoundNames.add(rootName);
+          }
+        }
+      }
     }
 
     let debugInfoStmt: o.Statement | null = null;
@@ -2287,16 +2311,10 @@ function buildDecoratorMetadataExpr(
 function buildCtorParametersExpr(
   constructorParams: nga.ConstructorParamMetadata[] | undefined,
   s: MagicString,
-  options?: {
-    omitEmptyDecorators?: boolean;
-    useNamespaceImports?: boolean;
-  },
 ): R3ClassMetadataCtorParameter[] | null {
   if (constructorParams == null) {
     return null;
   }
-  const omitEmptyDecorators = options?.omitEmptyDecorators ?? false;
-  const useNamespaceImports = options?.useNamespaceImports ?? false;
   return constructorParams.map((param) => {
     const typeName = param.isTypeOnly ? undefined : param.typeName;
     let decorators: o.Expression | null = null;
@@ -2306,14 +2324,8 @@ function buildCtorParametersExpr(
         .map((d) => buildDecoratorMetadataExpr(d.name, d.argsSpan, d.argsString, s, []));
       decorators = o.literalArr(ngDecorators);
     }
-    const useNamespaceImport = useNamespaceImports && typeName != null && param.typeModule != null;
     return {
-      type:
-        typeName == null
-          ? null
-          : useNamespaceImport
-            ? o.importExpr(new o.ExternalReference(param.typeModule!, typeName))
-            : o.variable(typeName),
+      type: typeName == null ? null : o.variable(typeName),
       decorators,
       // Ask the compiler for a `@ts-ignore` only when the analyzer emitted a reference it could
       // not resolve to a value declaration. Those are the references that make `tsc` fail on the
@@ -2633,9 +2645,7 @@ function buildSetClassMetadata(
   const classMetadata = {
     type: o.variable(className),
     decorators: o.literalArr(decoratorObjs),
-    ctorParameters: buildCtorParametersExpr(classMeta.constructorParams, s, {
-      useNamespaceImports: true,
-    }),
+    ctorParameters: buildCtorParametersExpr(classMeta.constructorParams, s),
     propDecorators: buildPropDecoratorsExpr(classMeta, s, className, guards),
   };
   return compileComponentClassMetadata(classMetadata, deferredDeps).toStmt();
