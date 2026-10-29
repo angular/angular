@@ -20,6 +20,8 @@ pub struct ResolvedTsConfig {
     pub implicit_standalone: bool,
     pub emit_declaration_only: bool,
     pub experimental_local_compilation: bool,
+    /// `angularCompilerOptions._isAngularCoreCompilation`, or `None` when unset.
+    pub is_angular_core_compilation: Option<bool>,
     pub merged_compiler_options: serde_json::Map<String, serde_json::Value>,
 }
 
@@ -158,6 +160,9 @@ pub fn load_and_resolve_tsconfig(
         .and_then(|v| v.as_str())
         .map(|mode| mode == "experimental-local" || mode == "local")
         .unwrap_or(false);
+    let is_angular_core_compilation = merged_compiler_options
+        .get("_isAngularCoreCompilation")
+        .and_then(|v| v.as_bool());
 
     Ok(ResolvedTsConfig {
         files,
@@ -174,6 +179,7 @@ pub fn load_and_resolve_tsconfig(
         implicit_standalone,
         emit_declaration_only,
         experimental_local_compilation,
+        is_angular_core_compilation,
         merged_compiler_options,
     })
 }
@@ -1200,6 +1206,34 @@ mod tests {
             .files
             .contains(&PathBuf::from("/virtual/src/main.ts")));
         assert_eq!(config.compiler_options.allow_js, Some(true));
+    }
+
+    /// `_isAngularCoreCompilation` keeps "unset" apart from `false`: only an unset flag falls back
+    /// to detecting `@angular/core` from its `r3_symbols.ts`.
+    #[test]
+    fn test_is_angular_core_compilation_is_inherited() {
+        let fs = crate::fs::OverlayFileSystem::new_with_overlay();
+        fs.upsert_file(
+            PathBuf::from("/virtual/base.json"),
+            r#"{"angularCompilerOptions": {"_isAngularCoreCompilation": true}}"#.to_string(),
+        );
+        for (tsconfig, expected) in [
+            (r#"{"extends": "./base.json", "files": []}"#, Some(true)),
+            (
+                r#"{"extends": "./base.json", "angularCompilerOptions": {"_isAngularCoreCompilation": false}, "files": []}"#,
+                Some(false),
+            ),
+            (
+                r#"{"bazelOptions": {"angularCompilerOptions": {"_isAngularCoreCompilation": true}}, "files": []}"#,
+                Some(true),
+            ),
+            (r#"{"files": []}"#, None),
+        ] {
+            fs.upsert_file(PathBuf::from("/virtual/tsconfig.json"), tsconfig.to_string());
+            let config =
+                load_and_resolve_tsconfig(Path::new("/virtual/tsconfig.json"), &fs).unwrap();
+            assert_eq!(config.is_angular_core_compilation, expected, "{tsconfig}");
+        }
     }
 
     #[test]
