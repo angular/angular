@@ -435,6 +435,22 @@ export function processFileSync(
     }
   }
 
+  // All local bindings explicitly listed in `@Component.deferredImports` across standalone
+  // components in this file. Computed before the per-class loop so co-bindings on a shared
+  // `import` statement (e.g. `import {DeferredCmpA, DeferredCmpB} from './deps'` where sibling
+  // components defer different bindings) are recognized as deferrable regardless of class order.
+  const fileExplicitlyDeferredNames = new Set<string>();
+  for (const cm of classes) {
+    const comp = cm.component;
+    if (!comp?.standalone) continue;
+    const byBlock = Object.values(comp.deferredImportsByBlock ?? {}).flat();
+    for (const ref of [...(comp.deferredImports ?? []), ...byBlock]) {
+      if (ref.localAlias !== undefined) {
+        fileExplicitlyDeferredNames.add(ref.localAlias);
+      }
+    }
+  }
+
   // First pass: compile all classes in the file into AST representations so `sharedPool`
   // (`ConstantPool`) finalizes all `FixupExpression`s (e.g., shared styles across multiple
   // components in the same file) before the second pass prints and appends them.
@@ -1231,11 +1247,14 @@ export function processFileSync(
        */
       const isRefDeferrable = (ref: nga.ReferenceMetadata): boolean => {
         const local = ref.localAlias;
-        if (local === undefined || !ref.typecheckImport) return false;
+        if (local === undefined || !ref.typecheckImport || !deferredHere.has(local)) return false;
         const owner = importsByBinding.get(local);
         if (owner === undefined) return false;
         return owner.bindings.every(
-          (b) => b.isType || (deferredHere.has(b.local) && !b.valueReferenced),
+          (b) =>
+            b.isType ||
+            ((deferredHere.has(b.local) || fileExplicitlyDeferredNames.has(b.local)) &&
+              !b.valueReferenced),
         );
       };
 
@@ -3271,55 +3290,63 @@ function reportEagerlyImportedDeferredDependencies(
   deferredOnlyNames: ReadonlySet<string>,
   eagerlyReferencedNames: ReadonlySet<string>,
 ) {
+  const deferredNamesByClass = new Map<nga.ClassMetadata, Set<string>>();
   const explicitlyDeferredNames = new Set<string>();
   for (const classMeta of classes) {
     const component = classMeta.component;
     const byBlock = Object.values(component?.deferredImportsByBlock ?? {}).flat();
+    const classNames = new Set<string>();
     for (const ref of [...(component?.deferredImports ?? []), ...byBlock]) {
       if (ref.localAlias !== undefined) {
         explicitlyDeferredNames.add(ref.localAlias);
+        classNames.add(ref.localAlias);
       }
+    }
+    if (classNames.size > 0) {
+      deferredNamesByClass.set(classMeta, classNames);
     }
   }
   if (explicitlyDeferredNames.size === 0) {
     return;
   }
 
-  for (const decl of importDeclarations) {
-    if (!decl.bindings.some((binding) => explicitlyDeferredNames.has(binding.local))) {
-      continue;
+  for (const classDeferredNames of deferredNamesByClass.values()) {
+    for (const decl of importDeclarations) {
+      if (!decl.bindings.some((binding) => classDeferredNames.has(binding.local))) {
+        continue;
+      }
+      // ngtsc asks whether the declaration would survive *its* emit, which is JavaScript, so a
+      // type-only binding or a type-position reference is erased on the way out and does not block
+      // deferral (`valueReferenced` rather than `eagerlyReferenced`).
+      //
+      // A name listed in `deferredImports` is excused by `markAsDeferrableCandidate` at analysis
+      // time whether or not the compiler ends up deferring it, so it counts as a deferred candidate
+      // here even when it is absent from `deferredOnlyNames` (which only holds the names this
+      // compiler actually deferred).
+      const canDefer = decl.bindings.every(
+        (binding) =>
+          binding.isType ||
+          ((deferredOnlyNames.has(binding.local) || explicitlyDeferredNames.has(binding.local)) &&
+            !eagerlyReferencedNames.has(binding.local) &&
+            !binding.valueReferenced),
+      );
+      if (canDefer) {
+        continue;
+      }
+      diagnostics.push({
+        category: 1, // Error
+        code: 8014, // DEFERRED_DEPENDENCY_IMPORTED_EAGERLY
+        messageText:
+          `This import contains symbols that are used both inside and outside of the ` +
+          `\`@Component.deferredImports\` fields in the file. This renders all these ` +
+          `defer imports useless as this import remains and its module is eagerly loaded. ` +
+          `To fix this, make sure that all symbols from the import are *only* used within ` +
+          `\`@Component.deferredImports\` arrays and there are no other references to those ` +
+          `symbols present in this file.`,
+        filePath,
+        span: decl.span,
+      });
     }
-    // ngtsc asks whether the declaration would survive *its* emit, which is JavaScript, so a
-    // type-only binding or a type-position reference is erased on the way out and does not block
-    // deferral (`valueReferenced` rather than `eagerlyReferenced`).
-    //
-    // A name listed in `deferredImports` is excused by `markAsDeferrableCandidate` at analysis
-    // time whether or not the compiler ends up deferring it, so it counts as a deferred candidate
-    // here even when it is absent from `deferredOnlyNames` (which only holds the names this
-    // compiler actually deferred).
-    const canDefer = decl.bindings.every(
-      (binding) =>
-        binding.isType ||
-        ((deferredOnlyNames.has(binding.local) || explicitlyDeferredNames.has(binding.local)) &&
-          !eagerlyReferencedNames.has(binding.local) &&
-          !binding.valueReferenced),
-    );
-    if (canDefer) {
-      continue;
-    }
-    diagnostics.push({
-      category: 1, // Error
-      code: 8014, // DEFERRED_DEPENDENCY_IMPORTED_EAGERLY
-      messageText:
-        `This import contains symbols that are used both inside and outside of the ` +
-        `\`@Component.deferredImports\` fields in the file. This renders all these ` +
-        `defer imports useless as this import remains and its module is eagerly loaded. ` +
-        `To fix this, make sure that all symbols from the import are *only* used within ` +
-        `\`@Component.deferredImports\` arrays and there are no other references to those ` +
-        `symbols present in this file.`,
-      filePath,
-      span: decl.span,
-    });
   }
 }
 

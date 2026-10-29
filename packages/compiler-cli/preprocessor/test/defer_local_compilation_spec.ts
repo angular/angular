@@ -715,5 +715,91 @@ ${deferFirst ? `${parentCmp}\n${helperCmp}` : `${helperCmp}\n${parentCmp}`}
 
       expect(await diagnose(files, true)).toEqual([]);
     });
+
+    it('defers symbols imported from a single import declaration across sibling components', async () => {
+      const files: TestFile[] = [
+        tsconfig(['app.component.ts', 'comps.ts']),
+        {
+          path: '/comps.ts',
+          content: `
+            import { Component } from '@angular/core';
+            @Component({ selector: 'comp-a', template: 'A' })
+            export class CompA {}
+            @Component({ selector: 'comp-b', template: 'B' })
+            export class CompB {}
+          `,
+        },
+        {
+          path: '/app.component.ts',
+          content: `
+            import { Component } from '@angular/core';
+            import { CompA, CompB } from './comps';
+
+            @Component({
+              deferredImports: { block1: [CompA] },
+              template: '@defer (name block1) { <comp-a /> }',
+            })
+            export class AppCmpA {}
+
+            @Component({
+              deferredImports: { block1: [CompB] },
+              template: '@defer (name block1) { <comp-b /> }',
+            })
+            export class AppCmpB {}
+          `,
+        },
+      ];
+
+      expect(await diagnose(files, true)).toEqual([]);
+      const out = await compile(files, true);
+      expect(out).not.toMatch(/from ['"]\.\/comps['"]/);
+      const names = depsFnNames(out);
+      expect(names).toEqual(['AppCmpA_Defer_1_DepsFn', 'AppCmpB_Defer_1_DepsFn']);
+      expect(depsFn(out, 'AppCmpA_Defer_1_DepsFn')).toEqual(['./comps#CompA']);
+      expect(depsFn(out, 'AppCmpB_Defer_1_DepsFn')).toEqual(['./comps#CompB']);
+    });
+
+    it('reports NG8014 once per component referencing a non-removable shared import', async () => {
+      const files: TestFile[] = [
+        tsconfig(['app.component.ts', 'comps.ts']),
+        {
+          path: '/comps.ts',
+          content: `
+            import { Component } from '@angular/core';
+            @Component({ selector: 'comp-a', template: 'A' })
+            export class CompA {}
+            @Component({ selector: 'comp-b', template: 'B' })
+            export class CompB {}
+            export function utilityFn() {}
+          `,
+        },
+        {
+          path: '/app.component.ts',
+          content: `
+            import { Component } from '@angular/core';
+            import { CompA, CompB, utilityFn } from './comps';
+
+            @Component({
+              deferredImports: { block1: [CompA] },
+              template: '@defer (name block1) { <comp-a /> }',
+            })
+            export class AppCmpA {
+              ngOnInit() {
+                utilityFn();
+              }
+            }
+
+            @Component({
+              deferredImports: { block1: [CompB] },
+              template: '@defer (name block1) { <comp-b /> }',
+            })
+            export class AppCmpB {}
+          `,
+        },
+      ];
+
+      const diags = await diagnose(files, true);
+      expect(diags.map((d) => d.code)).toEqual([8014, 8014]);
+    });
   });
 });

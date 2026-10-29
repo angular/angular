@@ -316,8 +316,6 @@ const NGP_POTENTIAL_BREAKING_CHANGES: ReadonlySet<string> = new Set([
 const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'import generation should report an error when a library entry-point does not export the symbol',
   'import generation should report an error when using a directive outside of rootDirs',
-  'local compilation @defer should produce a diagnostic in case imports with symbols used in `deferredImports` can not be removed',
-  'local compilation @defer should support importing multiple deferrable deps from a single file and use them within `@Component.deferrableImports` field',
   'local compilation custom decorator should produce diagnostic for each custom decorator',
   'local compilation host directives should generate component hostDirectives definition without input and output',
   'local compilation host directives should produce fatal diagnostics for host directives with forward references of externally imported directive',
