@@ -273,7 +273,7 @@ pub struct DirectiveData {
     /// Stage 2 can chase cross-file arrays and aliases before it is projected onto the wire.
     pub host_directives: Option<Resolved<Vec<HostDirectiveEntry>>>,
     pub host_directives_span: Option<oxc_span::Span>,
-    pub unsupported_host_directive_spans: Vec<oxc_span::Span>,
+    pub unsupported_host_directives: Vec<(Resolved<()>, oxc_span::Span)>,
     /// The directive's own `hostDirectives`, resolved in stage 2 — what ngtsc's
     /// `TypeCheckScopeRegistry` puts in `directivesOnHost` ahead of the directive itself when
     /// type-checking its host bindings. Components keep theirs on
@@ -431,6 +431,29 @@ async fn complete_style_urls<Fs: crate::ResourceResolverFs + Clone + 'static>(
     }
 }
 
+/// In non-`emitDeclarationOnly` local compilation, ngtsc still runs the partial evaluator over
+/// `hostDirectives`, so expressions like `forwardRef(() => DepA)` that resolve within the
+/// compilation unit succeed while unresolved external expressions remain dynamic and report NG11003.
+async fn complete_unsupported_host_directives<Fs: crate::ResourceResolverFs + Clone + 'static>(
+    entries: &mut Vec<(Resolved<()>, oxc_span::Span)>,
+    ctx: &crate::query::QueryContext<Fs>,
+    foreign: &[&dyn crate::evaluator::ForeignFunctionResolver],
+) {
+    if entries.is_empty() {
+        return;
+    }
+    for (probe, _) in entries.iter_mut() {
+        probe.complete_with(ctx, foreign).await;
+    }
+    entries.retain(|(probe, _)| {
+        matches!(
+            probe.raw().unwrap_named(),
+            crate::evaluator::ResolvedValue::Dynamic(_)
+                | crate::evaluator::ResolvedValue::Incomplete(_)
+        )
+    });
+}
+
 /// Stage 2 for a `templateUrl` that named a constant from another file: complete the
 /// expression, then read the template exactly as Stage 1 reads a literal URL — still relative
 /// to the component's own file, not to the file declaring the constant, as ngtsc's
@@ -482,7 +505,7 @@ impl Default for DirectiveData {
             host_properties: Vec::new(),
             host_directives: None,
             host_directives_span: None,
-            unsupported_host_directive_spans: Vec::new(),
+            unsupported_host_directives: Vec::new(),
             resolved_host_directives: None,
             host_directive_diagnostics: Vec::new(),
             providers_span: None,
@@ -1753,6 +1776,14 @@ impl ClassData {
                 if let Some(template) = &mut c.template {
                     template.complete_with(ctx, foreign).await;
                 }
+                if !ctx.engine.emit_declaration_only {
+                    complete_unsupported_host_directives(
+                        &mut c.directive.unsupported_host_directives,
+                        ctx,
+                        foreign,
+                    )
+                    .await;
+                }
             }
             DecoratorData::Directive(d) => {
                 if let Some(export_as) = &mut d.export_as {
@@ -1763,6 +1794,14 @@ impl ClassData {
                 }
                 for name in d.host_listener_event_names_mut() {
                     name.complete_with(ctx, foreign).await;
+                }
+                if !ctx.engine.emit_declaration_only {
+                    complete_unsupported_host_directives(
+                        &mut d.unsupported_host_directives,
+                        ctx,
+                        foreign,
+                    )
+                    .await;
                 }
             }
             _ => {}
@@ -2680,20 +2719,24 @@ impl ClassData {
         converter: &crate::utils::Utf8ToUtf16,
         diagnostics: &mut Vec<crate::NgDiagnostic>,
     ) {
-        if cx.emit_declaration_only {
-            for span in &d.unsupported_host_directive_spans {
+        if cx.emit_declaration_only || cx.mode != WireMode::Semantic {
+            let mode_name = if cx.emit_declaration_only {
+                "experimental declaration-only emission"
+            } else {
+                "local compilation"
+            };
+            for (_, span) in &d.unsupported_host_directives {
                 push_error(
                     diagnostics,
                     file_path,
                     converter,
                     "11003",
                     *span,
-                    "In experimental declaration-only emission mode, host directive cannot be an expression. Use an identifier instead".to_string(),
+                    format!(
+                        "In {mode_name} mode, host directive cannot be an expression. Use an identifier instead"
+                    ),
                 );
             }
-            return;
-        }
-        if cx.mode != WireMode::Semantic {
             return;
         }
         if let (Some(host_directives), Some(span)) = (&d.host_directives, d.host_directives_span) {
@@ -4564,7 +4607,9 @@ impl ClassData {
         d: &DirectiveData,
         cx: &WireContext,
     ) -> Option<Vec<HostDirectiveMetadata>> {
-        if cx.emit_declaration_only && !d.unsupported_host_directive_spans.is_empty() {
+        if (cx.emit_declaration_only || cx.mode != WireMode::Semantic)
+            && !d.unsupported_host_directives.is_empty()
+        {
             return None;
         }
         let slot = d.host_directives.as_ref()?;

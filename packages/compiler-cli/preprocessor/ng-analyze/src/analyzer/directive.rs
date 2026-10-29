@@ -155,8 +155,8 @@ pub fn extract_directive_metadata<'a>(
             "hostDirectives" => {
                 // Evaluated via the partial evaluator (`extractHostDirectives` in ngtsc `shared.ts`).
                 let evaluated = evaluate_expression(&p.value, eval);
-                data.unsupported_host_directive_spans =
-                    extract_unsupported_host_directive_spans(&evaluated, semantic);
+                data.unsupported_host_directives =
+                    extract_unsupported_host_directives(&evaluated, semantic, eval.file);
                 data.host_directives = Some(Resolved::from_syntax(evaluated, eval.file));
                 data.host_directives_span = Some(p.value.span());
             }
@@ -223,26 +223,28 @@ fn fold_or_defer_io_array(data: &mut DirectiveData, array: IoMetadataArray) {
         .push(array);
 }
 
-/// Spans of `hostDirectives` entries that resolve to an external reference (`Incomplete`) via an
+/// Entries in `hostDirectives` that evaluate to an external reference (`Incomplete`) via an
 /// expression other than a plain identifier or static property access (rejected in local and
-/// `emitDeclarationOnly` compilation modes by ngtsc's `extractHostDirectives`).
-fn extract_unsupported_host_directive_spans(
+/// `emitDeclarationOnly` compilation modes by ngtsc's `extractHostDirectives` when unresolved).
+fn extract_unsupported_host_directives(
     evaluated: &ResolvedValue,
     semantic: &Semantic<'_>,
-) -> Vec<oxc_span::Span> {
+    origin: crate::query::FileId,
+) -> Vec<(Resolved<()>, oxc_span::Span)> {
     let ResolvedValue::Array(items) = evaluated.unwrap_named() else {
         return Vec::new();
     };
     items
         .iter()
-        .filter_map(|item| unsupported_host_directive_span(item, semantic))
+        .filter_map(|item| unsupported_host_directive_entry(item, semantic, origin))
         .collect()
 }
 
-fn unsupported_host_directive_span(
+fn unsupported_host_directive_entry(
     item: &ResolvedValue,
     semantic: &Semantic<'_>,
-) -> Option<oxc_span::Span> {
+    origin: crate::query::FileId,
+) -> Option<(Resolved<()>, oxc_span::Span)> {
     let dir_val = match item.unwrap_named() {
         ResolvedValue::Map(map) => map.get("directive")?,
         other => other,
@@ -261,7 +263,7 @@ fn unsupported_host_directive_span(
     if is_supported {
         return None;
     }
-    if hole.synthetic {
+    let span = if hole.synthetic {
         let call_span = hole.node_id.and_then(|id| {
             semantic.nodes().ancestors(id).find_map(|ancestor| {
                 let oxc_ast::AstKind::CallExpression(call) = ancestor.kind() else {
@@ -270,9 +272,11 @@ fn unsupported_host_directive_span(
                 Some(call.span)
             })
         });
-        return Some(call_span.unwrap_or(hole.span));
-    }
-    Some(hole.span)
+        call_span.unwrap_or(hole.span)
+    } else {
+        hole.span
+    };
+    Some((Resolved::from_syntax(dir_val.clone(), origin), span))
 }
 
 /// The transforms of the `inputs` entries written in place as object literals, keyed by the

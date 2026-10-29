@@ -1928,8 +1928,8 @@ runInEachFileSystem(() => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
 
-        expect(jsContents).toContain(
-          'features: [i0.ɵɵHostDirectivesFeature([ExternalDirective, n.ExternalDirective, LocalDirective])]',
+        expect(jsContents).toMatch(
+          /features: \[i0\.ɵɵHostDirectivesFeature\(\[ExternalDirective, \w+\.ExternalDirective, LocalDirective\]\)\]/,
         );
       });
 
