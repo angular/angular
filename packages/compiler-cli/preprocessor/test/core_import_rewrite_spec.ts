@@ -39,8 +39,8 @@ describe('@angular/core import rewriting', () => {
   });
 
   it('should keep importing @angular/core when r3_symbols.ts is not part of the compilation', async () => {
-    // A secondary entry point such as `@angular/core/testing` shares core's `package.json` but
-    // is a separate compilation that does not include `r3_symbols.ts`; ngtsc uses the
+    // A secondary entry point such as `@angular/core/testing` is compiled as core
+    // (`_isAngularCoreCompilation`) but does not include `r3_symbols.ts`; ngtsc uses the
     // `NoopImportRewriter` there.
     const testBed: TestFile = {
       path: '/core/testing/src/test_bed.ts',
@@ -52,12 +52,16 @@ export class TestBedImpl {}
     };
     const tsconfig: TestFile = {
       path: '/core/testing/tsconfig.json',
-      content: JSON.stringify({compilerOptions: {strict: true}, files: [testBed.path]}),
+      content: JSON.stringify({
+        compilerOptions: {strict: true},
+        angularCompilerOptions: {_isAngularCoreCompilation: true},
+        files: [testBed.path],
+      }),
     };
-    const outputs = await runPipeline(
-      [tsconfig, CORE_PACKAGE_JSON, INJECTABLE_DECORATOR, testBed],
-      {optimize: false, format: false},
-    );
+    const outputs = await runPipeline([tsconfig, INJECTABLE_DECORATOR, testBed], {
+      optimize: false,
+      format: false,
+    });
     const emitted = new Map(outputs.map((o) => [o.path, o.content])).get(
       '/out/core/testing/src/test_bed.ts',
     )!;
@@ -86,13 +90,10 @@ export class CoreComponent {}
   });
 });
 
-/** Mirrors `packages/core/package.json`, which is how the analyzer recognizes core. */
-const CORE_PACKAGE_JSON: TestFile = {
-  path: '/core/package.json',
-  content: JSON.stringify({name: '@angular/core'}),
-};
-
-/** Mirrors `packages/core/src/r3_symbols.ts`. */
+/**
+ * Mirrors `packages/core/src/r3_symbols.ts`, whose `ITS_JUST_ANGULAR` marker is how a compilation
+ * without `_isAngularCoreCompilation` is recognized as core (ngtsc's `isAngularCorePackage`).
+ */
 const R3_SYMBOLS: TestFile = {
   path: '/core/src/r3_symbols.ts',
   content: `export const ITS_JUST_ANGULAR = true;
@@ -133,7 +134,7 @@ async function compileCore(files: TestFile[], errors?: string[]): Promise<Map<st
       files: files.map((f) => f.path),
     }),
   };
-  const outputs = await runPipeline([tsconfig, CORE_PACKAGE_JSON, ...files], {
+  const outputs = await runPipeline([tsconfig, ...files], {
     optimize: false,
     format: false,
     errors,
