@@ -16,6 +16,7 @@ import {
   DefaultUrlSerializer,
   UrlTree,
   Params,
+  NavigationExtras,
 } from '../src';
 import {withExperimentalPlatformNavigation, withRouterConfig} from '../src/provide_router';
 import {withBody, useAutoTick, timeout} from '@angular/private/testing';
@@ -507,6 +508,62 @@ if (typeof window !== 'undefined' && 'navigation' in window && !isFirefox()) {
         document.querySelector('a')!.click();
         await timeout();
         expect(routerEvents).toEqual([]);
+      }),
+    );
+  });
+
+  describe('focusReset with real platform navigation', () => {
+    const navigation = window.navigation as Navigation;
+
+    async function setup() {
+      TestBed.configureTestingModule({
+        providers: [
+          provideRouter([{path: '**', children: []}], withExperimentalPlatformNavigation()),
+          {provide: PlatformLocation, useClass: BrowserPlatformLocation},
+          {provide: PlatformNavigation, useFactory: () => navigation},
+        ],
+      });
+      const router = TestBed.inject(Router);
+      router.initialNavigation();
+      await timeout();
+      return router;
+    }
+
+    it(
+      'resets focus by default',
+      withBody('<input>', async () => {
+        const router = await setup();
+        const input = document.querySelector('input')!;
+        input.focus();
+        expect(document.activeElement).toBe(input);
+
+        // Each test uses its own URL: these tests share the page URL, and navigating to the
+        // current URL again would be skipped by the router.
+        await router.navigate(['/search'], {queryParams: {q: 'default'}});
+        // The browser resets focus when it finishes the navigate event, after the next render.
+        await navigation.transition?.finished;
+
+        expect(router.url).toBe('/search?q=default');
+        expect(document.activeElement).toBe(document.body);
+      }),
+    );
+
+    it(
+      "keeps focus with focusReset: 'manual' in the extras",
+      withBody('<input>', async () => {
+        const router = await setup();
+        const input = document.querySelector('input')!;
+        input.focus();
+        expect(document.activeElement).toBe(input);
+
+        await router.navigate(['/search'], {
+          queryParams: {q: 'manual'},
+          focusReset: 'manual',
+        } as NavigationExtras);
+        await navigation.transition?.finished;
+
+        expect(router.url).toBe('/search?q=manual');
+        expect(document.activeElement).toBe(input);
       }),
     );
   });
