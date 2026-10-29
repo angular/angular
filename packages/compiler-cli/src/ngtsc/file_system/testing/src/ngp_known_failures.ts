@@ -51,12 +51,6 @@ export function shouldSkipInNgp(fullSpecName: string): boolean {
  */
 const NGP_KNOWN_TYPECHECK_FAILURES: ReadonlySet<string> = new Set([
   'host directives should produce a diagnostic for host directive inputs and outputs that have not been exposed',
-  'input signal type-check diagnostics inline constructor generic inference',
-  'input signal type-check diagnostics with `--strict` inline constructor generic inference',
-  'model inputs type-check diagnostics inline constructor generic inference, one-way binding',
-  'model inputs type-check diagnostics inline constructor generic inference, two-way binding',
-  'model inputs type-check diagnostics with `--strict` inline constructor generic inference, one-way binding',
-  'model inputs type-check diagnostics with `--strict` inline constructor generic inference, two-way binding',
   'template diagnostics checks bindings to regular element',
   'template diagnostics does not repeat diagnostics for missing pipes in directive inputs',
   'template diagnostics infers generic pipe return types correctly and avoids expanding to strict undefined errors',
