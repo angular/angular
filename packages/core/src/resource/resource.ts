@@ -665,14 +665,19 @@ export const paramsContext: ResourceParamsContext = {
   chain,
 };
 
-let inParamsFunction = false;
+/**
+ * Safari 16-17 have a JIT bug where assigning to a module-level let/var can
+ * sometimes fail to write the value. We wrap in an array to keep a constant
+ * variable with a mutable internal value.
+ */
+const inParamsFunction: [boolean] = [false];
 
 export function isInParamsFunction() {
-  return inParamsFunction;
+  return inParamsFunction[0];
 }
 
 export function setInParamsFunction(value: boolean) {
-  inParamsFunction = value;
+  inParamsFunction[0] = value;
 }
 
 export function invalidResourceCreationInParams(): Error {
