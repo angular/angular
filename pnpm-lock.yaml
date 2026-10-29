@@ -999,12 +999,9 @@ importers:
       '@mcp-b/webmcp-polyfill':
         specifier: ^5.0.0
         version: 5.1.0
-      '@mcp-b/webmcp-types':
-        specifier: ^5.0.0
-        version: 5.1.0
-      '@modelcontextprotocol/server':
-        specifier: ^2.0.0
-        version: 2.4.0
+      webmcp-types:
+        specifier: 0.1.10
+        version: 0.1.10
 
   packages/core/test/bundling:
     dependencies:
@@ -1073,9 +1070,6 @@ importers:
         version: 4.6.7
     devDependencies:
       '@mcp-b/webmcp-polyfill':
-        specifier: ^5.0.0
-        version: 5.1.0
-      '@mcp-b/webmcp-types':
         specifier: ^5.0.0
         version: 5.1.0
 
@@ -1602,7 +1596,7 @@ packages:
 
   '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/a0d9c35737220cea1a70bdcaf7bde94518271dbb':
     resolution: {gitHosted: true, integrity: sha512-YnSuc6ELEyW/D4JacUBxPBd3IGT6V3cCyjGnZEAYT+ZvmxO22/22D6byv3gcxMCyhqMM81CXrLesL7t8KZ62Eg==, tarball: https://codeload.github.com/angular/domino/tar.gz/a0d9c35737220cea1a70bdcaf7bde94518271dbb}
-    version: 2.1.6
+    version: 2.1.6+git
 
   '@angular/material@22.2.5':
     resolution: {integrity: sha512-ewWa2VDaPdb5iQ5LZGrlvaTXPwAlPKmNL3UhOqzZ/sjrQqyfrNDPrE+Wc71GyNgm7xd+C3/VmZWcjvS4ptk5+A==}
@@ -3211,10 +3205,6 @@ packages:
     resolution: {integrity: sha512-laVmIhPGpWi7rG9q+0UigblRN0Hws/Yjlb6qLFtVqryXVLkc4h+yN8z731POD2LnAGQlFe7/tXhUm7Bi0YB91g==}
     engines: {node: '>=20'}
 
-  '@modelcontextprotocol/core@2.4.0':
-    resolution: {integrity: sha512-z8QBKqdfXLPzkLQuG4xp8hrVEMm1PZ1IgxMN2sMbJiFiAKOWXnAzogXn2W4aqIBlP1ea6U5yiqVquvUNM1Cj6Q==}
-    engines: {node: '>=20'}
-
   '@modelcontextprotocol/sdk@1.32.2':
     resolution: {integrity: sha512-SWsVtH/0vULSQStoZ6xxH2K09Li8fXYTMC64ZeogCdpZ3XSi1eCPOByV1OpuJxuI3OcmHhosDWYyii07tpPsLw==}
     engines: {node: '>=18'}
@@ -3231,10 +3221,6 @@ packages:
 
   '@modelcontextprotocol/server@2.3.1':
     resolution: {integrity: sha512-e59MfWuSssj6DoQ96JCTqdW1AXT5/XtnTl0WWd6MU1Ka434fFUGGosCLJbGNySDhHGvxQWoRWK137FXYFkYNWw==}
-    engines: {node: '>=20'}
-
-  '@modelcontextprotocol/server@2.4.0':
-    resolution: {integrity: sha512-rgR9yxSaAJ+bcsi/XroT/S2AfPiIWloXAnrdfYSCms9ivVju0ishu/wW0J21Ho6+ZOR1r7RyeRbjiRuF87ix5Q==}
     engines: {node: '>=20'}
 
   '@msgpackr-extract/msgpackr-extract-darwin-arm64@3.0.4':
@@ -11237,6 +11223,9 @@ packages:
     resolution: {integrity: sha512-BMhLD/Sw+GbJC21C/UgyaZX41nPt8bUTg+jWyDeg7e7YN4xOM05YPSIXceACnXVtqyEw/LMClUQMtMZ+PGGpqQ==}
     engines: {node: '>=20'}
 
+  webmcp-types@0.1.10:
+    resolution: {integrity: sha512-U4GQ1RpJ0tqCUt2ALMV9Pnhi+hsy8L31f/Q1v4mLVhW64r5sYhh+2+SjP/Lq4/9jP33vZgNkuRZARJl65A/ZIg==}
+
   websocket-driver@0.7.5:
     resolution: {integrity: sha512-ZL2+3c7kMBdIRCMz6l8jQMHyGVxj+UL+xVk74Ombiciboca8rHa15L86B19E5oh1pL9Ii/uj54gtsIrZGMo6zA==}
     engines: {node: '>=0.8.0'}
@@ -14315,10 +14304,6 @@ snapshots:
     dependencies:
       zod: 4.6.6
 
-  '@modelcontextprotocol/core@2.4.0':
-    dependencies:
-      zod: 4.6.7
-
   '@modelcontextprotocol/sdk@1.32.2(supports-color@11.0.0)':
     dependencies:
       '@hono/node-server': 2.1.5(hono@4.13.14)
@@ -14350,11 +14335,6 @@ snapshots:
     dependencies:
       '@modelcontextprotocol/core': 2.3.1
       zod: 4.6.6
-
-  '@modelcontextprotocol/server@2.4.0':
-    dependencies:
-      '@modelcontextprotocol/core': 2.4.0
-      zod: 4.6.7
 
   '@msgpackr-extract/msgpackr-extract-darwin-arm64@3.0.4':
     optional: true
@@ -23368,6 +23348,8 @@ snapshots:
   webidl-conversions@7.0.0: {}
 
   webidl-conversions@8.0.1: {}
+
+  webmcp-types@0.1.10: {}
 
   websocket-driver@0.7.5:
     dependencies:

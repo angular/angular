@@ -6,11 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-// g3-only import type {JsonSchemaForInference} from '@mcp-b/webmcp-types';
-import type {JsonSchemaForInference} from '../../third_party/@mcp-b/webmcp-types'; // 3p-only
+// g3-only-start
+// import type {WebMCP} from 'webmcp-types';
+// type ModelContext = WebMCP.ModelContext;
+// type ModelContextTool = WebMCP.ModelContextTool;
+// g3-only-end
+import type {ModelContext, ModelContextTool} from '../../third_party/webmcp-types'; // 3p-only
 import {assertInInjectionContext, inject, Injector, runInInjectionContext} from '../di';
 import {DestroyRef} from '../linker';
-import type {ModelContext, ToolDescriptor} from './types';
+import type {ToolDescriptor} from './types';
 
 /**
  * Declares a WebMCP tool.
@@ -29,9 +33,10 @@ import type {ModelContext, ToolDescriptor} from './types';
  *     `injector` argument provided.
  * @experimental
  */
-export async function declareExperimentalWebMcpTool<
-  const InputSchema extends JsonSchemaForInference,
->(tool: ToolDescriptor<InputSchema>, injector?: Injector): Promise<void> {
+export async function declareExperimentalWebMcpTool<const InputSchema extends object>(
+  tool: ToolDescriptor<InputSchema>,
+  injector?: Injector,
+): Promise<void> {
   // SSR may not have a document yet, so we abort before checking it.
   if (typeof ngServerMode !== 'undefined' && ngServerMode) return;
 
@@ -57,7 +62,7 @@ export async function declareExperimentalWebMcpTool<
   // Wrap the input tool with an `AbortSignal` which aborts when the
   // injection context is destroyed.
   const abortCtrl = new AbortController();
-  const wrappedTool: ToolDescriptor<InputSchema> = {
+  const wrappedTool: ModelContextTool = {
     ...tool,
     execute: (args, client) => {
       // TODO: `@mcp-b/webmcp-polyfill` currently lacks `AbortSignal` in its mock client.
@@ -67,7 +72,7 @@ export async function declareExperimentalWebMcpTool<
         : abortCtrl.signal;
 
       return runInInjectionContext(currentInjector, () =>
-        tool.execute(args, {
+        tool.execute(args as Parameters<typeof tool.execute>[0], {
           ...client,
           signal,
         }),
