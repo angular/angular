@@ -50,7 +50,6 @@ export function shouldSkipInNgp(fullSpecName: string): boolean {
  * (#678-#682, #690, plus `TemplateTypeChecker` IDE metadata queries).
  */
 const NGP_KNOWN_TYPECHECK_FAILURES: ReadonlySet<string> = new Set([
-  'template diagnostics should support type-narrowing for methods with type guards',
   'template parse failures should handle TypeScript parse failures gracefully',
   'template parse failures should handle non-Error failures gracefully',
 
