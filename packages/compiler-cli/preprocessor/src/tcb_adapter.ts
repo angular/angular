@@ -481,8 +481,8 @@ function declarationToMetadata(
   consumerPath?: string,
 ): TcbDirectiveMetadata {
   const isSameFile = consumerPath !== undefined && filePath === consumerPath;
-  const isLocal =
-    (requiresInline && isSameFile) || (!decl.ref.typecheckImport && !decl.ref.invalidReason);
+  const isInlinedSameFile = requiresInline && isSameFile;
+  const isLocal = isInlinedSameFile || (!decl.ref.typecheckImport && !decl.ref.invalidReason);
   const moduleName = isLocal ? null : (decl.ref.typecheckImport?.specifier ?? null);
   const symbolName = isLocal ? decl.name : (decl.ref.typecheckImport?.symbol ?? decl.name);
   const fields = decl.flattenedFields ?? decl.fields ?? [];
@@ -529,10 +529,7 @@ function declarationToMetadata(
       // `content` is the consumer file's text and transform spans index into the declaring
       // file, so the raw type is only usable when both are the same file and the TCB is
       // inlined into it.
-      return createInputPropertyMapping(
-        inputsList,
-        requiresInline && isSameFile ? content : undefined,
-      );
+      return createInputPropertyMapping(inputsList, isInlinedSameFile ? content : undefined);
     })(),
     outputs: (() => {
       const outputsList: nga.OutputMetadata[] = [];
@@ -543,7 +540,7 @@ function declarationToMetadata(
       }
       return createOutputPropertyMapping(outputsList);
     })(),
-    requiresInlineTypeCtor: decl.hasNonExportedBounds ?? false,
+    requiresInlineTypeCtor: !!decl.hasNonExportedBounds && !isInlinedSameFile,
     ngTemplateGuards:
       decl.ngTemplateGuards?.map((g) => ({
         inputName: g.inputName,
