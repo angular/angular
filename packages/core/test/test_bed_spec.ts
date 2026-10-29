@@ -2708,6 +2708,53 @@ describe('TestBed module teardown', () => {
     expect(fixtureDocument.body.contains(fixture.nativeElement)).toBe(false);
   });
 
+  it('should remove the fixture root element from the DOM when a host binding replaced its id', async () => {
+    @Component({
+      template: '',
+      host: {'[attr.id]': 'hostId()'},
+    })
+    class HostIdCmp {
+      hostId = signal('custom-id');
+    }
+
+    TestBed.configureTestingModule({teardown: {destroyAfterEach: true}});
+    const fixture = TestBed.createComponent(HostIdCmp);
+    await fixture.whenStable();
+    const fixtureDocument = fixture.nativeElement.ownerDocument;
+
+    expect(fixture.nativeElement.id).toBe('custom-id');
+    expect(fixtureDocument.body.contains(fixture.nativeElement)).toBe(true);
+    TestBed.resetTestingModule();
+    expect(fixtureDocument.body.contains(fixture.nativeElement)).toBe(false);
+  });
+
+  it('should remove a root element whose id was replaced by a host binding when the next component is created', async () => {
+    @Component({
+      template: '',
+      host: {'[attr.id]': 'hostId()'},
+    })
+    class HostIdCmp {
+      hostId = signal('custom-id');
+    }
+
+    @Component({template: ''})
+    class NextCmp {}
+
+    TestBed.configureTestingModule({teardown: {destroyAfterEach: false}});
+    const fixture = TestBed.createComponent(HostIdCmp);
+    await fixture.whenStable();
+    const fixtureDocument = fixture.nativeElement.ownerDocument;
+    expect(fixture.nativeElement.id).toBe('custom-id');
+
+    // Without module teardown, the root element stays in the DOM until the next component is
+    // created.
+    TestBed.resetTestingModule();
+    expect(fixtureDocument.body.contains(fixture.nativeElement)).toBe(true);
+    const nextFixture = TestBed.createComponent(NextCmp);
+    expect(fixtureDocument.body.contains(fixture.nativeElement)).toBe(false);
+    expect(fixtureDocument.body.contains(nextFixture.nativeElement)).toBe(true);
+  });
+
   it('should re-throw errors that were thrown during fixture cleanup', () => {
     @Component({
       template: '',
