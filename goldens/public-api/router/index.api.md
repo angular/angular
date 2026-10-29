@@ -413,16 +413,17 @@ export function mapToResolve<T>(provider: Type<Resolve<T>>): ResolveFn<T>;
 export type MaybeAsync<T> = T | Observable<T> | Promise<T>;
 
 // @public
-export interface Navigation {
+interface Navigation_2 {
     readonly abort: () => void;
     extractedUrl: UrlTree;
     extras: NavigationExtras;
     finalUrl?: UrlTree;
     id: number;
     initialUrl: UrlTree;
-    previousNavigation: Navigation | null;
+    previousNavigation: Navigation_2 | null;
     trigger: NavigationTrigger;
 }
+export { Navigation_2 as Navigation }
 
 // @public
 export interface NavigationBehaviorOptions {
@@ -732,17 +733,17 @@ export class Router {
     // (undocumented)
     config: Routes;
     createUrlTree(commands: readonly any[], navigationExtras?: UrlCreationOptions): UrlTree;
-    readonly currentNavigation: Signal<Navigation | null>;
+    readonly currentNavigation: Signal<Navigation_2 | null>;
     dispose(): void;
     get events(): Observable<Event_2>;
     // @deprecated
-    getCurrentNavigation(): Navigation | null;
+    getCurrentNavigation(): Navigation_2 | null;
     initialNavigation(): void;
     // @deprecated
     isActive(url: string | UrlTree, exact: boolean): boolean;
     // @deprecated (undocumented)
     isActive(url: string | UrlTree, matchOptions: Partial<IsActiveMatchOptions>): boolean;
-    get lastSuccessfulNavigation(): Signal<Navigation | null>;
+    get lastSuccessfulNavigation(): Signal<Navigation_2 | null>;
     navigate(commands: readonly any[], extras?: NavigationExtras): Promise<boolean>;
     navigateByUrl(url: string | UrlTree, extras?: NavigationBehaviorOptions): Promise<boolean>;
     navigated: boolean;
