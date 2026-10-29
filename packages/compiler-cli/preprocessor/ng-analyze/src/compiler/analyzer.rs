@@ -163,6 +163,7 @@ struct EffectiveConfig {
     strict_injection_parameters: bool,
     implicit_standalone: bool,
     emit_declaration_only: bool,
+    experimental_local_compilation: bool,
 }
 
 impl EffectiveConfig {
@@ -228,6 +229,8 @@ impl EffectiveConfig {
             .implicit_standalone
             .unwrap_or_else(|| tsconfig_flag(|r| r.implicit_standalone, true));
         let emit_declaration_only = tsconfig_flag(|r| r.emit_declaration_only, false);
+        let experimental_local_compilation =
+            tsconfig_flag(|r| r.experimental_local_compilation, false);
 
         let (tsconfig_files, tsconfig_root_dirs, tsconfig_workspace_name) = match resolved {
             Some(r) => (r.files, r.compiler_options.root_dirs, r.workspace_name),
@@ -276,6 +279,7 @@ impl EffectiveConfig {
             strict_injection_parameters,
             implicit_standalone,
             emit_declaration_only,
+            experimental_local_compilation,
             tsconfig_path,
         })
     }
@@ -369,6 +373,7 @@ impl Analyzer {
             config.strict_injection_parameters,
             config.implicit_standalone,
             config.emit_declaration_only,
+            config.experimental_local_compilation,
         );
         *engine.tsconfig_dts_files.write().unwrap() = dts_files;
 
@@ -1810,6 +1815,7 @@ mod chunk_order_tests {
             let cx = crate::analyzer::WireContext {
                 mode: crate::analyzer::WireMode::Semantic,
                 emit_declaration_only: false,
+                experimental_local_compilation: false,
                 source_text: &source_text,
                 converter: &semantic.converter,
                 reference_strategy: &*engine.reference_strategy,

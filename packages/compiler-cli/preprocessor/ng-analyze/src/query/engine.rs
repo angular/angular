@@ -79,6 +79,7 @@ pub struct QueryEngine<Fs: ResourceResolverFs + Clone + 'static> {
     pub strict_injection_parameters: bool,
     pub implicit_standalone: bool,
     pub emit_declaration_only: bool,
+    pub experimental_local_compilation: bool,
 }
 
 impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
@@ -104,6 +105,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             false,
             true,
             false,
+            false,
         )
     }
 
@@ -123,6 +125,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         strict_injection_parameters: bool,
         implicit_standalone: bool,
         emit_declaration_only: bool,
+        experimental_local_compilation: bool,
     ) -> Arc<Self> {
         Arc::new(Self {
             fs,
@@ -148,6 +151,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             strict_injection_parameters,
             implicit_standalone,
             emit_declaration_only,
+            experimental_local_compilation,
         })
     }
 
@@ -186,6 +190,8 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             strict_standalone: self.strict_standalone,
             strict_injection_parameters: self.strict_injection_parameters,
             emit_declaration_only: self.emit_declaration_only
+                && mode == crate::analyzer::WireMode::Syntax,
+            experimental_local_compilation: self.experimental_local_compilation
                 && mode == crate::analyzer::WireMode::Syntax,
         }
     }
@@ -809,6 +815,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             let cx = crate::analyzer::WireContext {
                 mode: crate::analyzer::WireMode::Semantic,
                 emit_declaration_only: false,
+                experimental_local_compilation: false,
                 source_text: &source_text,
                 converter: &semantic_res.converter,
                 reference_strategy: &*self.reference_strategy,
@@ -844,6 +851,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             let cx = crate::analyzer::WireContext {
                 mode: crate::analyzer::WireMode::Syntax,
                 emit_declaration_only: self.emit_declaration_only,
+                experimental_local_compilation: self.experimental_local_compilation,
                 source_text: &source_text,
                 converter: &syntax_res.converter,
                 reference_strategy: &*self.reference_strategy,

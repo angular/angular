@@ -431,6 +431,9 @@ export function performNgpCompilationSync(params: {
         _experimentalAllowEmitDeclarationOnly: Boolean(
           rawOpts['_experimentalAllowEmitDeclarationOnly'],
         ),
+        ...(rawOpts['compilationMode'] !== undefined
+          ? {compilationMode: rawOpts['compilationMode']}
+          : {}),
       },
       files: rootNames.map((r) => toPosixPath(fs.resolve(basePath, r))),
     });
