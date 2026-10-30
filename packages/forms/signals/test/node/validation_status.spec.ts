@@ -18,6 +18,7 @@ import {
   requiredError,
   validate,
   validateAsync,
+  validatePromise,
   validateTree,
   ValidationError,
 } from '../../public_api';
@@ -515,6 +516,225 @@ describe('validation status', () => {
       await appRef.whenStable();
 
       expect(f().pending()).toBe(false);
+      expect(f().invalid()).toBe(true);
+    });
+  });
+
+  describe('promise validator', () => {
+    useAutoTick();
+
+    it('should affect validity of host field', async () => {
+      const {promise, resolve} = Promise.withResolvers<ValidationError[]>();
+
+      const f = form(
+        signal('VALID'),
+        (p) => {
+          validatePromise(p, () => promise);
+        },
+        {injector},
+      );
+
+      expect(f().pending()).toBe(true);
+      expect(f().valid()).toBe(false);
+      expect(f().invalid()).toBe(false);
+
+      resolve([]);
+      await appRef.whenStable();
+
+      expect(f().pending()).toBe(false);
+      expect(f().valid()).toBe(true);
+      expect(f().invalid()).toBe(false);
+
+      const {promise: nextPromise, resolve: nextResolve} =
+        Promise.withResolvers<ValidationError[]>();
+      let currentPromise = nextPromise;
+
+      const f2 = form(
+        signal('VALID'),
+        (p) => {
+          validatePromise(p, async (value) => {
+            return value === 'VALID' ? null : currentPromise;
+          });
+        },
+        {injector},
+      );
+
+      await appRef.whenStable();
+      expect(f2().pending()).toBe(false);
+
+      f2().value.set('INVALID');
+      await timeout(0);
+
+      expect(f2().pending()).toBe(true);
+      expect(f2().valid()).toBe(false);
+      expect(f2().invalid()).toBe(false);
+
+      nextResolve([{kind: 'custom'}]);
+      await appRef.whenStable();
+
+      expect(f2().pending()).toBe(false);
+      expect(f2().valid()).toBe(false);
+      expect(f2().invalid()).toBe(true);
+    });
+
+    it('should call the validator with only the field value', async () => {
+      const validator = jasmine
+        .createSpy('validator')
+        .and.callFake(async (value: string) => (value === 'taken' ? [{kind: 'taken'}] : null));
+      const f = form(signal('free'), (p) => validatePromise(p, validator), {injector});
+
+      await appRef.whenStable();
+      expect(validator).toHaveBeenCalledOnceWith('free');
+
+      f().value.set('taken');
+      await appRef.whenStable();
+
+      expect(validator).toHaveBeenCalledTimes(2);
+      expect(validator.calls.mostRecent().args).toEqual(['taken']);
+      expect(f().invalid()).toBe(true);
+    });
+
+    it('should not run the validator when `when` returns false', async () => {
+      const validator = jasmine.createSpy('validator').and.resolveTo(null);
+      const f = form(
+        signal('a'),
+        (p) => validatePromise(p, validator, {when: ({value}) => value() !== 'a'}),
+        {injector},
+      );
+
+      await appRef.whenStable();
+      expect(validator).not.toHaveBeenCalled();
+
+      f().value.set('b');
+      await appRef.whenStable();
+      expect(validator).toHaveBeenCalledOnceWith('b');
+    });
+
+    it('should map rejected promises to an async error by default', async () => {
+      const f = form(
+        signal('a'),
+        (p) => validatePromise(p, () => Promise.reject(new Error('boom'))),
+        {injector},
+      );
+
+      await appRef.whenStable();
+
+      const error = f().errors()[0];
+      expect(error).toEqual(jasmine.objectContaining({kind: 'asyncError'}));
+      expect(error.message).toBeUndefined();
+    });
+
+    it('should map rejected promises using `onError`', async () => {
+      const f = form(
+        signal('a'),
+        (p) =>
+          validatePromise(p, () => Promise.reject(new Error('boom')), {
+            onError: () => ({kind: 'custom-error'}),
+          }),
+        {injector},
+      );
+
+      await appRef.whenStable();
+      expect(f().errors()).toEqual([jasmine.objectContaining({kind: 'custom-error'})]);
+    });
+
+    it('should produce pending status during debounce period', async () => {
+      const f = form(
+        signal('VALID'),
+        (p) => {
+          validatePromise(p, async (value) => (value === 'VALID' ? null : [{kind: 'custom'}]), {
+            debounce: 100,
+          });
+        },
+        {injector},
+      );
+
+      await appRef.whenStable();
+      expect(f().pending()).toBe(false);
+
+      f().value.set('INVALID');
+      await appRef.whenStable();
+
+      expect(f().pending()).withContext('pending during debounce').toBe(true);
+
+      await timeout(150);
+      await appRef.whenStable();
+
+      expect(f().pending()).toBe(false);
+      expect(f().invalid()).toBe(true);
+    });
+
+    it('should support debounced promise-based async validators', async () => {
+      const f = form(
+        signal('VALID'),
+        (p) => {
+          validatePromise(p, async (value) => (value === 'VALID' ? null : [{kind: 'custom'}]), {
+            debounce: 100,
+          });
+        },
+        {injector},
+      );
+
+      await appRef.whenStable();
+      expect(f().pending()).toBe(false);
+
+      f().value.set('INVALID');
+      await appRef.whenStable();
+
+      expect(f().pending()).toBe(true);
+      expect(f().valid()).toBe(false);
+      expect(f().invalid()).toBe(false);
+
+      await timeout(150);
+      await appRef.whenStable();
+
+      expect(f().pending()).toBe(false);
+      expect(f().valid()).toBe(false);
+      expect(f().invalid()).toBe(true);
+
+      f().value.set('VALID');
+      await appRef.whenStable();
+
+      expect(f().pending()).toBe(true);
+
+      await timeout(150);
+      await appRef.whenStable();
+
+      expect(f().pending()).toBe(false);
+      expect(f().valid()).toBe(true);
+      expect(f().invalid()).toBe(false);
+    });
+
+    it('should pass the current and previous value to custom debounce functions', async () => {
+      const debounceSpy = jasmine
+        .createSpy('debounce')
+        .and.callFake(() => new Promise<void>((resolve) => setTimeout(resolve, 10)));
+
+      const f = form(
+        signal('VALID'),
+        (p) => {
+          validatePromise(p, async (value) => (value === 'VALID' ? null : [{kind: 'custom'}]), {
+            debounce: debounceSpy,
+          });
+        },
+        {injector},
+      );
+
+      await appRef.whenStable();
+      expect(debounceSpy).not.toHaveBeenCalled();
+
+      f().value.set('INVALID');
+      await appRef.whenStable();
+
+      expect(debounceSpy).toHaveBeenCalledTimes(1);
+      expect(debounceSpy.calls.mostRecent().args[0]).toBe('INVALID');
+      expect(debounceSpy.calls.mostRecent().args[1]).toEqual({status: 'resolved', value: 'VALID'});
+
+      await timeout(20);
+      await appRef.whenStable();
+
+      expect(f().pending()).toBe(false);
+      expect(f().valid()).toBe(false);
       expect(f().invalid()).toBe(true);
     });
   });
