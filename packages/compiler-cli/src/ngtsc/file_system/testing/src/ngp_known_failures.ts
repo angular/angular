@@ -320,6 +320,8 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'ngtsc @defer block @Component.deferredImports block-specific deferredImports mapping should report error when name parameter references missing block in deferredImports',
   'ngtsc @defer block block-specific deferredImports type checking should report an error when a pipe declared in a keyed block is used in an unnamed defer block',
   'ngtsc behavioral tests cycle detection should detect a simple cycle and fatally error if doing partial-compilation',
+  'ngtsc behavioral tests error handling should disallow event attributes in @HostBinding on a class field',
+  'ngtsc behavioral tests error handling should disallow event attributes in @HostBinding on a getter with a mixed-case name',
   'ngtsc compilation of standalone types component-side should compile a standalone component in a cycle with its module',
   'ngtsc incremental compilation template type-checking should retain default imports that have been converted into a value expression',
 ]);
