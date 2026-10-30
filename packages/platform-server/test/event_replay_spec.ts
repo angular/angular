@@ -248,19 +248,73 @@ describe('event replay', () => {
     appRef.tick();
     const appId = appRef.injector.get(APP_ID);
 
-    // Important: This is done intentionally because `ApplicationRef` registers
-    // `onDestroy` callbacks, and we want to ensure that they execute successfully
-    // without resulting in any errors. This is necessary because the bodies of
-    // these `onDestroy` callbacks use the `ngServerMode` variable.
-    // Prior to setting this flag, the unit test was throwing a "destroyed injector"
-    // error — but we weren't capturing it because we hadn't explicitly set the flag to false.
-    globalThis['ngServerMode'] = false;
     appRef.destroy();
-    globalThis['ngServerMode'] = undefined;
 
     // This ensure that `_ejsas` for the current application is cleaned up
     // once the application is destroyed.
     expect(window._ejsas![appId]).toBeUndefined();
+  });
+
+  it('should stop queueing events in the early event contract once the app is stable', async () => {
+    @Component({
+      selector: 'app',
+      template: ` <button id="btn" (click)="onClick()" (focus)="onFocus()"></button> `,
+    })
+    class AppComponent {
+      onClick() {}
+      onFocus() {}
+    }
+
+    const hydrationFeatures = () => [withEventReplay()];
+    const html = await ssr(AppComponent, {hydrationFeatures});
+    const ssrContents = getAppContents(html);
+    const doc = getDocument();
+
+    prepareEnvironment(doc, ssrContents);
+    resetTViewsFor(AppComponent);
+    const earlyJsactionData = window._ejsas!['ng']!;
+
+    const appRef = await hydrate(doc, AppComponent, {hydrationFeatures});
+    await appRef.whenStable();
+
+    const btn = doc.getElementById('btn')!;
+    btn.click();
+    btn.dispatchEvent(new Event('focus'));
+
+    expect(earlyJsactionData.q.length).toBe(0);
+  });
+
+  it('should stop queueing events in the early event contract when the app is destroyed before it is stable', async () => {
+    @Component({
+      selector: 'app',
+      template: ` <button id="btn" (click)="onClick()" (focus)="onFocus()"></button> `,
+    })
+    class AppComponent {
+      constructor() {
+        if (isPlatformBrowser(inject(PLATFORM_ID))) {
+          inject(PendingTasks).add();
+        }
+      }
+      onClick() {}
+      onFocus() {}
+    }
+
+    const hydrationFeatures = () => [withEventReplay()];
+    const html = await ssr(AppComponent, {hydrationFeatures});
+    const ssrContents = getAppContents(html);
+    const doc = getDocument();
+
+    prepareEnvironment(doc, ssrContents);
+    resetTViewsFor(AppComponent);
+    const earlyJsactionData = window._ejsas!['ng']!;
+
+    const appRef = await hydrate(doc, AppComponent, {hydrationFeatures});
+    appRef.destroy();
+
+    doc.body.click();
+    doc.body.dispatchEvent(new Event('focus'));
+
+    expect(earlyJsactionData.q.length).toBe(0);
   });
 
   // Two apps with the same APP_ID both see `_ejsas[appId]` as set, so both enable event
