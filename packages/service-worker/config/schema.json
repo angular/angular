@@ -180,7 +180,7 @@
     },
     "applicationMaxAge": {
       "type": "string",
-      "description": "Indicates how long the entire application is allowed to remain in the cache before being considered invalid and bypassed. 'maxAge' is a duration string, using the following unit suffixes: d= days, h= hours, m= minutes, s= seconds, u= milliseconds. For example, the string '3d12h' will cache content for up to three and a half days."
+      "description": "Indicates how long, counted from the time the application was built, the entire application is allowed to be served from the cache before being considered invalid and bypassed. If omitted, there is no maximum age. 'applicationMaxAge' is a duration string, using the following unit suffixes: d= days, h= hours, m= minutes, s= seconds, u= milliseconds. For example, the string '3d12h' will serve cached content for up to three and a half days after the build."
     }
   },
   "required": [
