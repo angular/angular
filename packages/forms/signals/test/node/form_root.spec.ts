@@ -10,8 +10,8 @@ import {Component, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
-import {form, FormRoot} from '../../public_api';
 import {act} from '@angular/private/testing';
+import {form, FormRoot} from '../../public_api';
 
 @Component({
   template: `
@@ -111,17 +111,18 @@ describe('FormRoot', () => {
     @Component({
       template: `
         <form [formRoot]="f">
-          <button type="submit">Submit</button>
+          <button type="submit" value="publish">Publish</button>
         </form>
       `,
       imports: [FormRoot, ReactiveFormsModule],
     })
     class TestCmp {
-      submitted = false;
+      submitter: HTMLButtonElement | null = null;
+
       readonly f = form(signal({}), {
         submission: {
-          action: async () => {
-            this.submitted = true;
+          action: async (_, detail) => {
+            this.submitter = detail.submitEvent?.submitter as HTMLButtonElement | null;
           },
         },
       });
@@ -130,11 +131,31 @@ describe('FormRoot', () => {
     const fixture = act(() => TestBed.createComponent(TestCmp));
     const component = fixture.componentInstance;
     const formElement = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+    const button = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
 
-    const event = new Event('submit', {cancelable: true});
+    const event = createSubmitEvent(button);
+
     act(() => formElement.dispatchEvent(event));
 
     expect(event.defaultPrevented).toBe(true);
-    expect(component.submitted).toBeTrue();
+    expect(component.submitter).toBe(button);
   });
 });
+
+function act<T>(fn: () => T): T {
+  try {
+    return fn();
+  } finally {
+    TestBed.tick();
+  }
+}
+
+function createSubmitEvent(button: HTMLButtonElement): SubmitEvent {
+  const EventCtor = typeof SubmitEvent !== 'undefined' ? SubmitEvent : Event;
+  const event = new EventCtor('submit', {cancelable: true} as any) as SubmitEvent;
+  Object.defineProperty(event, 'submitter', {
+    value: button,
+    configurable: true,
+  });
+  return event;
+}
