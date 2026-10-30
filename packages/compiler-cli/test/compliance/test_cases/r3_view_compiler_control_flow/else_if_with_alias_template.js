@@ -40,6 +40,8 @@ export class MyApp {
           1,
           2
         );
+        (typeof ngDevMode === "undefined" || ngDevMode) &&
+          i0.ɵɵconditionalMetadata(2, "if", 2, null, "one", ["one", "value()"]);
         i0.ɵɵdomElementEnd();
       }
       if (rf & 2) {

@@ -40,6 +40,8 @@ it("case 1", () => {
             1,
             0
           );
+          (typeof ngDevMode === "undefined" || ngDevMode) &&
+            i0.ɵɵconditionalMetadata(0, "if", 2, 1, "true", ["true", null]);
         }
         if (rf & 2) {
           i0.ɵɵconditional(true ? 0 : 1);
@@ -101,6 +103,8 @@ it("case 2", () => {
             1,
             0
           );
+          (typeof ngDevMode === "undefined" || ngDevMode) &&
+            i0.ɵɵconditionalMetadata(0, "if", 2, 1, "true", ["true", null]);
         }
         if (rf & 2) {
           i0.ɵɵconditional(true ? 0 : 1);

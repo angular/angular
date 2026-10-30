@@ -37,6 +37,8 @@ export class MyApp {
           1,
           0
         );
+        (typeof ngDevMode === "undefined" || ngDevMode) &&
+          i0.ɵɵconditionalMetadata(2, "switch", 3, null, "value()", [["0"], ["1"], ["2"]]);
         i0.ɵɵelementEnd();
       }
       if (rf & 2) {

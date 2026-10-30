@@ -41,6 +41,8 @@ export class MyApp {
         if (rf & 1) {
           i0.ɵɵelementStart(0, 'has-content');
           i0.ɵɵconditionalCreate(1, MyApp_Conditional_1_Template, 2, 0);
+          (typeof ngDevMode === 'undefined' || ngDevMode) &&
+            i0.ɵɵconditionalMetadata(1, 'if', 1, null, 'show', ['show']);
           i0.ɵɵelementEnd();
         }
         if (rf & 2) {

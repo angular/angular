@@ -37,6 +37,8 @@ export interface SettingsDataV2 extends SettingsDataBase {
   'show_cd_in_explorer@components': boolean;
   'show_defer_blocks@components': boolean;
   'show_for_blocks@components': boolean;
+  'show_if_blocks@components': boolean;
+  'show_switch_blocks@components': boolean;
   'performance_track@profiling': boolean;
   'highlight_change_detection@profiling': boolean;
   'theme@general': ThemePreference;

@@ -46,6 +46,24 @@
     </li>
     <li>
       <input
+        id="show-if-blocks"
+        type="checkbox"
+        (change)="settings.showIfBlocks.set($event.target.checked)"
+        [checked]="settings.showIfBlocks()"
+      />
+      <label for="show-if-blocks">Show &#64;if blocks</label>
+    </li>
+    <li>
+      <input
+        id="show-switch-blocks"
+        type="checkbox"
+        (change)="settings.showSwitchBlocks.set($event.target.checked)"
+        [checked]="settings.showSwitchBlocks()"
+      />
+      <label for="show-switch-blocks">Show &#64;switch blocks</label>
+    </li>
+    <li>
+      <input
         id="show-hydration-overlays"
         type="checkbox"
         (change)="settings.showHydrationOverlays.set($event.target.checked)"

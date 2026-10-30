@@ -125,6 +125,8 @@ export class InlineCmp {
           i0.ɵɵtext(6, 'text');
           i0.ɵɵelementEnd()()();
           i0.ɵɵconditionalCreate(7, InlineCmp_Conditional_7_Template, 2, 0, 'button');
+          (typeof ngDevMode === 'undefined' || ngDevMode) &&
+            i0.ɵɵconditionalMetadata(7, 'if', 1, null, 'show', ['show']);
           i0.ɵɵattachSourceLocations('inline.component.ts', [
             [0, 101, 5, 4],
             [1, 117, 6, 6],

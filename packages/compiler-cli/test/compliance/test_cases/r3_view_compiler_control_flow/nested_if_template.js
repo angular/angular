@@ -43,6 +43,13 @@ function MyApp_Conditional_4_Template(rf, ctx) {
       1,
       0
     );
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵɵconditionalMetadata(0, "if", 4, 3, "innerVal === 0", [
+        "innerVal === 0",
+        "innerVal === 1",
+        "innerVal === 2",
+        null
+      ]);
   }
   if (rf & 2) {
     const ctx_r0 = i0.ɵɵnextContext();
@@ -79,6 +86,13 @@ export class MyApp {
           1,
           0
         )(4, MyApp_Conditional_4_Template, 4, 1)(5, MyApp_Conditional_5_Template, 1, 0);
+        (typeof ngDevMode === "undefined" || ngDevMode) &&
+          i0.ɵɵconditionalMetadata(2, "if", 4, 3, "val === 0", [
+            "val === 0",
+            "val === 1",
+            "val === 2",
+            null
+          ]);
         i0.ɵɵelementEnd();
       }
       if (rf & 2) {

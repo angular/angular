@@ -36,6 +36,8 @@ export class TestComp {
         i0.ɵɵdeclareLet(0);
         i0.ɵɵtext(1);
         i0.ɵɵconditionalCreate(2, TestComp_Conditional_2_Template, 2, 1);
+        (typeof ngDevMode === "undefined" || ngDevMode) &&
+          i0.ɵɵconditionalMetadata(2, "if", 1, null, "true", ["true"]);
       }
       if (rf & 2) {
         const fn_r4 = i0.ɵɵstoreLet(i0.ɵɵarrowFunction(2, arrowFn0, ctx));

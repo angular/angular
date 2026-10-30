@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {Component} from '../../src/core';
+import {Component, Pipe, PipeTransform, signal} from '../../src/core';
 import {DeferBlockBehavior, DeferBlockState, TestBed} from '../../testing';
 
 import {getControlFlowBlocks} from '../../src/render3/util/control_flow';
@@ -13,6 +13,8 @@ import {
   ControlFlowBlockType,
   DeferBlockData,
   ForLoopBlockData,
+  IfBlockData,
+  SwitchBlockData,
 } from '../../src/render3/util/control_flow_types';
 
 describe('getControlFlowBlocks', () => {
@@ -52,7 +54,9 @@ describe('getControlFlowBlocks', () => {
 describe('getControlFlowBlocks > @defer blocks', () => {
   // Use to narrow down type to `DeferBlockData` for `@defer`-specific tests.
   function getDeferBlocks(node: Node): DeferBlockData[] {
-    return getControlFlowBlocks(node) as DeferBlockData[];
+    return getControlFlowBlocks(node).filter(
+      (block): block is DeferBlockData => block.type === ControlFlowBlockType.Defer,
+    );
   }
 
   beforeEach(() => {
@@ -391,6 +395,276 @@ describe('getControlFlowBlocks > @defer blocks', () => {
       }
     });
   }
+});
+
+describe('getControlFlowBlocks > conditional blocks', () => {
+  @Pipe({name: 'identity'})
+  class IdentityPipe implements PipeTransform {
+    transform(value: unknown): unknown {
+      return value;
+    }
+  }
+
+  function getIfBlocks(node: Node): IfBlockData[] {
+    return getControlFlowBlocks(node).filter(
+      (block): block is IfBlockData => block.type === ControlFlowBlockType.If,
+    );
+  }
+
+  function getSwitchBlocks(node: Node): SwitchBlockData[] {
+    return getControlFlowBlocks(node).filter(
+      (block): block is SwitchBlockData => block.type === ControlFlowBlockType.Switch,
+    );
+  }
+
+  it('should get an @if block and its active @else branch', async () => {
+    @Component({
+      template: `
+        <section>
+          @if (condition()) {
+            <p>Truthy</p>
+          } @else {
+            <span>Falsy</span>
+          }
+        </section>
+      `,
+    })
+    class App {
+      condition = signal(false);
+    }
+
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+
+    let [ifBlock] = getIfBlocks(fixture.nativeElement);
+    expect(ifBlock).toEqual(
+      jasmine.objectContaining({
+        type: ControlFlowBlockType.If,
+        branchCount: 2,
+        activeBranchIndex: 1,
+        defaultBranchIndex: 1,
+        conditionExpressions: ['condition()', null],
+      } satisfies Partial<IfBlockData>),
+    );
+    expect(ifBlock.rootNodes.map((node) => node.nodeName.toLowerCase())).toEqual(['span']);
+
+    fixture.componentInstance.condition.set(true);
+    await fixture.whenStable();
+
+    [ifBlock] = getIfBlocks(fixture.nativeElement);
+    expect(ifBlock.activeBranchIndex).toBe(0);
+    expect(ifBlock.rootNodes.map((node) => node.nodeName.toLowerCase())).toEqual(['p']);
+  });
+
+  it('should get a non-rendered @if block without an @else branch', async () => {
+    @Component({
+      template: `
+        <section>
+          @if (condition()) {
+            <p>Truthy</p>
+          }
+        </section>
+      `,
+    })
+    class App {
+      condition = signal(false);
+    }
+
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+
+    const [ifBlock] = getIfBlocks(fixture.nativeElement);
+    expect(ifBlock).toEqual(
+      jasmine.objectContaining({
+        type: ControlFlowBlockType.If,
+        branchCount: 1,
+        activeBranchIndex: null,
+        defaultBranchIndex: null,
+        conditionExpressions: ['condition()'],
+      } satisfies Partial<IfBlockData>),
+    );
+    expect(ifBlock.rootNodes).toEqual([]);
+    expect(ifBlock.hostNode).toBeTruthy();
+  });
+
+  it('should get an @switch block and its active case', async () => {
+    @Component({
+      template: `
+        <section>
+          @switch (value()) {
+            @case (1) {
+              <p>One</p>
+            }
+            @case (2) {
+              <span>Two</span>
+            }
+            @default {
+              <strong>Default</strong>
+            }
+          }
+        </section>
+      `,
+    })
+    class App {
+      value = signal(2);
+    }
+
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+
+    let [switchBlock] = getSwitchBlocks(fixture.nativeElement);
+    expect(switchBlock).toEqual(
+      jasmine.objectContaining({
+        type: ControlFlowBlockType.Switch,
+        branchCount: 3,
+        activeBranchIndex: 1,
+        defaultBranchIndex: 2,
+        expression: 'value()',
+        caseExpressions: [['1'], ['2'], []],
+      } satisfies Partial<SwitchBlockData>),
+    );
+    expect(switchBlock.rootNodes.map((node) => node.nodeName.toLowerCase())).toEqual(['span']);
+
+    fixture.componentInstance.value.set(3);
+    await fixture.whenStable();
+
+    [switchBlock] = getSwitchBlocks(fixture.nativeElement);
+    expect(switchBlock.activeBranchIndex).toBe(2);
+    expect(switchBlock.rootNodes.map((node) => node.nodeName.toLowerCase())).toEqual(['strong']);
+  });
+
+  it('should get a non-rendered @switch block without a default case', async () => {
+    @Component({
+      template: `
+        <section>
+          @switch (value()) {
+            @case (1) {
+              <p>One</p>
+            }
+          }
+        </section>
+      `,
+    })
+    class App {
+      value = signal(2);
+    }
+
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+
+    const [switchBlock] = getSwitchBlocks(fixture.nativeElement);
+    expect(switchBlock).toEqual(
+      jasmine.objectContaining({
+        type: ControlFlowBlockType.Switch,
+        branchCount: 1,
+        activeBranchIndex: null,
+        defaultBranchIndex: null,
+        expression: 'value()',
+        caseExpressions: [['1']],
+      } satisfies Partial<SwitchBlockData>),
+    );
+    expect(switchBlock.rootNodes).toEqual([]);
+    expect(switchBlock.hostNode).toBeTruthy();
+  });
+
+  it('should expose exhaustive @switch checks', async () => {
+    @Component({
+      template: `
+        <section>
+          @switch (value) {
+            @case (0) {
+              <p>Zero</p>
+            }
+            @case (1) {
+              <span>One</span>
+            }
+            @default never;
+          }
+        </section>
+      `,
+    })
+    class App {
+      value: 0 | 1 = 1;
+    }
+
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+
+    const [switchBlock] = getSwitchBlocks(fixture.nativeElement);
+    expect(switchBlock).toEqual(
+      jasmine.objectContaining({
+        type: ControlFlowBlockType.Switch,
+        branchCount: 2,
+        activeBranchIndex: 1,
+        defaultBranchIndex: null,
+        expression: 'value',
+        caseExpressions: [['0'], ['1']],
+        hasExhaustiveCheck: true,
+      } satisfies Partial<SwitchBlockData>),
+    );
+    expect(switchBlock.rootNodes.map((node) => node.nodeName.toLowerCase())).toEqual(['span']);
+  });
+
+  it('should handle conditional branch containers separated by pipe slots', async () => {
+    @Component({
+      imports: [IdentityPipe],
+      template: `
+        <section>
+          @if ((value() | identity) === 1) {
+            <p>One</p>
+          } @else if ((value() | identity) === 2) {
+            <span>Two</span>
+          } @else {
+            <strong>Default</strong>
+          }
+
+          @switch (value() | identity) {
+            @case (1 | identity) {
+              <em>One</em>
+            }
+            @case (2 | identity) {
+              <b>Two</b>
+            }
+            @default {
+              <i>Default</i>
+            }
+          }
+        </section>
+      `,
+    })
+    class App {
+      value = signal(2);
+    }
+
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+
+    let [ifBlock] = getIfBlocks(fixture.nativeElement);
+    let [switchBlock] = getSwitchBlocks(fixture.nativeElement);
+
+    expect(ifBlock.activeBranchIndex).toBe(1);
+    expect(ifBlock.conditionExpressions).toEqual([
+      '(value() | identity) === 1',
+      '(value() | identity) === 2',
+      null,
+    ]);
+    expect(ifBlock.rootNodes.map((node) => node.nodeName.toLowerCase())).toEqual(['span']);
+    expect(switchBlock.activeBranchIndex).toBe(1);
+    expect(switchBlock.expression).toBe('value() | identity');
+    expect(switchBlock.caseExpressions).toEqual([['1 | identity'], ['2 | identity'], []]);
+    expect(switchBlock.rootNodes.map((node) => node.nodeName.toLowerCase())).toEqual(['b']);
+
+    fixture.componentInstance.value.set(3);
+    await fixture.whenStable();
+
+    [ifBlock] = getIfBlocks(fixture.nativeElement);
+    [switchBlock] = getSwitchBlocks(fixture.nativeElement);
+
+    expect(ifBlock.activeBranchIndex).toBe(2);
+    expect(ifBlock.rootNodes.map((node) => node.nodeName.toLowerCase())).toEqual(['strong']);
+    expect(switchBlock.activeBranchIndex).toBe(2);
+    expect(switchBlock.rootNodes.map((node) => node.nodeName.toLowerCase())).toEqual(['i']);
+  });
 });
 
 describe('getControlFlowBlocks > @for blocks', () => {

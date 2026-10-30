@@ -1405,6 +1405,7 @@ export function transformExpressionsInOp(
     case OpKind.IcuPlaceholder:
     case OpKind.DeclareLet:
     case OpKind.SourceLocation:
+    case OpKind.ConditionalMetadata:
     case OpKind.ConditionalCreate:
     case OpKind.ConditionalBranchCreate:
     case OpKind.Control:

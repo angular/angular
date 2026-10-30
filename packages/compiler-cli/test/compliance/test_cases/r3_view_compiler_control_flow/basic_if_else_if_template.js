@@ -43,6 +43,13 @@ export class MyApp {
           1,
           0
         )(4, MyApp_Conditional_4_Template, 1, 0)(5, MyApp_Conditional_5_Template, 1, 0);
+        (typeof ngDevMode === "undefined" || ngDevMode) &&
+          i0.ɵɵconditionalMetadata(2, "if", 4, 3, "value() === 1", [
+            "value() === 1",
+            "otherValue() === 2",
+            "message",
+            null
+          ]);
         i0.ɵɵelementEnd();
       }
       if (rf & 2) {
