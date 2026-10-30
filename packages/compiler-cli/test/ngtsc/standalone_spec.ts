@@ -212,8 +212,8 @@ runInEachFileSystem(() => {
         env.driveMain();
 
         const moduleJs = env.getContents('module.js');
-        expect(moduleJs).toContain(
-          'i0.ɵɵsetComponentScope(ModuleCmp, function () { return [i1.StandaloneCmp]; }, []);',
+        expect(moduleJs).toMatch(
+          /i0\.ɵɵsetComponentScope\(\s*ModuleCmp,\s*function\s*\(\)\s*\{\s*return\s*\[i1\.StandaloneCmp\];\s*\},\s*\[\]\s*\);/,
         );
 
         const cmpJs = env.getContents('component.js');
