@@ -50,7 +50,7 @@ const formDirectiveProvider: Provider = {
   useExisting: forwardRef(() => NgForm),
 };
 
-const resolvedPromise = (() => Promise.resolve())();
+const resolvedPromise = /* @__PURE__ */ (() => Promise.resolve())();
 
 /**
  * @description
