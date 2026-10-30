@@ -523,7 +523,14 @@ export function processFileSync(
           );
         }
 
-        const propExpr = buildPropDecoratorsExpr(classMeta, s, className, [], /* isJit */ true);
+        const jitGuards = ctx.complianceMode ? [] : classMeta.laterDeclarationReferences;
+        const propExpr = buildPropDecoratorsExpr(
+          classMeta,
+          s,
+          className,
+          jitGuards,
+          /* isJit */ true,
+        );
         if (propExpr !== null) {
           const nocollapse = ctx.isClosureCompilerEnabled ? '/** @nocollapse */\n  ' : '';
           s.appendLeft(
