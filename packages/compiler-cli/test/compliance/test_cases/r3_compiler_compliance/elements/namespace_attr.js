@@ -17,7 +17,7 @@ export class MyComponent {
         i0.ɵɵdomElement(0, "use")(1, "use", 0);
       }
       if (rf & 2) {
-        i0.ɵɵattribute("href", ctx.value, null, "xlink");
+        i0.ɵɵattribute("href", ctx.value, i0.ɵɵsanitizeResourceUrl, "xlink");
       }
     },
     encapsulation: 2
