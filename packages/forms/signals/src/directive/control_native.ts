@@ -26,6 +26,7 @@ import {
   getNativeControlValue,
   inputRequiresValidityTracking,
   isInput,
+  parseDecimalNumber,
   setNativeControlValue,
   setNativeDomProperty,
 } from './native';
@@ -38,8 +39,12 @@ export function nativeControlCreate(
     Signal<readonly ValidationError.WithoutFieldTree[]> | undefined
   >,
   validityMonitor: InputValidityMonitor,
+  document: Document,
 ): () => void {
   let updateMode = false;
+  let hasPendingValueWrite = false;
+  // Control value produced by the most recent user edit.
+  let lastEditedValue: unknown;
   const input = parent.nativeFormElement;
 
   // TODO: (perf) ok to always create this?
@@ -55,29 +60,42 @@ export function nativeControlCreate(
 
   parseErrorsSource.set(parser.errors);
   parent.onReset = () => {
+    hasPendingValueWrite = false;
     parser.reset();
     const value = parent.state().value();
     bindings['controlValue'] = value;
     setNativeControlValue(input, value);
   };
-
   // Use `addEventListener` so we only trigger ticks on signal changes.
   // See https://github.com/angular/angular/issues/61839.
   const nativeEl = host.nativeElement;
-  // Pass undefined as the raw value since the parse function doesn't care about it.
-  const onInput = () => parser.setRawValue(undefined);
-  nativeEl.addEventListener('input', onInput);
-  const onBlur = () => parent.state().markAsTouched();
+  const updateFromInput = () => {
+    // A newer user edit takes precedence over a deferred model update.
+    hasPendingValueWrite = false;
+    // Pass undefined as the raw value since the parse function doesn't care about it.
+    parser.setRawValue(undefined);
+    lastEditedValue = parent.state().controlValue();
+  };
+  nativeEl.addEventListener('input', updateFromInput);
+  const onBlur = () => {
+    const state = parent.state();
+    state.markAsTouched();
+    if (hasPendingValueWrite) {
+      hasPendingValueWrite = false;
+      parser.reset();
+      setNativeControlValue(input, state.controlValue());
+    }
+  };
   nativeEl.addEventListener('blur', onBlur);
 
   parent.destroyRef.onDestroy(() => {
-    nativeEl.removeEventListener('input', onInput);
+    nativeEl.removeEventListener('input', updateFromInput);
     nativeEl.removeEventListener('blur', onBlur);
   });
 
   // TODO: move extraction to first update pass?
   if (isInput(input) && inputRequiresValidityTracking(input)) {
-    validityMonitor.watchValidity(parent.destroyRef, input, () => parser.setRawValue(undefined));
+    validityMonitor.watchValidity(parent.destroyRef, input, updateFromInput);
   }
 
   parent.registerAsBinding();
@@ -133,9 +151,45 @@ export function nativeControlCreate(
       input.type === 'radio' && bindingUpdated(bindings, 'radioValue', input.value);
 
     if (controlValueChanged || radioValueChanged) {
-      setNativeControlValue(input, controlValue);
+      // Preserve unfinished input while focused. Unfocused controls must still reflect model changes.
+      const isFocused =
+        document.activeElement === input ||
+        (input.getRootNode?.() as Document | ShadowRoot | undefined)?.activeElement === input;
+      // Chromium hides incomplete numbers (e.g. `-` or `1e`) behind an empty value and badInput,
+      // so isIntermediate cannot detect them.
+      const isBadInput = isFocused && isInput(input) && validityMonitor.isBadInput(input);
+      if (!(isFocused && (isBadInput || isIntermediate(input.value, controlValue)))) {
+        setNativeControlValue(input, controlValue);
+        hasPendingValueWrite = false;
+      } else {
+        // Only defer external updates; the user's own edit is already displayed.
+        // Assign unconditionally so a later update that restores `lastEditedValue` clears a
+        // stale deferral. `Object.is` keeps -0 and +0 distinct, matching signal equality.
+        hasPendingValueWrite = !Object.is(controlValue, lastEditedValue);
+      }
     }
 
     updateMode = true;
   };
+}
+
+function isIntermediate(inputValue: string, controlValue: unknown): boolean {
+  // Numeric fields use `number | null`. Any other model value, including a plain string that
+  // happens to end in ".", must accept external updates immediately.
+  if (typeof controlValue !== 'number' && controlValue !== null) return false;
+  // Lone signs and a leading dot are not yet a parseable number.
+  if (
+    inputValue === '+' ||
+    inputValue === '-' ||
+    inputValue === '.' ||
+    inputValue === '-.' ||
+    inputValue === '+.'
+  ) {
+    return true;
+  }
+  // Keep spellings that parse but are not the canonical `String` form (`-0`, `1.0`, `+1`).
+  // Compare against the parsed value, not the current model, so an external update does not
+  // make a still-unfinished edit look complete.
+  const parsed = parseDecimalNumber(inputValue);
+  return parsed !== undefined && inputValue !== String(parsed);
 }
