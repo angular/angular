@@ -13,9 +13,13 @@ import {CompilerOptions} from '../../src/transformers/api';
 import {createCompilerHost} from '../../src/transformers/compiler_host';
 
 import {ErrorCode, ERROR_DETAILS_PAGE_BASE_URL, ngErrorCode} from '../../src/ngtsc/diagnostics';
-import {absoluteFrom} from '../../src/ngtsc/file_system';
+import {absoluteFrom, getFileSystem} from '../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
-import {loadStandardTestFiles} from '../../src/ngtsc/testing';
+import {
+  isNgpTestMode,
+  loadStandardTestFiles,
+  performNgpCompilationSync,
+} from '../../src/ngtsc/testing';
 import {
   restoreTypeScriptVersionForTesting,
   setTypeScriptVersionForTesting,
@@ -11700,38 +11704,63 @@ runInEachFileSystem((os: string) => {
           // strict: true & strictTemplates: true are set by default
           target: ts.ScriptTarget.Latest,
           module: ts.ModuleKind.ESNext,
+          moduleResolution: ts.ModuleResolutionKind.Bundler,
+          skipLibCheck: true,
           annotateForClosureCompiler: true,
         };
+
+        const fakeTsickleTransform: ts.TransformerFactory<ts.SourceFile> =
+          (ctx) => (sf: ts.SourceFile) => {
+            const tsickleFileOverview = ctx.factory.createNotEmittedStatement(sf);
+            ts.setSyntheticLeadingComments(tsickleFileOverview, [
+              {
+                kind: ts.SyntaxKind.MultiLineCommentTrivia,
+                text: `*
+                  * @fileoverview Closure comment
+                  * @suppress bla1
+                  * @suppress bla2
+                `,
+                pos: -1,
+                end: -1,
+                hasTrailingNewLine: true,
+              },
+            ]);
+            return ctx.factory.updateSourceFile(
+              sf,
+              [tsickleFileOverview, ...sf.statements],
+              sf.isDeclarationFile,
+              sf.referencedFiles,
+              sf.typeReferenceDirectives,
+              sf.hasNoDefaultLib,
+              sf.libReferenceDirectives,
+            );
+          };
+
+        if (isNgpTestMode()) {
+          const fs = getFileSystem();
+          const result = performNgpCompilationSync({
+            fs,
+            basePath: env.basePath,
+            tsconfigPath: fs.resolve(env.basePath, 'tsconfig.json'),
+            rootNames: [fs.resolve('/test.ts')],
+            options,
+            emit: true,
+            complianceMode: true,
+            customTransformers: {beforeTs: [fakeTsickleTransform]},
+          });
+
+          expect(
+            result.diagnostics.map((d) => ts.flattenDiagnosticMessageText(d.messageText, '\n')),
+          ).toEqual([]);
+          expect(env.getContents('/test.js')).toContain(`* @fileoverview Closure comment`);
+          return;
+        }
 
         const program = new NgtscProgram(['/test.ts'], options, createCompilerHost({options}));
         const transformers = program.compiler.prepareEmit().transformers;
 
         // Add a "fake tsickle" transform before Angular's transform.
-        transformers.before!.unshift((ctx) => (sf: ts.SourceFile) => {
-          const tsickleFileOverview = ctx.factory.createNotEmittedStatement(sf);
-          ts.setSyntheticLeadingComments(tsickleFileOverview, [
-            {
-              kind: ts.SyntaxKind.MultiLineCommentTrivia,
-              text: `*
-                  * @fileoverview Closure comment
-                  * @suppress bla1
-                  * @suppress bla2
-                `,
-              pos: -1,
-              end: -1,
-              hasTrailingNewLine: true,
-            },
-          ]);
-          return ctx.factory.updateSourceFile(
-            sf,
-            [tsickleFileOverview, ...sf.statements],
-            sf.isDeclarationFile,
-            sf.referencedFiles,
-            sf.typeReferenceDirectives,
-            sf.hasNoDefaultLib,
-            sf.libReferenceDirectives,
-          );
-        });
+        transformers.before!.unshift(fakeTsickleTransform);
 
         const {diagnostics, emitSkipped} = program
           .getTsProgram()
