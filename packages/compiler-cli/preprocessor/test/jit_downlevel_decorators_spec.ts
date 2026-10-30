@@ -199,6 +199,44 @@ describe('jit: true Angular member and constructor parameter decorator downlevel
     expect(content).not.toContain('static propDecorators');
     expect(content).not.toContain('static ctorParameters');
   });
+
+  it('guards forward declaration references in jit: true propDecorators with // @ts-ignore', async () => {
+    const outputs = await compileFiles({
+      '/test.ts': `
+        import {Component, Directive, ViewChild} from '@angular/core';
+
+        @Component({
+          selector: 'jit-cmp',
+          template: '',
+          jit: true,
+        })
+        export class JitCmp {
+          @ViewChild('tpl', {
+            static: true,
+          })
+          tpl: any;
+
+          @ViewChild(ForwardDir) child!: ForwardDir;
+        }
+
+        @Directive({
+          selector: '[forward-dir]',
+          jit: true,
+        })
+        export class ForwardDir {}
+      `,
+    });
+
+    const content = outputs.get('/out/test.ts')!;
+    expect(content).toContain('child: [{type: ViewChild, args: [ForwardDir]}]');
+
+    const diagnostics = typecheckEmittedTs(content);
+    expect(
+      diagnostics.map(
+        (d) => `TS${d.code}: ${ts.flattenDiagnosticMessageText(d.messageText, '\n')}`,
+      ),
+    ).toEqual(["TS2449: Class 'ForwardDir' used before its declaration."]);
+  });
 });
 
 function makeTsconfig(
@@ -285,6 +323,7 @@ function typecheckEmittedTs(
         export function Output(alias?: string): any;
         export function Inject(token: any): ParameterDecorator;
         export function Optional(): ParameterDecorator;
+        export function ViewChild(selector: any, opts?: any): any;
       }
       `,
     ],
