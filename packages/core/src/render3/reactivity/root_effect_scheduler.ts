@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {inject} from '../../di/injector_compatibility';
 import {ɵɵdefineInjectable} from '../../di/interface/defs';
+import {INTERNAL_APPLICATION_ERROR_HANDLER} from '../../error_handler';
 
 /**
  * Abstraction that encompasses any kind of effect that can be scheduled.
@@ -55,6 +57,7 @@ export abstract class EffectScheduler {
 export class ZoneAwareEffectScheduler implements EffectScheduler {
   private dirtyEffectCount = 0;
   private queues = new Map<Zone | null, Set<SchedulableEffect>>();
+  private readonly errorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
 
   add(handle: SchedulableEffect): void {
     this.enqueue(handle);
@@ -129,8 +132,11 @@ export class ZoneAwareEffectScheduler implements EffectScheduler {
       this.dirtyEffectCount--;
       ranOneEffect = true;
 
-      // TODO: what happens if this throws an error?
-      handle.run();
+      try {
+        handle.run();
+      } catch (e) {
+        this.errorHandler(e);
+      }
     }
     return ranOneEffect;
   }
