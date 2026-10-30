@@ -86,7 +86,7 @@ export abstract class FieldNodeStructure {
   // this to a shared symbol for all fields, rather than having a separate one per parent?
   readonly identitySymbol = Symbol();
 
-  /** Lazily initialized injector. Do not access directly, access via `injector` getter instead. */
+  /** Lazily initialized injector. Use the getter when an injection context is needed. */
   private _injector: DestroyableInjector | undefined = undefined;
 
   /** Cache whether any logic rules exist on children of this node. */
@@ -214,7 +214,7 @@ export abstract class FieldNodeStructure {
 
   /** Destroys the field when it is no longer needed. */
   destroy(): void {
-    this.injector.destroy();
+    this._injector?.destroy();
   }
 
   /**
