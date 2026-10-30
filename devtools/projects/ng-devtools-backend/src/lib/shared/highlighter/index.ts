@@ -15,7 +15,7 @@ import {
   HighlightType,
 } from './highlights';
 import {createOverlayWithLabels, getComponentRect} from './dom';
-import {findDirectiveAndHost} from '../../directive-forest/component-tree/component-tree';
+import {findDirectiveAndHost} from '../../directive-forest/utils/directive';
 import {runOutsideAngular} from '../utils/general';
 import {debugLog} from '../utils/log';
 

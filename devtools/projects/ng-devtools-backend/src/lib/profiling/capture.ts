@@ -21,7 +21,7 @@ import {isCustomElement, runOutsideAngular} from '../shared/utils/general';
 import {DirectiveForestManager, getDirectiveForestManager} from '../directive-forest/manager';
 import {IdentityTracker} from '../directive-forest/identity-tracker/identity-tracker';
 import {getProfiler, Hooks} from './profiler';
-import {getDirectiveName} from '../directive-forest/component-tree/component-tree';
+import {getDirectiveName} from '../directive-forest/utils/directive';
 import {debugLog} from '../shared/utils/log';
 import {AngularDevtoolsError} from '../shared/utils/error';
 

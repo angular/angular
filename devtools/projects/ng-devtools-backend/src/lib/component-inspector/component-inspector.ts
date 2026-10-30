@@ -8,12 +8,9 @@
 
 import {ElementPosition} from '../../../../protocol';
 
-import {
-  findDirectiveAndHost,
-  findNodeInForest,
-  getDirectiveName,
-} from '../directive-forest/component-tree/component-tree';
+import {findNodeInForest} from '../directive-forest';
 import {getDirectiveForestManager} from '../directive-forest/manager';
+import {findDirectiveAndHost, getDirectiveName} from '../directive-forest/utils/directive';
 import {Highlight, inspectElementHighlightTemplate} from '../shared/highlighter/highlights';
 import {highlightElement} from '../shared/highlighter';
 import {ComponentTreeNode} from '../shared/interfaces';

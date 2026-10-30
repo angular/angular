@@ -12,7 +12,7 @@
  */
 
 import {getConfig} from '../../config/config';
-import {getDirectiveName} from '../../directive-forest/component-tree/component-tree';
+import {getDirectiveName} from '../../directive-forest/utils/directive';
 import {highlightElement, removeHighlightsByType} from '../../shared/highlighter';
 import {
   changeDetectionHighlightTemplate,

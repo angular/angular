@@ -9,10 +9,10 @@
 import {RoutePropertyType, viewSourceFromRouter} from '../../../ng-devtools-backend';
 import {
   buildDirectiveForest,
-  getInjectorFromElementNode,
   findNodeFromSerializedPosition,
   queryDirectiveForest,
-} from '../../../ng-devtools-backend/src/lib/directive-forest/component-tree/component-tree';
+} from '../../../ng-devtools-backend/src/lib/directive-forest';
+import {getInjectorFromElementNode} from '../../../ng-devtools-backend/src/lib/injector-tree/injector-tree';
 
 import {ElementPosition, SignalNodePosition} from '../../../protocol';
 import {ngDebugClient} from '../../../ng-devtools-backend/src/lib/shared/ng-debug-api/ng-debug-api';

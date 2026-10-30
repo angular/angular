@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {buildDirectiveForest} from '..';
 import {DevToolsNode, ElementPosition} from '../../../../../protocol';
 
-import {buildDirectiveForest} from '../component-tree/component-tree';
 import {
   ComponentInstance,
   ComponentInstanceType,
