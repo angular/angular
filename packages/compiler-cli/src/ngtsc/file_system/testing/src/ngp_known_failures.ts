@@ -238,6 +238,9 @@ const NGP_POTENTIAL_BREAKING_CHANGES: ReadonlySet<string> = new Set([
   'ngtsc behavioral tests input transforms should compile an input with an external transform function',
   'ngtsc behavioral tests input transforms should compile an input with using an ambient type in the transform function',
 
+  // Partial compilation isn't implemented in ngp.
+  'ngtsc behavioral tests cycle detection should detect a simple cycle and fatally error if doing partial-compilation',
+
   // Design difference, not a bug: on an `@Inject` parameter whose type is imported from another
   // file, ngp emits `type: undefined` in `ɵsetClassMetadata` in both compilation modes. Single-file
   // analysis cannot tell an imported class from an imported interface (ngtsc can, via the type
@@ -317,10 +320,6 @@ const NGP_POTENTIAL_BREAKING_CHANGES: ReadonlySet<string> = new Set([
 const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'import generation should report an error when a library entry-point does not export the symbol',
   'import generation should report an error when using a directive outside of rootDirs',
-  'ngtsc @defer block @Component.deferredImports block-specific deferredImports mapping should report error when defer block has no name parameter but deferredImports is an object',
-  'ngtsc @defer block @Component.deferredImports block-specific deferredImports mapping should report error when name parameter references missing block in deferredImports',
-  'ngtsc @defer block block-specific deferredImports type checking should report an error when a pipe declared in a keyed block is used in an unnamed defer block',
-  'ngtsc behavioral tests cycle detection should detect a simple cycle and fatally error if doing partial-compilation',
   'ngtsc compilation of standalone types component-side should compile a standalone component in a cycle with its module',
   'ngtsc incremental compilation template type-checking should retain default imports that have been converted into a value expression',
 

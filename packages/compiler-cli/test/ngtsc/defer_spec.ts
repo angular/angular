@@ -1769,9 +1769,7 @@ runInEachFileSystem(() => {
                 blockA: [DeferredCmpA],
               },
               template: \`
-                @defer {
-                  <deferred-cmp-a />
-                }
+                @defer {}
               \`,
             })
             export class AppCmp {}
@@ -1807,9 +1805,7 @@ runInEachFileSystem(() => {
                 blockA: [DeferredCmpA],
               },
               template: \`
-                @defer (name blockB) {
-                  <deferred-cmp-a />
-                }
+                @defer (name blockB) {}
               \`,
             })
             export class AppCmp {}
@@ -2548,8 +2544,18 @@ runInEachFileSystem(() => {
         );
 
         const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toContain(`@defer block must specify a 'name' parameter`);
+
+        if (isNgpTestMode()) {
+          expect(diags.length).toBe(2);
+          expect(diags[0].messageText).toContain(`@defer block must specify a 'name' parameter`);
+          expect(diags[1].messageText).toContain(
+            `Pipe 'pipea' was imported via \`@Component.deferredImports\` under block 'blockA', ` +
+              `but is used in a \`@defer\` block configured for 'unnamed'`,
+          );
+        } else {
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain(`@defer block must specify a 'name' parameter`);
+        }
       });
 
       it('should report an error when a structural directive from deferredImports is used in an unassociated defer block', () => {
