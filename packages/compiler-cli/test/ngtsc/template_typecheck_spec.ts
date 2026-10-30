@@ -10502,6 +10502,31 @@ suppress
         expect(getSourceCodeForDiagnostic(diags[0])).toBe('attempt');
       });
 
+      it('should map errors at an unparenthesized parameter in a later interpolation', () => {
+        env.tsconfig({strictTemplates: true}, {strict: true, noImplicitAny: true});
+        const template = '{{1}} {{retry(attempt => load(attempt))}}';
+        env.write('test.html', template);
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+
+            @Component({templateUrl: './test.html'})
+            class TestCmp {
+              retry(fn: () => void) {}
+              load(attempt: number) {}
+            }
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].code).toBe(2345);
+        expect(diags[0].file!.text).toBe(template);
+        expect(diags[0].start).toBe(template.indexOf('attempt'));
+        expect(getSourceCodeForDiagnostic(diags[0])).toBe('attempt');
+      });
+
       it('should not report implicit any errors on arrow functions without a contextual type', () => {
         env.tsconfig({strictTemplates: true}, {strict: true, noImplicitAny: true});
         env.write(
