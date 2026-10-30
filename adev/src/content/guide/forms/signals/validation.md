@@ -700,6 +700,8 @@ For complete examples, including reusable schemas and discriminated unions, see 
 
 Async validation handles validation that requires external data sources, like checking username availability on a server or validating against an API.
 
+Use `validateHttp()` for Angular HTTP requests, `validateAsyncLoader()` for async functions, and `validateResource()` for resource or Observable integrations. See [async operations](guide/forms/signals/async-operations) for examples.
+
 ### Using validateHttp()
 
 The `validateHttp()` function performs HTTP-based validation:

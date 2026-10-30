@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {signal, WritableSignal} from '@angular/core';
+import {
+  resourceFromSnapshots,
+  Resource,
+  settledResourceValue,
+  Signal,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 import {
   createMetadataKey,
   FieldTree,
@@ -25,6 +32,8 @@ import {
   schema,
   SchemaFn,
   validate,
+  validateAsyncLoader,
+  validateResource,
 } from '../../public_api';
 
 interface Order {
@@ -224,6 +233,72 @@ function typeVerificationOnlyDoNotRunMe() {
             // @ts-expect-error
             () => MAX_DATE,
           );
+        });
+      });
+    });
+    describe('async validation', () => {
+      it('should infer defined loader params and the result type', () => {
+        schema<string>((path) => {
+          validateAsyncLoader(path, {
+            params: ({value}) => value() || undefined,
+            loader: async ({params}) => {
+              const name: string = params;
+              return {available: name.length > 1};
+            },
+            onSuccess: (result) => {
+              const available: boolean = result.available;
+              // @ts-expect-error
+              const invalid: string = result.available;
+              return available ? undefined : {kind: 'taken'};
+            },
+            onError: () => undefined,
+          });
+        });
+      });
+
+      it('should infer resource params and a defined result', () => {
+        schema<string>((path) => {
+          validateResource(path, {
+            params: ({value}) => value(),
+            factory: (params) => {
+              const source: Resource<string | undefined> = params;
+              const value: Signal<string | undefined> = settledResourceValue(source);
+              // @ts-expect-error
+              params();
+              return resourceFromSnapshots(() => ({status: 'resolved', value: value()?.length}));
+            },
+            onSuccess: (result) => {
+              const length: number = result;
+              // @ts-expect-error
+              const invalid: string = result;
+              return length > 1 ? undefined : {kind: 'short'};
+            },
+            onError: () => undefined,
+          });
+        });
+      });
+
+      it('should reject a Promise returned from a resource factory', () => {
+        schema<string>((path) => {
+          validateResource(path, {
+            params: ({value}) => value(),
+            // @ts-expect-error
+            factory: () => Promise.resolve(true),
+            onSuccess: () => undefined,
+            onError: () => undefined,
+          });
+        });
+      });
+
+      it('should reject a synchronous loader result', () => {
+        schema<string>((path) => {
+          validateAsyncLoader(path, {
+            params: ({value}) => value(),
+            // @ts-expect-error
+            loader: () => true,
+            onSuccess: () => undefined,
+            onError: () => undefined,
+          });
         });
       });
     });

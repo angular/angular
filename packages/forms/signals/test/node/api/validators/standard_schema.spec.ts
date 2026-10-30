@@ -27,6 +27,24 @@ interface Trip {
 }
 
 describe('standard schema integration', () => {
+  it('should evaluate an async schema once per value across sync and async rules and recover', async () => {
+    const validator = z.string().refine(async (value) => value === 'valid');
+    const check = spyOn(validator['~standard'], 'validate').and.callThrough();
+    const model = signal('invalid');
+    const f = form(model, (path) => validateStandardSchema(path, validator), {
+      injector: TestBed.inject(Injector),
+    });
+    const appRef = TestBed.inject(ApplicationRef);
+    await appRef.whenStable();
+    expect(f().invalid()).toBeTrue();
+    expect(f().errors()[0].kind).toBe('standardSchema');
+    expect(check).toHaveBeenCalledOnceWith('invalid');
+    model.set('valid');
+    await appRef.whenStable();
+    expect(f().valid()).toBeTrue();
+    expect(check.calls.allArgs()).toEqual([['invalid'], ['valid']]);
+  });
+
   it('should perform sync validation using a standard schema', async () => {
     const injector = TestBed.inject(Injector);
 
