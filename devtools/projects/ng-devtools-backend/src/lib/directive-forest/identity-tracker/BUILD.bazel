@@ -8,7 +8,7 @@ ts_project(
         "identity-tracker.ts",
     ],
     deps = [
-        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest/component-tree",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest",
         "//devtools/projects/ng-devtools-backend/src/lib/shared:interfaces",
         "//devtools/projects/protocol",
     ],

@@ -36,24 +36,26 @@ import {
 
 import {ComponentInspector} from './component-inspector/component-inspector';
 import {setConsoleReference} from './console/set-console-reference';
+import {queryDirectiveForest} from './directive-forest';
 import {
-  getDirectiveCdStrategy,
+  getLatestDirectiveState,
+  logDirectiveValue,
+  updateDirectiveState,
+} from './directive-forest/directive-state/directive-state';
+import {getDirectiveForestManager} from './directive-forest/manager';
+import {getDirectiveCdStrategy} from './directive-forest/utils/directive';
+import {loadHydrationOverlays} from './hydration/hydration-overlays';
+import {
   getElementInjectorElement,
   getInjectorFromElementNode,
   getInjectorProviders,
   getInjectorResolutionPath,
-  getLatestComponentState,
   idToInjector,
   isElementInjector,
-  logValue,
   nodeInjectorToResolutionPath,
-  queryDirectiveForest,
   serializeProviderRecord,
   serializeResolutionPath,
-  updateState,
-} from './directive-forest/component-tree/component-tree';
-import {getDirectiveForestManager} from './directive-forest/manager';
-import {loadHydrationOverlays} from './hydration/hydration-overlays';
+} from './injector-tree/injector-tree';
 import {start as startProfiling, stop as stopProfiling} from './profiling/capture';
 import {loadCdDataStream, loadCdHighlighting} from './profiling/cd-analyzer';
 import {loadPerformanceTrack} from './profiling/performance-track';
@@ -119,8 +121,8 @@ export const subscribeToClientEvents = (
 
   messageBus.on('getSignalNestedProperties', getSignalNestedPropertiesCallback(messageBus));
 
-  messageBus.on('updateState', updateState);
-  messageBus.on('logValue', logValue);
+  messageBus.on('updateState', updateDirectiveState);
+  messageBus.on('logValue', logDirectiveValue);
 
   messageBus.on('getInjectorProviders', getInjectorProvidersCallback(messageBus));
 
@@ -194,7 +196,7 @@ const getLatestComponentExplorerViewCallback =
       return;
     }
 
-    const state = getLatestComponentState(query, getDirectiveForestManager().getDirectiveForest());
+    const state = getLatestDirectiveState(query, getDirectiveForestManager().getDirectiveForest());
 
     if (state) {
       const {directiveProperties} = state;
