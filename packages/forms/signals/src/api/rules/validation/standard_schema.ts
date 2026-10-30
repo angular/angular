@@ -173,7 +173,9 @@ function standardIssueToFormTreeError(
   let target = fieldTree as ReadonlyFieldTree<Record<PropertyKey, unknown>>;
   for (const pathPart of issue.path ?? []) {
     const pathKey = typeof pathPart === 'object' ? pathPart.key : pathPart;
-    target = target[pathKey] as ReadonlyFieldTree<Record<PropertyKey, unknown>>;
+    // The path may point outside of the model (e.g. a schema written for a wider object). In that
+    // case `target` ends up `undefined` and the error is reported on the field being validated.
+    target = target?.[pathKey] as ReadonlyFieldTree<Record<PropertyKey, unknown>>;
   }
   return addDefaultField(standardSchemaError(issue, {message: issue.message}), target);
 }
