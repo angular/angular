@@ -43,7 +43,12 @@ import {requiresInlineTypeCtor} from './type_constructor';
 import {tempPrint} from './tcb_print';
 import {generateTcbTypeParameters} from './tcb_util';
 import {TypeParameterEmitter} from './type_parameter_emitter';
-import {ClassDeclaration, ReflectionHost} from '../../reflection';
+import {
+  ClassDeclaration,
+  ClassMemberAccessLevel,
+  ClassMemberKind,
+  ReflectionHost,
+} from '../../reflection';
 import ts from 'typescript';
 import {absoluteFromSourceFile} from '../../file_system';
 
@@ -149,7 +154,7 @@ export function adaptTypeCheckBlockMetadata(
       restrictedInputFields: dir.restrictedInputFields,
       stringLiteralInputFields: dir.stringLiteralInputFields,
       undeclaredInputFields: dir.undeclaredInputFields,
-      publicMethods: dir.publicMethods,
+      publicMethods: getPublicMethodsWithInheritance(dir, reflector),
       matchSource: dir.matchSource,
 
       ref: extractRef(dir.ref as Reference<ClassDeclaration>),
@@ -266,6 +271,49 @@ export function adaptTypeCheckBlockMetadata(
       ),
     },
   };
+}
+
+/** Includes CVA methods inherited from base classes without directive metadata. */
+function getPublicMethodsWithInheritance(
+  dir: TypeCheckableDirectiveMeta,
+  reflector: ReflectionHost,
+): Set<string> {
+  const publicMethods = new Set(dir.publicMethods);
+  const seenMembers = new Set<string>();
+  const seenClasses = new Set<ClassDeclaration>();
+  let current: ClassDeclaration | null = dir.ref.node;
+
+  while (current !== null && !seenClasses.has(current)) {
+    seenClasses.add(current);
+    for (const member of reflector.getMembersOfClass(current)) {
+      if (member.isStatic || seenMembers.has(member.name)) {
+        continue;
+      }
+      seenMembers.add(member.name);
+      if (
+        member.kind === ClassMemberKind.Method &&
+        (member.accessLevel === ClassMemberAccessLevel.PublicReadonly ||
+          member.accessLevel === ClassMemberAccessLevel.PublicWritable)
+      ) {
+        publicMethods.add(member.name);
+      } else {
+        publicMethods.delete(member.name);
+      }
+    }
+
+    const base = reflector.getBaseClassExpression(current);
+    const identifier =
+      base !== null && ts.isIdentifier(base)
+        ? base
+        : base !== null && ts.isPropertyAccessExpression(base) && ts.isIdentifier(base.name)
+          ? base.name
+          : null;
+    const declaration =
+      identifier === null ? null : reflector.getDeclarationOfIdentifier(identifier);
+    current = declaration !== null && reflector.isClass(declaration.node) ? declaration.node : null;
+  }
+
+  return publicMethods;
 }
 
 function adaptGenerics(

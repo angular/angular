@@ -9,7 +9,7 @@ import {SIGNAL} from '../../../primitives/signals';
 import {REQUIRED_UNSET_VALUE, type InputSignalNode} from '../../authoring/input/input_signal_node';
 import {performanceMarkFeature} from '../../util/performance';
 import {assertFirstCreatePass} from '../assert';
-import type {ControlDirectiveHost} from '../interfaces/control';
+import type {ControlDirectiveHost, ExplicitConstraintBinding} from '../interfaces/control';
 import type {DirectiveDef} from '../interfaces/definition';
 import {InputFlags} from '../interfaces/input_flags';
 import {type TNode, TNodeFlags} from '../interfaces/node';
@@ -38,11 +38,14 @@ import {writeToDirectiveInput} from './write_to_directive_input';
  *
  * @codeGenApi
  */
-export function ɵɵcontrolCreate(): void {
-  controlCreateInternal();
+export function ɵɵcontrolCreate(explicitConstraintBindings: readonly string[] = []): void {
+  controlCreateInternal(explicitConstraintBindings);
 }
 
-export function controlCreateInternal(): void {
+export function controlCreateInternal(
+  explicitConstraintBindings: readonly string[] = [],
+  dynamicConstraintBindings: readonly ExplicitConstraintBinding[] = [],
+): void {
   const lView = getLView();
   const tView = getTView();
   const tNode = getCurrentTNode()!;
@@ -58,7 +61,16 @@ export function controlCreateInternal(): void {
 
   const instance = lView[tNode.controlDirectiveIndex];
   const controlDef = (tView.data[tNode.controlDirectiveIndex] as DirectiveDef<unknown>).controlDef!;
-  controlDef.create(instance, new ControlDirectiveHostImpl(lView, tView, tNode));
+  controlDef.create(
+    instance,
+    new ControlDirectiveHostImpl(
+      lView,
+      tView,
+      tNode,
+      explicitConstraintBindings,
+      dynamicConstraintBindings,
+    ),
+  );
 }
 
 /**
@@ -95,10 +107,21 @@ class ControlDirectiveHostImpl implements ControlDirectiveHost {
 
   readonly hasPassThrough: boolean;
 
-  constructor(lView: LView, tView: TView, tNode: TNode) {
+  private readonly explicitConstraintBindings: readonly string[];
+  private readonly dynamicConstraintBindings: readonly ExplicitConstraintBinding[];
+
+  constructor(
+    lView: LView,
+    tView: TView,
+    tNode: TNode,
+    explicitConstraintBindings: readonly string[] = [],
+    dynamicConstraintBindings: readonly ExplicitConstraintBinding[] = [],
+  ) {
     this.lView = lView;
     this.tView = tView;
     this.tNode = tNode;
+    this.explicitConstraintBindings = explicitConstraintBindings;
+    this.dynamicConstraintBindings = dynamicConstraintBindings;
     this.hasPassThrough = !!(tNode.flags & TNodeFlags.isPassThroughControl);
   }
 
@@ -160,7 +183,10 @@ class ControlDirectiveHostImpl implements ControlDirectiveHost {
     if (directiveIndices) {
       for (const index of directiveIndices) {
         // Skip the control directive itself to avoid triggering its property setters
-        if (index === this.tNode.controlDirectiveIndex) {
+        if (
+          index === this.tNode.controlDirectiveIndex ||
+          this.isDynamicallyBoundInput(inputName, index)
+        ) {
           continue;
         }
         const directive = this.lView[index];
@@ -180,7 +206,10 @@ class ControlDirectiveHostImpl implements ControlDirectiveHost {
       for (let i = 0; i < hostDirectiveInputs.length; i += 2) {
         const index = hostDirectiveInputs[i] as number;
         // Skip the control directive itself to avoid triggering its property setters
-        if (index === this.tNode.controlDirectiveIndex) {
+        if (
+          index === this.tNode.controlDirectiveIndex ||
+          this.isDynamicallyBoundInput(inputName, index)
+        ) {
           continue;
         }
         const directive = this.lView[index];
@@ -214,6 +243,53 @@ class ControlDirectiveHostImpl implements ControlDirectiveHost {
     const presence = (directiveDef.signalFormsInputPresence ??=
       this._buildCustomControlInputCache(directiveDef));
     return presence[inputName] === true;
+  }
+
+  hasExplicitInputBinding(inputName: string, control = this.customControl): boolean {
+    if (this.explicitConstraintBindings.includes(inputName)) {
+      return true;
+    }
+    if (control === undefined) {
+      return false;
+    }
+    return this.dynamicConstraintBindings.some(
+      (binding) =>
+        binding.name === inputName &&
+        this.getDynamicBindingTargets(binding.targetIdx, inputName).some(
+          (index) => this.lView[index] === control,
+        ),
+    );
+  }
+
+  private isDynamicallyBoundInput(inputName: string, directiveIndex: number): boolean {
+    return this.dynamicConstraintBindings.some(
+      (binding) =>
+        binding.name === inputName &&
+        this.getDynamicBindingTargets(binding.targetIdx, inputName).includes(directiveIndex),
+    );
+  }
+
+  private getDynamicBindingTargets(targetIdx: number, inputName: string): number[] {
+    const type = this.tView.directiveRegistry?.[targetIdx]?.type;
+    const index = type === undefined ? undefined : this.tNode.directiveToIndex?.get(type);
+    if (index === undefined) {
+      return [];
+    }
+    if (!Array.isArray(index)) {
+      return [index];
+    }
+
+    // A host with host directives also owns the inputs it exposes from them.
+    const [hostIndex, start, end] = index;
+    const targets = [hostIndex];
+    const hostDirectiveInputs = this.tNode.hostDirectiveInputs?.[inputName] ?? [];
+    for (let i = 0; i < hostDirectiveInputs.length; i += 2) {
+      const directiveIndex = hostDirectiveInputs[i] as number;
+      if (directiveIndex >= start && directiveIndex <= end) {
+        targets.push(directiveIndex);
+      }
+    }
+    return targets;
   }
 
   private _buildCustomControlInputCache(directiveDef: DirectiveDef<unknown>): {
