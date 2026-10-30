@@ -127,8 +127,9 @@ describe('Resource Resolution E2E Test Suite', () => {
         expect(outputs.length).toBeGreaterThan(0);
         const jsOutput = outputs.find((o) => o.path.endsWith('app.component.ts'));
         expect(jsOutput).toBeDefined();
-        expect(jsOutput!.content).toContain("'\uFEFF.box { color: red; }'");
-        expect(jsOutput!.content).toContain("'\uFEFF<div>Hello</div>'");
+        expect(jsOutput!.content).not.toContain('\uFEFF');
+        expect(jsOutput!.content).toContain("'.box { color: red; }'");
+        expect(jsOutput!.content).toContain("'<div>Hello</div>'");
       });
 
       it('f6_relative_nested_subdirectory', async () => {

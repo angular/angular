@@ -55,7 +55,11 @@ impl<'a, Fs: ResourceResolverFs> ResourceResolver<'a, Fs> {
         url: &str,
     ) -> Result<LoadedResource, String> {
         let resolved_path = self.resolve_resource(containing_file, url)?;
-        let content = self.fs.read_to_string(&resolved_path).ok();
+        let content = self
+            .fs
+            .read_to_string(&resolved_path)
+            .ok()
+            .map(|s| s.strip_prefix('\u{feff}').map(str::to_owned).unwrap_or(s));
         // A file that does not exist cannot be canonicalized; still report a clean path for it.
         let canonical = self
             .fs
