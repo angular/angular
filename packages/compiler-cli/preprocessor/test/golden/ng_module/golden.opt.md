@@ -290,9 +290,9 @@ export class AppRoot {
               {
                 selector: 'app-root',
                 template: `
-            <my-comp [compInput]="'hello'"></my-comp>
-            <div myDir [dirInput]="'world'"></div>
-        `,
+        <my-comp [compInput]="'hello'"></my-comp>
+        <div myDir [dirInput]="'world'"></div>
+    `,
                 imports: [MyModule],
               },
             ],

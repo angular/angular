@@ -52,9 +52,9 @@ export class MyComp {
               {
                 selector: 'my-comp',
                 template: `
-        <unknown-element></unknown-element>
-        <div [unknown-property]="true"></div>
-      `,
+    <unknown-element></unknown-element>
+    <div [unknown-property]="true"></div>
+  `,
               },
             ],
           },
@@ -121,9 +121,9 @@ export class MyCompNoErrors {
               {
                 selector: 'my-comp-no-errors',
                 template: `
-        <unknown-element></unknown-element>
-        <div [unknown-property]="true"></div>
-      `,
+    <unknown-element></unknown-element>
+    <div [unknown-property]="true"></div>
+  `,
                 schemas: [NO_ERRORS_SCHEMA],
               },
             ],

@@ -100,13 +100,13 @@ export class MyApp {
                 selector: 'my-app',
                 imports: [HasContent],
                 template: `
-        <has-content>
-          @if (show) {
-            <div></div>
-            <div></div>
-          }
-        </has-content>
-      `,
+    <has-content>
+      @if (show) {
+        <div></div>
+        <div></div>
+      }
+    </has-content>
+  `,
               },
             ],
           },

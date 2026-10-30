@@ -247,17 +247,17 @@ export class AppComponent {
                 selector: 'app-root',
                 imports: [TestCoercedComponent],
                 template: `
-        <test-coerced
-          [coercedByStatic]="'test'"
-          [coercedByTransform]="'test'"
-          [privateInput]="'test'"
-          [protectedInput]="'test'"
-          [readonlyInput]="'test'"
-          [literalInput]="'test'"
-          [signalWithTransform]="'test'"
-          [normalInput]="'test'"
-        ></test-coerced>
-      `,
+    <test-coerced
+      [coercedByStatic]="'test'"
+      [coercedByTransform]="'test'"
+      [privateInput]="'test'"
+      [protectedInput]="'test'"
+      [readonlyInput]="'test'"
+      [literalInput]="'test'"
+      [signalWithTransform]="'test'"
+      [normalInput]="'test'"
+    ></test-coerced>
+  `,
               },
             ],
           },

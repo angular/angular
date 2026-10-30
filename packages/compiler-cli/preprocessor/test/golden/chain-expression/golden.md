@@ -67,9 +67,9 @@ export class AppComponent {
               {
                 selector: 'app-root',
                 template: `
-        <button (click)="a(); b()">Chain</button>
-        <button (click)="sig.set(true); a()">Signal Chain</button>
-      `,
+    <button (click)="a(); b()">Chain</button>
+    <button (click)="sig.set(true); a()">Signal Chain</button>
+  `,
                 standalone: true,
               },
             ],

@@ -74,11 +74,11 @@ export class AppComponent {
                       block: [DefCompA, DefCompB],
                     },
                     template: `
-        @defer (name block) {
-          <deferred-a />
-          <deferred-b />
-        }
-      `,
+    @defer (name block) {
+      <deferred-a />
+      <deferred-b />
+    }
+  `,
                   },
                 ],
               },

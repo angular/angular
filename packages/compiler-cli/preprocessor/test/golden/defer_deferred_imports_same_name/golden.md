@@ -147,13 +147,13 @@ export class AppComponent {
                   {
                     selector: 'app-root',
                     template: `
-        <widget-a/>
-        @defer {
-          <widget-b/>
-        } @placeholder {
-          Placeholder
-        }
-      `,
+    <widget-a/>
+    @defer {
+      <widget-b/>
+    } @placeholder {
+      Placeholder
+    }
+  `,
                     imports: [Widget],
                     deferredImports: [WidgetB],
                   },
@@ -327,13 +327,13 @@ export class MixedComponent {
                   {
                     selector: 'app-mixed',
                     template: `
-        <widget-a/>
-        @defer (name lazy) {
-          <widget-b/>
-        } @placeholder {
-          Placeholder
-        }
-      `,
+    <widget-a/>
+    @defer (name lazy) {
+      <widget-b/>
+    } @placeholder {
+      Placeholder
+    }
+  `,
                     imports: [Widget],
                     deferredImports: {
                       lazy: [WidgetB],
@@ -442,13 +442,13 @@ export class SplitComponent {
                   {
                     selector: 'app-split',
                     template: `
-        @defer (name first) {
-          <widget-a/>
-        }
-        @defer (name second) {
-          <widget-b/>
-        }
-      `,
+    @defer (name first) {
+      <widget-a/>
+    }
+    @defer (name second) {
+      <widget-b/>
+    }
+  `,
                     deferredImports: {
                       first: [Widget],
                       second: [WidgetB],
