@@ -566,7 +566,8 @@ export function processFileSync(
         const nocollapse = ctx.isClosureCompilerEnabled ? '/** @nocollapse */\n  ' : '';
         s.appendLeft(
           span.end - 1,
-          `\n  ${nocollapse}static ctorParameters = ${printer.print(ctorExpr)};\n`,
+          // ts-ignore is necessary to suppress errors if the base class has `ctorParameters`.
+          `\n  ${nocollapse}// @ts-ignore\n  static ctorParameters = ${printer.print(ctorExpr)};\n`,
         );
       }
 
@@ -597,7 +598,8 @@ export function processFileSync(
           const nocollapse = ctx.isClosureCompilerEnabled ? '/** @nocollapse */\n  ' : '';
           s.appendLeft(
             span.end - 1,
-            `\n  ${nocollapse}static propDecorators = ${printer.print(propExpr)};\n`,
+            // ts-ignore is necessary to suppress errors if the base class has `propDecorators`.
+            `\n  ${nocollapse}// @ts-ignore\n  static propDecorators = ${printer.print(propExpr)};\n`,
           );
         }
       }

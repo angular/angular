@@ -23,6 +23,7 @@ export class FullDir extends BaseDir {
 
   ngOnChanges() {}
 
+  // @ts-ignore
   static ctorParameters = (): any => [
     {
       /* @ts-ignore */
