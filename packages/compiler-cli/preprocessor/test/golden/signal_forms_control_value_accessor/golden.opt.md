@@ -316,10 +316,10 @@ export class MyComp {
               {
                 selector: 'my-comp',
                 template: `
-        <input customCva [formField]="itemField" [max]="maxValue" />
-        <input partialCva [formField]="itemField" />
-        <input privateCva [formField]="itemField" />
-      `,
+    <input customCva [formField]="itemField" [max]="maxValue" />
+    <input partialCva [formField]="itemField" />
+    <input privateCva [formField]="itemField" />
+  `,
                 imports: [FormField, CustomCvaDirective, PartialCvaDirective, PrivateCvaDirective],
               },
             ],

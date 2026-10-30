@@ -61,9 +61,9 @@ export class AppComponent {
                 selector: 'app-root',
                 imports: [ProtoBox, FireTeleportalOutlet],
                 template: `
-        <proto-box [value]="'test'"></proto-box>
-        <div [fireTeleportalOutlet]="myPortal"></div>
-      `,
+    <proto-box [value]="'test'"></proto-box>
+    <div [fireTeleportalOutlet]="myPortal"></div>
+  `,
               },
             ],
           },

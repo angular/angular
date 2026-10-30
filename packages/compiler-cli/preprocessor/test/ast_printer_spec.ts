@@ -231,7 +231,7 @@ describe('ExpressionPrinter.print - LocalizedString', () => {
 describe('binary operator @ts-ignore', () => {
   function emitStmt(expr: o.Expression, printTypes = true): string {
     const printer = new ExpressionPrinter(printTypes ? 'test.ts' : 'test.js');
-    return printer.printStatement(expr.toStmt()).trim();
+    return printer.printStatement(expr.toStmt(), 0).trim();
   }
 
   it('should add @ts-ignore when a numeric operator has a NotExpr operand', () => {

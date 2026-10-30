@@ -100,13 +100,13 @@ export class AppComponent {
                 selector: 'app-root',
                 imports: [IoArrayComponent],
                 template: `
-        <app-io-array
-          [name]="'TestName'"
-          [publicName]="'TestAlias'"
-          (emitter)="handleEmitter()"
-          (publicEmitter)="handleAliasEmitter($event)"
-        ></app-io-array>
-      `,
+    <app-io-array
+      [name]="'TestName'"
+      [publicName]="'TestAlias'"
+      (emitter)="handleEmitter()"
+      (publicEmitter)="handleAliasEmitter($event)"
+    ></app-io-array>
+  `,
               },
             ],
           },

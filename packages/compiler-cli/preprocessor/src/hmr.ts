@@ -131,5 +131,5 @@ export function getHmrUpdateDeclaration(
   }
   const callback = compileHmrUpdateCallback(compilationResults, constantStatements, meta);
   // The output AST has no modifiers, so `export default` is added to the printed declaration.
-  return `export default ${printer.printStatement(callback)}`;
+  return `export default ${printer.printStatement(callback, 0)}`;
 }

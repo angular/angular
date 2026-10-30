@@ -111,14 +111,14 @@ export class AppComponent {
                   {
                     selector: 'app-root',
                     template: `
-        <app-eager/>
-        @defer {
-          <app-deferred/>
-          {{ 'hello' | deferredPipe }}
-        } @placeholder {
-          Placeholder
-        }
-      `,
+    <app-eager/>
+    @defer {
+      <app-deferred/>
+      {{ 'hello' | deferredPipe }}
+    } @placeholder {
+      Placeholder
+    }
+  `,
                     imports: [EagerComponent],
                     deferredImports: [DeferredComponent, DeferredPipe],
                   },

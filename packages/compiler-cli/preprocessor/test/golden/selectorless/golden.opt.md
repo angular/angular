@@ -178,9 +178,9 @@ export class AppComponent {
                 selector: 'app-root',
                 imports: [SelectorlessComp, SelectorlessDir],
                 template: `
-        <SelectorlessComp [heroName]="hello" (heroSelect)="onSelect($event)"></SelectorlessComp>
-        <div @SelectorlessDir(dirInput="hello")></div>
-      `,
+    <SelectorlessComp [heroName]="hello" (heroSelect)="onSelect($event)"></SelectorlessComp>
+    <div @SelectorlessDir(dirInput="hello")></div>
+  `,
               },
             ],
           },

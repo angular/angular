@@ -106,9 +106,9 @@ export class App {
               {
                 selector: 'app-root',
                 template: `
-        <button tooltip #t="tooltip" (click)="t.show()">a</button>
-        <span multi #m="second" (click)="m.toggle()">b</span>
-      `,
+    <button tooltip #t="tooltip" (click)="t.show()">a</button>
+    <span multi #m="second" (click)="m.toggle()">b</span>
+  `,
                 imports: [Tooltip, Multi],
               },
             ],

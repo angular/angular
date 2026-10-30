@@ -59,9 +59,9 @@ export class AppComponent {
                 selector: 'app-root',
                 imports: [MyNestedModule],
                 template: `
-        <div my-dir [myProp]="'test'"></div>
-        <my-cmp [myProp]="'test'"></my-cmp>
-      `,
+    <div my-dir [myProp]="'test'"></div>
+    <my-cmp [myProp]="'test'"></my-cmp>
+  `,
               },
             ],
           },
