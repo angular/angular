@@ -78,8 +78,8 @@ export class AppComponent {
               {
                 selector: 'app-root',
                 template: `
-        <button mat-button [disabled]="true" [color]="'primary'" [disableRipple]="false">Click</button>
-      `,
+    <button mat-button [disabled]="true" [color]="'primary'" [disableRipple]="false">Click</button>
+  `,
                 imports: [MatButton],
               },
             ],

@@ -119,8 +119,8 @@ export class ViewQueryComponent {
               {
                 selector: 'view-query-component',
                 template: `
-        <div someDir></div>
-      `,
+    <div someDir></div>
+  `,
                 standalone: false,
               },
             ],

@@ -59,8 +59,8 @@ export class Utf16Component {
               {
                 selector: 'app-root',
                 template: `
-        <div>José & 😊</div>
-      `,
+    <div>José & 😊</div>
+  `,
               },
             ],
           },

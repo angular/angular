@@ -60,8 +60,8 @@ export class AppComponent {
                 selector: 'app-root',
                 imports: [MyNgIf],
                 template: `
-        <div *myNgIf="true"></div>
-      `,
+    <div *myNgIf="true"></div>
+  `,
               },
             ],
           },

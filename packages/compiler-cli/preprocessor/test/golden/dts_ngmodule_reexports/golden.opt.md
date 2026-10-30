@@ -77,8 +77,8 @@ export class AppComponent {
                 selector: 'app-root',
                 imports: [MyFeatureModule],
                 template: `
-        <feature-cmp [myProp]="'hello'"></feature-cmp>
-      `,
+    <feature-cmp [myProp]="'hello'"></feature-cmp>
+  `,
               },
             ],
           },

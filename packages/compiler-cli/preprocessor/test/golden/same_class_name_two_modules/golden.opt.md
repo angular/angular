@@ -92,12 +92,12 @@ export class AppComponent {
                   {
                     selector: 'app-root',
                     template: `
-        <widget-a />
+    <widget-a />
 
-        @defer {
-          <widget-b />
-        }
-      `,
+    @defer {
+      <widget-b />
+    }
+  `,
                     imports: [Widget, WidgetB, WidgetC],
                   },
                 ],

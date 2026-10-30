@@ -82,12 +82,12 @@ export class AppComponent {
               {
                 selector: 'app-root',
                 template: `
-        <test-cmp 
-          [privateInput]="'val1'" 
-          [protectedInput]="'val2'" 
-          [readonlyInput]="'val3'"
-        ></test-cmp>
-      `,
+    <test-cmp 
+      [privateInput]="'val1'" 
+      [protectedInput]="'val2'" 
+      [readonlyInput]="'val3'"
+    ></test-cmp>
+  `,
                 imports: [TestComponent],
               },
             ],

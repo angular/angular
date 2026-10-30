@@ -106,6 +106,6 @@ describe('ɵsetClassMetadata placement with non-Angular class decorators', () =>
 
     const content = outputs.get('/out/test.ts')!;
     expect(content).toContain('static {');
-    expect(content).toContain('template: `<div>\n      <span>hello</span>\n    </div>`');
+    expect(content).toContain('template: `<div>\n  <span>hello</span>\n</div>`');
   });
 });

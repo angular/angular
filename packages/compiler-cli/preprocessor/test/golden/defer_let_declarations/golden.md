@@ -79,14 +79,14 @@ export class AppComponent {
               {
                 selector: 'app-root',
                 template: `
-        @defer {
-          @let pipedValue = data | testPipe;
-          <app-deferred/>
-          <span>{{ pipedValue }}</span>
-        } @placeholder {
-          Placeholder
-        }
-      `,
+    @defer {
+      @let pipedValue = data | testPipe;
+      <app-deferred/>
+      <span>{{ pipedValue }}</span>
+    } @placeholder {
+      Placeholder
+    }
+  `,
                 imports: [DeferredComponent, TestPipe],
               },
             ],

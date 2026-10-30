@@ -118,11 +118,11 @@ export class AppComponent {
                     selector: 'app-root',
                     imports: [EagerDirective, DeferredDirective, EagerPipe, DeferredPipe],
                     template: `
-        <div eagerDir>{{ 1 | eagerPipe }}</div>
-        @defer {
-          <div deferredDir>{{ 2 | deferredPipe }}</div>
-        }
-      `,
+    <div eagerDir>{{ 1 | eagerPipe }}</div>
+    @defer {
+      <div deferredDir>{{ 2 | deferredPipe }}</div>
+    }
+  `,
                   },
                 ],
               },
