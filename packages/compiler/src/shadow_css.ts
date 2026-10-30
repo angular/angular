@@ -414,10 +414,6 @@ export class ShadowCss {
    *  scopeName .foo { ... }
    */
   private _scopeCssText(cssText: string, scopeSelector: string, hostSelector: string): string {
-    // replace :host and :host-context with -shadowcsshost and -shadowcsshostcontext respectively
-    cssText = this._insertPolyfillHostInCssText(cssText);
-    cssText = this._convertColonHost(cssText);
-    cssText = this._convertColonHostContext(cssText);
     if (scopeSelector) {
       cssText = this._scopeKeyframesRelatedCss(cssText, scopeSelector);
       cssText = this._scopeSelectors(cssText, scopeSelector, hostSelector);
@@ -597,6 +593,7 @@ export class ShadowCss {
       let content = rule.content;
       if (rule.selector[0] !== '@') {
         if (rule.isBlock) {
+          selector = this._convertHostPseudoClasses(selector);
           const selectorParts = selector.split(_selectorSplitRe);
           const containsDeep = selectorParts.some((part) => _shadowDeepSelectorRe.test(part));
 
@@ -646,11 +643,22 @@ export class ShadowCss {
    */
   private _stripScopingSelectors(cssText: string): string {
     return processRules(cssText, (rule) => {
-      const selector = rule.selector
+      if (!rule.isBlock) {
+        return rule;
+      }
+      const selector = this._convertHostPseudoClasses(rule.selector)
         .replace(_shadowDeepSelectors, ' ')
         .replace(_polyfillHostNoCombinatorRe, ' ');
       return new CssRule(selector, rule.content, rule.isBlock);
     });
+  }
+
+  private _convertHostPseudoClasses(selector: string): string {
+    const safeSelector = new SafeSelector(selector);
+    let converted = this._insertPolyfillHostInCssText(safeSelector.content());
+    converted = this._convertColonHost(converted);
+    converted = this._convertColonHostContext(converted);
+    return safeSelector.restore(converted);
   }
 
   private _safeSelector: SafeSelector | undefined;
@@ -923,8 +931,8 @@ export class ShadowCss {
 
   private _insertPolyfillHostInCssText(selector: string): string {
     return selector
-      .replace(_colonHostContextRe, _polyfillHostContext)
-      .replace(_colonHostRe, _polyfillHost);
+      .replace(_colonHostRe, _polyfillHost)
+      .replace(_colonHostContextRe, _polyfillHostContext);
   }
 }
 
@@ -1025,7 +1033,7 @@ const _selectorSplitRe =
   / ?,(?!(?:[^)(]*(?:\([^)(]*(?:\([^)(]*(?:\([^)(]*\)[^)(]*)*\)[^)(]*)*\)[^)(]*)*\))) ?/;
 const _selectorReSuffix = '([>\\s~+[.,{:][\\s\\S]*)?$';
 const _polyfillHostRe = /-shadowcsshost/gim;
-const _colonHostRe = /:host(?!\-context)/gim;
+const _colonHostRe = /:host(?!-|[^\W_])/gim;
 const _colonHostContextRe = /:host-context(?=\(\s*[^)\s])/gim;
 
 const _newLinesRe = /\r?\n/g;
