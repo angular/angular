@@ -215,6 +215,10 @@ export class FieldNode implements FieldState<unknown> {
     return this.nodeState.readonly;
   }
 
+  get forceValidate(): Signal<boolean> {
+    return this.nodeState.forceValidate;
+  }
+
   get formFieldBindings(): Signal<readonly FormField<unknown>[]> {
     return this.nodeState.formFieldBindings;
   }

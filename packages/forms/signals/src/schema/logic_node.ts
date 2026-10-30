@@ -35,6 +35,9 @@ export abstract class AbstractLogicNodeBuilder {
   /** Adds a rule to determine if a field should be read-only. */
   abstract addReadonlyRule(logic: LogicFn<any, boolean>): void;
 
+  /** Adds a rule to force validation even when the field is disabled or readonly. */
+  abstract addForceValidateRule(logic: LogicFn<any, boolean>): void;
+
   /** Adds a rule for synchronous validation errors for a field. */
   abstract addSyncErrorRule(logic: LogicFn<any, ValidationResult>): void;
 
@@ -114,6 +117,10 @@ export class LogicNodeBuilder extends AbstractLogicNodeBuilder {
 
   override addReadonlyRule(logic: LogicFn<any, boolean>): void {
     this.getCurrent().addReadonlyRule(logic);
+  }
+
+  override addForceValidateRule(logic: LogicFn<any, boolean>): void {
+    this.getCurrent().addForceValidateRule(logic);
   }
 
   override addSyncErrorRule(
@@ -252,6 +259,10 @@ class NonMergeableLogicNodeBuilder extends AbstractLogicNodeBuilder {
 
   override addReadonlyRule(logic: LogicFn<any, boolean>): void {
     this.logic.readonly.push(setBoundPathDepthForResolution(logic, this.depth));
+  }
+
+  override addForceValidateRule(logic: LogicFn<any, boolean>): void {
+    this.logic.forceValidate.push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
   override addSyncErrorRule(
