@@ -7,9 +7,16 @@
  */
 
 import ts from 'typescript';
+import {getFileSystem} from '../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {NgtscProgram} from '../../src/ngtsc/program';
-import {loadStandardTestFiles} from '../../src/ngtsc/testing';
+import {
+  isNgpTestMode,
+  loadStandardTestFiles,
+  normalizeNgpOutputFile,
+  performNgpCompilationSync,
+  toPosixPath,
+} from '../../src/ngtsc/testing';
 import {CompilerOptions} from '../../src/transformers/api';
 import {createCompilerHost} from '../../src/transformers/compiler_host';
 import {NgtscTestEnvironment} from './env';
@@ -1032,14 +1039,14 @@ runInEachFileSystem(() => {
       const options: CompilerOptions = {
         target: ts.ScriptTarget.Latest,
         module: ts.ModuleKind.ESNext,
+        moduleResolution: ts.ModuleResolutionKind.Bundler,
+        experimentalDecorators: true,
+        skipLibCheck: true,
         _enableHmr: true,
       };
 
-      const program = new NgtscProgram(['/test.ts'], options, createCompilerHost({options}));
-      const transformers = program.compiler.prepareEmit().transformers;
-
-      transformers.before!.unshift((ctx) => (sourceFile) => {
-        const visitor = (node: ts.Node) => {
+      const classTransform: ts.TransformerFactory<ts.SourceFile> = (ctx) => (sourceFile) => {
+        const visitor = (node: ts.Node): ts.Node => {
           if (ts.isClassDeclaration(node) && node.name?.getText() === 'Cmp') {
             const newMember = ctx.factory.createPropertyDeclaration(
               undefined,
@@ -1061,7 +1068,56 @@ runInEachFileSystem(() => {
           return ts.visitEachChild(node, visitor, ctx);
         };
         return ts.visitEachChild(sourceFile, visitor, ctx);
-      });
+      };
+
+      if (isNgpTestMode()) {
+        const fs = getFileSystem();
+        const result = performNgpCompilationSync({
+          fs,
+          basePath: env.basePath,
+          tsconfigPath: fs.resolve(env.basePath, 'tsconfig.json'),
+          rootNames: [fs.resolve('/test.ts')],
+          options,
+          emit: true,
+          complianceMode: true,
+          closeAnalyzer: false,
+          customTransformers: {beforeTs: [classTransform]},
+        });
+        try {
+          const filePath = toPosixPath(fs.resolve('/test.ts'));
+          const rawHmr = result.compiler.emitHmrUpdateModuleSync(filePath, 'Cmp');
+          const hmrContents =
+            rawHmr === null
+              ? null
+              : normalizeNgpOutputFile(
+                  ts.transpileModule(rawHmr, {
+                    compilerOptions: {
+                      ...options,
+                      module: ts.ModuleKind.ES2022,
+                      target: ts.ScriptTarget.ES2022,
+                    } as ts.CompilerOptions,
+                    fileName: '/test.ts',
+                    reportDiagnostics: false,
+                  }).outputText,
+                );
+          const jsContents = env.getContents('/test.js');
+
+          expect(
+            result.diagnostics.map((d) => ts.flattenDiagnosticMessageText(d.messageText, '\n')),
+          ).toEqual([]);
+          expect(jsContents).toContain('ɵreplaceMetadata(Cmp');
+          expect(jsContents).toContain('newProp = 123');
+          expect(hmrContents).toContain('export default function Cmp_UpdateMetadata');
+          return;
+        } finally {
+          result.compiler.analyzer.close();
+        }
+      }
+
+      const program = new NgtscProgram(['/test.ts'], options, createCompilerHost({options}));
+      const transformers = program.compiler.prepareEmit().transformers;
+
+      transformers.before!.unshift(classTransform);
 
       const {diagnostics, emitSkipped} = program
         .getTsProgram()

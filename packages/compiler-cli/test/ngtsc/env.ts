@@ -430,6 +430,9 @@ export class NgtscTestEnvironment {
   }
 
   driveTemplateTypeChecker(): {program: ts.Program; checker: TemplateTypeChecker} {
+    if (isNgpTestMode()) {
+      throw new Error('driveTemplateTypeChecker is not supported in NGP mode.');
+    }
     const {rootNames, options} = readNgcCommandLineAndConfiguration(this.commandLineArgs);
     const host = createCompilerHost({options});
     const program = createProgram({rootNames, host, options});
@@ -491,6 +494,9 @@ export class NgtscTestEnvironment {
   }
 
   driveDocsExtraction(entryPoint: string): DocEntry[] {
+    if (isNgpTestMode()) {
+      throw new Error('driveDocsExtraction is not supported in NGP mode.');
+    }
     const {rootNames, options} = readNgcCommandLineAndConfiguration(this.commandLineArgs);
     const host = createCompilerHost({options});
     const program = createProgram({rootNames, host, options});
@@ -498,6 +504,9 @@ export class NgtscTestEnvironment {
   }
 
   driveDocsExtractionForSymbols(entryPoint: string): Map<string, string> {
+    if (isNgpTestMode()) {
+      throw new Error('driveDocsExtractionForSymbols is not supported in NGP mode.');
+    }
     const {rootNames, options} = readNgcCommandLineAndConfiguration(this.commandLineArgs);
     const host = createCompilerHost({options});
     const program = createProgram({rootNames, host, options});
@@ -505,6 +514,9 @@ export class NgtscTestEnvironment {
   }
 
   driveXi18n(format: string, outputFileName: string, locale: string | null = null): void {
+    if (isNgpTestMode()) {
+      throw new Error('driveXi18n is not supported in NGP mode.');
+    }
     const errorSpy = jasmine.createSpy('consoleError').and.callFake(console.error);
     const args = [...this.commandLineArgs, `--i18nFormat=${format}`, `--outFile=${outputFileName}`];
     if (locale !== null) {
