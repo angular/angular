@@ -228,14 +228,14 @@ describe('jit: true Angular member and constructor parameter decorator downlevel
     });
 
     const content = outputs.get('/out/test.ts')!;
-    expect(content).toContain('child: [{type: ViewChild, args: [ForwardDir]}]');
+    expect(content).toContain('child: [{type: ViewChild, args: [// @ts-ignore\nForwardDir]}]');
 
     const diagnostics = typecheckEmittedTs(content);
     expect(
       diagnostics.map(
         (d) => `TS${d.code}: ${ts.flattenDiagnosticMessageText(d.messageText, '\n')}`,
       ),
-    ).toEqual(["TS2449: Class 'ForwardDir' used before its declaration."]);
+    ).toEqual([]);
   });
 });
 

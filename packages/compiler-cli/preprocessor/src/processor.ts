@@ -576,6 +576,7 @@ export function processFileSync(
         classMeta.memberDecorators &&
         classMeta.memberDecorators.length > 0
       ) {
+        const jitGuards = ctx.complianceMode ? [] : classMeta.laterDeclarationReferences;
         const propDecoratorsMap = new Map<
           string,
           {key: string; quoted: boolean; value: o.Expression}
@@ -584,7 +585,7 @@ export function processFileSync(
           if (member.isStringLiteral) continue;
           const ngDecorators = member.decorators
             .filter((d) => d.isAngular)
-            .map((d) => buildDecoratorMetadataExpr(d.name, d.argsSpan, d.argsString, s, []));
+            .map((d) => buildDecoratorMetadataExpr(d.name, d.argsSpan, d.argsString, s, jitGuards));
           if (ngDecorators.length > 0) {
             propDecoratorsMap.set(member.propertyName, {
               key: member.propertyName,
