@@ -105,6 +105,32 @@ describe('Resource Resolution E2E Test Suite', () => {
         expect(jsOutput!.content).toContain('.no-dot-slash { color: green; }');
       });
 
+      it('f6_utf8_bom_stripped', async () => {
+        const files: TestFile[] = [
+          {path: 'tsconfig.json', content: JSON.stringify({compilerOptions: {}})},
+          {
+            path: 'app.component.ts',
+            content: `
+              import { Component } from '@angular/core';
+              @Component({
+                selector: 'app-root',
+                templateUrl: './app.component.html',
+                styleUrls: ['./app.component.css']
+              })
+              export class AppComponent {}
+            `,
+          },
+          {path: 'app.component.html', content: '\uFEFF<div>Hello</div>'},
+          {path: 'app.component.css', content: '\uFEFF.box { color: red; }'},
+        ];
+        const outputs = await runTest('f6_utf8_bom_stripped', files);
+        expect(outputs.length).toBeGreaterThan(0);
+        const jsOutput = outputs.find((o) => o.path.endsWith('app.component.ts'));
+        expect(jsOutput).toBeDefined();
+        expect(jsOutput!.content).toContain("'\uFEFF.box { color: red; }'");
+        expect(jsOutput!.content).toContain("'\uFEFF<div>Hello</div>'");
+      });
+
       it('f6_relative_nested_subdirectory', async () => {
         const files: TestFile[] = [
           {path: 'tsconfig.json', content: JSON.stringify({compilerOptions: {}})},
