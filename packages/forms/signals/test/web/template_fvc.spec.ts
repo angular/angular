@@ -14,6 +14,7 @@ import {
   inject,
   input,
   model,
+  output,
   signal,
   ViewChild,
 } from '@angular/core';
@@ -35,6 +36,15 @@ class TemplateFvcInput {
   readonly pending = input(false);
   readonly required = input(false);
   readonly errors = input<readonly any[]>([]);
+}
+
+@Component({
+  selector: 'my-touch-fvc',
+  template: '<input #i [value]="value()" (input)="value.set(i.value)" (blur)="touch.emit()" />',
+})
+class TouchFvcInput {
+  readonly value = model('');
+  readonly touch = output<void>();
 }
 
 describe('NgModel with FVC', () => {
@@ -379,6 +389,123 @@ describe('NgModel with FVC', () => {
       await actAsync(() => fixture.componentInstance.val.set('valid'));
       expect(fvc.errors().length).toBe(0);
     });
+  });
+});
+
+describe('NgModel updateOn with FVC', () => {
+  it('should commit value to ngModel on blur', async () => {
+    @Component({
+      template: `<my-touch-fvc
+        [(ngModel)]="val"
+        [ngModelOptions]="{updateOn: 'blur'}"
+        #model="ngModel"
+      />`,
+      imports: [TouchFvcInput, FormsModule],
+    })
+    class TestCmp {
+      val = signal('initial');
+      @ViewChild('model') model!: NgModel;
+    }
+
+    const fixture = await actAsync(() => TestBed.createComponent(TestCmp));
+    const fvc = fixture.debugElement.query(By.directive(TouchFvcInput)).componentInstance;
+
+    act(() => fvc.value.set('typed'));
+    expect(fixture.componentInstance.val()).toBe('initial');
+    expect(fixture.componentInstance.model.control.value).toBe('initial');
+    expect(fixture.componentInstance.model.control.dirty).toBe(false);
+
+    act(() => fvc.touch.emit());
+    expect(fixture.componentInstance.val()).toBe('typed');
+    expect(fixture.componentInstance.model.control.value).toBe('typed');
+    expect(fixture.componentInstance.model.control.dirty).toBe(true);
+    expect(fixture.componentInstance.model.control.touched).toBe(true);
+    expect(fvc.value()).toBe('typed');
+  });
+
+  it('should update ngModel when the control value is set programmatically', async () => {
+    @Component({
+      template: `<my-touch-fvc [(ngModel)]="val" #model="ngModel" />`,
+      imports: [TouchFvcInput, FormsModule],
+    })
+    class TestCmp {
+      val = signal('initial');
+      @ViewChild('model') model!: NgModel;
+    }
+
+    const fixture = await actAsync(() => TestBed.createComponent(TestCmp));
+
+    await actAsync(() => fixture.componentInstance.model.control.setValue('new'));
+
+    expect(fixture.componentInstance.val()).toBe('new');
+  });
+
+  it('should update ngModel when the control is reset', async () => {
+    @Component({
+      template: `<my-touch-fvc [(ngModel)]="val" #model="ngModel" />`,
+      imports: [TouchFvcInput, FormsModule],
+    })
+    class TestCmp {
+      val = signal('initial');
+      @ViewChild('model') model!: NgModel;
+    }
+
+    const fixture = await actAsync(() => TestBed.createComponent(TestCmp));
+
+    await actAsync(() => fixture.componentInstance.model.reset('reset'));
+
+    expect(fixture.componentInstance.val()).toBe('reset');
+  });
+
+  it('should update ngModel with a value changed by a valueChanges subscriber', async () => {
+    @Component({
+      template: `<my-touch-fvc [(ngModel)]="val" #model="ngModel" />`,
+      imports: [TouchFvcInput, FormsModule],
+    })
+    class TestCmp {
+      val = signal('initial');
+      @ViewChild('model') model!: NgModel;
+    }
+
+    const fixture = await actAsync(() => TestBed.createComponent(TestCmp));
+    const fvc = fixture.debugElement.query(By.directive(TouchFvcInput)).componentInstance;
+    const control = fixture.componentInstance.model.control;
+    control.valueChanges.subscribe((value) => {
+      if (value === 'typed') {
+        control.setValue('TYPED');
+      }
+    });
+
+    await actAsync(() => fvc.value.set('typed'));
+
+    expect(fixture.componentInstance.val()).toBe('TYPED');
+    expect(fvc.value()).toBe('TYPED');
+  });
+
+  it('should discard pending value when model changes before blur', async () => {
+    @Component({
+      template: `<my-touch-fvc
+        [(ngModel)]="val"
+        [ngModelOptions]="{updateOn: 'blur'}"
+        #model="ngModel"
+      />`,
+      imports: [TouchFvcInput, FormsModule],
+    })
+    class TestCmp {
+      val = signal('initial');
+      @ViewChild('model') model!: NgModel;
+    }
+
+    const fixture = await actAsync(() => TestBed.createComponent(TestCmp));
+    const fvc = fixture.debugElement.query(By.directive(TouchFvcInput)).componentInstance;
+
+    act(() => fvc.value.set('typed'));
+    await actAsync(() => fixture.componentInstance.val.set('external'));
+    expect(fvc.value()).toBe('external');
+
+    act(() => fvc.touch.emit());
+    expect(fixture.componentInstance.val()).toBe('external');
+    expect(fixture.componentInstance.model.control.dirty).toBe(false);
   });
 });
 
