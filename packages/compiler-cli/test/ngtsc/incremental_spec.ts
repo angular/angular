@@ -944,7 +944,7 @@ runInEachFileSystem(() => {
 
         // Verify that the default import is still present.
         const content = env.getContents('cmp.js');
-        expect(content).toContain(`import DefaultService from './service';`);
+        expect(content).toMatch(/import DefaultService from ['"]\.\/service['"];/);
       });
 
       it('should recompile when a remote change happens to a scope', () => {

@@ -320,8 +320,6 @@ const NGP_POTENTIAL_BREAKING_CHANGES: ReadonlySet<string> = new Set([
 const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'import generation should report an error when a library entry-point does not export the symbol',
   'import generation should report an error when using a directive outside of rootDirs',
-  'ngtsc compilation of standalone types component-side should compile a standalone component in a cycle with its module',
-  'ngtsc incremental compilation template type-checking should retain default imports that have been converted into a value expression',
 
   // API documentation extraction (`getApiDocumentation`) is not implemented in NGP.
   'ngtsc NgModule docs extraction should extract NgModule info',

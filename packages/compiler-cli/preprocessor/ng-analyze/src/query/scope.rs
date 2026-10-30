@@ -101,12 +101,14 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                             || info.class_type == ClassType::Pipe
                         {
                             let flattened = flatten_class_info(info.clone(), ctx).await;
-                            if let Some(resolved) = DeclarationData::from_class_info(
-                                r.clone(),
-                                &info,
-                                &flattened,
-                                false,
-                            ) {
+                            let decl_ref = if info.is_standalone.unwrap_or(true) {
+                                self.ngmodule_imported_declaration_ref(r, &info)
+                            } else {
+                                r.clone()
+                            };
+                            if let Some(resolved) =
+                                DeclarationData::from_class_info(decl_ref, &info, &flattened, false)
+                            {
                                 resolved_declarations.push(resolved);
                             }
                         }
@@ -258,8 +260,9 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                     || info.class_type == ClassType::Pipe
                 {
                     let flattened = flatten_class_info(info.clone(), ctx).await;
+                    let decl_ref = self.ngmodule_imported_declaration_ref(r, &info);
                     if let Some(resolved) =
-                        DeclarationData::from_class_info(r.clone(), &info, &flattened, false)
+                        DeclarationData::from_class_info(decl_ref, &info, &flattened, false)
                     {
                         out_declarations.push(resolved);
                     }
@@ -268,6 +271,26 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             all_resolved
         }
         .boxed()
+    }
+
+    /// Reference carried by a standalone directive/component/pipe imported into an `@NgModule`.
+    fn ngmodule_imported_declaration_ref(
+        &self,
+        r: &crate::types::analysis::Reference,
+        info: &crate::ClassInfo,
+    ) -> crate::types::analysis::Reference {
+        if crate::utils::is_dts(&self.lookup_path(info.reference_id.file)) {
+            return r.clone();
+        }
+        let mut aliases = HashMap::with_capacity(1);
+        aliases.insert(info.reference_id.file, info.class_name.clone());
+        crate::types::analysis::Reference {
+            file: info.reference_id.file,
+            name: info.class_name.clone(),
+            owning_reference: None,
+            aliases,
+            is_default_export: r.is_default_export,
+        }
     }
 }
 
@@ -755,5 +778,42 @@ mod tests {
             "/node_modules/shared/shared.module.ts",
         );
         assert_eq!(owners, vec![("B".to_string(), None)]);
+    }
+
+    #[test]
+    fn source_standalone_imported_into_ngmodule_uses_canonical_reference() {
+        let engine = engine_for(
+            &[
+                (
+                    "/module.ts",
+                    "import { NgModule } from '@angular/core';\n\
+                     import { StandaloneCmp } from './component';\n\
+                     @NgModule({ imports: [StandaloneCmp] })\n\
+                     export class Module {}\n",
+                ),
+                (
+                    "/component.ts",
+                    "import { Component } from '@angular/core';\n\
+                     @Component({ selector: 'standalone-cmp', template: '' })\n\
+                     export class StandaloneCmp {}\n",
+                ),
+            ],
+            "/module.ts",
+        );
+        let ctx = QueryContext::new(engine.clone());
+        let module_file = engine.intern_path("/module.ts");
+        let component_file = engine.intern_path("/component.ts");
+        futures::executor::block_on(async {
+            let syntax = ctx.analyze_file_syntax(module_file).await;
+            let module = syntax.class_index.get("Module").expect("Module is indexed");
+            let scope = ctx.ngmodule_imports_scope(module.reference_id).await;
+            assert_eq!(scope.declarations.len(), 1);
+            let decl = &scope.declarations[0];
+            assert!(!decl.reference.aliases.contains_key(&module_file));
+            assert_eq!(
+                decl.reference.aliases.get(&component_file),
+                Some(&"StandaloneCmp".to_string())
+            );
+        });
     }
 }
