@@ -300,6 +300,99 @@ describe('HTML sanitizer', () => {
     );
   });
 
+  describe('should prevent reverse tabnabbing via `rel` and `target`', () => {
+    it('strips `opener` from `rel` attribute when it is the sole token', () => {
+      expect(
+        sanitizeHtml(
+          defaultDoc,
+          '<a href="https://attacker.example" target="_blank" rel="opener">Click me</a>',
+        ),
+      ).toEqual('<a href="https://attacker.example" target="_blank">Click me</a>');
+      expect(logMsgs.join('\n')).toMatch(/sanitizing HTML stripped some content/);
+    });
+
+    it('strips `opener` case-insensitively across ASCII whitespace while preserving other `rel` tokens', () => {
+      expect(
+        sanitizeHtml(
+          defaultDoc,
+          '<a href="https://attacker.example" target="_blank" rel="nofollow\tOPENER\nugc">Click me</a>',
+        ),
+      ).toEqual(
+        '<a href="https://attacker.example" target="_blank" rel="nofollow ugc">Click me</a>',
+      );
+      expect(logMsgs.join('\n')).toMatch(/sanitizing HTML stripped some content/);
+    });
+
+    it('strips `opener` even when `target` is absent (e.g. `<base target="_blank">`) and on `<area>`', () => {
+      expect(
+        sanitizeHtml(defaultDoc, '<a href="https://attacker.example" rel="opener">x</a>'),
+      ).toEqual('<a href="https://attacker.example">x</a>');
+      expect(
+        sanitizeHtml(
+          defaultDoc,
+          '<map><area href="https://attacker.example" target="_blank" rel="opener"></map>',
+        ),
+      ).toEqual('<map><area href="https://attacker.example" target="_blank"></map>');
+    });
+
+    it('leaves safe `rel` values and `target="_blank"` intact without warning', () => {
+      expect(
+        sanitizeHtml(
+          defaultDoc,
+          '<a href="https://angular.dev" target="_blank" rel="noopener noreferrer">Docs</a>',
+        ),
+      ).toEqual('<a href="https://angular.dev" target="_blank" rel="noopener noreferrer">Docs</a>');
+      expect(
+        sanitizeHtml(defaultDoc, '<a href="https://angular.dev" target="_blank">Docs</a>'),
+      ).toEqual('<a href="https://angular.dev" target="_blank">Docs</a>');
+      expect(
+        sanitizeHtml(defaultDoc, '<a href="https://angular.dev" rel="myopener">Docs</a>'),
+      ).toEqual('<a href="https://angular.dev" rel="myopener">Docs</a>');
+      expect(logMsgs).toEqual([]);
+    });
+
+    it('enforces `noopener` on `<a>` and `<area>` with custom named `target` values', () => {
+      expect(
+        sanitizeHtml(defaultDoc, '<a href="https://attacker.example" target="custom_tab">x</a>'),
+      ).toEqual('<a href="https://attacker.example" target="custom_tab" rel="noopener">x</a>');
+      expect(
+        sanitizeHtml(defaultDoc, '<a href="https://attacker.example" target=" _blank">x</a>'),
+      ).toEqual('<a href="https://attacker.example" target=" _blank" rel="noopener">x</a>');
+      expect(
+        sanitizeHtml(
+          defaultDoc,
+          '<a rel="nofollow" href="https://attacker.example" target="custom_tab">x</a>',
+        ),
+      ).toEqual(
+        '<a rel="nofollow noopener" href="https://attacker.example" target="custom_tab">x</a>',
+      );
+      expect(
+        sanitizeHtml(
+          defaultDoc,
+          '<a href="https://attacker.example" target="custom_tab" rel="opener">x</a>',
+        ),
+      ).toEqual('<a href="https://attacker.example" target="custom_tab" rel="noopener">x</a>');
+      expect(
+        sanitizeHtml(
+          defaultDoc,
+          '<map><area href="https://attacker.example" target="custom_tab"></map>',
+        ),
+      ).toEqual(
+        '<map><area href="https://attacker.example" target="custom_tab" rel="noopener"></map>',
+      );
+      // Already protected via `noreferrer` or `noopener`
+      expect(
+        sanitizeHtml(
+          defaultDoc,
+          '<a href="https://angular.dev" target="custom_tab" rel="noreferrer">x</a>',
+        ),
+      ).toEqual('<a href="https://angular.dev" target="custom_tab" rel="noreferrer">x</a>');
+      expect(
+        sanitizeHtml(defaultDoc, '<a href="https://angular.dev" target="_self">x</a>'),
+      ).toEqual('<a href="https://angular.dev" target="_self">x</a>');
+    });
+  });
+
   if (isDOMParserAvailable()) {
     it('should work even if DOMParser returns a null body', () => {
       // Simulate `DOMParser.parseFromString()` returning a null body.
