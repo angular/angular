@@ -6,11 +6,128 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injector, signal} from '@angular/core';
+import {
+  ApplicationRef,
+  assertNotInReactiveContext,
+  DestroyRef,
+  inject,
+  InjectionToken,
+  Injector,
+  signal,
+  type Signal,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {createMetadataKey, form, metadata, MetadataReducer} from '../../../public_api';
+import {
+  applyEach,
+  createManagedMetadataKey,
+  createMetadataKey,
+  debounce,
+  form,
+  metadata,
+  MetadataReducer,
+  min,
+  required,
+} from '../../../public_api';
 
 describe('metadata', () => {
+  it('should not create field injectors for plain metadata and built-in rules', () => {
+    const injector = TestBed.inject(Injector);
+    const createInjector = spyOn(Injector, 'create').and.callThrough();
+    const KEY = createMetadataKey<string>();
+    const model = signal({name: '', quantity: 0, label: 'initial'});
+    const f = form(
+      model,
+      (p) => {
+        required(p.name);
+        debounce(p.name, 0);
+        min(p.quantity, 1);
+        metadata(p.label, KEY, ({value}) => value());
+      },
+      {injector},
+    );
+
+    expect(f.name().invalid()).toBe(true);
+    expect(f.quantity().invalid()).toBe(true);
+    expect(f.label().metadata(KEY)!()).toBe('initial');
+
+    model.set({name: 'updated', quantity: 1, label: 'updated'});
+
+    expect(f.name().valid()).toBe(true);
+    expect(f.quantity().valid()).toBe(true);
+    expect(f.label().metadata(KEY)!()).toBe('updated');
+    expect(createInjector).not.toHaveBeenCalled();
+  });
+
+  it('should not create field injectors just to destroy removed fields', async () => {
+    const injector = TestBed.inject(Injector);
+    const appRef = TestBed.inject(ApplicationRef);
+    const model = signal([{value: 'initial'}]);
+    const f = form(model, {injector});
+    expect(f[0].value().value()).toBe('initial');
+    await appRef.whenStable();
+
+    const createInjector = spyOn(Injector, 'create').and.callThrough();
+    model.set([]);
+    await appRef.whenStable();
+
+    expect(createInjector).not.toHaveBeenCalled();
+  });
+
+  it('should share a field injector between managed keys and clean them up on removal', async () => {
+    const TOKEN = new InjectionToken<string>('metadata dependency');
+    TestBed.configureTestingModule({providers: [{provide: TOKEN, useValue: 'provided'}]});
+    const injector = TestBed.inject(Injector);
+    const appRef = TestBed.inject(ApplicationRef);
+    const contexts: Injector[] = [];
+    const created: string[] = [];
+    const destroyed: string[] = [];
+    const makeKey = (name: string) =>
+      createManagedMetadataKey((_state, params: Signal<string | undefined>) => {
+        assertNotInReactiveContext(makeKey);
+        expect(inject(TOKEN)).toBe('provided');
+        contexts.push(inject(Injector));
+        created.push(name);
+        inject(DestroyRef).onDestroy(() => destroyed.push(name));
+        return params;
+      });
+    const FIRST = makeKey('first');
+    const SECOND = makeKey('second');
+    const model = signal([{value: 'a'}, {value: 'b'}]);
+    const f = form(
+      model,
+      (p) => {
+        applyEach(p, (item) => {
+          required(item.value);
+          metadata(item.value, FIRST, ({value}) => value());
+          metadata(item.value, SECOND, ({value}) => value());
+        });
+      },
+      {injector},
+    );
+
+    // Managed keys are created eagerly, before their values are requested.
+    f[0].value();
+    f[1].value();
+    expect(created).toEqual(['first', 'second', 'first', 'second']);
+    expect(contexts[0]).toBe(contexts[1]);
+    expect(contexts[2]).toBe(contexts[3]);
+    expect(contexts[0]).not.toBe(contexts[2]);
+    expect(contexts[0]).not.toBe(injector);
+    expect(f[0].value().metadata(FIRST)!()).toBe('a');
+    expect(f[0].value().metadata(SECOND)!()).toBe('a');
+    await appRef.whenStable();
+
+    model.set([model()[1]]);
+    await appRef.whenStable();
+    expect(destroyed).toEqual(['first', 'second']);
+    expect(f[0].value().metadata(FIRST)!()).toBe('b');
+
+    model.set([]);
+    await appRef.whenStable();
+    expect(destroyed).toEqual(['first', 'second', 'first', 'second']);
+    expect(created.length).toBe(4);
+  });
+
   it('should reduce values with MetadataReducer.and', () => {
     const KEY = createMetadataKey(MetadataReducer.and());
 
