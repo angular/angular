@@ -1028,6 +1028,122 @@ describe('lexer', () => {
         expectNumberToken(tokens[5], 7, 8, 2);
       });
 
+      it('should not tokenize a regex preceded by a postfix increment', () => {
+        const tokens: Token[] = lex('a++ / 2');
+        expect(tokens.length).toBe(4);
+        expectIdentifierToken(tokens[0], 0, 1, 'a');
+        expectOperatorToken(tokens[1], 1, 3, '++');
+        expectOperatorToken(tokens[2], 4, 5, '/');
+        expectNumberToken(tokens[3], 6, 7, 2);
+      });
+
+      it('should not tokenize a regex preceded by a postfix decrement', () => {
+        const tokens: Token[] = lex('a-- / b / c');
+        expect(tokens.length).toBe(6);
+        expectIdentifierToken(tokens[0], 0, 1, 'a');
+        expectOperatorToken(tokens[1], 1, 3, '--');
+        expectOperatorToken(tokens[2], 4, 5, '/');
+        expectIdentifierToken(tokens[3], 6, 7, 'b');
+        expectOperatorToken(tokens[4], 8, 9, '/');
+        expectIdentifierToken(tokens[5], 10, 11, 'c');
+      });
+
+      it('should not tokenize a regex preceded by a postfix increment after a non-null assertion', () => {
+        const tokens: Token[] = lex('a!++ / 2');
+        expect(tokens.length).toBe(5);
+        expectIdentifierToken(tokens[0], 0, 1, 'a');
+        expectOperatorToken(tokens[1], 1, 2, '!');
+        expectOperatorToken(tokens[2], 2, 4, '++');
+        expectOperatorToken(tokens[3], 5, 6, '/');
+        expectNumberToken(tokens[4], 7, 8, 2);
+      });
+
+      it('should not tokenize a regex preceded by a postfix increment on a keyword property', () => {
+        const tokens: Token[] = lex('o.in++ / 2');
+        expect(tokens.length).toBe(6);
+        expectIdentifierToken(tokens[0], 0, 1, 'o');
+        expectCharacterToken(tokens[1], 1, 2, '.');
+        expectKeywordToken(tokens[2], 2, 4, 'in');
+        expectOperatorToken(tokens[3], 4, 6, '++');
+        expectOperatorToken(tokens[4], 7, 8, '/');
+        expectNumberToken(tokens[5], 9, 10, 2);
+      });
+
+      it('should not tokenize a regex preceded by a non-null assertion on this or null', () => {
+        const tokens: Token[] = lex('this! / 2');
+        expect(tokens.length).toBe(4);
+        expectKeywordToken(tokens[0], 0, 4, 'this');
+        expectOperatorToken(tokens[1], 4, 5, '!');
+        expectOperatorToken(tokens[2], 6, 7, '/');
+        expectNumberToken(tokens[3], 8, 9, 2);
+      });
+
+      it('should not tokenize a regex preceded by stacked non-null assertions', () => {
+        const tokens: Token[] = lex('a!! / 2');
+        expect(tokens.length).toBe(5);
+        expectIdentifierToken(tokens[0], 0, 1, 'a');
+        expectOperatorToken(tokens[1], 1, 2, '!');
+        expectOperatorToken(tokens[2], 2, 3, '!');
+        expectOperatorToken(tokens[3], 4, 5, '/');
+        expectNumberToken(tokens[4], 6, 7, 2);
+      });
+
+      it('should not tokenize a regex preceded by a postfix increment on a safe keyword property', () => {
+        const tokens: Token[] = lex('o?.in++ / 2');
+        expect(tokens.length).toBe(6);
+        expectIdentifierToken(tokens[0], 0, 1, 'o');
+        expectOperatorToken(tokens[1], 1, 3, '?.');
+        expectKeywordToken(tokens[2], 3, 5, 'in');
+        expectOperatorToken(tokens[3], 5, 7, '++');
+        expectOperatorToken(tokens[4], 8, 9, '/');
+        expectNumberToken(tokens[5], 10, 11, 2);
+      });
+
+      it('should not tokenize a regex preceded by a non-null assertion on a tagged template literal', () => {
+        const tokens: Token[] = lex('tag`42`! / 2');
+        expect(tokens.length).toBe(5);
+        expectIdentifierToken(tokens[0], 0, 3, 'tag');
+        expectStringToken(tokens[1], 3, 7, '42', StringTokenKind.TemplateLiteralEnd);
+        expectOperatorToken(tokens[2], 7, 8, '!');
+        expectOperatorToken(tokens[3], 9, 10, '/');
+        expectNumberToken(tokens[4], 11, 12, 2);
+      });
+
+      it('should tokenize a regex preceded by a negation after typeof', () => {
+        const tokens: Token[] = lex('typeof !/a/.test(b)');
+        expect(tokens.length).toBe(8);
+        expectKeywordToken(tokens[0], 0, 6, 'typeof');
+        expectOperatorToken(tokens[1], 7, 8, '!');
+        expectRegExpBodyToken(tokens[2], 8, 11, 'a');
+        expectCharacterToken(tokens[3], 11, 12, '.');
+        expectIdentifierToken(tokens[4], 12, 16, 'test');
+        expectCharacterToken(tokens[5], 16, 17, '(');
+        expectIdentifierToken(tokens[6], 17, 18, 'b');
+        expectCharacterToken(tokens[7], 18, 19, ')');
+      });
+
+      it('should tokenize a regex preceded by a negation after void', () => {
+        const tokens: Token[] = lex('void !/a/.test(b)');
+        expect(tokens.length).toBe(8);
+        expectKeywordToken(tokens[0], 0, 4, 'void');
+        expectOperatorToken(tokens[1], 5, 6, '!');
+        expectRegExpBodyToken(tokens[2], 6, 9, 'a');
+        expectCharacterToken(tokens[3], 9, 10, '.');
+        expectIdentifierToken(tokens[4], 10, 14, 'test');
+        expectCharacterToken(tokens[5], 14, 15, '(');
+        expectIdentifierToken(tokens[6], 15, 16, 'b');
+        expectCharacterToken(tokens[7], 16, 17, ')');
+      });
+
+      it('should tokenize a regex preceded by a prefix increment', () => {
+        const tokens: Token[] = lex('++/a/.lastIndex');
+        expect(tokens.length).toBe(4);
+        expectOperatorToken(tokens[0], 0, 2, '++');
+        expectRegExpBodyToken(tokens[1], 2, 5, 'a');
+        expectCharacterToken(tokens[2], 5, 6, '.');
+        expectIdentifierToken(tokens[3], 6, 15, 'lastIndex');
+      });
+
       it('should not tokenize consecutive regexes', () => {
         const tokens: Token[] = lex('/ 1 / 2 / 3 / 4');
         expect(tokens.length).toBe(6);
