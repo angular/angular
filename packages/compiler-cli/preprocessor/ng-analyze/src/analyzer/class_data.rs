@@ -1525,17 +1525,68 @@ pub struct IsolatedTypeTupleData {
     pub elements: Vec<IsolatedTypeElementData>,
 }
 
+/// An element inside a [`ResolvedIsolatedElement::Tuple`].
+pub(crate) enum ResolvedIsolatedTupleItem {
+    /// A resolved declaration reference (`typeof Ref`).
+    Reference(Reference),
+    /// An unresolved import bound at top-level in the origin file (`typeof LocalImportName`).
+    LocalImport(String),
+}
+
 /// A deferred element's completed value, per ngtsc's `resolvedToTypeTupleElement`.
 pub(crate) enum ResolvedIsolatedElement {
     /// `typeof Ref`
     Single(Reference),
     /// `[typeof A, typeof B]`
-    Tuple(Vec<Reference>),
+    Tuple(Vec<ResolvedIsolatedTupleItem>),
+}
+
+fn unresolved_local_import_name(
+    value: &crate::evaluator::ResolvedValue,
+    origin: crate::query::FileId,
+) -> Option<&str> {
+    use crate::analyzer::ImportKind;
+    use crate::evaluator::{DynamicReason, IncompleteDep, ResolvedValue};
+
+    let (unresolved, span) = match value.unwrap_named() {
+        ResolvedValue::Dynamic(d) if d.file == origin => match &d.reason {
+            DynamicReason::UnresolvedImport(u) => (u.as_ref(), d.span),
+            DynamicReason::DynamicInput(inner) => match &inner.reason {
+                DynamicReason::UnresolvedImport(u) => (u.as_ref(), d.span),
+                _ => return None,
+            },
+            _ => return None,
+        },
+        ResolvedValue::Incomplete(hole)
+            if hole.file == origin && hole.transparent && hole.spread.is_none() =>
+        {
+            match &hole.dep {
+                IncompleteDep::Reference(u) => (u, hole.span),
+                _ => return None,
+            }
+        }
+        _ => return None,
+    };
+
+    if unresolved.importer != origin
+        || unresolved.is_namespace_member
+        || matches!(unresolved.symbol, ImportKind::Namespace)
+    {
+        return None;
+    }
+    unresolved
+        .local_name
+        .as_deref()
+        .filter(|name| name.len() as u32 == span.size())
 }
 
 impl ResolvedIsolatedElement {
-    /// `None` for any other value, including one that still has holes.
-    pub(crate) fn from_value(value: &crate::evaluator::ResolvedValue) -> Option<Self> {
+    /// `None` for any other value, including one that still has holes (except same-file direct
+    /// unresolved imports inside tuple arrays).
+    pub(crate) fn from_value(
+        value: &crate::evaluator::ResolvedValue,
+        origin: crate::query::FileId,
+    ) -> Option<Self> {
         use crate::evaluator::ResolvedValue;
         match value.unwrap_named() {
             ResolvedValue::Reference(r) if r.member.is_none() => {
@@ -1544,10 +1595,11 @@ impl ResolvedIsolatedElement {
             ResolvedValue::Array(items) if !items.is_empty() => items
                 .iter()
                 .map(|item| match item.unwrap_named() {
-                    ResolvedValue::Reference(r) if r.member.is_none() => {
-                        Some(Reference::from_value_reference(r))
-                    }
-                    _ => None,
+                    ResolvedValue::Reference(r) if r.member.is_none() => Some(
+                        ResolvedIsolatedTupleItem::Reference(Reference::from_value_reference(r)),
+                    ),
+                    _ => unresolved_local_import_name(item, origin)
+                        .map(|name| ResolvedIsolatedTupleItem::LocalImport(name.to_string())),
                 })
                 .collect::<Option<Vec<_>>>()
                 .map(Self::Tuple),
@@ -1555,10 +1607,16 @@ impl ResolvedIsolatedElement {
         }
     }
 
-    pub(crate) fn references(&self) -> &[Reference] {
+    pub(crate) fn references(&self) -> Vec<Reference> {
         match self {
-            Self::Single(r) => std::slice::from_ref(r),
-            Self::Tuple(refs) => refs,
+            Self::Single(r) => vec![r.clone()],
+            Self::Tuple(items) => items
+                .iter()
+                .filter_map(|item| match item {
+                    ResolvedIsolatedTupleItem::Reference(r) => Some(r.clone()),
+                    ResolvedIsolatedTupleItem::LocalImport(_) => None,
+                })
+                .collect(),
         }
     }
 }
@@ -1586,8 +1644,10 @@ impl IsolatedTypeTupleData {
                     out.extend(references.iter().cloned())
                 }
                 IsolatedTypeElementData::Deferred { resolved, .. } => {
-                    if let Some(element) = ResolvedIsolatedElement::from_value(resolved.raw()) {
-                        out.extend(element.references().iter().cloned());
+                    if let Some(element) =
+                        ResolvedIsolatedElement::from_value(resolved.raw(), resolved.origin)
+                    {
+                        out.extend(element.references());
                     }
                 }
                 _ => {}
@@ -4565,30 +4625,41 @@ impl ClassData {
                 references: None,
             },
             IsolatedTypeElementData::Deferred { resolved, fallback } => {
-                let Some(element) = ResolvedIsolatedElement::from_value(resolved.raw()) else {
+                let Some(element) =
+                    ResolvedIsolatedElement::from_value(resolved.raw(), self.reference_id.file)
+                else {
                     return self.to_wire_isolated_element(fallback, current_file_path, cx);
                 };
-                let emitted: Option<Vec<ReferenceMetadata>> = element
-                    .references()
-                    .iter()
-                    .map(|r| {
-                        let emitted = self.to_wire_single_ref(r, current_file_path, cx);
-                        // Neither a local binding nor an import: unreachable from this file
-                        // (e.g. not exported), so ngtsc's reference emit would fail too.
-                        (emitted.local_alias.is_some() || emitted.consumer_import.is_some())
-                            .then_some(emitted)
-                    })
-                    .collect();
+                let project_ref = |r: &Reference| -> Option<ReferenceMetadata> {
+                    let emitted = self.to_wire_single_ref(r, current_file_path, cx);
+                    // Neither a local binding nor an import: unreachable from this file
+                    // (e.g. not exported), so ngtsc's reference emit would fail too.
+                    (emitted.local_alias.is_some() || emitted.consumer_import.is_some())
+                        .then_some(emitted)
+                };
+                let (kind, emitted) = match &element {
+                    ResolvedIsolatedElement::Single(r) => (
+                        IsolatedTypeElementKind::Typeof,
+                        project_ref(r).map(|m| vec![m]),
+                    ),
+                    ResolvedIsolatedElement::Tuple(items) => (
+                        IsolatedTypeElementKind::ReferenceTuple,
+                        items
+                            .iter()
+                            .map(|item| match item {
+                                ResolvedIsolatedTupleItem::Reference(r) => project_ref(r),
+                                ResolvedIsolatedTupleItem::LocalImport(local_name) => Some(
+                                    ReferenceMetadata::for_local_declaration(local_name.clone()),
+                                ),
+                            })
+                            .collect::<Option<Vec<_>>>(),
+                    ),
+                };
                 let Some(references) = emitted else {
                     return self.to_wire_isolated_element(fallback, current_file_path, cx);
                 };
                 IsolatedTypeElementMetadata {
-                    kind: match element {
-                        ResolvedIsolatedElement::Single(_) => IsolatedTypeElementKind::Typeof,
-                        ResolvedIsolatedElement::Tuple(_) => {
-                            IsolatedTypeElementKind::ReferenceTuple
-                        }
-                    },
+                    kind,
                     span: None,
                     references: Some(references),
                 }

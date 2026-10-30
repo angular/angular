@@ -1185,6 +1185,184 @@ fn test_isolated_type_tuple_resolves_local_const_of_imported_classes() {
     }
 }
 
+/// Under `emitDeclarationOnly`, a same-file `const` array containing unresolvable imports must
+/// expand to a `ReferenceTuple` of local import bindings (avoiding TS9017 under
+/// `--isolatedDeclarations`), while cross-file arrays with unresolved imports, calls, or
+/// unresolvable spreads still fall back to `typeof`.
+#[test]
+fn test_isolated_type_tuple_resolves_local_const_of_unresolved_imports() {
+    use crate::types::metadata::IsolatedTypeElementKind;
+
+    let mut virtual_files = HashMap::new();
+    virtual_files.insert(
+        "/project/tsconfig.json".to_string(),
+        r#"{
+            "compilerOptions": {"emitDeclarationOnly": true},
+            "angularCompilerOptions": {"_experimentalAllowEmitDeclarationOnly": true},
+            "files": ["index.ts", "resolved.module.ts", "shared.ts"]
+        }"#
+        .to_string(),
+    );
+    virtual_files.insert(
+        "/project/resolved.module.ts".to_string(),
+        r#"
+        import {NgModule} from '@angular/core';
+        @NgModule({})
+        export class ResolvedModule {}
+        "#
+        .to_string(),
+    );
+    virtual_files.insert(
+        "/project/shared.ts".to_string(),
+        r#"
+        import {Missing} from 'missing-pkg';
+        export const SHARED = [Missing];
+        "#
+        .to_string(),
+    );
+    let index_src = r#"
+        import {NgModule} from '@angular/core';
+        import {ExternalModuleA, EXTERNAL_ARRAY} from 'external-pkg';
+        import {ResolvedModule} from './resolved.module';
+        import {SHARED} from './shared';
+
+        @NgModule({})
+        export class LocalModuleB {}
+
+        const MODULE_IMPORTS = [ExternalModuleA, LocalModuleB];
+        const ALL_IMPORTS = [...MODULE_IMPORTS, ExternalModuleA, ResolvedModule];
+        const WITH_CALL = [ExternalModuleA.forRoot()];
+        const WITH_SPREAD = [...EXTERNAL_ARRAY];
+
+        @NgModule({
+            imports: [MODULE_IMPORTS],
+            exports: [MODULE_IMPORTS],
+        })
+        export class LocalConstModule {}
+
+        @NgModule({
+            imports: [ALL_IMPORTS, WITH_CALL, WITH_SPREAD, EXTERNAL_ARRAY, SHARED],
+        })
+        export class EdgeCasesModule {}
+        "#;
+    virtual_files.insert("/project/index.ts".to_string(), index_src.to_string());
+
+    for optimize in [false, true] {
+        let options = AnalyzerOptions {
+            tsconfig_path: Some("/project/tsconfig.json".to_string()),
+            optimize: Some(optimize),
+            virtual_files: Some(virtual_files.clone()),
+            ..Default::default()
+        };
+        let analyzer = Analyzer::new(options).unwrap();
+        let iterator = if optimize {
+            analyzer.analyze_optimized().unwrap()
+        } else {
+            analyzer.analyze().unwrap()
+        };
+        let mut results = Vec::new();
+        while let Some(chunk) = futures::executor::block_on(iterator.next()).unwrap() {
+            results.extend(chunk.files);
+        }
+
+        let index = results
+            .iter()
+            .find(|res| res.file_path == "/project/index.ts")
+            .expect("index.ts metadata");
+        assert!(
+            index.diagnostics.is_empty(),
+            "unexpected diagnostics (optimize={optimize}): {:?}",
+            index.diagnostics
+        );
+
+        let ng_module = |name: &str| {
+            index
+                .classes
+                .iter()
+                .find(|c| c.class_name.as_deref() == Some(name))
+                .and_then(|c| c.ng_module.as_ref())
+                .unwrap_or_else(|| panic!("{name} ng_module metadata (optimize={optimize})"))
+        };
+        let local_names = |refs: &Option<Vec<crate::types::metadata::ReferenceMetadata>>| {
+            refs.iter()
+                .flatten()
+                .map(|r| r.local_alias.clone().unwrap_or_default())
+                .collect::<Vec<_>>()
+        };
+        let span_text = |el: &crate::types::metadata::IsolatedTypeElementMetadata| {
+            let span = el.span.expect("syntactic element has a span");
+            &index_src[span.start as usize..span.end as usize]
+        };
+
+        let local_mod = ng_module("LocalConstModule");
+        for (label, tuple) in [
+            ("imports", local_mod.isolated_imports.as_ref().unwrap()),
+            ("exports", local_mod.isolated_exports.as_ref().unwrap()),
+        ] {
+            assert!(tuple.is_array_literal);
+            assert_eq!(tuple.elements.len(), 1);
+            assert_eq!(
+                tuple.elements[0].kind,
+                IsolatedTypeElementKind::ReferenceTuple,
+                "{label}: MODULE_IMPORTS must expand to ReferenceTuple (optimize={optimize})"
+            );
+            assert_eq!(
+                local_names(&tuple.elements[0].references),
+                vec!["ExternalModuleA", "LocalModuleB"],
+                "{label} (optimize={optimize})"
+            );
+            let refs = tuple.elements[0].references.as_ref().unwrap();
+            assert!(
+                refs[0].consumer_import.is_none(),
+                "ExternalModuleA should reuse local import without consumer_import (optimize={optimize})"
+            );
+        }
+
+        let edge = ng_module("EdgeCasesModule")
+            .isolated_imports
+            .as_ref()
+            .expect("EdgeCasesModule isolated_imports");
+        assert!(edge.is_array_literal);
+        assert_eq!(edge.elements.len(), 5);
+
+        // 0: `ALL_IMPORTS` (spread of same-file const + duplicate unresolved import + resolved cross-file class)
+        assert_eq!(
+            edge.elements[0].kind,
+            IsolatedTypeElementKind::ReferenceTuple
+        );
+        assert_eq!(
+            local_names(&edge.elements[0].references),
+            vec![
+                "ExternalModuleA",
+                "LocalModuleB",
+                "ExternalModuleA",
+                "ResolvedModule"
+            ],
+            "optimize={optimize}"
+        );
+
+        // 1: `WITH_CALL` (`[ExternalModuleA.forRoot()]`) -> falls back to `typeof WITH_CALL`
+        assert_eq!(edge.elements[1].kind, IsolatedTypeElementKind::Typeof);
+        assert!(edge.elements[1].references.is_none(), "optimize={optimize}");
+        assert_eq!(span_text(&edge.elements[1]), "WITH_CALL");
+
+        // 2: `WITH_SPREAD` (`[...EXTERNAL_ARRAY]`) -> falls back to `typeof WITH_SPREAD`
+        assert_eq!(edge.elements[2].kind, IsolatedTypeElementKind::Typeof);
+        assert!(edge.elements[2].references.is_none(), "optimize={optimize}");
+        assert_eq!(span_text(&edge.elements[2]), "WITH_SPREAD");
+
+        // 3: `EXTERNAL_ARRAY` (direct unresolved import) -> falls back to `typeof EXTERNAL_ARRAY`
+        assert_eq!(edge.elements[3].kind, IsolatedTypeElementKind::Typeof);
+        assert!(edge.elements[3].references.is_none(), "optimize={optimize}");
+        assert_eq!(span_text(&edge.elements[3]), "EXTERNAL_ARRAY");
+
+        // 4: `SHARED` (cross-file array containing `Missing` not imported in index.ts) -> `typeof SHARED`
+        assert_eq!(edge.elements[4].kind, IsolatedTypeElementKind::Typeof);
+        assert!(edge.elements[4].references.is_none(), "optimize={optimize}");
+        assert_eq!(span_text(&edge.elements[4]), "SHARED");
+    }
+}
+
 #[test]
 fn test_injectable_with_deps() {
     let mut virtual_files = HashMap::new();

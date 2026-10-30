@@ -111,7 +111,7 @@ export class PermissionsCheckerModule {
     PermissionsCheckerModule,
     never,
     [
-      typeof NG_MODULE_IMPORTS,
+      [typeof AveLoggingModule],
       ReturnType<typeof FooModule.forRoot>,
       ReturnType<typeof provideFoo>,
       [typeof LocalHelperModule],
