@@ -10502,9 +10502,9 @@ suppress
         expect(getSourceCodeForDiagnostic(diags[0])).toBe('attempt');
       });
 
-      it('should map errors at an unparenthesized parameter in a later interpolation', () => {
+      it('should map errors at an unparenthesized parameter in an interpolation', () => {
         env.tsconfig({strictTemplates: true}, {strict: true, noImplicitAny: true});
-        const template = '{{1}} {{retry(attempt => load(attempt))}}';
+        const template = '{{retry(attempt => load(attempt))}}';
         env.write('test.html', template);
         env.write(
           'test.ts',

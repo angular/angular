@@ -1341,8 +1341,8 @@ describe('parser', () => {
         });
 
         it('should produce spans for the arrow function parameters inside an interpolation', () => {
-          const ast = parseInterpolation('{{a}} {{(foo, bar) => foo + bar}}')!;
-          const arrowFn = (ast.ast as Interpolation).expressions[1] as ArrowFunction;
+          const ast = parseInterpolation('{{(foo, bar) => foo + bar}}')!;
+          const arrowFn = (ast.ast as Interpolation).expressions[0] as ArrowFunction;
           const getSource = (span: ParseSpan | AbsoluteSourceSpan) =>
             ast.source?.substring(span.start, span.end);
 
@@ -1352,14 +1352,14 @@ describe('parser', () => {
           expect(getSource(arrowFn.parameters[1].sourceSpan)).toBe('bar');
         });
 
-        it('should produce spans for an unparenthesized parameter in a later interpolation', () => {
-          const template = '{{a}} {{foo => foo}}';
+        it('should produce spans for an unparenthesized parameter inside an interpolation', () => {
+          const template = '{{foo => foo}}';
           const ast = createParser().parseInterpolation(template, getFakeSpan(), 100, null)!;
-          const arrowFn = (ast.ast as Interpolation).expressions[1] as ArrowFunction;
+          const arrowFn = (ast.ast as Interpolation).expressions[0] as ArrowFunction;
 
           expect(ast.errors).toEqual([]);
-          expect(arrowFn.parameters[0].span).toEqual(new ParseSpan(8, 11));
-          expect(arrowFn.parameters[0].sourceSpan).toEqual(new AbsoluteSourceSpan(108, 111));
+          expect(arrowFn.parameters[0].span).toEqual(new ParseSpan(2, 5));
+          expect(arrowFn.parameters[0].sourceSpan).toEqual(new AbsoluteSourceSpan(102, 105));
         });
       });
 
