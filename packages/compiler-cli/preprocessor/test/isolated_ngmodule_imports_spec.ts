@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import ts from 'typescript';
+
 import {runPipeline, TestFile} from './utils.js';
 
 function makeTsconfig(
@@ -94,5 +96,59 @@ describe('isolated NgModule imports under emitDeclarationOnly', () => {
     expect(content).toContain(
       'static ɵmod: i0.ɵɵNgModuleDeclaration<AppModule, never, [typeof ImportedModule], never>',
     );
+  });
+
+  it('expands same-file unannotated const arrays of unresolved imports without triggering TS9017', async () => {
+    for (const optimize of [false, true]) {
+      const outputs = await compileFiles(
+        {
+          '/test.ts': `
+            import {NgModule} from '@angular/core';
+            import {ModuleA} from 'external-pkg-a';
+            import {ModuleB} from 'external-pkg-b';
+
+            const MODULE_IMPORTS = [ModuleA, ModuleB];
+
+            @NgModule({
+              imports: [MODULE_IMPORTS],
+              exports: [MODULE_IMPORTS],
+            })
+            export class MyModule {}
+          `,
+        },
+        {
+          optimize,
+          compilerOptions: {
+            declaration: true,
+            emitDeclarationOnly: true,
+            isolatedDeclarations: true,
+          },
+          angularCompilerOptions: {
+            _experimentalAllowEmitDeclarationOnly: true,
+          },
+        },
+      );
+
+      const content = outputs.get('/out/test.ts')!;
+      expect(content).toContain(
+        'static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, never, [[typeof ModuleA, typeof ModuleB]], [[typeof ModuleA, typeof ModuleB]]>',
+      );
+      expect(content).not.toContain('import * as i1');
+
+      const dtsResult = ts.transpileDeclaration(content, {
+        fileName: 'test.ts',
+        compilerOptions: {
+          target: ts.ScriptTarget.ES2022,
+          module: ts.ModuleKind.ESNext,
+          declaration: true,
+          emitDeclarationOnly: true,
+          isolatedDeclarations: true,
+        },
+      });
+      expect(dtsResult.diagnostics ?? []).toEqual([]);
+      expect(dtsResult.outputText).toContain(
+        'static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, never, [[typeof ModuleA, typeof ModuleB]], [[typeof ModuleA, typeof ModuleB]]>;',
+      );
+    }
   });
 });
