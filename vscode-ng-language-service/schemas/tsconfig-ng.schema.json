@@ -205,6 +205,10 @@
           "type": "boolean",
           "description": "Whether object or array literals defined in templates use their inferred type, or are interpreted as 'any'."
         },
+        "strictNgTemplateTypes": {
+          "type": "boolean",
+          "description": "Whether to check input bindings on ng-template elements"
+        },
         "strictNullInputTypes": {
           "type": "boolean",
           "description": "Whether to use strict null types for input bindings for directives."

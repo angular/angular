@@ -115,21 +115,24 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagno
 
       const decorator = hostIsStandalone ? '@Component' : '@NgModule';
       const schemas = `'${decorator}.schemas'`;
-      let errorMsg = `Can't bind to '${name}' since it isn't a known property of '${tagName}'.`;
-      if (tagName.startsWith('ng-')) {
+      const localTagName = tagName.startsWith(':')
+        ? tagName.slice(tagName.indexOf(':', 1) + 1)
+        : tagName;
+      let errorMsg = `Can't bind to '${name}' since it isn't a known property of '${localTagName}'.`;
+      if (localTagName.startsWith('ng-')) {
         errorMsg +=
           `\n1. If '${name}' is an Angular directive, then add 'CommonModule' to the '${decorator}.imports' of this component.` +
           `\n2. To allow any property add 'NO_ERRORS_SCHEMA' to the ${schemas} of this component.`;
-      } else if (tagName.indexOf('-') > -1) {
+      } else if (localTagName.indexOf('-') > -1) {
         errorMsg +=
           `\n1. If '${
-            tagName
+            localTagName
           }' is an Angular component and it has '${name}' input, then verify that it is ${
             hostIsStandalone
               ? "included in the '@Component.imports' of this component"
               : 'part of this module'
           }.` +
-          `\n2. If '${tagName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the ${schemas} of this component to suppress this message.` +
+          `\n2. If '${localTagName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the ${schemas} of this component to suppress this message.` +
           `\n3. To allow any property add 'NO_ERRORS_SCHEMA' to the ${schemas} of this component.`;
       }
 

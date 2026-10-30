@@ -296,4 +296,9 @@ export interface TypeCheckingConfig {
    * Whether to validate unknown element tags even when matched by attribute directives.
    */
   checkUnknownElements: boolean;
+
+  /**
+   * Whether to check if unknown properties are bound to `<ng-template>`.
+   */
+  checkTypeOfNgTemplateBindings: boolean;
 }
