@@ -261,6 +261,7 @@ function applyDeferBlockState(
     removeLViewFromLContainer(lContainer, viewIndex);
 
     let injector: Injector | undefined;
+    const tDetails = getTDeferBlockDetails(hostTView, tNode);
     if (newState === DeferBlockState.Complete) {
       // When we render a defer block in completed state, there might be
       // newly loaded standalone components used within the block, which may
@@ -268,7 +269,6 @@ function applyDeferBlockState(
       // available for components declared in that NgModule, we create an instance
       // of an environment injector to host those providers and pass this injector
       // to the logic that creates a view.
-      const tDetails = getTDeferBlockDetails(hostTView, tNode);
       const providers = tDetails.providers;
       if (providers && providers.length > 0) {
         injector = createDeferBlockInjector(hostLView[INJECTOR], tDetails, providers);
@@ -279,7 +279,13 @@ function applyDeferBlockState(
       lDetails,
     );
 
-    const embeddedLView = createAndRenderEmbeddedLView(hostLView, activeBlockTNode, null, {
+    // Only the `@error` view has a context, with `$error` and `$retry`.
+    const context =
+      newState === DeferBlockState.Error && tDetails.errorContextFn !== null
+        ? tDetails.errorContextFn(hostLView, tNode, tDetails)
+        : null;
+
+    const embeddedLView = createAndRenderEmbeddedLView(hostLView, activeBlockTNode, context, {
       injector,
       dehydratedView,
     });

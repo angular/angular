@@ -18,6 +18,7 @@ import {
   parseOnTrigger,
   parseWhenTrigger,
 } from './r3_deferred_triggers';
+import {LET_PATTERN, parseLetParameters} from './util';
 
 /** Pattern to identify a `prefetch when` trigger. */
 const PREFETCH_WHEN_PATTERN = /^prefetch\s+when\s/;
@@ -48,6 +49,12 @@ const ON_PARAMETER_PATTERN = /^on\s/;
 
 /** Pattern to identify a `name` parameter in a block. */
 const NAME_PARAMETER_PATTERN = /^name\s+/;
+
+/** Pattern to identify a `retry` parameter in a block. */
+const RETRY_PARAMETER_PATTERN = /^retry(\s|$)/;
+
+/** Pattern to identify an alias without `let`, e.g. `retry = $retry`. */
+const ALIAS_PARAMETER_PATTERN = /^\s*[$A-Z_][0-9A-Z_$]*\s*=/i;
 
 /**
  * Predicate function that determines if a block with
@@ -156,7 +163,7 @@ function parseConnectedBlocks(
               new ParseError(block.startSourceSpan, `@defer block can only have one @error block`),
             );
           } else {
-            error = parseErrorBlock(block, visitor);
+            error = parseErrorBlock(block, visitor, errors);
           }
           break;
       }
@@ -252,9 +259,96 @@ function parseLoadingBlock(ast: html.Block, visitor: html.Visitor): t.DeferredBl
   );
 }
 
-function parseErrorBlock(ast: html.Block, visitor: html.Visitor): t.DeferredBlockError {
-  if (ast.parameters.length > 0) {
-    throw new Error(`@error block cannot have parameters`);
+function parseErrorBlock(
+  ast: html.Block,
+  visitor: html.Visitor,
+  errors: ParseError[],
+): t.DeferredBlockError {
+  let retryCount: number | null = null;
+  const emptySpan = new ParseSourceSpan(ast.startSourceSpan.end, ast.startSourceSpan.end);
+  const contextVariables: t.Variable[] = [
+    new t.Variable('$error', '$error', emptySpan, emptySpan, emptySpan),
+    new t.Variable('$retry', '$retry', emptySpan, emptySpan, emptySpan),
+  ];
+
+  for (const param of ast.parameters) {
+    const letMatch = param.expression.match(LET_PATTERN);
+
+    // Check aliases first, since `retry = $retry` also matches the `retry` parameter.
+    if (letMatch !== null || ALIAS_PARAMETER_PATTERN.test(param.expression)) {
+      const expressionToParse = letMatch !== null ? letMatch[1] : param.expression;
+      const variablesSpan =
+        letMatch !== null
+          ? new ParseSourceSpan(
+              param.sourceSpan.start.moveBy(letMatch[0].length - letMatch[1].length),
+              param.sourceSpan.end,
+            )
+          : param.sourceSpan;
+
+      parseLetParameters(
+        param.sourceSpan,
+        expressionToParse,
+        variablesSpan,
+        contextVariables,
+        errors,
+        (name, variableName, sourceSpan) => {
+          if (variableName !== '$error' && variableName !== '$retry') {
+            errors.push(
+              new ParseError(
+                sourceSpan,
+                `Unknown context variable "${variableName}". Only "$error" and "$retry" are allowed`,
+              ),
+            );
+          } else if (contextVariables.some((v) => v.name === name)) {
+            errors.push(new ParseError(sourceSpan, `Duplicate "let" parameter variable "${name}"`));
+          }
+        },
+        '@error block',
+        '$error',
+      );
+    } else if (RETRY_PARAMETER_PATTERN.test(param.expression)) {
+      if (retryCount != null) {
+        errors.push(
+          new ParseError(param.sourceSpan, `@error block can only have one "retry" parameter`),
+        );
+        continue;
+      }
+
+      const valueStart = getTriggerParametersStart(param.expression);
+      const rawValue = valueStart === -1 ? '' : param.expression.slice(valueStart).trim();
+
+      if (rawValue === '') {
+        errors.push(
+          new ParseError(
+            param.sourceSpan,
+            `The "retry" parameter requires a value, e.g. "retry 2"`,
+          ),
+        );
+        continue;
+      }
+
+      const parsed = parseRetryCount(rawValue);
+
+      if (parsed === null) {
+        errors.push(
+          new ParseError(
+            param.sourceSpan,
+            `Could not parse value of "retry" parameter: expected a non-negative integer ` +
+              `within JavaScript's safe integer range, got "${rawValue}"`,
+          ),
+        );
+        continue;
+      }
+
+      retryCount = parsed;
+    } else {
+      errors.push(
+        new ParseError(
+          param.sourceSpan,
+          `Unrecognized parameter in @error block: "${param.expression}"`,
+        ),
+      );
+    }
   }
 
   return new t.DeferredBlockError(
@@ -264,7 +358,20 @@ function parseErrorBlock(ast: html.Block, visitor: html.Visitor): t.DeferredBloc
     ast.startSourceSpan,
     ast.endSourceSpan,
     ast.i18n,
+    retryCount,
+    contextVariables,
   );
+}
+
+function parseRetryCount(value: string): number | null {
+  if (!/^\d+$/.test(value)) {
+    return null;
+  }
+  const parsed = Number(value);
+  if (!Number.isSafeInteger(parsed) || parsed < 0) {
+    return null;
+  }
+  return parsed;
 }
 
 function parsePrimaryTriggers(

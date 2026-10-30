@@ -17,6 +17,7 @@ import {
   Component,
   Content,
   DeferredBlock,
+  DeferredBlockError,
   DeferredBlockTriggers,
   Directive,
   Element,
@@ -40,6 +41,7 @@ import {DirectiveOwner} from '../../render3/view/t2_api';
 import {TcbDirectiveMetadata} from '../api';
 import {TcbOp} from './base';
 import {TcbBoundaryOp} from './boundary';
+import {TcbDeferredErrorOp} from './deferred_error';
 import {TcbExpr} from './codegen';
 import {TcbComponentContextCompletionOp} from './completions';
 import {TcbControlFlowContentProjectionOp} from './content_projection';
@@ -189,7 +191,14 @@ export class Scope {
   static forNodes(
     tcb: Context,
     parentScope: Scope | null,
-    scopedNode: Template | IfBlockBranch | ForLoopBlock | HostElement | BoundaryErrorBlock | null,
+    scopedNode:
+      | Template
+      | IfBlockBranch
+      | ForLoopBlock
+      | HostElement
+      | BoundaryErrorBlock
+      | DeferredBlockError
+      | null,
     children: Node[] | null,
     guard: TcbExpr | null,
   ): Scope {
@@ -236,6 +245,22 @@ export class Scope {
         if (variable.value === '$error') {
           typeExpr = new TcbExpr(`(err as Error)`);
         } else if (variable.value === '$reset') {
+          typeExpr = new TcbExpr(`(() => {})`);
+        } else {
+          throw new Error(`Unrecognized context variable ${variable.value}`);
+        }
+        Scope.registerVariable(
+          scope,
+          variable,
+          new TcbBlockVariableOp(tcb, scope, typeExpr, variable),
+        );
+      }
+    } else if (scopedNode instanceof DeferredBlockError) {
+      for (const variable of scopedNode.contextVariables) {
+        let typeExpr: TcbExpr;
+        if (variable.value === '$error') {
+          typeExpr = new TcbExpr(`(null! as Error)`);
+        } else if (variable.value === '$retry') {
           typeExpr = new TcbExpr(`(() => {})`);
         } else {
           throw new Error(`Unrecognized context variable ${variable.value}`);
@@ -396,7 +421,14 @@ export class Scope {
    */
   createChildScope(
     parentScope: Scope,
-    scopedNode: Template | IfBlockBranch | ForLoopBlock | HostElement | BoundaryErrorBlock | null,
+    scopedNode:
+      | Template
+      | IfBlockBranch
+      | ForLoopBlock
+      | HostElement
+      | BoundaryErrorBlock
+      | DeferredBlockError
+      | null,
     children: Node[] | null,
     guard: TcbExpr | null,
   ): Scope {
@@ -995,7 +1027,7 @@ export class Scope {
     }
 
     if (block.error !== null) {
-      this.appendChildren(block.error);
+      this.opQueue.push(new TcbDeferredErrorOp(this, block.error));
     }
   }
 
