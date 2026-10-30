@@ -8,7 +8,7 @@
 
 import {LifecycleProfile} from '../../../../protocol';
 import {getProfiler, Profiler} from './profiler';
-import {getDirectiveName} from '../directive-forest/component-tree/component-tree';
+import {getDirectiveName} from '../directive-forest/utils/directive';
 import type {ComponentInstance, DirectiveInstance} from '../shared/interfaces';
 import {getConfig} from '../config/config';
 
