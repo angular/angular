@@ -158,13 +158,13 @@ export class ExpressionPrinter {
   }
 
   print(expr: o.Expression): string {
-    const context = new MappingContext();
+    const context = new MappingContext(0);
     expr.visitExpression(this.exprVisitor, context);
     return this.finishPrint(context);
   }
 
-  printStatement(stmt: o.Statement): string {
-    const context = new MappingContext();
+  printStatement(stmt: o.Statement, indent: number): string {
+    const context = new MappingContext(indent);
     stmt.visitStatement(this.exprVisitor, context);
     return this.finishPrint(context);
   }
@@ -300,8 +300,8 @@ class MappingContext extends EmitterVisitorContext {
   private inComment = false;
   private readonly points: Array<{line: number; column: number; span: ParseSourceSpan}> = [];
 
-  constructor() {
-    super(0);
+  constructor(indent: number) {
+    super(indent);
   }
 
   override print(

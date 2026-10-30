@@ -235,10 +235,10 @@ export class TreeComponent {
                 selector: 'app-tree',
                 imports: [DirA, TreeComponent],
                 template: `
-        @if (child) {
-          <app-tree dirA [child]="child.child"></app-tree>
-        }
-      `,
+    @if (child) {
+      <app-tree dirA [child]="child.child"></app-tree>
+    }
+  `,
               },
             ],
           },
@@ -314,10 +314,10 @@ export class ForwardTreeComponent {
                 selector: 'app-forward-tree',
                 imports: [DirA, forwardRef(() => ForwardTreeComponent)],
                 template: `
-        @if (child) {
-          <app-forward-tree dirA [child]="child.child"></app-forward-tree>
-        }
-      `,
+    @if (child) {
+      <app-forward-tree dirA [child]="child.child"></app-forward-tree>
+    }
+  `,
               },
             ],
           },

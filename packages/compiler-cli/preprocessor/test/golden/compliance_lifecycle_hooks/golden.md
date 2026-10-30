@@ -151,9 +151,9 @@ export class SimpleLayout {
               {
                 selector: 'simple-layout',
                 template: `
-        <lifecycle-comp [name]="name1"></lifecycle-comp>
-        <lifecycle-comp [name]="name2"></lifecycle-comp>
-      `,
+    <lifecycle-comp [name]="name1"></lifecycle-comp>
+    <lifecycle-comp [name]="name2"></lifecycle-comp>
+  `,
                 standalone: false,
               },
             ],

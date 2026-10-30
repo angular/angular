@@ -94,10 +94,10 @@ export class AppComponent {
               {
                 selector: 'app-root',
                 template: `
-        <app-generic [value]="'string'"></app-generic>
-        <app-generic [value]="123"></app-generic>
-        <app-default-generic [value]="{a: 1}"></app-default-generic>
-      `,
+    <app-generic [value]="'string'"></app-generic>
+    <app-generic [value]="123"></app-generic>
+    <app-default-generic [value]="{a: 1}"></app-default-generic>
+  `,
                 imports: [GenericComponent, DefaultGenericComponent],
               },
             ],

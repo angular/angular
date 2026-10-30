@@ -75,8 +75,8 @@ export class AppComponent {
               {
                 selector: 'app-root',
                 template: `
-        <div>{{ obj?.foo?.bar }}</div>
-      `,
+    <div>{{ obj?.foo?.bar }}</div>
+  `,
                 standalone: true,
               },
             ],

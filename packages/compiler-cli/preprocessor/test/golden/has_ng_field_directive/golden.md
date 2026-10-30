@@ -150,8 +150,8 @@ export class MyComp {
               {
                 selector: 'my-comp',
                 template: `
-        <input [formField]="myField" myOtherDir>
-      `,
+    <input [formField]="myField" myOtherDir>
+  `,
                 imports: [FormField, MyOtherDirective],
               },
             ],

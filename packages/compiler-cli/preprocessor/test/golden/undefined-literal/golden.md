@@ -57,9 +57,9 @@ export class AppComponent {
               {
                 selector: 'app-root',
                 template: `
-        <div>{{ undefined }}</div>
-        <div [id]="undefined"></div>
-      `,
+    <div>{{ undefined }}</div>
+    <div [id]="undefined"></div>
+  `,
                 standalone: true,
               },
             ],

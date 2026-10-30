@@ -120,16 +120,16 @@ export class AppComponent {
               {
                 selector: 'app-root',
                 template: `
-        <child-comp
-          [value]="currentValue"
-          (valueChange)="onValueChange($event)"
-          (selected)="onSelected($event)"
-        ></child-comp>
-        <app-widget
-          [items]="currentItems"
-          (itemsSubmit)="onItemsSubmit($event)"
-        ></app-widget>
-      `,
+    <child-comp
+      [value]="currentValue"
+      (valueChange)="onValueChange($event)"
+      (selected)="onSelected($event)"
+    ></child-comp>
+    <app-widget
+      [items]="currentItems"
+      (itemsSubmit)="onItemsSubmit($event)"
+    ></app-widget>
+  `,
                 imports: [ChildComponent, Widget],
               },
             ],

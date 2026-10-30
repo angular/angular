@@ -1885,7 +1885,9 @@ export function processFileSync(
 
   const poolStatements =
     sharedPool.statements.length > 0
-      ? '\n' + sharedPool.statements.map((stmt) => printer.printStatement(stmt)).join('\n') + '\n'
+      ? '\n' +
+        sharedPool.statements.map((stmt) => printer.printStatement(stmt, 0)).join('\n') +
+        '\n'
       : '';
 
   const topOfFileStatements = [...hoistedImports, printer.getImportStatements(), poolStatements]
@@ -2040,7 +2042,7 @@ function appendCompiledClass(
     );
     if (ngModule.statements.length > 0) {
       ngModuleStatements = ngModule.statements
-        .map((stmt) => printer.printStatement(stmt))
+        .map((stmt) => printer.printStatement(stmt, 0))
         .join('\n');
     }
     const compiledInj = createStaticField(
@@ -2065,14 +2067,14 @@ function appendCompiledClass(
   }
 
   if (debugInfoStmt !== null) {
-    out.appendRight(span.end, '\n' + printer.printStatement(debugInfoStmt));
+    out.appendRight(span.end, '\n' + printer.printStatement(debugInfoStmt, 0));
   }
 
   // ngtsc appends the initializer to the `ɵcmp` statements, after `ɵsetClassMetadata` and
   // `ɵsetClassDebugInfo`.
   // https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L427-L439
   if (hmrInitializerStmt !== null) {
-    out.appendRight(span.end, '\n' + printer.printStatement(hmrInitializerStmt));
+    out.appendRight(span.end, '\n' + printer.printStatement(hmrInitializerStmt, 0));
   }
 
   // The NgModule side-effect statements (`ɵɵsetNgModuleScope`, `ɵɵregisterNgModuleType`)
@@ -2641,19 +2643,15 @@ function printSetClassMetadata(
   emitOutsideClass: boolean = false,
 ): string {
   if (emitOutsideClass || !(statement instanceof o.ExpressionStatement)) {
-    return printer.printStatement(statement);
+    return printer.printStatement(statement, 0);
   }
   const stmts = stripIife(statement.expr);
-  const printedStmt = stmts.map((stmt) => printer.printStatement(stmt)).join('\n');
+  const printedStmt = stmts.map((stmt) => printer.printStatement(stmt, 2)).join('\n');
   return createStaticBlock(printedStmt);
 }
 
 function createStaticBlock(statement: string): string {
-  const indented = statement
-    .split('\n')
-    .map((line) => (line.length > 0 ? `    ${line}` : line))
-    .join('\n');
-  return `  static {\n${indented}\n  }\n`;
+  return `  static {\n${statement}\n  }\n`;
 }
 
 /**

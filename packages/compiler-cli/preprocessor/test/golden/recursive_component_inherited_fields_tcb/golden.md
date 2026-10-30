@@ -66,9 +66,9 @@ export class ConditionGroupBuilder extends CommonConditionGroupBuilder {
               {
                 selector: 'condition-group-builder',
                 template: `
-        <condition-group-builder (onCelCodeUpdated)="handleUpdate($event)">
-        </condition-group-builder>
-      `,
+    <condition-group-builder (onCelCodeUpdated)="handleUpdate($event)">
+    </condition-group-builder>
+  `,
               },
             ],
           },

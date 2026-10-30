@@ -106,18 +106,18 @@ export class AppComponent {
                 args: [
                   {
                     template: `
-        @defer {
-          <shared-dep/>
-        }
+    @defer {
+      <shared-dep/>
+    }
 
-        @defer {
-          <shared-dep/>
-        }
+    @defer {
+      <shared-dep/>
+    }
 
-        @defer {
-          <other-dep/>
-        }
-      `,
+    @defer {
+      <other-dep/>
+    }
+  `,
                     imports: [SharedDep, OtherDep],
                   },
                 ],

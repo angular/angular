@@ -123,16 +123,16 @@ export class AppComponent {
               {
                 selector: 'app-root',
                 template: `
-        <test-cmp 
-          [simple]="'hello'" 
-          [alias]="'world'" 
-          [requiredAlias]="'backend'" 
-          [signalAlias]="'sig'"
-          (simpleOutput)="handle($event)"
-          (aliasedOutputAlias)="handle($event)"
-        ></test-cmp>
-        <div test-dir [dirInput]="'test'" [signal]="'sig'"></div>
-      `,
+    <test-cmp 
+      [simple]="'hello'" 
+      [alias]="'world'" 
+      [requiredAlias]="'backend'" 
+      [signalAlias]="'sig'"
+      (simpleOutput)="handle($event)"
+      (aliasedOutputAlias)="handle($event)"
+    ></test-cmp>
+    <div test-dir [dirInput]="'test'" [signal]="'sig'"></div>
+  `,
                 imports: [TestComponent, TestDirective],
               },
             ],

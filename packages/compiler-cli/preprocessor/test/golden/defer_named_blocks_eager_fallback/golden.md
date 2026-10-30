@@ -61,10 +61,10 @@ export class AppComponent {
                   blockA: [],
                 },
                 template: `
-        @defer (name blockA) {
-          <eager-cmp />
-        }
-      `,
+    @defer (name blockA) {
+      <eager-cmp />
+    }
+  `,
               },
             ],
           },

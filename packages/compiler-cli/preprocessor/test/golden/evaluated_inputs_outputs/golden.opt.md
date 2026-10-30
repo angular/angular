@@ -118,18 +118,18 @@ export class App {
               {
                 selector: 'app-root',
                 template: `
-        <div
-          field
-          [value]="text"
-          [sizeAlias]="2"
-          [localAlias]="text"
-          [extraAlias]="text"
-          [labelAlias]="text"
-          [hintAlias]="text"
-          (valueChange)="onChange($event)"
-          (doneAlias)="onDone()"
-        ></div>
-      `,
+    <div
+      field
+      [value]="text"
+      [sizeAlias]="2"
+      [localAlias]="text"
+      [extraAlias]="text"
+      [labelAlias]="text"
+      [hintAlias]="text"
+      (valueChange)="onChange($event)"
+      (doneAlias)="onDone()"
+    ></div>
+  `,
                 imports: [Field],
               },
             ],
