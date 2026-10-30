@@ -597,8 +597,8 @@ pub struct FileData {
     /// Byte offsets for implicit signal `debugName` insertions.
     pub(crate) signal_debug_names:
         Vec<crate::analyzer::signal_debug_name::SignalDebugNameInsertion>,
-    /// Whether this file is part of `@angular/core` itself (see
-    /// [`crate::analyzer::imports::detect_is_core`]). Always `false` for `.d.ts` files.
+    /// Whether this file is compiled as part of `@angular/core` itself (see
+    /// [`crate::AnalyzerOptions::angular_core_compilation`]). Always `false` for `.d.ts` files.
     pub(crate) is_core: bool,
     /// Root-scope runtime binding names for HMR (`None` unless the engine runs with
     /// `enable_hmr`).

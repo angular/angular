@@ -130,6 +130,7 @@ import {run} from './ngp.js';
       angularCompilerOptions?._useHostForImportAndAliasGeneration
         ? true
         : undefined;
+    const angularCoreCompilation = angularCompilerOptions?._isAngularCoreCompilation;
 
     let innerAnalyzer: IAnalyzer;
     if (sidecarPath) {
@@ -140,6 +141,7 @@ import {run} from './ngp.js';
         enableHmr,
         usePoisonedData: tcbConfig.usePoisonedData,
         useHostForImportGeneration,
+        angularCoreCompilation,
       });
       innerAnalyzer = sidecar;
     } else {
@@ -161,6 +163,7 @@ import {run} from './ngp.js';
         enableHmr,
         usePoisonedData: tcbConfig.usePoisonedData,
         useHostForImportGeneration,
+        angularCoreCompilation,
       });
     }
     const optionDiagnostics = verifyCompilerOptions(angularCompilerOptions ?? {});

@@ -127,6 +127,7 @@ export interface NgpCompilerOptions {
   _enableHmr?: boolean;
   _compilePoisonedComponents?: boolean;
   _enableTemplateTypeChecker?: boolean;
+  _isAngularCoreCompilation?: boolean;
 
   // i18n (`I18nOptions`).
   enableI18nLegacyMessageIdFormat?: boolean;
