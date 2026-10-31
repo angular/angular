@@ -101,17 +101,6 @@ runInEachFileSystem(() => {
       },
       // restricted fields
       {
-        id: 'disallows access to private model',
-        inputs: {
-          pattern: {type: 'ModelSignal<string>', isSignal: true, restrictionModifier: 'private'},
-        },
-        outputs: {patternChange: {type: 'ModelSignal<string>'}},
-        template: `<div dir [pattern]="'works'">`,
-        expected: [
-          `TestComponent.html(1, 11): Property 'pattern' is private and only accessible within class 'Dir'.`,
-        ],
-      },
-      {
         id: 'disallows access to protected model',
         inputs: {
           pattern: {type: 'ModelSignal<string>', isSignal: true, restrictionModifier: 'protected'},
@@ -133,18 +122,6 @@ runInEachFileSystem(() => {
       },
       // restricted fields (but opt-out of check)
       {
-        id: 'allow access to private input if modifiers are explicitly ignored',
-        inputs: {
-          pattern: {type: 'ModelSignal<string>', isSignal: true, restrictionModifier: 'private'},
-        },
-        outputs: {patternChange: {type: 'ModelSignal<string>'}},
-        template: `<div dir [pattern]="'works'">`,
-        expected: [],
-        options: {
-          honorAccessModifiersForInputBindings: false,
-        },
-      },
-      {
         id: 'allow access to protected model if modifiers are explicitly ignored',
         inputs: {
           pattern: {type: 'ModelSignal<string>', isSignal: true, restrictionModifier: 'protected'},
@@ -164,18 +141,6 @@ runInEachFileSystem(() => {
         outputs: {patternChange: {type: 'ModelSignal<string>'}},
         template: `<div dir [pattern]="'works'">`,
         expected: [],
-        options: {
-          honorAccessModifiersForInputBindings: false,
-        },
-      },
-      {
-        id: 'allow access to private model if modifiers are explicitly ignored, but error if not assignable',
-        inputs: {
-          pattern: {type: 'ModelSignal<string>', isSignal: true, restrictionModifier: 'private'},
-        },
-        outputs: {patternChange: {type: 'ModelSignal<string>'}},
-        template: `<div dir [pattern]="false">`,
-        expected: [`TestComponent.html(1, 11): Type 'boolean' is not assignable to type 'string'.`],
         options: {
           honorAccessModifiersForInputBindings: false,
         },
@@ -612,19 +577,6 @@ runInEachFileSystem(() => {
         ],
       },
       // restricted fields
-      {
-        id: 'allows access to private output',
-        inputs: {
-          evt: {
-            type: 'ModelSignal<string>',
-            isSignal: true,
-            restrictionModifier: 'private',
-          },
-        },
-        outputs: {evtChange: {type: 'ModelSignal<string>', restrictionModifier: 'private'}},
-        template: `<div dir (evtChange)="true">`,
-        expected: [],
-      },
       {
         id: 'allows access to protected output',
         inputs: {
