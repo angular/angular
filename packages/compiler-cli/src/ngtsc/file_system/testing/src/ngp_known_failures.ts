@@ -300,6 +300,8 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'model inputs type-check diagnostics with `--strict` allows access to protected output',
   'import generation should report an error when a library entry-point does not export the symbol',
   'import generation should report an error when using a directive outside of rootDirs',
+  'ngtsc behavioral tests undecorated providers template parsing diagnostics should not point at a quote that is escaped correctly in an inline template',
+  'ngtsc behavioral tests undecorated providers template parsing diagnostics should point at a quote whose backslash was removed by TypeScript in an inline template',
 
   // API documentation extraction (`getApiDocumentation`) is not implemented in NGP.
   'ngtsc NgModule docs extraction should extract NgModule info',
