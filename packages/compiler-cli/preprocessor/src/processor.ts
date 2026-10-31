@@ -1994,6 +1994,28 @@ interface CompiledClass {
   hmrInitializerStmt: o.Statement | null;
 }
 
+function renderCoercionMembers(
+  coercionMembers: string | undefined,
+  insertions: ReadonlyArray<nga.TextInsertionMetadata> | undefined,
+  printer: ExpressionPrinter,
+): string {
+  if (!coercionMembers) {
+    return '';
+  }
+  if (!insertions || insertions.length === 0) {
+    return coercionMembers;
+  }
+  let result = '';
+  let lastPos = 0;
+  for (const ins of insertions) {
+    const ns = printer.getOrCreateNamespace(ins.text);
+    result += coercionMembers.slice(lastPos, ins.position) + `${ns}.`;
+    lastPos = ins.position;
+  }
+  result += coercionMembers.slice(lastPos);
+  return result;
+}
+
 function appendCompiledClass(
   compiled: CompiledClass,
   out: OutputSourceMapBuilder,
@@ -2001,7 +2023,7 @@ function appendCompiledClass(
   ctx: HybridCompilerContext,
 ): void {
   const {
-    classMeta: {span},
+    classMeta: {span, coercionNamespaceInsertions},
     fields,
     ngModule,
     classMetadataStmt,
@@ -2018,7 +2040,12 @@ function appendCompiledClass(
       true,
       ctx.isClosureCompilerEnabled,
     );
-    out.appendLeft(span.end - 1, compiledFactory + compiledDef + (field.coercionMembers ?? ''));
+    const coercionMembers = renderCoercionMembers(
+      field.coercionMembers,
+      coercionNamespaceInsertions,
+      printer,
+    );
+    out.appendLeft(span.end - 1, compiledFactory + compiledDef + coercionMembers);
   }
 
   let ngModuleStatements = '';
