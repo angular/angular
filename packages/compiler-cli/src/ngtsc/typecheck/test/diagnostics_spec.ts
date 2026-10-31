@@ -15,6 +15,39 @@ import {diagnose, ngForDeclaration, ngForDts, ngIfDeclaration, ngIfDts} from '..
 
 runInEachFileSystem(() => {
   describe('template diagnostics', () => {
+    describe('arrow functions', () => {
+      it('should report duplicate arrow function parameter names', () => {
+        const messages = diagnose(
+          `<div (click)="takes((a, a) => a)"></div>`,
+          `
+          class TestComponent {
+            takes(fn: (a: number, b: number) => number) {}
+          }`,
+        );
+
+        expect(messages).toEqual([
+          `TestComponent.html(1, 22): Duplicate identifier 'a'.`,
+          `TestComponent.html(1, 25): Duplicate identifier 'a'.`,
+        ]);
+      });
+
+      it('should not report unused arrow function parameters', () => {
+        const messages = diagnose(
+          `<div (click)="takes((prev) => 1)"></div>`,
+          `
+          class TestComponent {
+            takes(fn: (value: number) => number) {}
+          }`,
+          [],
+          [],
+          {},
+          {noUnusedLocals: true, noUnusedParameters: true},
+        );
+
+        expect(messages).toEqual([]);
+      });
+    });
+
     it('works for directive bindings', () => {
       const messages = diagnose(
         `<div dir [input]="person.name"></div>`,
