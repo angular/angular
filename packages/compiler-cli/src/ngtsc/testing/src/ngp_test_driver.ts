@@ -121,19 +121,14 @@ function createTestWasmAnalyzerSync(
   if (typeof Inner !== 'function') {
     throw new Error(`'${options.wasmBinding}' does not export a 'WasmAnalyzer' constructor`);
   }
+  const {backend, nativeBinding, wasmBinding, hostFs, ngAnalyzeDir, useWasm, ...engine} = options;
   const inner = new Inner(
     JSON.stringify({
-      virtualFiles: options.virtualFiles,
+      ...engine,
       optimize: options.optimize ?? true,
       tsconfigPath,
-      nodeModulesPathOverride: options.nodeModulesPathOverride,
-      workspaceName: options.workspaceName,
-      rootDirs: options.rootDirs,
-      enableHmr: options.enableHmr,
-      usePoisonedData: options.usePoisonedData,
-      useHostForImportGeneration: options.useHostForImportGeneration,
     }),
-    options.hostFs,
+    hostFs,
   );
   return new WasmAnalyzer(inner);
 }
@@ -434,6 +429,7 @@ export function performNgpCompilationSync(params: {
         ...(rawOpts['compilationMode'] !== undefined
           ? {compilationMode: rawOpts['compilationMode']}
           : {}),
+        _isAngularCoreCompilation: rawOpts['_isAngularCoreCompilation'],
       },
       files: rootNames.map((r) => toPosixPath(fs.resolve(basePath, r))),
     });
@@ -484,6 +480,10 @@ export function performNgpCompilationSync(params: {
       enableHmr: Boolean(rawOpts['_enableHmr']),
       usePoisonedData: tcbConfig.usePoisonedData,
       useHostForImportGeneration,
+      angularCoreCompilation:
+        typeof rawOpts['_isAngularCoreCompilation'] === 'boolean'
+          ? rawOpts['_isAngularCoreCompilation']
+          : undefined,
     });
     try {
       compiler = new HybridCompiler(analyzer, {

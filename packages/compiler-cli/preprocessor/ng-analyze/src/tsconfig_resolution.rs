@@ -20,6 +20,8 @@ pub struct ResolvedTsConfig {
     pub implicit_standalone: bool,
     pub emit_declaration_only: bool,
     pub experimental_local_compilation: bool,
+    /// `angularCompilerOptions._isAngularCoreCompilation`, or `None` when unset.
+    pub is_angular_core_compilation: Option<bool>,
 }
 
 pub fn load_and_resolve_tsconfig(
@@ -116,6 +118,7 @@ pub fn load_and_resolve_tsconfig(
         experimental_local_compilation: extended_options
             .experimental_local_compilation
             .unwrap_or(false),
+        is_angular_core_compilation: extended_options.is_angular_core_compilation,
     })
 }
 
@@ -295,6 +298,7 @@ struct ExtendedOptions {
     emit_declaration_only: Option<bool>,
     allow_emit_declaration_only: Option<bool>,
     experimental_local_compilation: Option<bool>,
+    is_angular_core_compilation: Option<bool>,
 }
 
 fn core_version_supports_implicit_standalone(version: &str) -> bool {
@@ -433,6 +437,14 @@ fn resolve_extended_options_recursive(
             .map(|mode| mode == "experimental-local" || mode == "local")
     });
 
+    let mut current_is_angular_core_compilation = parsed_json.as_ref().ok().and_then(|json| {
+        json.pointer("/angularCompilerOptions/_isAngularCoreCompilation")
+            .or_else(|| {
+                json.pointer("/bazelOptions/angularCompilerOptions/_isAngularCoreCompilation")
+            })
+            .and_then(|v| v.as_bool())
+    });
+
     let base_dir = abs_path.parent().unwrap_or(Path::new("."));
 
     let mut current_root_dirs = tsconfig.compiler_options.root_dirs.clone().map(|dirs| {
@@ -458,6 +470,7 @@ fn resolve_extended_options_recursive(
         && current_emit_declaration_only.is_some()
         && current_allow_emit_declaration_only.is_some()
         && current_experimental_local_compilation.is_some()
+        && current_is_angular_core_compilation.is_some()
     {
         visited.remove(&canonical);
         return Ok(ExtendedOptions {
@@ -475,6 +488,7 @@ fn resolve_extended_options_recursive(
             emit_declaration_only: current_emit_declaration_only,
             allow_emit_declaration_only: current_allow_emit_declaration_only,
             experimental_local_compilation: current_experimental_local_compilation,
+            is_angular_core_compilation: current_is_angular_core_compilation,
         });
     }
 
@@ -495,6 +509,7 @@ fn resolve_extended_options_recursive(
             emit_declaration_only: current_emit_declaration_only,
             allow_emit_declaration_only: current_allow_emit_declaration_only,
             experimental_local_compilation: current_experimental_local_compilation,
+            is_angular_core_compilation: current_is_angular_core_compilation,
         });
     };
 
@@ -565,6 +580,9 @@ fn resolve_extended_options_recursive(
         if let Some(experimental_local_compilation) = res.experimental_local_compilation {
             inherited.experimental_local_compilation = Some(experimental_local_compilation);
         }
+        if let Some(is_angular_core_compilation) = res.is_angular_core_compilation {
+            inherited.is_angular_core_compilation = Some(is_angular_core_compilation);
+        }
     }
     if current_root_dirs.is_none() {
         current_root_dirs = inherited.root_dirs;
@@ -608,6 +626,9 @@ fn resolve_extended_options_recursive(
     if current_experimental_local_compilation.is_none() {
         current_experimental_local_compilation = inherited.experimental_local_compilation;
     }
+    if current_is_angular_core_compilation.is_none() {
+        current_is_angular_core_compilation = inherited.is_angular_core_compilation;
+    }
 
     visited.remove(&canonical);
     Ok(ExtendedOptions {
@@ -625,6 +646,7 @@ fn resolve_extended_options_recursive(
         emit_declaration_only: current_emit_declaration_only,
         allow_emit_declaration_only: current_allow_emit_declaration_only,
         experimental_local_compilation: current_experimental_local_compilation,
+        is_angular_core_compilation: current_is_angular_core_compilation,
     })
 }
 
@@ -1325,6 +1347,34 @@ mod tests {
             .files
             .contains(&PathBuf::from("/virtual/src/main.ts")));
         assert_eq!(config.compiler_options.allow_js, Some(true));
+    }
+
+    /// `_isAngularCoreCompilation` keeps "unset" apart from `false`: only an unset flag falls back
+    /// to detecting `@angular/core` from its `r3_symbols.ts`.
+    #[test]
+    fn test_is_angular_core_compilation_is_inherited() {
+        let fs = crate::fs::OverlayFileSystem::new_with_overlay();
+        fs.upsert_file(
+            PathBuf::from("/virtual/base.json"),
+            r#"{"angularCompilerOptions": {"_isAngularCoreCompilation": true}}"#.to_string(),
+        );
+        for (tsconfig, expected) in [
+            (r#"{"extends": "./base.json", "files": []}"#, Some(true)),
+            (
+                r#"{"extends": "./base.json", "angularCompilerOptions": {"_isAngularCoreCompilation": false}, "files": []}"#,
+                Some(false),
+            ),
+            (
+                r#"{"bazelOptions": {"angularCompilerOptions": {"_isAngularCoreCompilation": true}}, "files": []}"#,
+                Some(true),
+            ),
+            (r#"{"files": []}"#, None),
+        ] {
+            fs.upsert_file(PathBuf::from("/virtual/tsconfig.json"), tsconfig.to_string());
+            let config =
+                load_and_resolve_tsconfig(Path::new("/virtual/tsconfig.json"), &fs).unwrap();
+            assert_eq!(config.is_angular_core_compilation, expected, "{tsconfig}");
+        }
     }
 
     #[test]

@@ -1,8 +1,8 @@
 //! Shared parsing utility functions for extracting values from AST expressions.
 
 use oxc_ast::ast::{
-    Argument, BindingPattern, Decorator, Expression, IdentifierReference, Program, PropertyKey,
-    Statement, TSQualifiedName, TSTypeName,
+    Argument, BindingPattern, Declaration, Decorator, Expression, IdentifierReference, Program,
+    PropertyKey, Statement, TSQualifiedName, TSTypeName,
 };
 use oxc_ast::AstKind;
 use oxc_semantic::{Scoping, Semantic, SymbolFlags};
@@ -858,6 +858,31 @@ pub fn exports_type_only(program: &Program<'_>, exported_name: &str) -> bool {
         decl.specifiers.iter().any(|specifier| {
             specifier.exported.name() == exported_name
                 && (decl.export_kind.is_type() || specifier.export_kind.is_type())
+        })
+    })
+}
+
+/// Whether this file exports `ITS_JUST_ANGULAR = true`, the marker of `@angular/core`'s own
+/// `r3_symbols.ts`. As in ngtsc's `isAngularCorePackage`, an exported variable statement must
+/// declare the name itself and initialize it to the literal `true`.
+/// https://github.com/angular/angular/blob/4f6d294917/packages/compiler-cli/src/ngtsc/core/src/compiler.ts#L1751-L1786
+pub fn exports_its_just_angular(program: &Program<'_>) -> bool {
+    program.body.iter().any(|stmt| {
+        let Statement::ExportDeclaration(export) = stmt else {
+            return false;
+        };
+        let Declaration::VariableDeclaration(variables) = &export.declaration else {
+            return false;
+        };
+        variables.declarations.iter().any(|declarator| {
+            let Some(Expression::BooleanLiteral(init)) = &declarator.init else {
+                return false;
+            };
+            init.value
+                && declarator
+                    .id
+                    .get_binding_identifier()
+                    .is_some_and(|id| id.name == "ITS_JUST_ANGULAR")
         })
     })
 }

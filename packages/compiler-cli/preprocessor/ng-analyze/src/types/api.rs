@@ -129,8 +129,16 @@ pub struct AnalyzerOptions {
     /// `set_entry_points`), the tsconfig no longer supplies the roots.
     pub entry_points: Option<Vec<String>>,
     /// The `r3_symbols.ts` file that compiling `@angular/core` itself imports runtime symbols from.
-    /// Falls back to a root file named `r3_symbols.ts` when unset.
+    /// Falls back to a root file named `r3_symbols.ts` when unset. Setting it implies
+    /// [`Self::angular_core_compilation`] unless that is set explicitly.
     pub r3_symbols_file: Option<String>,
+    /// Whether this compilation builds `@angular/core` itself (ngtsc's `isCore`), which imports
+    /// its own decorators through relative paths rather than from `@angular/core`. Falls back to
+    /// the tsconfig's `angularCompilerOptions._isAngularCoreCompilation`, then to `true` when
+    /// [`Self::r3_symbols_file`] is set, and otherwise to whether the root file named
+    /// `r3_symbols.ts` exports `ITS_JUST_ANGULAR = true` (ngtsc's `isAngularCorePackage`).
+    /// Internal: only meant for compiling Angular itself.
+    pub angular_core_compilation: Option<bool>,
     pub optimize: Option<bool>,
     pub virtual_files: Option<HashMap<String, String>>,
     /// Deprecated alias of [`DefaultHostConfig::node_modules_path_override`], which takes

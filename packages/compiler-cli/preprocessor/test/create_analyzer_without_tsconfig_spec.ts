@@ -262,7 +262,6 @@ export class MyComp {}
   });
 
   it('rewrites @angular/core runtime imports when r3SymbolsFile is set explicitly', async () => {
-    const pkgJsonPath = '/core/package.json';
     const r3SymbolsPath = '/core/src/r3_symbols.ts';
     const injectablePath = '/core/src/di/injectable.ts';
     const appRefPath = '/core/src/application/application_ref.ts';
@@ -272,7 +271,6 @@ export class MyComp {}
 export class ApplicationRef {}
 `;
     const virtualFiles: Record<string, string> = {
-      [pkgJsonPath]: JSON.stringify({name: '@angular/core'}),
       [r3SymbolsPath]: `export const ITS_JUST_ANGULAR = true;\n`,
       [injectablePath]: `export function Injectable(opts?: unknown): any {}\n`,
       [appRefPath]: appRefContent,
@@ -283,7 +281,8 @@ export class ApplicationRef {}
       wasmBinding: resolveWasmBinding(),
       virtualFiles,
       optimize: false,
-      // r3_symbols.ts is not in entryPoints; r3SymbolsFile identifies it explicitly.
+      // r3_symbols.ts is not in entryPoints; r3SymbolsFile identifies it explicitly, which also
+      // marks the compilation as @angular/core.
       entryPoints: [appRefPath],
       r3SymbolsFile: r3SymbolsPath,
       defaultHost: {
@@ -303,6 +302,46 @@ export class ApplicationRef {}
       expect(emitted).not.toContain("from '@angular/core'");
       expect(emitted).toContain('i0.ɵɵdefineInjectable(');
       expect(emitted).toContain('i0.setClassMetadata(');
+    } finally {
+      analyzer.close();
+    }
+  });
+
+  it('recognizes @angular/core decorators when angularCoreCompilation is set without r3_symbols.ts', async () => {
+    const injectablePath = '/core/src/di/injectable.ts';
+    const testingServicePath = '/core/testing/src/testing_service.ts';
+    const testingServiceContent = `import {Injectable} from '../../src/di/injectable';
+
+@Injectable()
+export class TestingService {}
+`;
+    const virtualFiles: Record<string, string> = {
+      [injectablePath]: `export function Injectable(opts?: unknown): any {}\n`,
+      [testingServicePath]: testingServiceContent,
+    };
+
+    const analyzer = await createAnalyzer({
+      backend: 'wasm',
+      wasmBinding: resolveWasmBinding(),
+      virtualFiles,
+      optimize: false,
+      entryPoints: [testingServicePath],
+      angularCoreCompilation: true,
+      defaultHost: {
+        rootDirs: ['/core'],
+        nodeModulesPathOverride: resolveFixtureNodeModules(),
+      },
+    });
+
+    try {
+      const compiler = new HybridCompiler(analyzer, {
+        optimize: false,
+        rootDirs: ['/core'],
+      });
+      const processed = await compiler.processFile(testingServicePath, testingServiceContent);
+      const emitted = processed.magicString.toString();
+      expect(emitted).toContain("import * as i0 from '@angular/core';");
+      expect(emitted).toContain('i0.ɵɵdefineInjectable(');
     } finally {
       analyzer.close();
     }

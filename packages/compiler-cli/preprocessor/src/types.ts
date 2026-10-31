@@ -96,8 +96,20 @@ export interface AnalyzerOptions {
    * `setEntryPoints`), the tsconfig no longer supplies the roots.
    */
   entryPoints?: Array<string>;
-  /** The `r3_symbols.ts` file when compiling `@angular/core` itself. */
+  /**
+   * The `r3_symbols.ts` file when compiling `@angular/core` itself. Falls back to a root file
+   * named `r3_symbols.ts`. Setting it marks the compilation as `@angular/core`.
+   */
   r3SymbolsFile?: string;
+  /**
+   * Whether this compilation builds `@angular/core` itself (ngtsc's `isCore`), which imports
+   * its own decorators through relative paths rather than from `@angular/core`. Falls back to
+   * the tsconfig's `angularCompilerOptions._isAngularCoreCompilation`, then to `true` when
+   * `r3SymbolsFile` is set, and otherwise to whether the root file named `r3_symbols.ts` exports
+   * `ITS_JUST_ANGULAR = true` (ngtsc's `isAngularCorePackage`).
+   * Internal: only meant for compiling Angular itself.
+   */
+  angularCoreCompilation?: boolean;
   optimize?: boolean;
   virtualFiles?: Record<string, string>;
   /**
