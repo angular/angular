@@ -214,7 +214,7 @@ export abstract class FieldNodeStructure {
 
   /** Destroys the field when it is no longer needed. */
   destroy(): void {
-    this.injector.destroy();
+    this._injector?.destroy();
   }
 
   /**
@@ -472,6 +472,7 @@ export class RootFieldNodeStructure extends FieldNodeStructure {
   ) {
     super(logic, node, createChildNode);
     this.childrenMap = this.createChildrenMap();
+    this.fieldManager.structures.add(this);
   }
 }
 
