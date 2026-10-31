@@ -91,6 +91,11 @@ describe('sanitization', () => {
     ).toEqual('javascript:true');
   });
 
+  it('should map null and undefined resourceUrls to an empty string', () => {
+    expect(ɵɵsanitizeResourceUrl(null).toString()).toEqual('');
+    expect(ɵɵsanitizeResourceUrl(undefined).toString()).toEqual('');
+  });
+
   it('should sanitize style', () => {
     expect(ɵɵsanitizeStyle('red')).toEqual('red');
     expect(ɵɵsanitizeStyle(new Wrap('red'))).toEqual('red');
