@@ -31,11 +31,13 @@ export class Search {
 }
 ```
 
-`debounced` takes the source signal and a wait duration in milliseconds. The returned resource's `value()` always contains the last settled value, and `status()` tells you whether a new value is still pending.
+`debounced` takes the source signal and a wait duration in milliseconds. The returned resource's `value()` contains the last settled value, and `status()` tells you whether a new value is still pending.
 
 ## Status during debounce
 
-While the debounce timer is counting down, `status()` is `'loading'` and `value()` returns the previously resolved value. When the timer expires, the resource settles to `'resolved'`. If the source signal throws, the resource enters `'error'` immediately; no timer runs.
+While the debounce timer is counting down after a resolved value, `status()` is `'loading'` and `value()` returns the previously resolved value. When the timer expires, the resource settles to `'resolved'`.
+
+If the source signal throws, the resource enters `'error'` immediately, `value()` throws, and no timer runs. After the source signal stops throwing, the resource stays in `'error'` until the new wait settles, then becomes `'resolved'`.
 
 See [Resource status](/guide/signals/resource#resource-status) for the full list of statuses and their `value()` behavior.
 
