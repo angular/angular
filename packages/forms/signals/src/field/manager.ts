@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {APP_ID, effect, Injector, untracked} from '@angular/core';
+import {APP_ID, DestroyRef, effect, Injector, untracked} from '@angular/core';
 import type {FormSubmitOptions} from '../api/types';
 import type {FieldNodeStructure} from './structure';
 
@@ -33,8 +33,8 @@ export class FormFieldManager {
   }
 
   /**
-   * Contains all child field structures that have been created as part of the current form.
-   * New child structures are automatically added when they are created.
+   * Contains all field structures that have been created as part of the current form.
+   * New structures are automatically added when they are created.
    * Structures are destroyed and removed when they are no longer reachable from the root.
    */
   readonly structures = new Set<FieldNodeStructure>();
@@ -68,6 +68,13 @@ export class FormFieldManager {
       },
       {injector: this.injector},
     );
+
+    this.injector.get(DestroyRef).onDestroy(() => {
+      for (const structure of this.structures) {
+        structure.destroy();
+      }
+      this.structures.clear();
+    });
   }
 
   /**
