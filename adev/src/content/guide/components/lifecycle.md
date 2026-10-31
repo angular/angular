@@ -183,8 +183,9 @@ _content_) have been initialized.
 
 You can use this lifecycle hook to read the results of
 [content queries](guide/components/queries#content-queries). While you can access the initialized
-state of these queries, attempting to change any state in this method results in an
-[ExpressionChangedAfterItHasBeenCheckedError](errors/NG0100)
+state of these queries, avoid changing non-signal state that an ancestor's template has already
+rendered. Doing so can result in an
+[ExpressionChangedAfterItHasBeenCheckedError](errors/NG0100).
 
 ### ngAfterContentChecked
 
@@ -195,8 +196,8 @@ This method runs very frequently and can significantly impact your page's perfor
 defining this hook whenever possible, only using it when you have no alternative.
 
 While you can access the updated state
-of [content queries](guide/components/queries#content-queries) here, attempting to
-change any state in this method results in
+of [content queries](guide/components/queries#content-queries) here, avoid changing non-signal
+state that an ancestor's template has already rendered. Doing so can result in
 an [ExpressionChangedAfterItHasBeenCheckedError](errors/NG0100).
 
 ### ngAfterViewInit
@@ -206,8 +207,8 @@ _view_) have been initialized.
 
 You can use this lifecycle hook to read the results of
 [view queries](guide/components/queries#view-queries). While you can access the initialized state of
-these queries, attempting to change any state in this method results in an
-[ExpressionChangedAfterItHasBeenCheckedError](errors/NG0100)
+these queries, avoid changing non-signal state that a template has already rendered. Doing so can
+result in an [ExpressionChangedAfterItHasBeenCheckedError](errors/NG0100).
 
 ### ngAfterViewChecked
 
@@ -218,9 +219,8 @@ This method runs very frequently and can significantly impact your page's perfor
 defining this hook whenever possible, only using it when you have no alternative.
 
 While you can access the updated state of [view queries](guide/components/queries#view-queries)
-here, attempting to
-change any state in this method results in
-an [ExpressionChangedAfterItHasBeenCheckedError](errors/NG0100).
+here, avoid changing non-signal state that a template has already rendered. Doing so can result
+in an [ExpressionChangedAfterItHasBeenCheckedError](errors/NG0100).
 
 ### afterEveryRender and afterNextRender
 
