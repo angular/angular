@@ -148,7 +148,7 @@ class ControlDirectiveHostImpl implements ControlDirectiveHost {
   setInputOnDirectives(
     inputName: string,
     value: unknown,
-    writePredicate?: (currentValue: unknown) => boolean,
+    writePredicate?: (currentValue: unknown, directive: unknown) => boolean,
   ): boolean {
     const directiveIndices = this.tNode.inputs?.[inputName];
     const hostDirectiveInputs = this.tNode.hostDirectiveInputs?.[inputName];
@@ -167,7 +167,7 @@ class ControlDirectiveHostImpl implements ControlDirectiveHost {
         const directiveDef = this.tView.data[index] as DirectiveDef<unknown>;
         const matchesPredicate =
           !writePredicate ||
-          writePredicate(readInputFromDirective(directive, directiveDef, inputName));
+          writePredicate(readInputFromDirective(directive, directiveDef, inputName), directive);
 
         if (matchesPredicate) {
           writeToDirectiveInput(directiveDef, directive, inputName, value);
@@ -188,7 +188,7 @@ class ControlDirectiveHostImpl implements ControlDirectiveHost {
         const directiveDef = this.tView.data[index] as DirectiveDef<unknown>;
         const matchesPredicate =
           !writePredicate ||
-          writePredicate(readInputFromDirective(directive, directiveDef, inputName));
+          writePredicate(readInputFromDirective(directive, directiveDef, inputName), directive);
 
         if (matchesPredicate) {
           writeToDirectiveInput(directiveDef, directive, internalName, value);

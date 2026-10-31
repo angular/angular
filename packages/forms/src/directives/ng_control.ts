@@ -15,8 +15,6 @@ import {
   type Renderer2,
   Signal,
   inject,
-  signal,
-  untracked,
   type ɵControlDirectiveHost as ControlDirectiveHost,
   Provider,
 } from '@angular/core';
@@ -163,13 +161,6 @@ export abstract class NgControl extends AbstractControlDirective {
     errors?: ValidationErrors | null;
   } | null = null;
 
-  /**
-   * Counts the `statusChanges` emissions of the current control, plus the merge of validators in
-   * `setupCustomControl`. Read by `ngControlUpdate`, so that it runs again when only the errors
-   * change.
-   */
-  private readonly statusChangeCount = signal(0);
-
   constructor(
     injector?: Injector,
     renderer?: Renderer2,
@@ -203,12 +194,7 @@ export abstract class NgControl extends AbstractControlDirective {
     this.subscription = new Subscription();
 
     this.subscription.add(this.control.valueChanges.subscribe(markForCheck));
-    this.subscription.add(
-      this.control.statusChanges.subscribe(() => {
-        markForCheck();
-        untracked(() => this.statusChangeCount.update((count) => count + 1));
-      }),
-    );
+    this.subscription.add(this.control.statusChanges.subscribe(markForCheck));
 
     this.resetSubscription?.unsubscribe();
     this.resetSubscription = undefined;
@@ -224,13 +210,6 @@ export abstract class NgControl extends AbstractControlDirective {
     // Add parseErrors validator if present
     if (this.parseErrorsValidator) {
       this.control.addValidators(this.parseErrorsValidator);
-    }
-
-    // The caller re-validates the control with `emitEvent: false` after the setup, so the
-    // validators merged above emit no `statusChanges`, and leave the status signal unchanged when
-    // the control was already invalid. Count a change, so that `ngControlUpdate` binds the errors.
-    if (this.validator !== null || this.asyncValidator !== null) {
-      untracked(() => this.statusChangeCount.update((count) => count + 1));
     }
   }
 
@@ -286,13 +265,12 @@ export abstract class NgControl extends AbstractControlDirective {
     const control = this.control!;
     const bindings = this.customControlBindings!;
 
-    // Track the status signal and the status change count, so that this update runs again when
-    // validation changes later in the same change detection pass (e.g. a validator directive's
-    // `ngOnChanges` re-validating the control). The status getters below are untracked, `errors`
-    // is a plain field that the status signal does not cover, and a `markForCheck` from
-    // `statusChanges` does not re-run a view that is already being refreshed.
+    // Track the status and errors signals, so that this update runs again when validation changes
+    // later in the same change detection pass (e.g. a validator directive's `ngOnChanges`
+    // re-validating the control). The `status` and `errors` getters below are untracked, and a
+    // `markForCheck` from `statusChanges` does not re-run a view that is already being refreshed.
     control._status();
-    this.statusChangeCount();
+    control._errors();
 
     // Bind FormControl value -> FVC
     if (!Object.is(bindings.value, control.value)) {
@@ -308,8 +286,18 @@ export abstract class NgControl extends AbstractControlDirective {
     this.bindControlProperty(host, bindings, 'pending', control.pending);
     this.bindControlProperty(host, bindings, 'disabled', control.disabled);
 
-    // Binding to `required` may be handled by the host element itself.
-    if (this.shouldBindRequired) {
+    const requiredValidator = this.requiredValidatorViaDi;
+    if (requiredValidator) {
+      // The template's `required` binding reaches the custom control too, so compare with the
+      // input's current value rather than the last bound one. Skip the validator: its `required`
+      // input belongs to the template, and its `[attr.required]` host binding covers the element.
+      const required = this.isRequired;
+      host.setInputOnDirectives(
+        'required',
+        required,
+        (current, directive) => directive !== requiredValidator && current !== required,
+      );
+    } else {
       this.bindControlProperty(host, bindings, 'required', this.isRequired);
     }
 
@@ -325,27 +313,11 @@ export abstract class NgControl extends AbstractControlDirective {
   /**
    * Returns true if the control is currently considered required, false otherwise.
    *
-   * A control is required when it has `Validators.required`. A `RequiredValidator` on the element
-   * is handled by `shouldBindRequired` instead.
+   * A control is required when a `RequiredValidator` on the element is enabled or the control has
+   * `Validators.required`.
    */
   private get isRequired(): boolean {
-    return this.control?._hasRequired() ?? false;
-  }
-
-  /**
-   * Whether the control should bind the `required` property (in custom control mode).
-   *
-   * Not when a `RequiredValidator` is on the element, which is then the source of truth for
-   * required-ness as it is for `NgModel`: the template's `required` binding already reaches the
-   * custom control's `required` input, while a value bound here would also be written into the
-   * directive's input of the same name. That would override the template, both on the first pass
-   * (before the directive's `ngOnChanges`, clearing a static `required`) and later (turning
-   * `Validators.required` into a directive validator that outlives its removal).
-   *
-   * Can be overridden by subclasses that handle `required` in a different way.
-   */
-  protected get shouldBindRequired(): boolean {
-    return this.requiredValidatorViaDi === undefined;
+    return (this.requiredValidatorViaDi?._enabled || this.control?._hasRequired()) ?? false;
   }
 
   /**

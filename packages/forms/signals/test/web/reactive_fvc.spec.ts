@@ -7,7 +7,6 @@
  */
 
 import {
-  booleanAttribute,
   Component,
   computed,
   Directive,
@@ -861,7 +860,7 @@ describe('FormControlName with FVC', () => {
 })
 class ValidatedFvcInput {
   readonly value = model('');
-  readonly required = input(false, {transform: booleanAttribute});
+  readonly required = input<boolean | string>(false);
   readonly invalid = input(false);
   readonly errors = input<readonly any[]>([]);
 }
@@ -1008,8 +1007,7 @@ describe('FormControlDirective with FVC and validator directives', () => {
     const fvc = fixture.debugElement.query(By.directive(ValidatedFvcInput)).componentInstance;
     const {ctrl} = fixture.componentInstance;
     expect(ctrl.errors).toEqual({required: true});
-    // The `RequiredValidator` on the element decides the `required` input.
-    expect(fvc.required()).toBe(false);
+    expect(fvc.required()).toBe(true);
 
     act(() => {
       ctrl.removeValidators(Validators.required);
@@ -1020,6 +1018,44 @@ describe('FormControlDirective with FVC and validator directives', () => {
     // `[attr.required]` is the RequiredValidator's own host binding.
     const host = fixture.debugElement.query(By.directive(ValidatedFvcInput)).nativeElement;
     expect(host.hasAttribute('required')).toBe(false);
+  });
+
+  it('should keep required bound while Validators.required is present and [required] turns off', () => {
+    @Component({
+      template: `<validated-fvc-input [formControl]="ctrl" [required]="req()" />`,
+      imports: [ValidatedFvcInput, ReactiveFormsModule],
+    })
+    class TestCmp {
+      ctrl = new FormControl('', Validators.required);
+      req = signal(true);
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const fvc = fixture.debugElement.query(By.directive(ValidatedFvcInput)).componentInstance;
+    expect(fvc.required()).toBe(true);
+
+    act(() => fixture.componentInstance.req.set(false));
+    expect(fixture.componentInstance.ctrl.errors).toEqual({required: true});
+    expect(fvc.required()).toBe(true);
+  });
+
+  it('should bind errors that change without a status change or an event', () => {
+    @Component({
+      template: `<validated-fvc-input [formControl]="ctrl" required />`,
+      imports: [ValidatedFvcInput, ReactiveFormsModule],
+    })
+    class TestCmp {
+      ctrl = new FormControl('');
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const fvc = fixture.debugElement.query(By.directive(ValidatedFvcInput)).componentInstance;
+    const {ctrl} = fixture.componentInstance;
+    expect(fvc.errors().map((e: {kind: string}) => e.kind)).toEqual(['required']);
+
+    act(() => ctrl.setErrors({custom: true}, {emitEvent: false}));
+    expect(ctrl.status).toBe('INVALID');
+    expect(fvc.errors().map((e: {kind: string}) => e.kind)).toEqual(['custom']);
   });
 
   it('should move validator directives to a new FormControl when it is swapped', () => {
@@ -1321,35 +1357,6 @@ describe('FormControlName with FVC and validator directives', () => {
     // The control is invalid before the directive's validator is merged, which only adds an error.
     expect(Object.keys(form.controls.name.errors!)).toEqual(['pattern', 'minlength']);
     expect(fvc.errors().map((e: {kind: string}) => e.kind)).toEqual(['pattern', 'minlength']);
-  });
-
-  it('should set up the control when it exists after a change detection that failed', () => {
-    @Component({
-      template: `
-        <form [formGroup]="form()">
-          <validated-fvc-input formControlName="name" minlength="3" />
-        </form>
-      `,
-      imports: [ValidatedFvcInput, ReactiveFormsModule],
-    })
-    class TestCmp {
-      form = signal<FormGroup>(new FormGroup({}));
-    }
-
-    const fixture = TestBed.createComponent(TestCmp);
-    // The group has no `name` control yet.
-    expect(() => TestBed.tick()).toThrow();
-
-    const ctrl = new FormControl('ab');
-    act(() => fixture.componentInstance.form.set(new FormGroup({name: ctrl})));
-    const fvc = fixture.debugElement.query(By.directive(ValidatedFvcInput)).componentInstance;
-
-    expect(ctrl.errors).toEqual({minlength: {requiredLength: 3, actualLength: 2}});
-    expect(fvc.errors().map((e: {kind: string}) => e.kind)).toEqual(['minlength']);
-
-    act(() => ctrl.setValue('abc'));
-    expect(fvc.value()).toBe('abc');
-    expect(fvc.invalid()).toBe(false);
   });
 });
 

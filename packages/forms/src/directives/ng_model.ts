@@ -329,16 +329,6 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
   }
 
   /**
-   * Template-driven forms handle `required` via the `RequiredValidator` directive.
-   *
-   * This directive has a `required` input and a host binding to `[attr.required]`. It defines the
-   * source of truth for required-ness, so disable the normal control binding for it.
-   */
-  protected override get shouldBindRequired() {
-    return false;
-  }
-
-  /**
    * @description
    * Returns an array that represents the path from the top-level form to this control.
    * Each index is the string name of the control on that level.

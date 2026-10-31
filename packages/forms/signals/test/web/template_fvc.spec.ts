@@ -8,7 +8,6 @@
 
 import {
   ApplicationRef,
-  booleanAttribute,
   Component,
   computed,
   Directive,
@@ -500,7 +499,7 @@ describe('NgModel parseErrors binding', () => {
 })
 class ValidatedFvcInput {
   readonly value = model('');
-  readonly required = input(false, {transform: booleanAttribute});
+  readonly required = input<boolean | string>(false);
   readonly valid = input(true);
   readonly invalid = input(false);
   readonly errors = input<readonly any[]>([]);
@@ -564,6 +563,7 @@ describe('NgModel with FVC and validator directives', () => {
 
     expect(control.errors).toEqual({required: true});
     expect(control.valid).toBe(false);
+    expect(fvc.required()).toBe(true);
     expect(fvc.invalid()).toBe(true);
     expect(fvc.errors().map((e: {kind: string}) => e.kind)).toEqual(['required']);
 
@@ -609,13 +609,16 @@ describe('NgModel with FVC and validator directives', () => {
     const fvc = fixture.debugElement.query(By.directive(ValidatedFvcInput)).componentInstance;
     const control = fixture.componentInstance.model.control;
     expect(control.errors).toBeNull();
+    expect(fvc.required()).toBe(false);
 
     await actAsync(() => fixture.componentInstance.req.set(true));
     expect(control.errors).toEqual({required: true});
+    expect(fvc.required()).toBe(true);
     expect(fvc.invalid()).toBe(true);
 
     await actAsync(() => fixture.componentInstance.req.set(false));
     expect(control.errors).toBeNull();
+    expect(fvc.required()).toBe(false);
     expect(fvc.invalid()).toBe(false);
   });
 

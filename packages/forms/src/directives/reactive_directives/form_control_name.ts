@@ -95,7 +95,6 @@ const controlNameBinding: Provider = {
 })
 export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   private _added = false;
-  private _setUpAttempted = false;
   /**
    * Internal reference to the view model value.
    * @internal
@@ -193,7 +192,6 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
 
   /** @docs-private */
   ngOnChanges(changes: SimpleChanges) {
-    this._setUpAttempted = true;
     if (!this._added) this._setUpControl();
     if (isPropertyUpdated(changes, this.viewModel)) {
       if (typeof ngDevMode === 'undefined' || ngDevMode) {
@@ -269,21 +267,14 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
       return;
     }
 
-    // `ɵngControlUpdate` fires before `ngOnChanges`, so resolve `this.control` here to bind it.
-    // Setting it up is left to `ngOnChanges`, as for a ControlValueAccessor: setting it up here
-    // would run `NG_VALIDATORS` of the custom control before its `ngOnInit`, and let the first
-    // `ngOnChanges` of each validator directive re-validate it with events. The inputs bound
-    // before the setup are refreshed by the status change that `setupCustomControl` counts.
-    // If `ngOnChanges` has already failed to set it up, for example because the control did not
-    // exist yet, it does not run again until an input changes, so set it up here, as before.
-    if (!this._added) {
-      if (this._setUpAttempted) {
-        this._setUpControl();
-      } else {
-        const control = this.formDirective?.getControl(this);
-        if (!control) return;
-        (this as Writable<this>).control = control;
-      }
+    // `ɵngControlUpdate` runs during `executeTemplate`, before `ngOnChanges` calls
+    // `_setUpControl()` (which sets `_added = true`). Resolve `this.control` early so
+    // `super.ngControlUpdate` can bind initial state and track reactive signals, while
+    // leaving `_setUpControl()` to `ngOnChanges`.
+    if (!this.control) {
+      const control = this.formDirective?.getControl(this);
+      if (!control) return;
+      (this as Writable<this>).control = control;
     }
     super.ngControlUpdate(host, true);
   }
