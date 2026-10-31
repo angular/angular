@@ -95,9 +95,28 @@ pub enum FirstParam {
         /// True when the type can be emitted verbatim at class scope in the declaring file itself
         /// (no `this` type or function-scoped `typeof` parameter reference).
         is_emittable_in_file: bool,
+        /// True when every non-ambient symbol reference in the type is a `TSTypeReference`
+        /// whose `type_name` is an `IdentifierReference` in `type_refs` (and the type contains
+        /// no `import(...)`, `typeof`, or `this` types).
+        is_qualifiable_across_files: bool,
+        /// Top-level exported or imported `TSTypeReference` identifiers inside `type_text` that
+        /// require a namespace prefix when emitted in another file, sorted by `byte_offset`.
+        type_refs: Vec<ReferencedTypeIdent>,
         /// The first type it references that is declared in its file but not exported from it.
         unexported: Option<UnexportedType>,
     },
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct ReferencedTypeIdent {
+    /// Byte offset of the identifier's start relative to `type_span.start`.
+    pub byte_offset: u32,
+    /// Identifier name as written in the parameter type.
+    pub name: String,
+    /// True when the identifier resolves to an `import` / `import type` binding in the
+    /// function's declaring file; false when it resolves to a top-level declaration exported
+    /// under its own name from the function's declaring file.
+    pub is_imported: bool,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -150,14 +169,17 @@ impl FunctionFacts {
 }
 
 fn typed_param(ty: &TSType<'_>, semantic: &Semantic<'_>) -> FirstParam {
+    let span = ty.span();
     let mut finder = UnexportedTypeFinder {
         semantic,
+        type_span: span,
         is_self_contained: true,
         is_emittable_in_file: true,
+        is_qualifiable_across_files: true,
+        type_refs: Vec::new(),
         found: None,
     };
     finder.visit_ts_type(ty);
-    let span = ty.span();
     let type_text = semantic
         .source_text()
         .get(span.start as usize..span.end as usize)
@@ -168,28 +190,38 @@ fn typed_param(ty: &TSType<'_>, semantic: &Semantic<'_>) -> FirstParam {
         type_text,
         is_self_contained: finder.is_self_contained,
         is_emittable_in_file: finder.is_emittable_in_file,
+        is_qualifiable_across_files: finder.is_qualifiable_across_files,
+        type_refs: finder.type_refs,
         unexported: finder.found,
     }
 }
 
 /// Finds the type references ngtsc's `assertEmittableInputType` rejects within the context file:
 /// identifiers naming a declaration of the file that it does not statically export. Also tracks
-/// whether the type is self-contained across files (`is_self_contained`) and emittable at class
-/// scope in the declaring file (`is_emittable_in_file`).
+/// whether the type is self-contained across files (`is_self_contained`), emittable at class
+/// scope in the declaring file (`is_emittable_in_file`), or qualifiable across files via
+/// namespace imports (`is_qualifiable_across_files` + `type_refs`).
 struct UnexportedTypeFinder<'s, 'a> {
     semantic: &'s Semantic<'a>,
+    type_span: Span,
     is_self_contained: bool,
     is_emittable_in_file: bool,
+    is_qualifiable_across_files: bool,
+    type_refs: Vec<ReferencedTypeIdent>,
     found: Option<UnexportedType>,
 }
 
 impl<'a> Visit<'a> for UnexportedTypeFinder<'_, 'a> {
     fn visit_ts_type_reference(&mut self, it: &TSTypeReference<'a>) {
-        if self.found.is_none() {
-            if let TSTypeName::IdentifierReference(ident) = &it.type_name {
-                self.check(ident);
+        if let TSTypeName::IdentifierReference(ident) = &it.type_name {
+            self.check(ident);
+            if let Some(type_arguments) = &it.type_arguments {
+                self.visit_ts_type_parameter_instantiation(type_arguments);
             }
+            return;
         }
+        self.is_self_contained = false;
+        self.is_qualifiable_across_files = false;
         walk::walk_ts_type_reference(self, it);
     }
 
@@ -201,6 +233,7 @@ impl<'a> Visit<'a> for UnexportedTypeFinder<'_, 'a> {
             .and_then(|id| scoping.get_reference(id).symbol_id())
         {
             self.is_self_contained = false;
+            self.is_qualifiable_across_files = false;
             if scoping
                 .symbol_flags(symbol_id)
                 .intersects(SymbolFlags::FunctionScopedVariable)
@@ -212,22 +245,26 @@ impl<'a> Visit<'a> for UnexportedTypeFinder<'_, 'a> {
 
     fn visit_ts_import_type(&mut self, it: &oxc_ast::ast::TSImportType<'a>) {
         self.is_self_contained = false;
+        self.is_qualifiable_across_files = false;
         walk::walk_ts_import_type(self, it);
     }
 
     fn visit_ts_type_query(&mut self, it: &oxc_ast::ast::TSTypeQuery<'a>) {
         self.is_self_contained = false;
+        self.is_qualifiable_across_files = false;
         walk::walk_ts_type_query(self, it);
     }
 
     fn visit_ts_this_type(&mut self, _it: &oxc_ast::ast::TSThisType) {
         self.is_self_contained = false;
         self.is_emittable_in_file = false;
+        self.is_qualifiable_across_files = false;
     }
 
     fn visit_this_expression(&mut self, _it: &oxc_ast::ast::ThisExpression) {
         self.is_self_contained = false;
         self.is_emittable_in_file = false;
+        self.is_qualifiable_across_files = false;
     }
 }
 
@@ -243,21 +280,93 @@ impl UnexportedTypeFinder<'_, '_> {
             return;
         };
         let flags = scoping.symbol_flags(symbol_id);
-        // Imports name a declaration exported by another file. Type parameters only occur in
-        // generic functions, which are rejected before the type is looked at.
-        if flags
-            .intersects(SymbolFlags::Import | SymbolFlags::TypeImport | SymbolFlags::TypeParameter)
-        {
+        // Type parameters bound inside `type_span` itself (e.g. mapped types) are self-contained;
+        // function-level type parameters only occur in generic functions, which are rejected before
+        // the type is looked at.
+        if flags.intersects(SymbolFlags::TypeParameter) {
+            if !self.type_span.contains_inclusive(scoping.symbol_span(symbol_id)) {
+                self.is_self_contained = false;
+                self.is_qualifiable_across_files = false;
+            }
+            return;
+        }
+        self.is_self_contained = false;
+        if flags.intersects(SymbolFlags::FunctionScopedVariable) {
+            self.is_emittable_in_file = false;
+        }
+        // Imports name a declaration exported by another file.
+        if flags.intersects(SymbolFlags::Import | SymbolFlags::TypeImport) {
+            if let Some(byte_offset) = ident.span.start.checked_sub(self.type_span.start) {
+                self.type_refs.push(ReferencedTypeIdent {
+                    byte_offset,
+                    name: ident.name.to_string(),
+                    is_imported: true,
+                });
+            } else {
+                self.is_qualifiable_across_files = false;
+            }
             return;
         }
         if is_statically_exported(symbol_id, self.semantic) {
+            if is_exported_under_own_name(symbol_id, self.semantic) {
+                if let Some(byte_offset) = ident.span.start.checked_sub(self.type_span.start) {
+                    self.type_refs.push(ReferencedTypeIdent {
+                        byte_offset,
+                        name: ident.name.to_string(),
+                        is_imported: false,
+                    });
+                } else {
+                    self.is_qualifiable_across_files = false;
+                }
+            } else {
+                self.is_qualifiable_across_files = false;
+            }
             return;
         }
-        self.found = Some(UnexportedType {
-            name: scoping.symbol_name(symbol_id).to_string(),
-            decl_span: self.semantic.symbol_declaration(symbol_id).kind().span(),
-        });
+        self.is_qualifiable_across_files = false;
+        if self.found.is_none() {
+            self.found = Some(UnexportedType {
+                name: scoping.symbol_name(symbol_id).to_string(),
+                decl_span: self.semantic.symbol_declaration(symbol_id).kind().span(),
+            });
+        }
     }
+}
+
+/// Whether `symbol_id` is a root-scope declaration exported from its file under its own declared
+/// name (`export interface Foo`, `export type Foo`, `export class Foo`, `export enum Foo`, or
+/// `export { Foo }` without renaming).
+fn is_exported_under_own_name(symbol_id: SymbolId, semantic: &Semantic<'_>) -> bool {
+    let scoping = semantic.scoping();
+    if scoping.symbol_scope_id(symbol_id) != scoping.root_scope_id() {
+        return false;
+    }
+    let nodes = semantic.nodes();
+    let is_decl_direct_export = |node_id| {
+        let decl_id = match nodes.kind(node_id) {
+            AstKind::VariableDeclarator(_) => nodes.parent_id(node_id),
+            _ => node_id,
+        };
+        matches!(nodes.parent_kind(decl_id), AstKind::ExportDeclaration(_))
+    };
+    let declaration = semantic.symbol_declaration(symbol_id);
+    if is_decl_direct_export(declaration.id()) {
+        return true;
+    }
+    if scoping
+        .symbol_redeclarations(symbol_id)
+        .iter()
+        .any(|redecl| is_decl_direct_export(redecl.declaration))
+    {
+        return true;
+    }
+    let symbol_name = scoping.symbol_name(symbol_id);
+    scoping
+        .get_resolved_references(symbol_id)
+        .any(|reference| match nodes.parent_kind(reference.node_id()) {
+            AstKind::ExportSpecifier(spec) => spec.exported.name() == symbol_name,
+            _ => false,
+        })
 }
 
 /// Whether a declaration is exported from its file, by an `export` modifier or through an export
@@ -358,6 +467,9 @@ pub struct InputTransformSite {
     /// The resolved first-parameter type string for `ngAcceptInputType_<input>` when Stage 2 can
     /// emit the parameter type directly (mirroring ngtsc's full-compilation `Reference(firstParam.type)`).
     pub resolved_type: Option<String>,
+    /// `(byte_offset, module_specifier)` pairs within `resolved_type` where `<ns>.` namespace
+    /// prefixes must be spliced by the consumer.
+    pub resolved_type_insertions: Vec<(u32, String)>,
 }
 
 /// What a transform evaluates to, as far as ngtsc's reflector can read a function from it.
@@ -395,6 +507,7 @@ impl InputTransformSite {
             conflicting_coercion: false,
             issue: None,
             resolved_type: None,
+            resolved_type_insertions: Vec::new(),
         })
     }
 
@@ -526,6 +639,7 @@ impl InputTransformSite {
         file_path: &std::path::Path,
         ctx: &QueryCtx<Fs>,
     ) {
+        let mut fn_symbol = None;
         let (facts, detail, declared) = match &self.target {
             TransformTarget::Inline(facts) => (
                 facts.clone(),
@@ -542,7 +656,7 @@ impl InputTransformSite {
                 specifier,
                 export_name,
             } => {
-                let Some((facts, declared)) =
+                let Some((facts, declared, resolved_symbol)) =
                     imported_function_facts(specifier, export_name, file_path, ctx).await
                 else {
                     if specifier == "@angular/core"
@@ -563,6 +677,7 @@ impl InputTransformSite {
                         return;
                     }
                 };
+                fn_symbol = Some(resolved_symbol);
                 (facts, reference_detail(export_name), declared)
             }
             TransformTarget::NotAFunction(detail) => {
@@ -573,8 +688,10 @@ impl InputTransformSite {
         };
         self.issue = self.definition_issue(&facts, detail, &declared);
         if self.issue.is_none() && !self.conflicting_coercion {
-            self.resolved_type = match (&facts.first_param, &declared) {
-                (FirstParam::Absent, _) => Some("unknown".to_string()),
+            match (&facts.first_param, &declared) {
+                (FirstParam::Absent, _) => {
+                    self.resolved_type = Some("unknown".to_string());
+                }
                 (
                     FirstParam::Typed {
                         type_text,
@@ -582,7 +699,9 @@ impl InputTransformSite {
                         ..
                     },
                     Declared::InFile,
-                ) if !type_text.is_empty() => Some(type_text.clone()),
+                ) if !type_text.is_empty() => {
+                    self.resolved_type = Some(type_text.clone());
+                }
                 (
                     FirstParam::Typed {
                         type_text,
@@ -590,9 +709,35 @@ impl InputTransformSite {
                         ..
                     },
                     Declared::OtherFile | Declared::Declarations,
-                ) if !type_text.is_empty() => Some(type_text.clone()),
-                _ => None,
-            };
+                ) if !type_text.is_empty() => {
+                    self.resolved_type = Some(type_text.clone());
+                }
+                (
+                    FirstParam::Typed {
+                        type_text,
+                        is_self_contained: false,
+                        is_qualifiable_across_files: true,
+                        type_refs,
+                        ..
+                    },
+                    Declared::OtherFile | Declared::Declarations,
+                ) if !type_text.is_empty() && !type_refs.is_empty() => {
+                    if let Some(ref decl_symbol) = fn_symbol {
+                        if let Some(insertions) = resolve_cross_file_type_insertions(
+                            type_refs,
+                            decl_symbol,
+                            file_path,
+                            ctx,
+                        )
+                        .await
+                        {
+                            self.resolved_type = Some(type_text.clone());
+                            self.resolved_type_insertions = insertions;
+                        }
+                    }
+                }
+                _ => {}
+            }
         }
     }
 
@@ -661,6 +806,95 @@ fn not_a_function(span: Span, detail: String) -> ValueIssue {
     ValueIssue::wrong_type_with_detail(span, "Input transform must be a function", &detail)
 }
 
+async fn resolve_cross_file_type_insertions<Fs: ResourceResolverFs + Clone + 'static>(
+    type_refs: &[ReferencedTypeIdent],
+    fn_symbol: &crate::evaluator::cross_file::DeclaredSymbol,
+    consumer_path: &std::path::Path,
+    ctx: &QueryCtx<Fs>,
+) -> Option<Vec<(u32, String)>> {
+    let consumer_id = ctx.engine.intern_path(consumer_path);
+    let fn_file_id = ctx.engine.intern_path(&fn_symbol.file_path);
+    let mut insertions = Vec::with_capacity(type_refs.len());
+
+    for type_ref in type_refs {
+        let (target_file_id, target_path, owning_reference) = if !type_ref.is_imported {
+            (
+                fn_file_id,
+                fn_symbol.file_path.clone(),
+                fn_symbol.owning_reference.as_ref().map(|owning| {
+                    crate::types::analysis::OwningReference::from_source_specifier(
+                        owning.specifier().to_string(),
+                        type_ref.name.clone(),
+                    )
+                }),
+            )
+        } else {
+            let mut visited = std::collections::HashSet::new();
+            let Ok(Some(type_resolved)) = crate::evaluator::cross_file::cross_file_resolve(
+                ctx,
+                &fn_symbol.file_path,
+                None,
+                type_ref.name.clone(),
+                &mut visited,
+            )
+            .await
+            else {
+                return None;
+            };
+            if type_resolved.exported_as_default {
+                return None;
+            }
+            let target_id = ctx.engine.intern_path(&type_resolved.file_path);
+            let parsed = ctx.parse_file(target_id).await;
+            let is_own_name = {
+                let guard = parsed.lock().unwrap();
+                let semantic = &guard.borrow_dependent().semantic;
+                semantic.scoping().symbol_name(type_resolved.symbol_id) == type_ref.name
+                    && is_exported_under_own_name(type_resolved.symbol_id, semantic)
+            };
+            if !is_own_name {
+                return None;
+            }
+            let owning = type_resolved.owning_reference.or_else(|| {
+                fn_symbol.owning_reference.as_ref().map(|owning| {
+                    crate::types::analysis::OwningReference::from_source_specifier(
+                        owning.specifier().to_string(),
+                        type_ref.name.clone(),
+                    )
+                })
+            });
+            (target_id, type_resolved.file_path, owning)
+        };
+
+        if target_path == consumer_path {
+            continue;
+        }
+
+        let reference = crate::types::analysis::Reference {
+            file: target_file_id,
+            name: type_ref.name.clone(),
+            owning_reference,
+            aliases: Default::default(),
+            is_default_export: false,
+        };
+        let meta = ctx.engine.reference_strategy.emit(
+            &reference,
+            consumer_id,
+            consumer_path,
+            &target_path,
+            Some(&type_ref.name),
+        );
+        let imp = meta.consumer_import?;
+        if imp.symbol != type_ref.name {
+            return None;
+        }
+        insertions.push((type_ref.byte_offset, imp.specifier));
+    }
+
+    insertions.sort_by_key(|(offset, _)| *offset);
+    Some(insertions)
+}
+
 /// The facts of the function `export_name` of `specifier` names from `file_path`, or the error
 /// detail when it is not a function declaration; `None` when the import cannot be followed.
 async fn imported_function_facts<Fs: ResourceResolverFs + Clone + 'static>(
@@ -668,7 +902,11 @@ async fn imported_function_facts<Fs: ResourceResolverFs + Clone + 'static>(
     export_name: &str,
     file_path: &std::path::Path,
     ctx: &QueryCtx<Fs>,
-) -> Option<(Result<FunctionFacts, String>, Declared)> {
+) -> Option<(
+    Result<FunctionFacts, String>,
+    Declared,
+    crate::evaluator::cross_file::DeclaredSymbol,
+)> {
     let mut visited = std::collections::HashSet::new();
     let Ok(Some(resolved)) = crate::evaluator::cross_file::cross_file_resolve(
         ctx,
@@ -713,7 +951,7 @@ async fn imported_function_facts<Fs: ResourceResolverFs + Clone + 'static>(
                 "Value could not be determined statically.".to_string()
             }
         });
-    Some((facts, declared))
+    Some((facts, declared, resolved))
 }
 
 #[cfg(test)]

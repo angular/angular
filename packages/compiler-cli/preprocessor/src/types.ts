@@ -205,6 +205,11 @@ export interface ClassMetadata {
    * decorator-based inputs with a `transform`, empty when there are none.
    */
   coercionMembers: string;
+  /**
+   * Module specifiers to splice as `<ns>.` namespace prefixes into `coercionMembers`
+   * at the given UTF-16 code unit positions.
+   */
+  coercionNamespaceInsertions?: Array<TextInsertionMetadata>;
   hostBindings: Array<HostBindingMetadata>;
   hostListeners: Array<HostListenerMetadata>;
   typeParameters?: Array<TypeParameterMetadata>;

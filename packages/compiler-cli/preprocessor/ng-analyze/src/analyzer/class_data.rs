@@ -3854,6 +3854,7 @@ struct PreparedMembers {
     queries: Vec<QueryMetadata>,
     view_queries: Vec<QueryMetadata>,
     coercion_members: String,
+    coercion_namespace_insertions: Vec<crate::types::metadata::TextInsertionMetadata>,
 }
 
 /// `ngAcceptInputType_` coercion members are type-checking-only declarations: ngtsc adds them
@@ -3944,11 +3945,32 @@ fn prepare_members(
                             if let Some(resolved_type) =
                                 site.and_then(|s| s.resolved_type.as_deref())
                             {
-                                let _ = writeln!(
+                                let _ = write!(
                                     prepared.coercion_members,
-                                    "{NG_ACCEPT_INPUT_TYPE_PREFIX}{}: {resolved_type};",
+                                    "{NG_ACCEPT_INPUT_TYPE_PREFIX}{}: ",
                                     coercion_member_key(&i.name)
                                 );
+                                if let Some(insertions) =
+                                    site.map(|s| &s.resolved_type_insertions)
+                                {
+                                    if !insertions.is_empty() {
+                                        let base_utf16 =
+                                            prepared.coercion_members.encode_utf16().count() as u32;
+                                        for (byte_offset, specifier) in insertions {
+                                            let rel_utf16 = resolved_type[..*byte_offset as usize]
+                                                .encode_utf16()
+                                                .count()
+                                                as u32;
+                                            prepared.coercion_namespace_insertions.push(
+                                                crate::types::metadata::TextInsertionMetadata {
+                                                    position: base_utf16 + rel_utf16,
+                                                    text: specifier.clone(),
+                                                },
+                                            );
+                                        }
+                                    }
+                                }
+                                let _ = writeln!(prepared.coercion_members, "{resolved_type};");
                             } else {
                                 let expr_str = &source_text[span.start as usize..span.end as usize];
                                 let _ = writeln!(
@@ -4341,6 +4363,7 @@ impl ClassData {
             removal_spans,
             nocollapse_insertions,
             coercion_members: prepared.coercion_members,
+            coercion_namespace_insertions: prepared.coercion_namespace_insertions,
             host_bindings: members
                 .map(|m| {
                     m.host_bindings
