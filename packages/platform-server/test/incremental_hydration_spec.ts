@@ -13,6 +13,7 @@ import {
   Directive,
   ɵDEHYDRATED_BLOCK_REGISTRY as DEHYDRATED_BLOCK_REGISTRY,
   destroyPlatform,
+  ɵEVENT_REPLAY_QUEUE as EVENT_REPLAY_QUEUE,
   ɵgetDocument as getDocument,
   inject,
   Input,
@@ -2756,6 +2757,55 @@ describe('platform-server partial hydration integration', () => {
       expect(jsActionMap.size).toBe(0);
       expect(contract.instance!.cleanUp).toHaveBeenCalled();
       expect(registry.cleanup).toHaveBeenCalledTimes(2);
+    });
+
+    it('should discard queued events if element was destroyed before defer block hydration', async () => {
+      @Component({
+        selector: 'app',
+        template: `
+          <main (click)="fnA()">
+            @defer (on viewport; hydrate on interaction) {
+              <div id="main" (click)="fnA()">Main defer block rendered!</div>
+            } @placeholder {
+              <span>Outer block placeholder</span>
+            }
+          </main>
+        `,
+      })
+      class SimpleComponent {
+        fnA() {}
+      }
+
+      const appId = 'discard-queued-events-test';
+      const providers = [{provide: APP_ID, useValue: appId}];
+      const hydrationFeatures = () => [withIncrementalHydration()];
+
+      const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+      resetTViewsFor(SimpleComponent);
+
+      const doc = getDocument();
+      const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+        envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
+        hydrationFeatures,
+      });
+      appRef.tick();
+      await appRef.whenStable();
+
+      const queue = appRef.injector.get(EVENT_REPLAY_QUEUE);
+
+      // Simulate an event queued for an element that was destroyed before defer block hydrated
+      // (its DEFER_BLOCK_SSR_ID_ATTRIBUTE was removed on destroy)
+      const destroyedEl = doc.createElement('div');
+      queue.push({event: new CustomEvent('click'), currentTarget: destroyedEl});
+
+      const mainBlock = doc.getElementById('main')!;
+      const clickEvent = new CustomEvent('click', {bubbles: true});
+      mainBlock.dispatchEvent(clickEvent);
+
+      await allPendingDynamicImports();
+
+      // The destroyed element should have been discarded (not requeued)
+      expect(queue.length).toBe(0);
     });
 
     it('should clear registry of multiple blocks if they are hydrated in one go', async () => {
