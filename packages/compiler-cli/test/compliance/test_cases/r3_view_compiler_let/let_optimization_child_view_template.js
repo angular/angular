@@ -26,6 +26,8 @@ export class MyApp {
         i0.ɵɵdeclareLet(1);
         i0.ɵɵtext(2);
         i0.ɵɵconditionalCreate(3, MyApp_Conditional_3_Template, 1, 1);
+        (typeof ngDevMode === "undefined" || ngDevMode) &&
+          i0.ɵɵconditionalMetadata(3, "if", 1, null, "true", ["true"]);
       }
       if (rf & 2) {
         i0.ɵɵtextInterpolate1(" ", ctx.value, " ");

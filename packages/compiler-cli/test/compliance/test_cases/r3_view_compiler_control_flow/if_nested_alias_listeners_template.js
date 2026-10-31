@@ -38,6 +38,8 @@ function MyApp_Conditional_0_Conditional_1_Template(rf, ctx) {
       0,
       "button"
     );
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵɵconditionalMetadata(1, "if", 1, null, "value()", ["value()"]);
   }
   if (rf & 2) {
     let tmp_4_0;
@@ -57,6 +59,8 @@ function MyApp_Conditional_0_Template(rf, ctx) {
     });
     i0.ɵɵelementEnd();
     i0.ɵɵconditionalCreate(1, MyApp_Conditional_0_Conditional_1_Template, 2, 1);
+    (typeof ngDevMode === "undefined" || ngDevMode) &&
+      i0.ɵɵconditionalMetadata(1, "if", 1, null, "value()", ["value()"]);
   }
   if (rf & 2) {
     let tmp_2_0;
@@ -81,6 +85,8 @@ export class MyApp {
     template: function MyApp_Template(rf, ctx) {
       if (rf & 1) {
         i0.ɵɵconditionalCreate(0, MyApp_Conditional_0_Template, 2, 1);
+        (typeof ngDevMode === "undefined" || ngDevMode) &&
+          i0.ɵɵconditionalMetadata(0, "if", 1, null, "value()", ["value()"]);
       }
       if (rf & 2) {
         let tmp_0_0;

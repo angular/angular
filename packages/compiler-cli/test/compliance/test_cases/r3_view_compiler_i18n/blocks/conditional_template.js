@@ -100,7 +100,15 @@ export class MyApp {
           2,
           0
         )(4, MyApp_Conditional_4_Template, 2, 0);
+        (typeof ngDevMode === "undefined" || ngDevMode) &&
+          i0.ɵɵconditionalMetadata(2, "if", 3, 2, "count === 0", [
+            "count === 0",
+            "count === 1",
+            null
+          ]);
         i0.ɵɵconditionalCreate(5, MyApp_Conditional_5_Template, 2, 0);
+        (typeof ngDevMode === "undefined" || ngDevMode) &&
+          i0.ɵɵconditionalMetadata(5, "if", 1, null, "count === 7", ["count === 7"]);
         i0.ɵɵi18nEnd();
         i0.ɵɵelementEnd();
       }

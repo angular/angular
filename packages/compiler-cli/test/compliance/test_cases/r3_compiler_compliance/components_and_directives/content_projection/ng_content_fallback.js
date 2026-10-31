@@ -68,6 +68,8 @@ export class TestComponent {
         i0.ɵɵprojection(3, 1, null, TestComponent_ProjectionFallback_3_Template, 5, 1);
         i0.ɵɵdomElementEnd();
         i0.ɵɵconditionalCreate(5, TestComponent_Conditional_5_Template, 2, 0);
+        (typeof ngDevMode === "undefined" || ngDevMode) &&
+          i0.ɵɵconditionalMetadata(5, "if", 1, null, "hasFooter", ["hasFooter"]);
         i0.ɵɵdomTemplate(6, TestComponent_ng_content_6_Template, 2, 0, "ng-content", 0);
       }
       if (rf & 2) {

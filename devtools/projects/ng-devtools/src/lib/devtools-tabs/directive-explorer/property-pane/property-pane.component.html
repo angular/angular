@@ -32,6 +32,8 @@
       <ng-defer-view [defer]="block" />
     } @else if (BlockType.isForLoopBlock(block)) {
       <ng-for-loop-view [forLoop]="block" />
+    } @else if (BlockType.isConditionalBlock(block)) {
+      <ng-conditional-view [block]="block" />
     }
   </div>
 }

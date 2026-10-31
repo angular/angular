@@ -81,6 +81,8 @@ function AppComponent_Defer_0_Template(rf: number, ctx: any): any {
   if (rf & 1) {
     i0.ɵɵconditionalCreate(0, AppComponent_Defer_0_Conditional_0_Template, 1, 0, 'cmp-a');
     i0.ɵɵpipe(1, 'pipeA');
+    (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      i0.ɵɵconditionalMetadata(0, 'if', 1, null, 'show | pipeA', ['show | pipeA']);
     i0.ɵɵrepeaterCreate(
       2,
       AppComponent_Defer_0_For_3_Template,

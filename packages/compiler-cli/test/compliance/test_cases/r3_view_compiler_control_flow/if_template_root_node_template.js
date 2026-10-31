@@ -107,6 +107,8 @@ export class MyApp {
           null,
           1
         )(2, MyApp_Conditional_2_Template, 1, 1, null, 2);
+        (typeof ngDevMode === "undefined" || ngDevMode) &&
+          i0.ɵɵconditionalMetadata(0, "if", 3, 2, "expr === 0", ["expr === 0", "expr === 1", null]);
       }
       if (rf & 2) {
         i0.ɵɵconditional(ctx.expr === 0 ? 0 : ctx.expr === 1 ? 1 : 2);

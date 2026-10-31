@@ -36,6 +36,8 @@ export class MyApp {
           "math",
           1
         );
+        (typeof ngDevMode === "undefined" || ngDevMode) &&
+          i0.ɵɵconditionalMetadata(0, "if", 2, 1, "expr", ["expr", null]);
       }
       if (rf & 2) {
         i0.ɵɵconditional(ctx.expr ? 0 : 1);

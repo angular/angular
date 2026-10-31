@@ -44,6 +44,8 @@ export class TestComp {
       if (rf & 1) {
         i0.ɵɵdeclareLet(0);
         i0.ɵɵconditionalCreate(1, TestComp_Conditional_1_Template, 2, 1, "button");
+        (typeof ngDevMode === "undefined" || ngDevMode) &&
+          i0.ɵɵconditionalMetadata(1, "if", 1, null, "true", ["true"]);
       }
       if (rf & 2) {
         i0.ɵɵstoreLet(1);
