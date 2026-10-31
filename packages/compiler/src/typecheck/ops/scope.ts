@@ -7,7 +7,7 @@
  */
 
 import {CssSelector} from '../../directive_matching';
-import {splitNsName} from '../../ml_parser/tags';
+import {isNgTemplate, splitNsName} from '../../ml_parser/tags';
 import {
   BoundaryBlock,
   BoundaryErrorBlock,
@@ -36,7 +36,7 @@ import {
   Variable,
   ViewportDeferredTrigger,
 } from '../../render3/r3_ast';
-import {DirectiveOwner} from '../../render3/view/t2_api';
+import {DirectiveOwner, MatchSource} from '../../render3/view/t2_api';
 import {TcbDirectiveMetadata} from '../api';
 import {TcbOp} from './base';
 import {TcbBoundaryOp} from './boundary';
@@ -597,6 +597,16 @@ export class Scope {
             new TcbDomSchemaCheckerOp(this.tcb, node, /* checkElement */ true, claimedInputs),
           );
         }
+      } else if (isExplicitNgTemplate(node) && this.tcb.env.config.checkTypeOfNgTemplateBindings) {
+        // `ng-template` has no DOM properties, so if no directive matched the node at all,
+        // all of its bindings are reported against the schema (e.g. a directive that is
+        // missing from the component's `imports`).
+        this.opQueue.push(
+          new TcbUnclaimedInputsOp(this.tcb, this, node.inputs, node, claimedInputs),
+        );
+        this.opQueue.push(
+          new TcbDomSchemaCheckerOp(this.tcb, node, /* checkElement */ false, claimedInputs),
+        );
       }
       return;
     }
@@ -657,7 +667,12 @@ export class Scope {
 
     // After expanding the directives, we might need to queue an operation to check any unclaimed
     // inputs.
-    if (node instanceof Element) {
+    if (
+      node instanceof Element ||
+      (isExplicitNgTemplate(node) && this.tcb.env.config.checkTypeOfNgTemplateBindings)
+    ) {
+      const explicitNgTemplate = isExplicitNgTemplate(node);
+
       // Go through the directives and remove any inputs that it claims from `elementInputs`.
       for (const dir of directives) {
         for (const propertyName of dir.inputs.propertyNames) {
@@ -666,11 +681,30 @@ export class Scope {
       }
 
       this.opQueue.push(new TcbUnclaimedInputsOp(this.tcb, this, node.inputs, node, claimedInputs));
+
+      const schemaClaimedInputs = new Set<string>(claimedInputs);
+      if (explicitNgTemplate) {
+        for (const dir of directives) {
+          if (dir.matchSource === MatchSource.Selector && dir.selector !== null) {
+            const selectors = CssSelector.parse(dir.selector);
+            for (const selector of selectors) {
+              for (let i = 0; i < selector.attrs.length; i += 2) {
+                schemaClaimedInputs.add(selector.attrs[i]);
+              }
+            }
+          }
+        }
+      }
+
       // Check the element against the DOM schema unless it is matched by an Angular component
       // or by a directive that explicitly targets the element's tag name (such as `<router-outlet>`).
       // Directives that only match attributes (like `[formControl]`) do not claim the element name.
-      const checkElement = this.requiresUnknownElementCheck(node, directives);
-      this.opQueue.push(new TcbDomSchemaCheckerOp(this.tcb, node, checkElement, claimedInputs));
+      // Explicit `<ng-template>` nodes are never checked as elements.
+      const checkElement =
+        node instanceof Element && this.requiresUnknownElementCheck(node, directives);
+      this.opQueue.push(
+        new TcbDomSchemaCheckerOp(this.tcb, node, checkElement, schemaClaimedInputs),
+      );
     }
   }
 
@@ -910,6 +944,37 @@ export class Scope {
           const checkElement = this.requiresUnknownElementCheck(node, directives);
           this.opQueue.push(new TcbDomSchemaCheckerOp(this.tcb, node, checkElement, claimedInputs));
         }
+      } else if (isExplicitNgTemplate(node) && this.tcb.env.config.checkTypeOfNgTemplateBindings) {
+        const schemaClaimedInputs = new Set<string>();
+        let directives = this.tcb.boundTarget.getDirectivesOfNode(node);
+
+        for (const dirNode of node.directives) {
+          const directiveResults = this.tcb.boundTarget.getDirectivesOfNode(dirNode);
+
+          if (directiveResults !== null && directiveResults.length > 0) {
+            directives ??= [];
+            directives.push(...directiveResults);
+          }
+        }
+
+        if (directives !== null && directives.length > 0) {
+          for (const dir of directives) {
+            for (const propertyName of dir.inputs.propertyNames) {
+              schemaClaimedInputs.add(propertyName);
+            }
+            if (dir.matchSource === MatchSource.Selector && dir.selector !== null) {
+              const selectors = CssSelector.parse(dir.selector);
+              for (const selector of selectors) {
+                for (let i = 0; i < selector.attrs.length; i += 2) {
+                  schemaClaimedInputs.add(selector.attrs[i]);
+                }
+              }
+            }
+          }
+        }
+        this.opQueue.push(
+          new TcbDomSchemaCheckerOp(this.tcb, node, /* checkElement */ false, schemaClaimedInputs),
+        );
       }
 
       this.appendDeepSchemaChecks(node.children);
@@ -1150,4 +1215,11 @@ function matchesTagName(selector: string | null, tagName: string): boolean {
   } catch {
     return false;
   }
+}
+
+// Identifies a node as an explicitly written `<ng-template>` element (as opposed to a structural
+// directive's microsyntax which also gets converted into a Template node). This check is robust
+// against implicit namespaces like `:svg:ng-template`.
+function isExplicitNgTemplate(node: Node): node is Template {
+  return node instanceof Template && node.tagName !== null && isNgTemplate(node.tagName);
 }
