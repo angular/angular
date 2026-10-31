@@ -3,11 +3,25 @@ load("//tools:defaults.bzl", "ts_project")
 package(default_visibility = ["//visibility:public"])
 
 ts_project(
-    name = "hmr",
-    srcs = ["index.ts"] + glob([
-        "src/**/*.ts",
-    ]),
+    name = "extract_dependencies_output",
+    srcs = ["src/extract_dependencies_output.ts"],
     deps = [
+        "//packages/compiler",
+    ],
+)
+
+ts_project(
+    name = "hmr",
+    srcs = ["index.ts"] + glob(
+        [
+            "src/**/*.ts",
+        ],
+        exclude = [
+            "src/extract_dependencies_output.ts",
+        ],
+    ),
+    deps = [
+        ":extract_dependencies_output",
         "//:node_modules/@types/node",
         "//:node_modules/typescript",
         "//packages/compiler",
