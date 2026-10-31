@@ -543,6 +543,57 @@ NOTE: Child fields also have a `key` signal, and array item fields have both `ke
 
 Return an error object with `kind` and `message` when validation fails. Return `null` or `undefined` when validation passes.
 
+### Using validatePromise()
+
+The `validatePromise()` function creates custom asynchronous validation rules. It receives a validator function that receives the field's current value and returns a `Promise` resolving to:
+
+| Return Value          | Meaning          |
+| --------------------- | ---------------- |
+| Error object          | Value is invalid |
+| `null` or `undefined` | Value is valid   |
+
+```angular-ts
+import {Component, inject, signal} from '@angular/core';
+import {form, FormField, validatePromise} from '@angular/forms/signals';
+import {UserService} from './user.service';
+
+@Component({/* ... */})
+export class UsernameFormComponent {
+  private userService = inject(UserService);
+
+  usernameModel = signal({username: ''});
+
+  usernameForm = form(this.usernameModel, (schemaPath) => {
+    validatePromise(schemaPath.username, (username) => this.validateUsername(username));
+  });
+
+  private async validateUsername(username: string) {
+    const available = await this.userService.checkUsernameAvailability(username);
+
+    if (!available) {
+      return {
+        kind: 'usernameTaken',
+        message: 'Username is already taken',
+      };
+    }
+
+    return null;
+  }
+}
+```
+
+The validator function receives only the field's value, so the async operation re-runs exactly when the value changes. If you need the field context (for example, to read sibling fields), use [`validateAsync()`](guide/forms/signals/async-operations#custom-async-validation-with-validateasync).
+
+NOTE: For advanced async validation and complex scenarios requiring execution delays, conditional checks, unhandled error fallbacks, or direct access to Angular's `resource()` primitive, see the [Custom async validation with validateAsync() guide](guide/forms/signals/async-operations#custom-async-validation-with-validateasync).
+
+#### Optional Configuration Options
+
+| **Config Option** | **Type**                  | **Description**                                                                                                                                                                |
+| ----------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `debounce`        | `number \| DebounceTimer` | Duration in milliseconds to wait before triggering the async operation, or a function returning a timing promise. A function receives the new value and the previous snapshot. |
+| `when`            | `LogicFn`                 | A function that receives the field context and returns `true` if the async validation should run.                                                                              |
+| `onError`         | `Function`                | A handler for errors thrown by the validator. Defaults to `{ kind: 'asyncError' }` if omitted.                                                                                 |
+
 ### Using validateTree()
 
 The `validateTree()` function creates custom validation rules that can target multiple fields or provide complex validation logic for a whole subtree.
