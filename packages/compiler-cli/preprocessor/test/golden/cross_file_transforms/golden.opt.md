@@ -44,6 +44,8 @@ import { myBooleanTransform, externalToNumberTransform } from './transforms';
 import { arrowTransform as aliasedTransform } from './transforms';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './transforms';
 
 export class TestTransformsComponent {
   decoratorInput!: boolean;
@@ -120,9 +122,7 @@ export class TestTransformsComponent {
   // @ts-ignore
   declare static ngAcceptInputType_inlineTransform: string | null;
   // @ts-ignore
-  declare static ngAcceptInputType_externalTypeInput: Parameters<
-    typeof externalToNumberTransform
-  >[0];
+  declare static ngAcceptInputType_externalTypeInput: i1.ExternalToNumberType;
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

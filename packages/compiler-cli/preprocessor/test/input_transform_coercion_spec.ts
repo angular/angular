@@ -113,40 +113,75 @@ describe('@Input({ transform }) coercion member types', () => {
   });
 
   it('resolves cross-file exported named types in imported transform functions', async () => {
-    const outputs = await compileFiles({
-      '/transforms.ts': `
-        export interface CustomConfig {
-          id: string;
-        }
-        export type CustomAlias = number;
-        export function toCustom(value: CustomConfig | string): CustomConfig {
-          return typeof value === 'string' ? {id: value} : value;
-        }
-        export function toArray(value: Array<CustomConfig | CustomAlias>): CustomConfig[] {
-          return [];
-        }
-      `,
-      '/test.ts': `
-        import {Component, Input} from '@angular/core';
-        import {toCustom, toArray, CustomConfig} from './transforms';
+    const outputs = await compileFiles(
+      {
+        '/models.ts': `
+          export interface ExternalModel {
+            label: string;
+          }
+        `,
+        '/pkg/transforms.ts': `
+          export interface PkgConfig {
+            enabled: boolean;
+          }
+          export function toPkgConfig(value: PkgConfig | boolean): PkgConfig {
+            return typeof value === 'boolean' ? {enabled: value} : value;
+          }
+        `,
+        '/transforms.ts': `
+          import {ExternalModel} from './models';
 
-        @Component({
-          selector: 'transform-cmp',
-          template: '',
-        })
-        export class TransformCmp {
-          @Input({transform: toCustom}) custom!: CustomConfig;
-          @Input({transform: toArray}) list: CustomConfig[] = [];
-        }
-      `,
-    });
+          export interface CustomConfig {
+            id: string;
+          }
+          export type CustomAlias = number;
+          export function toCustom(value: CustomConfig | string): CustomConfig {
+            return typeof value === 'string' ? {id: value} : value;
+          }
+          export function toArray(value: Array<CustomConfig | CustomAlias>): CustomConfig[] {
+            return [];
+          }
+          export function toModel(value: ExternalModel | null): ExternalModel | null {
+            return value;
+          }
+        `,
+        '/test.ts': `
+          import {Component, Input} from '@angular/core';
+          import {toCustom, toArray, toModel, CustomConfig} from './transforms';
+          import {ExternalModel} from './models';
+          import {toPkgConfig, PkgConfig} from '@pkg/transforms';
+
+          @Component({
+            selector: 'transform-cmp',
+            template: '',
+          })
+          export class TransformCmp {
+            @Input({transform: toCustom}) custom!: CustomConfig;
+            @Input({transform: toArray}) list: CustomConfig[] = [];
+            @Input({transform: toModel}) model: ExternalModel | null = null;
+            @Input({transform: toPkgConfig}) pkg!: PkgConfig;
+          }
+        `,
+      },
+      {
+        compilerOptions: {
+          baseUrl: '/',
+          paths: {
+            '@pkg/*': ['pkg/*'],
+          },
+        },
+      },
+    );
 
     const content = outputs.get('/out/test.ts')!;
+    expect(content).toContain("import * as i1 from './transforms';");
+    expect(content).toContain("import * as i2 from './models';");
+    expect(content).toContain("import * as i3 from '@pkg/transforms';");
+    expect(content).toContain('declare static ngAcceptInputType_custom: i1.CustomConfig | string;');
     expect(content).toContain(
-      'declare static ngAcceptInputType_custom: Parameters<typeof toCustom>[0];',
+      'declare static ngAcceptInputType_list: Array<i1.CustomConfig | i1.CustomAlias>;',
     );
-    expect(content).toContain(
-      'declare static ngAcceptInputType_list: Parameters<typeof toArray>[0];',
-    );
+    expect(content).toContain('declare static ngAcceptInputType_model: i2.ExternalModel | null;');
+    expect(content).toContain('declare static ngAcceptInputType_pkg: i3.PkgConfig | boolean;');
   });
 });
