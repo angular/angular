@@ -111,4 +111,42 @@ describe('@Input({ transform }) coercion member types', () => {
     expect(content).toContain('static ngAcceptInputType_privateParam: unknown;');
     expect(content).toContain("inlineZeroArg: [2, 'inlineZeroArg', 'inlineZeroArg', () => true]");
   });
+
+  it('resolves cross-file exported named types in imported transform functions', async () => {
+    const outputs = await compileFiles({
+      '/transforms.ts': `
+        export interface CustomConfig {
+          id: string;
+        }
+        export type CustomAlias = number;
+        export function toCustom(value: CustomConfig | string): CustomConfig {
+          return typeof value === 'string' ? {id: value} : value;
+        }
+        export function toArray(value: Array<CustomConfig | CustomAlias>): CustomConfig[] {
+          return [];
+        }
+      `,
+      '/test.ts': `
+        import {Component, Input} from '@angular/core';
+        import {toCustom, toArray, CustomConfig} from './transforms';
+
+        @Component({
+          selector: 'transform-cmp',
+          template: '',
+        })
+        export class TransformCmp {
+          @Input({transform: toCustom}) custom!: CustomConfig;
+          @Input({transform: toArray}) list: CustomConfig[] = [];
+        }
+      `,
+    });
+
+    const content = outputs.get('/out/test.ts')!;
+    expect(content).toContain(
+      'declare static ngAcceptInputType_custom: Parameters<typeof toCustom>[0];',
+    );
+    expect(content).toContain(
+      'declare static ngAcceptInputType_list: Parameters<typeof toArray>[0];',
+    );
+  });
 });
