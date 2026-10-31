@@ -1053,6 +1053,10 @@ pub struct ClassMetadata {
     /// The ready-to-splice `declare static ngAcceptInputType_...` member block for
     /// decorator-based inputs with a `transform`, empty when there are none.
     pub coercion_members: String,
+    /// Module specifiers to splice as `<ns>.` namespace prefixes into `coercion_members`
+    /// at the given UTF-16 code unit positions.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub coercion_namespace_insertions: Vec<TextInsertionMetadata>,
     pub host_bindings: Vec<HostBindingMetadata>,
     pub host_listeners: Vec<HostListenerMetadata>,
     #[serde(skip_serializing_if = "Option::is_none")]
