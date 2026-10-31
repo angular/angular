@@ -352,14 +352,16 @@ class Scope implements Visitor {
       this.visitVariable(nodeOrNodes.item);
       nodeOrNodes.contextVariables.forEach((v) => this.visitVariable(v));
       nodeOrNodes.children.forEach((node) => node.visit(this));
-    } else if (nodeOrNodes instanceof BoundaryErrorBlock) {
+    } else if (
+      nodeOrNodes instanceof BoundaryErrorBlock ||
+      nodeOrNodes instanceof DeferredBlockError
+    ) {
       nodeOrNodes.contextVariables.forEach((v) => this.visitVariable(v));
       nodeOrNodes.children.forEach((node) => node.visit(this));
     } else if (
       nodeOrNodes instanceof SwitchBlockCaseGroup ||
       nodeOrNodes instanceof ForLoopBlockEmpty ||
       nodeOrNodes instanceof DeferredBlock ||
-      nodeOrNodes instanceof DeferredBlockError ||
       nodeOrNodes instanceof DeferredBlockPlaceholder ||
       nodeOrNodes instanceof DeferredBlockLoading ||
       nodeOrNodes instanceof ContentBlock ||
@@ -1096,10 +1098,13 @@ class TemplateBinder extends CombinedRecursiveAstVisitor {
       nodeOrNodes.expression?.visit(this);
       nodeOrNodes.children.forEach((node) => node.visit(this));
       this.nestingLevel.set(nodeOrNodes, this.level);
+    } else if (nodeOrNodes instanceof DeferredBlockError) {
+      nodeOrNodes.contextVariables.forEach((v) => this.visitNode(v));
+      nodeOrNodes.children.forEach((node) => node.visit(this));
+      this.nestingLevel.set(nodeOrNodes, this.level);
     } else if (
       nodeOrNodes instanceof SwitchBlockCaseGroup ||
       nodeOrNodes instanceof ForLoopBlockEmpty ||
-      nodeOrNodes instanceof DeferredBlockError ||
       nodeOrNodes instanceof DeferredBlockPlaceholder ||
       nodeOrNodes instanceof DeferredBlockLoading ||
       nodeOrNodes instanceof ContentBlock ||

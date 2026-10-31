@@ -141,6 +141,7 @@ export const angularCoreEnv: {[name: string]: unknown} = (() => ({
   'ɵɵdeferHydrateOnHover': r3.ɵɵdeferHydrateOnHover,
   'ɵɵdeferHydrateOnInteraction': r3.ɵɵdeferHydrateOnInteraction,
   'ɵɵdeferHydrateOnViewport': r3.ɵɵdeferHydrateOnViewport,
+  'ɵɵdeferEnableRetry': r3.ɵɵdeferEnableRetry,
   'ɵɵdeferEnableTimerScheduling': r3.ɵɵdeferEnableTimerScheduling,
   'ɵɵenableIncrementalHydrationRuntime': r3.ɵɵenableIncrementalHydrationRuntime,
   'ɵɵrepeater': r3.ɵɵrepeater,
