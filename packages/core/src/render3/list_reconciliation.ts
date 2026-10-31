@@ -29,6 +29,13 @@ export abstract class LiveCollection<T, V> {
   updateValue(index: number, value: V): void {
     // noop by default
   }
+  /**
+   * Whether a destroyed item can stay on screen for a while, as with leave animations. The new
+   * items are then inserted in front of the old ones, so they keep their place while those leave.
+   */
+  get hasLeaveAnimations(): boolean {
+    return false;
+  }
 
   // operations below could be implemented on top of the operations defined so far, but having
   // them explicitly allow clear expression of intent and potentially more performant
@@ -116,6 +123,7 @@ export function reconcile<T, V>(
 ): void {
   let detachedItems: UniqueValueMultiKeyMap<unknown, T> | undefined = undefined;
   let liveKeysInTheFuture: Set<unknown> | undefined = undefined;
+  let staleItemsRemoved = false;
 
   let liveStartIdx = 0;
   let liveEndIdx = liveCollection.length - 1;
@@ -196,6 +204,25 @@ export function reconcile<T, V>(
         liveCollection.updateValue(liveStartIdx, newStartValue);
         liveStartIdx++;
         continue;
+      }
+
+      // Before the slow path inserts anything, remove the live items that are not in the new
+      // collection. Inserting in front of them would shift them in the container one by one,
+      // which is quadratic when the whole list is replaced.
+      if (!staleItemsRemoved && !liveCollection.hasLeaveAnimations) {
+        staleItemsRemoved = true;
+        const removed = removeItemsNotInTheFuture(
+          liveCollection,
+          liveStartIdx,
+          liveEndIdx,
+          newCollection,
+          newEndIdx,
+          trackByFn,
+        );
+        if (removed > 0) {
+          liveEndIdx -= removed;
+          continue;
+        }
       }
 
       // Fallback to the slow path: we need to learn more about the content of the live and new
@@ -379,6 +406,33 @@ function createOrAttach<T, V>(
   } else {
     liveCollection.updateValue(index, value);
   }
+}
+
+/**
+ * Destroys the live items from `start` to `end` whose key is not in the new collection from
+ * `start` to `newEnd`. It goes from the end, so each removal is cheap, and returns how many
+ * items it removed.
+ */
+function removeItemsNotInTheFuture<T, V>(
+  liveCollection: LiveCollection<T, V>,
+  start: number,
+  end: number,
+  newCollection: V[],
+  newEnd: number,
+  trackByFn: TrackByFunction<V>,
+): number {
+  const newKeys = new Set<unknown>();
+  for (let i = start; i <= newEnd; i++) {
+    newKeys.add(trackByFn(i, newCollection[i]));
+  }
+  let removed = 0;
+  for (let i = end; i >= start; i--) {
+    if (!newKeys.has(trackByFn(i, liveCollection.at(i)))) {
+      liveCollection.destroy(liveCollection.detach(i));
+      removed++;
+    }
+  }
+  return removed;
 }
 
 function initLiveItemsInTheFuture<T>(
