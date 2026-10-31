@@ -38,41 +38,11 @@ export function shouldSkipInNgp(fullSpecName: string): boolean {
   }
   const normalized = fullSpecName.replace(/\s+/g, ' ').trim();
   return (
-    NGP_KNOWN_TYPECHECK_FAILURES.has(normalized) ||
     NGP_REQUIRES_TYPE_CHECKER.has(normalized) ||
     NGP_KNOWN_NGTSC_FAILURES.has(normalized) ||
     NGP_POTENTIAL_BREAKING_CHANGES.has(normalized)
   );
 }
-
-/**
- * Known failures in `//packages/compiler-cli/src/ngtsc/typecheck/test:test_ngp`
- * (#678-#682, #690, plus `TemplateTypeChecker` IDE metadata queries).
- */
-const NGP_KNOWN_TYPECHECK_FAILURES: ReadonlySet<string> = new Set([
-  'template parse failures should handle TypeScript parse failures gracefully',
-  'template parse failures should handle non-Error failures gracefully',
-
-  // The tests below check a pattern that is not allowed (private inputs/outputs). The reason they
-  // pass with ngtsc is that the tests are set up in a way that bypasses some validations.
-  // TODO(crisbeto): clean up these tests since they aren't testing a valid pattern.
-  'input signal type-check diagnostics allow access to private input if modifiers are explicitly ignored',
-  'input signal type-check diagnostics allow access to private input if modifiers are explicitly ignored, but error if not assignable',
-  'input signal type-check diagnostics disallows access to private input',
-  'input signal type-check diagnostics with `--strict` allow access to private input if modifiers are explicitly ignored',
-  'input signal type-check diagnostics with `--strict` allow access to private input if modifiers are explicitly ignored, but error if not assignable',
-  'input signal type-check diagnostics with `--strict` disallows access to private input',
-  'model inputs type-check diagnostics allow access to private input if modifiers are explicitly ignored',
-  'model inputs type-check diagnostics allow access to private model if modifiers are explicitly ignored, but error if not assignable',
-  'model inputs type-check diagnostics allows access to private output',
-  'model inputs type-check diagnostics allows access to protected output',
-  'model inputs type-check diagnostics disallows access to private model',
-  'model inputs type-check diagnostics with `--strict` allow access to private input if modifiers are explicitly ignored',
-  'model inputs type-check diagnostics with `--strict` allow access to private model if modifiers are explicitly ignored, but error if not assignable',
-  'model inputs type-check diagnostics with `--strict` allows access to private output',
-  'model inputs type-check diagnostics with `--strict` allows access to protected output',
-  'model inputs type-check diagnostics with `--strict` disallows access to private model',
-]);
 
 /**
  * Tests that rely on a TypeScript `TypeChecker` during analysis or template semantics checking,
@@ -309,6 +279,14 @@ const NGP_POTENTIAL_BREAKING_CHANGES: ReadonlySet<string> = new Set([
   'selectorless should resolve local reference to selectorless directive',
   'selectorless should treat unclaimed inputs as DOM property bindings on component nodes',
   'selectorless should treat unclaimed outputs as DOM events on component nodes',
+
+  // The two tests check behavior specific to the TS6 source
+  // file construction so we don't need to support them.
+  'template parse failures should handle TypeScript parse failures gracefully',
+  'template parse failures should handle non-Error failures gracefully',
+
+  // Tests TypeScript `structureIsReused` across in-memory ngtsc incremental compilations.
+  'ngtsc type checking stability should allow for complete program reuse during incremental compilations',
 ]);
 
 /**
@@ -318,6 +296,8 @@ const NGP_POTENTIAL_BREAKING_CHANGES: ReadonlySet<string> = new Set([
  * and diagnostic/TCB gaps #677-#696).
  */
 const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
+  'model inputs type-check diagnostics allows access to protected output',
+  'model inputs type-check diagnostics with `--strict` allows access to protected output',
   'import generation should report an error when a library entry-point does not export the symbol',
   'import generation should report an error when using a directive outside of rootDirs',
 

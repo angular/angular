@@ -67,12 +67,6 @@ runInEachFileSystem(() => {
       },
       // restricted fields
       {
-        id: 'allows access to private output',
-        outputs: {evt: {type: 'OutputEmitterRef<string>', restrictionModifier: 'private'}},
-        template: `<div dir (evt)="true">`,
-        expected: [],
-      },
-      {
         id: 'allows access to protected output',
         outputs: {evt: {type: 'OutputEmitterRef<string>', restrictionModifier: 'protected'}},
         template: `<div dir (evt)="true">`,
