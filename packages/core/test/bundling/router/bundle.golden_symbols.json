@@ -742,6 +742,7 @@
       "getSelectedIndex",
       "getSelectedTNode",
       "getSimpleChangesStore",
+      "getStyleDeclaration",
       "getStyleHost",
       "getSymbolIterator",
       "getTNode",
