@@ -12,6 +12,7 @@ import {effect, EffectRef} from '../render3/reactivity/effect';
 import {signal, signalAsReadonlyFn, WritableSignal} from '../render3/reactivity/signal';
 import {untracked} from '../render3/reactivity/untracked';
 import {
+  PromiseResourceOptions,
   Resource,
   ResourceDependencyError,
   ResourceOptions,
@@ -74,14 +75,17 @@ export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | 
     options as ResourceOptions<T, R> & {request: ResourceOptions<T, R>['params']}
   ).request;
   const params = options.params ?? oldNameForParams ?? (() => null!);
+  const isStreaming = isStreamingResourceOptions(options);
   return new ResourceImpl<T | undefined, R>(
     params,
-    getLoader(options),
+    isStreaming ? options.stream : createLoader(options),
     options.defaultValue,
     options.equal ? wrapEqualityFn(options.equal) : undefined,
     options.debugName,
     options.injector ?? inject(Injector),
     options.id as StateKey<T>,
+    undefined,
+    isStreaming,
   );
 }
 
@@ -210,6 +214,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
     injector: Injector,
     private transferCacheKey: StateKey<T> | undefined,
     getInitialStream?: (request: R) => Signal<ResourceStreamItem<T>> | undefined,
+    private readonly isStreaming = false,
   ) {
     if (isInParamsFunction()) {
       throw invalidResourceCreationInParams();
@@ -527,17 +532,33 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
       // Resolve the pending task now that the resource has a value.
       resolvePendingTask?.();
       resolvePendingTask = undefined;
+
+      // For non-streaming resources, once the load is complete (settled),
+      // there is no longer an in-progress operation to abort.
+      if (!this.isStreaming && this.pendingController?.signal === abortSignal) {
+        this.pendingController = undefined;
+      }
     }
   }
 
   private abortInProgressLoad(): void {
-    untracked(() => this.pendingController?.abort());
+    untracked(() => this.pendingController?.abort(getAbortReason()));
     this.pendingController = undefined;
 
     // Once the load is aborted, we no longer want to block stability on its resolution.
     this.resolvePendingTask?.();
     this.resolvePendingTask = undefined;
   }
+}
+
+let abortReason: DOMException | undefined;
+
+/**
+ * Returns a shared `AbortError` reason, since `abort()` without a reason creates a new one (with a
+ * stack trace) on every call, causing performance degradation on deep component trees.
+ */
+function getAbortReason(): DOMException {
+  return (abortReason ??= new DOMException('The operation was aborted.', 'AbortError'));
 }
 
 function saveToTransferState<R, T>(
@@ -557,11 +578,9 @@ function wrapEqualityFn<T>(equal: ValueEqualityFn<T>): ValueEqualityFn<T | undef
   return (a, b) => (a === undefined || b === undefined ? a === b : equal(a, b));
 }
 
-function getLoader<T, R>(options: ResourceOptions<T, R>): ResourceStreamingLoader<T, R> {
-  if (isStreamingResourceOptions(options)) {
-    return options.stream;
-  }
-
+function createLoader<T, R>(
+  options: PromiseResourceOptions<T, R> & {debugName?: string},
+): ResourceStreamingLoader<T, R> {
   return async (params) => {
     try {
       return signal(
