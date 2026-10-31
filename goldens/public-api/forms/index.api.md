@@ -41,7 +41,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
         emitEvent?: boolean;
     }): void;
     get enabled(): boolean;
-    readonly errors: ValidationErrors | null;
+    get errors(): ValidationErrors | null;
     readonly events: Observable<ControlEvent<TValue>>;
     get<P extends string | readonly (string | number)[]>(path: P): AbstractControl<ɵGetProperty<TRawValue, P>> | null;
     get<P extends string | Array<string | number>>(path: P): AbstractControl<ɵGetProperty<TRawValue, P>> | null;
@@ -702,7 +702,6 @@ export abstract class NgControl extends AbstractControlDirective {
     protected get selectedValueAccessor(): ControlValueAccessor | null;
     // (undocumented)
     protected setupCustomControl(): void;
-    protected get shouldBindRequired(): boolean;
     valueAccessor: ControlValueAccessor | null;
     abstract viewToModelUpdate(newValue: any): void;
 }
@@ -778,7 +777,6 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
         updateOn?: FormHooks;
     };
     get path(): string[];
-    protected get shouldBindRequired(): boolean;
     update: EventEmitter<any>;
     viewModel: any;
     viewToModelUpdate(newValue: any): void;

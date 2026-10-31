@@ -267,9 +267,15 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
       return;
     }
 
-    // this.control is typically initialized by `ngOnChanges`, however `ɵngControlUpdate` fires
-    // first. So, we're responsible for initializing it here.
-    if (!this._added) this._setUpControl();
+    // `ɵngControlUpdate` runs during `executeTemplate`, before `ngOnChanges` calls
+    // `_setUpControl()` (which sets `_added = true`). Resolve `this.control` early so
+    // `super.ngControlUpdate` can bind initial state and track reactive signals, while
+    // leaving `_setUpControl()` to `ngOnChanges`.
+    if (!this.control) {
+      const control = this.formDirective?.getControl(this);
+      if (!control) return;
+      (this as Writable<this>).control = control;
+    }
     super.ngControlUpdate(host, true);
   }
 }

@@ -13,6 +13,7 @@ import {
   Input,
   OnChanges,
   Provider,
+  signal,
   SimpleChanges,
 } from '@angular/core';
 import {Observable} from 'rxjs';
@@ -124,10 +125,14 @@ abstract class AbstractValidatorDirective implements Validator, OnChanges {
    * A flag that tracks whether this validator is enabled.
    *
    * Marking it `internal` (vs `protected`), so that this flag can be used in host bindings of
-   * directive classes that extend this base class.
+   * directive classes that extend this base class. It is backed by a signal, so that a control
+   * directive that reads it before `ngOnChanges` runs is updated in the same change detection.
    * @internal
    */
-  _enabled?: boolean;
+  get _enabled(): boolean | undefined {
+    return this.enabledReactive();
+  }
+  private readonly enabledReactive = signal<boolean | undefined>(undefined);
 
   /**
    * Name of an input that matches directive selector attribute (e.g. `minlength` for
@@ -160,8 +165,9 @@ abstract class AbstractValidatorDirective implements Validator, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (this.inputName in changes) {
       const input = this.normalizeInput(changes[this.inputName].currentValue);
-      this._enabled = this.enabled(input);
-      this._validator = this._enabled ? this.createValidator(input) : nullValidator;
+      const enabled = this.enabled(input);
+      this.enabledReactive.set(enabled);
+      this._validator = enabled ? this.createValidator(input) : nullValidator;
       this._onChange?.();
     }
   }
