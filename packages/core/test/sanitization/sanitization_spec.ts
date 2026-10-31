@@ -91,6 +91,28 @@ describe('sanitization', () => {
     ).toEqual('javascript:true');
   });
 
+  it('should allow `<svg:use>` references that cannot pull in a document', () => {
+    const ERROR = /NG0904: unsafe value used in a resource URL context.*/;
+    expect(ɵɵsanitizeResourceUrl('#icon', 'use', 'href')).toEqual('#icon');
+    expect(ɵɵsanitizeResourceUrl('#icon', 'use', 'xlink:href')).toEqual('#icon');
+    expect(ɵɵsanitizeResourceUrl('#icon', 'USE', 'XLINK:HREF')).toEqual('#icon');
+    expect(ɵɵsanitizeUrlOrResourceUrl('#icon', 'use', 'href')).toEqual('#icon');
+    // A nullish value removes the attribute instead of referencing a document.
+    expect(ɵɵsanitizeResourceUrl(null, 'use', 'href')).toEqual('');
+    expect(ɵɵsanitizeResourceUrl(undefined, 'use', 'href')).toEqual('');
+
+    expect(() => ɵɵsanitizeResourceUrl('/sprite.svg#icon', 'use', 'href')).toThrowError(ERROR);
+    // The fragment has to be the whole value: a document reference that ends in one still loads.
+    expect(() =>
+      ɵɵsanitizeResourceUrl('data:image/svg+xml,<svg/>#icon', 'use', 'href'),
+    ).toThrowError(ERROR);
+    expect(() => ɵɵsanitizeResourceUrl('#icon', 'use', 'src')).toThrowError(ERROR);
+    expect(() => ɵɵsanitizeResourceUrl('#icon', 'iframe', 'src')).toThrowError(ERROR);
+    expect(() => ɵɵsanitizeResourceUrl('#icon')).toThrowError(ERROR);
+    // Only strings are inspected: anything else could stringify to a document URL.
+    expect(() => ɵɵsanitizeResourceUrl(new Wrap('#icon'), 'use', 'href')).toThrowError(ERROR);
+  });
+
   it('should sanitize style', () => {
     expect(ɵɵsanitizeStyle('red')).toEqual('red');
     expect(ɵɵsanitizeStyle(new Wrap('red'))).toEqual('red');

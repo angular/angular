@@ -12,6 +12,7 @@ import {getTemplateLocationDetails} from '../render3/instructions/element_valida
 import {getDocument} from '../render3/interfaces/document';
 import {TNode, TNodeName, TNodeType} from '../render3/interfaces/node';
 import {RElement} from '../render3/interfaces/renderer_dom';
+import {SanitizerFn} from '../render3/interfaces/sanitization';
 import {ENVIRONMENT} from '../render3/interfaces/view';
 import {getLView, getSelectedIndex, getSelectedTNode} from '../render3/state';
 import {renderStringify} from '../render3/util/stringify_utils';
@@ -123,15 +124,30 @@ export function ɵɵsanitizeUrl(unsafeUrl: any): string {
 /**
  * A `url` sanitizer which only lets trusted `url`s through.
  *
- * This passes only `url`s marked trusted by calling {@link bypassSanitizationTrustResourceUrl}.
+ * This passes only `url`s marked trusted by calling {@link bypassSanitizationTrustResourceUrl},
+ * with the exception of `<svg:use>` references that cannot pull in another document.
  *
  * @param unsafeResourceUrl untrusted `url`, typically from the user.
+ * @param tagName target element tag name, when it is known.
+ * @param propName name of the property or attribute that contains the value, when it is known.
  * @returns `url` string which is safe to bind to the `src` properties such as `<img src>`, because
  * only trusted `url`s have been allowed to pass.
  *
  * @codeGenApi
  */
-export function ɵɵsanitizeResourceUrl(unsafeResourceUrl: any): TrustedScriptURL | string {
+export function ɵɵsanitizeResourceUrl(
+  unsafeResourceUrl: any,
+  tagName?: string,
+  propName?: string,
+): TrustedScriptURL | string {
+  if (
+    tagName !== undefined &&
+    propName !== undefined &&
+    isSafeSvgUseReference(unsafeResourceUrl, tagName, propName)
+  ) {
+    return renderStringify(unsafeResourceUrl);
+  }
+
   const sanitizer = getSanitizer();
   if (sanitizer) {
     return trustedScriptURLFromStringBypass(
@@ -234,7 +250,7 @@ export function ɵɵtrustConstantResourceUrl(url: TemplateStringsArray): Trusted
  * `packages/compiler/src/schema/dom_security_schema.ts`.
  * If tag and prop names don't match URL or Resource URL schema, no sanitizer is required.
  */
-export function getUrlSanitizer(tag: string, prop: string) {
+export function getUrlSanitizer(tag: string, prop: string): SanitizerFn | null {
   switch (getSecurityContext(tag, prop)) {
     case SecurityContext.RESOURCE_URL:
       return ɵɵsanitizeResourceUrl;
@@ -261,7 +277,36 @@ export function getUrlSanitizer(tag: string, prop: string) {
  * @codeGenApi
  */
 export function ɵɵsanitizeUrlOrResourceUrl(unsafeUrl: any, tag: string, prop: string) {
-  return getUrlSanitizer(tag, prop)?.(unsafeUrl) ?? unsafeUrl;
+  return getUrlSanitizer(tag, prop)?.(unsafeUrl, tag, prop) ?? unsafeUrl;
+}
+
+/**
+ * Checks whether a value bound to an `<svg:use>` reference is unable to pull in another document,
+ * in which case cloning it into the page is safe and no trusted value is required.
+ *
+ * @param value The value bound to the reference.
+ * @param tagName The name of the tag.
+ * @param propName The name of the property or attribute.
+ */
+function isSafeSvgUseReference(value: unknown, tagName: string, propName: string): boolean {
+  // A nullish value removes the attribute, so nothing is referenced at all, and a fragment such
+  // as `#icon` resolves against the page's own base URL, so it can only clone content that the
+  // application has rendered itself. Anything else, a value that merely stringifies to a fragment
+  // included, has to be marked as a trusted resource URL.
+  if (value != null && (typeof value !== 'string' || !value.startsWith('#'))) {
+    return false;
+  }
+
+  // The security context was resolved from the element and the attribute already, so `<use>` is
+  // the only element that has to be recognized here. `resolveElement` also resolves host bindings,
+  // where the element is known at runtime only.
+  const [, resolvedTagName] = resolveElement(tagName);
+  if (resolvedTagName !== 'use') {
+    return false;
+  }
+
+  const attributeName = propName.toLowerCase();
+  return attributeName === 'href' || attributeName === 'xlink:href';
 }
 
 export function validateAgainstEventProperties(name: string) {
