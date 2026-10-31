@@ -1,6 +1,7 @@
 {
   "chunks": {
     "main": [
+      "ABSTRACT_CONTROL",
       "AFTER_RENDER_SEQUENCES_TO_ADD",
       "ANIMATIONS",
       "APPLICATION_IS_STABLE_TIMEOUT",

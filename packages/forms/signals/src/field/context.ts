@@ -14,7 +14,7 @@ import {
   ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 import {RuntimeErrorCode} from '../errors';
-import {AbstractControl} from '@angular/forms';
+import {type AbstractControl, ɵisAbstractControl as isAbstractControl} from '@angular/forms';
 import {
   CompatSchemaPath,
   CompatFieldState,
@@ -168,7 +168,7 @@ export class FieldNodeContext implements FieldContext<unknown> {
   readonly valueOf = <TValue>(p: SchemaPath<TValue, SchemaPathRules>) => {
     const result = this.resolve(p)().value();
 
-    if (result instanceof AbstractControl) {
+    if (isAbstractControl(result)) {
       throw new RuntimeError(
         RuntimeErrorCode.ABSTRACT_CONTROL_IN_FORM,
         ngDevMode &&
