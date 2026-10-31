@@ -74,13 +74,13 @@ export class AppComponent {
               {
                 selector: 'app-root',
                 template: `
-        @defer {
-          <app-deferred/>
-          {{ 'hello' | testPipe }}
-        } @placeholder {
-          Placeholder
-        }
-      `,
+    @defer {
+      <app-deferred/>
+      {{ 'hello' | testPipe }}
+    } @placeholder {
+      Placeholder
+    }
+  `,
                 imports: [DeferredComponent, TestPipe],
               },
             ],

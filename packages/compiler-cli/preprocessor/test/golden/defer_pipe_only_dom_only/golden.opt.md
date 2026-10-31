@@ -169,14 +169,14 @@ class AppComponent {
               {
                 selector: 'app-root',
                 template: `
-        <div>
-          @defer {
-            {{ 'hello' | myPipe }}
-          } @placeholder {
-            Placeholder
-          }
-        </div>
-      `,
+    <div>
+      @defer {
+        {{ 'hello' | myPipe }}
+      } @placeholder {
+        Placeholder
+      }
+    </div>
+  `,
                 imports: [MyPipe],
               },
             ],

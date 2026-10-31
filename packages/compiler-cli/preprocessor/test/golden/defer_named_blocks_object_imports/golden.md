@@ -80,14 +80,14 @@ export class AppComponent {
                   blockB: [CompB, PipeA],
                 },
                 template: `
-        @defer (name blockA) {
-          <comp-a />
-        }
-        @defer (name blockB) {
-          <comp-b />
-          {{ 123 | pipeA }}
-        }
-      `,
+    @defer (name blockA) {
+      <comp-a />
+    }
+    @defer (name blockB) {
+      <comp-b />
+      {{ 123 | pipeA }}
+    }
+  `,
               },
             ],
           },

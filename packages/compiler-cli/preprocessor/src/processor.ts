@@ -2701,10 +2701,92 @@ function printSetClassMetadata(
 }
 
 function createStaticBlock(statement: string): string {
-  const indented = statement
-    .split('\n')
-    .map((line) => (line.length > 0 ? `    ${line}` : line))
-    .join('\n');
+  type LexMode = 'code' | 'single' | 'double' | 'line_comment' | 'block_comment' | 'template';
+  let mode: LexMode = 'code';
+  const templateBraceStack: number[] = [];
+  let indented = statement.length > 0 && statement[0] !== '\n' ? '    ' : '';
+
+  for (let i = 0; i < statement.length; i++) {
+    const ch = statement[i];
+    indented += ch;
+
+    if (ch === '\n') {
+      if (mode === 'line_comment') {
+        mode = 'code';
+      }
+      if (
+        mode !== 'template' &&
+        mode !== 'single' &&
+        mode !== 'double' &&
+        i + 1 < statement.length &&
+        statement[i + 1] !== '\n'
+      ) {
+        indented += '    ';
+      }
+      continue;
+    }
+
+    switch (mode) {
+      case 'code':
+        if (ch === "'") {
+          mode = 'single';
+        } else if (ch === '"') {
+          mode = 'double';
+        } else if (ch === '`') {
+          mode = 'template';
+        } else if (ch === '/' && statement[i + 1] === '/') {
+          mode = 'line_comment';
+          indented += statement[++i];
+        } else if (ch === '/' && statement[i + 1] === '*') {
+          mode = 'block_comment';
+          indented += statement[++i];
+        } else if (ch === '{' && templateBraceStack.length > 0) {
+          templateBraceStack[templateBraceStack.length - 1]++;
+        } else if (ch === '}' && templateBraceStack.length > 0) {
+          if (templateBraceStack[templateBraceStack.length - 1] === 0) {
+            templateBraceStack.pop();
+            mode = 'template';
+          } else {
+            templateBraceStack[templateBraceStack.length - 1]--;
+          }
+        }
+        break;
+      case 'single':
+        if (ch === '\\' && i + 1 < statement.length && statement[i + 1] !== '\n') {
+          indented += statement[++i];
+        } else if (ch === "'") {
+          mode = 'code';
+        }
+        break;
+      case 'double':
+        if (ch === '\\' && i + 1 < statement.length && statement[i + 1] !== '\n') {
+          indented += statement[++i];
+        } else if (ch === '"') {
+          mode = 'code';
+        }
+        break;
+      case 'block_comment':
+        if (ch === '*' && statement[i + 1] === '/') {
+          mode = 'code';
+          indented += statement[++i];
+        }
+        break;
+      case 'template':
+        if (ch === '\\' && i + 1 < statement.length && statement[i + 1] !== '\n') {
+          indented += statement[++i];
+        } else if (ch === '$' && statement[i + 1] === '{') {
+          templateBraceStack.push(0);
+          mode = 'code';
+          indented += statement[++i];
+        } else if (ch === '`') {
+          mode = 'code';
+        }
+        break;
+      case 'line_comment':
+        break;
+    }
+  }
+
   return `  static {\n${indented}\n  }\n`;
 }
 

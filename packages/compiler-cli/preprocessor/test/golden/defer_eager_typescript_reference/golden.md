@@ -92,15 +92,15 @@ export class AppComponent {
               {
                 selector: 'app-root',
                 template: `
-        <app-eager-twin />
-        @defer {
-          <app-deferred />
-          <app-queried />
-          <app-deferred-twin />
-        } @placeholder {
-          Placeholder
-        }
-      `,
+    <app-eager-twin />
+    @defer {
+      <app-deferred />
+      <app-queried />
+      <app-deferred-twin />
+    } @placeholder {
+      Placeholder
+    }
+  `,
                 imports: [DeferredComponent, QueriedComponent, DeferredTwin, EagerTwin],
               },
             ],

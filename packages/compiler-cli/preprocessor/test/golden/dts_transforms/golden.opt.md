@@ -73,11 +73,11 @@ export class AppComponent {
               {
                 selector: 'app-root',
                 template: `
-        <test-cmp 
-          width="100" 
-          height="200"
-        ></test-cmp>
-      `,
+    <test-cmp 
+      width="100" 
+      height="200"
+    ></test-cmp>
+  `,
                 imports: [TestComponent],
               },
             ],

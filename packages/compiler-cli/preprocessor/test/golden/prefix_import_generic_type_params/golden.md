@@ -81,11 +81,11 @@ export class DashboardComponent {
                   NestedViewComponent,
                 ],
                 template: `
-        <filter-bar [config]="config"></filter-bar>
-        <div [filterDir]="config"></div>
-        <local-config-comp [config]="config"></local-config-comp>
-        <nested-view [viewData]="config"></nested-view>
-      `,
+    <filter-bar [config]="config"></filter-bar>
+    <div [filterDir]="config"></div>
+    <local-config-comp [config]="config"></local-config-comp>
+    <nested-view [viewData]="config"></nested-view>
+  `,
               },
             ],
           },

@@ -87,12 +87,12 @@ export class ListComponent {
               {
                 imports: [NgFor],
                 template: `
-        @defer (on interaction) {
-          <div *ngFor="let item of items">{{ item }}</div>
-        } @placeholder {
-          <span>Placeholder</span>
-        }
-      `,
+    @defer (on interaction) {
+      <div *ngFor="let item of items">{{ item }}</div>
+    } @placeholder {
+      <span>Placeholder</span>
+    }
+  `,
               },
             ],
           },
