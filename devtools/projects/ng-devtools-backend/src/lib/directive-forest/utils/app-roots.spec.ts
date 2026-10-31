@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {getAppRoots} from './get-roots';
+import {getAppRoots} from './app-roots';
 
 function createRoot() {
   const root = document.createElement('div');
@@ -14,7 +14,7 @@ function createRoot() {
   return root;
 }
 
-describe('getRoots', () => {
+describe('getAppRoots', () => {
   afterEach(() => {
     document.body.replaceChildren();
   });
