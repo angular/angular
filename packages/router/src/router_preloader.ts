@@ -6,13 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  createEnvironmentInjector,
-  EnvironmentInjector,
-  Injectable,
-  OnDestroy,
-  Service,
-} from '@angular/core';
+import {EnvironmentInjector, Injectable, OnDestroy, Service} from '@angular/core';
 import {from, Observable, of, Subscription} from 'rxjs';
 import {catchError, concatMap, filter, mergeAll, mergeMap} from 'rxjs/operators';
 
@@ -20,6 +14,7 @@ import {Event, NavigationEnd} from './events';
 import {LoadedRouterConfig, Route, Routes} from './models';
 import {Router} from './router';
 import {RouterConfigLoader} from './router_config_loader';
+import {getOrCreateRouteInjectorIfNeeded} from './utils/config';
 
 /**
  * @description
@@ -127,15 +122,7 @@ export class RouterPreloader implements OnDestroy {
   private processRoutes(injector: EnvironmentInjector, routes: Routes): Observable<void> {
     const res: Observable<void>[] = [];
     for (const route of routes) {
-      if (route.providers && !route._injector) {
-        route._injector = createEnvironmentInjector(
-          route.providers,
-          injector,
-          typeof ngDevMode === 'undefined' || ngDevMode ? `Route: ${route.path}` : '',
-        );
-      }
-
-      const injectorForCurrentRoute = route._injector ?? injector;
+      const injectorForCurrentRoute = getOrCreateRouteInjectorIfNeeded(route, injector);
       if (route._loadedNgModuleFactory && !route._loadedInjector) {
         route._loadedInjector =
           route._loadedNgModuleFactory.create(injectorForCurrentRoute).injector;
@@ -150,52 +137,71 @@ export class RouterPreloader implements OnDestroy {
       // when present. Lastly, it remains to be decided whether `canLoad` should behave this way
       // at all. Code splitting and lazy loading is separate from client-side authorization checks
       // and should not be used as a security measure to prevent loading of code.
+      const hasPendingLoadConfig = Boolean(route.loadConfig && !route._configLoaded);
       if (
         // TODO: Remove `canLoad` check once removed from 3p.
         (route.loadChildren && !route._loadedRoutes && (route as any).canLoad === undefined) ||
-        (route.loadComponent && !route._loadedComponent)
+        (route.loadComponent && !route._loadedComponent) ||
+        hasPendingLoadConfig
       ) {
-        res.push(this.preloadConfig(injectorForCurrentRoute, route));
+        res.push(this.preloadConfig(injectorForCurrentRoute, route, hasPendingLoadConfig));
       }
-      if (route.children || route._loadedRoutes) {
+      if (!hasPendingLoadConfig && (route.children || route._loadedRoutes)) {
         res.push(this.processRoutes(injectorForChildren, (route.children ?? route._loadedRoutes)!));
       }
     }
     return from(res).pipe(mergeAll());
   }
 
-  private preloadConfig(injector: EnvironmentInjector, route: Route): Observable<void> {
+  private preloadConfig(
+    injector: EnvironmentInjector,
+    route: Route,
+    hasPendingLoadConfig: boolean,
+  ): Observable<void> {
     return this.preloadingStrategy.preload(route, () => {
       if (injector.destroyed) {
         return of(null);
       }
-      let loadedChildren$: Observable<LoadedRouterConfig | null>;
-      // TODO: Remove `canLoad` check once removed from 3p.
-      if (route.loadChildren && (route as any).canLoad === undefined) {
-        loadedChildren$ = from(this.loader.loadChildren(injector, route));
-      } else {
-        loadedChildren$ = of(null);
-      }
+      const loadConfig$: Observable<unknown> =
+        route.loadConfig && !route._configLoaded ? from(this.loader.loadConfig(route)) : of(null);
 
-      const recursiveLoadChildren$ = loadedChildren$.pipe(
-        mergeMap((config: LoadedRouterConfig | null) => {
-          if (config === null) {
+      return loadConfig$.pipe(
+        mergeMap(() => {
+          if (injector.destroyed) {
             return of(void 0);
           }
-          route._loadedRoutes = config.routes;
-          route._loadedInjector = config.injector;
-          route._loadedNgModuleFactory = config.factory;
-          // If the loaded config was a module, use that as the module/module injector going
-          // forward. Otherwise, continue using the current module/module injector.
-          return this.processRoutes(config.injector ?? injector, config.routes);
+          injector = getOrCreateRouteInjectorIfNeeded(route, injector);
+          // TODO: Remove `canLoad` check once removed from 3p.
+          const loadedChildren$: Observable<LoadedRouterConfig | null> =
+            route.loadChildren && (route as any).canLoad === undefined
+              ? from(this.loader.loadChildren(injector, route))
+              : of(null);
+
+          const recursiveLoadChildren$ = loadedChildren$.pipe(
+            mergeMap((config: LoadedRouterConfig | null) => {
+              if (config !== null) {
+                route._loadedRoutes = config.routes;
+                route._loadedInjector = config.injector;
+                route._loadedNgModuleFactory = config.factory;
+              }
+              const childRoutes =
+                config?.routes ??
+                (hasPendingLoadConfig ? (route.children ?? route._loadedRoutes) : null);
+              // If the loaded config was a module, use that as the module/module injector going
+              // forward. Otherwise, continue using the current module/module injector.
+              return childRoutes
+                ? this.processRoutes(route._loadedInjector ?? injector, childRoutes)
+                : of(void 0);
+            }),
+          );
+          if (route.loadComponent && !route._loadedComponent) {
+            const loadComponent$ = this.loader.loadComponent(injector, route);
+            return from([recursiveLoadChildren$, loadComponent$]).pipe(mergeAll());
+          } else {
+            return recursiveLoadChildren$;
+          }
         }),
       );
-      if (route.loadComponent && !route._loadedComponent) {
-        const loadComponent$ = this.loader.loadComponent(injector, route);
-        return from([recursiveLoadChildren$, loadComponent$]).pipe(mergeAll());
-      } else {
-        return recursiveLoadChildren$;
-      }
     });
   }
 }

@@ -431,6 +431,7 @@
       "assertNotDestroyed",
       "assertNotScriptHostElement",
       "assertTypeDefined",
+      "assignEmptyOutletComponent",
       "attachPatchData",
       "baseElement",
       "bind",

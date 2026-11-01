@@ -418,16 +418,15 @@ export class Recognizer {
 
     const createSnapshot = (result: MatchResult) =>
       this.createSnapshot(injector, route, result.consumedSegments, result.parameters, parentRoute);
-    const result = await firstValueFrom(
-      matchWithChecks(
-        rawSegment,
-        route,
-        segments,
-        injector,
-        this.urlSerializer,
-        createSnapshot,
-        this.abortSignal,
-      ),
+    const result = await matchWithChecks(
+      rawSegment,
+      route,
+      segments,
+      injector,
+      this.urlSerializer,
+      createSnapshot,
+      this.abortSignal,
+      this.configLoader,
     );
     if (route.path === '**') {
       // Prior versions of the route matching algorithm would stop matching at the wildcard route.
@@ -440,6 +439,7 @@ export class Recognizer {
     if (!result?.matched) {
       throw new NoMatch(rawSegment);
     }
+
     // If the route has an injector created from providers, we should start using that.
     injector = route._injector ?? injector;
     const {routes: childConfig} = await this.getChildConfig(injector, route, segments);
