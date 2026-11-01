@@ -41,6 +41,8 @@ export enum ExtendedTemplateDiagnosticName {
     // (undocumented)
     UNPARENTHESIZED_NULLISH_COALESCING = "unparenthesizedNullishCoalescing",
     // (undocumented)
+    UNSTABLE_TRACK_EXPRESSION = "unstableTrackExpression",
+    // (undocumented)
     UNUSED_LET_DECLARATION = "unusedLetDeclaration",
     // (undocumented)
     UNUSED_STANDALONE_IMPORTS = "unusedStandaloneImports"

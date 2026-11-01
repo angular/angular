@@ -27,11 +27,14 @@ Currently, Angular supports the following extended diagnostics:
 | `NG8116` | [`missingStructuralDirective`](extended-diagnostics/NG8116)           |
 | `NG8117` | [`uninvokedFunctionInTextInterpolation`](extended-diagnostics/NG8117) |
 | `NG8119` | [`numericCssPropertyRequiresUnit`](extended-diagnostics/NG8119)       |
+| `NG8120` | [`unstableTrackExpression`](extended-diagnostics/NG8120)              |
 | `NG8021` | [`deferTriggerMisconfiguration`](extended-diagnostics/NG8021)         |
 
 ## Configuration
 
 Extended diagnostics are warnings by default and do not block compilation.
+The opt-in [`unstableTrackExpression`](extended-diagnostics/NG8120) check requires an explicit
+`warning` or `error` entry under `checks`; `defaultCategory` alone does not enable it.
 Each diagnostic can be configured as either:
 
 | Error category | Effect                                                                                                                                                                   |
@@ -58,7 +61,7 @@ Check severity can be configured as an [Angular compiler option](reference/confi
 The `checks` field maps the name of individual diagnostics to their associated category.
 See [Diagnostics](#diagnostics) for a complete list of extended diagnostics and the name to use for configuring them.
 
-The `defaultCategory` field is used for any diagnostics that are not explicitly listed under `checks`.
+For enabled checks, the `defaultCategory` field is used for diagnostics that are not explicitly listed under `checks`.
 If not set, such diagnostics will be treated as `warning`.
 
 Extended diagnostics will emit when [`strictTemplates`](tools/cli/template-typecheck#strict-mode) is enabled.

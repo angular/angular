@@ -719,6 +719,9 @@ export enum ErrorCode {
    */
   NUMERIC_CSS_PROPERTY_REQUIRES_UNIT = 8119,
 
+  /** An object or array literal creates a new key each time an @for track expression runs. */
+  UNSTABLE_TRACK_EXPRESSION = 8120,
+
   /**
    * The template type-checking engine would need to generate an inline type check block for a
    * component, but the current type-checking environment doesn't support it.

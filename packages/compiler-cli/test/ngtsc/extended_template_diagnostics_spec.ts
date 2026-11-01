@@ -12,7 +12,7 @@ import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {getSourceCodeForDiagnostic, loadStandardTestFiles} from '../../src/ngtsc/testing';
 
-import {NgtscTestEnvironment} from './env';
+import {NgtscTestEnvironment, TsConfigOptions} from './env';
 
 const testFiles = loadStandardTestFiles({fakeCommon: true});
 
@@ -97,6 +97,121 @@ runInEachFileSystem(() => {
       expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
       expect(diags[0].code).toBe(ngErrorCode(ErrorCode.NULLISH_COALESCING_NOT_NULLABLE));
       expect(getSourceCodeForDiagnostic(diags[0])).toBe('bar ?? "foo"');
+    });
+
+    describe('unstable track expressions', () => {
+      function writeComponent(template: string, external = false) {
+        env.write(
+          'test.ts',
+          `
+            import {Component, signal} from '@angular/core';
+            @Component({
+              ${external ? "templateUrl: './test.html'" : `template: '${template}'`},
+            })
+            export class TestCmp {
+              readonly users = signal([{id: 1}]);
+            }
+          `,
+        );
+        if (external) {
+          env.write('test.html', template);
+        }
+      }
+
+      for (const external of [false, true]) {
+        for (const expression of [
+          '{id: user.id}',
+          '[user.id]',
+          '(({id: user.id}))',
+          '(([user.id]))',
+        ]) {
+          it(`reports ${expression} in ${external ? 'external' : 'inline'} templates`, () => {
+            env.tsconfig({
+              strictTemplates: true,
+              extendedDiagnostics: {checks: {unstableTrackExpression: 'warning'}},
+            });
+            writeComponent(`@for (user of users(); track ${expression}) { {{user.id}} }`, external);
+            const diagnostics = env.driveDiagnostics(0);
+            expect(diagnostics.length).toBe(1);
+            expect(diagnostics[0].code).toBe(ngErrorCode(ErrorCode.UNSTABLE_TRACK_EXPRESSION));
+            expect(diagnostics[0].category).toBe(ts.DiagnosticCategory.Warning);
+            expect(getSourceCodeForDiagnostic(diagnostics[0])).toBe(expression);
+            expect(
+              diagnostics[0].file!.fileName.endsWith(external ? '/test.html' : '/test.ts'),
+            ).toBeTrue();
+          });
+        }
+      }
+
+      for (const category of ['warning', 'error', 'suppress'] as const) {
+        it(`honors ${category} with defaultCategory error`, () => {
+          env.tsconfig({
+            strictTemplates: true,
+            extendedDiagnostics: {
+              defaultCategory: 'error',
+              checks: {unstableTrackExpression: category},
+            },
+          });
+          writeComponent('@for (user of users(); track [user.id]) {}');
+          const diagnostics = env.driveDiagnostics(category === 'error' ? 1 : 0);
+          if (category === 'suppress') {
+            expect(diagnostics).toEqual([]);
+          } else {
+            expect(diagnostics.length).toBe(1);
+            expect(diagnostics[0].code).toBe(ngErrorCode(ErrorCode.UNSTABLE_TRACK_EXPRESSION));
+            expect(diagnostics[0].category).toBe(
+              category === 'error' ? ts.DiagnosticCategory.Error : ts.DiagnosticCategory.Warning,
+            );
+          }
+        });
+      }
+
+      const unconfiguredOptions: TsConfigOptions[] = [
+        {strictTemplates: false},
+        {strictTemplates: true},
+        {strictTemplates: true, extendedDiagnostics: {}},
+        {strictTemplates: true, extendedDiagnostics: {defaultCategory: 'warning' as const}},
+        {strictTemplates: true, extendedDiagnostics: {defaultCategory: 'error' as const}},
+        {strictTemplates: true, extendedDiagnostics: {defaultCategory: 'suppress' as const}},
+      ];
+      for (const options of unconfiguredOptions) {
+        it(`preserves compilation without opt-in: ${JSON.stringify(options)}`, () => {
+          env.tsconfig(options);
+          writeComponent(
+            '@for (user of users(); track {id: user.id}) {} @for (user of users(); track [user.id]) {}',
+          );
+          expect(env.driveDiagnostics(0)).toEqual([]);
+          env.driveMain();
+          expect(env.getContents('test.js')).toContain('repeaterCreate');
+        });
+      }
+
+      it('preserves the existing configuration error when strictTemplates is disabled', () => {
+        env.tsconfig({
+          strictTemplates: false,
+          extendedDiagnostics: {checks: {unstableTrackExpression: 'warning'}},
+        });
+        writeComponent('@for (user of users(); track [user.id]) {}');
+        const diagnostics = env.driveDiagnostics(1);
+        expect(diagnostics.length).toBe(1);
+        expect(diagnostics[0].code).toBe(
+          ngErrorCode(ErrorCode.CONFIG_EXTENDED_DIAGNOSTICS_IMPLIES_STRICT_TEMPLATES),
+        );
+      });
+
+      it('does not change emitted JavaScript when enabled', () => {
+        writeComponent('@for (user of users(); track {id: user.id}) { {{user.id}} }');
+        env.driveMain();
+        const before = env.getContents('test.js');
+        env.tsconfig({
+          strictTemplates: true,
+          extendedDiagnostics: {checks: {unstableTrackExpression: 'warning'}},
+        });
+        const diagnostics = env.driveDiagnostics(0);
+        expect(diagnostics.length).toBe(1);
+        expect(diagnostics[0].code).toBe(ngErrorCode(ErrorCode.UNSTABLE_TRACK_EXPRESSION));
+        expect(env.getContents('test.js')).toBe(before);
+      });
     });
 
     describe('handles diagnostic configuration', () => {

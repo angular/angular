@@ -10,11 +10,13 @@ import {ParseTemplateOptions, TypeCheckId, TypeCheckingConfig} from '@angular/co
 import path from 'path';
 import ts from 'typescript';
 
-import {ErrorCode} from '../../../diagnostics';
+import {DiagnosticCategoryLabel, NgCompilerOptions} from '../../../core';
+import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../diagnostics';
 import {absoluteFrom, AbsoluteFsPath, getFileSystem} from '../../../file_system';
 import {TestFile} from '../../../file_system/testing';
 import {performNgpCompilationSync} from '../../../testing';
 import {TemplateDiagnostic, TemplateTypeChecker} from '../../api';
+import {ALL_DIAGNOSTIC_FACTORIES} from '../../extended';
 import {TemplateCheck} from '../../extended/api';
 import {ExtendedTemplateCheckerImpl} from '../../extended/src/extended_template_checker';
 import {
@@ -256,11 +258,30 @@ function runNgpForExtendedChecks(
     return [];
   }
 
-  const diagnostics = compileTargetsWithNgp(ctx.targets, ctx.overrides, ctx.load, true);
   const configuredByNgCode = new Map<number, ts.DiagnosticCategory>();
+  const checks: Partial<Record<ExtendedTemplateDiagnosticName, DiagnosticCategoryLabel>> = {};
   for (const [check, category] of templateChecks.entries()) {
     configuredByNgCode.set(-990000 - Number(check.code), category);
+    const factory = ALL_DIAGNOSTIC_FACTORIES.find((factory) => factory.code === check.code);
+    if (factory !== undefined) {
+      // Forward explicit categories as well as selecting the returned diagnostics. Opt-in checks
+      // cannot be enabled through the backend's default category alone.
+      checks[factory.name] =
+        category === ts.DiagnosticCategory.Error
+          ? DiagnosticCategoryLabel.Error
+          : DiagnosticCategoryLabel.Warning;
+    }
   }
+  const options: NgCompilerOptions = {
+    ...ctx.overrides.options,
+    extendedDiagnostics: {checks},
+  };
+  const diagnostics = compileTargetsWithNgp(
+    ctx.targets,
+    {...ctx.overrides, options},
+    ctx.load,
+    true,
+  );
 
   const out: TemplateDiagnostic[] = [];
   for (const d of diagnostics) {

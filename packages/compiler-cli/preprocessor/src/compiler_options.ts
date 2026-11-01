@@ -40,7 +40,8 @@ export type ExtendedTemplateDiagnosticName =
   | 'unparenthesizedNullishCoalescing'
   | 'uninvokedTrackFunction'
   | 'uninvokedFunctionInTextInterpolation'
-  | 'deferTriggerMisconfiguration';
+  | 'deferTriggerMisconfiguration'
+  | 'unstableTrackExpression';
 
 /**
  * Mirrors `SUPPORTED_DIAGNOSTIC_NAMES` in `ngtsc/typecheck/extended/index.ts`, in its iteration
@@ -67,6 +68,7 @@ export const SUPPORTED_DIAGNOSTIC_NAMES: ReadonlySet<ExtendedTemplateDiagnosticN
   'uninvokedTrackFunction',
   'uninvokedFunctionInTextInterpolation',
   'deferTriggerMisconfiguration',
+  'unstableTrackExpression',
 ]);
 
 /**

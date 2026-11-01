@@ -14,6 +14,7 @@ import {
   ParseSourceFile,
   ParseSourceSpan,
   parseTemplate,
+  R3TargetBinder,
   type TcbDirectiveMetadata,
   TmplAstElement,
   type TmplAstNode,
@@ -27,6 +28,7 @@ import {
 } from '../src/compiler_options.js';
 import {type Diagnostic, flattenNgDiagnosticMessage} from '../src/diagnostic.js';
 import {
+  ALL_DIAGNOSTIC_FACTORIES,
   EXTENDED_ERROR_DETAILS_PAGE_BASE_URL,
   ExtendedTemplateCheckerImpl,
   formatExtendedError,
@@ -1334,6 +1336,69 @@ export class CondComp {}
     expect(recorder.diagnostics.length).toBe(1);
     expect(recorder.diagnostics[0].code).toBe(10002);
     expect(recorder.diagnostics[0].category).toBe(OutOfBandDiagnosticCategory.Warning);
+  });
+
+  describe('NG8120: unstable track expressions', () => {
+    for (const expression of ['{id: user.id}', '[user.id]', '(({id: user.id}))', '(([user.id]))']) {
+      it(`diagnoses ${expression} only when explicitly enabled`, () => {
+        const template = `@for (user of users; track ${expression}) {}`;
+        const {nodes, errors} = parseTemplate(template, '/test.html');
+        expect(errors).toBeNull();
+        const component = {templateNodes: nodes} as unknown as TcbTargetInput;
+        const boundTarget = new R3TargetBinder<TcbDirectiveMetadata>(null).bind({template: nodes});
+        for (const category of [undefined, 'warning', 'error', 'suppress'] as const) {
+          const checker = new ExtendedTemplateCheckerImpl(ALL_DIAGNOSTIC_FACTORIES, {
+            extendedDiagnostics: {
+              defaultCategory: 'error',
+              checks: {unstableTrackExpression: category},
+            },
+          });
+          const diagnostics = checker.getDiagnosticsForComponent(
+            'tcb1' as TypeCheckId,
+            component,
+            boundTarget,
+          );
+          if (category === undefined || category === 'suppress') {
+            expect(diagnostics).toEqual([]);
+          } else {
+            expect(diagnostics.length).toBe(1);
+            expect(diagnostics[0].code).toBe(8120);
+            expect(diagnostics[0].category).toBe(
+              category === 'error'
+                ? OutOfBandDiagnosticCategory.Error
+                : OutOfBandDiagnosticCategory.Warning,
+            );
+            expect(template.slice(diagnostics[0].start, diagnostics[0].end)).toBe(expression);
+          }
+        }
+      });
+    }
+
+    it('does not diagnose stable keys, calls or literals outside track', () => {
+      const {nodes} = parseTemplate(
+        `
+        @for (user of [{id: 1}]; track user.id) { {{ {id: user.id} }} }
+        @for (user of users; track user) {}
+        @for (user of users; track $index) {}
+        @for (user of users; track 1) {}
+        @for (user of users; track getUserId(user)) {}
+        @for (field of fields(); track field) {}
+        @for (user of users; track user.id) { @for (key of [user.key]; track key) {} }
+        @for (user of users; track user.id ? user : {id: user.id}) {}
+      `,
+        '/test.html',
+      );
+      const checker = new ExtendedTemplateCheckerImpl(ALL_DIAGNOSTIC_FACTORIES, {
+        extendedDiagnostics: {checks: {unstableTrackExpression: 'warning'}},
+      });
+      expect(
+        checker.getDiagnosticsForComponent(
+          'tcb1' as TypeCheckId,
+          {templateNodes: nodes} as unknown as TcbTargetInput,
+          new R3TargetBinder<TcbDirectiveMetadata>(null).bind({template: nodes}),
+        ),
+      ).toEqual([]);
+    });
   });
 
   it('supports defining custom TemplateCheckWithVisitor and TemplateCheckFactory via ExtendedTemplateCheckerImpl', () => {

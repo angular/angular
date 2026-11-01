@@ -34,6 +34,7 @@ import {factory as suffixNotSupportedFactory} from './checks/suffix_not_supporte
 import {factory as textAttributeNotBindingFactory} from './checks/text_attribute_not_binding.js';
 import {factory as uninvokedFunctionInEventBindingFactory} from './checks/uninvoked_function_in_event_binding.js';
 import {factory as unparenthesizedNullishCoalescingFactory} from './checks/unparenthesized_nullish_coalescing.js';
+import {factory as unstableTrackExpressionFactory} from './checks/unstable_track_expression.js';
 import {factory as unusedLetDeclarationFactory} from './checks/unused_let_declaration.js';
 import {
   diagnosticLabelToCategory,
@@ -75,6 +76,7 @@ export const ALL_DIAGNOSTIC_FACTORIES: readonly TemplateCheckFactory<
   unparenthesizedNullishCoalescingFactory,
   deferTriggerMisconfigurationFactory,
   numericCssPropertyRequiresUnitFactory,
+  unstableTrackExpressionFactory,
 ];
 
 /**
