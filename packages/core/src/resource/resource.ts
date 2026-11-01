@@ -301,7 +301,6 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
             const transferState = this.transferState;
             const cacheKey = this.transferCacheKey;
             if (cacheState.isActive && cacheKey && transferState && request !== undefined) {
-              const key = this.transferCacheKey;
               if (transferState.hasKey(cacheKey)) {
                 stream = signal(
                   {value: transferState.get(cacheKey, defaultValue)},

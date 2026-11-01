@@ -23,13 +23,10 @@ import {CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {ComponentTemplate} from '../interfaces/definition';
 import {LocalRefExtractor, TAttributes, TNode, TNodeFlags} from '../interfaces/node';
 import {
-  ANIMATIONS,
   CONTEXT,
   DECLARATION_COMPONENT_VIEW,
   HEADER_OFFSET,
   HYDRATION,
-  ID,
-  INJECTOR,
   LView,
   TVIEW,
   TView,

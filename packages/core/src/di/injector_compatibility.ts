@@ -67,12 +67,6 @@ export class RetrievingInjector implements PrimitivesInjector {
   }
 }
 
-export const NG_TEMP_TOKEN_PATH = 'ngTempTokenPath';
-const NG_TOKEN_PATH = 'ngTokenPath';
-const NEW_LINE = /\n/gm;
-const NO_NEW_LINE = 'ɵ';
-export const SOURCE = '__source';
-
 /**
  * Temporary type to allow internal symbols to use inject flags. This should be
  * removed once we consolidate the flags and the object literal approach.
