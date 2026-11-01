@@ -64,7 +64,7 @@ export function removeAllAppScopedEventListeners(
   removeAllEventListeners(dataContainer._ejsas?.[appId]);
 }
 
-/** Clear the early event contract. */
+/** Removes the early event listeners and clears the early event contract. */
 export function clearAppScopedEarlyEventContract(
   appId: string,
   dataContainer: EarlyJsactionDataContainer = window,
@@ -72,5 +72,7 @@ export function clearAppScopedEarlyEventContract(
   if (!dataContainer._ejsas) {
     return;
   }
+  // This must run first because listeners can only be reached through the contract
+  removeAllEventListeners(dataContainer._ejsas[appId]);
   dataContainer._ejsas[appId] = undefined;
 }

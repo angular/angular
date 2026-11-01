@@ -121,10 +121,16 @@ export function withEventReplay(): Provider[] {
                   sharedMapFunction(rEl as RElement, jsActionMap);
                 },
               );
-              // Clean up the reference to the function set by the environment initializer,
-              // as the function closure may capture injected elements and prevent them
-              // from being properly garbage collected.
-              appRef.onDestroy(clearStashFn);
+
+              appRef.onDestroy(() => {
+                // Clean up the reference to the function set by the environment initializer,
+                // as the function closure may capture injected elements and prevent them
+                // from being properly garbage collected.
+                clearStashFn();
+                // We have to clean the early event contract because it would detach its
+                // event listeners and release elements captured in its event queue.
+                clearAppScopedEarlyEventContract(appId);
+              });
             }
           }
         },
@@ -145,17 +151,8 @@ export function withEventReplay(): Provider[] {
             }
 
             appsWithEventReplay.add(appRef);
-
-            const appId = injector.get(APP_ID);
             appRef.onDestroy(() => {
               appsWithEventReplay.delete(appRef);
-              // Ensure that we're always safe calling this in the browser.
-              if (typeof ngServerMode !== 'undefined' && !ngServerMode) {
-                // `_ejsa` should be deleted when the app is destroyed, ensuring that
-                // no elements are still captured in the global list and are not prevented
-                // from being garbage collected.
-                clearAppScopedEarlyEventContract(appId);
-              }
             });
 
             // Kick off event replay logic once hydration for the initial part
