@@ -13,14 +13,14 @@ import {createOrReusePlatformInjector} from '../platform/platform';
 import {assertStandaloneComponentType} from '../render3/errors';
 import {EnvironmentNgModuleRefAdapter} from '../render3/ng_module_ref';
 
-import {ApplicationRef} from './application_ref';
-import {provideZonelessChangeDetectionInternal} from '../change_detection/scheduling/zoneless_scheduling_impl';
-import {bootstrap} from '../platform/bootstrap';
-import {profiler} from '../render3/profiler';
 import {ProfilerEvent} from '../../primitives/devtools';
+import {provideZonelessChangeDetectionInternal} from '../change_detection/scheduling/zoneless_scheduling_impl';
 import {errorHandlerEnvironmentInitializer} from '../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
+import {bootstrap} from '../platform/bootstrap';
 import {PlatformRef} from '../platform/platform_ref';
+import {profiler} from '../render3/profiler';
+import {ApplicationRef} from './application_ref';
 import {validAppIdInitializer} from './application_tokens';
 
 /**
@@ -66,7 +66,7 @@ export function internalCreateApplication(config: {
     const allAppProviders = [
       provideZonelessChangeDetectionInternal(),
       errorHandlerEnvironmentInitializer,
-      ...(ngDevMode ? [validAppIdInitializer] : []),
+      ...(ngDevMode || ngServerMode ? [validAppIdInitializer] : []),
       ...(appProviders || []),
     ];
     const adapter = new EnvironmentNgModuleRefAdapter({
