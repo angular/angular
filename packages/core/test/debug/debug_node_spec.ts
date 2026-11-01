@@ -19,6 +19,7 @@ import {
   EmbeddedViewRef,
   EventEmitter,
   forwardRef,
+  inject,
   Input,
   NgZone,
   OnInit,
@@ -1337,6 +1338,30 @@ describe('debug element', () => {
     const fixture = TestBed.createComponent(Wrapper);
     expect(fixture.debugElement.query((e) => e.name === 'myComponent')).toBeTruthy();
     expect(fixture.debugElement.query((e) => e.name === 'div')).toBeTruthy();
+  });
+
+  it('should use the tag name of the native element for root and dynamically created hosts', () => {
+    @Component({selector: 'dynamic-cmp', template: ''})
+    class DynamicCmp {}
+
+    @Component({selector: 'dynamic-cmp-container', template: ''})
+    class DynamicCmpContainer {
+      vcr = inject(ViewContainerRef);
+    }
+
+    @Component({
+      selector: 'root-cmp',
+      template: '<dynamic-cmp-container />',
+      imports: [DynamicCmpContainer],
+    })
+    class RootCmp {}
+
+    const fixture = TestBed.createComponent(RootCmp, {inferTagName: true});
+    const container = fixture.debugElement.query(By.directive(DynamicCmpContainer));
+    container.componentInstance.vcr.createComponent(DynamicCmp);
+
+    expect(fixture.debugElement.name).toBe('root-cmp');
+    expect(fixture.debugElement.query((e) => e.name === 'dynamic-cmp')).toBeTruthy();
   });
 
   it('does not call event listeners added outside angular context', () => {
