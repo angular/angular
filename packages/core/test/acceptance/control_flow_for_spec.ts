@@ -479,6 +479,57 @@ describe('control flow - for', () => {
       expect(console.warn).not.toHaveBeenCalled();
     });
 
+    it('should recreate DOM without NG0956 for object-literal tracking keys', async () => {
+      @Component({
+        template: `@for (item of items(); track {id: item.id}) {
+          <span>{{ item.id }}</span>
+        }`,
+      })
+      class UnstableTracking {
+        items = signal([{id: 1}, {id: 2}]);
+      }
+
+      @Component({
+        template: `@for (item of items(); track item.id) {
+          <span>{{ item.id }}</span>
+        }`,
+      })
+      class StableTracking {
+        items = signal([{id: 1}, {id: 2}]);
+      }
+
+      spyOn(console, 'warn');
+
+      const unstableFixture = TestBed.createComponent(UnstableTracking);
+      const stableFixture = TestBed.createComponent(StableTracking);
+      await Promise.all([unstableFixture.whenStable(), stableFixture.whenStable()]);
+
+      const unstableBefore = unstableFixture.nativeElement.querySelectorAll('span');
+      const stableBefore = stableFixture.nativeElement.querySelectorAll('span');
+
+      expect(unstableBefore.length).toBe(2);
+      expect(stableBefore.length).toBe(2);
+
+      // Only the collection array changes; the item references and IDs remain unchanged.
+      unstableFixture.componentInstance.items.set([...unstableFixture.componentInstance.items()]);
+      stableFixture.componentInstance.items.set([...stableFixture.componentInstance.items()]);
+      await Promise.all([unstableFixture.whenStable(), stableFixture.whenStable()]);
+
+      const unstableAfter = unstableFixture.nativeElement.querySelectorAll('span');
+      const stableAfter = stableFixture.nativeElement.querySelectorAll('span');
+
+      expect(unstableAfter.length).toBe(2);
+      expect(stableAfter.length).toBe(2);
+
+      for (let i = 0; i < 2; i++) {
+        expect(unstableAfter[i]).not.toBe(unstableBefore[i]);
+        expect(stableAfter[i]).toBe(stableBefore[i]);
+      }
+
+      // NG0956 is restricted to the built-in track-by-identity function.
+      expect(console.warn).not.toHaveBeenCalledWith(jasmine.stringContaining('NG0956'));
+    });
+
     it('should NOT warn about collection re-creation when a trackBy function is not identity', async () => {
       @Component({
         template: `@for (item of items(); track item.value) {
