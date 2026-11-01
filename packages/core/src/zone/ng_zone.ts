@@ -601,16 +601,3 @@ export interface InternalNgZoneOptions {
   shouldCoalesceRunChangeDetection?: boolean;
   scheduleInRootZone?: boolean;
 }
-
-export function getNgZone(
-  ngZoneToUse: NgZone | 'zone.js' | 'noop' = 'zone.js',
-  options: InternalNgZoneOptions,
-): NgZone {
-  if (ngZoneToUse === 'noop') {
-    return new NoopNgZone();
-  }
-  if (ngZoneToUse === 'zone.js') {
-    return new NgZone(options);
-  }
-  return ngZoneToUse;
-}

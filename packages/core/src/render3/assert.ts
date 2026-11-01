@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {
   assertDefined,
   assertEqual,
@@ -16,7 +15,7 @@ import {
   throwError,
 } from '../util/assert';
 
-import {getComponentDef, getNgModuleDef} from './def_getters';
+import {getNgModuleDef} from './def_getters';
 import {LContainer} from './interfaces/container';
 import {DirectiveDef} from './interfaces/definition';
 import {TIcu} from './interfaces/i18n';
@@ -74,15 +73,6 @@ export function assertTIcu(tIcu: TIcu) {
   }
 }
 
-export function assertComponentType(
-  actual: any,
-  msg: string = "Type passed in is not ComponentType, it does not have 'ɵcmp' property.",
-) {
-  if (!getComponentDef(actual)) {
-    throwError(msg);
-  }
-}
-
 export function assertNgModuleType(
   actual: any,
   msg: string = "Type passed in is not NgModuleType, it does not have 'ɵmod' property.",
@@ -90,10 +80,6 @@ export function assertNgModuleType(
   if (!getNgModuleDef(actual)) {
     throwError(msg);
   }
-}
-
-export function assertCurrentTNodeIsParent(isParent: boolean) {
-  assertEqual(isParent, true, 'currentTNode should be a parent');
 }
 
 export function assertHasParent(tNode: TNode | null) {

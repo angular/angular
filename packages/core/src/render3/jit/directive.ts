@@ -244,8 +244,6 @@ function getStandaloneDefFunctions(
   directiveDefs: () => DirectiveDefList;
   pipeDefs: () => PipeDefList;
 } {
-  let cachedDirectiveDefs: DirectiveDefList | null = null;
-  let cachedPipeDefs: PipeDefList | null = null;
   const directiveDefs = () => {
     if (ngDevMode) {
       for (const rawDep of imports) {
