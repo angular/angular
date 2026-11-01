@@ -160,8 +160,10 @@ export {
   SharedStylesHost as ɵSharedStylesHost,
 } from './render3/interfaces/shared_styles_host';
 export {
+  // TODO: Remove this export when the deprecated Signal Forms `validateAsync` API is removed.
   chain as ɵchain,
   encapsulateResourceError as ɵencapsulateResourceError,
+  rethrowFatalErrors as ɵrethrowFatalResourceErrors,
   ResourceImpl as ɵResourceImpl,
 } from './resource/resource';
 export {

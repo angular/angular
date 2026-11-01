@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {resource, ɵisPromise} from '@angular/core';
+import {ɵisPromise} from '@angular/core';
 import type {StandardSchemaV1} from '@standard-schema/spec';
 import {addDefaultField} from '../../../field/validation';
 import type {LogicFn, ReadonlyFieldTree, SchemaPath, SchemaPathTree} from '../../types';
 import {createMetadataKey, metadata} from '../metadata';
-import {validateAsync} from './validate_async';
+import {validateAsyncLoader} from './validate_async_loader';
 import {validateTree} from './validate_tree';
 import {
   BaseNgValidationError,
@@ -101,7 +101,7 @@ export function validateStandardSchema<TSchema, TModel extends IgnoreUnknownProp
     );
   });
 
-  validateAsync<
+  validateAsyncLoader<
     TModel,
     Promise<StandardSchemaV1.Result<TSchema>> | undefined,
     readonly StandardSchemaV1.Issue[]
@@ -111,12 +111,7 @@ export function validateStandardSchema<TSchema, TModel extends IgnoreUnknownProp
       const result = state.metadata(VALIDATOR_MEMO)!();
       return result && ɵisPromise(result) ? result : undefined;
     },
-    factory: (params) => {
-      return resource({
-        params,
-        loader: async ({params}) => (await params)?.issues ?? [],
-      });
-    },
+    loader: async ({params}) => (await params)?.issues ?? [],
     onSuccess: (issues, {fieldTreeOf}) => {
       return issues.map((issue) => standardIssueToFormTreeError(fieldTreeOf<TModel>(path), issue));
     },

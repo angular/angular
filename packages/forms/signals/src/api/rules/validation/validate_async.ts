@@ -123,6 +123,8 @@ export interface AsyncValidatorOptions<
  * @see [Signal Form Async Validation](guide/forms/signals/validation#async-validation)
  * @see [Custom async validation](guide/forms/signals/async-operations#custom-async-validation-with-validateasync)
  * @category validation
+ * @deprecated Use `validateAsyncLoader` for Promise-like loaders or `validateResource` for
+ * resource factories with explicit params state.
  * @publicApi 22.0
  */
 export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKind = PathKind.Root>(
