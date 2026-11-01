@@ -107,8 +107,3 @@ export interface RText extends RNode {
 export interface RComment extends RNode {
   textContent: string | null;
 }
-
-export interface RTemplate extends RElement {
-  tagName: 'TEMPLATE';
-  content: RNode;
-}

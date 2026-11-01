@@ -209,9 +209,3 @@ export function setTStylingRangeNextDuplicate(tStylingRange: TStylingRange): TSt
   ngDevMode && assertNumber(tStylingRange, 'expected number');
   return (tStylingRange | StylingRange.NEXT_DUPLICATE) as TStylingRange;
 }
-
-export function getTStylingRangeTail(tStylingRange: TStylingRange): number {
-  ngDevMode && assertNumber(tStylingRange, 'expected number');
-  const next = getTStylingRangeNext(tStylingRange);
-  return next === 0 ? getTStylingRangePrev(tStylingRange) : next;
-}
