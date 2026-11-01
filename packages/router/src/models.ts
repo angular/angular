@@ -72,7 +72,7 @@ export interface ResourceContext {
    * with `chain(ctx.resources()['user'])`) rather than synchronously in the `resources` function
    * body, as ancestor `resources` functions may still be initializing asynchronously.
    *
-   * @developerPreview 22.2
+   * @developerPreview 22.3
    */
   resources: Signal<ResourceResult>;
 }
