@@ -71,6 +71,104 @@ describe('signal queries migration', () => {
     expect(content).toContain("readonly ref = contentChild.required<ElementRef>('ref');");
   });
 
+  it('should migrate a query once when its file is part of multiple tsconfigs', async () => {
+    writeFile('/tsconfig.spec.json', '{}');
+    writeFile(
+      '/angular.json',
+      JSON.stringify({
+        version: 1,
+        projects: {
+          t: {
+            root: '',
+            architect: {
+              build: {options: {tsConfig: './tsconfig.json'}},
+              test: {options: {tsConfig: './tsconfig.spec.json'}},
+            },
+          },
+        },
+      }),
+    );
+    writeFile(
+      '/index.ts',
+      `
+      import {ContentChild, ElementRef, Directive} from '@angular/core';
+
+      @Directive({})
+      export class SomeDirective {
+        @ContentChild('ref') ref!: ElementRef;
+      }`,
+    );
+
+    await runMigration();
+
+    const content = tree.readContent('/index.ts');
+    expect(content.match(/contentChild\.required/g)?.length).toBe(1);
+    expect(content.match(/from '@angular\/core'/g)?.length).toBe(1);
+  });
+
+  describe('with a spec-only file in a second tsconfig', () => {
+    beforeEach(() => {
+      writeFile('/tsconfig.json', JSON.stringify({exclude: ['index.spec.ts']}));
+      writeFile('/tsconfig.spec.json', '{}');
+      writeFile(
+        '/angular.json',
+        JSON.stringify({
+          version: 1,
+          projects: {
+            t: {
+              root: '',
+              architect: {
+                build: {options: {tsConfig: './tsconfig.json'}},
+                test: {options: {tsConfig: './tsconfig.spec.json'}},
+              },
+            },
+          },
+        }),
+      );
+      writeFile(
+        '/index.ts',
+        `
+        import {ContentChild, ElementRef, Directive} from '@angular/core';
+
+        @Directive({})
+        export class SomeDirective {
+          @ContentChild('ref') ref!: ElementRef;
+        }`,
+      );
+    });
+
+    it('should migrate references in the spec file', async () => {
+      writeFile(
+        '/index.spec.ts',
+        `
+        import {SomeDirective} from './index';
+
+        export function read(dir: SomeDirective) {
+          return dir.ref;
+        }`,
+      );
+
+      await runMigration();
+
+      expect(tree.readContent('/index.ts')).toContain('readonly ref = contentChild');
+      expect(tree.readContent('/index.spec.ts')).toContain('return dir.ref();');
+    });
+
+    it('should not migrate a query whose class is instantiated in the spec file', async () => {
+      writeFile(
+        '/index.spec.ts',
+        `
+        import {SomeDirective} from './index';
+
+        export const dir = new SomeDirective();`,
+      );
+
+      await runMigration();
+
+      expect(tree.readContent('/index.ts')).toContain("@ContentChild('ref') ref!: ElementRef;");
+    });
+  });
+
   it('should report correct statistics', async () => {
     writeFile(`node_modules/@tsconfig/strictest/tsconfig.json`, `{}`);
     writeFile(
