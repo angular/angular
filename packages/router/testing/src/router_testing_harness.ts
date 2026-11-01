@@ -21,6 +21,7 @@ import {
   NavigationExtras,
   Router,
   RouterOutlet,
+  UrlTree,
   ɵafterNextNavigation as afterNextNavigation,
 } from '../../index';
 
@@ -73,9 +74,10 @@ export class RouterTestingHarness {
    * Throws an error if an instance has already been created.
    * Use of this harness also requires `destroyAfterEach: true` in the `ModuleTeardownOptions`
    *
-   * @param initialUrl The target of navigation to trigger before returning the harness.
+   * @param initialUrl The target of navigation to trigger before returning the harness. Passed to
+   *     `Router.navigateByUrl`.
    */
-  static async create(initialUrl?: string): Promise<RouterTestingHarness> {
+  static async create(initialUrl?: string | UrlTree): Promise<RouterTestingHarness> {
     const harness = TestBed.inject(RootFixtureService).createHarness();
     if (initialUrl !== undefined) {
       await harness.navigateByUrl(initialUrl);
@@ -126,7 +128,7 @@ export class RouterTestingHarness {
    * @returns The activated component instance of the `RouterOutlet` after navigation completes
    *     (`null` if the outlet does not get activated).
    */
-  async navigateByUrl(url: string): Promise<null | {}>;
+  async navigateByUrl(url: string | UrlTree): Promise<null | {}>;
   /**
    * Triggers a router navigation and waits for it to complete.
    *
@@ -147,8 +149,11 @@ export class RouterTestingHarness {
    *     component is activated, this function will throw an error.
    * @returns The activated component instance of the `RouterOutlet` after navigation completes.
    */
-  async navigateByUrl<T>(url: string, requiredRoutedComponentType: Type<T>): Promise<T>;
-  async navigateByUrl<T>(url: string, requiredRoutedComponentType?: Type<T>): Promise<T | null> {
+  async navigateByUrl<T>(url: string | UrlTree, requiredRoutedComponentType: Type<T>): Promise<T>;
+  async navigateByUrl<T>(
+    url: string | UrlTree,
+    requiredRoutedComponentType?: Type<T>,
+  ): Promise<T | null> {
     return this.runNavigation((router) => router.navigateByUrl(url), requiredRoutedComponentType);
   }
 

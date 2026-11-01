@@ -325,6 +325,15 @@ export class Search {
 }
 ```
 
+`navigateByUrl()` and `RouterTestingHarness.create()` also accept a [`UrlTree`](api/router/UrlTree), so you can build the URL with [`Router.createUrlTree`](api/router/Router#createUrlTree) instead of a string:
+
+```ts
+const router = TestBed.inject(Router);
+harness = await RouterTestingHarness.create(
+  router.createUrlTree(['/search'], {queryParams: {q: 'angular'}}),
+);
+```
+
 ## Best practices for router testing
 
 1. **Use RouterTestingHarness** - For testing routed components, use [`RouterTestingHarness`](api/router/testing/RouterTestingHarness) which provides a cleaner API and eliminates the need for test host components. It offers direct component access, built-in navigation, and better type safety. However, it isn't as suitable for some scenarios, such as testing named outlets, where you may need to create custom host components.

@@ -94,6 +94,51 @@ describe('navigateForTest', () => {
     expect(TestBed.inject(Router).url).toBe('/a?q=1#frag');
   });
 
+  it('navigates with a UrlTree', async () => {
+    @Component({template: 'hello'})
+    class TestCmp {}
+
+    TestBed.configureTestingModule({providers: [provideRouter([{path: 'a', component: TestCmp}])]});
+    const harness = await RouterTestingHarness.create();
+    const router = TestBed.inject(Router);
+    const activatedComponent = await harness.navigateByUrl(
+      router.createUrlTree(['/a'], {queryParams: {q: '1'}, fragment: 'frag'}),
+    );
+
+    expect(activatedComponent).toBeInstanceOf(TestCmp);
+    expect(router.url).toBe('/a?q=1#frag');
+  });
+
+  it('navigates with a UrlTree and a component type', async () => {
+    @Component({template: 'hello'})
+    class TestCmp {}
+
+    TestBed.configureTestingModule({providers: [provideRouter([{path: 'a', component: TestCmp}])]});
+    const harness = await RouterTestingHarness.create();
+    const router = TestBed.inject(Router);
+    const activatedComponent: TestCmp = await harness.navigateByUrl(
+      router.createUrlTree(['/a']),
+      TestCmp,
+    );
+
+    expect(activatedComponent).toBeInstanceOf(TestCmp);
+    expect(router.url).toBe('/a');
+  });
+
+  it('creates the harness with an initial UrlTree', async () => {
+    @Component({template: 'hello'})
+    class TestCmp {}
+
+    TestBed.configureTestingModule({providers: [provideRouter([{path: 'a', component: TestCmp}])]});
+    const router = TestBed.inject(Router);
+    const harness = await RouterTestingHarness.create(
+      router.createUrlTree(['/a'], {queryParams: {q: '1'}, fragment: 'frag'}),
+    );
+
+    expect(harness.routeDebugElement?.componentInstance).toBeInstanceOf(TestCmp);
+    expect(router.url).toBe('/a?q=1#frag');
+  });
+
   it('executes guards on the path', async () => {
     let guardCalled = false;
     TestBed.configureTestingModule({

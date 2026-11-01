@@ -41,7 +41,7 @@ describe('Dashboard Component Routing', () => {
 ### Key Concepts
 
 1.  **`provideRouter([...])`**: Provide a test-specific routing configuration. This should include the routes necessary for the component-under-test to function correctly.
-2.  **`RouterTestingHarness.create(initialUrl?)`**: Asynchronously creates the harness and optionally performs an initial navigation.
+2.  **`RouterTestingHarness.create(initialUrl?)`**: Asynchronously creates the harness and optionally performs an initial navigation. `initialUrl` can be a string or a `UrlTree`.
 
 ## Writing Router Tests
 
