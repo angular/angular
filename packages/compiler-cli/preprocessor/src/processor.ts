@@ -527,7 +527,7 @@ export function processFileSync(
           s.appendLeft(
             span.end - 1,
             // ts-ignore is necessary to suppress errors if the base class has `propDecorators`.
-            `\n  ${nocollapse}// @ts-ignore\n  static propDecorators = ${printer.print(propExpr)};\n`,
+            `\n  ${nocollapse}// @ts-ignore\n  static propDecorators${printer.emitTypes ? ': any' : ''} = ${printer.print(propExpr)};\n`,
           );
         }
       }

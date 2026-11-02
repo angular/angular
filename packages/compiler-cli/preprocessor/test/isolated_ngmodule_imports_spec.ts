@@ -228,4 +228,3 @@ describe('isolated NgModule imports under emitDeclarationOnly', () => {
     }
   });
 });
-

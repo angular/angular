@@ -53,7 +53,7 @@ describe('jit: true Angular member and constructor parameter decorator downlevel
     expect(content).not.toContain('@Output()');
     expect(content).toContain('@CustomProp()');
     expect(content).toContain("@Input() 'string-literal-input' = 123;");
-    expect(content).toContain('// @ts-ignore\n  static propDecorators = {');
+    expect(content).toContain('// @ts-ignore\n  static propDecorators: any = {');
     expect(content).not.toContain('string-literal-input:');
     const gsMatches = [...content.matchAll(/\bgs:\s*\[/g)];
     expect(gsMatches.length).toBe(1);
@@ -111,7 +111,9 @@ describe('jit: true Angular member and constructor parameter decorator downlevel
 
     const content = outputs.get('/out/test.ts')!;
     expect([...content.matchAll(/\/\/ @ts-ignore\n  static ctorParameters =/g)].length).toBe(2);
-    expect([...content.matchAll(/\/\/ @ts-ignore\n  static propDecorators =/g)].length).toBe(2);
+    expect([...content.matchAll(/\/\/ @ts-ignore\n  static propDecorators: any =/g)].length).toBe(
+      2,
+    );
 
     const diagnostics = typecheckEmittedTs(content, {noImplicitOverride: true});
     expect(
@@ -149,7 +151,9 @@ describe('jit: true Angular member and constructor parameter decorator downlevel
     expect(content).toContain(
       '/** @nocollapse */\n  // @ts-ignore\n  static ctorParameters = (): any => [',
     );
-    expect(content).toContain('/** @nocollapse */\n  // @ts-ignore\n  static propDecorators = {');
+    expect(content).toContain(
+      '/** @nocollapse */\n  // @ts-ignore\n  static propDecorators: any = {',
+    );
 
     const transpiled = ts.transpileModule(content, {
       compilerOptions: {
@@ -229,7 +233,7 @@ describe('jit: true Angular member and constructor parameter decorator downlevel
     expect(content).not.toContain('@i0.Output');
     expect(content).not.toContain('@i0.ViewChild');
     expect(content).not.toContain('@i0.ContentChild');
-    expect(content).toContain('static propDecorators = {');
+    expect(content).toContain('static propDecorators: any = {');
     expect(content).toContain('legacyInput: [{type: Input}]');
     expect(content).toContain(
       "sigInput: [{type: i0.Input, args: [{isSignal: true, alias: 'sigInput', required: true}]}]",
@@ -244,6 +248,87 @@ describe('jit: true Angular member and constructor parameter decorator downlevel
     expect(content).toContain(
       "projected: [{type: i0.ContentChild, args: ['proj', {isSignal: true}]}]",
     );
+  });
+
+  it('emits isolatedDeclarations-compatible static fields on exported jit: true classes without TS9017 or TS9007', async () => {
+    const outputs = await compileFiles(
+      {
+        '/test.ts': `
+          import {Component, Input, Inject, Optional, ViewChild} from '@angular/core';
+
+          @Component({
+            selector: 'jit-isolated-cmp',
+            template: '',
+            jit: true,
+          })
+          export class JitIsolatedCmp {
+            @ViewChild('container', {static: true}) container: any;
+            @Input() label = '';
+
+            constructor(@Optional() @Inject('TOKEN') public token: string) {}
+          }
+        `,
+      },
+      {
+        compilerOptions: {
+          declaration: true,
+          isolatedDeclarations: true,
+        },
+      },
+    );
+
+    const content = outputs.get('/out/test.ts')!;
+    const dtsResult = ts.transpileDeclaration(content, {
+      fileName: 'test.ts',
+      compilerOptions: {
+        target: ts.ScriptTarget.ES2022,
+        module: ts.ModuleKind.ESNext,
+        declaration: true,
+        emitDeclarationOnly: true,
+        isolatedDeclarations: true,
+      },
+    });
+    expect(dtsResult.diagnostics ?? []).toEqual([]);
+    expect(dtsResult.outputText).toContain('static ctorParameters: () => any;');
+    expect(dtsResult.outputText).toContain('static propDecorators: any;');
+  });
+
+  it('does not trigger TS2417 when a jit: true subclass declares different member decorators than its jit: true base class', async () => {
+    const outputs = await compileFiles({
+      '/test.ts': `
+        import {Component, Input, ViewChild, Inject, Optional} from '@angular/core';
+
+        @Component({
+          selector: 'base-cmp',
+          template: '',
+          jit: true,
+        })
+        export class BaseCmp {
+          @ViewChild('container', {static: true}) container: any;
+          constructor(@Optional() @Inject('BASE_TOKEN') public baseToken: string) {}
+        }
+
+        @Component({
+          selector: 'sub-cmp',
+          template: '',
+          jit: true,
+        })
+        export class SubCmp extends BaseCmp {
+          @Input() label = '';
+          constructor(@Optional() @Inject('BASE_TOKEN') baseToken: string, public count: number) {
+            super(baseToken);
+          }
+        }
+      `,
+    });
+
+    const content = outputs.get('/out/test.ts')!;
+    const diagnostics = typecheckEmittedTs(content, {noImplicitOverride: true});
+    expect(
+      diagnostics.map(
+        (d) => `TS${d.code}: ${ts.flattenDiagnosticMessageText(d.messageText, '\n')}`,
+      ),
+    ).toEqual([]);
   });
 });
 
@@ -329,6 +414,7 @@ function typecheckEmittedTs(
         export function Directive(meta: any): ClassDecorator;
         export function Input(alias?: string): any;
         export function Output(alias?: string): any;
+        export function ViewChild(selector: any, opts?: any): any;
         export function Inject(token: any): ParameterDecorator;
         export function Optional(): ParameterDecorator;
       }
