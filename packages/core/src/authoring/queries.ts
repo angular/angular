@@ -8,6 +8,7 @@
 
 import {assertInInjectionContext} from '../di';
 import {ProviderToken} from '../di/provider_token';
+import {AbstractType} from '../interface/type';
 import {
   createMultiResultQuerySignalFn,
   createSingleResultOptionalQuerySignalFn,
@@ -51,10 +52,25 @@ export interface ViewChildFunction {
   <LocatorT, ReadT>(
     locator: ProviderToken<LocatorT> | string,
     opts: {
+      read: AbstractType<ReadT>;
+      debugName?: string;
+    },
+  ): Signal<ReadT | undefined>;
+
+  <LocatorT, ReadT>(
+    locator: ProviderToken<LocatorT> | string,
+    opts: {
       read: ProviderToken<ReadT>;
       debugName?: string;
     },
   ): Signal<ReadT | undefined>;
+
+  <LocatorT>(
+    locator: AbstractType<LocatorT>,
+    opts?: {
+      debugName?: string;
+    },
+  ): Signal<LocatorT | undefined>;
 
   <LocatorT>(
     locator: ProviderToken<LocatorT> | string,
@@ -70,11 +86,26 @@ export interface ViewChildFunction {
    */
   required: {
     <LocatorT>(
+      locator: AbstractType<LocatorT>,
+      opts?: {
+        debugName?: string;
+      },
+    ): Signal<LocatorT>;
+
+    <LocatorT>(
       locator: ProviderToken<LocatorT> | string,
       opts?: {
         debugName?: string;
       },
     ): Signal<LocatorT>;
+
+    <LocatorT, ReadT>(
+      locator: ProviderToken<LocatorT> | string,
+      opts: {
+        read: AbstractType<ReadT>;
+        debugName?: string;
+      },
+    ): Signal<ReadT>;
 
     <LocatorT, ReadT>(
       locator: ProviderToken<LocatorT> | string,
@@ -119,9 +150,20 @@ export const viewChild: ViewChildFunction = (() => {
 })();
 
 export function viewChildren<LocatorT>(
+  locator: AbstractType<LocatorT>,
+  opts?: {debugName?: string},
+): Signal<ReadonlyArray<LocatorT>>;
+export function viewChildren<LocatorT>(
   locator: ProviderToken<LocatorT> | string,
   opts?: {debugName?: string},
 ): Signal<ReadonlyArray<LocatorT>>;
+export function viewChildren<LocatorT, ReadT>(
+  locator: ProviderToken<LocatorT> | string,
+  opts: {
+    read: AbstractType<ReadT>;
+    debugName?: string;
+  },
+): Signal<ReadonlyArray<ReadT>>;
 export function viewChildren<LocatorT, ReadT>(
   locator: ProviderToken<LocatorT> | string,
   opts: {
@@ -204,6 +246,15 @@ export interface ContentChildFunction {
    * @publicAPI
    */
   <LocatorT>(
+    locator: AbstractType<LocatorT>,
+    opts?: {
+      descendants?: boolean;
+      read?: undefined;
+      debugName?: string;
+    },
+  ): Signal<LocatorT | undefined>;
+
+  <LocatorT>(
     locator: ProviderToken<LocatorT> | string,
     opts?: {
       descendants?: boolean;
@@ -211,6 +262,15 @@ export interface ContentChildFunction {
       debugName?: string;
     },
   ): Signal<LocatorT | undefined>;
+
+  <LocatorT, ReadT>(
+    locator: ProviderToken<LocatorT> | string,
+    opts: {
+      descendants?: boolean;
+      read: AbstractType<ReadT>;
+      debugName?: string;
+    },
+  ): Signal<ReadT | undefined>;
 
   <LocatorT, ReadT>(
     locator: ProviderToken<LocatorT> | string,
@@ -226,6 +286,15 @@ export interface ContentChildFunction {
    */
   required: {
     <LocatorT>(
+      locator: AbstractType<LocatorT>,
+      opts?: {
+        descendants?: boolean;
+        read?: undefined;
+        debugName?: string;
+      },
+    ): Signal<LocatorT>;
+
+    <LocatorT>(
       locator: ProviderToken<LocatorT> | string,
       opts?: {
         descendants?: boolean;
@@ -233,6 +302,15 @@ export interface ContentChildFunction {
         debugName?: string;
       },
     ): Signal<LocatorT>;
+
+    <LocatorT, ReadT>(
+      locator: ProviderToken<LocatorT> | string,
+      opts: {
+        descendants?: boolean;
+        read: AbstractType<ReadT>;
+        debugName?: string;
+      },
+    ): Signal<ReadT>;
 
     <LocatorT, ReadT>(
       locator: ProviderToken<LocatorT> | string,
@@ -279,6 +357,14 @@ export const contentChild: ContentChildFunction = (() => {
 })();
 
 export function contentChildren<LocatorT>(
+  locator: AbstractType<LocatorT>,
+  opts?: {
+    descendants?: boolean;
+    read?: undefined;
+    debugName?: string;
+  },
+): Signal<ReadonlyArray<LocatorT>>;
+export function contentChildren<LocatorT>(
   locator: ProviderToken<LocatorT> | string,
   opts?: {
     descendants?: boolean;
@@ -286,6 +372,14 @@ export function contentChildren<LocatorT>(
     debugName?: string;
   },
 ): Signal<ReadonlyArray<LocatorT>>;
+export function contentChildren<LocatorT, ReadT>(
+  locator: ProviderToken<LocatorT> | string,
+  opts: {
+    descendants?: boolean;
+    read: AbstractType<ReadT>;
+    debugName?: string;
+  },
+): Signal<ReadonlyArray<ReadT>>;
 export function contentChildren<LocatorT, ReadT>(
   locator: ProviderToken<LocatorT> | string,
   opts: {

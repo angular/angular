@@ -3955,6 +3955,95 @@ describe('di', () => {
         expect(TestBed.createComponent(TestCmp).componentInstance.value).toEqual('from root');
       });
     });
+
+    it('should infer generic type parameter when injecting generic classes and abstract classes', () => {
+      type IsAny<T> = 0 extends 1 & T ? true : false;
+
+      @Injectable()
+      class GenericService<T extends 'a' | 'b'> {
+        value!: T;
+      }
+
+      @Injectable()
+      abstract class AbstractGenericService<T extends 'x' | 'y'> {
+        abstract value: T;
+      }
+
+      // Here the protected constructor will prevent to infer the T generic parameter
+      class ProtectedConstructorService<T> {
+        protected constructor(public value: T) {}
+      }
+
+      @Component({
+        template: '',
+        providers: [
+          {provide: GenericService, useValue: {value: 'a'}},
+          {provide: AbstractGenericService, useValue: {value: 'x'}},
+          {provide: ProtectedConstructorService, useValue: {value: 'p'}},
+        ],
+      })
+      class TestCmp {
+        elDefault = inject(ElementRef);
+        el = inject(ElementRef<HTMLButtonElement>);
+        genericDefault = inject(GenericService);
+        genericSpecialized = inject(GenericService<'a'>);
+        abstractDefault = inject(AbstractGenericService);
+        abstractSpecialized = inject(AbstractGenericService<'x'>);
+        protectedConstructor = inject(ProtectedConstructorService);
+        _protectedConstructor = inject<ProtectedConstructorService<string>>(
+          ProtectedConstructorService,
+        );
+        _protectedConstructorGeneric = inject<ProtectedConstructorService<string>>(
+          ProtectedConstructorService<string>,
+        );
+        abstractProtectedOptional = inject(ProtectedConstructorService, {
+          optional: true,
+          skipSelf: true,
+        });
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      const instance = fixture.componentInstance;
+
+      // Ensure `inject(ElementRef)` without type arguments still defaults to `ElementRef<any>`,
+      // while specialized generic parameters do not degrade to `any` or `unknown`.
+      const _elDefaultIsAny: IsAny<typeof instance.elDefault.nativeElement> = true;
+      const _elNotAny: IsAny<typeof instance.el.nativeElement> = false;
+      const _elType: HTMLButtonElement = instance.el.nativeElement;
+      const _genericDefaultNotAny: IsAny<typeof instance.genericDefault.value> = false;
+      const _genericDefaultType: 'a' | 'b' = instance.genericDefault.value;
+      const _genericSpecializedNotAny: IsAny<typeof instance.genericSpecialized.value> = false;
+      const _genericSpecializedType: 'a' = instance.genericSpecialized.value;
+      const _abstractDefaultNotAny: IsAny<typeof instance.abstractDefault.value> = false;
+      const _abstractDefaultType: 'x' | 'y' = instance.abstractDefault.value;
+      const _abstractSpecializedNotAny: IsAny<typeof instance.abstractSpecialized.value> = false;
+      const _abstractSpecializedType: 'x' = instance.abstractSpecialized.value;
+      const _protectedConstructorIsAny: IsAny<typeof instance.protectedConstructor.value> = true;
+      const _protectedConstructorSpecializedNotAny: IsAny<
+        typeof instance._protectedConstructor.value
+      > = false;
+      const _protectedConstructorSpecializedType: string = instance._protectedConstructor.value;
+      const _protectedConstructorGenericSpecializedNotAny: IsAny<
+        typeof instance._protectedConstructorGeneric.value
+      > = false;
+      const _protectedConstructorGenericSpecializedType: string =
+        instance._protectedConstructorGeneric.value;
+
+      expect(_elDefaultIsAny).toBe(true);
+      expect(_elNotAny).toBe(false);
+      expect(instance.el).toBeInstanceOf(ElementRef);
+      expect(_genericDefaultType).toBe('a');
+      expect(_genericSpecializedType).toBe('a');
+      expect(_abstractDefaultType).toBe('x');
+      expect(_abstractSpecializedType).toBe('x');
+      expect(_protectedConstructorIsAny).toBe(true);
+      expect(_protectedConstructorSpecializedNotAny).toBe(false);
+      expect(_protectedConstructorGenericSpecializedNotAny).toBe(false);
+      expect(instance.protectedConstructor.value).toBe('p');
+      expect(instance._protectedConstructor.value).toBe('p');
+      expect(instance._protectedConstructorGeneric.value).toBe('p');
+      expect(instance.abstractProtectedOptional).toBeNull();
+    });
   });
 
   describe('injection flags', () => {

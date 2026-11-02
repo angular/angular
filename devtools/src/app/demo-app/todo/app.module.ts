@@ -6,15 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject, NgModule, signal, Service} from '@angular/core';
+import {inject, NgModule, Service, signal} from '@angular/core';
 import {MatDialogModule} from '@angular/material/dialog';
-import {
-  ActivatedRouteSnapshot,
-  CanActivateFn,
-  provideRouter,
-  RouterLink,
-  RouterOutlet,
-} from '@angular/router';
+import {CanMatchFn, provideRouter, RouterLink, RouterOutlet} from '@angular/router';
 
 import {AppTodoComponent} from './app-todo.component';
 
@@ -30,7 +24,7 @@ export class AllowGuardService {
   }
 }
 
-export const canMatchGuard: CanActivateFn = () => {
+export const canMatchGuard: CanMatchFn = () => {
   const allowGuardService = inject(AllowGuardService);
   const allowed = allowGuardService.allowGuard();
   return allowed;

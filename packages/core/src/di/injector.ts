@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {AbstractType} from '../interface/type';
+import {registerSpecialProvider} from '../render3/debug/special_providers';
 import {createInjector} from './create_injector';
 import {THROW_IF_NOT_FOUND, ɵɵinject} from './injector_compatibility';
 import {InjectorMarkers} from './injector_marker';
@@ -15,7 +17,6 @@ import {InjectOptions} from './interface/injector';
 import {Provider, StaticProvider} from './interface/provider';
 import {NullInjector} from './null_injector';
 import {ProviderToken} from './provider_token';
-import {registerSpecialProvider} from '../render3/debug/special_providers';
 
 /**
  * Concrete injectors implement this interface. Injectors are configured
@@ -53,7 +54,7 @@ export abstract class Injector {
    * @throws When the `notFoundValue` is `undefined` or `Injector.THROW_IF_NOT_FOUND`.
    */
   abstract get<T>(
-    token: ProviderToken<T>,
+    token: AbstractType<T>,
     notFoundValue: undefined,
     options: InjectOptions & {
       optional?: false;
@@ -66,9 +67,37 @@ export abstract class Injector {
    */
   abstract get<T>(
     token: ProviderToken<T>,
+    notFoundValue: undefined,
+    options: InjectOptions & {
+      optional?: false;
+    },
+  ): T;
+  /**
+   * Retrieves an instance from the injector based on the provided token.
+   * @returns The instance from the injector if defined, otherwise the `notFoundValue`.
+   * @throws When the `notFoundValue` is `undefined` or `Injector.THROW_IF_NOT_FOUND`.
+   */
+  abstract get<T>(
+    token: AbstractType<T>,
     notFoundValue: null | undefined,
     options: InjectOptions,
   ): T | null;
+  /**
+   * Retrieves an instance from the injector based on the provided token.
+   * @returns The instance from the injector if defined, otherwise the `notFoundValue`.
+   * @throws When the `notFoundValue` is `undefined` or `Injector.THROW_IF_NOT_FOUND`.
+   */
+  abstract get<T>(
+    token: ProviderToken<T>,
+    notFoundValue: null | undefined,
+    options: InjectOptions,
+  ): T | null;
+  /**
+   * Retrieves an instance from the injector based on the provided token.
+   * @returns The instance from the injector if defined, otherwise the `notFoundValue`.
+   * @throws When the `notFoundValue` is `undefined` or `Injector.THROW_IF_NOT_FOUND`.
+   */
+  abstract get<T>(token: AbstractType<T>, notFoundValue?: T, options?: InjectOptions): T;
   /**
    * Retrieves an instance from the injector based on the provided token.
    * @returns The instance from the injector if defined, otherwise the `notFoundValue`.

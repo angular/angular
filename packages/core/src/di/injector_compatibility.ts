@@ -9,23 +9,23 @@
 import '../util/ng_dev_mode';
 
 import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {Type} from '../interface/type';
+import {AbstractType, Type} from '../interface/type';
 import {emitInjectEvent} from '../render3/debug/injector_profiler';
 import {stringify} from '../util/stringify';
 
-import {resolveForwardRef} from './forward_ref';
-import {getInjectImplementation, injectRootLimpMode} from './inject_switch';
-import type {Injector} from './injector';
-import {DecoratorFlags, InternalInjectFlags, InjectOptions} from './interface/injector';
-import {ProviderToken} from './provider_token';
-import type {HostAttributeToken} from './host_attribute_token';
 import {
-  Injector as PrimitivesInjector,
-  isNotFound,
   NotFound,
   InjectionToken as PrimitivesInjectionToken,
+  Injector as PrimitivesInjector,
   getCurrentInjector,
+  isNotFound,
 } from '../../primitives/di';
+import {resolveForwardRef} from './forward_ref';
+import type {HostAttributeToken} from './host_attribute_token';
+import {getInjectImplementation, injectRootLimpMode} from './inject_switch';
+import type {Injector} from './injector';
+import {DecoratorFlags, InjectOptions, InternalInjectFlags} from './interface/injector';
+import {ProviderToken} from './provider_token';
 
 import {InjectionToken} from './injection_token';
 
@@ -174,7 +174,46 @@ Please check that 1) the type for the parameter at index ${index} is correct and
  *
  * @publicApi
  */
+export function inject<T>(token: AbstractType<T>): T;
+/**
+ * @param token A token that represents a dependency that should be injected.
+ * @returns the injected value if operation is successful, `null` otherwise.
+ * @throws if called outside of a supported context.
+ *
+ * @publicApi
+ */
 export function inject<T>(token: ProviderToken<T>): T;
+/**
+ * @param token A token that represents a dependency that should be injected.
+ * @returns the injected value if operation is successful, `null` otherwise.
+ * @throws if called outside of a supported context.
+ *
+ * @publicApi
+ */
+export function inject<Token extends Function & {prototype: any}>(
+  token: [Token] extends [abstract new (...args: never) => any] ? never : Token,
+): Token['prototype'];
+/**
+ * @param token A token that represents a dependency that should be injected.
+ * @returns the injected value if operation is successful, `null` otherwise.
+ * @throws if called outside of a supported context.
+ *
+ * @publicApi
+ */
+export function inject<T = never>(
+  token: [T] extends [never] ? never : Function & {prototype: any},
+): T;
+/**
+ * @param token A token that represents a dependency that should be injected.
+ * @param options Control how injection is executed. Options correspond to injection strategies
+ *     that can be specified with parameter decorators `@Host`, `@Self`, `@SkipSelf`, and
+ *     `@Optional`.
+ * @returns the injected value if operation is successful.
+ * @throws if called outside of a supported context, or if the token is not found.
+ *
+ * @publicApi
+ */
+export function inject<T>(token: AbstractType<T>, options: InjectOptions & {optional?: false}): T;
 /**
  * @param token A token that represents a dependency that should be injected.
  * @param options Control how injection is executed. Options correspond to injection strategies
@@ -191,6 +230,47 @@ export function inject<T>(token: ProviderToken<T>, options: InjectOptions & {opt
  * @param options Control how injection is executed. Options correspond to injection strategies
  *     that can be specified with parameter decorators `@Host`, `@Self`, `@SkipSelf`, and
  *     `@Optional`.
+ * @returns the injected value if operation is successful.
+ * @throws if called outside of a supported context, or if the token is not found.
+ *
+ * @publicApi
+ */
+export function inject<Token extends Function & {prototype: any}>(
+  token: [Token] extends [abstract new (...args: never) => any] ? never : Token,
+  options: InjectOptions & {optional?: false},
+): Token['prototype'];
+/**
+ * @param token A token that represents a dependency that should be injected.
+ * @param options Control how injection is executed. Options correspond to injection strategies
+ *     that can be specified with parameter decorators `@Host`, `@Self`, `@SkipSelf`, and
+ *     `@Optional`.
+ * @returns the injected value if operation is successful.
+ * @throws if called outside of a supported context, or if the token is not found.
+ *
+ * @publicApi
+ */
+export function inject<T = never>(
+  token: [T] extends [never] ? never : Function & {prototype: any},
+  options: InjectOptions & {optional?: false},
+): T;
+/**
+ * @param token A token that represents a dependency that should be injected.
+ * @param options Control how injection is executed. Options correspond to injection strategies
+ *     that can be specified with parameter decorators `@Host`, `@Self`, `@SkipSelf`, and
+ *     `@Optional`.
+ * @returns the injected value if operation is successful,  `null` if the token is not
+ *     found and optional injection has been requested.
+ * @throws if called outside of a supported context, or if the token is not found and optional
+ *     injection was not requested.
+ *
+ * @publicApi
+ */
+export function inject<T>(token: AbstractType<T>, options: InjectOptions): T | null;
+/**
+ * @param token A token that represents a dependency that should be injected.
+ * @param options Control how injection is executed. Options correspond to injection strategies
+ *     that can be specified with parameter decorators `@Host`, `@Self`, `@SkipSelf`, and
+ *     `@Optional`.
  * @returns the injected value if operation is successful,  `null` if the token is not
  *     found and optional injection has been requested.
  * @throws if called outside of a supported context, or if the token is not found and optional
@@ -199,6 +279,38 @@ export function inject<T>(token: ProviderToken<T>, options: InjectOptions & {opt
  * @publicApi
  */
 export function inject<T>(token: ProviderToken<T>, options: InjectOptions): T | null;
+/**
+ * @param token A token that represents a dependency that should be injected.
+ * @param options Control how injection is executed. Options correspond to injection strategies
+ *     that can be specified with parameter decorators `@Host`, `@Self`, `@SkipSelf`, and
+ *     `@Optional`.
+ * @returns the injected value if operation is successful,  `null` if the token is not
+ *     found and optional injection has been requested.
+ * @throws if called outside of a supported context, or if the token is not found and optional
+ *     injection was not requested.
+ *
+ * @publicApi
+ */
+export function inject<Token extends Function & {prototype: any}>(
+  token: [Token] extends [abstract new (...args: never) => any] ? never : Token,
+  options: InjectOptions,
+): Token['prototype'] | null;
+/**
+ * @param token A token that represents a dependency that should be injected.
+ * @param options Control how injection is executed. Options correspond to injection strategies
+ *     that can be specified with parameter decorators `@Host`, `@Self`, `@SkipSelf`, and
+ *     `@Optional`.
+ * @returns the injected value if operation is successful,  `null` if the token is not
+ *     found and optional injection has been requested.
+ * @throws if called outside of a supported context, or if the token is not found and optional
+ *     injection was not requested.
+ *
+ * @publicApi
+ */
+export function inject<T = never>(
+  token: [T] extends [never] ? never : Function & {prototype: any},
+  options: InjectOptions,
+): T | null;
 /**
  * @param token A token that represents a static attribute on the host node that should be injected.
  * @returns Value of the attribute if it exists.
@@ -290,7 +402,10 @@ export function inject(token: HostAttributeToken, options: {optional: false}): s
  *
  * @publicApi
  */
-export function inject<T>(token: ProviderToken<T> | HostAttributeToken, options?: InjectOptions) {
+export function inject<T>(
+  token: ProviderToken<T> | HostAttributeToken | (Function & {prototype: any}),
+  options?: InjectOptions,
+) {
   // The `as any` here _shouldn't_ be necessary, but without it JSCompiler
   // throws a disambiguation  error due to the multiple signatures.
   return ɵɵinject(token as any, convertToBitFlags(options));

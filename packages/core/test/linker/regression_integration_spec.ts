@@ -198,7 +198,7 @@ describe('regressions', () => {
       const tokenValue = 1;
       const injector = createInjector([{provide: token, useValue: tokenValue}]);
 
-      expect(injector.get(token)).toEqual(tokenValue);
+      expect(injector.get(token as any)).toEqual(tokenValue);
     });
 
     it('should support providers with an InjectionToken that has a StringMap as value', () => {
