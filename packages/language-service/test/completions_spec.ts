@@ -2480,3 +2480,102 @@ function setupInlineTemplate(
   );
   return {appFile: project.openFile('test.ts')};
 }
+
+describe('object literal key completions', () => {
+  const DIR_WITH_OBJECT_LITERAL_INPUTS = {
+    'Dir': `
+     @Directive({
+       selector: '[dir]',
+       inputs: ['objInput', 'arrInput'],
+       standalone: false,
+     })
+     export class Dir {
+       objInput!: {height?: number; width?: number};
+       arrInput!: Array<{height?: number; width?: number; size?: {depth?: number}}>;
+     }
+   `,
+  };
+
+  it('should complete keys of an object literal', () => {
+    const {templateFile} = setup(
+      `<input dir [objInput]="{he}">`,
+      '',
+      DIR_WITH_OBJECT_LITERAL_INPUTS,
+    );
+    templateFile.moveCursorToText('[objInput]="{he¦}"');
+    const completions = templateFile.getCompletionsAtPosition();
+    expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['height', 'width']);
+    expectReplacementText(completions, templateFile.contents, 'he');
+  });
+
+  it('should complete keys of an object literal inside an array', () => {
+    const {templateFile} = setup(
+      `<input dir [arrInput]="[{he}]">`,
+      '',
+      DIR_WITH_OBJECT_LITERAL_INPUTS,
+    );
+    templateFile.moveCursorToText('[arrInput]="[{he¦}]"');
+    const completions = templateFile.getCompletionsAtPosition();
+    expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['height', 'width']);
+    expectReplacementText(completions, templateFile.contents, 'he');
+  });
+
+  it('should complete keys of an empty object literal inside an array', () => {
+    const {templateFile} = setup(
+      `<input dir [arrInput]="[{}]">`,
+      '',
+      DIR_WITH_OBJECT_LITERAL_INPUTS,
+    );
+    templateFile.moveCursorToText('[arrInput]="[{¦}]"');
+    const completions = templateFile.getCompletionsAtPosition();
+    expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['height', 'width']);
+  });
+
+  it('should complete a key that has a value', () => {
+    const {templateFile} = setup(
+      `<input dir [arrInput]="[{he: 100}]">`,
+      '',
+      DIR_WITH_OBJECT_LITERAL_INPUTS,
+    );
+    templateFile.moveCursorToText('[arrInput]="[{he¦: 100}]"');
+    const completions = templateFile.getCompletionsAtPosition();
+    expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['height', 'width']);
+    expectReplacementText(completions, templateFile.contents, 'he');
+  });
+
+  it('should exclude keys that are already present in the object literal', () => {
+    const {templateFile} = setup(
+      `<input dir [arrInput]="[{height: 100, w}]">`,
+      '',
+      DIR_WITH_OBJECT_LITERAL_INPUTS,
+    );
+    templateFile.moveCursorToText('[arrInput]="[{height: 100, w¦}]"');
+    const completions = templateFile.getCompletionsAtPosition();
+    expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['width']);
+    expectDoesNotContain(completions, ts.ScriptElementKind.memberVariableElement, ['height']);
+    expectReplacementText(completions, templateFile.contents, 'w');
+  });
+
+  it('should complete keys of a nested object literal', () => {
+    const {templateFile} = setup(
+      `<input dir [arrInput]="[{size: {de}}]">`,
+      '',
+      DIR_WITH_OBJECT_LITERAL_INPUTS,
+    );
+    templateFile.moveCursorToText('{size: {de¦}}');
+    const completions = templateFile.getCompletionsAtPosition();
+    expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['depth']);
+    expectReplacementText(completions, templateFile.contents, 'de');
+  });
+
+  it('should still return expression completions for the value of a key', () => {
+    const {templateFile} = setup(
+      `<input dir [objInput]="{height: ti}">`,
+      'title!: number;',
+      DIR_WITH_OBJECT_LITERAL_INPUTS,
+    );
+    templateFile.moveCursorToText('{height: ti¦}');
+    const completions = templateFile.getCompletionsAtPosition();
+    expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['title']);
+  });
+});
