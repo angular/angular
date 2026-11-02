@@ -1,10 +1,12 @@
-load("//tools:defaults.bzl", "js_binary", "js_run_binary", "ng_project", "ts_project", "zoneless_jasmine_test", "zoneless_web_test_suite")
+load("//tools:defaults.bzl", "g3_test", "js_binary", "js_run_binary", "ng_project", "ts_project", "zoneless_jasmine_test", "zoneless_web_test_suite")
 
 package(default_visibility = ["//visibility:private"])
 
+G3_TEST_FILES = glob(["*_g3_spec.ts"])
+
 TEST_FILES = glob(
     ["*.ts"],
-    exclude = ["authoring_test_compiler.ts"],
+    exclude = ["authoring_test_compiler.ts"] + G3_TEST_FILES,
 )
 
 TEST_DEPS = [
@@ -86,4 +88,23 @@ zoneless_web_test_suite(
     deps = [
         ":test_jit_lib",
     ],
+)
+
+ng_project(
+    name = "test_g3_lib",
+    testonly = True,
+    srcs = G3_TEST_FILES,
+    tags = ["manual"],
+    deps = TEST_DEPS,
+)
+
+zoneless_jasmine_test(
+    name = "test_g3_raw",
+    data = [":test_g3_lib"],
+    tags = ["manual"],
+)
+
+g3_test(
+    name = "test_g3",
+    target = ":test_g3_raw",
 )

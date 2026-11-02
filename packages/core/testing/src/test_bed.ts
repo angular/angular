@@ -137,6 +137,34 @@ export interface TestBed {
 
   compileComponents(): Promise<any>;
 
+  // g3-only-start
+  // inject<T>(
+  //   token: abstract new (...args: any[]) => T,
+  //   notFoundValue: undefined,
+  //   options: InjectOptions & {
+  //     optional?: false;
+  //   },
+  // ): T;
+  // inject<T>(
+  //   token: abstract new (...args: never[]) => T,
+  //   notFoundValue: undefined,
+  //   options: InjectOptions & {
+  //     optional?: false;
+  //   },
+  // ): T;
+  // inject<T>(
+  //   token: abstract new (...args: any[]) => T,
+  //   notFoundValue: null | undefined,
+  //   options: InjectOptions,
+  // ): T | null;
+  // inject<T>(
+  //   token: abstract new (...args: never[]) => T,
+  //   notFoundValue: null | undefined,
+  //   options: InjectOptions,
+  // ): T | null;
+  // inject<T>(token: abstract new (...args: any[]) => T, notFoundValue?: T, options?: InjectOptions): T;
+  // inject<T>(token: abstract new (...args: never[]) => T, notFoundValue?: T, options?: InjectOptions): T;
+  // g3-only-end
   inject<T>(
     token: ProviderToken<T>,
     notFoundValue: undefined,
@@ -401,6 +429,34 @@ export class TestBedImpl implements TestBed {
     return TestBedImpl.INSTANCE.overrideProvider(token, provider);
   }
 
+  // g3-only-start
+  // static inject<T>(
+  //   token: abstract new (...args: any[]) => T,
+  //   notFoundValue: undefined,
+  //   options: InjectOptions & {
+  //     optional?: false;
+  //   },
+  // ): T;
+  // static inject<T>(
+  //   token: abstract new (...args: never[]) => T,
+  //   notFoundValue: undefined,
+  //   options: InjectOptions & {
+  //     optional?: false;
+  //   },
+  // ): T;
+  // static inject<T>(
+  //   token: abstract new (...args: any[]) => T,
+  //   notFoundValue: null | undefined,
+  //   options: InjectOptions,
+  // ): T | null;
+  // static inject<T>(
+  //   token: abstract new (...args: never[]) => T,
+  //   notFoundValue: null | undefined,
+  //   options: InjectOptions,
+  // ): T | null;
+  // static inject<T>(token: abstract new (...args: any[]) => T, notFoundValue?: T, options?: InjectOptions): T;
+  // static inject<T>(token: abstract new (...args: never[]) => T, notFoundValue?: T, options?: InjectOptions): T;
+  // g3-only-end
   static inject<T>(
     token: ProviderToken<T>,
     notFoundValue: undefined,

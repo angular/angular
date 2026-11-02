@@ -3955,6 +3955,123 @@ describe('di', () => {
         expect(TestBed.createComponent(TestCmp).componentInstance.value).toEqual('from root');
       });
     });
+
+    // TODO(v23): remove when we introduce the breaking change
+    it('should support assignment to a more specific generic', () => {
+      class GenericService<T> {
+        value!: T;
+      }
+
+      class TestCmp {
+        service: GenericService<number> = inject(GenericService);
+      }
+      expect(TestCmp).toBeDefined();
+    });
+
+    // TODO(v23): remove when we introduce the breaking change
+    it('should infer an any generic when calling injector.get with a generic token', () => {
+      type IsAny<T> = 0 extends 1 & T ? true : false;
+
+      class GenericService<T> {
+        value!: T;
+      }
+
+      const elementRefInstance = new ElementRef({});
+      const injector = Injector.create({
+        providers: [
+          {provide: GenericService, useValue: new GenericService<string>()},
+          {provide: ElementRef, useValue: elementRefInstance},
+        ],
+      });
+
+      // In 3P, unspecialized token returns GenericService<any>, allowing assignment to a more specific generic
+      const service: GenericService<number> = injector.get(GenericService);
+      expect(service).toBeDefined();
+
+      // In 3P, specialized token also infers `any` for the generic parameter because the g3-only `injector.get` overload is not applied
+      const specialized = injector.get(GenericService<string>, null, {optional: true});
+      const serviceVal = specialized!.value;
+      const _serviceValIsAny: IsAny<typeof serviceVal> = true;
+      expect(_serviceValIsAny).toBe(true);
+      expect(specialized).toBe(service);
+
+      const el = injector.get(ElementRef<HTMLButtonElement>, null, {optional: true});
+      const elNative = el!.nativeElement;
+      const _elNativeIsAny: IsAny<typeof elNative> = true;
+      expect(_elNativeIsAny).toBe(true);
+      expect(el).toBe(elementRefInstance);
+    });
+
+    it('should support function tokens in inject and injector.get', () => {
+      type IsAny<T> = 0 extends 1 & T ? true : false;
+
+      const arrowToken = () => 'arrow';
+      function normalToken() {
+        return 'normal';
+      }
+
+      @Component({
+        template: '',
+        providers: [
+          {provide: arrowToken, useValue: 'arrow-val'},
+          {provide: normalToken, useValue: 'normal-val'},
+        ],
+      })
+      class TestCmp {
+        arrowVal = inject(arrowToken);
+        arrowValExplicit = inject<string>(arrowToken);
+        normalVal = inject(normalToken);
+        normalValExplicit = inject<string>(normalToken);
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      const instance = fixture.componentInstance;
+      const injector = fixture.debugElement.injector;
+
+      const _arrowValIsAny: IsAny<typeof instance.arrowVal> = true;
+      const _arrowValExplicitNotAny: IsAny<typeof instance.arrowValExplicit> = false;
+      const _arrowValExplicitType: string = instance.arrowValExplicit;
+      const _normalValIsAny: IsAny<typeof instance.normalVal> = true;
+      const _normalValExplicitNotAny: IsAny<typeof instance.normalValExplicit> = false;
+      const _normalValExplicitType: string = instance.normalValExplicit;
+
+      expect(_arrowValIsAny).toBe(true);
+      expect(_arrowValExplicitNotAny).toBe(false);
+      expect(_arrowValExplicitType).toBe('arrow-val');
+      expect(_normalValIsAny).toBe(true);
+      expect(_normalValExplicitNotAny).toBe(false);
+      expect(_normalValExplicitType).toBe('normal-val');
+      expect(instance.arrowVal).toBe('arrow-val');
+      expect(instance.arrowValExplicit).toBe('arrow-val');
+      expect(instance.normalVal).toBe('normal-val');
+      expect(instance.normalValExplicit).toBe('normal-val');
+
+      // Also test injector.get
+      const getArrow = injector.get(arrowToken);
+      const getArrowExplicit = injector.get<string>(arrowToken);
+      const getNormal = injector.get(normalToken);
+      const getNormalExplicit = injector.get<string>(normalToken);
+      const getNotFoundOptional = injector.get(() => false, null, {optional: true});
+
+      const _getArrowIsAny: IsAny<typeof getArrow> = true;
+      const _getArrowExplicitNotAny: IsAny<typeof getArrowExplicit> = false;
+      const _getArrowExplicitType: string = getArrowExplicit;
+      const _getNormalIsAny: IsAny<typeof getNormal> = true;
+      const _getNormalExplicitNotAny: IsAny<typeof getNormalExplicit> = false;
+      const _getNormalExplicitType: string = getNormalExplicit;
+
+      expect(_getArrowIsAny).toBe(true);
+      expect(_getArrowExplicitNotAny).toBe(false);
+      expect(_getArrowExplicitType).toBe('arrow-val');
+      expect(_getNormalIsAny).toBe(true);
+      expect(_getNormalExplicitNotAny).toBe(false);
+      expect(_getNormalExplicitType).toBe('normal-val');
+      expect(getArrow).toBe('arrow-val');
+      expect(getArrowExplicit).toBe('arrow-val');
+      expect(getNormal).toBe('normal-val');
+      expect(getNormalExplicit).toBe('normal-val');
+      expect(getNotFoundOptional).toBeNull();
+    });
   });
 
   describe('injection flags', () => {

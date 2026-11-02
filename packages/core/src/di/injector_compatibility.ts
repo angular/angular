@@ -161,6 +161,56 @@ Please check that 1) the type for the parameter at index ${index} is correct and
   );
 }
 
+// g3-only-start
+// /**
+//  * @param token A token that represents a dependency that should be injected.
+//  * @returns the injected value if operation is successful, `null` otherwise.
+//  * @throws if called outside of a supported context.
+//  *
+//  * @publicApi
+//  */
+// export function inject<T>(token: abstract new (...args: any[]) => T): T;
+// export function inject<T>(token: abstract new (...args: never[]) => T): T;
+// /**
+//  * @param token A token that represents a dependency that should be injected.
+//  * @param options Control how injection is executed. Options correspond to injection strategies
+//  *     that can be specified with parameter decorators `@Host`, `@Self`, `@SkipSelf`, and
+//  *     `@Optional`.
+//  * @returns the injected value if operation is successful.
+//  * @throws if called outside of a supported context, or if the token is not found.
+//  *
+//  * @publicApi
+//  */
+// export function inject<T>(
+//   token: abstract new (...args: any[]) => T,
+//   options: InjectOptions & {optional?: false},
+// ): T;
+// export function inject<T>(
+//   token: abstract new (...args: never[]) => T,
+//   options: InjectOptions & {optional?: false},
+// ): T;
+// /**
+//  * @param token A token that represents a dependency that should be injected.
+//  * @param options Control how injection is executed. Options correspond to injection strategies
+//  *     that can be specified with parameter decorators `@Host`, `@Self`, `@SkipSelf`, and
+//  *     `@Optional`.
+//  * @returns the injected value if operation is successful, `null` if the token is not
+//  *     found and optional injection has been requested.
+//  * @throws if called outside of a supported context, or if the token is not found and optional
+//  *     injection was not requested.
+//  *
+//  * @publicApi
+//  */
+// export function inject<T>(
+//   token: abstract new (...args: any[]) => T,
+//   options: InjectOptions,
+// ): T | null;
+// export function inject<T>(
+//   token: abstract new (...args: never[]) => T,
+//   options: InjectOptions,
+// ): T | null;
+// g3-only-end
+
 /**
  * @param token A token that represents a dependency that should be injected.
  * @returns the injected value if operation is successful, `null` otherwise.
