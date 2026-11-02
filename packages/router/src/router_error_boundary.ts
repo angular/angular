@@ -20,7 +20,7 @@ import type {ErrorBoundaryOptions} from './provide_router';
 import type {Router} from './router';
 import type {RouterErrorBoundaryHandler} from './router_error_boundary_feature';
 import type {ChildrenOutletContexts} from './router_outlet_context';
-import type {ActivatedRoute, ActivatedRouteSnapshot} from './router_state';
+import type {ActivatedRoute} from './router_state';
 
 const REDIRECT_DISPATCHED: unique symbol = /* @__PURE__ */ Symbol(
   typeof ngDevMode === 'undefined' || ngDevMode ? '__redirectDispatched' : '',
@@ -76,6 +76,12 @@ export class ErrorBoundaryHandler implements RouterErrorBoundaryHandler {
     untracked(() => {
       const isRedirect = triggerRedirectIfCommand(error, this.router);
 
+      const errorComponent =
+        activatedRoute.snapshot.routeConfig?.errorComponent ?? this.options.defaultErrorComponent;
+      if (!errorComponent && !isRedirect) {
+        throw error;
+      }
+
       const globalOnError = this.options.onError;
       if (globalOnError) {
         // The global handler is configured at the root of the application, so it runs in the root
@@ -83,27 +89,10 @@ export class ErrorBoundaryHandler implements RouterErrorBoundaryHandler {
         runInInjectionContext(this.rootInjector, () => globalOnError(error, details));
       }
 
-      let errorComponent: Type<unknown> | null | undefined = null;
-      let currentRoute: ActivatedRouteSnapshot | null = activatedRoute.snapshot;
-      while (currentRoute) {
-        if (currentRoute.routeConfig?.errorComponent) {
-          errorComponent = currentRoute.routeConfig.errorComponent;
-          break;
-        }
-        if (!currentRoute.parent || currentRoute.parent.routeConfig?.component) {
-          break;
-        }
-        currentRoute = currentRoute.parent;
-      }
-
-      errorComponent = errorComponent ?? this.options.defaultErrorComponent;
       if (!errorComponent) {
-        if (isRedirect) {
-          // The redirect navigation replaces the current view, so there is nothing to render and no
-          // reason to keep propagating the error.
-          return;
-        }
-        throw error;
+        // The redirect navigation replaces the current view, so there is nothing to render and no
+        // reason to keep propagating the error.
+        return;
       }
 
       outlet.destroyActivatedComponent();

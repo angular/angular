@@ -152,9 +152,7 @@ function getRouteGuards(
     }
 
     if (shouldRun && context && context.outlet && context.outlet.isActivated) {
-      if (!context.outlet.isErrorComponentActive) {
-        checks.canDeactivateChecks.push(new CanDeactivate(context.outlet.component, curr));
-      }
+      checks.canDeactivateChecks.push(new CanDeactivate(context.outlet.component, curr));
     }
   } else {
     if (curr) {
@@ -239,9 +237,7 @@ function deactivateRouteAndItsChildren(
     }
   });
 
-  if (context?.outlet?.isErrorComponentActive) {
-    // Bypass canDeactivate guards because the primary component crashed and was destroyed.
-  } else if (!r.component) {
+  if (!r.component) {
     checks.canDeactivateChecks.push(new CanDeactivate(null, r));
   } else if (context && context.outlet && context.outlet.isActivated) {
     checks.canDeactivateChecks.push(new CanDeactivate(context.outlet.component, r));

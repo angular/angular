@@ -169,7 +169,7 @@ It is helpful to understand the distinction between **view-layer errors** and **
 - **View-layer errors (Error boundaries)**: Occur inside component constructors, dependency injection, lifecycle hooks (`ngOnInit`), template expressions, and component `resource()` loaders. These are caught by `RouterOutlet` and display the `errorComponent`.
 - **Navigation pipeline errors (`NavigationError`)**: Occur before route activation, such as failing `canActivate` / `canMatch` guards or route `resolve` data functions. These halt the navigation transition before reaching the outlet and can be customized using `withNavigationErrorHandler`.
 
-NOTE: When an error boundary displays an `errorComponent`, any `canDeactivate` guards configured for that route are bypassed. This ensures users can safely navigate away from the error fallback without triggering guards that expect state from the failed primary component.
+NOTE: When an error boundary displays an `errorComponent`, `canDeactivate` guards configured for that route run when navigating away. The guard receives the active `errorComponent` instance as its `component` parameter. If your guard accesses component-specific properties or methods, verify the component type or safely handle the error component instance.
 
 ## Next steps
 
