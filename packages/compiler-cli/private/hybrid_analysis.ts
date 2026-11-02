@@ -37,3 +37,4 @@ export {
 } from '../src/ngtsc/hmr';
 
 export * from '../src/ngtsc/indexer';
+export * from '../src/ngtsc/docs';

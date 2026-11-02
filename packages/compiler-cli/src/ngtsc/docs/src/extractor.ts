@@ -8,10 +8,9 @@
 
 import ts from 'typescript';
 
-import {MetadataReader} from '../../metadata';
 import {isNamedClassDeclaration} from '../../reflection';
 
-import {extractClass} from './class_extractor';
+import {DocsMetadataReader, extractClass} from './class_extractor';
 import {extractConstant, isSyntheticAngularConstant} from './constant_extractor';
 import {
   extractorDecorator,
@@ -50,7 +49,7 @@ type DeclarationWithExportName = readonly [string, ts.Declaration];
 export class DocsExtractor {
   constructor(
     private typeChecker: ts.TypeChecker,
-    private metadataReader: MetadataReader,
+    private metadataReader: DocsMetadataReader,
   ) {}
 
   /**

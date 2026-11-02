@@ -12,6 +12,7 @@ ts_project(
     ),
     deps = [
         # TODO(rules_js): Explore how this could work alternatively at runtime with the module names.
+        "//packages/compiler-cli/preprocessor",
         "//adev/shared-docs/pipeline/api-gen:node_modules/@angular/compiler-cli",
         "//adev/shared-docs/pipeline/api-gen:node_modules/@angular/compiler",
         "//adev:node_modules/@types/node",
@@ -24,6 +25,9 @@ js_binary(
     name = "extract_api_to_json",
     data = [
         ":extract_api_to_json_lib",
+        "//packages/compiler-cli/preprocessor",
+        "//packages/compiler-cli/preprocessor/ng-analyze:ng_analyze_wasm",
+        "//packages/compiler-cli/preprocessor/ng-analyze:package_json",
     ],
     entry_point = ":index.mjs",
     visibility = ["//visibility:public"],

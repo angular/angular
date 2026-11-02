@@ -351,6 +351,7 @@ export function performNgpCompilationSync(params: {
   closeAnalyzer?: boolean;
   tcbConfigOverride?: Partial<NgpTypeCheckingConfig>;
   templateDiagnosticsOnly?: boolean;
+  preprocess?: boolean;
   session?: NgpCompilationSession;
 }): NgpCompilationResult {
   const {
@@ -366,6 +367,7 @@ export function performNgpCompilationSync(params: {
     closeAnalyzer = true,
     tcbConfigOverride,
     templateDiagnosticsOnly = false,
+    preprocess = true,
     session,
   } = params;
 
@@ -549,7 +551,7 @@ export function performNgpCompilationSync(params: {
   const templateTargetByTypeCheckId = new Map<string, TemplateDiagnosticTarget>();
   const processorThrownErrors: Array<{fsFilePath: AbsoluteFsPath; message: string}> = [];
 
-  if (compiler !== undefined && rootNames.length > 0) {
+  if (preprocess && compiler !== undefined && rootNames.length > 0) {
     const processedFiles = compiler.compileSync({
       readFile: (posixFilePath: string) => {
         const fsFilePath = fromPosixPath(fs, posixFilePath);
@@ -813,7 +815,7 @@ export function performNgpCompilationSync(params: {
   }
   const hasOptionErrors = compiler?.optionDiagnostics.some((d) => d.category === 1);
 
-  if (!templateDiagnosticsOnly && !hasOptionErrors) {
+  if (preprocess && !templateDiagnosticsOnly && !hasOptionErrors) {
     allDiagnostics.push(...tsProgram.getOptionsDiagnostics());
     if (optimize || !complianceMode) {
       allDiagnostics.push(...tsProgram.getGlobalDiagnostics());

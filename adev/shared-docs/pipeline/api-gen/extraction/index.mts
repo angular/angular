@@ -16,12 +16,16 @@ import {
   DocEntry,
   EntryCollection,
   InterfaceEntry,
-  NgtscProgram,
 } from '@angular/compiler-cli';
+import {
+  createAnalyzer,
+  getApiDocumentation,
+  HybridCompiler,
+} from '@angular/compiler-cli/preprocessor';
 import ts from 'typescript';
 import {EXAMPLES_PATH, interpolateCodeExamples} from './interpolate_code_examples.mjs';
 
-function main() {
+async function main() {
   const [paramFilePath] = process.argv.slice(2);
   const rawParamLines = readFileSync(paramFilePath, {encoding: 'utf8'}).split('\n');
 
@@ -62,20 +66,17 @@ function main() {
     rootDir: '.',
     skipLibCheck: true,
     target: ts.ScriptTarget.ES2022,
+    module: ts.ModuleKind.ES2022,
+    moduleResolution: ts.ModuleResolutionKind.Bundler,
     // This is necessary because otherwise types that include `| null` are not included in the documentation.
     strictNullChecks: true,
-    moduleResolution: ts.ModuleResolutionKind.NodeNext,
     experimentalDecorators: true,
   };
 
   // Code examples should not be fed to the compiler.
   const filesWithoutExamples = srcs.split(',').filter((src) => !src.startsWith(EXAMPLES_PATH));
   const compilerHost = createCompilerHost({options: compilerOptions});
-  const program: NgtscProgram = new NgtscProgram(
-    filesWithoutExamples,
-    compilerOptions,
-    compilerHost,
-  );
+  const tsProgram = ts.createProgram(filesWithoutExamples, compilerOptions, compilerHost);
 
   const extraEntries: DocEntry[] = (extraEntriesSrcs ?? '')
     .split(',')
@@ -84,7 +85,30 @@ function main() {
       return result.concat(JSON.parse(readFileSync(path, {encoding: 'utf8'})) as DocEntry[]);
     }, []);
 
-  const apiDoc = program.getApiDocumentation(entryPointExecRootRelativePath, privateModules);
+  const projectRoot = path.resolve('.');
+  const analyzer = await createAnalyzer({
+    backend: 'wasm',
+    entryPoints: filesWithoutExamples.map((f) => path.resolve(f)),
+    defaultHost: {
+      rootDirs: [projectRoot],
+    },
+  });
+
+  let apiDoc: {entries: DocEntry[]; symbols: Map<string, string>};
+  try {
+    const compiler = new HybridCompiler(analyzer, {
+      optimize: true,
+      rootDir: projectRoot,
+    });
+    apiDoc = await getApiDocumentation(
+      compiler,
+      tsProgram,
+      entryPointExecRootRelativePath,
+      privateModules,
+    );
+  } finally {
+    analyzer.close();
+  }
   const extractedEntries = apiDoc.entries;
   const combinedEntries = extractedEntries.concat(extraEntries);
 
@@ -128,4 +152,4 @@ function hasMembers(entry: DocEntry): entry is InterfaceEntry | ClassEntry {
   return 'members' in entry && Array.isArray(entry.members);
 }
 
-main();
+await main();

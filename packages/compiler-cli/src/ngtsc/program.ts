@@ -21,7 +21,6 @@ import {
   NgCompilerHost,
 } from './core';
 import {NgCompilerOptions} from './core/api';
-import {DocEntry} from './docs';
 import {absoluteFrom, AbsoluteFsPath, getFileSystem, resolve} from './file_system';
 import {TrackedIncrementalBuildStrategy} from './incremental';
 import {ActivePerfRecorder, PerfCheckpoint as PerfCheckpoint, PerfEvent, PerfPhase} from './perf';
@@ -388,21 +387,6 @@ export class NgtscProgram implements api.Program {
 
   getIndexedComponents(): Map<DeclarationNode, IndexedComponent<DeclarationNode>> {
     return this.compiler.getIndexedComponents();
-  }
-
-  /**
-   * Gets information for the current program that may be used to generate API
-   * reference documentation. This includes Angular-specific information, such
-   * as component inputs and outputs.
-   *
-   * @param entryPoint Path to the entry point for the package for which API
-   *     docs should be extracted.
-   */
-  getApiDocumentation(
-    entryPoint: string,
-    privateModules: Set<string>,
-  ): {entries: DocEntry[]; symbols: Map<string, string>} {
-    return this.compiler.getApiDocumentation(entryPoint, privateModules);
   }
 
   getEmittedSourceFiles(): Map<string, ts.SourceFile> {

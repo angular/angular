@@ -494,23 +494,45 @@ export class NgtscTestEnvironment {
   }
 
   driveDocsExtraction(entryPoint: string): DocEntry[] {
-    if (isNgpTestMode()) {
-      throw new Error('driveDocsExtraction is not supported in NGP mode.');
-    }
     const {rootNames, options} = readNgcCommandLineAndConfiguration(this.commandLineArgs);
-    const host = createCompilerHost({options});
-    const program = createProgram({rootNames, host, options});
-    return (program as NgtscProgram).getApiDocumentation(entryPoint, new Set()).entries;
+    const tsconfigPath = this.fs.resolve(this.basePath, 'tsconfig.json');
+    const result = performNgpCompilationSync({
+      fs: this.fs,
+      basePath: this.basePath,
+      tsconfigPath,
+      rootNames,
+      options,
+      emit: false,
+      preprocess: false,
+      closeAnalyzer: false,
+    });
+    try {
+      return result.compiler.getApiDocumentationSync(result.tsProgram, entryPoint, new Set())
+        .entries;
+    } finally {
+      result.compiler.analyzer.close();
+    }
   }
 
   driveDocsExtractionForSymbols(entryPoint: string): Map<string, string> {
-    if (isNgpTestMode()) {
-      throw new Error('driveDocsExtractionForSymbols is not supported in NGP mode.');
-    }
     const {rootNames, options} = readNgcCommandLineAndConfiguration(this.commandLineArgs);
-    const host = createCompilerHost({options});
-    const program = createProgram({rootNames, host, options});
-    return (program as NgtscProgram).getApiDocumentation(entryPoint, new Set()).symbols;
+    const tsconfigPath = this.fs.resolve(this.basePath, 'tsconfig.json');
+    const result = performNgpCompilationSync({
+      fs: this.fs,
+      basePath: this.basePath,
+      tsconfigPath,
+      rootNames,
+      options,
+      emit: false,
+      preprocess: false,
+      closeAnalyzer: false,
+    });
+    try {
+      return result.compiler.getApiDocumentationSync(result.tsProgram, entryPoint, new Set())
+        .symbols;
+    } finally {
+      result.compiler.analyzer.close();
+    }
   }
 
   driveXi18n(format: string, outputFileName: string, locale: string | null = null): void {

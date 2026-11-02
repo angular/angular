@@ -34,7 +34,6 @@ import {
   isFatalDiagnosticError,
   ngErrorCode,
 } from '../../diagnostics';
-import {DocEntry, DocsExtractor} from '../../docs';
 import {checkForPrivateExports, ReferenceGraph} from '../../entry_point';
 import {
   absoluteFromSourceFile,
@@ -944,40 +943,6 @@ export class NgCompiler {
     };
 
     return generateIndexerAnalysis(context, adapter);
-  }
-
-  /**
-   * Gets information for the current program that may be used to generate API
-   * reference documentation. This includes Angular-specific information, such
-   * as component inputs and outputs.
-   *
-   * @param entryPoint Path to the entry point for the package for which API
-   *     docs should be extracted.
-   *
-   * @returns A map of symbols with their associated module, eg: ApplicationRef => @angular/core
-   */
-  getApiDocumentation(
-    entryPoint: string,
-    privateModules: Set<string>,
-  ): {entries: DocEntry[]; symbols: Map<string, string>} {
-    const compilation = this.ensureAnalyzed();
-    const checker = this.inputProgram.getTypeChecker();
-    const docsExtractor = new DocsExtractor(checker, compilation.metaReader);
-
-    const entryPointSourceFile = this.inputProgram.getSourceFiles().find((sourceFile) => {
-      // TODO: this will need to be more specific than `.includes`, but the exact path comparison
-      //     will be easier to figure out when the pipeline is running end-to-end.
-      return sourceFile.fileName.includes(entryPoint);
-    });
-
-    if (!entryPointSourceFile) {
-      throw new Error(`Entry point "${entryPoint}" not found in program sources.`);
-    }
-
-    // TODO: Technically the current directory is not the root dir.
-    // Should probably be derived from the config.
-    const rootDir = this.inputProgram.getCurrentDirectory();
-    return docsExtractor.extractAll(entryPointSourceFile, rootDir, privateModules);
   }
 
   /**

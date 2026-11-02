@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {InputOrOutput} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
-import {DirectiveMeta, InputMapping, MetadataReader, PipeMeta} from '../../metadata';
+import {ClassDeclaration} from '../../reflection';
 
 import {
   ClassEntry,
@@ -22,6 +21,48 @@ import {
 } from './entities';
 import {extractJsDocDescription, extractJsDocTags, extractRawJsDoc} from './jsdoc_extractor';
 import {ClassDeclarationLike, PropertiesExtractor} from './properties_extractor';
+
+/** Minimal input metadata required by `DocsExtractor`. */
+export interface DocsInputMetadata {
+  bindingPropertyName: string;
+  required: boolean;
+}
+
+/** Minimal output metadata required by `DocsExtractor`. */
+export interface DocsOutputMetadata {
+  bindingPropertyName: string;
+}
+
+/** Minimal directive/component metadata required by `DocsExtractor`. */
+export interface DocsDirectiveMetadata {
+  isComponent: boolean;
+  isStandalone: boolean;
+  selector: string | null;
+  exportAs: string[] | null;
+  inputs: {
+    getByClassPropertyName(classPropertyName: string): DocsInputMetadata | null;
+  } | null;
+  outputs: {
+    getByClassPropertyName(classPropertyName: string): DocsOutputMetadata | null;
+  } | null;
+}
+
+/** Minimal pipe metadata required by `DocsExtractor`. */
+export interface DocsPipeMetadata {
+  name: string | null;
+  isStandalone: boolean;
+  isPure: boolean;
+}
+
+/** Minimal NgModule metadata required by `DocsExtractor`. */
+export interface DocsNgModuleMetadata {}
+
+/** Interface for reading Angular class metadata during API documentation extraction. */
+export interface DocsMetadataReader {
+  getDirectiveMetadata(node: Reference<ClassDeclaration>): DocsDirectiveMetadata | null;
+  getPipeMetadata(node: Reference<ClassDeclaration>): DocsPipeMetadata | null;
+  getNgModuleMetadata(node: Reference<ClassDeclaration>): DocsNgModuleMetadata | null;
+}
 
 /** Extractor to pull info for API reference documentation for a TypeScript class or interface. */
 class ClassExtractor extends PropertiesExtractor {
@@ -78,7 +119,7 @@ class DirectiveExtractor extends ClassExtractor {
   constructor(
     declaration: {name: ts.Identifier} & ts.ClassDeclaration,
     protected reference: Reference,
-    protected metadata: DirectiveMeta,
+    protected metadata: DocsDirectiveMetadata,
     checker: ts.TypeChecker,
   ) {
     super(declaration, checker);
@@ -120,13 +161,13 @@ class DirectiveExtractor extends ClassExtractor {
   }
 
   /** Gets the input metadata for a directive property. */
-  private getInputMetadata(prop: ts.PropertyDeclaration): InputMapping | undefined {
+  private getInputMetadata(prop: ts.PropertyDeclaration): DocsInputMetadata | undefined {
     const propName = prop.name.getText();
     return this.metadata.inputs?.getByClassPropertyName(propName) ?? undefined;
   }
 
   /** Gets the output metadata for a directive property. */
-  private getOutputMetadata(prop: ts.PropertyDeclaration): InputOrOutput | undefined {
+  private getOutputMetadata(prop: ts.PropertyDeclaration): DocsOutputMetadata | undefined {
     const propName = prop.name.getText();
     return this.metadata?.outputs?.getByClassPropertyName(propName) ?? undefined;
   }
@@ -137,7 +178,7 @@ class PipeExtractor extends ClassExtractor {
   constructor(
     declaration: {name: ts.Identifier} & ts.ClassDeclaration,
     protected reference: Reference,
-    private metadata: PipeMeta,
+    private metadata: DocsPipeMetadata,
     typeChecker: ts.TypeChecker,
   ) {
     super(declaration, typeChecker);
@@ -176,7 +217,7 @@ class NgModuleExtractor extends ClassExtractor {
 /** Extracts documentation info for a class, potentially including Angular-specific info.  */
 export function extractClass(
   classDeclaration: {name: ts.Identifier} & ts.ClassDeclaration,
-  metadataReader: MetadataReader,
+  metadataReader: DocsMetadataReader,
   typeChecker: ts.TypeChecker,
 ): ClassEntry {
   const ref = new Reference(classDeclaration);
@@ -200,7 +241,10 @@ export function extractClass(
   return extractor.extract();
 }
 
-function extractPipeSyntax(metadata: PipeMeta, classDeclaration: ts.ClassDeclaration): string {
+function extractPipeSyntax(
+  metadata: DocsPipeMetadata,
+  classDeclaration: ts.ClassDeclaration,
+): string {
   const transformParams = classDeclaration.members.find((member) => {
     return (
       ts.isMethodDeclaration(member) &&

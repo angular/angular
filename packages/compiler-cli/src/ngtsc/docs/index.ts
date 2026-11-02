@@ -7,4 +7,12 @@
  */
 
 export * from './src/entities';
+export {
+  type DocsDirectiveMetadata,
+  type DocsInputMetadata,
+  type DocsMetadataReader,
+  type DocsNgModuleMetadata,
+  type DocsOutputMetadata,
+  type DocsPipeMetadata,
+} from './src/class_extractor';
 export {DocsExtractor} from './src/extractor';

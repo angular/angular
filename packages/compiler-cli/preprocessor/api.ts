@@ -29,6 +29,7 @@ export {run} from './ngp.js';
 export type {RunOptions} from './ngp.js';
 
 export {WasmAnalyzer, type WasmInner} from './src/analyzer_wasm.js';
+export {getApiDocumentation, getApiDocumentationSync} from './src/docs.js';
 export type {ClassEntity} from './src/indexer_api.js';
 export {IndexerBoundTemplate} from './src/indexing/indexer.js';
 export {buildTypeCheckingConfig, type NgpTypeCheckingConfig} from './src/tcb.js';

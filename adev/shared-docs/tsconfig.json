@@ -12,6 +12,7 @@
     "jsxFragmentFactory": "Fragment",
     "types": ["node"],
     "paths": {
+      "@angular/compiler-cli/preprocessor": ["../../packages/compiler-cli/preprocessor/api"],
       "@angular/*": ["../../packages/*/index"]
     }
   },

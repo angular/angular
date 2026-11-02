@@ -13,10 +13,13 @@ import {
   ParseTemplateOptions,
   TcbDirectiveMetadata,
 } from '@angular/compiler';
+import type {DocEntry} from '@angular/compiler-cli/private/hybrid_analysis';
+import ts from 'typescript';
 import {makeClassKey} from './compiler-utils.js';
 import {verifyExtendedDiagnosticsOptions} from './compiler_options.js';
 import {DependencyTemplates, ngContentSignature} from './dependency_templates.js';
 import {flattenNgDiagnosticMessage, withErrorGuide} from './diagnostic.js';
+import {getApiDocumentation, getApiDocumentationSync} from './docs.js';
 import {ChunkContext, FileAnalysis, getOrCreateFileAnalysis} from './file_analysis.js';
 import {IndexedComponent} from './indexer_api.js';
 import {IncrementalEmitTracker} from './incremental.js';
@@ -1807,6 +1810,22 @@ export class HybridCompiler {
       }
     }
     return getIndexedComponentsSync(this);
+  }
+
+  async getApiDocumentation(
+    tsProgram: ts.Program,
+    entryPoint: string,
+    privateModules: Set<string>,
+  ): Promise<{entries: DocEntry[]; symbols: Map<string, string>}> {
+    return getApiDocumentation(this, tsProgram, entryPoint, privateModules);
+  }
+
+  getApiDocumentationSync(
+    tsProgram: ts.Program,
+    entryPoint: string,
+    privateModules: Set<string>,
+  ): {entries: DocEntry[]; symbols: Map<string, string>} {
+    return getApiDocumentationSync(this, tsProgram, entryPoint, privateModules);
   }
 
   getTsFileForTemplate(templatePath: string): nga.TemplateUsage | null {
