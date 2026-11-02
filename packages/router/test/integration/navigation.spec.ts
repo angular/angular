@@ -1015,6 +1015,7 @@ export async function navigationIntegrationTestSuite(browserAPI: 'history' | 'na
           canActivate: [
             () => {
               canActivateCalled = true;
+              return true;
             },
           ],
           resolve: {

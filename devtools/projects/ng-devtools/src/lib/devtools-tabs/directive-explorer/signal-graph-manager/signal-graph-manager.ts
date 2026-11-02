@@ -8,8 +8,8 @@
 
 import {effect, inject, Injectable, Injector, Signal, signal} from '@angular/core';
 import {DebugSignalGraph, ElementPosition, MessageBus} from '../../../../../../protocol';
-import {DevtoolsSignalGraph} from '../../../shared/signal-graph/signal-graph-types';
 import {convertToDevtoolsSignalGraph} from '../../../shared/signal-graph/devtools-signal-graph';
+import {DevtoolsSignalGraph} from '../../../shared/signal-graph/signal-graph-types';
 
 /**
  * Keeps the signal graph of a provided element/component.
@@ -17,7 +17,7 @@ import {convertToDevtoolsSignalGraph} from '../../../shared/signal-graph/devtool
 @Injectable()
 export class SignalGraphManager {
   private readonly injector = inject(Injector);
-  private readonly messageBus = inject(MessageBus);
+  private readonly messageBus = inject(MessageBus<any>);
   private readonly signalGraph = signal<DevtoolsSignalGraph | null>(null);
   private unlistenFn?: () => void;
   private lastesSignalGraphMessageUnlistenFn?: () => void;

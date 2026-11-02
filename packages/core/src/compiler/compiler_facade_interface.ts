@@ -112,7 +112,7 @@ export interface CompilerFacade {
   FactoryTarget: typeof FactoryTarget;
   // Note that we do not use `{new(): ResourceLoader}` here because
   // the resource loader class is abstract and not constructable.
-  ResourceLoader: Function & {prototype: ResourceLoader};
+  ResourceLoader: abstract new () => ResourceLoader;
 }
 
 export interface CoreEnvironment {
@@ -242,8 +242,7 @@ export interface R3ComponentMetadataFacade extends R3DirectiveMetadataFacade {
 // TODO(legacy-partial-output-inputs): Remove in v18.
 // https://github.com/angular/angular/blob/d4b423690210872b5c32a322a6090beda30b05a3/packages/core/src/compiler/compiler_facade_interface.ts#L197-L199
 export type LegacyInputPartialMapping =
-  | string
-  | [bindingPropertyName: string, classPropertyName: string, transformFunction?: Function];
+  string | [bindingPropertyName: string, classPropertyName: string, transformFunction?: Function];
 
 export interface R3DeclareDirectiveFacade {
   selector?: string;

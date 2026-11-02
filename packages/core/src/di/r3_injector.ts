@@ -10,7 +10,7 @@ import '../util/ng_dev_mode';
 
 import {OnDestroy} from '../change_detection/lifecycle_hooks';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {Type} from '../interface/type';
+import {AbstractType, Type} from '../interface/type';
 import {
   emitInjectorToCreateInstanceEvent,
   emitInstanceCreatedByInjectorEvent,
@@ -134,7 +134,7 @@ export abstract class EnvironmentInjector implements Injector {
    * @throws When the `notFoundValue` is `undefined` or `Injector.THROW_IF_NOT_FOUND`.
    */
   abstract get<T>(
-    token: ProviderToken<T>,
+    token: AbstractType<T>,
     notFoundValue: undefined,
     options: InjectOptions & {
       optional?: false;
@@ -147,9 +147,37 @@ export abstract class EnvironmentInjector implements Injector {
    */
   abstract get<T>(
     token: ProviderToken<T>,
+    notFoundValue: undefined,
+    options: InjectOptions & {
+      optional?: false;
+    },
+  ): T;
+  /**
+   * Retrieves an instance from the injector based on the provided token.
+   * @returns The instance from the injector if defined, otherwise the `notFoundValue`.
+   * @throws When the `notFoundValue` is `undefined` or `Injector.THROW_IF_NOT_FOUND`.
+   */
+  abstract get<T>(
+    token: AbstractType<T>,
     notFoundValue: null | undefined,
     options: InjectOptions,
   ): T | null;
+  /**
+   * Retrieves an instance from the injector based on the provided token.
+   * @returns The instance from the injector if defined, otherwise the `notFoundValue`.
+   * @throws When the `notFoundValue` is `undefined` or `Injector.THROW_IF_NOT_FOUND`.
+   */
+  abstract get<T>(
+    token: ProviderToken<T>,
+    notFoundValue: null | undefined,
+    options: InjectOptions,
+  ): T | null;
+  /**
+   * Retrieves an instance from the injector based on the provided token.
+   * @returns The instance from the injector if defined, otherwise the `notFoundValue`.
+   * @throws When the `notFoundValue` is `undefined` or `Injector.THROW_IF_NOT_FOUND`.
+   */
+  abstract get<T>(token: AbstractType<T>, notFoundValue?: T, options?: InjectOptions): T;
   /**
    * Retrieves an instance from the injector based on the provided token.
    * @returns The instance from the injector if defined, otherwise the `notFoundValue`.

@@ -16,7 +16,7 @@ import {Type} from '../interface/type';
  *
  * @publicApi
  */
-export abstract class NgModuleRef<T> {
+export abstract class NgModuleRef<T = any> {
   /**
    * The injector that contains all of the providers of the `NgModule`.
    */

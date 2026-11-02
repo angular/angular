@@ -717,4 +717,34 @@ describe('queries as signals', () => {
     expect(fixture.componentInstance.elRefC).withContext('C').toBeDefined();
     expect(componentInstance.elRefC.nativeElement.textContent).toBe('Content C');
   });
+
+  it('should infer generic type parameter when querying with a generic token', async () => {
+    type IsAny<T> = 0 extends 1 & T ? true : false;
+
+    @Directive({
+      selector: '[dir]',
+    })
+    class MyDir {}
+
+    @Component({
+      imports: [MyDir],
+      template: `<button dir>Click</button>`,
+    })
+    class App {
+      defaultEl = viewChild.required(MyDir, {read: ElementRef});
+      btnEl = viewChild.required(MyDir, {read: ElementRef<HTMLButtonElement>});
+    }
+
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+
+    const defaultNativeEl = fixture.componentInstance.defaultEl().nativeElement;
+    const _defaultIsAny: IsAny<typeof defaultNativeEl> = true;
+    const nativeEl = fixture.componentInstance.btnEl().nativeElement;
+    const _notAny: IsAny<typeof nativeEl> = false;
+    const _btnType: HTMLButtonElement = nativeEl;
+    expect(_defaultIsAny).toBe(true);
+    expect(_notAny).toBe(false);
+    expect(_btnType.tagName).toBe('BUTTON');
+  });
 });
