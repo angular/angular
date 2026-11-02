@@ -81,7 +81,7 @@ export class JitComponent {
   );
 
   // @ts-ignore
-  static propDecorators = {
+  static propDecorators: any = {
     sigInput: [{ type: i0.Input, args: [{ isSignal: true, alias: 'sigInput', required: false }] }],
     reqInput: [{ type: i0.Input, args: [{ isSignal: true, alias: 'reqInput', required: true }] }],
     aliasedInput: [
@@ -126,7 +126,7 @@ export class JitDirective {
   );
 
   // @ts-ignore
-  static propDecorators = {
+  static propDecorators: any = {
     dirInput: [{ type: i0.Input, args: [{ isSignal: true, alias: 'dirInput', required: false }] }],
     dirOutput: [{ type: i0.Output, args: ['dirOutput'] }],
     dirModel: [
