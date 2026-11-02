@@ -14,7 +14,12 @@ import {InjectorMarkers} from '../di/injector_marker';
 import {InjectOptions, InternalInjectFlags} from '../di/interface/injector';
 import {ProviderToken} from '../di/provider_token';
 import {AbstractType, Type} from '../interface/type';
-import {assertDefined, assertEqual, assertIndexInRange} from '../util/assert';
+import {
+  assertDefined,
+  assertEqual,
+  assertIndexInRange,
+  assertLessThanOrEqual,
+} from '../util/assert';
 import {noSideEffects} from '../util/closure';
 
 import {assertDirectiveDef, assertNodeInjector, assertTNodeForLView} from './assert';
@@ -201,6 +206,13 @@ export function getOrCreateNodeInjectorForNode(
 
   const tView = lView[TVIEW];
   if (tView.firstCreatePass) {
+    ngDevMode &&
+      assertLessThanOrEqual(
+        lView.length,
+        RelativeInjectorLocationFlags.InjectorIndexMask,
+        'Node injector index exceeds the maximum supported LView size. The template is too ' +
+          'large; split it into child components or embedded views.',
+      );
     tNode.injectorIndex = lView.length;
     insertBloom(tView.data, tNode); // foundation for node bloom
     insertBloom(lView, null); // foundation for cumulative bloom
@@ -287,6 +299,12 @@ export function getParentInjectorLocation(tNode: TNode, lView: LView): RelativeI
 
     if (parentTNode.injectorIndex !== -1) {
       // We found a NodeInjector which points to something.
+      ngDevMode &&
+        assertLessThanOrEqual(
+          declarationViewOffset,
+          RelativeInjectorLocationFlags.MaxViewOffset,
+          'Declaration view offset exceeds the maximum supported nesting depth of templates.',
+        );
       return (parentTNode.injectorIndex |
         (declarationViewOffset <<
           RelativeInjectorLocationFlags.ViewOffsetShift)) as RelativeInjectorLocation;
