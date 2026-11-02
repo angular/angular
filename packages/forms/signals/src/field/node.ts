@@ -37,6 +37,7 @@ import type {FormField} from '../directive/form_field';
 import {DYNAMIC} from '../schema/logic';
 import {LogicNode} from '../schema/logic_node';
 import {FieldPathNode} from '../schema/path_node';
+import {isArray} from '../util/type_guards';
 import {FieldNodeContext} from './context';
 import type {FieldAdapter} from './field_adapter';
 import type {FormFieldManager} from './manager';
@@ -163,8 +164,13 @@ export class FieldNode implements FieldState<unknown> {
     return this.structure.value;
   }
 
+  private _keyInParent: Signal<string | number> | undefined = undefined;
   get keyInParent(): Signal<string | number> {
-    return this.structure.keyInParent;
+    // The structure tracks keys as strings. Expose array indices as numbers, as documented.
+    return (this._keyInParent ??= computed(() => {
+      const key = this.structure.keyInParent();
+      return isArray(untracked(this.structure.parent!.value)) ? Number(key) : key;
+    }));
   }
 
   get errors(): Signal<ValidationError.WithFieldTree[]> {
