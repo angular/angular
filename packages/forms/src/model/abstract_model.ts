@@ -461,6 +461,20 @@ export type ɵGetProperty<T, K> =
       : // Fall through permissively if we can't calculate the type of K.
         any;
 
+const ABSTRACT_CONTROL = /* @__PURE__ */ Symbol();
+
+/**
+ * Checks whether the given value is an `AbstractControl` instance without a value reference
+ * to the `AbstractControl` class, so the class can be tree-shaken.
+ */
+export function isAbstractControl(value: unknown): value is AbstractControl {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    (value as Record<symbol, unknown>)[ABSTRACT_CONTROL] === true
+  );
+}
+
 /**
  * This is the base class for `FormControl`, `FormGroup`, and `FormArray`.
  *
@@ -572,6 +586,7 @@ export abstract class AbstractControl<
     validators: ValidatorFn | ValidatorFn[] | null,
     asyncValidators: AsyncValidatorFn | AsyncValidatorFn[] | null,
   ) {
+    (this as Record<symbol, unknown>)[ABSTRACT_CONTROL] = true;
     this._assignValidators(validators);
     this._assignAsyncValidators(asyncValidators);
   }
