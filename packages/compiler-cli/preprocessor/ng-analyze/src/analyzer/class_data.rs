@@ -1666,9 +1666,8 @@ impl IsolatedTypeElementData {
                     ResolvedIsolatedElement::from_value(resolved.raw(), resolved.origin)
                 {
                     out.extend(element.references());
-                } else {
-                    fallback.collect_references(out);
                 }
+                fallback.collect_references(out);
             }
             _ => {}
         }
@@ -4665,13 +4664,48 @@ impl ClassData {
             IsolatedTypeElementData::Tuple { elements, fallback } => {
                 let projected: Vec<_> = elements
                     .iter()
-                    .map(|el| self.to_wire_isolated_element(el, current_file_path, cx))
+                    .map(|el| {
+                        if let IsolatedTypeElementData::Deferred { resolved, .. } = el {
+                            if let Some(local_name) =
+                                unresolved_local_import_name(resolved.raw(), self.reference_id.file)
+                            {
+                                return IsolatedTypeElementMetadata {
+                                    kind: IsolatedTypeElementKind::Typeof,
+                                    span: None,
+                                    references: Some(vec![
+                                        ReferenceMetadata::for_local_declaration(
+                                            local_name.to_string(),
+                                        ),
+                                    ]),
+                                    elements: None,
+                                };
+                            }
+                        }
+                        self.to_wire_isolated_element(el, current_file_path, cx)
+                    })
                     .collect();
                 if projected
                     .iter()
                     .any(|el| matches!(el.kind, IsolatedTypeElementKind::Never))
                 {
                     return self.to_wire_isolated_element(fallback, current_file_path, cx);
+                }
+                if projected.iter().all(|el| {
+                    matches!(el.kind, IsolatedTypeElementKind::Typeof)
+                        && el.span.is_none()
+                        && el.elements.is_none()
+                        && el.references.as_ref().is_some_and(|r| r.len() == 1)
+                }) {
+                    let references = projected
+                        .into_iter()
+                        .flat_map(|el| el.references.into_iter().flatten())
+                        .collect();
+                    return IsolatedTypeElementMetadata {
+                        kind: IsolatedTypeElementKind::ReferenceTuple,
+                        span: None,
+                        references: Some(references),
+                        elements: None,
+                    };
                 }
                 IsolatedTypeElementMetadata {
                     kind: IsolatedTypeElementKind::ReferenceTuple,

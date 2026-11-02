@@ -1233,6 +1233,10 @@ fn test_isolated_type_tuple_resolves_local_const_of_unresolved_imports() {
         const ALL_IMPORTS = [...MODULE_IMPORTS, ExternalModuleA, ResolvedModule];
         const WITH_CALL = [ExternalModuleA.forRoot()];
         const WITH_SPREAD = [...EXTERNAL_ARRAY];
+        let MUTABLE_IMPORTS = [ExternalModuleA, ExternalModuleA.forRoot()];
+        const OUTER_WITH_UNEXPANDABLE = [WITH_SPREAD, ExternalModuleA.forRoot()];
+        const CYCLE_A: any = [CYCLE_B, ExternalModuleA.forRoot()];
+        const CYCLE_B: any = [CYCLE_A];
 
         @NgModule({
             imports: [MODULE_IMPORTS],
@@ -1241,7 +1245,16 @@ fn test_isolated_type_tuple_resolves_local_const_of_unresolved_imports() {
         export class LocalConstModule {}
 
         @NgModule({
-            imports: [ALL_IMPORTS, WITH_CALL, WITH_SPREAD, EXTERNAL_ARRAY, SHARED],
+            imports: [
+                ALL_IMPORTS,
+                WITH_CALL,
+                WITH_SPREAD,
+                EXTERNAL_ARRAY,
+                SHARED,
+                MUTABLE_IMPORTS,
+                OUTER_WITH_UNEXPANDABLE,
+                CYCLE_A,
+            ],
         })
         export class EdgeCasesModule {}
         "#;
@@ -1323,7 +1336,7 @@ fn test_isolated_type_tuple_resolves_local_const_of_unresolved_imports() {
             .as_ref()
             .expect("EdgeCasesModule isolated_imports");
         assert!(edge.is_array_literal);
-        assert_eq!(edge.elements.len(), 5);
+        assert_eq!(edge.elements.len(), 8);
 
         // 0: `ALL_IMPORTS` (spread of same-file const + duplicate unresolved import + resolved cross-file class)
         assert_eq!(
@@ -1372,6 +1385,24 @@ fn test_isolated_type_tuple_resolves_local_const_of_unresolved_imports() {
         assert_eq!(edge.elements[4].kind, IsolatedTypeElementKind::Typeof);
         assert!(edge.elements[4].references.is_none(), "optimize={optimize}");
         assert_eq!(span_text(&edge.elements[4]), "SHARED");
+
+        // 5: `MUTABLE_IMPORTS` (`let` declaration) -> falls back to `typeof MUTABLE_IMPORTS`
+        assert_eq!(edge.elements[5].kind, IsolatedTypeElementKind::Typeof);
+        assert!(edge.elements[5].references.is_none(), "optimize={optimize}");
+        assert!(edge.elements[5].elements.is_none(), "optimize={optimize}");
+        assert_eq!(span_text(&edge.elements[5]), "MUTABLE_IMPORTS");
+
+        // 6: `OUTER_WITH_UNEXPANDABLE` (references local const `WITH_SPREAD` that cannot expand) -> falls back to `typeof OUTER_WITH_UNEXPANDABLE`
+        assert_eq!(edge.elements[6].kind, IsolatedTypeElementKind::Typeof);
+        assert!(edge.elements[6].references.is_none(), "optimize={optimize}");
+        assert!(edge.elements[6].elements.is_none(), "optimize={optimize}");
+        assert_eq!(span_text(&edge.elements[6]), "OUTER_WITH_UNEXPANDABLE");
+
+        // 7: `CYCLE_A` (cyclic local const reference) -> falls back to `typeof CYCLE_A`
+        assert_eq!(edge.elements[7].kind, IsolatedTypeElementKind::Typeof);
+        assert!(edge.elements[7].references.is_none(), "optimize={optimize}");
+        assert!(edge.elements[7].elements.is_none(), "optimize={optimize}");
+        assert_eq!(span_text(&edge.elements[7]), "CYCLE_A");
     }
 }
 
