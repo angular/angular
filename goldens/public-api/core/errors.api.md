@@ -112,6 +112,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     MISCONFIGURED_INCREMENTAL_HYDRATION = 508,
     // (undocumented)
+    MISPLACED_SILENT_EVENT_MODIFIER = 319,
+    // (undocumented)
     MISSING_DIRECTIVE_DEFINITION = 916,
     // (undocumented)
     MISSING_DOCUMENT = 210,
