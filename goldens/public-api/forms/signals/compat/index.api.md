@@ -58,7 +58,10 @@ export const NG_STATUS_CLASSES: SignalFormsConfig['classes'];
 
 // @public
 export class SignalFormControl<T> extends AbstractControl {
-    constructor(value: T, schemaOrOptions?: SchemaFn<T> | FormOptions<T>, options?: FormOptions<T>);
+    constructor(value: T);
+    constructor(value: T, schema: SchemaOrSchemaFn<T>);
+    constructor(value: T, options: FormOptions<T>);
+    constructor(value: T, schema: SchemaOrSchemaFn<T> | undefined, options: FormOptions<T>);
     // (undocumented)
     addAsyncValidators(_validators: any): void;
     // (undocumented)
