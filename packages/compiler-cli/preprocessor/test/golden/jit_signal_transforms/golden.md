@@ -30,69 +30,84 @@ export class ChildComponent {}
   jit: true,
 })
 export class JitComponent {
-  @i0.Input({ isSignal: true, alias: 'sigInput', required: false } as any) sigInput = input(
+  sigInput = input(
     'default',
     ...((ngDevMode ? [{ debugName: 'sigInput' }] : /* istanbul ignore next */ []) as []),
   );
-  @i0.Input({ isSignal: true, alias: 'reqInput', required: true } as any) reqInput =
-    input.required<string>(
-      ...((ngDevMode ? [{ debugName: 'reqInput' }] : /* istanbul ignore next */ []) as []),
-    );
-  @i0.Input({ isSignal: true, alias: 'publicName', required: false } as any) aliasedInput = input(
-    'val',
-    {
-      ...(ngDevMode ? { debugName: 'aliasedInput' } : /* istanbul ignore next */ {}),
-      alias: 'publicName',
-    },
+  reqInput = input.required<string>(
+    ...((ngDevMode ? [{ debugName: 'reqInput' }] : /* istanbul ignore next */ []) as []),
   );
-  @i0.Input({ isSignal: true, alias: 'transformedInput', required: false } as any)
+  aliasedInput = input('val', {
+    ...(ngDevMode ? { debugName: 'aliasedInput' } : /* istanbul ignore next */ {}),
+    alias: 'publicName',
+  });
   transformedInput = input('', {
     ...(ngDevMode ? { debugName: 'transformedInput' } : /* istanbul ignore next */ {}),
     transform: (v: string) => v.trim(),
   });
 
-  @i0.Output('sigOutput') sigOutput = output<string>();
-  @i0.Output('customEvent') aliasedOutput = output({ alias: 'customEvent' });
+  sigOutput = output<string>();
+  aliasedOutput = output({ alias: 'customEvent' });
 
-  @i0.Input({ isSignal: true, alias: 'sigModel', required: false } as any)
-  @i0.Output('sigModelChange')
   sigModel = model(
     123,
     ...((ngDevMode ? [{ debugName: 'sigModel' }] : /* istanbul ignore next */ []) as []),
   );
-  @i0.Input({ isSignal: true, alias: 'publicModel', required: false } as any)
-  @i0.Output('publicModelChange')
   aliasedModel = model('str', {
     ...(ngDevMode ? { debugName: 'aliasedModel' } : /* istanbul ignore next */ {}),
     alias: 'publicModel',
   });
 
-  @i0.ViewChild('el', { isSignal: true } as any) sigViewChild = viewChild<ElementRef>(
+  sigViewChild = viewChild<ElementRef>(
     'el',
     ...((ngDevMode ? [{ debugName: 'sigViewChild' }] : /* istanbul ignore next */ []) as []),
   );
-  @i0.ViewChild(i0.forwardRef(() => ChildComponent), { isSignal: true } as any)
   sigViewChildForward = viewChild(
     forwardRef(() => ChildComponent),
     ...((ngDevMode ? [{ debugName: 'sigViewChildForward' }] : /* istanbul ignore next */ []) as []),
   );
-  @i0.ViewChildren('item', { isSignal: true } as any) sigViewChildren = viewChildren<ElementRef>(
+  sigViewChildren = viewChildren<ElementRef>(
     'item',
     ...((ngDevMode ? [{ debugName: 'sigViewChildren' }] : /* istanbul ignore next */ []) as []),
   );
 
-  @i0.ContentChild('contentEl', { isSignal: true } as any) sigContentChild =
-    contentChild<ElementRef>(
-      'contentEl',
-      ...((ngDevMode ? [{ debugName: 'sigContentChild' }] : /* istanbul ignore next */ []) as []),
-    );
-  @i0.ContentChildren('contentItem', { isSignal: true } as any) sigContentChildren =
-    contentChildren<ElementRef>(
-      'contentItem',
-      ...((ngDevMode
-        ? [{ debugName: 'sigContentChildren' }]
-        : /* istanbul ignore next */ []) as []),
-    );
+  sigContentChild = contentChild<ElementRef>(
+    'contentEl',
+    ...((ngDevMode ? [{ debugName: 'sigContentChild' }] : /* istanbul ignore next */ []) as []),
+  );
+  sigContentChildren = contentChildren<ElementRef>(
+    'contentItem',
+    ...((ngDevMode ? [{ debugName: 'sigContentChildren' }] : /* istanbul ignore next */ []) as []),
+  );
+
+  // @ts-ignore
+  static propDecorators = {
+    sigInput: [{ type: i0.Input, args: [{ isSignal: true, alias: 'sigInput', required: false }] }],
+    reqInput: [{ type: i0.Input, args: [{ isSignal: true, alias: 'reqInput', required: true }] }],
+    aliasedInput: [
+      { type: i0.Input, args: [{ isSignal: true, alias: 'publicName', required: false }] },
+    ],
+    transformedInput: [
+      { type: i0.Input, args: [{ isSignal: true, alias: 'transformedInput', required: false }] },
+    ],
+    sigOutput: [{ type: i0.Output, args: ['sigOutput'] }],
+    aliasedOutput: [{ type: i0.Output, args: ['customEvent'] }],
+    sigModel: [
+      { type: i0.Input, args: [{ isSignal: true, alias: 'sigModel', required: false }] },
+      { type: i0.Output, args: ['sigModelChange'] },
+    ],
+    aliasedModel: [
+      { type: i0.Input, args: [{ isSignal: true, alias: 'publicModel', required: false }] },
+      { type: i0.Output, args: ['publicModelChange'] },
+    ],
+    sigViewChild: [{ type: i0.ViewChild, args: ['el', { isSignal: true }] }],
+    sigViewChildForward: [
+      { type: i0.ViewChild, args: [forwardRef(() => ChildComponent), { isSignal: true }] },
+    ],
+    sigViewChildren: [{ type: i0.ViewChildren, args: ['item', { isSignal: true }] }],
+    sigContentChild: [{ type: i0.ContentChild, args: ['contentEl', { isSignal: true }] }],
+    sigContentChildren: [{ type: i0.ContentChildren, args: ['contentItem', { isSignal: true }] }],
+  };
 }
 
 @Directive({
@@ -100,18 +115,24 @@ export class JitComponent {
   jit: true,
 })
 export class JitDirective {
-  @i0.Input({ isSignal: true, alias: 'dirInput', required: false } as any) dirInput =
-    input<boolean>(
-      false,
-      ...((ngDevMode ? [{ debugName: 'dirInput' }] : /* istanbul ignore next */ []) as []),
-    );
-  @i0.Output('dirOutput') dirOutput = output<number>();
-  @i0.Input({ isSignal: true, alias: 'dirModel', required: false } as any)
-  @i0.Output('dirModelChange')
+  dirInput = input<boolean>(
+    false,
+    ...((ngDevMode ? [{ debugName: 'dirInput' }] : /* istanbul ignore next */ []) as []),
+  );
+  dirOutput = output<number>();
   dirModel = model<string>(
     '',
     ...((ngDevMode ? [{ debugName: 'dirModel' }] : /* istanbul ignore next */ []) as []),
   );
-}
 
+  // @ts-ignore
+  static propDecorators = {
+    dirInput: [{ type: i0.Input, args: [{ isSignal: true, alias: 'dirInput', required: false }] }],
+    dirOutput: [{ type: i0.Output, args: ['dirOutput'] }],
+    dirModel: [
+      { type: i0.Input, args: [{ isSignal: true, alias: 'dirModel', required: false }] },
+      { type: i0.Output, args: ['dirModelChange'] },
+    ],
+  };
+}
 ```
