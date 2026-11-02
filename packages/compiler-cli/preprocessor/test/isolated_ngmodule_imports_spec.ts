@@ -151,4 +151,81 @@ describe('isolated NgModule imports under emitDeclarationOnly', () => {
       );
     }
   });
+
+  it('expands same-file unexported const arrays mixing classes and call expressions without triggering TS9017', async () => {
+    for (const optimize of [false, true]) {
+      const outputs = await compileFiles(
+        {
+          '/test.ts': `
+            import {Component, NgModule} from '@angular/core';
+            import {RouterModule} from '@angular/router';
+            import {FeaturePage} from './feature-page';
+
+            @Component({
+              selector: 'shared-widget',
+              template: '<span>widget</span>',
+            })
+            export class SharedWidget {}
+
+            const MODULE_IMPORTS = [
+              FeaturePage,
+              RouterModule.forChild([{path: '', component: FeaturePage}]),
+              SharedWidget,
+            ];
+
+            @NgModule({
+              imports: [MODULE_IMPORTS],
+              exports: [MODULE_IMPORTS],
+            })
+            export class FeatureModule {}
+
+            @NgModule({
+              imports: MODULE_IMPORTS,
+              exports: MODULE_IMPORTS,
+            })
+            export class DirectFeatureModule {}
+          `,
+        },
+        {
+          optimize,
+          compilerOptions: {
+            declaration: true,
+            emitDeclarationOnly: true,
+            isolatedDeclarations: true,
+          },
+          angularCompilerOptions: {
+            _experimentalAllowEmitDeclarationOnly: true,
+          },
+        },
+      );
+
+      const content = outputs.get('/out/test.ts')!;
+      expect(content).toContain(
+        'static ɵmod: i0.ɵɵNgModuleDeclaration<FeatureModule, never, [[typeof FeaturePage, ReturnType<typeof RouterModule.forChild>, typeof SharedWidget]], [[typeof FeaturePage, ReturnType<typeof RouterModule.forChild>, typeof SharedWidget]]>',
+      );
+      expect(content).toContain(
+        'static ɵmod: i0.ɵɵNgModuleDeclaration<DirectFeatureModule, never, [typeof FeaturePage, ReturnType<typeof RouterModule.forChild>, typeof SharedWidget], [typeof FeaturePage, ReturnType<typeof RouterModule.forChild>, typeof SharedWidget]>',
+      );
+      expect(content).not.toContain('typeof MODULE_IMPORTS');
+
+      const dtsResult = ts.transpileDeclaration(content, {
+        fileName: 'test.ts',
+        compilerOptions: {
+          target: ts.ScriptTarget.ES2022,
+          module: ts.ModuleKind.ESNext,
+          declaration: true,
+          emitDeclarationOnly: true,
+          isolatedDeclarations: true,
+        },
+      });
+      expect(dtsResult.diagnostics ?? []).toEqual([]);
+      expect(dtsResult.outputText).toContain(
+        'static ɵmod: i0.ɵɵNgModuleDeclaration<FeatureModule, never, [[typeof FeaturePage, ReturnType<typeof RouterModule.forChild>, typeof SharedWidget]], [[typeof FeaturePage, ReturnType<typeof RouterModule.forChild>, typeof SharedWidget]]>;',
+      );
+      expect(dtsResult.outputText).toContain(
+        'static ɵmod: i0.ɵɵNgModuleDeclaration<DirectFeatureModule, never, [typeof FeaturePage, ReturnType<typeof RouterModule.forChild>, typeof SharedWidget], [typeof FeaturePage, ReturnType<typeof RouterModule.forChild>, typeof SharedWidget]>;',
+      );
+    }
+  });
 });
+

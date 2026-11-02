@@ -2895,7 +2895,7 @@ function compileNgModuleDef(
       return null;
     }
 
-    const elementExprs = tuple.elements.map((el): o.Expression => {
+    const buildIsolatedTypeElementExpr = (el: nga.IsolatedTypeElementMetadata): o.Expression => {
       switch (el.kind) {
         case 'typeof': {
           if (el.references && el.references.length > 0) {
@@ -2918,6 +2918,9 @@ function compileNgModuleDef(
           return new o.WrappedNodeExpr(new RawSource(`ReturnType<typeof ${calleeText}>`));
         }
         case 'referenceTuple': {
+          if (el.elements && el.elements.length > 0) {
+            return o.literalArr(el.elements.map(buildIsolatedTypeElementExpr));
+          }
           return o.literalArr(
             (el.references ?? []).map((ref) => new o.TypeofExpr(refToTypeExpression(ref))),
           );
@@ -2936,7 +2939,9 @@ function compileNgModuleDef(
           return new o.WrappedNodeExpr(new RawSource('never'));
         }
       }
-    });
+    };
+
+    const elementExprs = tuple.elements.map(buildIsolatedTypeElementExpr);
     return tuple.isArrayLiteral ? o.literalArr(elementExprs) : (elementExprs[0] ?? null);
   };
 

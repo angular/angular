@@ -703,6 +703,11 @@ export interface IsolatedTypeElementMetadata {
    * reference for `Typeof`, or the full list for `ReferenceTuple`).
    */
   references?: Array<ReferenceMetadata>;
+  /**
+   * Expanded inner elements for a same-file `const` array that mixes references and call
+   * expressions (e.g. `RouterModule.forChild(...)`) when `kind` is `ReferenceTuple`.
+   */
+  elements?: Array<IsolatedTypeElementMetadata>;
 }
 
 export interface IsolatedTypeTupleMetadata {
