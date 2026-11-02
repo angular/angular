@@ -22,20 +22,15 @@ export function normalizeFormArgs<TModel>(
   SchemaOrSchemaFn<TModel> | undefined,
   (FormOptions<TModel> & {adapter?: FieldAdapter}) | undefined,
 ] {
-  let model: WritableSignal<TModel>;
+  const model: WritableSignal<TModel> = args[0];
   let schema: SchemaOrSchemaFn<TModel> | undefined;
   let options: (FormOptions<TModel> & {adapter?: FieldAdapter}) | undefined;
 
-  if (args.length === 3) {
-    [model, schema, options] = args;
-  } else if (args.length === 2) {
-    if (isSchemaOrSchemaFn(args[1])) {
-      [model, schema] = args;
-    } else {
-      [model, options] = args;
-    }
+  if (isSchemaOrSchemaFn(args[1])) {
+    schema = args[1];
+    options = args[2];
   } else {
-    [model] = args;
+    options = args[1] ?? args[2];
   }
 
   return [model, schema, options];

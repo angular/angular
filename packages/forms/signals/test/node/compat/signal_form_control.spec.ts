@@ -16,14 +16,25 @@ import {
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {ControlEvent, FormControlStatus, FormGroup, FormResetEvent} from '@angular/forms';
-import {disabled, required, validateAsync, ValidationError} from '@angular/forms/signals';
+import {
+  disabled,
+  FormOptions,
+  required,
+  validateAsync,
+  ValidationError,
+} from '@angular/forms/signals';
 import {SchemaFn} from '../../../src/api/types';
 import {SignalFormControl} from '../../../compat';
 
-function createSignalFormControl<T>(initialValue: T, schema?: SchemaFn<T>) {
+function createSignalFormControl<T>(
+  initialValue: T,
+  schemaOrOptions?: SchemaFn<T> | FormOptions<T>,
+) {
   const injector = TestBed.inject(Injector);
 
-  return new SignalFormControl(initialValue, schema, {injector});
+  return typeof schemaOrOptions === 'function'
+    ? new SignalFormControl(initialValue, schemaOrOptions, {injector})
+    : new SignalFormControl(initialValue, {injector, ...schemaOrOptions});
 }
 
 describe('SignalFormControl', () => {
@@ -741,12 +752,79 @@ describe('SignalFormControl', () => {
     });
   });
 
-  describe('dependency injection', () => {
+  describe('dependency injection and constructor options', () => {
     it('should be created without an explicit injector in an injection context', () => {
       const injector = TestBed.inject(Injector);
       const form = runInInjectionContext(injector, () => new SignalFormControl(10));
 
       expect(form.value).toBe(10);
+    });
+
+    it('should respect injector passed as second argument outside an injection context', () => {
+      const injector = TestBed.inject(Injector);
+      const form = new SignalFormControl(10, {injector});
+
+      expect(form.value).toBe(10);
+      form.setValue(20);
+      expect(form.value).toBe(20);
+    });
+
+    it('should respect injector passed as second argument inside an injection context', () => {
+      const injector = TestBed.inject(Injector);
+      const form = runInInjectionContext(injector, () => new SignalFormControl(10, {injector}));
+
+      expect(form.value).toBe(10);
+      form.setValue(20);
+      expect(form.value).toBe(20);
+    });
+
+    it('should support schema as second argument and options as third argument', () => {
+      const injector = TestBed.inject(Injector);
+      const form = new SignalFormControl<string>(
+        '',
+        (p) => {
+          required(p);
+        },
+        {injector},
+      );
+
+      expect(form.valid).toBe(false);
+      form.setValue('valid');
+      expect(form.valid).toBe(true);
+    });
+
+    it('should support options as third argument when schema is undefined', () => {
+      const injector = TestBed.inject(Injector);
+      const form = new SignalFormControl(10, undefined, {injector});
+
+      expect(form.value).toBe(10);
+    });
+
+    it('should forward other options (such as name) passed as second argument', () => {
+      const injector = TestBed.inject(Injector);
+      const form = new SignalFormControl(10, {injector, name: 'myControl'});
+
+      expect(form.value).toBe(10);
+    });
+
+    it('should throw error when updateOn option is passed as second argument', () => {
+      expect(() => new SignalFormControl(10, {updateOn: 'blur'} as any)).toThrowError(
+        /SignalFormControl does not support the "updateOn: 'blur'" option/,
+      );
+    });
+
+    it('should throw error when updateOn option is passed as second argument with injector', () => {
+      const injector = TestBed.inject(Injector);
+      expect(() => new SignalFormControl(10, {updateOn: 'blur', injector} as any)).toThrowError(
+        /SignalFormControl does not support the "updateOn: 'blur'" option/,
+      );
+    });
+
+    it('should throw error when updateOn option is passed as third argument', () => {
+      const injector = TestBed.inject(Injector);
+      expect(
+        () => new SignalFormControl(10, () => {}, {updateOn: 'blur', injector} as any),
+      ).toThrowError(/SignalFormControl does not support the "updateOn: 'blur'" option/);
     });
   });
 });

@@ -98,25 +98,21 @@ export class SignalFormControl<T> extends AbstractControl {
   constructor(value: T, schemaOrOptions?: SchemaFn<T> | FormOptions<T>, options?: FormOptions<T>) {
     super(null, null);
 
-    const rawOptions =
-      typeof schemaOrOptions === 'object' && schemaOrOptions !== null
-        ? {...schemaOrOptions, ...options}
-        : options;
+    const [model, schema, opts] = normalizeFormArgs<T>([signal(value), schemaOrOptions, options]);
     if (
       (typeof ngDevMode === 'undefined' || ngDevMode) &&
-      (rawOptions as any)?.updateOn &&
-      (rawOptions as any).updateOn !== 'change'
+      (opts as any)?.updateOn &&
+      (opts as any).updateOn !== 'change'
     ) {
-      throw unsupportedUpdateOnError((rawOptions as any).updateOn);
+      throw unsupportedUpdateOnError((opts as any).updateOn);
     }
-    const [model, schema, opts] = normalizeFormArgs<T>([signal(value), schemaOrOptions, options]);
     this.sourceValue = model;
     this.initialValue = value;
     const injector = opts?.injector ?? inject(Injector);
 
     const rawTree = schema
-      ? compatForm(this.sourceValue, schema, {injector})
-      : compatForm(this.sourceValue, {injector});
+      ? compatForm(this.sourceValue, schema, {...opts, injector})
+      : compatForm(this.sourceValue, {...opts, injector});
 
     this.fieldTree = wrapFieldTreeForSyncUpdates(rawTree, () =>
       this.parent?.updateValueAndValidity({sourceControl: this} as any),
