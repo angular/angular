@@ -130,7 +130,7 @@ Pages may have multiple outlets— you can assign a name to each outlet to speci
 <app-footer />
 ```
 
-Each outlet must have a unique name. The name cannot be set or changed dynamically. By default, the name is `'primary'`.
+Each outlet must have a unique name. You can bind the name to a value. When the value changes, the outlet destroys its current component and renders the route for the new name, if one matches. By default, the name is `'primary'`.
 
 Angular matches the outlet's name to the `outlet` property defined on each route:
 
