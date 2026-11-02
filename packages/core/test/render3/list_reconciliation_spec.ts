@@ -117,6 +117,28 @@ describe('list reconciliation', () => {
       ]);
     });
 
+    it('should prepend without moving a matching suffix', () => {
+      const pc = new LoggingLiveCollection(['a', 'b', 'c']);
+      reconcile(pc, ['x', 'a', 'b', 'c'], trackByIdentity, null);
+
+      expect(pc.getCollection()).toEqual(['x', 'a', 'b', 'c']);
+      expect(pc.getLogs()).toEqual([
+        ['create', 0, 'x'],
+        ['attach', 0, 'x'],
+      ]);
+    });
+
+    it('should swap items after matching a suffix', () => {
+      const pc = new LoggingLiveCollection(['a', 'b', 'c', 'd']);
+      reconcile(pc, ['a', 'c', 'b', 'd'], trackByIdentity, null);
+
+      expect(pc.getCollection()).toEqual(['a', 'c', 'b', 'd']);
+      expect(pc.getLogs()).toEqual([
+        ['detach', 2, 'c'],
+        ['attach', 1, 'c'],
+      ]);
+    });
+
     it('should swap items', () => {
       const pc = new LoggingLiveCollection(['a', 'b', 'c']);
       reconcile(pc, ['c', 'b', 'a'], trackByIdentity, null);
@@ -417,6 +439,98 @@ describe('list reconciliation', () => {
         {index: 0, implicit: 'c'},
         {index: 1, implicit: 'b'},
         {index: 2, implicit: 'a'},
+      ]);
+
+      pc.clearLogs();
+      reconcile(pc, ['x', 'c', 'b', 'a'], trackByIndex, null);
+      expect(pc.getCollection()).toEqual([
+        {index: 0, implicit: 'x'},
+        {index: 1, implicit: 'c'},
+        {index: 2, implicit: 'b'},
+        {index: 3, implicit: 'a'},
+      ]);
+      expect(pc.getLogs()).toEqual([
+        ['create', 3, 'a'],
+        ['attach', 3, {index: 3, implicit: 'a'}],
+      ]);
+    });
+
+    it('should update the values of every matching item in a suffix', () => {
+      const pc = new LoggingLiveCollection(
+        [],
+        new RepeaterLikeItemFactory<KeyValueItem<string, string>>(),
+      );
+      reconcile(
+        pc,
+        [
+          {k: 'a', v: 'old'},
+          {k: 'b', v: 'old'},
+        ],
+        trackByKey,
+        null,
+      );
+      pc.clearLogs();
+
+      reconcile(
+        pc,
+        [
+          {k: 'x', v: 'new'},
+          {k: 'a', v: 'new'},
+          {k: 'b', v: 'new'},
+        ],
+        trackByKey,
+        null,
+      );
+
+      expect(pc.getCollection().map((item) => item.implicit)).toEqual([
+        {k: 'x', v: 'new'},
+        {k: 'a', v: 'new'},
+        {k: 'b', v: 'new'},
+      ]);
+      expect(pc.getLogs()).toEqual([
+        ['create', 0, {k: 'x', v: 'new'}],
+        ['attach', 0, {index: 0, implicit: {k: 'x', v: 'new'}}],
+      ]);
+    });
+
+    it('should prepend while preserving a suffix with duplicate keys', () => {
+      const pc = new LoggingLiveCollection(
+        [],
+        new RepeaterLikeItemFactory<KeyValueItem<string, string>>(),
+      );
+      reconcile(
+        pc,
+        [
+          {k: 'a', v: 'first'},
+          {k: 'a', v: 'second'},
+          {k: 'b', v: 'last'},
+        ],
+        trackByKey,
+        null,
+      );
+      pc.clearLogs();
+
+      reconcile(
+        pc,
+        [
+          {k: 'x', v: 'new'},
+          {k: 'a', v: 'first updated'},
+          {k: 'a', v: 'second updated'},
+          {k: 'b', v: 'last updated'},
+        ],
+        trackByKey,
+        null,
+      );
+
+      expect(pc.getCollection().map((item) => item.implicit)).toEqual([
+        {k: 'x', v: 'new'},
+        {k: 'a', v: 'first updated'},
+        {k: 'a', v: 'second updated'},
+        {k: 'b', v: 'last updated'},
+      ]);
+      expect(pc.getLogs()).toEqual([
+        ['create', 0, {k: 'x', v: 'new'}],
+        ['attach', 0, {index: 0, implicit: {k: 'x', v: 'new'}}],
       ]);
     });
 
