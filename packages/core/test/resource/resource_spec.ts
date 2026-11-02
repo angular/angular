@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {timeout} from '@angular/private/testing';
+
 import {
   ApplicationRef,
   ɵCACHE_ACTIVE as CACHE_ACTIVE,
@@ -461,6 +463,72 @@ describe('resource', () => {
 
     expect(aborted).toEqual([{counter: 0}]);
   });
+
+  it('should cancel a pending load and release stability when params becomes undefined', async () => {
+    const params = signal<number | undefined>(1);
+    let abortSignal: AbortSignal | undefined;
+    const res = resource({
+      params,
+      loader: (options) => {
+        abortSignal = options.abortSignal;
+        // Aborting a loader does not require its promise to settle.
+        return new Promise<number>(() => {});
+      },
+      injector: TestBed.inject(Injector),
+    });
+    const appRef = TestBed.inject(ApplicationRef);
+
+    await timeout();
+    expect(abortSignal?.aborted).toBeFalse();
+
+    params.set(undefined);
+    await appRef.whenStable();
+
+    expect(abortSignal?.aborted).toBeTrue();
+    expect(res.snapshot()).toEqual({status: 'idle', value: undefined});
+  });
+
+  for (const settlement of ['resolve', 'reject'] as const) {
+    it(`should discard a cancelled load's late ${settlement} without releasing a newer load's pending task`, async () => {
+      const params = signal<number | undefined>(1);
+      const first = promiseWithResolvers<number>();
+      const second = promiseWithResolvers<number>();
+      const abortSignals: AbortSignal[] = [];
+      const res = resource({
+        params,
+        loader: ({params, abortSignal}) => {
+          abortSignals.push(abortSignal);
+          return params === 1 ? first.promise : second.promise;
+        },
+        injector: TestBed.inject(Injector),
+      });
+      const appRef = TestBed.inject(ApplicationRef);
+
+      await timeout();
+      params.set(undefined);
+      await appRef.whenStable();
+
+      params.set(2);
+      await timeout();
+
+      let stable = false;
+      const whenStable = appRef.whenStable().then(() => (stable = true));
+      if (settlement === 'resolve') {
+        first.resolve(1);
+      } else {
+        first.reject(new Error('cancelled load'));
+      }
+      await timeout();
+
+      expect(res.snapshot()).toEqual({status: 'loading', value: undefined});
+      expect(abortSignals.map((signal) => signal.aborted)).toEqual([true, false]);
+      expect(stable).toBeFalse();
+
+      second.resolve(2);
+      await whenStable;
+      expect(res.snapshot()).toEqual({status: 'resolved', value: 2});
+    });
+  }
 
   it('should cancel pending requests when the resource is destroyed via injector', async () => {
     const counter = signal(0);
