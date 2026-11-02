@@ -199,6 +199,52 @@ describe('jit: true Angular member and constructor parameter decorator downlevel
     expect(content).not.toContain('static propDecorators');
     expect(content).not.toContain('static ctorParameters');
   });
+
+  it('includes both traditional member decorators and signal APIs in static propDecorators for jit: true', async () => {
+    const outputs = await compileFiles({
+      '/test.ts': `
+        import {Component, Input, input, model, output, viewChild, contentChild, ElementRef} from '@angular/core';
+
+        export class ChildCmp {}
+
+        @Component({
+          selector: 'mixed-jit-cmp',
+          template: '<span></span>',
+          jit: true,
+        })
+        export class MixedJitCmp {
+          @Input() legacyInput = '';
+          readonly sigInput = input.required<string>();
+          readonly sigModel = model(0, {alias: 'modelAlias'});
+          readonly sigOut = output<string>();
+          readonly child = viewChild.required(ChildCmp);
+          readonly projected = contentChild<ElementRef>('proj');
+        }
+      `,
+    });
+
+    const content = outputs.get('/out/test.ts')!;
+    expect(content).not.toContain('@Input()');
+    expect(content).not.toContain('@i0.Input');
+    expect(content).not.toContain('@i0.Output');
+    expect(content).not.toContain('@i0.ViewChild');
+    expect(content).not.toContain('@i0.ContentChild');
+    expect(content).toContain('static propDecorators = {');
+    expect(content).toContain('legacyInput: [{type: Input}]');
+    expect(content).toContain(
+      "sigInput: [{type: i0.Input, args: [{isSignal: true, alias: 'sigInput', required: true}]}]",
+    );
+    expect(content).toContain(
+      "sigModel: [{type: i0.Input, args: [{isSignal: true, alias: 'modelAlias', required: false}]}, {type: i0.Output, args: ['modelAliasChange']}]",
+    );
+    expect(content).toContain("sigOut: [{type: i0.Output, args: ['sigOut']}]");
+    expect(content).toContain(
+      'child: [{type: i0.ViewChild, args: [i0.forwardRef(() => ChildCmp), {isSignal: true}]}]',
+    );
+    expect(content).toContain(
+      "projected: [{type: i0.ContentChild, args: ['proj', {isSignal: true}]}]",
+    );
+  });
 });
 
 function makeTsconfig(

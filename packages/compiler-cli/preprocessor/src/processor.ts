@@ -504,97 +504,25 @@ export function processFileSync(
 
     if (isJit) {
       if (!ctx.emitDeclarationOnly) {
-        const coreNamespace = printer.getOrCreateNamespace('@angular/core');
-        for (const input of inputs) {
-          if (input.isSignal && input.propertySpan) {
-            const inputArgsObj: string[] = [
-              'isSignal: true',
-              `alias: ${JSON.stringify(input.alias ?? input.name)}`,
-              `required: ${input.required ? 'true' : 'false'}`,
-            ];
-            const inputArgs = `({${inputArgsObj.join(', ')}} as any)`;
-            s.appendLeft(input.propertySpan.start, `@${coreNamespace}.Input(${inputArgs}) `);
+        printer.getOrCreateNamespace('@angular/core');
+        if (constructorParams && constructorParams.length > 0) {
+          for (const param of constructorParams) {
+            const hasNgDecorators = param.decorators.some((d) => d.isAngular);
+            if ((param.hasType || hasNgDecorators) && !param.isTypeOnly && param.typeName != null) {
+              eagerlyBoundNames.add(param.typeName.split('.')[0]);
+            }
           }
-        }
-
-        for (const output of outputs) {
-          if (output.isSignal && output.propertySpan) {
-            const outputArg = JSON.stringify(output.alias ?? output.name);
-            s.appendLeft(output.propertySpan.start, `@${coreNamespace}.Output(${outputArg}) `);
-          }
-        }
-
-        const allSignalQueries = [...(queries ?? []), ...(viewQueries ?? [])].filter(
-          (q) => q.isSignal && q.propertySpan,
-        );
-        for (const query of allSignalQueries) {
-          const decoratorName = query.isView
-            ? query.first
-              ? 'ViewChild'
-              : 'ViewChildren'
-            : query.first
-              ? 'ContentChild'
-              : 'ContentChildren';
-          const rawPred = s.original.slice(query.predicateSpan.start, query.predicateSpan.end);
-          // A signal query has selectors exactly when its locator is string-literal-like.
-          const predicateStr = query.predicateSelectors
-            ? rawPred
-            : `${coreNamespace}.forwardRef(() => ${rawPred})`;
-          const optionsObj: string[] = [];
-          if (query.optionsSpan) {
-            optionsObj.push(
-              `...${s.original.slice(query.optionsSpan.start, query.optionsSpan.end)}`,
-            );
-          }
-          optionsObj.push('isSignal: true');
-          const optionsStr = `({${optionsObj.join(', ')}} as any)`;
+          const ctorExpr = buildJitCtorParametersExpr(constructorParams, s);
+          const nocollapse = ctx.isClosureCompilerEnabled ? '/** @nocollapse */\n  ' : '';
           s.appendLeft(
-            query.propertySpan!.start,
-            `@${coreNamespace}.${decoratorName}(${predicateStr}, ${optionsStr}) `,
+            span.end - 1,
+            // ts-ignore is necessary to suppress errors if the base class has `ctorParameters`.
+            `\n  ${nocollapse}// @ts-ignore\n  static ctorParameters = ${printer.print(ctorExpr)};\n`,
           );
         }
-      }
 
-      if (!ctx.emitDeclarationOnly && constructorParams && constructorParams.length > 0) {
-        for (const param of constructorParams) {
-          const hasNgDecorators = param.decorators.some((d) => d.isAngular);
-          if ((param.hasType || hasNgDecorators) && !param.isTypeOnly && param.typeName != null) {
-            eagerlyBoundNames.add(param.typeName.split('.')[0]);
-          }
-        }
-        const ctorExpr = buildJitCtorParametersExpr(constructorParams, s);
-        const nocollapse = ctx.isClosureCompilerEnabled ? '/** @nocollapse */\n  ' : '';
-        s.appendLeft(
-          span.end - 1,
-          // ts-ignore is necessary to suppress errors if the base class has `ctorParameters`.
-          `\n  ${nocollapse}// @ts-ignore\n  static ctorParameters = ${printer.print(ctorExpr)};\n`,
-        );
-      }
-
-      if (
-        !ctx.emitDeclarationOnly &&
-        classMeta.memberDecorators &&
-        classMeta.memberDecorators.length > 0
-      ) {
-        const propDecoratorsMap = new Map<
-          string,
-          {key: string; quoted: boolean; value: o.Expression}
-        >();
-        for (const member of classMeta.memberDecorators) {
-          if (member.isStringLiteral) continue;
-          const ngDecorators = member.decorators
-            .filter((d) => d.isAngular)
-            .map((d) => buildDecoratorMetadataExpr(d.name, d.argsSpan, d.argsString, s, []));
-          if (ngDecorators.length > 0) {
-            propDecoratorsMap.set(member.propertyName, {
-              key: member.propertyName,
-              quoted: false,
-              value: o.literalArr(ngDecorators),
-            });
-          }
-        }
-        if (propDecoratorsMap.size > 0) {
-          const propExpr = o.literalMap(Array.from(propDecoratorsMap.values()));
+        const propExpr = buildPropDecoratorsExpr(classMeta, s, className, [], /* isJit */ true);
+        if (propExpr !== null) {
           const nocollapse = ctx.isClosureCompilerEnabled ? '/** @nocollapse */\n  ' : '';
           s.appendLeft(
             span.end - 1,
@@ -2420,6 +2348,7 @@ function buildPropDecoratorsExpr(
   s: MagicString,
   className: string,
   guards: nga.SpanMetadata[],
+  isJit: boolean,
 ): o.Expression | null {
   const {memberDecorators, inputs, outputs, queries, viewQueries} = classMeta;
   const propMap = new Map<
@@ -2440,10 +2369,13 @@ function buildPropDecoratorsExpr(
 
   // 1. Decorator-based members from AST
   const seenMemberNames =
-    memberDecorators && memberDecorators.length > 1 ? new Set<string>() : null;
+    !isJit && memberDecorators && memberDecorators.length > 1 ? new Set<string>() : null;
   const duplicateNames: string[] = [];
   if (memberDecorators) {
     for (const member of memberDecorators) {
+      if (isJit && member.isStringLiteral) {
+        continue;
+      }
       if (seenMemberNames !== null) {
         if (seenMemberNames.has(member.propertyName)) {
           duplicateNames.push(member.propertyName);
@@ -2451,12 +2383,19 @@ function buildPropDecoratorsExpr(
         }
         seenMemberNames.add(member.propertyName);
       }
-      const offset = member.decorators[0]?.decoratorSpan?.start;
-      const entry = getOrCreateEntry(member.propertyName, member.isStringLiteral, offset);
       const ngDecorators = member.decorators
         .filter((d) => d.isAngular)
         .map((d) => buildDecoratorMetadataExpr(d.name, d.argsSpan, d.argsString, s, guards));
-      entry.decorators.push(...ngDecorators);
+      if (isJit && ngDecorators.length === 0) {
+        continue;
+      }
+      const offset = member.decorators[0]?.decoratorSpan?.start;
+      const entry = getOrCreateEntry(member.propertyName, member.isStringLiteral, offset);
+      if (isJit) {
+        entry.decorators = ngDecorators;
+      } else {
+        entry.decorators.push(...ngDecorators);
+      }
     }
   }
 
@@ -2677,7 +2616,7 @@ function buildSetClassMetadata(
     type: o.variable(className),
     decorators: o.literalArr(decoratorObjs),
     ctorParameters: buildCtorParametersExpr(classMeta.constructorParams, s),
-    propDecorators: buildPropDecoratorsExpr(classMeta, s, className, guards),
+    propDecorators: buildPropDecoratorsExpr(classMeta, s, className, guards, false),
   };
   return compileComponentClassMetadata(classMetadata, deferredDeps).toStmt();
 }
