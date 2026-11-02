@@ -11,6 +11,7 @@ ts_project(
         "//devtools/projects/ng-devtools-backend/src/lib/profiling",
         "//devtools/projects/ng-devtools-backend/src/lib/shared:interfaces",
         "//devtools/projects/ng-devtools-backend/src/lib/shared/highlighter",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/highlighter:types",
         "//devtools/projects/protocol",
     ],
 )
