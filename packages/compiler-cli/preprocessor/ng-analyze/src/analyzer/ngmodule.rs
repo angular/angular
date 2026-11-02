@@ -371,7 +371,7 @@ fn classify_isolated_element<'a>(
     eval: &EvalInput<'a, '_>,
 ) -> super::class_data::IsolatedTypeElementData {
     let mut visited = std::collections::HashSet::new();
-    classify_isolated_element_with_visited(el, semantic, eval, &mut visited)
+    classify_isolated_element_with_visited(el, semantic, eval, &mut visited, false)
 }
 
 fn classify_isolated_element_with_visited<'a>(
@@ -379,10 +379,31 @@ fn classify_isolated_element_with_visited<'a>(
     semantic: &Semantic<'a>,
     eval: &EvalInput<'a, '_>,
     visited: &mut std::collections::HashSet<oxc_semantic::SymbolId>,
+    inside_expanded_tuple: bool,
 ) -> super::class_data::IsolatedTypeElementData {
     use super::class_data::IsolatedTypeElementData;
     use crate::evaluator::ResolvedValue;
     use crate::types::analysis::Reference;
+
+    let local_var_const = local_variable_constness(el, semantic);
+    let fallback = |el: &Expression<'a>| {
+        if inside_expanded_tuple && local_var_const.is_some() {
+            IsolatedTypeElementData::Never { span: el.span() }
+        } else {
+            syntactic_isolated_element(el, semantic)
+        }
+    };
+
+    if local_var_const == Some(false) {
+        return fallback(el);
+    }
+
+    if let Some(elements) = try_expand_local_const_array(el, semantic, eval, visited) {
+        return IsolatedTypeElementData::Tuple {
+            elements,
+            fallback: Box::new(fallback(el)),
+        };
+    }
 
     // `transformToTypeTupleExpression` calls `evaluator.evaluate(el)` without foreign function
     // resolvers (relying on the syntactic `unwrap_forward_ref` loop below for top-level
@@ -395,7 +416,7 @@ fn classify_isolated_element_with_visited<'a>(
     if resolved.contains_incomplete() {
         return IsolatedTypeElementData::Deferred {
             resolved: Resolved::from_syntax(resolved, eval.file),
-            fallback: Box::new(fallback_isolated_element(el, semantic, eval, visited)),
+            fallback: Box::new(fallback(el)),
         };
     }
     match resolved.unwrap_named() {
@@ -426,30 +447,12 @@ fn classify_isolated_element_with_visited<'a>(
         _ => {}
     }
 
-    fallback_isolated_element(el, semantic, eval, visited)
+    fallback(el)
 }
 
-fn fallback_isolated_element<'a>(
-    el: &Expression<'a>,
-    semantic: &Semantic<'a>,
-    eval: &EvalInput<'a, '_>,
-    visited: &mut std::collections::HashSet<oxc_semantic::SymbolId>,
-) -> super::class_data::IsolatedTypeElementData {
-    use super::class_data::IsolatedTypeElementData;
-
-    let syntactic = syntactic_isolated_element(el, semantic);
-    if let Some(elements) = try_expand_local_const_array(el, semantic, eval, visited) {
-        return IsolatedTypeElementData::Tuple {
-            elements,
-            fallback: Box::new(syntactic),
-        };
-    }
-    syntactic
-}
-
-/// If `el` resolves to a same-file variable initialized to a non-empty array literal, classify its
-/// elements individually so arrays mixing references and `ModuleWithProviders` calls (e.g.
-/// `RouterModule.forChild(...)`) can expand instead of falling back to `typeof CONST_NAME`
+/// If `el` resolves to a same-file `const` variable initialized to a non-empty array literal,
+/// classify its elements individually so arrays mixing references and `ModuleWithProviders` calls
+/// (e.g. `RouterModule.forChild(...)`) can expand instead of falling back to `typeof CONST_NAME`
 /// (which triggers TS9017 under `--isolatedDeclarations`).
 fn try_expand_local_const_array<'a>(
     el: &Expression<'a>,
@@ -488,10 +491,8 @@ fn try_expand_local_const_array<'a>(
             }
             return None;
         };
-        if scoping
-            .symbol_flags(symbol_id)
-            .contains(SymbolFlags::Import)
-        {
+        let flags = scoping.symbol_flags(symbol_id);
+        if flags.contains(SymbolFlags::Import) || !flags.contains(SymbolFlags::ConstVariable) {
             for sym in visited_chain {
                 visited.remove(&sym);
             }
@@ -559,8 +560,9 @@ fn try_expand_local_const_array<'a>(
                         valid = false;
                         break;
                     };
-                    let classified =
-                        classify_isolated_element_with_visited(el_expr, semantic, eval, visited);
+                    let classified = classify_isolated_element_with_visited(
+                        el_expr, semantic, eval, visited, true,
+                    );
                     if matches!(classified, IsolatedTypeElementData::Never { .. }) {
                         valid = false;
                         break;
@@ -576,6 +578,40 @@ fn try_expand_local_const_array<'a>(
     }
 
     (valid && !elements.is_empty()).then_some(elements)
+}
+
+/// Returns `Some(is_const)` when `el` (after unwrapping parentheses, type assertions, and
+/// `forwardRef`) is an identifier referencing a same-file variable declaration
+/// (`const`/`let`/`var`). Inside an expanded `const` array, such an identifier must either
+/// evaluate to a reference/array or expand into a nested `Tuple`; falling back to `typeof IDENT`
+/// would leak `TS9017` under `--isolatedDeclarations`.
+fn local_variable_constness<'a>(el: &Expression<'a>, semantic: &Semantic<'a>) -> Option<bool> {
+    use oxc_ast::AstKind;
+    use oxc_semantic::SymbolFlags;
+
+    let mut current = super::utils::unwrap_expression(el);
+    while let Some(unwrapped) = super::utils::unwrap_forward_ref(current, semantic) {
+        current = super::utils::unwrap_expression(unwrapped);
+    }
+    let Expression::Identifier(ident) = current else {
+        return None;
+    };
+    let Some(ref_id) = ident.reference_id.get() else {
+        return None;
+    };
+    let scoping = semantic.scoping();
+    let Some(symbol_id) = scoping.get_reference(ref_id).symbol_id() else {
+        return None;
+    };
+    let flags = scoping.symbol_flags(symbol_id);
+    if flags.contains(SymbolFlags::Import) {
+        return None;
+    }
+    matches!(
+        semantic.symbol_declaration(symbol_id).kind(),
+        AstKind::VariableDeclarator(_)
+    )
+    .then(|| flags.contains(SymbolFlags::ConstVariable))
 }
 
 /// The syntactic fallback (`transformToTypeTupleElement`).
@@ -1117,45 +1153,39 @@ mod tests {
             other => other.clone(),
         };
 
-        // 0: `NG_MODULE_IMPORTS` (local const of an import) -> Deferred, fallback Tuple([LoggingModule])
+        // 0: `NG_MODULE_IMPORTS` (local const of an import) -> Tuple([Deferred(LoggingModule)])
         match &isolated_imports.elements[0] {
-            IsolatedTypeElementData::Deferred { resolved, fallback } => {
-                assert!(resolved.contains_incomplete());
-                match fallback.as_ref() {
-                    IsolatedTypeElementData::Tuple {
-                        elements,
-                        fallback: outer_fallback,
+            IsolatedTypeElementData::Tuple {
+                elements,
+                fallback: outer_fallback,
+            } => {
+                assert_eq!(elements.len(), 1);
+                match settled(&elements[0]) {
+                    IsolatedTypeElementData::Typeof {
+                        span: Some(span),
+                        reference: None,
                     } => {
-                        assert_eq!(elements.len(), 1);
-                        match settled(&elements[0]) {
-                            IsolatedTypeElementData::Typeof {
-                                span: Some(span),
-                                reference: None,
-                            } => {
-                                assert_eq!(
-                                    &source[span.start as usize..span.end as usize],
-                                    "LoggingModule"
-                                );
-                            }
-                            other => panic!("Expected Typeof LoggingModule, got {other:?}"),
-                        }
-                        match outer_fallback.as_ref() {
-                            IsolatedTypeElementData::Typeof {
-                                span: Some(span),
-                                reference: None,
-                            } => {
-                                assert_eq!(
-                                    &source[span.start as usize..span.end as usize],
-                                    "NG_MODULE_IMPORTS"
-                                );
-                            }
-                            other => panic!("Expected outer Typeof fallback, got {other:?}"),
-                        }
+                        assert_eq!(
+                            &source[span.start as usize..span.end as usize],
+                            "LoggingModule"
+                        );
                     }
-                    other => panic!("Expected Tuple fallback, got {other:?}"),
+                    other => panic!("Expected Typeof LoggingModule, got {other:?}"),
+                }
+                match outer_fallback.as_ref() {
+                    IsolatedTypeElementData::Typeof {
+                        span: Some(span),
+                        reference: None,
+                    } => {
+                        assert_eq!(
+                            &source[span.start as usize..span.end as usize],
+                            "NG_MODULE_IMPORTS"
+                        );
+                    }
+                    other => panic!("Expected outer Typeof fallback, got {other:?}"),
                 }
             }
-            other => panic!("Expected Deferred for NG_MODULE_IMPORTS, got {other:?}"),
+            other => panic!("Expected Tuple for NG_MODULE_IMPORTS, got {other:?}"),
         }
 
         // 1: `FooModule.forRoot()` -> CallReturnType with `FooModule.forRoot`

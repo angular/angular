@@ -504,6 +504,8 @@ export function processFileSync(
 
     if (isJit) {
       if (!ctx.emitDeclarationOnly) {
+        // TODO: this was added to avoid invalidating the import graph since we're almost
+        // always guaranteed to need a core import. Figure out if we still need it.
         printer.getOrCreateNamespace('@angular/core');
         if (constructorParams && constructorParams.length > 0) {
           for (const param of constructorParams) {
