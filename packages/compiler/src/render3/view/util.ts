@@ -176,7 +176,9 @@ export function createCssSelectorFromNode(node: t.Element | t.Template): CssSele
   cssSelector.setElement(elementNameNoNs);
 
   Object.getOwnPropertyNames(attributes).forEach((name) => {
-    const nameNoNs = splitNsName(name)[1];
+    // `fatal` is disabled, because attribute names are allowed
+    // to start with a colon (e.g. `:disabled`).
+    const nameNoNs = splitNsName(name, /* fatal */ false)[1];
     const value = attributes[name];
 
     cssSelector.addAttribute(nameNoNs, value);

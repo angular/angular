@@ -431,6 +431,22 @@ describe('HtmlParser', () => {
         ]);
       });
 
+      it('should parse an attribute with a leading colon as a literal attribute name', () => {
+        expect(
+          humanizeDom(parser.parse('<button :disabled="disabled"></button>', 'TestComp')),
+        ).toEqual([
+          [html.Element, 'button', 0],
+          [html.Attribute, ':disabled', 'disabled', ['disabled']],
+        ]);
+      });
+
+      it('should parse an attribute with a leading colon on a namespaced element', () => {
+        expect(humanizeDom(parser.parse('<svg:use :disabled="disabled" />', 'TestComp'))).toEqual([
+          [html.Element, ':svg:use', 0, '#selfClosing'],
+          [html.Attribute, ':disabled', 'disabled', ['disabled']],
+        ]);
+      });
+
       it('should support a prematurely terminated interpolation in attribute', () => {
         const {errors, rootNodes} = parser.parse('<div p="{{ abc"><span></span>', 'TestComp');
         expect(humanizeNodes(rootNodes, true)).toEqual([

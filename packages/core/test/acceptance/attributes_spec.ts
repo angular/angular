@@ -48,6 +48,24 @@ describe('attribute creation', () => {
     expect(attrs['title'].namespaceURI).toEqual(null);
     expect(attrs['title'].value).toEqual('Hello');
   });
+
+  it('should treat an attribute with a leading colon as a literal attribute name', () => {
+    @Component({
+      template: `<button :disabled="xxxx">Click me</button>`,
+    })
+    class Comp {}
+
+    const fixture = TestBed.createComponent(Comp);
+    fixture.detectChanges();
+
+    const button = fixture.debugElement.query(By.css('button')).nativeElement;
+    // Matches the plain HTML behavior: `:disabled` is an attribute
+    // literally named `:disabled`, not a `disabled` attribute in an
+    // empty namespace, so the button must not be disabled.
+    expect(button.disabled).toBe(false);
+    expect(button.hasAttribute('disabled')).toBe(false);
+    expect(button.getAttribute(':disabled')).toBe('xxxx');
+  });
 });
 
 describe('attribute binding', () => {
