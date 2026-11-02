@@ -9,3 +9,11 @@ ts_project(
         "//devtools/projects/ng-devtools-backend/src",
     ],
 )
+
+ts_project(
+    name = "types",
+    srcs = ["types.ts"],
+    deps = [
+        "//devtools/projects/ng-devtools-backend/src/lib:rpc",
+    ],
+)

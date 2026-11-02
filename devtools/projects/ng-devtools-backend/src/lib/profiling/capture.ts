@@ -23,7 +23,7 @@ import {IdentityTracker} from '../directive-forest/identity-tracker/identity-tra
 import {getProfiler, Hooks} from './profiler';
 import {getDirectiveName} from '../directive-forest/utils/directive';
 import {debugLog} from '../shared/utils/log';
-import {AngularDevtoolsError} from '../shared/utils/error';
+import {AngularDevtoolsError} from '../../../../shared-utils';
 
 let inProgress = false;
 let inChangeDetection = false;

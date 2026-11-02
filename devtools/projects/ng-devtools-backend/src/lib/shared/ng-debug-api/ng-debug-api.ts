@@ -9,7 +9,7 @@
 import type {ɵFrameworkAgnosticGlobalUtils as GlobalUtils} from '@angular/core';
 import {getAppRoots} from '../../directive-forest/utils/app-roots';
 import {Framework} from '../../directive-forest/core-enums';
-import {AngularDevtoolsError} from '../utils/error';
+import {AngularDevtoolsError} from '../../../../../shared-utils';
 
 /** Returns a handle to window.ng APIs (global angular debugging). */
 export const ngDebugClient = () => {

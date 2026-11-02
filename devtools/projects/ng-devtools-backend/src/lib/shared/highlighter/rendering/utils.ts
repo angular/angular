@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AngularDevtoolsError} from '../../utils/error';
+import {AngularDevtoolsError} from '../../../../../../shared-utils';
 import {
   HighlightLabel,
   HighlightLabelDefinition,

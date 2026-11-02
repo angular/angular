@@ -7,7 +7,7 @@
  */
 
 import {HydrationStatus} from '../../../../../protocol';
-import {AngularDevtoolsError} from '../utils/error';
+import {AngularDevtoolsError} from '../../../../../shared-utils';
 import {HighlightTemplate, HighlightType, RgbColor} from './types';
 
 const COLORS = {

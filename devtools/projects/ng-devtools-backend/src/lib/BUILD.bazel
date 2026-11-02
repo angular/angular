@@ -42,6 +42,7 @@ ts_project(
     name = "client_event_subscribers",
     srcs = ["client-event-subscribers.ts"],
     deps = [
+        ":rpc",
         "//:node_modules/@angular/core",
         "//:node_modules/rxjs",
         "//devtools/projects/ng-devtools-backend/src/lib/component-inspector",
@@ -66,6 +67,14 @@ ts_project(
         "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:serialization",
         "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:signal-graph-ref",
         "//devtools/projects/protocol",
+        "//devtools/projects/shared-utils",
+    ],
+)
+
+ts_project(
+    name = "rpc",
+    srcs = ["rpc.ts"],
+    deps = [
         "//devtools/projects/shared-utils",
     ],
 )

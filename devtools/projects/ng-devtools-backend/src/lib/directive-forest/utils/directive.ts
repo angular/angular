@@ -12,9 +12,9 @@ import type {
   Type,
 } from '@angular/core';
 import {ChangeDetection, DirectiveMetadata} from '../../../../../protocol';
+import {AngularDevtoolsError} from '../../../../../shared-utils';
 import {ComponentInstanceType} from '../../shared/interfaces';
 import {ngDebugApiIsSupported, ngDebugClient} from '../../shared/ng-debug-api/ng-debug-api';
-import {AngularDevtoolsError} from '../../shared/utils/error';
 import {log} from '../../shared/utils/log';
 import {AcxChangeDetectionStrategy, ChangeDetectionStrategy, Framework} from '../core-enums';
 

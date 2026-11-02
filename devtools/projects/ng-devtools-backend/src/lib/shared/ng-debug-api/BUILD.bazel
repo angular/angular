@@ -12,8 +12,8 @@ ng_project(
         "//:node_modules/@angular/core",
         "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:core-enums",
         "//devtools/projects/ng-devtools-backend/src/lib/directive-forest/utils:app-roots",
-        "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:error",
         "//devtools/projects/protocol",
+        "//devtools/projects/shared-utils",
     ],
 )
 

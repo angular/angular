@@ -32,9 +32,9 @@ ts_project(
         "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:core-enums",
         "//devtools/projects/ng-devtools-backend/src/lib/shared:interfaces",
         "//devtools/projects/ng-devtools-backend/src/lib/shared/ng-debug-api",
-        "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:error",
         "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:log",
         "//devtools/projects/protocol",
+        "//devtools/projects/shared-utils",
     ],
 )
 

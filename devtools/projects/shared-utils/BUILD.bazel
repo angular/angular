@@ -13,6 +13,7 @@ ts_project(
     ),
     deps = [
         "//:node_modules/@angular/core",
+        "//devtools/projects/protocol",
     ],
 )
 
@@ -22,6 +23,7 @@ ts_test_library(
     deps = [
         ":shared-utils",
         "//:node_modules/@angular/core",
+        "//devtools/projects/protocol",
     ],
 )
 
