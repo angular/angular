@@ -3955,6 +3955,196 @@ describe('di', () => {
         expect(TestBed.createComponent(TestCmp).componentInstance.value).toEqual('from root');
       });
     });
+
+    it('should infer generic type parameter when injecting generic classes and abstract classes', () => {
+      type IsAny<T> = 0 extends 1 & T ? true : false;
+
+      @Injectable()
+      class GenericService<T extends 'a' | 'b'> {
+        value!: T;
+      }
+
+      @Injectable()
+      abstract class AbstractGenericService<T extends 'x' | 'y'> {
+        abstract value: T;
+      }
+
+      @Injectable()
+      abstract class AbstractDateAdapter<D, L = any> {
+        abstract getYear(date: D): number;
+        abstract clone(date: D): D;
+      }
+
+      // Here the protected constructor will prevent to infer the T generic parameter
+      class ProtectedConstructorService<T> {
+        protected constructor(public value: T) {}
+      }
+
+      @Component({
+        template: '',
+        providers: [
+          {provide: GenericService, useValue: {value: 'a'}},
+          {provide: AbstractGenericService, useValue: {value: 'x'}},
+          {
+            provide: AbstractDateAdapter,
+            useValue: {getYear: (d: any) => 2026, clone: (d: any) => d},
+          },
+          {provide: ProtectedConstructorService, useValue: {value: 'p'}},
+        ],
+      })
+      class TestCmp {
+        elDefault = inject(ElementRef);
+        el = inject(ElementRef<HTMLButtonElement>);
+        genericDefault = inject(GenericService);
+        genericSpecialized = inject(GenericService<'a'>);
+        abstractDefault = inject(AbstractGenericService);
+        abstractSpecialized = inject(AbstractGenericService<'x'>);
+        abstractDateAdapterDefault = inject(AbstractDateAdapter);
+        abstractDateAdapterSpecialized = inject(AbstractDateAdapter<Date>);
+        protectedConstructor = inject(ProtectedConstructorService);
+        protectedConstructorExplicit = inject<ProtectedConstructorService<string>>(
+          ProtectedConstructorService,
+        );
+        protectedConstructorGeneric = inject<ProtectedConstructorService<string>>(
+          ProtectedConstructorService<string>,
+        );
+        abstractProtectedOptional = inject(ProtectedConstructorService, {
+          optional: true,
+          skipSelf: true,
+        });
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      const instance = fixture.componentInstance;
+
+      // Ensure `inject(ElementRef)` without type arguments still defaults to `ElementRef<any>`,
+      // while specialized generic parameters do not degrade to `any` or `unknown`.
+      const _elDefaultIsAny: IsAny<typeof instance.elDefault.nativeElement> = true;
+      const _elNotAny: IsAny<typeof instance.el.nativeElement> = false;
+      const _elType: HTMLButtonElement = instance.el.nativeElement;
+      const _genericDefaultNotAny: IsAny<typeof instance.genericDefault.value> = false;
+      const _genericDefaultType: 'a' | 'b' = instance.genericDefault.value;
+      const _genericSpecializedNotAny: IsAny<typeof instance.genericSpecialized.value> = false;
+      const _genericSpecializedType: 'a' = instance.genericSpecialized.value;
+      const _abstractDefaultNotAny: IsAny<typeof instance.abstractDefault.value> = false;
+      const _abstractDefaultType: 'x' | 'y' = instance.abstractDefault.value;
+      const _abstractSpecializedNotAny: IsAny<typeof instance.abstractSpecialized.value> = false;
+      const _abstractSpecializedType: 'x' = instance.abstractSpecialized.value;
+
+      const _abstractDateAdapterSpecializedNotAny: IsAny<
+        Parameters<typeof instance.abstractDateAdapterSpecialized.getYear>[0]
+      > = false;
+      const _abstractDateAdapterSpecializedType: Date =
+        instance.abstractDateAdapterSpecialized.clone(new Date());
+
+      // Ensure an unspecialized abstract class token can be assigned to a generic target without type error
+      class ConsumingClass<D> {
+        adapter: AbstractDateAdapter<D> = inject(AbstractDateAdapter<D>);
+      }
+      runInInjectionContext(fixture.componentRef.injector, () => {
+        expect(new ConsumingClass()).toBeInstanceOf(ConsumingClass);
+      });
+
+      const _protectedConstructorIsAny: IsAny<typeof instance.protectedConstructor.value> = true;
+      const _protectedConstructorSpecializedNotAny: IsAny<
+        typeof instance.protectedConstructorExplicit.value
+      > = false;
+      const _protectedConstructorSpecializedType: string =
+        instance.protectedConstructorExplicit.value;
+      const _protectedConstructorGenericSpecializedNotAny: IsAny<
+        typeof instance.protectedConstructorGeneric.value
+      > = false;
+      const _protectedConstructorGenericSpecializedType: string =
+        instance.protectedConstructorGeneric.value;
+
+      expect(_elDefaultIsAny).toBe(true);
+      expect(_elNotAny).toBe(false);
+      expect(instance.el).toBeInstanceOf(ElementRef);
+      expect(_genericDefaultType).toBe('a');
+      expect(_genericSpecializedType).toBe('a');
+      expect(_abstractDefaultType).toBe('x');
+      expect(_abstractSpecializedType).toBe('x');
+      expect(_abstractDateAdapterSpecializedNotAny).toBe(false);
+      expect(_abstractDateAdapterSpecializedType).toBeInstanceOf(Date);
+      expect(_protectedConstructorIsAny).toBe(true);
+      expect(_protectedConstructorSpecializedNotAny).toBe(false);
+      expect(_protectedConstructorGenericSpecializedNotAny).toBe(false);
+      expect(instance.protectedConstructor.value).toBe('p');
+      expect(instance.protectedConstructorExplicit.value).toBe('p');
+      expect(instance.protectedConstructorGeneric.value).toBe('p');
+      expect(instance.abstractProtectedOptional).toBeNull();
+    });
+
+    it('should support function tokens in inject and injector.get', () => {
+      type IsAny<T> = 0 extends 1 & T ? true : false;
+
+      const arrowToken = () => 'arrow';
+      function normalToken() {
+        return 'normal';
+      }
+
+      @Component({
+        template: '',
+        providers: [
+          {provide: arrowToken, useValue: 'arrow-val'},
+          {provide: normalToken, useValue: 'normal-val'},
+        ],
+      })
+      class TestCmp {
+        arrowVal = inject(arrowToken);
+        arrowValExplicit = inject<string>(arrowToken);
+        normalVal = inject(normalToken);
+        normalValExplicit = inject<string>(normalToken);
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      const instance = fixture.componentInstance;
+      const injector = fixture.debugElement.injector;
+
+      const _arrowValIsAny: IsAny<typeof instance.arrowVal> = true;
+      const _arrowValExplicitNotAny: IsAny<typeof instance.arrowValExplicit> = false;
+      const _arrowValExplicitType: string = instance.arrowValExplicit;
+      const _normalValIsAny: IsAny<typeof instance.normalVal> = true;
+      const _normalValExplicitNotAny: IsAny<typeof instance.normalValExplicit> = false;
+      const _normalValExplicitType: string = instance.normalValExplicit;
+
+      expect(_arrowValIsAny).toBe(true);
+      expect(_arrowValExplicitNotAny).toBe(false);
+      expect(_arrowValExplicitType).toBe('arrow-val');
+      expect(_normalValIsAny).toBe(true);
+      expect(_normalValExplicitNotAny).toBe(false);
+      expect(_normalValExplicitType).toBe('normal-val');
+      expect(instance.arrowVal).toBe('arrow-val');
+      expect(instance.arrowValExplicit).toBe('arrow-val');
+      expect(instance.normalVal).toBe('normal-val');
+      expect(instance.normalValExplicit).toBe('normal-val');
+
+      // Also test injector.get
+      const getArrow = injector.get(arrowToken);
+      const getArrowExplicit = injector.get<string>(arrowToken);
+      const getNormal = injector.get(normalToken);
+      const getNormalExplicit = injector.get<string>(normalToken);
+      const getNotFoundOptional = injector.get(() => false, null, {optional: true});
+
+      const _getArrowIsAny: IsAny<typeof getArrow> = true;
+      const _getArrowExplicitNotAny: IsAny<typeof getArrowExplicit> = false;
+      const _getArrowExplicitType: string = getArrowExplicit;
+      const _getNormalIsAny: IsAny<typeof getNormal> = true;
+      const _getNormalExplicitNotAny: IsAny<typeof getNormalExplicit> = false;
+      const _getNormalExplicitType: string = getNormalExplicit;
+
+      expect(_getArrowIsAny).toBe(true);
+      expect(_getArrowExplicitNotAny).toBe(false);
+      expect(_getArrowExplicitType).toBe('arrow-val');
+      expect(_getNormalIsAny).toBe(true);
+      expect(_getNormalExplicitNotAny).toBe(false);
+      expect(_getNormalExplicitType).toBe('normal-val');
+      expect(getArrow).toBe('arrow-val');
+      expect(getArrowExplicit).toBe('arrow-val');
+      expect(getNormal).toBe('normal-val');
+      expect(getNormalExplicit).toBe('normal-val');
+      expect(getNotFoundOptional).toBeNull();
+    });
   });
 
   describe('injection flags', () => {
