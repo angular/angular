@@ -370,6 +370,16 @@ fn classify_isolated_element<'a>(
     semantic: &Semantic<'a>,
     eval: &EvalInput<'a, '_>,
 ) -> super::class_data::IsolatedTypeElementData {
+    let mut visited = std::collections::HashSet::new();
+    classify_isolated_element_with_visited(el, semantic, eval, &mut visited)
+}
+
+fn classify_isolated_element_with_visited<'a>(
+    el: &Expression<'a>,
+    semantic: &Semantic<'a>,
+    eval: &EvalInput<'a, '_>,
+    visited: &mut std::collections::HashSet<oxc_semantic::SymbolId>,
+) -> super::class_data::IsolatedTypeElementData {
     use super::class_data::IsolatedTypeElementData;
     use crate::evaluator::ResolvedValue;
     use crate::types::analysis::Reference;
@@ -385,7 +395,7 @@ fn classify_isolated_element<'a>(
     if resolved.contains_incomplete() {
         return IsolatedTypeElementData::Deferred {
             resolved: Resolved::from_syntax(resolved, eval.file),
-            fallback: Box::new(syntactic_isolated_element(el, semantic)),
+            fallback: Box::new(fallback_isolated_element(el, semantic, eval, visited)),
         };
     }
     match resolved.unwrap_named() {
@@ -416,7 +426,156 @@ fn classify_isolated_element<'a>(
         _ => {}
     }
 
-    syntactic_isolated_element(el, semantic)
+    fallback_isolated_element(el, semantic, eval, visited)
+}
+
+fn fallback_isolated_element<'a>(
+    el: &Expression<'a>,
+    semantic: &Semantic<'a>,
+    eval: &EvalInput<'a, '_>,
+    visited: &mut std::collections::HashSet<oxc_semantic::SymbolId>,
+) -> super::class_data::IsolatedTypeElementData {
+    use super::class_data::IsolatedTypeElementData;
+
+    let syntactic = syntactic_isolated_element(el, semantic);
+    if let Some(elements) = try_expand_local_const_array(el, semantic, eval, visited) {
+        return IsolatedTypeElementData::Tuple {
+            elements,
+            fallback: Box::new(syntactic),
+        };
+    }
+    syntactic
+}
+
+/// If `el` resolves to a same-file variable initialized to a non-empty array literal, classify its
+/// elements individually so arrays mixing references and `ModuleWithProviders` calls (e.g.
+/// `RouterModule.forChild(...)`) can expand instead of falling back to `typeof CONST_NAME`
+/// (which triggers TS9017 under `--isolatedDeclarations`).
+fn try_expand_local_const_array<'a>(
+    el: &Expression<'a>,
+    semantic: &Semantic<'a>,
+    eval: &EvalInput<'a, '_>,
+    visited: &mut std::collections::HashSet<oxc_semantic::SymbolId>,
+) -> Option<Vec<super::class_data::IsolatedTypeElementData>> {
+    use super::class_data::IsolatedTypeElementData;
+    use oxc_ast::ast::{ArrayExpressionElement, BindingPattern};
+    use oxc_ast::AstKind;
+    use oxc_semantic::SymbolFlags;
+
+    let mut current = super::utils::unwrap_expression(el);
+    while let Some(unwrapped) = super::utils::unwrap_forward_ref(current, semantic) {
+        current = super::utils::unwrap_expression(unwrapped);
+    }
+
+    let mut visited_chain = Vec::new();
+    let arr = loop {
+        let Expression::Identifier(ident) = current else {
+            for sym in visited_chain {
+                visited.remove(&sym);
+            }
+            return None;
+        };
+        let Some(ref_id) = ident.reference_id.get() else {
+            for sym in visited_chain {
+                visited.remove(&sym);
+            }
+            return None;
+        };
+        let scoping = semantic.scoping();
+        let Some(symbol_id) = scoping.get_reference(ref_id).symbol_id() else {
+            for sym in visited_chain {
+                visited.remove(&sym);
+            }
+            return None;
+        };
+        if scoping
+            .symbol_flags(symbol_id)
+            .contains(SymbolFlags::Import)
+        {
+            for sym in visited_chain {
+                visited.remove(&sym);
+            }
+            return None;
+        }
+        let AstKind::VariableDeclarator(declarator) =
+            semantic.symbol_declaration(symbol_id).kind()
+        else {
+            for sym in visited_chain {
+                visited.remove(&sym);
+            }
+            return None;
+        };
+        if !matches!(declarator.id, BindingPattern::BindingIdentifier(_)) {
+            for sym in visited_chain {
+                visited.remove(&sym);
+            }
+            return None;
+        }
+        let Some(init) = &declarator.init else {
+            for sym in visited_chain {
+                visited.remove(&sym);
+            }
+            return None;
+        };
+        if !visited.insert(symbol_id) {
+            for sym in visited_chain {
+                visited.remove(&sym);
+            }
+            return None;
+        }
+        visited_chain.push(symbol_id);
+
+        let mut next = super::utils::unwrap_expression(init);
+        while let Some(unwrapped) = super::utils::unwrap_forward_ref(next, semantic) {
+            next = super::utils::unwrap_expression(unwrapped);
+        }
+        if let Expression::ArrayExpression(arr) = next {
+            break arr;
+        }
+        current = next;
+    };
+
+    let mut elements = Vec::with_capacity(arr.elements.len());
+    let mut valid = !arr.elements.is_empty();
+    if valid {
+        for elem in &arr.elements {
+            match elem {
+                ArrayExpressionElement::SpreadElement(spread) => {
+                    if let Some(spread_elements) =
+                        try_expand_local_const_array(&spread.argument, semantic, eval, visited)
+                    {
+                        elements.extend(spread_elements);
+                    } else {
+                        valid = false;
+                        break;
+                    }
+                }
+                ArrayExpressionElement::Elision(_) => {
+                    valid = false;
+                    break;
+                }
+                _ => {
+                    let Some(el_expr) = elem.as_expression() else {
+                        valid = false;
+                        break;
+                    };
+                    let classified =
+                        classify_isolated_element_with_visited(el_expr, semantic, eval, visited);
+                    if matches!(classified, IsolatedTypeElementData::Never { .. }) {
+                        valid = false;
+                        break;
+                    }
+                    elements.push(classified);
+                }
+            }
+        }
+    }
+
+    for sym in visited_chain {
+        visited.remove(&sym);
+    }
+
+    (valid && !elements.is_empty()).then_some(elements)
 }
 
 /// The syntactic fallback (`transformToTypeTupleElement`).
@@ -918,7 +1077,7 @@ mod tests {
 
         let source = r#"
             import {NgModule, forwardRef} from '@angular/core';
-            import {AveLoggingModule} from '@external/ave-logging';
+            import {LoggingModule} from '@external/logging';
             import {FooModule, provideFoo} from './foo';
             import {isDev} from './config';
 
@@ -927,7 +1086,7 @@ mod tests {
             function getLocalImports() {
                 return [LocalModule];
             }
-            const NG_MODULE_IMPORTS = [AveLoggingModule];
+            const NG_MODULE_IMPORTS = [LoggingModule];
 
             @NgModule({
                 imports: [
@@ -958,21 +1117,42 @@ mod tests {
             other => other.clone(),
         };
 
-        // 0: `NG_MODULE_IMPORTS` (local const of an import) -> Deferred, fallback `typeof NG_MODULE_IMPORTS`
+        // 0: `NG_MODULE_IMPORTS` (local const of an import) -> Deferred, fallback Tuple([LoggingModule])
         match &isolated_imports.elements[0] {
             IsolatedTypeElementData::Deferred { resolved, fallback } => {
                 assert!(resolved.contains_incomplete());
                 match fallback.as_ref() {
-                    IsolatedTypeElementData::Typeof {
-                        span: Some(span),
-                        reference: None,
+                    IsolatedTypeElementData::Tuple {
+                        elements,
+                        fallback: outer_fallback,
                     } => {
-                        assert_eq!(
-                            &source[span.start as usize..span.end as usize],
-                            "NG_MODULE_IMPORTS"
-                        );
+                        assert_eq!(elements.len(), 1);
+                        match settled(&elements[0]) {
+                            IsolatedTypeElementData::Typeof {
+                                span: Some(span),
+                                reference: None,
+                            } => {
+                                assert_eq!(
+                                    &source[span.start as usize..span.end as usize],
+                                    "LoggingModule"
+                                );
+                            }
+                            other => panic!("Expected Typeof LoggingModule, got {other:?}"),
+                        }
+                        match outer_fallback.as_ref() {
+                            IsolatedTypeElementData::Typeof {
+                                span: Some(span),
+                                reference: None,
+                            } => {
+                                assert_eq!(
+                                    &source[span.start as usize..span.end as usize],
+                                    "NG_MODULE_IMPORTS"
+                                );
+                            }
+                            other => panic!("Expected outer Typeof fallback, got {other:?}"),
+                        }
                     }
-                    other => panic!("Expected Typeof span fallback, got {other:?}"),
+                    other => panic!("Expected Tuple fallback, got {other:?}"),
                 }
             }
             other => panic!("Expected Deferred for NG_MODULE_IMPORTS, got {other:?}"),

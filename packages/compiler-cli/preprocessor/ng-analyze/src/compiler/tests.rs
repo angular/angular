@@ -1341,10 +1341,22 @@ fn test_isolated_type_tuple_resolves_local_const_of_unresolved_imports() {
             "optimize={optimize}"
         );
 
-        // 1: `WITH_CALL` (`[ExternalModuleA.forRoot()]`) -> falls back to `typeof WITH_CALL`
-        assert_eq!(edge.elements[1].kind, IsolatedTypeElementKind::Typeof);
+        // 1: `WITH_CALL` (`[ExternalModuleA.forRoot()]`) -> expands to ReferenceTuple([CallReturnType])
+        assert_eq!(
+            edge.elements[1].kind,
+            IsolatedTypeElementKind::ReferenceTuple
+        );
         assert!(edge.elements[1].references.is_none(), "optimize={optimize}");
-        assert_eq!(span_text(&edge.elements[1]), "WITH_CALL");
+        let call_elements = edge.elements[1]
+            .elements
+            .as_ref()
+            .expect("WITH_CALL expanded elements");
+        assert_eq!(call_elements.len(), 1);
+        assert_eq!(
+            call_elements[0].kind,
+            IsolatedTypeElementKind::CallReturnType
+        );
+        assert_eq!(span_text(&call_elements[0]), "ExternalModuleA.forRoot");
 
         // 2: `WITH_SPREAD` (`[...EXTERNAL_ARRAY]`) -> falls back to `typeof WITH_SPREAD`
         assert_eq!(edge.elements[2].kind, IsolatedTypeElementKind::Typeof);

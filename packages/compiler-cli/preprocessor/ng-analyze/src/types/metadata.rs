@@ -819,6 +819,10 @@ pub struct IsolatedTypeElementMetadata {
     /// reference for `Typeof`, or the full list for `ReferenceTuple`).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub references: Option<Vec<ReferenceMetadata>>,
+    /// Nested tuple elements when `kind` is `ReferenceTuple` and the tuple was expanded from a
+    /// same-file `const` array containing non-reference elements (such as `CallReturnType`).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub elements: Option<Vec<IsolatedTypeElementMetadata>>,
 }
 
 #[cfg_attr(feature = "napi", napi(object))]

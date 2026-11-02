@@ -1509,6 +1509,14 @@ pub enum IsolatedTypeElementData {
     CallReturnType { callee_span: oxc_span::Span },
     /// `[typeof A, typeof B, ...]` — locally evaluates to an array of references.
     ReferenceTuple { references: Vec<Reference> },
+    /// `[<el1>, <el2>, ...]` — a same-file `const` array expanded element-by-element when it cannot
+    /// be reduced to a flat `ReferenceTuple` (e.g. contains `ModuleWithProviders` calls like
+    /// `RouterModule.forChild(...)`). Falls back to `fallback` (the `typeof CONST_NAME` span) if any
+    /// inner element fails to classify.
+    Tuple {
+        elements: Vec<IsolatedTypeElementData>,
+        fallback: Box<IsolatedTypeElementData>,
+    },
     /// `never` — unsupported expression shape in declaration-only mode.
     Never { span: oxc_span::Span },
     /// Evaluation that still depends on other files (e.g. `const SHARED = [ImportedPipe]`).
@@ -1621,37 +1629,69 @@ impl ResolvedIsolatedElement {
     }
 }
 
+impl IsolatedTypeElementData {
+    fn collect_deferred_values_mut<'a>(
+        &'a mut self,
+        out: &mut Vec<&'a mut Resolved<crate::evaluator::ResolvedValue>>,
+    ) {
+        match self {
+            Self::Deferred { resolved, fallback } => {
+                out.push(resolved);
+                fallback.collect_deferred_values_mut(out);
+            }
+            Self::Tuple { elements, fallback } => {
+                for el in elements {
+                    el.collect_deferred_values_mut(out);
+                }
+                fallback.collect_deferred_values_mut(out);
+            }
+            _ => {}
+        }
+    }
+
+    fn collect_references(&self, out: &mut Vec<Reference>) {
+        match self {
+            Self::Typeof {
+                reference: Some(r), ..
+            } => out.push(r.clone()),
+            Self::ReferenceTuple { references } => out.extend(references.iter().cloned()),
+            Self::Tuple { elements, fallback } => {
+                for el in elements {
+                    el.collect_references(out);
+                }
+                fallback.collect_references(out);
+            }
+            Self::Deferred { resolved, fallback } => {
+                if let Some(element) =
+                    ResolvedIsolatedElement::from_value(resolved.raw(), resolved.origin)
+                {
+                    out.extend(element.references());
+                } else {
+                    fallback.collect_references(out);
+                }
+            }
+            _ => {}
+        }
+    }
+}
+
 impl IsolatedTypeTupleData {
     /// The evaluations of all `Deferred` elements.
     pub(crate) fn deferred_values_mut(
         &mut self,
-    ) -> impl Iterator<Item = &mut Resolved<crate::evaluator::ResolvedValue>> {
-        self.elements.iter_mut().filter_map(|el| match el {
-            IsolatedTypeElementData::Deferred { resolved, .. } => Some(resolved),
-            _ => None,
-        })
+    ) -> Vec<&mut Resolved<crate::evaluator::ResolvedValue>> {
+        let mut out = Vec::new();
+        for el in &mut self.elements {
+            el.collect_deferred_values_mut(&mut out);
+        }
+        out
     }
 
     /// All references the wire projection may emit.
     pub(crate) fn references(&self) -> Vec<Reference> {
         let mut out = Vec::new();
         for el in &self.elements {
-            match el {
-                IsolatedTypeElementData::Typeof {
-                    reference: Some(r), ..
-                } => out.push(r.clone()),
-                IsolatedTypeElementData::ReferenceTuple { references } => {
-                    out.extend(references.iter().cloned())
-                }
-                IsolatedTypeElementData::Deferred { resolved, .. } => {
-                    if let Some(element) =
-                        ResolvedIsolatedElement::from_value(resolved.raw(), resolved.origin)
-                    {
-                        out.extend(element.references());
-                    }
-                }
-                _ => {}
-            }
+            el.collect_references(&mut out);
         }
         out
     }
@@ -4601,12 +4641,14 @@ impl ClassData {
                 references: reference
                     .as_ref()
                     .map(|r| vec![self.to_wire_single_ref(r, current_file_path, cx)]),
+                elements: None,
             },
             IsolatedTypeElementData::CallReturnType { callee_span } => {
                 IsolatedTypeElementMetadata {
                     kind: IsolatedTypeElementKind::CallReturnType,
                     span: Some(SpanMetadata::new(*callee_span, cx.converter)),
                     references: None,
+                    elements: None,
                 }
             }
             IsolatedTypeElementData::ReferenceTuple { references } => IsolatedTypeElementMetadata {
@@ -4618,11 +4660,31 @@ impl ClassData {
                         .map(|r| self.to_wire_single_ref(r, current_file_path, cx))
                         .collect(),
                 ),
+                elements: None,
             },
+            IsolatedTypeElementData::Tuple { elements, fallback } => {
+                let projected: Vec<_> = elements
+                    .iter()
+                    .map(|el| self.to_wire_isolated_element(el, current_file_path, cx))
+                    .collect();
+                if projected
+                    .iter()
+                    .any(|el| matches!(el.kind, IsolatedTypeElementKind::Never))
+                {
+                    return self.to_wire_isolated_element(fallback, current_file_path, cx);
+                }
+                IsolatedTypeElementMetadata {
+                    kind: IsolatedTypeElementKind::ReferenceTuple,
+                    span: None,
+                    references: None,
+                    elements: Some(projected),
+                }
+            }
             IsolatedTypeElementData::Never { span } => IsolatedTypeElementMetadata {
                 kind: IsolatedTypeElementKind::Never,
                 span: Some(SpanMetadata::new(*span, cx.converter)),
                 references: None,
+                elements: None,
             },
             IsolatedTypeElementData::Deferred { resolved, fallback } => {
                 let Some(element) =
@@ -4662,6 +4724,7 @@ impl ClassData {
                     kind,
                     span: None,
                     references: Some(references),
+                    elements: None,
                 }
             }
         }
