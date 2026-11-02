@@ -13,19 +13,19 @@ import {Type} from '../interface/type';
 import {emitInjectEvent} from '../render3/debug/injector_profiler';
 import {stringify} from '../util/stringify';
 
-import {resolveForwardRef} from './forward_ref';
-import {getInjectImplementation, injectRootLimpMode} from './inject_switch';
-import type {Injector} from './injector';
-import {DecoratorFlags, InternalInjectFlags, InjectOptions} from './interface/injector';
-import {ProviderToken} from './provider_token';
-import type {HostAttributeToken} from './host_attribute_token';
 import {
-  Injector as PrimitivesInjector,
-  isNotFound,
   NotFound,
   InjectionToken as PrimitivesInjectionToken,
+  Injector as PrimitivesInjector,
   getCurrentInjector,
+  isNotFound,
 } from '../../primitives/di';
+import {resolveForwardRef} from './forward_ref';
+import type {HostAttributeToken} from './host_attribute_token';
+import {getInjectImplementation, injectRootLimpMode} from './inject_switch';
+import type {Injector} from './injector';
+import {DecoratorFlags, InjectOptions, InternalInjectFlags} from './interface/injector';
+import {ProviderToken} from './provider_token';
 
 import {InjectionToken} from './injection_token';
 
@@ -160,6 +160,47 @@ This can happen if the dependency type is a primitive like a string or if an anc
 Please check that 1) the type for the parameter at index ${index} is correct and 2) the correct Angular decorators are defined for this class and its ancestors.`,
   );
 }
+
+// g3-only-start
+// /**
+//  * @param token A token that represents a dependency that should be injected.
+//  * @returns the injected value if operation is successful, `null` otherwise.
+//  * @throws if called outside of a supported context.
+//  *
+//  * @publicApi
+//  */
+// export function inject<T = any>(token: abstract new (...args: any[]) => T): T;
+// /**
+//  * @param token A token that represents a dependency that should be injected.
+//  * @param options Control how injection is executed. Options correspond to injection strategies
+//  *     that can be specified with parameter decorators `@Host`, `@Self`, `@SkipSelf`, and
+//  *     `@Optional`.
+//  * @returns the injected value if operation is successful.
+//  * @throws if called outside of a supported context, or if the token is not found.
+//  *
+//  * @publicApi
+//  */
+// export function inject<T = any>(
+//   token: abstract new (...args: any[]) => T,
+//   options: InjectOptions & {optional?: false},
+// ): T;
+// /**
+//  * @param token A token that represents a dependency that should be injected.
+//  * @param options Control how injection is executed. Options correspond to injection strategies
+//  *     that can be specified with parameter decorators `@Host`, `@Self`, `@SkipSelf`, and
+//  *     `@Optional`.
+//  * @returns the injected value if operation is successful, `null` if the token is not
+//  *     found and optional injection has been requested.
+//  * @throws if called outside of a supported context, or if the token is not found and optional
+//  *     injection was not requested.
+//  *
+//  * @publicApi
+//  */
+// export function inject<T = any>(
+//   token: abstract new (...args: any[]) => T,
+//   options: InjectOptions,
+// ): T | null;
+// g3-only-end
 
 /**
  * @param token A token that represents a dependency that should be injected.
