@@ -372,28 +372,49 @@ export interface ContentChildDecorator {
 
 // @public
 export interface ContentChildFunction {
-    <LocatorT>(locator: ProviderToken<LocatorT> | string, opts?: {
+    <LocatorT, ReadT = any>(locator: ProviderToken<LocatorT> | string, opts: {
+        descendants?: boolean;
+        read: abstract new (...args: any[]) => ReadT;
+        debugName?: string;
+    }): Signal<ReadT | undefined>;
+    // (undocumented)
+    <LocatorT, ReadT>(locator: ProviderToken<LocatorT> | string, opts: {
+        descendants?: boolean;
+        read: InjectionToken<ReadT>;
+        debugName?: string;
+    }): Signal<ReadT | undefined>;
+    <LocatorT = any>(locator: abstract new (...args: any[]) => LocatorT, opts?: {
         descendants?: boolean;
         read?: undefined;
         debugName?: string;
     }): Signal<LocatorT | undefined>;
     // (undocumented)
-    <LocatorT, ReadT>(locator: ProviderToken<LocatorT> | string, opts: {
+    <LocatorT>(locator: ProviderToken<LocatorT> | string, opts?: {
         descendants?: boolean;
-        read: ProviderToken<ReadT>;
+        read?: undefined;
         debugName?: string;
-    }): Signal<ReadT | undefined>;
+    }): Signal<LocatorT | undefined>;
     required: {
+        <LocatorT, ReadT = any>(locator: ProviderToken<LocatorT> | string, opts: {
+            descendants?: boolean;
+            read: abstract new (...args: any[]) => ReadT;
+            debugName?: string;
+        }): Signal<ReadT>;
+        <LocatorT, ReadT>(locator: ProviderToken<LocatorT> | string, opts: {
+            descendants?: boolean;
+            read: InjectionToken<ReadT>;
+            debugName?: string;
+        }): Signal<ReadT>;
+        <LocatorT = any>(locator: abstract new (...args: any[]) => LocatorT, opts?: {
+            descendants?: boolean;
+            read?: undefined;
+            debugName?: string;
+        }): Signal<LocatorT>;
         <LocatorT>(locator: ProviderToken<LocatorT> | string, opts?: {
             descendants?: boolean;
             read?: undefined;
             debugName?: string;
         }): Signal<LocatorT>;
-        <LocatorT, ReadT>(locator: ProviderToken<LocatorT> | string, opts: {
-            descendants?: boolean;
-            read: ProviderToken<ReadT>;
-            debugName?: string;
-        }): Signal<ReadT>;
     };
 }
 
@@ -403,19 +424,33 @@ export type ContentChildren = Query;
 // @public
 export const ContentChildren: ContentChildrenDecorator;
 
+// @public
+export function contentChildren<LocatorT, ReadT = any>(locator: ProviderToken<LocatorT> | string, opts: {
+    descendants?: boolean;
+    read: abstract new (...args: any[]) => ReadT;
+    debugName?: string;
+}): Signal<ReadonlyArray<ReadT>>;
+
 // @public (undocumented)
-export function contentChildren<LocatorT>(locator: ProviderToken<LocatorT> | string, opts?: {
+export function contentChildren<LocatorT, ReadT>(locator: ProviderToken<LocatorT> | string, opts: {
+    descendants?: boolean;
+    read: InjectionToken<ReadT>;
+    debugName?: string;
+}): Signal<ReadonlyArray<ReadT>>;
+
+// @public
+export function contentChildren<LocatorT = any>(locator: abstract new (...args: any[]) => LocatorT, opts?: {
     descendants?: boolean;
     read?: undefined;
     debugName?: string;
 }): Signal<ReadonlyArray<LocatorT>>;
 
 // @public (undocumented)
-export function contentChildren<LocatorT, ReadT>(locator: ProviderToken<LocatorT> | string, opts: {
+export function contentChildren<LocatorT>(locator: ProviderToken<LocatorT> | string, opts?: {
     descendants?: boolean;
-    read: ProviderToken<ReadT>;
+    read?: undefined;
     debugName?: string;
-}): Signal<ReadonlyArray<ReadT>>;
+}): Signal<ReadonlyArray<LocatorT>>;
 
 // @public
 export interface ContentChildrenDecorator {
@@ -876,6 +911,17 @@ export interface Inject {
 export const Inject: InjectDecorator;
 
 // @public (undocumented)
+export function inject<T = any>(token: abstract new (...args: any[]) => T): T;
+
+// @public (undocumented)
+export function inject<T = any>(token: abstract new (...args: any[]) => T, options: InjectOptions & {
+    optional?: false;
+}): T;
+
+// @public (undocumented)
+export function inject<T = any>(token: abstract new (...args: any[]) => T, options: InjectOptions): T | null;
+
+// @public (undocumented)
 export function inject<T>(token: ProviderToken<T>): T;
 
 // @public (undocumented)
@@ -994,6 +1040,7 @@ export abstract class Injector {
         parent?: Injector;
         name?: string;
     }): DestroyableInjector;
+    abstract get<C extends Type<unknown>>(token: C, notFoundValue: null | undefined, options: InjectOptions): InstanceType<C> | null;
     abstract get<T>(token: ProviderToken<T>, notFoundValue: undefined, options: InjectOptions & {
         optional?: false;
     }): T;
@@ -2057,22 +2104,37 @@ export interface ViewChildDecorator {
 
 // @public
 export interface ViewChildFunction {
-    <LocatorT, ReadT>(locator: ProviderToken<LocatorT> | string, opts: {
-        read: ProviderToken<ReadT>;
+    <LocatorT, ReadT = any>(locator: ProviderToken<LocatorT> | string, opts: {
+        read: abstract new (...args: any[]) => ReadT;
         debugName?: string;
     }): Signal<ReadT | undefined>;
+    // (undocumented)
+    <LocatorT, ReadT>(locator: ProviderToken<LocatorT> | string, opts: {
+        read: InjectionToken<ReadT>;
+        debugName?: string;
+    }): Signal<ReadT | undefined>;
+    <LocatorT = any>(locator: abstract new (...args: any[]) => LocatorT, opts?: {
+        debugName?: string;
+    }): Signal<LocatorT | undefined>;
     // (undocumented)
     <LocatorT>(locator: ProviderToken<LocatorT> | string, opts?: {
         debugName?: string;
     }): Signal<LocatorT | undefined>;
     required: {
+        <LocatorT, ReadT = any>(locator: ProviderToken<LocatorT> | string, opts: {
+            read: abstract new (...args: any[]) => ReadT;
+            debugName?: string;
+        }): Signal<ReadT>;
+        <LocatorT, ReadT>(locator: ProviderToken<LocatorT> | string, opts: {
+            read: InjectionToken<ReadT>;
+            debugName?: string;
+        }): Signal<ReadT>;
+        <LocatorT = any>(locator: abstract new (...args: any[]) => LocatorT, opts?: {
+            debugName?: string;
+        }): Signal<LocatorT>;
         <LocatorT>(locator: ProviderToken<LocatorT> | string, opts?: {
             debugName?: string;
         }): Signal<LocatorT>;
-        <LocatorT, ReadT>(locator: ProviderToken<LocatorT> | string, opts: {
-            read: ProviderToken<ReadT>;
-            debugName?: string;
-        }): Signal<ReadT>;
     };
 }
 
@@ -2082,16 +2144,27 @@ export type ViewChildren = Query;
 // @public
 export const ViewChildren: ViewChildrenDecorator;
 
+// @public
+export function viewChildren<LocatorT, ReadT = any>(locator: ProviderToken<LocatorT> | string, opts: {
+    read: abstract new (...args: any[]) => ReadT;
+    debugName?: string;
+}): Signal<ReadonlyArray<ReadT>>;
+
 // @public (undocumented)
-export function viewChildren<LocatorT>(locator: ProviderToken<LocatorT> | string, opts?: {
+export function viewChildren<LocatorT, ReadT>(locator: ProviderToken<LocatorT> | string, opts: {
+    read: InjectionToken<ReadT>;
+    debugName?: string;
+}): Signal<ReadonlyArray<ReadT>>;
+
+// @public
+export function viewChildren<LocatorT = any>(locator: abstract new (...args: any[]) => LocatorT, opts?: {
     debugName?: string;
 }): Signal<ReadonlyArray<LocatorT>>;
 
 // @public (undocumented)
-export function viewChildren<LocatorT, ReadT>(locator: ProviderToken<LocatorT> | string, opts: {
-    read: ProviderToken<ReadT>;
+export function viewChildren<LocatorT>(locator: ProviderToken<LocatorT> | string, opts?: {
     debugName?: string;
-}): Signal<ReadonlyArray<ReadT>>;
+}): Signal<ReadonlyArray<LocatorT>>;
 
 // @public
 export interface ViewChildrenDecorator {
