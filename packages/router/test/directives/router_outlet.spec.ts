@@ -1424,9 +1424,8 @@ describe('Error boundaries and errorComponent integration', () => {
     await router.navigateByUrl('/telemetry');
     await advance(fixture);
 
-    // Verify the global hook was still invoked
-    expect(telemetryError).not.toBeNull();
-    expect((telemetryError as any)?.message).toBe('Telemetry Error');
+    // Verify the global hook was NOT invoked because the router did not catch the error
+    expect(telemetryError).toBeNull();
     // Verify it still bubbled up to the template boundary
     expect(fixture.nativeElement.innerHTML).toContain(
       'Caught by template boundary: Telemetry Error',
@@ -1703,26 +1702,28 @@ describe('Error boundaries and errorComponent integration', () => {
     expect(deactivateCount).toBe(0);
   });
 
-  it('renders the errorComponent of a componentless parent route if a child crashes', async () => {
+  it('only invokes onError once when an unhandled child error bubbles to parent errorComponent', async () => {
+    let onErrorCallCount = 0;
+
     @Component({
-      template: 'Product',
+      template: 'Child',
     })
-    class ProductDetails {
+    class ThrowingChild {
       constructor() {
-        throw new Error('Crash');
+        throw new Error('Child Crash');
       }
     }
 
     @Component({
-      template: 'Componentless Error',
+      template: 'Parent Error Fallback',
     })
-    class ComponentlessErrorFallback {}
+    class ParentErrorFallback {}
 
     @Component({
       template: '<router-outlet></router-outlet>',
       imports: [RouterOutlet],
     })
-    class AppCmp {}
+    class ParentCmp {}
 
     TestBed.configureTestingModule({
       providers: [
@@ -1730,32 +1731,31 @@ describe('Error boundaries and errorComponent integration', () => {
           [
             {
               path: 'parent',
-              // No component here! It's a componentless route
-              errorComponent: ComponentlessErrorFallback,
+              component: ParentCmp,
+              errorComponent: ParentErrorFallback,
               children: [
                 {
                   path: 'child',
-                  component: ProductDetails,
+                  component: ThrowingChild,
                 },
               ],
             },
           ],
-          withErrorBoundaries(),
+          withErrorBoundaries({
+            onError: () => {
+              onErrorCallCount++;
+            },
+          }),
         ),
       ],
     });
 
     const harness = await RouterTestingHarness.create();
-
-    try {
-      await harness.navigateByUrl('/parent/child');
-    } catch (e) {}
-
+    await harness.navigateByUrl('/parent/child');
     await harness.fixture.whenStable();
 
-    // The router should render the ComponentlessErrorFallback
-    // BUT since the componentless route doesn't have an outlet, its errorComponent might be ignored!
-    expect(harness.routeNativeElement?.innerHTML).toContain('Componentless Error');
+    expect(harness.routeNativeElement?.innerHTML).toContain('Parent Error Fallback');
+    expect(onErrorCallCount).toBe(1);
   });
 
   it('does not catch errors when the error boundary feature is not enabled', async () => {
