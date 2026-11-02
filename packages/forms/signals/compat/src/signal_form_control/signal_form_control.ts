@@ -31,7 +31,7 @@ import {
 } from '@angular/forms';
 
 import {FormOptions} from '../../../src/api/structure';
-import {FieldState, FieldTree, SchemaFn} from '../../../src/api/types';
+import {FieldState, FieldTree, SchemaFn, SchemaOrSchemaFn} from '../../../src/api/types';
 import {signalErrorsToValidationErrors} from '../../../src/compat/validation_errors';
 import {RuntimeErrorCode} from '../../../src/errors';
 import {FieldNode} from '../../../src/field/node';
@@ -95,28 +95,33 @@ export class SignalFormControl<T> extends AbstractControl {
   override readonly valueChanges = new EventEmitter<T>();
   override readonly statusChanges = new EventEmitter<FormControlStatus>();
 
-  constructor(value: T, schemaOrOptions?: SchemaFn<T> | FormOptions<T>, options?: FormOptions<T>) {
+  constructor(value: T);
+  constructor(value: T, schema: SchemaOrSchemaFn<T>);
+  constructor(value: T, options: FormOptions<T>);
+  constructor(value: T, schema: SchemaOrSchemaFn<T> | undefined, options: FormOptions<T>);
+  constructor(
+    value: T,
+    schemaOrOptions?: SchemaOrSchemaFn<T> | FormOptions<T>,
+    options?: FormOptions<T>,
+  ) {
     super(null, null);
 
-    const rawOptions =
-      typeof schemaOrOptions === 'object' && schemaOrOptions !== null
-        ? {...schemaOrOptions, ...options}
-        : options;
+    const [model, schema, opts] = normalizeFormArgs<T>([signal(value), schemaOrOptions, options]);
     if (
       (typeof ngDevMode === 'undefined' || ngDevMode) &&
-      (rawOptions as any)?.updateOn &&
-      (rawOptions as any).updateOn !== 'change'
+      (opts as any)?.updateOn &&
+      (opts as any).updateOn !== 'change'
     ) {
-      throw unsupportedUpdateOnError((rawOptions as any).updateOn);
+      throw unsupportedUpdateOnError((opts as any).updateOn);
     }
-    const [model, schema, opts] = normalizeFormArgs<T>([signal(value), schemaOrOptions, options]);
     this.sourceValue = model;
     this.initialValue = value;
     const injector = opts?.injector ?? inject(Injector);
 
+    const formOptions = {...opts, injector};
     const rawTree = schema
-      ? compatForm(this.sourceValue, schema, {injector})
-      : compatForm(this.sourceValue, {injector});
+      ? compatForm(this.sourceValue, schema, formOptions)
+      : compatForm(this.sourceValue, formOptions);
 
     this.fieldTree = wrapFieldTreeForSyncUpdates(rawTree, () =>
       this.parent?.updateValueAndValidity({sourceControl: this} as any),
