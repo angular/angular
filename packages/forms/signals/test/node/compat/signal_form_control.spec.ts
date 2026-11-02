@@ -16,7 +16,7 @@ import {
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {ControlEvent, FormControlStatus, FormGroup, FormResetEvent} from '@angular/forms';
-import {disabled, required, validateAsync, ValidationError} from '@angular/forms/signals';
+import {disabled, required, schema, validateAsync, ValidationError} from '@angular/forms/signals';
 import {SchemaFn} from '../../../src/api/types';
 import {SignalFormControl} from '../../../compat';
 
@@ -747,6 +747,74 @@ describe('SignalFormControl', () => {
       const form = runInInjectionContext(injector, () => new SignalFormControl(10));
 
       expect(form.value).toBe(10);
+    });
+  });
+
+  describe('options handling', () => {
+    it('should accept options as the second argument', () => {
+      const injector = TestBed.inject(Injector);
+      const control = new SignalFormControl(10, {name: 'customControl', injector});
+
+      expect(control.value).toBe(10);
+      expect(control.fieldTree().name()).toBe('customControl');
+    });
+
+    it('should accept options as the second argument outside injection context', () => {
+      const injector = TestBed.inject(Injector);
+      const control = new SignalFormControl(10, {injector});
+
+      expect(control.value).toBe(10);
+    });
+
+    it('should accept options as the third argument with schema function', () => {
+      const injector = TestBed.inject(Injector);
+      const control = new SignalFormControl(
+        '',
+        (p) => {
+          required(p);
+        },
+        {name: 'requiredControl', injector},
+      );
+
+      expect(control.fieldTree().name()).toBe('requiredControl');
+      expect(control.valid).toBe(false);
+      control.setValue('hello');
+      expect(control.valid).toBe(true);
+    });
+
+    it('should accept options as the third argument with undefined schema', () => {
+      const injector = TestBed.inject(Injector);
+      const control = new SignalFormControl(10, undefined, {name: 'customControl', injector});
+
+      expect(control.value).toBe(10);
+      expect(control.fieldTree().name()).toBe('customControl');
+    });
+
+    it('should accept Schema instance created with schema()', () => {
+      const injector = TestBed.inject(Injector);
+      const customSchema = schema<string>((p) => {
+        required(p);
+      });
+      const control = new SignalFormControl('', customSchema, {name: 'schemaControl', injector});
+
+      expect(control.fieldTree().name()).toBe('schemaControl');
+      expect(control.valid).toBe(false);
+      control.setValue('hello');
+      expect(control.valid).toBe(true);
+    });
+
+    it('should throw when unsupported updateOn option is passed as second argument', () => {
+      const injector = TestBed.inject(Injector);
+      expect(() => new SignalFormControl(10, {updateOn: 'blur', injector} as any)).toThrowError(
+        /SignalFormControl does not support the "updateOn: 'blur'" option/,
+      );
+    });
+
+    it('should throw when unsupported updateOn option is passed as third argument', () => {
+      const injector = TestBed.inject(Injector);
+      expect(
+        () => new SignalFormControl(10, (p) => {}, {updateOn: 'submit', injector} as any),
+      ).toThrowError(/SignalFormControl does not support the "updateOn: 'submit'" option/);
     });
   });
 });
