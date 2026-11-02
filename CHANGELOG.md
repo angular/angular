@@ -1,3 +1,12 @@
+<a name="21.2.26"></a>
+# 21.2.26 (2026-11-02)
+### upgrade
+| Commit | Type | Description |
+| -- | -- | -- |
+| [bc74d72035](https://github.com/angular/angular/commit/bc74d72035bdf3aff82fe84514a1f00d37459cc5) | fix | only compile the template contents of a downgraded component |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.3.35"></a>
 # 20.3.35 (2026-11-02)
 ### upgrade
