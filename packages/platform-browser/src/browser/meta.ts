@@ -62,7 +62,6 @@ export type MetaDefinition = {
 export class Meta {
   private readonly _doc = inject(DOCUMENT);
   private readonly _dom = getDOM();
-  private _cachedHead: HTMLHeadElement | undefined;
 
   /**
    * Retrieves or creates a specific `<meta>` tag element in the current HTML document.
