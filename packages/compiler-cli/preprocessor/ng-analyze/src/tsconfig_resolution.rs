@@ -53,6 +53,23 @@ pub fn load_and_resolve_tsconfig(
         resolved_exclude.push(PathBuf::from("jspm_packages"));
     }
 
+    // Like TypeScript, a config with no `exclude` (including through `extends`) skips its own
+    // output directories, so emitted `.d.ts`/`.js` files aren't picked up as sources. oxc has
+    // already resolved these relative to the config that set them. See `getConfigFileSpecs` in
+    // TypeScript's `commandLineParser.ts`.
+    let excluded_dirs: Vec<PathBuf> = if tsconfig.exclude.is_none() {
+        [
+            &resolved_compiler_options.out_dir,
+            &resolved_compiler_options.declaration_dir,
+        ]
+        .into_iter()
+        .flatten()
+        .cloned()
+        .collect()
+    } else {
+        Vec::new()
+    };
+
     // Resolve extended options recursively to handle rootDirs, preserveSymlinks, and workspaceName
     let mut visited = HashSet::new();
     let extended_options = resolve_extended_options_recursive(path, fs, &resolver, &mut visited)?;
@@ -74,10 +91,16 @@ pub fn load_and_resolve_tsconfig(
     let allow_js = resolved_compiler_options.allow_js.unwrap_or(false);
 
     if !resolved_include.is_empty() {
-        let mut expanded: Vec<PathBuf> =
-            expand_globs(base_dir, &resolved_include, &resolved_exclude, allow_js, fs)
-                .into_iter()
-                .collect();
+        let mut expanded: Vec<PathBuf> = expand_globs(
+            base_dir,
+            &resolved_include,
+            &resolved_exclude,
+            &excluded_dirs,
+            allow_js,
+            fs,
+        )
+        .into_iter()
+        .collect();
         expanded.sort();
         for f in expanded {
             if seen_files.insert(f.clone()) {
@@ -189,6 +212,7 @@ fn expand_globs(
     base_dir: &Path,
     include: &[PathBuf],
     exclude: &[PathBuf],
+    excluded_dirs: &[PathBuf],
     allow_js: bool,
     fs: &crate::fs::OverlayFileSystem,
 ) -> HashSet<PathBuf> {
@@ -198,6 +222,10 @@ fn expand_globs(
         .iter()
         .map(|p| p.to_string_lossy().to_string())
         .collect();
+    let excluded = |path: &Path| {
+        excluded_dirs.iter().any(|dir| path.starts_with(dir))
+            || is_excluded(path, base_dir, &exclude_patterns)
+    };
 
     // Pre-process include patterns to handle directory matches
     let mut effective_patterns = vec![];
@@ -248,7 +276,7 @@ fn expand_globs(
             &root,
             fs.physical(),
             &mut |path| {
-                if !is_excluded(path, base_dir, &exclude_patterns)
+                if !excluded(path)
                     && is_supported_extension(path, allow_js)
                     && patterns
                         .iter()
@@ -257,7 +285,7 @@ fn expand_globs(
                     files.insert(path.to_path_buf());
                 }
             },
-            &mut |dir| !is_excluded(dir, base_dir, &exclude_patterns),
+            &mut |dir| !excluded(dir),
         );
     }
 
@@ -271,7 +299,7 @@ fn expand_globs(
             .iter()
             .any(|pat| pat.matches_path_with(path, options));
 
-        if included && !is_excluded(path, base_dir, &exclude_patterns) {
+        if included && !excluded(path) {
             files.insert(path.clone());
         }
     });
@@ -1338,7 +1366,7 @@ mod tests {
         let exclude = vec![];
         let base_dir = Path::new("/virtual");
 
-        let files = expand_globs(base_dir, &include, &exclude, false, &fs);
+        let files = expand_globs(base_dir, &include, &exclude, &[], false, &fs);
 
         assert_eq!(files.len(), 2);
         assert!(files.contains(&PathBuf::from("/virtual/src/main.ts")));
@@ -1900,5 +1928,79 @@ mod tests {
 
         let config = load_and_resolve_tsconfig(Path::new("/virtual/child.json"), &fs).unwrap();
         assert_eq!(config.workspace_name.as_deref(), Some("child_ws"));
+    }
+
+    fn output_dir_fixture(tsconfig: &str) -> crate::fs::OverlayFileSystem {
+        let fs = crate::fs::OverlayFileSystem::new_with_overlay();
+        fs.upsert_file(PathBuf::from("/virtual/tsconfig.json"), tsconfig.to_string());
+        fs.upsert_file(PathBuf::from("/virtual/src/app.ts"), "export const a = 1;".to_string());
+        fs.upsert_file(
+            PathBuf::from("/virtual/dist/src/app.d.ts"),
+            "export declare const a = 1;".to_string(),
+        );
+        fs.upsert_file(
+            PathBuf::from("/virtual/types/src/app.d.ts"),
+            "export declare const a = 1;".to_string(),
+        );
+        fs
+    }
+
+    #[test]
+    fn test_default_include_skips_out_dir_and_declaration_dir() {
+        let fs = output_dir_fixture(
+            r#"{"compilerOptions": {"outDir": "./dist", "declarationDir": "./types"}}"#,
+        );
+
+        let config = load_and_resolve_tsconfig(Path::new("/virtual/tsconfig.json"), &fs).unwrap();
+        assert_eq!(config.files, vec![PathBuf::from("/virtual/src/app.ts")]);
+    }
+
+    #[test]
+    fn test_explicit_exclude_does_not_skip_out_dir() {
+        // TypeScript only adds the output directories when `exclude` is absent.
+        let fs = output_dir_fixture(
+            r#"{"compilerOptions": {"outDir": "./dist"}, "exclude": ["types"]}"#,
+        );
+
+        let config = load_and_resolve_tsconfig(Path::new("/virtual/tsconfig.json"), &fs).unwrap();
+        assert_eq!(
+            config.files,
+            vec![
+                PathBuf::from("/virtual/dist/src/app.d.ts"),
+                PathBuf::from("/virtual/src/app.ts"),
+            ]
+        );
+    }
+
+    #[test]
+    fn test_out_dir_from_extended_config_is_skipped() {
+        let fs = output_dir_fixture(r#"{"extends": "./config/base.json"}"#);
+        // `outDir` resolves relative to the config that sets it: /virtual/config/../dist.
+        fs.upsert_file(
+            PathBuf::from("/virtual/config/base.json"),
+            r#"{"compilerOptions": {"outDir": "../dist"}}"#.to_string(),
+        );
+
+        let config = load_and_resolve_tsconfig(Path::new("/virtual/tsconfig.json"), &fs).unwrap();
+        assert!(
+            !config.files.contains(&PathBuf::from("/virtual/dist/src/app.d.ts")),
+            "outDir contents were picked up: {:?}",
+            config.files
+        );
+        assert!(config.files.contains(&PathBuf::from("/virtual/src/app.ts")));
+    }
+
+    #[test]
+    fn test_out_dir_prefix_does_not_skip_sibling_directory() {
+        // Only paths inside `dist/` are skipped, not `dist-src/`.
+        let fs = output_dir_fixture(r#"{"compilerOptions": {"outDir": "./dist"}}"#);
+        fs.upsert_file(
+            PathBuf::from("/virtual/dist-src/extra.ts"),
+            "export const b = 1;".to_string(),
+        );
+
+        let config = load_and_resolve_tsconfig(Path::new("/virtual/tsconfig.json"), &fs).unwrap();
+        assert!(config.files.contains(&PathBuf::from("/virtual/dist-src/extra.ts")));
+        assert!(!config.files.contains(&PathBuf::from("/virtual/dist/src/app.d.ts")));
     }
 }
