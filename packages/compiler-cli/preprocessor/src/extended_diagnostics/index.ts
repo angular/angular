@@ -7,6 +7,7 @@
  */
 
 import {BoundTarget, TcbDirectiveMetadata, TypeCheckId} from '@angular/compiler';
+import {ErrorCode} from '@angular/compiler-cli/private/hybrid_preprocessor';
 import type {
   DiagnosticCategoryLabel,
   ExtendedDiagnosticsOptions,
@@ -60,7 +61,7 @@ export {
 // (NG8107), `interpolatedSignalNotInvoked` (NG8109), `uninvokedTrackFunction` (NG8115), and
 // `uninvokedFunctionInTextInterpolation` (NG8117) when `ts.TypeChecker` integration is available.
 export const ALL_DIAGNOSTIC_FACTORIES: readonly TemplateCheckFactory<
-  number,
+  ErrorCode,
   ExtendedTemplateDiagnosticName
 >[] = [
   invalidBananaInBoxFactory,
@@ -91,7 +92,7 @@ export function runExtendedDiagnostics(
   filePath: string,
   options?: ExtendedDiagnosticsOptions,
   templateCheckFactories: readonly TemplateCheckFactory<
-    number,
+    ErrorCode,
     ExtendedTemplateDiagnosticName
   >[] = ALL_DIAGNOSTIC_FACTORIES,
   strictTemplates: boolean = true,

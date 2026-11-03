@@ -42,7 +42,7 @@ impl NgDiagnostic {
             .number
             .as_ref()
             .and_then(|c| c.strip_prefix("NG").unwrap_or(c).parse::<u32>().ok())
-            .unwrap_or(1010);
+            .unwrap_or(super::ErrorCode::VALUE_HAS_WRONG_TYPE.code());
         let span = diag.labels.first().map(|l| {
             let start = l.offset();
             let end = start + l.len();
@@ -63,10 +63,32 @@ impl NgDiagnostic {
         }
     }
 
-    pub fn error(code: u32, file_path: String, span: SpanMetadata, message_text: String) -> Self {
+    pub fn error(
+        code: super::ErrorCode,
+        file_path: String,
+        span: SpanMetadata,
+        message_text: String,
+    ) -> Self {
         Self {
             category: 1,
-            code,
+            code: code.code(),
+            message_text,
+            file_path: Some(file_path),
+            span: Some(span),
+            next: Vec::new(),
+            related_information: Vec::new(),
+        }
+    }
+
+    pub fn warning(
+        code: super::ErrorCode,
+        file_path: String,
+        span: SpanMetadata,
+        message_text: String,
+    ) -> Self {
+        Self {
+            category: 0,
+            code: code.code(),
             message_text,
             file_path: Some(file_path),
             span: Some(span),

@@ -9,7 +9,10 @@ rust_shared_library(
     name = "ng_analyze_wasm_lib",
     srcs = glob(
         include = ["src/**/*.rs"],
-        exclude = ["src/main.rs"],
+        exclude = [
+            "src/bin/**",
+            "src/main.rs",
+        ],
     ),
     crate_name = "ng_analyze",
     edition = "2021",
@@ -60,7 +63,10 @@ rust_library(
     name = "ng_analyze",
     srcs = glob(
         include = ["src/**/*.rs"],
-        exclude = ["src/main.rs"],
+        exclude = [
+            "src/bin/**",
+            "src/main.rs",
+        ],
     ),
     edition = "2021",
     deps = [
@@ -94,6 +100,23 @@ rust_binary(
         "@crates//:serde",
         "@crates//:serde_json",
     ],
+)
+
+rust_binary(
+    name = "gen_error_code_ts",
+    srcs = [
+        "src/bin/gen_error_code_ts.rs",
+        "src/types/error_code.rs",
+    ],
+    crate_root = "src/bin/gen_error_code_ts.rs",
+    edition = "2021",
+)
+
+genrule(
+    name = "generated_error_code_ts",
+    outs = ["generated_error_code.ts"],
+    cmd = "$(execpath :gen_error_code_ts) > $@",
+    tools = [":gen_error_code_ts"],
 )
 
 rust_test(

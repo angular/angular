@@ -20,7 +20,7 @@ import {
   type TmplAstVariable,
   type TypeCheckId,
 } from '@angular/compiler';
-import {createAnalyzer} from '../api.js';
+import {createAnalyzer, ErrorCode} from '../api.js';
 import {
   type ExtendedTemplateDiagnosticName,
   verifyExtendedDiagnosticsOptions,
@@ -916,19 +916,19 @@ describe('extended template diagnostics', () => {
   });
 
   it('formatExtendedError formats codes with and without messages consistently', () => {
-    expect(formatExtendedError(8101)).toBe(
+    expect(formatExtendedError(ErrorCode.INVALID_BANANA_IN_BOX)).toBe(
       `NG8101. Find more at ${EXTENDED_ERROR_DETAILS_PAGE_BASE_URL}/NG8101`,
     );
-    expect(formatExtendedError(8101, null)).toBe(
+    expect(formatExtendedError(ErrorCode.INVALID_BANANA_IN_BOX, null)).toBe(
       `NG8101. Find more at ${EXTENDED_ERROR_DETAILS_PAGE_BASE_URL}/NG8101`,
     );
-    expect(formatExtendedError(8101, false)).toBe(
+    expect(formatExtendedError(ErrorCode.INVALID_BANANA_IN_BOX, false)).toBe(
       `NG8101. Find more at ${EXTENDED_ERROR_DETAILS_PAGE_BASE_URL}/NG8101`,
     );
-    expect(formatExtendedError(8101, 'No trailing punctuation')).toBe(
+    expect(formatExtendedError(ErrorCode.INVALID_BANANA_IN_BOX, 'No trailing punctuation')).toBe(
       `NG8101: No trailing punctuation. Find more at ${EXTENDED_ERROR_DETAILS_PAGE_BASE_URL}/NG8101`,
     );
-    expect(formatExtendedError(8101, 'Has trailing punctuation!')).toBe(
+    expect(formatExtendedError(ErrorCode.INVALID_BANANA_IN_BOX, 'Has trailing punctuation!')).toBe(
       `NG8101: Has trailing punctuation! Find more at ${EXTENDED_ERROR_DETAILS_PAGE_BASE_URL}/NG8101`,
     );
   });
@@ -1337,11 +1337,11 @@ export class CondComp {}
   });
 
   it('supports defining custom TemplateCheckWithVisitor and TemplateCheckFactory via ExtendedTemplateCheckerImpl', () => {
-    class NoMarqueeElementCheck extends TemplateCheckWithVisitor<8999> {
-      override code = 8999 as const;
+    class NoMarqueeElementCheck extends TemplateCheckWithVisitor<ErrorCode.INVALID_BANANA_IN_BOX> {
+      override code = ErrorCode.INVALID_BANANA_IN_BOX as const;
 
       override visitNode(
-        ctx: TemplateContext<8999>,
+        ctx: TemplateContext<ErrorCode.INVALID_BANANA_IN_BOX>,
         _component: TcbTargetInput,
         node: TmplAstNode | AST,
       ): Diagnostic[] {
@@ -1352,8 +1352,11 @@ export class CondComp {}
       }
     }
 
-    const customFactory: TemplateCheckFactory<8999, ExtendedTemplateDiagnosticName> = {
-      code: 8999,
+    const customFactory: TemplateCheckFactory<
+      ErrorCode.INVALID_BANANA_IN_BOX,
+      ExtendedTemplateDiagnosticName
+    > = {
+      code: ErrorCode.INVALID_BANANA_IN_BOX,
       name: 'invalidBananaInBox',
       create: () => new NoMarqueeElementCheck(),
     };
@@ -1372,7 +1375,7 @@ export class CondComp {}
       {
         typeCheckId: 'tcb1' as TypeCheckId,
         category: OutOfBandDiagnosticCategory.Error,
-        code: 8999,
+        code: ErrorCode.INVALID_BANANA_IN_BOX,
         message: '<marquee> is not allowed.',
         start: 0,
         end: 19,

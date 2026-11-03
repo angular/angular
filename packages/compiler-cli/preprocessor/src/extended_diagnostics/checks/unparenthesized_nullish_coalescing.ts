@@ -7,6 +7,7 @@
  */
 
 import {AST, Binary, TmplAstNode} from '@angular/compiler';
+import {ErrorCode} from '@angular/compiler-cli/private/hybrid_preprocessor';
 import type {Diagnostic} from '../../diagnostic.js';
 import type {TcbTargetInput} from '../../tcb.js';
 import {
@@ -23,11 +24,11 @@ import {
  * Mirrors `UnparenthesizedNullishCoalescing` in
  * `ngtsc/typecheck/extended/checks/unparenthesized_nullish_coalescing/index.ts`.
  */
-class UnparenthesizedNullishCoalescing extends TemplateCheckWithVisitor<8114> {
-  override code = 8114 as const;
+class UnparenthesizedNullishCoalescing extends TemplateCheckWithVisitor<ErrorCode.UNPARENTHESIZED_NULLISH_COALESCING> {
+  override code = ErrorCode.UNPARENTHESIZED_NULLISH_COALESCING as const;
 
   override visitNode(
-    ctx: TemplateContext<8114>,
+    ctx: TemplateContext<ErrorCode.UNPARENTHESIZED_NULLISH_COALESCING>,
     _component: TcbTargetInput,
     node: TmplAstNode | AST,
   ): Diagnostic[] {
@@ -40,7 +41,7 @@ class UnparenthesizedNullishCoalescing extends TemplateCheckWithVisitor<8114> {
           const diagnostic = ctx.makeTemplateDiagnostic(
             node.sourceSpan,
             formatExtendedError(
-              8114,
+              ErrorCode.UNPARENTHESIZED_NULLISH_COALESCING,
               `Parentheses are required to disambiguate precedence when mixing '??' with '&&' and '||'`,
             ),
           );
@@ -52,8 +53,11 @@ class UnparenthesizedNullishCoalescing extends TemplateCheckWithVisitor<8114> {
   }
 }
 
-export const factory: TemplateCheckFactory<8114, 'unparenthesizedNullishCoalescing'> = {
-  code: 8114,
+export const factory: TemplateCheckFactory<
+  ErrorCode.UNPARENTHESIZED_NULLISH_COALESCING,
+  'unparenthesizedNullishCoalescing'
+> = {
+  code: ErrorCode.UNPARENTHESIZED_NULLISH_COALESCING,
   name: 'unparenthesizedNullishCoalescing',
   create: () => new UnparenthesizedNullishCoalescing(),
 };

@@ -14,6 +14,7 @@ import {
   TcbDirectiveMetadata,
   TypeCheckId,
 } from '@angular/compiler';
+import {ErrorCode} from '@angular/compiler-cli/private/hybrid_preprocessor';
 import type {
   DiagnosticCategoryLabel,
   ExtendedDiagnosticsOptions,
@@ -44,13 +45,16 @@ export interface ExtendedTemplateChecker {
  * Mirrors `ExtendedTemplateCheckerImpl` in `ngtsc/typecheck/extended/src/extended_template_checker.ts`.
  */
 export class ExtendedTemplateCheckerImpl implements ExtendedTemplateChecker {
-  private readonly templateChecks: Map<TemplateCheck<number>, OutOfBandDiagnosticCategory>;
+  private readonly templateChecks: Map<TemplateCheck<ErrorCode>, OutOfBandDiagnosticCategory>;
 
   constructor(
-    templateCheckFactories: readonly TemplateCheckFactory<number, ExtendedTemplateDiagnosticName>[],
+    templateCheckFactories: readonly TemplateCheckFactory<
+      ErrorCode,
+      ExtendedTemplateDiagnosticName
+    >[],
     options?: NgpCompilerOptions | {extendedDiagnostics?: ExtendedDiagnosticsOptions},
   ) {
-    this.templateChecks = new Map<TemplateCheck<number>, OutOfBandDiagnosticCategory>();
+    this.templateChecks = new Map<TemplateCheck<ErrorCode>, OutOfBandDiagnosticCategory>();
 
     for (const factory of templateCheckFactories) {
       // Read the diagnostic category from compiler options.
@@ -87,7 +91,7 @@ export class ExtendedTemplateCheckerImpl implements ExtendedTemplateChecker {
     const diagnostics: Diagnostic[] = [];
 
     for (const [check, category] of this.templateChecks.entries()) {
-      const ctx: TemplateContext<number> = {
+      const ctx: TemplateContext<ErrorCode> = {
         boundTarget,
         makeTemplateDiagnostic: (
           span: ParseSourceSpan | AbsoluteSourceSpan | {start: number; end: number},
@@ -99,7 +103,7 @@ export class ExtendedTemplateCheckerImpl implements ExtendedTemplateChecker {
           return {
             typeCheckId,
             category,
-            code: check.code,
+            code: Math.abs(check.code),
             message,
             start,
             end,

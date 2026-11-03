@@ -35,14 +35,8 @@ import {
   ParseSourceSpan,
 } from '@angular/compiler';
 
+import {ErrorCode} from '@angular/compiler-cli/private/hybrid_preprocessor';
 import * as nga from './types.js';
-
-/** Error codes for the diagnostics below, mirroring ngtsc's `ErrorCode` members. */
-const FOREIGN_COMPONENT_UNSUPPORTED_BINDING = 8025;
-const INVALID_CONTENT_PLACEMENT = 8026;
-const FOREIGN_COMPONENT_CONTENT_UNNECESSARY_FOR_CHILDREN = 8027;
-const CONFLICTING_CONTENT_DECLARATION = 8028;
-const CONFLICTING_CONTENT_AND_PROPERTY = 8029;
 
 /**
  * The intrinsic property name used to project children into a foreign component.
@@ -89,14 +83,14 @@ class ForeignComponentFeatureAnalyzer extends TmplAstRecursiveVisitor {
   }
 
   private report(
-    code: number,
+    code: ErrorCode,
     sourceSpan: ParseSourceSpan,
     messageText: string,
     relatedInformation?: nga.NgRelatedInformation[],
   ): void {
     this.diagnostics.push({
       category: 1,
-      code,
+      code: Math.abs(code),
       messageText,
       filePath: this.filePath,
       span: {start: sourceSpan.start.offset, end: sourceSpan.end.offset},
@@ -130,21 +124,21 @@ class ForeignComponentFeatureAnalyzer extends TmplAstRecursiveVisitor {
   private validateForeignComponent(element: TmplAstElement): void {
     if (element.outputs.length > 0) {
       this.report(
-        FOREIGN_COMPONENT_UNSUPPORTED_BINDING,
+        ErrorCode.FOREIGN_COMPONENT_UNSUPPORTED_BINDING,
         element.sourceSpan,
         'Foreign components do not support event bindings.',
       );
     }
     if (element.references.length > 0) {
       this.report(
-        FOREIGN_COMPONENT_UNSUPPORTED_BINDING,
+        ErrorCode.FOREIGN_COMPONENT_UNSUPPORTED_BINDING,
         element.sourceSpan,
         'Foreign components do not support references.',
       );
     }
     if (element.inputs.some((input) => input.type !== BindingType.Property)) {
       this.report(
-        FOREIGN_COMPONENT_UNSUPPORTED_BINDING,
+        ErrorCode.FOREIGN_COMPONENT_UNSUPPORTED_BINDING,
         element.sourceSpan,
         'Foreign components only support static attributes and property bindings.',
       );
@@ -171,7 +165,7 @@ class ForeignComponentFeatureAnalyzer extends TmplAstRecursiveVisitor {
     }
 
     this.report(
-      CONFLICTING_CONTENT_AND_PROPERTY,
+      ErrorCode.CONFLICTING_CONTENT_AND_PROPERTY,
       conflictingSource.sourceSpan,
       `A foreign component cannot have both a '${CHILDREN}' property and child nodes.`,
       [
@@ -276,7 +270,7 @@ class ForeignComponentFeatureAnalyzer extends TmplAstRecursiveVisitor {
       this.validateContentBlock(block);
     } else {
       this.report(
-        INVALID_CONTENT_PLACEMENT,
+        ErrorCode.INVALID_CONTENT_PLACEMENT,
         block.sourceSpan,
         '@content blocks are only valid as direct children of foreign components.',
       );
@@ -303,7 +297,7 @@ class ForeignComponentFeatureAnalyzer extends TmplAstRecursiveVisitor {
     if (seen.has(block.name)) {
       const firstDecl = seen.get(block.name)!;
       this.report(
-        CONFLICTING_CONTENT_DECLARATION,
+        ErrorCode.CONFLICTING_CONTENT_DECLARATION,
         block.sourceSpan,
         `A @content block with the name '${block.name}' has already been defined for this ` +
           'component.',
@@ -333,7 +327,7 @@ class ForeignComponentFeatureAnalyzer extends TmplAstRecursiveVisitor {
 
     if (conflict !== undefined) {
       this.report(
-        CONFLICTING_CONTENT_AND_PROPERTY,
+        ErrorCode.CONFLICTING_CONTENT_AND_PROPERTY,
         block.sourceSpan,
         `A @content block with the name '${block.name}' conflicts with a property on the ` +
           'parent component.',
@@ -354,7 +348,7 @@ class ForeignComponentFeatureAnalyzer extends TmplAstRecursiveVisitor {
     // child nodes are implicitly passed to the `children` property.
     if (block.name === CHILDREN && block.variables.length === 0) {
       this.report(
-        FOREIGN_COMPONENT_CONTENT_UNNECESSARY_FOR_CHILDREN,
+        ErrorCode.FOREIGN_COMPONENT_CONTENT_UNNECESSARY_FOR_CHILDREN,
         block.sourceSpan,
         `Defining a @content (${CHILDREN}) block with no parameters is unnecessary. ` +
           'Pass children as direct nested content of the foreign component instead.',

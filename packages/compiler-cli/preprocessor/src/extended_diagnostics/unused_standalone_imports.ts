@@ -12,6 +12,7 @@ import {
   TcbDirectiveMetadata,
   TypeCheckId,
 } from '@angular/compiler';
+import {ErrorCode} from '@angular/compiler-cli/private/hybrid_preprocessor';
 import type {Diagnostic} from '../diagnostic.js';
 import type {TcbTargetInput} from '../tcb.js';
 import type {ComponentImportEntryMetadata, SpanMetadata} from '../types.js';
@@ -76,7 +77,7 @@ export function checkUnusedStandaloneImports(
       {
         typeCheckId,
         category,
-        code: 8113,
+        code: ErrorCode.UNUSED_STANDALONE_IMPORTS,
         message: 'All imports are unused',
         start: component.importsKeySpan.start,
         end: component.importsKeySpan.end,
@@ -92,7 +93,7 @@ export function checkUnusedStandaloneImports(
     return {
       typeCheckId,
       category,
-      code: 8113,
+      code: ErrorCode.UNUSED_STANDALONE_IMPORTS,
       message: `${entry.name} is not used within the template of ${comp.className}`,
       start: span.start,
       end: span.end,

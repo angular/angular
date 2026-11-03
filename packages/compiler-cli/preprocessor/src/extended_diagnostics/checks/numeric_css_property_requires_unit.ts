@@ -15,6 +15,7 @@ import {
   TmplAstNode,
   Unary,
 } from '@angular/compiler';
+import {ErrorCode} from '@angular/compiler-cli/private/hybrid_preprocessor';
 import type {Diagnostic} from '../../diagnostic.js';
 import type {TcbTargetInput} from '../../tcb.js';
 import {
@@ -184,11 +185,11 @@ const CSS_LENGTH_PROPERTIES = new Set([
  * Mirrors `NumericCssPropertyRequiresUnitCheck` in
  * `ngtsc/typecheck/extended/checks/numeric_css_property_requires_unit/index.ts`.
  */
-class NumericCssPropertyRequiresUnitCheck extends TemplateCheckWithVisitor<8119> {
-  override code = 8119 as const;
+class NumericCssPropertyRequiresUnitCheck extends TemplateCheckWithVisitor<ErrorCode.NUMERIC_CSS_PROPERTY_REQUIRES_UNIT> {
+  override code = ErrorCode.NUMERIC_CSS_PROPERTY_REQUIRES_UNIT as const;
 
   override visitNode(
-    ctx: TemplateContext<8119>,
+    ctx: TemplateContext<ErrorCode.NUMERIC_CSS_PROPERTY_REQUIRES_UNIT>,
     _component: TcbTargetInput,
     node: TmplAstNode | AST,
   ): Diagnostic[] {
@@ -213,7 +214,7 @@ class NumericCssPropertyRequiresUnitCheck extends TemplateCheckWithVisitor<8119>
     const diagnostic = ctx.makeTemplateDiagnostic(
       node.keySpan,
       formatExtendedError(
-        8119,
+        ErrorCode.NUMERIC_CSS_PROPERTY_REQUIRES_UNIT,
         `Binding a number to the CSS property '${node.name}' will have no effect. ` +
           `CSS requires units for length values. ` +
           `For example, use [style.${node.name}.px]="${value}" or ` +
@@ -256,8 +257,11 @@ function getNumericValue(ast: AST): number | null {
   return null;
 }
 
-export const factory: TemplateCheckFactory<8119, 'numericCssPropertyRequiresUnit'> = {
-  code: 8119,
+export const factory: TemplateCheckFactory<
+  ErrorCode.NUMERIC_CSS_PROPERTY_REQUIRES_UNIT,
+  'numericCssPropertyRequiresUnit'
+> = {
+  code: ErrorCode.NUMERIC_CSS_PROPERTY_REQUIRES_UNIT,
   name: 'numericCssPropertyRequiresUnit',
   create: () => new NumericCssPropertyRequiresUnitCheck(),
 };

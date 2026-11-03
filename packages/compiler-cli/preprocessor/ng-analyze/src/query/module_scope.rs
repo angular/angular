@@ -329,11 +329,10 @@ enum ListKind {
 }
 
 impl ListKind {
-    fn code(self) -> u32 {
+    fn code(self) -> crate::ErrorCode {
         match self {
-            // NGMODULE_INVALID_IMPORT / NGMODULE_INVALID_EXPORT
-            ListKind::Import => 6002,
-            ListKind::Export => 6003,
+            ListKind::Import => crate::ErrorCode::NGMODULE_INVALID_IMPORT,
+            ListKind::Export => crate::ErrorCode::NGMODULE_INVALID_EXPORT,
         }
     }
 
@@ -629,7 +628,7 @@ impl<'a, Fs: ResourceResolverFs + Clone + 'static> Resolver<'a, Fs> {
                     Err(ScopeEntryRejection::NotAnArray(value)) => {
                         if let Some(span) = list_span {
                             diagnostics.push(NgDiagnostic::error(
-                                1010,
+                                crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                                 module_path.clone(),
                                 self.env.wire_span(module.file, span).await,
                                 crate::evaluator::wrong_type_message(
@@ -664,7 +663,7 @@ impl<'a, Fs: ResourceResolverFs + Clone + 'static> Resolver<'a, Fs> {
                         }
                         if let Some(span) = list_span {
                             diagnostics.push(NgDiagnostic::error(
-                                1010,
+                                crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                                 module_path.clone(),
                                 self.env.wire_span(module.file, span).await,
                                 crate::evaluator::wrong_type_message(
@@ -692,8 +691,7 @@ impl<'a, Fs: ResourceResolverFs + Clone + 'static> Resolver<'a, Fs> {
                         symbol_name,
                     }) => {
                         diagnostics.push(NgDiagnostic::error(
-                            // NGMODULE_MODULE_WITH_PROVIDERS_MISSING_GENERIC
-                            6005,
+                            crate::ErrorCode::NGMODULE_MODULE_WITH_PROVIDERS_MISSING_GENERIC,
                             self.env.file_path(file),
                             self.env.wire_span(file, span).await,
                             format!(
@@ -722,7 +720,7 @@ impl<'a, Fs: ResourceResolverFs + Clone + 'static> Resolver<'a, Fs> {
                 if entry.reference.kind != DeclKind::Class || entry.reference.member.is_some() {
                     let name_span = self.env.declaration_name_span(&entry.reference, None).await;
                     diagnostics.push(NgDiagnostic::error(
-                        1010,
+                        crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                         self.env.file_path(entry.reference.file),
                         name_span,
                         format!(
@@ -770,7 +768,7 @@ impl<'a, Fs: ResourceResolverFs + Clone + 'static> Resolver<'a, Fs> {
                 let name = &entry.reference.name;
                 diagnostics.push(
                     NgDiagnostic::error(
-                        6001,
+                        crate::ErrorCode::NGMODULE_INVALID_DECLARATION,
                         module_path.clone(),
                         span,
                         format!(
@@ -912,8 +910,7 @@ impl<'a, Fs: ResourceResolverFs + Clone + 'static> Resolver<'a, Fs> {
                         };
                         if let Some(span) = origin {
                             diagnostics.push(NgDiagnostic::error(
-                                // NGMODULE_DECLARATION_IS_STANDALONE
-                                6008,
+                                crate::ErrorCode::NGMODULE_DECLARATION_IS_STANDALONE,
                                 module_path.clone(),
                                 span,
                                 format!(
@@ -937,8 +934,7 @@ impl<'a, Fs: ResourceResolverFs + Clone + 'static> Resolver<'a, Fs> {
                             .await;
                         diagnostics.push(
                             NgDiagnostic::error(
-                                // NGMODULE_INVALID_DECLARATION
-                                6001,
+                                crate::ErrorCode::NGMODULE_INVALID_DECLARATION,
                                 module_path.clone(),
                                 span,
                                 format!(
@@ -1032,8 +1028,7 @@ impl<'a, Fs: ResourceResolverFs + Clone + 'static> Resolver<'a, Fs> {
                          NgModule first"
                     };
                     diagnostics.push(NgDiagnostic::error(
-                        // NGMODULE_INVALID_REEXPORT
-                        6004,
+                        crate::ErrorCode::NGMODULE_INVALID_REEXPORT,
                         module_path.clone(),
                         span,
                         format!("Can't be exported from this NgModule, as {reason}"),
@@ -1249,8 +1244,13 @@ impl<'a, Fs: ResourceResolverFs + Clone + 'static> ScopeEnv<'a, Fs> {
         if hint.is_none() {
             message.push_str(" It must be imported via an NgModule.");
         }
-        NgDiagnostic::error(2011, file_path, span, message)
-            .with_related_information(hint.into_iter().collect())
+        NgDiagnostic::error(
+            crate::ErrorCode::COMPONENT_IMPORT_NOT_STANDALONE,
+            file_path,
+            span,
+            message,
+        )
+        .with_related_information(hint.into_iter().collect())
     }
 
     /// `invalidRef`: an import that is not an NgModule or standalone entity, or an export that
@@ -1548,8 +1548,7 @@ pub(crate) async fn validate_standalone_imports<Fs: ResourceResolverFs + Clone +
                 out.is_poisoned = true;
                 if let Some(span) = span.or(imports_span) {
                     out.diagnostics.push(NgDiagnostic::error(
-                        // VALUE_HAS_WRONG_TYPE
-                        1010,
+                        crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                         file_path.clone(),
                         env.wire_span(component_file, span).await,
                         crate::evaluator::wrong_type_message(
@@ -1565,8 +1564,7 @@ pub(crate) async fn validate_standalone_imports<Fs: ResourceResolverFs + Clone +
                 out.is_poisoned = true;
                 if let Some(span) = span.or(imports_span) {
                     out.diagnostics.push(NgDiagnostic::error(
-                        // COMPONENT_UNKNOWN_IMPORT
-                        2012,
+                        crate::ErrorCode::COMPONENT_UNKNOWN_IMPORT,
                         file_path.clone(),
                         env.wire_span(component_file, span).await,
                         "Component imports contains a ModuleWithProviders value, likely the \
@@ -1585,8 +1583,7 @@ pub(crate) async fn validate_standalone_imports<Fs: ResourceResolverFs + Clone +
             } => {
                 out.is_poisoned = true;
                 out.diagnostics.push(NgDiagnostic::error(
-                    // NGMODULE_MODULE_WITH_PROVIDERS_MISSING_GENERIC
-                    6005,
+                    crate::ErrorCode::NGMODULE_MODULE_WITH_PROVIDERS_MISSING_GENERIC,
                     env.file_path(file),
                     env.wire_span(file, span).await,
                     format!(
@@ -1609,8 +1606,7 @@ pub(crate) async fn validate_standalone_imports<Fs: ResourceResolverFs + Clone +
         if entry.reference.kind != DeclKind::Class || entry.reference.member.is_some() {
             out.is_poisoned = true;
             out.diagnostics.push(NgDiagnostic::error(
-                // VALUE_HAS_WRONG_TYPE
-                1010,
+                crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                 file_path.clone(),
                 span,
                 format!(
@@ -1657,8 +1653,7 @@ pub(crate) async fn validate_standalone_imports<Fs: ResourceResolverFs + Clone +
             _ => {
                 out.is_poisoned = true;
                 out.diagnostics.push(NgDiagnostic::error(
-                    // COMPONENT_UNKNOWN_IMPORT
-                    2012,
+                    crate::ErrorCode::COMPONENT_UNKNOWN_IMPORT,
                     file_path.clone(),
                     span,
                     "Component imports must be standalone components, directives, pipes, or must \
@@ -1730,8 +1725,7 @@ pub(crate) async fn validate_standalone_deferred_imports<
                 out.is_poisoned = true;
                 if let Some(span) = span.or(deferred_imports_span) {
                     out.diagnostics.push(NgDiagnostic::error(
-                        // VALUE_HAS_WRONG_TYPE
-                        1010,
+                        crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                         file_path.clone(),
                         env.wire_span(component_file, span).await,
                         crate::evaluator::wrong_type_message(
@@ -1747,8 +1741,7 @@ pub(crate) async fn validate_standalone_deferred_imports<
                 out.is_poisoned = true;
                 if let Some(span) = span.or(deferred_imports_span) {
                     out.diagnostics.push(NgDiagnostic::error(
-                        // COMPONENT_UNKNOWN_IMPORT
-                        2012,
+                        crate::ErrorCode::COMPONENT_UNKNOWN_IMPORT,
                         file_path.clone(),
                         env.wire_span(component_file, span).await,
                         "Component imports contains a ModuleWithProviders value, likely the \
@@ -1767,8 +1760,7 @@ pub(crate) async fn validate_standalone_deferred_imports<
             } => {
                 out.is_poisoned = true;
                 out.diagnostics.push(NgDiagnostic::error(
-                    // NGMODULE_MODULE_WITH_PROVIDERS_MISSING_GENERIC
-                    6005,
+                    crate::ErrorCode::NGMODULE_MODULE_WITH_PROVIDERS_MISSING_GENERIC,
                     env.file_path(file),
                     env.wire_span(file, span).await,
                     format!(
@@ -1795,8 +1787,7 @@ pub(crate) async fn validate_standalone_deferred_imports<
         if entry.reference.kind != DeclKind::Class || entry.reference.member.is_some() {
             out.is_poisoned = true;
             out.diagnostics.push(NgDiagnostic::error(
-                // VALUE_HAS_WRONG_TYPE
-                1010,
+                crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                 file_path.clone(),
                 span,
                 format!(
@@ -1829,8 +1820,7 @@ pub(crate) async fn validate_standalone_deferred_imports<
             _ => {
                 out.is_poisoned = true;
                 out.diagnostics.push(NgDiagnostic::error(
-                    // COMPONENT_UNKNOWN_DEFERRED_IMPORT
-                    2022,
+                    crate::ErrorCode::COMPONENT_UNKNOWN_DEFERRED_IMPORT,
                     file_path.clone(),
                     span,
                     "Component deferred imports must be standalone components, directives or \

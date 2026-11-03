@@ -286,7 +286,7 @@ fn validate_host_directive_mappings(
     mappings: Option<&[crate::types::metadata::HostDirectiveBinding]>,
     existing: &[HostBinding],
     class_name: &str,
-    push: &mut dyn FnMut(u32, String),
+    push: &mut dyn FnMut(crate::ErrorCode, String),
 ) {
     let required: Vec<&HostBinding> = existing.iter().filter(|b| b.required).collect();
     let mut exposed_required = std::collections::HashSet::new();
@@ -300,7 +300,7 @@ fn validate_host_directive_mappings(
             .collect();
         if bindings.is_empty() {
             push(
-                2017, // HOST_DIRECTIVE_UNDEFINED_BINDING
+                crate::ErrorCode::HOST_DIRECTIVE_UNDEFINED_BINDING,
                 format!(
                     "Directive {class_name} does not have an {kind} with a public name of {public_name}."
                 ),
@@ -319,7 +319,7 @@ fn validate_host_directive_mappings(
         if remapped != public_name {
             for _ in existing.iter().filter(|b| &b.public_name == remapped) {
                 push(
-                    2018, // HOST_DIRECTIVE_CONFLICTING_ALIAS
+                    crate::ErrorCode::HOST_DIRECTIVE_CONFLICTING_ALIAS,
                     format!(
                         "Cannot alias {kind} {public_name} of host directive {class_name} to {remapped}, \
                          because it already has a different {kind} with the same public name."
@@ -336,7 +336,7 @@ fn validate_host_directive_mappings(
             .map(|r| format!("'{}'", r.public_name))
             .collect();
         push(
-            2019, // HOST_DIRECTIVE_MISSING_REQUIRED_BINDING
+            crate::ErrorCode::HOST_DIRECTIVE_MISSING_REQUIRED_BINDING,
             format!(
                 "Required {kind}{} {} from host directive {class_name} must be exposed.",
                 if missing.len() == 1 { "" } else { "s" },
@@ -378,7 +378,7 @@ async fn validate_own_host_directives<Fs: ResourceResolverFs + Clone + 'static>(
             .copied()
             .unwrap_or(container);
         let span = crate::types::metadata::SpanMetadata::new(span, &syntax.converter);
-        let mut push = |code: u32, message: String| {
+        let mut push = |code: crate::ErrorCode, message: String| {
             diagnostics.push(crate::NgDiagnostic::error(
                 code,
                 file_path_text.clone(),
@@ -392,7 +392,7 @@ async fn validate_own_host_directives<Fs: ResourceResolverFs + Clone + 'static>(
         };
         let Some(class_info) = resolved.class_info else {
             push(
-                2013, // HOST_DIRECTIVE_INVALID
+                crate::ErrorCode::HOST_DIRECTIVE_INVALID,
                 format!(
                     "{} must be a standalone directive to be used as a host directive",
                     resolved.symbol_name
@@ -405,7 +405,7 @@ async fn validate_own_host_directives<Fs: ResourceResolverFs + Clone + 'static>(
             ClassType::Directive | ClassType::Component
         ) {
             push(
-                2013, // HOST_DIRECTIVE_INVALID
+                crate::ErrorCode::HOST_DIRECTIVE_INVALID,
                 format!(
                     "{} must be a standalone directive to be used as a host directive",
                     class_info.class_name
@@ -419,13 +419,13 @@ async fn validate_own_host_directives<Fs: ResourceResolverFs + Clone + 'static>(
         let is_dts = crate::utils::is_dts(&ctx.engine.lookup_path(resolved.decl_file_id));
         if !crate::query::module_scope::is_standalone_class(&host_meta, is_dts) {
             push(
-                2014, // HOST_DIRECTIVE_NOT_STANDALONE
+                crate::ErrorCode::HOST_DIRECTIVE_NOT_STANDALONE,
                 format!("Host directive {class_name} must be standalone"),
             );
         }
         if host_meta.class_type == ClassType::Component {
             push(
-                2015, // HOST_DIRECTIVE_COMPONENT
+                crate::ErrorCode::HOST_DIRECTIVE_COMPONENT,
                 format!("Host directive {class_name} cannot be a component"),
             );
         }

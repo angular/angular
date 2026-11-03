@@ -18,6 +18,7 @@ import {
   TmplAstBoundEvent,
   TmplAstNode,
 } from '@angular/compiler';
+import {ErrorCode} from '@angular/compiler-cli/private/hybrid_preprocessor';
 import type {Diagnostic} from '../../diagnostic.js';
 import type {TcbTargetInput} from '../../tcb.js';
 import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '../api.js';
@@ -31,11 +32,11 @@ import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '.
  * TODO: Implement the `PropertyRead` / `SafePropertyRead` call-signature check in NG8111, which
  * requires `ts.TypeChecker` (`type.getCallSignatures()`).
  */
-class UninvokedFunctionInEventBindingSpec extends TemplateCheckWithVisitor<8111> {
-  override code = 8111 as const;
+class UninvokedFunctionInEventBindingSpec extends TemplateCheckWithVisitor<ErrorCode.UNINVOKED_FUNCTION_IN_EVENT_BINDING> {
+  override code = ErrorCode.UNINVOKED_FUNCTION_IN_EVENT_BINDING as const;
 
   override visitNode(
-    ctx: TemplateContext<8111>,
+    ctx: TemplateContext<ErrorCode.UNINVOKED_FUNCTION_IN_EVENT_BINDING>,
     component: TcbTargetInput,
     node: TmplAstNode | AST,
   ): Diagnostic[] {
@@ -68,7 +69,7 @@ function assertExpressionInvoked(
   expression: AST,
   _component: TcbTargetInput,
   node: TmplAstBoundEvent,
-  ctx: TemplateContext<8111>,
+  ctx: TemplateContext<ErrorCode.UNINVOKED_FUNCTION_IN_EVENT_BINDING>,
 ): Diagnostic[] {
   if (expression instanceof Call || expression instanceof SafeCall) {
     return [];
@@ -83,8 +84,11 @@ function assertExpressionInvoked(
   return [];
 }
 
-export const factory: TemplateCheckFactory<8111, 'uninvokedFunctionInEventBinding'> = {
-  code: 8111,
+export const factory: TemplateCheckFactory<
+  ErrorCode.UNINVOKED_FUNCTION_IN_EVENT_BINDING,
+  'uninvokedFunctionInEventBinding'
+> = {
+  code: ErrorCode.UNINVOKED_FUNCTION_IN_EVENT_BINDING,
   name: 'uninvokedFunctionInEventBinding',
   create: () => new UninvokedFunctionInEventBindingSpec(),
 };

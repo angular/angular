@@ -21,6 +21,7 @@ import {
   TmplAstTimerDeferredTrigger,
   TmplAstViewportDeferredTrigger,
 } from '@angular/compiler';
+import {ErrorCode} from '@angular/compiler-cli/private/hybrid_preprocessor';
 import type {Diagnostic} from '../../diagnostic.js';
 import type {TcbTargetInput} from '../../tcb.js';
 import {
@@ -87,11 +88,11 @@ function formatTimedTrigger(
  * Mirrors `DeferTriggerMisconfiguration` in
  * `ngtsc/typecheck/extended/checks/defer_trigger_misconfiguration/index.ts`.
  */
-class DeferTriggerMisconfiguration extends TemplateCheckWithVisitor<8021> {
-  override code = 8021 as const;
+class DeferTriggerMisconfiguration extends TemplateCheckWithVisitor<ErrorCode.DEFER_TRIGGER_MISCONFIGURATION> {
+  override code = ErrorCode.DEFER_TRIGGER_MISCONFIGURATION as const;
 
   override visitNode(
-    ctx: TemplateContext<8021>,
+    ctx: TemplateContext<ErrorCode.DEFER_TRIGGER_MISCONFIGURATION>,
     _component: TcbTargetInput,
     node: TmplAstNode | AST,
   ): Diagnostic[] {
@@ -117,11 +118,21 @@ class DeferTriggerMisconfiguration extends TemplateCheckWithVisitor<8021> {
     if (hasImmediateMain) {
       if (mains.length > 1) {
         const msg = `The 'immediate' trigger makes additional triggers redundant.`;
-        diags.push(ctx.makeTemplateDiagnostic(node.sourceSpan, formatExtendedError(8021, msg)));
+        diags.push(
+          ctx.makeTemplateDiagnostic(
+            node.sourceSpan,
+            formatExtendedError(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION, msg),
+          ),
+        );
       }
       if (prefetches.length > 0) {
         const msg = `Prefetch triggers have no effect because 'immediate' executes earlier.`;
-        diags.push(ctx.makeTemplateDiagnostic(node.sourceSpan, formatExtendedError(8021, msg)));
+        diags.push(
+          ctx.makeTemplateDiagnostic(
+            node.sourceSpan,
+            formatExtendedError(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION, msg),
+          ),
+        );
       }
     }
 
@@ -130,7 +141,12 @@ class DeferTriggerMisconfiguration extends TemplateCheckWithVisitor<8021> {
       const msg =
         `Define a main trigger when using 'prefetch' triggers. ` +
         `Without an explicit main trigger, @defer defaults to 'idle' and prefetch may have no effect.`;
-      diags.push(ctx.makeTemplateDiagnostic(node.sourceSpan, formatExtendedError(8021, msg)));
+      diags.push(
+        ctx.makeTemplateDiagnostic(
+          node.sourceSpan,
+          formatExtendedError(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION, msg),
+        ),
+      );
     }
 
     // If there is exactly one main and at least one prefetch, compare them.
@@ -161,7 +177,7 @@ class DeferTriggerMisconfiguration extends TemplateCheckWithVisitor<8021> {
           diags.push(
             ctx.makeTemplateDiagnostic(
               pre.sourceSpan ?? node.sourceSpan,
-              formatExtendedError(8021, msg),
+              formatExtendedError(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION, msg),
             ),
           );
 
@@ -195,7 +211,7 @@ class DeferTriggerMisconfiguration extends TemplateCheckWithVisitor<8021> {
             diags.push(
               ctx.makeTemplateDiagnostic(
                 pre.sourceSpan ?? node.sourceSpan,
-                formatExtendedError(8021, msg),
+                formatExtendedError(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION, msg),
               ),
             );
           }
@@ -218,7 +234,7 @@ class DeferTriggerMisconfiguration extends TemplateCheckWithVisitor<8021> {
           diags.push(
             ctx.makeTemplateDiagnostic(
               pre.sourceSpan ?? node.sourceSpan,
-              formatExtendedError(8021, msg),
+              formatExtendedError(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION, msg),
             ),
           );
         }
@@ -229,8 +245,11 @@ class DeferTriggerMisconfiguration extends TemplateCheckWithVisitor<8021> {
   }
 }
 
-export const factory: TemplateCheckFactory<8021, 'deferTriggerMisconfiguration'> = {
-  code: 8021,
+export const factory: TemplateCheckFactory<
+  ErrorCode.DEFER_TRIGGER_MISCONFIGURATION,
+  'deferTriggerMisconfiguration'
+> = {
+  code: ErrorCode.DEFER_TRIGGER_MISCONFIGURATION,
   name: 'deferTriggerMisconfiguration',
   create: () => new DeferTriggerMisconfiguration(),
 };

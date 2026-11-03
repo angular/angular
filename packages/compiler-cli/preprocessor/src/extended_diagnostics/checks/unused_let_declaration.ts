@@ -7,6 +7,7 @@
  */
 
 import {AST, ASTWithSource, TmplAstLetDeclaration, TmplAstNode} from '@angular/compiler';
+import {ErrorCode} from '@angular/compiler-cli/private/hybrid_preprocessor';
 import type {Diagnostic} from '../../diagnostic.js';
 import type {TcbTargetInput} from '../../tcb.js';
 import {
@@ -27,12 +28,12 @@ interface ClassAnalysis {
  * Mirrors `UnusedLetDeclarationCheck` in
  * `ngtsc/typecheck/extended/checks/unused_let_declaration/index.ts`.
  */
-class UnusedLetDeclarationCheck extends TemplateCheckWithVisitor<8112> {
-  override code = 8112 as const;
+class UnusedLetDeclarationCheck extends TemplateCheckWithVisitor<ErrorCode.UNUSED_LET_DECLARATION> {
+  override code = ErrorCode.UNUSED_LET_DECLARATION as const;
   private analysis = new Map<TcbTargetInput, ClassAnalysis>();
 
   override run(
-    ctx: TemplateContext<8112>,
+    ctx: TemplateContext<ErrorCode.UNUSED_LET_DECLARATION>,
     component: TcbTargetInput,
     template: TmplAstNode[],
   ): Diagnostic[] {
@@ -46,7 +47,10 @@ class UnusedLetDeclarationCheck extends TemplateCheckWithVisitor<8112> {
         diagnostics.push(
           ctx.makeTemplateDiagnostic(
             decl.sourceSpan,
-            formatExtendedError(8112, `@let ${decl.name} is declared but its value is never read.`),
+            formatExtendedError(
+              ErrorCode.UNUSED_LET_DECLARATION,
+              `@let ${decl.name} is declared but its value is never read.`,
+            ),
           ),
         );
       }
@@ -57,7 +61,7 @@ class UnusedLetDeclarationCheck extends TemplateCheckWithVisitor<8112> {
   }
 
   override visitNode(
-    ctx: TemplateContext<8112>,
+    ctx: TemplateContext<ErrorCode.UNUSED_LET_DECLARATION>,
     component: TcbTargetInput,
     node: TmplAstNode | AST,
   ): Diagnostic[] {
@@ -86,8 +90,11 @@ class UnusedLetDeclarationCheck extends TemplateCheckWithVisitor<8112> {
   }
 }
 
-export const factory: TemplateCheckFactory<8112, 'unusedLetDeclaration'> = {
-  code: 8112,
+export const factory: TemplateCheckFactory<
+  ErrorCode.UNUSED_LET_DECLARATION,
+  'unusedLetDeclaration'
+> = {
+  code: ErrorCode.UNUSED_LET_DECLARATION,
   name: 'unusedLetDeclaration',
   create: () => new UnusedLetDeclarationCheck(),
 };

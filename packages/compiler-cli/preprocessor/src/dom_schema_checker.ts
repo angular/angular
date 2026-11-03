@@ -17,7 +17,7 @@ import {
   NO_ERRORS_SCHEMA,
   CUSTOM_ELEMENTS_SCHEMA,
 } from '@angular/compiler';
-
+import {ErrorCode} from '@angular/compiler-cli/private/hybrid_preprocessor';
 import {Diagnostic} from './diagnostic.js';
 
 const REGISTRY = new DomElementSchemaRegistry();
@@ -64,7 +64,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<Diagnostic> {
       this._diagnostics.push({
         typeCheckId: id,
         category: OutOfBandDiagnosticCategory.Error,
-        code: 8001,
+        code: Math.abs(ErrorCode.SCHEMA_INVALID_ELEMENT),
         message: errorMsg,
         start: sourceSpanForDiagnostics.start.offset,
         end: sourceSpanForDiagnostics.end.offset,
@@ -86,7 +86,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<Diagnostic> {
       this._diagnostics.push({
         typeCheckId: id as TypeCheckId,
         category: OutOfBandDiagnosticCategory.Error,
-        code: 8002,
+        code: Math.abs(ErrorCode.SCHEMA_INVALID_ATTRIBUTE),
         message: report.msg!,
         start: span.start.offset,
         end: span.end.offset,
@@ -118,7 +118,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<Diagnostic> {
       this._diagnostics.push({
         typeCheckId: id as TypeCheckId,
         category: OutOfBandDiagnosticCategory.Error,
-        code: 8002,
+        code: Math.abs(ErrorCode.SCHEMA_INVALID_ATTRIBUTE),
         message: errorMsg,
         start: span.start.offset,
         end: span.end.offset,
@@ -139,7 +139,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<Diagnostic> {
       this._diagnostics.push({
         typeCheckId: id as TypeCheckId,
         category: OutOfBandDiagnosticCategory.Error,
-        code: 8002,
+        code: Math.abs(ErrorCode.SCHEMA_INVALID_ATTRIBUTE),
         message: report.msg!,
         start: span.start.offset,
         end: span.end.offset,
@@ -156,7 +156,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<Diagnostic> {
       this._diagnostics.push({
         typeCheckId: id as TypeCheckId,
         category: OutOfBandDiagnosticCategory.Error,
-        code: 8002,
+        code: Math.abs(ErrorCode.SCHEMA_INVALID_ATTRIBUTE),
         message: errorMessage,
         start: span.start.offset,
         end: span.end.offset,
@@ -211,7 +211,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<Diagnostic> {
     this._diagnostics.push({
       typeCheckId: id as TypeCheckId,
       category: OutOfBandDiagnosticCategory.Error,
-      code: 8030,
+      code: ErrorCode.UNCLAIMED_EVENT_BINDING,
       message: errorMsg,
       start: span.start.offset,
       end: span.end.offset,

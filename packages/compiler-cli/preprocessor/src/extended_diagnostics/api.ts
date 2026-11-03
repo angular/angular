@@ -24,6 +24,7 @@ import {
   TmplAstTemplate,
   VERSION,
 } from '@angular/compiler';
+import {ErrorCode} from '@angular/compiler-cli/private/hybrid_preprocessor';
 import type {ExtendedTemplateDiagnosticName, NgpCompilerOptions} from '../compiler_options.js';
 import type {Diagnostic, DiagnosticRelatedInformation} from '../diagnostic.js';
 import type {TcbTargetInput} from '../tcb.js';
@@ -34,7 +35,7 @@ export const EXTENDED_ERROR_DETAILS_PAGE_BASE_URL = `https://${versionSubDomain}
 /**
  * Mirrors `formatExtendedError` in `ngtsc/typecheck/extended/api/format-extended-error.ts`.
  */
-export function formatExtendedError(code: number, message?: null | false | string): string {
+export function formatExtendedError(code: ErrorCode, message?: null | false | string): string {
   const fullCode = `NG${Math.abs(code)}`;
   const errorMessage = `${fullCode}${message ? ': ' + message : ''}`;
   const addPeriodSeparator = !/[.,;!?\n]$/.test(errorMessage);
@@ -48,7 +49,7 @@ export function formatExtendedError(code: number, message?: null | false | strin
  *
  * Mirrors `TemplateCheck` in `ngtsc/typecheck/extended/api/api.ts`.
  */
-export interface TemplateCheck<Code extends number> {
+export interface TemplateCheck<Code extends ErrorCode> {
   /** Unique template check code, used for configuration and searching the error. */
   code: Code;
 
@@ -61,7 +62,7 @@ export interface TemplateCheck<Code extends number> {
  *
  * Mirrors `TemplateContext` in `ngtsc/typecheck/extended/api/api.ts`.
  */
-export interface TemplateContext<Code extends number = number> {
+export interface TemplateContext<Code extends ErrorCode = ErrorCode> {
   /** Bound template target providing directive/pipe/expression target bindings for the template. */
   boundTarget: BoundTarget<TcbDirectiveMetadata>;
 
@@ -83,7 +84,7 @@ export interface TemplateContext<Code extends number = number> {
  * Mirrors `TemplateCheckFactory` in `ngtsc/typecheck/extended/api/api.ts`.
  */
 export interface TemplateCheckFactory<
-  Code extends number,
+  Code extends ErrorCode,
   Name extends ExtendedTemplateDiagnosticName,
 > {
   code: Code;
@@ -97,7 +98,9 @@ export interface TemplateCheckFactory<
  *
  * Mirrors `TemplateCheckWithVisitor` in `ngtsc/typecheck/extended/api/api.ts`.
  */
-export abstract class TemplateCheckWithVisitor<Code extends number> implements TemplateCheck<Code> {
+export abstract class TemplateCheckWithVisitor<
+  Code extends ErrorCode,
+> implements TemplateCheck<Code> {
   abstract code: Code;
 
   /**
@@ -129,7 +132,7 @@ export abstract class TemplateCheckWithVisitor<Code extends number> implements T
  *
  * Mirrors `TemplateVisitor` in `ngtsc/typecheck/extended/api/api.ts`.
  */
-class TemplateVisitor<Code extends number> extends CombinedRecursiveAstVisitor {
+class TemplateVisitor<Code extends ErrorCode> extends CombinedRecursiveAstVisitor {
   diagnostics: Diagnostic[] = [];
 
   constructor(
