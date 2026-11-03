@@ -7,6 +7,7 @@
  */
 
 import {AST, TmplAstBoundAttribute, TmplAstNode, TmplAstTextAttribute} from '@angular/compiler';
+import {ErrorCode} from '@angular/compiler-cli/private/hybrid_preprocessor';
 import type {Diagnostic} from '../../diagnostic.js';
 import type {TcbTargetInput} from '../../tcb.js';
 import {
@@ -25,17 +26,17 @@ const NG_SKIP_HYDRATION_ATTR_NAME = 'ngSkipHydration';
  * Mirrors `NgSkipHydrationSpec` in
  * `ngtsc/typecheck/extended/checks/skip_hydration_not_static/index.ts`.
  */
-class NgSkipHydrationSpec extends TemplateCheckWithVisitor<8108> {
-  override code = 8108 as const;
+class NgSkipHydrationSpec extends TemplateCheckWithVisitor<ErrorCode.SKIP_HYDRATION_NOT_STATIC> {
+  override code = ErrorCode.SKIP_HYDRATION_NOT_STATIC as const;
 
   override visitNode(
-    ctx: TemplateContext<8108>,
+    ctx: TemplateContext<ErrorCode.SKIP_HYDRATION_NOT_STATIC>,
     _component: TcbTargetInput,
     node: TmplAstNode | AST,
   ): Diagnostic[] {
     if (node instanceof TmplAstBoundAttribute && node.name === NG_SKIP_HYDRATION_ATTR_NAME) {
       const errorString = formatExtendedError(
-        8108,
+        ErrorCode.SKIP_HYDRATION_NOT_STATIC,
         `ngSkipHydration should not be used as a binding`,
       );
       return [ctx.makeTemplateDiagnostic(node.sourceSpan, errorString)];
@@ -49,7 +50,7 @@ class NgSkipHydrationSpec extends TemplateCheckWithVisitor<8108> {
       node.value !== undefined
     ) {
       const errorString = formatExtendedError(
-        8108,
+        ErrorCode.SKIP_HYDRATION_NOT_STATIC,
         `ngSkipHydration only accepts "true" or "" as value or no value at all. For example 'ngSkipHydration="true"' or 'ngSkipHydration'`,
       );
       return [ctx.makeTemplateDiagnostic(node.sourceSpan, errorString)];
@@ -59,8 +60,11 @@ class NgSkipHydrationSpec extends TemplateCheckWithVisitor<8108> {
   }
 }
 
-export const factory: TemplateCheckFactory<8108, 'skipHydrationNotStatic'> = {
-  code: 8108,
+export const factory: TemplateCheckFactory<
+  ErrorCode.SKIP_HYDRATION_NOT_STATIC,
+  'skipHydrationNotStatic'
+> = {
+  code: ErrorCode.SKIP_HYDRATION_NOT_STATIC,
   name: 'skipHydrationNotStatic',
   create: () => new NgSkipHydrationSpec(),
 };

@@ -606,7 +606,7 @@ impl ComponentData {
 /// `validate()` on `span` with ngtsc's code and message.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ValueIssue {
-    pub code: &'static str,
+    pub code: crate::ErrorCode,
     pub span: oxc_span::Span,
     pub message: String,
     pub next: Vec<String>,
@@ -616,32 +616,32 @@ pub struct ValueIssue {
 impl ValueIssue {
     /// `DECORATOR_ARG_NOT_LITERAL` (`NG1001`).
     pub fn arg_not_literal(span: oxc_span::Span, message: impl Into<String>) -> Self {
-        Self::new("1001", span, message)
+        Self::new(crate::ErrorCode::DECORATOR_ARG_NOT_LITERAL, span, message)
     }
 
     /// `DECORATOR_ARITY_WRONG` (`NG1002`).
     pub fn arity_wrong(span: oxc_span::Span, message: impl Into<String>) -> Self {
-        Self::new("1002", span, message)
+        Self::new(crate::ErrorCode::DECORATOR_ARITY_WRONG, span, message)
     }
 
     /// `DECORATOR_NOT_CALLED` (`NG1003`).
     pub fn decorator_not_called(span: oxc_span::Span, message: impl Into<String>) -> Self {
-        Self::new("1003", span, message)
+        Self::new(crate::ErrorCode::DECORATOR_NOT_CALLED, span, message)
     }
 
     /// `DECORATOR_UNEXPECTED` (`NG1005`).
     pub fn decorator_unexpected(span: oxc_span::Span, message: impl Into<String>) -> Self {
-        Self::new("1005", span, message)
+        Self::new(crate::ErrorCode::DECORATOR_UNEXPECTED, span, message)
     }
 
     /// `DECORATOR_COLLISION` (`NG1006`).
     pub fn decorator_collision(span: oxc_span::Span, message: impl Into<String>) -> Self {
-        Self::new("1006", span, message)
+        Self::new(crate::ErrorCode::DECORATOR_COLLISION, span, message)
     }
 
     /// `VALUE_HAS_WRONG_TYPE` (`NG1010`) whose message already carries any detail.
     pub fn wrong_type(span: oxc_span::Span, message: impl Into<String>) -> Self {
-        Self::new("1010", span, message)
+        Self::new(crate::ErrorCode::VALUE_HAS_WRONG_TYPE, span, message)
     }
 
     /// `VALUE_HAS_WRONG_TYPE` (`NG1010`) for `value`, with the detail ngtsc's
@@ -652,7 +652,7 @@ impl ValueIssue {
         message: &str,
     ) -> Self {
         Self::new(
-            "1010",
+            crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
             span,
             crate::evaluator::wrong_type_message(message, value),
         )
@@ -661,7 +661,7 @@ impl ValueIssue {
     /// `VALUE_HAS_WRONG_TYPE` (`NG1010`) with the detail of `createValueHasWrongTypeError`
     /// chained under the message.
     pub fn wrong_type_with_detail(span: oxc_span::Span, message: &str, detail: &str) -> Self {
-        let mut issue = Self::new("1010", span, message);
+        let mut issue = Self::new(crate::ErrorCode::VALUE_HAS_WRONG_TYPE, span, message);
         issue.next.push(detail.to_string());
         issue
     }
@@ -669,7 +669,7 @@ impl ValueIssue {
     /// `CONFLICTING_INPUT_TRANSFORM` (`NG2020`).
     pub fn conflicting_input_transform(span: oxc_span::Span, input: &str) -> Self {
         Self::new(
-            "2020",
+            crate::ErrorCode::CONFLICTING_INPUT_TRANSFORM,
             span,
             format!(
                 "Class cannot have both a transform function on Input {input} and a static \
@@ -681,7 +681,7 @@ impl ValueIssue {
     /// `SYMBOL_NOT_EXPORTED` (`NG3001`) for the type of an input transform's parameter.
     pub fn symbol_not_exported(span: oxc_span::Span, decl_span: oxc_span::Span) -> Self {
         let mut issue = Self::new(
-            "3001",
+            crate::ErrorCode::SYMBOL_NOT_EXPORTED,
             span,
             "Symbol must be exported in order to be used as the type of an Input transform \
              function",
@@ -694,27 +694,43 @@ impl ValueIssue {
 
     /// `IMPORT_GENERATION_FAILURE` (`NG3004`) for a type that cannot be imported.
     pub fn import_generation_failure(span: oxc_span::Span, name: &str) -> Self {
-        Self::new("3004", span, format!("Unable to import type {name}."))
+        Self::new(
+            crate::ErrorCode::IMPORT_GENERATION_FAILURE,
+            span,
+            format!("Unable to import type {name}."),
+        )
     }
 
     /// `VALUE_NOT_LITERAL` (`NG1011`).
     pub fn not_literal(span: oxc_span::Span, message: impl Into<String>) -> Self {
-        Self::new("1011", span, message)
+        Self::new(crate::ErrorCode::VALUE_NOT_LITERAL, span, message)
     }
 
     /// `INITIALIZER_API_WITH_DISALLOWED_DECORATOR` (`NG1050`).
     pub fn disallowed_decorator(span: oxc_span::Span, message: impl Into<String>) -> Self {
-        Self::new("1050", span, message)
+        Self::new(
+            crate::ErrorCode::INITIALIZER_API_WITH_DISALLOWED_DECORATOR,
+            span,
+            message,
+        )
     }
 
     /// `INITIALIZER_API_DECORATOR_METADATA_COLLISION` (`NG1051`).
     pub fn metadata_collision(span: oxc_span::Span, message: impl Into<String>) -> Self {
-        Self::new("1051", span, message)
+        Self::new(
+            crate::ErrorCode::INITIALIZER_API_DECORATOR_METADATA_COLLISION,
+            span,
+            message,
+        )
     }
 
     /// `INITIALIZER_API_NO_REQUIRED_FUNCTION` (`NG1052`).
     pub fn no_required_function(span: oxc_span::Span, message: impl Into<String>) -> Self {
-        Self::new("1052", span, message)
+        Self::new(
+            crate::ErrorCode::INITIALIZER_API_NO_REQUIRED_FUNCTION,
+            span,
+            message,
+        )
     }
 
     /// `INITIALIZER_API_DISALLOWED_MEMBER_VISIBILITY` (`NG1053`).
@@ -726,7 +742,7 @@ impl ValueIssue {
     ) -> Self {
         let allowed: Vec<&str> = allowed.iter().map(|level| level.as_str()).collect();
         Self::new(
-            "1053",
+            crate::ErrorCode::INITIALIZER_API_DISALLOWED_MEMBER_VISIBILITY,
             span,
             format!(
                 "Cannot use \"{function_name}\" on a class member that is declared as {}.\n  \
@@ -739,7 +755,11 @@ impl ValueIssue {
 
     /// `INCORRECTLY_DECLARED_ON_STATIC_MEMBER` (`NG1100`).
     pub fn declared_on_static_member(span: oxc_span::Span, message: impl Into<String>) -> Self {
-        Self::new("1100", span, message)
+        Self::new(
+            crate::ErrorCode::INCORRECTLY_DECLARED_ON_STATIC_MEMBER,
+            span,
+            message,
+        )
     }
 
     /// `UNDECORATED_PROVIDER` (`NG2005`), ngtsc's `getProviderDiagnostics`.
@@ -747,7 +767,7 @@ impl ValueIssue {
     // TODO(parity): ngtsc attaches a related-information entry pointing at the class declaration.
     pub fn undecorated_provider(span: oxc_span::Span, class_name: &str) -> Self {
         Self::new(
-            "2005",
+            crate::ErrorCode::UNDECORATED_PROVIDER,
             span,
             format!(
                 "The class '{class_name}' cannot be created via dependency injection, as it does \
@@ -770,7 +790,7 @@ impl ValueIssue {
 
         let param_name = param.name.clone().unwrap_or_else(|| index.to_string());
         let mut issue = Self::new(
-            "2003",
+            crate::ErrorCode::PARAM_MISSING_TOKEN,
             param.name_span,
             format!(
                 "No suitable injection token for parameter '{param_name}' of class '{class_name}'."
@@ -835,7 +855,7 @@ impl ValueIssue {
         kind: &str,
     ) -> Self {
         Self::new(
-            "2016",
+            crate::ErrorCode::INJECTABLE_INHERITS_INVALID_CONSTRUCTOR,
             span,
             format!(
                 "The {} {class_name} inherits its constructor from {base_class_name}, but the \
@@ -862,7 +882,7 @@ impl ValueIssue {
             "Injectable"
         };
         Self::new(
-            "2006",
+            crate::ErrorCode::DIRECTIVE_INHERITS_UNDECORATED_CTOR,
             span,
             format!(
                 "The {} {class_name} inherits its constructor from {base_class_name}, but the \
@@ -879,7 +899,7 @@ impl ValueIssue {
     /// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/common/src/diagnostics.ts#L349-L358
     pub fn undecorated_class_using_angular_features(span: oxc_span::Span) -> Self {
         Self::new(
-            "2007",
+            crate::ErrorCode::UNDECORATED_CLASS_USING_ANGULAR_FEATURES,
             span,
             "Class is using Angular features but is not decorated. Please add an explicit \
              Angular decorator.",
@@ -890,7 +910,7 @@ impl ValueIssue {
     /// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/src/service.ts#L312-L318
     pub fn service_constructor_di(span: oxc_span::Span) -> Self {
         Self::new(
-            "2028",
+            crate::ErrorCode::SERVICE_CONSTRUCTOR_DI,
             span,
             "@Service class cannot use constructor dependency injection. Use the `inject` \
              function instead.",
@@ -899,7 +919,11 @@ impl ValueIssue {
 
     /// `NGMODULE_BOOTSTRAP_IS_STANDALONE` (`NG6009`).
     pub fn bootstrap_is_standalone(span: oxc_span::Span, message: impl Into<String>) -> Self {
-        Self::new("6009", span, message)
+        Self::new(
+            crate::ErrorCode::NGMODULE_BOOTSTRAP_IS_STANDALONE,
+            span,
+            message,
+        )
     }
 
     /// `UNSUPPORTED_INITIALIZER_API_USAGE` (`NG8110`).
@@ -907,7 +931,11 @@ impl ValueIssue {
         span: oxc_span::Span,
         message: impl Into<String>,
     ) -> Self {
-        Self::new("8110", span, message)
+        Self::new(
+            crate::ErrorCode::UNSUPPORTED_INITIALIZER_API_USAGE,
+            span,
+            message,
+        )
     }
 
     /// `FORBIDDEN_REQUIRED_INITIALIZER_INVOCATION` (`NG8118`).
@@ -915,10 +943,14 @@ impl ValueIssue {
         span: oxc_span::Span,
         message: impl Into<String>,
     ) -> Self {
-        Self::new("8118", span, message)
+        Self::new(
+            crate::ErrorCode::FORBIDDEN_REQUIRED_INITIALIZER_INVOCATION,
+            span,
+            message,
+        )
     }
 
-    fn new(code: &'static str, span: oxc_span::Span, message: impl Into<String>) -> Self {
+    fn new(code: crate::ErrorCode, span: oxc_span::Span, message: impl Into<String>) -> Self {
         Self {
             code,
             span,
@@ -2221,7 +2253,7 @@ impl ClassData {
                     diagnostics,
                     file_path,
                     converter,
-                    "1005",
+                    crate::ErrorCode::DECORATOR_UNEXPECTED,
                     *span,
                     format!(
                         "In {mode_name} mode, Angular does not support custom decorators. Ensure all class decorators are from Angular."
@@ -2352,7 +2384,7 @@ impl ClassData {
             diagnostics,
             file_path,
             converter,
-            "2023",
+            crate::ErrorCode::NON_STANDALONE_NOT_ALLOWED,
             span,
             message.to_string(),
         );
@@ -2383,7 +2415,7 @@ impl ClassData {
             diagnostics,
             file_path,
             converter,
-            "2004",
+            crate::ErrorCode::DIRECTIVE_MISSING_SELECTOR,
             self.decorated_span,
             format!("Directive {class_name} has no selector, please add it!"),
         );
@@ -2414,7 +2446,7 @@ impl ClassData {
         };
         diagnostics.push(
             crate::NgDiagnostic::error(
-                6007,
+                crate::ErrorCode::NGMODULE_DECLARATION_NOT_UNIQUE,
                 file_path.to_string_lossy().into_owned(),
                 crate::types::metadata::SpanMetadata::new(name_span, converter),
                 format!("The {kind} '{class_name}' is declared by more than one NgModule."),
@@ -2443,7 +2475,7 @@ impl ClassData {
             diagnostics,
             file_path,
             converter,
-            "6100",
+            crate::ErrorCode::WARN_NGMODULE_ID_UNNECESSARY,
             span,
             "Using 'module.id' for NgModule.id is a common anti-pattern that is ignored by \
              the Angular compiler."
@@ -2467,7 +2499,7 @@ impl ClassData {
                 diagnostics,
                 file_path,
                 converter,
-                "1005",
+                crate::ErrorCode::DECORATOR_UNEXPECTED,
                 decorator.span,
                 format!("Unexpected decorator {} on parameter.", decorator.name),
             );
@@ -2560,7 +2592,7 @@ impl ClassData {
                             diagnostics,
                             file_path,
                             converter,
-                            "11001",
+                            crate::ErrorCode::LOCAL_COMPILATION_UNRESOLVED_CONST,
                             unresolved_span,
                             "Unresolved identifier found for @Component.selector field! Did you \
                              import this identifier from a file outside of the compilation unit? \
@@ -2576,7 +2608,7 @@ impl ClassData {
                     diagnostics,
                     file_path,
                     converter,
-                    "1010",
+                    crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                     span,
                     "selector must be a string".to_string(),
                 );
@@ -2588,7 +2620,7 @@ impl ClassData {
                     diagnostics,
                     file_path,
                     converter,
-                    "2004",
+                    crate::ErrorCode::DIRECTIVE_MISSING_SELECTOR,
                     span,
                     format!("Directive {class_name} has no selector, please add it!"),
                 );
@@ -2642,7 +2674,7 @@ impl ClassData {
                         diagnostics,
                         file_path,
                         converter,
-                        "11001",
+                        crate::ErrorCode::LOCAL_COMPILATION_UNRESOLVED_CONST,
                         unresolved_span,
                         "Unresolved identifier found for exportAs field! Did you import this \
                          identifier from a file outside of the compilation unit? This is not \
@@ -2656,7 +2688,7 @@ impl ClassData {
                         diagnostics,
                         file_path,
                         converter,
-                        "1010",
+                        crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                         span,
                         "exportAs must be a string".to_string(),
                     );
@@ -2672,7 +2704,7 @@ impl ClassData {
                 diagnostics,
                 file_path,
                 converter,
-                "1010",
+                crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                 span,
                 "standalone flag must be a boolean".to_string(),
             );
@@ -2687,7 +2719,7 @@ impl ClassData {
                     diagnostics,
                     file_path,
                     converter,
-                    "1002",
+                    crate::ErrorCode::DECORATOR_ARITY_WRONG,
                     binding.decorator_span,
                     format!(
                         "@HostBinding can have at most one argument, got {} argument(s)",
@@ -2707,7 +2739,7 @@ impl ClassData {
                             diagnostics,
                             file_path,
                             converter,
-                            "11001",
+                            crate::ErrorCode::LOCAL_COMPILATION_UNRESOLVED_CONST,
                             unresolved_span,
                             "Unresolved identifier found for @HostBinding's argument! Did you \
                              import this identifier from a file outside of the compilation unit? \
@@ -2726,7 +2758,7 @@ impl ClassData {
                     diagnostics,
                     file_path,
                     converter,
-                    "1010",
+                    crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                     binding.decorator_span,
                     "@HostBinding's argument must be a string".to_string(),
                 );
@@ -2747,7 +2779,7 @@ impl ClassData {
                             diagnostics,
                             file_path,
                             converter,
-                            "11001",
+                            crate::ErrorCode::LOCAL_COMPILATION_UNRESOLVED_CONST,
                             unresolved_span,
                             "Unresolved identifier found for @HostListener's event name argument! \
                              Did you import this identifier from a file outside of the \
@@ -2766,7 +2798,7 @@ impl ClassData {
                     diagnostics,
                     file_path,
                     converter,
-                    "1010",
+                    crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                     listener
                         .event_name
                         .as_ref()
@@ -2783,7 +2815,7 @@ impl ClassData {
                             diagnostics,
                             file_path,
                             converter,
-                            "1010",
+                            crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                             *span,
                             "@HostListener's second argument must be a string array".to_string(),
                         );
@@ -2793,7 +2825,7 @@ impl ClassData {
                             diagnostics,
                             file_path,
                             converter,
-                            "1010",
+                            crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                             *span,
                             format!("Failed to resolve @HostListener.args at position {index} to a string"),
                         );
@@ -2822,7 +2854,7 @@ impl ClassData {
                     diagnostics,
                     file_path,
                     converter,
-                    "11003",
+                    crate::ErrorCode::LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION,
                     *span,
                     format!(
                         "In {mode_name} mode, host directive cannot be an expression. Use an identifier instead"
@@ -2842,7 +2874,7 @@ impl ClassData {
                         diagnostics,
                         file_path,
                         converter,
-                        "1010",
+                        crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                         span,
                         error.message().to_string(),
                     );
@@ -2874,7 +2906,7 @@ impl ClassData {
                 diagnostics,
                 file_path,
                 converter,
-                "2021",
+                crate::ErrorCode::COMPONENT_INVALID_STYLE_URLS,
                 span,
                 "@Component cannot define both `styleUrl` and `styleUrls`. Use `styleUrl` if the component has one stylesheet, or `styleUrls` if it has multiple".to_string(),
             );
@@ -2885,7 +2917,7 @@ impl ClassData {
                 diagnostics,
                 file_path,
                 converter,
-                "1010",
+                crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                 issue.span,
                 issue.message.clone(),
             );
@@ -2899,7 +2931,7 @@ impl ClassData {
                         diagnostics,
                         file_path,
                         converter,
-                        "2008",
+                        crate::ErrorCode::COMPONENT_RESOURCE_NOT_FOUND,
                         span,
                         format!("Could not find stylesheet file '{}'.", u.url),
                     );
@@ -2914,7 +2946,7 @@ impl ClassData {
                     diagnostics,
                     file_path,
                     converter,
-                    "2008",
+                    crate::ErrorCode::COMPONENT_RESOURCE_NOT_FOUND,
                     span,
                     format!("Could not find template file '{}'.", t_url.url),
                 );
@@ -2951,7 +2983,7 @@ impl ClassData {
                     diagnostics,
                     file_path,
                     converter,
-                    "11001",
+                    crate::ErrorCode::LOCAL_COMPILATION_UNRESOLVED_CONST,
                     unresolved_span,
                     "Unresolved identifier found for @Component.styles field! Did you import \
                      this identifier from a file outside of the compilation unit? This is not \
@@ -2972,7 +3004,14 @@ impl ClassData {
                 format!("Failed to resolve styles at position {index} to a string")
             }
         };
-        push_error(diagnostics, file_path, converter, "1010", span, message);
+        push_error(
+            diagnostics,
+            file_path,
+            converter,
+            crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
+            span,
+            message,
+        );
     }
 
     fn validate_shadow_dom_selector(
@@ -3018,7 +3057,7 @@ impl ClassData {
             diagnostics,
             file_path,
             converter,
-            "2009",
+            crate::ErrorCode::COMPONENT_INVALID_SHADOW_DOM_SELECTOR,
             span,
             message.to_string(),
         );
@@ -3045,7 +3084,7 @@ impl ClassData {
                 diagnostics,
                 file_path,
                 converter,
-                "2002",
+                crate::ErrorCode::PIPE_MISSING_NAME,
                 metadata_span,
                 "@Pipe decorator is missing name field".to_string(),
             );
@@ -3054,7 +3093,7 @@ impl ClassData {
                 diagnostics,
                 file_path,
                 converter,
-                "1010",
+                crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                 p.name_span.unwrap_or(metadata_span),
                 "@Pipe.name must be a string".to_string(),
             );
@@ -3066,7 +3105,7 @@ impl ClassData {
                 diagnostics,
                 file_path,
                 converter,
-                "1010",
+                crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                 span,
                 "@Pipe.pure must be a boolean".to_string(),
             );
@@ -3077,7 +3116,7 @@ impl ClassData {
                 diagnostics,
                 file_path,
                 converter,
-                "1010",
+                crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                 span,
                 "standalone flag must be a boolean".to_string(),
             );
@@ -3109,7 +3148,7 @@ impl ClassData {
                     diagnostics,
                     file_path,
                     converter,
-                    "1010",
+                    crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                     span,
                     "templateUrl must be a string".to_string(),
                 );
@@ -3126,7 +3165,7 @@ impl ClassData {
                             diagnostics,
                             file_path,
                             converter,
-                            "11001",
+                            crate::ErrorCode::LOCAL_COMPILATION_UNRESOLVED_CONST,
                             span,
                             "Unresolved identifier found for @Component.template field! Did you \
                              import this identifier from a file outside of the compilation unit? \
@@ -3141,7 +3180,7 @@ impl ClassData {
                             diagnostics,
                             file_path,
                             converter,
-                            "1010",
+                            crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                             span,
                             "template must be a string".to_string(),
                         );
@@ -3160,7 +3199,7 @@ impl ClassData {
                 diagnostics,
                 file_path,
                 converter,
-                "2001",
+                crate::ErrorCode::COMPONENT_MISSING_TEMPLATE,
                 span,
                 "@Component is missing a template. Add either a `template` or `templateUrl`"
                     .to_string(),
@@ -3197,7 +3236,7 @@ impl ClassData {
                 let file_path_str = file_path.to_string_lossy().into_owned();
                 diagnostics.push(
                     crate::NgDiagnostic::error(
-                        2010,
+                        crate::ErrorCode::COMPONENT_NOT_STANDALONE,
                         file_path_str.clone(),
                         crate::types::metadata::SpanMetadata::new(span, converter),
                         format!("'{field}' is only valid on a component that is standalone."),
@@ -3223,7 +3262,7 @@ impl ClassData {
                     diagnostics,
                     file_path,
                     converter,
-                    "2010",
+                    crate::ErrorCode::COMPONENT_NOT_STANDALONE,
                     span,
                     "'schemas' is only valid on a component that is standalone.".to_string(),
                 );
@@ -3255,7 +3294,7 @@ impl ClassData {
                 diagnostics,
                 file_path,
                 converter,
-                "1010",
+                crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                 issue.span,
                 message.to_string(),
             );
@@ -3431,18 +3470,16 @@ fn push_error(
     diagnostics: &mut Vec<crate::NgDiagnostic>,
     file_path: &std::path::Path,
     converter: &crate::utils::Utf8ToUtf16,
-    code: &'static str,
+    code: crate::ErrorCode,
     span: oxc_span::Span,
     message: String,
 ) {
-    push_diagnostic(
-        diagnostics,
-        file_path,
-        converter,
-        oxc_diagnostics::OxcDiagnostic::error(message),
+    diagnostics.push(crate::NgDiagnostic::error(
         code,
-        span,
-    );
+        file_path.to_string_lossy().into_owned(),
+        crate::SpanMetadata::new(span, converter),
+        message,
+    ));
 }
 
 /// [`push_error`] for a recorded [`ValueIssue`].
@@ -3452,22 +3489,14 @@ pub(crate) fn push_issue(
     converter: &crate::utils::Utf8ToUtf16,
     issue: &ValueIssue,
 ) {
-    push_error(
-        diagnostics,
-        file_path,
-        converter,
+    let file_path_str = file_path.to_string_lossy().into_owned();
+    let mut diagnostic = crate::NgDiagnostic::error(
         issue.code,
-        issue.span,
+        file_path_str.clone(),
+        crate::SpanMetadata::new(issue.span, converter),
         issue.message.clone(),
     );
-    let Some(diagnostic) = diagnostics.last_mut() else {
-        return;
-    };
     diagnostic.next = issue.next.clone();
-    let file_path_str = diagnostic
-        .file_path
-        .clone()
-        .unwrap_or_else(|| file_path.to_string_lossy().into_owned());
     diagnostic.related_information = issue
         .related
         .iter()
@@ -3477,6 +3506,7 @@ pub(crate) fn push_issue(
             message_text: message.clone(),
         })
         .collect();
+    diagnostics.push(diagnostic);
 }
 
 /// [`push_error`] for the codes ngtsc reports as warnings rather than errors, which compile
@@ -3485,35 +3515,15 @@ fn push_warning(
     diagnostics: &mut Vec<crate::NgDiagnostic>,
     file_path: &std::path::Path,
     converter: &crate::utils::Utf8ToUtf16,
-    code: &'static str,
+    code: crate::ErrorCode,
     span: oxc_span::Span,
     message: String,
 ) {
-    push_diagnostic(
-        diagnostics,
-        file_path,
-        converter,
-        oxc_diagnostics::OxcDiagnostic::warn(message),
+    diagnostics.push(crate::NgDiagnostic::warning(
         code,
-        span,
-    );
-}
-
-/// Stamp the `NG` code and source span onto a diagnostic and push it. The severity already
-/// on `diag` is what `NgDiagnostic::from_oxc` turns into the wire category.
-fn push_diagnostic(
-    diagnostics: &mut Vec<crate::NgDiagnostic>,
-    file_path: &std::path::Path,
-    converter: &crate::utils::Utf8ToUtf16,
-    diag: oxc_diagnostics::OxcDiagnostic,
-    code: &'static str,
-    span: oxc_span::Span,
-) {
-    let oxc_diag = diag.with_error_code("NG", code).with_label(span);
-    diagnostics.push(crate::NgDiagnostic::from_oxc(
-        &oxc_diag,
-        Some(file_path.to_string_lossy().into_owned()),
-        converter,
+        file_path.to_string_lossy().into_owned(),
+        crate::SpanMetadata::new(span, converter),
+        message,
     ));
 }
 

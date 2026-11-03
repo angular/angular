@@ -19,6 +19,7 @@
 import type {AnalyzerBackend, LoadAnalyzerOptions, LoadedAnalyzer} from './src/analyzer_loader.js';
 import type {IAnalyzer} from './src/hybrid_compiler.js';
 
+export {ErrorCode} from '@angular/compiler-cli/private/hybrid_preprocessor';
 export {HybridCompiler} from './src/hybrid_compiler.js';
 export type {HybridCompilerOptions, IAnalyzer} from './src/hybrid_compiler.js';
 

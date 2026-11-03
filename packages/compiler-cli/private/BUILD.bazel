@@ -31,6 +31,7 @@ ts_project(
     srcs = ["hybrid_preprocessor.ts"],
     deps = [
         "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/diagnostics:error_code",
         "//packages/compiler-cli/src/ngtsc/hmr:extract_dependencies_output",
         "//packages/compiler-cli/src/ngtsc/imports:core_symbols",
     ],

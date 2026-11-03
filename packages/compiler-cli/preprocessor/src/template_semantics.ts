@@ -23,10 +23,8 @@ import {
   unwrapWriteTarget,
   type TcbDirectiveMetadata,
 } from '@angular/compiler';
+import {ErrorCode} from '@angular/compiler-cli/private/hybrid_preprocessor';
 import {Diagnostic} from './diagnostic.js';
-
-/** `ErrorCode.WRITE_TO_READ_ONLY_VARIABLE`. */
-const WRITE_TO_READ_ONLY_VARIABLE = 8005;
 
 /**
  * Verifies the semantics of a component's template, reporting the diagnostics of ngtsc's
@@ -124,7 +122,7 @@ class ExpressionsSemanticsVisitor extends RecursiveAstVisitor {
     this.diagnostics.push({
       typeCheckId: this.typeCheckId,
       category: OutOfBandDiagnosticCategory.Error,
-      code: WRITE_TO_READ_ONLY_VARIABLE,
+      code: ErrorCode.WRITE_TO_READ_ONLY_VARIABLE,
       message,
       start: event.handlerSpan.start.offset,
       end: event.handlerSpan.end.offset,

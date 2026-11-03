@@ -736,7 +736,7 @@ mod tests {
         options: Option<String>,
         is_static: bool,
         is_signal: bool,
-        predicate_issue: Option<(&'static str, String, String)>,
+        predicate_issue: Option<(crate::ErrorCode, String, String)>,
     }
 
     fn parse_class(source_text: &str) -> (Vec<QueryTestResult>, Vec<QueryTestResult>) {
@@ -752,7 +752,7 @@ mod tests {
     ) -> (
         Vec<QueryTestResult>,
         Vec<QueryTestResult>,
-        Vec<(&'static str, String, String)>,
+        Vec<(crate::ErrorCode, String, String)>,
     ) {
         let allocator = Allocator::default();
         let source_type = SourceType::default().with_typescript(true);
@@ -1178,18 +1178,18 @@ mod tests {
             issues,
             vec![
                 (
-                    "1006",
+                    crate::ErrorCode::DECORATOR_COLLISION,
                     "Cannot combine multiple query decorators.".to_string(),
                     "@ContentChild('bar', {static: true})\n            @ContentChild('foo')\n            multiple: any;"
                         .to_string()
                 ),
                 (
-                    "1006",
+                    crate::ErrorCode::DECORATOR_COLLISION,
                     "Cannot combine @Input decorators with query decorators".to_string(),
                     "@Input() @ViewChild('foo') withInput: any;".to_string()
                 ),
                 (
-                    "1005",
+                    crate::ErrorCode::DECORATOR_UNEXPECTED,
                     "Query decorator must go on a property-type member".to_string(),
                     "@ContentChildren('foo')\n            private someFn() {}".to_string()
                 ),
@@ -1216,17 +1216,17 @@ mod tests {
             issues,
             vec![
                 (
-                    "1002",
+                    crate::ErrorCode::DECORATOR_ARITY_WRONG,
                     "@ViewChild must have arguments".to_string(),
                     "@ViewChild() none: any;".to_string()
                 ),
                 (
-                    "1002",
+                    crate::ErrorCode::DECORATOR_ARITY_WRONG,
                     "@ViewChildren must have arguments".to_string(),
                     "@ViewChildren bare: any;".to_string()
                 ),
                 (
-                    "1002",
+                    crate::ErrorCode::DECORATOR_ARITY_WRONG,
                     "@ContentChild has too many arguments".to_string(),
                     "'foo'".to_string()
                 ),
@@ -1263,35 +1263,35 @@ mod tests {
             issues,
             vec![
                 (
-                    "1001",
+                    crate::ErrorCode::DECORATOR_ARG_NOT_LITERAL,
                     "@ViewChild options must be an object literal".to_string(),
                     "'invalidOptionsArgumentType'".to_string()
                 ),
                 (
-                    "1001",
+                    crate::ErrorCode::DECORATOR_ARG_NOT_LITERAL,
                     "@ViewChild options must be an object literal".to_string(),
                     "OPTIONS".to_string()
                 ),
                 (
-                    "1010",
+                    crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                     "@ContentChild options.descendants must be a boolean\n  Value is of type 'string'."
                         .to_string(),
                     "'invalid'".to_string()
                 ),
                 (
-                    "1010",
+                    crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                     "@ContentChildren options.descendants must be a boolean\n  Value is of type 'string'."
                         .to_string(),
                     "DESCENDANTS".to_string()
                 ),
                 (
-                    "1010",
+                    crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                     "@ViewChild options.emitDistinctChangesOnly must be a boolean\n  Value is of type 'number'."
                         .to_string(),
                     "1".to_string()
                 ),
                 (
-                    "1010",
+                    crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                     "@ViewChild options.static must be a boolean\n  Value is of type 'null'."
                         .to_string(),
                     "'foo'".to_string()
@@ -1328,19 +1328,19 @@ mod tests {
             predicate_issues,
             vec![
                 (
-                    "1010",
+                    crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                     "Failed to resolve @ContentChildren predicate at position 1 to a string\n  Value is of type '{ 'invalid-predicate-type': boolean }'."
                         .to_string(),
                     "['predicate-a', {'invalid-predicate-type': true}]".to_string()
                 ),
                 (
-                    "1010",
+                    crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                     "@ViewChild predicate cannot be interpreted\n  Value is of type '{ 'invalid-predicate-type': boolean }'."
                         .to_string(),
                     "{'invalid-predicate-type': true}".to_string()
                 ),
                 (
-                    "1010",
+                    crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
                     "@ViewChild predicate cannot be interpreted\n  Value is of type 'number'."
                         .to_string(),
                     "42".to_string()

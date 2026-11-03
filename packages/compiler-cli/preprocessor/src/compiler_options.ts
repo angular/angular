@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ErrorCode} from '@angular/compiler-cli/private/hybrid_preprocessor';
 import type {NgDiagnostic} from './types.js';
 
 /**
@@ -139,11 +140,6 @@ export interface NgpCompilerOptions {
   rootDirs?: string[];
 }
 
-const CONFIG_EXTENDED_DIAGNOSTICS_IMPLIES_STRICT_TEMPLATES = 4003;
-const CONFIG_EXTENDED_DIAGNOSTICS_UNKNOWN_CATEGORY_LABEL = 4004;
-const CONFIG_EXTENDED_DIAGNOSTICS_UNKNOWN_CHECK = 4005;
-const CONFIG_EMIT_DECLARATION_ONLY_UNSUPPORTED = 4006;
-
 /**
  * Validates `extendedDiagnostics` compiler options, mirroring `verifyCompatibleTypeCheckOptions`
  * in `ngtsc/core/src/compiler.ts`.
@@ -153,12 +149,12 @@ export function verifyExtendedDiagnosticsOptions(options: NgpCompilerOptions): N
     return [];
   }
   const diagnostics: NgDiagnostic[] = [];
-  const configError = (code: number, messageText: string) =>
-    diagnostics.push({category: 1, code, messageText});
+  const configError = (code: ErrorCode, messageText: string) =>
+    diagnostics.push({category: 1, code: Math.abs(code), messageText});
 
   if (options.strictTemplates === false) {
     configError(
-      CONFIG_EXTENDED_DIAGNOSTICS_IMPLIES_STRICT_TEMPLATES,
+      ErrorCode.CONFIG_EXTENDED_DIAGNOSTICS_IMPLIES_STRICT_TEMPLATES,
       `
 Angular compiler option "extendedDiagnostics" is configured, however "strictTemplates" is disabled.
 
@@ -174,7 +170,7 @@ One of the following actions is required:
   const defaultCategory = options.extendedDiagnostics.defaultCategory;
   if (defaultCategory !== undefined && !DIAGNOSTIC_CATEGORY_LABELS.includes(defaultCategory)) {
     configError(
-      CONFIG_EXTENDED_DIAGNOSTICS_UNKNOWN_CATEGORY_LABEL,
+      ErrorCode.CONFIG_EXTENDED_DIAGNOSTICS_UNKNOWN_CATEGORY_LABEL,
       `
 Angular compiler option "extendedDiagnostics.defaultCategory" has an unknown diagnostic category: "${defaultCategory}".
 
@@ -187,7 +183,7 @@ ${DIAGNOSTIC_CATEGORY_LABELS.join('\n')}
   for (const [checkName, category] of Object.entries(options.extendedDiagnostics.checks ?? {})) {
     if (!(SUPPORTED_DIAGNOSTIC_NAMES as ReadonlySet<string>).has(checkName)) {
       configError(
-        CONFIG_EXTENDED_DIAGNOSTICS_UNKNOWN_CHECK,
+        ErrorCode.CONFIG_EXTENDED_DIAGNOSTICS_UNKNOWN_CHECK,
         `
 Angular compiler option "extendedDiagnostics.checks" has an unknown check: "${checkName}".
 
@@ -199,7 +195,7 @@ ${Array.from(SUPPORTED_DIAGNOSTIC_NAMES).join('\n')}
 
     if (!DIAGNOSTIC_CATEGORY_LABELS.includes(category as string)) {
       configError(
-        CONFIG_EXTENDED_DIAGNOSTICS_UNKNOWN_CATEGORY_LABEL,
+        ErrorCode.CONFIG_EXTENDED_DIAGNOSTICS_UNKNOWN_CATEGORY_LABEL,
         `
 Angular compiler option "extendedDiagnostics.checks['${checkName}']" has an unknown diagnostic category: "${category}".
 
@@ -227,7 +223,7 @@ export function verifyCompilerOptions(options: NgpCompilerOptions): NgDiagnostic
   if (options.emitDeclarationOnly && !options._experimentalAllowEmitDeclarationOnly) {
     diagnostics.push({
       category: 1,
-      code: CONFIG_EMIT_DECLARATION_ONLY_UNSUPPORTED,
+      code: ErrorCode.CONFIG_EMIT_DECLARATION_ONLY_UNSUPPORTED,
       messageText: 'TS compiler option "emitDeclarationOnly" is not supported.',
     });
   }

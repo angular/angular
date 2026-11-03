@@ -231,7 +231,7 @@ mod tests {
     use oxc_semantic::SemanticBuilder;
     use oxc_span::SourceType;
 
-    fn issues(source: &str) -> Vec<(&'static str, String, String)> {
+    fn issues(source: &str) -> Vec<(crate::ErrorCode, String, String)> {
         let allocator = Allocator::default();
         let ret = Parser::new(&allocator, source, SourceType::ts()).parse();
         assert!(
@@ -311,9 +311,9 @@ mod tests {
              @Directive() export class D { inp = input(); }",
         );
         assert_eq!(found.len(), 2);
-        assert!(found
-            .iter()
-            .all(|(code, message, _)| *code == "8110" && message.ends_with(NOT_DIRECTIVE)));
+        assert!(found.iter().all(|(code, message, _)| *code
+            == crate::ErrorCode::UNSUPPORTED_INITIALIZER_API_USAGE
+            && message.ends_with(NOT_DIRECTIVE)));
     }
 
     #[test]
@@ -327,14 +327,14 @@ mod tests {
             found,
             [
                 (
-                    "8110",
+                    crate::ErrorCode::UNSUPPORTED_INITIALIZER_API_USAGE,
                     format!(
                         "Unsupported call to the outputFromObservable function. {NOT_INITIALIZER}"
                     ),
                     "outputFromObservable({} as any)".to_string(),
                 ),
                 (
-                    "8110",
+                    crate::ErrorCode::UNSUPPORTED_INITIALIZER_API_USAGE,
                     format!(
                         "Unsupported call to the outputFromObservable function. {NOT_DIRECTIVE}"
                     ),
@@ -383,26 +383,26 @@ mod tests {
             found,
             [
                 (
-                    "8118",
+                    crate::ErrorCode::FORBIDDEN_REQUIRED_INITIALIZER_INVOCATION,
                     "`reqInp` is a required `input` and does not have a value in this context."
                         .to_string(),
                     "this.reqInp".to_string()
                 ),
                 (
-                    "8118",
+                    crate::ErrorCode::FORBIDDEN_REQUIRED_INITIALIZER_INVOCATION,
                     "`reqModel` is a required `model` and does not have a value in this context."
                         .to_string(),
                     "this.reqModel".to_string()
                 ),
                 (
-                    "8118",
+                    crate::ErrorCode::FORBIDDEN_REQUIRED_INITIALIZER_INVOCATION,
                     "`reqChild` is a required `viewChild` and does not have a value in this \
                      context."
                         .to_string(),
                     "this.reqChild".to_string()
                 ),
                 (
-                    "8118",
+                    crate::ErrorCode::FORBIDDEN_REQUIRED_INITIALIZER_INVOCATION,
                     "`reqNs` is a required `ng.input` and does not have a value in this context."
                         .to_string(),
                     "this.reqNs".to_string()

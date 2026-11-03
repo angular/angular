@@ -7,6 +7,7 @@
  */
 
 import {AST, TmplAstBoundEvent, TmplAstNode} from '@angular/compiler';
+import {ErrorCode} from '@angular/compiler-cli/private/hybrid_preprocessor';
 import type {Diagnostic} from '../../diagnostic.js';
 import type {TcbTargetInput} from '../../tcb.js';
 import {
@@ -24,11 +25,11 @@ import {
  * Mirrors `InvalidBananaInBoxCheck` in
  * `ngtsc/typecheck/extended/checks/invalid_banana_in_box/index.ts`.
  */
-class InvalidBananaInBoxCheck extends TemplateCheckWithVisitor<8101> {
-  override code = 8101 as const;
+class InvalidBananaInBoxCheck extends TemplateCheckWithVisitor<ErrorCode.INVALID_BANANA_IN_BOX> {
+  override code = ErrorCode.INVALID_BANANA_IN_BOX as const;
 
   override visitNode(
-    ctx: TemplateContext<8101>,
+    ctx: TemplateContext<ErrorCode.INVALID_BANANA_IN_BOX>,
     _component: TcbTargetInput,
     node: TmplAstNode | AST,
   ): Diagnostic[] {
@@ -42,7 +43,7 @@ class InvalidBananaInBoxCheck extends TemplateCheckWithVisitor<8101> {
     const diagnostic = ctx.makeTemplateDiagnostic(
       node.sourceSpan,
       formatExtendedError(
-        8101,
+        ErrorCode.INVALID_BANANA_IN_BOX,
         `In the two-way binding syntax the parentheses should be inside the brackets, ex. '${expectedBoundSyntax}'`,
       ),
     );
@@ -50,8 +51,9 @@ class InvalidBananaInBoxCheck extends TemplateCheckWithVisitor<8101> {
   }
 }
 
-export const factory: TemplateCheckFactory<8101, 'invalidBananaInBox'> = {
-  code: 8101,
-  name: 'invalidBananaInBox',
-  create: () => new InvalidBananaInBoxCheck(),
-};
+export const factory: TemplateCheckFactory<ErrorCode.INVALID_BANANA_IN_BOX, 'invalidBananaInBox'> =
+  {
+    code: ErrorCode.INVALID_BANANA_IN_BOX,
+    name: 'invalidBananaInBox',
+    create: () => new InvalidBananaInBoxCheck(),
+  };

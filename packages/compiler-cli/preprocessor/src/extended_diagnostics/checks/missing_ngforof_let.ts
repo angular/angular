@@ -7,6 +7,7 @@
  */
 
 import {AST, TmplAstNode, TmplAstTemplate} from '@angular/compiler';
+import {ErrorCode} from '@angular/compiler-cli/private/hybrid_preprocessor';
 import type {Diagnostic} from '../../diagnostic.js';
 import type {TcbTargetInput} from '../../tcb.js';
 import {
@@ -23,11 +24,11 @@ import {
  * Mirrors `MissingNgForOfLetCheck` in
  * `ngtsc/typecheck/extended/checks/missing_ngforof_let/index.ts`.
  */
-class MissingNgForOfLetCheck extends TemplateCheckWithVisitor<8105> {
-  override code = 8105 as const;
+class MissingNgForOfLetCheck extends TemplateCheckWithVisitor<ErrorCode.MISSING_NGFOROF_LET> {
+  override code = ErrorCode.MISSING_NGFOROF_LET as const;
 
   override visitNode(
-    ctx: TemplateContext<8105>,
+    ctx: TemplateContext<ErrorCode.MISSING_NGFOROF_LET>,
     _component: TcbTargetInput,
     node: TmplAstNode | AST,
   ): Diagnostic[] {
@@ -48,7 +49,7 @@ class MissingNgForOfLetCheck extends TemplateCheckWithVisitor<8105> {
     }
 
     const errorString = formatExtendedError(
-      8105,
+      ErrorCode.MISSING_NGFOROF_LET,
       `Your ngFor is missing a value. Did you forget to add the \`let\` keyword?`,
     );
 
@@ -56,8 +57,8 @@ class MissingNgForOfLetCheck extends TemplateCheckWithVisitor<8105> {
   }
 }
 
-export const factory: TemplateCheckFactory<8105, 'missingNgForOfLet'> = {
-  code: 8105,
+export const factory: TemplateCheckFactory<ErrorCode.MISSING_NGFOROF_LET, 'missingNgForOfLet'> = {
+  code: ErrorCode.MISSING_NGFOROF_LET,
   name: 'missingNgForOfLet',
   create: () => new MissingNgForOfLetCheck(),
 };

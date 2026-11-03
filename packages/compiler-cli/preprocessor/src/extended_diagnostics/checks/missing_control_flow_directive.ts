@@ -7,6 +7,7 @@
  */
 
 import {AST, TmplAstNode, TmplAstTemplate} from '@angular/compiler';
+import {ErrorCode} from '@angular/compiler-cli/private/hybrid_preprocessor';
 import type {Diagnostic} from '../../diagnostic.js';
 import type {TcbTargetInput} from '../../tcb.js';
 import {
@@ -35,11 +36,11 @@ export const KNOWN_CONTROL_FLOW_DIRECTIVES = new Map([
  * Mirrors `MissingControlFlowDirectiveCheck` in
  * `ngtsc/typecheck/extended/checks/missing_control_flow_directive/index.ts`.
  */
-class MissingControlFlowDirectiveCheck extends TemplateCheckWithVisitor<8103> {
-  override code = 8103 as const;
+class MissingControlFlowDirectiveCheck extends TemplateCheckWithVisitor<ErrorCode.MISSING_CONTROL_FLOW_DIRECTIVE> {
+  override code = ErrorCode.MISSING_CONTROL_FLOW_DIRECTIVE as const;
 
   override run(
-    ctx: TemplateContext<8103>,
+    ctx: TemplateContext<ErrorCode.MISSING_CONTROL_FLOW_DIRECTIVE>,
     component: TcbTargetInput,
     template: TmplAstNode[],
   ): Diagnostic[] {
@@ -50,7 +51,7 @@ class MissingControlFlowDirectiveCheck extends TemplateCheckWithVisitor<8103> {
   }
 
   override visitNode(
-    ctx: TemplateContext<8103>,
+    ctx: TemplateContext<ErrorCode.MISSING_CONTROL_FLOW_DIRECTIVE>,
     _component: TcbTargetInput,
     node: TmplAstNode | AST,
   ): Diagnostic[] {
@@ -69,7 +70,7 @@ class MissingControlFlowDirectiveCheck extends TemplateCheckWithVisitor<8103> {
     const sourceSpan = controlFlowAttr.keySpan || controlFlowAttr.sourceSpan;
     const directiveAndBuiltIn = KNOWN_CONTROL_FLOW_DIRECTIVES.get(controlFlowAttr.name);
     const errorMessage = formatExtendedError(
-      8103,
+      ErrorCode.MISSING_CONTROL_FLOW_DIRECTIVE,
       `The \`*${controlFlowAttr.name}\` directive was used in the template, ` +
         `but neither the \`${directiveAndBuiltIn?.directive}\` directive nor the \`CommonModule\` was imported. ` +
         `Use Angular's built-in control flow ${directiveAndBuiltIn?.builtIn} or ` +
@@ -81,8 +82,11 @@ class MissingControlFlowDirectiveCheck extends TemplateCheckWithVisitor<8103> {
   }
 }
 
-export const factory: TemplateCheckFactory<8103, 'missingControlFlowDirective'> = {
-  code: 8103,
+export const factory: TemplateCheckFactory<
+  ErrorCode.MISSING_CONTROL_FLOW_DIRECTIVE,
+  'missingControlFlowDirective'
+> = {
+  code: ErrorCode.MISSING_CONTROL_FLOW_DIRECTIVE,
   name: 'missingControlFlowDirective',
   create: () => new MissingControlFlowDirectiveCheck(),
 };

@@ -1,14 +1,28 @@
+load("@bazel_lib//lib:write_source_files.bzl", "write_source_file")
 load("//tools:defaults.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
 ts_project(
+    name = "error_code",
+    srcs = ["src/error_code.ts"],
+)
+
+ts_project(
     name = "diagnostics",
-    srcs = ["index.ts"] + glob([
-        "src/**/*.ts",
-    ]),
+    srcs = ["index.ts"] + glob(
+        ["src/**/*.ts"],
+        exclude = ["src/error_code.ts"],
+    ),
     deps = [
+        ":error_code",
         "//:node_modules/typescript",
         "//packages/compiler",
     ],
+)
+
+write_source_file(
+    name = "sync_error_code",
+    in_file = "//packages/compiler-cli/preprocessor/ng-analyze:generated_error_code.ts",
+    out_file = "src/error_code.ts",
 )

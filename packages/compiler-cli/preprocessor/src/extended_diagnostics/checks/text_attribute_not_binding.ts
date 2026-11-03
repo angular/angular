@@ -7,6 +7,7 @@
  */
 
 import {AST, TmplAstNode, TmplAstTextAttribute} from '@angular/compiler';
+import {ErrorCode} from '@angular/compiler-cli/private/hybrid_preprocessor';
 import type {Diagnostic} from '../../diagnostic.js';
 import type {TcbTargetInput} from '../../tcb.js';
 import {
@@ -23,11 +24,11 @@ import {
  * Mirrors `TextAttributeNotBindingSpec` in
  * `ngtsc/typecheck/extended/checks/text_attribute_not_binding/index.ts`.
  */
-class TextAttributeNotBindingSpec extends TemplateCheckWithVisitor<8104> {
-  override code = 8104 as const;
+class TextAttributeNotBindingSpec extends TemplateCheckWithVisitor<ErrorCode.TEXT_ATTRIBUTE_NOT_BINDING> {
+  override code = ErrorCode.TEXT_ATTRIBUTE_NOT_BINDING as const;
 
   override visitNode(
-    ctx: TemplateContext<8104>,
+    ctx: TemplateContext<ErrorCode.TEXT_ATTRIBUTE_NOT_BINDING>,
     _component: TcbTargetInput,
     node: TmplAstNode | AST,
   ): Diagnostic[] {
@@ -53,15 +54,18 @@ class TextAttributeNotBindingSpec extends TemplateCheckWithVisitor<8104> {
       if (node.value) {
         errorString += ` For example, '${expectedKey}="${expectedValue}"'.`;
       }
-      errorString = formatExtendedError(8104, errorString);
+      errorString = formatExtendedError(ErrorCode.TEXT_ATTRIBUTE_NOT_BINDING, errorString);
     }
 
     return [ctx.makeTemplateDiagnostic(node.sourceSpan, errorString)];
   }
 }
 
-export const factory: TemplateCheckFactory<8104, 'textAttributeNotBinding'> = {
-  code: 8104,
+export const factory: TemplateCheckFactory<
+  ErrorCode.TEXT_ATTRIBUTE_NOT_BINDING,
+  'textAttributeNotBinding'
+> = {
+  code: ErrorCode.TEXT_ATTRIBUTE_NOT_BINDING,
   name: 'textAttributeNotBinding',
   create: () => new TextAttributeNotBindingSpec(),
 };

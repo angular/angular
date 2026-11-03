@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+export {ErrorCode} from '../src/ngtsc/diagnostics/src/error_code';
 export {validateAndRewriteCoreSymbol} from '../src/ngtsc/imports/src/core_symbols';
 export {
   extractHmrDependenciesFromOutput,

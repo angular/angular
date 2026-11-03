@@ -7,6 +7,7 @@
  */
 
 import {AST, TmplAstNode, TmplAstTemplate} from '@angular/compiler';
+import {ErrorCode} from '@angular/compiler-cli/private/hybrid_preprocessor';
 import type {Diagnostic} from '../../diagnostic.js';
 import type {TcbTargetInput} from '../../tcb.js';
 import {
@@ -39,11 +40,11 @@ export const KNOWN_CONTROL_FLOW_DIRECTIVES = new Set([
  * Mirrors `MissingStructuralDirectiveCheck` in
  * `ngtsc/typecheck/extended/checks/missing_structural_directive/index.ts`.
  */
-class MissingStructuralDirectiveCheck extends TemplateCheckWithVisitor<8116> {
-  override code = 8116 as const;
+class MissingStructuralDirectiveCheck extends TemplateCheckWithVisitor<ErrorCode.MISSING_STRUCTURAL_DIRECTIVE> {
+  override code = ErrorCode.MISSING_STRUCTURAL_DIRECTIVE as const;
 
   override run(
-    ctx: TemplateContext<8116>,
+    ctx: TemplateContext<ErrorCode.MISSING_STRUCTURAL_DIRECTIVE>,
     component: TcbTargetInput,
     template: TmplAstNode[],
   ): Diagnostic[] {
@@ -54,7 +55,7 @@ class MissingStructuralDirectiveCheck extends TemplateCheckWithVisitor<8116> {
   }
 
   override visitNode(
-    ctx: TemplateContext<8116>,
+    ctx: TemplateContext<ErrorCode.MISSING_STRUCTURAL_DIRECTIVE>,
     _component: TcbTargetInput,
     node: TmplAstNode | AST,
   ): Diagnostic[] {
@@ -77,7 +78,7 @@ class MissingStructuralDirectiveCheck extends TemplateCheckWithVisitor<8116> {
 
     const sourceSpan = customStructuralDirective.keySpan || customStructuralDirective.sourceSpan;
     const errorMessage = formatExtendedError(
-      8116,
+      ErrorCode.MISSING_STRUCTURAL_DIRECTIVE,
       `A structural directive \`${customStructuralDirective.name}\` was used in the template ` +
         `without a corresponding import in the component. ` +
         `Make sure that the directive is included in the \`@Component.imports\` array of this component.`,
@@ -87,8 +88,11 @@ class MissingStructuralDirectiveCheck extends TemplateCheckWithVisitor<8116> {
   }
 }
 
-export const factory: TemplateCheckFactory<8116, 'missingStructuralDirective'> = {
-  code: 8116,
+export const factory: TemplateCheckFactory<
+  ErrorCode.MISSING_STRUCTURAL_DIRECTIVE,
+  'missingStructuralDirective'
+> = {
+  code: ErrorCode.MISSING_STRUCTURAL_DIRECTIVE,
   name: 'missingStructuralDirective',
   create: () => new MissingStructuralDirectiveCheck(),
 };

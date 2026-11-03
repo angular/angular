@@ -47,6 +47,7 @@ import {
   type R3DeferPerBlockDependency,
   type R3DeferPerComponentDependency,
 } from '@angular/compiler';
+import {ErrorCode} from '@angular/compiler-cli/private/hybrid_preprocessor';
 import MagicString, {type SourceMap} from 'magic-string';
 import * as fsSync from 'node:fs';
 import * as path from 'path';
@@ -694,7 +695,7 @@ export function processFileSync(
           fileDiagnostics.push(
             withTemplateDiagnosticLocation(component, filePath, {
               category: 1,
-              code: 5002,
+              code: ErrorCode.TEMPLATE_PARSE_ERROR,
               messageText: error.msg,
               span: {start, end},
             }),
@@ -729,7 +730,7 @@ export function processFileSync(
       if (component.animationsSpan && hasAnimations(parsed.nodes)) {
         fileDiagnostics.push({
           category: 1,
-          code: 2027,
+          code: ErrorCode.COMPONENT_ANIMATIONS_CONFLICT,
           messageText: `A component cannot have both the '@Component.animations' property (legacy animations) and use 'animate.enter' or 'animate.leave' in the template.`,
           filePath,
           span: {start: component.animationsSpan.start, end: component.animationsSpan.end},
@@ -788,7 +789,7 @@ export function processFileSync(
           const span = component.templateUrlSpan ?? component.templateSpan;
           fileDiagnostics.push({
             category: 1,
-            code: 2008,
+            code: ErrorCode.COMPONENT_RESOURCE_NOT_FOUND,
             messageText: `Could not find stylesheet file '${styleUrl}' linked from the template.`,
             filePath,
             span: span ? {start: span.start, end: span.end} : undefined,
@@ -966,7 +967,7 @@ export function processFileSync(
           if (blockName === null) {
             fileDiagnostics.push({
               category: 1, // Error
-              code: 11100,
+              code: ErrorCode.DEFER_BLOCK_MISSING_NAME_PARAMETER,
               messageText: `@defer block must specify a 'name' parameter (e.g. '@defer (name blockName)') when 'deferredImports' is defined.`,
               filePath,
               span: block.sourceSpan
@@ -976,7 +977,7 @@ export function processFileSync(
           } else if (!component?.deferredImportsByBlock?.[blockName]) {
             fileDiagnostics.push({
               category: 1, // Error
-              code: 11101,
+              code: ErrorCode.DEFER_BLOCK_UNKNOWN_NAME_PARAMETER,
               messageText: `The 'name' parameter references block '${blockName}' which is missing from '@Component.deferredImports'.`,
               filePath,
               span: block.sourceSpan
@@ -988,7 +989,7 @@ export function processFileSync(
           if (blockName !== null) {
             fileDiagnostics.push({
               category: 1, // Error
-              code: 11102,
+              code: ErrorCode.DEFER_BLOCK_INVALID_NAME_PARAMETER,
               messageText: `The 'name' parameter can only be used when '@Component.deferredImports' is defined.`,
               filePath,
               span: block.sourceSpan
@@ -2932,7 +2933,7 @@ function compileNgModuleDef(
           if (diagnostics && filePath) {
             diagnostics.push({
               category: 1,
-              code: 11003,
+              code: ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION,
               messageText: `In experimental declaration-only emission mode, this expression is not supported in NgModule imports/exports as it cannot be referenced with 'typeof'. Use a direct reference or a supported call.`,
               filePath,
               span: el.span ? {start: el.span.start, end: el.span.end} : undefined,
@@ -3283,7 +3284,7 @@ function reportEagerlyImportedDeferredDependencies(
       }
       diagnostics.push({
         category: 1, // Error
-        code: 8014, // DEFERRED_DEPENDENCY_IMPORTED_EAGERLY
+        code: ErrorCode.DEFERRED_DEPENDENCY_IMPORTED_EAGERLY,
         messageText:
           `This import contains symbols that are used both inside and outside of the ` +
           `\`@Component.deferredImports\` fields in the file. This renders all these ` +

@@ -7,6 +7,7 @@
  */
 
 import {AST, BindingType, TmplAstBoundAttribute, TmplAstNode} from '@angular/compiler';
+import {ErrorCode} from '@angular/compiler-cli/private/hybrid_preprocessor';
 import type {Diagnostic} from '../../diagnostic.js';
 import type {TcbTargetInput} from '../../tcb.js';
 import {
@@ -19,7 +20,7 @@ import {
 const STYLE_SUFFIXES = ['px', '%', 'em'];
 
 const SUFFIX_ERROR_MSG = formatExtendedError(
-  8106,
+  ErrorCode.SUFFIX_NOT_SUPPORTED,
   `The ${STYLE_SUFFIXES.map((suffix) => `'.${suffix}'`).join(', ')} suffixes are only supported on style bindings`,
 );
 
@@ -30,11 +31,11 @@ const SUFFIX_ERROR_MSG = formatExtendedError(
  * Mirrors `SuffixNotSupportedCheck` in
  * `ngtsc/typecheck/extended/checks/suffix_not_supported/index.ts`.
  */
-class SuffixNotSupportedCheck extends TemplateCheckWithVisitor<8106> {
-  override code = 8106 as const;
+class SuffixNotSupportedCheck extends TemplateCheckWithVisitor<ErrorCode.SUFFIX_NOT_SUPPORTED> {
+  override code = ErrorCode.SUFFIX_NOT_SUPPORTED as const;
 
   override visitNode(
-    ctx: TemplateContext<8106>,
+    ctx: TemplateContext<ErrorCode.SUFFIX_NOT_SUPPORTED>,
     _component: TcbTargetInput,
     node: TmplAstNode | AST,
   ): Diagnostic[] {
@@ -51,8 +52,8 @@ class SuffixNotSupportedCheck extends TemplateCheckWithVisitor<8106> {
   }
 }
 
-export const factory: TemplateCheckFactory<8106, 'suffixNotSupported'> = {
-  code: 8106,
+export const factory: TemplateCheckFactory<ErrorCode.SUFFIX_NOT_SUPPORTED, 'suffixNotSupported'> = {
+  code: ErrorCode.SUFFIX_NOT_SUPPORTED,
   name: 'suffixNotSupported',
   create: () => new SuffixNotSupportedCheck(),
 };
