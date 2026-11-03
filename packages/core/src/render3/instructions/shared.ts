@@ -333,13 +333,18 @@ export function setDomProperty<T>(
  *
  * This workaround is intended to be dropped in v23 when the breaking change window opens.
  */
-function unwrapImgVideoSrcValue(propName: string, element: RElement, value: unknown): any {
+function unwrapImgVideoSrcValue(
+  propName: string,
+  element: RElement,
+  value: unknown,
+  isAttribute = false,
+): any {
   if (
     propName === 'src' &&
     ((element as RElement).tagName === 'IMG' || (element as RElement).tagName === 'VIDEO')
   ) {
     if (value == null) {
-      return '';
+      return isAttribute ? value : '';
     }
 
     return unwrapSafeValue(value);
@@ -548,7 +553,7 @@ export function elementAttributeInternal(
 
   const element = getNativeByTNode(tNode, lView) as RElement;
   // TODO(v23): Remove this workaround once we can introduce a breaking change
-  value = unwrapImgVideoSrcValue(name, element, value);
+  value = unwrapImgVideoSrcValue(name, element, value, true);
   setElementAttribute(lView[RENDERER], element, namespace, tNode.value, name, value, sanitizer);
 }
 
