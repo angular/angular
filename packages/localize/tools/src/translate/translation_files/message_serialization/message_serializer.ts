@@ -101,8 +101,4 @@ export class MessageSerializer<T> extends BaseVisitor {
     this.visitContainedNodes(children);
     this.renderer.closePlaceholder(closeName);
   }
-
-  private isPlaceholderContainer(node: Node): boolean {
-    return node instanceof Element && node.name === this.config.placeholderContainer!.elementName;
-  }
 }
