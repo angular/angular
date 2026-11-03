@@ -6236,9 +6236,7 @@
           "name": "harnessType",
           "type": "ComponentHarnessConstructor<T>",
           "memberType": "property",
-          "memberTags": [
-            "override"
-          ],
+          "memberTags": [],
           "description": "",
           "jsdocTags": []
         },
