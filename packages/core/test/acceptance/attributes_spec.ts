@@ -229,6 +229,75 @@ describe('attribute binding', () => {
     const img = fixture.debugElement.query(By.css('img')).nativeElement;
     expect(img.getAttribute('src')).toBe('javascript:true');
   });
+
+  it('should remove the src attribute when [attr.src] is bound to null or undefined', async () => {
+    @Component({
+      template: `
+        <img [attr.src]="src()" />
+        <video [attr.src]="src()"></video>
+      `,
+    })
+    class Comp {
+      src = signal<string | null | undefined>('https://example.com/test.png');
+    }
+
+    const fixture = TestBed.createComponent(Comp);
+    await fixture.whenStable();
+
+    const img = fixture.nativeElement.querySelector('img') as HTMLImageElement;
+    const video = fixture.nativeElement.querySelector('video') as HTMLVideoElement;
+
+    expect(img.getAttribute('src')).toBe('https://example.com/test.png');
+    expect(video.getAttribute('src')).toBe('https://example.com/test.png');
+
+    // Act: Update to null
+    fixture.componentInstance.src.set(null);
+    await fixture.whenStable();
+
+    // Assert: Attribute should be removed completely
+    expect(img.hasAttribute('src')).toBe(false);
+    expect(video.hasAttribute('src')).toBe(false);
+
+    // Act: Update to undefined
+    fixture.componentInstance.src.set(undefined);
+    await fixture.whenStable();
+
+    // Assert: Attribute should still be absent
+    expect(img.hasAttribute('src')).toBe(false);
+    expect(video.hasAttribute('src')).toBe(false);
+
+    // Act: Update back to valid URL
+    fixture.componentInstance.src.set('https://example.com/updated.png');
+    await fixture.whenStable();
+
+    // Assert: Attribute is restored
+    expect(img.getAttribute('src')).toBe('https://example.com/updated.png');
+    expect(video.getAttribute('src')).toBe('https://example.com/updated.png');
+  });
+
+  it('should not add src attribute when initial [attr.src] value is null or undefined', async () => {
+    @Component({
+      template: `
+        <img [attr.src]="nullSrc()" />
+        <img [attr.src]="undefinedSrc()" />
+        <video [attr.src]="nullSrc()"></video>
+      `,
+    })
+    class Comp {
+      nullSrc = signal<string | null>(null);
+      undefinedSrc = signal<string | undefined>(undefined);
+    }
+
+    const fixture = TestBed.createComponent(Comp);
+    await fixture.whenStable();
+
+    const imgs = fixture.nativeElement.querySelectorAll('img');
+    const video = fixture.nativeElement.querySelector('video') as HTMLVideoElement;
+
+    expect(imgs[0].hasAttribute('src')).toBe(false);
+    expect(imgs[1].hasAttribute('src')).toBe(false);
+    expect(video.hasAttribute('src')).toBe(false);
+  });
 });
 
 describe('attribute interpolation', () => {
