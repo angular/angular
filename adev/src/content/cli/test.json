@@ -10,21 +10,6 @@
   "deprecated": false,
   "options": [
     {
-      "name": "browser-viewport",
-      "type": "string",
-      "description": "Specifies the browser viewport dimensions for browser-based tests in the format `widthxheight`."
-    },
-    {
-      "name": "browsers",
-      "type": "array",
-      "description": "Specifies the browsers to use for test execution. When not specified, the Vitest runner runs tests in a Node.js environment using `happy-dom` if it is installed, otherwise `jsdom`, and the Karma runner uses the browsers of its configuration. Browser names ending with `Headless` enable headless mode (e.g., `ChromiumHeadless` for Vitest with the Playwright provider, or `ChromeHeadless` for Karma)."
-    },
-    {
-      "name": "build-target",
-      "type": "string",
-      "description": "Specifies the build target to use for the unit test build in the format `project:target[:configuration]`. This defaults to the `build` target of the current project with the `development` configuration. You can also pass a comma-separated list of configurations. Example: `project:target:production,staging`."
-    },
-    {
       "name": "configuration",
       "type": "string",
       "aliases": [
@@ -33,158 +18,310 @@
       "description": "One or more named builder configurations as a comma-separated list as specified in the \"configurations\" section in angular.json.\nThe builder uses the named configurations to run the given target.\nFor more information, see https://angular.dev/reference/configs/workspace-config#alternate-build-configurations."
     },
     {
-      "name": "coverage",
-      "type": "boolean",
-      "description": "Enables coverage reporting for tests. If not specified, the coverage configuration from a runner configuration file will be used if present. Otherwise, coverage is disabled by default."
-    },
-    {
-      "name": "coverage-exclude",
-      "type": "array",
-      "description": "Specifies glob patterns of files to exclude from the coverage report."
-    },
-    {
-      "name": "coverage-include",
-      "type": "array",
-      "description": "Specifies glob patterns of files to include in the coverage report."
-    },
-    {
-      "name": "coverage-reporters",
-      "type": "array",
-      "enum": [
-        "cobertura",
-        "html",
-        "json",
-        "json-summary",
-        "lcov",
-        "lcovonly",
-        "text",
-        "text-summary"
-      ],
-      "description": "Specifies the reporters to use for coverage results. Each reporter can be a string representing its name, or a tuple containing the name and an options object. Built-in reporters include 'html', 'lcov', 'lcovonly', 'text', 'text-summary', 'cobertura', 'json', and 'json-summary'."
-    },
-    {
-      "name": "debug",
-      "type": "boolean",
-      "default": false,
-      "description": "Enables debugging mode for tests, allowing the use of the Node Inspector."
-    },
-    {
-      "name": "exclude",
-      "type": "array",
-      "description": "Specifies glob patterns of files to exclude from testing, relative to the project source root."
-    },
-    {
-      "name": "filter",
-      "type": "string",
-      "description": "Specifies a regular expression pattern to match against test suite and test names. Only tests with a name matching the pattern will be executed. For example, `^App` will run only tests in suites beginning with 'App'."
-    },
-    {
-      "name": "headless",
-      "type": "boolean",
-      "description": "Forces all configured browsers to run in headless mode. When using the Vitest runner, this option is ignored if no browsers are configured. The Karma runner does not support this option."
-    },
-    {
       "name": "help",
       "type": "boolean",
       "description": "Shows a help message for this command in the console."
-    },
-    {
-      "name": "include",
-      "type": "array",
-      "default": [
-        "**/*.spec.ts",
-        "**/*.test.ts"
-      ],
-      "description": "Specifies glob patterns of files to include for testing, relative to the project source root. This option also has special handling for directory paths (includes all test files within) and file paths (includes the corresponding test file if one exists)."
-    },
-    {
-      "name": "isolate",
-      "type": "boolean",
-      "description": "Enables isolation for test execution. When true, Vitest runs tests in separate threads or processes. This option is only available for the Vitest runner. Defaults to false to align with the Karma/Jasmine experience."
-    },
-    {
-      "name": "list-tests",
-      "type": "boolean",
-      "default": false,
-      "description": "Lists all discovered test files and exits the process without building or executing the tests."
-    },
-    {
-      "name": "output-file",
-      "type": "string",
-      "description": "Specifies a file path for the test report. This path is used by every configured reporter that writes to a file. To write a separate file for each reporter, use the tuple format `['reporter-name', { outputFile: '...' }]` within the `reporters` option. When not provided, output is written to the console."
-    },
-    {
-      "name": "polyfills",
-      "type": "array",
-      "description": "A list of polyfills to include in the build. Can be a full path for a file, relative to the current workspace or module specifier. Example: 'zone.js'. If not specified, polyfills will be inherited from the build target."
-    },
-    {
-      "name": "progress",
-      "type": "boolean",
-      "description": "Shows build progress information in the console. Defaults to the `progress` setting of the specified `buildTarget`."
     },
     {
       "name": "project",
       "type": "string",
       "description": "The name of the project to run the command for. Can be an application or a library.",
       "positional": 0
+    }
+  ],
+  "builders": [
+    {
+      "name": "Unit-test",
+      "options": [
+        {
+          "name": "browser-viewport",
+          "type": "string",
+          "description": "Specifies the browser viewport dimensions for browser-based tests in the format `widthxheight`."
+        },
+        {
+          "name": "browsers",
+          "type": "array",
+          "description": "Specifies the browsers to use for test execution. When not specified, the Vitest runner runs tests in a Node.js environment using `happy-dom` if it is installed, otherwise `jsdom`, and the Karma runner uses the browsers of its configuration. Browser names ending with `Headless` enable headless mode (e.g., `ChromiumHeadless` for Vitest with the Playwright provider, or `ChromeHeadless` for Karma)."
+        },
+        {
+          "name": "build-target",
+          "type": "string",
+          "description": "Specifies the build target to use for the unit test build in the format `project:target[:configuration]`. This defaults to the `build` target of the current project with the `development` configuration. You can also pass a comma-separated list of configurations. Example: `project:target:production,staging`."
+        },
+        {
+          "name": "coverage",
+          "type": "boolean",
+          "description": "Enables coverage reporting for tests. If not specified, the coverage configuration from a runner configuration file will be used if present. Otherwise, coverage is disabled by default."
+        },
+        {
+          "name": "coverage-exclude",
+          "type": "array",
+          "description": "Specifies glob patterns of files to exclude from the coverage report."
+        },
+        {
+          "name": "coverage-include",
+          "type": "array",
+          "description": "Specifies glob patterns of files to include in the coverage report."
+        },
+        {
+          "name": "coverage-reporters",
+          "type": "array",
+          "enum": [
+            "cobertura",
+            "html",
+            "json",
+            "json-summary",
+            "lcov",
+            "lcovonly",
+            "text",
+            "text-summary"
+          ],
+          "description": "Specifies the reporters to use for coverage results. Each reporter can be a string representing its name, or a tuple containing the name and an options object. Built-in reporters include 'html', 'lcov', 'lcovonly', 'text', 'text-summary', 'cobertura', 'json', and 'json-summary'."
+        },
+        {
+          "name": "debug",
+          "type": "boolean",
+          "default": false,
+          "description": "Enables debugging mode for tests, allowing the use of the Node Inspector."
+        },
+        {
+          "name": "exclude",
+          "type": "array",
+          "description": "Specifies glob patterns of files to exclude from testing, relative to the project source root."
+        },
+        {
+          "name": "filter",
+          "type": "string",
+          "description": "Specifies a regular expression pattern to match against test suite and test names. Only tests with a name matching the pattern will be executed. For example, `^App` will run only tests in suites beginning with 'App'."
+        },
+        {
+          "name": "headless",
+          "type": "boolean",
+          "description": "Forces all configured browsers to run in headless mode. When using the Vitest runner, this option is ignored if no browsers are configured. The Karma runner does not support this option."
+        },
+        {
+          "name": "include",
+          "type": "array",
+          "default": [
+            "**/*.spec.ts",
+            "**/*.test.ts"
+          ],
+          "description": "Specifies glob patterns of files to include for testing, relative to the project source root. This option also has special handling for directory paths (includes all test files within) and file paths (includes the corresponding test file if one exists)."
+        },
+        {
+          "name": "isolate",
+          "type": "boolean",
+          "description": "Enables isolation for test execution. When true, Vitest runs tests in separate threads or processes. This option is only available for the Vitest runner. Defaults to false to align with the Karma/Jasmine experience."
+        },
+        {
+          "name": "list-tests",
+          "type": "boolean",
+          "default": false,
+          "description": "Lists all discovered test files and exits the process without building or executing the tests."
+        },
+        {
+          "name": "output-file",
+          "type": "string",
+          "description": "Specifies a file path for the test report. This path is used by every configured reporter that writes to a file. To write a separate file for each reporter, use the tuple format `['reporter-name', { outputFile: '...' }]` within the `reporters` option. When not provided, output is written to the console."
+        },
+        {
+          "name": "polyfills",
+          "type": "array",
+          "description": "A list of polyfills to include in the build. Can be a full path for a file, relative to the current workspace or module specifier. Example: 'zone.js'. If not specified, polyfills will be inherited from the build target."
+        },
+        {
+          "name": "progress",
+          "type": "boolean",
+          "description": "Shows build progress information in the console. Defaults to the `progress` setting of the specified `buildTarget`."
+        },
+        {
+          "name": "providers-file",
+          "type": "string",
+          "description": "Specifies the path to a TypeScript file that provides an array of Angular providers for the test environment. The file must contain a default export of the provider array."
+        },
+        {
+          "name": "quiet",
+          "type": "boolean",
+          "description": "Suppresses the verbose build summary and stats table on each rebuild. Defaults to `true` locally and `false` in CI environments."
+        },
+        {
+          "name": "reporters",
+          "type": "array",
+          "description": "Specifies the reporters to use during test execution. Each reporter can be a string representing its name, or a tuple containing the name and an options object. Built-in reporters include 'default', 'verbose', 'dots', 'json', 'junit', 'tap', 'tap-flat', and 'html'. You can also provide a path to a custom reporter."
+        },
+        {
+          "name": "runner",
+          "type": "string",
+          "default": "vitest",
+          "enum": [
+            "karma",
+            "vitest"
+          ],
+          "description": "Specifies the test runner to use for test execution."
+        },
+        {
+          "name": "runner-config",
+          "type": "string",
+          "description": "Specifies the configuration file for the selected test runner. If a string is provided, it will be used as the path to the configuration file. If `true`, the builder will search for a default configuration file (e.g., `vitest-base.config.mts` or `karma.conf.js`). If `false`, no external configuration file will be used.\\nFor Vitest, this enables advanced options and the use of custom plugins. Please note that while the file is loaded, the Angular team does not provide direct support for its specific contents or any third-party plugins used within it."
+        },
+        {
+          "name": "setup-files",
+          "type": "array",
+          "description": "A list of paths to global setup files that are executed before the test files. The application's polyfills and the Angular TestBed are always initialized before these files."
+        },
+        {
+          "name": "splitting",
+          "type": "boolean",
+          "deprecated": "No longer needed with Vitest 5.",
+          "default": true,
+          "description": "Enables code splitting for test execution. When enabled, shared code between test files is split into separate chunks. Issues with live ESM bindings in Node.js environments (such as uninitialized exports or mocking failures) can be resolved by disabling splitting. This option is only available for the Vitest runner."
+        },
+        {
+          "name": "ts-config",
+          "type": "string",
+          "description": "The path to the TypeScript configuration file, relative to the workspace root. Defaults to `tsconfig.spec.json` in the project root if it exists. If not specified and the default does not exist, the `tsConfig` from the specified `buildTarget` will be used."
+        },
+        {
+          "name": "ui",
+          "type": "boolean",
+          "description": "Enables the Vitest UI for interactive test execution. This option is only available for the Vitest runner."
+        },
+        {
+          "name": "watch",
+          "type": "boolean",
+          "description": "Enables watch mode, which re-runs tests when source files change. Defaults to `true` in TTY environments and `false` otherwise."
+        }
+      ]
     },
     {
-      "name": "providers-file",
-      "type": "string",
-      "description": "Specifies the path to a TypeScript file that provides an array of Angular providers for the test environment. The file must contain a default export of the provider array."
-    },
-    {
-      "name": "quiet",
-      "type": "boolean",
-      "description": "Suppresses the verbose build summary and stats table on each rebuild. Defaults to `true` locally and `false` in CI environments."
-    },
-    {
-      "name": "reporters",
-      "type": "array",
-      "description": "Specifies the reporters to use during test execution. Each reporter can be a string representing its name, or a tuple containing the name and an options object. Built-in reporters include 'default', 'verbose', 'dots', 'json', 'junit', 'tap', 'tap-flat', and 'html'. You can also provide a path to a custom reporter."
-    },
-    {
-      "name": "runner",
-      "type": "string",
-      "default": "vitest",
-      "enum": [
-        "karma",
-        "vitest"
-      ],
-      "description": "Specifies the test runner to use for test execution."
-    },
-    {
-      "name": "runner-config",
-      "type": "string",
-      "description": "Specifies the configuration file for the selected test runner. If a string is provided, it will be used as the path to the configuration file. If `true`, the builder will search for a default configuration file (e.g., `vitest-base.config.mts` or `karma.conf.js`). If `false`, no external configuration file will be used.\\nFor Vitest, this enables advanced options and the use of custom plugins. Please note that while the file is loaded, the Angular team does not provide direct support for its specific contents or any third-party plugins used within it."
-    },
-    {
-      "name": "setup-files",
-      "type": "array",
-      "description": "A list of paths to global setup files that are executed before the test files. The application's polyfills and the Angular TestBed are always initialized before these files."
-    },
-    {
-      "name": "splitting",
-      "type": "boolean",
-      "deprecated": "No longer needed with Vitest 5.",
-      "default": true,
-      "description": "Enables code splitting for test execution. When enabled, shared code between test files is split into separate chunks. Issues with live ESM bindings in Node.js environments (such as uninitialized exports or mocking failures) can be resolved by disabling splitting. This option is only available for the Vitest runner."
-    },
-    {
-      "name": "ts-config",
-      "type": "string",
-      "description": "The path to the TypeScript configuration file, relative to the workspace root. Defaults to `tsconfig.spec.json` in the project root if it exists. If not specified and the default does not exist, the `tsConfig` from the specified `buildTarget` will be used."
-    },
-    {
-      "name": "ui",
-      "type": "boolean",
-      "description": "Enables the Vitest UI for interactive test execution. This option is only available for the Vitest runner."
-    },
-    {
-      "name": "watch",
-      "type": "boolean",
-      "description": "Enables watch mode, which re-runs tests when source files change. Defaults to `true` in TTY environments and `false` otherwise."
+      "name": "Karma",
+      "options": [
+        {
+          "name": "aot",
+          "type": "boolean",
+          "default": false,
+          "description": "Run tests using Ahead of Time compilation."
+        },
+        {
+          "name": "browsers",
+          "type": "string",
+          "description": "Override which browsers tests are run against. Set to `false` to not use any browser."
+        },
+        {
+          "name": "code-coverage",
+          "type": "boolean",
+          "default": false,
+          "description": "Output a code coverage report."
+        },
+        {
+          "name": "code-coverage-exclude",
+          "type": "array",
+          "description": "Globs to exclude from code coverage."
+        },
+        {
+          "name": "define",
+          "type": "array",
+          "description": "Defines global identifiers that will be replaced with a specified constant value when found in any JavaScript or TypeScript code including libraries. The value will be used directly. String values must be put in quotes. Identifiers within Angular metadata such as Component Decorators will not be replaced."
+        },
+        {
+          "name": "exclude",
+          "type": "array",
+          "description": "Globs of files to exclude, relative to the project source root."
+        },
+        {
+          "name": "external-dependencies",
+          "type": "array",
+          "description": "Exclude the listed external dependencies from being bundled into the bundle. Instead, the created bundle relies on these dependencies to be available during runtime."
+        },
+        {
+          "name": "include",
+          "type": "array",
+          "default": [
+            "**/*.spec.ts"
+          ],
+          "description": "Globs of files to include, relative to the project source root. \nThere are 2 special cases:\n - when a path to a directory is provided, all test files ending \".@(spec|test).@(ts|tsx)\" will be included\n - when a path to a file is provided, and a matching test file exists, it will be included instead."
+        },
+        {
+          "name": "inline-style-language",
+          "type": "string",
+          "default": "css",
+          "enum": [
+            "css",
+            "less",
+            "sass",
+            "scss"
+          ],
+          "description": "The stylesheet language to use for the application's inline component styles."
+        },
+        {
+          "name": "karma-config",
+          "type": "string",
+          "description": "The name of the Karma configuration file."
+        },
+        {
+          "name": "main",
+          "type": "string",
+          "description": "The name of the main entry-point file."
+        },
+        {
+          "name": "poll",
+          "type": "number",
+          "description": "Enable and define the file watching poll time period in milliseconds."
+        },
+        {
+          "name": "polyfills",
+          "type": "array",
+          "description": "A list of polyfills to include in the build. Can be a full path for a file, relative to the current workspace or module specifier. Example: 'zone.js'."
+        },
+        {
+          "name": "preserve-symlinks",
+          "type": "boolean",
+          "description": "Do not use the real path when resolving modules. If unset then will default to `true` if NodeJS option --preserve-symlinks is set."
+        },
+        {
+          "name": "progress",
+          "type": "boolean",
+          "default": true,
+          "description": "Log progress to the console while building."
+        },
+        {
+          "name": "reporters",
+          "type": "array",
+          "description": "Karma reporters to use. Directly passed to the karma runner."
+        },
+        {
+          "name": "scripts",
+          "type": "array",
+          "description": "Global scripts to be included in the build."
+        },
+        {
+          "name": "source-map",
+          "type": "boolean",
+          "default": true,
+          "description": "Output source maps for scripts and styles. For more information, see https://angular.dev/reference/configs/workspace-config#source-map-configuration."
+        },
+        {
+          "name": "styles",
+          "type": "array",
+          "description": "Global styles to be included in the build."
+        },
+        {
+          "name": "ts-config",
+          "type": "string",
+          "description": "The name of the TypeScript configuration file."
+        },
+        {
+          "name": "watch",
+          "type": "boolean",
+          "default": true,
+          "description": "Re-run tests when source files change."
+        },
+        {
+          "name": "web-worker-ts-config",
+          "type": "string",
+          "description": "TypeScript configuration for Web Worker modules."
+        }
+      ]
     }
   ]
 }
