@@ -159,7 +159,7 @@ export type CliOptionRenderable = CliOption & {
 export type CliCardItemRenderable = CliOptionRenderable;
 
 export interface CliCardRenderable {
-  type: 'Options' | 'Arguments';
+  type: 'Options' | 'Arguments' | `${string} builder options`;
   items: CliCardItemRenderable[];
 }
 

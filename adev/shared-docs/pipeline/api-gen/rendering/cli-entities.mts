@@ -16,7 +16,13 @@ export interface CliCommand {
   deprecated: boolean;
   aliases: string[];
   options: CliOption[];
+  builders?: CliBuilder[];
   subcommands?: CliCommand[];
+}
+
+export interface CliBuilder {
+  name: string;
+  options: CliOption[];
 }
 
 /** The CLI item option info. */
