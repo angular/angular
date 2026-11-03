@@ -132,3 +132,23 @@ export class App {
   initialCount = 18;
 }
 ```
+
+### Binding the input and output separately
+
+Two-way binding is a shorthand for a property binding and an event binding. For every `model` property, Angular creates an output with the same name followed by `Change`. The following two bindings are equivalent:
+
+```angular-html
+<app-counter [(count)]="initialCount"></app-counter>
+
+<app-counter [count]="initialCount" (countChange)="initialCount = $event"></app-counter>
+```
+
+If the parent needs to run its own logic when the value changes, bind the input and the output separately:
+
+```angular-html
+<app-counter [count]="initialCount" (countChange)="onCountChange($event)"></app-counter>
+```
+
+The `countChange` output emits only when the child writes a new value with `set` or `update`. It doesn't emit when the parent passes a new value through the `count` input, so `onCountChange` runs only for changes that come from the child.
+
+Learn more about [model inputs](guide/components/inputs#model-inputs) in the inputs guide.
