@@ -47,6 +47,15 @@ pub(crate) const UNRESOLVED_IMPORTS_FILE_ID: FileId = FileId::MAX - 1;
 /// exactly those, while other root changes leave them cached. Never interned.
 pub(crate) const R3_SYMBOLS_ROOT_FILE_ID: FileId = FileId::MAX - 2;
 
+// Pseudo IDs must stay above `MAX_INTERNED_FILE_ID`, the largest ID `FileIdInterner` allocates, so
+// they never collide with interned files.
+const _: () = {
+    use crate::query::file_id::MAX_INTERNED_FILE_ID;
+    assert!(ROOTS_FILE_ID > MAX_INTERNED_FILE_ID);
+    assert!(UNRESOLVED_IMPORTS_FILE_ID > MAX_INTERNED_FILE_ID);
+    assert!(R3_SYMBOLS_ROOT_FILE_ID > MAX_INTERNED_FILE_ID);
+};
+
 /// The ambient global value names a `.d.ts` file may declare (see
 /// [`extract_ambient_global_names_in_dts`]).
 pub(crate) type AmbientGlobalNames = Arc<HashSet<String>>;
