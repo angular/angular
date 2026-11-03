@@ -57,7 +57,7 @@ import {loadHydrationOverlays} from './hydration/hydration-overlays';
 import {start as startProfiling, stop as stopProfiling} from './profiling/capture';
 import {loadCdDataStream, loadCdHighlighting} from './profiling/cd-analyzer';
 import {loadPerformanceTrack} from './profiling/performance-track';
-import {getProfiler, Profiler} from './profiling/profiler';
+import {Profiler} from './profiling/profiler';
 import {
   getRouterCallableConstructRef,
   parseRoutes,
@@ -76,16 +76,14 @@ import {debugLog, log, setupLogging} from './shared/utils/log';
 import {sanitizeObject} from './shared/utils/serialization';
 import {SignalGraphRef} from './shared/utils/signal-graph-ref';
 import {getConfig} from './config/config';
+import {rootInjector} from './di';
 
 type InspectorRef = {ref: ComponentInspector | null};
 
 export const subscribeToClientEvents = (
   messageBus: MessageBus<Events>,
-  config?: DevtoolsBackendConfig & {
-    depsForTestOnly?: {
-      profiler?: new (...args: any[]) => Profiler;
-    };
-  },
+  config?: DevtoolsBackendConfig,
+  injector = rootInjector,
 ): void => {
   const inspector: InspectorRef = {ref: null};
   setupLogging(config?.devtoolsDevMode ?? false);
@@ -151,7 +149,8 @@ export const subscribeToClientEvents = (
     // update requests, instead we want to request an update at most
     // once every 250ms
     runOutsideAngular(() => {
-      getProfiler(config?.depsForTestOnly)
+      injector
+        .get(Profiler)
         .changeDetection$.pipe(debounceTime(250))
         .subscribe(() => messageBus.emit('componentTreeDirty'));
     });

@@ -7,10 +7,11 @@
  */
 
 import {LifecycleProfile} from '../../../../protocol';
-import {getProfiler, Profiler} from './profiler';
+import {Profiler} from './profiler';
 import {getDirectiveName} from '../directive-forest/component-tree/component-tree';
 import type {ComponentInstance, DirectiveInstance} from '../shared/interfaces';
 import {getConfig} from '../config/config';
+import {inject} from '../di';
 
 type Method = keyof LifecycleProfile | 'changeDetection' | string;
 
@@ -20,11 +21,11 @@ export function loadPerformanceTrack(): () => void {
   return getConfig().onValue('performanceTrack', (enabled: boolean) => {
     if (enabled) {
       // We assign the profiler to a variable to avoid
-      // using `getProfiler` in the `else` case, if it
+      // using `inject(Profiler)` in the `else` case, if it
       // happens to be executed first. This will prevent
       // spawning a profiler just for the sake of calling
       // `unsubscribe` on non-subscribed hooks.
-      profiler = getProfiler();
+      profiler = inject(Profiler);
       profiler.subscribe(timingHooks);
     } else {
       profiler?.unsubscribe(timingHooks);
