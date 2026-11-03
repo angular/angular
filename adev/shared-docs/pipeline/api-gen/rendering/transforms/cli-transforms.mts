@@ -21,6 +21,7 @@ import {getHighlighterInstance} from '../shiki/shiki.mjs';
 export function getCliRenderable(command: CliCommand): CliCommandRenderable {
   return {
     ...command,
+    builders: command.builders?.filter((builder) => builder.options.length > 0),
     subcommands: command.subcommands?.map((sub) => getCliRenderable(sub)),
     htmlDescription: parseMarkdown(command.longDescription ?? command.shortDescription, {
       highlighter: getHighlighterInstance(),
@@ -50,6 +51,15 @@ export function getCliCardsRenderable(command: CliCommand): CliCardRenderable[] 
     });
   }
 
+  for (const builder of command.builders ?? []) {
+    if (builder.options.length > 0) {
+      cards.push({
+        type: `${builder.name} builder options`,
+        items: getRenderableOptions(builder.options),
+      });
+    }
+  }
+
   return cards;
 }
 
@@ -74,7 +84,10 @@ function getArgumentsLabel(command: CliCommand): string {
 }
 
 function getOptionsLabel(command: CliCommand): string {
-  return getOptions(command).length > 0 ? ' [options]' : '';
+  const hasOptions =
+    getOptions(command).length > 0 ||
+    (command.builders?.some((b) => b.options.length > 0) ?? false);
+  return hasOptions ? ' [options]' : '';
 }
 
 function getArgs(command: CliCommand): CliOption[] {

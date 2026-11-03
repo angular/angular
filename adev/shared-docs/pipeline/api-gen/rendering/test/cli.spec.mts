@@ -56,4 +56,93 @@ describe('CLI docs to html', () => {
     // Subdomains are intentionally left as external.
     expect(hrefs).toContain('https://next.angular.dev/cli-test-preview');
   });
+
+  it('should render builder option sections when builders are provided', async () => {
+    const buildEntry = {
+      name: 'build',
+      command: 'ng build [project]',
+      shortDescription: 'Compiles an Angular application or library.',
+      longDescription: 'Long description.',
+      aliases: ['b'],
+      deprecated: false,
+      options: [
+        {
+          name: 'project',
+          type: 'string',
+          description: 'The name of the project.',
+          positional: 0,
+        },
+        {
+          name: 'configuration',
+          type: 'string',
+          aliases: ['c'],
+          description: 'One or more named builder configurations.',
+        },
+      ],
+      builders: [
+        {
+          name: 'Application',
+          options: [
+            {
+              name: 'aot',
+              type: 'boolean',
+              default: true,
+              description: 'Build using Ahead of Time compilation.',
+            },
+          ],
+        },
+        {
+          name: 'Library',
+          options: [
+            {
+              name: 'compilation-mode',
+              type: 'string',
+              default: 'partial',
+              enum: ['full', 'partial'],
+              description: 'Angular compilation mode.',
+            },
+          ],
+        },
+      ],
+    };
+
+    const renderableJson = await getRenderable(buildEntry as any, '', 'angular/cli');
+    const localFragment = JSDOM.fragment(renderEntry(renderableJson));
+    const h3Headings = Array.from(localFragment.querySelectorAll('h3')).map((h) =>
+      h.textContent?.trim(),
+    );
+    expect(h3Headings).toContain('Builders');
+
+    const builderLinks = Array.from(
+      localFragment.querySelectorAll('.docs-reference-cli-content ul a'),
+    ).map((a) => ({
+      text: a.textContent?.trim(),
+      href: a.getAttribute('href'),
+    }));
+    expect(builderLinks).toEqual([
+      {text: 'Application', href: '#application-builder-options'},
+      {text: 'Library', href: '#library-builder-options'},
+    ]);
+
+    const headings = Array.from(localFragment.querySelectorAll('h2')).map((h) => ({
+      id: h.id,
+      text: h.textContent?.trim(),
+    }));
+
+    expect(headings).toEqual([
+      {id: 'arguments', text: 'Arguments'},
+      {id: 'options', text: 'Options'},
+      {id: 'application-builder-options', text: 'Application builder options'},
+      {id: 'library-builder-options', text: 'Library builder options'},
+    ]);
+
+    const cards = localFragment.querySelectorAll('.docs-reference-member-card');
+    expect(cards.length).toBe(4);
+    expect(cards[2].textContent).toContain('aot');
+    expect(cards[2].textContent).toContain('Default');
+    expect(cards[2].textContent).toContain('true');
+    expect(cards[3].textContent).toContain('compilation-mode');
+    expect(cards[3].textContent).toContain('Default');
+    expect(cards[3].textContent).toContain('partial');
+  });
 });
