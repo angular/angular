@@ -19,6 +19,7 @@ import {
   ɵJSACTION_BLOCK_ELEMENT_MAP as JSACTION_BLOCK_ELEMENT_MAP,
   ɵJSACTION_EVENT_CONTRACT as JSACTION_EVENT_CONTRACT,
   PendingTasks,
+  ɵPendingTasksInternal as PendingTasksInternal,
   PLATFORM_ID,
   Provider,
   QueryList,
@@ -2756,6 +2757,96 @@ describe('platform-server partial hydration integration', () => {
       expect(jsActionMap.size).toBe(0);
       expect(contract.instance!.cleanUp).toHaveBeenCalled();
       expect(registry.cleanup).toHaveBeenCalledTimes(2);
+    });
+
+    it('should not throw and should release pending task if block is cleaned up during hydration', async () => {
+      @Component({
+        selector: 'nested-cmp',
+        template: 'Nested component',
+      })
+      class NestedCmp {}
+
+      @Component({
+        selector: 'app',
+        imports: [NestedCmp],
+        template: `
+          <main>
+            @defer (on interaction; hydrate on interaction) {
+              <div id="main" (click)="fnA()">
+                <nested-cmp />
+              </div>
+            } @placeholder {
+              <span>Outer block placeholder</span>
+            }
+          </main>
+        `,
+      })
+      class SimpleComponent {
+        fnA() {}
+      }
+
+      let allowDepsToLoad = false;
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => [
+            new Promise((resolve) => {
+              const check = () => {
+                if (allowDepsToLoad) {
+                  resolve(NestedCmp);
+                } else {
+                  setTimeout(check, 10);
+                }
+              };
+              check();
+            }),
+          ];
+        },
+      };
+
+      const appId = 'custom-app-id';
+      const providers = [{provide: APP_ID, useValue: appId}];
+      const hydrationFeatures = () => [withIncrementalHydration()];
+
+      const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+
+      resetTViewsFor(SimpleComponent, NestedCmp);
+
+      const doc = getDocument();
+      const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+        envProviders: [
+          ...providers,
+          {provide: PLATFORM_ID, useValue: 'browser'},
+          {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+        ],
+        hydrationFeatures,
+      });
+
+      appRef.tick();
+      await appRef.whenStable();
+
+      const registry = appRef.injector.get(DEHYDRATED_BLOCK_REGISTRY);
+      const pendingTasks = appRef.injector.get(PendingTasksInternal);
+
+      const mainBlock = doc.getElementById('main')!;
+      const clickEvent = new CustomEvent('click', {bubbles: true});
+      mainBlock.dispatchEvent(clickEvent);
+
+      // Wait a tick so triggerHydrationFromBlockName starts dependency loading
+      await timeout(20);
+      expect(pendingTasks.hasPendingTasks).toBeTrue();
+      expect(registry.hydrating.has('d0')).toBeTrue();
+
+      // Simulate the block being cleaned up while hydration is in flight
+      registry.cleanup(['d0']);
+      expect(registry.hydrating.has('d0')).toBeFalse();
+
+      // Allow dependencies to resolve
+      allowDepsToLoad = true;
+      await timeout(50);
+      appRef.tick();
+
+      await appRef.whenStable();
+      expect(pendingTasks.hasPendingTasks).toBeFalse();
     });
 
     it('should clear registry of multiple blocks if they are hydrated in one go', async () => {
