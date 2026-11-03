@@ -62,8 +62,6 @@ export class UnusedImportsMigration extends TsurgeFunnelMigration<
   CompilationUnitData,
   CompilationUnitData
 > {
-  private printer = ts.createPrinter();
-
   override createProgram(tsconfigAbsPath: string, fs: FileSystem): ProgramInfo {
     return super.createProgram(tsconfigAbsPath, fs, {
       extendedDiagnostics: {
