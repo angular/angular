@@ -13,11 +13,11 @@ import {
   HighlightTemplate,
   HighlightLabelDefinition,
   HighlightType,
-} from './highlights';
-import {createOverlayWithLabels, getComponentRect} from './dom';
+} from './types';
 import {findDirectiveAndHost} from '../../directive-forest/component-tree/component-tree';
-import {runOutsideAngular} from '../utils/general';
 import {debugLog} from '../utils/log';
+import {HighlightImpl} from './highlight';
+import {getRenderer} from './rendering/renderer';
 
 // A global synchronous event emitter that handles all highlight destroy events.
 const highlightDestroyEvents = new EventEmitter<[highlight: Highlight]>();
@@ -48,100 +48,38 @@ const highlightsRegistry = new FinalizationRegistry<Highlight>((highlight) => {
   }
 });
 
-const WINDOW_RESIZE_DEBOUNCE = 200;
-let resizeTimeout: ReturnType<typeof setTimeout>;
-let animationFrameId: ReturnType<typeof requestAnimationFrame>;
-let isWindowResizing = false;
-let resizeObserver: ResizeObserver;
-
-// Wrap Zone.js monkey-patched code for Zone-based apps.
-runOutsideAngular(() => {
-  window.addEventListener('resize', () => {
-    isWindowResizing = true;
-    if (resizeTimeout) {
-      clearTimeout(resizeTimeout);
-    }
-    resizeTimeout = setTimeout(() => {
-      const positions: [Highlight, DOMRect][] = [];
-
-      // We perform the DOM read first to avoid thrashing.
-      // All consecutive `getBoundingClientRect` should be practically free.
-      forEachActiveHighlight((h, t) => {
-        positions.push([h, t.getBoundingClientRect()]);
-      });
-
-      // We update the positions (DOM write).
-      for (const [highlight, rect] of positions) {
-        highlight.position(rect);
-      }
-
-      isWindowResizing = false;
-    }, WINDOW_RESIZE_DEBOUNCE);
-  });
-
-  resizeObserver = new ResizeObserver((entries) => {
-    // Ignore events that are already handled by window.resize.
-    if (isWindowResizing) {
-      return;
-    }
-    if (animationFrameId) {
-      cancelAnimationFrame(animationFrameId);
-    }
-    animationFrameId = requestAnimationFrame(() => {
-      const positions: [Highlight, DOMRect][] = [];
-
-      // We perform the DOM read first to avoid thrashing.
-      // All consecutive `getBoundingClientRect` should be practically free.
-      for (const {target} of entries) {
-        for (const highlight of activeHighlights.get(target) ?? []) {
-          positions.push([highlight, target.getBoundingClientRect()]);
-        }
-      }
-
-      // We update the positions (DOM write).
-      for (const [highlight, rect] of positions) {
-        highlight.position(rect);
-      }
-    });
-  });
-});
-
 // Clean up the references after `destroy` has been called.
 highlightDestroyEvents.subscribe(([highlight]) => {
-  forEachActiveHighlight((h, target) => {
-    if (highlight !== h) {
-      return;
+  const target = highlight.targetElement.deref();
+  if (!target) {
+    return;
+  }
+
+  const targetHighlights = activeHighlights.get(target);
+
+  if (!targetHighlights) {
+    return;
+  }
+
+  const idx = targetHighlights.indexOf(highlight);
+  if (idx > -1) {
+    targetHighlights.splice(idx, 1);
+    highlightsRegistry.unregister(highlight);
+
+    // Determine if there are any other highlights that can be rendered.
+    displayElementHighlights(target);
+  }
+
+  // In case there are no other highlights attached to that element,
+  // remove the target element from the global vars.
+  if (!targetHighlights.length) {
+    activeHighlights.delete(target);
+
+    const targetElsIdx = targetElements.findIndex((wr) => wr.deref() === target);
+    if (targetElsIdx > -1) {
+      targetElements.splice(targetElsIdx, 1);
     }
-
-    const targetHighlights = activeHighlights.get(target);
-
-    if (!targetHighlights) {
-      return false;
-    }
-
-    const idx = targetHighlights.indexOf(highlight);
-    if (idx > -1) {
-      targetHighlights.splice(idx, 1);
-      highlightsRegistry.unregister(h);
-
-      // Determine if there are any other highlights that can be rendered.
-      displayElementHighlights(target);
-    }
-
-    // In case there are no other highlights attached to that element,
-    // remove the target element from the global vars.
-    if (!targetHighlights.length) {
-      activeHighlights.delete(target);
-      resizeObserver.unobserve(target);
-
-      const targetElsIdx = targetElements.findIndex((wr) => wr.deref() === target);
-      if (targetElsIdx > -1) {
-        targetElements.splice(targetElsIdx, 1);
-      }
-    }
-
-    return false;
-  });
+  }
 });
 
 /** Store the `Highlight` in the active highlights data structures. */
@@ -178,23 +116,15 @@ export function highlightElement<T extends HighlightLabelDefinition = HighlightL
     return null;
   }
 
-  const rect = getComponentRect(targetElement);
-  if (!rect || rect.height === 0 || rect.width === 0) {
-    // display nothing in case the component is not visible
-    return null;
-  }
-
-  const {overlay, labels} = createOverlayWithLabels(template, props);
-  const highlight = new Highlight(overlay, labels, template, highlightDestroyEvents);
+  const highlight = new HighlightImpl(
+    targetElement,
+    template,
+    props,
+    highlightDestroyEvents,
+    getRenderer(),
+  );
   storeHighlight(targetElement, highlight);
-
-  highlight.position(rect);
   displayElementHighlights(targetElement);
-
-  // NOTE: Chrome V8 is optimized to unobserve elements
-  // detached from the DOM that don't have any other
-  // strong references in the code.
-  resizeObserver.observe(targetElement);
 
   return highlight;
 }

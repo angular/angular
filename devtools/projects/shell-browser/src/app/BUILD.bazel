@@ -286,6 +286,7 @@ ts_project(
         ":same_page_message_bus",
         "//devtools/projects/ng-devtools-backend",
         "//devtools/projects/ng-devtools-backend/src/lib/shared/highlighter",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/highlighter:types",
     ],
 )
 

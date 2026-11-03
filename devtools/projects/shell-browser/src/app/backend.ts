@@ -9,7 +9,7 @@
 import {initializeMessageBus} from '../../../ng-devtools-backend';
 
 import {removeHighlightsByType} from '../../../ng-devtools-backend/src/lib/shared/highlighter';
-import {HighlightType} from '../../../ng-devtools-backend/src/lib/shared/highlighter/highlights';
+import {HighlightType} from '../../../ng-devtools-backend/src/lib/shared/highlighter/types';
 
 import {initializeExtendedWindowOperations} from './chrome-window-extensions';
 import {getBackendUri, getContentScriptUri} from './comm-utils';
