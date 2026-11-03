@@ -198,6 +198,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     UNKNOWN_ELEMENT = 304,
     // (undocumented)
+    UNPARSABLE_ICU_EXPRESSION = 702,
+    // (undocumented)
     UNSAFE_ATTRIBUTE_BINDING = -910,
     // (undocumented)
     UNSAFE_VALUE_IN_RESOURCE_URL = -904,
