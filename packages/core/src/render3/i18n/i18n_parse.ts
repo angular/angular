@@ -10,7 +10,7 @@ import '../../util/ng_i18n_closure_mode';
 
 import {XSS_SECURITY_URL} from '../../error_details_base_url';
 import {checkSecurityContext, SecurityContext} from '../../sanitization/dom_security_schema';
-import {formatRuntimeError, RuntimeErrorCode} from '../../errors';
+import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../../errors';
 import {getTemplateContent, VALID_ATTRS, VALID_ELEMENTS} from '../../sanitization/html_sanitizer';
 import {getInertBodyHelper} from '../../sanitization/inert_body';
 import {
@@ -179,11 +179,20 @@ export function i18nStartFirstCreatePass(
           // Verify that ICU expression has the right shape. Translations might contain invalid
           // constructions (while original messages were correct), so ICU parsing at runtime may
           // not succeed (thus `icuExpression` remains a string).
-          // Note: we intentionally retain the error here by not using `ngDevMode`, because
-          // the value can change based on the locale and users aren't guaranteed to hit
-          // an invalid string while they're developing.
+          // Note: we intentionally throw the error in production mode as well (only the
+          // message is guarded by `ngDevMode`), because the value can change based on the
+          // locale and users aren't guaranteed to hit an invalid string while they're
+          // developing.
           if (typeof icuExpression !== 'object') {
-            throw new Error(`Unable to parse ICU expression in "${message}" message.`);
+            throw new RuntimeError(
+              RuntimeErrorCode.UNPARSABLE_ICU_EXPRESSION,
+              ngDevMode &&
+                `Unable to parse ICU expression in "${message}" message. ` +
+                  `Check that the translation contains a valid ICU expression. ` +
+                  `Note that ICU expressions in translations are only supported if the ` +
+                  `original message contains an ICU expression as well: introducing an ` +
+                  `ICU expression solely in a translation is not supported.`,
+            );
           }
           const icuContainerTNode = createTNodeAndAddOpCode(
             tView,

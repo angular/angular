@@ -105,6 +105,7 @@ export const enum RuntimeErrorCode {
   // i18n Errors
   INVALID_I18N_STRUCTURE = 700,
   MISSING_LOCALE_DATA = 701,
+  UNPARSABLE_ICU_EXPRESSION = 702,
 
   // Defer errors (750-799 range)
   DEFER_LOADING_FAILED = -750,

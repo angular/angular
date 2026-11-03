@@ -2909,7 +2909,7 @@ describe('runtime i18n', () => {
       expect(() =>
         initWithTemplate(AppComp, '{count, select, 10 {ten} other {other}}'),
       ).toThrowError(
-        /Unable to parse ICU expression in "{�0�, select, 10 {dix} other {autre}" message./,
+        /NG0702: Unable to parse ICU expression in "{�0�, select, 10 {dix} other {autre}" message./,
       );
     });
 
@@ -2926,7 +2926,7 @@ describe('runtime i18n', () => {
         [computeMsgId('Text')]: 'Text { count }',
       });
       expect(() => initWithTemplate(AppComp, '<div i18n>Text</div>')).toThrowError(
-        /Unable to parse ICU expression in "Text { count }" message./,
+        /NG0702: Unable to parse ICU expression in "Text { count }" message. Check that the translation contains a valid ICU expression. Note that ICU expressions in translations are only supported if the original message contains an ICU expression as well: introducing an ICU expression solely in a translation is not supported./,
       );
     });
 
