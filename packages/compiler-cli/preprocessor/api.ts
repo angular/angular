@@ -20,8 +20,12 @@ import type {AnalyzerBackend, LoadAnalyzerOptions, LoadedAnalyzer} from './src/a
 import type {IAnalyzer} from './src/hybrid_compiler.js';
 
 export {ErrorCode} from '@angular/compiler-cli/private/hybrid_preprocessor';
-export {HybridCompiler} from './src/hybrid_compiler.js';
-export type {HybridCompilerOptions, IAnalyzer} from './src/hybrid_compiler.js';
+export {createHybridCompiler, HybridCompiler} from './src/hybrid_compiler.js';
+export type {
+  CreateHybridCompilerOptions,
+  HybridCompilerOptions,
+  IAnalyzer,
+} from './src/hybrid_compiler.js';
 
 // The sidecar transport: usable with no N-API addon and no wasm engine present.
 export {SidecarAnalyzer} from './src/analyzer_sidecar.js';

@@ -12,6 +12,8 @@ import * as os from 'os';
 import * as path from 'path';
 import {resolveGoldenRoot} from './golden_cases.js';
 import {getOrCreateSyntheticNodeModules, parseMarkdownTestCase, pathExists} from './utils.js';
+import {createHybridCompiler, HybridCompiler, type IAnalyzer} from '../src/hybrid_compiler.js';
+import {run} from '../ngp.js';
 
 describe('ngp CLI (main.ts)', () => {
   const ngpPath = path.resolve(import.meta.dirname, '../main.js');
@@ -97,5 +99,57 @@ describe('ngp CLI (main.ts)', () => {
     } finally {
       await fs.rm(outDir, {recursive: true, force: true});
     }
+  });
+
+  it('creates HybridCompiler configured with options from innerAnalyzer', () => {
+    const fakeAnalyzer = {
+      analyze: async function* () {},
+      getCompilerOptions: () => ({
+        legacyOptionalChaining: true,
+        annotateForClosureCompiler: true,
+        workspaceName: 'my_ws',
+        preserveWhitespaces: false,
+      }),
+      close: () => {},
+    } as unknown as IAnalyzer;
+    const compiler = createHybridCompiler(fakeAnalyzer, {
+      optimize: true,
+      rootDir: '/workspace',
+      enableTemplateTypeChecker: true,
+    });
+    expect(compiler).toBeInstanceOf(HybridCompiler);
+    expect(compiler.optimize).toBe(true);
+    expect(compiler.legacyOptionalChaining).toBe(true);
+    expect(compiler.isClosureCompilerEnabled).toBe(true);
+    expect(compiler.workspaceName).toBe('my_ws');
+    expect(compiler.rootDir).toBe('/workspace');
+  });
+
+  it('leaves compiler.analyzer open when keepAnalyzerAlive is true', async () => {
+    let closed = false;
+    const fakeAnalyzer = {
+      analyze: async function* () {},
+      analyzeOptimized: async function* () {},
+      close: () => {
+        closed = true;
+      },
+    } as unknown as IAnalyzer;
+    const compiler = new HybridCompiler(fakeAnalyzer, {optimize: false});
+    await run(compiler, {keepAnalyzerAlive: true});
+    expect(closed).toBe(false);
+  });
+
+  it('closes compiler.analyzer when keepAnalyzerAlive is false or omitted', async () => {
+    let closed = false;
+    const fakeAnalyzer = {
+      analyze: async function* () {},
+      analyzeOptimized: async function* () {},
+      close: () => {
+        closed = true;
+      },
+    } as unknown as IAnalyzer;
+    const compiler = new HybridCompiler(fakeAnalyzer, {optimize: false});
+    await run(compiler, {});
+    expect(closed).toBe(true);
   });
 });
