@@ -296,8 +296,6 @@ const NGP_INTENTIONAL_BEHAVIOR_DIFFERENCES: ReadonlySet<string> = new Set([
  * and diagnostic/TCB gaps #677-#696).
  */
 const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
-  'model inputs type-check diagnostics allows access to protected output',
-  'model inputs type-check diagnostics with `--strict` allows access to protected output',
   'import generation should report an error when a library entry-point does not export the symbol',
   'import generation should report an error when using a directive outside of rootDirs',
 

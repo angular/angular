@@ -174,7 +174,7 @@ export function compileTargetsWithNgp(
             text: synthesizeDtsStaticDeclaration(decl, stmt),
           });
         } else {
-          const decoratorText = `${synthesizeTsDecoratorForDeclaration(decl, stmt)}\n`;
+          const decoratorText = `${synthesizeTsDecoratorForDeclaration(decl, stmt, sf)}\n`;
           const updatedClassText = synthesizeSignalInitializerMembers(decl, stmt, sf);
           replacements.push({
             start: stmt.getStart(sf),
@@ -310,19 +310,42 @@ function collectAllTestDeclarations(declarations: TestDeclaration[]): TestDeclar
   return result;
 }
 
+function findDeclaredInputMapping(decl: TestDeclaration, propName: string) {
+  if (decl.type !== 'directive' || !decl.inputs || decl.undeclaredInputFields?.includes(propName)) {
+    return undefined;
+  }
+  return Object.entries(decl.inputs).find(([k, v]) =>
+    typeof v === 'object' ? v.classPropertyName === propName || k === propName : k === propName,
+  );
+}
+
 function synthesizeTsDecoratorForDeclaration(
   decl: TestDeclaration,
   classNode?: ts.ClassDeclaration,
+  sf?: ts.SourceFile,
 ): string {
   if (decl.type === 'pipe') {
     const standalone = decl.isStandalone ?? true;
     return `@ɵNgpPipe({name: ${JSON.stringify(decl.pipeName)}, standalone: ${standalone}})`;
   }
   const declaredPropNames = new Set<string>();
+  const modelPropNames = new Set<string>();
   if (classNode) {
     for (const member of classNode.members) {
-      if (member.name && ts.isIdentifier(member.name)) {
-        declaredPropNames.add(member.name.text);
+      if (!member.name || !ts.isIdentifier(member.name)) {
+        continue;
+      }
+      const propName = member.name.text;
+      declaredPropNames.add(propName);
+      if (
+        ts.isPropertyDeclaration(member) &&
+        member.type &&
+        /\bModelSignal\b/.test(sf ? member.type.getText(sf) : member.type.getText())
+      ) {
+        const entry = findDeclaredInputMapping(decl, propName);
+        if (entry && typeof entry[1] === 'object' && entry[1].isSignal) {
+          modelPropNames.add(propName);
+        }
       }
     }
   }
@@ -364,6 +387,11 @@ function synthesizeTsDecoratorForDeclaration(
   if (decl.outputs) {
     const outputEntries: string[] = [];
     for (const [fieldName, bindingName] of Object.entries(decl.outputs)) {
+      // `ɵngpModel(...)` already declares the output on the property; repeating it in
+      // `@ɵNgpDirective({outputs: [...]})` triggers NG1051.
+      if (modelPropNames.has(fieldName)) {
+        continue;
+      }
       outputEntries.push(
         fieldName === bindingName
           ? JSON.stringify(fieldName)
@@ -404,22 +432,30 @@ function synthesizeSignalInitializerMembers(
     return fullClassText;
   }
   const classStart = classNode.getStart(sf);
-  const memberInsertions: {pos: number; text: string}[] = [];
+  const memberReplacements: {start: number; end: number; text: string}[] = [];
+  const seenInputProps = new Set<string>();
 
   for (const member of classNode.members) {
     if (!ts.isPropertyDeclaration(member) || !member.name || !ts.isIdentifier(member.name)) {
       continue;
     }
     const propName = member.name.text;
-    if (decl.undeclaredInputFields?.includes(propName)) {
-      continue;
-    }
-    const mappingEntry = Object.entries(decl.inputs).find(([k, v]) =>
-      typeof v === 'object' ? v.classPropertyName === propName || k === propName : k === propName,
-    );
+    const mappingEntry = findDeclaredInputMapping(decl, propName);
     if (!mappingEntry) {
       continue;
     }
+    // `typeCheckDiagnose` emits separate fields for `inputs` and `outputs`; when both use the
+    // same `ModelSignal` property name, drop the duplicate field declaration.
+    if (seenInputProps.has(propName)) {
+      memberReplacements.push({
+        start: member.getStart(sf) - classStart,
+        end: member.end - classStart,
+        text: '',
+      });
+      continue;
+    }
+    seenInputProps.add(propName);
+
     const [fieldName, mapping] = mappingEntry;
     if (typeof mapping === 'object' && mapping.isSignal) {
       if (member.initializer !== undefined) {
@@ -435,9 +471,10 @@ function synthesizeSignalInitializerMembers(
           ? `ɵngpInput.required({alias: ${JSON.stringify(mapping.bindingPropertyName)}})`
           : `ɵngpInput(undefined as any, {alias: ${JSON.stringify(mapping.bindingPropertyName)}})`;
 
-      const insertPos = member.type ? member.type.end : member.name.end;
-      memberInsertions.push({
-        pos: insertPos - classStart,
+      const insertPos = (member.type ? member.type.end : member.name.end) - classStart;
+      memberReplacements.push({
+        start: insertPos,
+        end: insertPos,
         text: ` = ${callExpr} as any`,
       });
     } else {
@@ -451,17 +488,19 @@ function synthesizeSignalInitializerMembers(
         alias === fieldName && !required && !transformExpr
           ? `@ɵNgpInput() `
           : `@ɵNgpInput({alias: ${JSON.stringify(alias)}, required: ${required}${transformExpr}}) `;
-      memberInsertions.push({
-        pos: member.getStart(sf) - classStart,
+      const insertPos = member.getStart(sf) - classStart;
+      memberReplacements.push({
+        start: insertPos,
+        end: insertPos,
         text: decoratorCall,
       });
     }
   }
 
-  memberInsertions.sort((a, b) => b.pos - a.pos);
+  memberReplacements.sort((a, b) => b.start - a.start);
   let updated = fullClassText;
-  for (const ins of memberInsertions) {
-    updated = updated.slice(0, ins.pos) + ins.text + updated.slice(ins.pos);
+  for (const rep of memberReplacements) {
+    updated = updated.slice(0, rep.start) + rep.text + updated.slice(rep.end);
   }
   return updated;
 }
