@@ -163,6 +163,7 @@ pub struct ClassData {
     /// Public instance method names ngtsc's `publicMethods` would hold: the class's own after
     /// single-file analysis, merged with its base classes' once Stage 2 flattens inheritance.
     pub public_methods: Vec<String>,
+    pub signal_members: Vec<String>,
     pub uses_inheritance: bool,
     pub uses_on_changes: bool,
     pub is_exported: bool,
@@ -2288,13 +2289,7 @@ impl ClassData {
         match &self.decorator {
             DecoratorData::Component(c) => {
                 self.validate_directive(&c.directive, false, cx, file_path, converter, diagnostics);
-                self.validate_host_directives(
-                    &c.directive,
-                    cx,
-                    file_path,
-                    converter,
-                    diagnostics,
-                );
+                self.validate_host_directives(&c.directive, cx, file_path, converter, diagnostics);
                 if cx.mode != WireMode::Semantic || !c.directive.has_host_directives_shape_error() {
                     self.validate_component(c, cx.mode, file_path, converter, diagnostics);
                     self.validate_unique_declaration(
@@ -3406,9 +3401,7 @@ fn check_custom_element_selector_for_errors(selector: &str) -> Option<&'static s
 
 /// Returns the unresolved identifier span when `value` corresponds to ngtsc's
 /// `value instanceof DynamicValue && value.isFromUnknownIdentifier()` in local compilation mode.
-fn local_unresolved_const_span(
-    value: &crate::evaluator::ResolvedValue,
-) -> Option<oxc_span::Span> {
+fn local_unresolved_const_span(value: &crate::evaluator::ResolvedValue) -> Option<oxc_span::Span> {
     use crate::analyzer::ImportKind;
     use crate::evaluator::{DynamicReason, IncompleteDep, ResolvedValue, UnresolvedReference};
 
@@ -3453,9 +3446,7 @@ fn local_unresolved_const_span(
     }
 }
 
-fn local_unresolved_styles_span(
-    value: &crate::evaluator::ResolvedValue,
-) -> Option<oxc_span::Span> {
+fn local_unresolved_styles_span(value: &crate::evaluator::ResolvedValue) -> Option<oxc_span::Span> {
     match value.unwrap_named() {
         crate::evaluator::ResolvedValue::Array(items) => {
             items.iter().find_map(local_unresolved_const_span)
@@ -3755,9 +3746,8 @@ impl TransformData {
             } => TransformMetadata {
                 kind: "type".to_string(),
                 span: crate::types::metadata::SpanMetadata::new(*value_span, converter),
-                type_span: (!type_span.is_empty()).then(|| {
-                    crate::types::metadata::SpanMetadata::new(*type_span, converter)
-                }),
+                type_span: (!type_span.is_empty())
+                    .then(|| crate::types::metadata::SpanMetadata::new(*type_span, converter)),
             },
             TransformData::Expression(span) => TransformMetadata {
                 kind: "expression".to_string(),
@@ -3955,10 +3945,7 @@ fn prepare_members(
                 // locate, which would splice a malformed `: ;` member.
                 if !i.is_signal {
                     use std::fmt::Write;
-                    let site = d
-                        .input_transforms
-                        .iter()
-                        .rfind(|site| site.input == i.name);
+                    let site = d.input_transforms.iter().rfind(|site| site.input == i.name);
                     if let Some(site) = site.filter(|s| s.is_invalid()) {
                         if !site.conflicting_coercion {
                             let _ = writeln!(
@@ -4451,6 +4438,7 @@ impl ClassData {
             ng_template_guards: self.ng_template_guards.clone(),
             has_ng_field_directive: self.has_ng_field_directive,
             public_methods: self.public_methods.clone(),
+            signal_members: self.signal_members.clone(),
             super_class: self.super_class.clone(),
             uses_inheritance: self.uses_inheritance,
             uses_on_changes: self.uses_on_changes,

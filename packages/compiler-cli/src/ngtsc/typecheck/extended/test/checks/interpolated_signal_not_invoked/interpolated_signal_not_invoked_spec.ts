@@ -141,13 +141,17 @@ runInEachFileSystem(() => {
       {
         fileName,
         templates: {
-          'TestCmp': `<div>{{ count }}</div>`,
+          'TestCmp': `<div>{{ count }} {{ fromPrivate }} {{ fromEsPrivate }}</div>`,
         },
         source: `
           import {signal} from '@angular/core';
 
           export class TestCmp {
+            private readonly _count = signal(0);
+            #esPrivateCount = signal(0);
             count = signal(0).asReadonly();
+            readonly fromPrivate = this._count.asReadonly();
+            readonly fromEsPrivate = this.#esPrivateCount.asReadonly();
           }`,
       },
     ]);
@@ -160,10 +164,40 @@ runInEachFileSystem(() => {
       {} /* options */,
     );
     const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
-    expect(diags.length).toBe(1);
+    expect(diags.length).toBe(3);
     expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
     expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED));
     expect(getSourceCodeForDiagnostic(diags[0])).toBe('count');
+    expect(getSourceCodeForDiagnostic(diags[1])).toBe('fromPrivate');
+    expect(getSourceCodeForDiagnostic(diags[2])).toBe('fromEsPrivate');
+  });
+
+  it('should not produce a warning when a nullable union signal initialized with signal() is guarded in @if', () => {
+    const fileName = absoluteFrom('/main.ts');
+    const {program, templateTypeChecker} = setup([
+      {
+        fileName,
+        templates: {
+          'TestCmp': `@if (maybeSig) { {{ maybeSig() }} }`,
+        },
+        source: `
+          import {Signal, signal} from '@angular/core';
+
+          export class TestCmp {
+            maybeSig: Signal<string> | null = signal('a');
+          }`,
+      },
+    ]);
+    const sf = getSourceFileOrError(program, fileName);
+    const component = getClass(sf, 'TestCmp');
+    const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+      templateTypeChecker,
+      program.getTypeChecker(),
+      [interpolatedSignalFactory],
+      {} /* options */,
+    );
+    const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+    expect(diags.length).toBe(0);
   });
 
   it('should produce a warning when a computed signal is not invoked', () => {
@@ -1426,6 +1460,125 @@ runInEachFileSystem(() => {
       expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
       expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED));
       expect(getSourceCodeForDiagnostic(diags[0])).toBe('mySignal2');
+    });
+  });
+
+  describe('inherited signals', () => {
+    it('should produce a warning when an inherited signal from a base class is not invoked', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const {program, templateTypeChecker} = setup([
+        {
+          fileName,
+          templates: {
+            'TestCmp': `<div>{{ baseSignal }} {{ invokedSignal() }}</div>`,
+          },
+          source: `
+            import {signal} from '@angular/core';
+
+            class BaseCmp {
+              protected baseSignal = signal('hello');
+              protected invokedSignal = signal('world');
+            }
+
+            export class TestCmp extends BaseCmp {}`,
+        },
+      ]);
+      const sf = getSourceFileOrError(program, fileName);
+      const component = getClass(sf, 'TestCmp');
+      const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [interpolatedSignalFactory],
+        {},
+      );
+      const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+      expect(diags.length).toBe(1);
+      expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED));
+      expect(getSourceCodeForDiagnostic(diags[0])).toBe('baseSignal');
+    });
+
+    it('should produce warnings for signals inherited across .ts and .d.ts base classes', () => {
+      const dtsFile = absoluteFrom('/base.d.ts');
+      const midFile = absoluteFrom('/mid.ts');
+      const mainFile = absoluteFrom('/main.ts');
+      const {program, templateTypeChecker} = setup([
+        {
+          fileName: dtsFile,
+          source: `
+            import {Signal} from '@angular/core';
+
+            export declare class DtsBase {
+              dtsSignal: Signal<string>;
+            }`,
+        },
+        {
+          fileName: midFile,
+          source: `
+            import {computed} from '@angular/core';
+            import {DtsBase} from './base';
+
+            export class MidBase extends DtsBase {
+              midSignal = computed(() => this.dtsSignal().length);
+            }`,
+        },
+        {
+          fileName: mainFile,
+          templates: {
+            'TestCmp': `<div>{{ dtsSignal }} {{ midSignal }}</div>`,
+          },
+          source: `
+            import {MidBase} from './mid';
+
+            export class TestCmp extends MidBase {}`,
+        },
+      ]);
+      const sf = getSourceFileOrError(program, mainFile);
+      const component = getClass(sf, 'TestCmp');
+      const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [interpolatedSignalFactory],
+        {},
+      );
+      const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+      expect(diags.length).toBe(2);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED));
+      expect(getSourceCodeForDiagnostic(diags[0])).toBe('dtsSignal');
+      expect(diags[1].code).toBe(ngErrorCode(ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED));
+      expect(getSourceCodeForDiagnostic(diags[1])).toBe('midSignal');
+    });
+
+    it('should not produce a warning when an inherited signal is overridden by a non-signal property', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const {program, templateTypeChecker} = setup([
+        {
+          fileName,
+          templates: {
+            'TestCmp': `<div>{{ value }}</div>`,
+          },
+          source: `
+            import {signal} from '@angular/core';
+
+            class BaseCmp {
+              value = signal(0);
+            }
+
+            export class TestCmp extends BaseCmp {
+              override value: any = 42;
+            }`,
+        },
+      ]);
+      const sf = getSourceFileOrError(program, fileName);
+      const component = getClass(sf, 'TestCmp');
+      const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [interpolatedSignalFactory],
+        {},
+      );
+      const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+      expect(diags.length).toBe(0);
     });
   });
 });

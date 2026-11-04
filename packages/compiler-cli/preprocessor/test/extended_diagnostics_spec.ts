@@ -587,6 +587,135 @@ describe('extended template diagnostics', () => {
     );
   });
 
+  it('NG8109: interpolatedSignalNotInvoked for signal creators, explicit Signal types, and @let aliases', async () => {
+    const diags = await getDiagnostics({
+      '/app.ts': `
+        import {
+          Component,
+          computed,
+          effect,
+          linkedSignal,
+          output,
+          resource,
+          signal as createSig,
+          type Signal,
+          viewChild,
+        } from '@angular/core';
+        import {toSignal} from '@angular/core/rxjs-interop';
+
+        @Component({
+          selector: 'app-root',
+          template: \`
+            {{ count }}
+            {{ roFromProp }}
+            {{ roFromPriv }}
+            {{ doubled }}
+            {{ linked }}
+            {{ childEl }}
+            {{ fromObs }}
+            {{ explicitSig }}
+            {{ nested.leaf }}
+            @let alias = count;
+            {{ alias }}
+            @if (maybeSig) {
+              {{ maybeSig() }}
+            }
+            {{ unionSig }}
+            {{ eff }}
+            {{ res }}
+            {{ roRes }}
+            {{ out }}
+          \`,
+        })
+        export class App {
+          count = createSig(0);
+          private readonly _backing = createSig(0);
+          readonly roFromProp = this._backing.asReadonly();
+          #privBacking = createSig(0);
+          readonly roFromPriv = this.#privBacking.asReadonly();
+          doubled = computed(() => this.count() * 2);
+          linked = linkedSignal(() => this.count());
+          childEl = viewChild('el');
+          fromObs = toSignal({} as any);
+          protected explicitSig!: Signal<string>;
+          nested = {leaf: createSig('hi')};
+          maybeSig: Signal<string> | null = createSig('a');
+          unionSig: Signal<string> | string = createSig('plain');
+          eff = effect(() => {});
+          res = resource({loader: async () => 1});
+          roRes = this.res.asReadonly();
+          out = output<void>();
+        }
+      `,
+    });
+    const ng8109 = diags.filter((d) => d.code === 8109);
+    expect(ng8109.map((d) => d.messageText)).toEqual([
+      jasmine.stringMatching(/NG8109: count is a function and should be invoked: count\(\)\}/),
+      jasmine.stringMatching(
+        /NG8109: roFromProp is a function and should be invoked: roFromProp\(\)\}/,
+      ),
+      jasmine.stringMatching(
+        /NG8109: roFromPriv is a function and should be invoked: roFromPriv\(\)\}/,
+      ),
+      jasmine.stringMatching(/NG8109: doubled is a function and should be invoked: doubled\(\)\}/),
+      jasmine.stringMatching(/NG8109: linked is a function and should be invoked: linked\(\)\}/),
+      jasmine.stringMatching(/NG8109: childEl is a function and should be invoked: childEl\(\)\}/),
+      jasmine.stringMatching(/NG8109: fromObs is a function and should be invoked: fromObs\(\)\}/),
+      jasmine.stringMatching(
+        /NG8109: explicitSig is a function and should be invoked: explicitSig\(\)\}/,
+      ),
+      jasmine.stringMatching(/NG8109: leaf is a function and should be invoked: leaf\(\)\}/),
+      jasmine.stringMatching(/NG8109: alias is a function and should be invoked: alias\(\)\}/),
+    ]);
+  });
+
+  it('NG8109: respects base class inheritance, override shadowing, and template variable shadowing', async () => {
+    const diags = await getDiagnostics({
+      '/dts_base.d.ts': `
+        import * as i0 from '@angular/core';
+        export declare class DtsBase {
+          dtsSig: i0.Signal<string>;
+          overriddenSig: i0.WritableSignal<number>;
+        }
+      `,
+      '/mid.ts': `
+        import {signal} from '@angular/core';
+        import {DtsBase} from './dts_base';
+        export class UndecoratedMid extends DtsBase {
+          midSig = signal(1);
+        }
+      `,
+      '/app.ts': `
+        import {Component, signal} from '@angular/core';
+        import {UndecoratedMid} from './mid';
+
+        @Component({
+          selector: 'app-root',
+          template: \`
+            {{ dtsSig }}
+            {{ midSig }}
+            {{ overriddenSig }}
+            @for (ownSig of items; track $index) {
+              {{ ownSig }}
+              {{ this.ownSig }}
+            }
+          \`,
+        })
+        export class App extends UndecoratedMid {
+          override overriddenSig: any = 123;
+          ownSig = signal('component-signal');
+          items = ['a', 'b'];
+        }
+      `,
+    });
+    const ng8109 = diags.filter((d) => d.code === 8109);
+    expect(ng8109.map((d) => d.messageText)).toEqual([
+      jasmine.stringMatching(/NG8109: dtsSig is a function and should be invoked: dtsSig\(\)\}/),
+      jasmine.stringMatching(/NG8109: midSig is a function and should be invoked: midSig\(\)\}/),
+      jasmine.stringMatching(/NG8109: ownSig is a function and should be invoked: ownSig\(\)\}/),
+    ]);
+  });
+
   it('NG8111: uninvokedFunctionInEventBinding for arrow functions', async () => {
     const diags = await getDiagnostics({
       '/app.ts': `

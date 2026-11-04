@@ -586,6 +586,8 @@ pub struct FileData {
     pub(crate) symbol_index: Arc<HashMap<ReferenceId, ClassInfo>>,
     /// Constructor facts for every class in the file, decorated or not, keyed by name.
     pub(crate) di_facts: Arc<HashMap<String, crate::analyzer::di_facts::ClassDiFacts>>,
+    /// Signal member facts for every class in the file, decorated or not, keyed by name.
+    pub(crate) signal_facts: Arc<HashMap<String, crate::analyzer::signal_facts::ClassSignalFacts>>,
     /// Facts for the top-level function declarations, keyed by name.
     pub(crate) function_facts: Arc<HashMap<String, crate::analyzer::transforms::FunctionFacts>>,
     /// Re-export table (`export … from …`).
@@ -623,9 +625,7 @@ impl FileData {
             crate::analyzer::DecoratorData::Component(c) => {
                 !c.directive.standalone || c.directive.standalone_dynamic
             }
-            crate::analyzer::DecoratorData::Directive(d) => {
-                !d.standalone || d.standalone_dynamic
-            }
+            crate::analyzer::DecoratorData::Directive(d) => !d.standalone || d.standalone_dynamic,
             crate::analyzer::DecoratorData::Pipe(p) => !p.standalone.unwrap_or(false),
             _ => false,
         })

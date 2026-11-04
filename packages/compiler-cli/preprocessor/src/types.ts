@@ -214,6 +214,7 @@ export interface ClassMetadata {
   ngTemplateGuards: Array<TemplateGuardMetadata>;
   hasNgFieldDirective: boolean;
   publicMethods: Array<string>;
+  signalMembers?: Array<string>;
   superClass?: DeclarationTuple;
   usesInheritance: boolean;
   usesOnChanges: boolean;
