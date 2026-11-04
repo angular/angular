@@ -37,9 +37,7 @@ pub use analyzer::{
     ParsedFileAnalysis, PrefixImportStrategy, ReferenceEmitStrategy, WireContext, WireMode,
 };
 pub use compiler::{AnalysisIterator, Analyzer, SharedQuery, Spawner};
-pub use evaluator::cross_file::{
-    cross_file_resolve, resolve_specifier, ChaseSymbolError, DeclaredSymbol,
-};
+pub use evaluator::cross_file::{cross_file_resolve, ChaseSymbolError, DeclaredSymbol};
 pub use host::{
     AnalysisHost, DefaultFsHost, HostError, HostFuture, IdKind, ImportKind, LoadKind,
     LoadedModule, ModuleFormat, ModuleId, ResolveRequest, ResolvedModule, ResolvedResourceId,

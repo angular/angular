@@ -3650,14 +3650,13 @@ export class Cmp {}
             ("/test/base.css", ".base {}"),
             ("/test/extra.css", ".extra {}"),
         ]);
-        let resolver = crate::utils::create_resolver_with_fs(None, fs.clone(), false, None);
-        let resource_resolver = crate::ResourceResolver::new(&fs, &resolver);
-        crate::analyzer::load_syntax_resources(
+        let host = crate::host::DefaultFsHost::from_fs_and_options(fs, None, false, None);
+        futures::executor::block_on(crate::analyzer::load_syntax_resources(
             &mut analysis.classes,
-            &resource_resolver,
-            file_path,
+            &host,
+            &crate::host::ModuleId::from_path(file_path),
             0,
-        );
+        ));
 
         let comp = analysis.classes[0]
             .as_component()
@@ -3734,14 +3733,13 @@ export class LiteralCmp {}
         }
 
         let fs = create_test_fs(&[("/test/literal.html", "<b>lit</b>")]);
-        let resolver = crate::utils::create_resolver_with_fs(None, fs.clone(), false, None);
-        let resource_resolver = crate::ResourceResolver::new(&fs, &resolver);
-        crate::analyzer::load_syntax_resources(
+        let host = crate::host::DefaultFsHost::from_fs_and_options(fs, None, false, None);
+        futures::executor::block_on(crate::analyzer::load_syntax_resources(
             &mut analysis.classes,
-            &resource_resolver,
-            file_path,
+            &host,
+            &crate::host::ModuleId::from_path(file_path),
             0,
-        );
+        ));
 
         // The cross-file `templateUrl` is left parked for Stage 2 and nothing is loaded for it.
         let cross_file = analysis.classes[0].as_component().expect("component");

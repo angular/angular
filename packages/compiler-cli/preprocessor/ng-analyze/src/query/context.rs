@@ -80,10 +80,17 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryContext<Fs> {
         let cached = if let Some(shared) = self.engine.cache.get(&key) {
             shared.await
         } else {
-            let res = self.engine.clone().execute(key).await;
-            let (remote, handle) = futures::future::ready(res.clone()).remote_handle();
-            let _ = remote.now_or_never();
-            self.engine.cache.insert(key, handle.shared());
+            let (res, cacheable_epoch) = self.engine.clone().execute_tracked(key).await;
+            if let Some(started) = cacheable_epoch {
+                let (remote, handle) = futures::future::ready(res.clone()).remote_handle();
+                let _ = remote.now_or_never();
+                self.engine.cache_if_kind_unchanged(
+                    key,
+                    handle.shared(),
+                    &res.dependencies,
+                    started,
+                );
+            }
             res
         };
         self.extend_dependencies(cached.dependencies.iter().copied());
@@ -279,7 +286,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryContext<Fs> {
     /// [`QueryEngine::next_ambient_global_candidate`]). Records that `consumer_file` looked up
     /// `name` rather than depending on every `.d.ts` scanned, so editing one only evicts
     /// `consumer_file` if it starts or stops declaring `name`.
-    pub fn next_ambient_global_candidate(
+    pub async fn next_ambient_global_candidate(
         &self,
         name: &str,
         consumer_file: FileId,
@@ -289,7 +296,9 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryContext<Fs> {
         self.record_file(consumer_file);
         self.engine
             .record_ambient_global_dependent(name, consumer_file);
-        self.engine.next_ambient_global_candidate(name, position)
+        self.engine
+            .next_ambient_global_candidate(name, position)
+            .await
     }
 
     pub async fn has_path(&self, start: FileId, target: FileId) -> bool {

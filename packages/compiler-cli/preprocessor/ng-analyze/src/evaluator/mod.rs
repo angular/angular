@@ -25,7 +25,7 @@ pub mod interpreter;
 pub mod resolved;
 pub mod value;
 
-pub use cross_file::{cross_file_resolve, resolve_specifier, ChaseSymbolError, DeclaredSymbol};
+pub use cross_file::{cross_file_resolve, ChaseSymbolError, DeclaredSymbol};
 
 #[cfg(test)]
 mod tests;

@@ -23,6 +23,9 @@ impl ResourceRegistry {
         component_path: PathBuf,
         symbol_id: SymbolId,
     ) {
+        if template_path.as_os_str().is_empty() {
+            return;
+        }
         let case_fold_template = normalize_path(&template_path).into_owned();
         let case_fold_component = normalize_path(&component_path).into_owned();
         let norm_comp = normalize_path_structural(&component_path);
@@ -384,5 +387,17 @@ mod tests {
         let new_comps = new_components.unwrap();
         assert_eq!(new_comps.len(), 1);
         assert_eq!(new_comps[0].ts_file_path, "/project/app.ts");
+    }
+
+    #[test]
+    fn test_resource_registry_skips_empty_paths() {
+        let registry = super::ResourceRegistry::default();
+        registry.register_template(
+            PathBuf::new(),
+            PathBuf::from("/Project/App.ts"),
+            SymbolId::from(1),
+        );
+        assert!(registry.template_to_components.read().unwrap().is_empty());
+        assert!(registry.file_to_templates.read().unwrap().is_empty());
     }
 }
