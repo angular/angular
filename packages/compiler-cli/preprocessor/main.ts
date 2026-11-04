@@ -13,9 +13,7 @@ import {fileURLToPath} from 'url';
 import * as fs from 'node:fs/promises';
 import * as path from 'path';
 import {resolveWorkspaceConfig} from './src/workspace.js';
-import {verifyCompilerOptions} from './src/compiler_options.js';
-import {HybridCompiler, IAnalyzer} from './src/hybrid_compiler.js';
-import {buildTypeCheckingConfig} from './src/tcb.js';
+import {createHybridCompiler, HybridCompiler, IAnalyzer} from './src/hybrid_compiler.js';
 import {SidecarAnalyzer} from './src/analyzer_sidecar.js';
 import {run} from './ngp.js';
 
@@ -109,47 +107,10 @@ import {run} from './ngp.js';
         ngAnalyzeDir,
       });
     }
-    const angularCompilerOptions = innerAnalyzer.getCompilerOptions?.();
-    const optionDiagnostics = verifyCompilerOptions(angularCompilerOptions ?? {});
-
-    const tcbConfig = buildTypeCheckingConfig(angularCompilerOptions, enableTemplateTypeCheckerArg);
-
-    const isClosureCompilerEnabled = angularCompilerOptions?.annotateForClosureCompiler === true;
-
-    const emitDeclarationOnly =
-      angularCompilerOptions?.emitDeclarationOnly === true &&
-      angularCompilerOptions?._experimentalAllowEmitDeclarationOnly === true;
-
-    const onlyPublishPublicTypingsForNgModules =
-      angularCompilerOptions?.onlyPublishPublicTypingsForNgModules === true;
-
-    const workspaceName = angularCompilerOptions?.workspaceName || undefined;
-    const rootDirs = angularCompilerOptions?.rootDirs;
-    const enableHmr = angularCompilerOptions?._enableHmr;
-    const compiler = new HybridCompiler(innerAnalyzer, {
+    const compiler = createHybridCompiler(innerAnalyzer, {
       optimize,
-      tcbConfig,
-      optionDiagnostics,
-      legacyOptionalChaining: angularCompilerOptions?.legacyOptionalChaining,
-      isClosureCompilerEnabled,
-      onlyExplicitDeferDependencyImports:
-        angularCompilerOptions?.onlyExplicitDeferDependencyImports,
-      enableTemplateSourceLocations: angularCompilerOptions?.enableTemplateSourceLocations,
-      emitDeclarationOnly,
-      onlyPublishPublicTypingsForNgModules,
-      forbidOrphanComponents: angularCompilerOptions?.forbidOrphanComponents,
-      supportJitMode: angularCompilerOptions?.supportJitMode !== false,
-      preserveWhitespaces: angularCompilerOptions?.preserveWhitespaces,
-      supportTestBed: angularCompilerOptions?.supportTestBed,
-      enableI18nLegacyMessageIdFormat: angularCompilerOptions?.enableI18nLegacyMessageIdFormat,
-      i18nUseExternalIds: angularCompilerOptions?.i18nUseExternalIds,
-      i18nNormalizeLineEndingsInICUs: angularCompilerOptions?.i18nNormalizeLineEndingsInICUs,
-      i18nPreserveWhitespaceForLegacyExtraction:
-        angularCompilerOptions?.i18nPreserveWhitespaceForLegacyExtraction,
-      enableHmr,
       rootDir,
-      workspaceName,
-      rootDirs,
+      enableTemplateTypeChecker: enableTemplateTypeCheckerArg,
     });
 
     console.log('Processing files...');

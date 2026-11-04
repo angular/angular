@@ -14,7 +14,11 @@ import {
   TcbDirectiveMetadata,
 } from '@angular/compiler';
 import {makeClassKey} from './compiler-utils.js';
-import {verifyExtendedDiagnosticsOptions, type NgpCompilerOptions} from './compiler_options.js';
+import {
+  verifyCompilerOptions,
+  verifyExtendedDiagnosticsOptions,
+  type NgpCompilerOptions,
+} from './compiler_options.js';
 import {DependencyTemplates, ngContentSignature} from './dependency_templates.js';
 import {flattenNgDiagnosticMessage, withErrorGuide} from './diagnostic.js';
 import {ChunkContext, FileAnalysis, getOrCreateFileAnalysis} from './file_analysis.js';
@@ -203,6 +207,63 @@ export interface HybridCompilerOptions {
    * have differed.
    */
   verifyReusedProcessedFiles?: boolean;
+}
+
+/** Options for {@link createHybridCompiler}. */
+export interface CreateHybridCompilerOptions {
+  optimize?: boolean;
+  rootDir?: string;
+  enableTemplateTypeChecker?: boolean;
+}
+
+/**
+ * Creates a configured {@link HybridCompiler} using compiler options read from `innerAnalyzer`.
+ */
+export function createHybridCompiler(
+  innerAnalyzer: IAnalyzer,
+  options: CreateHybridCompilerOptions = {},
+): HybridCompiler {
+  const angularCompilerOptions = innerAnalyzer.getCompilerOptions?.();
+  const optionDiagnostics = verifyCompilerOptions(angularCompilerOptions ?? {});
+  const tcbConfig = buildTypeCheckingConfig(
+    angularCompilerOptions,
+    options.enableTemplateTypeChecker,
+  );
+  const isClosureCompilerEnabled = angularCompilerOptions?.annotateForClosureCompiler === true;
+  const emitDeclarationOnly =
+    angularCompilerOptions?.emitDeclarationOnly === true &&
+    angularCompilerOptions?._experimentalAllowEmitDeclarationOnly === true;
+  const onlyPublishPublicTypingsForNgModules =
+    angularCompilerOptions?.onlyPublishPublicTypingsForNgModules === true;
+  const workspaceName = angularCompilerOptions?.workspaceName || undefined;
+  const rootDirs = angularCompilerOptions?.rootDirs;
+  const enableHmr = angularCompilerOptions?._enableHmr;
+  const optimize = options.optimize ?? false;
+
+  return new HybridCompiler(innerAnalyzer, {
+    optimize,
+    tcbConfig,
+    optionDiagnostics,
+    legacyOptionalChaining: angularCompilerOptions?.legacyOptionalChaining,
+    isClosureCompilerEnabled,
+    onlyExplicitDeferDependencyImports: angularCompilerOptions?.onlyExplicitDeferDependencyImports,
+    enableTemplateSourceLocations: angularCompilerOptions?.enableTemplateSourceLocations,
+    emitDeclarationOnly,
+    onlyPublishPublicTypingsForNgModules,
+    forbidOrphanComponents: angularCompilerOptions?.forbidOrphanComponents,
+    supportJitMode: angularCompilerOptions?.supportJitMode !== false,
+    preserveWhitespaces: angularCompilerOptions?.preserveWhitespaces,
+    supportTestBed: angularCompilerOptions?.supportTestBed,
+    enableI18nLegacyMessageIdFormat: angularCompilerOptions?.enableI18nLegacyMessageIdFormat,
+    i18nUseExternalIds: angularCompilerOptions?.i18nUseExternalIds,
+    i18nNormalizeLineEndingsInICUs: angularCompilerOptions?.i18nNormalizeLineEndingsInICUs,
+    i18nPreserveWhitespaceForLegacyExtraction:
+      angularCompilerOptions?.i18nPreserveWhitespaceForLegacyExtraction,
+    enableHmr,
+    rootDir: options.rootDir,
+    workspaceName,
+    rootDirs,
+  });
 }
 
 export interface CompileOptions {

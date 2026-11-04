@@ -15,15 +15,17 @@ import {AnalysisResult} from './src/types.js';
 import {ChunkContext} from './src/file_analysis.js';
 
 export interface RunOptions {
-  outDir: string | null;
-  rootDir: string;
+  outDir?: string | null;
+  rootDir?: string;
   inPlace?: boolean;
   /** When set, writes `<tsconfig>.ngdiag.json` from `compiler.getDiagnostics()`. */
   tsconfigPath?: string;
+  /** When true, leaves `compiler.analyzer` open so the caller can reuse it across runs. */
+  keepAnalyzerAlive?: boolean;
 }
 
 export async function run(compiler: HybridCompiler, options: RunOptions): Promise<void> {
-  const {outDir, rootDir, tsconfigPath} = options;
+  const {outDir = null, rootDir = '', tsconfigPath} = options;
   const results =
     compiler.optimize && !compiler.emitDeclarationOnly
       ? compiler.analyzeOptimized()
@@ -43,7 +45,9 @@ export async function run(compiler: HybridCompiler, options: RunOptions): Promis
     // depend on any file) still have to make it into the `.ngdiag.json`.
     await writeDiagnosticsFile(compiler, tsconfigPath);
   } finally {
-    compiler.analyzer.close();
+    if (!options.keepAnalyzerAlive) {
+      compiler.analyzer.close();
+    }
   }
 }
 
