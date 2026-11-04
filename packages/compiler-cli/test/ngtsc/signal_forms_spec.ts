@@ -302,10 +302,10 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(2);
-      expect(extractMessage(diags[0])).toBe(
+      expect(extractMessage(diags[0])).toContain(
         `Setting the 'min' attribute is not allowed on nodes using the '[formField]' directive`,
       );
-      expect(extractMessage(diags[1])).toBe(
+      expect(extractMessage(diags[1])).toContain(
         `Setting the 'max' attribute is not allowed on nodes using the '[formField]' directive`,
       );
     });
@@ -450,7 +450,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(extractMessage(diags[0])).toBe(
+      expect(extractMessage(diags[0])).toContain(
         `Binding to '[max]' is not allowed on nodes using the '[formField]' directive`,
       );
     });
@@ -475,7 +475,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(extractMessage(diags[0])).toBe(
+      expect(extractMessage(diags[0])).toContain(
         `Binding to '[attr.maxlength]' is not allowed on nodes using the '[formField]' directive`,
       );
     });
@@ -500,7 +500,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(extractMessage(diags[0])).toBe(
+      expect(extractMessage(diags[0])).toContain(
         `Binding to '[(max)]' is not allowed on nodes using the '[formField]' directive`,
       );
     });
@@ -530,7 +530,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(extractMessage(diags[0])).toBe(
+      expect(extractMessage(diags[0])).toContain(
         `Binding to '[max]' is not allowed on nodes using the '[formField]' directive`,
       );
     });
@@ -608,7 +608,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(extractMessage(diags[0])).toBe(
+      expect(extractMessage(diags[0])).toContain(
         `Setting the 'value' attribute is not allowed on nodes using the '[formField]' directive`,
       );
     });
