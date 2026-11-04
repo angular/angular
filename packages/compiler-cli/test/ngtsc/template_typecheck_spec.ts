@@ -2581,6 +2581,30 @@ runInEachFileSystem(() => {
       );
     });
 
+    it('should detect an illegal write to a template reference', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+
+        @Component({
+          template: \`
+            <ng-template #hello>Hello</ng-template>
+            <ng-template #bye>Bye</ng-template>
+            <button (click)="hello = bye">Assign</button>
+          \`,
+        })
+        export class TestCmp {}
+      `,
+      );
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(getSourceCodeForDiagnostic(diags[0])).toBe('hello = bye');
+      expect(diags[0].messageText).toBe(
+        `Cannot use reference 'hello' as the left-hand side of an assignment expression. Template references are read-only.`,
+      );
+    });
+
     describe('foreign component template semantics', () => {
       const foreignSetupCode = `
         // We must redeclare foreignImports and ForeignComponent to test them since they are marked @internal.

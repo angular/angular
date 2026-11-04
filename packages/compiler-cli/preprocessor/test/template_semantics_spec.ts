@@ -80,6 +80,28 @@ describe('template semantics diagnostics', () => {
     ]);
   });
 
+  it('reports a write to a template reference in an event binding', async () => {
+    const diagnostics = await diagnose(`
+      import {Component} from '@angular/core';
+
+      @Component({
+        selector: 'app-comp',
+        template: '<ng-template #hello></ng-template><button (click)="hello = null"></button>',
+      })
+      export class AppComponent {}
+    `);
+
+    expect(diagnostics).toEqual([
+      {
+        code: 8005,
+        message:
+          `Cannot use reference 'hello' as the left-hand side of an assignment expression. ` +
+          `Template references are read-only.`,
+        text: 'hello = null',
+      },
+    ]);
+  });
+
   it('does not report writes to component properties or through other receivers', async () => {
     const diagnostics = await diagnose(`
       import {Component} from '@angular/core';

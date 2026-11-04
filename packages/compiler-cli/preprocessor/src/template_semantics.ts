@@ -17,6 +17,7 @@ import {
   TmplAstBoundEvent,
   TmplAstNode,
   TmplAstRecursiveVisitor,
+  TmplAstReference,
   TmplAstVariable,
   TypeCheckId,
   Unary,
@@ -110,15 +111,22 @@ class ExpressionsSemanticsVisitor extends RecursiveAstVisitor {
         target,
         `Cannot use variable '${target.name}' as the left-hand side of an assignment expression. Template variables are read-only.`,
       );
+    } else if (target instanceof TmplAstReference) {
+      this.reportIllegalWrite(
+        context,
+        target,
+        `Cannot use reference '${target.name}' as the left-hand side of an assignment expression. Template references are read-only.`,
+      );
     }
   }
 
   private reportIllegalWrite(
     event: TmplAstBoundEvent,
-    target: TmplAstVariable,
+    target: TmplAstVariable | TmplAstReference,
     message: string,
   ): void {
-    const span = target.valueSpan || target.sourceSpan;
+    const span =
+      target instanceof TmplAstVariable ? target.valueSpan || target.sourceSpan : target.sourceSpan;
     this.diagnostics.push({
       typeCheckId: this.typeCheckId,
       category: OutOfBandDiagnosticCategory.Error,

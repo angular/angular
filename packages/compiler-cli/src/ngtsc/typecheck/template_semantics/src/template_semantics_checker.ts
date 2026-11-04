@@ -18,6 +18,7 @@ import {
   TmplAstLetDeclaration,
   TmplAstNode,
   TmplAstRecursiveVisitor,
+  TmplAstReference,
   TmplAstVariable,
   ThisReceiver,
   Unary,
@@ -116,6 +117,9 @@ class ExpressionsSemanticsVisitor extends RecursiveAstVisitor {
     if (target instanceof TmplAstVariable) {
       const errorMessage = `Cannot use variable '${target.name}' as the left-hand side of an assignment expression. Template variables are read-only.`;
       this.diagnostics.push(this.makeIllegalTemplateVarDiagnostic(target, context, errorMessage));
+    } else if (target instanceof TmplAstReference) {
+      const errorMessage = `Cannot use reference '${target.name}' as the left-hand side of an assignment expression. Template references are read-only.`;
+      this.diagnostics.push(this.makeIllegalTemplateVarDiagnostic(target, context, errorMessage));
     }
   }
 
@@ -153,7 +157,7 @@ class ExpressionsSemanticsVisitor extends RecursiveAstVisitor {
   }
 
   private makeIllegalTemplateVarDiagnostic(
-    target: TmplAstVariable | TmplAstLetDeclaration,
+    target: TmplAstVariable | TmplAstLetDeclaration | TmplAstReference,
     expressionNode: TmplAstBoundEvent,
     errorMessage: string,
   ): TemplateDiagnostic {
