@@ -79,6 +79,8 @@ But most servers by default will reject `http://my-app.test/users/42` and return
 Configure the fallback route or 404 page to `index.html` for your server, so Angular is served for deep links and can display the correct route.
 Some servers call this fallback behavior "Single-Page Application" (SPA) mode.
 
+NOTE: When you prerender your application with `outputMode: "static"`, the build writes the host page to `index.csr.html`. If `index.html` exists, it is the prerendered home page, so use `index.csr.html` as the fallback instead.
+
 Once the browser loads the application, Angular router will read the URL to determine which page it is on and display `/users/42` correctly.
 
 For "real" 404 pages such as `http://my-app.test/does-not-exist`, the server does not require any additional configuration.
