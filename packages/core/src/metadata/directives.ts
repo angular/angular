@@ -679,7 +679,8 @@ export interface Component extends Directive {
  */
 export const Component: ComponentDecorator = makeDecorator(
   'Component',
-  (c: Component = {}) => ({changeDetection: ChangeDetectionStrategy.Eager, ...c}),
+  // g3-only (c: Component = {}) => ({changeDetection: ChangeDetectionStrategy.OnPush, ...c}),
+  (c: Component = {}) => ({changeDetection: ChangeDetectionStrategy.Eager, ...c}), // 3p-only
   Directive,
   undefined,
   (type: Type<any>, meta: Component) => compileComponent(type, meta),
