@@ -573,15 +573,11 @@ impl Analyzer {
         containing_file: String,
         url: String,
     ) -> Option<crate::ResolvedResource> {
-        let resource_resolver =
-            crate::ResourceResolver::new(&self.fs, self.engine.resolver.as_ref());
-        let resource = resource_resolver
-            .load_resource(Path::new(&containing_file), &url)
-            .ok()?;
-        Some(crate::ResolvedResource {
-            resolved_path: crate::fs::path_to_string(resource.resolved_path),
-            content: resource.content,
-        })
+        self.engine.read_resource_blocking(
+            &containing_file,
+            &url,
+            crate::host::ResourceKind::Style,
+        )
     }
 
     pub fn canonical_paths_core(&self, paths: Vec<String>) -> Vec<String> {

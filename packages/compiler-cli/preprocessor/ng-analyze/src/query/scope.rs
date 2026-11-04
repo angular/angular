@@ -411,7 +411,13 @@ fn module_export_table<'a, Fs: ResourceResolverFs + Clone + 'static>(
                 }
                 let (Some(imported), Some(target)) = (
                     binding.imported,
-                    resolve_export_source(ctx, &syntax.file_path, binding.specifier),
+                    resolve_export_source(
+                        ctx,
+                        file_id,
+                        binding.specifier,
+                        crate::host::ImportKind::Static,
+                    )
+                    .await,
                 ) else {
                     continue;
                 };
@@ -429,7 +435,10 @@ fn module_export_table<'a, Fs: ResourceResolverFs + Clone + 'static>(
             if r.is_type || r.local_name == "*" {
                 continue;
             }
-            let Some(target) = resolve_export_source(ctx, &syntax.file_path, &r.source) else {
+            let Some(target) =
+                resolve_export_source(ctx, file_id, &r.source, crate::host::ImportKind::ReExport)
+                    .await
+            else {
                 continue;
             };
             let sub = module_export_table(ctx, target, &mut *walk).await;
@@ -448,7 +457,13 @@ fn module_export_table<'a, Fs: ResourceResolverFs + Clone + 'static>(
             if wildcard.is_type {
                 continue;
             }
-            let Some(target) = resolve_export_source(ctx, &syntax.file_path, &wildcard.source)
+            let Some(target) = resolve_export_source(
+                ctx,
+                file_id,
+                &wildcard.source,
+                crate::host::ImportKind::ReExport,
+            )
+            .await
             else {
                 continue;
             };
@@ -510,13 +525,15 @@ fn import_binding<'a>(syntax: &'a crate::FileData, local: &str) -> Option<Import
     })
 }
 
-fn resolve_export_source<Fs: ResourceResolverFs + Clone + 'static>(
+async fn resolve_export_source<Fs: ResourceResolverFs + Clone + 'static>(
     ctx: &QueryContext<Fs>,
-    from: &std::path::Path,
+    from: FileId,
     source: &str,
+    kind: crate::host::ImportKind,
 ) -> Option<FileId> {
-    crate::evaluator::cross_file::resolve_specifier(ctx.engine.resolver.as_ref(), from, source)
-        .map(|path| ctx.engine.intern_path(&path))
+    ctx.resolve_from_id(from, source, kind)
+        .await
+        .map(|(id, _)| id)
 }
 
 /// Invert the table into upstream's `exportMap`: declaration -> the name it is published under,
@@ -557,16 +574,18 @@ pub(crate) async fn propagate_owning_reference_validated<
     let absolute_owning = owning_reference.as_ref();
 
     // Resolve the package entry point so re-exported aliases use the published name.
-    let package_entry = absolute_owning
-        .and_then(|owning| {
-            crate::evaluator::cross_file::resolve_specifier(
-                ctx.engine.resolver.as_ref(),
-                &parent_path,
+    let package_entry = match absolute_owning {
+        Some(owning) => ctx
+            .resolve_from_id(
+                parent_file,
                 owning.specifier(),
+                crate::host::ImportKind::Static,
             )
-        })
-        .map(|path| ctx.engine.intern_path(&path))
-        .unwrap_or(parent_file);
+            .await
+            .map(|(id, _)| id)
+            .unwrap_or(parent_file),
+        None => parent_file,
+    };
 
     // Enumerate the entry point's exports once (matching ngtsc's `moduleExportsCache`): per-declaration
     // searches would re-walk the package and miss alternative export names required for the alias tie-break.

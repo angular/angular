@@ -193,20 +193,25 @@ async fn resolve_host_directive<Fs: ResourceResolverFs + Clone + 'static>(
     let mut invalid_reason = None;
     if reference.owning_reference.is_none() && crate::utils::is_dts(declaring_file_path) {
         if let Some(owning) = parent_owning {
-            let package_entry_path = crate::evaluator::cross_file::resolve_specifier(
-                ctx.engine.resolver.as_ref(),
-                consumer_path,
-                owning.specifier(),
-            )
-            .or_else(|| {
-                crate::evaluator::cross_file::resolve_specifier(
-                    ctx.engine.resolver.as_ref(),
-                    declaring_file_path,
+            let package_entry_resolved = match ctx
+                .resolve_from_id(
+                    consumer_file,
                     owning.specifier(),
+                    crate::host::ImportKind::Static,
                 )
-            });
-            if let Some(entry_path) = package_entry_path {
-                let package_entry = ctx.engine.intern_path(&entry_path);
+                .await
+            {
+                Some((id, _)) => Some((id, ctx.engine.lookup_path(id))),
+                None => {
+                    ctx.resolve_from_path(
+                        declaring_file_path,
+                        owning.specifier(),
+                        crate::host::ImportKind::Static,
+                    )
+                    .await
+                }
+            };
+            if let Some((package_entry, entry_path)) = package_entry_resolved {
                 let exports = ctx.module_export_map(package_entry).await;
                 let decl_key = (decl_file_id, reference.name.clone());
                 if let Some(export_name) = exports.get(&decl_key) {
