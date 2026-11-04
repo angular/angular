@@ -12,6 +12,7 @@ import {
   Component,
   inject,
   provideZoneChangeDetection,
+  signal,
 } from '../../src/core';
 import {TestBed} from '../../testing';
 
@@ -230,7 +231,7 @@ describe('attribute binding', () => {
     expect(img.getAttribute('src')).toBe('javascript:true');
   });
 
-  it('should remove the src attribute when [attr.src] is bound to null or undefined', async () => {
+  it('should remove the src attribute when [attr.src] is bound to null or undefined', () => {
     @Component({
       template: `
         <img [attr.src]="src()" />
@@ -242,7 +243,7 @@ describe('attribute binding', () => {
     }
 
     const fixture = TestBed.createComponent(Comp);
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     const img = fixture.nativeElement.querySelector('img') as HTMLImageElement;
     const video = fixture.nativeElement.querySelector('video') as HTMLVideoElement;
@@ -252,7 +253,7 @@ describe('attribute binding', () => {
 
     // Act: Update to null
     fixture.componentInstance.src.set(null);
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     // Assert: Attribute should be removed completely
     expect(img.hasAttribute('src')).toBe(false);
@@ -260,7 +261,7 @@ describe('attribute binding', () => {
 
     // Act: Update to undefined
     fixture.componentInstance.src.set(undefined);
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     // Assert: Attribute should still be absent
     expect(img.hasAttribute('src')).toBe(false);
@@ -268,14 +269,14 @@ describe('attribute binding', () => {
 
     // Act: Update back to valid URL
     fixture.componentInstance.src.set('https://example.com/updated.png');
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     // Assert: Attribute is restored
     expect(img.getAttribute('src')).toBe('https://example.com/updated.png');
     expect(video.getAttribute('src')).toBe('https://example.com/updated.png');
   });
 
-  it('should not add src attribute when initial [attr.src] value is null or undefined', async () => {
+  it('should not add src attribute when initial [attr.src] value is null or undefined', () => {
     @Component({
       template: `
         <img [attr.src]="nullSrc()" />
@@ -289,7 +290,7 @@ describe('attribute binding', () => {
     }
 
     const fixture = TestBed.createComponent(Comp);
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     const imgs = fixture.nativeElement.querySelectorAll('img');
     const video = fixture.nativeElement.querySelector('video') as HTMLVideoElement;
