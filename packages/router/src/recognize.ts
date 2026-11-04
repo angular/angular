@@ -22,7 +22,7 @@ import {
 } from './router_state';
 import {Params, PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
-import {getOutlet, sortByMatchingOutlets} from './utils/config';
+import {getOrCreateRouteInjectorIfNeeded, getOutlet, sortByMatchingOutlets} from './utils/config';
 import {
   createPreMatchRouteSnapshot,
   emptyPathMatch,
@@ -423,7 +423,9 @@ export class Recognizer {
         rawSegment,
         route,
         segments,
-        injector,
+        // TODO(v23): Run canMatch guards in root environment injector in 3p as well.
+        // g3-only this.injector,
+        injector, // 3p-only
         this.urlSerializer,
         createSnapshot,
         this.abortSignal,
@@ -441,7 +443,7 @@ export class Recognizer {
       throw new NoMatch(rawSegment);
     }
     // If the route has an injector created from providers, we should start using that.
-    injector = route._injector ?? injector;
+    injector = getOrCreateRouteInjectorIfNeeded(route, injector);
     const {routes: childConfig} = await this.getChildConfig(injector, route, segments);
     const childInjector = route._loadedInjector ?? injector;
 
