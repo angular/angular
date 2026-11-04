@@ -364,7 +364,9 @@ export class Recognizer {
       route.redirectTo!,
       positionalParamSegments,
       createPreMatchRouteSnapshot(currentSnapshot),
-      injector,
+      // TODO(v23): Run redirectTo functions in root environment injector in 3p as well.
+      // g3-only this.injector,
+      injector, // 3p-only
     );
 
     const newSegments = await this.applyRedirects.lineralizeSegments(route, newTree);
