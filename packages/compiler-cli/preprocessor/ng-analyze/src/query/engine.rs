@@ -649,6 +649,9 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                 class_index: Arc::new(class_index),
                 symbol_index: Arc::new(symbol_index),
                 di_facts: Arc::new(crate::analyzer::di_facts::index_di_facts(result.di_facts)),
+                signal_facts: Arc::new(crate::analyzer::signal_facts::index_signal_facts(
+                    result.signal_facts,
+                )),
                 function_facts: Arc::new(result.function_facts),
                 file_exports: Arc::new(result.exports),
                 errors,
@@ -732,6 +735,9 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             class_index: Arc::new(class_index),
             symbol_index: Arc::new(symbol_index),
             di_facts: Arc::new(crate::analyzer::di_facts::index_di_facts(analysis.di_facts)),
+            signal_facts: Arc::new(crate::analyzer::signal_facts::index_signal_facts(
+                analysis.signal_facts,
+            )),
             function_facts: Arc::new(analysis.function_facts),
             file_exports: Arc::new(analysis.file_exports),
             errors,
@@ -964,8 +970,10 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                     if let Some(references) = completed.get_optional() {
                         let mut resolve_futures = Vec::new();
                         for r in &references {
-                            resolve_futures
-                                .push((r, crate::query::scope::resolve_reference_async(r, &mod_ctx)));
+                            resolve_futures.push((
+                                r,
+                                crate::query::scope::resolve_reference_async(r, &mod_ctx),
+                            ));
                         }
                         let (items, futures): (Vec<_>, Vec<_>) =
                             resolve_futures.into_iter().unzip();
@@ -1183,6 +1191,32 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                         crate::analyzer::flatten_class_info(comp_info.clone(), ctx).await;
                     class.flattened_fields = flattened.fields;
                     class.public_methods = flattened.public_methods;
+                }
+                if matches!(
+                    class.decorator,
+                    crate::analyzer::DecoratorData::Component(_)
+                ) {
+                    let fallback_own;
+                    let own_signals = match class_name
+                        .as_deref()
+                        .and_then(|name| local_result.signal_facts.get(name))
+                    {
+                        Some(facts) => &facts.own,
+                        None => {
+                            fallback_own = crate::analyzer::signal_facts::OwnSignalFacts {
+                                signal_members: class.signal_members.clone(),
+                                declared_members: HashSet::new(),
+                            };
+                            &fallback_own
+                        }
+                    };
+                    class.signal_members = crate::analyzer::signal_facts::flatten_signal_members(
+                        own_signals,
+                        reference_id,
+                        class.super_class.as_ref(),
+                        ctx,
+                    )
+                    .await;
                 }
             }
 
@@ -2027,7 +2061,7 @@ mod tests {
     use crate::test_utils::create_test_fs;
     use oxc_resolver::ResolveOptions;
     use std::path::Path;
-    
+
     #[test]
     fn test_ambient_module_names() {
         let source = r#"

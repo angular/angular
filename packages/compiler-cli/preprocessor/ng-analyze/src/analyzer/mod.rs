@@ -26,6 +26,7 @@ pub mod resolver;
 pub mod resolvers;
 mod service;
 pub mod signal_debug_name;
+pub(crate) mod signal_facts;
 pub mod transforms;
 pub mod utils;
 mod visitor;
@@ -1376,11 +1377,32 @@ mod tests {
             .iter()
             .find(|c| c.class_name.as_deref() == Some("TestCmp"))
             .expect("TestCmp metadata");
-        let params = class.constructor_params.as_ref().expect("constructor_params");
+        let params = class
+            .constructor_params
+            .as_ref()
+            .expect("constructor_params");
 
         let summary: Vec<(&str, Option<&str>, Option<&str>, bool)> = [
-            "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q",
-            "untyped", "untypedOptional", "rest",
+            "a",
+            "b",
+            "c",
+            "d",
+            "e",
+            "f",
+            "g",
+            "h",
+            "i",
+            "j",
+            "k",
+            "l",
+            "m",
+            "n",
+            "o",
+            "p",
+            "q",
+            "untyped",
+            "untypedOptional",
+            "rest",
         ]
         .into_iter()
         .zip(params.iter())

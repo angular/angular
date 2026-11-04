@@ -27,6 +27,7 @@ pub struct DtsAnalysisResult {
     pub classes: Vec<ClassData>,
     pub registrations: Vec<RegistrationInfo>,
     pub di_facts: Vec<crate::analyzer::di_facts::ClassDiFacts>,
+    pub signal_facts: Vec<crate::analyzer::signal_facts::ClassSignalFacts>,
     pub function_facts:
         std::collections::HashMap<String, crate::analyzer::transforms::FunctionFacts>,
     pub exports: FileExportInfo,
@@ -49,6 +50,7 @@ pub fn analyze_dts(
     let mut classes = Vec::new();
     let mut registrations = Vec::new();
     let mut di_facts = Vec::new();
+    let mut signal_facts = Vec::new();
     let mut named_exports = Vec::new();
     let mut wildcards = Vec::new();
     let mut local_aliases = Vec::new();
@@ -99,18 +101,18 @@ pub fn analyze_dts(
                         });
                     let reference_id = ReferenceId::new(file_id, symbol_id);
 
-                    di_facts.extend(class_di_facts(class, reference_id, &eval));
-                    if let Some(analysis) = extract_class_metadata(
+                    process_dts_class(
                         class,
                         source_text,
                         reference_id,
                         &eval,
                         &local_exported_names,
                         converter,
-                    ) {
-                        classes.push(analysis.class);
-                        registrations.push(analysis.registration);
-                    }
+                        &mut classes,
+                        &mut registrations,
+                        &mut di_facts,
+                        &mut signal_facts,
+                    );
                 }
             }
             Statement::ExportNamedDeclaration(export) => {
@@ -172,18 +174,18 @@ pub fn analyze_dts(
                             oxc_semantic::SymbolId::from(fallback_symbol_id)
                         });
                         let reference_id = ReferenceId::new(file_id, symbol_id);
-                        di_facts.extend(class_di_facts(class, reference_id, &eval));
-                        if let Some(analysis) = extract_class_metadata(
+                        process_dts_class(
                             class,
                             source_text,
                             reference_id,
                             &eval,
                             &local_exported_names,
                             converter,
-                        ) {
-                            classes.push(analysis.class);
-                            registrations.push(analysis.registration);
-                        }
+                            &mut classes,
+                            &mut registrations,
+                            &mut di_facts,
+                            &mut signal_facts,
+                        );
                         id.name.to_string()
                     }
                     // `declare class Foo; export default Foo` — the arm below registers `Foo`.
@@ -207,9 +209,7 @@ pub fn analyze_dts(
                 let is_declare_export = class.declare
                     && source_text
                         .get(class.span.start as usize..class.body.span.start as usize)
-                        .is_some_and(|header| {
-                            header.split_whitespace().any(|tok| tok == "export")
-                        });
+                        .is_some_and(|header| header.split_whitespace().any(|tok| tok == "export"));
                 if is_declare_export {
                     has_explicit_export = true;
                     if let Some(id) = &class.id {
@@ -230,18 +230,18 @@ pub fn analyze_dts(
                     });
                 let reference_id = ReferenceId::new(file_id, symbol_id);
 
-                di_facts.extend(class_di_facts(class, reference_id, &eval));
-                if let Some(analysis) = extract_class_metadata(
+                process_dts_class(
                     class,
                     source_text,
                     reference_id,
                     &eval,
                     &local_exported_names,
                     converter,
-                ) {
-                    classes.push(analysis.class);
-                    registrations.push(analysis.registration);
-                }
+                    &mut classes,
+                    &mut registrations,
+                    &mut di_facts,
+                    &mut signal_facts,
+                );
             }
             _ => {}
         }
@@ -267,6 +267,7 @@ pub fn analyze_dts(
         classes,
         registrations,
         di_facts,
+        signal_facts,
         function_facts: crate::analyzer::transforms::collect_function_facts(program, semantic),
         exports: FileExportInfo {
             named: named_exports,
@@ -310,6 +311,60 @@ fn class_di_facts(
         reference_id,
         evaluate_super_class(class, eval),
     )
+}
+
+#[allow(clippy::too_many_arguments)]
+fn process_dts_class(
+    class: &Class<'_>,
+    source_text: &str,
+    reference_id: ReferenceId,
+    eval: &EvalInput<'_, '_>,
+    local_exported_names: &std::collections::HashSet<&str>,
+    converter: &Utf8ToUtf16,
+    classes: &mut Vec<ClassData>,
+    registrations: &mut Vec<RegistrationInfo>,
+    di_facts: &mut Vec<crate::analyzer::di_facts::ClassDiFacts>,
+    signal_facts: &mut Vec<crate::analyzer::signal_facts::ClassSignalFacts>,
+) {
+    di_facts.extend(class_di_facts(class, reference_id, eval));
+    let mut analysis = extract_class_metadata(
+        class,
+        source_text,
+        reference_id,
+        eval,
+        local_exported_names,
+        converter,
+    );
+    let signal_input_names: Vec<&str> = analysis
+        .as_ref()
+        .and_then(|a| match &a.class.decorator {
+            DecoratorData::Component(c) => Some(&c.directive),
+            DecoratorData::Directive(d) => Some(d),
+            _ => None,
+        })
+        .into_iter()
+        .flat_map(|dir| dir.fields.iter())
+        .filter_map(|field| match field {
+            AngularField::Input(input) if input.is_signal => Some(input.name.as_str()),
+            _ => None,
+        })
+        .collect();
+    let (own_signals, class_signals) = crate::analyzer::signal_facts::dts_class_signal_facts(
+        class,
+        reference_id,
+        eval.semantic,
+        eval.import_map,
+        evaluate_super_class(class, eval),
+        signal_input_names,
+    );
+    signal_facts.extend(class_signals);
+    if let Some(ref mut analysis) = analysis {
+        analysis.class.signal_members = own_signals.signal_members;
+    }
+    if let Some(analysis) = analysis {
+        classes.push(analysis.class);
+        registrations.push(analysis.registration);
+    }
 }
 
 fn extract_class_metadata(
@@ -541,6 +596,7 @@ fn extract_class_metadata(
             ng_template_guards: Vec::new(),
             has_ng_field_directive: false,
             public_methods: Vec::new(),
+            signal_members: Vec::new(),
             uses_inheritance,
             uses_on_changes: false,
             is_exported: true,
@@ -741,6 +797,7 @@ fn extract_class_metadata(
             ng_template_guards: ng_template_guards.clone(),
             has_ng_field_directive,
             public_methods: public_methods.clone(),
+            signal_members: Vec::new(),
             uses_inheritance,
             uses_on_changes: false,
             is_exported: true,

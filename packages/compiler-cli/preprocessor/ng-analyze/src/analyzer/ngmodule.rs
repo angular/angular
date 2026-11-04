@@ -498,8 +498,7 @@ fn try_expand_local_const_array<'a>(
             }
             return None;
         }
-        let AstKind::VariableDeclarator(declarator) =
-            semantic.symbol_declaration(symbol_id).kind()
+        let AstKind::VariableDeclarator(declarator) = semantic.symbol_declaration(symbol_id).kind()
         else {
             for sym in visited_chain {
                 visited.remove(&sym);

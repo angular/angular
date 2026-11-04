@@ -43,6 +43,7 @@ pub struct ClassVisitor<'a> {
     results: Vec<ClassData>,
     registrations: Vec<RegistrationInfo>,
     di_facts: Vec<super::di_facts::ClassDiFacts>,
+    signal_facts: Vec<super::signal_facts::ClassSignalFacts>,
     fallback_symbol_id: usize,
     diagnostics: Vec<crate::NgDiagnostic>,
 }
@@ -79,6 +80,7 @@ impl<'a> ClassVisitor<'a> {
             results: Vec::new(),
             registrations: Vec::new(),
             di_facts: Vec::new(),
+            signal_facts: Vec::new(),
             fallback_symbol_id: 1000000,
             diagnostics: Vec::new(),
         }
@@ -91,6 +93,7 @@ impl<'a> ClassVisitor<'a> {
             classes: self.results,
             registrations: self.registrations,
             di_facts: self.di_facts,
+            signal_facts: self.signal_facts,
             file_exports: self.file_exports,
             diagnostics: self.diagnostics,
         }
@@ -150,6 +153,21 @@ impl<'a> ClassVisitor<'a> {
             super_class.clone(),
             ctor_params_di.as_deref(),
         ));
+        let own_signal_facts = super::signal_facts::extract_own_signal_facts(
+            class,
+            self.semantic,
+            self.import_map,
+            self.angular_imports.is_core,
+            false,
+        );
+        let own_signal_members = own_signal_facts.signal_members.clone();
+        self.signal_facts
+            .extend(super::signal_facts::ts_class_signal_facts(
+                class,
+                reference_id,
+                own_signal_facts,
+                super_class.clone(),
+            ));
 
         if class.decorators.is_empty() {
             if !self.angular_imports.is_core
@@ -179,6 +197,7 @@ impl<'a> ClassVisitor<'a> {
             self.enable_hmr,
             super_class,
             ctor_params_di.unwrap_or_default(),
+            own_signal_members,
         ) else {
             return;
         };
@@ -402,6 +421,7 @@ fn classify(
         ng_template_guards: common.ng_template_guards,
         has_ng_field_directive: common.has_ng_field_directive,
         public_methods: common.public_methods,
+        signal_members: common.signal_members,
         uses_inheritance: common.uses_inheritance,
         uses_on_changes: common.uses_on_changes,
         is_exported: common.is_exported,
@@ -468,6 +488,7 @@ struct ParsedCommon {
     ng_template_guards: Vec<TemplateGuardMetadata>,
     has_ng_field_directive: bool,
     public_methods: Vec<String>,
+    signal_members: Vec<String>,
     uses_inheritance: bool,
     uses_on_changes: bool,
     is_exported: bool,
@@ -531,6 +552,7 @@ fn process_class_common<'a>(
     enable_hmr: bool,
     super_class: Option<crate::DeclarationTuple>,
     ctor_params_di: Vec<super::CtorParamDi>,
+    signal_members: Vec<String>,
 ) -> Option<ParsedClass> {
     let class_name = class.id.as_ref().map(|id| id.name.to_string());
     let name_span = class.id.as_ref().map(|id| id.span);
@@ -756,6 +778,7 @@ fn process_class_common<'a>(
             ng_template_guards: type_check_meta.ng_template_guards,
             has_ng_field_directive: type_check_meta.has_ng_field_directive,
             public_methods: type_check_meta.public_methods,
+            signal_members,
             uses_inheritance,
             uses_on_changes,
             is_exported,
@@ -874,6 +897,8 @@ pub struct ParsedFileAnalysis {
     pub registrations: Vec<RegistrationInfo>,
     /// Constructor facts for every class in the file, decorated or not.
     pub di_facts: Vec<super::di_facts::ClassDiFacts>,
+    /// Signal member facts for every class in the file, decorated or not.
+    pub signal_facts: Vec<super::signal_facts::ClassSignalFacts>,
     /// Facts for the top-level function declarations, by name.
     pub function_facts: std::collections::HashMap<String, super::transforms::FunctionFacts>,
     pub file_exports: FileExportInfo,
@@ -906,6 +931,7 @@ struct ClassVisitorOutput {
     classes: Vec<ClassData>,
     registrations: Vec<RegistrationInfo>,
     di_facts: Vec<super::di_facts::ClassDiFacts>,
+    signal_facts: Vec<super::signal_facts::ClassSignalFacts>,
     file_exports: FileExportInfo,
     diagnostics: Vec<crate::NgDiagnostic>,
 }
@@ -993,6 +1019,7 @@ pub fn analyze_parsed(
         classes: output.classes,
         registrations: output.registrations,
         di_facts: output.di_facts,
+        signal_facts: output.signal_facts,
         function_facts: super::transforms::collect_function_facts(program, semantic),
         file_exports: output.file_exports,
         imports_end,
