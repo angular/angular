@@ -40,7 +40,7 @@ export function shouldSkipInNgp(fullSpecName: string): boolean {
   return (
     NGP_REQUIRES_TYPE_CHECKER.has(normalized) ||
     NGP_KNOWN_NGTSC_FAILURES.has(normalized) ||
-    NGP_POTENTIAL_BREAKING_CHANGES.has(normalized)
+    NGP_INTENTIONAL_BEHAVIOR_DIFFERENCES.has(normalized)
   );
 }
 
@@ -55,38 +55,10 @@ const NGP_REQUIRES_TYPE_CHECKER: ReadonlySet<string> = new Set([
   'ngtsc type checking @let declarations should not be able to write to let declaration in a two-way binding',
   'ngtsc type checking for loop blocks should not be able to write to loop template variables in a two-way binding',
 
-  // TypeChecker-backed extended template diagnostics (#673, #677) in
-  // `//packages/compiler-cli/src/ngtsc/typecheck/extended/test/checks/*:test_ngp` and `ngtsc_spec`.
-  'ngtsc extended template checks should produce nullish coalescing not nullable warning',
   '@let declarations should produce a warning when a signal aliased via @let is not invoked in interpolation',
   '@let declarations should produce a warning when a signal aliased via @let is used in @if',
   '@let declarations should produce a warning when a signal aliased via @let is used in a bound attribute',
   '@let declarations should produce a warning when an instance property of a signal aliased via @let is accessed in interpolation',
-  'NullishCoalescingNotNullableCheck does not warn for pipe arguments when parens are used',
-  'NullishCoalescingNotNullableCheck should produce nullish coalescing warning',
-  'NullishCoalescingNotNullableCheck should produce nullish coalescing warning for classes with inline TCBs',
-  'NullishCoalescingNotNullableCheck should respect configured diagnostic category',
-  'NullishCoalescingNotNullableCheck warns for pipe arguments which are likely configured incorrectly (?? operates on "format" here)',
-  'OptionalChainNotNullableCheck should produce optional chain warning for classes with inline TCBs',
-  'OptionalChainNotNullableCheck should produce optional chain warning for indexed access',
-  'OptionalChainNotNullableCheck should produce optional chain warning for method call',
-  'OptionalChainNotNullableCheck should produce optional chain warning for property access',
-  'OptionalChainNotNullableCheck should respect configured diagnostic category',
-  'Uninvoked function in text interpolation compiler check should produce a warning when a function is not invoked in text interpolation',
-  'Uninvoked function in text interpolation compiler check should produce a warning when a property method is not invoked in text interpolation (with and without safe navigation)',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a function in a chain is not invoked',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a function in a function is not invoked',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a function in an event binding is not invoked',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a function is not',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a function that returns a function is not invoked',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a nested function in a conditional is not invoked',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a nested function in an event binding is not invoked',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a nested function that uses key read in an event binding is not invoked',
-  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when no function in a conditional is not invoked',
-  'UninvokedTrackFunctionCheck should produce a diagnostic when a track function in a @for block is not invoked',
-  'UninvokedTrackFunctionCheck should produce a warning when track is a method on an item',
-  'UninvokedTrackFunctionCheck should produce a warning when track is a regular function on an object',
-  'UninvokedTrackFunctionCheck should produce a warning when track is an arrow function property on component',
   'should produce a warning if the template contains a directive with the same input name, but on a different node',
   'should produce a warning when a computed signal is not invoked',
   'should produce a warning when a model signal is not invoked',
@@ -139,13 +111,12 @@ const NGP_REQUIRES_TYPE_CHECKER: ReadonlySet<string> = new Set([
   "should produce a warning when signal isn't invoked on class binding",
   "should produce a warning when signal isn't invoked on dom property binding",
   "should produce a warning when signal isn't invoked on style binding",
-  'should produce optional chain warning for chained property access',
 ]);
 
 /**
- * Addressing these failures will likely cause breaking changes. Proceed with caution.
+ * Includes behaviors that are intentionally different with ngp, or functionality we have decided not to support.
  */
-const NGP_POTENTIAL_BREAKING_CHANGES: ReadonlySet<string> = new Set([
+const NGP_INTENTIONAL_BEHAVIOR_DIFFERENCES: ReadonlySet<string> = new Set([
   // Aligning the debug info shape can cause a different overload to
   // match for signal inputs which in turn causes breakages.
   'Debug Info Typescript tranformation afterRenderEffect should insert debug info into afterRenderEffect function if imported from angular core',
@@ -287,6 +258,35 @@ const NGP_POTENTIAL_BREAKING_CHANGES: ReadonlySet<string> = new Set([
 
   // Tests TypeScript `structureIsReused` across in-memory ngtsc incremental compilations.
   'ngtsc type checking stability should allow for complete program reuse during incremental compilations',
+
+  // Extended diagnostics that won't be ported to the new compilation model
+  'ngtsc extended template checks should produce nullish coalescing not nullable warning',
+  'should produce optional chain warning for chained property access',
+  'NullishCoalescingNotNullableCheck does not warn for pipe arguments when parens are used',
+  'NullishCoalescingNotNullableCheck should produce nullish coalescing warning',
+  'NullishCoalescingNotNullableCheck should produce nullish coalescing warning for classes with inline TCBs',
+  'NullishCoalescingNotNullableCheck should respect configured diagnostic category',
+  'NullishCoalescingNotNullableCheck warns for pipe arguments which are likely configured incorrectly (?? operates on "format" here)',
+  'OptionalChainNotNullableCheck should produce optional chain warning for classes with inline TCBs',
+  'OptionalChainNotNullableCheck should produce optional chain warning for indexed access',
+  'OptionalChainNotNullableCheck should produce optional chain warning for method call',
+  'OptionalChainNotNullableCheck should produce optional chain warning for property access',
+  'OptionalChainNotNullableCheck should respect configured diagnostic category',
+  'Uninvoked function in text interpolation compiler check should produce a warning when a function is not invoked in text interpolation',
+  'Uninvoked function in text interpolation compiler check should produce a warning when a property method is not invoked in text interpolation (with and without safe navigation)',
+  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a function in a chain is not invoked',
+  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a function in a function is not invoked',
+  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a function in an event binding is not invoked',
+  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a function is not',
+  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a function that returns a function is not invoked',
+  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a nested function in a conditional is not invoked',
+  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a nested function in an event binding is not invoked',
+  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a nested function that uses key read in an event binding is not invoked',
+  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when no function in a conditional is not invoked',
+  'UninvokedTrackFunctionCheck should produce a diagnostic when a track function in a @for block is not invoked',
+  'UninvokedTrackFunctionCheck should produce a warning when track is a method on an item',
+  'UninvokedTrackFunctionCheck should produce a warning when track is a regular function on an object',
+  'UninvokedTrackFunctionCheck should produce a warning when track is an arrow function property on component',
 ]);
 
 /**
