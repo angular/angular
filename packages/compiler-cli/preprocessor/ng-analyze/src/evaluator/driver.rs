@@ -12,7 +12,7 @@
 //! always dropped before any `.await`; no two file locks are ever held simultaneously.
 
 use crate::analyzer::{extract_import_map, ImportKind};
-use crate::evaluator::cross_file::{resolve_specifier, ChasedExport};
+use crate::evaluator::cross_file::ChasedExport;
 use crate::evaluator::foreign::ForeignFunctionResolver;
 use crate::evaluator::interpreter::{
     evaluate_expression, evaluate_function_call, evaluate_static_member,
@@ -492,8 +492,9 @@ async fn resolve_ambient_global<Fs: ResourceResolverFs + Clone + 'static>(
     }
 
     let mut position = 0;
-    while let Some((candidate_position, dts_file_id)) =
-        ctx.next_ambient_global_candidate(&name, consumer_file, position)
+    while let Some((candidate_position, dts_file_id)) = ctx
+        .next_ambient_global_candidate(&name, consumer_file, position)
+        .await
     {
         position = candidate_position + 1;
         let parsed = ctx.parse_file(dts_file_id).await;
@@ -774,17 +775,27 @@ fn resolve_named_export<'a, Fs: ResourceResolverFs + Clone + 'static>(
                 ResolvedValue::dynamic(unresolved.importer, usage_span, DynamicReason::DepthLimit)
             }
             Err(crate::evaluator::cross_file::ChaseSymbolError::CycleDetected) => {
-                let file_id =
-                    resolve_specifier(ctx.engine.resolver.as_ref(), file_path, &specifier)
-                        .map(|p| ctx.engine.intern_path(&p))
-                        .unwrap_or(unresolved.importer);
+                let file_id = ctx
+                    .resolve_from_id(
+                        unresolved.importer,
+                        &specifier,
+                        crate::host::ImportKind::Static,
+                    )
+                    .await
+                    .map(|(id, _)| id)
+                    .unwrap_or(unresolved.importer);
                 ResolvedValue::dynamic(file_id, usage_span, DynamicReason::ImportCycle)
             }
             Ok(None) => {
-                let file_id =
-                    resolve_specifier(ctx.engine.resolver.as_ref(), file_path, &specifier)
-                        .map(|p| ctx.engine.intern_path(&p))
-                        .unwrap_or(unresolved.importer);
+                let file_id = ctx
+                    .resolve_from_id(
+                        unresolved.importer,
+                        &specifier,
+                        crate::host::ImportKind::Static,
+                    )
+                    .await
+                    .map(|(id, _)| id)
+                    .unwrap_or(unresolved.importer);
                 ResolvedValue::dynamic(
                     file_id,
                     usage_span,
@@ -824,6 +835,13 @@ mod tests {
         files: &[(&str, &str)],
         entrypoints: &[&str],
     ) -> Arc<QueryEngine<OverlayFileSystem>> {
+        build_engine_with_fs(files, entrypoints).0
+    }
+
+    fn build_engine_with_fs(
+        files: &[(&str, &str)],
+        entrypoints: &[&str],
+    ) -> (Arc<QueryEngine<OverlayFileSystem>>, OverlayFileSystem) {
         let fs = crate::test_utils::create_test_fs(files);
         let resolver = Arc::new(ResolverGeneric::new_with_file_system(
             fs.clone(),
@@ -836,7 +854,10 @@ mod tests {
         let entrypoints = Arc::new(std::sync::RwLock::new(
             entrypoints.iter().map(PathBuf::from).collect::<Vec<_>>(),
         ));
-        QueryEngine::new_default(fs, resolver, registry, entrypoints)
+        (
+            QueryEngine::new_default(fs.clone(), resolver, registry, entrypoints),
+            fs,
+        )
     }
 
     /// Run a future on a worker thread with a deadline, so a regression toward deadlock (the
@@ -2298,7 +2319,7 @@ mod tests {
 
     #[test]
     fn edit_to_referenced_const_file_invalidates_consumer() {
-        let engine = build_engine(
+        let (engine, fs) = build_engine_with_fs(
             &[
                 ("/app/app.component.ts", APP_WITH_SHARED),
                 ("/app/shared.ts", SHARED_CONSTS),
@@ -2343,7 +2364,7 @@ mod tests {
         // Edit the const file: drop BarDirective from the shared array.
         let evicted = engine.invalidate_file(Path::new("/app/shared.ts"));
         assert!(evicted.contains(&QueryKey::AnalyzeFileSemantic(app_id)));
-        engine.fs.upsert_file(
+        fs.upsert_file(
             PathBuf::from("/app/shared.ts"),
             r#"
                 import { FooComponent } from './foo.component';

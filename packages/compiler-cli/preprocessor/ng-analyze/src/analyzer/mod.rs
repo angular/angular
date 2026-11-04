@@ -32,7 +32,7 @@ pub mod utils;
 mod visitor;
 
 pub use class_data::*;
-pub(crate) use component::load_syntax_resources;
+pub(crate) use component::{load_syntax_resources, resolve_and_load_resource};
 pub use dts::analyze_dts;
 pub use import_emit::{
     strip_extension_str, ApfImportStrategy, PrefixImportStrategy, ReferenceEmitStrategy,

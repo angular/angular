@@ -424,9 +424,9 @@ async fn complete_style_urls<Fs: crate::ResourceResolverFs + Clone + 'static>(
     for source in &mut sources {
         source.complete_with(ctx, foreign).await;
     }
+    let containing = ctx.lookup_id(reference_id.file);
     let file_path = ctx.lookup_path(reference_id.file);
-    let resource_resolver = crate::ResourceResolver::new(&ctx.fs, ctx.resolver.as_ref());
-    crate::analyzer::component::load_style_urls(&sources, c, &resource_resolver, &file_path);
+    crate::analyzer::component::load_style_urls(&sources, c, ctx.host.as_ref(), &containing).await;
     for style_url in c.style_urls.iter().flatten() {
         ctx.resource_registry.register_template(
             std::path::PathBuf::from(&style_url.resolved_path),
@@ -499,15 +499,16 @@ async fn complete_template_url<Fs: crate::ResourceResolverFs + Clone + 'static>(
         return;
     };
     source.url.complete_with(ctx, foreign).await;
+    let containing = ctx.lookup_id(reference_id.file);
     let file_path = ctx.lookup_path(reference_id.file);
-    let resource_resolver = crate::ResourceResolver::new(&ctx.fs, ctx.resolver.as_ref());
     crate::analyzer::component::load_template_url(
         &source,
         c,
-        &resource_resolver,
-        &file_path,
+        ctx.host.as_ref(),
+        &containing,
         reference_id.file,
-    );
+    )
+    .await;
     if let Some(template_url) = &c.template_url {
         ctx.resource_registry.register_template(
             std::path::PathBuf::from(&template_url.resolved_path),

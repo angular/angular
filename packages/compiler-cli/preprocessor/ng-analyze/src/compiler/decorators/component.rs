@@ -77,7 +77,8 @@ async fn resolve_host_directives_for_class<Fs: ResourceResolverFs + Clone + 'sta
     ancestors: &mut Vec<ReferenceId>,
 ) -> Option<Vec<ResolvedHostDirective>> {
     let host_dirs = class_info.host_directives.as_ref()?;
-    let declaring_file_path = ctx.engine.lookup_path(class_info.reference_id.file);
+    let declaring_file_id = class_info.reference_id.file;
+    let declaring_file_path = ctx.engine.lookup_path(declaring_file_id);
 
     ancestors.push(class_info.reference_id);
     let mut resolved = Vec::with_capacity(host_dirs.len());
@@ -85,6 +86,7 @@ async fn resolve_host_directives_for_class<Fs: ResourceResolverFs + Clone + 'sta
         let Some(entry) = resolve_host_directive(
             ctx,
             hd,
+            declaring_file_id,
             &declaring_file_path,
             parent_owning,
             consumer_file,
@@ -104,7 +106,7 @@ async fn resolve_host_directives_for_class<Fs: ResourceResolverFs + Clone + 'sta
 
 /// The class a `hostDirectives` entry names, looked up in its declaring file.
 struct HostDirectiveClass {
-    decl: crate::evaluator::cross_file::DeclaredSymbol,
+    reference: crate::types::analysis::Reference,
     decl_file_id: crate::query::FileId,
     symbol_name: String,
     class_info: Option<crate::ClassInfo>,
@@ -115,9 +117,31 @@ struct HostDirectiveClass {
 async fn resolve_host_directive_class<Fs: ResourceResolverFs + Clone + 'static>(
     ctx: &QueryCtx<Fs>,
     hd: &crate::types::analysis::HostDirectiveEntry,
+    declaring_file_id: crate::query::FileId,
     declaring_file_path: &Path,
 ) -> Option<HostDirectiveClass> {
-    let declaring_file_id = ctx.engine.intern_path(declaring_file_path);
+    // `hd.directive` usually already points at its declaring file (resolved during evaluation).
+    // Reading it directly avoids re-resolving through `relative_specifier_between`, which
+    // synthesizes paths that custom `AnalysisHost` implementations and symlinked files cannot resolve.
+    let direct_file_id = hd.directive.file;
+    let direct_evaluated = ctx.analyze_file_evaluated(direct_file_id).await;
+    if let Some(class_info) = direct_evaluated.class_index.get(&hd.directive.name).cloned() {
+        return Some(HostDirectiveClass {
+            reference: hd.directive.clone(),
+            decl_file_id: direct_file_id,
+            symbol_name: hd.directive.name.clone(),
+            class_info: Some(class_info),
+        });
+    }
+    if hd.directive.owning_reference.is_none() {
+        return Some(HostDirectiveClass {
+            reference: hd.directive.clone(),
+            decl_file_id: direct_file_id,
+            symbol_name: hd.directive.name.clone(),
+            class_info: None,
+        });
+    }
+
     let specifier = hd.directive.specifier_for(
         declaring_file_id,
         Some(declaring_file_path),
@@ -153,7 +177,13 @@ async fn resolve_host_directive_class<Fs: ResourceResolverFs + Clone + 'static>(
     let class_info = evaluated.class_index.get(&symbol_name).cloned();
 
     Some(HostDirectiveClass {
-        decl,
+        reference: crate::types::analysis::Reference {
+            file: decl_file_id,
+            name: symbol_name.clone(),
+            owning_reference: decl.owning_reference.clone(),
+            aliases: decl.aliases.into_iter().collect(),
+            is_default_export: decl.exported_as_default,
+        },
         decl_file_id,
         symbol_name,
         class_info,
@@ -165,6 +195,7 @@ async fn resolve_host_directive_class<Fs: ResourceResolverFs + Clone + 'static>(
 async fn resolve_host_directive<Fs: ResourceResolverFs + Clone + 'static>(
     ctx: &QueryCtx<Fs>,
     hd: &crate::types::analysis::HostDirectiveEntry,
+    declaring_file_id: crate::query::FileId,
     declaring_file_path: &Path,
     parent_owning: Option<&OwningReference>,
     consumer_file: crate::query::FileId,
@@ -172,41 +203,38 @@ async fn resolve_host_directive<Fs: ResourceResolverFs + Clone + 'static>(
     ancestors: &mut Vec<ReferenceId>,
 ) -> Option<ResolvedHostDirective> {
     let HostDirectiveClass {
-        decl,
+        mut reference,
         decl_file_id,
-        symbol_name,
         class_info,
-    } = resolve_host_directive_class(ctx, hd, declaring_file_path).await?;
+        ..
+    } = resolve_host_directive_class(ctx, hd, declaring_file_id, declaring_file_path).await?;
     let hd_class_info = class_info?;
     if ancestors.contains(&hd_class_info.reference_id) {
         return None;
     }
 
-    let mut reference = crate::types::analysis::Reference {
-        file: decl_file_id,
-        name: symbol_name,
-        owning_reference: decl.owning_reference.clone(),
-        aliases: decl.aliases.into_iter().collect(),
-        is_default_export: decl.exported_as_default,
-    };
-
     let mut invalid_reason = None;
     if reference.owning_reference.is_none() && crate::utils::is_dts(declaring_file_path) {
         if let Some(owning) = parent_owning {
-            let package_entry_path = crate::evaluator::cross_file::resolve_specifier(
-                ctx.engine.resolver.as_ref(),
-                consumer_path,
-                owning.specifier(),
-            )
-            .or_else(|| {
-                crate::evaluator::cross_file::resolve_specifier(
-                    ctx.engine.resolver.as_ref(),
-                    declaring_file_path,
+            let package_entry_resolved = match ctx
+                .resolve_from_id(
+                    consumer_file,
                     owning.specifier(),
+                    crate::host::ImportKind::Static,
                 )
-            });
-            if let Some(entry_path) = package_entry_path {
-                let package_entry = ctx.engine.intern_path(&entry_path);
+                .await
+            {
+                Some((id, _)) => Some(id),
+                None => ctx
+                    .resolve_from_id(
+                        declaring_file_id,
+                        owning.specifier(),
+                        crate::host::ImportKind::Static,
+                    )
+                    .await
+                    .map(|(id, _)| id),
+            };
+            if let Some(package_entry) = package_entry_resolved {
                 let exports = ctx.module_export_map(package_entry).await;
                 let decl_key = (decl_file_id, reference.name.clone());
                 if let Some(export_name) = exports.get(&decl_key) {
@@ -215,6 +243,7 @@ async fn resolve_host_directive<Fs: ResourceResolverFs + Clone + 'static>(
                         export_name.clone(),
                     ));
                 } else {
+                    let entry_path = ctx.engine.lookup_path(package_entry);
                     invalid_reason = Some(format!(
                         "The symbol is not exported from {} (module '{}').",
                         entry_path.display(),
@@ -387,7 +416,9 @@ async fn validate_own_host_directives<Fs: ResourceResolverFs + Clone + 'static>(
             ));
         };
 
-        let Some(resolved) = resolve_host_directive_class(ctx, entry, file_path).await else {
+        let Some(resolved) =
+            resolve_host_directive_class(ctx, entry, reference_id.file, file_path).await
+        else {
             continue;
         };
         let Some(class_info) = resolved.class_info else {
