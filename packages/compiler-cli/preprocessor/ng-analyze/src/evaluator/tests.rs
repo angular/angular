@@ -1404,3 +1404,42 @@ fn declared_variable_typed_with_an_import_resolves_to_class_only() {
     );
     assert_eq!(reference_names(&value), ["X"]);
 }
+
+#[test]
+fn foreign_function_module_with_providers_marks_ng_module_synthetic() {
+    let source = r#"
+        import { ModuleWithProviders } from '@angular/core';
+        export class FeatureModule {
+            static forRoot(): ModuleWithProviders<FeatureModule> {
+                return window.dynamicResult;
+            }
+        }
+        FeatureModule.forRoot();
+    "#;
+    let value = eval_source(source);
+    let ResolvedValue::Synthetic(SyntheticValue::ModuleWithProviders { ng_module, .. }) =
+        value.unwrap_named()
+    else {
+        panic!("expected SyntheticValue::ModuleWithProviders, got {value:?}");
+    };
+    assert_eq!(ng_module.name, "FeatureModule");
+    assert_eq!(ng_module.kind, DeclKind::Class);
+    assert!(!ng_module.synthetic);
+
+    // Also verify mark_value_synthetic directly on SyntheticValue::ModuleWithProviders.
+    let mut non_synthetic_ref = ng_module.clone();
+    non_synthetic_ref.synthetic = false;
+    let marked =
+        mark_value_synthetic(ResolvedValue::Synthetic(SyntheticValue::ModuleWithProviders {
+            ng_module: non_synthetic_ref,
+            call_span: oxc_span::Span::new(0, 10),
+            call_file: test_file_id(),
+        }));
+    let ResolvedValue::Synthetic(SyntheticValue::ModuleWithProviders {
+        ng_module: marked_mod, ..
+    }) = marked
+    else {
+        panic!("expected SyntheticValue::ModuleWithProviders");
+    };
+    assert!(!marked_mod.synthetic);
+}
