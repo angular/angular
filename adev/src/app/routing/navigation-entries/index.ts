@@ -1559,6 +1559,10 @@ export const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
             path: 'cli/generate/directive',
           },
           {
+            label: 'entry-point',
+            path: 'cli/generate/entry-point',
+          },
+          {
             label: 'enum',
             path: 'cli/generate/enum',
           },

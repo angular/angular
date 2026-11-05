@@ -44,12 +44,12 @@ When you generate a new library, the workspace configuration file, `angular.json
   …
   "my-lib": {
     "root": "projects/my-lib",
-    "sourceRoot": "projects/my-lib/src",
+    "sourceRoot": "projects/my-lib",
     "projectType": "library",
     "prefix": "lib",
     "architect": {
       "build": {
-        "builder": "@angular/build:ng-packagr",
+        "builder": "@angular/build:library",
         …
 
 ```
@@ -79,18 +79,19 @@ Your library should supply documentation \(typically a README file\) for install
 ## Entry points
 
 An _entry point_ is a module specifier that consumers import from, together with the public API that specifier exposes.
-Every library has one _primary entry point_, and can add any number of _secondary entry points_.
+Every library has one _primary entry point_, and you can add any number of _secondary entry points_.
 
-The primary entry point is the package itself.
-The `ng-package.json` file at the root of the library configures it, and `lib.entryFile` names the file that defines its public API.
+You configure entry points in the library's `package.json` file using the `"exports"` field.
+The `"."` key defines the primary entry point and points to the TypeScript file that exports its public API:
 
-```json {header: 'projects/my-lib/ng-package.json'}
+```json {header: "projects/my-lib/package.json"}
 {
-  "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
-  "dest": "../../dist/my-lib",
-  "lib": {
-    "entryFile": "src/public-api.ts"
-  }
+  "name": "my-lib",
+  "version": "0.0.1",
+  "exports": {
+    ".": "./src/public-api.ts"
+  },
+  …
 }
 ```
 
@@ -100,9 +101,8 @@ Consumers import the primary entry point by the package name:
 import {ThemeService} from 'my-lib';
 ```
 
-A secondary entry point is a directory inside the library with its own `ng-package.json` file.
-The path of that directory relative to the library root defines the import subpath.
-For example, a `button` directory makes `my-lib/button` available to consumers:
+A secondary entry point is an additional subpath key in `"exports"` that points to its own public API file.
+For example, a `"./button"` export makes `my-lib/button` available to consumers:
 
 ```ts
 import {ButtonComponent} from 'my-lib/button';
@@ -115,53 +115,67 @@ HELPFUL: For an architectural overview of how entry points enable code splitting
 
 ### Adding a secondary entry point
 
-Create a directory inside the library with its own `ng-package.json` and public API file:
+Use the [`entry-point` schematic](cli/generate/entry-point) to generate a new secondary entry point in your library:
 
-```text
-projects/my-lib/
-├── ng-package.json      (primary entry point: my-lib)
-├── package.json
-├── src/
-│   ├── public-api.ts
-│   └── lib/ …
-└── button/
-    ├── ng-package.json  (secondary entry point: my-lib/button)
-    └── src/
-        ├── public-api.ts
-        └── button.ts
+```shell
+ng generate entry-point button --project my-lib
 ```
 
-The secondary `ng-package.json` configures only the entry point itself:
+You can also generate nested subpaths, such as `testing/harness`:
 
-```json {header: 'projects/my-lib/button/ng-package.json'}
-{
-  "$schema": "../../../node_modules/ng-packagr/ng-entrypoint.schema.json",
-  "lib": {
-    "entryFile": "src/public-api.ts"
-  }
-}
+```shell
+ng generate entry-point testing/harness --project my-lib
 ```
 
-IMPORTANT: A secondary `ng-package.json` accepts only the `lib` options. Package-wide options such as `dest` and `assets` belong in the `ng-package.json` at the library root and apply to every entry point.
+Running `ng generate entry-point button --project my-lib` performs the following steps:
 
-You do not need to register the secondary entry point anywhere else.
-During the build, `ng-packagr` automatically discovers every `ng-package.json` under the library root and derives the import subpath from its directory path (for example, `button/` becomes `my-lib/button` and `testing/harness/` becomes `my-lib/testing/harness`).
+1. Creates a `button/src/` directory inside the library with its own `public-api.ts` file and initial component files:
 
-To import a secondary entry point from an application in the same workspace, add a wildcard path mapping in the workspace `tsconfig.json`.
-By default, `ng generate library` maps only the package root, which does not cover subpaths:
+   ```text
+   projects/my-lib/
+   ├── package.json
+   ├── src/
+   │   ├── public-api.ts         (primary entry point: my-lib)
+   │   └── lib/
+   │       ├── my-lib.spec.ts
+   │       └── my-lib.ts
+   └── button/
+       └── src/
+           ├── button.spec.ts
+           ├── button.ts
+           └── public-api.ts     (secondary entry point: my-lib/button)
+   ```
 
-```json {header: 'tsconfig.json'}
-{
-  "compilerOptions": {
-    "paths": {
-      "my-lib": ["./dist/my-lib"],
-      "my-lib/*": ["./dist/my-lib/*"]
-    }
-  }
-}
-```
+1. Registers the `"./button"` subpath in the library's `package.json`:
 
-IMPORTANT: When importing code from another entry point in the same library, always use its package import path (for example, `import {ThemeService} from 'my-lib'`) instead of a relative path. `ng-packagr` builds each entry point separately in dependency order, so relative imports across entry points and circular dependencies between entry points will fail the build.
+   ```json {header: "projects/my-lib/package.json"}
+   {
+     "name": "my-lib",
+     "version": "0.0.1",
+     "exports": {
+       ".": "./src/public-api.ts",
+       "./button": "./button/src/public-api.ts"
+     },
+     …
+   }
+   ```
+
+1. Adds a `"my-lib/*"` wildcard path mapping in the workspace `tsconfig.json` (if not already present) so applications in the same workspace can resolve secondary entry points from the built library output:
+
+   ```json {header: "tsconfig.json"}
+   {
+     "compilerOptions": {
+       "paths": {
+         "my-lib": ["./dist/my-lib"],
+         "my-lib/*": ["./dist/my-lib/*"]
+       }
+     }
+   }
+   ```
+
+   Because `"my-lib/*"` is a wildcard pattern, it is added the first time you generate a secondary entry point and automatically covers all current and future secondary entry points without further updates to `tsconfig.json`.
+
+During the build, `@angular/build:library` discovers all entry points from the `"exports"` field in `projects/my-lib/package.json`, compiles and bundles each entry point, and writes the corresponding `types` and `default` export conditions into `dist/my-lib/package.json`.
 
 ## Refactoring parts of an application into a library
 
@@ -218,11 +232,10 @@ For more information, see [Schematics Overview](tools/cli/schematics) and [Schem
 
 Use the Angular CLI and the npm package manager to build and publish your library as an npm package.
 
-Angular CLI uses a tool called [ng-packagr](https://github.com/ng-packagr/ng-packagr/blob/main/README.md) to create packages from your compiled code that can be published to npm.
-See [Building libraries with Ivy](tools/libraries/creating-libraries#publishing-libraries) for information on the distribution formats supported by `ng-packagr` and guidance on how
-to choose the right format for your library.
+The Angular CLI uses the `@angular/build:library` builder to compile your code into packages in the [Angular Package Format](tools/libraries/angular-package-format) that you can publish to npm.
+See [Publishing libraries](tools/libraries/creating-libraries#publishing-libraries) for information on the supported distribution formats and guidance on how to choose the right format for your library.
 
-You should always build libraries for distribution using the `production` configuration.
+You should always build libraries for distribution using the `production` configuration (the default configuration for `ng build`).
 This ensures that generated output uses the appropriate optimizations and the correct package format for npm.
 
 ```shell
@@ -236,30 +249,56 @@ npm publish
 ## Managing assets in a library
 
 In your Angular library, the distributable can include additional assets like theming files, Sass mixins, or documentation \(like a changelog\).
-For more information [copy assets into your library as part of the build](https://github.com/ng-packagr/ng-packagr/blob/main/docs/copy-assets.md) and [embed assets in component styles](https://github.com/ng-packagr/ng-packagr/blob/main/docs/embed-assets-css.md).
+By default, the library builder copies `README.md` and `LICENSE*` files from the root of your library to the output directory, and inlines assets referenced via relative `url()` paths in component stylesheets as data URLs.
+To copy additional files as part of the build, configure the [`assets` option](reference/configs/workspace-config#assets-configuration) on your library's `build` target in `angular.json`:
 
-IMPORTANT: When including additional assets like Sass mixins or pre-compiled CSS.
-You need to add these manually to the conditional ["exports"](tools/libraries/angular-package-format#exports) in the `package.json` of the primary entrypoint.
-
-`ng-packagr` will merge handwritten `"exports"` with the auto-generated ones, allowing for library authors to configure additional export subpaths, or custom conditions.
-
-```json
-
-"exports": {
-  ".": {
-    "sass": "./_index.scss",
-  },
-  "./theming": {
-    "sass": "./_theming.scss"
-  },
-  "./prebuilt-themes/indigo-pink.css": {
-    "style": "./prebuilt-themes/indigo-pink.css"
+```json {header: "angular.json"}
+{
+  "projects": {
+    "my-lib": {
+      "architect": {
+        "build": {
+          "builder": "@angular/build:library",
+          "options": {
+            "tsConfig": "projects/my-lib/tsconfig.lib.json",
+            "assets": [
+              "projects/my-lib/CHANGELOG.md",
+              "projects/my-lib/_index.scss",
+              "projects/my-lib/prebuilt-themes",
+              {
+                "glob": "**/*.scss",
+                "input": "projects/my-lib/src/theming",
+                "output": "theming"
+              }
+            ]
+          }
+        }
+      }
+    }
   }
 }
-
 ```
 
-The above is an extract from the [@angular/material](https://unpkg.com/browse/@angular/material/package.json) distributable.
+IMPORTANT: When including additional assets like Sass mixins or pre-compiled CSS, expose them in the [`"exports"`](tools/libraries/angular-package-format#exports) field of your library's `package.json`.
+
+The library builder merges custom `"exports"` subpaths and conditions with the generated entry point exports, allowing you to expose stylesheets or custom conditions alongside TypeScript entry points:
+
+```json {header: "projects/my-lib/package.json"}
+{
+  "exports": {
+    ".": {
+      "sass": "./_index.scss",
+      "default": "./src/public-api.ts"
+    },
+    "./theming": {
+      "sass": "./theming/_theming.scss"
+    },
+    "./prebuilt-themes/indigo-pink.css": {
+      "style": "./prebuilt-themes/indigo-pink.css"
+    }
+  }
+}
+```
 
 ## Peer dependencies
 
@@ -313,14 +352,9 @@ ng build my-lib --watch
 
 ```
 
-IMPORTANT: The CLI `build` command uses a different builder and invokes a different build tool for libraries than it does for applications.
+IMPORTANT: The CLI `build` command uses a different builder for libraries (`@angular/build:library`) than it does for applications (`@angular/build:application`).
 
-- The build system for applications, `@angular/build`, is based on `esbuild`, and is included in all new Angular CLI projects
-- The build system for libraries is based on `ng-packagr`.
-  It is only added to your dependencies when you add a library using `ng generate library my-lib`.
-
-The two build systems support different things, and even where they support the same things, they do those things differently.
-This means that the TypeScript source can result in different JavaScript code in a built library than it would in a built application.
+Libraries are compiled and packaged according to the [Angular Package Format](tools/libraries/angular-package-format), which means that TypeScript source code produces different output in a built library than it does in a built application.
 
 For this reason, an application that depends on a library should only use TypeScript path mappings that point to the _built library_.
 TypeScript path mappings should _not_ point to the library source `.ts` files.
@@ -399,7 +433,7 @@ The Angular version used to build an application should always be the same or gr
 For example, if you had a library using Angular version 13, the application that depends on that library should use Angular version 13 or later.
 Angular does not support using an earlier version for the application.
 
-If you intend to publish your library to npm, compile with partial-Ivy code by setting `"compilationMode": "partial"` in `tsconfig.prod.json`.
+If you intend to publish your library to npm, build with the `production` configuration, which sets `"compilationMode": "partial"` by default to emit partial-Ivy code.
 This partial format is stable between different versions of Angular, so is safe to publish to npm.
 Code with this format is processed during the application build using the same version of the Angular compiler, ensuring that the application and all of its libraries use a single version of Angular.
 
