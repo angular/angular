@@ -599,6 +599,7 @@ describe('extended template diagnostics', () => {
           resource,
           signal as createSig,
           type Signal,
+          type WritableSignal,
           viewChild,
         } from '@angular/core';
         import {toSignal} from '@angular/core/rxjs-interop';
@@ -620,6 +621,11 @@ describe('extended template diagnostics', () => {
             @if (maybeSig) {
               {{ maybeSig() }}
             }
+            @if (optionalSig) {
+              {{ optionalSig() }}
+            } @else if (optionalWritable) {
+              {{ optionalWritable() }}
+            }
             {{ unionSig }}
             {{ eff }}
             {{ res }}
@@ -640,6 +646,8 @@ describe('extended template diagnostics', () => {
           protected explicitSig!: Signal<string>;
           nested = {leaf: createSig('hi')};
           maybeSig: Signal<string> | null = createSig('a');
+          optionalSig?: Signal<string>;
+          optionalWritable?: WritableSignal<number>;
           unionSig: Signal<string> | string = createSig('plain');
           eff = effect(() => {});
           res = resource({loader: async () => 1});

@@ -192,6 +192,7 @@ pub(crate) fn extract_own_signal_facts<'a>(
                 cx.collect_field_signals(
                     &prop.key,
                     prop.computed,
+                    prop.optional,
                     prop.type_annotation.as_deref(),
                     prop.value.as_ref(),
                     &mut state,
@@ -201,6 +202,7 @@ pub(crate) fn extract_own_signal_facts<'a>(
                 cx.collect_field_signals(
                     &prop.key,
                     prop.computed,
+                    false,
                     prop.type_annotation.as_deref(),
                     prop.value.as_ref(),
                     &mut state,
@@ -266,6 +268,10 @@ fn extract_parameter_property_signal<'a>(
         return;
     }
     state.own.declared_members.insert(name.to_string());
+    if param.optional {
+        state.explicit_non_signals.insert((name.to_string(), false));
+        return;
+    }
     if let Some(ann) = &param.type_annotation {
         if cx.is_explicit_signal_type(&ann.type_annotation) {
             state.record_signal(name.to_string(), false, false);
@@ -290,6 +296,7 @@ impl<'a> SignalDetectCtx<'a, '_> {
         &self,
         key: &PropertyKey<'a>,
         computed: bool,
+        optional: bool,
         type_annotation: Option<&TSTypeAnnotation<'a>>,
         initializer: Option<&Expression<'a>>,
         state: &mut OwnExtractState,
@@ -304,6 +311,12 @@ impl<'a> SignalDetectCtx<'a, '_> {
             }
             MemberKey::Private(name) => (name, true),
         };
+        if optional {
+            state
+                .explicit_non_signals
+                .insert((name.to_string(), is_private));
+            return;
+        }
         if let Some(ann) = type_annotation {
             if self.is_explicit_signal_type(&ann.type_annotation) {
                 state.record_signal(name.to_string(), is_private, false);
@@ -846,6 +859,10 @@ mod tests {
                 get sigGetter(): WritableSignal<boolean> { return null!; }
                 unionNotMatched: Signal<string> | null = createSig('nullable');
                 unionAssignedInCtor: Signal<number> | null;
+                optionalSig?: Signal<string>;
+                optionalWritable?: WritableSignal<number>;
+                optionalInit? = createSig(0);
+                optionalAssignedInCtor?: Signal<number>;
                 nested = {
                     inner: computed(() => 1),
                     deep: { leaf: createSig('ok') },
@@ -870,9 +887,11 @@ mod tests {
                     private ctorInit = createSig('x'),
                     public ctorUnion: Signal<number> | null = createSig(0),
                     notProp: Signal<number>,
+                    public ctorOptional?: Signal<number>,
                 ) {
                     this.assignedInCtor = computed(() => 2);
                     this.unionAssignedInCtor = createSig(99);
+                    this.optionalAssignedInCtor = createSig(100);
                     this.#ctorPriv = createSig(3);
                     this.roAssignedFromPriv = this.#ctorPriv.asReadonly();
                 }
@@ -924,6 +943,7 @@ mod tests {
             import * as i0 from '@angular/core';
             export declare class DtsGrandBase {
                 dtsSig: i0.Signal<string>;
+                dtsOptionalSig?: i0.Signal<string>;
                 overriddenByMid: i0.WritableSignal<number>;
                 overriddenByLeaf: i0.InputSignal<boolean>;
             }
