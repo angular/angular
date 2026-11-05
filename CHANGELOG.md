@@ -1,3 +1,55 @@
+<a name="22.3.0-next.4"></a>
+# 22.3.0-next.4 (2026-11-05)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [20dd959f4c](https://github.com/angular/angular/commit/20dd959f4c8a32a2e885fe15456c66c49018c4e1) | fix | avoid compilation errors for invalid tracking functions |
+| [9fe64d48d2](https://github.com/angular/angular/commit/9fe64d48d29f15ccad00f4d405ad7f2f1f647ae5) | fix | avoid producing type errors for invalid `@let` usages |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1ab73090b5](https://github.com/angular/angular/commit/1ab73090b50e1fd80febb9413d8fab6b44cfec81) | fix | add explicit type to propDecorators |
+| [47edfd51a2](https://github.com/angular/angular/commit/47edfd51a2c3cbd69348a30013016adbbcdd2235) | fix | add validation for defer in local compilation mode |
+| [5c00d135e3](https://github.com/angular/angular/commit/5c00d135e36adf88a08f0b114f35e4f319bc63de) | fix | do not decorate signal APIs in preprocessor |
+| [458303fe94](https://github.com/angular/angular/commit/458303fe94d75ea94a662fa45d2030041bf10ea8) | fix | emit namespace imports for standalone declarations in remote scopes |
+| [f5b0fa96a4](https://github.com/angular/angular/commit/f5b0fa96a44c30af55c84e1d0e0e09c82979ee5d) | fix | emit static ctorParameters for zero-arg constructor in jit: true |
+| [8c91cf2b42](https://github.com/angular/angular/commit/8c91cf2b4220e24b13835e42eb6456521a44354b) | fix | emit untyped inline input transforms in local mode |
+| [caa4aa9005](https://github.com/angular/angular/commit/caa4aa9005f87ce1c1decfdea25eff419b8be7ae) | fix | expand more expression types for same-file imports array |
+| [c7bcc2e3b8](https://github.com/angular/angular/commit/c7bcc2e3b8648d27021133daedabe95278c8e73a) | fix | expand same-file imports arrays in preprocessor |
+| [73911c88ca](https://github.com/angular/angular/commit/73911c88ca0adbafcba20bd7fdc920563816dca5) | fix | fix json parsing error in sidecar |
+| [f7b389879f](https://github.com/angular/angular/commit/f7b389879f0c9d73eefb6eb6aebdf82985cdb4e0) | fix | generate extra imports in local compilation mode |
+| [492c1338a2](https://github.com/angular/angular/commit/492c1338a2346e3001824d0e12d4fdfff67bf35e) | fix | guard forward references in jit propDecorators |
+| [7d2330e459](https://github.com/angular/angular/commit/7d2330e459dd7562f0aa7a515c9bc23d01d06fa2) | fix | handle generic expressions in queries |
+| [009ec5ccbe](https://github.com/angular/angular/commit/009ec5ccbea77e4414d9264ca4b402c9cf1b6f87) | fix | handle optional signals in uninvoked signals check |
+| [78b6c53d48](https://github.com/angular/angular/commit/78b6c53d489ded2ff918cca3d371912b941cd7da) | fix | implement uninvoked signal check in preprocessor |
+| [a2617c5b96](https://github.com/angular/angular/commit/a2617c5b96b02fe446ff51a70212cf687218092f) | fix | mark ModuleWithProviders from foreign function calls as synthetic |
+| [26f7e70520](https://github.com/angular/angular/commit/26f7e70520175a0290b5124425bb407408c7ad17) | fix | port custom decorator validation in local mode |
+| [b3f98afcb1](https://github.com/angular/angular/commit/b3f98afcb119821e96b2cc3dbfb101f86c5a7f44) | fix | preserve multiline template literals in createStaticBlock |
+| [6c21e65fe0](https://github.com/angular/angular/commit/6c21e65fe09cb7ab64a22cd77cbda29c0d87c792) | fix | skip outputs for unchanged files in preprocessor |
+| [c1b8c53505](https://github.com/angular/angular/commit/c1b8c53505de4f91b59a1f9b36d3ecfc4bdf8321) | fix | strip UTF-8 BOM when loading external component resources |
+| [393ec969e8](https://github.com/angular/angular/commit/393ec969e82bd1cc5c797356cbbfa33ea28e44aa) | fix | suppress inheritance errors for metadata in preprocessor |
+| [02a8a664ae](https://github.com/angular/angular/commit/02a8a664aedba87f5720faa318ca8e64e98a072f) | fix | suppress wire codegen when NgModule analysis fails |
+| [7c9f3263d9](https://github.com/angular/angular/commit/7c9f3263d91af55ef75a9854e7322b50716318c5) | fix | validate constants in local mode |
+| [323495c2ec](https://github.com/angular/angular/commit/323495c2ec568adaa97cb69fe317a508405404b6) | fix | validate host directive in local compilation |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [afbe39765c](https://github.com/angular/angular/commit/afbe39765caf125bb4e81f32ce579f29906fc4fe) | fix | add debugName option to rxResource |
+| [f3c77f1e2b](https://github.com/angular/angular/commit/f3c77f1e2b989b20611de55c265b64fb6fcc5848) | fix | escape comment markers which share characters |
+| [d0bef2c605](https://github.com/angular/angular/commit/d0bef2c605358c87ca706ad49ceaa178be066acf) | fix | remove attribute when img/video attr.src is null or undefined |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [97bde8aa6c](https://github.com/angular/angular/commit/97bde8aa6cbb651467b5da37d71e760119562299) | fix | reflect required validators in compat fields |
+| [401b4f2011](https://github.com/angular/angular/commit/401b4f2011c5d978bd11edde5a67217b92d1fb65) | fix | support updateOn blur and submit for custom FormValueControl |
+| [67e5069327](https://github.com/angular/angular/commit/67e50693274153555918bfaa8e136aabd149f3a3) | perf | avoid creating unused field injectors |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cfad3f5854](https://github.com/angular/angular/commit/cfad3f58543861a25a2f1d5bbe34f8bd13cb9cff) | perf | run loadComponent and loadChildren in root environment injector (g3-only) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.2.26"></a>
 # 21.2.26 (2026-11-02)
 ### upgrade
