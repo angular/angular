@@ -7,7 +7,7 @@
  */
 
 import * as child_process from 'child_process';
-import * as readline from 'readline';
+import type {Readable} from 'stream';
 import type {
   AnalysisResult,
   AnalyzerOptions,
@@ -42,38 +42,7 @@ export class SidecarAnalyzer implements IAnalyzer {
     this.sidecarProcess = child_process.spawn(sidecarPath);
 
     if (this.sidecarProcess.stdout) {
-      const rl = readline.createInterface({
-        input: this.sidecarProcess.stdout,
-        crlfDelay: Infinity,
-      });
-
-      rl.on('line', (line: string) => {
-        if (line.trim() === '') return;
-        try {
-          const parsed = JSON.parse(line) as Record<string, any>;
-          if (parsed && typeof parsed === 'object') {
-            if ('id' in parsed && parsed['id'] !== undefined && parsed['id'] !== null) {
-              const req = this.pendingRequests.get(parsed['id'] as number);
-              if (req) {
-                if (parsed['error']) {
-                  req.reject(new Error(parsed['error'] as string));
-                } else {
-                  req.resolve(parsed['result']);
-                }
-                this.pendingRequests.delete(parsed['id'] as number);
-              }
-            } else if (parsed['method'] === 'analysisResult') {
-              this.handleAnalysisResult(parsed['params'] as CompilationChunk);
-            } else if (parsed['method'] === 'analysisError') {
-              this.handleAnalysisError(parsed['params'] as string);
-            } else if (parsed['method'] === 'analysisComplete') {
-              this.handleAnalysisComplete();
-            }
-          }
-        } catch (e) {
-          console.error(`Failed to parse sidecar output line: ${line}`);
-        }
-      });
+      this.readMessages(this.sidecarProcess.stdout);
     }
 
     this.sidecarProcess.stderr?.on('data', (data) => {
@@ -133,6 +102,75 @@ export class SidecarAnalyzer implements IAnalyzer {
 
     if (this.isAnalyzing) {
       this.handleAnalysisError(`${reason} during analysis`);
+    }
+  }
+
+  /**
+   * Splits `stdout` into newline-delimited JSON-RPC messages and dispatches each one.
+   *
+   * Messages are framed strictly on `\n` (0x0A) bytes, as the sidecar writes them. Node's
+   * `readline` is not usable here: it also treats U+2028 and U+2029 as line terminators, and
+   * `serde_json` leaves those characters unescaped inside JSON strings (RFC 8259 permits it), so a
+   * template containing one would be split into unparseable fragments. Splitting the raw bytes is
+   * safe for UTF-8, where 0x0A never occurs inside a multi-byte sequence.
+   */
+  private readMessages(stdout: Readable): void {
+    let partial: Buffer[] = [];
+    stdout.on('data', (chunk: Buffer) => {
+      let start = 0;
+      let newline: number;
+      while ((newline = chunk.indexOf(0x0a, start)) !== -1) {
+        partial.push(chunk.subarray(start, newline));
+        this.handleMessage(Buffer.concat(partial).toString('utf8'));
+        partial = [];
+        start = newline + 1;
+      }
+      if (start < chunk.length) {
+        partial.push(chunk.subarray(start));
+      }
+    });
+    stdout.on('end', () => {
+      if (partial.length > 0) {
+        this.handleMessage(Buffer.concat(partial).toString('utf8'));
+        partial = [];
+      }
+    });
+  }
+
+  private handleMessage(line: string): void {
+    if (this.terminationReason !== null || line.trim() === '') return;
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(line);
+    } catch (e) {
+      // Each message is one complete line, so one that does not parse means the channel can no
+      // longer be trusted: it may have been an `analysisResult` (a dropped compilation chunk) or
+      // the response to a pending request, which would otherwise never settle.
+      console.error(`Failed to parse sidecar output line: ${line}`);
+      this.terminate(`Sidecar emitted an unparseable message (${(e as Error).message})`);
+      this.sidecarProcess.kill();
+      return;
+    }
+    if (!parsed || typeof parsed !== 'object') {
+      return;
+    }
+    const message = parsed as Record<string, any>;
+    if ('id' in message && message['id'] !== undefined && message['id'] !== null) {
+      const req = this.pendingRequests.get(message['id'] as number);
+      if (req) {
+        if (message['error']) {
+          req.reject(new Error(message['error'] as string));
+        } else {
+          req.resolve(message['result']);
+        }
+        this.pendingRequests.delete(message['id'] as number);
+      }
+    } else if (message['method'] === 'analysisResult') {
+      this.handleAnalysisResult(message['params'] as CompilationChunk);
+    } else if (message['method'] === 'analysisError') {
+      this.handleAnalysisError(message['params'] as string);
+    } else if (message['method'] === 'analysisComplete') {
+      this.handleAnalysisComplete();
     }
   }
 
