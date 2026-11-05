@@ -400,7 +400,20 @@ describe('jit: true Angular member and constructor parameter decorator downlevel
 
     const outputs = await compileFiles({'/test.ts': source});
     const content = outputs.get('/out/test.ts')!;
-    expect(content).not.toContain('static ctorParameters');
+    expect(
+      [...content.matchAll(/\/\/ @ts-ignore\n  static ctorParameters = \(\): any => \[\];/g)]
+        .length,
+    ).toBe(2);
+    expect([...content.matchAll(/static ctorParameters/g)].length).toBe(2);
+    expect(content).toContain('export class ImplicitCtorCmp {}');
+
+    const jsOutput = ts.transpileModule(content, {
+      compilerOptions: {
+        target: ts.ScriptTarget.ES2022,
+        experimentalDecorators: true,
+      },
+    }).outputText;
+    expect([...jsOutput.matchAll(/static ctorParameters = \(\) => \[\];/g)].length).toBe(2);
 
     const diagnostics = typecheckEmittedTs(content, {noImplicitOverride: true});
     expect(
