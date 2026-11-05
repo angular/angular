@@ -114,7 +114,7 @@ export class RouterModule {
    *
    * ```ts
    * @NgModule({
-   *   imports: [RouterModule.forRoot(ROUTES)]
+   *   imports: [RouterModule.forRoot(routes)]
    * })
    * class MyNgModule {}
    * ```
@@ -170,7 +170,7 @@ export class RouterModule {
    *
    * ```ts
    * @NgModule({
-   *   imports: [RouterModule.forChild(ROUTES)]
+   *   imports: [RouterModule.forChild(routes)]
    * })
    * class MyNgModule {}
    * ```
