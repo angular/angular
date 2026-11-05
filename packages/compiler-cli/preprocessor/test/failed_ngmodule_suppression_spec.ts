@@ -77,18 +77,54 @@ describe('failed NgModule analysis wire suppression', () => {
     const outMap = new Map(outputs.map((o) => [o.path, o.content]));
 
     const diagJson = JSON.parse(outMap.get('/tsconfig.ngdiag.json')!) as {
-      diagnostics: Array<{code: number; messageText: string; start?: number; length?: number}>;
+      diagnostics: Array<{
+        code: number;
+        messageText: string | {messageText: string};
+        start?: number;
+        length?: number;
+      }>;
     };
     const ng6001 = diagJson.diagnostics.filter((d) => d.code === 6001);
     const ng2003 = diagJson.diagnostics.filter((d) => d.code === 2003);
     expect(ng6001.length).toBe(2);
-    // Pre-fix baseline: both BrokenModule and BrokenInjectableModule emit NG2003 and static ɵmod.
-    expect(ng2003.length).toBe(2);
+    expect(ng2003.length).toBe(1);
+    expect(JSON.stringify(ng2003[0].messageText)).toContain('BrokenInjectableModule');
+    expect(JSON.stringify(ng2003[0].messageText)).not.toContain('BrokenModule.');
 
     const appOut = outMap.get('/out/app.ts')!;
     expect(appOut).toBeDefined();
-    expect(appOut).toContain('ValidComponent');
-    expect(appOut).toContain('ɵcmp');
+
+    // Neither BrokenModule nor BrokenInjectableModule may emit ɵmod, ɵinj, ɵprov, ɵfac, or
+    // ɵsetClassMetadata.
+    expect(appOut).not.toContain('ɵmod');
+    expect(appOut).not.toContain('ɵinj');
+    expect(appOut).not.toContain('ɵprov');
+    expect(appOut).toContain('export class BrokenModule {\n  constructor(dep: unknown) {}\n}');
+    expect(appOut).toContain(
+      'export class BrokenInjectableModule {\n  constructor(dep: unknown) {}\n}',
+    );
+    expect(appOut).not.toContain('BrokenModule_Factory');
+    expect(appOut).not.toContain('BrokenInjectableModule_Factory');
+    expect(appOut).not.toContain('ɵsetClassMetadata(BrokenModule');
+    expect(appOut).not.toContain('ɵsetClassMetadata(BrokenInjectableModule');
+
+    // Both @Injectable() and @NgModule({ declarations: [ExternalComponent] }) remain intact on
+    // BrokenInjectableModule (and @NgModule on BrokenModule), keeping ExternalComponent used.
+    expect(appOut).toMatch(
+      /@Injectable\(\)\s*@NgModule\(\{\s*declarations:\s*\[ExternalComponent\],?\s*\}\)\s*export class BrokenInjectableModule/,
+    );
+    expect(appOut).toMatch(
+      /@NgModule\(\{\s*declarations:\s*\[ExternalComponent\],?\s*\}\)\s*export class BrokenModule/,
+    );
+
+    // Sibling ValidComponent still compiles ɵcmp and ɵfac.
+    expect(appOut).toMatch(/class ValidComponent\s*\{[\s\S]*?static\s+ɵfac\b/);
+    expect(appOut).toMatch(/class ValidComponent\s*\{[\s\S]*?static\s+ɵcmp\b/);
+
+    // Downstream tsc with `noUnusedLocals: true` and `strict: true` must report zero TS6133/TS2339
+    // errors on the emitted `.ng.ts` output.
+    const tsDiags = typecheckWithExtDts(outMap, extDts, ['/out/app.ts']);
+    expect(tsDiags).toEqual([]);
   });
 });
 

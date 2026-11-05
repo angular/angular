@@ -26,6 +26,7 @@ pub async fn optimize_ng_module<Fs: ResourceResolverFs + Clone + 'static>(
     if let Some(outcome) = registry.outcome(reference_id) {
         ng_module.scope_diagnostics = outcome.diagnostics.clone();
         if outcome.failed {
+            ng_module.analysis_failed = true;
             ng_module.declarations = None;
             ng_module.declarations_span = None;
             ng_module.imports = None;

@@ -1722,13 +1722,13 @@ fn analyze_app_module_importing_non_class(
 }
 
 fn app_module_scope_failed(meta: &AnalysisResult) -> bool {
-    let ng_module = meta
-        .classes
+    // When NgModule analysis fails in full mode, NgModuleMetadata is suppressed from wire output
+    // (mirroring ngtsc's failed analysis handling, which omits ɵmod/ɵinj/setClassMetadata).
+    meta.classes
         .iter()
         .find(|c| c.class_name.as_deref() == Some("AppModule"))
         .and_then(|c| c.ng_module.as_ref())
-        .expect("AppModule ng_module");
-    ng_module.imports.is_none()
+        .is_none()
 }
 
 #[test]
@@ -7944,20 +7944,21 @@ fn test_failed_ngmodule_analysis_suppresses_wire_metadata_and_preserves_diagnost
         app_meta.diagnostics
     );
 
-    // Pre-fix baseline: BrokenModule and BrokenInjectableModule still emit wire metadata.
+    // Both BrokenModule and BrokenInjectableModule are filtered out of wire classes in full mode
+    // when NgModule analysis fails, avoiding cascading TS6133/TS2339 errors on `.ng.ts`.
     assert!(
         app_meta
             .classes
             .iter()
-            .any(|c| c.class_name.as_deref() == Some("BrokenModule")),
-        "pre-fix expected BrokenModule in wire classes"
+            .all(|c| c.class_name.as_deref() != Some("BrokenModule")),
+        "expected BrokenModule to be filtered out when analysis_failed is true"
     );
     assert!(
         app_meta
             .classes
             .iter()
-            .any(|c| c.class_name.as_deref() == Some("BrokenInjectableModule")),
-        "pre-fix expected BrokenInjectableModule in wire classes"
+            .all(|c| c.class_name.as_deref() != Some("BrokenInjectableModule")),
+        "expected BrokenInjectableModule to be filtered out when analysis_failed is true"
     );
     assert!(
         app_meta
@@ -8047,10 +8048,9 @@ fn test_failed_ngmodule_strict_injection_parameters_diagnostics() {
         "expected NG6001 on BrokenModule, got {:?}",
         pure_meta.diagnostics
     );
-    // Pre-fix baseline: BrokenModule also validates constructor dependencies despite failed analysis.
     assert!(
-        pure_meta.diagnostics.iter().any(|d| d.code == 2003),
-        "pre-fix expected NG2003 on BrokenModule, got {:?}",
+        pure_meta.diagnostics.iter().all(|d| d.code != 2003),
+        "expected BrokenModule NOT to emit NG2003 when NgModule analysis fails, got {:?}",
         pure_meta.diagnostics
     );
 }

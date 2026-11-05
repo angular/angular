@@ -205,6 +205,7 @@ fn parse_ng_module_args<'a>(
         service: None,
         decorator_name,
         is_jit: false,
+        analysis_failed: false,
     })
 }
 

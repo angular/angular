@@ -569,6 +569,7 @@ fn extract_class_metadata(
             service: None,
             decorator_name: None,
             is_jit: false,
+            analysis_failed: false,
         });
 
         let class_data = ClassData {

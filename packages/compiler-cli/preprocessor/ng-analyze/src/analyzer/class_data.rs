@@ -1529,6 +1529,7 @@ pub struct NgModuleData {
     pub service: Option<ServiceData>,
     pub decorator_name: Option<String>,
     pub is_jit: bool,
+    pub analysis_failed: bool,
 }
 
 #[derive(Clone, Debug)]
@@ -2463,6 +2464,9 @@ impl ClassData {
             push_issue(diagnostics, file_path, converter, issue);
         }
         diagnostics.extend(m.scope_diagnostics.iter().cloned());
+        if m.analysis_failed {
+            return;
+        }
         let Some(span) = m.module_id_span else {
             return;
         };
@@ -2512,8 +2516,12 @@ impl ClassData {
         diagnostics: &mut Vec<crate::NgDiagnostic>,
     ) {
         let validates = match &self.decorator {
-            DecoratorData::Component(_) | DecoratorData::Pipe(_) | DecoratorData::NgModule(_) => {
-                true
+            DecoratorData::Component(_) | DecoratorData::Pipe(_) => true,
+            DecoratorData::NgModule(m) => {
+                !m.analysis_failed
+                    || m.injectable.as_ref().is_some_and(|i| {
+                        cx.strict_injection_parameters && !self.is_abstract && i.requires_valid_ctor()
+                    })
             }
             DecoratorData::Directive(d) => d.selector.is_some(),
             DecoratorData::Injectable(i) => {
@@ -4173,7 +4181,7 @@ impl ClassData {
                     declaring_ng_module,
                 });
             }
-            DecoratorData::NgModule(m) => {
+            DecoratorData::NgModule(m) if !m.analysis_failed => {
                 let any_synthetic = |slot: &Option<crate::evaluator::Resolved<Vec<Reference>>>| {
                     slot.as_ref()
                         .is_some_and(|s| s.raw().any_reference(&mut |r| r.synthetic))
@@ -4255,8 +4263,9 @@ impl ClassData {
                     is_jit: m.is_jit,
                 });
             }
-            // Already projected via injectable_data()/service_data() above.
-            DecoratorData::Injectable(_) | DecoratorData::Service(_) => {}
+            // Already projected via injectable_data()/service_data() above, or skipped after a
+            // fatal NgModule analysis error.
+            DecoratorData::Injectable(_) | DecoratorData::Service(_) | DecoratorData::NgModule(_) => {}
         }
 
         // Member-level API surface: from the directive part; empty defaults for
