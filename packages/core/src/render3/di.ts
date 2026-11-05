@@ -112,11 +112,11 @@ import {stringifyForError} from './util/stringify_utils';
  *
  * ```
  */
-let includeViewProviders = true;
+const includeViewProviders: [boolean] = [true];
 
 export function setIncludeViewProviders(v: boolean): boolean {
-  const oldValue = includeViewProviders;
-  includeViewProviders = v;
+  const oldValue = includeViewProviders[0];
+  includeViewProviders[0] = v;
   return oldValue;
 }
 
@@ -645,7 +645,7 @@ function searchTokensOnInjector<T>(
         // - AND the injector set `includeViewProviders` to true (implying that the token can see
         // ViewProviders because it is the Component or a Service which itself was declared in
         // ViewProviders)
-        isComponentHost(tNode) && includeViewProviders
+        isComponentHost(tNode) && includeViewProviders[0]
       : // 2) `previousTView != null` which means that we are now walking across the parent nodes.
         // In such a case we are only allowed to look into the ViewProviders if:
         // - We just crossed from child View to Parent View `previousTView != currentTView`
@@ -723,7 +723,7 @@ export function locateDirectiveOrProvider<T>(
 /**
  * Used in ngDevMode to keep the injection path in case of cycles in DI.
  */
-let injectionPath: string[] = [];
+const injectionPath: string[] = [];
 
 /**
  * Retrieve or instantiate the injectable from the `LView` at particular `index`.
@@ -804,7 +804,7 @@ export function getNodeInjectable(
       setIncludeViewProviders(previousIncludeViewProviders);
       factory.resolving = false;
       leaveDI();
-      ngDevMode && (injectionPath = []);
+      ngDevMode && (injectionPath.length = 0);
     }
   }
   return value;

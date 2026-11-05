@@ -78,14 +78,14 @@ import {
  * that we may end up changing more than we need to. But i18n expressions with 32 bindings is rare
  * so in practice it should not be an issue.)
  */
-let changeMask = 0b0;
+const changeMask: [number] = [0b0];
 
 /**
  * Keeps track of which bit needs to be updated in `changeMask`
  *
  * This value gets incremented on every call to `ɵɵi18nExp`
  */
-let changeMaskCounter = 0;
+const changeMaskCounter: [number] = [0];
 
 /**
  * Keep track of which input bindings in `ɵɵi18nExp` have changed.
@@ -96,27 +96,27 @@ let changeMaskCounter = 0;
  */
 export function setMaskBit(hasChange: boolean) {
   if (hasChange) {
-    changeMask = changeMask | (1 << Math.min(changeMaskCounter, 31));
+    changeMask[0] = changeMask[0] | (1 << Math.min(changeMaskCounter[0], 31));
   }
-  changeMaskCounter++;
+  changeMaskCounter[0]++;
 }
 
 export function applyI18n(tView: TView, lView: LView, index: number) {
   try {
-    if (changeMaskCounter > 0) {
+    if (changeMaskCounter[0] > 0) {
       ngDevMode && assertDefined(tView, `tView should be defined`);
       const tI18n = tView.data[index] as TI18n | I18nUpdateOpCodes;
       // When `index` points to an `ɵɵi18nAttributes` then we have an array otherwise `TI18n`
       const updateOpCodes: I18nUpdateOpCodes = Array.isArray(tI18n)
         ? (tI18n as I18nUpdateOpCodes)
         : (tI18n as TI18n).update;
-      const bindingsStartIndex = getBindingIndex() - changeMaskCounter - 1;
-      applyUpdateOpCodes(tView, lView, updateOpCodes, bindingsStartIndex, changeMask);
+      const bindingsStartIndex = getBindingIndex() - changeMaskCounter[0] - 1;
+      applyUpdateOpCodes(tView, lView, updateOpCodes, bindingsStartIndex, changeMask[0]);
     }
   } finally {
     // Reset changeMask & maskBit to default for the next update cycle
-    changeMask = 0b0;
-    changeMaskCounter = 0;
+    changeMask[0] = 0b0;
+    changeMaskCounter[0] = 0;
   }
 }
 
@@ -504,7 +504,7 @@ function applyIcuUpdateCase(tView: TView, tIcu: TIcu, bindingsStartIndex: number
   ngDevMode && assertIndexInRange(lView, tIcu.currentCaseLViewIndex);
   let activeCaseIndex = lView[tIcu.currentCaseLViewIndex];
   if (activeCaseIndex !== null) {
-    let mask = changeMask;
+    let mask = changeMask[0];
     if (activeCaseIndex < 0) {
       // Clear the flag.
       // Negative number means that the ICU was freshly created and we need to force the update.
