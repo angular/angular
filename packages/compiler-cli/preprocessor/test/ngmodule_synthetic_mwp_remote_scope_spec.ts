@@ -92,7 +92,9 @@ describe('foreign-function ModuleWithProviders remote scope cycle protection', (
     const outMap = new Map(outputs.map((o) => [o.path, o.content]));
     const appModuleOut = outMap.get('/out/app.module.ts')!;
     expect(appModuleOut).toBeDefined();
-    expect(appModuleOut).toContain('i0.ɵɵsetComponentScope(CompB, [');
+    expect(appModuleOut).toMatch(
+      /i0\.ɵɵsetComponentScope\(\s*CompB,\s*function\s*\(\)\s*\{\s*return\s*\[/,
+    );
 
     const diags = typecheckOutputs(outMap, [
       '/out/addon.ts',

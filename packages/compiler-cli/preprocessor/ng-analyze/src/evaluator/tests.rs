@@ -1424,7 +1424,10 @@ fn foreign_function_module_with_providers_marks_ng_module_synthetic() {
     };
     assert_eq!(ng_module.name, "FeatureModule");
     assert_eq!(ng_module.kind, DeclKind::Class);
-    assert!(!ng_module.synthetic);
+    assert!(
+        ng_module.synthetic,
+        "expected ng_module from foreign function call to be marked synthetic"
+    );
 
     // Also verify mark_value_synthetic directly on SyntheticValue::ModuleWithProviders.
     let mut non_synthetic_ref = ng_module.clone();
@@ -1441,5 +1444,5 @@ fn foreign_function_module_with_providers_marks_ng_module_synthetic() {
     else {
         panic!("expected SyntheticValue::ModuleWithProviders");
     };
-    assert!(!marked_mod.synthetic);
+    assert!(marked_mod.synthetic);
 }

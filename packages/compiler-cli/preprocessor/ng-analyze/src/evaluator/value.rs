@@ -737,6 +737,18 @@ pub fn mark_value_synthetic(value: ResolvedValue) -> ResolvedValue {
             reference.synthetic = true;
             ResolvedValue::Reference(reference)
         }
+        ResolvedValue::Synthetic(SyntheticValue::ModuleWithProviders {
+            mut ng_module,
+            call_span,
+            call_file,
+        }) => {
+            ng_module.synthetic = true;
+            ResolvedValue::Synthetic(SyntheticValue::ModuleWithProviders {
+                ng_module,
+                call_span,
+                call_file,
+            })
+        }
         ResolvedValue::Incomplete(mut hole) => {
             hole.synthetic = true;
             ResolvedValue::Incomplete(hole)
