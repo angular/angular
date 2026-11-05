@@ -65,6 +65,21 @@ export class App {
 }
 ```
 
+The two-way binding shorthand is equivalent to a property binding paired with an event
+binding:
+
+```angular-ts
+<app-counter
+  [count]="initialCount"
+  (countChange)="initialCount = $event"
+></app-counter>
+```
+
+The property binding sends `initialCount` from the parent to the child. If the parent
+changes `initialCount`, Angular updates the child's `count` input without emitting
+`countChange`. The output is emitted when the child updates its model, so the parent can
+handle changes initiated by the child separately from values it sends down.
+
 ```angular-ts {header: 'counter.ts'}
 import {Component, model} from '@angular/core';
 
