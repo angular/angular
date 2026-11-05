@@ -93,8 +93,6 @@ When `true`, replaces the `templateUrl` and `styleUrls` properties in all `@Comp
 
 When enabled, the `.js` output of `ngc` does not include any lazy-loaded template or style URLs.
 
-For library projects created with the Angular CLI, the development configuration default is `true`.
-
 ### `flatModuleId`
 
 The module ID to use for importing a flat module \(when `flatModuleOutFile` is `true`\).
@@ -155,8 +153,6 @@ This turns off most of the template compiler and disables the reporting of templ
 
 Can be used to instruct the template compiler to produce `.metadata.json` files for distribution with an `npm` package. This avoids the production of `.ngfactory.js` and `.ngstyle.js` files that cannot be distributed to `npm`.
 
-For library projects created with the Angular CLI, the development configuration default is `true`.
-
 ### `strictMetadataEmit`
 
 When `true`, reports an error to the `.metadata.json` file if `"skipMetadataEmit"` is `false`.
@@ -174,8 +170,6 @@ The template compiler can then use the error nodes to report an error if these s
 
 If the client of a library intends to use a symbol in an annotation, the template compiler does not normally report this. It gets reported after the client actually uses the symbol.
 This option allows detection of these errors during the build phase of the library and is used, for example, in producing Angular libraries themselves.
-
-For library projects created with the Angular CLI, the development configuration default is `true`.
 
 ### `strictInjectionParameters`
 
