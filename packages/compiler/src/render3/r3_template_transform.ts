@@ -242,6 +242,14 @@ class HtmlAstToIvyAst implements html.Visitor {
               `Attribute bindings are not supported on ng-container. Use property bindings instead.`,
               bound.sourceSpan,
             );
+            // TODO(v23): Enable this breaking change
+            // g3-only-start
+            // } else if (
+            // bound.type === BindingType.Class ||
+            // (bound.type === BindingType.Property && bound.name === 'class')
+            // ) {
+            // this.reportError(`Class bindings are not supported on ng-container.`, bound.sourceSpan);
+            // g3-only-end
           }
         }
       }
