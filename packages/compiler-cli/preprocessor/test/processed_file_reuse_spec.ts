@@ -345,4 +345,68 @@ describe('HybridCompiler processed output reuse', () => {
     expect(shouldEmit(path.join(root, 'dir.ts'))).toBeTrue();
     analyzer.close();
   });
+
+  it('produces the same output without fingerprinting or reuse when incremental is false', async () => {
+    /** Processes every file through `prepareChunk` + `processFile`, keyed by base name. */
+    const processAll = async (compiler: HybridCompiler, root: string): Promise<BuildOutputs> => {
+      const outputs: BuildOutputs = new Map();
+      for await (const chunk of compiler.analyzeOptimized()) {
+        const chunkContext = await compiler.prepareChunk(chunk);
+        for (const file of chunk.files) {
+          const content = await fs.readFile(file.filePath, 'utf-8');
+          outputs.set(
+            path.basename(file.filePath),
+            await compiler.processFile(file.filePath, content, file, chunkContext),
+          );
+        }
+      }
+      return outputs;
+    };
+    const incremental = await createSession('parity_incremental', false, true);
+    const oneShot = await createSession('parity_one_shot', false, false);
+    const incrementalOutputs = await processAll(incremental.compiler, incremental.root);
+    const oneShotOutputs = await processAll(oneShot.compiler, oneShot.root);
+
+    expect([...oneShotOutputs.keys()].sort()).toEqual([...incrementalOutputs.keys()].sort());
+    expect(oneShotOutputs.get('a.component.ts')!.tcb?.code).toBeTruthy();
+    // The two sessions live in different directories; compare their output modulo that.
+    const normalize = (text: string | undefined, root: string) => text?.split(root).join('<root>');
+    for (const [name, expected] of incrementalOutputs) {
+      const actual = oneShotOutputs.get(name)!;
+      expect(normalize(actual.magicString.toString(), oneShot.root))
+        .withContext(name)
+        .toBe(normalize(expected.magicString.toString(), incremental.root));
+      expect(normalize(actual.tcb?.code, oneShot.root))
+        .withContext(name)
+        .toBe(normalize(expected.tcb?.code, incremental.root));
+    }
+
+    // Both bind the templates for this build, but only the incremental compiler keys that
+    // binding for reuse in later builds.
+    const boundState = (session: {compiler: HybridCompiler; root: string}) =>
+      session.compiler.fileCache.get(path.join(session.root, 'a.component.ts'));
+    expect(boundState(incremental)?.preparedTcbData).toBeTruthy();
+    expect(boundState(incremental)?.boundFingerprint).toBeDefined();
+    expect(boundState(oneShot)?.preparedTcbData).toBeTruthy();
+    expect(boundState(oneShot)?.boundFingerprint).toBeUndefined();
+
+    // Processing a file again with unchanged inputs reuses the cached output only when incremental.
+    const reprocess = (session: {compiler: HybridCompiler; root: string}) => {
+      const aPath = path.join(session.root, 'a.component.ts');
+      const aMeta = session.compiler.getCachedMetadata(aPath)!;
+      return session.compiler.processFileSync(aPath, FILES['a.component.ts'], undefined, aMeta);
+    };
+    expect(reprocess(incremental)).toBe(incrementalOutputs.get('a.component.ts')!);
+    const oneShotPrepared = boundState(oneShot)?.preparedTcbData;
+    const reprocessedOneShot = reprocess(oneShot);
+    expect(reprocessedOneShot).not.toBe(oneShotOutputs.get('a.component.ts')!);
+    expect(boundState(oneShot)?.preparedTcbData).toBeTruthy();
+    expect(boundState(oneShot)?.preparedTcbData).not.toBe(oneShotPrepared);
+    expect(reprocessedOneShot.magicString.toString()).toBe(
+      oneShotOutputs.get('a.component.ts')!.magicString.toString(),
+    );
+
+    incremental.analyzer.close();
+    oneShot.analyzer.close();
+  });
 });
