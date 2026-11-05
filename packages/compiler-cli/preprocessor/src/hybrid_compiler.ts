@@ -214,6 +214,7 @@ export interface CreateHybridCompilerOptions {
   optimize?: boolean;
   rootDir?: string;
   enableTemplateTypeChecker?: boolean;
+  incremental?: boolean;
 }
 
 /**
@@ -263,6 +264,7 @@ export function createHybridCompiler(
     rootDir: options.rootDir,
     workspaceName,
     rootDirs,
+    incremental: options.incremental,
   });
 }
 
@@ -563,7 +565,10 @@ export class HybridCompiler {
       return;
     }
     this.metadataByFile.set(result.filePath, result);
-    this.recordComponentTemplateConsumers(result.filePath, result);
+    // Template consumers only drive incremental invalidation and delta passes.
+    if (this.incrementalEnabled) {
+      this.recordComponentTemplateConsumers(result.filePath, result);
+    }
   }
 
   private invalidateCachedFile(filePath: string): void {
@@ -1382,7 +1387,7 @@ export class HybridCompiler {
     result: nga.AnalysisResult,
     knownMetadata?: ReadonlyMap<string, nga.AnalysisResult>,
   ): string | undefined {
-    if (content === undefined) {
+    if (content === undefined || !this.incrementalEnabled) {
       return undefined;
     }
     const pieces = [
@@ -1526,7 +1531,7 @@ export class HybridCompiler {
       );
       const reused = this.reusableOutput(normPath, fingerprint);
       if (!reused && result) {
-        this.invalidateStaleFileAnalysis(normPath, content, boundFingerprint);
+        this.invalidateStaleFileAnalysis(normPath, content, boundFingerprint, chunkContext);
       }
       processed = reused
         ? this.adoptReused(normPath, reused)
@@ -1571,7 +1576,7 @@ export class HybridCompiler {
       );
       const reused = this.reusableOutput(normPath, fingerprint);
       if (!reused && result) {
-        this.invalidateStaleFileAnalysis(normPath, content, boundFingerprint);
+        this.invalidateStaleFileAnalysis(normPath, content, boundFingerprint, chunkContext);
       }
       processed = reused
         ? this.adoptReused(normPath, reused)
@@ -1601,12 +1606,18 @@ export class HybridCompiler {
     filePath: string,
     content: string,
     nextFingerprint: string | undefined,
+    chunkContext: ChunkContext | undefined,
   ): void {
     const existing = this.fileCache.get(filePath);
     if (!existing) {
       return;
     }
+    // Without incremental compilation the binding has no fingerprint to be validated against.
+    // `prepareChunk` binds the files of a chunk afresh, but outside of a chunk the cached binding
+    // may predate a change to a dependency's metadata, so it can't be trusted.
+    const unverifiable = !this.incrementalEnabled && chunkContext === undefined;
     if (
+      unverifiable ||
       existing.sourceContent !== content ||
       (existing.boundFingerprint !== undefined && existing.boundFingerprint !== nextFingerprint)
     ) {

@@ -125,6 +125,16 @@ describe('ngp CLI (main.ts)', () => {
     expect(compiler.rootDir).toBe('/workspace');
   });
 
+  it('creates an incremental HybridCompiler unless incremental is false', () => {
+    const fakeAnalyzer = {
+      getCompilerOptions: () => ({}),
+      close: () => {},
+    } as unknown as IAnalyzer;
+    expect(createHybridCompiler(fakeAnalyzer).incrementalEnabled).toBe(true);
+    expect(createHybridCompiler(fakeAnalyzer, {incremental: true}).incrementalEnabled).toBe(true);
+    expect(createHybridCompiler(fakeAnalyzer, {incremental: false}).incrementalEnabled).toBe(false);
+  });
+
   it('leaves compiler.analyzer open when keepAnalyzerAlive is true', async () => {
     let closed = false;
     const fakeAnalyzer = {

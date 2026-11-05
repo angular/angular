@@ -111,6 +111,7 @@ import {run} from './ngp.js';
       optimize,
       rootDir,
       enableTemplateTypeChecker: enableTemplateTypeCheckerArg,
+      incremental: false,
     });
 
     console.log('Processing files...');
