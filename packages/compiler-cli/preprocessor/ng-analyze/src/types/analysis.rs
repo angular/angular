@@ -643,6 +643,21 @@ impl FileData {
                 !((cx.emit_declaration_only || cx.experimental_local_compilation)
                     && !c.non_ng_decorator_spans.is_empty())
             })
+            // TODO(parity): In ngtsc, a co-located `@Injectable()` on a class whose `@NgModule`
+            // fails analysis with a `FatalDiagnosticError` still compiles `ɵprov`/`ɵfac` independently
+            // because decorator handlers run per-decorator. Because `ngp` emits `.ng.ts` TypeScript
+            // source rather than post-typecheck JS, stripping `@NgModule(...)` or emitting `ɵprov`
+            // without `ɵfac` on a fatally errored NgModule class triggers cascading TS6133/TS2339
+            // errors; we therefore suppress wire codegen for the entire class in full mode while
+            // preserving both `NG6xxx` and `@Injectable` (`NG2003`) diagnostics.
+            .filter(|c| {
+                !(!cx.emit_declaration_only
+                    && !cx.experimental_local_compilation
+                    && matches!(
+                        &c.decorator,
+                        crate::analyzer::DecoratorData::NgModule(m) if m.analysis_failed
+                    ))
+            })
             .map(|c| c.to_wire(cx))
             .collect::<Result<Vec<_>, _>>()?;
 
