@@ -368,6 +368,47 @@ describe('jit: true Angular member and constructor parameter decorator downlevel
       ),
     ).toEqual([]);
   });
+
+  it('handles explicit zero-arg constructor vs implicit constructor in jit: true', async () => {
+    const source = `
+      import {Component, Directive} from '@angular/core';
+
+      @Directive({
+        selector: '[empty-ctor-dir]',
+        jit: true,
+      })
+      export class EmptyCtorDir {
+        constructor() {}
+      }
+
+      @Component({
+        selector: 'empty-ctor-cmp',
+        template: '',
+        jit: true,
+      })
+      export class EmptyCtorCmp {
+        constructor() {}
+      }
+
+      @Component({
+        selector: 'implicit-ctor-cmp',
+        template: '',
+        jit: true,
+      })
+      export class ImplicitCtorCmp {}
+    `;
+
+    const outputs = await compileFiles({'/test.ts': source});
+    const content = outputs.get('/out/test.ts')!;
+    expect(content).not.toContain('static ctorParameters');
+
+    const diagnostics = typecheckEmittedTs(content, {noImplicitOverride: true});
+    expect(
+      diagnostics.map(
+        (d) => `TS${d.code}: ${ts.flattenDiagnosticMessageText(d.messageText, '\n')}`,
+      ),
+    ).toEqual([]);
+  });
 });
 
 function makeTsconfig(
