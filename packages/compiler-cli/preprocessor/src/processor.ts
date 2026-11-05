@@ -508,7 +508,7 @@ export function processFileSync(
         // TODO: this was added to avoid invalidating the import graph since we're almost
         // always guaranteed to need a core import. Figure out if we still need it.
         printer.getOrCreateNamespace('@angular/core');
-        if (constructorParams && constructorParams.length > 0) {
+        if (constructorParams) {
           for (const param of constructorParams) {
             const hasNgDecorators = param.decorators.some((d) => d.isAngular);
             if ((param.hasType || hasNgDecorators) && !param.isTypeOnly && param.typeName != null) {

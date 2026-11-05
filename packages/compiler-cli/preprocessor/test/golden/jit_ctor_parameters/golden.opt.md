@@ -54,6 +54,9 @@ export class JitCtorComponent {
 })
 export class JitEmptyCtorDirective {
   constructor() {}
+
+  // @ts-ignore
+  static ctorParameters = (): any => [];
 }
 
 ```
