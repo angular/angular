@@ -560,17 +560,32 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
     ) -> Arc<Mutex<crate::ParsedFile>> {
         ctx.record_file(file_id);
         let file_path = self.lookup_path(file_id);
-        let source_text = match self.fs.read_to_string(&file_path) {
-            Ok(s) => s,
+        let (source_text, cache_key) = match self.fs.read_to_string(&file_path) {
+            // Declaration files are shared by every compilation a long-lived analyzer process
+            // serves (a persistent build worker analyzes one target per request, and each
+            // target's program pulls in the same framework `.d.ts` files), and parsing them is
+            // the bulk of a request's analysis time. Reuse the parse across analyzers while the
+            // file's text is unchanged.
+            Ok(s) => {
+                let cache_key = crate::utils::is_dts(&file_path)
+                    .then(|| shared_dts_parse_cache::SourceKey::of(&s));
+                if let Some(key) = &cache_key {
+                    if let Some(parsed) = shared_dts_parse_cache::get(&file_path, key) {
+                        return parsed;
+                    }
+                }
+                (s, cache_key)
+            }
             Err(e) => {
                 // Warn before falling back to an empty parse so unreadable files are not silently skipped.
                 #[allow(clippy::print_stderr)]
                 {
                     eprintln!("Warning: Failed to read '{}': {}", file_path.display(), e);
                 }
-                String::new()
+                (String::new(), None)
             }
         };
+        let cache_entry = cache_key.map(|key| (file_path.clone(), key));
 
         let owner = crate::ParsedFileOwner {
             file_path,
@@ -605,7 +620,11 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             }
         });
 
-        Arc::new(Mutex::new(parsed))
+        let parsed = Arc::new(Mutex::new(parsed));
+        if let Some((path, key)) = cache_entry {
+            shared_dts_parse_cache::insert(path, key, parsed.clone());
+        }
+        parsed
     }
 
     /// Syntactic single-file analysis: the complete single-file extraction — every decorated class,
@@ -2055,6 +2074,152 @@ fn collect_from_namespace_decl<'a>(
         }
     }
 }
+
+/// A process-wide cache of parsed `.d.ts` files, shared by every [`QueryEngine`] in the process.
+///
+/// A long-lived analyzer process (e.g. the sidecar under a persistent build worker, which creates
+/// a new engine per request) would otherwise re-parse the same framework and library declaration
+/// files for every compilation.
+mod shared_dts_parse_cache {
+    use std::collections::hash_map::DefaultHasher;
+    use std::collections::HashMap;
+    use std::hash::{Hash, Hasher};
+    use std::path::{Path, PathBuf};
+    use std::sync::{Arc, Mutex, OnceLock, PoisonError};
+
+    use crate::ParsedFile;
+
+    /// Upper bound on the total source text of the cached files.
+    const MAX_SOURCE_BYTES: usize = 192 * 1024 * 1024;
+
+    static CACHE: OnceLock<Mutex<Cache>> = OnceLock::new();
+
+    fn cache() -> &'static Mutex<Cache> {
+        CACHE.get_or_init(|| Mutex::new(Cache::new(MAX_SOURCE_BYTES)))
+    }
+
+    /// Identifies the text a file was parsed from, so a cached parse can be validated without
+    /// locking it or keeping a second copy of the text.
+    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+    pub(super) struct SourceKey {
+        len: usize,
+        hash: u64,
+    }
+
+    impl SourceKey {
+        pub(super) fn of(source_text: &str) -> Self {
+            let mut hasher = DefaultHasher::new();
+            source_text.hash(&mut hasher);
+            Self {
+                len: source_text.len(),
+                hash: hasher.finish(),
+            }
+        }
+    }
+
+    /// The cached parse of `path` if it was parsed from text matching `key`.
+    pub(super) fn get(path: &Path, key: &SourceKey) -> Option<Arc<Mutex<ParsedFile>>> {
+        cache()
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner)
+            .get(path, key)
+    }
+
+    /// Caches `parsed`, the parse of `path` from text matching `key`, replacing any earlier parse
+    /// of the same path.
+    pub(super) fn insert(path: PathBuf, key: SourceKey, parsed: Arc<Mutex<ParsedFile>>) {
+        cache()
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner)
+            .insert(path, key, parsed);
+    }
+
+    struct Entry {
+        parsed: Arc<Mutex<ParsedFile>>,
+        source: SourceKey,
+        last_used: u64,
+    }
+
+    pub(super) struct Cache {
+        entries: HashMap<PathBuf, Entry>,
+        total_source_bytes: usize,
+        max_source_bytes: usize,
+        clock: u64,
+    }
+
+    impl Cache {
+        pub(super) fn new(max_source_bytes: usize) -> Self {
+            Self {
+                entries: HashMap::new(),
+                total_source_bytes: 0,
+                max_source_bytes,
+                clock: 0,
+            }
+        }
+
+        pub(super) fn get(
+            &mut self,
+            path: &Path,
+            key: &SourceKey,
+        ) -> Option<Arc<Mutex<ParsedFile>>> {
+            self.clock += 1;
+            let entry = self.entries.get_mut(path)?;
+            if entry.source != *key {
+                self.remove(path);
+                return None;
+            }
+            entry.last_used = self.clock;
+            Some(entry.parsed.clone())
+        }
+
+        pub(super) fn insert(
+            &mut self,
+            path: PathBuf,
+            key: SourceKey,
+            parsed: Arc<Mutex<ParsedFile>>,
+        ) {
+            let source_len = key.len;
+            // A single file this large would evict most of the cache for one entry.
+            if source_len > self.max_source_bytes / 4 {
+                return;
+            }
+            self.clock += 1;
+            self.remove(&path);
+            while self.total_source_bytes + source_len > self.max_source_bytes {
+                let Some(lru) = self
+                    .entries
+                    .iter()
+                    .min_by_key(|(_, entry)| entry.last_used)
+                    .map(|(path, _)| path.clone())
+                else {
+                    break;
+                };
+                self.remove(&lru);
+            }
+            self.total_source_bytes += source_len;
+            self.entries.insert(
+                path,
+                Entry {
+                    parsed,
+                    source: key,
+                    last_used: self.clock,
+                },
+            );
+        }
+
+        fn remove(&mut self, path: &Path) {
+            if let Some(entry) = self.entries.remove(path) {
+                self.total_source_bytes -= entry.source.len;
+            }
+        }
+
+        #[cfg(test)]
+        pub(super) fn contains(&self, path: &Path) -> bool {
+            self.entries.contains_key(path)
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -3155,5 +3320,124 @@ mod tests {
             .map(|d| d.selector.as_deref())
             .collect();
         assert_eq!(selectors, vec![Some("my-dialog")]);
+    }
+}
+
+#[cfg(test)]
+mod shared_dts_parse_cache_tests {
+    use super::shared_dts_parse_cache::{Cache, SourceKey};
+    use super::*;
+    use crate::fs::OverlayFileSystem;
+    use crate::test_utils::create_test_fs;
+    use oxc_resolver::ResolveOptions;
+
+    // The cache is process-wide and tests run in parallel, so every test uses its own paths.
+
+    fn engine_over(files: &[(&str, &str)]) -> Arc<QueryEngine<OverlayFileSystem>> {
+        let fs = create_test_fs(files);
+        let resolver = Arc::new(ResolverGeneric::new_with_file_system(
+            fs.clone(),
+            ResolveOptions::default(),
+        ));
+        QueryEngine::new_default(
+            fs,
+            resolver,
+            Arc::new(ResourceRegistry::default()),
+            Arc::new(RwLock::new(Vec::new())),
+        )
+    }
+
+    fn parse(
+        engine: &Arc<QueryEngine<OverlayFileSystem>>,
+        path: &str,
+    ) -> Arc<Mutex<crate::ParsedFile>> {
+        let file_id = engine.intern_path(path);
+        let ctx = QueryContext::new(engine.clone());
+        futures::executor::block_on(engine.parse_file_body(file_id, &ctx))
+    }
+
+    fn source_text(parsed: &Arc<Mutex<crate::ParsedFile>>) -> String {
+        parsed.lock().unwrap().borrow_owner().source_text.clone()
+    }
+
+    #[test]
+    fn reuses_a_dts_parse_across_engines() {
+        let path = "/shared_dts_hit/lib.d.ts";
+        let files = [(path, "export declare class Lib {}")];
+        let first = parse(&engine_over(&files), path);
+        let second = parse(&engine_over(&files), path);
+        assert!(Arc::ptr_eq(&first, &second));
+    }
+
+    #[test]
+    fn reparses_a_dts_whose_text_changed() {
+        let path = "/shared_dts_miss/lib.d.ts";
+        let before = parse(&engine_over(&[(path, "export declare class A {}")]), path);
+        let after = parse(&engine_over(&[(path, "export declare class B {}")]), path);
+        assert!(!Arc::ptr_eq(&before, &after));
+        assert_eq!(source_text(&after), "export declare class B {}");
+
+        // The new parse replaced the stale one.
+        let again = parse(&engine_over(&[(path, "export declare class B {}")]), path);
+        assert!(Arc::ptr_eq(&after, &again));
+    }
+
+    #[test]
+    fn never_shares_ts_sources() {
+        let path = "/shared_dts_ts/lib.ts";
+        let files = [(path, "export class Lib {}")];
+        let first = parse(&engine_over(&files), path);
+        let second = parse(&engine_over(&files), path);
+        assert!(!Arc::ptr_eq(&first, &second));
+    }
+
+    #[test]
+    fn never_caches_an_unreadable_dts() {
+        let path = "/shared_dts_unreadable/missing.d.ts";
+        let first = parse(&engine_over(&[]), path);
+        let second = parse(&engine_over(&[]), path);
+        assert!(!Arc::ptr_eq(&first, &second));
+    }
+
+    #[test]
+    fn shares_a_parse_in_use_on_another_thread() {
+        let path = "/shared_dts_in_use/lib.d.ts";
+        let files = [(path, "export declare class Lib {}")];
+        let first = parse(&engine_over(&files), path);
+        let second = {
+            let _guard = first.lock().unwrap();
+            parse(&engine_over(&files), path)
+        };
+        assert!(Arc::ptr_eq(&first, &second));
+    }
+
+    #[test]
+    fn evicts_the_least_recently_used_entries_beyond_its_capacity() {
+        let path = "/shared_dts_eviction/lib.d.ts";
+        let parsed = parse(&engine_over(&[(path, "export declare class Lib {}")]), path);
+        let key = |name: &str| PathBuf::from(format!("/shared_dts_eviction/{name}.d.ts"));
+        let source = SourceKey::of(&"x".repeat(25));
+
+        let mut cache = Cache::new(100);
+        for name in ["a", "b", "c", "d"] {
+            cache.insert(key(name), source, parsed.clone());
+        }
+        // Full (100 of 100 bytes). Using `a` leaves `b` the least recently used.
+        assert!(cache.get(&key("a"), &source).is_some());
+        cache.insert(key("e"), source, parsed.clone());
+
+        assert!(!cache.contains(&key("b")));
+        for name in ["a", "c", "d", "e"] {
+            assert!(cache.contains(&key(name)), "{name} should still be cached");
+        }
+
+        // A file larger than a quarter of the capacity is not cached at all.
+        cache.insert(key("huge"), SourceKey::of(&"x".repeat(26)), parsed.clone());
+        assert!(!cache.contains(&key("huge")));
+        assert!(cache.contains(&key("a")));
+
+        // A lookup with different text drops the stale entry.
+        assert!(cache.get(&key("a"), &SourceKey::of(&"y".repeat(25))).is_none());
+        assert!(!cache.contains(&key("a")));
     }
 }
