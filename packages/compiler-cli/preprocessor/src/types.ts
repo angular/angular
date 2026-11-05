@@ -837,6 +837,7 @@ export interface QueryMetadata {
   emitDistinctChangesOnly: boolean;
   readSpan?: SpanMetadata;
   optionsSpan?: SpanMetadata;
+  optionsString?: string;
   isStatic: boolean;
   isSignal: boolean;
   decoratorSpan?: SpanMetadata;

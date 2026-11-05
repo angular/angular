@@ -118,8 +118,22 @@ fn extract_decorator_args_string<'a>(
     source_text: &str,
     guards: &[oxc_span::Span],
 ) -> Option<String> {
+    strip_type_arguments_from_args(get_decorator_args(decorator)?, source_text, guards)
+}
+
+/// The source text of `args` (first argument start..last argument end) with every generic type
+/// argument list removed (`TemplateRef<Ctx<T>>` -> `TemplateRef`), and a
+/// [`FORWARD_REFERENCE_GUARD`] before each of `guards`. Expressions re-emitted into static class
+/// members must not keep type arguments, which may name class type parameters (TS2302).
+///
+/// Returns `None` when `args` contain no type arguments, so the caller can slice the source
+/// directly.
+pub(crate) fn strip_type_arguments_from_args<'a>(
+    args: &[oxc_ast::ast::Argument<'a>],
+    source_text: &str,
+    guards: &[oxc_span::Span],
+) -> Option<String> {
     use oxc_span::GetSpan;
-    let args = get_decorator_args(decorator)?;
     let first = args.first()?;
     let last = args.last()?;
     let first_start = first.span().start;

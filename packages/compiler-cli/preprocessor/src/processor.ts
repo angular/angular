@@ -2499,8 +2499,10 @@ function buildPropDecoratorsExpr(
     if (query.optionsSpan) {
       // TODO(cleanup): `laterDeclarationReferences` only covers decorator arguments, so a signal
       // query's options naming a later declaration is unguarded and fails `tsc` inside the static
-      // block.
-      const optionsStr = s.original.slice(query.optionsSpan.start, query.optionsSpan.end);
+      // block. Type arguments are pre-stripped (`optionsString`) since they may name class type
+      // parameters (TS2302); they contain no value reads, so the span still describes it for HMR.
+      const optionsStr =
+        query.optionsString ?? s.original.slice(query.optionsSpan.start, query.optionsSpan.end);
       queryOptionsEntries.push(
         new o.LiteralMapSpreadAssignment(
           new o.WrappedNodeExpr(new RawSource(optionsStr, [query.optionsSpan])),

@@ -242,6 +242,37 @@ export class MyComp {}
   });
 });
 
+describe('query read options on generic classes', () => {
+  const GENERIC_QUERIES = `
+import {ContentChild, contentChild, Directive, TemplateRef} from '@angular/core';
+
+export interface CellContext<T> {
+  $implicit: T;
+}
+
+@Directive({selector: '[cellDef]'})
+export class CellDef {}
+
+@Directive({selector: 'tree-column'})
+export class TreeColumn<T> {
+  readonly cellTemplate = contentChild(CellDef, {
+    read: TemplateRef<CellContext<T>>,
+  });
+
+  @ContentChild(CellDef, {read: TemplateRef<CellContext<T>>})
+  decoratorTemplate?: TemplateRef<CellContext<T>>;
+}
+`;
+
+  it('erases type arguments from static definitions and class metadata (no TS2302)', async () => {
+    const emitted = await emitUnformatted(GENERIC_QUERIES);
+
+    expect(emitted).toContain('static ɵdir');
+    expect(emitted).toContain('ɵsetClassMetadata(TreeColumn');
+    expect(await typeCheck(emitted)).toEqual([]);
+  });
+});
+
 describe('emitted /*@__PURE__*/ annotations', () => {
   let emitted: string;
 

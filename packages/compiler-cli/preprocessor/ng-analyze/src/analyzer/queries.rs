@@ -150,7 +150,7 @@ pub(crate) fn extract_query_options<'a>(
                 }
             }
             "read" => {
-                read_span = Some(p.value.span());
+                read_span = Some(get_runtime_expression(&p.value).span());
             }
             _ => {}
         }
@@ -233,7 +233,7 @@ fn decorator_query_options<'a>(
         };
         let (slot, option, anchor) = match key.as_ref() {
             "read" => {
-                options.read_span = Some(p.value.span());
+                options.read_span = Some(get_runtime_expression(&p.value).span());
                 continue;
             }
             "descendants" => (&mut options.descendants, "descendants", p.value.span()),
@@ -325,6 +325,7 @@ fn extract_decorator_query_metadata<'a>(
         emit_distinct_changes_only: options.emit_distinct_changes_only,
         read_span: options.read_span,
         options_span: None,
+        options_string: None,
         is_static: options.is_static,
         is_signal: false,
         decorator_span: Some(site.decorator_span),
@@ -531,11 +532,17 @@ pub fn extract_queries<'a>(
         let predicate = extract_predicate(&call.arguments[0], PredicateKind::Signal, eval);
         let (descendants, emit_distinct_changes_only, read_span, is_static) =
             extract_query_options(&call.arguments, default_descendants, semantic);
-        let options_span = call
-            .arguments
-            .get(1)
+        let options_arg = call.arguments.get(1);
+        let options_span = options_arg
             .and_then(|arg| arg.as_expression())
             .map(GetSpan::span);
+        let options_string = options_arg.and_then(|arg| {
+            super::strip_type_arguments_from_args(
+                std::slice::from_ref(arg),
+                semantic.source_text(),
+                &[],
+            )
+        });
         if let Some(reads) = top_level_reads.as_deref_mut() {
             super::collect_argument_references(
                 &call.arguments,
@@ -557,6 +564,7 @@ pub fn extract_queries<'a>(
             emit_distinct_changes_only,
             read_span,
             options_span,
+            options_string,
             is_static,
             is_signal: true,
             decorator_span: None,
@@ -734,6 +742,7 @@ mod tests {
         emit_distinct_changes_only: bool,
         read: Option<String>,
         options: Option<String>,
+        options_string: Option<String>,
         is_static: bool,
         is_signal: bool,
         predicate_issue: Option<(crate::ErrorCode, String, String)>,
@@ -823,6 +832,7 @@ mod tests {
                             emit_distinct_changes_only: q.emit_distinct_changes_only,
                             read,
                             options,
+                            options_string: q.options_string,
                             is_static: q.is_static,
                             is_signal: q.is_signal,
                             predicate_issue,
@@ -1027,6 +1037,51 @@ mod tests {
         assert!(view_queries[5].first);
         assert_eq!(view_queries[5].predicate[0], "nsReqView");
         assert!(view_queries[5].is_signal);
+    }
+
+    #[test]
+    fn test_query_read_and_options_strip_type_arguments() {
+        let source = r#"
+        import { ContentChild, contentChild, viewChild, TemplateRef } from '@angular/core';
+
+        class CellDef {}
+        interface CellContext<T> { $implicit: T; }
+
+        class TreeColumn<T> {
+            signalRead = contentChild(CellDef, { read: TemplateRef<CellContext<T>> });
+            signalWrapped = viewChild('tpl', { read: (TemplateRef<CellContext<T>> as any) });
+            signalPlain = viewChild('plain', { read: TemplateRef });
+            @ContentChild(CellDef, { read: TemplateRef<CellContext<T>> }) decoratorRead: any;
+        }
+        "#;
+
+        let (content, view) = parse_class(source);
+
+        assert_eq!(content.len(), 2);
+        assert_eq!(content[0].property_name, "signalRead");
+        assert_eq!(content[0].read.as_deref(), Some("TemplateRef"));
+        assert_eq!(
+            content[0].options.as_deref(),
+            Some("{ read: TemplateRef<CellContext<T>> }")
+        );
+        assert_eq!(
+            content[0].options_string.as_deref(),
+            Some("{ read: TemplateRef }")
+        );
+        assert_eq!(content[1].property_name, "decoratorRead");
+        assert_eq!(content[1].read.as_deref(), Some("TemplateRef"));
+        assert_eq!(content[1].options_string, None);
+
+        assert_eq!(view.len(), 2);
+        assert_eq!(view[0].property_name, "signalWrapped");
+        assert_eq!(view[0].read.as_deref(), Some("TemplateRef"));
+        assert_eq!(
+            view[0].options_string.as_deref(),
+            Some("{ read: (TemplateRef as any) }")
+        );
+        assert_eq!(view[1].property_name, "signalPlain");
+        assert_eq!(view[1].read.as_deref(), Some("TemplateRef"));
+        assert_eq!(view[1].options_string, None);
     }
 
     /// Regression: when Angular symbols are imported through a package-internal relative path
