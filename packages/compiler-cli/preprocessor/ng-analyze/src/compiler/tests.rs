@@ -7878,3 +7878,181 @@ fn test_local_compilation_custom_decorators_diagnostic() {
     }
 }
 
+#[test]
+fn test_failed_ngmodule_analysis_suppresses_wire_metadata_and_preserves_diagnostics() {
+    let mut virtual_files = HashMap::new();
+    virtual_files.insert(
+        "/project/tsconfig.json".to_string(),
+        r#"{"files": ["app.ts", "ext.d.ts"]}"#.to_string(),
+    );
+    virtual_files.insert(
+        "/project/ext.d.ts".to_string(),
+        r#"
+            import * as i0 from '@angular/core';
+            export declare class ExternalComponent {
+                static ɵcmp: i0.ɵɵComponentDeclaration<ExternalComponent, 'ext-comp', never, {}, {}, never, never, false, never>;
+            }
+        "#
+        .to_string(),
+    );
+    virtual_files.insert(
+        "/project/app.ts".to_string(),
+        r#"
+            import { Component, Injectable, NgModule } from '@angular/core';
+            import { ExternalComponent } from './ext';
+
+            @NgModule({
+                declarations: [ExternalComponent],
+            })
+            export class BrokenModule {}
+
+            @Injectable()
+            @NgModule({
+                declarations: [ExternalComponent],
+            })
+            export class BrokenInjectableModule {}
+
+            @Component({
+                selector: 'valid-comp',
+                template: '<div>ok</div>',
+            })
+            export class ValidComponent {}
+        "#
+        .to_string(),
+    );
+
+    let analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
+        optimize: Some(true),
+        virtual_files: Some(virtual_files),
+        ..Default::default()
+    })
+    .unwrap();
+
+    let app_meta = analyzer
+        .get_metadata_for_file("/project/app.ts".to_string())
+        .expect("app.ts metadata");
+
+    let ng6001_count = app_meta
+        .diagnostics
+        .iter()
+        .filter(|d| d.code == 6001)
+        .count();
+    assert_eq!(
+        ng6001_count, 2,
+        "expected 2 NG6001 diagnostics, got {:?}",
+        app_meta.diagnostics
+    );
+
+    // Pre-fix baseline: BrokenModule and BrokenInjectableModule still emit wire metadata.
+    assert!(
+        app_meta
+            .classes
+            .iter()
+            .any(|c| c.class_name.as_deref() == Some("BrokenModule")),
+        "pre-fix expected BrokenModule in wire classes"
+    );
+    assert!(
+        app_meta
+            .classes
+            .iter()
+            .any(|c| c.class_name.as_deref() == Some("BrokenInjectableModule")),
+        "pre-fix expected BrokenInjectableModule in wire classes"
+    );
+    assert!(
+        app_meta
+            .classes
+            .iter()
+            .any(|c| c.class_name.as_deref() == Some("ValidComponent"))
+    );
+}
+
+#[test]
+fn test_failed_ngmodule_strict_injection_parameters_diagnostics() {
+    let mut virtual_files = HashMap::new();
+    virtual_files.insert(
+        "/project/tsconfig.json".to_string(),
+        r#"{"files": ["broken_injectable.ts", "broken_pure.ts", "ext.d.ts"], "angularCompilerOptions": {"strictInjectionParameters": true}}"#
+            .to_string(),
+    );
+    virtual_files.insert(
+        "/project/ext.d.ts".to_string(),
+        r#"
+            import * as i0 from '@angular/core';
+            export declare class ExternalComponent {
+                static ɵcmp: i0.ɵɵComponentDeclaration<ExternalComponent, 'ext-comp', never, {}, {}, never, never, false, never>;
+            }
+        "#
+        .to_string(),
+    );
+    virtual_files.insert(
+        "/project/broken_injectable.ts".to_string(),
+        r#"
+            import { Injectable, NgModule } from '@angular/core';
+            import { ExternalComponent } from './ext';
+
+            @Injectable()
+            @NgModule({
+                declarations: [ExternalComponent],
+            })
+            export class BrokenInjectableModule {
+                constructor(dep: unknown) {}
+            }
+        "#
+        .to_string(),
+    );
+    virtual_files.insert(
+        "/project/broken_pure.ts".to_string(),
+        r#"
+            import { NgModule } from '@angular/core';
+            import { ExternalComponent } from './ext';
+
+            @NgModule({
+                declarations: [ExternalComponent],
+            })
+            export class BrokenModule {
+                constructor(dep: unknown) {}
+            }
+        "#
+        .to_string(),
+    );
+
+    let analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
+        optimize: Some(true),
+        virtual_files: Some(virtual_files),
+        ..Default::default()
+    })
+    .unwrap();
+
+    let inj_meta = analyzer
+        .get_metadata_for_file("/project/broken_injectable.ts".to_string())
+        .expect("broken_injectable.ts metadata");
+    assert!(
+        inj_meta.diagnostics.iter().any(|d| d.code == 6001),
+        "expected NG6001 on BrokenInjectableModule, got {:?}",
+        inj_meta.diagnostics
+    );
+    assert!(
+        inj_meta.diagnostics.iter().any(|d| d.code == 2003),
+        "expected NG2003 on BrokenInjectableModule, got {:?}",
+        inj_meta.diagnostics
+    );
+
+    let pure_meta = analyzer
+        .get_metadata_for_file("/project/broken_pure.ts".to_string())
+        .expect("broken_pure.ts metadata");
+    assert!(
+        pure_meta.diagnostics.iter().any(|d| d.code == 6001),
+        "expected NG6001 on BrokenModule, got {:?}",
+        pure_meta.diagnostics
+    );
+    // Pre-fix baseline: BrokenModule also validates constructor dependencies despite failed analysis.
+    assert!(
+        pure_meta.diagnostics.iter().any(|d| d.code == 2003),
+        "pre-fix expected NG2003 on BrokenModule, got {:?}",
+        pure_meta.diagnostics
+    );
+}
+
+
