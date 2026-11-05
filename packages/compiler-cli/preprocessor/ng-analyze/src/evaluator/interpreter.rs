@@ -1833,7 +1833,9 @@ impl<'a, 'e, 'i> Interpreter<'a, 'e, 'i> {
         args: &[ResolvedValue],
     ) -> Option<ResolvedValue> {
         let mut resolve_type = |name: TypeNameRef<'_, 'a>| {
-            let resolved = self.resolve_type_name(name, &Scope::new());
+            let resolved = crate::evaluator::value::mark_value_synthetic(
+                self.resolve_type_name(name, &Scope::new()),
+            );
             match resolved {
                 ResolvedValue::Dynamic(_) | ResolvedValue::Incomplete(_) => {
                     self.propagate_failure(call_span, resolved)

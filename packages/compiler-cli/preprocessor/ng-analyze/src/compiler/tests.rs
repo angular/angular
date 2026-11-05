@@ -8105,7 +8105,10 @@ fn test_foreign_function_module_with_providers_marks_remote_scopes_synthetic() {
         .expect("AppModule class metadata");
     let ng_module = app_module.ng_module.as_ref().expect("NgModule metadata");
 
-    assert!(!ng_module.remote_scopes_may_require_cycle_protection);
+    assert!(
+        ng_module.remote_scopes_may_require_cycle_protection,
+        "expected foreign-function ModuleWithProviders to set remote_scopes_may_require_cycle_protection"
+    );
     assert_eq!(ng_module.injector_import_raw_spans.as_ref().map(|raws| raws.len()), Some(1));
 }
 
@@ -8169,5 +8172,8 @@ fn test_foreign_function_module_with_providers_cross_file_type_hole_marks_remote
         .expect("AppModule class metadata");
     let ng_module = app_module.ng_module.as_ref().expect("NgModule metadata");
 
-    assert!(!ng_module.remote_scopes_may_require_cycle_protection);
+    assert!(
+        ng_module.remote_scopes_may_require_cycle_protection,
+        "expected cross-file ExternalModule resolved via foreign-function ModuleWithProviders to set remote_scopes_may_require_cycle_protection"
+    );
 }
