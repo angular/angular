@@ -18,7 +18,7 @@
   "background": {
     "scripts": ["app/background_bundle.js"]
   },
-  "permissions": ["activeTab", "storage", "http://*/*", "https://*/*", "file:///*"],
+  "permissions": ["storage", "http://*/*", "https://*/*", "file:///*"],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
