@@ -12,6 +12,7 @@ import {
   Component,
   inject,
   provideZoneChangeDetection,
+  provideZonelessChangeDetection,
   signal,
 } from '../../src/core';
 import {TestBed} from '../../testing';
@@ -242,6 +243,9 @@ describe('attribute binding', () => {
       src = signal<string | null | undefined>('https://example.com/test.png');
     }
 
+    TestBed.configureTestingModule({
+      providers: [provideZonelessChangeDetection()],
+    });
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
 
@@ -289,6 +293,9 @@ describe('attribute binding', () => {
       undefinedSrc = signal<string | undefined>(undefined);
     }
 
+    TestBed.configureTestingModule({
+      providers: [provideZonelessChangeDetection()],
+    });
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
 
