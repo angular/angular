@@ -8,6 +8,7 @@
 
 import {computed, signal} from '@angular/core';
 import {FieldContext} from '../../public_api';
+import {EQUALITY} from '../../src/schema/logic_node';
 import {DYNAMIC} from '../../src/schema/logic';
 import {LogicNodeBuilder} from '../../src/schema/logic_node';
 
@@ -38,6 +39,21 @@ describe('LogicNodeBuilder', () => {
     expect(logicNode.logic.syncErrors.compute(fakeFieldContext)).toEqual([
       {kind: 'root-err', fieldTree: undefined as any},
     ]);
+  });
+
+  it('should apply predicates to equality logic', () => {
+    const builder = LogicNodeBuilder.newRoot();
+    const enabled = signal(true);
+    const equality = () => true;
+    const conditional = LogicNodeBuilder.newRoot();
+    conditional.addEqualityRule(() => equality);
+    builder.mergeIn(conditional, {fn: () => enabled(), path: undefined!});
+
+    const logicNode = builder.build();
+    expect(logicNode.logic.getMetadata(EQUALITY).compute(fakeFieldContext)).toBe(equality);
+
+    enabled.set(false);
+    expect(logicNode.logic.getMetadata(EQUALITY).compute(fakeFieldContext)).toBeUndefined();
   });
 
   it('should build child logic', () => {

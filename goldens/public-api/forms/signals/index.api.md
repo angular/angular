@@ -129,6 +129,12 @@ export class EmailValidationError extends BaseNgValidationError {
 }
 
 // @public
+export const EQUALITY: MetadataKey<Signal<((a: any, b: any) => boolean) | undefined>, (a: any, b: any) => boolean, ((a: any, b: any) => boolean) | undefined>;
+
+// @public
+export function equality<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, logic: (a: TValue, b: TValue) => boolean): void;
+
+// @public
 export type Field<TValue, TKey extends string | number = string | number> = () => FieldState<TValue, TKey>;
 
 // @public
