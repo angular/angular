@@ -87,6 +87,11 @@ async function processFile(
   const s = processed.magicString;
 
   const writeOutput = outDir || options.inPlace;
+  const emitsTcb = compiler.optimize && !compiler.emitDeclarationOnly;
+
+  if (options.inPlace && !outDir && !s.hasChanged() && !processed.tcb?.code) {
+    return;
+  }
 
   if (writeOutput) {
     let outputPath: string;
@@ -127,7 +132,9 @@ async function processFile(
       fs.writeFile(mapPath, map.toString()),
     ];
 
-    if (compiler.optimize && !compiler.emitDeclarationOnly) {
+    // Files without a TCB only get the empty placeholder with `--out`, since in-place mode
+    // shouldn't write `.ngtypecheck.ts` files for anything that has nothing to type-check.
+    if (emitsTcb && (processed.tcb?.code || outDir)) {
       // Strip `.ng.ts` (--in-place) or `.ts` (--out) before appending `.ngtypecheck.ts`
       // so the TCB never clobbers `outputPath`.
       const tcbPath = outputPath.replace(/(\.ng)?\.ts$/, '.ngtypecheck.ts');

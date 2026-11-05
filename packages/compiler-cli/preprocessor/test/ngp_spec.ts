@@ -153,3 +153,167 @@ describe('ngp CLI (main.ts)', () => {
     expect(closed).toBe(true);
   });
 });
+
+describe('ngp CLI output of unchanged files', () => {
+  const ngpPath = path.resolve(import.meta.dirname, '../main.js');
+
+  const SERVICE_CONTENT = `export class Logger {
+  log(message: string): void {
+    console.log(message);
+  }
+}
+`;
+  const COMPONENT_CONTENT = `import {Component} from '@angular/core';
+
+@Component({selector: 'my-cmp', template: '<div>{{ name }}</div>'})
+export class MyComponent {
+  name = 'hello';
+}
+`;
+  const INJECTABLE_CONTENT = `import {Injectable} from '@angular/core';
+
+@Injectable({providedIn: 'root'})
+export class DataService {
+  getData(): string[] {
+    return [];
+  }
+}
+`;
+
+  let tempDir: string;
+  let tsconfigPath: string;
+
+  /** Writes a fixture project with `files` (relative path → content) into a fresh temp dir. */
+  async function createProject(files: Record<string, string>): Promise<void> {
+    tempDir = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'ngp-unchanged-test-')));
+    tsconfigPath = path.join(tempDir, 'tsconfig.json');
+
+    const nodeModules = getOrCreateSyntheticNodeModules();
+    if (nodeModules) {
+      await fs.symlink(nodeModules, path.join(tempDir, 'node_modules'), 'dir');
+    }
+
+    const tsconfig = {compilerOptions: {strict: true}, files: Object.keys(files)};
+    await fs.writeFile(tsconfigPath, JSON.stringify(tsconfig));
+    await Promise.all(
+      Object.entries(files).map(([name, content]) =>
+        fs.writeFile(path.join(tempDir, name), content),
+      ),
+    );
+  }
+
+  const runNgp = (...args: string[]) =>
+    execFileSync(
+      process.execPath,
+      [...process.execArgv, ngpPath, tsconfigPath, '--wasm', ...args],
+      {
+        encoding: 'utf-8',
+        stdio: 'pipe',
+        env: process.env,
+      },
+    );
+
+  /** The `.ng.ts`, `.ng.ts.map` and `.ngtypecheck.ts` paths NGP writes in-place for `name`. */
+  const inPlaceOutputs = (name: string) => {
+    const base = path.join(tempDir, name.replace(/\.ts$/, ''));
+    return [`${base}.ng.ts`, `${base}.ng.ts.map`, `${base}.ngtypecheck.ts`];
+  };
+
+  afterEach(async () => {
+    if (tempDir) {
+      await fs.rm(tempDir, {recursive: true, force: true});
+    }
+  });
+
+  it('does not write outputs for a file without Angular declarations in --in-place mode', async () => {
+    await createProject({'logger.ts': SERVICE_CONTENT});
+
+    runNgp('--optimize', '--in-place');
+
+    for (const output of inPlaceOutputs('logger.ts')) {
+      expect(await pathExists(output))
+        .withContext(output)
+        .toBe(false);
+    }
+    expect(await fs.readFile(path.join(tempDir, 'logger.ts'), 'utf-8')).toBe(SERVICE_CONTENT);
+  });
+
+  it('does not write outputs for an unchanged file in non-optimized --in-place mode', async () => {
+    await createProject({'logger.ts': SERVICE_CONTENT});
+
+    runNgp('--in-place');
+
+    for (const output of inPlaceOutputs('logger.ts')) {
+      expect(await pathExists(output))
+        .withContext(output)
+        .toBe(false);
+    }
+  });
+
+  it('writes all outputs for a component in --in-place mode', async () => {
+    await createProject({'my_cmp.ts': COMPONENT_CONTENT});
+
+    runNgp('--optimize', '--in-place');
+
+    const [ngTsPath, mapPath, tcbPath] = inPlaceOutputs('my_cmp.ts');
+    expect(await pathExists(ngTsPath)).toBe(true);
+    expect(await pathExists(mapPath)).toBe(true);
+    expect(await pathExists(tcbPath)).toBe(true);
+    const tcb = await fs.readFile(tcbPath, 'utf-8');
+    expect(tcb.trim()).not.toBe('');
+    expect(tcb).not.toContain('// Empty TCB');
+    expect(await fs.readFile(path.join(tempDir, 'my_cmp.ts'), 'utf-8')).toBe(COMPONENT_CONTENT);
+  });
+
+  it('only writes outputs for changed files in a mixed --in-place target', async () => {
+    await createProject({'logger.ts': SERVICE_CONTENT, 'my_cmp.ts': COMPONENT_CONTENT});
+
+    runNgp('--optimize', '--in-place');
+
+    for (const output of inPlaceOutputs('logger.ts')) {
+      expect(await pathExists(output))
+        .withContext(output)
+        .toBe(false);
+    }
+    for (const output of inPlaceOutputs('my_cmp.ts')) {
+      expect(await pathExists(output))
+        .withContext(output)
+        .toBe(true);
+    }
+    expect(await pathExists(path.join(tempDir, 'tsconfig.ngdiag.json'))).toBe(true);
+  });
+
+  it('does not write a type-check file for a changed file without a template in --in-place mode', async () => {
+    await createProject({'data_service.ts': INJECTABLE_CONTENT});
+
+    runNgp('--optimize', '--in-place');
+
+    const [ngTsPath, mapPath, tcbPath] = inPlaceOutputs('data_service.ts');
+    expect(await fs.readFile(ngTsPath, 'utf-8')).toContain('ɵprov');
+    expect(await pathExists(mapPath)).toBe(true);
+    expect(await pathExists(tcbPath)).toBe(false);
+    expect(await fs.readFile(path.join(tempDir, 'data_service.ts'), 'utf-8')).toBe(
+      INJECTABLE_CONTENT,
+    );
+  });
+
+  it('still writes outputs for an unchanged file when --out is specified', async () => {
+    await createProject({'logger.ts': SERVICE_CONTENT});
+    const outDir = await fs.realpath(
+      await fs.mkdtemp(path.join(os.tmpdir(), 'ngp-unchanged-out-')),
+    );
+
+    try {
+      runNgp('--optimize', '--out', outDir, '--root', tempDir);
+
+      const outputPath = path.join(outDir, 'logger.ts');
+      expect(await fs.readFile(outputPath, 'utf-8')).toContain(SERVICE_CONTENT);
+      expect(await pathExists(`${outputPath}.map`)).toBe(true);
+      expect(await fs.readFile(path.join(outDir, 'logger.ngtypecheck.ts'), 'utf-8')).toBe(
+        '// Empty TCB\nexport const empty = true;\n',
+      );
+    } finally {
+      await fs.rm(outDir, {recursive: true, force: true});
+    }
+  });
+});
