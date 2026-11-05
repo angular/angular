@@ -92,7 +92,7 @@
     "stringify-entities": "^4.0.4",
     "style-mod": "4.1.4",
     "tinyglobby": "0.2.17",
-    "tslib": "2.8.1",
+    "tslib": "2.9.1",
     "typescript": "6.0.3",
     "w3c-keyname": "2.2.8",
     "zwitch": "^2.0.4"

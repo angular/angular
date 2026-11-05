@@ -5,7 +5,7 @@
     "@angular/common": "workspace:*",
     "@angular/core": "workspace:*",
     "rxjs": "7.8.2",
-    "tslib": "2.8.1"
+    "tslib": "2.9.1"
   },
   "devDependencies": {
     "@angular/cli": "22.3.0-next.4",
