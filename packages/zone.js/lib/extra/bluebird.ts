@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ZoneType} from '../zone-impl';
+import {AsyncContext, ZoneType} from '../zone-impl';
 
 export function patchBluebird(Zone: ZoneType): void {
   Zone.__load_patch('bluebird', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
@@ -25,20 +25,32 @@ export function patchBluebird(Zone: ZoneType): void {
           bapi,
           (delegate: Function) => (self: any, args: any[]) => {
             const zone = Zone.current;
+            let asyncContext: AsyncContext | null | undefined;
             for (let i = 0; i < args.length; i++) {
               const func = args[i];
               if (typeof func === 'function') {
+                // Bluebird calls this wrapper from a queue of its own, in whatever context drains
+                // that queue, so capture the context here, where the reaction is registered.
+                if (asyncContext === undefined) {
+                  asyncContext = api.captureAsyncContext ? api.captureAsyncContext() : null;
+                }
                 args[i] = function () {
                   const argSelf: any = this;
                   const argArgs: any = arguments;
                   return new Bluebird((res: any, rej: any) => {
-                    zone.scheduleMicroTask('Promise.then', () => {
-                      try {
-                        res(func.apply(argSelf, argArgs));
-                      } catch (error) {
-                        rej(error);
-                      }
-                    });
+                    api.scheduleMicroTaskInAsyncContext(
+                      zone,
+                      'Promise.then',
+                      () => {
+                        try {
+                          res(func.apply(argSelf, argArgs));
+                        } catch (error) {
+                          rej(error);
+                        }
+                      },
+                      undefined,
+                      asyncContext,
+                    );
                   });
                 };
               }
