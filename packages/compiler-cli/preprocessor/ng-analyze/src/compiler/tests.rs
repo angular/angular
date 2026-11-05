@@ -8055,4 +8055,119 @@ fn test_failed_ngmodule_strict_injection_parameters_diagnostics() {
     );
 }
 
+#[test]
+fn test_foreign_function_module_with_providers_marks_remote_scopes_synthetic() {
+    let mut virtual_files = HashMap::new();
+    virtual_files.insert(
+        "/project/tsconfig.json".to_string(),
+        r#"{"files": ["app.ts", "feature.d.ts"]}"#.to_string(),
+    );
+    virtual_files.insert(
+        "/project/feature.d.ts".to_string(),
+        r#"
+            import * as i0 from '@angular/core';
+            import { ModuleWithProviders } from '@angular/core';
+            export declare class FeatureModule {
+                static forRoot(): ModuleWithProviders<FeatureModule>;
+                static ɵmod: i0.ɵɵNgModuleDeclaration<FeatureModule, never, never, never>;
+            }
+        "#
+        .to_string(),
+    );
+    virtual_files.insert(
+        "/project/app.ts".to_string(),
+        r#"
+            import { NgModule } from '@angular/core';
+            import { FeatureModule } from './feature';
 
+            @NgModule({
+                imports: [FeatureModule.forRoot()],
+            })
+            export class AppModule {}
+        "#
+        .to_string(),
+    );
+
+    let analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
+        optimize: Some(true),
+        virtual_files: Some(virtual_files),
+        ..Default::default()
+    })
+    .unwrap();
+
+    let app_meta =
+        analyzer.get_metadata_for_file("/project/app.ts".to_string()).expect("app.ts metadata");
+    let app_module = app_meta
+        .classes
+        .iter()
+        .find(|c| c.class_name.as_deref() == Some("AppModule"))
+        .expect("AppModule class metadata");
+    let ng_module = app_module.ng_module.as_ref().expect("NgModule metadata");
+
+    assert!(!ng_module.remote_scopes_may_require_cycle_protection);
+    assert_eq!(ng_module.injector_import_raw_spans.as_ref().map(|raws| raws.len()), Some(1));
+}
+
+#[test]
+fn test_foreign_function_module_with_providers_cross_file_type_hole_marks_remote_scopes_synthetic() {
+    let mut virtual_files = HashMap::new();
+    virtual_files.insert(
+        "/project/tsconfig.json".to_string(),
+        r#"{"files": ["app.ts", "addon.ts", "external.ts"]}"#.to_string(),
+    );
+    virtual_files.insert(
+        "/project/external.ts".to_string(),
+        r#"
+            import { NgModule } from '@angular/core';
+            @NgModule({})
+            export class ExternalModule {}
+        "#
+        .to_string(),
+    );
+    virtual_files.insert(
+        "/project/addon.ts".to_string(),
+        r#"
+            import { ModuleWithProviders } from '@angular/core';
+            import { ExternalModule } from './external';
+            export class AddonModule {
+                static forRoot(): ModuleWithProviders<ExternalModule> {
+                    return (globalThis as any).dynamicMwp;
+                }
+            }
+        "#
+        .to_string(),
+    );
+    virtual_files.insert(
+        "/project/app.ts".to_string(),
+        r#"
+            import { NgModule } from '@angular/core';
+            import { AddonModule } from './addon';
+
+            @NgModule({
+                imports: [AddonModule.forRoot()],
+            })
+            export class AppModule {}
+        "#
+        .to_string(),
+    );
+
+    let analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
+        optimize: Some(true),
+        virtual_files: Some(virtual_files),
+        ..Default::default()
+    })
+    .unwrap();
+
+    let app_meta =
+        analyzer.get_metadata_for_file("/project/app.ts".to_string()).expect("app.ts metadata");
+    let app_module = app_meta
+        .classes
+        .iter()
+        .find(|c| c.class_name.as_deref() == Some("AppModule"))
+        .expect("AppModule class metadata");
+    let ng_module = app_module.ng_module.as_ref().expect("NgModule metadata");
+
+    assert!(!ng_module.remote_scopes_may_require_cycle_protection);
+}
