@@ -62,7 +62,9 @@ export function specializeBindings(job: CompilationJob): void {
               ),
             );
           } else {
-            const [namespace, name] = splitNsName(op.name);
+            // `fatal` is disabled, because attribute names are allowed
+            // to start with a colon (e.g. `:disabled`).
+            const [namespace, name] = splitNsName(op.name, /* fatal */ false);
             ir.OpList.replace<ir.UpdateOp>(
               op,
               ir.createAttributeOp(

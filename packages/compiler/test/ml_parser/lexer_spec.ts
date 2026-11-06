@@ -1813,6 +1813,30 @@ describe('HtmlLexer', () => {
       ]);
     });
 
+    it('should parse attributes with a leading colon as part of the name', () => {
+      expect(tokenizeAndHumanizeParts('<t :a="b">')).toEqual([
+        [TokenType.TAG_OPEN_START, '', 't'],
+        [TokenType.ATTR_NAME, '', ':a'],
+        [TokenType.ATTR_QUOTE, '"'],
+        [TokenType.ATTR_VALUE_TEXT, 'b'],
+        [TokenType.ATTR_QUOTE, '"'],
+        [TokenType.TAG_OPEN_END],
+        [TokenType.EOF],
+      ]);
+    });
+
+    it('should parse attributes with multiple leading colons as part of the name', () => {
+      expect(tokenizeAndHumanizeParts('<t ::a="b">')).toEqual([
+        [TokenType.TAG_OPEN_START, '', 't'],
+        [TokenType.ATTR_NAME, '', '::a'],
+        [TokenType.ATTR_QUOTE, '"'],
+        [TokenType.ATTR_VALUE_TEXT, 'b'],
+        [TokenType.ATTR_QUOTE, '"'],
+        [TokenType.TAG_OPEN_END],
+        [TokenType.EOF],
+      ]);
+    });
+
     it('should parse attributes whose prefix is not valid', () => {
       expect(tokenizeAndHumanizeParts('<t (ns1:a)>')).toEqual([
         [TokenType.TAG_OPEN_START, '', 't'],

@@ -818,7 +818,10 @@ class _Tokenizer {
     this._endToken([content]);
   }
 
-  private _consumePrefixAndName(endPredicate: (code: number) => boolean): string[] {
+  private _consumePrefixAndName(
+    endPredicate: (code: number) => boolean,
+    isTagName: boolean,
+  ): string[] {
     const nameOrPrefixStart = this._cursor.clone();
     let prefix: string = '';
     while (this._cursor.peek() !== chars.$COLON && !isPrefixEnd(this._cursor.peek())) {
@@ -826,9 +829,16 @@ class _Tokenizer {
     }
     let nameStart: CharacterCursor;
     if (this._cursor.peek() === chars.$COLON) {
-      prefix = this._cursor.getChars(nameOrPrefixStart);
-      this._cursor.advance();
-      nameStart = this._cursor.clone();
+      const maybePrefix = this._cursor.getChars(nameOrPrefixStart);
+      // A colon at the beginning of an attribute isn't a namespace separator, but a part of
+      // the name (e.g. `:disabled` in plain HTML is an attribute literally named `:disabled`).
+      if (isTagName || maybePrefix !== '') {
+        prefix = maybePrefix;
+        this._cursor.advance();
+        nameStart = this._cursor.clone();
+      } else {
+        nameStart = nameOrPrefixStart;
+      }
     } else {
       nameStart = nameOrPrefixStart;
     }
@@ -1001,7 +1011,7 @@ class _Tokenizer {
 
   private _consumeTagOpenStart(start: CharacterCursor): TagOpenStartToken {
     this._beginToken(TokenType.TAG_OPEN_START, start);
-    const parts = this._consumePrefixAndName(isNameEnd);
+    const parts = this._consumePrefixAndName(isNameEnd, /* isTagName */ true);
     return this._endToken(parts) as TagOpenStartToken;
   }
 
@@ -1021,7 +1031,7 @@ class _Tokenizer {
     let tagName = '';
     if (this._cursor.peek() === chars.$COLON) {
       this._cursor.advance();
-      [prefix, tagName] = this._consumePrefixAndName(isNameEnd);
+      [prefix, tagName] = this._consumePrefixAndName(isNameEnd, /* isTagName */ true);
     }
     return [name, prefix, tagName];
   }
@@ -1084,7 +1094,7 @@ class _Tokenizer {
       nameEndPredicate = isNameEnd;
     }
 
-    const prefixAndName = this._consumePrefixAndName(nameEndPredicate);
+    const prefixAndName = this._consumePrefixAndName(nameEndPredicate, /* isTagName */ false);
     this._endToken(prefixAndName);
   }
 
@@ -1155,7 +1165,7 @@ class _Tokenizer {
 
     this._beginToken(TokenType.TAG_CLOSE, start);
     this._attemptCharCodeUntilFn(isNotWhitespace);
-    const prefixAndName = this._consumePrefixAndName(isNameEnd);
+    const prefixAndName = this._consumePrefixAndName(isNameEnd, /* isTagName */ true);
     this._attemptCharCodeUntilFn(isNotWhitespace);
     this._requireCharCode(chars.$GT);
     this._endToken(prefixAndName);
