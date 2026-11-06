@@ -223,7 +223,6 @@
       "RendererFactory2",
       "RendererStyleFlags2",
       "RequiredValidator",
-      "ResourceParamsStatus",
       "RetrievingInjector",
       "RootComponent",
       "RuntimeError",

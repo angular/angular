@@ -243,7 +243,6 @@
       "RESPONSE_TYPE",
       "RendererFactory2",
       "RendererStyleFlags2",
-      "ResourceParamsStatus",
       "Restriction",
       "RetrievingInjector",
       "RuntimeError",
