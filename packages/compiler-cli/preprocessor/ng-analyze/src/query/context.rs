@@ -274,29 +274,22 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryContext<Fs> {
         }
     }
 
-    pub async fn ambient_global_files(&self) -> Arc<crate::query::keys::AmbientGlobalFiles> {
-        self.record_file(crate::query::engine::ROOTS_FILE_ID);
-        let cached = self.engine.query(QueryKey::AmbientGlobalFiles).await;
-        match &*cached.value {
-            QueryValue::AmbientGlobalFiles(r) => r.clone(),
-            _ => unreachable!("AmbientGlobalFiles must yield AmbientGlobalFiles"),
-        }
-    }
-
-    /// Look up the candidate `.d.ts` files that may declare ambient global `name` for
-    /// `consumer_file`, recording fine-grained invalidation dependencies for `(consumer_file, name)`
-    /// rather than depending on every `.d.ts` file in the program.
-    pub async fn ambient_global_candidates(
+    /// The first `.d.ts` at or after `position` in the tsconfig's `files` that may declare
+    /// ambient global value `name`, and its position (see
+    /// [`QueryEngine::next_ambient_global_candidate`]). Records that `consumer_file` looked up
+    /// `name` rather than depending on every `.d.ts` scanned, so editing one only evicts
+    /// `consumer_file` if it starts or stops declaring `name`.
+    pub fn next_ambient_global_candidate(
         &self,
         name: &str,
         consumer_file: FileId,
-    ) -> Option<Vec<FileId>> {
+        position: usize,
+    ) -> Option<(usize, FileId)> {
         self.record_file(crate::query::engine::ROOTS_FILE_ID);
         self.record_file(consumer_file);
         self.engine
             .record_ambient_global_dependent(name, consumer_file);
-        let index = self.ambient_global_files().await;
-        index.get(name).cloned()
+        self.engine.next_ambient_global_candidate(name, position)
     }
 
     pub async fn has_path(&self, start: FileId, target: FileId) -> bool {
