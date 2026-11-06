@@ -61,8 +61,19 @@ describe('BrowserViewportScroller', () => {
     let scroller: BrowserViewportScroller;
 
     beforeEach(() => {
+      // Force instant scrolling so that the reset below always takes effect synchronously.
+      // Otherwise a leftover `smooth` value would make every assertion on the scroll position
+      // racy, because the scroll would still be animating once the test body runs.
+      document.documentElement.style.scrollBehavior = 'auto';
       scroller = new BrowserViewportScroller(document, window);
       scroller.scrollToPosition([0, 0]);
+    });
+
+    afterEach(() => {
+      // Undo the global mutations here rather than at the end of the individual tests, so that a
+      // failed assertion cannot leak them into whichever test happens to run next.
+      document.documentElement.style.scrollBehavior = '';
+      document.body.style.paddingBottom = '';
     });
 
     it('should scroll when element with matching id is found', () => {
@@ -141,15 +152,18 @@ describe('BrowserViewportScroller', () => {
       // Header offset
       scroller.setOffset([0, 80]);
 
-      scroller.scrollToAnchor(anchor);
+      try {
+        scroller.scrollToAnchor(anchor);
 
-      await waitFor(() => throwUnless(anchorNode.getBoundingClientRect().top).toBe(80), {
-        timeout: 1_000,
-      });
-
-      document.documentElement.style.scrollBehavior = '';
-      document.body.style.paddingBottom = '';
-      cleanup();
+        // A smooth scroll settles on a fractional pixel on displays whose device pixel ratio is
+        // not 1, so compare against the offset with a sub-pixel tolerance rather than exactly.
+        await waitFor(
+          () => throwUnless(Math.abs(anchorNode.getBoundingClientRect().top - 80)).toBeLessThan(1),
+          {timeout: 1_000},
+        );
+      } finally {
+        cleanup();
+      }
     });
 
     function createTallElement() {
