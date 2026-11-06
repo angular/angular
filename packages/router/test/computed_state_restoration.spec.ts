@@ -81,7 +81,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
     let fixture: ComponentFixture<unknown>;
 
-    async function createNavigationHistory(urlUpdateStrategy: 'eager' | 'deferred' = 'deferred') {
+    function configureTestingModule(urlUpdateStrategy: 'eager' | 'deferred' = 'deferred') {
       TestBed.configureTestingModule({
         providers: [
           provideRouter(
@@ -132,6 +132,10 @@ for (const browserAPI of ['navigation', 'history'] as const) {
           ),
         ],
       });
+    }
+
+    async function createNavigationHistory(urlUpdateStrategy: 'eager' | 'deferred' = 'deferred') {
+      configureTestingModule(urlUpdateStrategy);
       const router = TestBed.inject(Router);
       const location = TestBed.inject(Location);
       fixture = await createRoot(router, RootCmp);
@@ -513,6 +517,51 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
         location.back();
         await nextNavigation();
+        expect(location.path()).toEqual('/first');
+        expectPageIndex(1);
+      });
+
+      it(`does not traverse history when initial navigation after reload is cancelled with urlUpdateStrategy ${urlUpdateStrategy}`, async () => {
+        configureTestingModule(urlUpdateStrategy);
+        const location = TestBed.inject(Location);
+        const router = TestBed.inject(Router);
+
+        location.go('/first', '', {navigationId: 1, ɵrouterPageId: 1});
+        location.go('/second', '', {navigationId: 2, ɵrouterPageId: 2});
+
+        TestBed.inject(MyCanActivateGuard).allow = false;
+        await createRoot(router, RootCmp);
+        await timeout(5);
+
+        expectPageIndex(2);
+
+        // Once the guard allows navigation, back traversal to /first should succeed at index 1.
+        TestBed.inject(MyCanActivateGuard).allow = true;
+        location.back();
+        await nextNavigation();
+        await timeout(5);
+        expect(location.path()).toEqual('/first');
+        expectPageIndex(1);
+      });
+
+      it(`does not traverse history when initial navigation after reload errors with urlUpdateStrategy ${urlUpdateStrategy}`, async () => {
+        configureTestingModule(urlUpdateStrategy);
+        const location = TestBed.inject(Location);
+        const router = TestBed.inject(Router);
+
+        location.go('/first', '', {navigationId: 1, ɵrouterPageId: 1});
+        location.go('/second', '', {navigationId: 2, ɵrouterPageId: 2});
+
+        TestBed.inject(ThrowingCanActivateGuard).throw = true;
+        await createRoot(router, RootCmp);
+        await timeout(5);
+
+        expectPageIndex(2);
+
+        TestBed.inject(ThrowingCanActivateGuard).throw = false;
+        location.back();
+        await nextNavigation();
+        await timeout(5);
         expect(location.path()).toEqual('/first');
         expectPageIndex(1);
       });
