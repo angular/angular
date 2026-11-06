@@ -98,7 +98,6 @@
       "ENVIRONMENT_INITIALIZER",
       "ERRORED",
       "EVENT_MANAGER_PLUGINS",
-      "EffectRefImpl",
       "EffectScheduler",
       "ElementRef",
       "EmptyError",

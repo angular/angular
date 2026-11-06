@@ -104,7 +104,6 @@
       "EVENT_MANAGER_PLUGINS",
       "EVENT_REPLAY_ENABLED_DEFAULT",
       "EVENT_REPLAY_QUEUE",
-      "EffectRefImpl",
       "EffectScheduler",
       "ElementRef",
       "EmulatedEncapsulationDomRenderer2",

@@ -121,7 +121,6 @@
       "ENABLE_ROOT_COMPONENT_BOOTSTRAP",
       "ENVIRONMENT",
       "ENVIRONMENT_INITIALIZER",
-      "EffectRefImpl",
       "EffectScheduler",
       "ElementRef",
       "EnvironmentInjector",
