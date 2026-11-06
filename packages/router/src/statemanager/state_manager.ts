@@ -280,7 +280,7 @@ export class HistoryStateManager extends StateManager {
     if (this.canceledNavigationResolution === 'computed') {
       const currentBrowserPageId = this.browserPageId;
       const targetPagePosition = this.currentPageId - currentBrowserPageId;
-      if (targetPagePosition !== 0) {
+      if (targetPagePosition !== 0 && this.lastSuccessfulId !== -1) {
         this.location.historyGo(targetPagePosition);
       } else if (this.getCurrentUrlTree() === navigation.finalUrl && targetPagePosition === 0) {
         // We got to the activation stage (where currentUrlTree is set to the navigation's
