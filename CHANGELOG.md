@@ -1,3 +1,25 @@
+<a name="22.2.5"></a>
+# 22.2.5 (2026-11-06)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6f06af76c9](https://github.com/angular/angular/commit/6f06af76c931a6924993e9f061fe99c5128a3ceb) | fix | add debugName option to rxResource |
+| [8c426b6cbc](https://github.com/angular/angular/commit/8c426b6cbc132b1591eb42f0570edc22531223e4) | fix | escape comment markers which share characters |
+| [ca3afffbdc](https://github.com/angular/angular/commit/ca3afffbdc3378e8b5597aa04b6502d1b875db20) | fix | remove attribute when img/video attr.src is null or undefined |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [545eb3d07b](https://github.com/angular/angular/commit/545eb3d07baee57d6a8c15729b36b9ceba84d766) | fix | reflect required validators in compat fields |
+| [a7b0e8ef9d](https://github.com/angular/angular/commit/a7b0e8ef9d676135f8ba66d554766c8e9472f00b) | fix | support updateOn blur and submit for custom FormValueControl |
+| [96b027ebf6](https://github.com/angular/angular/commit/96b027ebf68e7b2ca341c516d96063c39248d65c) | perf | avoid creating unused field injectors |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ca42fefa56](https://github.com/angular/angular/commit/ca42fefa566048ac6f52b5e3714ec61929d81ad3) | fix | read focusReset from the navigation extras |
+| [585271376a](https://github.com/angular/angular/commit/585271376ab924e9457d38911fe315fd89f9bd34) | perf | run loadComponent and loadChildren in root environment injector (g3-only) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="22.2.4"></a>
 # 22.2.4 (2026-10-29)
 ### compiler
