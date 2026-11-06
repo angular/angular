@@ -50,10 +50,6 @@ pub enum QueryKey {
     /// Singleton: the tsconfig's `.d.ts` files that may declare each ambient module, keyed by
     /// the `declare module '<specifier>'` name, found by a textual scan rather than a parse.
     AmbientModuleFiles,
-    /// Singleton: the tsconfig's `.d.ts` files that may declare each ambient global value, keyed
-    /// by identifier name, indexed via `oxc_parser` with a recycled arena allocator (without
-    /// building semantic models or caching [`ParsedFile`]s for non-matching `.d.ts` files).
-    AmbientGlobalFiles,
     /// Singleton: entrypoint IDs and global extra imports for `generateExtraImportsInLocalMode`.
     LocalExtraImports,
 }
@@ -75,14 +71,13 @@ impl QueryKey {
             | Self::NgModuleScopeRegistry
             | Self::ProgramFiles
             | Self::AmbientModuleFiles
-            | Self::AmbientGlobalFiles
             | Self::LocalExtraImports => None,
         }
     }
 
     /// Variant names, indexed by [`Self::kind_index`]. The perf layer maps a query span's
     /// `kind` field back to its name here.
-    pub const KIND_NAMES: [&'static str; 14] = [
+    pub const KIND_NAMES: [&'static str; 13] = [
         "AnalyzeFileSemantic",
         "AnalyzeFileSyntax",
         "AnalyzeFileEvaluated",
@@ -95,7 +90,6 @@ impl QueryKey {
         "NgModuleScopeRegistry",
         "ProgramFiles",
         "AmbientModuleFiles",
-        "AmbientGlobalFiles",
         "LocalExtraImports",
     ];
 
@@ -114,8 +108,7 @@ impl QueryKey {
             Self::NgModuleScopeRegistry => 9,
             Self::ProgramFiles => 10,
             Self::AmbientModuleFiles => 11,
-            Self::AmbientGlobalFiles => 12,
-            Self::LocalExtraImports => 13,
+            Self::LocalExtraImports => 12,
         }
     }
 
@@ -130,9 +123,6 @@ pub type ModuleExportMap = std::collections::HashMap<(FileId, String), String>;
 
 /// Ambient module specifier → the `.d.ts` files that may declare it, in tsconfig order.
 pub type AmbientModuleFiles = std::collections::HashMap<String, Vec<FileId>>;
-
-/// Ambient global identifier → the `.d.ts` files that may declare it as a value, in tsconfig order.
-pub type AmbientGlobalFiles = std::collections::HashMap<String, Vec<FileId>>;
 
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct LocalExtraImportsData {
@@ -179,8 +169,6 @@ pub enum QueryValue {
     ProgramFiles(Arc<Vec<FileId>>),
     /// Candidate files per ambient module specifier ([`QueryKey::AmbientModuleFiles`]).
     AmbientModuleFiles(Arc<AmbientModuleFiles>),
-    /// Candidate files per ambient global identifier ([`QueryKey::AmbientGlobalFiles`]).
-    AmbientGlobalFiles(Arc<AmbientGlobalFiles>),
     /// Cached entrypoint IDs and global extra imports ([`QueryKey::LocalExtraImports`]).
     LocalExtraImports(Arc<LocalExtraImportsData>),
 }
@@ -209,7 +197,6 @@ impl std::fmt::Debug for QueryValue {
             Self::ScopeRegistry(_) => write!(f, "ScopeRegistry"),
             Self::ProgramFiles(v) => write!(f, "ProgramFiles({} files)", v.len()),
             Self::AmbientModuleFiles(v) => write!(f, "AmbientModuleFiles({} modules)", v.len()),
-            Self::AmbientGlobalFiles(v) => write!(f, "AmbientGlobalFiles({} globals)", v.len()),
             Self::LocalExtraImports(v) => {
                 write!(
                     f,

@@ -778,9 +778,9 @@ fn replace_if_changed<T: PartialEq>(lock: &RwLock<T>, value: T) -> bool {
 
 /// Split the tsconfig's file list into the compilation roots, canonicalized through `fs`, and the
 /// `.d.ts` files it also lists, only normalized structurally. Bazel targets can list thousands of
-/// transitive `.d.ts` files, so they never cost a canonicalize call here: the ambient module and
-/// ambient global indexes canonicalize them lazily (`QueryKey::AmbientModuleFiles` and
-/// `QueryKey::AmbientGlobalFiles`). Other files are filtered out.
+/// transitive `.d.ts` files, so they never cost a canonicalize call here: the engine canonicalizes
+/// them lazily, as the ambient module index and ambient global lookups first read them
+/// (`QueryEngine::tsconfig_dts_file_id`). Other files are filtered out.
 fn partition_tsconfig_files(
     files: Vec<PathBuf>,
     fs: &OverlayFileSystem,
