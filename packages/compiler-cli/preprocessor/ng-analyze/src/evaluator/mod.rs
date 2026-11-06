@@ -46,11 +46,11 @@ pub use interpreter::{
     EvalMode,
 };
 pub use resolved::{
-    host_directives_shape_error, is_enum_member_value, ChangeDetectionStrategyValue,
-    ComponentStyles, ComponentStylesError, ConstEnumLiteral, ConstEnumMember, ConstEnumResolution,
-    ExportAsNames, FromResolved, HostDirectivesShapeError, HostMetadata, HostMetadataValue,
-    QuerySelectors, Resolved, ScopeReferences, StillIncomplete, StringList, UnresolvedCause,
-    ViewEncapsulationValue,
+    host_directives_shape_error, is_enum_member_value, local_host_directive_entries,
+    ChangeDetectionStrategyValue, ComponentStyles, ComponentStylesError, ConstEnumLiteral,
+    ConstEnumMember, ConstEnumResolution, ExportAsNames, FromResolved, HostDirectivesShapeError,
+    HostMetadata, HostMetadataValue, LocalHostDirectiveIssue, QuerySelectors, Resolved,
+    ScopeReferences, StillIncomplete, StringList, UnresolvedCause, ViewEncapsulationValue,
 };
 pub use value::{
     collect_holes, demote_incomplete_to_dynamic, fingerprint, fingerprint_args, is_truthy,

@@ -590,6 +590,116 @@ impl FromResolved for Vec<crate::types::analysis::HostDirectiveEntry> {
     }
 }
 
+/// A `hostDirectives` entry that local or `emitDeclarationOnly` compilation can't emit.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum LocalHostDirectiveIssue {
+    /// `LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION`: an entry that is still dynamic and isn't
+    /// written as an identifier or property access.
+    UnsupportedExpression(oxc_span::Span),
+    /// `VALUE_HAS_WRONG_TYPE`: a value that is neither an array nor a reference. ngtsc doesn't
+    /// diagnose an entry that is a static non-reference value in local compilation (it throws an
+    /// internal error instead), so this reuses full compilation's message.
+    WrongType(oxc_span::Span, HostDirectivesShapeError),
+}
+
+/// Destructure `hostDirectives` for local and `emitDeclarationOnly` compilation, where entries are
+/// never chased to their declaration (`extractHostDirectives` under `CompilationMode.LOCAL` in
+/// ngtsc `shared.ts`).
+///
+/// Every entry either lands in the returned entries or produces an issue:
+/// - a reference, an import, or an unresolvable import is emitted as a reference;
+/// - a value that is still dynamic is emitted verbatim (ngtsc's `WrappedNodeExpr`) when its array
+///   element is one of `wrappable` (an identifier or property access in the decorator's own array
+///   literal), and is otherwise an unsupported expression;
+/// - anything else is the wrong type.
+///
+/// As in ngtsc's `parseHostDirectivesMapping`, an `inputs`/`outputs` value that isn't an array
+/// yields no mapping rather than dropping the entry.
+/// https://github.com/angular/angular/blob/73911c8/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L2111-L2225
+pub fn local_host_directive_entries(
+    value: &ResolvedValue,
+    origin: crate::query::FileId,
+    wrappable: &[(oxc_span::Span, String)],
+    field_span: oxc_span::Span,
+) -> (
+    Vec<crate::types::analysis::HostDirectiveEntry>,
+    Vec<LocalHostDirectiveIssue>,
+) {
+    let ResolvedValue::Array(items) = value.unwrap_named() else {
+        return (
+            Vec::new(),
+            vec![LocalHostDirectiveIssue::WrongType(
+                field_span,
+                HostDirectivesShapeError::NotArray,
+            )],
+        );
+    };
+    let mut entries = Vec::with_capacity(items.len());
+    let mut issues = Vec::new();
+    for item in items {
+        match local_host_directive_entry(item, origin, wrappable) {
+            Ok(entry) => entries.push(entry),
+            Err(LocalHostDirectiveIssue::WrongType(_, error)) => {
+                issues.push(LocalHostDirectiveIssue::WrongType(field_span, error));
+            }
+            Err(issue) => issues.push(issue),
+        }
+    }
+    (entries, issues)
+}
+
+fn local_host_directive_entry(
+    item: &ResolvedValue,
+    origin: crate::query::FileId,
+    wrappable: &[(oxc_span::Span, String)],
+) -> Result<crate::types::analysis::HostDirectiveEntry, LocalHostDirectiveIssue> {
+    let not_reference = LocalHostDirectiveIssue::WrongType(
+        oxc_span::Span::default(),
+        HostDirectivesShapeError::NotReference,
+    );
+    let (directive_value, inputs, outputs) = match item.unwrap_named() {
+        ResolvedValue::Map(map) => (
+            map.get("directive").ok_or(not_reference)?,
+            host_directive_mapping(map.get("inputs")),
+            host_directive_mapping(map.get("outputs")),
+        ),
+        other => (other, None, None),
+    };
+    let entry = |directive, is_forward_ref, origin_identifiers| {
+        crate::types::analysis::HostDirectiveEntry {
+            directive,
+            is_forward_ref,
+            inputs,
+            outputs,
+            origin_identifiers,
+        }
+    };
+    if let Some((directive, is_forward_ref, identifiers)) =
+        host_directive_reference(directive_value, origin)
+    {
+        return Ok(entry(directive, is_forward_ref, identifiers));
+    }
+    let (file, span) = match directive_value.unwrap_named() {
+        ResolvedValue::Dynamic(dynamic) => (dynamic.file, dynamic.span),
+        ResolvedValue::Incomplete(hole) => (hole.file, hole.span),
+        _ => return Err(not_reference),
+    };
+    let wrapped = wrappable
+        .iter()
+        .find(|(wrappable_span, _)| file == origin && *wrappable_span == span);
+    let Some((_, text)) = wrapped else {
+        return Err(LocalHostDirectiveIssue::UnsupportedExpression(span));
+    };
+    let directive = crate::types::analysis::Reference {
+        file: origin,
+        name: text.clone(),
+        owning_reference: None,
+        aliases: std::collections::HashMap::from([(origin, text.clone())]),
+        is_default_export: false,
+    };
+    Ok(entry(directive, false, Vec::new()))
+}
+
 fn host_directive_entry(
     value: &ResolvedValue,
     origin: crate::query::FileId,
