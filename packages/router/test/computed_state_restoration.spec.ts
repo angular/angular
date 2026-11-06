@@ -7,10 +7,24 @@
  */
 
 import {Location, PlatformNavigation} from '@angular/common';
-import {Component, Injectable, makeEnvironmentProviders, NgModule, Type} from '@angular/core';
+import {
+  Component,
+  ErrorHandler,
+  Injectable,
+  makeEnvironmentProviders,
+  NgModule,
+  Type,
+} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/private/testing/matchers';
-import {Router, RouterModule, RouterOutlet, UrlTree, withRouterConfig} from '../index';
+import {
+  NavigationError,
+  Router,
+  RouterModule,
+  RouterOutlet,
+  UrlTree,
+  withRouterConfig,
+} from '../index';
 import {EMPTY, of} from 'rxjs';
 
 import {provideRouter, withExperimentalPlatformNavigation} from '../src/provide_router';
@@ -519,6 +533,109 @@ for (const browserAPI of ['navigation', 'history'] as const) {
     }
   });
 }
+
+describe(`canceledNavigationResolution: 'computed' first navigation after a reload`, () => {
+  useAutoTick();
+
+  @Injectable({providedIn: 'root'})
+  class RejectingGuard {
+    canActivate(): boolean {
+      return false;
+    }
+  }
+
+  it('should not call history.go() when the first navigation after a reload is cancelled', async () => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          [
+            {path: 'first', component: SimpleCmp},
+            {path: 'second', component: SimpleCmp, canActivate: [RejectingGuard]},
+            {path: 'third', component: SimpleCmp},
+          ],
+          withRouterConfig({
+            canceledNavigationResolution: 'computed',
+            resolveNavigationPromiseOnError: true,
+          }),
+        ),
+      ],
+    });
+    const location = TestBed.inject(Location);
+    // Simulate a reload on /second: the restored history entry still carries the
+    // previous app instance's page id.
+    location.replaceState('/second', '', {navigationId: 2, ɵrouterPageId: 2});
+
+    const router = TestBed.inject(Router);
+    const historyGoSpy = spyOn(location, 'historyGo');
+
+    TestBed.createComponent(RootCmp);
+    router.initialNavigation();
+    await nextNavigation();
+    await timeout(5);
+
+    expect(historyGoSpy).not.toHaveBeenCalled();
+    expect(location.path()).toEqual('/second');
+    expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
+  });
+
+  it('should not call history.go() when the first navigation after a reload errors', async () => {
+    TestBed.configureTestingModule({
+      providers: [
+        // The resolver error reaches the app error handler; swallow it here
+        // so the test only asserts on the history restoration, not the error
+        // reporting (the NavigationError event is still awaited below).
+        {provide: ErrorHandler, useValue: {handleError: () => {}}},
+        provideRouter(
+          [
+            {path: 'first', component: SimpleCmp},
+            {path: 'second', component: SimpleCmp},
+            {
+              path: 'third',
+              component: SimpleCmp,
+              resolve: {
+                x: () => {
+                  throw new Error('Throwing resolver');
+                },
+              },
+            },
+          ],
+          withRouterConfig({
+            canceledNavigationResolution: 'computed',
+            resolveNavigationPromiseOnError: true,
+          }),
+        ),
+      ],
+    });
+    const location = TestBed.inject(Location);
+    location.replaceState('/third', '', {navigationId: 2, ɵrouterPageId: 2});
+
+    const router = TestBed.inject(Router);
+    const historyGoSpy = spyOn(location, 'historyGo');
+
+    // Subscribe before the initial navigation starts: the resolver throws
+    // during the navigation, so it ends with NavigationError, and a
+    // subscription made after initialNavigation() could miss it.
+    const errored = new Promise<void>((resolve) => {
+      const sub = router.events.subscribe((e) => {
+        if (e instanceof NavigationError) {
+          sub.unsubscribe();
+          resolve();
+        }
+      });
+    });
+    TestBed.createComponent(RootCmp);
+    router.initialNavigation();
+    // Pump the mock clock so the router's async steps run, then wait for the
+    // error event (already fired by now in practice).
+    await timeout(5);
+    await errored;
+    await timeout(5);
+
+    expect(historyGoSpy).not.toHaveBeenCalled();
+    expect(location.path()).toEqual('/third');
+    expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 2}));
+  });
+});
 
 async function createRoot<T>(router: Router, type: Type<T>): Promise<ComponentFixture<T>> {
   const f = TestBed.createComponent(type);
