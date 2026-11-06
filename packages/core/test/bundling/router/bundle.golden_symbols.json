@@ -873,6 +873,7 @@
       "isRedirectingNavigationCancelingError",
       "isRefreshingViews",
       "isRootView",
+      "isSafeSvgUseReference",
       "isScheduler",
       "isSchedulerTick",
       "isSkipHydrationRootTNode",
