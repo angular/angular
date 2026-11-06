@@ -17,10 +17,13 @@ import * as a from '../../../src/render3/r3_ast';
 import {htmlAstToRender3Ast, Render3ParseResult} from '../../../src/render3/r3_template_transform';
 import {I18nMetaVisitor} from '../../../src/render3/view/i18n/meta';
 import {LEADING_TRIVIA_CHARS} from '../../../src/render3/view/template';
+import {DomElementSchemaRegistry} from '../../../src/schema/dom_element_schema_registry';
 import {ElementSchemaRegistry} from '../../../src/schema/element_schema_registry';
 import {BindingParser} from '../../../src/template_parser/binding_parser';
 
 class MockSchemaRegistry implements ElementSchemaRegistry {
+  private domSchema = new DomElementSchemaRegistry();
+
   constructor(
     public existingProperties: {[key: string]: boolean},
     public attrPropMapping: {[key: string]: string},
@@ -58,9 +61,8 @@ class MockSchemaRegistry implements ElementSchemaRegistry {
   validateProperty(name: string): {error: boolean; msg?: string} {
     if (this.invalidProperties.indexOf(name) > -1) {
       return {error: true, msg: `Binding to property '${name}' is disallowed for security reasons`};
-    } else {
-      return {error: false};
     }
+    return this.domSchema.validateProperty(name);
   }
 
   validateAttribute(name: string): {error: boolean; msg?: string} {
@@ -69,9 +71,8 @@ class MockSchemaRegistry implements ElementSchemaRegistry {
         error: true,
         msg: `Binding to attribute '${name}' is disallowed for security reasons`,
       };
-    } else {
-      return {error: false};
     }
+    return this.domSchema.validateAttribute(name);
   }
 
   normalizeAnimationStyleProperty(propName: string): string {

@@ -469,10 +469,18 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
   }
 
   override validateProperty(name: string): {error: boolean; msg?: string} {
-    if (name.toLowerCase().startsWith('on')) {
+    if (name.startsWith(':')) {
+      return {
+        error: true,
+        msg: `Invalid property name '${name}'. Property names cannot start with a colon.`,
+      };
+    }
+    const colonIdx = name.lastIndexOf(':');
+    const localName = colonIdx > -1 ? name.substring(colonIdx + 1) : name;
+    if (localName.toLowerCase().startsWith('on')) {
       const msg =
         `Binding to event property '${name}' is disallowed for security reasons, ` +
-        `please use (${name.slice(2)})=...` +
+        `please use (${localName.slice(2)})=...` +
         `\nIf '${name}' is a directive input, make sure the directive is imported by the` +
         ` current module.`;
       return {error: true, msg: msg};
@@ -482,10 +490,18 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
   }
 
   override validateAttribute(name: string): {error: boolean; msg?: string} {
-    if (name.toLowerCase().startsWith('on')) {
+    if (name.startsWith(':')) {
+      return {
+        error: true,
+        msg: `Invalid attribute name '${name}'. Attribute names cannot start with a colon.`,
+      };
+    }
+    const colonIdx = name.lastIndexOf(':');
+    const localName = colonIdx > -1 ? name.substring(colonIdx + 1) : name;
+    if (localName.toLowerCase().startsWith('on')) {
       const msg =
         `Binding to event attribute '${name}' is disallowed for security reasons, ` +
-        `please use (${name.slice(2)})=...`;
+        `please use (${localName.slice(2)})=...`;
       return {error: true, msg: msg};
     } else {
       return {error: false};
