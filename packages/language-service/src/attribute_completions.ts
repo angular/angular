@@ -415,10 +415,12 @@ export function buildAttributeCompletionTable(
       }
     }
     for (const event of checker.getPotentialDomEvents(element.name)) {
-      table.set(event, {
-        kind: AttributeCompletionKind.DomEvent,
-        eventName: event,
-      });
+      if (!table.has(event)) {
+        table.set(event, {
+          kind: AttributeCompletionKind.DomEvent,
+          eventName: event,
+        });
+      }
     }
   }
   return table;

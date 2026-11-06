@@ -1109,6 +1109,29 @@ describe('completions', () => {
           );
         });
 
+        it('should return completions for an input named like a DOM event', () => {
+          const {templateFile} = setup(`<div dir [tog]></div>`, '', {
+            'Dir': `
+              @Directive({
+                selector: '[dir]',
+                inputs: ['toggle'],
+                standalone: false,
+              })
+              export class Dir {
+                toggle!: string;
+              }
+            `,
+          });
+          templateFile.moveCursorToText('[tog¦]');
+
+          const completions = templateFile.getCompletionsAtPosition();
+          expectContain(
+            completions,
+            unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
+            ['toggle'],
+          );
+        });
+
         it('should return completion for input coming from a host directive', () => {
           const {templateFile} = setup(`<input dir my>`, '', {
             'Dir': `
