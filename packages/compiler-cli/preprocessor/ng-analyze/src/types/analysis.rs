@@ -573,6 +573,7 @@ pub struct FileData {
     pub(crate) classes: Vec<crate::analyzer::ClassData>,
     /// Static `import` declarations in source order.
     pub(crate) import_declarations: Vec<crate::analyzer::ImportDeclarationInfo>,
+    pub(crate) import_equals_declarations: Vec<crate::analyzer::ImportEqualsDeclarationInfo>,
     pub(crate) type_only_exports: Vec<String>,
     /// Resolved on-disk TS paths of static imports (edges of the static import graph).
     pub(crate) resolved_dependencies: Vec<PathBuf>,
@@ -667,6 +668,16 @@ impl FileData {
             imports_end: self.imports_end,
             classes,
             imports: self.wire_imports(),
+            import_equals_declarations: self
+                .import_equals_declarations
+                .iter()
+                .map(|info| {
+                    crate::types::metadata::ImportEqualsDeclarationMetadata::to_wire(
+                        info,
+                        &self.converter,
+                    )
+                })
+                .collect(),
             type_only_exports: self.type_only_exports.clone(),
             diagnostics: self.diagnostics.clone(),
             source_file_validator_diagnostics: self.source_file_validator_diagnostics.clone(),

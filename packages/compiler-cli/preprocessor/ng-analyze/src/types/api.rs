@@ -114,6 +114,10 @@ pub struct AnalysisResult {
     /// The file's static `import` declarations, in source order, so consumers never have to
     /// re-parse the source to find or edit an import.
     pub imports: Vec<ImportDeclarationMetadata>,
+    /// The file's top-level `import X = …` statements, in source order, which the emitter hoists
+    /// like ngtsc's `ImportManager` alongside [`Self::imports`].
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub import_equals_declarations: Vec<super::metadata::ImportEqualsDeclarationMetadata>,
     pub type_only_exports: Vec<String>,
     pub diagnostics: Vec<NgDiagnostic>,
     /// Diagnostics from `SourceFileValidator` checks (`NG8110`, `NG8118`), recorded separately

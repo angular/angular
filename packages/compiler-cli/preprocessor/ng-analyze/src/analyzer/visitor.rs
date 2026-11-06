@@ -907,6 +907,9 @@ pub struct ParsedFileAnalysis {
     /// `@defer` and namespace-alias discovery — both need the exact declaration text, so both
     /// would otherwise have to re-parse the source downstream.
     pub import_declarations: Vec<ImportDeclarationInfo>,
+    /// The file's top-level `import X = …` statements, in source order, which the emitter hoists
+    /// alongside [`Self::import_declarations`].
+    pub import_equals_declarations: Vec<super::imports::ImportEqualsDeclarationInfo>,
     pub type_only_exports: Vec<String>,
     pub static_dependencies: Vec<String>,
     /// The specifiers of the file's dynamic imports, `import()` calls and literal import types
@@ -1006,6 +1009,8 @@ pub fn analyze_parsed(
         source_text,
         &dependency_array_references(&output.classes),
     );
+    let import_equals_declarations =
+        super::imports::collect_import_equals_declarations(program, source_text);
     let type_only_exports = get_type_only_exports(module_record, semantic);
     let (static_dependencies, type_only_static_dependencies) =
         super::imports::extract_imports(module_record, program);
@@ -1024,6 +1029,7 @@ pub fn analyze_parsed(
         file_exports: output.file_exports,
         imports_end,
         import_declarations,
+        import_equals_declarations,
         type_only_exports,
         static_dependencies,
         dynamic_dependencies,

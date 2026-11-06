@@ -1,8 +1,8 @@
 use crate::analyzer::utils::unwrap_forward_ref_evaluated;
 use crate::resource_loader::ResourceResolverFs;
 use oxc_ast::ast::{
-    ArrayExpression, ArrayExpressionElement, BindingPattern, Expression, ImportDeclaration,
-    ImportDeclarationSpecifier, Program, Statement,
+    ArrayExpression, ArrayExpressionElement, BindingPattern, Declaration, Expression,
+    ImportDeclaration, ImportDeclarationSpecifier, Program, Statement,
 };
 use oxc_ast::AstKind;
 use oxc_semantic::{Semantic, SymbolId};
@@ -437,6 +437,50 @@ pub fn collect_import_declarations(
         .collect()
 }
 
+/// A top-level `import X = …` statement (`import X = ns.Y`, `import x = require('…')`), including
+/// its `export import X = …` form.
+///
+/// ngtsc's `ImportManager` rebuilds every file it adds imports to as its existing import
+/// statements, then the generated imports, then the rest of the file, and `isImportStatement`
+/// counts these as import statements. The emitter hoists the ones written after another statement
+/// alongside the `import` declarations.
+/// https://github.com/angular/angular/blob/73911c8/packages/compiler-cli/src/ngtsc/translator/src/import_manager/import_typescript_transform.ts#L114-L148
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct ImportEqualsDeclarationInfo {
+    /// The statement's span, including a leading `export`.
+    pub span: Span,
+    /// [`Self::span`] extended like [`ImportDeclarationInfo::removal_span`].
+    pub removal_span: Span,
+}
+
+/// The file's top-level `import X = …` statements, in source order.
+pub fn collect_import_equals_declarations(
+    program: &Program<'_>,
+    source_text: &str,
+) -> Vec<ImportEqualsDeclarationInfo> {
+    program
+        .body
+        .iter()
+        .filter_map(import_equals_statement_span)
+        .map(|span| ImportEqualsDeclarationInfo {
+            span,
+            removal_span: Span::new(span.start, extend_past_line_end(source_text, span.end)),
+        })
+        .collect()
+}
+
+/// The span of `stmt` when it is `import X = …` or `export import X = …`.
+fn import_equals_statement_span(stmt: &Statement<'_>) -> Option<Span> {
+    match stmt {
+        Statement::TSImportEqualsDeclaration(decl) => Some(decl.span),
+        Statement::ExportDeclaration(export) => match &export.declaration {
+            Declaration::TSImportEqualsDeclaration(_) => Some(export.span),
+            _ => None,
+        },
+        _ => None,
+    }
+}
+
 fn collect_import_bindings(
     decl: &ImportDeclaration<'_>,
     semantic: &Semantic<'_>,
@@ -576,9 +620,10 @@ pub struct FileExportInfo {
 /// Byte position the preprocessor splices its generated (and hoisted) imports into: the end of
 /// the file's *leading* run of `import` declarations.
 ///
-/// The scan stops at the first top-level statement that is not an `ImportDeclaration`, so nothing
-/// is ever spliced below one. Imports written *after* such a statement are hoisted up to this
-/// point by the emitter instead.
+/// The scan stops at the first top-level statement that is not an import statement (an
+/// `ImportDeclaration` or an [`ImportEqualsDeclarationInfo`]), so nothing is ever spliced below
+/// one. Imports written *after* such a statement are hoisted up to this point by the emitter
+/// instead.
 ///
 /// Falls back to [`find_leading_comments_end`] when no import leads the file, which keeps
 /// file-level directives (`@fileoverview`, `/// <reference … />`, `// @ts-nocheck`) above the
@@ -588,15 +633,14 @@ pub fn find_imports_end(program: &Program<'_>, source_text: &str) -> u32 {
     let mut imports_end: u32 = 0;
 
     for stmt in &program.body {
-        match stmt {
-            Statement::ImportDeclaration(decl) => {
-                imports_end = decl.span.end;
-            }
-            Statement::TSImportEqualsDeclaration(decl) => {
-                imports_end = decl.span.end;
-            }
-            _ => break,
+        if let Statement::ImportDeclaration(decl) = stmt {
+            imports_end = decl.span.end;
+            continue;
         }
+        let Some(span) = import_equals_statement_span(stmt) else {
+            break;
+        };
+        imports_end = span.end;
     }
 
     if imports_end > 0 {
@@ -1751,6 +1795,57 @@ mod tests {
         assert!(imported_part.contains("import { A } from 'a';"));
         assert!(imported_part.contains("import { B } from 'b';"));
         assert!(!imported_part.contains("console.log"));
+    }
+
+    /// `import X = …` counts as an import statement in the leading run, `export import X = …`
+    /// included, as in ngtsc's `isImportStatement`.
+    #[test]
+    fn test_find_imports_end_includes_import_equals_declarations() {
+        let source = "import { A } from 'a';\n\
+                      import B = A.B;\n\
+                      export import C = A.C;\n\
+                      const d = 1;\n";
+        assert_eq!(
+            &source[..imports_end_of(source) as usize],
+            "import { A } from 'a';\nimport B = A.B;\nexport import C = A.C;"
+        );
+    }
+
+    #[test]
+    fn import_equals_declarations_cover_export_and_require_forms() {
+        let source = "import { a } from './a';\n\
+                      const k = 1;\n\
+                      import B = ns.B;\n\
+                      export import C = ns.C; // trailing\n\
+                      import req = require('./x');\n\
+                      import type T = require('./t');\n\
+                      export const e = 1;\n\
+                      namespace Inner { import D = ns.D; }\n";
+        let allocator = Allocator::default();
+        let ret = Parser::new(&allocator, source, SourceType::ts()).parse();
+        let declarations = collect_import_equals_declarations(&ret.program, source);
+        let text = |span: Span| &source[span.start as usize..span.end as usize];
+        assert_eq!(
+            declarations
+                .iter()
+                .map(|d| (text(d.span), text(d.removal_span)))
+                .collect::<Vec<_>>(),
+            [
+                ("import B = ns.B;", "import B = ns.B;\n"),
+                // A trailing comment stays put, so the removal stops at the statement.
+                ("export import C = ns.C;", "export import C = ns.C;"),
+                (
+                    "import req = require('./x');",
+                    "import req = require('./x');\n"
+                ),
+                (
+                    "import type T = require('./t');",
+                    "import type T = require('./t');\n"
+                ),
+            ],
+            "top-level statements only; the `import` declaration, other exports, and a namespace's own \
+             `import D = …` are not collected"
+        );
     }
 
     #[test]
