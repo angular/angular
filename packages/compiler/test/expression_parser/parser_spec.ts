@@ -215,6 +215,8 @@ describe('parser', () => {
       checkAction('--a!');
       checkAction('++(a)');
       checkAction('--(a)');
+      checkAction('++/a/.lastIndex');
+      checkAction('--/a/g.lastIndex');
     });
 
     it('should parse postfix ++ and --', () => {
@@ -261,6 +263,10 @@ describe('parser', () => {
       checkAction('a++ in o');
       checkAction('a++ < 3');
       checkAction('a++ * 2');
+      checkAction('a++ / 2');
+      checkAction('a!++ / 2');
+      checkAction('a-- / b / c');
+      checkAction('c = a++ / 2');
       checkAction('a++ ?? b');
       checkAction('a ? b++ : c--');
       checkAction('o[a++]');
@@ -271,6 +277,22 @@ describe('parser', () => {
       checkAction('c += a++');
       checkAction('a.b[c++].d++');
       checkAction('a++ + ++a');
+    });
+
+    describe('division after postfix operators with keywords', () => {
+      it('should parse division after postfix update on keyword properties', () => {
+        checkAction('o.in++ / 2');
+        checkAction('o.as++ / 2');
+        checkAction('o.null++ / 2');
+        checkAction('o.this++ / 2');
+        checkAction('o.let++ / 2');
+      });
+
+      it('should parse division after non-null assertion on keywords', () => {
+        checkBinding('this! / 2', '! / 2');
+        checkBinding('null! / 2');
+        checkBinding('undefined! / 2');
+      });
     });
 
     describe('literals', () => {
@@ -775,6 +797,10 @@ describe('parser', () => {
         checkBinding('typeof `hello!`');
         checkBinding('typeof `hello ${name}!`');
       });
+
+      it('should parse division after non-null assertion on a tagged template literal', () => {
+        checkBinding('tag`42`! / 2');
+      });
     });
 
     describe('regular expression literals', () => {
@@ -801,6 +827,11 @@ describe('parser', () => {
       it('should parse a regular expression literal that ends with an escaped slash', () => {
         checkBinding('/^https?:\\/\\//');
         checkBinding('url.replace(/^\\//, "") //comment', 'url.replace(/^\\//, "")');
+      });
+
+      it('should parse a regular expression after a negation that follows typeof or void', () => {
+        checkBinding('typeof !/a/.test(b)');
+        checkBinding('void !/a/.test(b)');
       });
 
       it('should report invalid regular expression flag', () => {
