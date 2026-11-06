@@ -2959,8 +2959,12 @@ export enum Empty {}
         );
         assert!(!reads.iter().find(|r| r.name == "ns").unwrap().is_const_enum);
 
+        let app = results
+            .iter()
+            .find(|r| r.file_path.ends_with("/app.ts"))
+            .unwrap();
         assert_eq!(
-            results[0].top_level_value_bindings.as_deref().unwrap(),
+            app.top_level_value_bindings.as_deref().unwrap(),
             [
                 "Component",
                 "Directive",

@@ -37,6 +37,7 @@ import {ErrorCode} from '@angular/compiler-cli/private/hybrid_preprocessor';
 import * as nga from './types.js';
 import {PipeMeta} from './tcb.js';
 import type {ParsedComponentTemplate} from './file_analysis.js';
+import {Counter, NOOP_TRACER, SpanKind, type Tracer} from './perf.js';
 import {RawSource} from './output_ast_printer.js';
 import {offsetToPosition} from './tcb_util.js';
 import MagicString from 'magic-string';
@@ -623,7 +624,12 @@ export function parseComponentTemplate(
   filePath: string,
   content: string,
   options: Partial<ParseTemplateOptions> = {},
+  tracer: Tracer = NOOP_TRACER,
 ): ParsedComponentTemplate {
+  const traced = <T>(parse: () => T): T => {
+    tracer.count(Counter.TemplatesParsed);
+    return tracer.slice(SpanKind.TemplateParse, parse);
+  };
   const parseOptions: Partial<ParseTemplateOptions> = {
     ...options,
     preserveWhitespaces: component.preserveWhitespaces ?? options.preserveWhitespaces ?? false,
@@ -645,12 +651,11 @@ export function parseComponentTemplate(
   // diagnostics, and indexing.
   const contentSpan = component.templateContentSpan;
   if (component.templateUrl == null && contentSpan != null) {
-    const parsed = parseDirectInlineTemplate(content, filePath, contentSpan, parseOptions);
-    const diagNodes = parseDirectInlineTemplate(
-      content,
-      filePath,
-      contentSpan,
-      diagParseOptions,
+    const parsed = traced(() =>
+      parseDirectInlineTemplate(content, filePath, contentSpan, parseOptions),
+    );
+    const diagNodes = traced(() =>
+      parseDirectInlineTemplate(content, filePath, contentSpan, diagParseOptions),
     ).nodes;
     return {...parsed, diagNodes};
   }
@@ -659,8 +664,8 @@ export function parseComponentTemplate(
   // the template file itself (as in ngtsc's `extractTemplate`).
   const templateStr = component.template || '';
   const templateUrl = component.templateUrl?.resolvedPath ?? filePath;
-  const parsed = parseTemplate(templateStr, templateUrl, parseOptions);
-  const diagNodes = parseTemplate(templateStr, templateUrl, diagParseOptions).nodes;
+  const parsed = traced(() => parseTemplate(templateStr, templateUrl, parseOptions));
+  const diagNodes = traced(() => parseTemplate(templateStr, templateUrl, diagParseOptions)).nodes;
   return {...parsed, diagNodes};
 }
 
@@ -676,12 +681,13 @@ export function getOrParseComponentTemplate(
   filePath: string,
   content: string,
   options?: Partial<ParseTemplateOptions>,
+  tracer: Tracer = NOOP_TRACER,
 ): ParsedComponentTemplate {
   const classKey = makeClassKey(classMeta.className, classMeta.span.start);
   let parsed = templatesByClass.get(classKey);
   if (parsed === undefined) {
     parsed = {
-      ...parseComponentTemplate(component, filePath, content, options),
+      ...parseComponentTemplate(component, filePath, content, options, tracer),
       classNameStart: classMeta.nameSpan?.start,
     };
     templatesByClass.set(classKey, parsed);

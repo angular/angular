@@ -36,6 +36,7 @@ rust_shared_library(
         "@crates//:self_cell",
         "@crates//:serde",
         "@crates//:serde_json",
+        "@crates//:tracing",
         "@crates//:wasm-bindgen",
     ],
 )
@@ -87,6 +88,8 @@ rust_library(
         "@crates//:self_cell",
         "@crates//:serde",
         "@crates//:serde_json",
+        "@crates//:tracing",
+        "@crates//:tracing-subscriber",
     ],
 )
 
