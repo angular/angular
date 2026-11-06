@@ -10,6 +10,6 @@ import {Component} from '@angular/core';
       </form>
     </section>
   `,
-  styleUrls: ['./home.css'],
+  styleUrl: './home.css',
 })
 export class Home {}

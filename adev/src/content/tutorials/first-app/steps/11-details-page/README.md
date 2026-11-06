@@ -58,11 +58,11 @@ In this step, you will get the route parameter in the `Details`. Currently, the 
 
          ```ts
          export class Details {
-            route: ActivatedRoute = inject(ActivatedRoute);
-            housingLocationId = -1;
-            constructor() {
-            this.housingLocationId = Number(this.route.snapshot.params['id']);
-            }
+           route: ActivatedRoute = inject(ActivatedRoute);
+           housingLocationId = -1;
+           constructor() {
+             this.housingLocationId = Number(this.route.snapshot.params['id']);
+           }
          }
          ```
 
@@ -96,9 +96,6 @@ To access the data you will add a call to the `HousingService`.
 
    and save your changes
 
-1. In `Details` use the just created `details.css` file as the source for the styles:
-   <docs-code language="angular-ts" header="Update details.ts to use the created css file" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.ts" visibleLines="[30]"/>
-
 1. In the browser refresh the page and confirm that when you click on the "Learn More" link for a given housing location the details page displays the correct information based on the data for that selected item.
 
 <img alt="Details page listing home info" src="assets/images/tutorials/first-app/homes-app-lesson-11-step-3.png">
@@ -110,7 +107,7 @@ In a previous lesson you updated the `App` template to include a `routerLink`. A
 
 1.  Confirm that your code matches the following:
 
-      <docs-code language="angular-ts" header="Confirm the routerLink in app.ts" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/app.ts" visibleLines="[8,19]"/>
+      <docs-code language="angular-ts" header="Confirm the routerLink in app.ts" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/app.ts" visibleLines="[7,18]"/>
 
     Your code should already be up-to-date but confirm to be sure.
 

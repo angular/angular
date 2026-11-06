@@ -1,6 +1,6 @@
 import {Component, inject} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {HousingService} from '../housing.service';
+import {HousingService} from '../housing-service';
 import {HousingLocationInfo} from '../housinglocation';
 
 @Component({
@@ -27,7 +27,7 @@ import {HousingLocationInfo} from '../housinglocation';
       </section>
     </article>
   `,
-  styleUrls: ['./details.css'],
+  styleUrl: './details.css',
 })
 export class Details {
   route: ActivatedRoute = inject(ActivatedRoute);

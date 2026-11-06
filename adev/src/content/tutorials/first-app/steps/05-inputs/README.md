@@ -8,7 +8,7 @@ NOTE: This video reflects an older syntax, but the main concepts remain valid.
 
 ## What you'll learn
 
-Your app's `HousingLocation` template has a `HousingLocation` property to receive input.
+Your app's `HousingLocation` template will have a `HousingLocation` property to receive input.
 
 ## Conceptual preview of Inputs
 
