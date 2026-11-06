@@ -22,9 +22,6 @@ import {AsyncStackTaggingZoneSpec} from './async-stack-tagging';
 declare const Zone: any;
 
 const isAngularZoneProperty = 'isAngularZone';
-export const angularZoneInstanceIdProperty = isAngularZoneProperty + '_ID';
-
-let ngZoneInstanceId = 0;
 
 /**
  * An injectable service for executing work inside or outside of the Angular zone.
@@ -427,13 +424,10 @@ function forkInnerZoneWithAngularBehavior(zone: NgZonePrivate) {
   const delayChangeDetectionForEventsDelegate = () => {
     delayChangeDetectionForEvents(zone);
   };
-  const instanceId = ngZoneInstanceId++;
   zone._inner = zone._inner.fork({
     name: 'angular',
     properties: <any>{
       [isAngularZoneProperty]: true,
-      [angularZoneInstanceIdProperty]: instanceId,
-      [angularZoneInstanceIdProperty + instanceId]: true,
     },
     onInvokeTask: (
       delegate: ZoneDelegate,
