@@ -174,8 +174,17 @@ export class HistoryStateManager extends StateManager {
    * This is used to track what page the router last activated. When an attempted navigation fails,
    * the router can then use this to compute how to restore the state back to the previously active
    * page.
+   *
+   * Initialized from the restored history state, if any, so the router starts out on the page
+   * the browser is actually showing. After a reload (or when returning to the app via Back),
+   * the current entry can still carry a page id from the previous app instance while
+   * `currentPageId` would otherwise be 0. Cancelling the first navigation would then compute
+   * a non-zero `history.go()` delta and move the browser to an unrelated history entry.
+   * It is only ever updated from the restored state here and on successful navigation, never
+   * when a navigation starts, so a later popstate or eager navigation cannot overwrite it
+   * with a target entry's id before any navigation has succeeded.
    */
-  private currentPageId: number = 0;
+  private currentPageId: number = this.restoredState()?.ɵrouterPageId ?? 0;
   private lastSuccessfulId: number = -1;
 
   /**
@@ -286,6 +295,14 @@ export class HistoryStateManager extends StateManager {
         // We got to the activation stage (where currentUrlTree is set to the navigation's
         // finalUrl), but we weren't moving anywhere in history (skipLocationChange or replaceUrl).
         // We still need to reset the router state back to what it was when the navigation started.
+        this.resetInternalState(navigation);
+        this.resetUrlToCurrentUrlTree();
+      } else if (this.lastSuccessfulId === -1) {
+        // No navigation has succeeded yet, so the browser url may still be the rejected
+        // path even though the router never activated it (e.g. the first navigation after
+        // a reload is cancelled by a guard or resolver). Reset the url to the router's
+        // current url, like errors thrown during activation do above, instead of leaving
+        // the browser on a route the router never activated.
         this.resetInternalState(navigation);
         this.resetUrlToCurrentUrlTree();
       } else {
