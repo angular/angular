@@ -235,12 +235,15 @@ export declare interface Zone {
    * @param callback
    * @param data
    * @param customSchedule
+   * @param asyncContext The host async context the task must run in, captured where its callback
+   *   was registered. See `ZonePrivate.captureAsyncContext`.
    */
   scheduleMicroTask(
     source: string,
     callback: Function,
     data?: TaskData,
     customSchedule?: (task: Task) => void,
+    asyncContext?: AsyncContextRunner | null,
   ): MicroTask;
 
   /**
@@ -382,6 +385,15 @@ export declare interface ZonePrivate {
   attachOriginToPatched: (target: any, origin: any) => void;
   _redefineProperty: (target: any, callback: string, desc: any) => void;
   nativeScheduleMicroTask: (func: Function) => void;
+  /**
+   * Captures the async context of the host — for instance the `AsyncLocalStorage` stores
+   * which are active in the current Node.js execution context — so that a callback which
+   * runs later, from the shared microtask queue, can be invoked within it.
+   *
+   * Returns `null` when the host does not track an async context of its own (the browser,
+   * for example), in which case callers invoke their callback directly.
+   */
+  captureAsyncContext: () => AsyncContextRunner | null;
   patchCallbacks: (
     api: ZonePrivate,
     target: any,
@@ -407,6 +419,14 @@ export declare interface ZonePrivate {
 }
 
 /**
+ * Invokes `callback` within an async context captured earlier by
+ * `ZonePrivate.captureAsyncContext` and returns its result.
+ */
+export declare interface AsyncContextRunner {
+  <T>(callback: () => T): T;
+}
+
+/**
  * ZoneFrame represents zone stack frame information
  */
 export declare interface ZoneFrame {
@@ -420,6 +440,8 @@ export declare interface UncaughtPromiseError extends Error {
   promise: Promise<any>;
   rejection: any;
   throwOriginal?: boolean;
+  /** The host async context the rejection happened in, if the host tracks one. */
+  asyncContext?: AsyncContextRunner | null;
 }
 
 /**
@@ -1020,10 +1042,11 @@ export function initZone(): ZoneType {
       callback: Function,
       data?: TaskData,
       customSchedule?: (task: Task) => void,
+      asyncContext?: AsyncContextRunner | null,
     ): MicroTask {
-      return this.scheduleTask(
-        new ZoneTask(microTask, source, callback, data, customSchedule, undefined),
-      );
+      const task = new ZoneTask(microTask, source, callback, data, customSchedule, undefined);
+      task._asyncContext = asyncContext ?? null;
+      return this.scheduleTask(task);
     }
 
     scheduleMacroTask(
@@ -1394,6 +1417,11 @@ export function initZone(): ZoneType {
     public runCount: number = 0;
     _zoneDelegates: _ZoneDelegate[] | null = null;
     _state: TaskState = 'notScheduled';
+    /**
+     * The host async context this task must run in, captured where its callback was registered.
+     * See `drainMicroTaskQueueSynchronously`.
+     */
+    _asyncContext: AsyncContextRunner | null = null;
 
     constructor(
       type: T,
@@ -1557,10 +1585,23 @@ export function initZone(): ZoneType {
         _microTaskQueue = [];
 
         for (const task of queue) {
-          try {
-            task.zone.runTask(task, null, null);
-          } catch (error) {
-            _api.onUnhandledError(error as Error);
+          const runTask = () => {
+            try {
+              task.zone.runTask(task, null, null);
+            } catch (error) {
+              _api.onUnhandledError(error as Error);
+            }
+          };
+          // Microtasks of the whole process are drained from a single native microtask, which the
+          // host runs in the async context of whichever task was queued first. Restore the context
+          // captured where this task's callback was registered, the one the host would have run it
+          // in, so that concurrent operations neither observe each other's `AsyncLocalStorage`
+          // stores nor, through the task's hooks or its errors, report each other's work.
+          const asyncContext = (task as ZoneTask<'microTask'>)._asyncContext;
+          if (asyncContext) {
+            asyncContext(runTask);
+          } else {
+            runTask();
           }
         }
       }
@@ -1623,6 +1664,9 @@ export function initZone(): ZoneType {
     _redefineProperty: () => noop,
     patchCallbacks: () => noop,
     nativeScheduleMicroTask,
+    // Hosts which keep an async context of their own (Node.js, through `async_hooks`)
+    // replace this with an implementation that captures it; see `lib/node/async-context.ts`.
+    captureAsyncContext: () => null,
   };
   let _currentZoneFrame: ZoneFrame = {parent: null, zone: new ZoneImpl(null, null)};
   let _currentTask: Task | null = null;

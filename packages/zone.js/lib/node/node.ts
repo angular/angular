@@ -12,6 +12,7 @@ import {patchTimer} from '../common/timers';
 import {ArraySlice, isMix, patchMacroTask, patchMicroTask} from '../common/utils';
 import {ZoneType} from '../zone-impl';
 
+import {patchAsyncContext} from './async-context';
 import {patchEvents} from './events';
 import {patchFs} from './fs';
 import {patchNodeUtil} from './node_util';
@@ -20,6 +21,7 @@ const set = 'set';
 const clear = 'clear';
 
 export function patchNode(Zone: ZoneType): void {
+  patchAsyncContext(Zone);
   patchNodeUtil(Zone);
   patchEvents(Zone);
   patchFs(Zone);
