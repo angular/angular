@@ -44,6 +44,21 @@ pub(crate) const UNRESOLVED_IMPORTS_FILE_ID: FileId = FileId::MAX - 1;
 /// [`extract_ambient_global_names_in_dts`]).
 pub(crate) type AmbientGlobalNames = Arc<HashSet<String>>;
 
+/// [`QueryEngine::next_ambient_global_candidate`]'s answers from position 0, valid while
+/// `generation` is unchanged.
+#[derive(Default)]
+pub(crate) struct FirstAmbientGlobalCandidates {
+    generation: u64,
+    candidates: HashMap<String, Option<(usize, FileId)>>,
+}
+
+impl FirstAmbientGlobalCandidates {
+    fn clear(&mut self) {
+        self.generation += 1;
+        self.candidates.clear();
+    }
+}
+
 /// The unified query engine.
 ///
 /// Every "question" the analyzer answers is a [`QueryKey`]; [`QueryEngine::query`] returns a cached,
@@ -72,6 +87,8 @@ pub struct QueryEngine<Fs: ResourceResolverFs + Clone + 'static> {
     /// Held while a lookup scans `.d.ts` files whose names aren't cached yet, so concurrent
     /// lookups wait for that scan once rather than at every file.
     ambient_global_scan: Mutex<()>,
+    /// The first candidate of each name looked up from the start of the tsconfig's `files`.
+    ambient_global_first_candidates: RwLock<FirstAmbientGlobalCandidates>,
     /// The names an invalidated `.d.ts` declared in each version a lookup may have read, until
     /// [`Self::ensure_singletons_fresh`] diffs them against its current names.
     pub(crate) stale_ambient_global_names: Mutex<HashMap<FileId, Vec<AmbientGlobalNames>>>,
@@ -157,6 +174,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             tsconfig_dts_file_ids: RwLock::new(Vec::new()),
             ambient_global_names: RwLock::new(HashMap::new()),
             ambient_global_scan: Mutex::new(()),
+            ambient_global_first_candidates: RwLock::new(FirstAmbientGlobalCandidates::default()),
             stale_ambient_global_names: Mutex::new(HashMap::new()),
             ambient_global_dependents: RwLock::new(HashMap::new()),
             ambient_global_reverse_deps: RwLock::new(HashMap::new()),
@@ -289,6 +307,10 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
     pub fn invalidate_file_id(&self, file_id: FileId) -> Vec<QueryKey> {
         if file_id == ROOTS_FILE_ID {
             self.tsconfig_dts_file_ids.write().unwrap().clear();
+            self.ambient_global_first_candidates
+                .write()
+                .unwrap()
+                .clear();
         }
         self.mark_ambient_global_names_stale(file_id);
         self.clear_ambient_global_dependents_for_file(file_id);
@@ -465,6 +487,10 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         let Some(names) = self.ambient_global_names.write().unwrap().remove(&file_id) else {
             return;
         };
+        self.ambient_global_first_candidates
+            .write()
+            .unwrap()
+            .clear();
         self.stale_ambient_global_names
             .lock()
             .unwrap()
@@ -574,6 +600,9 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             return Some(file_id);
         }
         let dts_files = self.tsconfig_dts_files.read().unwrap();
+        if position >= dts_files.len() {
+            return None;
+        }
         let mut file_ids = self.tsconfig_dts_file_ids.write().unwrap();
         while file_ids.len() <= position {
             let path = dts_files.get(file_ids.len())?;
@@ -585,8 +614,33 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
 
     /// The first `.d.ts` at or after `position` in the tsconfig's `files` that may declare ambient
     /// global value `name`, and its position. Scans in `files` order and stops at the first match,
-    /// so most lookups read only a prefix of the list.
+    /// so most lookups read only a prefix of the list. Lookups from the start, which nearly all are,
+    /// are memoized until a scanned `.d.ts` is invalidated or the roots change.
     pub(crate) fn next_ambient_global_candidate(
+        &self,
+        name: &str,
+        position: usize,
+    ) -> Option<(usize, FileId)> {
+        if position != 0 {
+            return self.scan_for_ambient_global_candidate(name, position);
+        }
+        let generation = {
+            let first = self.ambient_global_first_candidates.read().unwrap();
+            if let Some(&candidate) = first.candidates.get(name) {
+                return candidate;
+            }
+            first.generation
+        };
+        let candidate = self.scan_for_ambient_global_candidate(name, 0);
+        let mut first = self.ambient_global_first_candidates.write().unwrap();
+        // Skip memoizing a scan that may have read names invalidated since it started.
+        if first.generation == generation {
+            first.candidates.insert(name.to_string(), candidate);
+        }
+        candidate
+    }
+
+    fn scan_for_ambient_global_candidate(
         &self,
         name: &str,
         mut position: usize,
@@ -2566,10 +2620,23 @@ mod shared_dts_parse_cache {
                 super::extract_ambient_global_names_in_dts(dep.program, &dep.module_record)
             }
             None => {
-                let allocator = oxc_allocator::Allocator::default();
-                let ret = oxc_parser::Parser::new(&allocator, source, oxc_span::SourceType::d_ts())
-                    .parse();
-                super::extract_ambient_global_names_in_dts(&ret.program, &ret.module_record)
+                thread_local! {
+                    static ALLOCATOR: std::cell::RefCell<oxc_allocator::Allocator> =
+                        std::cell::RefCell::new(oxc_allocator::Allocator::default());
+                }
+                ALLOCATOR.with_borrow_mut(|allocator| {
+                    let names = {
+                        let ret = oxc_parser::Parser::new(
+                            allocator,
+                            source,
+                            oxc_span::SourceType::d_ts(),
+                        )
+                        .parse();
+                        super::extract_ambient_global_names_in_dts(&ret.program, &ret.module_record)
+                    };
+                    allocator.reset();
+                    names
+                })
             }
         });
         global_names()
@@ -3137,6 +3204,202 @@ mod tests {
         assert_eq!(candidates(), candidates_before);
         assert_eq!(app_selector(&engine, true).as_deref(), Some("app-dev"));
         assert_eq!(app_selector(&engine, false).as_deref(), Some("app-dev"));
+    }
+
+    fn selector_app(selector: &str) -> (String, String) {
+        (
+            "/project/app.ts".to_string(),
+            format!(
+                "import {{ Component }} from '@angular/core';\n\
+                 @Component({{ selector: {selector}, template: '' }})\n\
+                 export class AppComp {{}}\n"
+            ),
+        )
+    }
+
+    #[test]
+    fn test_ambient_global_lookup_follows_tsconfig_file_order_changes() {
+        let files = vec![
+            (
+                "/project/a.d.ts".to_string(),
+                "declare const SEL: 'from-a';\n".to_string(),
+            ),
+            (
+                "/project/b.d.ts".to_string(),
+                "declare const SEL: 'from-b';\n".to_string(),
+            ),
+            selector_app("SEL"),
+        ];
+        let a = PathBuf::from("/project/a.d.ts");
+        let b = PathBuf::from("/project/b.d.ts");
+
+        // Reordering the files changes which declaration comes first.
+        let (engine, _fs) = ambient_global_test_engine(&files, vec![a.clone(), b.clone()]);
+        assert_eq!(app_selector(&engine, false).as_deref(), Some("from-a"));
+        *engine.tsconfig_dts_files.write().unwrap() = vec![b.clone(), a.clone()];
+        engine.invalidate_roots();
+        assert_eq!(app_selector(&engine, false).as_deref(), Some("from-b"));
+
+        // So does adding a file before the one a lookup stopped at.
+        let (engine, _fs) = ambient_global_test_engine(&files, vec![b.clone()]);
+        assert_eq!(app_selector(&engine, true).as_deref(), Some("from-b"));
+        *engine.tsconfig_dts_files.write().unwrap() = vec![a, b];
+        engine.invalidate_roots();
+        futures::executor::block_on(engine.ensure_singletons_fresh(true));
+        assert_eq!(app_selector(&engine, true).as_deref(), Some("from-a"));
+    }
+
+    #[test]
+    fn test_ambient_global_lookup_continues_past_a_type_only_candidate() {
+        let files = vec![
+            (
+                "/project/a.d.ts".to_string(),
+                "declare namespace SEL { type T = string; }\n".to_string(),
+            ),
+            (
+                "/project/m.d.ts".to_string(),
+                "declare const MID: 1;\n".to_string(),
+            ),
+            (
+                "/project/b.d.ts".to_string(),
+                "declare const SEL: 'from-b';\n".to_string(),
+            ),
+            selector_app("SEL"),
+        ];
+        let (engine, fs) = ambient_global_test_engine(
+            &files,
+            vec![
+                PathBuf::from("/project/a.d.ts"),
+                PathBuf::from("/project/m.d.ts"),
+                PathBuf::from("/project/b.d.ts"),
+            ],
+        );
+        assert_eq!(app_selector(&engine, false).as_deref(), Some("from-b"));
+
+        // A declaration between the type-only candidate and the match takes over.
+        fs.upsert_file(
+            PathBuf::from("/project/m.d.ts"),
+            "declare const SEL: 'from-m';\n".to_string(),
+        );
+        engine.invalidate_file(Path::new("/project/m.d.ts"));
+        futures::executor::block_on(engine.ensure_singletons_fresh(false));
+        assert_eq!(app_selector(&engine, false).as_deref(), Some("from-m"));
+    }
+
+    #[test]
+    fn test_ambient_global_read_through_another_file() {
+        let files = vec![
+            (
+                "/project/a.d.ts".to_string(),
+                "declare const OTHER: 1;\n".to_string(),
+            ),
+            (
+                "/project/b.d.ts".to_string(),
+                "declare const SEL: 'from-b';\n".to_string(),
+            ),
+            (
+                "/project/sel.ts".to_string(),
+                "export const MY_SEL = SEL;\n".to_string(),
+            ),
+            (
+                "/project/app.ts".to_string(),
+                "import { Component } from '@angular/core';\n\
+                 import { MY_SEL } from './sel';\n\
+                 @Component({ selector: MY_SEL, template: '' })\n\
+                 export class AppComp {}\n"
+                    .to_string(),
+            ),
+        ];
+        let (engine, fs) = ambient_global_test_engine(
+            &files,
+            vec![
+                PathBuf::from("/project/a.d.ts"),
+                PathBuf::from("/project/b.d.ts"),
+            ],
+        );
+        assert_eq!(app_selector(&engine, true).as_deref(), Some("from-b"));
+        assert_eq!(app_selector(&engine, false).as_deref(), Some("from-b"));
+
+        // `sel.ts` looked `SEL` up, and `app.ts` read it from there.
+        fs.upsert_file(
+            PathBuf::from("/project/a.d.ts"),
+            "declare const SEL: 'from-a';\n".to_string(),
+        );
+        engine.invalidate_file(Path::new("/project/a.d.ts"));
+        futures::executor::block_on(engine.ensure_singletons_fresh(true));
+        assert_eq!(app_selector(&engine, true).as_deref(), Some("from-a"));
+        assert_eq!(app_selector(&engine, false).as_deref(), Some("from-a"));
+    }
+
+    #[test]
+    fn test_repeated_ambient_global_lookups_are_memoized() {
+        let mut files = Vec::new();
+        let mut dts_paths = Vec::new();
+        for i in 0..4 {
+            let path = format!("/project/lib_{i}.d.ts");
+            files.push((path.clone(), format!("declare const G{i}: {i};\n")));
+            dts_paths.push(PathBuf::from(path));
+        }
+        let (engine, fs) = ambient_global_test_engine(&files, dts_paths);
+        let lib_3_id = engine.intern_path("/project/lib_3.d.ts");
+        assert_eq!(engine.next_ambient_global_candidate("Number", 0), None);
+        assert_eq!(
+            engine.next_ambient_global_candidate("G3", 0),
+            Some((3, lib_3_id))
+        );
+
+        // Repeated lookups, including of a name no `.d.ts` declares, neither walk the files again
+        // nor wait for a scan.
+        let scan = engine.ambient_global_scan.lock().unwrap();
+        let (sender, receiver) = std::sync::mpsc::channel();
+        let lookup_engine = engine.clone();
+        std::thread::spawn(move || {
+            let _ = sender.send((
+                lookup_engine.next_ambient_global_candidate("Number", 0),
+                lookup_engine.next_ambient_global_candidate("G3", 0),
+            ));
+        });
+        let memoized = receiver.recv_timeout(std::time::Duration::from_secs(10));
+        drop(scan);
+        assert_eq!(memoized, Ok((None, Some((3, lib_3_id)))));
+
+        // Invalidating a scanned `.d.ts` drops the memoized answers.
+        fs.upsert_file(
+            PathBuf::from("/project/lib_0.d.ts"),
+            "declare const Number: 0;\n".to_string(),
+        );
+        engine.invalidate_file(Path::new("/project/lib_0.d.ts"));
+        let lib_0_id = engine.intern_path("/project/lib_0.d.ts");
+        assert_eq!(
+            engine.next_ambient_global_candidate("Number", 0),
+            Some((0, lib_0_id))
+        );
+    }
+
+    #[test]
+    fn test_dts_read_by_a_query_still_evicts_singletons() {
+        let files = vec![
+            (
+                "/project/lib.d.ts".to_string(),
+                "export declare const LIB_SEL: 'from-lib';\n".to_string(),
+            ),
+            (
+                "/project/app.ts".to_string(),
+                "import { Component } from '@angular/core';\n\
+                 import { LIB_SEL } from './lib';\n\
+                 @Component({ selector: LIB_SEL, template: '' })\n\
+                 export class AppComp {}\n"
+                    .to_string(),
+            ),
+        ];
+        let (engine, _fs) =
+            ambient_global_test_engine(&files, vec![PathBuf::from("/project/lib.d.ts")]);
+        assert_eq!(app_selector(&engine, true).as_deref(), Some("from-lib"));
+        futures::executor::block_on(QueryContext::new(engine.clone()).component_mapping());
+
+        let evicted = engine.invalidate_file(Path::new("/project/lib.d.ts"));
+        assert!(evicted.contains(&QueryKey::ComponentMapping));
+        assert!(engine.cache.get(&QueryKey::ComponentMapping).is_none());
     }
 
     #[test]
