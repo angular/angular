@@ -64,7 +64,7 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     HYDRATION_MISSING_NODE = -502,
     // (undocumented)
-    HYDRATION_MISSING_NODE_ON_PATH = 509,
+    HYDRATION_MISSING_NODE_ON_PATH = -509,
     // (undocumented)
     HYDRATION_MISSING_SIBLINGS = -501,
     // (undocumented)
