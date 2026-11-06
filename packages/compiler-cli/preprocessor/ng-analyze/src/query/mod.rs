@@ -17,7 +17,7 @@ pub(crate) use scope::resolve_reference_async;
 
 pub use context::QueryContext;
 pub use engine::QueryEngine;
-pub type QueryCtx<Fs> = QueryContext<Fs>;
+pub type QueryCtx = QueryContext;
 pub use file_id::{FileId, FileIdInterner};
 pub use keys::{QueryKey, QueryValue};
 pub use module_scope::{NgModuleScopeOutcome, NgModuleScopeRegistry};

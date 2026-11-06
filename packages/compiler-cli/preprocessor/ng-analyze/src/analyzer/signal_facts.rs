@@ -13,7 +13,7 @@ use super::utils::extract_property_key;
 use crate::evaluator::strip_dts_alias_suffix;
 use crate::query::{QueryCtx, ReferenceId};
 use crate::utils::ANGULAR_CORE;
-use crate::{DeclarationTuple, ResourceResolverFs};
+use crate::DeclarationTuple;
 
 const ANGULAR_RXJS_INTEROP: &str = "@angular/core/rxjs-interop";
 const MAX_OBJECT_LITERAL_DEPTH: usize = 8;
@@ -719,10 +719,10 @@ fn push_unique(out: &mut Vec<String>, item: String) {
     }
 }
 
-async fn resolve_signal_facts<Fs: ResourceResolverFs + Clone + 'static>(
+async fn resolve_signal_facts(
     decl: &DeclarationTuple,
     module_file: &Path,
-    ctx: &QueryCtx<Fs>,
+    ctx: &QueryCtx,
 ) -> Option<ClassSignalFacts> {
     let mut visited = HashSet::new();
     let Ok(Some(resolved)) = crate::evaluator::cross_file::cross_file_resolve(
@@ -750,11 +750,11 @@ async fn resolve_signal_facts<Fs: ResourceResolverFs + Clone + 'static>(
 
 /// Flatten `own` signal members with inherited signal members along the `extends` chain,
 /// respecting subclass member overrides that shadow base-class signals.
-pub(crate) async fn flatten_signal_members<Fs: ResourceResolverFs + Clone + 'static>(
+pub(crate) async fn flatten_signal_members(
     own: &OwnSignalFacts,
     reference_id: ReferenceId,
     super_class: Option<&DeclarationTuple>,
-    ctx: &QueryCtx<Fs>,
+    ctx: &QueryCtx,
 ) -> Vec<String> {
     let mut result = own.signal_members.clone();
     let Some(mut next_super) = super_class.cloned() else {
@@ -795,10 +795,7 @@ mod tests {
     use std::path::PathBuf;
     use std::sync::{Arc, RwLock};
 
-    fn engine_for(
-        files: &[(&str, &str)],
-        entry: &str,
-    ) -> Arc<crate::query::engine::QueryEngine<crate::fs::OverlayFileSystem>> {
+    fn engine_for(files: &[(&str, &str)], entry: &str) -> Arc<crate::query::engine::QueryEngine> {
         let fs = crate::test_utils::create_test_fs(files);
         let resolver = Arc::new(oxc_resolver::ResolverGeneric::new_with_file_system(
             fs.clone(),

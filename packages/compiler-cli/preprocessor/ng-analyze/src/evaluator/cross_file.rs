@@ -1,6 +1,5 @@
 use crate::query::FileId;
 use crate::types::analysis::OwningReference;
-use crate::ResourceResolverFs;
 use futures::future::{BoxFuture, FutureExt};
 use oxc_semantic::SymbolId;
 use oxc_syntax::module_record::{ExportExportName, ExportImportName, ImportImportName};
@@ -79,8 +78,8 @@ impl ChasedExport {
 /// Resolves `export_name` from `specifier` (or `file_path` when `None`) through import and
 /// re-export chains to its underlying declaration. Returns `None` for unnamed `export default <expr>`
 /// (use [`cross_file_resolve_export`] when default expressions are needed).
-pub fn cross_file_resolve<'a, Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &'a crate::QueryCtx<Fs>,
+pub fn cross_file_resolve<'a>(
+    ctx: &'a crate::QueryCtx,
     file_path: &'a Path,
     specifier: Option<&'a str>,
     export_name: String,
@@ -96,8 +95,8 @@ pub fn cross_file_resolve<'a, Fs: ResourceResolverFs + Clone + 'static>(
 
 /// Like [`cross_file_resolve`], but also returns [`ChasedExport::DefaultExpression`] for unnamed
 /// `export default <expression>`.
-pub fn cross_file_resolve_export<'a, Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &'a crate::QueryCtx<Fs>,
+pub fn cross_file_resolve_export<'a>(
+    ctx: &'a crate::QueryCtx,
     file_path: &'a Path,
     specifier: Option<&'a str>,
     export_name: String,
@@ -316,8 +315,8 @@ fn chase_symbol_in_file_inner(
     ChaseTarget::NotFound
 }
 
-async fn chase_symbol_in_file<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &crate::QueryCtx<Fs>,
+async fn chase_symbol_in_file(
+    ctx: &crate::QueryCtx,
     file_path: &Path,
     name: &str,
     require_exported: bool,
@@ -378,8 +377,8 @@ async fn chase_symbol_in_file<Fs: ResourceResolverFs + Clone + 'static>(
     ChaseTarget::NotFound
 }
 
-fn chase_symbol_declaration<'a, Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &'a crate::QueryCtx<Fs>,
+fn chase_symbol_declaration<'a>(
+    ctx: &'a crate::QueryCtx,
     file_path: PathBuf,
     name: String,
     owning_reference: Option<OwningReference>,
@@ -582,17 +581,13 @@ fn chase_symbol_declaration<'a, Fs: ResourceResolverFs + Clone + 'static>(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::fs::OverlayFileSystem;
     use crate::query::{QueryContext, QueryEngine};
     use crate::resource_registry::ResourceRegistry;
     use crate::test_utils::create_test_fs;
     use oxc_resolver::{ResolveOptions, ResolverGeneric};
     use std::sync::Arc;
 
-    fn build_engine(
-        files: &[(&str, &str)],
-        entrypoints: &[&str],
-    ) -> Arc<QueryEngine<OverlayFileSystem>> {
+    fn build_engine(files: &[(&str, &str)], entrypoints: &[&str]) -> Arc<QueryEngine> {
         let fs = create_test_fs(files);
         let resolver = Arc::new(ResolverGeneric::new_with_file_system(
             fs.clone(),
