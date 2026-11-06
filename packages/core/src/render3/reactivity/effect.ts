@@ -47,7 +47,7 @@ export interface EffectRef {
 }
 
 export class EffectRefImpl implements EffectRef {
-  [SIGNAL]: EffectNode;
+  declare [SIGNAL]: EffectNode;
 
   constructor(node: EffectNode) {
     this[SIGNAL] = node;
