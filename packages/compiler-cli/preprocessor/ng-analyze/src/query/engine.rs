@@ -40,6 +40,10 @@ pub(crate) const ROOTS_FILE_ID: FileId = FileId::MAX;
 /// ([`QueryEngine::invalidate_module_resolution`]) re-runs exactly those. Never interned.
 pub(crate) const UNRESOLVED_IMPORTS_FILE_ID: FileId = FileId::MAX - 1;
 
+/// The ambient global value names a `.d.ts` file may declare (see
+/// [`extract_ambient_global_names_in_dts`]).
+pub(crate) type AmbientGlobalNames = Arc<HashSet<String>>;
+
 /// The unified query engine.
 ///
 /// Every "question" the analyzer answers is a [`QueryKey`]; [`QueryEngine::query`] returns a cached,
@@ -60,9 +64,17 @@ pub struct QueryEngine<Fs: ResourceResolverFs + Clone + 'static> {
     pub(crate) reverse_index: RwLock<HashMap<FileId, HashSet<QueryKey>>>,
     pub(crate) cache: crate::QueryCache<QueryKey, CachedResult>,
     pub(crate) static_import_graph: RwLock<Option<Arc<StaticImportGraph>>>,
-    pub(crate) ambient_global_dts_cache: RwLock<HashMap<FileId, Arc<Vec<String>>>>,
-    pub(crate) last_ambient_global_files:
-        Mutex<Option<Arc<crate::query::keys::AmbientGlobalFiles>>>,
+    /// Canonical [`FileId`]s of a prefix of `tsconfig_dts_files`, extended on demand and
+    /// dropped when the roots change.
+    pub(crate) tsconfig_dts_file_ids: RwLock<Vec<FileId>>,
+    /// The ambient global value names each `.d.ts` scanned by an ambient global lookup declares.
+    pub(crate) ambient_global_names: RwLock<HashMap<FileId, AmbientGlobalNames>>,
+    /// Held while a lookup scans `.d.ts` files whose names aren't cached yet, so concurrent
+    /// lookups wait for that scan once rather than at every file.
+    ambient_global_scan: Mutex<()>,
+    /// The names an invalidated `.d.ts` declared in each version a lookup may have read, until
+    /// [`Self::ensure_singletons_fresh`] diffs them against its current names.
+    pub(crate) stale_ambient_global_names: Mutex<HashMap<FileId, Vec<AmbientGlobalNames>>>,
     pub(crate) ambient_global_dependents: RwLock<HashMap<String, HashSet<FileId>>>,
     pub(crate) ambient_global_reverse_deps: RwLock<HashMap<FileId, HashSet<String>>>,
     pub(crate) last_component_mapping: Mutex<Option<Arc<NgModuleComponentMap>>>,
@@ -142,8 +154,10 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             reverse_index: RwLock::new(HashMap::new()),
             cache: crate::QueryCache::new(),
             static_import_graph: RwLock::new(None),
-            ambient_global_dts_cache: RwLock::new(HashMap::new()),
-            last_ambient_global_files: Mutex::new(None),
+            tsconfig_dts_file_ids: RwLock::new(Vec::new()),
+            ambient_global_names: RwLock::new(HashMap::new()),
+            ambient_global_scan: Mutex::new(()),
+            stale_ambient_global_names: Mutex::new(HashMap::new()),
             ambient_global_dependents: RwLock::new(HashMap::new()),
             ambient_global_reverse_deps: RwLock::new(HashMap::new()),
             last_component_mapping: Mutex::new(None),
@@ -273,12 +287,10 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
 
     /// Purge every cached query that depends on `file_id` using the granular reverse invalidation index.
     pub fn invalidate_file_id(&self, file_id: FileId) -> Vec<QueryKey> {
-        if let Ok(mut graph_guard) = self.static_import_graph.write() {
-            *graph_guard = None;
+        if file_id == ROOTS_FILE_ID {
+            self.tsconfig_dts_file_ids.write().unwrap().clear();
         }
-        if let Ok(mut dts_guard) = self.ambient_global_dts_cache.write() {
-            dts_guard.remove(&file_id);
-        }
+        self.mark_ambient_global_names_stale(file_id);
         self.clear_ambient_global_dependents_for_file(file_id);
         self.mark_file_dirty(file_id);
 
@@ -288,15 +300,38 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             HashSet::new()
         };
 
-        // TODO(parity): avoid evicting ComponentMapping on changes that do not affect @Component/@NgModule declarations.
-        evicted_keys.insert(QueryKey::ComponentMapping);
-        evicted_keys.insert(QueryKey::NgModuleScopeRegistry);
-        evicted_keys.insert(QueryKey::LocalExtraImports);
+        if !self.is_dts_read_only_by_ambient_indexes(file_id, &evicted_keys) {
+            if let Ok(mut graph_guard) = self.static_import_graph.write() {
+                *graph_guard = None;
+            }
+            // TODO(parity): avoid evicting ComponentMapping on changes that do not affect @Component/@NgModule declarations.
+            evicted_keys.insert(QueryKey::ComponentMapping);
+            evicted_keys.insert(QueryKey::NgModuleScopeRegistry);
+            evicted_keys.insert(QueryKey::LocalExtraImports);
+        }
 
         evicted_keys
             .into_iter()
             .filter(|key| self.remove_cached_key(key))
             .collect()
+    }
+
+    /// Whether `file_id` is a `.d.ts` file that no cached query read except the ambient module
+    /// index, given the queries `evicted_keys` that depended on it. The import graph and the
+    /// whole-program singletons can't depend on such a file. Ambient global lookups that only
+    /// scanned it for the names it declares don't depend on it either; if those names changed,
+    /// [`Self::ensure_singletons_fresh`] evicts the lookups and the singletons that read them.
+    fn is_dts_read_only_by_ambient_indexes(
+        &self,
+        file_id: FileId,
+        evicted_keys: &HashSet<QueryKey>,
+    ) -> bool {
+        file_id != ROOTS_FILE_ID
+            && file_id != UNRESOLVED_IMPORTS_FILE_ID
+            && evicted_keys
+                .iter()
+                .all(|key| *key == QueryKey::AmbientModuleFiles)
+            && crate::utils::is_dts(&self.lookup_path(file_id))
     }
 
     /// Evict only the syntactic/semantic/wire queries of `path` after an external template or
@@ -424,26 +459,46 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         }
     }
 
-    fn changed_ambient_global_consumers(
-        &self,
-        prev: &crate::query::keys::AmbientGlobalFiles,
-        next: &crate::query::keys::AmbientGlobalFiles,
-    ) -> HashSet<FileId> {
-        let Ok(deps_guard) = self.ambient_global_dependents.read() else {
-            return HashSet::new();
+    /// Keep the names an invalidated `.d.ts` declared, so [`Self::ensure_singletons_fresh`] can
+    /// evict the lookups of the names it adds or removes. A `.d.ts` no lookup scanned has none.
+    fn mark_ambient_global_names_stale(&self, file_id: FileId) {
+        let Some(names) = self.ambient_global_names.write().unwrap().remove(&file_id) else {
+            return;
         };
+        self.stale_ambient_global_names
+            .lock()
+            .unwrap()
+            .entry(file_id)
+            .or_default()
+            .push(names);
+    }
+
+    /// The consumers of every ambient global name that an invalidated `.d.ts` started or stopped
+    /// declaring since a lookup scanned it.
+    fn changed_ambient_global_consumers(&self) -> HashSet<FileId> {
+        let stale = std::mem::take(&mut *self.stale_ambient_global_names.lock().unwrap());
+        let dependents = self.ambient_global_dependents.read().unwrap();
         let mut changed = HashSet::new();
-        for (name, consumers) in deps_guard.iter() {
-            if prev.get(name) != next.get(name) {
-                changed.extend(consumers.iter().copied());
+        if dependents.is_empty() {
+            return changed;
+        }
+        for (file_id, versions) in stale {
+            let current = self.ambient_global_names(file_id);
+            for name in versions
+                .iter()
+                .flat_map(|previous| previous.symmetric_difference(&current))
+            {
+                if let Some(consumers) = dependents.get(name) {
+                    changed.extend(consumers.iter().copied());
+                }
             }
         }
         changed
     }
 
-    /// Evict evaluated, semantic, scope, and wire queries that depend on any of `file_ids` when
-    /// `AmbientGlobalFiles` changes the candidate `.d.ts` list for an ambient global referenced by
-    /// `file_ids`, while keeping `ParseFile` and `AnalyzeFileSyntax` cached.
+    /// Evict evaluated, semantic, scope, wire, and whole-program singleton queries that depend on
+    /// any of `file_ids` when the `.d.ts` files declaring an ambient global referenced by
+    /// `file_ids` change, while keeping `ParseFile` and `AnalyzeFileSyntax` cached.
     pub(crate) fn evict_evaluated_dependents(&self, file_ids: impl IntoIterator<Item = FileId>) {
         let mut keys_to_evict = HashSet::new();
         let r_guard = self.reverse_index.read().ok();
@@ -475,9 +530,13 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                                     is_optimized: false,
                                 });
                             }
+                            // `ComponentMapping` evaluates NgModule `declarations` itself.
                             QueryKey::AnalyzeFileWire { .. }
                             | QueryKey::NgModuleExportsScope(_)
-                            | QueryKey::NgModuleImportsScope(_) => {
+                            | QueryKey::NgModuleImportsScope(_)
+                            | QueryKey::ComponentMapping
+                            | QueryKey::NgModuleScopeRegistry
+                            | QueryKey::LocalExtraImports => {
                                 keys_to_evict.insert(key);
                             }
                             _ => {}
@@ -492,43 +551,97 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         }
     }
 
-    /// Re-index ambient globals if a build already indexed them, evicting the files whose lookups
-    /// now find a different set of declaring `.d.ts` files. Runs before any per-file query reads
-    /// the cache, unlike an eviction from inside the `AmbientGlobalFiles` query body, which could
-    /// run partway through another file's query or after a delta build snapshotted its dirty files.
+    /// Evict the files whose ambient global lookups may now find a different `.d.ts`, because a
+    /// `.d.ts` they scanned started or stopped declaring a name they looked up. Runs before any
+    /// per-file query reads the cache, rather than from within a lookup, which could run partway
+    /// through another file's query or after a delta build snapshotted its dirty files.
     ///
-    /// A value change within the same `.d.ts` (`declare const COMPILED: true` → `false`) leaves the
-    /// candidate list alone; the consumer depends on that `.d.ts` directly (it parsed it to
-    /// evaluate the declaration), so the ordinary invalidation evicts it.
-    async fn refresh_ambient_global_files(self: &Arc<Self>) {
-        let Some(prev) = self
-            .last_ambient_global_files
-            .lock()
-            .ok()
-            .and_then(|guard| guard.clone())
-        else {
-            return;
-        };
-        let next = match &*self.query(QueryKey::AmbientGlobalFiles).await.value {
-            QueryValue::AmbientGlobalFiles(index) => index.clone(),
-            _ => unreachable!("AmbientGlobalFiles must yield AmbientGlobalFiles"),
-        };
-        if Arc::ptr_eq(&prev, &next) {
-            return;
-        }
-        let changed = self.changed_ambient_global_consumers(&prev, &next);
+    /// A value change within the same `.d.ts` (`declare const COMPILED: true` → `false`) leaves its
+    /// names alone; the consumer depends on that `.d.ts` directly (it parsed it to evaluate the
+    /// declaration), so the ordinary invalidation evicts it.
+    fn refresh_ambient_global_lookups(&self) {
+        let changed = self.changed_ambient_global_consumers();
         if !changed.is_empty() {
             self.evict_evaluated_dependents(changed);
         }
-        if let Ok(mut guard) = self.last_ambient_global_files.lock() {
-            *guard = Some(next);
+    }
+
+    /// The canonical [`FileId`] of the `.d.ts` at `position` in the tsconfig's `files`, or `None`
+    /// past the end. Paths are canonicalized here, on first use, rather than when the tsconfig is
+    /// read, so an ambient global lookup that stops early never canonicalizes the rest.
+    pub(crate) fn tsconfig_dts_file_id(&self, position: usize) -> Option<FileId> {
+        if let Some(&file_id) = self.tsconfig_dts_file_ids.read().unwrap().get(position) {
+            return Some(file_id);
         }
+        let dts_files = self.tsconfig_dts_files.read().unwrap();
+        let mut file_ids = self.tsconfig_dts_file_ids.write().unwrap();
+        while file_ids.len() <= position {
+            let path = dts_files.get(file_ids.len())?;
+            let path = self.fs.canonicalize(path).unwrap_or_else(|_| path.clone());
+            file_ids.push(self.intern_path(&path));
+        }
+        Some(file_ids[position])
+    }
+
+    /// The first `.d.ts` at or after `position` in the tsconfig's `files` that may declare ambient
+    /// global value `name`, and its position. Scans in `files` order and stops at the first match,
+    /// so most lookups read only a prefix of the list.
+    pub(crate) fn next_ambient_global_candidate(
+        &self,
+        name: &str,
+        mut position: usize,
+    ) -> Option<(usize, FileId)> {
+        while let Some((file_id, names)) = self.scanned_ambient_global_names(position) {
+            if names.contains(name) {
+                return Some((position, file_id));
+            }
+            position += 1;
+        }
+        let _scan = self.ambient_global_scan.lock().unwrap();
+        (position..)
+            .map_while(|position| Some((position, self.tsconfig_dts_file_id(position)?)))
+            .find(|&(_, file_id)| self.ambient_global_names(file_id).contains(name))
+    }
+
+    /// The `.d.ts` at `position` in the tsconfig's `files` and the names it declares, if a lookup
+    /// already scanned it.
+    fn scanned_ambient_global_names(
+        &self,
+        position: usize,
+    ) -> Option<(FileId, AmbientGlobalNames)> {
+        let file_id = *self.tsconfig_dts_file_ids.read().unwrap().get(position)?;
+        let names = self
+            .ambient_global_names
+            .read()
+            .unwrap()
+            .get(&file_id)?
+            .clone();
+        Some((file_id, names))
+    }
+
+    /// The ambient global value names `file_id` declares, or none if it can't be read. Cached per
+    /// engine until the file is invalidated, and across engines while its text is unchanged.
+    pub(crate) fn ambient_global_names(&self, file_id: FileId) -> AmbientGlobalNames {
+        if let Some(names) = self.ambient_global_names.read().unwrap().get(&file_id) {
+            return names.clone();
+        }
+        let path = self.lookup_path(file_id);
+        let names = match self.fs.read_to_string(&path) {
+            Ok(source) => shared_dts_parse_cache::ambient_global_names(path, &source),
+            Err(_) => AmbientGlobalNames::default(),
+        };
+        self.ambient_global_names
+            .write()
+            .unwrap()
+            .entry(file_id)
+            .or_insert(names)
+            .clone()
     }
 
     /// Re-evaluate whole-program singletons if they were invalidated since a previous build so
     /// any diff-based evictions happen before per-file semantic/wire queries read the cache.
     pub async fn ensure_singletons_fresh(self: &Arc<Self>, is_optimized: bool) {
-        self.refresh_ambient_global_files().await;
+        self.refresh_ambient_global_lookups();
         if !is_optimized && !self.generate_extra_imports_in_local_mode {
             return;
         }
@@ -641,15 +754,6 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                 QueryKey::AmbientModuleFiles => Arc::new(QueryValue::AmbientModuleFiles(
                     self.ambient_module_files_body(&child_ctx),
                 )),
-                QueryKey::AmbientGlobalFiles => {
-                    let index = self.ambient_global_files_body(&child_ctx);
-                    // Only the first index becomes the baseline here. Later ones are diffed by
-                    // `ensure_singletons_fresh`, so evictions never happen partway through a query.
-                    if let Ok(mut prev_guard) = self.last_ambient_global_files.lock() {
-                        prev_guard.get_or_insert_with(|| index.clone());
-                    }
-                    Arc::new(QueryValue::AmbientGlobalFiles(index))
-                }
                 QueryKey::LocalExtraImports => Arc::new(QueryValue::LocalExtraImports(
                     self.local_extra_imports_body(&child_ctx).await,
                 )),
@@ -1106,19 +1210,16 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
 
     /// Index the tsconfig's `.d.ts` files by the ambient modules they may declare, from a textual
     /// scan of each file rather than a parse, so that resolving an import against ambient modules
-    /// only parses the few files that can declare it. The `.d.ts` paths are canonicalized here,
-    /// lazily, rather than when the tsconfig is read. Every scanned file is a recorded dependency,
-    /// since an edit to any of them may add or remove a declaration, and so is the list itself.
+    /// only parses the few files that can declare it. The `.d.ts` paths are canonicalized lazily
+    /// ([`Self::tsconfig_dts_file_id`]). Every scanned file is a recorded dependency, since an
+    /// edit to any of them may add or remove a declaration, and so is the list itself.
     fn ambient_module_files_body(
         self: &Arc<Self>,
         ctx: &QueryContext<Fs>,
     ) -> Arc<crate::query::keys::AmbientModuleFiles> {
         ctx.record_file(ROOTS_FILE_ID);
-        let dts_files: Vec<PathBuf> = self.tsconfig_dts_files.read().unwrap().clone();
         let mut index = crate::query::keys::AmbientModuleFiles::new();
-        for path in dts_files {
-            let path = self.fs.canonicalize(&path).unwrap_or(path);
-            let file_id = self.intern_path(&path);
+        for file_id in (0..).map_while(|position| self.tsconfig_dts_file_id(position)) {
             ctx.record_file(file_id);
             let Ok(source) = self.fs.read_to_string(&self.lookup_path(file_id)) else {
                 continue;
@@ -1131,67 +1232,6 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             }
         }
         Arc::new(index)
-    }
-
-    /// Index the tsconfig's `.d.ts` files by the ambient global value declarations they may
-    /// contribute (either top-level value declarations in a script `.d.ts` or declarations inside
-    /// `declare global { ... }`). Each `.d.ts` is parsed into a single recycled
-    /// [`oxc_allocator::Allocator`] without running `SemanticBuilder` or caching
-    /// [`crate::ParsedFile`]s, and its declared names are cached per [`FileId`] (evicted by
-    /// [`Self::invalidate_file_id`]), so re-indexing after an edit only re-parses the edited files.
-    /// Compilation units with no unbound identifiers in Angular decorator expressions never run
-    /// this query.
-    fn ambient_global_files_body(
-        self: &Arc<Self>,
-        ctx: &QueryContext<Fs>,
-    ) -> Arc<crate::query::keys::AmbientGlobalFiles> {
-        ctx.record_file(ROOTS_FILE_ID);
-        let dts_files: Vec<PathBuf> = self.tsconfig_dts_files.read().unwrap().clone();
-        let mut index = crate::query::keys::AmbientGlobalFiles::new();
-        let mut allocator = oxc_allocator::Allocator::default();
-        for path in dts_files {
-            let path = self.fs.canonicalize(&path).unwrap_or(path);
-            let file_id = self.intern_path(&path);
-            ctx.record_file(file_id);
-            let Some(names) = self.ambient_global_names_in_dts(file_id, &mut allocator) else {
-                continue;
-            };
-            for name in names.iter() {
-                record_ambient_global_candidate(&mut index, name, file_id);
-            }
-        }
-        Arc::new(index)
-    }
-
-    /// The ambient global value names `file_id` declares, from the per-file cache or by parsing it
-    /// into `allocator`. `None` when the file can't be read (not cached, so a later read retries).
-    fn ambient_global_names_in_dts(
-        &self,
-        file_id: FileId,
-        allocator: &mut oxc_allocator::Allocator,
-    ) -> Option<Arc<Vec<String>>> {
-        let cached = self
-            .ambient_global_dts_cache
-            .read()
-            .ok()
-            .and_then(|cache| cache.get(&file_id).cloned());
-        if cached.is_some() {
-            return cached;
-        }
-        let source = self.fs.read_to_string(&self.lookup_path(file_id)).ok()?;
-        let names = {
-            let ret =
-                oxc_parser::Parser::new(allocator, &source, oxc_span::SourceType::d_ts()).parse();
-            Arc::new(extract_ambient_global_names_in_dts(
-                &ret.program,
-                &ret.module_record,
-            ))
-        };
-        allocator.reset();
-        if let Ok(mut cache) = self.ambient_global_dts_cache.write() {
-            cache.insert(file_id, names.clone());
-        }
-        Some(names)
     }
 
     /// Build the component → owning-NgModule mapping across every file of the program (the
@@ -2130,20 +2170,6 @@ pub(crate) fn is_external_module_dts(
     })
 }
 
-fn record_ambient_global_candidate(
-    index: &mut crate::query::keys::AmbientGlobalFiles,
-    name: &str,
-    file_id: FileId,
-) {
-    if let Some(files) = index.get_mut(name) {
-        if files.last() != Some(&file_id) {
-            files.push(file_id);
-        }
-        return;
-    }
-    index.insert(name.to_string(), vec![file_id]);
-}
-
 fn declaration_of_stmt<'s, 'a>(
     stmt: &'s oxc_ast::ast::Statement<'a>,
 ) -> Option<&'s oxc_ast::ast::Declaration<'a>> {
@@ -2153,21 +2179,17 @@ fn declaration_of_stmt<'s, 'a>(
     }
 }
 
-fn record_ambient_global_name(names: &mut Vec<String>, seen: &mut HashSet<String>, name: &str) {
-    if !seen.contains(name) {
-        let owned = name.to_string();
-        seen.insert(owned.clone());
-        names.push(owned);
-    }
-}
-
 fn collect_ambient_value_decls_in_stmts(
     stmts: &[oxc_ast::ast::Statement<'_>],
-    names: &mut Vec<String>,
-    seen: &mut HashSet<String>,
+    names: &mut HashSet<String>,
 ) {
     use oxc_ast::ast::Declaration;
 
+    let mut record = |name: &str| {
+        if !names.contains(name) {
+            names.insert(name.to_string());
+        }
+    };
     for stmt in stmts {
         let Some(decl) = declaration_of_stmt(stmt) else {
             continue;
@@ -2176,32 +2198,32 @@ fn collect_ambient_value_decls_in_stmts(
             Declaration::VariableDeclaration(var_decl) => {
                 for declarator in &var_decl.declarations {
                     for ident in declarator.id.get_binding_identifiers() {
-                        record_ambient_global_name(names, seen, ident.name.as_str());
+                        record(ident.name.as_str());
                     }
                 }
             }
             Declaration::FunctionDeclaration(func) => {
                 if let Some(id) = &func.id {
-                    record_ambient_global_name(names, seen, id.name.as_str());
+                    record(id.name.as_str());
                 }
             }
             Declaration::ClassDeclaration(class) => {
                 if let Some(id) = &class.id {
-                    record_ambient_global_name(names, seen, id.name.as_str());
+                    record(id.name.as_str());
                 }
             }
             Declaration::TSEnumDeclaration(en) => {
-                record_ambient_global_name(names, seen, en.id.name.as_str());
+                record(en.id.name.as_str());
             }
             Declaration::TSNamespaceDeclaration(ns) => {
-                record_ambient_global_name(names, seen, ns.id.name.as_str());
+                record(ns.id.name.as_str());
             }
             _ => {}
         }
     }
 }
 
-/// Extract deduplicated candidate ambient global value declaration names in `program`.
+/// Extract candidate ambient global value declaration names in `program`.
 ///
 /// Checks [`is_external_module_dts`] first before recording top-level script declarations, and
 /// always indexes declarations inside `declare global { ... }` blocks (both at top level and
@@ -2210,20 +2232,19 @@ fn collect_ambient_value_decls_in_stmts(
 fn extract_ambient_global_names_in_dts(
     program: &oxc_ast::ast::Program<'_>,
     module_record: &oxc_syntax::module_record::ModuleRecord<'_>,
-) -> Vec<String> {
+) -> HashSet<String> {
     use oxc_ast::ast::Statement;
 
-    let mut names = Vec::new();
-    let mut seen = HashSet::new();
+    let mut names = HashSet::new();
 
     if !is_external_module_dts(program, module_record) {
-        collect_ambient_value_decls_in_stmts(&program.body, &mut names, &mut seen);
+        collect_ambient_value_decls_in_stmts(&program.body, &mut names);
     }
 
     for stmt in &program.body {
         match stmt {
             Statement::TSGlobalDeclaration(global_decl) => {
-                collect_ambient_value_decls_in_stmts(&global_decl.body.body, &mut names, &mut seen);
+                collect_ambient_value_decls_in_stmts(&global_decl.body.body, &mut names);
             }
             Statement::TSExternalModuleDeclaration(mod_decl) => {
                 let Some(block) = &mod_decl.body else {
@@ -2233,11 +2254,7 @@ fn extract_ambient_global_names_in_dts(
                     let Statement::TSGlobalDeclaration(global_decl) = inner else {
                         continue;
                     };
-                    collect_ambient_value_decls_in_stmts(
-                        &global_decl.body.body,
-                        &mut names,
-                        &mut seen,
-                    );
+                    collect_ambient_value_decls_in_stmts(&global_decl.body.body, &mut names);
                 }
             }
             _ => {}
@@ -2464,7 +2481,8 @@ fn collect_from_namespace_decl<'a>(
     }
 }
 
-/// A process-wide cache of parsed `.d.ts` files, shared by every [`QueryEngine`] in the process.
+/// Process-wide caches of parsed `.d.ts` files and of the ambient global names they declare,
+/// shared by every [`QueryEngine`] in the process.
 ///
 /// A long-lived analyzer process (e.g. the sidecar under a persistent build worker, which creates
 /// a new engine per request) would otherwise re-parse the same framework and library declaration
@@ -2476,15 +2494,21 @@ mod shared_dts_parse_cache {
     use std::path::{Path, PathBuf};
     use std::sync::{Arc, Mutex, OnceLock, PoisonError};
 
+    use super::AmbientGlobalNames;
     use crate::ParsedFile;
 
-    /// Upper bound on the total source text of the cached files.
+    /// Upper bound on the total source text of the files cached in each cache.
     const MAX_SOURCE_BYTES: usize = 192 * 1024 * 1024;
 
-    static CACHE: OnceLock<Mutex<Cache>> = OnceLock::new();
+    static CACHE: OnceLock<Mutex<Cache<Arc<Mutex<ParsedFile>>>>> = OnceLock::new();
+    static GLOBAL_NAMES: OnceLock<Mutex<Cache<AmbientGlobalNames>>> = OnceLock::new();
 
-    fn cache() -> &'static Mutex<Cache> {
+    fn cache() -> &'static Mutex<Cache<Arc<Mutex<ParsedFile>>>> {
         CACHE.get_or_init(|| Mutex::new(Cache::new(MAX_SOURCE_BYTES)))
+    }
+
+    fn global_names() -> &'static Mutex<Cache<AmbientGlobalNames>> {
+        GLOBAL_NAMES.get_or_init(|| Mutex::new(Cache::new(MAX_SOURCE_BYTES)))
     }
 
     /// Identifies the text a file was parsed from, so a cached parse can be validated without
@@ -2523,20 +2547,54 @@ mod shared_dts_parse_cache {
             .insert(path, key, parsed);
     }
 
-    struct Entry {
-        parsed: Arc<Mutex<ParsedFile>>,
+    /// The ambient global value names the `.d.ts` at `path` with text `source` declares. Cached
+    /// while its text is unchanged, and extracted from its cached full parse if it has one, or
+    /// else from a parse that skips the semantic model and is not kept.
+    pub(super) fn ambient_global_names(path: PathBuf, source: &str) -> AmbientGlobalNames {
+        let key = SourceKey::of(source);
+        if let Some(names) = global_names()
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner)
+            .get(&path, &key)
+        {
+            return names;
+        }
+        let names = Arc::new(match get(&path, &key) {
+            Some(parsed) => {
+                let guard = parsed.lock().unwrap_or_else(PoisonError::into_inner);
+                let dep = guard.borrow_dependent();
+                super::extract_ambient_global_names_in_dts(dep.program, &dep.module_record)
+            }
+            None => {
+                let allocator = oxc_allocator::Allocator::default();
+                let ret = oxc_parser::Parser::new(&allocator, source, oxc_span::SourceType::d_ts())
+                    .parse();
+                super::extract_ambient_global_names_in_dts(&ret.program, &ret.module_record)
+            }
+        });
+        global_names()
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner)
+            .insert(path, key, names.clone());
+        names
+    }
+
+    struct Entry<V> {
+        value: V,
         source: SourceKey,
         last_used: u64,
     }
 
-    pub(super) struct Cache {
-        entries: HashMap<PathBuf, Entry>,
+    /// Values derived from files' text, keyed by path and evicted least recently used first once
+    /// the text they were derived from exceeds a total size.
+    pub(super) struct Cache<V> {
+        entries: HashMap<PathBuf, Entry<V>>,
         total_source_bytes: usize,
         max_source_bytes: usize,
         clock: u64,
     }
 
-    impl Cache {
+    impl<V: Clone> Cache<V> {
         pub(super) fn new(max_source_bytes: usize) -> Self {
             Self {
                 entries: HashMap::new(),
@@ -2546,11 +2604,7 @@ mod shared_dts_parse_cache {
             }
         }
 
-        pub(super) fn get(
-            &mut self,
-            path: &Path,
-            key: &SourceKey,
-        ) -> Option<Arc<Mutex<ParsedFile>>> {
+        pub(super) fn get(&mut self, path: &Path, key: &SourceKey) -> Option<V> {
             self.clock += 1;
             let entry = self.entries.get_mut(path)?;
             if entry.source != *key {
@@ -2558,15 +2612,10 @@ mod shared_dts_parse_cache {
                 return None;
             }
             entry.last_used = self.clock;
-            Some(entry.parsed.clone())
+            Some(entry.value.clone())
         }
 
-        pub(super) fn insert(
-            &mut self,
-            path: PathBuf,
-            key: SourceKey,
-            parsed: Arc<Mutex<ParsedFile>>,
-        ) {
+        pub(super) fn insert(&mut self, path: PathBuf, key: SourceKey, value: V) {
             let source_len = key.len;
             // A single file this large would evict most of the cache for one entry.
             if source_len > self.max_source_bytes / 4 {
@@ -2589,7 +2638,7 @@ mod shared_dts_parse_cache {
             self.entries.insert(
                 path,
                 Entry {
-                    parsed,
+                    value,
                     source: key,
                     last_used: self.clock,
                 },
@@ -2686,7 +2735,7 @@ mod tests {
     }
 
     #[test]
-    fn test_ambient_global_files_index_and_lazy_parse_cache() {
+    fn test_ambient_global_names_and_lookup_order() {
         let fs = create_test_fs(&[
             (
                 "/project/script.d.ts",
@@ -2744,27 +2793,46 @@ mod tests {
         let esm_id = engine.intern_path("/project/esm.d.ts");
 
         let ctx = QueryContext::new(engine.clone());
-        let index = futures::executor::block_on(ctx.ambient_global_files());
-        let singleton_deps =
-            futures::executor::block_on(engine.query(QueryKey::AmbientGlobalFiles))
-                .dependencies
-                .clone();
+        let consumer_id = engine.intern_path("/project/app.ts");
 
-        // Indexing uses a recycled `Allocator` + `oxc_parser::Parser` without populating `ParseFile`,
-        // and callers of `ambient_global_files` do not inherit `O(D)` `.d.ts` dependencies directly.
+        // A lookup stops at the first file that may declare the name, and depends on the roots
+        // rather than on the files it scanned.
+        assert_eq!(
+            ctx.next_ambient_global_candidate("COMPILED", consumer_id, 0),
+            Some((0, script_id))
+        );
+        assert!(!engine
+            .ambient_global_names
+            .read()
+            .unwrap()
+            .contains_key(&umd_id));
+        assert_eq!(
+            ctx.next_ambient_global_candidate("NESTED_GLOBAL_AUG", consumer_id, 0),
+            Some((3, esm_id))
+        );
+        assert_eq!(
+            ctx.next_ambient_global_candidate("NESTED_GLOBAL_AUG", consumer_id, 4),
+            None
+        );
+        assert_eq!(
+            ctx.next_ambient_global_candidate("UNDECLARED", consumer_id, 0),
+            None
+        );
+        assert!(ctx.dependencies().contains(&ROOTS_FILE_ID));
+        assert!(ctx.dependencies().contains(&consumer_id));
+
+        // Names are extracted with a parse that is not kept as a `ParseFile`.
         for id in [script_id, umd_id, cjs_id, esm_id] {
             assert!(engine.cache.get(&QueryKey::ParseFile(id)).is_none());
-            assert!(singleton_deps.contains(&id));
             assert!(!ctx.dependencies().contains(&id));
             assert!(engine
-                .ambient_global_dts_cache
+                .ambient_global_names
                 .read()
                 .unwrap()
                 .contains_key(&id));
         }
-        assert!(singleton_deps.contains(&ROOTS_FILE_ID));
-        assert!(ctx.dependencies().contains(&ROOTS_FILE_ID));
 
+        let names = |id| engine.ambient_global_names(id);
         for name in [
             "TOKEN",
             "COMPILED",
@@ -2775,16 +2843,22 @@ mod tests {
             "GlobalEnum",
             "GlobalNs",
         ] {
-            assert_eq!(index.get(name), Some(&vec![script_id]), "missing {name}");
+            assert!(names(script_id).contains(name), "missing {name}");
         }
-        assert!(!index.contains_key("TypeOnlyIface"));
-        assert!(!index.contains_key("Imported"));
-        assert_eq!(index.get("UMD_GLOBAL"), Some(&vec![umd_id]));
-        assert_eq!(index.get("UmdNs"), Some(&vec![umd_id]));
-        assert!(!index.contains_key("CJS_LOCAL"));
-        assert_eq!(index.get("CJS_GLOBAL_AUG"), Some(&vec![cjs_id]));
-        assert!(!index.contains_key("ESM_LOCAL"));
-        assert_eq!(index.get("NESTED_GLOBAL_AUG"), Some(&vec![esm_id]));
+        assert!(!names(script_id).contains("TypeOnlyIface"));
+        assert!(!names(script_id).contains("Imported"));
+        assert_eq!(
+            *names(umd_id),
+            HashSet::from(["UMD_GLOBAL".to_string(), "UmdNs".to_string()])
+        );
+        assert_eq!(
+            *names(cjs_id),
+            HashSet::from(["CJS_GLOBAL_AUG".to_string()])
+        );
+        assert_eq!(
+            *names(esm_id),
+            HashSet::from(["NESTED_GLOBAL_AUG".to_string()])
+        );
     }
 
     fn ambient_global_test_engine(
@@ -2800,7 +2874,10 @@ mod tests {
         }
         let resolver = Arc::new(ResolverGeneric::new_with_file_system(
             fs.clone(),
-            ResolveOptions::default(),
+            ResolveOptions {
+                extensions: vec![".ts".into(), ".d.ts".into()],
+                ..ResolveOptions::default()
+            },
         ));
         let entrypoints = Arc::new(std::sync::RwLock::new(vec![PathBuf::from(
             "/project/app.ts",
@@ -2831,7 +2908,7 @@ mod tests {
     }
 
     #[test]
-    fn test_ambient_global_fine_grained_invalidation_and_dts_name_cache() {
+    fn test_ambient_global_lookup_stops_early_and_tracks_names() {
         let mut files: Vec<(String, String)> = vec![
             (
                 "/project/globals.d.ts".to_string(),
@@ -2863,43 +2940,37 @@ mod tests {
         let globals_id = engine.intern_path("/project/globals.d.ts");
         let extra_id = engine.intern_path("/project/extra.d.ts");
         let unrelated_0_id = engine.intern_path("/project/unrelated_0.d.ts");
-
-        assert_eq!(app_selector(&engine, true).as_deref(), Some("app-prod"));
-        assert_eq!(app_selector(&engine, false).as_deref(), Some("app-prod"));
-
-        // `unrelated_0.d.ts` has only `QueryKey::AmbientGlobalFiles` in `reverse_index` (not `app.ts`).
-        {
-            let r_index = engine.reverse_index.read().unwrap();
-            let unrelated_deps = r_index.get(&unrelated_0_id).unwrap();
-            assert_eq!(
-                unrelated_deps,
-                &HashSet::from([QueryKey::AmbientGlobalFiles])
-            );
-        }
-
-        // 1. Editing an unrelated `.d.ts` file evicts only its own per-file name cache entry and
-        // `AmbientGlobalFiles`, keeping `app.ts` cached across both optimized and local wire queries.
-        fs.upsert_file(
-            PathBuf::from("/project/unrelated_0.d.ts"),
-            "declare const UNRELATED_0: 999;\n".to_string(),
-        );
-        let evicted = engine.invalidate_file(Path::new("/project/unrelated_0.d.ts"));
-        assert!(!evicted.iter().any(|k| k.file_id() == Some(app_id)));
-        let cached_names = |id| {
+        let scanned = |id| {
             engine
-                .ambient_global_dts_cache
+                .ambient_global_names
                 .read()
                 .unwrap()
                 .contains_key(&id)
         };
-        assert!(cached_names(globals_id));
-        assert!(!cached_names(unrelated_0_id));
 
-        futures::executor::block_on(engine.ensure_singletons_fresh(false));
+        assert_eq!(app_selector(&engine, true).as_deref(), Some("app-prod"));
+        assert_eq!(app_selector(&engine, false).as_deref(), Some("app-prod"));
+
+        // 1. The lookup of `COMPILED` stopped at `globals.d.ts`, so it never read the files after
+        // it, and editing one of them evicts nothing, not even the whole-program singletons.
+        assert!(scanned(globals_id));
+        assert!(!scanned(extra_id));
+        assert!(!scanned(unrelated_0_id));
+        futures::executor::block_on(QueryContext::new(engine.clone()).component_mapping());
+        fs.upsert_file(
+            PathBuf::from("/project/unrelated_0.d.ts"),
+            "declare const UNRELATED_0: 999;\n".to_string(),
+        );
+        assert_eq!(
+            engine.invalidate_file(Path::new("/project/unrelated_0.d.ts")),
+            Vec::new()
+        );
+        assert!(engine.cache.get(&QueryKey::ComponentMapping).is_some());
+        futures::executor::block_on(engine.ensure_singletons_fresh(true));
         assert!(engine.has_cached_wire(app_id, true));
         assert!(engine.has_cached_wire(app_id, false));
 
-        // 2. `app.ts` reads `FUTURE_SEL`, which no `.d.ts` declares yet.
+        // 2. `app.ts` reads `FUTURE_SEL`, which no `.d.ts` declares, so its lookup scans them all.
         fs.upsert_file(
             PathBuf::from("/project/app.ts"),
             "import { Component } from '@angular/core';\n\
@@ -2911,33 +2982,121 @@ mod tests {
         let before = engine.analyze_file_wire_blocking("/project/app.ts", false);
         assert!(!before.0.as_ref().unwrap().diagnostics.is_empty());
         let _ = engine.analyze_file_wire_blocking("/project/app.ts", true);
+        assert!(scanned(extra_id));
+        assert!(scanned(unrelated_0_id));
+
+        // Editing a scanned `.d.ts` without changing whether it declares `FUTURE_SEL` keeps it.
+        fs.upsert_file(
+            PathBuf::from("/project/unrelated_0.d.ts"),
+            "declare const UNRELATED_0: 1000;\ndeclare const OTHER: 1;\n".to_string(),
+        );
+        assert_eq!(
+            engine.invalidate_file(Path::new("/project/unrelated_0.d.ts")),
+            Vec::new()
+        );
+        futures::executor::block_on(engine.ensure_singletons_fresh(false));
         assert!(engine.has_cached_wire(app_id, true));
         assert!(engine.has_cached_wire(app_id, false));
 
-        // 3. Declaring `FUTURE_SEL` in `extra.d.ts` changes the candidate list for a name `app.ts`
-        // looked up. `app.ts` never parsed `extra.d.ts`, so only the candidate diff evicts it.
+        // 3. Declaring `FUTURE_SEL` in `extra.d.ts`, which `app.ts` scanned but never parsed.
         fs.upsert_file(
             PathBuf::from("/project/extra.d.ts"),
             "declare const FUTURE_SEL: 'app-future';\n".to_string(),
         );
         engine.invalidate_file(Path::new("/project/extra.d.ts"));
-        assert!(!cached_names(extra_id));
+        assert!(!scanned(extra_id));
         assert!(engine.has_cached_wire(app_id, true));
         assert!(engine.has_cached_wire(app_id, false));
 
-        // Re-indexing from inside a query (as a lookup in another file's analysis would) never
-        // evicts anything partway through that query...
-        let _ = futures::executor::block_on(engine.query(QueryKey::AmbientGlobalFiles));
+        // A lookup from another file's analysis rescans `extra.d.ts` without evicting anything
+        // partway through that analysis...
+        assert_eq!(
+            engine.next_ambient_global_candidate("FUTURE_SEL", 0),
+            Some((1, extra_id))
+        );
         assert!(engine.has_cached_wire(app_id, true));
         assert!(engine.has_cached_wire(app_id, false));
 
-        // ...`ensure_singletons_fresh` does, before any per-file query reads the cache, in
-        // non-optimized mode too.
+        // ...`ensure_singletons_fresh` evicts `app.ts`, before any per-file query reads the
+        // cache, in non-optimized mode too.
         futures::executor::block_on(engine.ensure_singletons_fresh(false));
         assert!(!engine.has_cached_wire(app_id, true));
         assert!(!engine.has_cached_wire(app_id, false));
         assert_eq!(app_selector(&engine, false).as_deref(), Some("app-future"));
         assert_eq!(app_selector(&engine, true).as_deref(), Some("app-future"));
+    }
+
+    #[test]
+    fn test_ambient_global_declared_in_dts_that_becomes_readable() {
+        let files = vec![(
+            "/project/app.ts".to_string(),
+            "import { Component } from '@angular/core';\n\
+             @Component({ selector: LATE_SEL, template: '' })\n\
+             export class LateComp {}\n"
+                .to_string(),
+        )];
+        let (engine, fs) =
+            ambient_global_test_engine(&files, vec![PathBuf::from("/project/late.d.ts")]);
+        let app_id = engine.intern_path("/project/app.ts");
+
+        let before = engine.analyze_file_wire_blocking("/project/app.ts", false);
+        assert!(!before.0.as_ref().unwrap().diagnostics.is_empty());
+
+        fs.upsert_file(
+            PathBuf::from("/project/late.d.ts"),
+            "declare const LATE_SEL: 'app-late';\n".to_string(),
+        );
+        engine.invalidate_file(Path::new("/project/late.d.ts"));
+        futures::executor::block_on(engine.ensure_singletons_fresh(false));
+        assert!(!engine.has_cached_wire(app_id, false));
+        assert_eq!(app_selector(&engine, false).as_deref(), Some("app-late"));
+    }
+
+    #[test]
+    fn test_ambient_global_declaration_change_refreshes_component_mapping() {
+        let files = vec![
+            (
+                "/project/extra.d.ts".to_string(),
+                "declare interface ExtraType {}\n".to_string(),
+            ),
+            (
+                "/project/app.ts".to_string(),
+                "import { NgModule } from '@angular/core';\n\
+                 import { DeclaredComp } from './comp';\n\
+                 @NgModule({ declarations: FUTURE_ENABLED ? [DeclaredComp] : [] })\n\
+                 export class AppModule {}\n"
+                    .to_string(),
+            ),
+            (
+                "/project/comp.ts".to_string(),
+                "import { Component } from '@angular/core';\n\
+                 @Component({ selector: 'app-declared', template: '', standalone: false })\n\
+                 export class DeclaredComp {}\n"
+                    .to_string(),
+            ),
+        ];
+        let (engine, fs) =
+            ambient_global_test_engine(&files, vec![PathBuf::from("/project/extra.d.ts")]);
+        let comp_id = engine.intern_path("/project/comp.ts");
+        let declared = || {
+            futures::executor::block_on(QueryContext::new(engine.clone()).component_mapping())
+                .component_to_module
+                .contains_key(&comp_id)
+        };
+
+        let _ = engine.analyze_file_wire_blocking("/project/app.ts", true);
+        assert!(!declared());
+
+        // `ComponentMapping` evaluated `FUTURE_ENABLED` itself, so declaring it evicts the mapping
+        // along with the module's own analysis, although editing `extra.d.ts` alone does not.
+        fs.upsert_file(
+            PathBuf::from("/project/extra.d.ts"),
+            "declare const FUTURE_ENABLED: true;\n".to_string(),
+        );
+        engine.invalidate_file(Path::new("/project/extra.d.ts"));
+        assert!(engine.cache.get(&QueryKey::ComponentMapping).is_some());
+        futures::executor::block_on(engine.ensure_singletons_fresh(true));
+        assert!(declared());
     }
 
     #[test]
@@ -2958,12 +3117,7 @@ mod tests {
         let (engine, fs) =
             ambient_global_test_engine(&files, vec![PathBuf::from("/project/globals.d.ts")]);
         let app_id = engine.intern_path("/project/app.ts");
-        let candidates = || {
-            let index = futures::executor::block_on(
-                QueryContext::new(engine.clone()).ambient_global_files(),
-            );
-            index.get("COMPILED").cloned()
-        };
+        let candidates = || engine.next_ambient_global_candidate("COMPILED", 0);
 
         assert_eq!(app_selector(&engine, true).as_deref(), Some("app-prod"));
         assert_eq!(app_selector(&engine, false).as_deref(), Some("app-prod"));
@@ -2975,8 +3129,9 @@ mod tests {
         );
         engine.invalidate_file(Path::new("/project/globals.d.ts"));
 
-        // The candidate list is unchanged, so the ambient diff has nothing to evict; `app.ts` is
-        // evicted by its ordinary dependency on the `.d.ts` it evaluated `COMPILED` in.
+        // The names `globals.d.ts` declares are unchanged, so the ambient diff has nothing to
+        // evict; `app.ts` is evicted by its ordinary dependency on the `.d.ts` it evaluated
+        // `COMPILED` in.
         assert!(!engine.has_cached_wire(app_id, true));
         assert!(!engine.has_cached_wire(app_id, false));
         assert_eq!(candidates(), candidates_before);
@@ -4097,6 +4252,32 @@ mod shared_dts_parse_cache_tests {
             parse(&engine_over(&files), path)
         };
         assert!(Arc::ptr_eq(&first, &second));
+    }
+
+    #[test]
+    fn reuses_ambient_global_names_across_engines() {
+        let path = "/shared_dts_global_names/globals.d.ts";
+        let names = |source: &str| {
+            let engine = engine_over(&[(path, source)]);
+            engine.ambient_global_names(engine.intern_path(path))
+        };
+        let first = names("declare const SHARED_GLOBAL: true;");
+        let second = names("declare const SHARED_GLOBAL: true;");
+        assert!(Arc::ptr_eq(&first, &second));
+        assert_eq!(*first, HashSet::from(["SHARED_GLOBAL".to_string()]));
+
+        let changed = names("declare const OTHER_GLOBAL: true;");
+        assert_eq!(*changed, HashSet::from(["OTHER_GLOBAL".to_string()]));
+    }
+
+    #[test]
+    fn extracts_ambient_global_names_from_a_shared_parse() {
+        let path = "/shared_dts_global_names_parsed/globals.d.ts";
+        let files = [(path, "declare const PARSED_GLOBAL: true;")];
+        parse(&engine_over(&files), path);
+        let engine = engine_over(&files);
+        let names = engine.ambient_global_names(engine.intern_path(path));
+        assert_eq!(*names, HashSet::from(["PARSED_GLOBAL".to_string()]));
     }
 
     #[test]
