@@ -7,6 +7,7 @@
  */
 
 import {assertInInjectionContext} from '../di';
+import {InjectionToken} from '../di/injection_token';
 import {ProviderToken} from '../di/provider_token';
 import {
   createMultiResultQuerySignalFn,
@@ -47,14 +48,34 @@ export interface ViewChildFunction {
    *
    * @publicAPI
    */
+  <LocatorT, ReadT = any>(
+    locator: ProviderToken<LocatorT> | string,
+    opts: {
+      read: abstract new (...args: any[]) => ReadT;
+      debugName?: string;
+    },
+  ): Signal<ReadT | undefined>;
 
   <LocatorT, ReadT>(
     locator: ProviderToken<LocatorT> | string,
     opts: {
-      read: ProviderToken<ReadT>;
+      read: InjectionToken<ReadT>;
       debugName?: string;
     },
   ): Signal<ReadT | undefined>;
+
+  /**
+   * Initializes a view child query. Consider using `viewChild.required` for queries that should
+   * always match.
+   *
+   * @publicAPI
+   */
+  <LocatorT = any>(
+    locator: abstract new (...args: any[]) => LocatorT,
+    opts?: {
+      debugName?: string;
+    },
+  ): Signal<LocatorT | undefined>;
 
   <LocatorT>(
     locator: ProviderToken<LocatorT> | string,
@@ -69,20 +90,40 @@ export interface ViewChildFunction {
    * @publicAPI
    */
   required: {
+    <LocatorT, ReadT = any>(
+      locator: ProviderToken<LocatorT> | string,
+      opts: {
+        read: abstract new (...args: any[]) => ReadT;
+        debugName?: string;
+      },
+    ): Signal<ReadT>;
+
+    <LocatorT, ReadT>(
+      locator: ProviderToken<LocatorT> | string,
+      opts: {
+        read: InjectionToken<ReadT>;
+        debugName?: string;
+      },
+    ): Signal<ReadT>;
+
+    /**
+     * Initializes a view child query that is expected to always match an element.
+     *
+     * @publicAPI
+     */
+    <LocatorT = any>(
+      locator: abstract new (...args: any[]) => LocatorT,
+      opts?: {
+        debugName?: string;
+      },
+    ): Signal<LocatorT>;
+
     <LocatorT>(
       locator: ProviderToken<LocatorT> | string,
       opts?: {
         debugName?: string;
       },
     ): Signal<LocatorT>;
-
-    <LocatorT, ReadT>(
-      locator: ProviderToken<LocatorT> | string,
-      opts: {
-        read: ProviderToken<ReadT>;
-        debugName?: string;
-      },
-    ): Signal<ReadT>;
   };
 }
 
@@ -118,17 +159,44 @@ export const viewChild: ViewChildFunction = (() => {
   return viewChildFn as typeof viewChildFn & {required: typeof viewChildRequiredFn};
 })();
 
+/**
+ * Initializes a view children query.
+ *
+ * Query results are represented as a signal of a read-only collection containing all matched
+ * elements.
+ *
+ * @publicAPI
+ */
+export function viewChildren<LocatorT, ReadT = any>(
+  locator: ProviderToken<LocatorT> | string,
+  opts: {
+    read: abstract new (...args: any[]) => ReadT;
+    debugName?: string;
+  },
+): Signal<ReadonlyArray<ReadT>>;
+export function viewChildren<LocatorT, ReadT>(
+  locator: ProviderToken<LocatorT> | string,
+  opts: {
+    read: InjectionToken<ReadT>;
+    debugName?: string;
+  },
+): Signal<ReadonlyArray<ReadT>>;
+/**
+ * Initializes a view children query.
+ *
+ * Query results are represented as a signal of a read-only collection containing all matched
+ * elements.
+ *
+ * @publicAPI
+ */
+export function viewChildren<LocatorT = any>(
+  locator: abstract new (...args: any[]) => LocatorT,
+  opts?: {debugName?: string},
+): Signal<ReadonlyArray<LocatorT>>;
 export function viewChildren<LocatorT>(
   locator: ProviderToken<LocatorT> | string,
   opts?: {debugName?: string},
 ): Signal<ReadonlyArray<LocatorT>>;
-export function viewChildren<LocatorT, ReadT>(
-  locator: ProviderToken<LocatorT> | string,
-  opts: {
-    read: ProviderToken<ReadT>;
-    debugName?: string;
-  },
-): Signal<ReadonlyArray<ReadT>>;
 
 /**
  * Initializes a view children query.
@@ -203,6 +271,39 @@ export interface ContentChildFunction {
    * Consider using `contentChild.required` for queries that should always match.
    * @publicAPI
    */
+  <LocatorT, ReadT = any>(
+    locator: ProviderToken<LocatorT> | string,
+    opts: {
+      descendants?: boolean;
+      read: abstract new (...args: any[]) => ReadT;
+      debugName?: string;
+    },
+  ): Signal<ReadT | undefined>;
+
+  <LocatorT, ReadT>(
+    locator: ProviderToken<LocatorT> | string,
+    opts: {
+      descendants?: boolean;
+      read: InjectionToken<ReadT>;
+      debugName?: string;
+    },
+  ): Signal<ReadT | undefined>;
+
+  /**
+   * Initializes a content child query.
+   *
+   * Consider using `contentChild.required` for queries that should always match.
+   * @publicAPI
+   */
+  <LocatorT = any>(
+    locator: abstract new (...args: any[]) => LocatorT,
+    opts?: {
+      descendants?: boolean;
+      read?: undefined;
+      debugName?: string;
+    },
+  ): Signal<LocatorT | undefined>;
+
   <LocatorT>(
     locator: ProviderToken<LocatorT> | string,
     opts?: {
@@ -212,19 +313,40 @@ export interface ContentChildFunction {
     },
   ): Signal<LocatorT | undefined>;
 
-  <LocatorT, ReadT>(
-    locator: ProviderToken<LocatorT> | string,
-    opts: {
-      descendants?: boolean;
-      read: ProviderToken<ReadT>;
-      debugName?: string;
-    },
-  ): Signal<ReadT | undefined>;
-
   /**
    * Initializes a content child query that is always expected to match.
    */
   required: {
+    <LocatorT, ReadT = any>(
+      locator: ProviderToken<LocatorT> | string,
+      opts: {
+        descendants?: boolean;
+        read: abstract new (...args: any[]) => ReadT;
+        debugName?: string;
+      },
+    ): Signal<ReadT>;
+
+    <LocatorT, ReadT>(
+      locator: ProviderToken<LocatorT> | string,
+      opts: {
+        descendants?: boolean;
+        read: InjectionToken<ReadT>;
+        debugName?: string;
+      },
+    ): Signal<ReadT>;
+
+    /**
+     * Initializes a content child query that is always expected to match.
+     */
+    <LocatorT = any>(
+      locator: abstract new (...args: any[]) => LocatorT,
+      opts?: {
+        descendants?: boolean;
+        read?: undefined;
+        debugName?: string;
+      },
+    ): Signal<LocatorT>;
+
     <LocatorT>(
       locator: ProviderToken<LocatorT> | string,
       opts?: {
@@ -233,15 +355,6 @@ export interface ContentChildFunction {
         debugName?: string;
       },
     ): Signal<LocatorT>;
-
-    <LocatorT, ReadT>(
-      locator: ProviderToken<LocatorT> | string,
-      opts: {
-        descendants?: boolean;
-        read: ProviderToken<ReadT>;
-        debugName?: string;
-      },
-    ): Signal<ReadT>;
   };
 }
 
@@ -278,6 +391,46 @@ export const contentChild: ContentChildFunction = (() => {
   return contentChildFn as typeof contentChildFn & {required: typeof contentChildRequiredFn};
 })();
 
+/**
+ * Initializes a content children query.
+ *
+ * Query results are represented as a signal of a read-only collection containing all matched
+ * elements.
+ *
+ * @publicAPI
+ */
+export function contentChildren<LocatorT, ReadT = any>(
+  locator: ProviderToken<LocatorT> | string,
+  opts: {
+    descendants?: boolean;
+    read: abstract new (...args: any[]) => ReadT;
+    debugName?: string;
+  },
+): Signal<ReadonlyArray<ReadT>>;
+export function contentChildren<LocatorT, ReadT>(
+  locator: ProviderToken<LocatorT> | string,
+  opts: {
+    descendants?: boolean;
+    read: InjectionToken<ReadT>;
+    debugName?: string;
+  },
+): Signal<ReadonlyArray<ReadT>>;
+/**
+ * Initializes a content children query.
+ *
+ * Query results are represented as a signal of a read-only collection containing all matched
+ * elements.
+ *
+ * @publicAPI
+ */
+export function contentChildren<LocatorT = any>(
+  locator: abstract new (...args: any[]) => LocatorT,
+  opts?: {
+    descendants?: boolean;
+    read?: undefined;
+    debugName?: string;
+  },
+): Signal<ReadonlyArray<LocatorT>>;
 export function contentChildren<LocatorT>(
   locator: ProviderToken<LocatorT> | string,
   opts?: {
@@ -286,14 +439,6 @@ export function contentChildren<LocatorT>(
     debugName?: string;
   },
 ): Signal<ReadonlyArray<LocatorT>>;
-export function contentChildren<LocatorT, ReadT>(
-  locator: ProviderToken<LocatorT> | string,
-  opts: {
-    descendants?: boolean;
-    read: ProviderToken<ReadT>;
-    debugName?: string;
-  },
-): Signal<ReadonlyArray<ReadT>>;
 
 /**
  * Initializes a content children query.
