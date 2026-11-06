@@ -48,7 +48,7 @@ The `CanActivate` guard determines whether a user can access a route. It is most
 It has access to the following default arguments:
 
 - `route`: `ActivatedRouteSnapshot` - Contains information about the route being activated
-- `state`: `RouterStateSnapshot` - Contains the router's current state
+- `state`: `RouterStateSnapshot` - Contains the state the router is navigating to, not the current state (use `Router.routerState` for that)
 
 It can return the [standard return guard types](#route-guard-return-types).
 
@@ -73,7 +73,7 @@ The `CanActivateChild` guard determines whether a user can access child routes o
 It has access to the following default arguments:
 
 - `childRoute`: `ActivatedRouteSnapshot` - Contains information about the "future" snapshot (i.e., state the router is attempting to navigate to) of the child route being activated
-- `state`: `RouterStateSnapshot` - Contains the router's current state
+- `state`: `RouterStateSnapshot` - Contains the state the router is navigating to, not the current state (use `Router.routerState` for that)
 
 It can return the [standard return guard types](#route-guard-return-types).
 
