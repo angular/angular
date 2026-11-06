@@ -43,7 +43,7 @@ import {profiler} from '../render3/profiler';
 import {isReactiveLViewConsumer} from '../render3/reactive_lview_consumer';
 import {EffectScheduler} from '../render3/reactivity/root_effect_scheduler';
 import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from '../render3/util/global_utils';
-import {requiresRefreshOrTraversal} from '../render3/util/view_utils';
+import {requiresRefreshOrTraversal, viewAttachedToChangeDetector} from '../render3/util/view_utils';
 import {ViewRef as InternalViewRef} from '../render3/view_ref';
 import {TESTABILITY} from '../testability/testability';
 import {NgZone} from '../zone/ng_zone';
@@ -578,7 +578,9 @@ export class ApplicationRef {
       this.synchronize();
       if (typeof ngDevMode === 'undefined' || ngDevMode) {
         for (let view of this.allViews) {
-          view.checkNoChanges();
+          if (viewAttachedToChangeDetector(view._lView)) {
+            view.checkNoChanges();
+          }
         }
       }
     } finally {
@@ -648,6 +650,10 @@ export class ApplicationRef {
 
       // Check all potentially dirty views.
       for (let {_lView} of this.allViews) {
+        if (!viewAttachedToChangeDetector(_lView)) {
+          continue;
+        }
+
         // When re-checking, only check views which actually need it.
         if (!useGlobalCheck && !requiresRefreshOrTraversal(_lView)) {
           continue;
@@ -713,7 +719,13 @@ export class ApplicationRef {
    *    reachable through traversal from our roots (e.g. it's detached from the CD tree).
    */
   private syncDirtyFlagsWithViews(): void {
-    if (this.allViews.some(({_lView}) => requiresRefreshOrTraversal(_lView))) {
+    // Detached views are skipped when checking, so a dirty one must not request another pass:
+    // nothing would ever clear its flags and `synchronize` would loop until it gives up.
+    if (
+      this.allViews.some(
+        ({_lView}) => viewAttachedToChangeDetector(_lView) && requiresRefreshOrTraversal(_lView),
+      )
+    ) {
       // If after running all afterRender callbacks new views are dirty, ensure we loop back.
       this.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeTraversal;
       return;
