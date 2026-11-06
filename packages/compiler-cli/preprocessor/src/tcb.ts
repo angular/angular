@@ -36,6 +36,7 @@ import MagicString from 'magic-string';
 
 import {makeClassKey} from './compiler-utils.js';
 import {OutOfBandDiagnosticRecorderImpl} from './oob.js';
+import {NOOP_TRACER, type Tracer} from './perf.js';
 import {adaptTcbInput, ExtendedTcbTypeParameter} from './tcb_adapter.js';
 import {requiresInlineDeclaration, requiresInlineTypeCheckBlock} from './tcb_util.js';
 import {getTemplateSemanticsDiagnostics} from './template_semantics.js';
@@ -581,6 +582,7 @@ export function prepareTcbTargets(
   content: string,
   config: TypeCheckingConfig,
   classes?: nga.ClassMetadata[],
+  tracer: Tracer = NOOP_TRACER,
 ): PreparedTcbData | null {
   if (tcbTargets.length === 0) return null;
 
@@ -608,7 +610,15 @@ export function prepareTcbTargets(
   for (let i = 0; i < tcbTargets.length; i++) {
     const comp = tcbTargets[i];
     const typeCheckId = `tcb${i + 1}` as TypeCheckId;
-    const adapted = adaptTcbInput(comp, typeCheckId, filePath, config, requiresInline, content);
+    const adapted = adaptTcbInput(
+      comp,
+      typeCheckId,
+      filePath,
+      config,
+      requiresInline,
+      content,
+      tracer,
+    );
     intermediateTargets.push({comp, typeCheckId, ...adapted});
 
     if (
@@ -627,7 +637,7 @@ export function prepareTcbTargets(
   for (let i = 0; i < tcbTargets.length; i++) {
     const {comp, typeCheckId} = intermediateTargets[i];
     const {tcbMeta, targetMeta, hostElement} = requiresInline
-      ? adaptTcbInput(comp, typeCheckId, filePath, config, true, content)
+      ? adaptTcbInput(comp, typeCheckId, filePath, config, true, content, tracer)
       : intermediateTargets[i];
 
     const classKey = makeClassKey(comp.className, comp.classMeta.span.start);

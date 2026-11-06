@@ -15,6 +15,7 @@ mod analyzer;
 pub mod compiler;
 pub mod evaluator;
 pub mod fs;
+pub mod perf;
 pub mod physical_fs;
 pub mod query;
 pub mod resource_loader;

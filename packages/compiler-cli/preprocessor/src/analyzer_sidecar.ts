@@ -18,6 +18,15 @@ import type {
 } from './types.js';
 import type {NgpCompilerOptions} from './compiler_options.js';
 import type {IAnalyzer} from './hybrid_compiler.js';
+import {
+  Counter,
+  NOOP_TRACER,
+  nowMicros,
+  SpanKind,
+  type AnalyzerPerfTake,
+  type RustPerfTake,
+  type Tracer,
+} from './perf.js';
 
 export class SidecarAnalyzer implements IAnalyzer {
   private sidecarProcess: child_process.ChildProcess;
@@ -38,8 +47,13 @@ export class SidecarAnalyzer implements IAnalyzer {
    */
   private terminationReason: string | null = null;
 
-  constructor(sidecarPath: string) {
-    this.sidecarProcess = child_process.spawn(sidecarPath);
+  constructor(
+    sidecarPath: string,
+    private tracer: Tracer = NOOP_TRACER,
+  ) {
+    this.sidecarProcess = tracer.slice(SpanKind.SpawnSidecar, () =>
+      child_process.spawn(sidecarPath),
+    );
 
     if (this.sidecarProcess.stdout) {
       this.readMessages(this.sidecarProcess.stdout);
@@ -140,6 +154,7 @@ export class SidecarAnalyzer implements IAnalyzer {
   private handleMessage(line: string): void {
     if (this.terminationReason !== null || line.trim() === '') return;
     let parsed: unknown;
+    const parseStartUs = this.tracer.enabled ? nowMicros() : 0;
     try {
       parsed = JSON.parse(line);
     } catch (e) {
@@ -155,6 +170,11 @@ export class SidecarAnalyzer implements IAnalyzer {
       return;
     }
     const message = parsed as Record<string, any>;
+    if (this.tracer.enabled && message['method'] === 'analysisResult') {
+      // This runs while the driver waits in `AwaitAnalysis`, so it gets its own slice.
+      this.tracer.record(SpanKind.ParseAnalysisResult, parseStartUs);
+      this.tracer.count(Counter.AnalysisResultBytes, Buffer.byteLength(line));
+    }
     if ('id' in message && message['id'] !== undefined && message['id'] !== null) {
       const req = this.pendingRequests.get(message['id'] as number);
       if (req) {
@@ -218,15 +238,26 @@ export class SidecarAnalyzer implements IAnalyzer {
       'tsconfigPath' | 'optimize' | 'virtualFiles' | 'nodeModulesPathOverride'
     >,
   ): Promise<NgpCompilerOptions> {
-    const res = await this.callRpc<NgpCompilerOptions | null>('initialize', {
-      ...options,
-      tsconfigPath,
-      optimize,
-      virtualFiles,
-      nodeModulesPathOverride,
-    });
+    const token = this.tracer.begin(SpanKind.InitializeRpc);
+    let res: NgpCompilerOptions | null;
+    try {
+      res = await this.callRpc<NgpCompilerOptions | null>('initialize', {
+        ...options,
+        tsconfigPath,
+        optimize,
+        virtualFiles,
+        nodeModulesPathOverride,
+      });
+    } finally {
+      this.tracer.end(token);
+    }
     this.compilerOptions = res ?? {};
     return this.compilerOptions;
+  }
+
+  /** Records later RPCs and message parsing on `tracer`, for a long-lived sidecar. */
+  setTracer(tracer: Tracer): void {
+    this.tracer = tracer;
   }
 
   getCompilerOptions(): NgpCompilerOptions {
@@ -349,6 +380,14 @@ export class SidecarAnalyzer implements IAnalyzer {
 
   async canonicalPaths(paths: string[]): Promise<string[]> {
     return this.callRpc<string[]>('canonicalPaths', paths);
+  }
+
+  async takePerf(): Promise<AnalyzerPerfTake> {
+    // `nowUs` is read mid round trip; the midpoint of these aligns the clocks.
+    const requestUs = nowMicros();
+    const take = await this.callRpc<RustPerfTake>('takePerf', {});
+    const responseUs = nowMicros();
+    return {...take, requestUs, responseUs};
   }
 
   getMetadataForFileSync(filePath: string): AnalysisResult | null {

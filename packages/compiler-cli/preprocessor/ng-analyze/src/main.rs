@@ -111,6 +111,11 @@ fn handle_rpc_request(req: RpcRequest, analyzer: &mut Option<Analyzer>) -> RpcRe
                 error: Some("Invalid initialize params".to_string()),
             };
         };
+        let perf_trace = options.perf_trace == Some(true);
+        if perf_trace {
+            ng_analyze::perf::install();
+        }
+        ng_analyze::perf::set_recording(perf_trace, options.perf_trace_detail == Some(true));
         return match Analyzer::new_core(options) {
             Ok(a) => {
                 let compiler_options =
@@ -354,6 +359,18 @@ fn handle_rpc_request(req: RpcRequest, analyzer: &mut Option<Analyzer>) -> RpcRe
                 error: None,
             }
         }
+        "takePerf" => match ng_analyze::perf::take(&|id| a.file_path(id)) {
+            Some(take) => RpcResponse {
+                id: req.id,
+                result: Some(serde_json::to_value(take).unwrap()),
+                error: None,
+            },
+            None => RpcResponse {
+                id: req.id,
+                result: None,
+                error: Some("Perf tracing is not enabled".to_string()),
+            },
+        },
 
         _ => RpcResponse {
             id: req.id,
@@ -383,6 +400,7 @@ mod tests {
 
     #[test]
     fn test_rpc_initialize_and_analyze() {
+        let _lock = PERF_LOCK.lock().unwrap_or_else(|e| e.into_inner());
         let mut virtual_files = HashMap::new();
         virtual_files.insert(
             "/project/tsconfig.json".to_string(),
@@ -438,5 +456,80 @@ mod tests {
         };
         let res5 = handle_rpc_request(delta_req2, &mut analyzer);
         assert!(res5.error.is_none());
+    }
+
+    /// `initialize` sets the global perf recording state.
+    static PERF_LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
+
+    fn init_request(perf_trace: bool) -> RpcRequest {
+        RpcRequest {
+            id: 1,
+            method: "initialize".to_string(),
+            params: serde_json::json!({
+                "tsconfigPath": "/project/tsconfig.json",
+                "virtualFiles": {
+                    "/project/tsconfig.json": r#"{"files": ["app.ts"]}"#,
+                    "/project/app.ts": "export class AppComponent {}",
+                },
+                "perfTrace": perf_trace,
+            }),
+        }
+    }
+
+    fn analyze_and_take_perf(analyzer: &mut Option<Analyzer>) -> RpcResponse {
+        let a = analyzer.as_ref().unwrap();
+        let mut rx = a
+            .analyze_core(ng_analyze::compiler::analyzer::get_global_pool().clone())
+            .unwrap();
+        futures::executor::block_on(async { while rx.next().await.is_some() {} });
+        let req = RpcRequest {
+            id: 2,
+            method: "takePerf".to_string(),
+            params: serde_json::Value::Null,
+        };
+        handle_rpc_request(req, analyzer)
+    }
+
+    #[test]
+    fn test_rpc_take_perf() {
+        let _lock = PERF_LOCK.lock().unwrap_or_else(|e| e.into_inner());
+        let mut analyzer = None;
+        assert!(handle_rpc_request(init_request(true), &mut analyzer)
+            .error
+            .is_none());
+        let take = analyze_and_take_perf(&mut analyzer).result.unwrap();
+        assert_eq!(take["pid"], std::process::id());
+        let summary = &take["summary"];
+        assert!(summary["queries"]["ParseFile"]["count"].as_u64().unwrap() >= 1);
+        assert!(summary["spans"]["Initialize"]["count"].as_u64().unwrap() >= 1);
+        assert!(summary["counters"]["VirtualFileHits"].as_u64().unwrap() > 0);
+        let slowest = &summary["queries"]["ParseFile"]["slowest"][0];
+        assert_eq!(slowest["file"], "/project/app.ts");
+        let events = take["events"].as_array().unwrap();
+        let parse = events
+            .iter()
+            .find(|e| e["ph"] == "X" && e["name"] == "ngp.rust.ParseFile")
+            .unwrap();
+        assert_eq!(parse["cat"], "ngp.query");
+        let worker = events
+            .iter()
+            .find(|e| e["name"] == "thread_name" && e["tid"] == parse["tid"])
+            .unwrap();
+        assert!(worker["args"]["name"]
+            .as_str()
+            .unwrap()
+            .starts_with("ng-analyze-worker-"));
+
+        // A persistent sidecar follows each `initialize`.
+        assert!(handle_rpc_request(init_request(false), &mut analyzer)
+            .error
+            .is_none());
+        let res = analyze_and_take_perf(&mut analyzer);
+        assert_eq!(res.error.as_deref(), Some("Perf tracing is not enabled"));
+        assert!(handle_rpc_request(init_request(true), &mut analyzer)
+            .error
+            .is_none());
+        let take = analyze_and_take_perf(&mut analyzer).result.unwrap();
+        assert_eq!(take["summary"]["spans"]["Initialize"]["count"], 1);
     }
 }

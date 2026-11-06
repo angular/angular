@@ -85,6 +85,7 @@ import {extractHmrMetadata, getHmrUpdateDeclaration} from './hmr.js';
 import type {IAnalyzer} from './hybrid_compiler.js';
 import {ExpressionPrinter, RawSource} from './output_ast_printer.js';
 import {OutputSourceMapBuilder, type OutputSourceMapOptions} from './output_source_map.js';
+import {Counter, SpanKind, type Tracer} from './perf.js';
 import {analyzeTemplateForSelectorless} from './selectorless.js';
 import {
   combineTcbContent,
@@ -128,6 +129,7 @@ interface HybridCompilerContext {
   rootDirs?: string[];
   enableHmr?: boolean;
   hmrUpdateTarget?: string;
+  tracer: Tracer;
 }
 
 // These are const enums, so they're not available at runtime - use literal values
@@ -188,6 +190,7 @@ export function buildTcbTargets(
   options: Partial<ParseTemplateOptions> = {},
   tcbConfig: NgpTypeCheckingConfig,
   dependencyTemplates: DependencyTemplates,
+  tracer: Tracer,
 ): TcbTargetInput[] {
   const tcbTargets: TcbTargetInput[] = [];
   const consumer = {filePath, content, classes, templatesByClass};
@@ -211,6 +214,7 @@ export function buildTcbTargets(
         filePath,
         content,
         options,
+        tracer,
       );
 
       const parsedSchemas: SchemaMetadata[] = [];
@@ -317,6 +321,7 @@ export async function processFile(
   content: string,
   metadata?: nga.AnalysisResult,
   chunkContext?: ChunkContext,
+  fileId = 0,
 ): Promise<ProcessedFile> {
   const result = metadata || (await rawCtx.analyzer.getMetadataForFile(filePath));
   if (!result) {
@@ -333,6 +338,7 @@ export async function processFile(
       filePath,
       content,
       rawCtx.templateParseOptions,
+      rawCtx.tracer,
     );
     for (const styleUrl of parsed.styleUrls) {
       if (!resourceMap.has(styleUrl)) {
@@ -350,9 +356,10 @@ export async function processFile(
       rawCtx.fileCache,
       rawCtx.templateParseOptions,
       chunkContext?.metadataMap || rawCtx.metadataMap,
+      rawCtx.tracer,
     ).prefetch(result);
   }
-  return processFileSync(rawCtx, filePath, content, resourceMap, result, chunkContext);
+  return processFileSync(rawCtx, filePath, content, resourceMap, result, chunkContext, fileId);
 }
 
 export function processFileSync(
@@ -362,6 +369,7 @@ export function processFileSync(
   readResource?: ((file: string) => string | undefined) | Map<string, nga.ResolvedResource | null>,
   metadata?: nga.AnalysisResult,
   chunkContext?: ChunkContext,
+  fileId = 0,
 ): ProcessedFile {
   const ctx: HybridCompilerContext & {
     remoteScopedClasses: Set<string>;
@@ -465,6 +473,7 @@ export function processFileSync(
   // error-free (where ngtsc would have reached emit and thrown too).
   let pipelineError: unknown = undefined;
 
+  const compileToken = ctx.tracer.begin(SpanKind.Compile, fileId);
   for (const classMeta of classes) {
     if (ctx.hmrUpdateTarget !== undefined && classMeta.className !== ctx.hmrUpdateTarget) {
       continue;
@@ -618,6 +627,7 @@ export function processFileSync(
         factory: factoryRes,
         def: {name: 'ɵpipe', def},
       });
+      ctx.tracer.count(Counter.PipesCompiled);
     }
 
     if (component) {
@@ -689,6 +699,7 @@ export function processFileSync(
         filePath,
         content,
         ctx.templateParseOptions,
+        ctx.tracer,
       );
 
       if (parsed.errors && parsed.errors.length > 0) {
@@ -896,7 +907,9 @@ export function processFileSync(
         matcher,
         createForeignComponentMatcher(component.foreignImports),
       );
-      const bound = binder.bind({template: parsed.nodes});
+      const bound = ctx.tracer.slice(SpanKind.TemplateBind, () =>
+        binder.bind({template: parsed.nodes}),
+      );
 
       /** Resolves binder matches back to the declarations they were registered from. */
       const toDecls = (metas: MinimalDirectiveMeta[]): nga.DeclarationMetadata[] =>
@@ -1541,6 +1554,7 @@ export function processFileSync(
         def: {name: 'ɵcmp', def: compileResult},
         coercionMembers: classMeta.coercionMembers,
       });
+      ctx.tracer.count(Counter.ComponentsCompiled);
 
       if (ctx.enableHmr) {
         hmrComponent = {
@@ -1637,6 +1651,7 @@ export function processFileSync(
         def: {name: 'ɵdir', def: compileResult},
         coercionMembers: classMeta.coercionMembers,
       });
+      ctx.tracer.count(Counter.DirectivesCompiled);
     }
     if (service) {
       decoratorsToEmit.push({
@@ -1671,6 +1686,7 @@ export function processFileSync(
         factory: factoryRes,
         def: {name: 'ɵprov', def},
       });
+      ctx.tracer.count(Counter.InjectablesCompiled);
     }
 
     if (injectable) {
@@ -1743,6 +1759,7 @@ export function processFileSync(
         factory: factoryRes,
         def: {name: 'ɵprov', def},
       });
+      ctx.tracer.count(Counter.InjectablesCompiled);
     }
 
     if (ngModule) {
@@ -1764,6 +1781,7 @@ export function processFileSync(
         filePath,
         fileDiagnostics,
       );
+      ctx.tracer.count(Counter.NgModulesCompiled);
     }
 
     let classMetadataStmt: o.Statement | null = null;
@@ -1838,10 +1856,12 @@ export function processFileSync(
                 nameOffset: classMeta.nameSpan?.start ?? span.start,
                 ctx,
               });
+        ctx.tracer.end(compileToken);
         return {magicString: s, generateSourceMap, hmrUpdateModule};
       }
     }
   }
+  ctx.tracer.end(compileToken);
 
   // The target was not a component (or has no HMR metadata); nothing to update.
   if (ctx.hmrUpdateTarget !== undefined) {
@@ -1849,6 +1869,7 @@ export function processFileSync(
   }
 
   // Second pass: print and append static fields and trailing statements for all compiled classes.
+  const serializeToken = ctx.tracer.begin(SpanKind.SerializeOutput, fileId);
   for (const compiledClass of compiledClasses) {
     appendCompiledClass(compiledClass, out, printer, ctx);
   }
@@ -1909,7 +1930,10 @@ export function processFileSync(
     const prefix = importsEnd === 0 || content[importsEnd - 1] === '\n' ? '' : '\n';
     out.appendRight(importsEnd, prefix + topOfFileStatements + '\n');
   }
+  ctx.tracer.end(serializeToken);
 
+  const tcbToken =
+    ctx.optimize && !ctx.emitDeclarationOnly ? ctx.tracer.begin(SpanKind.GenerateTcb, fileId) : 0;
   const analysis = getOrCreateFileAnalysis(ctx.fileCache, filePath);
   let prepared: ReturnType<typeof prepareTcbTargets>;
   if (ctx.optimize && !ctx.emitDeclarationOnly) {
@@ -1928,11 +1952,13 @@ export function processFileSync(
           ctx.fileCache,
           ctx.templateParseOptions,
           ctx.metadataMap,
+          ctx.tracer,
         ),
+        ctx.tracer,
       );
       prepared =
         tcbTargets.length > 0
-          ? prepareTcbTargets(filePath, tcbTargets, content, ctx.tcbConfig, classes)
+          ? prepareTcbTargets(filePath, tcbTargets, content, ctx.tcbConfig, classes, ctx.tracer)
           : null;
       analysis.preparedTcbData = prepared;
       analysis.sourceContent = content;
@@ -1949,6 +1975,7 @@ export function processFileSync(
     : undefined;
   if (returnTcb) {
     analysis.tcb = returnTcb.code;
+    ctx.tracer.count(Counter.TcbFilesGenerated);
   }
 
   if (tcb?.diagnostics && tcb.diagnostics.length > 0) {
@@ -1980,6 +2007,7 @@ export function processFileSync(
       );
     }
   }
+  ctx.tracer.end(tcbToken);
 
   if (pipelineError !== undefined && !fileDiagnostics.some((d) => d.category === 1)) {
     throw pipelineError;

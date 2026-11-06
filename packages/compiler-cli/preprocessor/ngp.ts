@@ -11,8 +11,27 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import {getDiagnosticPath, HybridCompiler, serializeDiagnostics} from './src/hybrid_compiler.js';
+import {
+  Counter,
+  createTracer,
+  NOOP_TRACER,
+  SpanKind,
+  type PerfSummary,
+  type TraceEvent,
+  type Tracer,
+} from './src/perf.js';
 import {AnalysisResult} from './src/types.js';
 import {ChunkContext} from './src/file_analysis.js';
+
+export {
+  Counter,
+  createTracer,
+  NOOP_TRACER,
+  SpanKind,
+  type PerfSummary,
+  type TraceEvent,
+  type Tracer,
+};
 
 export interface RunOptions {
   outDir?: string | null;
@@ -22,14 +41,16 @@ export interface RunOptions {
   tsconfigPath?: string;
   /** When true, leaves `compiler.analyzer` open so the caller can reuse it across runs. */
   keepAnalyzerAlive?: boolean;
+  /** Records run-level spans and counters. Defaults to `compiler.tracer`. */
+  tracer?: Tracer;
 }
 
 export async function run(compiler: HybridCompiler, options: RunOptions): Promise<void> {
   const {outDir = null, rootDir = '', tsconfigPath} = options;
-  const results =
-    compiler.optimize && !compiler.emitDeclarationOnly
-      ? compiler.analyzeOptimized()
-      : compiler.analyze();
+  const tracer = options.tracer ?? compiler.tracer;
+  const optimized = compiler.optimize && !compiler.emitDeclarationOnly;
+  const chunks = optimized ? compiler.analyzeOptimized() : compiler.analyze();
+  const results = tracer.enabled ? timeEachNext(tracer, chunks) : chunks;
   try {
     for await (const chunk of results) {
       // Pre-bind all files and analyze cycles in the chunk
@@ -37,16 +58,64 @@ export async function run(compiler: HybridCompiler, options: RunOptions): Promis
 
       await Promise.all(
         chunk.files.map((file) =>
-          processFile(file, outDir, compiler, options, chunkContext, rootDir),
+          processFile(file, outDir, compiler, options, chunkContext, rootDir, tracer),
         ),
       );
     }
     // Unconditional: even when the analyzer produced no chunks, option diagnostics (which don't
     // depend on any file) still have to make it into the `.ngdiag.json`.
-    await writeDiagnosticsFile(compiler, tsconfigPath);
+    const diagToken = tracer.begin(SpanKind.WriteDiagnostics);
+    try {
+      await writeDiagnosticsFile(compiler, tsconfigPath);
+    } finally {
+      tracer.end(diagToken);
+    }
   } finally {
+    if (tracer.enabled && compiler.analyzer.takePerf) {
+      // `begin` throws if an exception left a synchronous section open; take anyway.
+      let token = 0;
+      try {
+        token = tracer.begin(SpanKind.TakePerf);
+      } catch {}
+      try {
+        tracer.addAnalyzerPerf(await compiler.analyzer.takePerf());
+      } catch {
+        // The sidecar may already have exited (e.g. after a fatal error).
+      } finally {
+        tracer.end(token);
+      }
+    }
     if (!options.keepAnalyzerAlive) {
-      compiler.analyzer.close();
+      tracer.slice(SpanKind.Close, () => compiler.analyzer.close());
+    }
+  }
+}
+
+/**
+ * Records each wait on `source.next()` as an `AwaitAnalysis` slice. Nothing else runs on the
+ * main thread meanwhile, so it can be a synchronous slice.
+ */
+async function* timeEachNext<T>(tracer: Tracer, source: AsyncIterable<T>): AsyncGenerator<T> {
+  const iterator = source[Symbol.asyncIterator]();
+  let done = false;
+  try {
+    while (true) {
+      const token = tracer.begin(SpanKind.AwaitAnalysis);
+      let next: IteratorResult<T>;
+      try {
+        next = await iterator.next();
+      } finally {
+        tracer.end(token);
+      }
+      if (next.done) {
+        done = true;
+        return;
+      }
+      yield next.value;
+    }
+  } finally {
+    if (!done) {
+      await iterator.return?.();
     }
   }
 }
@@ -74,6 +143,7 @@ async function processFile(
   options: RunOptions,
   chunkContext: ChunkContext,
   rootDir: string,
+  tracer: Tracer,
 ) {
   const {filePath} = file;
 
@@ -82,8 +152,27 @@ async function processFile(
     return;
   }
 
+  const fileId = tracer.newFileId(filePath);
+  try {
+    await emitFile(file, outDir, compiler, options, chunkContext, rootDir, tracer, fileId);
+  } finally {
+    tracer.asyncEnd(SpanKind.File, fileId);
+  }
+}
+
+async function emitFile(
+  file: AnalysisResult,
+  outDir: string | null,
+  compiler: HybridCompiler,
+  options: RunOptions,
+  chunkContext: ChunkContext,
+  rootDir: string,
+  tracer: Tracer,
+  fileId: number,
+) {
+  const {filePath} = file;
   const content = await fs.readFile(filePath, 'utf-8');
-  const processed = await compiler.processFile(filePath, content, file, chunkContext);
+  const processed = await compiler.processFile(filePath, content, file, chunkContext, fileId);
   const s = processed.magicString;
 
   const writeOutput = outDir || options.inPlace;
@@ -94,6 +183,9 @@ async function processFile(
   }
 
   if (writeOutput) {
+    if (tracer.enabled && !s.hasChanged()) {
+      tracer.count(Counter.UnchangedFilesEmitted);
+    }
     let outputPath: string;
     let relativeSourcePath: string;
 
@@ -119,6 +211,7 @@ async function processFile(
 
     await fs.mkdir(outputDir, {recursive: true});
 
+    const mapToken = tracer.begin(SpanKind.SourceMap, fileId);
     const map = processed.generateSourceMap({
       source: relativeSourcePath,
       file: path.basename(outputPath),
@@ -126,10 +219,14 @@ async function processFile(
     });
 
     const sourceWithMap = s.toString() + `\n//# sourceMappingURL=${path.basename(mapPath)}\n`;
+    const mapString = map.toString();
+    tracer.end(mapToken);
+    // Writes of different files overlap, so this is an async slice.
+    tracer.asyncBegin(SpanKind.WriteOutput, fileId);
 
     const writePromises: Array<Promise<void>> = [
       fs.writeFile(outputPath, sourceWithMap),
-      fs.writeFile(mapPath, map.toString()),
+      fs.writeFile(mapPath, mapString),
     ];
 
     // Files without a TCB only get the empty placeholder with `--out`, since in-place mode
@@ -144,11 +241,16 @@ async function processFile(
             `(unexpected output extension).`,
         );
       }
+      if (!processed.tcb) {
+        tracer.count(Counter.EmptyTcbFilesWritten);
+      }
       const tcbCode = processed.tcb?.code ?? '// Empty TCB\nexport const empty = true;\n';
       writePromises.push(fs.writeFile(tcbPath, tcbCode));
     }
 
     await Promise.all(writePromises);
+    tracer.asyncEnd(SpanKind.WriteOutput, fileId);
+    tracer.count(Counter.FilesEmitted);
   } else {
     console.log(`--- ${filePath} ---`);
     console.log(s.toString());

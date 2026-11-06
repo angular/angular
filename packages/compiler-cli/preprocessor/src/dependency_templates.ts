@@ -15,6 +15,7 @@ import {
   type ParsedComponentTemplate,
 } from './file_analysis.js';
 import type {IAnalyzer} from './hybrid_compiler.js';
+import {NOOP_TRACER, type Tracer} from './perf.js';
 import type * as nga from './types.js';
 
 /** The file whose component's dependencies are being resolved. */
@@ -69,6 +70,7 @@ export class DependencyTemplates {
     private readonly fileCache: Map<string, FileAnalysis>,
     private readonly templateParseOptions: Partial<ParseTemplateOptions> | undefined,
     private readonly knownMetadata?: ReadonlyMap<string, nga.AnalysisResult>,
+    private readonly tracer: Tracer = NOOP_TRACER,
   ) {}
 
   /**
@@ -218,6 +220,7 @@ export class DependencyTemplates {
       filePath,
       content,
       this.templateParseOptions,
+      this.tracer,
     );
   }
 }
