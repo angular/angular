@@ -9,6 +9,7 @@
 import {
   ApplicationRef,
   ComponentRef,
+  EnvironmentProviders,
   ErrorHandler,
   Injectable,
   Provider,
@@ -247,7 +248,7 @@ export async function ssr(
   component: Type<unknown>,
   options: {
     doc?: string;
-    envProviders?: Provider[];
+    envProviders?: Array<Provider | EnvironmentProviders>;
     hydrationFeatures?: () => HydrationFeature<HydrationFeatureKind>[];
     enableHydration?: boolean;
   } = {},

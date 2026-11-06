@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {CombinedRecursiveAstVisitor} from '../../../combined_visitor';
 import {ConstantPool} from '../../../constant_pool';
 import {SecurityContext} from '../../../core';
 import * as e from '../../../expression_parser/ast';
@@ -847,6 +848,7 @@ function ingestDeferView(
   i18nMeta: i18n.I18nMeta | undefined,
   children?: t.Node[],
   sourceSpan?: ParseSourceSpan,
+  contextVariables?: t.Variable[],
 ): ir.TemplateOp | null {
   if (i18nMeta !== undefined && !(i18nMeta instanceof i18n.BlockPlaceholder)) {
     throw Error('Unhandled i18n metadata type for defer block');
@@ -855,6 +857,14 @@ function ingestDeferView(
     return null;
   }
   const secondaryView = unit.job.allocateView(unit.xref);
+  for (const variable of contextVariables ?? []) {
+    secondaryView.aliases.add({
+      kind: ir.SemanticVariableKind.Alias,
+      name: null,
+      identifier: variable.name,
+      expression: new o.ReadPropExpr(new ir.ContextExpr(secondaryView.xref), variable.value),
+    });
+  }
   ingestNodes(secondaryView, children);
   const templateOp = ir.createTemplateOp(
     secondaryView.xref,
@@ -868,6 +878,28 @@ function ingestDeferView(
   );
   unit.create.push(templateOp);
   return templateOp;
+}
+
+/** Whether an `@error` block reads `$error`, `$retry` or one of their aliases. */
+function readsContextVariables(block: t.DeferredBlockError): boolean {
+  const names = new Set(block.contextVariables.map((v) => v.name));
+  let found = false;
+
+  class ContextReadFinder extends CombinedRecursiveAstVisitor {
+    find(nodes: t.Node[]): void {
+      this.visitAllTemplateNodes(nodes);
+    }
+
+    override visitPropertyRead(ast: e.PropertyRead, context: unknown): void {
+      if (ast.receiver instanceof e.ImplicitReceiver && names.has(ast.name)) {
+        found = true;
+      }
+      super.visitPropertyRead(ast, context);
+    }
+  }
+
+  new ContextReadFinder().find(block.children);
+  return found;
 }
 
 function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock): void {
@@ -910,6 +942,7 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
     deferBlock.error?.i18n,
     deferBlock.error?.children,
     deferBlock.error?.sourceSpan,
+    deferBlock.error?.contextVariables,
   );
 
   // Create the main defer op, and ops for all secondary views.
@@ -926,6 +959,8 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
   deferOp.placeholderSlot = placeholder?.handle ?? null;
   deferOp.loadingSlot = loading?.handle ?? null;
   deferOp.errorSlot = error?.handle ?? null;
+  deferOp.errorRetryCount = deferBlock.error?.retryCount ?? null;
+  deferOp.errorContextUsed = deferBlock.error ? readsContextVariables(deferBlock.error) : false;
   deferOp.placeholderMinimumTime = deferBlock.placeholder?.minimumTime ?? null;
   deferOp.loadingMinimumTime = deferBlock.loading?.minimumTime ?? null;
   deferOp.loadingAfterTime = deferBlock.loading?.afterTime ?? null;

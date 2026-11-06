@@ -330,6 +330,8 @@ export class DeferredBlockError extends BlockNode implements Node {
     startSourceSpan: ParseSourceSpan,
     endSourceSpan: ParseSourceSpan | null,
     public i18n?: I18nMeta,
+    public retryCount: number | null = null,
+    public contextVariables: Variable[] = [],
   ) {
     super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
   }
@@ -850,7 +852,8 @@ export class RecursiveVisitor implements Visitor<void> {
     visitAll(this, block.children);
   }
   visitDeferredBlockError(block: DeferredBlockError): void {
-    visitAll(this, block.children);
+    const blockItems = [...block.contextVariables, ...block.children];
+    visitAll(this, blockItems);
   }
   visitDeferredBlockLoading(block: DeferredBlockLoading): void {
     visitAll(this, block.children);
