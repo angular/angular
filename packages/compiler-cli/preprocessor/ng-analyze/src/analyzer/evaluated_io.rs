@@ -93,6 +93,25 @@ impl EvaluatedIo {
         }
     }
 
+    pub async fn complete_ambient_globals_with<Fs: crate::ResourceResolverFs + Clone + 'static>(
+        &mut self,
+        ctx: &crate::query::QueryContext<Fs>,
+        foreign: &[&dyn crate::evaluator::ForeignFunctionResolver],
+    ) {
+        for array in &mut self.arrays {
+            array
+                .value
+                .complete_ambient_globals_with(ctx, foreign)
+                .await;
+        }
+        for options in &mut self.member_options {
+            options
+                .value
+                .complete_ambient_globals_with(ctx, foreign)
+                .await;
+        }
+    }
+
     pub fn demote(&mut self) {
         for array in &mut self.arrays {
             array.value.demote();

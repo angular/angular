@@ -8177,3 +8177,337 @@ fn test_foreign_function_module_with_providers_cross_file_type_hole_marks_remote
         "expected cross-file ExternalModule resolved via foreign-function ModuleWithProviders to set remote_scopes_may_require_cycle_protection"
     );
 }
+#[test]
+fn test_ambient_dts_globals_missing_or_type_only_diagnostics() {
+    // Without an ambient value declaration in `tsconfig.files` (even if Closure options are set,
+    // or if `.d.ts` only declares an interface/type alias), `COMPILED` fails with NG1010 in full
+    // mode and NG11001 on bare identifiers in `experimental-local` mode.
+    for (tsconfig_json, extra_dts_file) in [
+        (r#"{"files": ["app.ts"]}"#, None),
+        (
+            r#"{"files": ["app.ts"], "angularCompilerOptions": {"annotateForClosureCompiler": true}, "bazelOptions": {"tsickle": true}}"#,
+            None,
+        ),
+        (
+            r#"{"files": ["types.d.ts", "app.ts"]}"#,
+            Some((
+                "/project/types.d.ts",
+                "declare interface COMPILED {}\ndeclare type OTHER_GLOBAL = boolean;",
+            )),
+        ),
+        (
+            r#"{"files": ["module_only.d.ts", "app.ts"]}"#,
+            Some(("/project/module_only.d.ts", "export declare var COMPILED: boolean;")),
+        ),
+        (
+            r#"{"files": ["cjs_module.d.ts", "app.ts"]}"#,
+            Some((
+                "/project/cjs_module.d.ts",
+                "import x = require('other-pkg');\ndeclare var COMPILED: boolean;\ndeclare global { var UNRELATED_AUG: boolean; }",
+            )),
+        ),
+    ] {
+        let mut full_files = HashMap::new();
+        full_files.insert("/project/tsconfig.json".to_string(), tsconfig_json.to_string());
+        if let Some((dts_path, dts)) = extra_dts_file {
+            full_files.insert(dts_path.to_string(), dts.to_string());
+        }
+        full_files.insert(
+            "/project/app.ts".to_string(),
+            r#"
+                import { Component, NgModule } from '@angular/core';
+
+                @NgModule({})
+                export class FooModule {}
+
+                @Component({
+                    selector: 'standalone-cmp',
+                    template: '',
+                    imports: [COMPILED && FooModule],
+                })
+                export class StandaloneCmp {}
+            "#
+            .to_string(),
+        );
+
+        let full_analyzer = Analyzer::new(AnalyzerOptions {
+            tsconfig_path: Some("/project/tsconfig.json".to_string()),
+            optimize: Some(true),
+            virtual_files: Some(full_files),
+            ..Default::default()
+        })
+        .unwrap();
+        let full_meta = full_analyzer
+            .get_metadata_for_file("/project/app.ts".to_string())
+            .expect("app.ts metadata");
+        assert!(
+            full_meta.diagnostics.iter().any(|d| d.code == 1010),
+            "Expected NG1010 for {tsconfig_json}, got: {:?}",
+            full_meta.diagnostics
+        );
+    }
+
+    let mut local_files = HashMap::new();
+    local_files.insert(
+        "/project/tsconfig.json".to_string(),
+        r#"{"files": ["app.ts"], "angularCompilerOptions": {"compilationMode": "experimental-local"}}"#
+            .to_string(),
+    );
+    let local_app_src = r#"
+        import { Component, HostBinding, ViewChild } from '@angular/core';
+
+        @Component({
+            selector: 'app-cmp',
+            template: '',
+            styles: [COMPILED],
+        })
+        export class AppCmp {}
+
+        @Component({
+            selector: 'bad-host-cmp',
+            template: '',
+            host: COMPILED,
+        })
+        export class BadHostCmp {}
+
+        @Component({
+            selector: 'bad-host-value-cmp',
+            template: '',
+            host: { '[attr.x]': COMPILED, bad: 123 },
+        })
+        export class BadHostValueCmp {}
+
+        @Component({
+            selector: 'bad-query-cmp',
+            template: '',
+        })
+        export class BadQueryCmp {
+            @ViewChild(['ref', COMPILED]) child: any;
+            @HostBinding(COMPILED ? 123 : 456) bound: any;
+        }
+    "#;
+    local_files.insert("/project/app.ts".to_string(), local_app_src.to_string());
+    let local_analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
+        optimize: Some(false),
+        virtual_files: Some(local_files),
+        ..Default::default()
+    })
+    .unwrap();
+    let local_iter = local_analyzer.analyze().unwrap();
+    let local_chunk = futures::executor::block_on(local_iter.next())
+        .unwrap()
+        .expect("chunk");
+    let local_diags = &local_chunk.files[0].diagnostics;
+    assert!(
+        local_diags.iter().any(|d| d.code == 11001),
+        "Expected NG11001 in experimental-local mode, got: {:?}",
+        local_diags
+    );
+    for expected_msg in [
+        "Decorator host metadata must be an object",
+        "Decorator host metadata must be a string -> string object",
+        "Failed to resolve @ViewChild predicate at position 1 to a string",
+        "@HostBinding's argument must be a string",
+    ] {
+        assert!(
+            local_diags
+                .iter()
+                .any(|d| d.code == 1010 && d.message_text.contains(expected_msg)),
+            "Expected NG1010 containing {expected_msg:?} in experimental-local mode, got: {:?}",
+            local_diags
+        );
+    }
+
+    // Direct Stage-1 `ClassData::validate` callers (without `QueryEngine` completion) must also
+    // report NG1010 on undeclared globals rather than skipping validation on lingering holes.
+    let alloc = oxc_allocator::Allocator::default();
+    let ret = oxc_parser::Parser::new(&alloc, local_app_src, oxc_span::SourceType::ts()).parse();
+    let sem = oxc_semantic::SemanticBuilder::new()
+        .with_build_nodes(true)
+        .with_class_table(true)
+        .build(&ret.program);
+    let converter = crate::utils::Utf8ToUtf16::new(local_app_src);
+    let analysis = crate::analyzer::analyze_parsed(
+        Path::new("/project/app.ts"),
+        0,
+        local_app_src,
+        &ret.program,
+        &ret.module_record,
+        &sem.semantic,
+        &converter,
+        false,
+        false,
+        false,
+        true,
+    );
+    let mut stage1_diags = Vec::new();
+    let vcx = crate::analyzer::ValidationContext {
+        mode: crate::analyzer::WireMode::Syntax,
+        strict_standalone: false,
+        strict_injection_parameters: false,
+        emit_declaration_only: false,
+        experimental_local_compilation: true,
+    };
+    for class in &analysis.classes {
+        class.validate(
+            vcx,
+            Path::new("/project/app.ts"),
+            &converter,
+            &mut stage1_diags,
+        );
+    }
+    for expected_msg in [
+        "Decorator host metadata must be an object",
+        "Decorator host metadata must be a string -> string object",
+        "Failed to resolve @ViewChild predicate at position 1 to a string",
+        "@HostBinding's argument must be a string",
+    ] {
+        assert!(
+            stage1_diags
+                .iter()
+                .any(|d| d.code == 1010 && d.message_text.contains(expected_msg)),
+            "Expected Stage-1 NG1010 containing {expected_msg:?}, got: {:?}",
+            stage1_diags
+        );
+    }
+}
+
+#[test]
+fn test_ambient_dts_globals_in_local_compilation_modes() {
+    // Full compilation is covered end to end by `closure_compiled_global_spec.ts`; local and
+    // declaration-only compilation complete ambient globals in fields the spec's emitted code
+    // doesn't expose directly (`host`, query predicates, `@Input` and `inputs` aliases).
+    let mut virtual_files = HashMap::new();
+    virtual_files.insert(
+        "/project/closure.lib.d.ts".to_string(),
+        "declare var COMPILED: boolean;\n".to_string(),
+    );
+    virtual_files.insert(
+        "/project/imported.ts".to_string(),
+        r#"
+            import { Directive, NgModule } from '@angular/core';
+
+            export const CROSS_SELECTOR = COMPILED && 'cross-closure-cmp';
+
+            @Directive({
+                selector: '[importedDir]',
+                standalone: false,
+            })
+            export class ImportedDir {}
+
+            @NgModule({
+                declarations: [ImportedDir],
+                exports: [ImportedDir],
+            })
+            export class ImportedModule {}
+        "#
+        .to_string(),
+    );
+    for (extra_tsconfig, emit_decl_only) in [
+        (
+            r#"{"files": ["closure.lib.d.ts", "imported.ts", "local_app.ts"], "angularCompilerOptions": {"compilationMode": "experimental-local"}}"#,
+            false,
+        ),
+        (
+            r#"{"files": ["closure.lib.d.ts", "imported.ts", "local_app.ts"], "compilerOptions": {"declaration": true, "emitDeclarationOnly": true}, "angularCompilerOptions": {"_experimentalAllowEmitDeclarationOnly": true}}"#,
+            true,
+        ),
+    ] {
+        let mut mode_files = virtual_files.clone();
+        mode_files.insert(
+            "/project/tsconfig.json".to_string(),
+            extra_tsconfig.to_string(),
+        );
+        mode_files.insert(
+            "/project/local_app.ts".to_string(),
+            r#"
+                import { Component, Directive, Input, Pipe, ViewChild } from '@angular/core';
+                import { CROSS_SELECTOR } from './imported';
+
+                @Component({
+                    selector: CROSS_SELECTOR,
+                    template: '',
+                    host: COMPILED ? { role: 'button' } : {},
+                })
+                export class LocalCmp {
+                    @ViewChild(COMPILED && 'myRef') child: any;
+                    @Input(COMPILED && 'myAlias') prop: any;
+                }
+
+                @Directive({
+                    selector: '[local-io-dir]',
+                    inputs: [COMPILED && 'dirProp: dirAlias'],
+                })
+                export class LocalIoDir {
+                    dirProp: any;
+                }
+
+                @Pipe({
+                    name: COMPILED && 'closurePipe',
+                })
+                export class LocalPipe {}
+            "#
+            .to_string(),
+        );
+        let mode_analyzer = Analyzer::new(AnalyzerOptions {
+            tsconfig_path: Some("/project/tsconfig.json".to_string()),
+            optimize: Some(false),
+            virtual_files: Some(mode_files),
+            ..Default::default()
+        })
+        .unwrap();
+        let iter = mode_analyzer.analyze().unwrap();
+        let mut all_files = Vec::new();
+        while let Ok(Some(chunk)) = futures::executor::block_on(iter.next()) {
+            all_files.extend(chunk.files);
+        }
+        let local_meta = all_files
+            .iter()
+            .find(|f| f.file_path.ends_with("local_app.ts"))
+            .expect("local_app.ts metadata");
+        assert!(
+            local_meta.diagnostics.is_empty(),
+            "Expected no diagnostics for emit_decl_only={emit_decl_only}, got: {:?}",
+            local_meta.diagnostics
+        );
+        let local_cmp_class = local_meta
+            .classes
+            .iter()
+            .find(|c| c.class_name.as_deref() == Some("LocalCmp"))
+            .expect("LocalCmp class");
+        let local_cmp = local_cmp_class.component.as_ref().expect("LocalCmp");
+        assert_eq!(local_cmp.selector.as_deref(), Some("cross-closure-cmp"));
+        let host_meta = local_cmp
+            .host_metadata
+            .as_ref()
+            .expect("LocalCmp host_metadata");
+        assert_eq!(host_meta.len(), 1);
+        assert_eq!(host_meta[0].key, "role");
+        assert_eq!(host_meta[0].value.as_deref(), Some("button"));
+        assert_eq!(local_cmp_class.view_queries.len(), 1);
+        assert_eq!(local_cmp_class.view_queries[0].property_name, "child");
+        assert_eq!(
+            local_cmp_class.view_queries[0]
+                .predicate_selectors
+                .as_deref(),
+            Some(&["myRef".to_string()][..]),
+        );
+        assert_eq!(local_cmp_class.inputs.len(), 1);
+        assert_eq!(local_cmp_class.inputs[0].name, "prop");
+        assert_eq!(local_cmp_class.inputs[0].alias.as_deref(), Some("myAlias"),);
+
+        let local_io_dir_class = local_meta
+            .classes
+            .iter()
+            .find(|c| c.class_name.as_deref() == Some("LocalIoDir"))
+            .expect("LocalIoDir class");
+        assert_eq!(local_io_dir_class.inputs.len(), 1);
+        assert_eq!(local_io_dir_class.inputs[0].name, "dirProp");
+        assert_eq!(
+            local_io_dir_class.inputs[0].alias.as_deref(),
+            Some("dirAlias"),
+        );
+    }
+}
+

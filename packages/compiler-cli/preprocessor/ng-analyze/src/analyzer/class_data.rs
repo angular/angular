@@ -1891,7 +1891,9 @@ impl ClassData {
     /// Complete the remaining constant-evaluated fields that ngtsc evaluates in local compilation
     /// mode (`exportAs`, `@Component.template`, `@HostBinding` arguments, and `@HostListener`
     /// event names) so cross-file constants within the compilation unit resolve and external
-    /// imports demote to `UnresolvedImport` for `NG11001` validation.
+    /// imports demote to `UnresolvedImport` for `NG11001` validation, and resolve ambient `.d.ts`
+    /// global holes on `host`, `@Input`/`@Output` metadata, and decorator query predicates while
+    /// keeping cross-file import holes intact for syntax-mode emission.
     pub async fn complete_local_compilation_constants<
         Fs: crate::ResourceResolverFs + Clone + 'static,
     >(
@@ -1903,12 +1905,22 @@ impl ClassData {
             if let Some(export_as) = &mut d.export_as {
                 export_as.complete_with(ctx, foreign).await;
             }
+            if let Some(host) = &mut d.host_expr {
+                host.complete_ambient_globals_with(ctx, foreign).await;
+            }
+            for predicate in d.evaluated_query_predicates_mut() {
+                predicate.complete_ambient_globals_with(ctx, foreign).await;
+            }
             for name in d.host_binding_names_mut() {
                 name.complete_with(ctx, foreign).await;
             }
             for name in d.host_listener_event_names_mut() {
                 name.complete_with(ctx, foreign).await;
             }
+            if let Some(io) = &mut d.evaluated_io {
+                io.complete_ambient_globals_with(ctx, foreign).await;
+            }
+            d.fold_pending_io();
             if !ctx.engine.emit_declaration_only {
                 complete_unsupported_host_directives(
                     &mut d.unsupported_host_directives,
@@ -1921,6 +1933,14 @@ impl ClassData {
         if let Some(c) = self.as_component_mut() {
             if let Some(template) = &mut c.template {
                 template.complete_with(ctx, foreign).await;
+            }
+        }
+        if let DecoratorData::Pipe(p) = &mut self.decorator {
+            if let Some(name) = &mut p.name {
+                name.complete_with(ctx, foreign).await;
+            }
+            if let Some(pure) = &mut p.pure {
+                pure.complete_with(ctx, foreign).await;
             }
         }
     }
@@ -2755,7 +2775,9 @@ impl ClassData {
                         continue;
                     }
                 }
-                if name.contains_incomplete() {
+                if crate::evaluator::value::demote_ambient_global_holes(name.raw().clone())
+                    .contains_incomplete()
+                {
                     continue;
                 }
                 push_error(
@@ -2795,7 +2817,11 @@ impl ClassData {
                         continue;
                     }
                 }
-                if listener.resolved_event_name.contains_incomplete() {
+                if crate::evaluator::value::demote_ambient_global_holes(
+                    listener.resolved_event_name.raw().clone(),
+                )
+                .contains_incomplete()
+                {
                     continue;
                 }
                 push_error(
@@ -3346,7 +3372,8 @@ fn host_metadata_issues(d: &DirectiveData) -> Vec<ValueIssue> {
     let (Some(host), Some(span)) = (&d.host_expr, d.host_span) else {
         return Vec::new();
     };
-    let value = host.raw();
+    let demoted = crate::evaluator::value::demote_ambient_global_holes(host.raw().clone());
+    let value = &demoted;
     // A value still waiting on another file is checked once Stage 2 completes it.
     if value.contains_incomplete() {
         return Vec::new();
@@ -3447,6 +3474,16 @@ fn local_unresolved_const_span(value: &crate::evaluator::ResolvedValue) -> Optio
                 && matches!(
                     &hole.dep,
                     IncompleteDep::Reference(u) if is_direct_import(u, hole.span)
+                ) =>
+        {
+            Some(hole.span)
+        }
+        ResolvedValue::Incomplete(hole)
+            if hole.transparent
+                && hole.identifiers.len() <= 1
+                && matches!(
+                    &hole.dep,
+                    IncompleteDep::AmbientGlobal { name, .. } if name.len() as u32 == hole.span.size()
                 ) =>
         {
             Some(hole.span)

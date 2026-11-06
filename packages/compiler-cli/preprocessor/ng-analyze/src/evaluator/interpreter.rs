@@ -430,6 +430,7 @@ impl<'a, 'e, 'i> Interpreter<'a, 'e, 'i> {
                 self.visit_type(&op.type_annotation, scope)
             }
             TSType::TSLiteralType(literal) => self.visit_literal_type(literal, scope),
+            TSType::TSNullKeyword(_) => ResolvedValue::Null,
             TSType::TSNeverKeyword(_) => ResolvedValue::Array(Vec::new()),
             TSType::TSImportType(import_type) => {
                 let old_node_id = self.current_node_id.replace(Some(import_type.node_id()));
@@ -1140,7 +1141,13 @@ impl<'a, 'e, 'i> Interpreter<'a, 'e, 'i> {
             if name == "undefined" {
                 return ResolvedValue::Undefined;
             }
-            return self.dynamic(span, DynamicReason::UnknownIdentifier(name.to_string()));
+            // Pure type-position references (e.g. `: Function` in `declare const X: Function;`)
+            // cannot resolve to ambient runtime values and stay immediately dynamic so local
+            // ambient variable declarations fall back to `Reference` synchronously in Stage 1.
+            if reference.flags().is_type_only() {
+                return self.dynamic(span, DynamicReason::UnknownIdentifier(name.to_string()));
+            }
+            return self.ambient_global_hole(span, name);
         };
 
         if let Some(value) = scope.get(&symbol_id) {
@@ -1184,6 +1191,32 @@ impl<'a, 'e, 'i> Interpreter<'a, 'e, 'i> {
             span,
             self.current_node_id.get(),
             IncompleteDep::Reference(target),
+        )
+    }
+
+    /// An unbound value identifier that may be declared as an ambient global in one of the
+    /// tsconfig's `.d.ts` files: consult the env (Semantic mode), else emit a hole.
+    fn ambient_global_hole(&self, span: Span, name: &str) -> ResolvedValue {
+        let key = HoleKey::AmbientGlobal {
+            file: self.file(),
+            name: name.to_string(),
+        };
+        if let Some(mut value) = self.lookup_env(&key) {
+            if let ResolvedValue::Dynamic(ref mut d) = value {
+                if matches!(d.reason, DynamicReason::UnknownIdentifier(_)) {
+                    d.span = span;
+                }
+            }
+            return value;
+        }
+        ResolvedValue::incomplete(
+            self.file(),
+            span,
+            self.current_node_id.get(),
+            IncompleteDep::AmbientGlobal {
+                file: self.file(),
+                name: name.to_string(),
+            },
         )
     }
 
@@ -1238,7 +1271,17 @@ impl<'a, 'e, 'i> Interpreter<'a, 'e, 'i> {
                     None if self.is_declared_variable(decl_node.id()) => {
                         let mut type_val = None;
                         if let Some(type_annotation) = &declarator.type_annotation {
-                            let val = self.visit_type(&type_annotation.type_annotation, scope);
+                            let val = match self.visit_type(&type_annotation.type_annotation, scope)
+                            {
+                                val @ ResolvedValue::Incomplete(_) => {
+                                    // `visitVariableDeclaration` in `ngtsc` falls back to a
+                                    // `Reference` to the variable whenever `visitType` resolves to
+                                    // `DynamicValue`, so a pending type hole cannot be substituted
+                                    // transparently — re-run the declaration once the hole fills.
+                                    self.propagate_failure(usage_span, val)
+                                }
+                                val => val,
+                            };
                             if !matches!(val, ResolvedValue::Dynamic(_)) {
                                 type_val = Some(val);
                             }
@@ -1316,11 +1359,26 @@ impl<'a, 'e, 'i> Interpreter<'a, 'e, 'i> {
     }
 
     fn is_declared_variable(&self, declarator_node_id: oxc_semantic::NodeId) -> bool {
-        let parent = self.input.semantic.nodes().parent_node(declarator_node_id);
+        let nodes = self.input.semantic.nodes();
+        let parent = nodes.parent_node(declarator_node_id);
         let AstKind::VariableDeclaration(decl) = parent.kind() else {
             return false;
         };
-        decl.declare
+        if decl.declare {
+            return true;
+        }
+        // Declarations inside `declare global { ... }`, `declare namespace ...`, or
+        // `declare module '...'` omit `declare` on inner `var`/`let`/`const` statements (`TS1038`).
+        nodes
+            .ancestors(parent.id())
+            .any(|ancestor| match ancestor.kind() {
+                AstKind::TSGlobalDeclaration(g) => {
+                    g.declare || self.input.semantic.source_type().is_typescript_definition()
+                }
+                AstKind::TSNamespaceDeclaration(ns) => ns.declare,
+                AstKind::TSExternalModuleDeclaration(m) => m.declare,
+                _ => false,
+            })
     }
 
     /// Mirror of upstream `visitEnumDeclaration`: a `Map` of member name → [`EnumValue`].
