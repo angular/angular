@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ApplicationRef, Component} from '@angular/core';
+import {ApplicationRef, ChangeDetectorRef, Component} from '@angular/core';
 
 export interface RowData {
   id: number;
@@ -40,11 +40,19 @@ export class JsWebFrameworksComponent {
   data: Array<RowData> = [];
   selected: number | null = null;
 
-  constructor(private _appRef: ApplicationRef) {}
+  constructor(
+    private _appRef: ApplicationRef,
+    private _changeDetectorRef: ChangeDetectorRef,
+  ) {}
+
+  render() {
+    this._changeDetectorRef.markForCheck();
+    this._appRef.tick();
+  }
 
   select(itemId: number) {
     this.selected = itemId;
-    this._appRef.tick();
+    this.render();
   }
 
   delete(itemId: number) {
@@ -55,6 +63,6 @@ export class JsWebFrameworksComponent {
         break;
       }
     }
-    this._appRef.tick();
+    this.render();
   }
 }

@@ -90,27 +90,30 @@ const NOUNS = [
 
 export function init(appRef: ApplicationRef) {
   let component: JsWebFrameworksComponent;
+  let nextId = 0;
 
   function create1K() {
     component.data = buildData(1 * 1000);
-    appRef.tick();
+    nextId = component.data.length;
+    component.render();
   }
 
   function create10K() {
     component.data = buildData(10 * 1000);
-    appRef.tick();
+    nextId = component.data.length;
+    component.render();
   }
 
   function deleteAll() {
     component.data = [];
-    appRef.tick();
+    component.render();
   }
 
   function update() {
     for (let i = 0; i < component.data.length; i += 10) {
       component.data[i].label += ' !!!';
     }
-    appRef.tick();
+    component.render();
   }
 
   function swapRows() {
@@ -120,7 +123,12 @@ export function init(appRef: ApplicationRef) {
       data[1] = data[998];
       data[998] = a;
     }
-    appRef.tick();
+    component.render();
+  }
+
+  function prependRow() {
+    component.data.unshift({id: nextId++, label: 'new row'});
+    component.render();
   }
 
   component = appRef.components[0].instance;
@@ -130,4 +138,5 @@ export function init(appRef: ApplicationRef) {
   bindAction('#deleteAll', deleteAll);
   bindAction('#update', update);
   bindAction('#swap', swapRows);
+  bindAction('#prepend', prependRow);
 }
