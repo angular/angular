@@ -228,6 +228,21 @@ There are a number of third party libraries that depend on DOM manipulation to b
 
 Many third party scripts, such as ad trackers and analytics, modify the DOM before hydration can occur. These scripts may cause hydration errors because the page no longer matches the structure expected by Angular. Prefer deferring this type of script until after hydration whenever possible. Consider using [`AfterNextRender`](api/core/afterNextRender) to delay the script until post-hydration processes have occurred.
 
+### CDNs and browser extensions
+
+Code outside your application can change the HTML from the server before hydration starts. You often can't see these errors on your computer, because they don't happen on your local server.
+
+**CDNs that change HTML.** Some CDN features change HTML on its way to the browser. For example, some features remove comment nodes and whitespace, but hydration needs them. Another example is Email Address Obfuscation from Cloudflare, which is on by default. This feature changes email addresses to elements like `<span class="__cf_email__" data-cfemail="...">`. It also changes `mailto:` links and adds a script that changes the content back. If this script doesn't run before hydration starts, Angular finds an element where it expects text. Your local server doesn't use the CDN, so your application works on your computer and fails only in production.
+
+**Browser extensions.** Some browser extensions change the page before hydration starts. Examples are click-to-call tools, translators, and password managers. You can't control these extensions. Only users who install them have the problem, so you may see errors from only some users.
+
+To fix these errors:
+
+- Add `ngSkipHydration` to the component host around the changed content. Add it in the template where you write that content, like this: `<app-contact ngSkipHydration><a href="tel:...">...</a></app-contact>`. Angular then renders this content again in the browser, and this removes the changes. You can use this attribute only on component host elements, so you can't add it to the `<a>` element. Read more in [how to skip hydration](#how-to-skip-hydration-for-particular-components).
+- Turn off the CDN feature for your application. In Cloudflare, turn off [Email Address Obfuscation](https://developers.cloudflare.com/waf/tools/scrape-shield/email-address-obfuscation/) in the security settings, or use a [Configuration Rule](https://developers.cloudflare.com/rules/configuration-rules/settings/) to turn it off for the hostnames of your application.
+
+NOTE: The `<!--email_off-->` comments from Cloudflare don't help in Angular templates, because the compiler removes comments from templates.
+
 ## Incremental Hydration
 
 Incremental hydration is an advanced form of hydration that allows for more granular control over when hydration happens. See the [incremental hydration guide](guide/incremental-hydration) for more information.
