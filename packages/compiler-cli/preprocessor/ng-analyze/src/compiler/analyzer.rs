@@ -1,7 +1,6 @@
 use crate::fs::OverlayFileSystem;
 use crate::query::keys::QueryKey;
 use crate::query::{FileId, QueryContext};
-use crate::resource_loader::ResourceResolverFs;
 use crate::resource_registry::ResourceRegistry;
 use crate::tsconfig_resolution;
 use crate::utils::{create_resolver_with_fs, is_compilation_root, is_ts_file, is_ts_source};
@@ -116,7 +115,7 @@ use napi_derive::napi;
 pub struct Analyzer {
     resource_registry: Arc<ResourceRegistry>,
     fs: OverlayFileSystem,
-    engine: Arc<crate::query::QueryEngine<OverlayFileSystem>>,
+    engine: Arc<crate::query::QueryEngine>,
     #[cfg(not(target_arch = "wasm32"))]
     active_handles: Arc<RwLock<Vec<futures::future::RemoteHandle<()>>>>,
 
@@ -1132,8 +1131,8 @@ pub trait Spawner: Spawn + futures::task::LocalSpawn + Clone + 'static {}
 #[cfg(target_arch = "wasm32")]
 impl<T: Spawn + futures::task::LocalSpawn + Clone + 'static> Spawner for T {}
 
-async fn run_coordinator<S, LA, FutLA, P, FutP, Fs>(
-    engine: Arc<crate::QueryEngine<Fs>>,
+async fn run_coordinator<S, LA, FutLA, P, FutP>(
+    engine: Arc<crate::QueryEngine>,
     entrypoints: Vec<PathBuf>,
     spawner: S,
     event_receiver: mpsc::Receiver<CoordinatorEvent>,
@@ -1148,7 +1147,6 @@ async fn run_coordinator<S, LA, FutLA, P, FutP, Fs>(
     is_optimized: bool,
     is_delta: bool,
 ) where
-    Fs: FileSystem + Clone + 'static + ResourceResolverFs,
     S: Spawner,
     LA: Fn(PathBuf) -> FutLA + Send + Sync + 'static + Clone,
     FutLA: std::future::Future<Output = Arc<FileData>> + Send + 'static,
@@ -1359,14 +1357,14 @@ async fn run_coordinator<S, LA, FutLA, P, FutP, Fs>(
 /// snapshot and consumes it. A run that does not complete (every update cancels the in-flight
 /// stream) puts the snapshot back when dropped, so the next delta pass still re-streams those
 /// files, and still knows a baseline exists against which to report `removed_files`.
-struct DirtyFilesSnapshot<Fs: ResourceResolverFs + Clone + 'static> {
-    engine: Arc<crate::QueryEngine<Fs>>,
+struct DirtyFilesSnapshot {
+    engine: Arc<crate::QueryEngine>,
     files: Option<Arc<HashSet<FileId>>>,
     consumed: bool,
 }
 
-impl<Fs: ResourceResolverFs + Clone + 'static> DirtyFilesSnapshot<Fs> {
-    fn take(engine: &Arc<crate::QueryEngine<Fs>>) -> Self {
+impl DirtyFilesSnapshot {
+    fn take(engine: &Arc<crate::QueryEngine>) -> Self {
         let files = engine
             .dirty_wire_files
             .lock()
@@ -1395,7 +1393,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> DirtyFilesSnapshot<Fs> {
     }
 }
 
-impl<Fs: ResourceResolverFs + Clone + 'static> Drop for DirtyFilesSnapshot<Fs> {
+impl Drop for DirtyFilesSnapshot {
     fn drop(&mut self) {
         if self.consumed {
             return;
@@ -1425,9 +1423,9 @@ pub enum CoordinatorEvent {
 }
 
 #[allow(clippy::too_many_arguments)]
-fn handle_coordinator_event<Fs: FileSystem + Clone + 'static + ResourceResolverFs>(
+fn handle_coordinator_event(
     event: CoordinatorEvent,
-    engine: &Arc<crate::QueryEngine<Fs>>,
+    engine: &Arc<crate::QueryEngine>,
     cancel_token: &CancellationToken,
     seen: &mut HashSet<PathBuf>,
     visited_file_ids: &mut HashSet<FileId>,
@@ -1545,8 +1543,8 @@ impl UnionFind {
     }
 }
 
-fn compute_intra_chunk_static_edges<Fs: FileSystem + Clone + 'static + ResourceResolverFs>(
-    engine: &Arc<crate::QueryEngine<Fs>>,
+fn compute_intra_chunk_static_edges(
+    engine: &Arc<crate::QueryEngine>,
     chunk_files: &[crate::AnalysisResult],
 ) -> Option<HashMap<String, Vec<FileId>>> {
     if chunk_files.len() <= 1 {
@@ -1602,10 +1600,10 @@ pub struct FileChunkInfo {
 
 /// Summarize what a completed file contributes to chunk grouping: whether it holds anything that
 /// needs an `@NgModule` scope at all, and which files the `@NgModule`s it declares pull in.
-pub(crate) async fn extract_chunk_info<Fs: ResourceResolverFs + Clone + 'static>(
+pub(crate) async fn extract_chunk_info(
     file_data: &FileData,
-    engine: &crate::QueryEngine<Fs>,
-    ctx: &QueryContext<Fs>,
+    engine: &crate::QueryEngine,
+    ctx: &QueryContext,
 ) -> FileChunkInfo {
     let mut has_non_standalone = false;
     let mut declared_file_ids = Vec::new();
@@ -1669,9 +1667,9 @@ pub(crate) async fn extract_chunk_info<Fs: ResourceResolverFs + Clone + 'static>
 /// Semantic results are already hole-free; syntactic results (used when
 /// `generateExtraImportsInLocalMode` groups chunks) still contain `Incomplete` holes for imported
 /// declarations that must be completed to find their declaring files.
-async fn resolved_ng_module_declarations<Fs: ResourceResolverFs + Clone + 'static>(
+async fn resolved_ng_module_declarations(
     declarations: &crate::evaluator::Resolved<Vec<crate::types::analysis::Reference>>,
-    ctx: &QueryContext<Fs>,
+    ctx: &QueryContext,
 ) -> Option<Vec<crate::types::analysis::Reference>> {
     if !declarations.contains_incomplete() {
         return declarations.get_optional();
@@ -1683,8 +1681,8 @@ async fn resolved_ng_module_declarations<Fs: ResourceResolverFs + Clone + 'stati
     completed.get_optional()
 }
 
-fn handle_completed_file<Fs: FileSystem + Clone + 'static + ResourceResolverFs>(
-    engine: &Arc<crate::QueryEngine<Fs>>,
+fn handle_completed_file(
+    engine: &Arc<crate::QueryEngine>,
     file_id: FileId,
     result: Result<crate::AnalysisResult, String>,
     chunk_info: FileChunkInfo,
@@ -1832,7 +1830,7 @@ mod chunk_order_tests {
     use super::*;
 
     fn optimized_result(
-        engine: &Arc<crate::QueryEngine<OverlayFileSystem>>,
+        engine: &Arc<crate::QueryEngine>,
         path: &str,
     ) -> (AnalysisResult, FileChunkInfo) {
         futures::executor::block_on(async {

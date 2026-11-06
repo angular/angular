@@ -80,9 +80,9 @@ impl EvaluatedIo {
                 .any(|o| o.value.contains_incomplete())
     }
 
-    pub async fn complete_with<Fs: crate::ResourceResolverFs + Clone + 'static>(
+    pub async fn complete_with(
         &mut self,
-        ctx: &crate::query::QueryContext<Fs>,
+        ctx: &crate::query::QueryContext,
         foreign: &[&dyn crate::evaluator::ForeignFunctionResolver],
     ) {
         for array in &mut self.arrays {
@@ -93,9 +93,9 @@ impl EvaluatedIo {
         }
     }
 
-    pub async fn complete_ambient_globals_with<Fs: crate::ResourceResolverFs + Clone + 'static>(
+    pub async fn complete_ambient_globals_with(
         &mut self,
-        ctx: &crate::query::QueryContext<Fs>,
+        ctx: &crate::query::QueryContext,
         foreign: &[&dyn crate::evaluator::ForeignFunctionResolver],
     ) {
         for array in &mut self.arrays {
@@ -657,7 +657,7 @@ mod tests {
     fn engine_for(
         files: &[(&str, &str)],
         entry: &str,
-    ) -> std::sync::Arc<crate::query::engine::QueryEngine<crate::fs::OverlayFileSystem>> {
+    ) -> std::sync::Arc<crate::query::engine::QueryEngine> {
         use std::sync::Arc;
         let fs = crate::test_utils::create_test_fs(files);
         let resolver = Arc::new(oxc_resolver::ResolverGeneric::new_with_file_system(

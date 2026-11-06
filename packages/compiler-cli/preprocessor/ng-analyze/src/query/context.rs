@@ -1,8 +1,6 @@
 use std::collections::HashSet;
 use std::sync::{Arc, Mutex};
 
-use crate::ResourceResolverFs;
-
 use crate::query::engine::QueryEngine;
 use crate::query::keys::{QueryKey, QueryValue};
 use crate::query::{FileId, ReferenceId};
@@ -10,12 +8,12 @@ use crate::{types::analysis::DeclarationData, FileData, NgModuleComponentMap};
 
 /// Context passed down during query execution to track dependencies.
 #[derive(Clone)]
-pub struct QueryContext<Fs: ResourceResolverFs + Clone + 'static> {
-    pub engine: Arc<QueryEngine<Fs>>,
+pub struct QueryContext {
+    pub engine: Arc<QueryEngine>,
     pub(crate) dependencies: Arc<Mutex<HashSet<FileId>>>,
 }
 
-impl<Fs: ResourceResolverFs + Clone + 'static> std::fmt::Debug for QueryContext<Fs> {
+impl std::fmt::Debug for QueryContext {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("QueryContext")
             .field("dependencies", &self.dependencies)
@@ -23,8 +21,8 @@ impl<Fs: ResourceResolverFs + Clone + 'static> std::fmt::Debug for QueryContext<
     }
 }
 
-impl<Fs: ResourceResolverFs + Clone + 'static> QueryContext<Fs> {
-    pub fn new(engine: Arc<QueryEngine<Fs>>) -> Self {
+impl QueryContext {
+    pub fn new(engine: Arc<QueryEngine>) -> Self {
         Self {
             engine,
             dependencies: Arc::new(Mutex::new(HashSet::new())),
@@ -290,8 +288,8 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryContext<Fs> {
     }
 }
 
-impl<Fs: ResourceResolverFs + Clone + 'static> std::ops::Deref for QueryContext<Fs> {
-    type Target = QueryEngine<Fs>;
+impl std::ops::Deref for QueryContext {
+    type Target = QueryEngine;
 
     fn deref(&self) -> &Self::Target {
         &self.engine

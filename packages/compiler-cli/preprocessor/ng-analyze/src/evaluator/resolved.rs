@@ -725,9 +725,9 @@ impl<T> Resolved<T> {
     }
 
     /// Completely resolve this value in-place by filling all its holes from `ctx` directly.
-    pub async fn complete_with<Fs: crate::ResourceResolverFs + Clone + 'static>(
+    pub async fn complete_with(
         &mut self,
-        ctx: &crate::query::QueryContext<Fs>,
+        ctx: &crate::query::QueryContext,
         foreign: &[&dyn crate::evaluator::ForeignFunctionResolver],
     ) {
         if !self.value.contains_incomplete() {
@@ -738,9 +738,9 @@ impl<T> Resolved<T> {
 
     /// Resolve only [`crate::evaluator::IncompleteDep::AmbientGlobal`] holes in-place via `ctx`,
     /// leaving cross-file import/member/call holes untouched.
-    pub async fn complete_ambient_globals_with<Fs: crate::ResourceResolverFs + Clone + 'static>(
+    pub async fn complete_ambient_globals_with(
         &mut self,
-        ctx: &crate::query::QueryContext<Fs>,
+        ctx: &crate::query::QueryContext,
         foreign: &[&dyn crate::evaluator::ForeignFunctionResolver],
     ) {
         if !crate::evaluator::value::contains_ambient_global_hole(&self.value) {

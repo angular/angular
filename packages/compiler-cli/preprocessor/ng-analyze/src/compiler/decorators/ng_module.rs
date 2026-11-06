@@ -2,14 +2,13 @@ use crate::analyzer::{resolve_declaration_async, NgModuleData, ValueIssue};
 use crate::evaluator::value::SyntheticValue;
 use crate::evaluator::{Resolved, ResolvedValue};
 use crate::query::{QueryCtx, ReferenceId};
-use crate::ResourceResolverFs;
 use crate::{ClassInfo, ClassType};
 use futures::future::{BoxFuture, FutureExt};
 use std::collections::HashSet;
 use std::path::Path;
 
-pub async fn optimize_ng_module<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryCtx<Fs>,
+pub async fn optimize_ng_module(
+    ctx: &QueryCtx,
     _file_path: &Path,
     reference_id: ReferenceId,
     _class_name: Option<&str>,
@@ -149,10 +148,10 @@ pub async fn optimize_ng_module<Fs: ResourceResolverFs + Clone + 'static>(
     ng_module.injector_imports = Some(injector_imports);
 }
 
-async fn standalone_bootstrap_issues<Fs: ResourceResolverFs + Clone + 'static>(
+async fn standalone_bootstrap_issues(
     bootstrap: &ResolvedValue,
     bootstrap_span: Option<oxc_span::Span>,
-    ctx: &QueryCtx<Fs>,
+    ctx: &QueryCtx,
 ) -> Vec<ValueIssue> {
     let mut entries = Vec::new();
     collect_bootstrap_entries(bootstrap, None, &mut entries);
@@ -223,9 +222,9 @@ fn is_module_with_providers(item: &ResolvedValue) -> bool {
 /// Non-reference leaves are kept in `out` but return `false` since they cannot be emitted verbatim.
 /// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L1269-L1288
 /// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L863-L875
-fn collect_kept_imports<'a, Fs: ResourceResolverFs + Clone + 'static>(
+fn collect_kept_imports<'a>(
     item: &'a ResolvedValue,
-    ctx: &'a QueryCtx<Fs>,
+    ctx: &'a QueryCtx,
     calculating: &'a mut HashSet<ReferenceId>,
     out: &'a mut Vec<ResolvedValue>,
 ) -> BoxFuture<'a, bool> {
@@ -253,9 +252,9 @@ fn collect_kept_imports<'a, Fs: ResourceResolverFs + Clone + 'static>(
 /// for exports, so an exported `X.forRoot()` contributes `X` and drops its `providers`.
 /// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L1257-L1288
 /// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L878-L888
-fn collect_exported_ng_modules<'a, Fs: ResourceResolverFs + Clone + 'static>(
+fn collect_exported_ng_modules<'a>(
     item: &'a ResolvedValue,
-    ctx: &'a QueryCtx<Fs>,
+    ctx: &'a QueryCtx,
     out: &'a mut Vec<ResolvedValue>,
 ) -> BoxFuture<'a, ()> {
     async move {
@@ -291,9 +290,9 @@ fn unwrap_module_with_providers(item: &ResolvedValue) -> Option<ResolvedValue> {
 }
 
 /// Whether a single resolved import entry is kept in `ɵinj.imports`.
-async fn should_keep_import<Fs: ResourceResolverFs + Clone + 'static>(
+async fn should_keep_import(
     item: &ResolvedValue,
-    ctx: &QueryCtx<Fs>,
+    ctx: &QueryCtx,
     calculating: &mut HashSet<ReferenceId>,
 ) -> bool {
     let ResolvedValue::Reference(r) = item else {
@@ -316,10 +315,7 @@ async fn should_keep_import<Fs: ResourceResolverFs + Clone + 'static>(
     }
 }
 
-async fn is_exported_ng_module<Fs: ResourceResolverFs + Clone + 'static>(
-    item: &ResolvedValue,
-    ctx: &QueryCtx<Fs>,
-) -> bool {
+async fn is_exported_ng_module(item: &ResolvedValue, ctx: &QueryCtx) -> bool {
     let ResolvedValue::Reference(r) = item else {
         return false;
     };
@@ -333,9 +329,9 @@ async fn is_exported_ng_module<Fs: ResourceResolverFs + Clone + 'static>(
     class_info.class_type == ClassType::NgModule
 }
 
-fn may_export_providers<'a, Fs: ResourceResolverFs + Clone + 'static>(
+fn may_export_providers<'a>(
     class_info: &'a ClassInfo,
-    ctx: &'a QueryCtx<Fs>,
+    ctx: &'a QueryCtx,
     calculating: &'a mut HashSet<ReferenceId>,
 ) -> BoxFuture<'a, bool> {
     async move {
@@ -366,9 +362,9 @@ fn may_export_providers<'a, Fs: ResourceResolverFs + Clone + 'static>(
 }
 
 /// Whether any entry in `class_info.raw_imports` may export providers.
-fn imports_may_export_providers<'a, Fs: ResourceResolverFs + Clone + 'static>(
+fn imports_may_export_providers<'a>(
     class_info: &'a ClassInfo,
-    ctx: &'a QueryCtx<Fs>,
+    ctx: &'a QueryCtx,
     calculating: &'a mut HashSet<ReferenceId>,
 ) -> BoxFuture<'a, bool> {
     async move {

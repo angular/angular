@@ -3,7 +3,6 @@ use crate::analyzer::{
 };
 use crate::query::{QueryCtx, ReferenceId};
 use crate::types::analysis::{DeclarationData, OwningReference};
-use crate::ResourceResolverFs;
 use crate::{types::analysis::ResolvedHostDirective, ClassType, DeclarationTuple};
 use std::path::Path;
 
@@ -15,8 +14,8 @@ use std::path::Path;
 ///
 /// Never invent an identifier: a name that isn't a real binding emits a dangling reference (the
 /// bug in the old generated-alias scheme once the emitter moved to namespace imports).
-async fn contextualize_declaration<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryCtx<Fs>,
+async fn contextualize_declaration(
+    ctx: &QueryCtx,
     decl: &DeclarationData,
     consumer: crate::query::FileId,
     file_path: &Path,
@@ -45,8 +44,8 @@ async fn contextualize_declaration<Fs: ResourceResolverFs + Clone + 'static>(
 }
 
 /// Project one reference into `consumer`'s frame.
-async fn project_reference<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryCtx<Fs>,
+async fn project_reference(
+    ctx: &QueryCtx,
     reference: &crate::types::analysis::Reference,
     consumer: crate::query::FileId,
     consumer_path: &Path,
@@ -68,8 +67,8 @@ async fn project_reference<Fs: ResourceResolverFs + Clone + 'static>(
 /// Host directives attach to the hosting declaration rather than the consumer's template scope
 /// (`createMatcherFromScope` registers only direct scope dependencies). `ancestors` tracks the
 /// active host chain to break cycles.
-async fn resolve_host_directives_for_class<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryCtx<Fs>,
+async fn resolve_host_directives_for_class(
+    ctx: &QueryCtx,
     class_info: &crate::ClassInfo,
     parent_owning: Option<&OwningReference>,
     consumer_file: crate::query::FileId,
@@ -112,8 +111,8 @@ struct HostDirectiveClass {
 
 /// Chase a `hostDirectives` entry written in `declaring_file_path` to its declaration. `None`
 /// when the symbol itself cannot be resolved (e.g. a package without typings).
-async fn resolve_host_directive_class<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryCtx<Fs>,
+async fn resolve_host_directive_class(
+    ctx: &QueryCtx,
     hd: &crate::types::analysis::HostDirectiveEntry,
     declaring_file_path: &Path,
 ) -> Option<HostDirectiveClass> {
@@ -162,8 +161,8 @@ async fn resolve_host_directive_class<Fs: ResourceResolverFs + Clone + 'static>(
 
 /// Resolve one `hostDirectives` entry written in `declaring_file_path`, including the host
 /// directives it declares in turn.
-async fn resolve_host_directive<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryCtx<Fs>,
+async fn resolve_host_directive(
+    ctx: &QueryCtx,
     hd: &crate::types::analysis::HostDirectiveEntry,
     declaring_file_path: &Path,
     parent_owning: Option<&OwningReference>,
@@ -352,8 +351,8 @@ fn validate_host_directive_mappings(
 }
 
 // TODO(parity): ngtsc poisons the class when any of these fire, suppressing its emit.
-async fn validate_own_host_directives<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryCtx<Fs>,
+async fn validate_own_host_directives(
+    ctx: &QueryCtx,
     file_path: &Path,
     reference_id: ReferenceId,
     directive: &DirectiveData,
@@ -457,8 +456,8 @@ async fn validate_own_host_directives<Fs: ResourceResolverFs + Clone + 'static>(
 /// Resolve the `hostDirectives` a class declares on itself, in its own file's frame — what
 /// ngtsc's `TypeCheckScopeRegistry` puts in `directivesOnHost` ahead of the class itself when
 /// type-checking its host bindings. Shared by components and directives.
-async fn resolve_own_host_directives<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryCtx<Fs>,
+async fn resolve_own_host_directives(
+    ctx: &QueryCtx,
     file_path: &Path,
     reference_id: ReferenceId,
     class_name: Option<&str>,
@@ -480,8 +479,8 @@ async fn resolve_own_host_directives<Fs: ResourceResolverFs + Clone + 'static>(
 /// Stage 2 for a directive: resolve its own `hostDirectives` for the host binding type-check
 /// block, and validate them. The directive's template scope does not exist, so this is all it
 /// needs cross-file.
-pub async fn optimize_directive<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryCtx<Fs>,
+pub async fn optimize_directive(
+    ctx: &QueryCtx,
     file_path: &Path,
     reference_id: ReferenceId,
     class_name: Option<&str>,
@@ -504,8 +503,8 @@ pub async fn optimize_directive<Fs: ResourceResolverFs + Clone + 'static>(
 }
 
 /// Resolve the `hostDirectives` of a scope entry, looking its class up in its declaring file.
-async fn resolve_host_directives_for_declaration<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryCtx<Fs>,
+async fn resolve_host_directives_for_declaration(
+    ctx: &QueryCtx,
     decl: &DeclarationData,
     consumer_file: crate::query::FileId,
     consumer_path: &Path,
@@ -573,8 +572,8 @@ fn collect_declaration_tuples(
 ///   (`(false, Some(span))`).
 /// - All other references (same-file declarations in a variable, exported variable arrays, or
 ///   imported shared arrays) are treated as potentially shared (`(true, None)`).
-async fn resolve_import_usage<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryCtx<Fs>,
+async fn resolve_import_usage(
+    ctx: &QueryCtx,
     component_file: crate::query::FileId,
     reference_file: crate::query::FileId,
     raw_imports_span: Option<oxc_span::Span>,
@@ -658,8 +657,8 @@ fn legacy_import_reference(
 /// `ref_in_declaring_module`, `is_forward_ref`, `cycle_prone`, and `resolved_host_directives`.
 /// Shared by `optimize_component` and `populate_local_component_extra_imports`.
 #[allow(clippy::too_many_arguments)]
-async fn contextualize_ngmodule_scope_declarations<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryCtx<Fs>,
+async fn contextualize_ngmodule_scope_declarations(
+    ctx: &QueryCtx,
     file_path: &Path,
     reference_id: ReferenceId,
     declarations: &[DeclarationData],
@@ -722,8 +721,8 @@ async fn contextualize_ngmodule_scope_declarations<Fs: ResourceResolverFs + Clon
 /// `component.imports` is completed in place so no `Incomplete` survives into the semantic result.
 /// Invalidation needs no explicit bookkeeping: every awaited sub-query records the files it touched
 /// on the `QueryContext`, and they flow into this semantic query's reverse-index entry.
-pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryCtx<Fs>,
+pub async fn optimize_component(
+    ctx: &QueryCtx,
     file_path: &Path,
     reference_id: ReferenceId,
     class_name: Option<&str>,
@@ -761,8 +760,8 @@ pub async fn optimize_component<Fs: ResourceResolverFs + Clone + 'static>(
     }
 }
 
-async fn optimize_component_scope<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryCtx<Fs>,
+async fn optimize_component_scope(
+    ctx: &QueryCtx,
     file_path: &Path,
     reference_id: ReferenceId,
     class_name: Option<&str>,
@@ -1340,8 +1339,8 @@ fn rebase_relative_specifier(
 ///
 /// Local mode omits static `ɵcmp` dependency lists, stripping module-graph edges needed by
 /// JsTrimmer/Closure for topological sorting. Bare `import '<spec>';` statements restore them.
-pub async fn populate_local_component_extra_imports<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryCtx<Fs>,
+pub async fn populate_local_component_extra_imports(
+    ctx: &QueryCtx,
     file_path: &Path,
     reference_id: ReferenceId,
     class_name: Option<&str>,
