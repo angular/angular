@@ -16,7 +16,6 @@ use super::ImportKind;
 use crate::evaluator::value::{DeclKind, DynamicReason};
 use crate::evaluator::{evaluate_expression, wrong_type_detail, EvalInput, ResolvedValue};
 use crate::query::QueryCtx;
-use crate::ResourceResolverFs;
 
 pub enum ExtractedTransformType {
     Type(oxc_span::Span),
@@ -520,11 +519,11 @@ enum Declared {
 impl InputTransformSite {
     /// Stage 2: the first problem ngtsc's `parseDecoratorInputTransformFunction` reports for
     /// this transform outside local compilation.
-    pub(crate) async fn resolve_issue<Fs: ResourceResolverFs + Clone + 'static>(
+    pub(crate) async fn resolve_issue(
         &mut self,
         file_facts: &HashMap<String, FunctionFacts>,
         file_path: &std::path::Path,
-        ctx: &QueryCtx<Fs>,
+        ctx: &QueryCtx,
     ) {
         let (facts, detail, declared) = match &self.target {
             TransformTarget::Inline(facts) => (
@@ -663,11 +662,11 @@ fn not_a_function(span: Span, detail: String) -> ValueIssue {
 
 /// The facts of the function `export_name` of `specifier` names from `file_path`, or the error
 /// detail when it is not a function declaration; `None` when the import cannot be followed.
-async fn imported_function_facts<Fs: ResourceResolverFs + Clone + 'static>(
+async fn imported_function_facts(
     specifier: &str,
     export_name: &str,
     file_path: &std::path::Path,
-    ctx: &QueryCtx<Fs>,
+    ctx: &QueryCtx,
 ) -> Option<(Result<FunctionFacts, String>, Declared)> {
     let mut visited = std::collections::HashSet::new();
     let Ok(Some(resolved)) = crate::evaluator::cross_file::cross_file_resolve(
