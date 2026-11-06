@@ -28,6 +28,7 @@ import {
   HttpEvent,
   HttpEventType,
   HttpHeaderResponse,
+  HttpJsonParseError,
   HttpResponse,
 } from './response';
 
@@ -342,8 +343,9 @@ export class FetchBackend implements HttpBackend {
   ): string | ArrayBuffer | Blob | object | null {
     switch (request.responseType) {
       case 'json':
+        const originalText = new TextDecoder().decode(binContent);
         // stripping the XSSI when present
-        const text = new TextDecoder().decode(binContent).replace(XSSI_PREFIX, '');
+        const text = originalText.replace(XSSI_PREFIX, '');
         if (text === '') {
           return null;
         }
@@ -357,7 +359,8 @@ export class FetchBackend implements HttpBackend {
           if (status < 200 || status >= 300) {
             return text;
           }
-          throw e;
+          // Like the XHR backend, keep the body that failed to parse.
+          throw {error: e, text: originalText} as HttpJsonParseError;
         }
       case 'text':
         return getTextDecoder(contentType).decode(binContent);

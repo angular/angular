@@ -297,6 +297,26 @@ describe('FetchBackend', () => {
     expect(res.error).toBe('simple text error');
   });
 
+  it('keeps the response text when a json success response fails to parse', async () => {
+    const promise = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
+    fetchMock.mockFlush(HttpStatusCode.Ok, 'OK', '<html>Service unavailable</html>');
+    const events = await promise;
+    expect(events.length).toBe(2);
+    const res = events[1] as any as HttpErrorResponse;
+    expect(res.status).toBe(HttpStatusCode.Ok);
+    expect(res.error.error).toBeInstanceOf(SyntaxError);
+    expect(res.error.text).toBe('<html>Service unavailable</html>');
+  });
+
+  it('keeps the XSSI prefix in the text when a json success response fails to parse', async () => {
+    const promise = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
+    fetchMock.mockFlush(HttpStatusCode.Ok, 'OK', XSSI_PREFIX + 'not json');
+    const events = await promise;
+    const res = events[1] as any as HttpErrorResponse;
+    expect(res.error.error).toBeInstanceOf(SyntaxError);
+    expect(res.error.text).toBe(XSSI_PREFIX + 'not json');
+  });
+
   it('handles a json string response', async () => {
     const promise = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
     fetchMock.mockFlush(HttpStatusCode.Ok, 'OK', JSON.stringify('this is a string'));
