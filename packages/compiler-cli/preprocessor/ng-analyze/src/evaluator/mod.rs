@@ -36,7 +36,7 @@ pub use crate::analyzer::{ImportKind, ImportedSymbol};
 pub use crate::types::analysis::Reference;
 pub use crate::types::metadata::ReferenceMetadata;
 pub use diagnostics::{describe_resolved_type, wrong_type_detail, wrong_type_message};
-pub use driver::evaluate_value_completely;
+pub use driver::{evaluate_ambient_globals_only, evaluate_value_completely};
 pub use foreign::{
     strip_dts_alias_suffix, ForeignFunctionResolver, FunctionTarget, ResolveExpr, ResolveTypeName,
     TypeNameRef,

@@ -463,6 +463,12 @@ fn collect_references(
             true
         }
         ResolvedValue::Incomplete(hole) => {
+            if matches!(
+                hole.dep,
+                crate::evaluator::value::IncompleteDep::AmbientGlobal { .. }
+            ) {
+                return on_dynamic == DynamicEntry::Skip;
+            }
             if !hole.transparent {
                 return false;
             }
@@ -471,6 +477,7 @@ fn collect_references(
                     out.push(reference_from_import_hole(hole.file, target, origin));
                     true
                 }
+                crate::evaluator::value::IncompleteDep::AmbientGlobal { .. } => unreachable!(),
                 crate::evaluator::value::IncompleteDep::Member { base, .. } => {
                     out.push(to_reference(base));
                     true
@@ -727,6 +734,20 @@ impl<T> Resolved<T> {
             return;
         }
         self.value = crate::evaluator::evaluate_value_completely(ctx, &self.value, foreign).await;
+    }
+
+    /// Resolve only [`crate::evaluator::IncompleteDep::AmbientGlobal`] holes in-place via `ctx`,
+    /// leaving cross-file import/member/call holes untouched.
+    pub async fn complete_ambient_globals_with<Fs: crate::ResourceResolverFs + Clone + 'static>(
+        &mut self,
+        ctx: &crate::query::QueryContext<Fs>,
+        foreign: &[&dyn crate::evaluator::ForeignFunctionResolver],
+    ) {
+        if !crate::evaluator::value::contains_ambient_global_hole(&self.value) {
+            return;
+        }
+        self.value =
+            crate::evaluator::evaluate_ambient_globals_only(ctx, &self.value, foreign).await;
     }
 
     /// Demote remaining holes to `Dynamic` in place — Stage-2 invariant enforcement for

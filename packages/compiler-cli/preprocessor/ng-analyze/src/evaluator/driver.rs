@@ -20,8 +20,9 @@ use crate::evaluator::interpreter::{
 };
 use crate::evaluator::value::{
     collect_holes, collect_reevaluation_holes, demote_incomplete_to_dynamic, fingerprint_args,
-    stamp_owning_reference, substitute, DeclKind, DynamicReason, IncompleteDep, IncompleteValue,
-    ResolvedEnv, ResolvedValue, UnresolvedReference, ValueReference,
+    record_ambient_global_alias, stamp_owning_reference, substitute, DeclKind, DynamicReason,
+    IncompleteDep, IncompleteValue, ResolvedEnv, ResolvedValue, UnresolvedReference,
+    ValueReference,
 };
 use crate::query::{FileId, QueryContext};
 use crate::types::analysis::OwningReference;
@@ -138,6 +139,71 @@ pub async fn evaluate_value_completely<Fs: ResourceResolverFs + Clone + 'static>
         }
     }
     demote_incomplete_to_dynamic(current)
+}
+
+/// Resolves only [`IncompleteDep::AmbientGlobal`] holes in `value` via `ctx` (demoting undeclared
+/// globals to `UnknownIdentifier` dynamics) while leaving cross-file module import holes
+/// (`Reference`, `Member`, `Call`) intact for syntax-mode consumers.
+pub async fn evaluate_ambient_globals_only<Fs: ResourceResolverFs + Clone + 'static>(
+    ctx: &QueryContext<Fs>,
+    value: &ResolvedValue,
+    foreign: &[&dyn ForeignFunctionResolver],
+) -> ResolvedValue {
+    if !crate::evaluator::value::contains_ambient_global_hole(value) {
+        return value.clone();
+    }
+    let mut state = ResolutionState::default();
+    let mut env = ResolvedEnv::new();
+    let mut ast_results = std::collections::HashMap::new();
+    let mut current = value.clone();
+    let mut reevaluation_changed = false;
+
+    for _ in 0..MAX_FIXPOINT_ITERS {
+        if !crate::evaluator::value::contains_ambient_global_hole(&current) {
+            return current;
+        }
+        let holes = collect_holes(&current);
+        let mut progressed = false;
+        for hole in holes {
+            if !matches!(hole.dep, IncompleteDep::AmbientGlobal { .. }) {
+                continue;
+            }
+            let key = hole.key();
+            if env.contains_key(&key) {
+                continue;
+            }
+            let resolved = resolve_hole(ctx, hole, &mut state, 0, foreign).await;
+            env.insert(key, resolved);
+            progressed = true;
+        }
+        if !progressed && !reevaluation_changed {
+            break;
+        }
+        current = substitute(current, &env, &ast_results);
+        reevaluation_changed = false;
+
+        if crate::evaluator::value::contains_ambient_global_hole(&current) {
+            for hole in collect_reevaluation_holes(&current) {
+                if !matches!(hole.dep, IncompleteDep::AmbientGlobal { .. }) {
+                    continue;
+                }
+                let Some(reevaluated) =
+                    reevaluate_ast_expression(ctx, hole.file, hole.node_id, &env, foreign).await
+                else {
+                    continue;
+                };
+                if ast_results.get(&hole.span) == Some(&reevaluated) {
+                    continue;
+                }
+                ast_results.insert(hole.span, reevaluated);
+                reevaluation_changed = true;
+            }
+            if reevaluation_changed {
+                current = substitute(current, &env, &ast_results);
+            }
+        }
+    }
+    crate::evaluator::value::demote_ambient_global_holes(current)
 }
 
 /// Re-runnable single-file evaluation target. Re-running with a growing env is what lets
@@ -329,6 +395,19 @@ fn resolve_hole<'a, Fs: ResourceResolverFs + Clone + 'static>(
             IncompleteDep::Reference(unresolved) => {
                 return resolve_import(ctx, unresolved, hole.span, state, depth + 1, foreign).await;
             }
+            IncompleteDep::AmbientGlobal { file, name } => {
+                let ident_span = hole.identifiers.first().map_or(hole.span, |&(_, s)| s);
+                return resolve_ambient_global(
+                    ctx,
+                    file,
+                    name,
+                    ident_span,
+                    state,
+                    depth + 1,
+                    foreign,
+                )
+                .await;
+            }
             IncompleteDep::Member { base, member } => (
                 ResolutionKey::Member {
                     file: base.file,
@@ -396,6 +475,126 @@ fn apply_owning_reference(
         return value;
     };
     stamp_owning_reference(value, file, &owning)
+}
+
+async fn resolve_ambient_global<Fs: ResourceResolverFs + Clone + 'static>(
+    ctx: &QueryContext<Fs>,
+    consumer_file: FileId,
+    name: String,
+    ident_span: Span,
+    state: &mut ResolutionState,
+    depth: usize,
+    foreign: &[&dyn ForeignFunctionResolver],
+) -> ResolvedValue {
+    if depth >= MAX_FILE_DEPTH {
+        state.note_depth_limit();
+        return ResolvedValue::dynamic(consumer_file, ident_span, DynamicReason::DepthLimit);
+    }
+
+    let index = ctx.ambient_global_files().await;
+    let Some(candidates) = index.get(&name) else {
+        return ResolvedValue::dynamic(
+            consumer_file,
+            ident_span,
+            DynamicReason::UnknownIdentifier(name),
+        );
+    };
+
+    for &dts_file_id in candidates {
+        let parsed = ctx.parse_file(dts_file_id).await;
+        let found = {
+            let guard = parsed.lock().expect("ParsedFile lock poisoned");
+            let dep = guard.borrow_dependent();
+            find_ambient_global_value_symbol(dep, &name).map(|symbol_id| {
+                let import_map = extract_import_map(&dep.module_record);
+                let input = EvalInput {
+                    semantic: &dep.semantic,
+                    file: dts_file_id,
+                    import_map: &import_map,
+                    mode: EvalMode::Semantic,
+                    env: &ResolvedEnv::new(),
+                    foreign,
+                };
+                (symbol_id, evaluate_symbol_declaration(symbol_id, &input))
+            })
+        };
+        let Some((symbol_id, probe)) = found else {
+            continue;
+        };
+
+        let completed = complete_value(
+            ctx,
+            dts_file_id,
+            EvalTask::Declaration { symbol: symbol_id },
+            Some(probe),
+            state,
+            depth + 1,
+            foreign,
+        )
+        .await;
+        return record_ambient_global_alias(completed, dts_file_id, consumer_file, &name);
+    }
+
+    ResolvedValue::dynamic(
+        consumer_file,
+        ident_span,
+        DynamicReason::UnknownIdentifier(name),
+    )
+}
+
+fn find_ambient_global_value_symbol(
+    dep: &crate::types::ParsedFileDependent<'_>,
+    name: &str,
+) -> Option<SymbolId> {
+    let scoping = dep.semantic.scoping();
+    let is_value_symbol = |sym: SymbolId| {
+        scoping
+            .symbol_flags(sym)
+            .intersects(oxc_syntax::symbol::SymbolFlags::Value)
+    };
+
+    if !crate::query::engine::is_external_module_dts(dep.program, &dep.module_record) {
+        if let Some(sym) = scoping
+            .get_root_binding(name.into())
+            .filter(|&s| is_value_symbol(s))
+        {
+            return Some(sym);
+        }
+    }
+
+    let find_in_global_stmts = |stmts: &[oxc_ast::ast::Statement<'_>]| -> Option<SymbolId> {
+        for stmt in stmts {
+            let oxc_ast::ast::Statement::TSGlobalDeclaration(global_decl) = stmt else {
+                continue;
+            };
+            let Some(scope_id) = global_decl.scope_id.get() else {
+                continue;
+            };
+            if let Some(sym) = scoping
+                .get_binding(scope_id, name.into())
+                .filter(|&s| is_value_symbol(s))
+            {
+                return Some(sym);
+            }
+        }
+        None
+    };
+
+    if let Some(sym) = find_in_global_stmts(&dep.program.body) {
+        return Some(sym);
+    }
+    for stmt in &dep.program.body {
+        let oxc_ast::ast::Statement::TSExternalModuleDeclaration(mod_decl) = stmt else {
+            continue;
+        };
+        let Some(block) = &mod_decl.body else {
+            continue;
+        };
+        if let Some(sym) = find_in_global_stmts(&block.body) {
+            return Some(sym);
+        }
+    }
+    None
 }
 
 async fn resolve_import<Fs: ResourceResolverFs + Clone + 'static>(

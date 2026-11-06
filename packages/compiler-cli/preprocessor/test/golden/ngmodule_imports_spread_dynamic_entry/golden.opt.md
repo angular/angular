@@ -179,7 +179,7 @@ export class DevToolsModule {
   }
 }
 
-const extraModules = [PRODUCTION ? [] : DevToolsModule.instrument()];
+const extraModules = [isProd() ? [] : DevToolsModule.instrument()];
 
 export class AppComponent {
   // @ts-ignore

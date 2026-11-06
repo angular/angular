@@ -189,7 +189,8 @@ fn evaluate_boolean_option(
     expr: &Expression<'_>,
     eval: &EvalInput<'_, '_>,
 ) -> Result<Option<bool>, Box<crate::evaluator::ResolvedValue>> {
-    let value = evaluate_expression(expr, eval);
+    let value =
+        crate::evaluator::value::demote_ambient_global_holes(evaluate_expression(expr, eval));
     match value.unwrap_named() {
         crate::evaluator::ResolvedValue::Boolean(b) => Ok(Some(*b)),
         other if other.contains_incomplete() => Ok(None),
@@ -632,7 +633,8 @@ pub(crate) fn validate_decorator_query_predicate(query: &QueryData) -> Option<Va
     let QueryPredicate::Evaluated(resolved) = &query.predicate else {
         return None;
     };
-    let value = resolved.raw();
+    let demoted = crate::evaluator::value::demote_ambient_global_holes(resolved.raw().clone());
+    let value = &demoted;
     if value.contains_incomplete() {
         return None;
     }

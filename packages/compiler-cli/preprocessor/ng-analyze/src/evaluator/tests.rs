@@ -55,7 +55,24 @@ fn eval_source_with_env(source: &str, env: &ResolvedEnv, mode: EvalMode) -> Reso
 }
 
 fn eval_source(source: &str) -> ResolvedValue {
-    eval_source_with_env(source, &ResolvedEnv::new(), EvalMode::Syntax)
+    let initial = eval_source_with_env(source, &ResolvedEnv::new(), EvalMode::Syntax);
+    let mut env = ResolvedEnv::new();
+    for hole in collect_holes(&initial) {
+        if let IncompleteDep::AmbientGlobal { file, name } = hole.dep {
+            let ident_span = hole.identifiers.first().map_or(hole.span, |&(_, s)| s);
+            env.insert(
+                HoleKey::AmbientGlobal {
+                    file,
+                    name: name.clone(),
+                },
+                ResolvedValue::dynamic(file, ident_span, DynamicReason::UnknownIdentifier(name)),
+            );
+        }
+    }
+    if env.is_empty() {
+        return initial;
+    }
+    eval_source_with_env(source, &env, EvalMode::Semantic)
 }
 
 fn assert_string(value: &ResolvedValue, expected: &str) {
@@ -1445,4 +1462,215 @@ fn foreign_function_module_with_providers_marks_ng_module_synthetic() {
         panic!("expected SyntheticValue::ModuleWithProviders");
     };
     assert!(marked_mod.synthetic);
+}
+
+fn complete_across_files_with_dts(
+    files: &[(&str, &str)],
+    dts_files: &[&str],
+    consumer: &str,
+) -> ResolvedValue {
+    use crate::query::{QueryContext, QueryEngine};
+    use std::path::PathBuf;
+    use std::sync::Arc;
+
+    let fs = crate::test_utils::create_test_fs(files);
+    let resolver = Arc::new(oxc_resolver::ResolverGeneric::new_with_file_system(
+        fs.clone(),
+        oxc_resolver::ResolveOptions {
+            extensions: vec![".ts".into(), ".d.ts".into()],
+            ..oxc_resolver::ResolveOptions::default()
+        },
+    ));
+    let registry = Arc::new(crate::resource_registry::ResourceRegistry::default());
+    let entrypoints = Arc::new(std::sync::RwLock::new(vec![PathBuf::from(consumer)]));
+    let engine = QueryEngine::new_default(fs, resolver, registry, entrypoints);
+    *engine.tsconfig_dts_files.write().unwrap() = dts_files.iter().map(PathBuf::from).collect();
+    let file = engine.intern_path(consumer);
+    let ctx = QueryContext::new(engine);
+    let foreign = crate::analyzer::resolvers::angular_foreign_resolvers();
+    futures::executor::block_on(async move {
+        let parsed = ctx.parse_file(file).await;
+        let syntax = {
+            let guard = parsed.lock().expect("ParsedFile lock poisoned");
+            let dep = guard.borrow_dependent();
+            let import_map = extract_import_map(&dep.module_record);
+            let last_expr = dep
+                .program
+                .body
+                .iter()
+                .rev()
+                .find_map(|stmt| match stmt {
+                    oxc_ast::ast::Statement::ExpressionStatement(s) => Some(&s.expression),
+                    _ => None,
+                })
+                .expect("consumer must end with an expression statement");
+            let env = ResolvedEnv::new();
+            let input = EvalInput::new(dep, &import_map, file, EvalMode::Syntax, &env, foreign);
+            evaluate_expression(last_expr, &input)
+        };
+        super::evaluate_value_completely(&ctx, &syntax, foreign).await
+    })
+}
+
+#[test]
+fn ambient_dts_global_values_and_type_only_declarations() {
+    let syntax_hole = eval_source_with_env(
+        "[COMPILED, COMPILED];",
+        &ResolvedEnv::new(),
+        EvalMode::Syntax,
+    );
+    let holes = collect_holes(&syntax_hole);
+    assert_eq!(holes.len(), 1);
+    assert!(matches!(
+        &holes[0].dep,
+        IncompleteDep::AmbientGlobal { name, .. } if name == "COMPILED"
+    ));
+
+    let value = complete_across_files_with_dts(
+        &[
+            (
+                "/app/closure.lib.d.ts",
+                "type Imported = import('./shared').TAG;\n\
+                 declare var GLOBAL_TOKEN: import('@angular/core').InjectionToken<string>;\n\
+                 declare var GLOBAL_CLS: import('./shared').SharedClass;\n\
+                 declare var COMPILED: boolean;\n\
+                 declare const BRAND: 'acme';\n\
+                 declare const NULL_VAL: null;",
+            ),
+            (
+                "/app/umd.lib.d.ts",
+                "declare namespace UmdNs { export const V: 'umd'; }\n\
+                 declare const UMD_BRAND: 'umd-acme';\n\
+                 export as namespace UmdNs;",
+            ),
+            (
+                "/app/shared.ts",
+                "export class SharedClass {}\nexport const TAG = COMPILED && BRAND;",
+            ),
+            (
+                "/app/consumer.ts",
+                "import { TAG } from './shared';\n\
+                 declare var LOCAL_TOKEN: import('@angular/core').InjectionToken<string>;\n\
+                 [COMPILED, TAG, GLOBAL_TOKEN, GLOBAL_CLS, LOCAL_TOKEN, UMD_BRAND, NULL_VAL];",
+            ),
+        ],
+        &["/app/closure.lib.d.ts", "/app/umd.lib.d.ts"],
+        "/app/consumer.ts",
+    );
+    let ResolvedValue::Array(items) = &value else {
+        panic!("expected Array, got {value:?}");
+    };
+    let ResolvedValue::Reference(compiled_ref) = items[0].unwrap_named() else {
+        panic!("expected Reference for COMPILED, got {:?}", items[0]);
+    };
+    assert_eq!(compiled_ref.name, "COMPILED");
+    assert_eq!(compiled_ref.kind, DeclKind::Variable);
+    assert!(
+        compiled_ref
+            .aliases
+            .iter()
+            .any(|(_, local)| local == "COMPILED"),
+        "expected consumer alias on ambient global reference, got {:?}",
+        compiled_ref.aliases
+    );
+    assert_string(&items[1], "acme");
+    let ResolvedValue::Reference(token_ref) = items[2].unwrap_named() else {
+        panic!("expected Reference for GLOBAL_TOKEN, got {:?}", items[2]);
+    };
+    assert_eq!(token_ref.name, "GLOBAL_TOKEN");
+    assert_eq!(token_ref.kind, DeclKind::Variable);
+    assert!(
+        token_ref
+            .aliases
+            .iter()
+            .any(|(_, local)| local == "GLOBAL_TOKEN"),
+        "expected consumer alias on GLOBAL_TOKEN, got {:?}",
+        token_ref.aliases
+    );
+    let ResolvedValue::Reference(cls_ref) = items[3].unwrap_named() else {
+        panic!("expected Reference for GLOBAL_CLS, got {:?}", items[3]);
+    };
+    assert_eq!(cls_ref.name, "SharedClass");
+    assert_eq!(cls_ref.kind, DeclKind::Class);
+    let ResolvedValue::Reference(local_token_ref) = items[4].unwrap_named() else {
+        panic!("expected Reference for LOCAL_TOKEN, got {:?}", items[4]);
+    };
+    assert_eq!(local_token_ref.name, "LOCAL_TOKEN");
+    assert_eq!(local_token_ref.kind, DeclKind::Variable);
+    assert_string(&items[5], "umd-acme");
+    assert_eq!(items[6], ResolvedValue::Null);
+
+    for (dts_path, dts_content) in [
+        (
+            "/app/types.d.ts",
+            "declare interface COMPILED {}\ndeclare type BRAND = 'acme';",
+        ),
+        (
+            "/app/cjs.d.ts",
+            "import x = require('some-cjs');\ndeclare var COMPILED: boolean;",
+        ),
+    ] {
+        let non_global = complete_across_files_with_dts(
+            &[(dts_path, dts_content), ("/app/consumer.ts", "COMPILED;")],
+            &[dts_path],
+            "/app/consumer.ts",
+        );
+        assert!(matches!(
+            root_reason(&non_global),
+            DynamicReason::UnknownIdentifier(name) if name == "COMPILED"
+        ));
+    }
+
+    // Verify `record_ambient_global_alias` recurses into `Array` and `KnownFn`.
+    let interner = FileIdInterner::new();
+    let dts_file = interner.intern_path("/app/globals.d.ts");
+    let consumer_file = interner.intern_path("/app/consumer.ts");
+    let make_ref = || ValueReference {
+        file: dts_file,
+        name: "GLOBAL_ITEM".to_string(),
+        member: None,
+        reference_id: None,
+        span: oxc_span::Span::new(0, 11),
+        kind: DeclKind::Variable,
+        owning_reference: None,
+        synthetic: false,
+        aliases: Vec::new(),
+        is_default_export: false,
+        identifiers: Vec::new(),
+    };
+    let stamped_arr = crate::evaluator::value::record_ambient_global_alias(
+        ResolvedValue::Array(vec![ResolvedValue::Reference(make_ref())]),
+        dts_file,
+        consumer_file,
+        "GLOBAL_ITEM",
+    );
+    let ResolvedValue::Array(arr_items) = stamped_arr else {
+        panic!("expected Array");
+    };
+    let ResolvedValue::Reference(arr_ref) = &arr_items[0] else {
+        panic!("expected Reference in Array");
+    };
+    assert_eq!(
+        arr_ref.aliases,
+        vec![(consumer_file, "GLOBAL_ITEM".to_string())]
+    );
+
+    let stamped_kf = crate::evaluator::value::record_ambient_global_alias(
+        ResolvedValue::KnownFn(KnownFn::ArraySlice(vec![ResolvedValue::Reference(
+            make_ref(),
+        )])),
+        dts_file,
+        consumer_file,
+        "GLOBAL_ITEM",
+    );
+    let ResolvedValue::KnownFn(KnownFn::ArraySlice(kf_items)) = stamped_kf else {
+        panic!("expected KnownFn::ArraySlice");
+    };
+    let ResolvedValue::Reference(kf_ref) = &kf_items[0] else {
+        panic!("expected Reference in KnownFn::ArraySlice");
+    };
+    assert_eq!(
+        kf_ref.aliases,
+        vec![(consumer_file, "GLOBAL_ITEM".to_string())]
+    );
 }

@@ -622,6 +622,10 @@ impl IncompleteValue {
     pub fn key(&self) -> HoleKey {
         match &self.dep {
             IncompleteDep::Reference(target) => HoleKey::Reference(target.clone()),
+            IncompleteDep::AmbientGlobal { file, name } => HoleKey::AmbientGlobal {
+                file: *file,
+                name: name.clone(),
+            },
             IncompleteDep::Member { base, member } => HoleKey::Member {
                 base: base.clone(),
                 member: member.clone(),
@@ -639,6 +643,9 @@ impl IncompleteValue {
 pub enum IncompleteDep {
     /// An import binding used as a value — the reference we couldn't chase.
     Reference(UnresolvedReference),
+    /// An unbound identifier in value position that may resolve to an ambient global value
+    /// declared in one of the tsconfig's `.d.ts` files (e.g. `declare var COMPILED: boolean`).
+    AmbientGlobal { file: FileId, name: String },
     /// Property access on a [`ValueReference`] whose declaration lives in another file
     /// (e.g. `.forRoot` on a resolved foreign class reference).
     Member {
@@ -658,6 +665,10 @@ pub enum IncompleteDep {
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum HoleKey {
     Reference(UnresolvedReference),
+    AmbientGlobal {
+        file: FileId,
+        name: String,
+    },
     Member {
         base: ValueReference,
         member: String,
@@ -774,6 +785,24 @@ fn anchor_on_hole(value: ResolvedValue, (file, span): (FileId, Span)) -> Resolve
     }
 }
 
+/// Point an ambient global that no `.d.ts` declares at its identifier rather than at the
+/// expression wrapping it.
+fn anchor_unknown_ambient_identifier(
+    hole: &IncompleteValue,
+    mut filled: ResolvedValue,
+) -> ResolvedValue {
+    let is_ambient = matches!(hole.dep, IncompleteDep::AmbientGlobal { .. });
+    match &mut filled {
+        ResolvedValue::Dynamic(d)
+            if is_ambient && matches!(d.reason, DynamicReason::UnknownIdentifier(_)) =>
+        {
+            d.span = hole.identifiers.first().map_or(hole.span, |&(_, s)| s);
+        }
+        _ => {}
+    }
+    filled
+}
+
 /// Fill holes in place on an owned tree using `env` (for [`IncompleteValue::is_env_value`] holes)
 /// or `ast_results` (for re-evaluated enclosing expressions, keyed by hole span).
 pub fn substitute(
@@ -807,10 +836,8 @@ pub fn substitute(
             };
             let env_value = env.get(&hole.key()).filter(|_| hole.is_env_value());
             if let Some(replacement) = env_value {
-                return anchor_on_hole(
-                    inherit(substitute(replacement.clone(), env, ast_results)),
-                    anchor,
-                );
+                let filled = inherit(substitute(replacement.clone(), env, ast_results));
+                return anchor_on_hole(anchor_unknown_ambient_identifier(hole, filled), anchor);
             }
             if let Some(reevaluated) = ast_results.get(&hole.span) {
                 return anchor_on_hole(inherit(reevaluated.clone()), anchor);
@@ -921,10 +948,19 @@ pub(crate) fn first_spread_hole(items: &[ResolvedValue]) -> Option<&ResolvedValu
 pub fn demote_incomplete_to_dynamic(value: ResolvedValue) -> ResolvedValue {
     match value {
         ResolvedValue::Incomplete(hole) => {
+            let ident_span = hole.identifiers.first().map_or(hole.span, |&(_, s)| s);
+            let is_wrapped_ambient =
+                matches!(hole.dep, IncompleteDep::AmbientGlobal { .. }) && hole.span != ident_span;
+            let inner_span = if is_wrapped_ambient {
+                ident_span
+            } else {
+                hole.span
+            };
             let inner_reason = match hole.dep {
                 IncompleteDep::Reference(unresolved) => {
                     DynamicReason::UnresolvedImport(Box::new(unresolved))
                 }
+                IncompleteDep::AmbientGlobal { name, .. } => DynamicReason::UnknownIdentifier(name),
                 IncompleteDep::Member { base, .. } => {
                     DynamicReason::ExternalReference(Box::new(base))
                 }
@@ -932,12 +968,12 @@ pub fn demote_incomplete_to_dynamic(value: ResolvedValue) -> ResolvedValue {
                     DynamicReason::ExternalReference(Box::new(callee))
                 }
             };
-            let reason = if hole.transparent {
+            let reason = if hole.transparent && !is_wrapped_ambient {
                 inner_reason
             } else {
                 DynamicReason::DynamicInput(Box::new(DynamicValue {
                     file: hole.file,
-                    span: hole.span,
+                    span: inner_span,
                     reason: inner_reason,
                 }))
             };
@@ -974,6 +1010,128 @@ pub fn demote_incomplete_to_dynamic(value: ResolvedValue) -> ResolvedValue {
         } => ResolvedValue::Named {
             span,
             value: Box::new(demote_incomplete_to_dynamic(*value)),
+            synthetic,
+        },
+        other => other,
+    }
+}
+
+/// Whether `value` contains any surviving [`IncompleteDep::AmbientGlobal`] hole.
+pub(crate) fn contains_ambient_global_hole(value: &ResolvedValue) -> bool {
+    match value {
+        ResolvedValue::Incomplete(hole) => matches!(hole.dep, IncompleteDep::AmbientGlobal { .. }),
+        ResolvedValue::Array(items) => items.iter().any(contains_ambient_global_hole),
+        ResolvedValue::Map(map) => map.iter().any(|(_, v)| contains_ambient_global_hole(v)),
+        ResolvedValue::EnumValue(ev) => contains_ambient_global_hole(&ev.resolved),
+        ResolvedValue::KnownFn(kf) => kf.children().iter().any(contains_ambient_global_hole),
+        ResolvedValue::Named { value, .. } => contains_ambient_global_hole(value),
+        _ => false,
+    }
+}
+
+/// Demotes only [`IncompleteDep::AmbientGlobal`] holes to `UnknownIdentifier` dynamics while
+/// leaving cross-file import/member/call holes intact, for Stage 1 callers that inspect
+/// `ResolvedValue` directly without running `driver.rs`.
+pub(crate) fn demote_ambient_global_holes(value: ResolvedValue) -> ResolvedValue {
+    match value {
+        ResolvedValue::Incomplete(hole) => {
+            if matches!(hole.dep, IncompleteDep::AmbientGlobal { .. }) {
+                demote_incomplete_to_dynamic(ResolvedValue::Incomplete(hole))
+            } else {
+                ResolvedValue::Incomplete(hole)
+            }
+        }
+        ResolvedValue::Array(items) => {
+            ResolvedValue::Array(items.into_iter().map(demote_ambient_global_holes).collect())
+        }
+        ResolvedValue::Map(mut map) => {
+            for entry in map.iter_mut() {
+                let v = std::mem::replace(&mut entry.1, ResolvedValue::Undefined);
+                entry.1 = demote_ambient_global_holes(v);
+            }
+            ResolvedValue::Map(map)
+        }
+        ResolvedValue::EnumValue(mut ev) => {
+            let resolved = std::mem::replace(&mut ev.resolved, ResolvedValue::Undefined);
+            ev.resolved = demote_ambient_global_holes(resolved);
+            ResolvedValue::EnumValue(ev)
+        }
+        ResolvedValue::KnownFn(kf) => ResolvedValue::KnownFn(
+            kf.map_receiver(|items| items.into_iter().map(demote_ambient_global_holes).collect()),
+        ),
+        ResolvedValue::Named {
+            span,
+            value,
+            synthetic,
+        } => ResolvedValue::Named {
+            span,
+            value: Box::new(demote_ambient_global_holes(*value)),
+            synthetic,
+        },
+        other => other,
+    }
+}
+
+/// Record `(consumer_file, name)` in `aliases` on non-synthetic references to an ambient global
+/// declared in `dts_file` so `Reference::is_in_scope_of(consumer_file)` is `true` and emission
+/// uses the bare global identifier rather than attempting a relative import to a script `.d.ts`.
+pub(crate) fn record_ambient_global_alias(
+    value: ResolvedValue,
+    dts_file: FileId,
+    consumer_file: FileId,
+    name: &str,
+) -> ResolvedValue {
+    let add_alias = |ref_val: &mut ValueReference| {
+        if !ref_val.synthetic
+            && ref_val.file == dts_file
+            && ref_val.name == name
+            && !ref_val.aliases.iter().any(|(f, _)| *f == consumer_file)
+        {
+            ref_val.aliases.push((consumer_file, name.to_string()));
+        }
+    };
+    match value {
+        ResolvedValue::Reference(mut ref_val) => {
+            add_alias(&mut ref_val);
+            ResolvedValue::Reference(ref_val)
+        }
+        ResolvedValue::Array(items) => ResolvedValue::Array(
+            items
+                .into_iter()
+                .map(|v| record_ambient_global_alias(v, dts_file, consumer_file, name))
+                .collect(),
+        ),
+        ResolvedValue::Map(mut map) => {
+            for entry in map.iter_mut() {
+                let v = std::mem::replace(&mut entry.1, ResolvedValue::Undefined);
+                entry.1 = record_ambient_global_alias(v, dts_file, consumer_file, name);
+            }
+            ResolvedValue::Map(map)
+        }
+        ResolvedValue::EnumValue(mut ev) => {
+            add_alias(&mut ev.enum_ref);
+            let resolved = std::mem::replace(&mut ev.resolved, ResolvedValue::Undefined);
+            ev.resolved = record_ambient_global_alias(resolved, dts_file, consumer_file, name);
+            ResolvedValue::EnumValue(ev)
+        }
+        ResolvedValue::KnownFn(kf) => ResolvedValue::KnownFn(kf.map_receiver(|items| {
+            items
+                .into_iter()
+                .map(|v| record_ambient_global_alias(v, dts_file, consumer_file, name))
+                .collect()
+        })),
+        ResolvedValue::Named {
+            span,
+            value,
+            synthetic,
+        } => ResolvedValue::Named {
+            span,
+            value: Box::new(record_ambient_global_alias(
+                *value,
+                dts_file,
+                consumer_file,
+                name,
+            )),
             synthetic,
         },
         other => other,

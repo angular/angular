@@ -474,6 +474,9 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                 QueryKey::AmbientModuleFiles => Arc::new(QueryValue::AmbientModuleFiles(
                     self.ambient_module_files_body(&child_ctx),
                 )),
+                QueryKey::AmbientGlobalFiles => Arc::new(QueryValue::AmbientGlobalFiles(
+                    self.ambient_global_files_body(&child_ctx),
+                )),
                 QueryKey::LocalExtraImports => Arc::new(QueryValue::LocalExtraImports(
                     self.local_extra_imports_body(&child_ctx).await,
                 )),
@@ -953,6 +956,38 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                     files.push(file_id);
                 }
             }
+        }
+        Arc::new(index)
+    }
+
+    /// Index the tsconfig's `.d.ts` files by the ambient global value declarations they may
+    /// contribute (either top-level value declarations in a script `.d.ts` or declarations inside
+    /// `declare global { ... }`), parsing each `.d.ts` into a single recycled [`oxc_allocator::Allocator`]
+    /// without running `SemanticBuilder` or caching [`crate::ParsedFile`]s for non-matching files.
+    /// Compilation units with no unbound identifiers in Angular decorator expressions never run
+    /// this query.
+    fn ambient_global_files_body(
+        self: &Arc<Self>,
+        ctx: &QueryContext<Fs>,
+    ) -> Arc<crate::query::keys::AmbientGlobalFiles> {
+        ctx.record_file(ROOTS_FILE_ID);
+        let dts_files: Vec<PathBuf> = self.tsconfig_dts_files.read().unwrap().clone();
+        let mut index = crate::query::keys::AmbientGlobalFiles::new();
+        let mut allocator = oxc_allocator::Allocator::default();
+        for path in dts_files {
+            let path = self.fs.canonicalize(&path).unwrap_or(path);
+            let file_id = self.intern_path(&path);
+            ctx.record_file(file_id);
+            let Ok(source) = self.fs.read_to_string(&self.lookup_path(file_id)) else {
+                continue;
+            };
+            {
+                let ret =
+                    oxc_parser::Parser::new(&allocator, &source, oxc_span::SourceType::d_ts())
+                        .parse();
+                index_ambient_globals_in_dts(&ret.program, &ret.module_record, file_id, &mut index);
+            }
+            allocator.reset();
         }
         Arc::new(index)
     }
@@ -1860,6 +1895,141 @@ fn ambient_module_names(source: &str) -> impl Iterator<Item = &str> {
     })
 }
 
+/// Whether a `.d.ts` file is an external ES/CJS module (so its top-level declarations are
+/// module-scoped rather than ambient globals), matching TypeScript's `isExternalModule` /
+/// `isAnExternalModuleIndicatorNode`.
+///
+/// Do not rely on `module_record.has_module_syntax` alone:
+/// - `import x = require('foo')` (`Statement::TSImportEqualsDeclaration` with an external module
+///   reference) leaves `has_module_syntax == false` in `oxc_parser`, while TypeScript treats it as
+///   an external module indicator.
+/// - UMD `export as namespace Foo;` (`Statement::TSNamespaceExportDeclaration`) sets
+///   `has_module_syntax == true` in `oxc_parser`, while TypeScript does not treat it alone as an
+///   external module indicator.
+pub(crate) fn is_external_module_dts(
+    program: &oxc_ast::ast::Program<'_>,
+    module_record: &oxc_syntax::module_record::ModuleRecord<'_>,
+) -> bool {
+    use oxc_ast::ast::Statement;
+
+    if !module_record.import_metas.is_empty() {
+        return true;
+    }
+    program.body.iter().any(|stmt| match stmt {
+        Statement::ImportDeclaration(_)
+        | Statement::ExportAllDeclaration(_)
+        | Statement::ExportDefaultDeclaration(_)
+        | Statement::ExportDeclaration(_)
+        | Statement::ExportNamedDeclaration(_)
+        | Statement::ExportFromDeclaration(_)
+        | Statement::TSExportAssignment(_) => true,
+        Statement::TSImportEqualsDeclaration(decl) => decl.module_reference.is_external(),
+        _ => false,
+    })
+}
+
+fn record_ambient_global_candidate(
+    index: &mut crate::query::keys::AmbientGlobalFiles,
+    name: &str,
+    file_id: FileId,
+) {
+    if let Some(files) = index.get_mut(name) {
+        if files.last() != Some(&file_id) {
+            files.push(file_id);
+        }
+        return;
+    }
+    index.insert(name.to_string(), vec![file_id]);
+}
+
+fn declaration_of_stmt<'s, 'a>(
+    stmt: &'s oxc_ast::ast::Statement<'a>,
+) -> Option<&'s oxc_ast::ast::Declaration<'a>> {
+    match stmt {
+        oxc_ast::ast::Statement::ExportDeclaration(export) => Some(&export.declaration),
+        other => other.as_declaration(),
+    }
+}
+
+fn collect_ambient_value_decls_in_stmts(
+    stmts: &[oxc_ast::ast::Statement<'_>],
+    file_id: FileId,
+    index: &mut crate::query::keys::AmbientGlobalFiles,
+) {
+    use oxc_ast::ast::Declaration;
+
+    for stmt in stmts {
+        let Some(decl) = declaration_of_stmt(stmt) else {
+            continue;
+        };
+        match decl {
+            Declaration::VariableDeclaration(var_decl) => {
+                for declarator in &var_decl.declarations {
+                    for ident in declarator.id.get_binding_identifiers() {
+                        record_ambient_global_candidate(index, ident.name.as_str(), file_id);
+                    }
+                }
+            }
+            Declaration::FunctionDeclaration(func) => {
+                if let Some(id) = &func.id {
+                    record_ambient_global_candidate(index, id.name.as_str(), file_id);
+                }
+            }
+            Declaration::ClassDeclaration(class) => {
+                if let Some(id) = &class.id {
+                    record_ambient_global_candidate(index, id.name.as_str(), file_id);
+                }
+            }
+            Declaration::TSEnumDeclaration(en) => {
+                record_ambient_global_candidate(index, en.id.name.as_str(), file_id);
+            }
+            Declaration::TSNamespaceDeclaration(ns) => {
+                record_ambient_global_candidate(index, ns.id.name.as_str(), file_id);
+            }
+            _ => {}
+        }
+    }
+}
+
+/// Index candidate ambient global value declaration names in `program` into `index`.
+///
+/// Checks [`is_external_module_dts`] first before recording top-level script declarations, and
+/// always indexes declarations inside `declare global { ... }` blocks (both at top level and
+/// nested inside `declare module '...' { global { ... } }`). `driver::resolve_ambient_global`
+/// parses only candidate files on demand and verifies `SymbolFlags::Value` via `oxc_semantic`.
+fn index_ambient_globals_in_dts(
+    program: &oxc_ast::ast::Program<'_>,
+    module_record: &oxc_syntax::module_record::ModuleRecord<'_>,
+    file_id: FileId,
+    index: &mut crate::query::keys::AmbientGlobalFiles,
+) {
+    use oxc_ast::ast::Statement;
+
+    if !is_external_module_dts(program, module_record) {
+        collect_ambient_value_decls_in_stmts(&program.body, file_id, index);
+    }
+
+    for stmt in &program.body {
+        match stmt {
+            Statement::TSGlobalDeclaration(global_decl) => {
+                collect_ambient_value_decls_in_stmts(&global_decl.body.body, file_id, index);
+            }
+            Statement::TSExternalModuleDeclaration(mod_decl) => {
+                let Some(block) = &mod_decl.body else {
+                    continue;
+                };
+                for inner in &block.body {
+                    let Statement::TSGlobalDeclaration(global_decl) = inner else {
+                        continue;
+                    };
+                    collect_ambient_value_decls_in_stmts(&global_decl.body.body, file_id, index);
+                }
+            }
+            _ => {}
+        }
+    }
+}
+
 /// Classifies `member` as the ambient module `decl` exports it.
 fn resolve_in_ambient_module(
     decl: &oxc_ast::ast::TSExternalModuleDeclaration<'_>,
@@ -2296,6 +2466,96 @@ mod tests {
         ));
         assert_eq!(found, Some(SymbolValueKind::Value));
         assert!(is_parsed(ambient_id) && !is_parsed(unrelated_id));
+    }
+
+    #[test]
+    fn test_ambient_global_files_index_and_lazy_parse_cache() {
+        let fs = create_test_fs(&[
+            (
+                "/project/script.d.ts",
+                "type Imported = import('./other').Foo;\n\
+                 type Tpl<S extends string> = `a-${S extends \"b\" ? 'c' : `d`}`;\n\
+                 declare var TOKEN: import('@angular/core').InjectionToken<string>;\n\
+                 declare var COMPILED: boolean;\n\
+                 declare const { DESTR_A, raw: DESTR_B }: { DESTR_A: string; raw: number };\n\
+                 declare function* genFn(): Generator<number>;\n\
+                 declare class GlobalSvc {}\n\
+                 declare enum GlobalEnum { A }\n\
+                 declare namespace GlobalNs { export const X: number; }\n\
+                 declare interface TypeOnlyIface {}\n",
+            ),
+            (
+                "/project/umd.d.ts",
+                "declare namespace UmdNs { export const V: string; }\n\
+                 declare const UMD_GLOBAL: 'umd';\n\
+                 export as namespace UmdNs;\n",
+            ),
+            (
+                "/project/cjs.d.ts",
+                "import dep = require('dep');\n\
+                 declare var CJS_LOCAL: boolean;\n\
+                 declare global { var CJS_GLOBAL_AUG: boolean; }\n",
+            ),
+            (
+                "/project/esm.d.ts",
+                "export {};\n\
+                 declare var ESM_LOCAL: boolean;\n\
+                 declare module 'some-pkg' {\n\
+                   global { const NESTED_GLOBAL_AUG: 'nested'; }\n\
+                 }\n",
+            ),
+        ]);
+        let resolver = Arc::new(ResolverGeneric::new_with_file_system(
+            fs.clone(),
+            ResolveOptions::default(),
+        ));
+        let engine = QueryEngine::new_default(
+            fs,
+            resolver,
+            Arc::new(ResourceRegistry::default()),
+            Arc::new(std::sync::RwLock::new(Vec::new())),
+        );
+        *engine.tsconfig_dts_files.write().unwrap() = vec![
+            PathBuf::from("/project/script.d.ts"),
+            PathBuf::from("/project/umd.d.ts"),
+            PathBuf::from("/project/cjs.d.ts"),
+            PathBuf::from("/project/esm.d.ts"),
+        ];
+        let script_id = engine.intern_path("/project/script.d.ts");
+        let umd_id = engine.intern_path("/project/umd.d.ts");
+        let cjs_id = engine.intern_path("/project/cjs.d.ts");
+        let esm_id = engine.intern_path("/project/esm.d.ts");
+
+        let ctx = QueryContext::new(engine.clone());
+        let index = futures::executor::block_on(ctx.ambient_global_files());
+
+        // Indexing uses a recycled `Allocator` + `oxc_parser::Parser` without populating `ParseFile`.
+        for id in [script_id, umd_id, cjs_id, esm_id] {
+            assert!(engine.cache.get(&QueryKey::ParseFile(id)).is_none());
+            assert!(ctx.dependencies().contains(&id));
+        }
+        assert!(ctx.dependencies().contains(&ROOTS_FILE_ID));
+
+        for name in [
+            "TOKEN",
+            "COMPILED",
+            "DESTR_A",
+            "DESTR_B",
+            "genFn",
+            "GlobalSvc",
+            "GlobalEnum",
+            "GlobalNs",
+        ] {
+            assert_eq!(index.get(name), Some(&vec![script_id]), "missing {name}");
+        }
+        assert!(!index.contains_key("TypeOnlyIface"));
+        assert!(!index.contains_key("Imported"));
+        assert_eq!(index.get("UMD_GLOBAL"), Some(&vec![umd_id]));
+        assert_eq!(index.get("UmdNs"), Some(&vec![umd_id]));
+        assert!(!index.contains_key("CJS_LOCAL"));
+        assert_eq!(index.get("CJS_GLOBAL_AUG"), Some(&vec![cjs_id]));
+        assert!(!index.contains_key("ESM_LOCAL"));
+        assert_eq!(index.get("NESTED_GLOBAL_AUG"), Some(&vec![esm_id]));
     }
 
     #[test]
