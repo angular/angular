@@ -66,6 +66,11 @@ export interface AnalysisResult {
    * re-parse the source to find or edit an import.
    */
   imports: Array<ImportDeclarationMetadata>;
+  /**
+   * The file's top-level `import X = …` statements, in source order, which the emitter hoists
+   * like ngtsc's `ImportManager` alongside `imports`.
+   */
+  importEqualsDeclarations?: Array<ImportEqualsDeclarationMetadata>;
   typeOnlyExports: Array<string>;
   diagnostics: Array<NgDiagnostic>;
   /**
@@ -648,6 +653,14 @@ export interface ImportDeclarationMetadata {
   specifier: string;
   /** Introduced bindings (empty for bare side-effect imports). */
   bindings: Array<ImportBindingMetadata>;
+}
+
+/** A top-level `import X = …` statement, which the emitter hoists like the `import` declarations. */
+export interface ImportEqualsDeclarationMetadata {
+  /** Statement span, including a leading `export`. */
+  span: SpanMetadata;
+  /** `span` extended over any trailing line terminator for clean removal. */
+  removalSpan: SpanMetadata;
 }
 
 export interface InjectableMetadata {

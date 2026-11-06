@@ -1871,16 +1871,27 @@ export function processFileSync(
     ? new Set<nga.ImportDeclarationMetadata>()
     : removeDeferredImports(s, content, importDeclarations, deferredOnlyNames, eagerlyBoundNames);
 
-  // Hoist any `import` declarations written after a non-import statement to `importsEnd` so that
-  // downstream CommonJS / Closure downleveling never emits a lexical `const ... = require(...)`
-  // below a top-level statement that references it.
+  // Hoist the import statements written after another statement up to `importsEnd`, like ngtsc's
+  // `ImportManager`, which rebuilds a file it adds imports to as its existing import statements
+  // (`import` declarations and `import X = …`), the generated imports, then everything else. This
+  // also keeps CommonJS / Closure downleveling from emitting a `const ... = require(...)` below a
+  // statement that reads it. ngtsc adds no imports to a file whose classes are all `jit: true`, but
+  // this emitter does (`getOrCreateNamespace` above), so the gate is a compiled class.
+  // TODO: as with ngtsc's `isImportStatement`, `import X = Local.Y` moves above a later local
+  // `namespace` / `enum` / class `Local` and then reads `undefined.Y` at runtime (for an enum, the
+  // type-checked output also reports TS2450). Skipping aliases of local declarations would fix both.
+  // https://github.com/angular/angular/blob/73911c8/packages/compiler-cli/src/ngtsc/translator/src/import_manager/import_typescript_transform.ts#L114-L148
   const hoistedImports: string[] = [];
-  if (!filePath.endsWith('.d.ts') && classes.length > 0) {
-    for (const decl of importDeclarations) {
-      if (decl.span.start > importsEnd && !removedDecls.has(decl)) {
-        hoistedImports.push(s.slice(decl.span.start, decl.span.end));
-        s.remove(decl.removalSpan.start, decl.removalSpan.end);
-      }
+  if (!filePath.endsWith('.d.ts') && compiledClasses.length > 0) {
+    const lateImports = [
+      ...importDeclarations.filter((decl) => !removedDecls.has(decl)),
+      ...(result.importEqualsDeclarations ?? []),
+    ]
+      .filter((decl) => decl.span.start > importsEnd)
+      .sort((a, b) => a.span.start - b.span.start);
+    for (const decl of lateImports) {
+      hoistedImports.push(s.slice(decl.span.start, decl.span.end));
+      s.remove(decl.removalSpan.start, decl.removalSpan.end);
     }
   }
 

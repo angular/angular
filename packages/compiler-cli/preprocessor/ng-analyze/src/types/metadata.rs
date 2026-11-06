@@ -104,6 +104,29 @@ impl ImportDeclarationMetadata {
     }
 }
 
+/// A top-level `import X = …` statement, which the emitter hoists like the `import` declarations.
+#[cfg_attr(feature = "napi", napi(object))]
+#[derive(Clone, Debug, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ImportEqualsDeclarationMetadata {
+    /// Statement span, including a leading `export`.
+    pub span: SpanMetadata,
+    /// `span` extended over any trailing line terminator for clean removal.
+    pub removal_span: SpanMetadata,
+}
+
+impl ImportEqualsDeclarationMetadata {
+    pub(crate) fn to_wire(
+        info: &crate::analyzer::ImportEqualsDeclarationInfo,
+        converter: &crate::utils::Utf8ToUtf16,
+    ) -> Self {
+        Self {
+            span: SpanMetadata::new(info.span, converter),
+            removal_span: SpanMetadata::new(info.removal_span, converter),
+        }
+    }
+}
+
 /// Implicit signal `debugName` insertion (`signalMetadataTransform`).
 /// https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/transform/src/implicit_signal_debug_name_transform.ts#L11-L93
 #[cfg_attr(feature = "napi", napi(object))]
