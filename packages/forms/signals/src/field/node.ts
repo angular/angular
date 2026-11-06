@@ -146,7 +146,7 @@ export class FieldNode implements FieldState<unknown> {
   private readonly pendingSync: WritableSignal<AbortController | undefined> = linkedSignal({
     source: () => this.value(),
     computation: (_source, previous) => {
-      previous?.value?.abort();
+      untracked(() => previous?.value?.abort());
       return undefined;
     },
   });
@@ -438,9 +438,14 @@ export class FieldNode implements FieldState<unknown> {
       if (promise) {
         this.pendingSync.set(controller);
         await promise;
-        if (controller.signal.aborted) {
-          return; // Do not sync if the debounce was aborted.
+        if (
+          this.structure.isOrphaned() ||
+          controller.signal.aborted ||
+          this.pendingSync() !== controller
+        ) {
+          return; // Do not sync an orphaned, aborted, or superseded debounce.
         }
+        this.pendingSync.set(undefined);
       }
     }
 
