@@ -1363,3 +1363,26 @@ describe('SVG <a> link sanitization', () => {
     expect(links[1].getAttribute('xlink:href')).toEqual('javascript:alert(2)');
   });
 });
+
+describe('[innerHTML] reverse tabnabbing protection', () => {
+  it('should strip `opener` from `rel` and add `noopener` for custom `target` names', async () => {
+    @Component({
+      template: `<div [innerHTML]="untrustedContent()"></div>`,
+    })
+    class TestCmp {
+      untrustedContent = signal(
+        '<a id="blank" href="https://attacker.example" target="_blank" rel="opener">Blank</a>' +
+          '<a id="named" href="https://attacker.example" target="evil_win">Named</a>',
+      );
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    await fixture.whenStable();
+
+    const links = fixture.nativeElement.querySelectorAll('a');
+    expect(links[0].getAttribute('target')).toBe('_blank');
+    expect(links[0].hasAttribute('rel')).toBe(false);
+    expect(links[1].getAttribute('target')).toBe('evil_win');
+    expect(links[1].getAttribute('rel')).toBe('noopener');
+  });
+});
