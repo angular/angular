@@ -122,6 +122,96 @@ describe('reactivity', () => {
       expect(lastError.message).toBe('fail!');
     });
 
+    it('should keep running sibling root effects after one throws', async () => {
+      TestBed.configureTestingModule({
+        providers: [{provide: ErrorHandler, useFactory: () => new FakeErrorHandler()}],
+        rethrowApplicationErrors: false,
+      });
+
+      let lastError: any = null;
+      class FakeErrorHandler extends ErrorHandler {
+        override handleError(error: any): void {
+          lastError = error;
+        }
+      }
+      const appRef = TestBed.inject(ApplicationRef);
+
+      const trigger = signal(false);
+      const other = signal(0);
+      const seen: number[] = [];
+
+      // The first-registered root effect throws once `trigger` is set.
+      effect(
+        () => {
+          if (trigger()) {
+            throw new Error('boom');
+          }
+        },
+        {injector: appRef.injector},
+      );
+      // A sibling root effect, registered after it, reads a different signal.
+      effect(
+        () => {
+          seen.push(other());
+        },
+        {injector: appRef.injector},
+      );
+
+      await appRef.whenStable();
+      expect(seen).toEqual([0]);
+
+      // In the same turn, the first effect throws and the sibling's dependency changes.
+      trigger.set(true);
+      other.set(1);
+      await appRef.whenStable();
+
+      expect(lastError.message).toBe('boom');
+      expect(seen).toEqual([0, 1]);
+
+      // The sibling must keep reacting to later changes too.
+      other.set(2);
+      await appRef.whenStable();
+      expect(seen).toEqual([0, 1, 2]);
+    });
+
+    it('should still refresh dirty views in the tick where a root effect throws', async () => {
+      TestBed.configureTestingModule({
+        providers: [{provide: ErrorHandler, useValue: {handleError: () => {}}}],
+        rethrowApplicationErrors: false,
+      });
+
+      const value = signal('before');
+      const trigger = signal(false);
+
+      @Component({template: '{{value()}}'})
+      class TestCmp {
+        value = value;
+      }
+
+      const appRef = TestBed.inject(ApplicationRef);
+      effect(
+        () => {
+          if (trigger()) {
+            throw new Error('boom');
+          }
+        },
+        {injector: appRef.injector},
+      );
+
+      const fixture = TestBed.createComponent(TestCmp);
+      await appRef.whenStable();
+      expect(fixture.nativeElement.textContent).toBe('before');
+
+      trigger.set(true);
+      value.set('after');
+      await appRef.whenStable();
+      expect(fixture.nativeElement.textContent).toBe('after');
+
+      value.set('later');
+      await appRef.whenStable();
+      expect(fixture.nativeElement.textContent).toBe('later');
+    });
+
     // Disabled while we consider whether this actually makes sense.
     // This test _used_ to show that `effect()` was usable inside component error handlers, partly
     // because effect errors used to report to component error handlers. Now, effect errors are
