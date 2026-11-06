@@ -186,6 +186,48 @@ describe('security integration tests', function () {
       checkEscapeOfHrefProperty(fixture);
     });
 
+    function checkNullishResourceUrl(
+      fixture: ComponentFixture<any>,
+      expectedNullishSrc: string | null,
+    ) {
+      const e = fixture.debugElement.children[0].nativeElement;
+      const ci = fixture.componentInstance;
+
+      ci.ctxProp = undefined;
+      fixture.changeDetectorRef.markForCheck();
+      expect(() => fixture.detectChanges()).not.toThrow();
+      expect(e.getAttribute('src')).toEqual(expectedNullishSrc);
+
+      ci.ctxProp = null;
+      fixture.changeDetectorRef.markForCheck();
+      expect(() => fixture.detectChanges()).not.toThrow();
+      expect(e.getAttribute('src')).toEqual(expectedNullishSrc);
+
+      ci.ctxProp = 'https://example.com/embed';
+      fixture.changeDetectorRef.markForCheck();
+      expect(() => fixture.detectChanges()).toThrowError(
+        /NG0904: unsafe value used in a resource URL context/,
+      );
+    }
+
+    it('should allow binding null and undefined to resource URL properties', () => {
+      const template = `<iframe [src]="ctxProp"></iframe>`;
+      TestBed.overrideComponent(SecuredComponent, {set: {template}});
+      const fixture = TestBed.createComponent(SecuredComponent);
+
+      // The property is set to an empty string, which the browser treats as `about:blank`.
+      checkNullishResourceUrl(fixture, '');
+    });
+
+    it('should allow binding null and undefined to resource URL attributes', () => {
+      const template = `<iframe [attr.src]="ctxProp"></iframe>`;
+      TestBed.overrideComponent(SecuredComponent, {set: {template}});
+      const fixture = TestBed.createComponent(SecuredComponent);
+
+      // Nullish attribute values remove the attribute without going through the sanitizer.
+      checkNullishResourceUrl(fixture, null);
+    });
+
     it('should escape unsafe attributes', () => {
       const template = `<a [attr.href]="ctxProp">Link Title</a>`;
       TestBed.overrideComponent(SecuredComponent, {set: {template}});
