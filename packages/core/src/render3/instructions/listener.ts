@@ -6,15 +6,20 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {EventCallback, WrappedEventCallback} from '../../event_delegation_utils';
+import {formatRuntimeError, RuntimeErrorCode} from '../../errors';
+import {
+  type EventCallback,
+  markEventHandledForElement,
+  type WrappedEventCallback,
+} from '../../event_delegation_utils';
 import {TNode, TNodeType} from '../interfaces/node';
 import {GlobalTargetResolver, Renderer} from '../interfaces/renderer';
-import {LView, RENDERER, TView} from '../interfaces/view';
+import {CONTEXT, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
 import {getCurrentDirectiveDef, getCurrentTNode, getLView, getTView} from '../state';
 
 import {listenToOutput} from '../view/directive_outputs';
-import {listenToDomEvent, wrapListener} from '../view/listeners';
+import {executeListenerWithErrorHandling, listenToDomEvent, wrapListener} from '../view/listeners';
 import {loadComponentRenderer} from './shared';
 
 /**
@@ -112,7 +117,7 @@ export function ɵɵdomListener(
       lView[RENDERER],
       eventName,
       listenerFn,
-      wrapListener(tNode, lView, listenerFn),
+      _wrapDomListenerImpl(tNode, lView, listenerFn, eventName),
     );
   }
 
@@ -138,7 +143,7 @@ export function listenerInternal(
   // - The event target has a resolver (usually resulting in a global object,
   //   such as `window` or `document`).
   if (tNode.type & TNodeType.AnyRNode || eventTargetResolver) {
-    wrappedListener ??= wrapListener(tNode, lView, listenerFn);
+    wrappedListener ??= _wrapDomListenerImpl(tNode, lView, listenerFn, eventName);
     const hasCoalescedDomEvent = listenToDomEvent(
       tNode,
       tView,
@@ -176,4 +181,67 @@ export function listenerInternal(
       }
     }
   }
+}
+
+/** Listeners with this suffix don't schedule change detection */
+const SILENT_EVENT_SUFFIX = '.silent';
+
+/**
+ * This is a copy of `wrapListener` but without `markViewDirty()`, so the listener itself
+ * doesn't schedule change detection. Note that signal writes inside still schedule it,
+ * since signals notify the scheduler on their own
+ */
+function wrapSilentListener(lView: LView, listenerFn: EventCallback): WrappedEventCallback {
+  function wrapListenerIn_preventDefault(event: any) {
+    const nativeEl = (wrapListenerIn_preventDefault as any).__ngNativeEl__;
+    if (nativeEl !== undefined) {
+      markEventHandledForElement(event, nativeEl);
+    }
+
+    const context = lView[CONTEXT];
+    let result = executeListenerWithErrorHandling(lView, context, listenerFn, event);
+    let nextListenerFn = (<any>wrapListenerIn_preventDefault).__ngNextListenerFn__;
+    while (nextListenerFn) {
+      result = executeListenerWithErrorHandling(lView, context, nextListenerFn, event) && result;
+      nextListenerFn = (<any>nextListenerFn).__ngNextListenerFn__;
+    }
+
+    return result;
+  }
+
+  const wrapped = wrapListenerIn_preventDefault as WrappedEventCallback;
+  wrapped.__ngOriginalListener__ = listenerFn;
+  return wrapped;
+}
+
+function wrapDomListenerImpl(
+  tNode: TNode,
+  lView: LView,
+  listenerFn: EventCallback,
+  eventName: string,
+): WrappedEventCallback {
+  if (!eventName.endsWith(SILENT_EVENT_SUFFIX)) {
+    if (ngDevMode && eventName.includes(SILENT_EVENT_SUFFIX + '.')) {
+      console.warn(
+        formatRuntimeError(
+          RuntimeErrorCode.MISPLACED_SILENT_EVENT_MODIFIER,
+          `"${eventName}": \`.silent\` must be the last modifier, e.g. "keyup.enter.silent". ` +
+            `This listener will never fire.`,
+        ),
+      );
+    }
+    return wrapListener(tNode, lView, listenerFn);
+  }
+  const wrapped = wrapSilentListener(lView, listenerFn);
+  wrapped.__ngNativeEventName__ = eventName.slice(0, -SILENT_EVENT_SUFFIX.length);
+  return wrapped;
+}
+
+// Default is just `wrapListener`, the `.silent` code is referenced only from
+// `enableSilentListenersImpl()`, so it's tree-shaken if nobody enables it
+let _wrapDomListenerImpl: typeof wrapDomListenerImpl = wrapListener;
+
+/** Turns on `.silent` support, called from `provideSilentListeners()` */
+export function enableSilentListenersImpl() {
+  _wrapDomListenerImpl = wrapDomListenerImpl;
 }

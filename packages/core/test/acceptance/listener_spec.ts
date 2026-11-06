@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {NgFor, NgIf, NgTemplateOutlet} from '@angular/common';
-import {By} from '@angular/platform-browser';
+import {DOCUMENT, NgFor, NgIf, NgTemplateOutlet} from '@angular/common';
+import {By, EventManagerPlugin, EVENT_MANAGER_PLUGINS} from '@angular/platform-browser';
 import {
   Component,
   Directive,
@@ -15,15 +15,19 @@ import {
   EventEmitter,
   forwardRef,
   HostListener,
+  inject,
   Input,
   OnInit,
   Output,
+  provideZonelessChangeDetection,
   QueryList,
   signal,
   TemplateRef,
   ViewChild,
   ViewChildren,
   ViewContainerRef,
+  ɵprovideSilentListeners,
+  ɵunwrapListener,
 } from '../../src/core';
 import {TestBed} from '../../testing';
 
@@ -880,6 +884,169 @@ describe('event listeners', () => {
       button.click();
       fixture.detectChanges();
       expect(clicks).toBe(1);
+    });
+  });
+
+  describe('custom EventManager plugin', () => {
+    // Regression coverage for #61839: a plugin that unwraps the authored listener via
+    // `ɵunwrapListener` and registers it directly, so the event does not schedule change detection.
+    class SilentEventPlugin extends EventManagerPlugin {
+      constructor() {
+        super(inject(DOCUMENT));
+      }
+
+      override supports(eventName: string): boolean {
+        return eventName.endsWith('.silent');
+      }
+
+      override addEventListener(
+        element: HTMLElement,
+        eventName: string,
+        handler: Function,
+      ): Function {
+        const name = eventName.slice(0, -'.silent'.length);
+        // `handler` is the `decoratePreventDefault`-wrapped listener. Peel that layer with the
+        // `__ngUnwrap__` token, then get the handler as authored with `ɵunwrapListener`.
+        const preventDefaultWrapped = handler as (token: string) => (event?: any) => any;
+        const original = ɵunwrapListener(preventDefaultWrapped('__ngUnwrap__'));
+        element.addEventListener(name, original as EventListener);
+        return () => element.removeEventListener(name, original as EventListener);
+      }
+    }
+
+    it('runs the authored handler without scheduling change detection', async () => {
+      let handlerCalls = 0;
+
+      @Component({template: `<button (click.silent)="onClick()">{{ label }}</button>`})
+      class App {
+        label = 'initial';
+        onClick() {
+          handlerCalls++;
+          this.label = 'updated';
+        }
+      }
+
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          provideZonelessChangeDetection(),
+          {provide: EVENT_MANAGER_PLUGINS, useClass: SilentEventPlugin, multi: true},
+        ],
+      });
+
+      const fixture = TestBed.createComponent(App);
+      await fixture.whenStable();
+      const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+      expect(button.textContent).toBe('initial');
+
+      button.click();
+      await fixture.whenStable();
+
+      // The authored handler ran and mutated the component...
+      expect(handlerCalls).toBe(1);
+      expect(fixture.componentInstance.label).toBe('updated');
+      // ...but no change detection was scheduled, so the DOM was not refreshed.
+      expect(button.textContent).toBe('initial');
+    });
+  });
+
+  describe('silent listeners', () => {
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        providers: [provideZonelessChangeDetection(), ɵprovideSilentListeners()],
+      });
+    });
+
+    it('should not refresh the view after a silent listener', async () => {
+      const recorder: string[] = [];
+
+      @Component({template: `<button (click.silent)="onClick()">{{ label }}</button>`})
+      class App {
+        label = 'initial';
+        onClick() {
+          recorder.push('click');
+          this.label = 'updated';
+        }
+      }
+
+      const fixture = TestBed.createComponent(App);
+      await fixture.whenStable();
+      const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+
+      button.click();
+      await fixture.whenStable();
+
+      expect(recorder).toEqual(['click']);
+      expect(button.textContent).toBe('initial');
+    });
+
+    it('should refresh the view when a silent listener writes a signal', async () => {
+      @Component({template: `<button (click.silent)="label.set('updated')">{{ label() }}</button>`})
+      class App {
+        label = signal('initial');
+      }
+
+      const fixture = TestBed.createComponent(App);
+      await fixture.whenStable();
+      const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+
+      button.click();
+      await fixture.whenStable();
+
+      expect(button.textContent).toBe('updated');
+    });
+
+    it('should not silence a regular listener for the same event', async () => {
+      const recorder: string[] = [];
+
+      @Directive({selector: '[dir]', host: {'(click.silent)': 'onClick()'}})
+      class Dir {
+        onClick() {
+          recorder.push('silent');
+        }
+      }
+
+      @Component({
+        imports: [Dir],
+        template: `<button dir (click)="onClick()">{{ label }}</button>`,
+      })
+      class App {
+        label = 'initial';
+        onClick() {
+          recorder.push('regular');
+          this.label = 'updated';
+        }
+      }
+
+      const fixture = TestBed.createComponent(App);
+      await fixture.whenStable();
+      const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+
+      button.click();
+      await fixture.whenStable();
+
+      expect(recorder).toEqual(['silent', 'regular']);
+      expect(button.textContent).toBe('updated');
+    });
+
+    it('should warn when `.silent` is not the last modifier', async () => {
+      const recorder: string[] = [];
+      spyOn(console, 'warn').and.callFake((message: string) => {
+        recorder.push(message);
+      });
+
+      @Component({template: `<input (keyup.silent.enter)="onEnter()" />`})
+      class App {
+        onEnter() {}
+      }
+
+      const fixture = TestBed.createComponent(App);
+      await fixture.whenStable();
+
+      expect(recorder).toEqual([
+        'NG0319: "keyup.silent.enter": `.silent` must be the last modifier, ' +
+          'e.g. "keyup.enter.silent". This listener will never fire.',
+      ]);
     });
   });
 });
