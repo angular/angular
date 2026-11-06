@@ -664,6 +664,51 @@ describe('error bindings', () => {
     expect(text).toContain('HAS_ERRORS'); // Should immediately update the rendered error count
   });
 
+  it('should pass parse error to control errors input when model value is unchanged (issue #71127)', () => {
+    @Component({
+      selector: 'my-raw-parsing-input',
+      template: `
+        <input #i [value]="raw()" (input)="raw.set(i.value)" />
+        <p>{{ errors().length }}</p>
+      `,
+    })
+    class MyRawParsingInput {
+      readonly value = model('');
+      readonly errors = input<readonly any[]>([]);
+      // Unparseable text stays here and never reaches `value`
+      readonly raw = signal('');
+
+      constructor() {
+        const parseErrorsToken = inject(ɵFORM_CONTROL_INTEGRATION, {optional: true, self: true});
+        if (parseErrorsToken) {
+          parseErrorsToken.setParseErrors(
+            computed(() => (this.raw() === 'INVALID' ? [{kind: 'parse'}] : [])),
+          );
+        }
+      }
+    }
+
+    @Component({
+      template: `<my-raw-parsing-input [formControl]="ctrl" />`,
+      imports: [MyRawParsingInput, ReactiveFormsModule],
+    })
+    class TestCmp {
+      ctrl = new FormControl('');
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const inputEl = fixture.nativeElement.querySelector('input');
+    const p = fixture.nativeElement.querySelector('p');
+    expect(p.textContent).toBe('0');
+
+    inputEl.value = 'INVALID';
+    act(() => inputEl.dispatchEvent(new Event('input')));
+
+    expect(fixture.componentInstance.ctrl.value).toBe('');
+    expect(fixture.componentInstance.ctrl.errors).toEqual({parse: {kind: 'parse'}});
+    expect(p.textContent).toBe('1');
+  });
+
   it('should switch parseErrors to new FormControl when swapped', () => {
     @Component({
       selector: 'my-parsing-input',

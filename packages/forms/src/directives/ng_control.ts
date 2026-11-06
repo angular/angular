@@ -14,6 +14,7 @@ import {
   computed,
   effect,
   inject,
+  untracked,
   type ɵControlDirectiveHost as ControlDirectiveHost,
   type Injector,
   type Renderer2,
@@ -473,7 +474,7 @@ export abstract class NgControl extends AbstractControlDirective {
 
     // Create validator that returns current parse errors
     this.parseErrorsValidator = () => {
-      lastSeenErrors = convertedParseErrors();
+      lastSeenErrors = untracked(convertedParseErrors);
       return lastSeenErrors;
     };
 
