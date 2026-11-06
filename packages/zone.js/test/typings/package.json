@@ -9,7 +9,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "domino": "https://github.com/angular/domino.git#a0d9c35737220cea1a70bdcaf7bde94518271dbb",
+    "domino": "https://github.com/angular/domino.git#967f59984ab6c95ca6df49bfc49050494feef017",
     "zone.js": "workspace:*"
   },
   "devDependencies": {
