@@ -491,16 +491,11 @@ async fn resolve_ambient_global<Fs: ResourceResolverFs + Clone + 'static>(
         return ResolvedValue::dynamic(consumer_file, ident_span, DynamicReason::DepthLimit);
     }
 
-    let index = ctx.ambient_global_files().await;
-    let Some(candidates) = index.get(&name) else {
-        return ResolvedValue::dynamic(
-            consumer_file,
-            ident_span,
-            DynamicReason::UnknownIdentifier(name),
-        );
-    };
-
-    for &dts_file_id in candidates {
+    let mut position = 0;
+    while let Some((candidate_position, dts_file_id)) =
+        ctx.next_ambient_global_candidate(&name, consumer_file, position)
+    {
+        position = candidate_position + 1;
         let parsed = ctx.parse_file(dts_file_id).await;
         let found = {
             let guard = parsed.lock().expect("ParsedFile lock poisoned");

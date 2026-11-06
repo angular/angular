@@ -276,6 +276,9 @@ pub struct DirectiveData {
     pub host_directives: Option<Resolved<Vec<HostDirectiveEntry>>>,
     pub host_directives_span: Option<oxc_span::Span>,
     pub unsupported_host_directives: Vec<(Resolved<()>, oxc_span::Span)>,
+    /// `hostDirectives` array elements that local compilation may emit verbatim when they don't
+    /// resolve to a reference (see [`crate::evaluator::local_host_directive_entries`]).
+    pub host_directive_expressions: Vec<(oxc_span::Span, String)>,
     /// The directive's own `hostDirectives`, resolved in stage 2 — what ngtsc's
     /// `TypeCheckScopeRegistry` puts in `directivesOnHost` ahead of the directive itself when
     /// type-checking its host bindings. Components keep theirs on
@@ -433,27 +436,51 @@ async fn complete_style_urls<Fs: crate::ResourceResolverFs + Clone + 'static>(
     }
 }
 
-/// In non-`emitDeclarationOnly` local compilation, ngtsc still runs the partial evaluator over
-/// `hostDirectives`, so expressions like `forwardRef(() => DepA)` that resolve within the
-/// compilation unit succeed while unresolved external expressions remain dynamic and report NG11003.
-async fn complete_unsupported_host_directives<Fs: crate::ResourceResolverFs + Clone + 'static>(
-    entries: &mut Vec<(Resolved<()>, oxc_span::Span)>,
+/// Complete `hostDirectives` for local compilation the way ngtsc's partial evaluator sees it.
+///
+/// Without `emitDeclarationOnly`, ngtsc still evaluates across the compilation unit, so
+/// `forwardRef(() => DepA)`, `[...DIRS]`, or `FLAG ? DirA : DirB` resolve when their inputs live in
+/// another file of the unit. Under `emitDeclarationOnly`, other `.ts` files are outside the unit,
+/// but ambient `.d.ts` globals listed in `tsconfig.files` are still in the `ts.Program`, so only
+/// those fold (e.g. `COMPILED ? DirA : DirB`).
+///
+/// An entry Stage 1 flagged as an unsupported expression stays flagged unless completion folds it to
+/// a concrete value: ngtsc's `visitExpression` re-anchors any `DynamicValue` on the outermost
+/// expression it evaluated, so `FLAG ? ImportedDir : X` is still reported once `FLAG` resolves,
+/// even though the branch it selects is a plain identifier. Entries that fold land in
+/// `host_directives` too, since it is completed the same way.
+async fn complete_local_host_directives<Fs: crate::ResourceResolverFs + Clone + 'static>(
+    d: &mut DirectiveData,
     ctx: &crate::query::QueryContext<Fs>,
     foreign: &[&dyn crate::evaluator::ForeignFunctionResolver],
 ) {
-    if entries.is_empty() {
-        return;
+    let ambient_only = ctx.engine.emit_declaration_only;
+    if let Some(host_directives) = &mut d.host_directives {
+        complete_for_local_compilation(host_directives, ambient_only, ctx, foreign).await;
     }
-    for (probe, _) in entries.iter_mut() {
-        probe.complete_with(ctx, foreign).await;
+    for (probe, _) in &mut d.unsupported_host_directives {
+        complete_for_local_compilation(probe, ambient_only, ctx, foreign).await;
     }
-    entries.retain(|(probe, _)| {
+    d.unsupported_host_directives.retain(|(probe, _)| {
         matches!(
             probe.raw().unwrap_named(),
             crate::evaluator::ResolvedValue::Dynamic(_)
                 | crate::evaluator::ResolvedValue::Incomplete(_)
         )
     });
+}
+
+async fn complete_for_local_compilation<T, Fs: crate::ResourceResolverFs + Clone + 'static>(
+    value: &mut Resolved<T>,
+    ambient_only: bool,
+    ctx: &crate::query::QueryContext<Fs>,
+    foreign: &[&dyn crate::evaluator::ForeignFunctionResolver],
+) {
+    if ambient_only {
+        value.complete_ambient_globals_with(ctx, foreign).await;
+    } else {
+        value.complete_with(ctx, foreign).await;
+    }
 }
 
 /// Stage 2 for a `templateUrl` that named a constant from another file: complete the
@@ -508,6 +535,7 @@ impl Default for DirectiveData {
             host_directives: None,
             host_directives_span: None,
             unsupported_host_directives: Vec::new(),
+            host_directive_expressions: Vec::new(),
             resolved_host_directives: None,
             host_directive_diagnostics: Vec::new(),
             providers_span: None,
@@ -1893,7 +1921,8 @@ impl ClassData {
     /// event names) so cross-file constants within the compilation unit resolve and external
     /// imports demote to `UnresolvedImport` for `NG11001` validation, and resolve ambient `.d.ts`
     /// global holes on `host`, `@Input`/`@Output` metadata, and decorator query predicates while
-    /// keeping cross-file import holes intact for syntax-mode emission.
+    /// keeping cross-file import holes intact for syntax-mode emission. `hostDirectives` is
+    /// completed by [`complete_local_host_directives`].
     pub async fn complete_local_compilation_constants<
         Fs: crate::ResourceResolverFs + Clone + 'static,
     >(
@@ -1921,14 +1950,7 @@ impl ClassData {
                 io.complete_ambient_globals_with(ctx, foreign).await;
             }
             d.fold_pending_io();
-            if !ctx.engine.emit_declaration_only {
-                complete_unsupported_host_directives(
-                    &mut d.unsupported_host_directives,
-                    ctx,
-                    foreign,
-                )
-                .await;
-            }
+            complete_local_host_directives(d, ctx, foreign).await;
         }
         if let Some(c) = self.as_component_mut() {
             if let Some(template) = &mut c.template {
@@ -2891,6 +2913,41 @@ impl ClassData {
                     ),
                 );
             }
+            let issues = local_host_directives(d).map_or_else(Vec::new, |(_, issues)| issues);
+            for issue in issues {
+                match issue {
+                    crate::evaluator::LocalHostDirectiveIssue::UnsupportedExpression(span) => {
+                        // Stage 1 already flagged the entry when it was written as an expression.
+                        let already_reported = d
+                            .unsupported_host_directives
+                            .iter()
+                            .any(|(_, reported)| reported.contains_inclusive(span));
+                        if already_reported {
+                            continue;
+                        }
+                        push_error(
+                            diagnostics,
+                            file_path,
+                            converter,
+                            crate::ErrorCode::LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION,
+                            span,
+                            format!(
+                                "In {mode_name} mode, host directive cannot be an expression. Use an identifier instead"
+                            ),
+                        );
+                    }
+                    crate::evaluator::LocalHostDirectiveIssue::WrongType(span, error) => {
+                        push_error(
+                            diagnostics,
+                            file_path,
+                            converter,
+                            crate::ErrorCode::VALUE_HAS_WRONG_TYPE,
+                            span,
+                            error.message().to_string(),
+                        );
+                    }
+                }
+            }
             return;
         }
         if let (Some(host_directives), Some(span)) = (&d.host_directives, d.host_directives_span) {
@@ -3364,6 +3421,23 @@ fn core_enum_field_issues(c: &ComponentData) -> Vec<ValueIssue> {
     .into_iter()
     .flatten()
     .collect()
+}
+
+/// `hostDirectives` as local and `emitDeclarationOnly` compilation emit it, with the entries that
+/// can't be emitted.
+fn local_host_directives(
+    d: &DirectiveData,
+) -> Option<(
+    Vec<HostDirectiveEntry>,
+    Vec<crate::evaluator::LocalHostDirectiveIssue>,
+)> {
+    let host_directives = d.host_directives.as_ref()?;
+    Some(crate::evaluator::local_host_directive_entries(
+        host_directives.raw(),
+        host_directives.origin,
+        &d.host_directive_expressions,
+        d.host_directives_span.unwrap_or_default(),
+    ))
 }
 
 fn host_metadata_issues(d: &DirectiveData) -> Vec<ValueIssue> {
@@ -4818,10 +4892,22 @@ impl ClassData {
         d: &DirectiveData,
         cx: &WireContext,
     ) -> Option<Vec<HostDirectiveMetadata>> {
-        if (cx.emit_declaration_only || cx.mode != WireMode::Semantic)
-            && !d.unsupported_host_directives.is_empty()
-        {
-            return None;
+        if cx.emit_declaration_only || cx.mode != WireMode::Semantic {
+            if !d.unsupported_host_directives.is_empty() {
+                return None;
+            }
+            let (entries, issues) = local_host_directives(d)?;
+            if !issues.is_empty() {
+                return None;
+            }
+            let file_id = self.reference_id.file;
+            let current_file_path = cx.path_lookup.map(|lookup| lookup(file_id));
+            return Some(
+                entries
+                    .into_iter()
+                    .map(|e| e.into_wire(file_id, current_file_path.as_deref(), cx.path_lookup))
+                    .collect(),
+            );
         }
         let slot = d.host_directives.as_ref()?;
         let entries = slot.get_optional()?;

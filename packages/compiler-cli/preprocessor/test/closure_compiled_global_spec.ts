@@ -20,6 +20,7 @@ describe('ambient .d.ts global value evaluation', () => {
       declare var COMPILED: boolean;
       declare const ENV_TAG: 'prod';
       declare class AmbientGlobalService {}
+      declare class GlobalDir {}
     `;
     const umdDts = `
       declare namespace UmdGlobalLib {
@@ -155,11 +156,15 @@ describe('ambient .d.ts global value evaluation', () => {
       {
         path: '/app.ts',
         content: `
-          import {Component, NgModule} from '@angular/core';
+          import {Component, Directive, NgModule} from '@angular/core';
           import {LOCAL_CROSS_SELECTOR} from './imported';
+
+          @Directive({selector: '[localHost]'})
+          export class LocalHostDir {}
 
           @Component({
             selector: LOCAL_CROSS_SELECTOR,
+            hostDirectives: [COMPILED ? LocalHostDir : LocalHostDir, GlobalDir],
             template: '',
           })
           export class LocalClosureCmp {}
@@ -176,6 +181,7 @@ describe('ambient .d.ts global value evaluation', () => {
     expect(localOutMap.get('/tsconfig.ngdiag.json')).toBeUndefined();
     const localAppOut = localOutMap.get('/out/app.ts')!;
     expect(localAppOut).toContain("selectors: [['app-local-closure']]");
+    expect(localAppOut).toContain('ɵɵHostDirectivesFeature([LocalHostDir, GlobalDir])');
     expect(localAppOut).not.toContain('closure.lib');
     expect(
       typecheckAmbientOutputs(

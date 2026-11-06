@@ -274,11 +274,22 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryContext<Fs> {
         }
     }
 
-    pub async fn ambient_global_files(&self) -> Arc<crate::query::keys::AmbientGlobalFiles> {
-        match &*self.query_with_deps(QueryKey::AmbientGlobalFiles).await {
-            QueryValue::AmbientGlobalFiles(r) => r.clone(),
-            _ => unreachable!("AmbientGlobalFiles must yield AmbientGlobalFiles"),
-        }
+    /// The first `.d.ts` at or after `position` in the tsconfig's `files` that may declare
+    /// ambient global value `name`, and its position (see
+    /// [`QueryEngine::next_ambient_global_candidate`]). Records that `consumer_file` looked up
+    /// `name` rather than depending on every `.d.ts` scanned, so editing one only evicts
+    /// `consumer_file` if it starts or stops declaring `name`.
+    pub fn next_ambient_global_candidate(
+        &self,
+        name: &str,
+        consumer_file: FileId,
+        position: usize,
+    ) -> Option<(usize, FileId)> {
+        self.record_file(crate::query::engine::ROOTS_FILE_ID);
+        self.record_file(consumer_file);
+        self.engine
+            .record_ambient_global_dependent(name, consumer_file);
+        self.engine.next_ambient_global_candidate(name, position)
     }
 
     pub async fn has_path(&self, start: FileId, target: FileId) -> bool {
