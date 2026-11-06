@@ -157,6 +157,8 @@ pub fn extract_directive_metadata<'a>(
                 let evaluated = evaluate_expression(&p.value, eval);
                 data.unsupported_host_directives =
                     extract_unsupported_host_directives(&evaluated, semantic, eval.file);
+                data.host_directive_expressions =
+                    host_directive_wrappable_expressions(&p.value, semantic.source_text());
                 data.host_directives = Some(Resolved::from_syntax(evaluated, eval.file));
                 data.host_directives_span = Some(p.value.span());
             }
@@ -240,6 +242,64 @@ fn extract_unsupported_host_directives(
         .collect()
 }
 
+/// The `hostDirectives` array elements (or their `directive` property) that are an identifier or
+/// a non-computed property access chain, with their source text.
+///
+/// In local and `emitDeclarationOnly` compilation, ngtsc's `extractHostDirectives` keeps an entry
+/// that evaluates to a `DynamicValue` as `WrappedNodeExpr(node)` when that node is an `Identifier`
+/// or `PropertyAccessExpression`. Since `visitExpression` re-anchors every `DynamicValue` on the
+/// outermost expression evaluated, the node is the array element itself, so the check is purely
+/// syntactic on the decorator's own array literal.
+/// https://github.com/angular/angular/blob/73911c8/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L2152-L2171
+fn host_directive_wrappable_expressions(
+    expr: &Expression<'_>,
+    source_text: &str,
+) -> Vec<(oxc_span::Span, String)> {
+    let Expression::ArrayExpression(array) = expr.without_parentheses() else {
+        return Vec::new();
+    };
+    array
+        .elements
+        .iter()
+        .filter_map(|element| {
+            let element = element.as_expression()?;
+            let directive = match element.without_parentheses() {
+                Expression::ObjectExpression(object) => object_property_value(object, "directive")?,
+                other => other,
+            };
+            is_identifier_or_property_access(directive).then(|| {
+                let span = directive.span();
+                (span, span.source_text(source_text).to_string())
+            })
+        })
+        .collect()
+}
+
+fn object_property_value<'r, 'a>(
+    object: &'r oxc_ast::ast::ObjectExpression<'a>,
+    name: &str,
+) -> Option<&'r Expression<'a>> {
+    object.properties.iter().find_map(|property| {
+        let ObjectPropertyKind::ObjectProperty(property) = property else {
+            return None;
+        };
+        if property.computed || extract_property_key(&property.key).as_deref() != Some(name) {
+            return None;
+        }
+        Some(&property.value)
+    })
+}
+
+fn is_identifier_or_property_access(expr: &Expression<'_>) -> bool {
+    match expr {
+        Expression::Identifier(_) => true,
+        Expression::StaticMemberExpression(member) => {
+            is_identifier_or_property_access(&member.object)
+        }
+        _ => false,
+    }
+}
+
 fn unsupported_host_directive_entry(
     item: &ResolvedValue,
     semantic: &Semantic<'_>,
@@ -252,7 +312,10 @@ fn unsupported_host_directive_entry(
     let ResolvedValue::Incomplete(hole) = dir_val.unwrap_named() else {
         return None;
     };
+    // A spread hole's node is its argument, but ngtsc sees the spread element itself
+    // (`[...IMPORTED]`), which is never an identifier.
     let is_supported = !hole.synthetic
+        && hole.spread.is_none()
         && hole.node_id.is_some_and(|id| {
             matches!(
                 semantic.nodes().kind(id),
