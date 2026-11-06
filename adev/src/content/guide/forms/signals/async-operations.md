@@ -1,6 +1,6 @@
 # Async operations
 
-Some validation requires data from external sources like backend APIs or third-party services. Signal Forms provides two functions for asynchronous validation: `validateHttp()` for HTTP-based validation and `validateAsync()` for custom resource-based validation.
+Some validation requires data from external sources like backend APIs or third-party services. Signal Forms provides three functions for asynchronous validation: `validateHttp()` for HTTP-based validation, `validateAsyncLoader()` for async functions, and `validateResource()` for custom resource-based validation.
 
 ## When to use async validation
 
@@ -82,7 +82,7 @@ The validation flow works like this:
 5. The request completes and `pending()` becomes `false`
 6. Errors update based on the response
 
-## HTTP validation with validateHttp()
+## HTTP validation with `validateHttp()`
 
 The `validateHttp()` function provides the most common form of async validation. Use it when you need to validate against a REST API or any HTTP endpoint.
 
@@ -241,26 +241,19 @@ validateHttp(schemaPath.field, {
 
 TIP: See the [httpResource API documentation](api/common/http/httpResource) for all available options.
 
-## Custom async validation with validateAsync()
+## Custom async validation with `validateAsyncLoader()` {#custom-async-validation-with-validateasync}
 
 Most applications should use `validateHttp()` for async validation. It handles HTTP requests with minimal configuration and covers the majority of use cases.
 
-`validateAsync()` is a lower-level API that exposes Angular's resource primitive directly. It offers complete control but requires more code and familiarity with Angular's resource API.
-
-Consider `validateAsync()` only when `validateHttp()` can't meet your needs. Some examples include:
-
-- **Non-HTTP validation** - WebSocket connections, IndexedDB lookups, or Web Worker computations
-- **Custom caching strategies** - Application-specific caching beyond simple memoization
-- **Complex retry logic** - Custom backoff strategies or conditional retries
-- **Direct resource access** - When you need the full resource lifecycle
+Use `validateAsyncLoader()` when validation calls an async function, such as an IndexedDB lookup or a Web Worker computation.
 
 ### Creating a custom validation rule
 
-The `validateAsync()` function requires four properties: `params`, `factory`, `onSuccess`, and `onError`. The `params` function returns the parameters for your resource, while `factory` creates the resource:
+The `validateAsyncLoader()` function requires four properties: `params`, `loader`, `onSuccess`, and `onError`. The `params` function returns the parameters for validation, while `loader` calls the async function:
 
 ```ts
-import {Component, inject, signal, resource, Signal} from '@angular/core';
-import {form, validateAsync, FormField} from '@angular/forms/signals';
+import {Component, inject, signal} from '@angular/core';
+import {form, validateAsyncLoader, FormField} from '@angular/forms/signals';
 import {UsernameValidator} from './username-validator';
 
 @Component({
@@ -274,36 +267,29 @@ export class Registration {
   private usernameValidator = inject(UsernameValidator);
   private cache = new Map<string, {available: boolean}>();
 
-  // Custom resource factory with caching
-  createUsernameResource = (usernameSignal: Signal<string | undefined>) => {
-    return resource({
-      params: () => usernameSignal(),
-      loader: async ({params: username}) => {
-        if (!username) return undefined;
+  // Custom validation with caching
+  private async validateUsername(username: string) {
+    // Check cache first
+    const cached = this.cache.get(username);
+    if (cached !== undefined) return cached;
 
-        // Check cache first
-        const cached = this.cache.get(username);
-        if (cached !== undefined) return cached;
+    // Use injected service for validation
+    const result = await this.usernameValidator.checkAvailability(username);
 
-        // Use injected service for validation
-        const result = await this.usernameValidator.checkAvailability(username);
-
-        // Cache result
-        this.cache.set(username, result);
-        return result;
-      },
-    });
-  };
+    // Cache result
+    this.cache.set(username, result);
+    return result;
+  }
 
   registrationForm = form(this.registrationModel, (schemaPath) => {
-    validateAsync(schemaPath.username, {
+    validateAsyncLoader(schemaPath.username, {
       params: ({value}) => {
         const username = value();
-        return username.length >= 3 ? username : undefined!;
+        return username.length >= 3 ? username : undefined;
       },
-      factory: this.createUsernameResource,
+      loader: ({params: username}) => this.validateUsername(username),
       onSuccess: (result) => {
-        return result?.available
+        return result.available
           ? null
           : {
               kind: 'usernameTaken',
@@ -322,16 +308,24 @@ export class Registration {
 }
 ```
 
-The `params` function runs on every value change. Return `undefined` to skip validation. The `factory` function runs once during setup and receives params as a signal. The resource updates automatically when params change.
+The `params` function runs on every value change. Return `undefined` to skip validation. The loader runs automatically when params change.
+
+## Resource-based validation with `validateResource()`
+
+`validateResource()` is a lower-level API for validation that needs direct access to a resource, such as an Observable-based service or resource composition. Its factory receives the params as a resource and returns the resource used for validation. The factory runs once when the field is created.
+
+Use `chain` in the resource's `params` callback to read the validator params. See [Composing resources in async validation with a factory](#composing-resources-in-async-validation-with-a-factory) for an example.
+
+The field remains pending while params are debouncing or the resource is loading. Use `onSuccess` to map the result to validation errors and `onError` to handle failures. Return `undefined` from `params` to skip validation.
 
 ### Using Observable-based services
 
 If your application has existing services that return Observables, use `rxResource` from `@angular/core/rxjs-interop`:
 
 ```ts
-import {Component, inject, signal, Signal} from '@angular/core';
+import {Component, inject, signal, Resource} from '@angular/core';
 import {rxResource} from '@angular/core/rxjs-interop';
-import {form, validateAsync, FormField} from '@angular/forms/signals';
+import {form, validateResource, FormField} from '@angular/forms/signals';
 import {UsernameService} from './username-service';
 
 @Component({
@@ -344,15 +338,15 @@ export class Registration {
 
   private usernameService = inject(UsernameService);
 
-  private createUsernameResource = (usernameSignal: Signal<string | undefined>) => {
+  private createUsernameResource = (usernameResource: Resource<string | undefined>) => {
     return rxResource({
-      params: () => usernameSignal(),
+      params: ({chain}) => chain(usernameResource),
       stream: ({params: username}) => this.usernameService.checkUsername(username),
     });
   };
 
   registrationForm = form(this.registrationModel, (schemaPath) => {
-    validateAsync(schemaPath.username, {
+    validateResource(schemaPath.username, {
       params: ({value}) => value(),
       factory: this.createUsernameResource,
       onSuccess: (result) =>
@@ -474,7 +468,7 @@ The `abortSignal` fires when the field is touched, or when its value changes bef
 
 ### Debouncing a single async validator
 
-The `debounce` rule holds back every reaction to the field, from sync validation to derived signals to async validation. However, there are times when you want the opposite: cheap sync validators like `required` or `email` running immediately for instant feedback, while only the expensive async call waits for the user to settle. Both `validateHttp()` and `validateAsync()` accept their own [`debounce` option](api/forms/signals/validateAsync) that throttles just that validator:
+The `debounce` rule holds back every reaction to the field, from sync validation to derived signals to async validation. However, there are times when you want the opposite: cheap sync validators like `required` or `email` running immediately for instant feedback, while only the expensive async call waits for the user to settle. `validateHttp()`, `validateAsyncLoader()`, and `validateResource()` accept their own [`debounce` option](api/forms/signals/validateAsyncLoader) that throttles just that validator:
 
 ```ts
 form(this.registrationModel, (schemaPath) => {
@@ -500,37 +494,48 @@ The model still updates on every keystroke, and any other rules attached to the 
 
 Choose between the two layers based on scope:
 
-| Option                                                        | When to use                                                                                                                         |
-| ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `debounce()` rule                                             | Sync validation, derived state, and submission should all wait until the field commits. The whole field shouldn't react mid-typing. |
-| `validateHttp({ debounce })` or `validateAsync({ debounce })` | Cheap sync validators should give immediate feedback, but expensive async calls should wait for the user to pause.                  |
+| Option                                                                                                 | When to use                                                                                                                         |
+| ------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `debounce()` rule                                                                                      | Sync validation, derived state, and submission should all wait until the field commits. The whole field shouldn't react mid-typing. |
+| `validateHttp({ debounce })`, `validateAsyncLoader({ debounce })`, or `validateResource({ debounce })` | Cheap sync validators should give immediate feedback, but expensive async calls should wait for the user to pause.                  |
 
 Both options accept a duration in milliseconds. Their custom-timing callbacks differ: the form-level rule takes a `Debouncer`, and the validator-level option takes a `DebounceTimer` from `@angular/core`. The two signatures are not interchangeable.
 
 ## Composing resources in async validation with a factory
 
-The built-in [`debounce` option](api/forms/signals/validateAsync) covers throttling, but `validateAsync()` exposes a deeper composition point: the `factory` function. The factory receives the params as a signal and returns a resource. Between those two points, you're free to compose whatever you need.
+The built-in [`debounce` option](api/forms/signals/validateResource) covers throttling, but `validateResource()` exposes a deeper composition point: the `factory` function. The factory receives the params as a resource and returns a resource. Between those two points, you're free to compose whatever you need.
 
-In its simplest form, a factory wraps a single resource. A username-availability check can live as a method on the component class, and then be wired into `validateAsync` by reference:
+A factory can wrap a resource with additional logic, such as caching validated responses. A username-availability check can live as a method on the component class, and then be wired into `validateResource` by reference:
 
 ```ts
 export class Registration {
   registrationModel = signal({username: ''});
   private usernameValidator = inject(UsernameValidator);
 
-  // Factory function
-  checkUsernameAvailable = (username: Signal<string | undefined>) =>
-    resource({
-      params: () => username(),
-      loader: async ({params: name}) => this.usernameValidator.checkAvailability(name),
+  // Factory function with caching
+  checkUsernameAvailable = (username: Resource<string | undefined>) => {
+    // Cache lives in the factory's closure and persists for the field's lifetime
+    const cache = new Map<string, {available: boolean}>();
+    return resource({
+      params: ({chain}) => chain(username),
+      loader: async ({params: name}) => {
+        // Check cache first
+        const cached = cache.get(name);
+        if (cached !== undefined) return cached;
+
+        const result = await this.usernameValidator.checkAvailability(name);
+        cache.set(name, result);
+        return result;
+      },
     });
+  };
 
   registrationForm = form(this.registrationModel, (schemaPath) => {
-    validateAsync(schemaPath.username, {
+    validateResource(schemaPath.username, {
       params: ({value}) => {
         const username = value();
         // Skip validation for short usernames
-        return username.length >= 3 ? username : undefined!;
+        return username.length >= 3 ? username : undefined;
       },
       debounce: 300,
       // Reference to the factory defined above
@@ -543,53 +548,9 @@ export class Registration {
 }
 ```
 
-The `params` callback returns `undefined` for short usernames, signaling that validation should skip. With `debounce: 300` applied, the resource waits until the user pauses typing for 300 ms before acting on each change. It then runs the loader for valid usernames and stays idle once the debounced value settles to `undefined`.
+The `params` callback returns `undefined` for short usernames, signaling that validation should skip. With `debounce: 300` applied, subsequent params changes wait until the user pauses typing for 300 ms. It then runs the loader for valid usernames and stays idle once the debounced value settles to `undefined`.
 
-### Combining debounce with additional logic
-
-When you need logic beyond a plain duration debounce, use a custom factory to combine debouncing with that logic. A common case is caching validated responses. For example, once the server has confirmed a username, you don't need to ask again on subsequent keystrokes that revisit the same value.
-
-```ts
-export class Registration {
-  registrationModel = signal({username: ''});
-  private usernameValidator = inject(UsernameValidator);
-
-  registrationForm = form(this.registrationModel, (schemaPath) => {
-    validateAsync(schemaPath.username, {
-      params: ({value}) => {
-        const username = value();
-        return username.length >= 3 ? username : undefined;
-      },
-      factory: (username) => {
-        // Core primitive: settles 300 ms after the source stops changing
-        const debouncedUsername = debounced(username, 300);
-        // Cache lives in the factory's closure and persists for the field's lifetime
-        const cache = new Map<string, {available: boolean}>();
-        return resource({
-          // Read from the debounced signal, not the raw one
-          params: () => debouncedUsername.value(),
-          loader: async ({params: name}) => {
-            const cached = cache.get(name);
-            if (cached) return cached;
-
-            const result = await this.usernameValidator.checkAvailability(name);
-            cache.set(name, result);
-            return result;
-          },
-        });
-      },
-      onSuccess: (result) =>
-        result?.available ? null : {kind: 'usernameTaken', message: 'Username taken'},
-      onError: () => ({
-        kind: 'serverError',
-        message: 'Could not verify username',
-      }),
-    });
-  });
-}
-```
-
-The `cache` lives in the factory's closure, so it persists for the field's lifetime. Once the user has typed a username the server has already checked, the loader reads from the cache instead of making a new network request.
+Once the user has typed a username the server has already checked, the loader reads from the cache instead of making a new network request.
 
 ## Understanding pending state
 
@@ -780,7 +741,7 @@ Use the `pending()` signal to show when validation is happening. This helps user
 
 ## Next steps
 
-This guide covered async validation with `validateHttp()` and `validateAsync()`. Related guides explore other aspects of Signal Forms:
+This guide covered async validation with `validateHttp()`, `validateAsyncLoader()`, and `validateResource()`. Related guides explore other aspects of Signal Forms:
 
 <docs-pill-row>
   <docs-pill href="guide/forms/signals/validation" title="Validation"/>
@@ -790,6 +751,7 @@ This guide covered async validation with `validateHttp()` and `validateAsync()`.
 For detailed API documentation, see:
 
 - [`validateHttp()`](api/forms/signals/validateHttp) - HTTP-based async validation
-- [`validateAsync()`](api/forms/signals/validateAsync) - Custom resource-based async validation
+- [`validateAsyncLoader()`](api/forms/signals/validateAsyncLoader) - Promise-like loader validation
+- [`validateResource()`](api/forms/signals/validateResource) - Resource-based validation
 - [`httpResource()`](api/common/http/httpResource) - Angular's HTTP resource API
 - [`resource()`](api/core/resource) - Angular's resource primitive
