@@ -12,7 +12,7 @@ use crate::evaluator::value::{DeclKind, ValueReference};
 use crate::evaluator::{evaluate_expression, EvalInput, Resolved, ResolvedValue};
 use crate::query::{FileId, QueryCtx, ReferenceId};
 use crate::types::analysis::Reference;
-use crate::{DeclarationTuple, ResourceResolverFs};
+use crate::DeclarationTuple;
 
 const INJECTABLE_REGISTERING_DECORATORS: [&str; 5] =
     ["Component", "Directive", "Pipe", "Injectable", "NgModule"];
@@ -132,10 +132,10 @@ pub(crate) fn index_di_facts(facts: Vec<ClassDiFacts>) -> HashMap<String, ClassD
 }
 
 /// The facts of the class `decl` names from `module_file`, following re-exports.
-async fn resolve_di_facts<Fs: ResourceResolverFs + Clone + 'static>(
+async fn resolve_di_facts(
     decl: &DeclarationTuple,
     module_file: &std::path::Path,
-    ctx: &QueryCtx<Fs>,
+    ctx: &QueryCtx,
 ) -> Option<ClassDiFacts> {
     let mut visited = HashSet::new();
     let Ok(Some(resolved)) = crate::evaluator::cross_file::cross_file_resolve(
@@ -162,10 +162,7 @@ async fn resolve_di_facts<Fs: ResourceResolverFs + Clone + 'static>(
 }
 
 /// The facts of the class a reference points at.
-async fn referenced_di_facts<Fs: ResourceResolverFs + Clone + 'static>(
-    reference: &ValueReference,
-    ctx: &QueryCtx<Fs>,
-) -> Option<ClassDiFacts> {
+async fn referenced_di_facts(reference: &ValueReference, ctx: &QueryCtx) -> Option<ClassDiFacts> {
     ctx.analyze_file_syntax(reference.file)
         .await
         .di_facts
@@ -185,10 +182,7 @@ pub struct InheritedCtor {
 /// cannot be followed (a dynamic `extends` expression or an unresolvable import), which ngtsc
 /// also leaves alone.
 /// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/common/src/diagnostics.ts#L405-L455
-pub async fn find_inherited_ctor<Fs: ResourceResolverFs + Clone + 'static>(
-    facts: &ClassDiFacts,
-    ctx: &QueryCtx<Fs>,
-) -> Option<InheritedCtor> {
+pub async fn find_inherited_ctor(facts: &ClassDiFacts, ctx: &QueryCtx) -> Option<InheritedCtor> {
     if facts.ctor_param_count.is_some() {
         return None;
     }
@@ -241,10 +235,10 @@ impl ClassData {
     /// constructor parameters (`getDependencyInjectionDiagnostics`).
     /// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/common/src/diagnostics.ts#L360-L397
     /// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/src/service.ts#L278-L309
-    pub(crate) async fn inherited_ctor_issues<Fs: ResourceResolverFs + Clone + 'static>(
+    pub(crate) async fn inherited_ctor_issues(
         &self,
         facts: Option<&ClassDiFacts>,
-        ctx: &QueryCtx<Fs>,
+        ctx: &QueryCtx,
     ) -> Vec<ValueIssue> {
         let kinds = self.inherited_ctor_checked_kinds();
         let is_service = self.service_data().is_some();
@@ -287,10 +281,7 @@ impl ClassData {
     /// have to construct through a factory it does not have
     /// (`resolveProvidersRequiringFactory` + `getProviderDiagnostics`).
     /// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L337-L385
-    pub(crate) async fn undecorated_provider_issues<Fs: ResourceResolverFs + Clone + 'static>(
-        &self,
-        ctx: &QueryCtx<Fs>,
-    ) -> Vec<ValueIssue> {
+    pub(crate) async fn undecorated_provider_issues(&self, ctx: &QueryCtx) -> Vec<ValueIssue> {
         let provider_lists: Vec<(&ProvidersData, Option<Span>)> = match &self.decorator {
             DecoratorData::Component(c) => [
                 (c.directive.providers.as_ref(), c.directive.providers_span),

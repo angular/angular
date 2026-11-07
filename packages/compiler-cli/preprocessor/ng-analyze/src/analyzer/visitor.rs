@@ -943,11 +943,11 @@ struct ClassVisitorOutput {
 /// symbol/registration tables, re-exports, and the raw static/dynamic import specifiers.
 ///
 /// This is deliberately a pure AST/semantic walk — it performs no module resolution and no
-/// filesystem reads beyond what `is_core` already captured — so the caller can run it while
-/// holding the `ParsedFile` lock and release that lock before any I/O. Component `templateUrl`
-/// and `styleUrl(s)` expressions are only *recorded* (on `pending_template_url` /
-/// `pending_style_urls`); the caller must follow up with [`super::load_syntax_resources`] to
-/// complete Stage 1, otherwise `template`, `template_url` and `style_urls` stay unset.
+/// filesystem reads — so the caller can run it while holding the `ParsedFile` lock and release
+/// that lock before any I/O. Component `templateUrl` and `styleUrl(s)` expressions are only
+/// *recorded* (on `pending_template_url` / `pending_style_urls`); the caller must follow up with
+/// [`super::load_syntax_resources`] to complete Stage 1, otherwise `template`, `template_url` and
+/// `style_urls` stay unset.
 #[allow(clippy::too_many_arguments)]
 pub fn analyze_parsed(
     path: &Path,
@@ -3322,12 +3322,8 @@ export class MyService {
     fn test_core_reports_any_unrecognized_param_decorator() {
         let fs = create_test_fs(&[
             (
-                "/test/package.json",
-                r#"{"name": "@angular/core", "version": "0.0.0"}"#,
-            ),
-            (
                 "/test/tsconfig.json",
-                r#"{"compilerOptions": {}, "files": ["app.ts"]}"#,
+                r#"{"compilerOptions": {}, "angularCompilerOptions": {"_isAngularCoreCompilation": true}, "files": ["app.ts"]}"#,
             ),
             (
                 "/test/di.ts",
@@ -3650,14 +3646,13 @@ export class Cmp {}
             ("/test/base.css", ".base {}"),
             ("/test/extra.css", ".extra {}"),
         ]);
-        let resolver = crate::utils::create_resolver_with_fs(None, fs.clone(), false, None);
-        let resource_resolver = crate::ResourceResolver::new(&fs, &resolver);
-        crate::analyzer::load_syntax_resources(
+        let host = crate::host::DefaultFsHost::from_fs_and_options(fs, None, false, None);
+        futures::executor::block_on(crate::analyzer::load_syntax_resources(
             &mut analysis.classes,
-            &resource_resolver,
-            file_path,
+            &host,
+            &crate::host::ModuleId::from_path(file_path),
             0,
-        );
+        ));
 
         let comp = analysis.classes[0]
             .as_component()
@@ -3734,14 +3729,13 @@ export class LiteralCmp {}
         }
 
         let fs = create_test_fs(&[("/test/literal.html", "<b>lit</b>")]);
-        let resolver = crate::utils::create_resolver_with_fs(None, fs.clone(), false, None);
-        let resource_resolver = crate::ResourceResolver::new(&fs, &resolver);
-        crate::analyzer::load_syntax_resources(
+        let host = crate::host::DefaultFsHost::from_fs_and_options(fs, None, false, None);
+        futures::executor::block_on(crate::analyzer::load_syntax_resources(
             &mut analysis.classes,
-            &resource_resolver,
-            file_path,
+            &host,
+            &crate::host::ModuleId::from_path(file_path),
             0,
-        );
+        ));
 
         // The cross-file `templateUrl` is left parked for Stage 2 and nothing is loaded for it.
         let cross_file = analysis.classes[0].as_component().expect("component");

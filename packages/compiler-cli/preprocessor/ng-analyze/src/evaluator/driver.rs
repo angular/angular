@@ -12,7 +12,7 @@
 //! always dropped before any `.await`; no two file locks are ever held simultaneously.
 
 use crate::analyzer::{extract_import_map, ImportKind};
-use crate::evaluator::cross_file::{resolve_specifier, ChasedExport};
+use crate::evaluator::cross_file::ChasedExport;
 use crate::evaluator::foreign::ForeignFunctionResolver;
 use crate::evaluator::interpreter::{
     evaluate_expression, evaluate_function_call, evaluate_static_member,
@@ -27,7 +27,6 @@ use crate::evaluator::value::{
 use crate::query::{FileId, QueryContext};
 use crate::types::analysis::OwningReference;
 use crate::types::ParsedFile;
-use crate::ResourceResolverFs;
 use futures::future::{BoxFuture, FutureExt};
 use oxc_ast::{ast::Expression, AstKind};
 use oxc_semantic::SymbolId;
@@ -42,8 +41,8 @@ const MAX_FILE_DEPTH: usize = 64;
 /// node, and one expression's hole-key space is finite.
 const MAX_FIXPOINT_ITERS: usize = 16;
 
-async fn reevaluate_ast_expression<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryContext<Fs>,
+async fn reevaluate_ast_expression(
+    ctx: &QueryContext,
     file_id: FileId,
     node_id: Option<oxc_semantic::NodeId>,
     env: &ResolvedEnv,
@@ -68,8 +67,8 @@ async fn reevaluate_ast_expression<Fs: ResourceResolverFs + Clone + 'static>(
 
 /// Resolves all [`IncompleteValue`] holes in `value` via `ctx`, demoting any remaining
 /// unresolvable holes to `Dynamic`.
-pub async fn evaluate_value_completely<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryContext<Fs>,
+pub async fn evaluate_value_completely(
+    ctx: &QueryContext,
     value: &ResolvedValue,
     foreign: &[&dyn ForeignFunctionResolver],
 ) -> ResolvedValue {
@@ -144,8 +143,8 @@ pub async fn evaluate_value_completely<Fs: ResourceResolverFs + Clone + 'static>
 /// Resolves only [`IncompleteDep::AmbientGlobal`] holes in `value` via `ctx` (demoting undeclared
 /// globals to `UnknownIdentifier` dynamics) while leaving cross-file module import holes
 /// (`Reference`, `Member`, `Call`) intact for syntax-mode consumers.
-pub async fn evaluate_ambient_globals_only<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryContext<Fs>,
+pub async fn evaluate_ambient_globals_only(
+    ctx: &QueryContext,
     value: &ResolvedValue,
     foreign: &[&dyn ForeignFunctionResolver],
 ) -> ResolvedValue {
@@ -230,8 +229,8 @@ enum EvalTask {
 
 /// Runs `task` to a hole-free value in `file_id`, iteratively resolving cross-file holes and
 /// re-evaluating with the populated `env` until complete (or demoting remaining holes to `Dynamic`).
-fn complete_value<'a, Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &'a QueryContext<Fs>,
+fn complete_value<'a>(
+    ctx: &'a QueryContext,
     file_id: FileId,
     task: EvalTask,
     initial: Option<ResolvedValue>,
@@ -379,8 +378,8 @@ impl ResolutionState {
 }
 
 /// Resolves one hole to a hole-free value, converting failures to `Dynamic`.
-fn resolve_hole<'a, Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &'a QueryContext<Fs>,
+fn resolve_hole<'a>(
+    ctx: &'a QueryContext,
     hole: IncompleteValue,
     state: &'a mut ResolutionState,
     depth: usize,
@@ -477,8 +476,8 @@ fn apply_owning_reference(
     stamp_owning_reference(value, file, &owning)
 }
 
-async fn resolve_ambient_global<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryContext<Fs>,
+async fn resolve_ambient_global(
+    ctx: &QueryContext,
     consumer_file: FileId,
     name: String,
     ident_span: Span,
@@ -597,8 +596,8 @@ fn find_ambient_global_value_symbol(
     None
 }
 
-async fn resolve_import<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryContext<Fs>,
+async fn resolve_import(
+    ctx: &QueryContext,
     unresolved: UnresolvedReference,
     usage_span: Span,
     state: &mut ResolutionState,
@@ -653,8 +652,8 @@ async fn resolve_import<Fs: ResourceResolverFs + Clone + 'static>(
 }
 
 #[allow(clippy::too_many_arguments)]
-fn resolve_named_export<'a, Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &'a QueryContext<Fs>,
+fn resolve_named_export<'a>(
+    ctx: &'a QueryContext,
     file_path: &'a Path,
     specifier: String,
     export_name: String,
@@ -779,17 +778,27 @@ fn resolve_named_export<'a, Fs: ResourceResolverFs + Clone + 'static>(
                 ResolvedValue::dynamic(unresolved.importer, usage_span, DynamicReason::DepthLimit)
             }
             Err(crate::evaluator::cross_file::ChaseSymbolError::CycleDetected) => {
-                let file_id =
-                    resolve_specifier(ctx.engine.resolver.as_ref(), file_path, &specifier)
-                        .map(|p| ctx.engine.intern_path(&p))
-                        .unwrap_or(unresolved.importer);
+                let file_id = ctx
+                    .resolve_from_id(
+                        unresolved.importer,
+                        &specifier,
+                        crate::host::ImportKind::Static,
+                    )
+                    .await
+                    .map(|(id, _)| id)
+                    .unwrap_or(unresolved.importer);
                 ResolvedValue::dynamic(file_id, usage_span, DynamicReason::ImportCycle)
             }
             Ok(None) => {
-                let file_id =
-                    resolve_specifier(ctx.engine.resolver.as_ref(), file_path, &specifier)
-                        .map(|p| ctx.engine.intern_path(&p))
-                        .unwrap_or(unresolved.importer);
+                let file_id = ctx
+                    .resolve_from_id(
+                        unresolved.importer,
+                        &specifier,
+                        crate::host::ImportKind::Static,
+                    )
+                    .await
+                    .map(|(id, _)| id)
+                    .unwrap_or(unresolved.importer);
                 ResolvedValue::dynamic(
                     file_id,
                     usage_span,
@@ -825,10 +834,14 @@ mod tests {
     use std::sync::Arc;
     use std::time::Duration;
 
-    fn build_engine(
+    fn build_engine(files: &[(&str, &str)], entrypoints: &[&str]) -> Arc<QueryEngine> {
+        build_engine_with_fs(files, entrypoints).0
+    }
+
+    fn build_engine_with_fs(
         files: &[(&str, &str)],
         entrypoints: &[&str],
-    ) -> Arc<QueryEngine<OverlayFileSystem>> {
+    ) -> (Arc<QueryEngine>, OverlayFileSystem) {
         let fs = crate::test_utils::create_test_fs(files);
         let resolver = Arc::new(ResolverGeneric::new_with_file_system(
             fs.clone(),
@@ -841,7 +854,10 @@ mod tests {
         let entrypoints = Arc::new(std::sync::RwLock::new(
             entrypoints.iter().map(PathBuf::from).collect::<Vec<_>>(),
         ));
-        QueryEngine::new_default(fs, resolver, registry, entrypoints)
+        (
+            QueryEngine::new_default(fs.clone(), resolver, registry, entrypoints),
+            fs,
+        )
     }
 
     /// Run a future on a worker thread with a deadline, so a regression toward deadlock (the
@@ -2303,7 +2319,7 @@ mod tests {
 
     #[test]
     fn edit_to_referenced_const_file_invalidates_consumer() {
-        let engine = build_engine(
+        let (engine, fs) = build_engine_with_fs(
             &[
                 ("/app/app.component.ts", APP_WITH_SHARED),
                 ("/app/shared.ts", SHARED_CONSTS),
@@ -2348,7 +2364,7 @@ mod tests {
         // Edit the const file: drop BarDirective from the shared array.
         let evicted = engine.invalidate_file(Path::new("/app/shared.ts"));
         assert!(evicted.contains(&QueryKey::AnalyzeFileSemantic(app_id)));
-        engine.fs.upsert_file(
+        fs.upsert_file(
             PathBuf::from("/app/shared.ts"),
             r#"
                 import { FooComponent } from './foo.component';
@@ -2435,7 +2451,7 @@ mod tests {
     /// Evaluate the initializer of `export const <name>` in `file`, then complete it across
     /// files the way the analyzer does.
     fn evaluate_exported_const(
-        engine: Arc<QueryEngine<OverlayFileSystem>>,
+        engine: Arc<QueryEngine>,
         file: &'static str,
         name: &'static str,
     ) -> ResolvedValue {

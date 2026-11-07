@@ -8,12 +8,12 @@ use crate::evaluator::value::{DeclKind, SyntheticValue, ValueReference};
 use crate::evaluator::{Resolved, ResolvedValue};
 use crate::query::{FileId, QueryContext, QueryEngine, ReferenceId};
 use crate::types::metadata::SpanMetadata;
-use crate::{ClassInfo, ClassType, NgDiagnostic, NgRelatedInformation, ResourceResolverFs};
+use crate::{ClassInfo, ClassType, NgDiagnostic, NgRelatedInformation};
 
 pub type DeclKey = (FileId, String);
 
-pub(crate) async fn duplicate_declaration_context<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryContext<Fs>,
+pub(crate) async fn duplicate_declaration_context(
+    ctx: &QueryContext,
     class_file: FileId,
     class_name: &str,
     modules: &[ReferenceId],
@@ -254,9 +254,9 @@ fn collect_scope_entry(
 }
 
 /// Complete a decorator list slot across files and flatten it.
-pub(crate) async fn scope_entries<Fs: ResourceResolverFs + Clone + 'static>(
+pub(crate) async fn scope_entries(
     slot: &Resolved<Vec<crate::types::analysis::Reference>>,
-    ctx: &QueryContext<Fs>,
+    ctx: &QueryContext,
 ) -> Vec<Result<ScopeEntry, ScopeEntryRejection>> {
     let mut completed = slot.clone();
     completed
@@ -273,8 +273,8 @@ type PreparedLists = [Vec<Result<ScopeEntry, ScopeEntryRejection>>; 3];
 /// The order-independent half of resolving a module (ngtsc's `analyze`): evaluate and flatten
 /// its three lists. Runs for every source NgModule concurrently so the registry's only serial
 /// work is the cycle-sensitive graph walk.
-async fn prepare_module<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryContext<Fs>,
+async fn prepare_module(
+    ctx: &QueryContext,
     module: ReferenceId,
 ) -> (ReferenceId, PreparedLists, HashSet<FileId>) {
     let mod_ctx = QueryContext::new(ctx.engine.clone());
@@ -370,8 +370,8 @@ struct ResolvedScope {
     exported: Vec<DeclKey>,
 }
 
-struct Resolver<'a, Fs: ResourceResolverFs + Clone + 'static> {
-    env: ScopeEnv<'a, Fs>,
+struct Resolver<'a> {
+    env: ScopeEnv<'a>,
     cache: HashMap<ReferenceId, State>,
     dts_cache: HashMap<ReferenceId, Option<Arc<ResolvedScope>>>,
     /// Lists flattened up front by [`prepare_module`]; taken when the module is resolved.
@@ -382,7 +382,7 @@ struct Resolver<'a, Fs: ResourceResolverFs + Clone + 'static> {
     registry: NgModuleScopeRegistry,
 }
 
-impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
+impl QueryEngine {
     /// Resolve every source NgModule of the program, recording the outcome of each
     /// ([`QueryKey::NgModuleScopeRegistry`]).
     ///
@@ -395,7 +395,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
     /// [`QueryKey::NgModuleScopeRegistry`]: crate::query::QueryKey::NgModuleScopeRegistry
     pub(crate) async fn ngmodule_scope_registry_body(
         self: &Arc<Self>,
-        ctx: &QueryContext<Fs>,
+        ctx: &QueryContext,
     ) -> Arc<NgModuleScopeRegistry> {
         let program_files = ctx.program_files().await;
         let (mapping, syntaxes) = futures::join!(
@@ -471,11 +471,11 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
 
 /// The query-backed lookups shared by the module resolver and the standalone component import
 /// check.
-pub(crate) struct ScopeEnv<'a, Fs: ResourceResolverFs + Clone + 'static> {
-    pub ctx: &'a QueryContext<Fs>,
+pub(crate) struct ScopeEnv<'a> {
+    pub ctx: &'a QueryContext,
 }
 
-impl<'a, Fs: ResourceResolverFs + Clone + 'static> ScopeEnv<'a, Fs> {
+impl<'a> ScopeEnv<'a> {
     fn file_path(&self, file: FileId) -> String {
         self.ctx
             .engine
@@ -545,7 +545,7 @@ impl<'a, Fs: ResourceResolverFs + Clone + 'static> ScopeEnv<'a, Fs> {
     }
 }
 
-impl<'a, Fs: ResourceResolverFs + Clone + 'static> Resolver<'a, Fs> {
+impl<'a> Resolver<'a> {
     /// `getScopeOfModuleReference` for a source NgModule, memoized with an in-progress marker so a
     /// module reached again while being resolved reports as a cycle.
     fn get_scope_of_module(&mut self, module: ReferenceId) -> BoxFuture<'_, State> {
@@ -1213,7 +1213,7 @@ impl<'a, Fs: ResourceResolverFs + Clone + 'static> Resolver<'a, Fs> {
     }
 }
 
-impl<'a, Fs: ResourceResolverFs + Clone + 'static> ScopeEnv<'a, Fs> {
+impl<'a> ScopeEnv<'a> {
     /// `makeNotStandaloneDiagnostic` (NG2011, `COMPONENT_IMPORT_NOT_STANDALONE`): a
     /// non-standalone component/directive/pipe listed in `imports`, with a hint naming the
     /// NgModule that declares it when there is one.
@@ -1515,8 +1515,8 @@ fn collect_component_import_items(
 /// `validateStandaloneImports` (`annotations/component/src/handler.ts`) together with the
 /// `ModuleWithProviders` rejection of `validateAndFlattenComponentImports` (`.../util.ts`).
 /// `imports_span` is the `imports` property's value expression, the fallback diagnostic node.
-pub(crate) async fn validate_standalone_imports<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryContext<Fs>,
+pub(crate) async fn validate_standalone_imports(
+    ctx: &QueryContext,
     component_file: FileId,
     imports: &ResolvedValue,
     imports_span: Option<Span>,
@@ -1668,10 +1668,8 @@ pub(crate) async fn validate_standalone_imports<Fs: ResourceResolverFs + Clone +
 
 /// Validate the evaluated `deferredImports` of a standalone component in `component_file`: ngtsc's
 /// `validateStandaloneImports(..., true /* isDeferredImport */)` (`annotations/component/src/handler.ts`).
-pub(crate) async fn validate_standalone_deferred_imports<
-    Fs: ResourceResolverFs + Clone + 'static,
->(
-    ctx: &QueryContext<Fs>,
+pub(crate) async fn validate_standalone_deferred_imports(
+    ctx: &QueryContext,
     component_file: FileId,
     deferred_imports: &ResolvedValue,
     deferred_imports_span: Option<Span>,

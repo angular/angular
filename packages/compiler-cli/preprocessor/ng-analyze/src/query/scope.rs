@@ -6,7 +6,6 @@
 use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 
-use crate::ResourceResolverFs;
 use futures::future::{BoxFuture, FutureExt};
 
 use crate::analyzer::flatten_class_info;
@@ -16,17 +15,17 @@ use crate::query::{FileId, QueryContext, QueryEngine, ReferenceId};
 use crate::types::analysis::{DeclarationData, OwningReference};
 use crate::ClassType;
 
-pub(crate) async fn resolve_reference_async<Fs: ResourceResolverFs + Clone + 'static>(
+pub(crate) async fn resolve_reference_async(
     reference: &crate::types::analysis::Reference,
-    ctx: &QueryContext<Fs>,
+    ctx: &QueryContext,
 ) -> Option<crate::ClassInfo> {
     let evaluated_file = ctx.analyze_file_evaluated(reference.file).await;
     evaluated_file.class_index.get(&reference.name).cloned()
 }
 
-async fn scope_references<Fs: ResourceResolverFs + Clone + 'static>(
+async fn scope_references(
     slot: &crate::evaluator::Resolved<Vec<crate::types::analysis::Reference>>,
-    ctx: &QueryContext<Fs>,
+    ctx: &QueryContext,
 ) -> Option<Vec<crate::types::analysis::Reference>> {
     let mut completed = slot.clone();
     completed
@@ -35,12 +34,12 @@ async fn scope_references<Fs: ResourceResolverFs + Clone + 'static>(
     ScopeReferences::from_value(completed.raw(), completed.origin).map(|refs| refs.0)
 }
 
-impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
+impl QueryEngine {
     /// All declarations (components/directives/pipes) transitively exported by an NgModule.
     pub(crate) async fn exports_scope_body(
         self: &Arc<Self>,
         reference_id: ReferenceId,
-        ctx: &QueryContext<Fs>,
+        ctx: &QueryContext,
     ) -> Arc<Vec<DeclarationData>> {
         let mut visited = HashSet::new();
         visited.insert(reference_id);
@@ -53,7 +52,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
     fn exports_scope_internal<'a>(
         self: &'a Arc<Self>,
         reference_id: ReferenceId,
-        ctx: &'a QueryContext<Fs>,
+        ctx: &'a QueryContext,
         visited: &'a mut HashSet<ReferenceId>,
     ) -> BoxFuture<'a, Vec<DeclarationData>> {
         async move {
@@ -125,7 +124,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
     pub(crate) async fn imports_scope_body(
         self: &Arc<Self>,
         reference_id: ReferenceId,
-        ctx: &QueryContext<Fs>,
+        ctx: &QueryContext,
     ) -> Arc<crate::query::keys::NgModuleImportsScopeData> {
         let fp = self.lookup_path(reference_id.file);
 
@@ -210,7 +209,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
     pub(crate) async fn module_export_map_body(
         self: &Arc<Self>,
         file_id: FileId,
-        ctx: &QueryContext<Fs>,
+        ctx: &QueryContext,
     ) -> Arc<ModuleExportMap> {
         let mut walk = ExportWalk::default();
         let table = module_export_table(ctx, file_id, &mut walk).await;
@@ -223,7 +222,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
         references: &'a [crate::types::analysis::Reference],
         visited_modules: &'a mut HashSet<ReferenceId>,
         out_declarations: &'a mut Vec<DeclarationData>,
-        ctx: &'a QueryContext<Fs>,
+        ctx: &'a QueryContext,
     ) -> BoxFuture<'a, bool> {
         async move {
             let mut all_resolved = true;
@@ -377,8 +376,8 @@ struct ExportWalk {
 ///
 /// Re-exports are followed, not matched by name: `export {X} from './y'` proves nothing unless
 /// `./y` publishes an `X`, and only `./y` knows which declaration that is.
-fn module_export_table<'a, Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &'a QueryContext<Fs>,
+fn module_export_table<'a>(
+    ctx: &'a QueryContext,
     file_id: FileId,
     walk: &'a mut ExportWalk,
 ) -> BoxFuture<'a, Arc<ExportTable>> {
@@ -411,7 +410,13 @@ fn module_export_table<'a, Fs: ResourceResolverFs + Clone + 'static>(
                 }
                 let (Some(imported), Some(target)) = (
                     binding.imported,
-                    resolve_export_source(ctx, &syntax.file_path, binding.specifier),
+                    resolve_export_source(
+                        ctx,
+                        file_id,
+                        binding.specifier,
+                        crate::host::ImportKind::Static,
+                    )
+                    .await,
                 ) else {
                     continue;
                 };
@@ -429,7 +434,10 @@ fn module_export_table<'a, Fs: ResourceResolverFs + Clone + 'static>(
             if r.is_type || r.local_name == "*" {
                 continue;
             }
-            let Some(target) = resolve_export_source(ctx, &syntax.file_path, &r.source) else {
+            let Some(target) =
+                resolve_export_source(ctx, file_id, &r.source, crate::host::ImportKind::ReExport)
+                    .await
+            else {
                 continue;
             };
             let sub = module_export_table(ctx, target, &mut *walk).await;
@@ -448,7 +456,13 @@ fn module_export_table<'a, Fs: ResourceResolverFs + Clone + 'static>(
             if wildcard.is_type {
                 continue;
             }
-            let Some(target) = resolve_export_source(ctx, &syntax.file_path, &wildcard.source)
+            let Some(target) = resolve_export_source(
+                ctx,
+                file_id,
+                &wildcard.source,
+                crate::host::ImportKind::ReExport,
+            )
+            .await
             else {
                 continue;
             };
@@ -510,13 +524,15 @@ fn import_binding<'a>(syntax: &'a crate::FileData, local: &str) -> Option<Import
     })
 }
 
-fn resolve_export_source<Fs: ResourceResolverFs + Clone + 'static>(
-    ctx: &QueryContext<Fs>,
-    from: &std::path::Path,
+async fn resolve_export_source(
+    ctx: &QueryContext,
+    from: FileId,
     source: &str,
+    kind: crate::host::ImportKind,
 ) -> Option<FileId> {
-    crate::evaluator::cross_file::resolve_specifier(ctx.engine.resolver.as_ref(), from, source)
-        .map(|path| ctx.engine.intern_path(&path))
+    ctx.resolve_from_id(from, source, kind)
+        .await
+        .map(|(id, _)| id)
 }
 
 /// Invert the table into upstream's `exportMap`: declaration -> the name it is published under,
@@ -541,10 +557,8 @@ fn export_names_by_decl(table: &ExportTable) -> ModuleExportMap {
 /// files degrade to relative imports into the package, which Google3/Bazel layouts reject. Source
 /// NgModules keep their own relative references (`LocalModuleScopeRegistry`): rerouting them
 /// through a tsconfig `paths` barrel could import the consumer back and close a cycle.
-pub(crate) async fn propagate_owning_reference_validated<
-    Fs: ResourceResolverFs + Clone + 'static,
->(
-    ctx: &QueryContext<Fs>,
+pub(crate) async fn propagate_owning_reference_validated(
+    ctx: &QueryContext,
     declarations: &[DeclarationData],
     owning_reference: &Option<OwningReference>,
     parent_file: FileId,
@@ -557,16 +571,18 @@ pub(crate) async fn propagate_owning_reference_validated<
     let absolute_owning = owning_reference.as_ref();
 
     // Resolve the package entry point so re-exported aliases use the published name.
-    let package_entry = absolute_owning
-        .and_then(|owning| {
-            crate::evaluator::cross_file::resolve_specifier(
-                ctx.engine.resolver.as_ref(),
-                &parent_path,
+    let package_entry = match absolute_owning {
+        Some(owning) => ctx
+            .resolve_from_id(
+                parent_file,
                 owning.specifier(),
+                crate::host::ImportKind::Static,
             )
-        })
-        .map(|path| ctx.engine.intern_path(&path))
-        .unwrap_or(parent_file);
+            .await
+            .map(|(id, _)| id)
+            .unwrap_or(parent_file),
+        None => parent_file,
+    };
 
     // Enumerate the entry point's exports once (matching ngtsc's `moduleExportsCache`): per-declaration
     // searches would re-walk the package and miss alternative export names required for the alias tie-break.
@@ -593,13 +609,12 @@ pub(crate) async fn propagate_owning_reference_validated<
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::fs::OverlayFileSystem;
     use crate::resource_registry::ResourceRegistry;
     use crate::test_utils::create_test_fs;
     use oxc_resolver::{ResolveOptions, ResolverGeneric};
     use std::path::PathBuf;
 
-    fn engine_for(files: &[(&str, &str)], entry: &str) -> Arc<QueryEngine<OverlayFileSystem>> {
+    fn engine_for(files: &[(&str, &str)], entry: &str) -> Arc<QueryEngine> {
         let fs = create_test_fs(files);
         let resolver = Arc::new(ResolverGeneric::new_with_file_system(
             fs.clone(),
@@ -616,7 +631,7 @@ mod tests {
     fn export_map_for(
         files: &[(&str, &str)],
         entry: &str,
-    ) -> (Arc<QueryEngine<OverlayFileSystem>>, Arc<ModuleExportMap>) {
+    ) -> (Arc<QueryEngine>, Arc<ModuleExportMap>) {
         let engine = engine_for(files, entry);
         let ctx = QueryContext::new(engine.clone());
         let entry_id = engine.intern_path(entry);
