@@ -13,6 +13,7 @@ import {Type, Writable} from '../interface/type';
 import {assertNotDefined} from '../util/assert';
 import {bindingUpdated} from './bindings';
 import {controlCreateInternal, controlUpdateInternal} from './instructions/control';
+import type {ExplicitConstraintBinding} from './interfaces/control';
 import {markViewDirty} from './instructions/mark_view_dirty';
 import {setDirectiveInput, storePropertyBindingMetadata} from './instructions/shared';
 import {TVIEW} from './interfaces/view';
@@ -42,6 +43,12 @@ export interface BindingInternal extends Binding {
 
   /** Target index (in a view's registry) to which to apply the binding. */
   targetIdx?: number;
+
+  /** Public name of this input, for collecting sibling constraint bindings. */
+  publicName?: string;
+
+  /** Explicit constraints and their target directive indexes. */
+  explicitConstraintBindings?: readonly ExplicitConstraintBinding[];
 
   /** Callback that will be invoked during creation. */
   create?(slot?: number): void;
@@ -134,8 +141,9 @@ export function inputBinding(publicName: string, value: () => unknown): Binding 
   if (publicName === 'formField') {
     const binding: BindingInternal = {
       [BINDING]: INPUT_BINDING_METADATA,
+      publicName,
       create: () => {
-        controlCreateInternal();
+        controlCreateInternal([], binding.explicitConstraintBindings);
       },
       update: () => {
         // Update the [formField] input binding, regardless of whether this targets a 'FormField' directive.
@@ -150,6 +158,7 @@ export function inputBinding(publicName: string, value: () => unknown): Binding 
   // don't get tree shaken when constructed by a function like this.
   const binding: BindingInternal = {
     [BINDING]: INPUT_BINDING_METADATA,
+    publicName,
     update: () => inputBindingUpdate(binding.targetIdx!, publicName, value()),
   };
 
@@ -230,9 +239,13 @@ export function twoWayBinding(publicName: string, value: WritableSignal<unknown>
   ngDevMode && assertNotDefined(output.update, 'Unexpected `update` callback in outputBinding');
 
   const binding: BindingInternal = {
+    publicName,
     [BINDING]: {
       kind: 'twoWay',
       requiredVars: input[BINDING].requiredVars + output[BINDING].requiredVars,
+    },
+    get targetIdx(): number {
+      return (input as BindingInternal).targetIdx!;
     },
     set targetIdx(idx: number) {
       (input as Writable<BindingInternal>).targetIdx = idx;
