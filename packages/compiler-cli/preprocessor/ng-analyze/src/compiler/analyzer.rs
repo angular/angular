@@ -665,6 +665,10 @@ impl Analyzer {
                 self.resource_registry.unregister_ts_file(&path);
                 ts_paths_to_invalidate.push(path.to_string_lossy().into_owned());
             }
+            if matches!(update.update_type, crate::FileUpdateType::Deleted) {
+                let evicted = self.engine.invalidate_deleted_file(&path);
+                self.push_evicted_paths(evicted, &mut ts_paths_to_invalidate);
+            }
             self.invalidate_changed_path(&path, &mut ts_paths_to_invalidate);
         }
 
