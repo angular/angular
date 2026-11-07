@@ -39,7 +39,7 @@ export abstract class PreloadingStrategy {
  * Provides a preloading strategy that preloads all modules as quickly as possible.
  *
  * ```ts
- * RouterModule.forRoot(ROUTES, {preloadingStrategy: PreloadAllModules})
+ * RouterModule.forRoot(routes, {preloadingStrategy: PreloadAllModules})
  * ```
  *
  * ```ts
