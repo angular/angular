@@ -42,7 +42,7 @@
     {
       "name": "schematic",
       "type": "string",
-      "description": "The [collection:schematic] to run.",
+      "description": "The `[collection:schematic]` to run.",
       "positional": 0
     }
   ],
