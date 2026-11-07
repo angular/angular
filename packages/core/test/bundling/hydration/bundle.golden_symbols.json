@@ -970,6 +970,7 @@
       "triggerResourceLoadingForHydration",
       "uniqueIdCounter",
       "unregisterLView",
+      "unregisterLViewTree",
       "unsetAction",
       "unwrapRNode",
       "updateAncestorTraversalFlagsOnAttach",

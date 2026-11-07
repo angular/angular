@@ -15,6 +15,7 @@ import {assertDefined} from '../util/assert';
 
 import {assertLContainer, assertTNodeForLView} from './assert';
 import {renderView} from './instructions/render';
+import {unregisterLViewTree} from './interfaces/lview_tracking';
 import {TNode} from './interfaces/node';
 import {DECLARATION_LCONTAINER, FLAGS, LView, LViewFlags, QUERIES} from './interfaces/view';
 import {createLView} from './view/construction';
@@ -62,7 +63,14 @@ export function createAndRenderEmbeddedLView<T>(
     }
 
     // execute creation mode of a view
-    renderView(embeddedTView, embeddedLView, context);
+    try {
+      renderView(embeddedTView, embeddedLView, context);
+    } catch (e) {
+      // Stop tracking the views if creation failed since the embedded
+      // view won't be inserted into a container that can destroy them.
+      unregisterLViewTree(embeddedLView);
+      throw e;
+    }
 
     return embeddedLView;
   } finally {
