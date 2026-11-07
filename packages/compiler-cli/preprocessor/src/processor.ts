@@ -371,11 +371,7 @@ export function processFileSync(
   chunkContext?: ChunkContext,
   fileId = 0,
 ): ProcessedFile {
-  const ctx: HybridCompilerContext & {
-    remoteScopedClasses: Set<string>;
-    metadataMap: Map<string, nga.AnalysisResult>;
-    eagerlyUsedDeclarations: Map<string, nga.DeclarationMetadata[]>;
-  } = {
+  const ctx: ProcessFileContext = {
     ...rawCtx,
     remoteScopedClasses:
       chunkContext?.remoteScopedClasses || rawCtx.remoteScopedClasses || new Set(),
@@ -385,7 +381,6 @@ export function processFileSync(
   const s = new MagicString(content);
   const fileDiagnostics: nga.NgDiagnostic[] = [];
   const referencedStyleFiles: string[] = [];
-  let hmrUpdateModule: string | null | undefined;
 
   const result = metadata || ctx.analyzer.getMetadataForFileSync(filePath);
   if (!result) {
@@ -460,20 +455,129 @@ export function processFileSync(
     }
   }
 
-  // First pass: compile all classes in the file into AST representations so `sharedPool`
-  // (`ConstantPool`) finalizes all `FixupExpression`s (e.g., shared styles across multiple
-  // components in the same file) before the second pass prints and appends them.
-  const compiledClasses: CompiledClass[] = [];
+  const file: FileCompilation = {
+    ctx,
+    filePath,
+    content,
+    readResource,
+    s,
+    result,
+    printer,
+    out,
+    templatesByClass,
+    sharedPool,
+    importsByBinding,
+    fileExplicitlyDeferredNames,
+    fileDiagnostics,
+    referencedStyleFiles,
+    compiledClasses: [],
+    deferredOnlyNames,
+    eagerlyBoundNames,
+    eagerlyReferencedNames,
+    eagerDependencyNames,
+    pipelineError: undefined,
+  };
+  const hmrUpdateModule = ctx.tracer.slice(SpanKind.Compile, () => compileClasses(file), fileId);
+  if (hmrUpdateModule !== undefined) {
+    return {magicString: s, generateSourceMap, hmrUpdateModule};
+  }
 
-  // The first error the template pipeline threw for a component in this file. ngtsc only runs
-  // the pipeline at emit time, and `performCompilation` never emits a program that has error
-  // diagnostics, so a template the type checker already rejects never reaches the pipeline
-  // there. ngp compiles and type-checks in one pass, so a pipeline throw is held back until the
-  // type-check block has produced its diagnostics and only surfaces if the file is otherwise
-  // error-free (where ngtsc would have reached emit and thrown too).
-  let pipelineError: unknown = undefined;
+  // The target was not a component (or has no HMR metadata); nothing to update.
+  if (ctx.hmrUpdateTarget !== undefined) {
+    return {magicString: s, generateSourceMap, hmrUpdateModule: null};
+  }
 
-  const compileToken = ctx.tracer.begin(SpanKind.Compile, fileId);
+  ctx.tracer.slice(SpanKind.SerializeOutput, () => serializeOutput(file), fileId);
+  const returnTcb =
+    ctx.optimize && !ctx.emitDeclarationOnly
+      ? ctx.tracer.slice(SpanKind.GenerateTcb, () => generateTcb(file), fileId)
+      : undefined;
+
+  if (file.pipelineError !== undefined && !fileDiagnostics.some((d) => d.category === 1)) {
+    throw file.pipelineError;
+  }
+
+  return {
+    magicString: s,
+    generateSourceMap,
+    tcb: returnTcb,
+    diagnostics: fileDiagnostics,
+    hmrUpdateModule,
+    referencedStyleFiles: referencedStyleFiles.length > 0 ? referencedStyleFiles : undefined,
+  };
+}
+
+type ProcessFileContext = HybridCompilerContext & {
+  remoteScopedClasses: Set<string>;
+  metadataMap: Map<string, nga.AnalysisResult>;
+  eagerlyUsedDeclarations: Map<string, nga.DeclarationMetadata[]>;
+};
+
+/** The state of one `processFileSync` call that its passes below share. */
+interface FileCompilation {
+  ctx: ProcessFileContext;
+  filePath: string;
+  content: string;
+  readResource:
+    ((file: string) => string | undefined) | Map<string, nga.ResolvedResource | null> | undefined;
+  s: MagicString;
+  result: nga.AnalysisResult;
+  printer: ExpressionPrinter;
+  out: OutputSourceMapBuilder;
+  templatesByClass: Map<string, ParsedComponentTemplate>;
+  sharedPool: ConstantPool;
+  importsByBinding: Map<string, nga.ImportDeclarationMetadata>;
+  fileExplicitlyDeferredNames: Set<string>;
+  fileDiagnostics: nga.NgDiagnostic[];
+  referencedStyleFiles: string[];
+  /**
+   * First pass: all classes in the file compiled into AST representations, so `sharedPool`
+   * (`ConstantPool`) finalizes all `FixupExpression`s (e.g., shared styles across multiple
+   * components in the same file) before the second pass prints and appends them.
+   */
+  compiledClasses: CompiledClass[];
+  deferredOnlyNames: Set<string>;
+  eagerlyBoundNames: Set<string>;
+  eagerlyReferencedNames: Set<string>;
+  eagerDependencyNames: Set<string>;
+  /**
+   * The first error the template pipeline threw for a component in this file. ngtsc only runs
+   * the pipeline at emit time, and `performCompilation` never emits a program that has error
+   * diagnostics, so a template the type checker already rejects never reaches the pipeline
+   * there. ngp compiles and type-checks in one pass, so a pipeline throw is held back until the
+   * type-check block has produced its diagnostics and only surfaces if the file is otherwise
+   * error-free (where ngtsc would have reached emit and thrown too).
+   */
+  pipelineError: unknown;
+}
+
+/**
+ * The `Compile` pass: compiles each class into `file.compiledClasses`. Returns the HMR update
+ * module as soon as `ctx.hmrUpdateTarget` is compiled, and `undefined` otherwise.
+ */
+function compileClasses(file: FileCompilation): string | null | undefined {
+  const {
+    ctx,
+    filePath,
+    content,
+    readResource,
+    s,
+    result,
+    printer,
+    out,
+    templatesByClass,
+    sharedPool,
+    importsByBinding,
+    fileExplicitlyDeferredNames,
+    fileDiagnostics,
+    referencedStyleFiles,
+    compiledClasses,
+    deferredOnlyNames,
+    eagerlyBoundNames,
+    eagerlyReferencedNames,
+    eagerDependencyNames,
+  } = file;
+  const {classes} = result;
   for (const classMeta of classes) {
     if (ctx.hmrUpdateTarget !== undefined && classMeta.className !== ctx.hmrUpdateTarget) {
       continue;
@@ -1535,7 +1639,7 @@ export function processFileSync(
       try {
         compileResult = compileComponentFromMetadata(componentMeta, sharedPool, bindingParser);
       } catch (e) {
-        pipelineError ??= e;
+        file.pipelineError ??= e;
         continue;
       }
 
@@ -1632,7 +1736,7 @@ export function processFileSync(
       try {
         compileResult = compileDirectiveFromMetadata(directiveMeta, sharedPool, bindingParser);
       } catch (e) {
-        pipelineError ??= e;
+        file.pipelineError ??= e;
         continue;
       }
 
@@ -1840,7 +1944,7 @@ export function processFileSync(
         compiledClass.hmrInitializerStmt = compileHmrInitializer(hmrMeta).toStmt();
       }
       if (ctx.hmrUpdateTarget === className) {
-        hmrUpdateModule =
+        const hmrUpdateModule =
           hmrMeta === null
             ? null
             : compileHmrUpdateModule({
@@ -1856,20 +1960,35 @@ export function processFileSync(
                 nameOffset: classMeta.nameSpan?.start ?? span.start,
                 ctx,
               });
-        ctx.tracer.end(compileToken);
-        return {magicString: s, generateSourceMap, hmrUpdateModule};
+        return hmrUpdateModule;
       }
     }
   }
-  ctx.tracer.end(compileToken);
+  return undefined;
+}
 
-  // The target was not a component (or has no HMR metadata); nothing to update.
-  if (ctx.hmrUpdateTarget !== undefined) {
-    return {magicString: s, generateSourceMap, hmrUpdateModule: null};
-  }
-
-  // Second pass: print and append static fields and trailing statements for all compiled classes.
-  const serializeToken = ctx.tracer.begin(SpanKind.SerializeOutput, fileId);
+/**
+ * The `SerializeOutput` pass: prints and appends static fields and trailing statements for all
+ * compiled classes, then the imports and shared constants at the top of the file.
+ */
+function serializeOutput(file: FileCompilation): void {
+  const {
+    ctx,
+    filePath,
+    content,
+    s,
+    result,
+    printer,
+    out,
+    sharedPool,
+    fileDiagnostics,
+    compiledClasses,
+    deferredOnlyNames,
+    eagerlyBoundNames,
+    eagerlyReferencedNames,
+    eagerDependencyNames,
+  } = file;
+  const {classes, importsEnd, imports: importDeclarations} = result;
   for (const compiledClass of compiledClasses) {
     appendCompiledClass(compiledClass, out, printer, ctx);
   }
@@ -1930,41 +2049,42 @@ export function processFileSync(
     const prefix = importsEnd === 0 || content[importsEnd - 1] === '\n' ? '' : '\n';
     out.appendRight(importsEnd, prefix + topOfFileStatements + '\n');
   }
-  ctx.tracer.end(serializeToken);
+}
 
-  const tcbToken =
-    ctx.optimize && !ctx.emitDeclarationOnly ? ctx.tracer.begin(SpanKind.GenerateTcb, fileId) : 0;
+/**
+ * The `GenerateTcb` pass, when optimizing: generates the file's type-check block and adds its
+ * diagnostics to `file.fileDiagnostics`.
+ */
+function generateTcb(file: FileCompilation): TcbResult | undefined {
+  const {ctx, filePath, content, result, templatesByClass, fileDiagnostics} = file;
+  const {classes} = result;
   const analysis = getOrCreateFileAnalysis(ctx.fileCache, filePath);
   let prepared: ReturnType<typeof prepareTcbTargets>;
-  if (ctx.optimize && !ctx.emitDeclarationOnly) {
-    if (analysis.preparedTcbData !== undefined && analysis.sourceContent === content) {
-      prepared = analysis.preparedTcbData;
-    } else {
-      const tcbTargets = buildTcbTargets(
-        filePath,
-        content,
-        classes,
-        templatesByClass,
-        ctx.templateParseOptions,
-        ctx.tcbConfig,
-        new DependencyTemplates(
-          ctx.analyzer,
-          ctx.fileCache,
-          ctx.templateParseOptions,
-          ctx.metadataMap,
-          ctx.tracer,
-        ),
-        ctx.tracer,
-      );
-      prepared =
-        tcbTargets.length > 0
-          ? prepareTcbTargets(filePath, tcbTargets, content, ctx.tcbConfig, classes, ctx.tracer)
-          : null;
-      analysis.preparedTcbData = prepared;
-      analysis.sourceContent = content;
-    }
+  if (analysis.preparedTcbData !== undefined && analysis.sourceContent === content) {
+    prepared = analysis.preparedTcbData;
   } else {
-    prepared = null;
+    const tcbTargets = buildTcbTargets(
+      filePath,
+      content,
+      classes,
+      templatesByClass,
+      ctx.templateParseOptions,
+      ctx.tcbConfig,
+      new DependencyTemplates(
+        ctx.analyzer,
+        ctx.fileCache,
+        ctx.templateParseOptions,
+        ctx.metadataMap,
+        ctx.tracer,
+      ),
+      ctx.tracer,
+    );
+    prepared =
+      tcbTargets.length > 0
+        ? prepareTcbTargets(filePath, tcbTargets, content, ctx.tcbConfig, classes, ctx.tracer)
+        : null;
+    analysis.preparedTcbData = prepared;
+    analysis.sourceContent = content;
   }
   const tcb = prepared
     ? (generateTcbCode(filePath, prepared, ctx.tcbConfig) ?? undefined)
@@ -2007,20 +2127,7 @@ export function processFileSync(
       );
     }
   }
-  ctx.tracer.end(tcbToken);
-
-  if (pipelineError !== undefined && !fileDiagnostics.some((d) => d.category === 1)) {
-    throw pipelineError;
-  }
-
-  return {
-    magicString: s,
-    generateSourceMap,
-    tcb: returnTcb,
-    diagnostics: fileDiagnostics,
-    hmrUpdateModule,
-    referencedStyleFiles: referencedStyleFiles.length > 0 ? referencedStyleFiles : undefined,
-  };
+  return returnTcb;
 }
 
 interface CompiledNgModuleDef {

@@ -44,6 +44,12 @@ pub fn take(file_path: &dyn Fn(u32) -> Option<String>) -> Option<PerfTake> {
         .map(|l| l.take(file_path))
 }
 
+/// Now in µs on the clock of the events, or `None` until [`install`]. The `now` RPC returns it,
+/// so Node can align the clocks with a round trip that carries no payload.
+pub fn now_us() -> Option<f64> {
+    LAYER.get().map(|l| us(l.now()))
+}
+
 /// Adds `n` to `counter`. Just a load and branch unless recording.
 #[inline]
 pub fn count(counter: Counter, n: u64) {
@@ -77,7 +83,6 @@ pub fn set_pool_thread_index(index: usize) {
 #[derive(Debug, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PerfTake {
-    pub now_us: f64,
     pub pid: u32,
     pub events: Vec<TraceEvent>,
     pub summary: RustSummary,
@@ -431,7 +436,6 @@ impl NgPerfLayer {
 
     /// Drains the timeline, totals and counters.
     pub(super) fn take(&self, file_path: &dyn Fn(u32) -> Option<String>) -> PerfTake {
-        let now = self.now();
         let mut threads = Vec::new();
         let mut events = Vec::new();
         let mut counters = [0; Counter::NAMES.len()];
@@ -492,7 +496,6 @@ impl NgPerfLayer {
         );
         all.append(&mut events);
         PerfTake {
-            now_us: us(now),
             pid: std::process::id(),
             events: all,
             summary,

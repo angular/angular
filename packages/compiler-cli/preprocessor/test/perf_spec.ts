@@ -6,18 +6,27 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import * as fs from 'node:fs/promises';
+import * as os from 'node:os';
+import * as path from 'path';
 import {PerformanceObserver} from 'perf_hooks';
+import {createAnalyzer} from '../api.js';
+import {SidecarAnalyzer} from '../src/analyzer_sidecar.js';
 import {parseComponentTemplate} from '../src/compiler-utils.js';
+import {HybridCompiler} from '../src/hybrid_compiler.js';
 import {
   Counter,
   createTracer,
   NOOP_TRACER,
+  nowMicros,
   processStartMicros,
   SpanKind,
   type AnalyzerPerfTake,
   type TraceEvent,
 } from '../src/perf.js';
+import {buildTypeCheckingConfig} from '../src/tcb.js';
 import type * as nga from '../src/types.js';
+import {resolveFixtureNodeModules, resolveWasmBinding} from './utils.js';
 
 /** Busy-waits so that a section has a measurable duration. */
 function spin(us: number): void {
@@ -36,11 +45,10 @@ function spans(events: TraceEvent[], ph: TraceEvent['ph']): TraceEvent[] {
 }
 
 describe('Tracer', () => {
-  it('records nothing when disabled', () => {
+  it('records nothing when disabled', async () => {
     expect(NOOP_TRACER.enabled).toBeFalse();
-    const token = NOOP_TRACER.begin(SpanKind.Compile, 1);
-    NOOP_TRACER.end(token);
-    expect(NOOP_TRACER.slice(SpanKind.SourceMap, () => 42)).toBe(42);
+    expect(NOOP_TRACER.slice(SpanKind.SourceMap, () => 42, 1)).toBe(42);
+    expect(await NOOP_TRACER.sliceAsync(SpanKind.PrepareChunk, async () => 'x')).toBe('x');
     const fileId = NOOP_TRACER.newFileId('/a.ts');
     NOOP_TRACER.asyncBegin(SpanKind.WriteOutput, fileId);
     NOOP_TRACER.asyncEnd(SpanKind.WriteOutput, fileId);
@@ -59,9 +67,7 @@ describe('Tracer', () => {
     const tracer = createTracer();
     tracer.slice(SpanKind.Compile, () => {
       spin(200);
-      const inner = tracer.begin(SpanKind.GenerateTcb, 7);
-      spin(500);
-      tracer.end(inner);
+      tracer.slice(SpanKind.GenerateTcb, () => spin(500), 7);
     });
 
     const {events, summary} = tracer.take();
@@ -89,26 +95,12 @@ describe('Tracer', () => {
     expect(Math.abs(summary.node.mainThreadBusyUs - compile.inclusiveUs)).toBeLessThanOrEqual(1);
   });
 
-  it('closes slices left open inside an ended slice', () => {
-    const tracer = createTracer();
-    const outer = tracer.begin(SpanKind.Compile);
-    tracer.begin(SpanKind.SerializeOutput);
-    tracer.end(outer);
-    tracer.end(outer);
-
-    const {events, summary} = tracer.take();
-    expect(spans(events, 'X').map((e) => e.name)).toEqual(['ngp.SerializeOutput', 'ngp.Compile']);
-    expect(summary.node.spans['Compile'].count).toBe(1);
-  });
-
   it('does not count sections spanning driver-level awaits as busy time', () => {
     const tracer = createTracer();
-    const wait = tracer.begin(SpanKind.AwaitAnalysis);
-    spin(300);
-    tracer.end(wait);
-    const prepare = tracer.begin(SpanKind.PrepareChunk);
-    tracer.slice(SpanKind.PrepareTcbTargets, () => spin(200));
-    tracer.end(prepare);
+    tracer.slice(SpanKind.AwaitAnalysis, () => spin(300));
+    tracer.slice(SpanKind.PrepareChunk, () => {
+      tracer.slice(SpanKind.PrepareTcbTargets, () => spin(200));
+    });
 
     const {summary} = tracer.take();
     const tcb = summary.node.spans['PrepareTcbTargets'];
@@ -116,22 +108,54 @@ describe('Tracer', () => {
     expect(Math.abs(summary.node.mainThreadBusyUs - tcb.inclusiveUs)).toBeLessThanOrEqual(1);
   });
 
-  it('rejects driver-level awaiting sections inside synchronous ones', () => {
+  it('ends a slice when its body throws', () => {
     const tracer = createTracer();
-    const compile = tracer.begin(SpanKind.Compile);
-    expect(() => tracer.begin(SpanKind.AwaitAnalysis)).toThrowError(/AwaitAnalysis/);
-    expect(() => tracer.slice(SpanKind.PrepareChunk, () => {})).toThrowError(/PrepareChunk/);
-    tracer.end(compile);
+    expect(() =>
+      tracer.slice(SpanKind.Compile, () => {
+        tracer.slice(SpanKind.TemplateBind, () => {
+          throw new Error('boom');
+        });
+      }),
+    ).toThrowError('boom');
+    tracer.slice(SpanKind.PrepareChunk, () => {});
 
-    // Fine at the top level, and synchronous sections can nest inside them.
-    const prepare = tracer.begin(SpanKind.PrepareChunk);
-    tracer.slice(SpanKind.PrepareTcbTargets, () => {});
-    tracer.end(prepare);
-    expect(spans(tracer.take().events, 'X').map((e) => e.name)).toEqual([
+    const {events, summary} = tracer.take();
+    expect(spans(events, 'X').map((e) => e.name)).toEqual([
+      'ngp.TemplateBind',
       'ngp.Compile',
-      'ngp.PrepareTcbTargets',
       'ngp.PrepareChunk',
     ]);
+    expect(summary.node.spans['Compile'].count).toBe(1);
+  });
+
+  it('ends an async slice when its promise settles, and propagates rejections', async () => {
+    const tracer = createTracer();
+    const value = await tracer.sliceAsync(SpanKind.AwaitAnalysis, async () => {
+      await new Promise((resolve) => setTimeout(resolve, 1));
+      spin(300);
+      return 42;
+    });
+    expect(value).toBe(42);
+    await expectAsync(
+      tracer.sliceAsync(SpanKind.PrepareChunk, async () => {
+        await Promise.resolve();
+        throw new Error('rejected');
+      }),
+    ).toBeRejectedWithError('rejected');
+    tracer.slice(SpanKind.PrepareTcbTargets, () => {});
+
+    const {events, summary} = tracer.take();
+    const [wait, prepare, tcb] = spans(events, 'X');
+    expect([wait.name, prepare.name, tcb.name]).toEqual([
+      'ngp.AwaitAnalysis',
+      'ngp.PrepareChunk',
+      'ngp.PrepareTcbTargets',
+    ]);
+    expect(wait.dur).toBeGreaterThanOrEqual(300);
+    expect(wait.ts + wait.dur!).toBeLessThanOrEqual(prepare.ts);
+    expect(summary.node.spans['PrepareChunk'].count).toBe(1);
+    // Awaiting sections are wall time, not main-thread busy time.
+    expect(Math.abs(summary.node.mainThreadBusyUs - tcb.dur!)).toBeLessThanOrEqual(1);
   });
 
   it('records overlapping per-file work as async slices with file ids', async () => {
@@ -349,5 +373,129 @@ describe('Tracer', () => {
     expect(summary.node.counters['TemplatesParsed']).toBe(2);
     expect(summary.node.spans['TemplateParse'].count).toBe(2);
     expect(spans(events, 'X').filter((e) => e.name === 'ngp.TemplateParse').length).toBe(2);
+  });
+
+  it('keeps compiling after a file throws mid-Compile, with its sections closed', async () => {
+    const root = await fs.mkdtemp(path.join(process.env['TEST_TMPDIR'] || os.tmpdir(), 'perf-'));
+    const files: Record<string, string> = {
+      'tsconfig.json': JSON.stringify({compilerOptions: {}, files: ['a.component.ts', 'bad.ts']}),
+      // The stylesheet link is read while `bad.ts` compiles, which is where the throw happens.
+      'bad.ts': `
+        import {Component} from '@angular/core';
+        @Component({selector: 'app-bad', template: '<link rel="stylesheet" href="./missing.css">'})
+        export class BadComponent {}
+      `,
+      // Depends on `bad.ts`, so it's analyzed in a later chunk, prepared after the throw.
+      'a.component.ts': `
+        import {Component} from '@angular/core';
+        import {BadComponent} from './bad';
+        @Component({selector: 'app-a', imports: [BadComponent], template: '<app-bad />'})
+        export class AComponent {}
+      `,
+    };
+    for (const [name, content] of Object.entries(files)) {
+      await fs.writeFile(path.join(root, name), content);
+    }
+    const analyzer = await createAnalyzer(path.join(root, 'tsconfig.json'), {
+      backend: 'wasm',
+      wasmBinding: resolveWasmBinding(),
+      optimize: true,
+      nodeModulesPathOverride: resolveFixtureNodeModules(),
+    });
+    // `readResourceSync` is only called from the `Compile` section, for the stylesheet link.
+    const throwingAnalyzer = new Proxy(analyzer, {
+      get(target, prop, receiver) {
+        if (prop === 'readResourceSync') {
+          return () => {
+            throw new Error('no stylesheet');
+          };
+        }
+        const value = Reflect.get(target, prop, receiver);
+        return typeof value === 'function' ? value.bind(target) : value;
+      },
+    });
+    const tracer = createTracer();
+    const compiler = new HybridCompiler(throwingAnalyzer, {
+      optimize: true,
+      tcbConfig: buildTypeCheckingConfig({strictTemplates: true}),
+      tracer,
+    });
+    try {
+      const outputs = compiler.compileSync();
+      expect([...compiler.currentProcessErrors.values()]).toEqual(['no stylesheet']);
+      expect([...outputs.keys()].map((p) => path.basename(p))).toEqual(['a.component.ts']);
+    } finally {
+      analyzer.close();
+      await fs.rm(root, {recursive: true, force: true});
+    }
+
+    const {events, summary} = tracer.take();
+    // Both files' `Compile` sections are closed, the failed one by the throw.
+    expect(summary.node.spans['Compile'].count).toBe(2);
+    expect(summary.node.spans['PrepareChunk'].count).toBe(2);
+    const compiles = spans(events, 'X').filter((e) => e.name === 'ngp.Compile');
+    const prepares = spans(events, 'X').filter((e) => e.name === 'ngp.PrepareChunk');
+    expect(compiles[0].ts + compiles[0].dur!).toBeLessThanOrEqual(prepares[1].ts);
+  });
+
+  describe('with a scripted sidecar', () => {
+    let tmpDir: string;
+
+    beforeEach(async () => {
+      if (process.platform === 'win32') {
+        pending('The scripted sidecar launcher is a POSIX shell script.');
+      }
+      tmpDir = await fs.mkdtemp(path.join(process.env['TEST_TMPDIR'] || os.tmpdir(), 'perf-'));
+    });
+
+    afterEach(async () => {
+      await fs.rm(tmpDir, {recursive: true, force: true});
+    });
+
+    it('aligns the clocks on the `now` round trip, not the slow `takePerf` one', async () => {
+      const takeDelayMs = 300;
+      const script = path.join(tmpDir, 'fake_sidecar.mjs');
+      await fs.writeFile(
+        script,
+        `
+import * as readline from 'node:readline';
+const send = (message) => process.stdout.write(JSON.stringify(message) + '\\n');
+let nowCalls = 0;
+readline.createInterface({input: process.stdin}).on('line', (line) => {
+  const {id, method} = JSON.parse(line);
+  if (method === 'now') {
+    nowCalls++;
+    send({id, result: {nowUs: 111}});
+  } else if (method === 'takePerf') {
+    // A reply that takes a while to arrive, as a multi-MB one does.
+    setTimeout(() => {
+      const summary = {queries: {}, spans: {}, counters: {nowCalls}};
+      send({id, result: {nowUs: 999, pid: 1, events: [], summary}});
+    }, ${takeDelayMs});
+  } else {
+    send({id, result: null});
+  }
+});
+`,
+      );
+      const launcher = path.join(tmpDir, 'fake_sidecar');
+      await fs.writeFile(launcher, `#!/bin/sh\nexec "${process.execPath}" "${script}"\n`);
+      await fs.chmod(launcher, 0o755);
+
+      const sidecar = new SidecarAnalyzer(launcher);
+      try {
+        await sidecar.initialize('/tsconfig.json', false);
+        const before = nowMicros();
+        const take = await sidecar.takePerf();
+        expect(nowMicros() - before).toBeGreaterThanOrEqual(takeDelayMs * 1000 - 5000);
+        // `now` was called once, before `takePerf`, and is what the alignment uses.
+        expect(take.summary.counters['nowCalls']).toBe(1);
+        expect(take.nowUs).toBe(111);
+        expect(take.requestUs).toBeGreaterThanOrEqual(before);
+        expect(take.responseUs - take.requestUs).toBeLessThan(takeDelayMs * 1000);
+      } finally {
+        sidecar.close();
+      }
+    });
   });
 });

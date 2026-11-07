@@ -251,7 +251,6 @@ fn take_drains_events_and_resets_totals() {
     assert!(second.summary.queries.is_empty() && second.summary.spans.is_empty());
     let names = |t: &PerfTake| t.events.iter().filter(|e| e.ph == "M").count();
     assert_eq!(names(&second), names(&first));
-    assert_eq!(second.now_us, 100.0);
     assert_eq!(second.pid, std::process::id());
 }
 
@@ -361,7 +360,7 @@ fn take_serializes_to_chrome_trace_events() {
             "id2": {"local": id}, "args": {"key": "ParseFile(3)"},
         })
     );
-    assert!(json["nowUs"].is_number() && json["pid"].is_number());
+    assert!(json["pid"].is_number());
     assert_eq!(json["summary"]["queries"]["ParseFile"]["cancelled"], 1);
 }
 

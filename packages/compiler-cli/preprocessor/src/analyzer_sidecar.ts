@@ -238,19 +238,15 @@ export class SidecarAnalyzer implements IAnalyzer {
       'tsconfigPath' | 'optimize' | 'virtualFiles' | 'nodeModulesPathOverride'
     >,
   ): Promise<NgpCompilerOptions> {
-    const token = this.tracer.begin(SpanKind.InitializeRpc);
-    let res: NgpCompilerOptions | null;
-    try {
-      res = await this.callRpc<NgpCompilerOptions | null>('initialize', {
+    const res = await this.tracer.sliceAsync(SpanKind.InitializeRpc, () =>
+      this.callRpc<NgpCompilerOptions | null>('initialize', {
         ...options,
         tsconfigPath,
         optimize,
         virtualFiles,
         nodeModulesPathOverride,
-      });
-    } finally {
-      this.tracer.end(token);
-    }
+      }),
+    );
     this.compilerOptions = res ?? {};
     return this.compilerOptions;
   }
@@ -383,11 +379,14 @@ export class SidecarAnalyzer implements IAnalyzer {
   }
 
   async takePerf(): Promise<AnalyzerPerfTake> {
-    // `nowUs` is read mid round trip; the midpoint of these aligns the clocks.
+    // The clocks are aligned on `now`, whose round trip is symmetric. `takePerf` isn't: its reply
+    // can be megabytes to serialize, pipe and parse, which would put `nowUs` well before the
+    // midpoint and the Rust events too late.
     const requestUs = nowMicros();
-    const take = await this.callRpc<RustPerfTake>('takePerf', {});
+    const {nowUs} = await this.callRpc<{nowUs: number}>('now', {});
     const responseUs = nowMicros();
-    return {...take, requestUs, responseUs};
+    const take = await this.callRpc<RustPerfTake>('takePerf', {});
+    return {...take, requestUs, nowUs, responseUs};
   }
 
   getMetadataForFileSync(filePath: string): AnalysisResult | null {

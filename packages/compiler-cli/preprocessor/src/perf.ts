@@ -67,7 +67,8 @@ for (let kind = 0; kind < SPAN_KINDS; kind++) {
 
 /**
  * Sections that contain driver-level awaits (nothing else runs meanwhile). They are wall time,
- * so they don't count towards `mainThreadBusyUs`, and can't start inside other sections.
+ * so they don't count towards `mainThreadBusyUs`. Only `sliceAsync` begins them, never inside a
+ * synchronous section.
  */
 const AWAITING_KINDS = new Uint8Array(SPAN_KINDS);
 AWAITING_KINDS[SpanKind.PrepareChunk] = 1;
@@ -127,17 +128,20 @@ export interface RustSummary {
 
 /** Reply of ng-analyze's `takePerf`. Draining it resets the analyzer's buffers. */
 export interface RustPerfTake {
-  /** Rust clock (µs since its fixed epoch) when the reply was built. */
-  nowUs: number;
   pid: number;
   /** Finished trace events without `pid`, on the Rust clock. `M` events have `ts` 0. */
   events: Array<Omit<TraceEvent, 'pid'>>;
   summary: RustSummary;
 }
 
-/** A `takePerf` reply plus the Node clock around the round trip, for clock alignment. */
+/**
+ * A `takePerf` reply plus a sample of the Rust clock taken with a payload-free `now` round trip
+ * just before it, bracketed by the Node clock, for clock alignment.
+ */
 export interface AnalyzerPerfTake extends RustPerfTake {
   requestUs: number;
+  /** Rust clock (µs since its fixed epoch) during the `now` round trip. */
+  nowUs: number;
   responseUs: number;
 }
 
@@ -175,14 +179,15 @@ export interface PerfSummary {
 export interface Tracer {
   readonly enabled: boolean;
   /**
-   * Starts a synchronous section on the main thread and returns a token for `end()`. Don't hold
-   * a token across an `await`, except at driver level where nothing else runs. A `fileId` of 0
-   * means no file.
+   * Runs `fn` as a synchronous section on the main thread, ended when `fn` returns or throws. A
+   * `fileId` of 0 means no file.
    */
-  begin(kind: SpanKind, fileId?: number): number;
-  /** Ends the section of `token`, and any section left open inside it. */
-  end(token: number): void;
   slice<T>(kind: SpanKind, fn: () => T, fileId?: number): T;
+  /**
+   * Like `slice`, for a driver-level await during which nothing else runs on the main thread
+   * (the `AWAITING_KINDS`). The section ends when the promise settles.
+   */
+  sliceAsync<T>(kind: SpanKind, fn: () => Promise<T>, fileId?: number): Promise<T>;
   /** Records a finished synchronous section that ran from `startUs` until now. */
   record(kind: SpanKind, startUs: number): void;
   /** Allocates an id for a file and begins its `ngp.File` async slice. */
@@ -236,9 +241,8 @@ function metadata(name: string, pid: number, tid: number, value: string): TraceE
 
 export const NOOP_TRACER: Tracer = Object.freeze({
   enabled: false,
-  begin: () => 0,
-  end: () => {},
   slice: <T>(_kind: SpanKind, fn: () => T): T => fn(),
+  sliceAsync: <T>(_kind: SpanKind, fn: () => Promise<T>): Promise<T> => fn(),
   record: () => {},
   newFileId: () => 0,
   asyncBegin: () => {},
@@ -304,10 +308,8 @@ class RecordingTracer implements Tracer {
     }
   }
 
-  begin(kind: SpanKind, fileId?: number): number {
-    if (AWAITING_KINDS[kind] && this.openNonAwaiting > 0) {
-      throw new Error(`${SpanKind[kind]} can't begin inside a synchronous section`);
-    }
+  /** Opens a section and returns a token for `end()`. */
+  private begin(kind: SpanKind, fileId: number | undefined): number {
     this.openKind.push(kind);
     this.openStart.push(nowMicros());
     this.openFile.push(fileId);
@@ -318,7 +320,8 @@ class RecordingTracer implements Tracer {
     return this.openKind.length;
   }
 
-  end(token: number): void {
+  /** Ends the section of `token`, and any section left open inside it. */
+  private end(token: number): void {
     if (token < 1 || token > this.openKind.length) {
       return;
     }
@@ -385,6 +388,15 @@ class RecordingTracer implements Tracer {
     }
   }
 
+  async sliceAsync<T>(kind: SpanKind, fn: () => Promise<T>, fileId?: number): Promise<T> {
+    const token = this.begin(kind, fileId);
+    try {
+      return await fn();
+    } finally {
+      this.end(token);
+    }
+  }
+
   newFileId(path: string): number {
     const fileId = this.nextFileId++;
     this.asyncEvent('b', SpanKind.File, fileId, {path});
@@ -440,7 +452,7 @@ class RecordingTracer implements Tracer {
   addAnalyzerPerf(perf: AnalyzerPerfTake): void {
     this.rust = perf.summary;
     const pid = perf.pid;
-    // Rust clock to Node clock: `nowUs` was read about halfway through the round trip.
+    // Rust clock to Node clock: `nowUs` was read about halfway through the `now` round trip.
     const base = (perf.requestUs + perf.responseUs) / 2 - perf.nowUs;
     for (const e of perf.events) {
       this.events.push({...e, pid, ts: e.ph === 'M' ? 0 : e.ts + base});
@@ -512,7 +524,7 @@ class RecordingTracer implements Tracer {
       {name: 'ngp.Summary', cat: 'ngp', ph: 'i', s: 'p', pid, tid: 1, ts: now, args: nodeTotals},
     ];
 
-    // Sections an exception left open can't be closed meaningfully; drop them.
+    // A section still open (a `sliceAsync` whose promise hasn't settled) is dropped.
     this.openKind.length = 0;
     this.openStart.length = 0;
     this.openFile.length = 0;

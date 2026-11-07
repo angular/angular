@@ -446,8 +446,7 @@ export class HybridCompiler {
 
   async prepareChunk(chunk: nga.CompilationChunk): Promise<ChunkContext> {
     // Spans awaits, but chunks are prepared one at a time with no other work in between.
-    const token = this.tracer.begin(SpanKind.PrepareChunk);
-    try {
+    return this.tracer.sliceAsync(SpanKind.PrepareChunk, async () => {
       this.recordChunkDiagnostics(chunk);
       if (!this.incrementalEnabled) {
         for (const file of chunk.files) {
@@ -463,14 +462,11 @@ export class HybridCompiler {
         })),
       );
       return this.finalizePreparedChunk(chunk, boundFiles, metadataMap);
-    } finally {
-      this.tracer.end(token);
-    }
+    });
   }
 
   prepareChunkSync(chunk: nga.CompilationChunk): ChunkContext {
-    const token = this.tracer.begin(SpanKind.PrepareChunk);
-    try {
+    return this.tracer.slice(SpanKind.PrepareChunk, () => {
       this.recordChunkDiagnostics(chunk);
       if (!this.incrementalEnabled) {
         for (const file of chunk.files) {
@@ -484,9 +480,7 @@ export class HybridCompiler {
         analysis: this.ensureBoundWithMetadataSync(file, undefined, metadataMap),
       }));
       return this.finalizePreparedChunk(chunk, boundFiles, metadataMap);
-    } finally {
-      this.tracer.end(token);
-    }
+    });
   }
 
   private recordChunkDiagnostics(chunk: nga.CompilationChunk): void {
@@ -1455,16 +1449,9 @@ export class HybridCompiler {
       this.tracer,
     );
 
-    const prepareToken = this.tracer.begin(SpanKind.PrepareTcbTargets);
-    const prepared = prepareTcbTargets(
-      filePath,
-      tcbTargets,
-      content,
-      this.tcbConfig,
-      result.classes,
-      this.tracer,
+    const prepared = this.tracer.slice(SpanKind.PrepareTcbTargets, () =>
+      prepareTcbTargets(filePath, tcbTargets, content, this.tcbConfig, result.classes, this.tracer),
     );
-    this.tracer.end(prepareToken);
     if (prepared) {
       fileAnalysis.preparedTcbData = prepared;
     } else {

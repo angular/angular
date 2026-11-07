@@ -21,11 +21,12 @@
 //! - Counters ([`Counter`]), bumped with [`count`] from `fs.rs` and the query engine, and query
 //!   cache hits via [`count_cache_hit`].
 //!
-//! `takePerf` returns `{nowUs, pid, events, summary}`: `events` are finished Chrome trace events
+//! `takePerf` returns `{pid, events, summary}`: `events` are finished Chrome trace events
 //! without `pid` (`M` process and thread names first), and `summary` is a [`RustSummary`]
 //! (`queries` per kind with the slowest executions, `spans` per sync/async span, `counters`).
 //! The Node side adds the summary to the trace as `ngp.rust.Counters` (`C`) and
-//! `ngp.rust.Summary` (`i`).
+//! `ngp.rust.Summary` (`i`). `now` returns `{nowUs}` on the events' clock; Node calls it right
+//! before `takePerf` to align the clocks, since that round trip carries no payload.
 
 use std::collections::BTreeMap;
 
@@ -36,7 +37,7 @@ mod tests;
 
 #[cfg(not(target_arch = "wasm32"))]
 pub use layer::{
-    count, count_cache_hit, install, set_pool_thread_index, set_recording, take, PerfTake,
+    count, count_cache_hit, install, now_us, set_pool_thread_index, set_recording, take, PerfTake,
     TraceEvent,
 };
 

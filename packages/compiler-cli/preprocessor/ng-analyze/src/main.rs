@@ -371,6 +371,20 @@ fn handle_rpc_request(req: RpcRequest, analyzer: &mut Option<Analyzer>) -> RpcRe
                 error: Some("Perf tracing is not enabled".to_string()),
             },
         },
+        // The perf clock, for aligning it with Node's. Cheap, so its round trip is symmetric,
+        // unlike `takePerf`, whose reply can be megabytes.
+        "now" => match ng_analyze::perf::now_us() {
+            Some(now_us) => RpcResponse {
+                id: req.id,
+                result: Some(serde_json::json!({"nowUs": now_us})),
+                error: None,
+            },
+            None => RpcResponse {
+                id: req.id,
+                result: None,
+                error: Some("Perf tracing is not enabled".to_string()),
+            },
+        },
 
         _ => RpcResponse {
             id: req.id,
@@ -531,5 +545,41 @@ mod tests {
             .is_none());
         let take = analyze_and_take_perf(&mut analyzer).result.unwrap();
         assert_eq!(take["summary"]["spans"]["Initialize"]["count"], 1);
+    }
+
+    #[test]
+    fn test_rpc_now() {
+        let _lock = PERF_LOCK.lock().unwrap_or_else(|e| e.into_inner());
+        let mut analyzer = None;
+        assert!(handle_rpc_request(init_request(true), &mut analyzer)
+            .error
+            .is_none());
+        let now_us = |analyzer: &mut Option<Analyzer>| {
+            let req = RpcRequest {
+                id: 3,
+                method: "now".to_string(),
+                params: serde_json::Value::Null,
+            };
+            let res = handle_rpc_request(req, analyzer).result.unwrap();
+            res["nowUs"].as_f64().unwrap()
+        };
+        let first = now_us(&mut analyzer);
+        // The same clock as the events: the analysis run in between lands between the samples.
+        let take = analyze_and_take_perf(&mut analyzer).result.unwrap();
+        let second = now_us(&mut analyzer);
+        let analyze_ts = |ph: &str| {
+            let events = take["events"].as_array().unwrap();
+            let event = events
+                .iter()
+                .find(|e| e["ph"] == ph && e["name"] == "ngp.rust.Analyze")
+                .unwrap();
+            event["ts"].as_f64().unwrap()
+        };
+        assert!(first <= analyze_ts("b") && analyze_ts("e") <= second);
+        // Unlike `takePerf`, it works while not recording: the clock exists once installed.
+        assert!(handle_rpc_request(init_request(false), &mut analyzer)
+            .error
+            .is_none());
+        assert!(now_us(&mut analyzer) >= second);
     }
 }

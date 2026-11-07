@@ -64,49 +64,36 @@ export async function run(compiler: HybridCompiler, options: RunOptions): Promis
     }
     // Unconditional: even when the analyzer produced no chunks, option diagnostics (which don't
     // depend on any file) still have to make it into the `.ngdiag.json`.
-    const diagToken = tracer.begin(SpanKind.WriteDiagnostics);
-    try {
-      await writeDiagnosticsFile(compiler, tsconfigPath);
-    } finally {
-      tracer.end(diagToken);
-    }
+    await tracer.sliceAsync(SpanKind.WriteDiagnostics, () =>
+      writeDiagnosticsFile(compiler, tsconfigPath),
+    );
   } finally {
-    if (tracer.enabled && compiler.analyzer.takePerf) {
-      // `begin` throws if an exception left a synchronous section open; take anyway.
-      let token = 0;
+    const {analyzer} = compiler;
+    if (tracer.enabled && analyzer.takePerf) {
       try {
-        token = tracer.begin(SpanKind.TakePerf);
-      } catch {}
-      try {
-        tracer.addAnalyzerPerf(await compiler.analyzer.takePerf());
+        tracer.addAnalyzerPerf(
+          await tracer.sliceAsync(SpanKind.TakePerf, () => analyzer.takePerf!()),
+        );
       } catch {
         // The sidecar may already have exited (e.g. after a fatal error).
-      } finally {
-        tracer.end(token);
       }
     }
     if (!options.keepAnalyzerAlive) {
-      tracer.slice(SpanKind.Close, () => compiler.analyzer.close());
+      tracer.slice(SpanKind.Close, () => analyzer.close());
     }
   }
 }
 
 /**
  * Records each wait on `source.next()` as an `AwaitAnalysis` slice. Nothing else runs on the
- * main thread meanwhile, so it can be a synchronous slice.
+ * main thread meanwhile, as `sliceAsync` requires.
  */
 async function* timeEachNext<T>(tracer: Tracer, source: AsyncIterable<T>): AsyncGenerator<T> {
   const iterator = source[Symbol.asyncIterator]();
   let done = false;
   try {
     while (true) {
-      const token = tracer.begin(SpanKind.AwaitAnalysis);
-      let next: IteratorResult<T>;
-      try {
-        next = await iterator.next();
-      } finally {
-        tracer.end(token);
-      }
+      const next = await tracer.sliceAsync(SpanKind.AwaitAnalysis, () => iterator.next());
       if (next.done) {
         done = true;
         return;
@@ -211,16 +198,21 @@ async function emitFile(
 
     await fs.mkdir(outputDir, {recursive: true});
 
-    const mapToken = tracer.begin(SpanKind.SourceMap, fileId);
-    const map = processed.generateSourceMap({
-      source: relativeSourcePath,
-      file: path.basename(outputPath),
-      includeContent: true,
-    });
-
-    const sourceWithMap = s.toString() + `\n//# sourceMappingURL=${path.basename(mapPath)}\n`;
-    const mapString = map.toString();
-    tracer.end(mapToken);
+    const {sourceWithMap, mapString} = tracer.slice(
+      SpanKind.SourceMap,
+      () => {
+        const map = processed.generateSourceMap({
+          source: relativeSourcePath,
+          file: path.basename(outputPath),
+          includeContent: true,
+        });
+        return {
+          sourceWithMap: s.toString() + `\n//# sourceMappingURL=${path.basename(mapPath)}\n`,
+          mapString: map.toString(),
+        };
+      },
+      fileId,
+    );
     // Writes of different files overlap, so this is an async slice.
     tracer.asyncBegin(SpanKind.WriteOutput, fileId);
 
