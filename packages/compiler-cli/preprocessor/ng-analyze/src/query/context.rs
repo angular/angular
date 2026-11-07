@@ -49,6 +49,51 @@ impl QueryContext {
         }
     }
 
+    /// Resolve `req` from `importer` through the engine's resolution cache
+    /// ([`QueryEngine::resolve_request_cached`]), recording both `importer` and (when resolution
+    /// fails) `UNRESOLVED_IMPORTS_FILE_ID` on this query context.
+    ///
+    /// The cache is keyed by `importer` while the host is asked about `req.importer`, so both must
+    /// name the same module. Debug builds assert it.
+    pub async fn resolve_request(
+        &self,
+        importer: FileId,
+        req: crate::host::ResolveRequest,
+    ) -> Result<Option<(FileId, crate::host::ResolvedModule)>, crate::host::HostError> {
+        self.record_file(importer);
+        let outcome = self.engine.resolve_request_cached(importer, req).await;
+        if !matches!(outcome, Ok(Some(_))) {
+            self.record_file(crate::query::engine::UNRESOLVED_IMPORTS_FILE_ID);
+        }
+        outcome
+    }
+
+    /// [`Self::resolve_request`] for a plain `specifier` lookup of the given `kind` from
+    /// `importer`, without import attributes. A host failure is reported as unresolved.
+    pub async fn resolve_from_id(
+        &self,
+        importer: FileId,
+        specifier: &str,
+        kind: crate::host::ImportKind,
+    ) -> Option<(FileId, crate::host::ResolvedModule)> {
+        let importer_id = self.engine.lookup_id(importer);
+        let req = crate::host::ResolveRequest::new(importer_id, specifier, kind);
+        self.resolve_request(importer, req).await.ok().flatten()
+    }
+
+    /// [`Self::resolve_from_id`] for an importer and a result named by filesystem path, interning
+    /// `importer_path` if it wasn't already.
+    pub async fn resolve_from_path(
+        &self,
+        importer_path: &std::path::Path,
+        specifier: &str,
+        kind: crate::host::ImportKind,
+    ) -> Option<(FileId, std::path::PathBuf)> {
+        let importer = self.engine.intern_path(importer_path);
+        let (target_id, _) = self.resolve_from_id(importer, specifier, kind).await?;
+        Some((target_id, self.engine.lookup_path(target_id)))
+    }
+
     async fn query_with_deps(&self, key: QueryKey) -> Arc<QueryValue> {
         let cached = self.engine.query(key).await;
         self.extend_dependencies(cached.dependencies.iter().copied());
