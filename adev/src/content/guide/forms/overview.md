@@ -293,7 +293,7 @@ Here are the steps performed in the view to model test.
 
 1. Query the view for the form input element, and create a custom "input" event for the test.
 1. Set the new value for the input to _Red_, and dispatch the "input" event on the form input element.
-1. Run change detection through the test fixture.
+1. Use `await fixture.whenStable()` to wait for the update to be processed.
 1. Assert that the component `favoriteColor` property value matches the value from the input.
 
 The following test verifies the data flow from model to view.
@@ -303,7 +303,6 @@ The following test verifies the data flow from model to view.
 Here are the steps performed in the model to view test.
 
 1. Use the component instance to set the value of the `favoriteColor` property.
-1. Run change detection through the test fixture.
 1. Use `await fixture.whenStable()` to wait for the next rendering.
 1. Query the view for the form input element.
 1. Assert that the input value matches the value of the `favoriteColor` property in the component instance.
