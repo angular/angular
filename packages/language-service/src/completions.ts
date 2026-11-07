@@ -13,6 +13,8 @@ import {
   BindingType,
   EmptyExpr,
   ImplicitReceiver,
+  LiteralMap,
+  LiteralMapPropertyKey,
   LiteralPrimitive,
   ParseSourceSpan,
   ParsedEventType,
@@ -82,6 +84,8 @@ type ElementAttributeCompletionBuilder = CompletionBuilder<
 type PipeCompletionBuilder = CompletionBuilder<BindingPipe>;
 
 type LiteralCompletionBuilder = CompletionBuilder<LiteralPrimitive | TextAttribute>;
+
+type LiteralMapKeyCompletionBuilder = CompletionBuilder<LiteralMap | PropertyRead | EmptyExpr>;
 
 type ElementAnimationCompletionBuilder = CompletionBuilder<
   TmplAstBoundAttribute | TmplAstBoundEvent
@@ -193,7 +197,9 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
   getCompletionsAtPosition(
     options: ts.GetCompletionsAtPositionOptions | undefined,
   ): ts.WithMetadata<ts.CompletionInfo> | undefined {
-    if (this.isPropertyExpressionCompletion()) {
+    if (this.isLiteralMapKeyCompletion()) {
+      return this.getLiteralMapKeyCompletions(options);
+    } else if (this.isPropertyExpressionCompletion()) {
       return this.getPropertyExpressionCompletion(options);
     } else if (this.isElementTagCompletion()) {
       return this.getElementTagCompletion(options);
@@ -269,6 +275,101 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
       entries: completionEntries,
     };
     return completionInfo;
+  }
+
+  /**
+   * Determines whether the position is completing a key of an object literal, either within an
+   * existing key (`{he¦}`, `{he¦: value}`) or at a position where a new key can be written
+   * (`{¦}`, `{a: 1, ¦}`).
+   */
+  private isLiteralMapKeyCompletion(): this is LiteralMapKeyCompletionBuilder {
+    return this.getContainingLiteralMapKey() !== null;
+  }
+
+  /**
+   * Resolves the object literal whose key is being completed at the position, along with the key
+   * itself when the position is within an existing key.
+   */
+  private getContainingLiteralMapKey(): {
+    map: LiteralMap;
+    key: LiteralMapPropertyKey | null;
+  } | null {
+    if (this.node instanceof LiteralMap) {
+      // The keys of a `LiteralMap` are not AST nodes, so a position within a key (or anywhere
+      // else in the map not covered by one of its values) targets the map itself.
+      return {map: this.node, key: findLiteralMapKeyAt(this.node, this.position)};
+    }
+    if (
+      (this.node instanceof PropertyRead || this.node instanceof EmptyExpr) &&
+      this.nodeParent instanceof LiteralMap
+    ) {
+      // A shorthand property (`{he¦}`) parses as a key with a `PropertyRead` value that spans
+      // the key, so the position targets the value instead of the map.
+      const key = findLiteralMapKeyAt(this.nodeParent, this.position);
+      if (key !== null && key.isShorthandInitialized === true) {
+        return {map: this.nodeParent, key};
+      }
+    }
+    return null;
+  }
+
+  private getLiteralMapKeyCompletions(
+    this: LiteralMapKeyCompletionBuilder,
+    options: ts.GetCompletionsAtPositionOptions | undefined,
+  ): ts.WithMetadata<ts.CompletionInfo> | undefined {
+    const target = this.getContainingLiteralMapKey();
+    if (target === null) {
+      return undefined;
+    }
+    const {map, key} = target;
+    const location = this.templateTypeChecker.getLiteralMapKeyCompletionLocation(
+      map,
+      key,
+      this.component,
+    );
+    if (location === null) {
+      return undefined;
+    }
+    const tsResults = this.tsLS.getCompletionsAtPosition(
+      location.tcbPath,
+      location.positionInFile,
+      options,
+    );
+    if (tsResults === undefined) {
+      return undefined;
+    }
+
+    let replacementSpan: ts.TextSpan | undefined;
+    if (key !== null && !key.quoted && key.key.length > 0) {
+      replacementSpan = {
+        start: key.sourceSpan.start,
+        length: key.key.length,
+      };
+    }
+
+    // TypeScript does not exclude the properties that are already present in the object literal
+    // when completing inside a quoted property name, so filter them out here.
+    const existingKeys = new Set<string>();
+    for (const existingKey of map.keys) {
+      if (existingKey.kind === 'property' && existingKey !== key) {
+        existingKeys.add(existingKey.key);
+      }
+    }
+
+    const entries: ts.CompletionEntry[] = [];
+    for (const entry of tsResults.entries) {
+      if (existingKeys.has(entry.name)) {
+        continue;
+      }
+      entries.push({
+        ...entry,
+        replacementSpan,
+      });
+    }
+    return {
+      ...tsResults,
+      entries,
+    };
   }
 
   private isLiteralCompletion(): this is LiteralCompletionBuilder {
@@ -1453,6 +1554,20 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
     }
     return false;
   }
+}
+
+/** Finds the property key of `map` whose source span contains `position`, if any. */
+function findLiteralMapKeyAt(map: LiteralMap, position: number): LiteralMapPropertyKey | null {
+  for (const key of map.keys) {
+    if (
+      key.kind === 'property' &&
+      position >= key.sourceSpan.start &&
+      position <= key.sourceSpan.end
+    ) {
+      return key;
+    }
+  }
+  return null;
 }
 
 function makeReplacementSpanFromParseSourceSpan(span: ParseSourceSpan): ts.TextSpan {
