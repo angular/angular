@@ -31,11 +31,7 @@ import {HttpParams} from './params';
 import {HttpRequest} from './request';
 import {HttpResourceOptions, HttpResourceRef, HttpResourceRequest} from './resource_api';
 import {HttpErrorResponse, HttpEventType, HttpProgressEvent} from './response';
-import {
-  CACHE_OPTIONS,
-  HTTP_TRANSFER_CACHE_ORIGIN_MAP,
-  retrieveStateFromCache,
-} from './transfer_cache';
+import {CACHE_OPTIONS, HTTP_TRANSFER_CACHE_ORIGIN_MAP} from './transfer_cache';
 
 /**
  * Type for the `httpRequest` top-level function, which includes the call signatures for the JSON-
@@ -249,7 +245,7 @@ function makeHttpResourceFn<TRaw>(responseType: ResponseType) {
 
     const getInitialStream = (req: HttpRequest<unknown> | undefined) => {
       if (cacheOptions && transferState && req) {
-        const cachedResponse = retrieveStateFromCache(req, cacheOptions, transferState, originMap);
+        const cachedResponse = cacheOptions.readCache(req, cacheOptions, transferState, originMap);
         if (cachedResponse) {
           try {
             const body = cachedResponse.body as TRaw;
