@@ -27,6 +27,7 @@ describe('DOMElementSchema', () => {
     expect(registry.hasElement('b', [])).toBeTruthy();
     expect(registry.hasElement('ng-container', [])).toBeTruthy();
     expect(registry.hasElement('ng-content', [])).toBeTruthy();
+    expect(registry.hasElement('ng-template', [])).toBeTruthy();
 
     expect(registry.hasElement('my-cmp', [])).toBeFalsy();
     expect(registry.hasElement('abc', [])).toBeFalsy();
@@ -252,6 +253,13 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
     it('should support <ng-content>', () => {
       expect(registry.hasProperty('ng-content', 'id', [])).toBeFalsy();
       expect(registry.hasProperty('ng-content', 'select', [])).toBeFalsy();
+    });
+
+    it('should support <ng-template>', () => {
+      expect(registry.hasProperty('ng-template', 'id', [])).toBeFalsy();
+      expect(registry.hasProperty('ng-template', 'id', [CUSTOM_ELEMENTS_SCHEMA])).toBeFalsy();
+      expect(registry.hasProperty(':svg:ng-template', 'id', [])).toBeFalsy();
+      expect(registry.hasProperty(':svg:ng-template', 'id', [CUSTOM_ELEMENTS_SCHEMA])).toBeFalsy();
     });
   });
 

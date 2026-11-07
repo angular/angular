@@ -226,6 +226,7 @@ export function buildTypeCheckingConfig(
       allowDomEventAssertion: true,
       checkUnclaimedEventNames: false,
       checkUnknownElements: false,
+      checkTypeOfNgTemplateBindings: false,
     };
   } else {
     typeCheckingConfig = {
@@ -264,6 +265,7 @@ export function buildTypeCheckingConfig(
       allowDomEventAssertion: true,
       checkUnclaimedEventNames: false,
       checkUnknownElements: false,
+      checkTypeOfNgTemplateBindings: false,
     };
   }
 
@@ -304,6 +306,9 @@ export function buildTypeCheckingConfig(
   }
   if (options.strictUnknownElements !== undefined) {
     typeCheckingConfig.checkUnknownElements = options.strictUnknownElements;
+  }
+  if (options.strictNgTemplateTypes !== undefined) {
+    typeCheckingConfig.checkTypeOfNgTemplateBindings = options.strictNgTemplateTypes;
   }
   typeCheckingConfig.typeCheckHostBindings = options.typeCheckHostBindings ?? true;
   typeCheckingConfig.usePoisonedData =
