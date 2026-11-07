@@ -119,6 +119,35 @@ export async function guardsIntegrationSuite() {
 
           expect(onUnhandledrejection).not.toHaveBeenCalled();
         });
+
+        it('should cancel the navigation', async () => {
+          const router = TestBed.inject(Router);
+          const location = TestBed.inject(Location);
+          const fixture = await createRoot(router, RootCmp);
+
+          const recordedEvents: Event[] = [];
+          router.events.forEach((e) => recordedEvents.push(e));
+
+          router.resetConfig([{path: 'team/:id', component: TeamCmp, canActivate: [() => EMPTY]}]);
+
+          expect(await router.navigateByUrl('/team/22')).toBe(false);
+          await fixture.whenStable();
+
+          expect(location.path()).toEqual('');
+          // Recorder before the fix: the last event was [NavigationError, '/team/22'].
+          expectEvents(recordedEvents, [
+            [NavigationStart, '/team/22'],
+            [RoutesRecognized, '/team/22'],
+            [GuardsCheckStart, '/team/22'],
+            [ChildActivationStart],
+            [ActivationStart],
+            [GuardsCheckEnd, '/team/22'],
+            [NavigationCancel, '/team/22'],
+          ]);
+          expect((recordedEvents[6] as NavigationCancel).code).toBe(
+            NavigationCancellationCode.GuardRejected,
+          );
+        });
       });
 
       describe('should not activate a route when CanActivate returns false', () => {
