@@ -690,8 +690,42 @@ export function getTemplateDiagnostics(
       ts.DiagnosticCategory.Error,
       ngErrorCode(ErrorCode.TEMPLATE_PARSE_ERROR),
       error.msg,
+      getUnescapedQuoteHint(error, sourceMapping),
     );
   });
+}
+
+/**
+ * TypeScript removes the backslash of `\'` in a template literal, so a quote that was meant to be
+ * escaped in an inline template reaches the template parser unescaped. Points at the first such
+ * quote inside the span of the parse error. Double quotes are not handled, because a backslash
+ * cannot escape a double quote inside a double-quoted attribute anyway.
+ */
+function getUnescapedQuoteHint(
+  error: ParseError,
+  sourceMapping: SourceMapping,
+): {text: string; start: number; end: number}[] | undefined {
+  if (sourceMapping.type !== 'direct' || !ts.isNoSubstitutionTemplateLiteral(sourceMapping.node)) {
+    return undefined;
+  }
+
+  const {start, end} = error.span;
+  const text = sourceMapping.node.getSourceFile().text.slice(start.offset, end.offset);
+  const match = /(?<!\\)\\'/.exec(text);
+  if (match === null) {
+    return undefined;
+  }
+
+  const quoteStart = start.offset + match.index;
+  return [
+    {
+      text:
+        `TypeScript removes the backslash from \\' in a template literal, so Angular sees an ` +
+        `unescaped quote here. To escape a quote inside a string in the template, write \\\\' instead.`,
+      start: quoteStart,
+      end: quoteStart + 2,
+    },
+  ];
 }
 
 /**

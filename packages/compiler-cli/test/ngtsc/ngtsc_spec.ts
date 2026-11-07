@@ -10739,6 +10739,54 @@ runInEachFileSystem((os: string) => {
           expect(diags.length).toBe(1);
           expect(diags[0].messageText).toContain('Parser Error: Missing expected }');
         });
+
+        it('should point at a quote whose backslash was removed by TypeScript in an inline template', () => {
+          env.write(
+            'test.ts',
+            `
+              import {Component} from '@angular/core';
+              @Component({
+                template: \`{{ filter ? ' your filter: \\'' + filter + '\\'' : '' }}\`,
+                selector: 'test-cmp',
+              })
+              export class TestCmp {
+                filter = '';
+              }
+            `,
+          );
+          const diags = env.driveDiagnostics();
+
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain('requires all 3 expressions');
+          expect(diags[0].relatedInformation!.length).toBe(1);
+          expect(getDiagnosticSourceCode(diags[0].relatedInformation![0])).toBe(`\\'`);
+          expect(diags[0].relatedInformation![0].messageText).toContain(
+            `TypeScript removes the backslash from \\' in a template literal`,
+          );
+        });
+
+        it('should not point at a quote that is escaped correctly in an inline template', () => {
+          env.write(
+            'test.ts',
+            `
+              import {Component} from '@angular/core';
+              @Component({
+                template: \`<button (click)="save('it\\\\'s', 'foo\\'')"></button>\`,
+                selector: 'test-cmp',
+              })
+              export class TestCmp {
+                save(...args: string[]) {}
+              }
+            `,
+          );
+          const diags = env.driveDiagnostics();
+
+          expect(diags.length).toBe(2);
+          for (const diag of diags) {
+            expect(diag.relatedInformation!.length).toBe(1);
+            expect(diag.relatedInformation![0].start).toBe(diag.file!.text.indexOf(`'foo\\'`) + 4);
+          }
+        });
       });
 
       describe('shadow DOM selector diagnostics', () => {
