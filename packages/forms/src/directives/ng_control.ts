@@ -9,14 +9,15 @@
 import {
   ChangeDetectorRef,
   DestroyRef,
+  Provider,
+  Signal,
   computed,
   effect,
+  inject,
+  untracked,
+  type ɵControlDirectiveHost as ControlDirectiveHost,
   type Injector,
   type Renderer2,
-  Signal,
-  inject,
-  type ɵControlDirectiveHost as ControlDirectiveHost,
-  Provider,
 } from '@angular/core';
 import {Subscription} from 'rxjs';
 
@@ -28,8 +29,8 @@ import {ControlContainer} from './control_container';
 import {ControlValueAccessor} from './control_value_accessor';
 import {isNativeFormElement, setNativeDomProperty, type NativeFormControl} from './native';
 import {ReactiveValidationError} from './reactive_validation_error';
+import {ɵFORM_CONTROL_INTEGRATION as FORM_CONTROL_INTEGRATION, selectValueAccessor} from './shared';
 import {RequiredValidator, ValidationErrors, ValidatorFn} from './validators';
-import {selectValueAccessor, ɵFORM_CONTROL_INTEGRATION as FORM_CONTROL_INTEGRATION} from './shared';
 
 type ParseError = {readonly kind: string};
 
@@ -455,7 +456,7 @@ export abstract class NgControl extends AbstractControlDirective {
       return;
     }
 
-    let convertedErrors: ValidationErrors | null = null;
+    let lastSeenErrors: ValidationErrors | null = null;
     const convertedParseErrors = computed(() => {
       const rawErrors = parseErrors();
       if (rawErrors.length === 0) {
@@ -472,13 +473,20 @@ export abstract class NgControl extends AbstractControlDirective {
     });
 
     // Create validator that returns current parse errors
-    this.parseErrorsValidator = (() => convertedErrors).bind(this);
+    this.parseErrorsValidator = () => {
+      lastSeenErrors = untracked(convertedParseErrors);
+      return lastSeenErrors;
+    };
 
     // Setup effect to watch parseErrors and trigger revalidation
     effect(
       () => {
-        convertedErrors = convertedParseErrors();
-        this.control?.updateValueAndValidity({emitEvent: false});
+        const currentErrors = convertedParseErrors();
+        if (currentErrors !== lastSeenErrors) {
+          lastSeenErrors = currentErrors;
+          this.control?.updateValueAndValidity({emitEvent: false});
+          this.injector?.get(ChangeDetectorRef)?.markForCheck();
+        }
       },
       {injector: this.injector},
     );
