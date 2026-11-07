@@ -127,7 +127,3 @@ export class InjectionToken<T> {
     return `InjectionToken ${this._desc}`;
   }
 }
-
-export interface InjectableDefToken<T> extends InjectionToken<T> {
-  ɵprov: unknown;
-}

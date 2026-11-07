@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {ProcessProvidersFunction, Provider} from '../../di/interface/provider';
+import {Provider} from '../../di/interface/provider';
 import {providersResolver} from '../di_setup';
 import {DirectiveDef} from '../interfaces/definition';
 
