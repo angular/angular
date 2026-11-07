@@ -372,6 +372,10 @@ export class SidecarAnalyzer implements IAnalyzer {
     return this.callRpc('setEntryPoints', entryPoints);
   }
 
+  async clearResolutionCache(): Promise<string[]> {
+    return this.callRpc('clearResolutionCache', null);
+  }
+
   async getTsFileForTemplate(templatePath: string): Promise<TemplateUsage[] | null> {
     return this.callRpc('getTsFileForTemplate', {templatePath});
   }
