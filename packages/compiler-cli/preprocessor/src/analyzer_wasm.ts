@@ -27,6 +27,8 @@ export interface WasmInner {
   invalidate_files?(updatesJson: string): string;
   setEntryPoints?(entryPointsJson: string): string;
   set_entry_points?(entryPointsJson: string): string;
+  clearResolutionCache?(): string;
+  clear_resolution_cache?(): string;
   getMetadataForFile?(filePath: string): string | undefined;
   get_metadata_for_file?(filePath: string): string | undefined;
   getFileContent?(filePath: string): string;
@@ -263,6 +265,14 @@ export class WasmAnalyzer implements IAnalyzer {
       this.inner.setEntryPoints ?? this.inner.set_entry_points,
       'setEntryPoints',
       JSON.stringify(entryPoints),
+    );
+    return JSON.parse(res) as string[];
+  }
+
+  async clearResolutionCache(): Promise<string[]> {
+    const res = this.invoke(
+      this.inner.clearResolutionCache ?? this.inner.clear_resolution_cache,
+      'clearResolutionCache',
     );
     return JSON.parse(res) as string[];
   }

@@ -51,6 +51,7 @@ class ScriptedAnalyzer implements IAnalyzer {
 
   // Optional engine capabilities a test may opt into.
   canonicalPaths?: IAnalyzer['canonicalPaths'];
+  clearResolutionCache?: IAnalyzer['clearResolutionCache'];
 
   async *analyze(): AsyncGenerator<CompilationChunk> {}
   async *analyzeOptimized(): AsyncGenerator<CompilationChunk> {}
@@ -284,6 +285,38 @@ for (const {optimize} of [{optimize: true}, {optimize: false}]) {
         [['/real/a.ts'], []],
         [['/real/b.html'], ['/real/c.ts']],
       ]);
+    });
+
+    it('queues clearResolutionCache, evicts stale file caches, and records incremental changes', async () => {
+      const analyzer = new ScriptedAnalyzer();
+      analyzer.clearResolutionCache = async () => {
+        analyzer.calls.push('clearResolutionCache');
+        return ['/app/a.ts', '/node_modules/lib/index.d.ts'];
+      };
+      const compiler = new HybridCompiler(analyzer, {optimize});
+      const recordChanges = spyOn(compiler.incremental, 'recordChanges').and.callThrough();
+      getOrCreateFileAnalysis(compiler.fileCache, '/app/a.ts');
+      getOrCreateFileAnalysis(compiler.fileCache, '/node_modules/lib/index.d.ts');
+      getOrCreateFileAnalysis(compiler.fileCache, '/app/keep.ts');
+
+      await compiler.clearResolutionCache();
+
+      expect(analyzer.calls).toEqual(['clearResolutionCache', deltaCall]);
+      expect([...compiler.fileCache.keys()]).toEqual(['/app/keep.ts']);
+      // An evicted declaration file did not change, so it is not recorded as one: that would
+      // make the next build re-emit every file.
+      expect(recordChanges.calls.allArgs()).toEqual([[['/app/a.ts'], []]]);
+    });
+
+    it('records no incremental change when clearResolutionCache only evicts declaration files', async () => {
+      const analyzer = new ScriptedAnalyzer();
+      analyzer.clearResolutionCache = async () => ['/node_modules/lib/index.d.ts'];
+      const compiler = new HybridCompiler(analyzer, {optimize});
+      const recordChanges = spyOn(compiler.incremental, 'recordChanges').and.callThrough();
+
+      await compiler.clearResolutionCache();
+
+      expect(recordChanges).not.toHaveBeenCalled();
     });
   });
 }

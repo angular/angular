@@ -38,8 +38,9 @@ struct CachedEntry {
 
 #[derive(Default)]
 struct ResolutionCacheInner {
-    /// Counts structure changes ([`ResolutionCache::clear_for_structure_change`]). An entry
-    /// recorded in an earlier generation is stale: it is no longer served, but it is kept so that
+    /// Counts structure changes ([`ResolutionCache::clear_for_structure_change`]) and full
+    /// flushes ([`ResolutionCache::clear_all`]). An entry recorded in an earlier generation is
+    /// stale: it is no longer served. A structure change keeps such entries so that
     /// [`Self::importers_by_target`] still covers an importer whose queries stayed cached and so
     /// do not resolve again.
     generation: u64,
@@ -66,7 +67,8 @@ impl ResolutionCache {
     }
 
     /// The current generation. A lookup reads it before asking the host and passes it to
-    /// [`Self::insert`], so that an answer obtained across a structure change is not memoized.
+    /// [`Self::insert`], so that an answer obtained across a structure change or a full flush is
+    /// not memoized.
     pub fn generation(&self) -> u64 {
         self.inner.read().unwrap().generation
     }
@@ -83,7 +85,7 @@ impl ResolutionCache {
     /// resolved to, or among the importers with a failed lookup.
     ///
     /// `generation` is the one read ([`Self::generation`]) before the host was asked. The outcome
-    /// is dropped when a structure change has superseded it since.
+    /// is dropped when a structure change or a full flush has superseded it since.
     pub fn insert(
         &self,
         importer: FileId,
@@ -169,6 +171,21 @@ impl ResolutionCache {
         std::mem::take(&mut inner.unresolved_by_importer)
             .into_keys()
             .collect()
+    }
+
+    /// Flush all cached resolutions and unresolved-specifier entries, returning every importer
+    /// `FileId` that held any positive or negative resolution entry. A lookup still waiting on
+    /// the host is superseded, so its answer is not memoized afterwards.
+    pub fn clear_all(&self) -> HashSet<FileId> {
+        let mut guard = self.inner.write().unwrap();
+        let inner = &mut *guard;
+        inner.generation += 1;
+        inner.importers_by_target.clear();
+        let by_importer = std::mem::take(&mut inner.by_importer);
+        let unresolved = std::mem::take(&mut inner.unresolved_by_importer);
+        let mut importers: HashSet<FileId> = by_importer.into_keys().collect();
+        importers.extend(unresolved.into_keys());
+        importers
     }
 }
 
@@ -457,5 +474,51 @@ mod tests {
 
         assert!(cache.get(importer, &key).is_none());
         assert!(cache.remove_deleted_target(target).is_empty());
+    }
+
+    #[test]
+    fn clear_all_returns_both_resolved_and_unresolved_importers() {
+        let cache = ResolutionCache::new();
+        let importer_ok: FileId = 30;
+        let importer_missing: FileId = 31;
+        let target: FileId = 40;
+
+        let ok_key = ResolutionLookupKey::from_request(&ResolveRequest::new(
+            "/app/ok.ts",
+            "./lib",
+            ImportKind::Static,
+        ));
+        let missing_key = ResolutionLookupKey::from_request(&ResolveRequest::new(
+            "/app/missing.ts",
+            "./nope",
+            ImportKind::Static,
+        ));
+
+        let stale_gen = cache.generation();
+        cache.insert(
+            importer_ok,
+            ok_key.clone(),
+            Ok(Some((target, resolved_module("/app/lib.ts")))),
+            stale_gen,
+        );
+        cache.insert(importer_missing, missing_key.clone(), Ok(None), stale_gen);
+
+        let cleared = cache.clear_all();
+        assert_eq!(cleared, HashSet::from([importer_ok, importer_missing]));
+        assert!(cache.get(importer_ok, &ok_key).is_none());
+        assert!(cache.get(importer_missing, &missing_key).is_none());
+        assert!(cache.remove_deleted_target(target).is_empty());
+
+        // A lookup that started before the flush is answered after it.
+        cache.insert(
+            importer_ok,
+            ok_key.clone(),
+            Ok(Some((target, resolved_module("/app/lib.ts")))),
+            stale_gen,
+        );
+        assert!(cache.get(importer_ok, &ok_key).is_none());
+        assert!(cache.remove_deleted_target(target).is_empty());
+
+        assert!(cache.clear_for_structure_change().is_empty());
     }
 }

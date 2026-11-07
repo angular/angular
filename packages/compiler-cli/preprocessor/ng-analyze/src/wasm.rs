@@ -143,6 +143,11 @@ impl WasmAnalyzer {
         serde_json::to_string(&res).map_err(|e| e.to_string())
     }
 
+    pub fn clear_resolution_cache(&self) -> Result<String, String> {
+        let res = self.analyzer.clear_resolution_cache_core()?;
+        serde_json::to_string(&res).map_err(|e| e.to_string())
+    }
+
     pub fn get_ts_file_for_template(&self, template_path: String) -> Option<String> {
         let res = self.analyzer.get_ts_file_for_template_core(template_path)?;
         serde_json::to_string(&res).ok()

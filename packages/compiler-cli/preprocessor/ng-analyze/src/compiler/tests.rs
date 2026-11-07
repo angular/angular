@@ -5660,6 +5660,39 @@ fn test_invalidate_files_deleted_file_evicts_importer_after_unrelated_file_creat
     );
 }
 
+#[test]
+fn test_clear_resolution_cache_re_resolves_cached_importers() {
+    let dir = tempfile::TempDir::new().unwrap();
+    let root = dir.path().canonicalize().unwrap();
+    let root_str = root.to_string_lossy().into_owned();
+    let lib_dir = root.join("lib");
+    std::fs::create_dir(&lib_dir).unwrap();
+    std::fs::write(lib_dir.join("index.ts"), lib_source("[libIndex]")).unwrap();
+    let app_path = format!("{root_str}/app.ts");
+
+    let analyzer = consumer_analyzer(&root_str, "./lib", HashMap::new());
+    assert_eq!(
+        imported_lib_dir_selector(&analyzer, &app_path).as_deref(),
+        Some("[libIndex]")
+    );
+    let app_wire_path = analyzer
+        .get_metadata_for_file(app_path.clone())
+        .unwrap()
+        .file_path;
+
+    // Write `lib.ts` shadowing `lib/index.ts` without reporting `FileUpdateType::Created`, then
+    // explicitly flush cached resolutions via `clear_resolution_cache`.
+    std::fs::write(root.join("lib.ts"), lib_source("[libDirect]")).unwrap();
+    let invalidated = analyzer.clear_resolution_cache().unwrap();
+
+    assert!(invalidated.contains(&app_wire_path), "{invalidated:?}");
+    assert_eq!(
+        imported_lib_dir_selector(&analyzer, &app_path).as_deref(),
+        Some("[libDirect]"),
+        "clear_resolution_cache must evict cached positive resolutions so ./lib re-resolves"
+    );
+}
+
 #[cfg(unix)]
 #[test]
 fn test_canonical_paths_resolves_symlinked_host_paths() {

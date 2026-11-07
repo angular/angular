@@ -28,6 +28,7 @@ function throwingInner(message: string): WasmInner {
     update_file_content: fail,
     invalidate_files: fail,
     set_entry_points: fail,
+    clear_resolution_cache: fail,
     get_file_content: fail,
     get_metadata_for_file: fail,
     get_ts_file_for_template: fail,
@@ -40,6 +41,7 @@ describe('WasmAnalyzer engine errors', () => {
     const analyzer = new WasmAnalyzer(throwingInner(MESSAGE));
 
     await expectAsync(analyzer.setEntryPoints(['src/main.ts'])).toBeRejectedWithError(MESSAGE);
+    await expectAsync(analyzer.clearResolutionCache()).toBeRejectedWithError(MESSAGE);
     await expectAsync(analyzer.updateFileContent([])).toBeRejectedWithError(MESSAGE);
     await expectAsync(analyzer.invalidateFiles([])).toBeRejectedWithError(MESSAGE);
     await expectAsync(analyzer.getFileContent('/main.ts')).toBeRejectedWithError(MESSAGE);
@@ -75,10 +77,22 @@ describe('WasmAnalyzer engine errors', () => {
   it('still reports exports that an older engine build lacks', async () => {
     const inner = throwingInner('unused');
     delete inner.set_entry_points;
+    delete inner.clear_resolution_cache;
     const analyzer = new WasmAnalyzer(inner);
 
     await expectAsync(analyzer.setEntryPoints(['/main.ts'])).toBeRejectedWithError(
       'WasmInner does not support setEntryPoints',
     );
+    await expectAsync(analyzer.clearResolutionCache()).toBeRejectedWithError(
+      'WasmInner does not support clearResolutionCache',
+    );
+  });
+
+  it('parses evicted module IDs returned by clearResolutionCache', async () => {
+    const inner = throwingInner('unused');
+    inner.clear_resolution_cache = () => JSON.stringify(['/app/a.ts', '\0virtual:dep']);
+    const analyzer = new WasmAnalyzer(inner);
+
+    expect(await analyzer.clearResolutionCache()).toEqual(['/app/a.ts', '\0virtual:dep']);
   });
 });

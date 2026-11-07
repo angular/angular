@@ -424,8 +424,8 @@ impl QueryEngine {
         if let Some(cached) = self.resolution_cache.get(importer, &key) {
             return cached;
         }
-        // Read before asking the host, so that an answer which arrives after a structure change is
-        // recognized as superseded and not memoized.
+        // Read before asking the host, so that an answer which arrives after a structure change or
+        // a full flush is recognized as superseded and not memoized.
         let generation = self.resolution_cache.generation();
         let mut kind_changed = false;
         let outcome = match self.host.resolve(req).await {
@@ -1141,13 +1141,31 @@ impl QueryEngine {
     ///
     /// Must not run while a resolution is in progress.
     pub fn invalidate_module_resolution(&self) -> Vec<QueryKey> {
+        self.evict_resolution_importers(|cache| cache.clear_for_structure_change())
+    }
+
+    /// Flush every cached module resolution and evict queries derived from any importer's
+    /// resolutions while keeping each file's `ParseFile` result cached.
+    ///
+    /// Must not run while a resolution is in progress.
+    pub fn clear_resolution_cache(&self) -> Vec<QueryKey> {
+        self.evict_resolution_importers(|cache| cache.clear_all())
+    }
+
+    /// Clear the host's resolver cache, invalidate cached resolutions with `clear`, and evict the
+    /// queries of the importers it returns (keeping each one's `ParseFile`) along with every query
+    /// that recorded a failed resolution.
+    fn evict_resolution_importers(
+        &self,
+        clear: impl FnOnce(&crate::query::resolution_cache::ResolutionCache) -> HashSet<FileId>,
+    ) -> Vec<QueryKey> {
         self.host.clear_cache();
-        let unresolved_importers = self.resolution_cache.clear_for_structure_change();
+        let importers = clear(&self.resolution_cache);
         let mut evicted: HashSet<QueryKey> = self
             .invalidate_file_id(UNRESOLVED_IMPORTS_FILE_ID)
             .into_iter()
             .collect();
-        evicted.extend(self.evict_importers_preserving_parse(unresolved_importers));
+        evicted.extend(self.evict_importers_preserving_parse(importers));
         evicted.into_iter().collect()
     }
 
@@ -5881,6 +5899,7 @@ mod tests {
             resolutions: RwLock<HashMap<(String, String, ImportKind), ResolvedModule>>,
             modules: RwLock<HashMap<String, LoadedModule>>,
             resolve_calls: Mutex<Vec<(String, String, ImportKind)>>,
+            load_calls: Mutex<Vec<String>>,
         }
 
         impl AnalysisHost for CountingAsyncHost {
@@ -5900,6 +5919,7 @@ mod tests {
                 _kind: LoadKind,
                 _external: bool,
             ) -> HostFuture<Result<Option<LoadedModule>, HostError>> {
+                self.load_calls.lock().unwrap().push(id.as_str().to_owned());
                 let hit = self.modules.read().unwrap().get(id.as_str()).cloned();
                 yield_once(Ok(hit))
             }
@@ -5917,6 +5937,7 @@ mod tests {
         let app_path = "/cache_test/app.ts";
         let barrel_path = "/cache_test/barrel.ts";
         let child_path = "/cache_test/child.ts";
+        let alt_child_path = "/cache_test/alt_child.ts";
 
         let mut resolutions = HashMap::new();
         resolutions.insert(
@@ -5966,7 +5987,7 @@ mod tests {
                      import { BarrelDir } from './barrel';\n\
                      @Component({\n\
                        selector: 'app-root',\n\
-                       template: '<div childV1 childV2></div>',\n\
+                       template: '<div childV1 childV2 childAlt></div>',\n\
                        imports: [BarrelDir],\n\
                      })\n\
                      export class AppCmp {}\n",
@@ -5982,11 +6003,13 @@ mod tests {
             },
         );
         modules.insert(child_path.to_owned(), child_source("[childV1]"));
+        modules.insert(alt_child_path.to_owned(), child_source("[childAlt]"));
 
         let host = Arc::new(CountingAsyncHost {
             resolutions: RwLock::new(resolutions),
             modules: RwLock::new(modules),
             resolve_calls: Mutex::new(Vec::new()),
+            load_calls: Mutex::new(Vec::new()),
         });
         let registry = Arc::new(ResourceRegistry::default());
         let entrypoints = Arc::new(RwLock::new(vec![PathBuf::from(app_path)]));
@@ -6054,12 +6077,54 @@ mod tests {
         // Editing `app.ts` itself drops only `app.ts`'s cached resolutions while preserving
         // `barrel.ts`'s cached resolution to `./child`.
         engine.invalidate_file_id(app_id);
+        let engine_v3 = engine.clone();
         let _ = block_on_with_timeout(async move {
-            let ctx = QueryContext::new(engine);
+            let ctx = QueryContext::new(engine_v3);
             ctx.analyze_file_semantic(app_id).await
         });
         assert_eq!(count_for(app_path, "./barrel", ImportKind::Static), 1);
         assert_eq!(count_for(barrel_path, "./child", ImportKind::ReExport), 0);
+
+        // Clearing the resolution cache re-resolves positive cached entries across all importers
+        // while keeping existing `ParseFile` results cached (no host `load` for `app` or `barrel`).
+        host.resolve_calls.lock().unwrap().clear();
+        host.load_calls.lock().unwrap().clear();
+        host.resolutions.write().unwrap().insert(
+            (
+                barrel_path.to_owned(),
+                "./child".to_owned(),
+                ImportKind::ReExport,
+            ),
+            ResolvedModule {
+                id: ModuleId::new(alt_child_path),
+                id_kind: IdKind::Path,
+                format: Some(ModuleFormat::Ts),
+                external: false,
+                code: None,
+            },
+        );
+        let evicted = engine.clear_resolution_cache();
+        assert!(evicted.contains(&QueryKey::AnalyzeFileSemantic(app_id)));
+        assert!(!evicted.contains(&QueryKey::ParseFile(app_id)));
+        assert!(!evicted.contains(&QueryKey::ParseFile(barrel_id)));
+
+        let semantic_v4 = block_on_with_timeout(async move {
+            let ctx = QueryContext::new(engine);
+            ctx.analyze_file_semantic(app_id).await
+        });
+        let cmp_v4 = semantic_v4.classes[0].as_component().expect("AppCmp");
+        assert_eq!(
+            cmp_v4.resolved_declarations.as_ref().unwrap()[0]
+                .selector
+                .as_deref(),
+            Some("[childAlt]")
+        );
+        assert_eq!(count_for(app_path, "./barrel", ImportKind::Static), 1);
+        assert_eq!(count_for(barrel_path, "./child", ImportKind::ReExport), 1);
+        assert_eq!(
+            *host.load_calls.lock().unwrap(),
+            vec![alt_child_path.to_owned()]
+        );
     }
 
     /// A failed lookup served from the resolution cache must still mark the calling query as

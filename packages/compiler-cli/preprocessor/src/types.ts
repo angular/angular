@@ -28,6 +28,11 @@ export declare class Analyzer {
    * Paths must be absolute. From then on the roots are no longer re-read from the tsconfig.
    */
   setEntryPoints(entryPoints: Array<string>): Array<string>;
+  /**
+   * Flush every cached module resolution and return every module ID whose cached analysis was
+   * evicted.
+   */
+  clearResolutionCache(): Array<string>;
   analyze(): AnalysisIterator;
   analyzeOptimized(): AnalysisIterator;
   analyzeDelta(): AnalysisIterator;
@@ -50,6 +55,7 @@ export declare class TestAnalyzer {
   updateFileContent(updates: Array<FileUpdate>): Array<string>;
   invalidateFiles(updates: Array<FileInvalidation>): Array<string>;
   setEntryPoints(entryPoints: Array<string>): Array<string>;
+  clearResolutionCache(): Array<string>;
   analyze(): AnalysisIterator;
   analyzeOptimized(): AnalysisIterator;
   analyzeDelta(): AnalysisIterator;
