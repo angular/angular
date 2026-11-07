@@ -31,6 +31,9 @@ declare function getDefaulted(element: Element): {
     [key: string]: string | undefined;
 };
 
+/** Clears the jsaction parser cache from the given DOM Element. */
+declare function clear(element: Element): void;
+
 /**
  * Whether or not an event type should be registered in the capture phase.
  * @param eventType
@@ -59,4 +62,4 @@ declare function removeAllAppScopedEventListeners(appId: string, dataContainer?:
 /** Clear the early event contract. */
 declare function clearAppScopedEarlyEventContract(appId: string, dataContainer?: EarlyJsactionDataContainer): void;
 
-export { Attribute, EarlyJsactionDataContainer, bootstrapAppScopedEarlyEventContract, clearAppScopedEarlyEventContract, getDefaulted as getActionCache, getAppScopedQueuedEventInfos, isCaptureEventType, isEarlyEventType, registerAppScopedDispatcher, removeAllAppScopedEventListeners };
+export { Attribute, EarlyJsactionDataContainer, bootstrapAppScopedEarlyEventContract, clear as clearActionCache, clearAppScopedEarlyEventContract, getDefaulted as getActionCache, getAppScopedQueuedEventInfos, isCaptureEventType, isEarlyEventType, registerAppScopedDispatcher, removeAllAppScopedEventListeners };
