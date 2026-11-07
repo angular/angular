@@ -34,6 +34,20 @@ function cleanNewLines(contents: string) {
   return contents.replace(/\s*\n\s*/g, ' ');
 }
 
+/**
+ * Creates a regex that matches the expected shape of the `debugName` while
+ * tolerating differences in output between ngtsc and ngp.
+ */
+function looseMatch(expected: string): RegExp {
+  const pattern = expected
+    .replace(/[.*+?^${}()|[\]\\/]/g, '\\$&')
+    .replace(/\\\/\\\* @ts-ignore \\\*\\\/ /g, '(?:\\/\\* @ts-ignore \\*\\/ )?')
+    .replace(/\\\(\s*/g, '\\(\\s*')
+    .replace(/\s*\\\)/g, '\\s*\\)')
+    .replace(/,?\s*\\\}/g, ',?\\s*\\}');
+  return new RegExp(pattern);
+}
+
 runInEachFileSystem(() => {
   describe('Debug Info Typescript tranformation', () => {
     let env!: NgtscTestEnvironment;
@@ -88,7 +102,7 @@ runInEachFileSystem(() => {
           const jsContents = env.getContents('test.js');
           const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions)).code;
           expect(builtContent).not.toContain('debugName');
-          expect(cleanNewLines(builtContent)).toContain('signal( "Hello World" )');
+          expect(cleanNewLines(builtContent)).toMatch(looseMatch('signal( "Hello World" )'));
         });
 
         it('should not tree-shake away debug info if in dev mode', async () => {
@@ -103,8 +117,8 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           const builtContent = (await esbuild.transform(jsContents, minifiedDevBuildOptions)).code;
-          expect(cleanNewLines(builtContent)).toContain(
-            `signal( "Hello World", { debugName: "testSignal" } )`,
+          expect(cleanNewLines(builtContent)).toMatch(
+            looseMatch(`signal( "Hello World", { debugName: "testSignal" } )`),
           );
         });
 
@@ -185,7 +199,7 @@ runInEachFileSystem(() => {
           const jsContents = env.getContents('test.js');
           const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions)).code;
           expect(builtContent).not.toContain('debugName');
-          expect(cleanNewLines(builtContent)).toContain('signal( "Hello World" )');
+          expect(cleanNewLines(builtContent)).toMatch(looseMatch('signal( "Hello World" )'));
         });
 
         it('should not tree-shake away debug info if in dev mode', async () => {
@@ -206,8 +220,8 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           const builtContent = (await esbuild.transform(jsContents, minifiedDevBuildOptions)).code;
-          expect(cleanNewLines(builtContent)).toContain(
-            `signal( "Hello World", { debugName: "testSignal" } )`,
+          expect(cleanNewLines(builtContent)).toMatch(
+            looseMatch(`signal( "Hello World", { debugName: "testSignal" } )`),
           );
         });
 
@@ -307,7 +321,7 @@ runInEachFileSystem(() => {
           const jsContents = env.getContents('test.js');
           const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions)).code;
           expect(builtContent).not.toContain('debugName');
-          expect(cleanNewLines(builtContent)).toContain('signal( "Hello World" )');
+          expect(cleanNewLines(builtContent)).toMatch(looseMatch('signal( "Hello World" )'));
         });
 
         it('should not tree-shake away debug info if in dev mode', async () => {
@@ -331,8 +345,8 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           const builtContent = (await esbuild.transform(jsContents, minifiedDevBuildOptions)).code;
-          expect(cleanNewLines(builtContent)).toContain(
-            `signal( "Hello World", { debugName: "testSignal" } )`,
+          expect(cleanNewLines(builtContent)).toMatch(
+            looseMatch(`signal( "Hello World", { debugName: "testSignal" } )`),
           );
         });
 
@@ -416,8 +430,10 @@ runInEachFileSystem(() => {
         );
         env.driveMain();
         const jsContents = env.getContents('test.js');
-        expect(cleanNewLines(jsContents)).toContain(
-          `computed(() => testSignal(), /* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testComputed" }] : /* istanbul ignore next */ []))`,
+        expect(cleanNewLines(jsContents)).toMatch(
+          looseMatch(
+            `computed(() => testSignal(), /* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testComputed" }] : /* istanbul ignore next */ []))`,
+          ),
         );
       });
 
@@ -435,7 +451,7 @@ runInEachFileSystem(() => {
           const jsContents = env.getContents('test.js');
           const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions)).code;
           expect(builtContent).not.toContain('debugName');
-          expect(cleanNewLines(builtContent)).toContain('computed( () => testSignal() )');
+          expect(cleanNewLines(builtContent)).toMatch(looseMatch('computed( () => testSignal() )'));
         });
 
         it('should not tree-shake away debug info if in dev mode', async () => {
@@ -450,8 +466,8 @@ runInEachFileSystem(() => {
           env.driveMain();
           const jsContents = env.getContents('test.js');
           const builtContent = (await esbuild.transform(jsContents, minifiedDevBuildOptions)).code;
-          expect(cleanNewLines(builtContent)).toContain(
-            `computed( () => testSignal(), { debugName: "testComputed" } )`,
+          expect(cleanNewLines(builtContent)).toMatch(
+            looseMatch(`computed( () => testSignal(), { debugName: "testComputed" } )`),
           );
         });
 
@@ -534,7 +550,9 @@ runInEachFileSystem(() => {
           const jsContents = env.getContents('test.js');
           const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions)).code;
           expect(builtContent).not.toContain('debugName');
-          expect(cleanNewLines(builtContent)).toContain('computed( () => this.testSignal() )');
+          expect(cleanNewLines(builtContent)).toMatch(
+            looseMatch('computed( () => this.testSignal() )'),
+          );
         });
 
         it('should not tree-shake away debug info if in dev mode', async () => {
@@ -554,8 +572,8 @@ runInEachFileSystem(() => {
           env.driveMain();
           const jsContents = env.getContents('test.js');
           const builtContent = (await esbuild.transform(jsContents, minifiedDevBuildOptions)).code;
-          expect(cleanNewLines(builtContent)).toContain(
-            `computed( () => this.testSignal(), { debugName: "testComputed" } )`,
+          expect(cleanNewLines(builtContent)).toMatch(
+            looseMatch(`computed( () => this.testSignal(), { debugName: "testComputed" } )`),
           );
         });
 
@@ -658,7 +676,9 @@ runInEachFileSystem(() => {
           const jsContents = env.getContents('test.js');
           const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions)).code;
           expect(builtContent).not.toContain('debugName');
-          expect(cleanNewLines(builtContent)).toContain('computed( () => this.testSignal() )');
+          expect(cleanNewLines(builtContent)).toMatch(
+            looseMatch('computed( () => this.testSignal() )'),
+          );
         });
 
         it('should not tree-shake away debug info if in dev mode', async () => {
@@ -684,8 +704,8 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           const builtContent = (await esbuild.transform(jsContents, minifiedDevBuildOptions)).code;
-          expect(cleanNewLines(builtContent)).toContain(
-            `computed( () => this.testSignal(), { debugName: "testComputed" } )`,
+          expect(cleanNewLines(builtContent)).toMatch(
+            looseMatch(`computed( () => this.testSignal(), { debugName: "testComputed" } )`),
           );
         });
 
@@ -859,7 +879,7 @@ runInEachFileSystem(() => {
         const jsContents = env.getContents('test.js');
         const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions)).code;
         expect(builtContent).not.toContain('debugName');
-        expect(cleanNewLines(builtContent)).toContain('model( "Hello World" )');
+        expect(cleanNewLines(builtContent)).toMatch(looseMatch('model( "Hello World" )'));
       });
 
       describe('.required', () => {
@@ -879,8 +899,10 @@ runInEachFileSystem(() => {
           env.driveMain();
 
           const jsContents = env.getContents('test.js');
-          expect(cleanNewLines(jsContents)).toContain(
-            `model.required(/* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testModel" }] : /* istanbul ignore next */ []))`,
+          expect(cleanNewLines(jsContents)).toMatch(
+            looseMatch(
+              `model.required(/* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testModel" }] : /* istanbul ignore next */ []))`,
+            ),
           );
         });
 
@@ -941,8 +963,8 @@ runInEachFileSystem(() => {
           env.driveMain();
           const jsContents = env.getContents('test.js');
           const builtContent = (await esbuild.transform(jsContents, minifiedDevBuildOptions)).code;
-          expect(cleanNewLines(builtContent)).toContain(
-            `model.required( { debugName: "testModel" } )`,
+          expect(cleanNewLines(builtContent)).toMatch(
+            looseMatch(`model.required( { debugName: "testModel" } )`),
           );
         });
 
@@ -1026,8 +1048,10 @@ runInEachFileSystem(() => {
         env.driveMain();
 
         const jsContents = env.getContents('test.js');
-        expect(cleanNewLines(jsContents)).toContain(
-          `input(/* @ts-ignore */ ...(ngDevMode ? [undefined, { debugName: "testInput" }] : /* istanbul ignore next */ []))`,
+        expect(cleanNewLines(jsContents)).toMatch(
+          looseMatch(
+            `input(/* @ts-ignore */ ...(ngDevMode ? [undefined, { debugName: "testInput" }] : /* istanbul ignore next */ []))`,
+          ),
         );
       });
 
@@ -1092,8 +1116,10 @@ runInEachFileSystem(() => {
           env.driveMain();
 
           const jsContents = env.getContents('test.js');
-          expect(cleanNewLines(jsContents)).toContain(
-            `input.required(/* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testInput" }] : /* istanbul ignore next */ []))`,
+          expect(cleanNewLines(jsContents)).toMatch(
+            looseMatch(
+              `input.required(/* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testInput" }] : /* istanbul ignore next */ []))`,
+            ),
           );
         });
 
@@ -1156,8 +1182,8 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           const builtContent = (await esbuild.transform(jsContents, minifiedDevBuildOptions)).code;
-          expect(cleanNewLines(builtContent)).toContain(
-            `input.required( { debugName: "testInput" } )`,
+          expect(cleanNewLines(builtContent)).toMatch(
+            looseMatch(`input.required( { debugName: "testInput" } )`),
           );
         });
 
@@ -1286,8 +1312,8 @@ runInEachFileSystem(() => {
         const jsContents = env.getContents('test.js');
         const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions)).code;
         expect(builtContent).not.toContain('debugName');
-        expect(cleanNewLines(builtContent)).toContain(`viewChild( "foo" )`);
-        expect(cleanNewLines(builtContent)).toContain(`viewChild( ChildComponent )`);
+        expect(cleanNewLines(builtContent)).toMatch(looseMatch(`viewChild( "foo" )`));
+        expect(cleanNewLines(builtContent)).toMatch(looseMatch(`viewChild( ChildComponent )`));
       });
 
       it('should not tree-shake away debug info if in dev mode', async () => {
@@ -1315,11 +1341,11 @@ runInEachFileSystem(() => {
 
         const jsContents = env.getContents('test.js');
         const builtContent = (await esbuild.transform(jsContents, minifiedDevBuildOptions)).code;
-        expect(cleanNewLines(builtContent)).toContain(
-          `viewChild( "foo", { debugName: "testViewChild" } )`,
+        expect(cleanNewLines(builtContent)).toMatch(
+          looseMatch(`viewChild( "foo", { debugName: "testViewChild" } )`),
         );
-        expect(cleanNewLines(builtContent)).toContain(
-          `viewChild( ChildComponent, { debugName: "testViewChildComponent" } )`,
+        expect(cleanNewLines(builtContent)).toMatch(
+          looseMatch(`viewChild( ChildComponent, { debugName: "testViewChildComponent" } )`),
         );
       });
 
@@ -1429,7 +1455,7 @@ runInEachFileSystem(() => {
           const jsContents = env.getContents('test.js');
           const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions)).code;
           expect(builtContent).not.toContain('debugName');
-          expect(cleanNewLines(builtContent)).toContain(`viewChild( "foo" )`);
+          expect(cleanNewLines(builtContent)).toMatch(looseMatch(`viewChild( "foo" )`));
         });
 
         it('should not tree-shake away debug info if in dev mode', async () => {
@@ -1450,8 +1476,8 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           const builtContent = (await esbuild.transform(jsContents, minifiedDevBuildOptions)).code;
-          expect(cleanNewLines(builtContent)).toContain(
-            `viewChild.required( "foo", { debugName: "testViewChild" } )`,
+          expect(cleanNewLines(builtContent)).toMatch(
+            looseMatch(`viewChild.required( "foo", { debugName: "testViewChild" } )`),
           );
         });
 
@@ -1559,7 +1585,7 @@ runInEachFileSystem(() => {
         const jsContents = env.getContents('test.js');
         const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions)).code;
         expect(builtContent).not.toContain('debugName');
-        expect(cleanNewLines(builtContent)).toContain('viewChildren( "foo" )');
+        expect(cleanNewLines(builtContent)).toMatch(looseMatch('viewChildren( "foo" )'));
       });
 
       it('should not tree-shake away debug info if in dev mode', async () => {
@@ -1579,8 +1605,8 @@ runInEachFileSystem(() => {
 
         const jsContents = env.getContents('test.js');
         const builtContent = (await esbuild.transform(jsContents, minifiedDevBuildOptions)).code;
-        expect(cleanNewLines(builtContent)).toContain(
-          `viewChildren( "foo", { debugName: "testViewChildren" } )`,
+        expect(cleanNewLines(builtContent)).toMatch(
+          looseMatch(`viewChildren( "foo", { debugName: "testViewChildren" } )`),
         );
       });
 
@@ -1687,7 +1713,7 @@ runInEachFileSystem(() => {
         const jsContents = env.getContents('test.js');
         const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions)).code;
         expect(builtContent).not.toContain('debugName');
-        expect(cleanNewLines(builtContent)).toContain('contentChild( "foo" )');
+        expect(cleanNewLines(builtContent)).toMatch(looseMatch('contentChild( "foo" )'));
       });
 
       it('should not tree-shake away debug info if in dev mode', async () => {
@@ -1707,8 +1733,8 @@ runInEachFileSystem(() => {
 
         const jsContents = env.getContents('test.js');
         const builtContent = (await esbuild.transform(jsContents, minifiedDevBuildOptions)).code;
-        expect(cleanNewLines(builtContent)).toContain(
-          `contentChild( "foo", { debugName: "testContentChild" } )`,
+        expect(cleanNewLines(builtContent)).toMatch(
+          looseMatch(`contentChild( "foo", { debugName: "testContentChild" } )`),
         );
       });
 
@@ -1818,7 +1844,7 @@ runInEachFileSystem(() => {
           const jsContents = env.getContents('test.js');
           const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions)).code;
           expect(builtContent).not.toContain('debugName');
-          expect(cleanNewLines(builtContent)).toContain(`contentChild( "foo" )`);
+          expect(cleanNewLines(builtContent)).toMatch(looseMatch(`contentChild( "foo" )`));
         });
 
         it('should not tree-shake away debug info if in dev mode', async () => {
@@ -1839,8 +1865,8 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           const builtContent = (await esbuild.transform(jsContents, minifiedDevBuildOptions)).code;
-          expect(cleanNewLines(builtContent)).toContain(
-            `contentChild.required( "foo", { debugName: "testContentChild" } )`,
+          expect(cleanNewLines(builtContent)).toMatch(
+            looseMatch(`contentChild.required( "foo", { debugName: "testContentChild" } )`),
           );
         });
 
@@ -1950,7 +1976,7 @@ runInEachFileSystem(() => {
         const jsContents = env.getContents('test.js');
         const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions)).code;
         expect(builtContent).not.toContain('debugName');
-        expect(cleanNewLines(builtContent)).toContain('contentChildren( "foo" )');
+        expect(cleanNewLines(builtContent)).toMatch(looseMatch('contentChildren( "foo" )'));
       });
 
       it('should not tree-shake away debug info if in dev mode', async () => {
@@ -1970,8 +1996,8 @@ runInEachFileSystem(() => {
 
         const jsContents = env.getContents('test.js');
         const builtContent = (await esbuild.transform(jsContents, minifiedDevBuildOptions)).code;
-        expect(cleanNewLines(builtContent)).toContain(
-          `contentChildren( "foo", { debugName: "testContentChildren" } )`,
+        expect(cleanNewLines(builtContent)).toMatch(
+          looseMatch(`contentChildren( "foo", { debugName: "testContentChildren" } )`),
         );
       });
 
@@ -2059,8 +2085,10 @@ runInEachFileSystem(() => {
         );
         env.driveMain();
         const jsContents = env.getContents('test.js');
-        expect(cleanNewLines(jsContents)).toContain(
-          `effect(() => this.testSignal(), /* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testEffect" }] : /* istanbul ignore next */ []))`,
+        expect(cleanNewLines(jsContents)).toMatch(
+          looseMatch(
+            `effect(() => this.testSignal(), /* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testEffect" }] : /* istanbul ignore next */ []))`,
+          ),
         );
       });
 
@@ -2081,7 +2109,9 @@ runInEachFileSystem(() => {
         const jsContents = env.getContents('test.js');
         const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions)).code;
         expect(builtContent).not.toContain('debugName');
-        expect(cleanNewLines(builtContent)).toContain('effect( () => this.testSignal() )');
+        expect(cleanNewLines(builtContent)).toMatch(
+          looseMatch('effect( () => this.testSignal() )'),
+        );
       });
 
       it('should not tree-shake away debug info if in dev mode', async () => {
@@ -2102,8 +2132,8 @@ runInEachFileSystem(() => {
 
         const jsContents = env.getContents('test.js');
         const builtContent = (await esbuild.transform(jsContents, minifiedDevBuildOptions)).code;
-        expect(cleanNewLines(builtContent)).toContain(
-          `effect( () => this.testSignal(), { debugName: "testEffect" } )`,
+        expect(cleanNewLines(builtContent)).toMatch(
+          looseMatch(`effect( () => this.testSignal(), { debugName: "testEffect" } )`),
         );
       });
 
@@ -2191,8 +2221,10 @@ runInEachFileSystem(() => {
         );
         env.driveMain();
         const jsContents = env.getContents('test.js');
-        expect(cleanNewLines(jsContents)).toContain(
-          `afterRenderEffect(() => this.testSignal(), /* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testEffect" }] : /* istanbul ignore next */ []))`,
+        expect(cleanNewLines(jsContents)).toMatch(
+          looseMatch(
+            `afterRenderEffect(() => this.testSignal(), /* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testEffect" }] : /* istanbul ignore next */ []))`,
+          ),
         );
       });
 
@@ -2212,8 +2244,10 @@ runInEachFileSystem(() => {
         );
         env.driveMain();
         const jsContents = env.getContents('test.js');
-        expect(cleanNewLines(jsContents)).toContain(
-          `afterRenderEffect({ read: () => this.testSignal() }, /* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testEffect" }] : /* istanbul ignore next */ []))`,
+        expect(cleanNewLines(jsContents)).toMatch(
+          looseMatch(
+            `afterRenderEffect({ read: () => this.testSignal() }, /* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testEffect" }] : /* istanbul ignore next */ []))`,
+          ),
         );
       });
 
@@ -2236,8 +2270,10 @@ runInEachFileSystem(() => {
         );
         env.driveMain();
         const jsContents = env.getContents('test.js');
-        expect(cleanNewLines(jsContents)).toContain(
-          `afterRenderEffect(() => this.testSignal(), /* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testEffect" }] : /* istanbul ignore next */ []))`,
+        expect(cleanNewLines(jsContents)).toMatch(
+          looseMatch(
+            `afterRenderEffect(() => this.testSignal(), /* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testEffect" }] : /* istanbul ignore next */ []))`,
+          ),
         );
       });
 
@@ -2277,8 +2313,8 @@ runInEachFileSystem(() => {
         const jsContents = env.getContents('test.js');
         const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions)).code;
         expect(builtContent).not.toContain('debugName');
-        expect(cleanNewLines(builtContent)).toContain(
-          'afterRenderEffect( () => this.testSignal() )',
+        expect(cleanNewLines(builtContent)).toMatch(
+          looseMatch('afterRenderEffect( () => this.testSignal() )'),
         );
       });
 
@@ -2300,8 +2336,8 @@ runInEachFileSystem(() => {
 
         const jsContents = env.getContents('test.js');
         const builtContent = (await esbuild.transform(jsContents, minifiedDevBuildOptions)).code;
-        expect(cleanNewLines(builtContent)).toContain(
-          `afterRenderEffect( () => this.testSignal(), { debugName: "testEffect" } )`,
+        expect(cleanNewLines(builtContent)).toMatch(
+          looseMatch(`afterRenderEffect( () => this.testSignal(), { debugName: "testEffect" } )`),
         );
       });
 
@@ -2378,8 +2414,10 @@ runInEachFileSystem(() => {
         );
         env.driveMain();
         const jsContents = env.getContents('test.js');
-        expect(cleanNewLines(jsContents)).toContain(
-          `linkedSignal(() => testSignal(), /* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testLinkedSignal" }] : /* istanbul ignore next */ []))`,
+        expect(cleanNewLines(jsContents)).toMatch(
+          looseMatch(
+            `linkedSignal(() => testSignal(), /* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testLinkedSignal" }] : /* istanbul ignore next */ []))`,
+          ),
         );
       });
 
@@ -2397,7 +2435,9 @@ runInEachFileSystem(() => {
           const jsContents = env.getContents('test.js');
           const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions)).code;
           expect(builtContent).not.toContain('debugName');
-          expect(cleanNewLines(builtContent)).toContain('linkedSignal( () => testSignal() )');
+          expect(cleanNewLines(builtContent)).toMatch(
+            looseMatch('linkedSignal( () => testSignal() )'),
+          );
         });
 
         it('should not tree-shake away debug info if in dev mode', async () => {
@@ -2412,8 +2452,8 @@ runInEachFileSystem(() => {
           env.driveMain();
           const jsContents = env.getContents('test.js');
           const builtContent = (await esbuild.transform(jsContents, minifiedDevBuildOptions)).code;
-          expect(cleanNewLines(builtContent)).toContain(
-            `linkedSignal( () => testSignal(), { debugName: "testLinkedSignal" } )`,
+          expect(cleanNewLines(builtContent)).toMatch(
+            looseMatch(`linkedSignal( () => testSignal(), { debugName: "testLinkedSignal" } )`),
           );
         });
 
@@ -2491,11 +2531,13 @@ runInEachFileSystem(() => {
           env.driveMain();
 
           const jsContents = cleanNewLines(env.getContents('test.js'));
-          expect(jsContents).toContain(
-            'testLinkedSignal = linkedSignal({ ...(ngDevMode ? { debugName: "testLinkedSignal" } : /* istanbul ignore next */ {}), ' +
-              'source: testSignal, ' +
-              'computation: (src, prev) => src ' +
-              '})',
+          expect(jsContents).toMatch(
+            looseMatch(
+              'testLinkedSignal = linkedSignal({ ...(ngDevMode ? { debugName: "testLinkedSignal" } : /* istanbul ignore next */ {}), ' +
+                'source: testSignal, ' +
+                'computation: (src, prev) => src ' +
+                '})',
+            ),
           );
         });
 
@@ -2573,7 +2615,9 @@ runInEachFileSystem(() => {
           const jsContents = env.getContents('test.js');
           const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions)).code;
           expect(builtContent).not.toContain('debugName');
-          expect(cleanNewLines(builtContent)).toContain('linkedSignal( () => this.testSignal() )');
+          expect(cleanNewLines(builtContent)).toMatch(
+            looseMatch('linkedSignal( () => this.testSignal() )'),
+          );
         });
 
         it('should not tree-shake away debug info if in dev mode', async () => {
@@ -2593,8 +2637,10 @@ runInEachFileSystem(() => {
           env.driveMain();
           const jsContents = env.getContents('test.js');
           const builtContent = (await esbuild.transform(jsContents, minifiedDevBuildOptions)).code;
-          expect(cleanNewLines(builtContent)).toContain(
-            `linkedSignal( () => this.testSignal(), { debugName: "testLinkedSignal" } )`,
+          expect(cleanNewLines(builtContent)).toMatch(
+            looseMatch(
+              `linkedSignal( () => this.testSignal(), { debugName: "testLinkedSignal" } )`,
+            ),
           );
         });
 
@@ -2690,11 +2736,13 @@ runInEachFileSystem(() => {
           env.driveMain();
 
           const jsContents = cleanNewLines(env.getContents('test.js'));
-          expect(jsContents).toContain(
-            'linkedSignal({ ...(ngDevMode ? { debugName: "testLinkedSignal" } : /* istanbul ignore next */ {}), ' +
-              'source: this.testSignal, ' +
-              'computation: (src, prev) => src ' +
-              '})',
+          expect(jsContents).toMatch(
+            looseMatch(
+              'linkedSignal({ ...(ngDevMode ? { debugName: "testLinkedSignal" } : /* istanbul ignore next */ {}), ' +
+                'source: this.testSignal, ' +
+                'computation: (src, prev) => src ' +
+                '})',
+            ),
           );
         });
 
@@ -2785,7 +2833,9 @@ runInEachFileSystem(() => {
           const jsContents = env.getContents('test.js');
           const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions)).code;
           expect(builtContent).not.toContain('debugName');
-          expect(cleanNewLines(builtContent)).toContain('linkedSignal( () => this.testSignal() )');
+          expect(cleanNewLines(builtContent)).toMatch(
+            looseMatch('linkedSignal( () => this.testSignal() )'),
+          );
         });
 
         it('should not tree-shake away debug info if in dev mode', async () => {
@@ -2810,8 +2860,10 @@ runInEachFileSystem(() => {
           env.driveMain();
           const jsContents = env.getContents('test.js');
           const builtContent = (await esbuild.transform(jsContents, minifiedDevBuildOptions)).code;
-          expect(cleanNewLines(builtContent)).toContain(
-            `linkedSignal( () => this.testSignal(), { debugName: "testLinkedSignal" } )`,
+          expect(cleanNewLines(builtContent)).toMatch(
+            looseMatch(
+              `linkedSignal( () => this.testSignal(), { debugName: "testLinkedSignal" } )`,
+            ),
           );
         });
 
@@ -2927,11 +2979,13 @@ runInEachFileSystem(() => {
           env.driveMain();
 
           const jsContents = cleanNewLines(env.getContents('test.js'));
-          expect(jsContents).toContain(
-            'linkedSignal({ ...(ngDevMode ? { debugName: "testLinkedSignal" } : /* istanbul ignore next */ {}), ' +
-              'source: this.testSignal, ' +
-              'computation: (src, prev) => src ' +
-              '})',
+          expect(jsContents).toMatch(
+            looseMatch(
+              'linkedSignal({ ...(ngDevMode ? { debugName: "testLinkedSignal" } : /* istanbul ignore next */ {}), ' +
+                'source: this.testSignal, ' +
+                'computation: (src, prev) => src ' +
+                '})',
+            ),
           );
         });
 
@@ -3318,7 +3372,9 @@ runInEachFileSystem(() => {
           const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions)).code;
           const contentWoNewLines = cleanNewLines(builtContent);
           expect(contentWoNewLines).not.toContain('debugName');
-          expect(contentWoNewLines).toContain(`testHttpResource = httpResource( () => "/api" )`);
+          expect(contentWoNewLines).toMatch(
+            looseMatch(`testHttpResource = httpResource( () => "/api" )`),
+          );
         });
 
         it('should not tree-shake away debug info if in dev mode', async () => {
@@ -3334,8 +3390,10 @@ runInEachFileSystem(() => {
           const jsContents = env.getContents('test.js');
           const builtContent = (await esbuild.transform(jsContents, minifiedDevBuildOptions)).code;
           const contentWoNewLines = cleanNewLines(builtContent);
-          expect(contentWoNewLines).toContain(
-            'testHttpResource = httpResource( () => "/api", { debugName: "testHttpResource" } )',
+          expect(contentWoNewLines).toMatch(
+            looseMatch(
+              'testHttpResource = httpResource( () => "/api", { debugName: "testHttpResource" } )',
+            ),
           );
         });
       });
@@ -3380,7 +3438,9 @@ runInEachFileSystem(() => {
           const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions)).code;
           const contentWoNewLines = cleanNewLines(builtContent);
           expect(contentWoNewLines).not.toContain('debugName');
-          expect(contentWoNewLines).toContain(`testHttpResource = httpResource( () => "/api" )`);
+          expect(contentWoNewLines).toMatch(
+            looseMatch(`testHttpResource = httpResource( () => "/api" )`),
+          );
         });
 
         it('should not tree-shake away debug info if in dev mode', async () => {
@@ -3401,8 +3461,10 @@ runInEachFileSystem(() => {
           const jsContents = env.getContents('test.js');
           const builtContent = (await esbuild.transform(jsContents, minifiedDevBuildOptions)).code;
           const contentWoNewLines = cleanNewLines(builtContent);
-          expect(contentWoNewLines).toContain(
-            'testHttpResource = httpResource( () => "/api", { debugName: "testHttpResource" } )',
+          expect(contentWoNewLines).toMatch(
+            looseMatch(
+              'testHttpResource = httpResource( () => "/api", { debugName: "testHttpResource" } )',
+            ),
           );
         });
       });
@@ -3453,7 +3515,9 @@ runInEachFileSystem(() => {
           const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions)).code;
           const contentWoNewLines = cleanNewLines(builtContent);
           expect(contentWoNewLines).not.toContain('debugName');
-          expect(contentWoNewLines).toContain(`testHttpResource = httpResource( () => "/api" )`);
+          expect(contentWoNewLines).toMatch(
+            looseMatch(`testHttpResource = httpResource( () => "/api" )`),
+          );
         });
 
         it('should not tree-shake away debug info if in dev mode', async () => {
@@ -3477,8 +3541,10 @@ runInEachFileSystem(() => {
           const jsContents = env.getContents('test.js');
           const builtContent = (await esbuild.transform(jsContents, minifiedDevBuildOptions)).code;
           const contentWoNewLines = cleanNewLines(builtContent);
-          expect(contentWoNewLines).toContain(
-            'testHttpResource = httpResource( () => "/api", { debugName: "testHttpResource" } )',
+          expect(contentWoNewLines).toMatch(
+            looseMatch(
+              'testHttpResource = httpResource( () => "/api", { debugName: "testHttpResource" } )',
+            ),
           );
         });
       });
