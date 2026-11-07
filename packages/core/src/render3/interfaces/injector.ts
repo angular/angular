@@ -65,14 +65,23 @@ export const enum NodeInjectorOffset {
  *
  * The interfaces encodes number of parents `LView`s to traverse and index in the `LView`
  * pointing to the parent injector.
+ *
+ * The lower 20 bits hold the index of the parent injector in the `LView`, the bits from
+ * `ViewOffsetShift` upwards hold the number of declaration views to traverse. The value stays
+ * within V8's 31-bit small integer range for up to 1023 declaration views.
  */
 export type RelativeInjectorLocation = number & {
   __brand__: 'RelativeInjectorLocationFlags';
 };
 
 export const enum RelativeInjectorLocationFlags {
-  InjectorIndexMask = 0b111111111111111,
-  ViewOffsetShift = 16,
+  InjectorIndexMask = 0b11111111111111111111,
+  ViewOffsetShift = 20,
+  /**
+   * Largest supported declaration view offset. Together with the 20 index bits this keeps the
+   * packed value below 2^30, so it remains a small integer in V8.
+   */
+  MaxViewOffset = 0b1111111111,
   NO_PARENT = -1,
 }
 
