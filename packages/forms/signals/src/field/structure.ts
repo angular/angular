@@ -472,6 +472,7 @@ export class RootFieldNodeStructure extends FieldNodeStructure {
   ) {
     super(logic, node, createChildNode);
     this.childrenMap = this.createChildrenMap();
+    this.fieldManager.structures.add(this);
   }
 }
 
