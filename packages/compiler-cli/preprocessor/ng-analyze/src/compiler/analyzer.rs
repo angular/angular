@@ -145,6 +145,9 @@ struct EffectiveConfig {
     /// `.d.ts` files are used even when `entry_points` replace its roots.
     tsconfig_files: Vec<PathBuf>,
     r3_symbols_file: Option<PathBuf>,
+    /// `angular_core_compilation` > `angularCompilerOptions._isAngularCoreCompilation` > `true`
+    /// with an explicit `r3_symbols_file` > none (detected from `r3_symbols.ts` by the engine).
+    angular_core_compilation: Option<bool>,
     /// `default_host.preserve_symlinks` > `compilerOptions.preserveSymlinks` > `false`.
     preserve_symlinks: bool,
     /// `default_host.root_dirs` > `compilerOptions.rootDirs` > `[tsconfig dir]` > none.
@@ -233,6 +236,10 @@ impl EffectiveConfig {
         let emit_declaration_only = tsconfig_flag(|r| r.emit_declaration_only, false);
         let experimental_local_compilation =
             tsconfig_flag(|r| r.experimental_local_compilation, false);
+        let angular_core_compilation = options
+            .angular_core_compilation
+            .or_else(|| resolved.as_ref().and_then(|r| r.is_angular_core_compilation))
+            .or_else(|| options.r3_symbols_file.is_some().then_some(true));
 
         let (
             tsconfig_files,
@@ -275,6 +282,7 @@ impl EffectiveConfig {
                 .r3_symbols_file
                 .map(|path| absolutize(PathBuf::from(path)))
                 .transpose()?,
+            angular_core_compilation,
             preserve_symlinks,
             merge_root_dirs,
             node_modules_path_override: default_host
@@ -378,6 +386,7 @@ impl Analyzer {
             entrypoints_lock.clone(),
             reference_strategy,
             r3_symbols_file,
+            config.angular_core_compilation,
             config.generate_extra_imports_in_local_mode,
             config.compile_non_exported_classes,
             config.enable_hmr,
@@ -564,15 +573,11 @@ impl Analyzer {
         containing_file: String,
         url: String,
     ) -> Option<crate::ResolvedResource> {
-        let resource_resolver =
-            crate::ResourceResolver::new(&self.fs, self.engine.resolver.as_ref());
-        let resource = resource_resolver
-            .load_resource(Path::new(&containing_file), &url)
-            .ok()?;
-        Some(crate::ResolvedResource {
-            resolved_path: crate::fs::path_to_string(resource.resolved_path),
-            content: resource.content,
-        })
+        self.engine.read_resource_blocking(
+            &containing_file,
+            &url,
+            crate::host::ResourceKind::Style,
+        )
     }
 
     pub fn canonical_paths_core(&self, paths: Vec<String>) -> Vec<String> {
@@ -719,13 +724,15 @@ impl Analyzer {
     }
 
     /// Install the given compilation roots and the tsconfig's `.d.ts` files (`None` keeps the
-    /// current list), evicting every query that read the previous lists when either differs.
+    /// current list), evicting every query that read the previous lists when either differs, and
+    /// every query that read which root is `r3_symbols.ts` when that changes too.
     fn replace_program_files(
         &self,
         roots: Option<Vec<PathBuf>>,
         dts_files: Option<Vec<PathBuf>>,
         invalidated_paths: &mut Vec<String>,
     ) {
+        let r3_symbols_file = self.engine.r3_symbols_file();
         let roots_changed = roots.is_some_and(|roots| replace_if_changed(&self.entrypoints, roots));
         let dts_files_changed = dts_files.is_some_and(|dts_files| {
             replace_if_changed(&self.engine.tsconfig_dts_files, dts_files)
@@ -733,7 +740,10 @@ impl Analyzer {
         if !roots_changed && !dts_files_changed {
             return;
         }
-        let evicted = self.engine.invalidate_roots();
+        let mut evicted = self.engine.invalidate_roots();
+        if self.engine.r3_symbols_file() != r3_symbols_file {
+            evicted.extend(self.engine.invalidate_r3_symbols_root());
+        }
         self.push_evicted_paths(evicted, invalidated_paths);
     }
 }
@@ -1959,6 +1969,7 @@ mod effective_config_tests {
             "generateExtraImportsInLocalMode": true,
             "_enableHmr": true,
             "_compilePoisonedComponents": true,
+            "_isAngularCoreCompilation": true,
             "_angularCoreVersion": "18.2.0"
         }
     }"#;
@@ -1997,6 +2008,7 @@ mod effective_config_tests {
         assert!(config.enable_hmr);
         assert!(config.use_poisoned_data);
         assert!(!config.implicit_standalone);
+        assert_eq!(config.angular_core_compilation, Some(true));
         assert_eq!(config.node_modules_path_override, None);
     }
 
@@ -2012,6 +2024,7 @@ mod effective_config_tests {
             enable_hmr: Some(false),
             use_poisoned_data: Some(false),
             implicit_standalone: Some(true),
+            angular_core_compilation: Some(false),
             default_host: Some(crate::DefaultHostConfig {
                 root_dirs: Some(vec!["./gen".to_string()]),
                 preserve_symlinks: Some(false),
@@ -2030,6 +2043,7 @@ mod effective_config_tests {
         assert!(!config.enable_hmr);
         assert!(!config.use_poisoned_data);
         assert!(config.implicit_standalone);
+        assert_eq!(config.angular_core_compilation, Some(false));
         assert_eq!(config.node_modules_path_override.as_deref(), Some("/nm"));
     }
 
@@ -2100,6 +2114,7 @@ mod effective_config_tests {
         assert!(!config.strict_standalone);
         assert!(config.implicit_standalone);
         assert_eq!(config.r3_symbols_file, None);
+        assert_eq!(config.angular_core_compilation, None);
     }
 
     #[test]
@@ -2116,9 +2131,22 @@ mod effective_config_tests {
         assert_eq!(config.entry_points, Some(paths(&["/app/main.ts"])));
         assert!(config.tsconfig_files.is_empty());
         assert_eq!(config.r3_symbols_file, Some(PathBuf::from("/core/r3_symbols.ts")));
+        // Naming the `r3_symbols.ts` file only makes sense when compiling `@angular/core`.
+        assert_eq!(config.angular_core_compilation, Some(true));
         assert!(config.strict_standalone);
         assert!(!config.implicit_standalone);
         assert_eq!(config.import_prefix_roots, paths(&["/app"]));
+    }
+
+    #[test]
+    fn explicit_angular_core_compilation_wins_over_r3_symbols_file() {
+        let config = resolve_without_tsconfig(AnalyzerOptions {
+            r3_symbols_file: Some("/core/r3_symbols.ts".to_string()),
+            angular_core_compilation: Some(false),
+            ..Default::default()
+        })
+        .unwrap();
+        assert_eq!(config.angular_core_compilation, Some(false));
     }
 
     #[test]
@@ -2467,7 +2495,89 @@ mod entry_point_tests {
         .unwrap();
         assert_eq!(
             explicit.engine.r3_symbols_file(),
-            Some(PathBuf::from("/core/r3_symbols.ts")))
+            Some(PathBuf::from("/core/r3_symbols.ts")),
+        );
+    }
+
+    const R3_SYMBOLS: &str = "export const ITS_JUST_ANGULAR = true;";
+
+    /// Whether `path` is analyzed as part of `@angular/core` itself.
+    fn is_core(analyzer: &Analyzer, path: &str) -> bool {
+        let engine = analyzer.engine.clone();
+        let file_id = engine.intern_path(path);
+        let syntax =
+            futures::executor::block_on(QueryContext::new(engine).analyze_file_syntax(file_id));
+        syntax.is_core
+    }
+
+    /// Without `_isAngularCoreCompilation`, a root `r3_symbols.ts` exporting `ITS_JUST_ANGULAR`
+    /// makes the compilation `@angular/core`, so roots that add or remove it re-analyze the files
+    /// analyzed before, while unrelated root changes leave them cached.
+    #[test]
+    fn root_change_redetects_angular_core_compilation() {
+        let analyzer = analyzer(&[
+            ("/project/tsconfig.json", r#"{"files": ["c1.component.ts"]}"#),
+            ("/project/c1.component.ts", COMPONENT),
+            ("/project/c2.component.ts", COMPONENT),
+            ("/project/r3_symbols.ts", R3_SYMBOLS),
+        ]);
+        assert!(!is_core(&analyzer, "/project/c1.component.ts"));
+
+        let unrelated_stale = analyzer
+            .set_entry_points_core(vec![
+                "/project/c1.component.ts".to_string(),
+                "/project/c2.component.ts".to_string(),
+            ])
+            .unwrap();
+        assert!(
+            !unrelated_stale.contains(&"/project/c1.component.ts".to_string()),
+            "unrelated root change should not invalidate c1.component.ts: {unrelated_stale:?}"
+        );
+
+        let stale = analyzer
+            .set_entry_points_core(vec![
+                "/project/c1.component.ts".to_string(),
+                "/project/c2.component.ts".to_string(),
+                "/project/r3_symbols.ts".to_string(),
+            ])
+            .unwrap();
+        assert!(
+            stale.contains(&"/project/c1.component.ts".to_string()),
+            "stale paths: {stale:?}"
+        );
+        assert!(is_core(&analyzer, "/project/c1.component.ts"));
+
+        analyzer
+            .set_entry_points_core(vec!["/project/c1.component.ts".to_string()])
+            .unwrap();
+        assert!(!is_core(&analyzer, "/project/c1.component.ts"));
+    }
+
+    /// Detecting `@angular/core` reads `r3_symbols.ts`, so editing its `ITS_JUST_ANGULAR` marker
+    /// re-analyzes the files analyzed before.
+    #[test]
+    fn r3_symbols_edit_redetects_angular_core_compilation() {
+        let analyzer = analyzer(&[
+            (
+                "/project/tsconfig.json",
+                r#"{"files": ["c1.component.ts", "r3_symbols.ts"]}"#,
+            ),
+            ("/project/c1.component.ts", COMPONENT),
+            ("/project/r3_symbols.ts", R3_SYMBOLS),
+        ]);
+        assert!(is_core(&analyzer, "/project/c1.component.ts"));
+
+        let stale = analyzer
+            .update_file_content_core(vec![FileUpdate {
+                file_path: "/project/r3_symbols.ts".to_string(),
+                content: "export const ITS_JUST_ANGULAR = false;".to_string(),
+            }])
+            .unwrap();
+        assert!(
+            stale.contains(&"/project/c1.component.ts".to_string()),
+            "stale paths: {stale:?}"
+        );
+        assert!(!is_core(&analyzer, "/project/c1.component.ts"));
     }
 
     #[test]

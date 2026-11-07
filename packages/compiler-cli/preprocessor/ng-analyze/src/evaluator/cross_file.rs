@@ -2,7 +2,6 @@ use crate::query::FileId;
 use crate::types::analysis::OwningReference;
 use crate::ResourceResolverFs;
 use futures::future::{BoxFuture, FutureExt};
-use oxc_resolver::ResolverGeneric;
 use oxc_semantic::SymbolId;
 use oxc_syntax::module_record::{ExportExportName, ExportImportName, ImportImportName};
 use oxc_syntax::symbol::SymbolFlags;
@@ -77,19 +76,6 @@ impl ChasedExport {
     }
 }
 
-/// Resolves an import specifier relative to `file_path`.
-pub fn resolve_specifier<Fs: ResourceResolverFs>(
-    resolver: &ResolverGeneric<Fs>,
-    file_path: &Path,
-    specifier: &str,
-) -> Option<PathBuf> {
-    let file_dir = file_path.parent().unwrap_or(Path::new("."));
-    resolver
-        .resolve(file_dir, specifier)
-        .ok()
-        .map(|res| res.into_path_buf())
-}
-
 /// Resolves `export_name` from `specifier` (or `file_path` when `None`) through import and
 /// re-export chains to its underlying declaration. Returns `None` for unnamed `export default <expr>`
 /// (use [`cross_file_resolve_export`] when default expressions are needed).
@@ -118,22 +104,26 @@ pub fn cross_file_resolve_export<'a, Fs: ResourceResolverFs + Clone + 'static>(
     visited: &'a mut HashSet<(PathBuf, String)>,
 ) -> BoxFuture<'a, Result<Option<ChasedExport>, ChaseSymbolError>> {
     async move {
-        let (target_file, initial_owning) = match specifier {
+        let (target_id, target_file, initial_owning) = match specifier {
             Some(spec) if !spec.is_empty() => {
-                let Some(resolved) =
-                    resolve_specifier(ctx.engine.resolver.as_ref(), file_path, spec)
+                let Some((resolved_id, resolved)) = ctx
+                    .resolve_from_path(file_path, spec, crate::host::ImportKind::Static)
+                    .await
                 else {
                     return Ok(None);
                 };
                 let owning = OwningReference::is_absolute_specifier(spec)
                     .then(|| OwningReference::from_source_specifier(spec, export_name.clone()));
-                (resolved, owning)
+                (resolved_id, resolved, owning)
             }
-            _ => (file_path.to_path_buf(), None),
+            _ => (
+                ctx.engine.intern_path(file_path),
+                file_path.to_path_buf(),
+                None,
+            ),
         };
 
         let entered_from_specifier = specifier.is_some_and(|spec| !spec.is_empty());
-        let target_id = ctx.engine.intern_path(&target_file);
         let mut resolved = chase_symbol_declaration(
             ctx,
             target_file,
@@ -426,15 +416,19 @@ fn chase_symbol_declaration<'a, Fs: ResourceResolverFs + Clone + 'static>(
                     source,
                     binds_locally,
                 } => {
-                    if let Some(resolved_path) =
-                        resolve_specifier(ctx.engine.resolver.as_ref(), &file_path, &source)
+                    let kind = if binds_locally {
+                        crate::host::ImportKind::Static
+                    } else {
+                        crate::host::ImportKind::ReExport
+                    };
+                    if let Some((resolved_id, resolved_path)) =
+                        ctx.resolve_from_path(&file_path, &source, kind).await
                     {
                         let next_owning = update_owning_reference(
                             owning_reference.as_ref(),
                             &source,
                             &original_name,
                         );
-                        let resolved_id = ctx.engine.intern_path(&resolved_path);
                         let mut resolved = chase_symbol_declaration(
                             ctx,
                             resolved_path,
@@ -490,11 +484,14 @@ fn chase_symbol_declaration<'a, Fs: ResourceResolverFs + Clone + 'static>(
                     let mut saw_cycle = false;
                     let mut unmatched_deps = HashSet::new();
                     for wildcard_source in &wildcards {
-                        let Some(resolved_path) = resolve_specifier(
-                            ctx.engine.resolver.as_ref(),
-                            &file_path,
-                            wildcard_source,
-                        ) else {
+                        let Some((resolved_id, resolved_path)) = ctx
+                            .resolve_from_path(
+                                &file_path,
+                                wildcard_source,
+                                crate::host::ImportKind::ReExport,
+                            )
+                            .await
+                        else {
                             continue;
                         };
 
@@ -503,7 +500,6 @@ fn chase_symbol_declaration<'a, Fs: ResourceResolverFs + Clone + 'static>(
                             wildcard_source,
                             &name,
                         );
-                        let resolved_id = ctx.engine.intern_path(&resolved_path);
                         let branch_ctx = crate::QueryCtx::new(ctx.engine.clone());
                         match chase_symbol_declaration(
                             &branch_ctx,
