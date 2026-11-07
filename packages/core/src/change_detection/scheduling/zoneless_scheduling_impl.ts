@@ -19,7 +19,7 @@ import {
   scheduleCallbackWithRafRace,
 } from '../../util/callback_scheduler';
 import {performanceMarkFeature} from '../../util/performance';
-import {NgZone, NgZonePrivate, NoopNgZone, angularZoneInstanceIdProperty} from '../../zone/ng_zone';
+import {NgZone, NgZonePrivate, NoopNgZone} from '../../zone/ng_zone';
 
 import {TracingService} from '../../application/tracing';
 import {Service} from '../../di';
@@ -67,8 +67,8 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler, O
   private readonly zoneIsDefined = typeof Zone !== 'undefined' && !!Zone.root.run;
   private readonly schedulerTickApplyArgs = [{data: {'__scheduler_tick__': true}}];
   private readonly subscriptions = new Subscription();
-  private readonly angularZoneId = this.zoneIsDefined
-    ? (this.ngZone as NgZonePrivate)._inner?.get(angularZoneInstanceIdProperty)
+  private readonly innerNgZone = this.zoneIsDefined
+    ? ((this.ngZone as NgZonePrivate)._inner ?? null)
     : null;
   private readonly scheduleInRootZone =
     !this.zonelessEnabled &&
@@ -232,17 +232,24 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler, O
     if (this.pendingRenderTaskId !== null || this.runningTick || this.appRef._runningTick) {
       return false;
     }
-    // If we're inside the zone don't bother with scheduler. Zone will stabilize
+    // If we're inside this app's Angular zone don't bother with scheduler. Zone will stabilize
     // eventually and run change detection.
-    if (
-      !this.zonelessEnabled &&
-      this.zoneIsDefined &&
-      Zone.current.get(angularZoneInstanceIdProperty + this.angularZoneId)
-    ) {
+    if (!this.zonelessEnabled && this.innerNgZone !== null && this.isInNgZone()) {
       return false;
     }
 
     return true;
+  }
+
+  private isInNgZone(): boolean {
+    let zone: Zone | null = Zone.current;
+    while (zone) {
+      if (zone === this.innerNgZone) {
+        return true;
+      }
+      zone = zone.parent;
+    }
+    return false;
   }
 
   /**
