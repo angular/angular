@@ -559,12 +559,17 @@ impl Analyzer {
         self.push_evicted_paths(evicted, invalidated_paths);
     }
 
-    /// Append the wire path of every file whose cached query was evicted.
+    /// Append the wire path or virtual module ID of every file whose cached query was evicted.
     fn push_evicted_paths(&self, evicted: Vec<QueryKey>, invalidated_paths: &mut Vec<String>) {
         let mut evicted: Vec<String> = evicted
             .into_iter()
             .filter_map(|key| key.file_id())
-            .map(|file_id| crate::fs::path_to_string(self.engine.lookup_path(file_id)))
+            .map(|file_id| match self.engine.lookup_module(file_id) {
+                (id, crate::host::IdKind::Virtual) => id.as_str().to_owned(),
+                (_, crate::host::IdKind::Path) => {
+                    crate::fs::path_to_string(self.engine.lookup_path(file_id))
+                }
+            })
             .collect();
         evicted.sort_unstable();
         evicted.dedup();
@@ -740,6 +745,16 @@ impl Analyzer {
         Ok(dedup_preserving_order(invalidated_paths))
     }
 
+    /// Flush every cached module resolution and return every module ID whose cached analysis was
+    /// evicted.
+    pub fn clear_resolution_cache_core(&self) -> Result<Vec<String>, String> {
+        self.cancel_current_analysis();
+        let mut invalidated_paths = Vec::new();
+        let evicted = self.engine.clear_resolution_cache();
+        self.push_evicted_paths(evicted, &mut invalidated_paths);
+        Ok(dedup_preserving_order(invalidated_paths))
+    }
+
     /// Install the given compilation roots and the tsconfig's `.d.ts` files (`None` keeps the
     /// current list), evicting every query that read the previous lists when either differs, and
     /// every query that read which root is `r3_symbols.ts` when that changes too.
@@ -878,6 +893,20 @@ impl Analyzer {
     #[cfg(not(feature = "napi"))]
     pub fn set_entry_points(&self, entry_points: Vec<String>) -> Result<Vec<String>, String> {
         self.set_entry_points_core(entry_points)
+    }
+
+    /// Flush every cached module resolution and return every module ID whose cached analysis was
+    /// evicted.
+    #[cfg(feature = "napi")]
+    #[napi]
+    pub fn clear_resolution_cache(&self) -> napi::Result<Vec<String>> {
+        self.clear_resolution_cache_core()
+            .map_err(napi::Error::from_reason)
+    }
+
+    #[cfg(not(feature = "napi"))]
+    pub fn clear_resolution_cache(&self) -> Result<Vec<String>, String> {
+        self.clear_resolution_cache_core()
     }
 
     #[cfg(feature = "napi")]
