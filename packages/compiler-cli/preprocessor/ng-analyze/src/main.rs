@@ -294,6 +294,18 @@ fn handle_rpc_request(req: RpcRequest, analyzer: &mut Option<Analyzer>) -> RpcRe
                 },
             }
         }
+        "clearResolutionCache" => match a.clear_resolution_cache_core() {
+            Ok(res) => RpcResponse {
+                id: req.id,
+                result: Some(serde_json::to_value(&res).unwrap()),
+                error: None,
+            },
+            Err(e) => RpcResponse {
+                id: req.id,
+                result: None,
+                error: Some(e),
+            },
+        },
         "getTsFileForTemplate" => {
             let Ok(param) = serde_json::from_value::<TemplatePathParam>(req.params) else {
                 return RpcResponse {

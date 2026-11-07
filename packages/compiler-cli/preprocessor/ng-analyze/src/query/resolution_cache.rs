@@ -170,6 +170,19 @@ impl ResolutionCache {
             .into_keys()
             .collect()
     }
+
+    /// Flush all cached resolutions and unresolved-specifier entries, returning every importer
+    /// `FileId` that held any positive or negative resolution entry.
+    pub fn clear_all(&self) -> HashSet<FileId> {
+        let mut guard = self.inner.write().unwrap();
+        let inner = &mut *guard;
+        inner.importers_by_target.clear();
+        let by_importer = std::mem::take(&mut inner.by_importer);
+        let unresolved = std::mem::take(&mut inner.unresolved_by_importer);
+        let mut importers: HashSet<FileId> = by_importer.into_keys().collect();
+        importers.extend(unresolved.into_keys());
+        importers
+    }
 }
 
 fn remove_importer_locked(inner: &mut ResolutionCacheInner, importer: FileId) {
@@ -457,5 +470,44 @@ mod tests {
 
         assert!(cache.get(importer, &key).is_none());
         assert!(cache.remove_deleted_target(target).is_empty());
+    }
+
+    #[test]
+    fn clear_all_returns_both_resolved_and_unresolved_importers() {
+        let cache = ResolutionCache::new();
+        let importer_ok: FileId = 30;
+        let importer_missing: FileId = 31;
+        let target: FileId = 40;
+
+        let ok_key = ResolutionLookupKey::from_request(&ResolveRequest::new(
+            "/app/ok.ts",
+            "./lib",
+            ImportKind::Static,
+        ));
+        let missing_key = ResolutionLookupKey::from_request(&ResolveRequest::new(
+            "/app/missing.ts",
+            "./nope",
+            ImportKind::Static,
+        ));
+
+        cache.insert(
+            importer_ok,
+            ok_key.clone(),
+            Ok(Some((target, resolved_module("/app/lib.ts")))),
+            cache.generation(),
+        );
+        cache.insert(
+            importer_missing,
+            missing_key.clone(),
+            Ok(None),
+            cache.generation(),
+        );
+
+        let cleared = cache.clear_all();
+        assert_eq!(cleared, HashSet::from([importer_ok, importer_missing]));
+        assert!(cache.get(importer_ok, &ok_key).is_none());
+        assert!(cache.get(importer_missing, &missing_key).is_none());
+        assert!(cache.remove_deleted_target(target).is_empty());
+        assert!(cache.clear_for_structure_change().is_empty());
     }
 }

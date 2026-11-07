@@ -116,6 +116,11 @@ export interface IAnalyzer {
    * is now stale. From then on the roots are no longer re-read from the tsconfig.
    */
   setEntryPoints(entryPoints: string[]): Promise<string[]>;
+  /**
+   * Flushes cached module resolutions and returns every module ID whose cached analysis is now
+   * stale.
+   */
+  clearResolutionCache?(): Promise<string[]>;
   getTsFileForTemplate(templatePath: string): Promise<nga.TemplateUsage[] | null>;
   getFileContent(filePath: string): Promise<string>;
   /**
@@ -773,6 +778,23 @@ export class HybridCompiler {
     await this.enqueueUpdate(async () => {
       await this.recordInvalidations(updates);
       return this.analyzer.invalidateFiles(updates);
+    });
+  }
+
+  /**
+   * Flushes cached module resolutions in the underlying analyzer and refreshes stale analyses on
+   * the queued delta pass.
+   */
+  async clearResolutionCache(): Promise<void> {
+    await this.enqueueUpdate(async () => {
+      if (!this.analyzer.clearResolutionCache) {
+        throw new Error('Analyzer does not support clearResolutionCache');
+      }
+      const invalidated = await this.analyzer.clearResolutionCache();
+      if (this.incrementalEnabled && invalidated.length > 0) {
+        this.incremental.recordChanges(invalidated, []);
+      }
+      return invalidated;
     });
   }
 
