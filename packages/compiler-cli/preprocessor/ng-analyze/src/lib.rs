@@ -15,6 +15,7 @@ mod analyzer;
 pub mod compiler;
 pub mod evaluator;
 pub mod fs;
+pub mod host;
 pub mod physical_fs;
 pub mod query;
 pub mod resource_loader;
@@ -31,13 +32,17 @@ pub use test_analyzer::{TestAnalyzer, TestAnalyzerOptions};
 pub mod wasm;
 
 pub use analyzer::{
-    flatten_class_info, resolve_declaration_async, resolve_to_dts, strip_extension_str,
-    ApfImportStrategy, ParsedFileAnalysis, PrefixImportStrategy, ReferenceEmitStrategy,
-    WireContext, WireMode,
+    flatten_class_info, resolve_declaration_async, strip_extension_str, ApfImportStrategy,
+    ParsedFileAnalysis, PrefixImportStrategy, ReferenceEmitStrategy, WireContext, WireMode,
 };
 pub use compiler::{AnalysisIterator, Analyzer, SharedQuery, Spawner};
 pub use evaluator::cross_file::{
     cross_file_resolve, resolve_specifier, ChaseSymbolError, DeclaredSymbol,
+};
+pub use host::{
+    AnalysisHost, DefaultFsHost, HostError, HostFuture, IdKind, ImportKind, LoadKind,
+    LoadedModule, ModuleFormat, ModuleId, ResolveRequest, ResolvedModule, ResolvedResourceId,
+    ResourceKind,
 };
 pub use physical_fs::{DirEntry, PhysicalFs};
 pub use query::{QueryCtx, QueryEngine, QueryKey, QueryValue, ReferenceId};

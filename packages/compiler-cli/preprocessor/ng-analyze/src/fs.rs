@@ -37,9 +37,6 @@ pub struct OverlayFileSystem {
     pub allowed_sources: Arc<Option<HashSet<PathBuf>>>,
     /// Cache for is_allowed results to avoid repeated canonicalization and normalization.
     is_allowed_cache: Arc<RwLock<HashMap<PathBuf, bool>>>,
-    /// Per-run cache for `detect_is_core` (directory -> is-`@angular/core`); see
-    /// `ResourceResolverFs::is_core_cache`.
-    is_core_cache: Arc<RwLock<HashMap<PathBuf, bool>>>,
     /// The non-virtual filesystem underneath this overlay.
     physical: Arc<dyn PhysicalFs>,
     #[cfg(test)]
@@ -56,7 +53,6 @@ impl Clone for OverlayFileSystem {
             preserve_symlinks: Arc::clone(&self.preserve_symlinks),
             allowed_sources: Arc::clone(&self.allowed_sources),
             is_allowed_cache: Arc::clone(&self.is_allowed_cache),
-            is_core_cache: Arc::clone(&self.is_core_cache),
             physical: Arc::clone(&self.physical),
             #[cfg(test)]
             delays: Arc::clone(&self.delays),
@@ -181,7 +177,6 @@ impl OverlayFileSystem {
             preserve_symlinks: Arc::new(AtomicBool::new(false)),
             allowed_sources: Arc::new(allowed),
             is_allowed_cache: Arc::new(RwLock::new(HashMap::new())),
-            is_core_cache: Arc::new(RwLock::new(HashMap::new())),
             #[cfg(test)]
             delays: Arc::new(RwLock::new(HashMap::new())),
         }
@@ -448,10 +443,6 @@ impl crate::resource_loader::ResourceResolverFs for OverlayFileSystem {
         self.root_dirs.read().unwrap().clone()
     }
 
-    fn is_core_cache(&self) -> &RwLock<HashMap<PathBuf, bool>> {
-        &self.is_core_cache
-    }
-
     fn resolve_root_dirs_backing_path(&self, path: &Path) -> Option<PathBuf> {
         if self.root_dirs.read().unwrap().len() <= 1 || self.exists_raw(path) {
             return None;
@@ -477,7 +468,6 @@ impl FileSystem for OverlayFileSystem {
             preserve_symlinks: Arc::new(AtomicBool::new(false)),
             allowed_sources: Arc::new(None),
             is_allowed_cache: Arc::new(RwLock::new(HashMap::new())),
-            is_core_cache: Arc::new(RwLock::new(HashMap::new())),
             #[cfg(test)]
             delays: Arc::new(RwLock::new(HashMap::new())),
         }
