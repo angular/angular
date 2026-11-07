@@ -597,6 +597,11 @@ export function verifyHostBindings(
 
   validateNoEventBindings(bindings, bindingParser, sourceSpan);
 
+  // Static host attributes aren't parsed as bindings, so their animation names are checked here.
+  for (const name of Object.keys(bindings.attributes)) {
+    bindingParser.validateAnimationName(name, sourceSpan);
+  }
+
   return bindingParser.errors;
 }
 

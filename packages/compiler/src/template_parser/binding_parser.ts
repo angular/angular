@@ -47,6 +47,28 @@ const STYLE_PREFIX = 'style';
 const TEMPLATE_ATTR_PREFIX = '*';
 const LEGACY_ANIMATE_PROP_PREFIX = 'animate-';
 
+/** Names of the supported `animate.` bindings. */
+const ANIMATION_BINDING_NAMES = ['animate.enter', 'animate.leave'];
+
+/**
+ * Gets the error for a binding name that starts with `animate.` but isn't one of the supported
+ * animations, or `null` if there is nothing to report. Without this check, any other name, such as
+ * a misspelled `animate.enter`, would silently be compiled as a leave animation.
+ */
+export function getUnsupportedAnimationBindingError(name: string): string | null {
+  if (
+    !name.startsWith(`${ANIMATE_PREFIX}${PROPERTY_PARTS_SEPARATOR}`) ||
+    ANIMATION_BINDING_NAMES.includes(name)
+  ) {
+    return null;
+  }
+  const supportedNames = ANIMATION_BINDING_NAMES.map((supported) => `"${supported}"`).join(' and ');
+  return (
+    `Unsupported animation binding "${name}". ` +
+    `The supported animation bindings are ${supportedNames}.`
+  );
+}
+
 export interface HostProperties {
   [key: string]: string;
 }
@@ -397,6 +419,15 @@ export class BindingParser {
         targetProps,
       );
     } else if (name.startsWith(`${ANIMATE_PREFIX}${PROPERTY_PARTS_SEPARATOR}`)) {
+      if (isPartOfAssignmentBinding) {
+        this._reportError(
+          `Unsupported two-way binding on "${name}". Animations can only be bound with a ` +
+            `static value, a property binding or an event binding.`,
+          keySpan,
+        );
+      } else {
+        this.validateAnimationName(name, keySpan);
+      }
       this._parseAnimation(
         name,
         this.parseBinding(expression, isHost, valueSpan || sourceSpan, absoluteOffset),
@@ -483,6 +514,17 @@ export class BindingParser {
     targetProps.push(
       new ParsedProperty(name, ast, ParsedPropertyType.ANIMATION, sourceSpan, keySpan, valueSpan),
     );
+  }
+
+  /**
+   * Reports an error if a binding name starts with `animate.` but isn't one of the supported
+   * animations. Other names are ignored.
+   */
+  validateAnimationName(name: string, sourceSpan: ParseSourceSpan): void {
+    const error = getUnsupportedAnimationBindingError(name);
+    if (error !== null) {
+      this._reportError(error, sourceSpan);
+    }
   }
 
   private _parseLegacyAnimation(
@@ -775,6 +817,10 @@ export class BindingParser {
     }
     if (name.startsWith(`${ANIMATE_PREFIX}${PROPERTY_PARTS_SEPARATOR}`)) {
       eventType = ParsedEventType.Animation;
+      // The event of a two-way binding is generated from the property, which is reported instead.
+      if (!isAssignmentEvent) {
+        this.validateAnimationName(name, keySpan);
+      }
     }
 
     targetEvents.push(
