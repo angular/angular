@@ -7,6 +7,10 @@
  */
 
 import {
+  bootstrapGlobalEarlyEventContract,
+  clearGlobalEarlyEventContract,
+} from '../src/bootstrap_global';
+import {
   EarlyEventContract,
   EarlyJsactionData,
   EarlyJsactionDataContainer,
@@ -601,6 +605,19 @@ describe('EventContract', () => {
         expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
         expect(eventInfoWrapper.getAction()).toBeUndefined();
       });
+    });
+
+    it('clearing the global early event contract removes its event listeners', () => {
+      const targetElement = getRequiredElementById('click-target-element');
+      bootstrapGlobalEarlyEventContract(['click'], []);
+      const earlyJsactionData = window._ejsa!;
+
+      dispatchMouseEvent(targetElement);
+      clearGlobalEarlyEventContract();
+      dispatchMouseEvent(targetElement);
+
+      expect(window._ejsa).toBeUndefined();
+      expect(earlyJsactionData.q.length).toBe(1);
     });
   });
 });
