@@ -65,7 +65,6 @@
       "ENVIRONMENT",
       "ENVIRONMENT_INITIALIZER",
       "EVENT_MANAGER_PLUGINS",
-      "EffectRefImpl",
       "EffectScheduler",
       "ElementRef",
       "EmulatedEncapsulationDomRenderer2",
