@@ -290,7 +290,7 @@ export class HttpRequest<T> implements HttpRequestOptions {
 
   constructor(method: 'GET' | 'HEAD', url: string, init?: HttpRequestOptions);
   constructor(method: 'DELETE' | 'JSONP' | 'OPTIONS', url: string, init?: HttpRequestOptions);
-  constructor(method: 'POST', url: string, body: T | null, init?: HttpRequestOptions);
+  constructor(method: 'POST' | 'QUERY', url: string, body: T | null, init?: HttpRequestOptions);
   constructor(method: 'PUT' | 'PATCH', url: string, body: T | null, init?: HttpRequestOptions);
   constructor(method: string, url: string, body: T | null, init?: HttpRequestOptions);
   constructor(
