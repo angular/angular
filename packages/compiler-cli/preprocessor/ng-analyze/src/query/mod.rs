@@ -11,6 +11,7 @@ pub mod file_id;
 pub mod keys;
 pub mod module_scope;
 pub mod reference_id;
+mod resolution_cache;
 mod scope;
 pub(crate) use scope::propagate_owning_reference_validated;
 pub(crate) use scope::resolve_reference_async;
