@@ -96,6 +96,10 @@ export interface AnalysisResult {
  * always takes precedence. Without a tsconfig, path-valued options must be absolute.
  */
 export interface AnalyzerOptions {
+  /** Record spans and counters for `takePerf`. Off by default. */
+  perfTrace?: boolean;
+  /** With `perfTrace`, also record detail events (per-query slices, query keys). */
+  perfTraceDetail?: boolean;
   /** tsconfig to read the root files and unset options from. */
   tsconfigPath?: string;
   /**

@@ -22,6 +22,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::OnceLock;
 use std::sync::{Arc, Mutex, RwLock};
 use std::task::Waker;
+use tracing::Instrument;
 
 #[cfg(not(target_arch = "wasm32"))]
 static GLOBAL_POOL: OnceLock<futures::executor::ThreadPool> = OnceLock::new();
@@ -31,6 +32,8 @@ pub fn get_global_pool() -> &'static futures::executor::ThreadPool {
     GLOBAL_POOL.get_or_init(|| {
         futures::executor::ThreadPool::builder()
             .pool_size(std::thread::available_parallelism().unwrap().get())
+            .name_prefix("ng-analyze-worker-")
+            .after_start(crate::perf::set_pool_thread_index)
             .create()
             .expect("Failed to create Global ThreadPool")
     })
@@ -173,7 +176,8 @@ impl EffectiveConfig {
         let tsconfig_path = options.tsconfig_path.map(PathBuf::from);
         let resolved = match &tsconfig_path {
             Some(path) => Some(
-                tsconfig_resolution::load_and_resolve_tsconfig(path, fs)
+                tracing::info_span!("ResolveTsconfig")
+                    .in_scope(|| tsconfig_resolution::load_and_resolve_tsconfig(path, fs))
                     .map_err(|e| e.to_string())?,
             ),
             None => None,
@@ -195,7 +199,11 @@ impl EffectiveConfig {
             }
         };
         let absolutize_all = |paths: Vec<String>| -> Result<Vec<PathBuf>, String> {
-            paths.into_iter().map(PathBuf::from).map(absolutize).collect()
+            paths
+                .into_iter()
+                .map(PathBuf::from)
+                .map(absolutize)
+                .collect()
         };
 
         // A tsconfig-provided flag, or its default without a tsconfig.
@@ -234,20 +242,16 @@ impl EffectiveConfig {
         let experimental_local_compilation =
             tsconfig_flag(|r| r.experimental_local_compilation, false);
 
-        let (
-            tsconfig_files,
-            tsconfig_root_dirs,
-            tsconfig_workspace_name,
-            merged_compiler_options,
-        ) = match resolved {
-            Some(r) => (
-                r.files,
-                r.compiler_options.root_dirs,
-                r.workspace_name,
-                r.merged_compiler_options,
-            ),
-            None => (Vec::new(), None, None, serde_json::Map::new()),
-        };
+        let (tsconfig_files, tsconfig_root_dirs, tsconfig_workspace_name, merged_compiler_options) =
+            match resolved {
+                Some(r) => (
+                    r.files,
+                    r.compiler_options.root_dirs,
+                    r.workspace_name,
+                    r.merged_compiler_options,
+                ),
+                None => (Vec::new(), None, None, serde_json::Map::new()),
+            };
 
         let mut merge_root_dirs = match default_host.root_dirs {
             Some(dirs) => absolutize_all(dirs)?,
@@ -310,6 +314,7 @@ impl Analyzer {
         options: AnalyzerOptions,
         physical: std::sync::Arc<dyn crate::physical_fs::PhysicalFs>,
     ) -> Result<Self, String> {
+        let _span = tracing::info_span!("Initialize").entered();
         let allowed = options
             .allowed_sources
             .clone()
@@ -330,7 +335,7 @@ impl Analyzer {
         fs: OverlayFileSystem,
     ) -> Result<Self, String> {
         let config = EffectiveConfig::resolve(options, &fs)?;
-        Ok(Self::construct(config, fs))
+        Ok(tracing::info_span!("ConstructAnalyzer").in_scope(|| Self::construct(config, fs)))
     }
 
     /// Build the analyzer from fully merged settings. Order matters: the symlink mode and the
@@ -406,6 +411,11 @@ impl Analyzer {
 
     pub fn merged_compiler_options(&self) -> &serde_json::Map<String, serde_json::Value> {
         &self.merged_compiler_options
+    }
+
+    /// Path of an interned file, for perf reports.
+    pub fn file_path(&self, id: crate::query::FileId) -> Option<String> {
+        self.engine.file_path(id)
     }
 
     pub fn analyze_core<S: Spawner>(
@@ -1068,6 +1078,11 @@ impl Analyzer {
         // cycle detection across an NgModule's declarations).
         let group_chunks_by_ng_module =
             is_optimized || self.engine.generate_extra_imports_in_local_mode;
+        let span = if is_optimized {
+            tracing::info_span!(target: crate::perf::ASYNC_TARGET, "AnalyzeOptimized")
+        } else {
+            tracing::info_span!(target: crate::perf::ASYNC_TARGET, "Analyze")
+        };
 
         #[cfg(not(target_arch = "wasm32"))]
         {
@@ -1084,7 +1099,8 @@ impl Analyzer {
                 group_chunks_by_ng_module,
                 is_optimized,
                 is_delta,
-            );
+            )
+            .instrument(span);
 
             let handle = spawner.spawn_with_handle(fut).unwrap();
             self.active_handles.write().unwrap().push(handle);
@@ -1106,7 +1122,8 @@ impl Analyzer {
                 group_chunks_by_ng_module,
                 is_optimized,
                 is_delta,
-            );
+            )
+            .instrument(span);
             spawner.spawn_local(fut).unwrap();
         }
     }
@@ -1156,7 +1173,13 @@ async fn run_coordinator<S, LA, FutLA, P, FutP, Fs>(
         return;
     }
 
-    engine.ensure_singletons_fresh(is_optimized).await;
+    engine
+        .ensure_singletons_fresh(is_optimized)
+        .instrument(tracing::info_span!(
+            target: crate::perf::ASYNC_TARGET,
+            "EnsureSingletonsFresh"
+        ))
+        .await;
 
     if cancel_token.is_cancelled() {
         return;
@@ -1215,7 +1238,9 @@ async fn run_coordinator<S, LA, FutLA, P, FutP, Fs>(
                     }
                     None => true,
                 };
-                if !is_dirty && (!group_chunks_by_ng_module || !local_res.may_have_non_standalone_class()) {
+                if !is_dirty
+                    && (!group_chunks_by_ng_module || !local_res.may_have_non_standalone_class())
+                {
                     return;
                 }
                 let (result, chunk_info) = processor(path, local_res).await;
@@ -1967,7 +1992,10 @@ mod effective_config_tests {
         let physical: Arc<dyn crate::physical_fs::PhysicalFs> =
             Arc::new(crate::physical_fs::default_physical_fs());
         let fs = OverlayFileSystem::new_with_allowed_sources_and_fs(None, physical);
-        fs.upsert_file(PathBuf::from("/project/tsconfig.json"), TSCONFIG.to_string());
+        fs.upsert_file(
+            PathBuf::from("/project/tsconfig.json"),
+            TSCONFIG.to_string(),
+        );
         fs.upsert_file(PathBuf::from("/project/main.ts"), "export {};".to_string());
         EffectiveConfig::resolve(
             AnalyzerOptions {
@@ -2021,7 +2049,10 @@ mod effective_config_tests {
         });
         assert!(!config.preserve_symlinks);
         assert_eq!(config.merge_root_dirs, paths(&["/project/gen"]));
-        assert_eq!(config.import_prefix_roots, paths(&["/project/prefix", "/abs"]));
+        assert_eq!(
+            config.import_prefix_roots,
+            paths(&["/project/prefix", "/abs"])
+        );
         assert_eq!(config.workspace_name.as_deref(), Some("explicit"));
         assert!(!config.strict_standalone);
         assert!(!config.strict_injection_parameters);
@@ -2041,10 +2072,16 @@ mod effective_config_tests {
             ..Default::default()
         });
         assert_eq!(alias_only.import_prefix_roots, paths(&["/project/legacy"]));
-        assert_eq!(alias_only.node_modules_path_override.as_deref(), Some("/legacy_nm"));
+        assert_eq!(
+            alias_only.node_modules_path_override.as_deref(),
+            Some("/legacy_nm")
+        );
         // The deprecated `root_dirs` alias only feeds the import prefix roots, never the merging
         // directories.
-        assert_eq!(alias_only.merge_root_dirs, paths(&["/project/a", "/project/b"]));
+        assert_eq!(
+            alias_only.merge_root_dirs,
+            paths(&["/project/a", "/project/b"])
+        );
 
         let both = resolve(AnalyzerOptions {
             root_dirs: Some(vec!["./legacy".to_string()]),
@@ -2115,7 +2152,10 @@ mod effective_config_tests {
         .unwrap();
         assert_eq!(config.entry_points, Some(paths(&["/app/main.ts"])));
         assert!(config.tsconfig_files.is_empty());
-        assert_eq!(config.r3_symbols_file, Some(PathBuf::from("/core/r3_symbols.ts")));
+        assert_eq!(
+            config.r3_symbols_file,
+            Some(PathBuf::from("/core/r3_symbols.ts"))
+        );
         assert!(config.strict_standalone);
         assert!(!config.implicit_standalone);
         assert_eq!(config.import_prefix_roots, paths(&["/app"]));
@@ -2144,7 +2184,9 @@ mod effective_config_tests {
                 ..Default::default()
             },
         ] {
-            let err = resolve_without_tsconfig(options).err().expect("relative path rejected");
+            let err = resolve_without_tsconfig(options)
+                .err()
+                .expect("relative path rejected");
             assert!(err.contains("must be an absolute path"), "{err}");
         }
     }
@@ -2156,7 +2198,10 @@ mod effective_config_tests {
             ..Default::default()
         });
         assert_eq!(config.entry_points, Some(paths(&["/project/main.ts"])));
-        assert_eq!(config.tsconfig_path, Some(PathBuf::from("/project/tsconfig.json")));
+        assert_eq!(
+            config.tsconfig_path,
+            Some(PathBuf::from("/project/tsconfig.json"))
+        );
     }
 }
 
@@ -2203,7 +2248,10 @@ mod entry_point_tests {
     #[test]
     fn set_entry_points_evicts_program_queries() {
         let analyzer = analyzer(&[
-            ("/project/tsconfig.json", r#"{"files": ["c1.component.ts"]}"#),
+            (
+                "/project/tsconfig.json",
+                r#"{"files": ["c1.component.ts"]}"#,
+            ),
             ("/project/c1.component.ts", COMPONENT),
             ("/project/m.module.ts", MODULE),
         ]);
@@ -2222,10 +2270,15 @@ mod entry_point_tests {
     #[test]
     fn set_entry_points_with_unchanged_roots_evicts_nothing() {
         let analyzer = analyzer(&[
-            ("/project/tsconfig.json", r#"{"files": ["c1.component.ts"]}"#),
+            (
+                "/project/tsconfig.json",
+                r#"{"files": ["c1.component.ts"]}"#,
+            ),
             ("/project/c1.component.ts", COMPONENT),
         ]);
-        analyzer.engine.analyze_file_semantic_blocking("/project/c1.component.ts");
+        analyzer
+            .engine
+            .analyze_file_semantic_blocking("/project/c1.component.ts");
 
         let stale = analyzer
             .set_entry_points_core(vec!["/project/c1.component.ts".to_string()])
@@ -2236,10 +2289,15 @@ mod entry_point_tests {
     #[test]
     fn set_entry_points_rejects_relative_paths() {
         let analyzer = analyzer(&[
-            ("/project/tsconfig.json", r#"{"files": ["c1.component.ts"]}"#),
+            (
+                "/project/tsconfig.json",
+                r#"{"files": ["c1.component.ts"]}"#,
+            ),
             ("/project/c1.component.ts", COMPONENT),
         ]);
-        let err = analyzer.set_entry_points_core(vec!["c1.component.ts".to_string()]).unwrap_err();
+        let err = analyzer
+            .set_entry_points_core(vec!["c1.component.ts".to_string()])
+            .unwrap_err();
         assert!(err.contains("c1.component.ts"), "{err}");
     }
 
@@ -2248,7 +2306,10 @@ mod entry_point_tests {
     #[test]
     fn set_entry_points_keeps_tsconfig_declaration_files() {
         let analyzer = analyzer(&[
-            ("/project/tsconfig.json", r#"{"files": ["c1.component.ts", "a.d.ts"]}"#),
+            (
+                "/project/tsconfig.json",
+                r#"{"files": ["c1.component.ts", "a.d.ts"]}"#,
+            ),
             ("/project/c1.component.ts", COMPONENT),
             ("/project/m.module.ts", MODULE),
             ("/project/a.d.ts", "declare module 'a' {}"),
@@ -2264,7 +2325,10 @@ mod entry_point_tests {
                 "/project/b.d.ts".to_string(),
             ])
             .unwrap();
-        assert_eq!(*analyzer.entrypoints.read().unwrap(), paths(&["/project/m.module.ts"]));
+        assert_eq!(
+            *analyzer.entrypoints.read().unwrap(),
+            paths(&["/project/m.module.ts"])
+        );
         assert_eq!(dts_files(&analyzer), paths(&["/project/a.d.ts"]));
 
         analyzer
@@ -2273,7 +2337,10 @@ mod entry_point_tests {
                 content: r#"{"files": ["c1.component.ts", "b.d.ts"]}"#.to_string(),
             }])
             .unwrap();
-        assert_eq!(*analyzer.entrypoints.read().unwrap(), paths(&["/project/m.module.ts"]));
+        assert_eq!(
+            *analyzer.entrypoints.read().unwrap(),
+            paths(&["/project/m.module.ts"])
+        );
         assert_eq!(dts_files(&analyzer), paths(&["/project/b.d.ts"]));
     }
 
@@ -2290,7 +2357,9 @@ mod entry_point_tests {
             ("/project/c1.component.ts", COMPONENT),
         ]);
         // A non-standalone component's semantic analysis reads the program-wide NgModule mapping.
-        analyzer.engine.analyze_file_semantic_blocking("/project/c1.component.ts");
+        analyzer
+            .engine
+            .analyze_file_semantic_blocking("/project/c1.component.ts");
 
         let stale = analyzer
             .update_file_content_core(vec![FileUpdate {
@@ -2467,7 +2536,8 @@ mod entry_point_tests {
         .unwrap();
         assert_eq!(
             explicit.engine.r3_symbols_file(),
-            Some(PathBuf::from("/core/r3_symbols.ts")))
+            Some(PathBuf::from("/core/r3_symbols.ts"))
+        )
     }
 
     #[test]
@@ -2551,17 +2621,19 @@ mod entry_point_tests {
             ("/project/c3.component.ts", c3),
         ]);
 
-        let collect_chunks = |rx: futures::channel::mpsc::UnboundedReceiver<
-            Result<CompilationChunk, String>,
-        >| {
-            futures::executor::block_on(rx.collect::<Vec<_>>())
-                .into_iter()
-                .map(|c| c.expect("chunk"))
-                .collect::<Vec<_>>()
-        };
+        let collect_chunks =
+            |rx: futures::channel::mpsc::UnboundedReceiver<Result<CompilationChunk, String>>| {
+                futures::executor::block_on(rx.collect::<Vec<_>>())
+                    .into_iter()
+                    .map(|c| c.expect("chunk"))
+                    .collect::<Vec<_>>()
+            };
 
-        let initial_chunks =
-            collect_chunks(analyzer.analyze_optimized_core(get_global_pool().clone()).unwrap());
+        let initial_chunks = collect_chunks(
+            analyzer
+                .analyze_optimized_core(get_global_pool().clone())
+                .unwrap(),
+        );
         let initial_files: HashSet<String> = initial_chunks
             .iter()
             .flat_map(|c| c.files.iter().map(|f| f.file_path.clone()))
@@ -2643,14 +2715,13 @@ mod entry_point_tests {
         })
         .unwrap();
 
-        let collect_chunks = |rx: futures::channel::mpsc::UnboundedReceiver<
-            Result<CompilationChunk, String>,
-        >| {
-            futures::executor::block_on(rx.collect::<Vec<_>>())
-                .into_iter()
-                .map(|c| c.expect("chunk"))
-                .collect::<Vec<_>>()
-        };
+        let collect_chunks =
+            |rx: futures::channel::mpsc::UnboundedReceiver<Result<CompilationChunk, String>>| {
+                futures::executor::block_on(rx.collect::<Vec<_>>())
+                    .into_iter()
+                    .map(|c| c.expect("chunk"))
+                    .collect::<Vec<_>>()
+            };
         let extra_imports_of_cmp = |chunks: &[CompilationChunk]| {
             chunks
                 .iter()
@@ -2712,7 +2783,15 @@ mod entry_point_tests {
     /// The file declaring the first component of a wire result's NgModule, if any.
     fn declaring_module(wire: &crate::query::keys::WireFileResult) -> Option<String> {
         wire.0.as_ref().ok()?.classes.iter().find_map(|class| {
-            Some(class.component.as_ref()?.declaring_ng_module.as_ref()?.file_path.clone())
+            Some(
+                class
+                    .component
+                    .as_ref()?
+                    .declaring_ng_module
+                    .as_ref()?
+                    .file_path
+                    .clone(),
+            )
         })
     }
 
@@ -2813,7 +2892,10 @@ mod entry_point_tests {
             !Arc::ptr_eq(&before, &after),
             "c1's wire result must be recomputed once an NgModule declares it"
         );
-        assert_eq!(declaring_module(&after).as_deref(), Some("/project/m.module.ts"));
+        assert_eq!(
+            declaring_module(&after).as_deref(),
+            Some("/project/m.module.ts")
+        );
     }
 
     /// A delta run that is cancelled after taking the dirty files must give them back: the next
@@ -2828,7 +2910,10 @@ mod entry_point_tests {
             export class C2 {}
         "#;
         let analyzer = analyzer(&[
-            ("/project/tsconfig.json", r#"{"files": ["c1.component.ts", "c2.component.ts"]}"#),
+            (
+                "/project/tsconfig.json",
+                r#"{"files": ["c1.component.ts", "c2.component.ts"]}"#,
+            ),
             ("/project/c1.component.ts", COMPONENT),
             ("/project/c2.component.ts", c2),
             ("/project/c2.component.html", "<p>v1</p>"),
@@ -2848,7 +2933,11 @@ mod entry_point_tests {
         };
 
         // Baseline: a completed full stream.
-        let initial = collect_chunks(analyzer.analyze_optimized_core(get_global_pool().clone()).unwrap());
+        let initial = collect_chunks(
+            analyzer
+                .analyze_optimized_core(get_global_pool().clone())
+                .unwrap(),
+        );
         assert_eq!(streamed(&initial).len(), 2);
         let c1 = engine.intern_path("/project/c1.component.ts");
         let c2_id = engine.intern_path("/project/c2.component.ts");
@@ -2860,8 +2949,15 @@ mod entry_point_tests {
                 content: "<p>v2</p>".to_string(),
             }])
             .unwrap();
-        analyzer.set_entry_points_core(vec!["/project/c2.component.ts".to_string()]).unwrap();
-        let dirty_before = engine.dirty_wire_files.lock().unwrap().clone().expect("baseline");
+        analyzer
+            .set_entry_points_core(vec!["/project/c2.component.ts".to_string()])
+            .unwrap();
+        let dirty_before = engine
+            .dirty_wire_files
+            .lock()
+            .unwrap()
+            .clone()
+            .expect("baseline");
         assert!(dirty_before.contains(&c2_id));
 
         // A delta run that cancels itself as soon as it processes a file.
@@ -2884,7 +2980,9 @@ mod entry_point_tests {
             let token = processor_token.clone();
             async move {
                 token.cancel();
-                let wire = QueryContext::new(engine).analyze_file_wire(local.file_id, true).await;
+                let wire = QueryContext::new(engine)
+                    .analyze_file_wire(local.file_id, true)
+                    .await;
                 (*wire).clone()
             }
             .boxed()
@@ -2923,13 +3021,19 @@ mod entry_point_tests {
                 .analyze_optimized_delta_core(get_global_pool().clone())
                 .unwrap(),
         );
-        assert_eq!(streamed(&delta), vec!["/project/c2.component.ts".to_string()]);
+        assert_eq!(
+            streamed(&delta),
+            vec!["/project/c2.component.ts".to_string()]
+        );
         let removed: Vec<String> = delta
             .iter()
             .filter_map(|c| c.removed_files.clone())
             .flatten()
             .collect();
         assert_eq!(removed, vec!["/project/c1.component.ts".to_string()]);
-        assert_eq!(*engine.dirty_wire_files.lock().unwrap(), Some(HashSet::new()));
+        assert_eq!(
+            *engine.dirty_wire_files.lock().unwrap(),
+            Some(HashSet::new())
+        );
     }
 }

@@ -11,7 +11,13 @@ import * as fs from 'node:fs/promises';
 import * as os from 'os';
 import * as path from 'path';
 import {resolveGoldenRoot} from './golden_cases.js';
-import {getOrCreateSyntheticNodeModules, parseMarkdownTestCase, pathExists} from './utils.js';
+import {
+  getOrCreateSyntheticNodeModules,
+  parseMarkdownTestCase,
+  pathExists,
+  resolveSidecarBinary,
+} from './utils.js';
+import type {PerfSummary, RustSummary, TraceEvent} from '../src/perf.js';
 import {createHybridCompiler, HybridCompiler, type IAnalyzer} from '../src/hybrid_compiler.js';
 import {run} from '../ngp.js';
 
@@ -325,5 +331,104 @@ export class DataService {
     } finally {
       await fs.rm(outDir, {recursive: true, force: true});
     }
+  });
+});
+
+describe('ngp CLI --perf-trace with the sidecar', () => {
+  const ngpPath = path.resolve(import.meta.dirname, '../main.js');
+  let tempDir: string;
+
+  afterEach(async () => {
+    if (tempDir) {
+      await fs.rm(tempDir, {recursive: true, force: true});
+    }
+  });
+
+  it('covers startup, the sidecar RPCs and the Rust summary', async () => {
+    tempDir = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'ngp-perf-test-')));
+    const nodeModules = getOrCreateSyntheticNodeModules();
+    if (nodeModules) {
+      await fs.symlink(nodeModules, path.join(tempDir, 'node_modules'), 'dir');
+    }
+    const tsconfigPath = path.join(tempDir, 'tsconfig.json');
+    await fs.writeFile(tsconfigPath, JSON.stringify({files: ['my_cmp.ts']}));
+    await fs.writeFile(
+      path.join(tempDir, 'my_cmp.ts'),
+      `import {Component} from '@angular/core';
+
+@Component({selector: 'my-cmp', template: '<div>{{ name }}</div>'})
+export class MyComponent {
+  name = 'hello';
+}
+`,
+    );
+    const tracePath = path.join(tempDir, 'perf.trace');
+    const summaryPath = path.join(tempDir, 'perf.json');
+    execFileSync(
+      process.execPath,
+      [
+        ...process.execArgv,
+        ngpPath,
+        tsconfigPath,
+        '--optimize',
+        '--in-place',
+        '--sidecar',
+        resolveSidecarBinary(),
+        '--perf-trace',
+        tracePath,
+        '--perf-summary',
+        summaryPath,
+      ],
+      {encoding: 'utf-8', stdio: 'pipe', env: process.env},
+    );
+    const events = JSON.parse(await fs.readFile(tracePath, 'utf-8')) as TraceEvent[];
+    const summary = JSON.parse(await fs.readFile(summaryPath, 'utf-8')) as PerfSummary;
+
+    const ngpPid = events.find((e) => e.name === 'process_name' && e.args?.['name'] === 'ngp')!.pid;
+    const slices = events.filter((e) => e.pid === ngpPid && e.ph === 'X' && e.tid === 1);
+    const named = (name: string) => slices.filter((e) => e.name === `ngp.${name}`);
+    for (const name of ['Startup', 'SpawnSidecar', 'InitializeRpc', 'TakePerf', 'Close']) {
+      expect(named(name).length).withContext(name).toBe(1);
+    }
+    expect(named('ParseAnalysisResult').length).toBeGreaterThan(0);
+    expect(named('TemplateParse').length).toBe(2);
+    expect(summary.node.counters['TemplatesParsed']).toBe(2);
+    expect(summary.node.counters['AnalysisResultBytes']).toBeGreaterThan(0);
+    // In order, and the main thread's slices nest.
+    const [startup] = named('Startup');
+    expect(startup.ts + startup.dur!).toBeLessThanOrEqual(named('SpawnSidecar')[0].ts);
+    expect(named('TakePerf')[0].ts + named('TakePerf')[0].dur!).toBeLessThanOrEqual(
+      named('Close')[0].ts,
+    );
+    const sorted = [...slices].sort((a, b) => a.ts - b.ts || b.dur! - a.dur!);
+    const open: TraceEvent[] = [];
+    for (const e of sorted) {
+      while (open.length && open[open.length - 1].ts + open[open.length - 1].dur! <= e.ts) {
+        open.pop();
+      }
+      const parent = open[open.length - 1];
+      if (parent) {
+        expect(e.ts + e.dur!)
+          .withContext(`${e.name} in ${parent.name}`)
+          .toBeLessThanOrEqual(parent.ts + parent.dur! + 1);
+      }
+      open.push(e);
+    }
+
+    // ng-analyze's counters and per-kind summary, with the slowest executions named by path.
+    const rustPid = events.find(
+      (e) => e.name === 'process_name' && e.args?.['name'] === 'ng-analyze',
+    )!.pid;
+    const counters = events.find((e) => e.name === 'ngp.rust.Counters')!;
+    expect(counters.pid).toBe(rustPid);
+    expect(counters.args!['FsReads']).toBeGreaterThan(0);
+    const rustSummary = events.find((e) => e.name === 'ngp.rust.Summary')!;
+    expect(rustSummary.pid).toBe(rustPid);
+    const queries = rustSummary.args!['queries'] as RustSummary['queries'];
+    const slowest = queries['ParseFile'].slowest!;
+    expect(slowest.length).toBeGreaterThan(0);
+    expect(slowest.length).toBeLessThanOrEqual(5);
+    expect(slowest.some((s) => s.file === path.join(tempDir, 'my_cmp.ts'))).toBeTrue();
+    expect(summary.rust!.queries['ParseFile'].slowest).toEqual(slowest);
   });
 });

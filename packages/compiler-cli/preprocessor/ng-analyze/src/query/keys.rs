@@ -28,10 +28,7 @@ pub enum QueryKey {
     /// analysis, so any query may read it without forming a cycle.
     AnalyzeFileEvaluated(FileId),
     /// Wire-projected [`crate::AnalysisResult`] and chunk grouping info for a file.
-    AnalyzeFileWire {
-        file_id: FileId,
-        is_optimized: bool,
-    },
+    AnalyzeFileWire { file_id: FileId, is_optimized: bool },
     /// Parsed AST and semantic index for a source file in a self-contained arena.
     ParseFile(FileId),
     /// All declarations (components/directives/pipes) transitively exported by an NgModule.
@@ -81,6 +78,50 @@ impl QueryKey {
             | Self::AmbientGlobalFiles
             | Self::LocalExtraImports => None,
         }
+    }
+
+    /// Variant names, indexed by [`Self::kind_index`]. The perf layer maps a query span's
+    /// `kind` field back to its name here.
+    pub const KIND_NAMES: [&'static str; 14] = [
+        "AnalyzeFileSemantic",
+        "AnalyzeFileSyntax",
+        "AnalyzeFileEvaluated",
+        "AnalyzeFileWire",
+        "ParseFile",
+        "NgModuleExportsScope",
+        "NgModuleImportsScope",
+        "ModuleExportMap",
+        "ComponentMapping",
+        "NgModuleScopeRegistry",
+        "ProgramFiles",
+        "AmbientModuleFiles",
+        "AmbientGlobalFiles",
+        "LocalExtraImports",
+    ];
+
+    /// Position of this key's variant in [`Self::KIND_NAMES`].
+    pub fn kind_index(&self) -> usize {
+        match self {
+            Self::AnalyzeFileSemantic(_) => 0,
+            Self::AnalyzeFileSyntax(_) => 1,
+            Self::AnalyzeFileEvaluated(_) => 2,
+            Self::AnalyzeFileWire { .. } => 3,
+            Self::ParseFile(_) => 4,
+            Self::NgModuleExportsScope(_) => 5,
+            Self::NgModuleImportsScope(_) => 6,
+            Self::ModuleExportMap(_) => 7,
+            Self::ComponentMapping => 8,
+            Self::NgModuleScopeRegistry => 9,
+            Self::ProgramFiles => 10,
+            Self::AmbientModuleFiles => 11,
+            Self::AmbientGlobalFiles => 12,
+            Self::LocalExtraImports => 13,
+        }
+    }
+
+    /// The variant name, used as the perf span's display name and summary key.
+    pub fn name(&self) -> &'static str {
+        Self::KIND_NAMES[self.kind_index()]
     }
 }
 
@@ -170,7 +211,11 @@ impl std::fmt::Debug for QueryValue {
             Self::AmbientModuleFiles(v) => write!(f, "AmbientModuleFiles({} modules)", v.len()),
             Self::AmbientGlobalFiles(v) => write!(f, "AmbientGlobalFiles({} globals)", v.len()),
             Self::LocalExtraImports(v) => {
-                write!(f, "LocalExtraImports({} imports)", v.global_extra_imports.len())
+                write!(
+                    f,
+                    "LocalExtraImports({} imports)",
+                    v.global_extra_imports.len()
+                )
             }
         }
     }

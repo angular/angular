@@ -5,6 +5,7 @@ use std::sync::{Arc, Mutex, RwLock};
 use crate::ResourceResolverFs;
 use futures::future::{BoxFuture, FutureExt};
 use oxc_resolver::ResolverGeneric;
+use tracing::Instrument;
 
 use crate::analyzer::DecoratorData;
 use crate::compiler::async_compiler::spawn_shared;
@@ -198,6 +199,13 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
 
     pub fn lookup_path(&self, id: FileId) -> PathBuf {
         self.interner.lookup_path(id)
+    }
+
+    /// Path of `id`, or `None` if it isn't interned (e.g. after the engine was rebuilt).
+    pub fn file_path(&self, id: FileId) -> Option<String> {
+        self.interner
+            .try_lookup_path(id)
+            .map(crate::fs::path_to_string)
     }
 
     pub fn r3_symbols_file(&self) -> Option<PathBuf> {
@@ -405,12 +413,29 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
     /// handle is stored; concurrent and subsequent requests reuse the same in-flight/completed task.
     pub fn query(self: &Arc<Self>, key: QueryKey) -> crate::SharedQuery<CachedResult> {
         let me = self.clone();
-        self.cache
-            .get_or_create(key, move || spawn_shared(me.execute(key).boxed()))
+        let mut hit = true;
+        let query = self.cache.get_or_create(key, || {
+            hit = false;
+            spawn_shared(me.execute(key).boxed())
+        });
+        if hit {
+            crate::perf::count_cache_hit(key.name());
+        }
+        query
     }
 
     /// Dispatch a query key to its computation. Each arm may request sub-queries via `self`.
     pub(crate) fn execute(self: Arc<Self>, key: QueryKey) -> BoxFuture<'static, Arc<CachedResult>> {
+        // `kind` indexes `QueryKey::KIND_NAMES`; `key` is only formatted in perf detail mode.
+        let span = tracing::info_span!(
+            target: crate::perf::QUERY_TARGET,
+            "query",
+            kind = key.kind_index() as u64,
+            file = key.file_id(),
+            key = ?key,
+            done = tracing::field::Empty,
+        );
+        let done = span.clone();
         async move {
             let child_ctx = QueryContext::new(self.clone());
             let res = match key {
@@ -491,8 +516,10 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                     r_guard.entry(file_id).or_default().insert(key);
                 }
             }
+            done.record("done", true);
             cached_res
         }
+        .instrument(span)
         .boxed()
     }
 
@@ -623,6 +650,12 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             }
         });
 
+        let counter = if crate::utils::is_dts(&parsed.borrow_owner().file_path) {
+            crate::perf::Counter::DtsFilesParsed
+        } else {
+            crate::perf::Counter::TsFilesParsed
+        };
+        crate::perf::count(counter, 1);
         let parsed = Arc::new(Mutex::new(parsed));
         if let Some((path, key)) = cache_entry {
             shared_dts_parse_cache::insert(path, key, parsed.clone());
@@ -3699,7 +3732,9 @@ mod shared_dts_parse_cache_tests {
         assert!(cache.contains(&key("a")));
 
         // A lookup with different text drops the stale entry.
-        assert!(cache.get(&key("a"), &SourceKey::of(&"y".repeat(25))).is_none());
+        assert!(cache
+            .get(&key("a"), &SourceKey::of(&"y".repeat(25)))
+            .is_none());
         assert!(!cache.contains(&key("a")));
     }
 }
