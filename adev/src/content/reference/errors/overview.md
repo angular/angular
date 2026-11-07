@@ -68,5 +68,6 @@
 | `NG8002` | [Invalid Attribute](errors/NG8002)                          |
 | `NG8003` | [Missing Reference Target](errors/NG8003)                   |
 | `NG8011` | [Control Flow Preventing Content Projection](errors/NG8011) |
+| `NG8022` | [Unsupported Binding on a Form Field](errors/NG8022)        |
 | `NG8023` | [Multiple Components Match Same Element](errors/NG8023)     |
 | `NG8024` | [Conflicting Host Directive Binding](errors/NG8024)         |
