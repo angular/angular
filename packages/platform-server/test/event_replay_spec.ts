@@ -16,8 +16,10 @@ import {
   inject,
   PendingTasks,
   PLATFORM_ID,
+  signal,
   ɵgetDocument as getDocument,
   ɵEVENT_REPLAY_QUEUE as EVENT_REPLAY_QUEUE,
+  ɵJSACTION_BLOCK_ELEMENT_MAP as JSACTION_BLOCK_ELEMENT_MAP,
 } from '@angular/core';
 import {isPlatformBrowser} from '@angular/common';
 import {
@@ -991,6 +993,72 @@ describe('event replay', () => {
 
       // Verify global cleanup
       expect(window._ejsas![appId]).toBeUndefined();
+    });
+
+    it('should clean up stashed listeners and jsActionMap entry when component is destroyed', async () => {
+      const appId = 'app-cleanup-listeners-test';
+      const providers = [{provide: APP_ID, useValue: appId}];
+
+      @Component({
+        selector: 'child',
+        template: '<button id="btn" (click)="onClick()" (blur)="onBlur()">Click</button>',
+      })
+      class ChildComponent {
+        onClick() {}
+        onBlur() {}
+      }
+
+      @Component({
+        selector: 'app',
+        imports: [ChildComponent],
+        template: `
+          <button (click)="noop()">App</button>
+          @if (show()) {
+            <child />
+          }
+        `,
+      })
+      class SimpleComponent {
+        show = signal(false);
+        noop() {}
+      }
+
+      const hydrationFeatures = () => [withEventReplay()];
+      const html = await ssr(SimpleComponent, {
+        envProviders: providers,
+        hydrationFeatures,
+      });
+      const ssrContents = getAppContents(html);
+      const doc = getDocument();
+      prepareEnvironment(doc, ssrContents);
+      resetTViewsFor(SimpleComponent);
+      resetTViewsFor(ChildComponent);
+
+      const appRef = await hydrate(doc, SimpleComponent, {
+        envProviders: providers,
+        hydrationFeatures,
+      });
+      await appRef.whenStable();
+
+      const comp = appRef.components[0].instance as SimpleComponent;
+      const jsActionMap = appRef.injector.get(JSACTION_BLOCK_ELEMENT_MAP);
+
+      // Create child component after initial hydration
+      comp.show.set(true);
+      await appRef.whenStable();
+
+      const btn = doc.getElementById('btn')!;
+      expect(btn).not.toBeNull();
+      expect(jsActionMap.get('')?.has(btn)).toBeTrue();
+      expect((btn as any).__jsaction_fns).toBeDefined();
+
+      // Destroy child component and verify cleanup
+      comp.show.set(false);
+      await appRef.whenStable();
+
+      expect(jsActionMap.get('')?.has(btn)).toBeFalse();
+      expect((btn as any).__jsaction_fns).toBeUndefined();
+      expect(btn.hasAttribute('jsaction')).toBeFalse();
     });
   });
 });

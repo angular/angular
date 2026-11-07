@@ -856,6 +856,7 @@
       "removeDehydratedView",
       "removeDehydratedViewList",
       "removeDehydratedViews",
+      "removeElementFromSharedMap",
       "removeElements",
       "removeEventListener",
       "removeEventListeners",
