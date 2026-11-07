@@ -52,7 +52,7 @@ export class PlatformRef {
       provideZonelessChangeDetectionInternal(),
       ...(options?.applicationProviders ?? []),
       errorHandlerEnvironmentInitializer,
-      ...(ngDevMode ? [validAppIdInitializer] : []),
+      ...(ngDevMode || ngServerMode ? [validAppIdInitializer] : []),
     ];
     const moduleRef = createNgModuleRefWithProviders(
       moduleFactory.moduleType,
