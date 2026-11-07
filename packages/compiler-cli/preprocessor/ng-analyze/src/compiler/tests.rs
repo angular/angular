@@ -8511,3 +8511,253 @@ fn test_ambient_dts_globals_in_local_compilation_modes() {
     }
 }
 
+
+/// Every `hostDirectives` entry either lands in the emitted metadata or reports a diagnostic, as in
+/// ngtsc's `extractHostDirectives`: local and declaration-only compilation keep a dynamic entry
+/// written as an identifier or property access verbatim and report NG11003 for any other
+/// expression, while full compilation requires a class reference.
+#[test]
+fn test_host_directives_entries_are_never_dropped() {
+    const UNSUPPORTED: &str = "11003";
+    const NOT_REFERENCE: &str = "1010:Host directive must be a reference";
+    const NOT_CLASS: &str = "1010:Host directive reference must be a class";
+    const NOT_ARRAY: &str = "1010:hostDirectives must be an array";
+    // (case, `hostDirectives` expression, [local, declaration-only, full] expectations), each
+    // expectation being the emitted entries (`None` when not emitted) and the diagnostics.
+    type Expected = (Option<&'static [&'static str]>, &'static [&'static str]);
+    let cases: &[(&str, &str, [Expected; 3])] = &[
+        (
+            "undeclared identifier",
+            "[LocalDir, UndeclaredDir]",
+            [
+                (Some(&["LocalDir", "UndeclaredDir"]), &[]),
+                (Some(&["LocalDir", "UndeclaredDir"]), &[]),
+                (Some(&["LocalDir"]), &[NOT_REFERENCE]),
+            ],
+        ),
+        (
+            "undeclared property access",
+            "[GlobalNs.Dir, LocalDir]",
+            [
+                (Some(&["GlobalNs.Dir", "LocalDir"]), &[]),
+                (Some(&["GlobalNs.Dir", "LocalDir"]), &[]),
+                (Some(&["LocalDir"]), &[NOT_REFERENCE]),
+            ],
+        ),
+        (
+            "imported identifier",
+            "[LocalDir, ImportedDir]",
+            [
+                (Some(&["LocalDir", "ImportedDir<./other:ImportedDir>"]), &[]),
+                (Some(&["LocalDir", "ImportedDir<./other:ImportedDir>"]), &[]),
+                (Some(&["LocalDir", "ImportedDir<./other:ImportedDir>"]), &[]),
+            ],
+        ),
+        (
+            "conditional on an import",
+            "[IMPORTED_BOOL ? LocalDir : LocalDir]",
+            [
+                (Some(&["LocalDir"]), &[]),
+                (None, &[UNSUPPORTED]),
+                (Some(&["LocalDir"]), &[]),
+            ],
+        ),
+        (
+            "conditional on an ambient global",
+            "[COMPILED ? LocalDir : LocalDir]",
+            [
+                (Some(&["LocalDir"]), &[]),
+                (Some(&["LocalDir"]), &[]),
+                (Some(&["LocalDir"]), &[]),
+            ],
+        ),
+        (
+            "conditional on an undeclared global",
+            "[NOPE ? LocalDir : LocalDir]",
+            [
+                (None, &[UNSUPPORTED]),
+                (None, &[UNSUPPORTED]),
+                (Some(&[]), &[NOT_REFERENCE]),
+            ],
+        ),
+        (
+            "spread of an import",
+            "[...IMPORTED_HDS]",
+            [
+                (Some(&["<./other:ImportedDir>"]), &[]),
+                (None, &[UNSUPPORTED]),
+                (Some(&["<./other:ImportedDir>"]), &[]),
+            ],
+        ),
+        (
+            "imported array",
+            "IMPORTED_HDS",
+            [
+                (Some(&["<./other:ImportedDir>"]), &[]),
+                (None, &[NOT_ARRAY]),
+                (Some(&["<./other:ImportedDir>"]), &[]),
+            ],
+        ),
+        (
+            "imported inputs mapping",
+            "[{directive: LocalDir, inputs: IMPORTED_INPUTS}]",
+            [
+                (Some(&["LocalDir[in:1]"]), &[]),
+                (Some(&["LocalDir"]), &[]),
+                (Some(&["LocalDir[in:1]"]), &[]),
+            ],
+        ),
+        (
+            "string entry",
+            "['str', LocalDir]",
+            [
+                (None, &[NOT_REFERENCE]),
+                (None, &[NOT_REFERENCE]),
+                (Some(&["LocalDir"]), &[NOT_REFERENCE]),
+            ],
+        ),
+        (
+            "forward reference to an import",
+            "[forwardRef(() => ImportedDir)]",
+            [
+                (Some(&["ImportedDir<./other:ImportedDir>"]), &[]),
+                (None, &[UNSUPPORTED]),
+                (Some(&["ImportedDir<./other:ImportedDir>"]), &[]),
+            ],
+        ),
+        (
+            "local array",
+            "LOCAL_HDS",
+            [
+                (Some(&["LocalDir"]), &[]),
+                (Some(&["LocalDir"]), &[]),
+                (Some(&["LocalDir"]), &[]),
+            ],
+        ),
+        (
+            "function reference",
+            "[LocalDir, notADirective]",
+            [
+                (Some(&["LocalDir", "notADirective"]), &[]),
+                (Some(&["LocalDir", "notADirective"]), &[]),
+                (Some(&["LocalDir", "notADirective"]), &[NOT_CLASS]),
+            ],
+        ),
+    ];
+    let modes = [
+        (
+            r#""angularCompilerOptions": {"compilationMode": "experimental-local"}"#,
+            false,
+        ),
+        (
+            r#""compilerOptions": {"declaration": true, "emitDeclarationOnly": true}, "angularCompilerOptions": {"_experimentalAllowEmitDeclarationOnly": true}"#,
+            false,
+        ),
+        (r#""angularCompilerOptions": {}"#, true),
+    ];
+    for (case, host_directives, expectations) in cases {
+        for ((options, optimize), (expected_entries, expected_diagnostics)) in
+            modes.iter().zip(expectations)
+        {
+            let mut files = HashMap::new();
+            files.insert(
+                "/project/tsconfig.json".to_string(),
+                format!(r#"{{"files": ["globals.d.ts", "other.ts", "app.ts"], {options}}}"#),
+            );
+            files.insert(
+                "/project/globals.d.ts".to_string(),
+                "declare var COMPILED: boolean;\n".to_string(),
+            );
+            files.insert(
+                "/project/other.ts".to_string(),
+                "import { Directive } from '@angular/core';\n\
+                 @Directive({selector: '[imp]'}) export class ImportedDir {}\n\
+                 export declare const IMPORTED_BOOL: boolean;\n\
+                 export const IMPORTED_HDS = [ImportedDir];\n\
+                 export const IMPORTED_INPUTS = ['x'];\n"
+                    .to_string(),
+            );
+            files.insert(
+                "/project/app.ts".to_string(),
+                format!(
+                    "import {{ Component, Directive, Input, forwardRef }} from '@angular/core';\n\
+                     import {{ ImportedDir, IMPORTED_BOOL, IMPORTED_HDS, IMPORTED_INPUTS }} from './other';\n\
+                     @Directive({{selector: '[loc]'}}) export class LocalDir {{ @Input() x: any; }}\n\
+                     const LOCAL_HDS = [LocalDir];\n\
+                     function notADirective() {{}}\n\
+                     @Component({{selector: 'c', template: '', hostDirectives: {host_directives}}})\n\
+                     export class Cmp {{}}\n"
+                ),
+            );
+            let analyzer = Analyzer::new(AnalyzerOptions {
+                tsconfig_path: Some("/project/tsconfig.json".to_string()),
+                optimize: Some(*optimize),
+                virtual_files: Some(files),
+                ..Default::default()
+            })
+            .unwrap();
+            let iter = if *optimize {
+                analyzer.analyze_optimized().unwrap()
+            } else {
+                analyzer.analyze().unwrap()
+            };
+            let mut all_files = Vec::new();
+            while let Ok(Some(chunk)) = futures::executor::block_on(iter.next()) {
+                all_files.extend(chunk.files);
+            }
+            let meta = all_files
+                .iter()
+                .find(|f| f.file_path.ends_with("app.ts"))
+                .expect("app.ts metadata");
+            let entries: Option<Vec<String>> = meta
+                .classes
+                .iter()
+                .find(|c| c.class_name.as_deref() == Some("Cmp"))
+                .and_then(|c| c.component.as_ref())
+                .and_then(|c| c.host_directives.as_ref())
+                .map(|entries| {
+                    entries
+                        .iter()
+                        .map(|entry| {
+                            let alias = entry.directive.local_alias.clone().unwrap_or_default();
+                            let import = entry
+                                .directive
+                                .consumer_import
+                                .as_ref()
+                                .map(|i| format!("<{}:{}>", i.specifier, i.symbol))
+                                .unwrap_or_default();
+                            let inputs = entry
+                                .inputs
+                                .as_ref()
+                                .map(|i| format!("[in:{}]", i.len()))
+                                .unwrap_or_default();
+                            format!("{alias}{import}{inputs}")
+                        })
+                        .collect()
+                });
+            let diagnostics: Vec<String> = meta
+                .diagnostics
+                .iter()
+                .map(|d| {
+                    if d.code == 11003 {
+                        UNSUPPORTED.to_string()
+                    } else {
+                        format!("{}:{}", d.code, d.message_text.lines().next().unwrap_or(""))
+                    }
+                })
+                .collect();
+            let mode = if *optimize { "full" } else { options };
+            assert_eq!(
+                entries
+                    .as_deref()
+                    .map(|e| e.iter().map(String::as_str).collect::<Vec<_>>()),
+                expected_entries.map(|e| e.to_vec()),
+                "entries for {case} in {mode}"
+            );
+            assert_eq!(
+                diagnostics, *expected_diagnostics,
+                "diagnostics for {case} in {mode}"
+            );
+        }
+    }
+}
