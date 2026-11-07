@@ -9,6 +9,7 @@
 import {
   Component,
   computed,
+  DestroyRef,
   inject,
   Injector,
   Input,
@@ -1959,6 +1960,168 @@ describe('Router resources integration', () => {
         const route = router.routerState.root.firstChild!;
         expect(route.resources?.['custom']?.reload()).toBe(false);
         expect(route.resources?.['custom']?.value()).toBe('static');
+      });
+    });
+
+    describe('Parallel loadComponent and resources', () => {
+      it('should start resources in parallel with loadComponent without waiting for component to load', async () => {
+        const componentDeferred = Promise.withResolvers<any>();
+        const resourceDeferred = Promise.withResolvers<string>();
+        const events: string[] = [];
+
+        @Component({template: 'lazy loaded'})
+        class LazyTargetCmp {}
+
+        const {harness, router} = await setupRouter([
+          {
+            path: 'lazy',
+            loadComponent: () => {
+              events.push('loadComponent:start');
+              return componentDeferred.promise.then((cmp) => {
+                events.push('loadComponent:end');
+                return cmp;
+              });
+            },
+            resources: () => ({
+              data: resource({
+                loader: () => {
+                  events.push('resources:start');
+                  return resourceDeferred.promise.then((val) => {
+                    events.push('resources:end');
+                    return val;
+                  });
+                },
+              }),
+            }),
+          },
+        ]);
+
+        const navPromise = harness.navigateByUrl('/lazy');
+        await timeout();
+        harness.fixture.detectChanges();
+
+        // Both loadComponent and resources should have started before either finishes
+        expect(events).toEqual(['loadComponent:start', 'resources:start']);
+        expect(router.url).not.toBe('/lazy');
+
+        // Resolve resource first — navigation should still wait for loadComponent
+        resourceDeferred.resolve('resource data');
+        await timeout();
+        expect(events).toContain('resources:end');
+        expect(router.url).not.toBe('/lazy');
+
+        // Now resolve loadComponent — navigation should complete
+        componentDeferred.resolve(LazyTargetCmp);
+        await navPromise;
+
+        expect(router.url).toBe('/lazy');
+        expect(harness.routeNativeElement?.textContent).toBe('lazy loaded');
+        const route = router.routerState.root.firstChild!;
+        expect(route.component).toBe(LazyTargetCmp);
+        expect(route.resources?.['data'].value()).toBe('resource data');
+      });
+
+      it('should wait for blocking resources when loadComponent finishes first', async () => {
+        const componentDeferred = Promise.withResolvers<any>();
+        const resourceDeferred = Promise.withResolvers<string>();
+
+        @Component({template: 'lazy loaded'})
+        class LazyTargetCmp {}
+
+        const {harness, router} = await setupRouter([
+          {
+            path: 'lazy',
+            loadComponent: () => componentDeferred.promise,
+            resources: () => ({
+              data: resource({
+                loader: () => resourceDeferred.promise,
+              }),
+            }),
+          },
+        ]);
+
+        const navPromise = harness.navigateByUrl('/lazy');
+        await timeout();
+
+        // Resolve loadComponent first — navigation should still wait for blocking resource
+        componentDeferred.resolve(LazyTargetCmp);
+        await timeout();
+        expect(router.url).not.toBe('/lazy');
+
+        // Now resolve resource — navigation should complete
+        resourceDeferred.resolve('resource data');
+        await navPromise;
+
+        expect(router.url).toBe('/lazy');
+        expect(harness.routeNativeElement?.textContent).toBe('lazy loaded');
+        expect(router.routerState.root.firstChild?.resources?.['data'].value()).toBe(
+          'resource data',
+        );
+      });
+
+      it('should bind blocking resource inputs when loadComponent and resources run in parallel', async () => {
+        const componentDeferred = Promise.withResolvers<any>();
+        const resourceDeferred = Promise.withResolvers<string>();
+
+        const {harness} = await setupRouter(
+          [
+            {
+              path: 'lazy-input',
+              loadComponent: () => componentDeferred.promise,
+              resources: () => ({
+                user: resource({
+                  loader: () => resourceDeferred.promise,
+                }),
+              }),
+            },
+          ],
+          withComponentInputBinding(),
+        );
+
+        const navPromise = harness.navigateByUrl('/lazy-input');
+        await timeout();
+
+        resourceDeferred.resolve('Alice');
+        componentDeferred.resolve(InputBindingCmp);
+        const instance = await navPromise;
+
+        expect((instance as InputBindingCmp).user).toBe('Alice');
+      });
+
+      it('should clean up resource injector if loadComponent rejects while resources are pending', async () => {
+        const componentDeferred = Promise.withResolvers<any>();
+        const resourceDeferred = Promise.withResolvers<string>();
+        let injectorDestroyed = false;
+
+        const {harness} = await setupRouter(
+          [
+            {
+              path: 'lazy-fail',
+              loadComponent: () => componentDeferred.promise,
+              resources: () => {
+                inject(DestroyRef).onDestroy(() => {
+                  injectorDestroyed = true;
+                });
+                return {
+                  data: resource({
+                    loader: () => resourceDeferred.promise,
+                  }),
+                };
+              },
+            },
+          ],
+          withNavigationErrorHandler(() => {}),
+        );
+
+        const navPromise = harness.navigateByUrl('/lazy-fail');
+        await timeout();
+
+        expect(injectorDestroyed).toBe(false);
+
+        componentDeferred.reject(new Error('Chunk load failed'));
+        await expectAsync(navPromise).toBeRejectedWithError('Chunk load failed');
+
+        expect(injectorDestroyed).toBe(true);
       });
     });
   });
