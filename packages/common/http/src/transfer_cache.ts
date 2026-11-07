@@ -133,6 +133,8 @@ interface TransferHttpResponse {
 
 interface CacheOptions extends HttpTransferCacheOptions {
   isCacheActive: boolean;
+  // Keep cache reading reachable only when transfer caching is enabled.
+  readCache: typeof retrieveStateFromCache;
 }
 
 export const CACHE_OPTIONS = new InjectionToken<CacheOptions>(
@@ -472,7 +474,7 @@ export function withHttpTransferCache(cacheOptions: HttpTransferCacheOptions): P
       provide: CACHE_OPTIONS,
       useFactory: (): CacheOptions => {
         performanceMarkFeature('NgHttpTransferCache');
-        return {isCacheActive: true, ...cacheOptions};
+        return {isCacheActive: true, ...cacheOptions, readCache: retrieveStateFromCache};
       },
     },
     {
