@@ -68,7 +68,8 @@ export function matchWithChecks(
   const currentSnapshot = createPreMatchRouteSnapshot(createSnapshot(result));
   // Only create the Route's `EnvironmentInjector` if it matches the attempted
   // navigation
-  injector = getOrCreateRouteInjectorIfNeeded(route, injector);
+  // TODO(v23): Run canMatch guards in root environment injector in 3p as well.
+  injector = getOrCreateRouteInjectorIfNeeded(route, injector); // 3p-only
   return runCanMatchGuards(
     injector,
     route,
