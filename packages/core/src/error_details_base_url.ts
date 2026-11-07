@@ -8,7 +8,7 @@
 
 import {VERSION} from './version';
 
-export const DOC_PAGE_BASE_URL: string = (() => {
+export const DOC_PAGE_BASE_URL: string = /* @__PURE__ */ (() => {
   const full = VERSION.full;
   const isPreRelease =
     full.includes('-next') ||
@@ -26,7 +26,7 @@ export const DOC_PAGE_BASE_URL: string = (() => {
  *  - packages/compiler-cli/src/ngtsc/diagnostics/src/error_details_base_url.ts
  *  - packages/core/src/error_details_base_url.ts
  */
-export const ERROR_DETAILS_PAGE_BASE_URL: string = (() => {
+export const ERROR_DETAILS_PAGE_BASE_URL: string = /* @__PURE__ */ (() => {
   return `${DOC_PAGE_BASE_URL}/errors`;
 })();
 /**

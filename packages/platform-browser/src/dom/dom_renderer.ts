@@ -545,7 +545,7 @@ export function disableThrowOnSyntheticProps(renderer: Renderer2): void {
   }
 }
 
-const AT_CHARCODE = (() => '@'.charCodeAt(0))();
+const AT_CHARCODE = /* @__PURE__ */ (() => '@'.charCodeAt(0))();
 
 function checkNoSyntheticProp(name: string, nameKind: string) {
   if (name.charCodeAt(0) === AT_CHARCODE) {
