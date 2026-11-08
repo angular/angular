@@ -17,6 +17,7 @@ import {TcbDirectiveMetadata} from '../api';
 import {TcbExpressionTranslator, unwrapWritableSignal} from './expression';
 import {ExpressionIdentifier} from '../comments';
 import {checkSplitTwoWayBinding} from './bindings';
+import {isNonRenderingNode} from './ignored_bindings';
 import {LocalSymbol} from './references';
 
 const EVENT_PARAMETER = '$event';
@@ -167,7 +168,9 @@ export class TcbUnclaimedOutputsOp extends TcbOp {
         this.hasDirectives &&
         output.type === ParsedEventType.Regular &&
         output.target === null &&
-        this.target instanceof Element
+        this.target instanceof Element &&
+        // NG8031 already reports every unclaimed event on `<ng-container>`.
+        !(this.tcb.env.config.ignoredBinding !== 'suppress' && isNonRenderingNode(this.target))
       ) {
         this.tcb.domSchemaChecker.checkTemplateElementEvent(
           this.tcb.id,

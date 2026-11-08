@@ -97,10 +97,17 @@ describe('bindings on ng-container and ng-template', () => {
     expect(loggedCodes).toEqual(['NG0303']);
   });
 
-  it('should log NG0319 when errorOnUnknownProperties is enabled', async () => {
+  it('should throw NG0319 when errorOnUnknownProperties is enabled', async () => {
     TestBed.configureTestingModule({errorOnUnknownProperties: true});
-    await render('<ng-container (click)="onEvent()"></ng-container>');
-    expect(loggedCodes).toEqual(['NG0319']);
+    await expectAsync(
+      render('<ng-container (click)="onEvent()"></ng-container>'),
+    ).toBeRejectedWithError(
+      new RegExp(
+        "^NG0319: The '\\(click\\)' binding has no effect on <ng-container> " +
+          "\\(used in the 'TestComponent' component template\\), because <ng-container> " +
+          "doesn't render an element\\. Move the binding to an element\\.",
+      ),
+    );
   });
 
   it('should not log NG0319 for directive host bindings', async () => {

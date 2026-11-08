@@ -195,7 +195,7 @@ export function tcb(
     checkControlFlowBodies: true,
     alwaysCheckSchemaInTemplateBodies: true,
     controlFlowPreventingContentProjection: 'warning',
-    ignoredBinding: 'warning',
+    ignoredBinding: 'error',
     unusedStandaloneImports: 'warning',
     strictSafeNavigationTypes: true,
     useContextGenericType: true,

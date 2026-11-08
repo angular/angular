@@ -20,7 +20,7 @@ const testFiles = loadStandardTestFiles({fakeCommon: true});
 type Row = [name: string, template: string, expected: string[]];
 
 // The default level of NG8031, as `diagnosticCodes` reports it.
-const NG8031 = 'warning NG8031';
+const NG8031 = 'error NG8031';
 
 runInEachFileSystem(() => {
   describe('bindings on ng-container, ng-template, and ng-content', () => {
@@ -536,12 +536,20 @@ runInEachFileSystem(() => {
       });
     });
 
-    // Known gap: NG8030 and NG8031 both report an unclaimed event on <ng-container>.
-    it('should report an unclaimed event on ng-container twice, as NG8030 and NG8031', () => {
+    it('should report an unclaimed event on ng-container only as NG8031', () => {
       const options = {strictUnclaimedEventNames: true};
       expect(diagnose(`<ng-container out-dir (fooBar)="h()"></ng-container>`, options)).toEqual([
-        'error NG8030',
         NG8031,
+      ]);
+    });
+
+    it('should report an unclaimed event on ng-container as NG8030 when NG8031 is suppressed', () => {
+      const options = {
+        strictUnclaimedEventNames: true,
+        extendedDiagnostics: {checks: {ignoredBinding: 'suppress'}},
+      };
+      expect(diagnose(`<ng-container out-dir (fooBar)="h()"></ng-container>`, options)).toEqual([
+        'error NG8030',
       ]);
     });
 
@@ -558,9 +566,9 @@ runInEachFileSystem(() => {
     describe('configuration', () => {
       const template = `<ng-container [class.p]="v"></ng-container>`;
 
-      it('should report errors when the check is configured as an error', () => {
-        const options = {extendedDiagnostics: {checks: {ignoredBinding: 'error'}}};
-        expect(diagnose(template, options)).toEqual(['error NG8031']);
+      it('should report warnings when the check is configured as a warning', () => {
+        const options = {extendedDiagnostics: {checks: {ignoredBinding: 'warning'}}};
+        expect(diagnose(template, options)).toEqual(['warning NG8031']);
       });
 
       it('should report nothing when the check is suppressed', () => {

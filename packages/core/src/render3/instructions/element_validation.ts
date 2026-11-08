@@ -248,6 +248,9 @@ export function reportIgnoredBinding(binding: string, tNode: TNode, lView: LView
   const message =
     `The '${binding}' binding has no effect on <${tagName}>${getTemplateLocationDetails(lView)}, ` +
     `because <${tagName}> doesn't render an element. Move the binding to an element.`;
+  if (shouldThrowErrorOnUnknownProperty) {
+    throw new RuntimeError(RuntimeErrorCode.IGNORED_BINDING, message);
+  }
   console.error(formatRuntimeError(RuntimeErrorCode.IGNORED_BINDING, message));
 }
 

@@ -218,7 +218,7 @@ export function buildTypeCheckingConfig(
       ignoredBinding:
         options.extendedDiagnostics?.checks?.ignoredBinding ??
         options.extendedDiagnostics?.defaultCategory ??
-        'warning',
+        'error',
       unusedStandaloneImports:
         options.unusedStandaloneImports ??
         options.extendedDiagnostics?.checks?.unusedStandaloneImports ??

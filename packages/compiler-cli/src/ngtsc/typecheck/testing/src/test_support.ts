@@ -219,7 +219,7 @@ export const ALL_ENABLED_CONFIG: Readonly<TypeCheckingConfig> = {
   enableTemplateTypeChecker: false,
   useInlineTypeConstructors: true,
   controlFlowPreventingContentProjection: 'warning',
-  ignoredBinding: 'warning',
+  ignoredBinding: 'error',
   unusedStandaloneImports: 'warning',
   allowSignalsInTwoWayBindings: true,
   allowDomEventAssertion: true,
