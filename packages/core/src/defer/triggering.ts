@@ -721,36 +721,36 @@ export function processAndInitTriggers(
 }
 
 function setIdleTriggers(injector: Injector, elementTriggers: ElementTrigger[]) {
-  for (const elementTrigger of elementTriggers) {
+  for (const {blockName} of elementTriggers) {
     const registry = injector.get(DEHYDRATED_BLOCK_REGISTRY);
-    const onInvoke = () => triggerHydrationFromBlockName(injector, elementTrigger.blockName);
+    const onInvoke = () => triggerHydrationFromBlockName(injector, blockName);
     const cleanupFn = onIdle(onInvoke, injector);
-    registry.addCleanupFn(elementTrigger.blockName, cleanupFn);
+    registry.addCleanupFn(blockName, cleanupFn);
   }
 }
 
 function setViewportTriggers(injector: Injector, elementTriggers: ElementTrigger[]) {
   if (elementTriggers.length > 0) {
     const registry = injector.get(DEHYDRATED_BLOCK_REGISTRY);
-    for (let elementTrigger of elementTriggers) {
+    for (const {el, blockName, intersectionObserverOptions} of elementTriggers) {
       const cleanupFn = onViewportWrapper(
-        elementTrigger.el,
-        () => triggerHydrationFromBlockName(injector, elementTrigger.blockName),
+        el,
+        () => triggerHydrationFromBlockName(injector, blockName),
         injector,
-        elementTrigger.intersectionObserverOptions,
+        intersectionObserverOptions,
       );
-      registry.addCleanupFn(elementTrigger.blockName, cleanupFn);
+      registry.addCleanupFn(blockName, cleanupFn);
     }
   }
 }
 
 function setTimerTriggers(injector: Injector, elementTriggers: ElementTrigger[]) {
-  for (const elementTrigger of elementTriggers) {
+  for (const {blockName, delay} of elementTriggers) {
     const registry = injector.get(DEHYDRATED_BLOCK_REGISTRY);
-    const onInvoke = () => triggerHydrationFromBlockName(injector, elementTrigger.blockName);
-    const timerFn = onTimer(elementTrigger.delay!);
+    const onInvoke = () => triggerHydrationFromBlockName(injector, blockName);
+    const timerFn = onTimer(delay!);
     const cleanupFn = timerFn(onInvoke, injector);
-    registry.addCleanupFn(elementTrigger.blockName, cleanupFn);
+    registry.addCleanupFn(blockName, cleanupFn);
   }
 }
 

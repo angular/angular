@@ -327,6 +327,7 @@ describe('computed', () => {
       shouldThrow = false;
       source.set(2);
       expect(derived()).toBe(2);
+      expect((derived as any)[SIGNAL].error).toBeNull();
     });
   });
 

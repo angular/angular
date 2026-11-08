@@ -236,17 +236,19 @@ function executeLeaveAnimations(
   // to be safe here.
   const runningAnimations: Promise<unknown>[] = [];
 
-  if (animations && animations.leave) {
-    for (const [index] of nodesWithExitAnimations) {
-      if (!animations.leave.has(index)) continue;
+  if (animations) {
+    if (animations.leave) {
+      for (const [index] of nodesWithExitAnimations) {
+        if (!animations.leave.has(index)) continue;
 
-      const currentAnimationData = animations.leave.get(index)!;
-      for (const animationFn of currentAnimationData.animateFns) {
-        const {promise} = animationFn() as ReturnType<RunLeaveAnimationFn>;
-        runningAnimations.push(promise);
+        const currentAnimationData = animations.leave.get(index)!;
+        for (const animationFn of currentAnimationData.animateFns) {
+          const {promise} = animationFn() as ReturnType<RunLeaveAnimationFn>;
+          runningAnimations.push(promise);
+        }
       }
-      animations.detachedLeaveAnimationFns = undefined;
     }
+    animations.detachedLeaveAnimationFns = undefined;
   }
 
   // Also add nested view animations

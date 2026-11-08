@@ -7,6 +7,7 @@
  */
 
 import {
+  Attribute,
   isEarlyEventType,
   isCaptureEventType,
   EventContractContainer,
@@ -115,8 +116,13 @@ export function withEventReplay(): Provider[] {
                 (rEl: RNode, eventName: string, listenerFn: VoidFunction) => {
                   // If a user binds to a ng-container and uses a directive that binds using a host listener,
                   // this element could be a comment node. So we need to ensure we have an actual element
-                  // node before stashing anything.
-                  if ((rEl as Node).nodeType !== Node.ELEMENT_NODE) return;
+                  // node with a `jsaction` attribute before stashing anything.
+                  if (
+                    (rEl as Node).nodeType !== Node.ELEMENT_NODE ||
+                    !(rEl as Element).hasAttribute(Attribute.JSACTION)
+                  ) {
+                    return;
+                  }
                   sharedStashFunction(rEl as RElement, eventName, listenerFn);
                   sharedMapFunction(rEl as RElement, jsActionMap);
                 },

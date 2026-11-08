@@ -7,7 +7,7 @@
  */
 
 import {isSignal, linkedSignal, signal, computed} from '../../src/core';
-import {defaultEquals, setPostProducerCreatedFn} from '../../primitives/signals';
+import {defaultEquals, setPostProducerCreatedFn, SIGNAL} from '../../primitives/signals';
 import {global} from '../../src/util/global';
 import {flushEffects, testingEffect} from './effect_util';
 
@@ -565,5 +565,22 @@ describe('linkedSignal', () => {
         watchDestroy();
       }
     });
+  });
+
+  it('should clear stored error on node after recovering from an error', () => {
+    const shouldThrow = signal(true);
+    const state = linkedSignal(() => {
+      if (shouldThrow()) {
+        throw new Error('computation failed');
+      }
+      return 'ok';
+    });
+
+    expect(() => state()).toThrowError('computation failed');
+    expect((state as any)[SIGNAL].error).toEqual(jasmine.any(Error));
+
+    shouldThrow.set(false);
+    expect(state()).toBe('ok');
+    expect((state as any)[SIGNAL].error).toBeNull();
   });
 });
