@@ -4166,7 +4166,8 @@ describe('platform-server full application hydration integration', () => {
           selector: 'app',
           template: `
             This is hydrated content.
-            <span>{{ spanText }}</span>.
+            <span>{{ spanText }}</span
+            >.
             <p>{{ pText }}</p>
             <div>{{ anotherText }}</div>
           `,
@@ -8646,7 +8647,7 @@ describe('platform-server full application hydration integration', () => {
       it('should handle let declaration inside a projected control flow node', async () => {
         @Component({
           selector: 'test',
-          template: 'Main: <ng-content/> Slot: <ng-content slot="foo"/>',
+          template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
         })
         class TestComponent {}
 
