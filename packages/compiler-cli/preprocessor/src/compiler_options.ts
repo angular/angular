@@ -24,6 +24,7 @@ const DIAGNOSTIC_CATEGORY_LABELS: readonly string[] = ['warning', 'error', 'supp
  */
 export type ExtendedTemplateDiagnosticName =
   | 'controlFlowPreventingContentProjection'
+  | 'ignoredBinding'
   | 'unusedStandaloneImports'
   | 'invalidBananaInBox'
   | 'nullishCoalescingNotNullable'
@@ -45,11 +46,12 @@ export type ExtendedTemplateDiagnosticName =
 
 /**
  * Mirrors `SUPPORTED_DIAGNOSTIC_NAMES` in `ngtsc/typecheck/extended/index.ts`, in its iteration
- * order (the two option-only checks, then `ALL_DIAGNOSTIC_FACTORIES`), since the diagnostic
+ * order (the three option-only checks, then `ALL_DIAGNOSTIC_FACTORIES`), since the diagnostic
  * lists them. Keep in sync when a check is added upstream.
  */
 export const SUPPORTED_DIAGNOSTIC_NAMES: ReadonlySet<ExtendedTemplateDiagnosticName> = new Set([
   'controlFlowPreventingContentProjection',
+  'ignoredBinding',
   'unusedStandaloneImports',
   'invalidBananaInBox',
   'nullishCoalescingNotNullable',

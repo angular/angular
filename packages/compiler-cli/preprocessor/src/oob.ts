@@ -35,6 +35,9 @@ import {
   OutOfBandDiagnosticRecorder,
   type TcbDirectiveMetadata,
   type TypeCheckId,
+  type TmplAstContent,
+  getComponentOnNonRenderingElementMessage,
+  getIgnoredBindingMessage,
 } from '@angular/compiler';
 import {ErrorCode} from '@angular/compiler-cli/private/hybrid_preprocessor';
 import {Diagnostic, DiagnosticRelatedInformation} from './diagnostic.js';
@@ -524,6 +527,35 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
       element.startSourceSpan,
       OutOfBandDiagnosticCategory.Error,
       ErrorCode.MULTIPLE_MATCHING_COMPONENTS,
+    );
+  }
+
+  ignoredBinding(
+    id: TypeCheckId,
+    category: OutOfBandDiagnosticCategory,
+    node: TmplAstElement | TmplAstTemplate | TmplAstContent,
+    binding: TmplAstBoundAttribute | TmplAstBoundEvent | TmplAstTextAttribute,
+  ): void {
+    this.pushDiagnostic(
+      id,
+      getIgnoredBindingMessage(node, binding),
+      binding.sourceSpan,
+      category,
+      ErrorCode.IGNORED_BINDING,
+    );
+  }
+
+  componentOnNonRenderingElement(
+    id: TypeCheckId,
+    node: TmplAstElement | TmplAstTemplate,
+    componentName: string,
+  ): void {
+    this.pushDiagnostic(
+      id,
+      getComponentOnNonRenderingElementMessage(node, componentName),
+      node.startSourceSpan,
+      OutOfBandDiagnosticCategory.Warning,
+      ErrorCode.COMPONENT_ON_NON_RENDERING_ELEMENT,
     );
   }
 

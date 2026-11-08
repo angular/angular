@@ -1202,6 +1202,7 @@ describe('type check blocks', () => {
       enableTemplateTypeChecker: false,
       useInlineTypeConstructors: true,
       controlFlowPreventingContentProjection: 'warning',
+      ignoredBinding: 'warning',
       unusedStandaloneImports: 'warning',
       allowSignalsInTwoWayBindings: true,
       allowDomEventAssertion: true,

@@ -8,6 +8,7 @@
 
 import {
   CssSelector,
+  isNgContainer,
   MatchSource,
   SelectorMatcher,
   TmplAstElement,
@@ -402,8 +403,9 @@ export function buildAttributeCompletionTable(
     }
   }
 
-  // Finally, add any DOM attributes not already covered by inputs.
-  if (element instanceof TmplAstElement) {
+  // Finally, add any DOM attributes not already covered by inputs. `<ng-container>` doesn't render
+  // an element, so DOM attributes have no effect on it.
+  if (element instanceof TmplAstElement && !isNgContainer(element.name)) {
     for (const {attribute, property} of checker.getPotentialDomBindings(element.name)) {
       const isAlsoProperty = attribute === property;
       if (!table.has(attribute) && isAlsoProperty) {

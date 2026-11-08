@@ -511,6 +511,26 @@ export enum ErrorCode {
   UNCLAIMED_EVENT_BINDING = 8030,
 
   /**
+   * A binding or attribute on an `<ng-container>`, an `<ng-template>`, or an `<ng-content>` has no
+   * effect, because none of them renders an element. For example:
+   *
+   * ```html
+   * <ng-container [class.active]="isActive" (click)="select()"></ng-container>
+   * ```
+   */
+  IGNORED_BINDING = -8031,
+
+  /**
+   * A component's selector matches an `<ng-container>` or an `<ng-template>`, which can't host
+   * a component because neither renders an element. For example:
+   *
+   * ```html
+   * <ng-container user-card></ng-container>
+   * ```
+   */
+  COMPONENT_ON_NON_RENDERING_ELEMENT = -8032,
+
+  /**
    * A two way binding in a template has an incorrect syntax,
    * parentheses outside brackets. For example:
    *

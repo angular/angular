@@ -64,14 +64,7 @@ export class TcbControlFlowContentProjectionOp extends TcbOp {
     const controlFlowToCheck = this.findPotentialControlFlowNodes();
 
     if (controlFlowToCheck.length > 0) {
-      const matcher = new SelectorMatcher<string>();
-
-      for (const selector of this.ngContentSelectors) {
-        // `*` is a special selector for the catch-all slot.
-        if (selector !== '*') {
-          matcher.addSelectables(CssSelector.parse(selector), selector);
-        }
-      }
+      const matcher = createSlotMatcher(this.ngContentSelectors);
 
       for (const root of controlFlowToCheck) {
         for (const child of root.children) {
@@ -168,4 +161,19 @@ export class TcbControlFlowContentProjectionOp extends TcbOp {
 
     return false;
   }
+}
+
+/**
+ * Creates a matcher for the specific content projection slots of a component, which leaves out
+ * the catch-all slot.
+ */
+export function createSlotMatcher(ngContentSelectors: string[]): SelectorMatcher<string> {
+  const matcher = new SelectorMatcher<string>();
+  for (const selector of ngContentSelectors) {
+    // `*` is a special selector for the catch-all slot.
+    if (selector !== '*') {
+      matcher.addSelectables(CssSelector.parse(selector), selector);
+    }
+  }
+  return matcher;
 }

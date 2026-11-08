@@ -258,6 +258,12 @@ export interface TypeCheckingConfig {
   controlFlowPreventingContentProjection: 'error' | 'warning' | 'suppress';
 
   /**
+   * Whether to report bindings and attributes that `<ng-container>`, `<ng-template>`, and
+   * `<ng-content>` ignore because they don't render an element.
+   */
+  ignoredBinding: 'error' | 'warning' | 'suppress';
+
+  /**
    * Whether to check if `@Component.imports` contains unused symbols.
    */
   unusedStandaloneImports: 'error' | 'warning' | 'suppress';

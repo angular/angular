@@ -59,6 +59,9 @@
                 "deferTriggerMisconfiguration": {
                   "$ref": "#/definitions/diagnosticCategory"
                 },
+                "ignoredBinding": {
+                  "$ref": "#/definitions/diagnosticCategory"
+                },
                 "interpolatedSignalNotInvoked": {
                   "$ref": "#/definitions/diagnosticCategory"
                 },

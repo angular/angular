@@ -992,6 +992,23 @@ describe('completions', () => {
           expectContain(completions, DisplayInfoKind.EVENT, ['(click)']);
         });
 
+        it('should not return DOM completions on ng-container', () => {
+          const {templateFile} = setup(`<ng-container dir ></ng-container>`, '', DIR_WITH_INPUT);
+          templateFile.moveCursorToText('dir ¦>');
+
+          const completions = templateFile.getCompletionsAtPosition();
+          expectDoesNotContain(
+            completions,
+            unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
+            ['[title]', '[id]'],
+          );
+          expectContain(
+            completions,
+            unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
+            ['[myInput]'],
+          );
+        });
+
         it('should not return element completions in end tag', () => {
           const {templateFile} = setup(`<button ></button>`, ``);
           templateFile.moveCursorToText(`</¦button>`);

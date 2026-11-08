@@ -15,6 +15,7 @@ import {getCurrentDirectiveDef, getCurrentTNode, getLView, getTView} from '../st
 
 import {listenToOutput} from '../view/directive_outputs';
 import {listenToDomEvent, wrapListener} from '../view/listeners';
+import {reportIgnoredBinding, shouldReportIgnoredBinding} from './element_validation';
 import {loadComponentRenderer} from './shared';
 
 /**
@@ -47,6 +48,18 @@ export function ɵɵlistener(
     listenerFn,
     eventTargetResolver,
   );
+
+  // Containers have no element to listen on, so only outputs and global targets can fire.
+  if (
+    ngDevMode &&
+    tView.firstCreatePass &&
+    !eventTargetResolver &&
+    !tNode.outputs?.[eventName]?.length &&
+    !tNode.hostDirectiveOutputs?.[eventName]?.length &&
+    shouldReportIgnoredBinding(tNode, getCurrentDirectiveDef(tView.data) !== null)
+  ) {
+    reportIgnoredBinding(`(${eventName})`, tNode, lView);
+  }
   return ɵɵlistener;
 }
 
@@ -114,6 +127,9 @@ export function ɵɵdomListener(
       listenerFn,
       wrapListener(tNode, lView, listenerFn),
     );
+  } else if (ngDevMode && tView.firstCreatePass) {
+    // Containers have no element to listen on. Host listeners never reach this instruction.
+    reportIgnoredBinding(`(${eventName})`, tNode, lView);
   }
 
   return ɵɵdomListener;

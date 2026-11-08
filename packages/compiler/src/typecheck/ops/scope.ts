@@ -60,6 +60,12 @@ import {TcbIntersectionObserverOp} from './intersection_observer';
 import {TcbLetDeclarationOp} from './let';
 import {LocalSymbol, TcbInvalidReferenceOp, TcbReferenceOp} from './references';
 import {TcbDomSchemaCheckerOp} from './schema';
+import {
+  getElementWrappedByTemplate,
+  getNodesInProjectionSlots,
+  isNonRenderingNode,
+  TcbIgnoredBindingsOp,
+} from './ignored_bindings';
 import {TcbComponentNodeOp} from './selectorless';
 import {
   CustomFormControlType,
@@ -495,15 +501,19 @@ export class Scope {
       if (this.tcb.env.config.controlFlowPreventingContentProjection !== 'suppress') {
         this.appendContentProjectionCheckOp(node);
       }
+      this.recordNodesInProjectionSlots(node);
       this.appendDirectivesAndInputsOfElementLikeNode(node);
       this.appendOutputsOfElementLikeNode(node, node.inputs, node.outputs);
+      this.appendIgnoredBindingsCheckOp(node);
       this.appendSelectorlessDirectives(node);
       this.appendChildren(node);
       this.checkAndAppendReferencesOfNode(node);
     } else if (node instanceof Template) {
       // Template children are rendered in a child scope.
+      this.recordNodeWrappedByStructuralDirective(node);
       this.appendDirectivesAndInputsOfElementLikeNode(node);
       this.appendOutputsOfElementLikeNode(node, node.inputs, node.outputs);
+      this.appendIgnoredBindingsCheckOp(node);
       this.appendSelectorlessDirectives(node);
       const ctxIndex = this.opQueue.push(new TcbTemplateContextOp(this.tcb, this)) - 1;
       this.templateCtxOpMap.set(node, ctxIndex);
@@ -531,6 +541,7 @@ export class Scope {
     } else if (node instanceof Icu) {
       this.appendIcuExpressions(node);
     } else if (node instanceof Content) {
+      this.appendIgnoredBindingsCheckOp(node);
       this.appendChildren(node);
     } else if (node instanceof LetDeclaration) {
       const opIndex = this.opQueue.push(new TcbLetDeclarationOp(this.tcb, this, node)) - 1;
@@ -541,6 +552,51 @@ export class Scope {
       }
     } else if (node instanceof HostElement) {
       this.appendHostElement(node);
+    }
+  }
+
+  /**
+   * Records the content of a component that its specific projection slots select, so that
+   * `TcbIgnoredBindingsOp` leaves their static attributes alone.
+   */
+  private recordNodesInProjectionSlots(root: Element | Component): void {
+    if (this.tcb.env.config.ignoredBinding === 'suppress') {
+      return;
+    }
+    const meta = this.tcb.boundTarget.getDirectivesOfNode(root)?.find((dir) => dir.isComponent);
+    if (meta === undefined) {
+      return;
+    }
+    // Without a specific slot, no attribute selects content. Unknown slots (`null`) may select any.
+    const selectors = meta.ngContentSelectors;
+    if (selectors !== null && selectors.every((selector) => selector === '*')) {
+      return;
+    }
+    for (const node of getNodesInProjectionSlots(root.children, selectors)) {
+      this.tcb.nodesInProjectionSlots.add(node);
+    }
+  }
+
+  /**
+   * Records the element that a structural directive wraps, so that
+   * `TcbIgnoredBindingsOp` leaves its static attributes alone.
+   */
+  private recordNodeWrappedByStructuralDirective(template: Template): void {
+    if (this.tcb.env.config.ignoredBinding === 'suppress') {
+      return;
+    }
+    const element = getElementWrappedByTemplate(template);
+    const directives = this.tcb.boundTarget.getDirectivesOfNode(template);
+    if (element !== null && directives !== null && directives.length > 0) {
+      this.tcb.nodesWrappedByStructuralDirectives.add(element);
+    }
+  }
+
+  private appendIgnoredBindingsCheckOp(node: Element | Template | Content): void {
+    if (this.tcb.env.config.ignoredBinding !== 'suppress' && isNonRenderingNode(node)) {
+      const directives =
+        node instanceof Content ? [] : this.tcb.boundTarget.getDirectivesOfNode(node);
+      this.opQueue.push(new TcbIgnoredBindingsOp(this.tcb, node, directives ?? []));
     }
   }
 
@@ -645,6 +701,14 @@ export class Scope {
           node,
           matchedComponents.map((dir) => dir.name),
         );
+      }
+    }
+
+    if (isNonRenderingNode(node)) {
+      for (const dir of directives) {
+        if (dir.isComponent) {
+          this.tcb.oobRecorder.componentOnNonRenderingElement(this.tcb.id, node, dir.name);
+        }
       }
     }
 
@@ -968,6 +1032,7 @@ export class Scope {
     if (this.tcb.env.config.controlFlowPreventingContentProjection !== 'suppress') {
       this.appendContentProjectionCheckOp(node);
     }
+    this.recordNodesInProjectionSlots(node);
     this.appendInputsOfSelectorlessNode(node);
     this.appendOutputsOfSelectorlessNode(node);
     this.appendSelectorlessDirectives(node);

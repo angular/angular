@@ -104,6 +104,9 @@ const NGP_INTENTIONAL_BEHAVIOR_DIFFERENCES: ReadonlySet<string> = new Set([
 
   // For the time being we aren't implementing selectorless in ngp. Also some of the analysis depends on
   // the parsed template which hasn't been ported to Rust at the time of writing.
+  'bindings on ng-container, ng-template, and ng-content bindings that take effect should not report static attributes on ng-container when a selectorless directive applies',
+  'bindings on ng-container, ng-template, and ng-content bindings that take effect should not report static attributes on ng-template when a selectorless directive applies',
+  'bindings on ng-container, ng-template, and ng-content content projection should not report a static attribute that a selectorless component slot selects',
   'selectorless should be able to alias imports of selectorless dependencies',
   'selectorless should be able to use default imports as selectorless dependencies',
   'selectorless should check input bindings coming from host directives on component nodes',

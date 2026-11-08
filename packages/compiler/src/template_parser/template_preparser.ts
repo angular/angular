@@ -9,15 +9,15 @@
 import * as html from '../ml_parser/ast';
 import {isNgContent, splitNsName} from '../ml_parser/tags';
 
-const NG_CONTENT_SELECT_ATTR = 'select';
+export const NG_CONTENT_SELECT_ATTR = 'select';
 const LINK_ELEMENT = 'link';
 const LINK_STYLE_REL_ATTR = 'rel';
 const LINK_STYLE_HREF_ATTR = 'href';
 const LINK_STYLE_REL_VALUE = 'stylesheet';
 const STYLE_ELEMENT = 'style';
 const SCRIPT_ELEMENT = 'script';
-const NG_NON_BINDABLE_ATTR = 'ngNonBindable';
-const NG_PROJECT_AS = 'ngProjectAs';
+export const NG_NON_BINDABLE_ATTR = 'ngNonBindable';
+export const NG_PROJECT_AS = 'ngProjectAs';
 
 export function preparseElement(ast: html.Element): PreparsedElement {
   let selectAttr: string | null = null;

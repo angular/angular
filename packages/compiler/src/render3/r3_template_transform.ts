@@ -16,7 +16,7 @@ import {
 import * as i18n from '../i18n/i18n_ast';
 import * as html from '../ml_parser/ast';
 import {replaceNgsp} from '../ml_parser/html_whitespaces';
-import {isNgTemplate} from '../ml_parser/tags';
+import {isNgContainer, isNgTemplate} from '../ml_parser/tags';
 import {InterpolatedAttributeToken, InterpolatedTextToken} from '../ml_parser/tokens';
 import {ParseError, ParseErrorLevel, ParseSourceSpan} from '../parse_util';
 import {isStyleUrlResolvable} from '../style_url_resolver';
@@ -61,6 +61,38 @@ const BINDING_DELIMS = {
 };
 
 const TEMPLATE_ATTR_PREFIX = '*';
+
+/**
+ * Whether an attribute name uses binding syntax: `[x]`, `(x)`, `[(x)]`, `bind-x`, `on-x`, or
+ * `bindon-x`.
+ */
+export function isBindingAttributeName(name: string): boolean {
+  if (
+    name.startsWith(BINDING_DELIMS.PROPERTY.start) ||
+    name.startsWith(BINDING_DELIMS.EVENT.start)
+  ) {
+    return true;
+  }
+  const bindParts = name.match(BIND_NAME_REGEXP);
+  return (
+    bindParts !== null &&
+    (bindParts[KW_BIND_IDX] != null ||
+      bindParts[KW_ON_IDX] != null ||
+      bindParts[KW_BINDON_IDX] != null)
+  );
+}
+
+/**
+ * Whether an attribute name uses declaration syntax: a structural directive (`*x`), a template
+ * variable (`let-x`), or a reference (`#x` or `ref-x`).
+ */
+export function isDeclarationAttributeName(name: string): boolean {
+  if (name.startsWith(TEMPLATE_ATTR_PREFIX)) {
+    return true;
+  }
+  const bindParts = name.match(BIND_NAME_REGEXP);
+  return bindParts !== null && (bindParts[KW_LET_IDX] != null || bindParts[KW_REF_IDX] != null);
+}
 
 // TODO(crisbeto): any other tag names that shouldn't be allowed here?
 const UNSUPPORTED_SELECTORLESS_TAGS = new Set([
@@ -235,7 +267,7 @@ class HtmlAstToIvyAst implements html.Visitor {
         i18nAttrsMeta,
       );
 
-      if (element.name === 'ng-container') {
+      if (isNgContainer(element.name)) {
         for (const bound of attrs.bound) {
           if (bound.type === BindingType.Attribute) {
             this.reportError(

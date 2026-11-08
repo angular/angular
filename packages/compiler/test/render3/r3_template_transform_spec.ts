@@ -3098,6 +3098,14 @@ describe('R3 template transform', () => {
     );
   });
 
+  it('should report an error for attribute bindings on ng-container inside svg', () => {
+    const template = `<svg><ng-container [attr.x]="'1'"></ng-container></svg>`;
+    const errors = parse(template, {ignoreError: true}).errors;
+    expect(errors.map((e) => e.msg)).toEqual([
+      'Attribute bindings are not supported on ng-container. Use property bindings instead.',
+    ]);
+  });
+
   it('should not report an error on non-attr bindings on ng-container', () => {
     const template = `<ng-container *ngIf"test" [ngTemplateOutlet]="foo"></ng-container>`;
     const errors = parse(template, {ignoreError: true}).errors;

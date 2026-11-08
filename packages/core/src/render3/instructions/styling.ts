@@ -59,6 +59,7 @@ import {
 import {NO_CHANGE} from '../tokens';
 import {getNativeByIndex} from '../util/view_utils';
 
+import {reportIgnoredBinding, shouldReportIgnoredBinding} from './element_validation';
 import {setDirectiveInputsWhichShadowsStyling} from './property';
 
 /**
@@ -380,6 +381,13 @@ function stylingFirstUpdatePass(
       // we need to neutralize this binding since that directive is shadowing it.
       // We turn this into a noop by setting the key to `false`
       tStylingKey = false;
+    } else if (ngDevMode && shouldReportIgnoredBinding(tNode, isHostBindings)) {
+      const kind = isClassBased ? 'class' : 'style';
+      reportIgnoredBinding(
+        tStylingKey === null ? `[${kind}]` : `[${kind}.${tStylingKey}]`,
+        tNode,
+        getLView(),
+      );
     }
     tStylingKey = wrapInStaticStylingKey(tData, tNode, tStylingKey, isClassBased);
     insertTStylingBinding(tData, tNode, tStylingKey, bindingIndex, isHostBindings, isClassBased);

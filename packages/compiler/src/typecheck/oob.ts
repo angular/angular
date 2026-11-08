@@ -13,6 +13,7 @@ import {
   BoundEvent,
   BoundaryBlock,
   Component,
+  Content,
   Directive,
   Element,
   ForLoopBlock,
@@ -228,6 +229,27 @@ export interface OutOfBandDiagnosticRecorder<T> {
    * Reports that multiple components in the compilation scope match a given element.
    */
   multipleMatchingComponents(id: TypeCheckId, element: Element, componentNames: string[]): void;
+
+  /**
+   * Reports a binding or attribute that an `<ng-container>`, an `<ng-template>`, or an
+   * `<ng-content>` ignores, because it doesn't render an element.
+   */
+  ignoredBinding(
+    id: TypeCheckId,
+    category: OutOfBandDiagnosticCategory,
+    node: Element | Template | Content,
+    binding: BoundAttribute | BoundEvent | TextAttribute,
+  ): void;
+
+  /**
+   * Reports a component that matches an `<ng-container>` or an `<ng-template>`, neither of which
+   * can host a component because it doesn't render an element.
+   */
+  componentOnNonRenderingElement(
+    id: TypeCheckId,
+    node: Element | Template,
+    componentName: string,
+  ): void;
 
   /**
    * Reports that a host directive input/output has been exposed under multiple names.

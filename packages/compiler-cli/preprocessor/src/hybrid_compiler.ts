@@ -374,8 +374,8 @@ export class HybridCompiler {
     this.optionDiagnostics = [...configErrors];
     // Mirrors `NgCompiler`, which doesn't construct the extended template checker, the template
     // semantics checker or the source file validator when it has construction diagnostics. Note
-    // that `controlFlowPreventingContentProjection` is intentionally left alone: ngtsc reports
-    // it from the type check block regardless of option diagnostics.
+    // that `controlFlowPreventingContentProjection` and `ignoredBinding` are intentionally left
+    // alone: ngtsc reports them from the type check block regardless of option diagnostics.
     if (this.optionDiagnostics.length > 0) {
       this.tcbConfig = {...this.tcbConfig, disabledExtendedDiagnostics: true};
     }

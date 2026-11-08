@@ -35,6 +35,9 @@ import {
   TmplAstVariable,
   TmplAstViewportDeferredTrigger,
   TypeCheckId,
+  TmplAstContent,
+  getComponentOnNonRenderingElementMessage,
+  getIgnoredBindingMessage,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -707,6 +710,41 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         ts.DiagnosticCategory.Error,
         ngErrorCode(ErrorCode.MULTIPLE_MATCHING_COMPONENTS),
         `Multiple components match node with tagname ${element.name}: ${names}.`,
+      ),
+    );
+  }
+
+  ignoredBinding(
+    id: TypeCheckId,
+    category: OutOfBandDiagnosticCategory,
+    node: TmplAstElement | TmplAstTemplate | TmplAstContent,
+    binding: TmplAstBoundAttribute | TmplAstBoundEvent | TmplAstTextAttribute,
+  ): void {
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        this.resolver.getTemplateSourceMapping(id),
+        binding.sourceSpan,
+        translateCategory(category),
+        ngErrorCode(ErrorCode.IGNORED_BINDING),
+        getIgnoredBindingMessage(node, binding),
+      ),
+    );
+  }
+
+  componentOnNonRenderingElement(
+    id: TypeCheckId,
+    node: TmplAstElement | TmplAstTemplate,
+    componentName: string,
+  ): void {
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        this.resolver.getTemplateSourceMapping(id),
+        node.startSourceSpan,
+        ts.DiagnosticCategory.Warning,
+        ngErrorCode(ErrorCode.COMPONENT_ON_NON_RENDERING_ELEMENT),
+        getComponentOnNonRenderingElementMessage(node, componentName),
       ),
     );
   }

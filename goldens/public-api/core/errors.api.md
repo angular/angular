@@ -72,6 +72,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     HYDRATION_STABLE_TIMEDOUT = -506,
     // (undocumented)
+    IGNORED_BINDING = -319,
+    // (undocumented)
     IMAGE_PERFORMANCE_WARNING = -913,
     // (undocumented)
     IMPORT_PROVIDERS_FROM_STANDALONE = 800,

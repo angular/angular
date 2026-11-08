@@ -215,6 +215,10 @@ export function buildTypeCheckingConfig(
         options.extendedDiagnostics?.checks?.controlFlowPreventingContentProjection ??
         options.extendedDiagnostics?.defaultCategory ??
         'warning',
+      ignoredBinding:
+        options.extendedDiagnostics?.checks?.ignoredBinding ??
+        options.extendedDiagnostics?.defaultCategory ??
+        'warning',
       unusedStandaloneImports:
         options.unusedStandaloneImports ??
         options.extendedDiagnostics?.checks?.unusedStandaloneImports ??
@@ -253,6 +257,8 @@ export function buildTypeCheckingConfig(
         options.extendedDiagnostics?.checks?.controlFlowPreventingContentProjection ??
         options.extendedDiagnostics?.defaultCategory ??
         'warning',
+      // Like extended diagnostics, this check needs `strictTemplates`.
+      ignoredBinding: 'suppress',
       unusedStandaloneImports:
         options.unusedStandaloneImports ??
         options.extendedDiagnostics?.checks?.unusedStandaloneImports ??

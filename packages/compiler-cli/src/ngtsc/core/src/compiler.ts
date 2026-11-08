@@ -1130,6 +1130,8 @@ export class NgCompiler {
         useInlineTypeConstructors,
         controlFlowPreventingContentProjection:
           this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
+        ignoredBinding:
+          this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
         unusedStandaloneImports:
           this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
         allowSignalsInTwoWayBindings,
@@ -1162,6 +1164,8 @@ export class NgCompiler {
         useInlineTypeConstructors,
         controlFlowPreventingContentProjection:
           this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
+        // Like extended diagnostics, this check needs `strictTemplates`.
+        ignoredBinding: 'suppress',
         unusedStandaloneImports:
           this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
         allowSignalsInTwoWayBindings,
@@ -1213,6 +1217,9 @@ export class NgCompiler {
     ) {
       typeCheckingConfig.controlFlowPreventingContentProjection =
         this.options.extendedDiagnostics.checks.controlFlowPreventingContentProjection;
+    }
+    if (this.options.extendedDiagnostics?.checks?.ignoredBinding !== undefined) {
+      typeCheckingConfig.ignoredBinding = this.options.extendedDiagnostics.checks.ignoredBinding;
     }
     if (this.options.extendedDiagnostics?.checks?.unusedStandaloneImports !== undefined) {
       typeCheckingConfig.unusedStandaloneImports =

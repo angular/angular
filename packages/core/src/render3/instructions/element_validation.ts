@@ -12,7 +12,7 @@ import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from '../../me
 import {throwError} from '../../util/assert';
 import {getComponentDef} from '../def_getters';
 import {ComponentDef} from '../interfaces/definition';
-import {TElementNode, TNodeType} from '../interfaces/node';
+import {TElementNode, TNode, TNodeType} from '../interfaces/node';
 import {RComment, RElement} from '../interfaces/renderer_dom';
 import {isDirectiveHost} from '../interfaces/type_checks';
 import {CONTEXT, DECLARATION_COMPONENT_VIEW, LView, TVIEW} from '../interfaces/view';
@@ -221,6 +221,34 @@ export function handleUnknownPropertyError(
   }
 
   reportUnknownPropertyError(message);
+}
+
+/**
+ * Whether a binding on `tNode` has no effect and should be reported: an `<ng-container>` or an
+ * `<ng-template>` doesn't render an element. Host bindings of directives are left alone, because a
+ * directive is reusable across elements.
+ *
+ * @param tNode Node hosting the binding.
+ * @param isHostBinding Whether the binding comes from the host bindings of a directive.
+ */
+export function shouldReportIgnoredBinding(tNode: TNode, isHostBinding: boolean): boolean {
+  return !(tNode.type & TNodeType.AnyRNode) && !isHostBinding;
+}
+
+/**
+ * Reports that a template binding has no effect because it's on an `<ng-container>` or an
+ * `<ng-template>`, neither of which renders an element.
+ *
+ * @param binding The binding as written in a template, for example `[class.active]` or `(click)`.
+ * @param tNode Node hosting the binding.
+ * @param lView An `LView` that represents a current component
+ */
+export function reportIgnoredBinding(binding: string, tNode: TNode, lView: LView): void {
+  const tagName = tNode.type & TNodeType.ElementContainer ? 'ng-container' : 'ng-template';
+  const message =
+    `The '${binding}' binding has no effect on <${tagName}>${getTemplateLocationDetails(lView)}, ` +
+    `because <${tagName}> doesn't render an element. Move the binding to an element.`;
+  console.error(formatRuntimeError(RuntimeErrorCode.IGNORED_BINDING, message));
 }
 
 export function reportUnknownPropertyError(message: string) {

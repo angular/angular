@@ -16,6 +16,7 @@
 | `NG0301`  | [Export Not Found](errors/NG0301)                                                    |
 | `NG0302`  | [Pipe Not Found](errors/NG0302)                                                      |
 | `NG0318`  | [Invalid style property binding value](errors/NG0318)                                |
+| `NG0319`  | [Binding on ng-container or ng-template has no effect](errors/NG0319)                |
 | `NG0401`  | [Missing platform](errors/NG0401)                                                    |
 | `NG0403`  | [Bootstrapped NgModule doesn't specify which component to initialize](errors/NG0403) |
 | `NG0500`  | [Hydration Node Mismatch](errors/NG0500)                                             |
@@ -57,16 +58,18 @@
 
 ## Compiler errors
 
-| Code     | Name                                                        |
-| :------- | :---------------------------------------------------------- |
-| `NG1001` | [Argument Not Literal](errors/NG1001)                       |
-| `NG2003` | [Missing Token](errors/NG2003)                              |
-| `NG2009` | [Invalid Shadow DOM selector](errors/NG2009)                |
-| `NG3003` | [Import Cycle Detected](errors/NG3003)                      |
-| `NG6100` | [NgModule.id Set to module.id anti-pattern](errors/NG6100)  |
-| `NG8001` | [Invalid Element](errors/NG8001)                            |
-| `NG8002` | [Invalid Attribute](errors/NG8002)                          |
-| `NG8003` | [Missing Reference Target](errors/NG8003)                   |
-| `NG8011` | [Control Flow Preventing Content Projection](errors/NG8011) |
-| `NG8023` | [Multiple Components Match Same Element](errors/NG8023)     |
-| `NG8024` | [Conflicting Host Directive Binding](errors/NG8024)         |
+| Code     | Name                                                                               |
+| :------- | :--------------------------------------------------------------------------------- |
+| `NG1001` | [Argument Not Literal](errors/NG1001)                                              |
+| `NG2003` | [Missing Token](errors/NG2003)                                                     |
+| `NG2009` | [Invalid Shadow DOM selector](errors/NG2009)                                       |
+| `NG3003` | [Import Cycle Detected](errors/NG3003)                                             |
+| `NG6100` | [NgModule.id Set to module.id anti-pattern](errors/NG6100)                         |
+| `NG8001` | [Invalid Element](errors/NG8001)                                                   |
+| `NG8002` | [Invalid Attribute](errors/NG8002)                                                 |
+| `NG8003` | [Missing Reference Target](errors/NG8003)                                          |
+| `NG8011` | [Control Flow Preventing Content Projection](errors/NG8011)                        |
+| `NG8023` | [Multiple Components Match Same Element](errors/NG8023)                            |
+| `NG8024` | [Conflicting Host Directive Binding](errors/NG8024)                                |
+| `NG8031` | [Binding on ng-container, ng-template, or ng-content has no effect](errors/NG8031) |
+| `NG8032` | [Component on ng-container or ng-template](errors/NG8032)                          |
