@@ -526,6 +526,7 @@
       "getNodeInjectable",
       "getNullInjector",
       "getOrBorrowReactiveLViewConsumer",
+      "getOrCreateBaseRenderer",
       "getOrCreateComponentTView",
       "getOrCreateInjectable",
       "getOrCreateNodeInjectorForNode",
