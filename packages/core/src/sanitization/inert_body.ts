@@ -66,8 +66,8 @@ class DOMParserHelper implements InertBodyHelper {
 class InertDocumentHelper implements InertBodyHelper {
   private inertDocument: Document;
 
-  constructor(private defaultDoc: Document) {
-    this.inertDocument = this.defaultDoc.implementation.createHTMLDocument('sanitization-inert');
+  constructor(defaultDoc: Document) {
+    this.inertDocument = defaultDoc.implementation.createHTMLDocument('sanitization-inert');
   }
 
   getInertBodyElement(html: string): HTMLElement | null {
