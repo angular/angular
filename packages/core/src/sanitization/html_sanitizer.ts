@@ -186,7 +186,25 @@ class SanitizingHtmlSerializer {
     }
     this.buf.push('<');
     this.buf.push(tagName);
+    let addNoopener = false;
     const elAttrs = element.attributes;
+    if (tagName === 'a' || tagName === 'area') {
+      for (let i = 0; i < elAttrs.length; i++) {
+        const elAttr = elAttrs.item(i)!;
+        if (elAttr.name.toLowerCase() === 'target') {
+          // Browsers only apply an implicit `noopener` when `target` is an ASCII
+          // case-insensitive match for `_blank` (while empty, `_self`, `_parent`,
+          // and `_top` do not open a new auxiliary browsing context). Custom target
+          // names (e.g. `target="foo"` or `target=" _blank"`) open a new browsing
+          // context with `window.opener` populated unless `noopener` or `noreferrer`
+          // is explicitly present in `rel`.
+          if (!/^(?:|_blank|_self|_parent|_top)$/i.test(elAttr.value)) {
+            addNoopener = true;
+            break;
+          }
+        }
+      }
+    }
     for (let i = 0; i < elAttrs.length; i++) {
       const elAttr = elAttrs.item(i);
       const attrName = elAttr!.name;
@@ -198,10 +216,41 @@ class SanitizingHtmlSerializer {
       let value = elAttr!.value;
       // TODO(martinprobst): Special case image URIs for data:image/...
       if (URI_ATTRS[lower]) value = _sanitizeUrl(value);
+      if (lower === 'rel') {
+        const sanitizedRel = this.sanitizeRel(value, addNoopener);
+        addNoopener = false;
+        if (sanitizedRel === null) {
+          continue;
+        }
+        value = sanitizedRel;
+      }
       this.buf.push(' ', attrName, '="', encodeEntities(value), '"');
+    }
+    if (addNoopener) {
+      this.buf.push(' rel="noopener"');
     }
     this.buf.push('>');
     return true;
+  }
+
+  private sanitizeRel(value: string, addNoopener: boolean): string | null {
+    const tokens = value.split(/[\t\n\f\r ]+/).filter(Boolean);
+    const filtered = tokens.filter((t) => !/^opener$/i.test(t));
+    const strippedOpener = filtered.length !== tokens.length;
+    if (strippedOpener) {
+      this.sanitizedSomething = true;
+    }
+
+    let addedNoopener = false;
+    if (addNoopener && !filtered.some((t) => /^(?:noopener|noreferrer)$/i.test(t))) {
+      filtered.push('noopener');
+      addedNoopener = true;
+    }
+
+    if (!strippedOpener && !addedNoopener) {
+      return value;
+    }
+    return filtered.length === 0 ? null : filtered.join(' ');
   }
 
   private endElement(current: Element) {
