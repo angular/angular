@@ -7,6 +7,7 @@
  */
 
 import {NO_ERRORS_SCHEMA} from '../../core';
+import {CssSelector} from '../../directive_matching';
 import {BindingType, ParsedEventType} from '../../expression_parser/ast';
 import {PRESERVE_WS_ATTR_NAME} from '../../ml_parser/html_whitespaces';
 import {isNgContainer, isNgTemplate} from '../../ml_parser/tags';
@@ -25,6 +26,7 @@ import {
   isBindingAttributeName,
   isDeclarationAttributeName,
 } from '../../render3/r3_template_transform';
+import {MatchSource} from '../../render3/view/t2_api';
 import {createCssSelectorFromNode} from '../../render3/view/util';
 import {
   NG_CONTENT_SELECT_ATTR,
@@ -89,9 +91,15 @@ export class TcbIgnoredBindingsOp extends TcbOp {
       for (const name of dir.inputs.propertyNames) claimedInputs.add(name);
       for (const name of dir.outputs.propertyNames) claimedOutputs.add(name);
     }
+    // Property and event bindings take part in directive matching, so a binding named in the
+    // selector of a matched directive has an effect even if no input or output claims it.
+    const selectorNames = getSelectorAttributeNames(this.directives);
 
     for (const input of node.inputs) {
-      if (this.compilesToProperty(input) && claimedInputs.has(input.name)) {
+      if (
+        (this.compilesToProperty(input) && claimedInputs.has(input.name)) ||
+        (isPropertyBinding(input) && selectorNames.has(input.name))
+      ) {
         continue;
       }
       if (this.isIgnoredInput(input)) {
@@ -106,7 +114,8 @@ export class TcbIgnoredBindingsOp extends TcbOp {
       // alone, like legacy `[@trigger]` bindings.
       const isIgnoredEvent =
         output.type === ParsedEventType.Regular || output.type === ParsedEventType.Animation;
-      if (!claimedOutputs.has(output.name) && output.target === null && isIgnoredEvent) {
+      const isClaimed = claimedOutputs.has(output.name) || selectorNames.has(output.name);
+      if (!isClaimed && output.target === null && isIgnoredEvent) {
         this.tcb.oobRecorder.ignoredBinding(this.tcb.id, this.category, node, output);
       }
     }
@@ -379,4 +388,24 @@ function getBindingDisplayName(binding: BoundAttribute | BoundEvent): string {
     default:
       return `[${binding.name}]`;
   }
+}
+
+/**
+ * Returns the attribute names in the selectors of directives that matched by selector. Host
+ * directives aren't matched by their selector, so their selectors are left out.
+ */
+function getSelectorAttributeNames(directives: TcbDirectiveMetadata[]): Set<string> {
+  const names = new Set<string>();
+  for (const dir of directives) {
+    if (dir.matchSource !== MatchSource.Selector || dir.selector === null) {
+      continue;
+    }
+    for (const selector of CssSelector.parse(dir.selector)) {
+      // `attrs` alternates names and values.
+      for (let i = 0; i < selector.attrs.length; i += 2) {
+        names.add(selector.attrs[i]);
+      }
+    }
+  }
+  return names;
 }

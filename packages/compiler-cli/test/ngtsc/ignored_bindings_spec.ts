@@ -105,6 +105,15 @@ runInEachFileSystem(() => {
           readonly p = input<unknown>();
         }
 
+        @Directive({selector: '[match-dir]'})
+        export class MatchDir {}
+
+        @Directive({selector: '[host-only]'})
+        export class HostOnly {}
+
+        @Directive({selector: '[with-host]', hostDirectives: [HostOnly]})
+        export class WithHost {}
+
         @Directive({selector: '[tab-role]'})
         export class TabRole {
           readonly role = inject(new HostAttributeToken('role'));
@@ -115,7 +124,8 @@ runInEachFileSystem(() => {
 
         @Component({
           selector: 'proj',
-          template: '<ng-content select="[card-header]" /><ng-content />',
+          template:
+            '<ng-content select="[card-header]" /><ng-content select=".card-body" /><ng-content />',
         })
         export class Proj {}
 
@@ -130,6 +140,8 @@ runInEachFileSystem(() => {
             ClassInputDir,
             StaticInputDir,
             PInputDir,
+            MatchDir,
+            WithHost,
             TabRole,
             Card,
             Proj,
@@ -163,6 +175,16 @@ runInEachFileSystem(() => {
       [
         'should report a class binding on ng-container',
         `<ng-container [class.p]="v"></ng-container>`,
+        [NG8031],
+      ],
+      [
+        'should report a class map binding on ng-container',
+        `<ng-container [class]="'a'"></ng-container>`,
+        [NG8031],
+      ],
+      [
+        'should report a class interpolation on ng-container',
+        `<ng-container class="a {{v}}"></ng-container>`,
         [NG8031],
       ],
       [
@@ -213,6 +235,11 @@ runInEachFileSystem(() => {
       [
         'should report an attribute binding on ng-template',
         `<ng-template [attr.title]="'t'"></ng-template>`,
+        [NG8031],
+      ],
+      [
+        'should report an event binding on ng-template',
+        `<ng-template (click)="h()"></ng-template>`,
         [NG8031],
       ],
       [
@@ -275,6 +302,31 @@ runInEachFileSystem(() => {
 
     describe('bindings that take effect', () => {
       runRows([
+        [
+          'should not report a property binding that a directive selector matches on ng-template',
+          `<ng-template [match-dir]="v"></ng-template>`,
+          [],
+        ],
+        [
+          'should not report an event that a directive selector matches',
+          `<ng-container (match-dir)="h()"></ng-container>`,
+          [],
+        ],
+        [
+          'should report a binding that only the selector of a host directive names',
+          `<ng-template with-host [host-only]="v"></ng-template>`,
+          [NG8031],
+        ],
+        [
+          'should not report a directive input on ng-template inside svg',
+          `<ng-template #t>t</ng-template><svg><ng-template [ngTemplateOutlet]="t"></ng-template></svg>`,
+          [],
+        ],
+        [
+          'should not report a directive input on ng-template inside a namespaced element',
+          `<xhtml:div xmlns:xhtml="http://www.w3.org/1999/xhtml"><ng-template [ngIf]="v"></ng-template></xhtml:div>`,
+          [],
+        ],
         [
           'should not report an event that a directive output claims',
           `<ng-container out-dir (out)="h($event)"></ng-container>`,
@@ -394,6 +446,11 @@ runInEachFileSystem(() => {
           [],
         ],
         [
+          'should not report a static class that a projection slot selects',
+          `<proj><ng-container class="card-body">B</ng-container></proj>`,
+          [],
+        ],
+        [
           'should not report a static attribute that a projection slot selects through a block',
           `<proj>@if (v) {<ng-container card-header>H</ng-container>}</proj>`,
           [],
@@ -486,6 +543,16 @@ runInEachFileSystem(() => {
         'error NG8030',
         NG8031,
       ]);
+    });
+
+    it('should not report a property binding that a directive selector matches under NO_ERRORS_SCHEMA', () => {
+      expect(
+        diagnose(
+          `<ng-container [match-dir]="v"></ng-container>`,
+          {},
+          'schemas: [NO_ERRORS_SCHEMA],',
+        ),
+      ).toEqual([]);
     });
 
     describe('configuration', () => {
