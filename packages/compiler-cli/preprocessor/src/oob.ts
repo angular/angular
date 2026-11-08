@@ -554,7 +554,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
       id,
       getComponentOnNonRenderingElementMessage(node, componentName),
       node.startSourceSpan,
-      OutOfBandDiagnosticCategory.Warning,
+      OutOfBandDiagnosticCategory.Error,
       ErrorCode.COMPONENT_ON_NON_RENDERING_ELEMENT,
     );
   }

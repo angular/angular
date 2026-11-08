@@ -509,7 +509,7 @@ runInEachFileSystem(() => {
 
     describe('components on ng-container and ng-template', () => {
       // The level of NG8032, as `diagnosticCodes` reports it.
-      const NG8032 = 'warning NG8032';
+      const NG8032 = 'error NG8032';
 
       runRows([
         [

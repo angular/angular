@@ -742,7 +742,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         id,
         this.resolver.getTemplateSourceMapping(id),
         node.startSourceSpan,
-        ts.DiagnosticCategory.Warning,
+        ts.DiagnosticCategory.Error,
         ngErrorCode(ErrorCode.COMPONENT_ON_NON_RENDERING_ELEMENT),
         getComponentOnNonRenderingElementMessage(node, componentName),
       ),
