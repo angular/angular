@@ -258,6 +258,8 @@ export class GenericKeyFn implements ExpressionKeyFn {
       return `read(${expr.name})`;
     } else if (expr instanceof o.TypeofExpr) {
       return `typeof(${this.keyOf(expr.expr)})`;
+    } else if (expr instanceof o.VoidExpr) {
+      return `void(${this.keyOf(expr.expr)})`;
     } else if (expr instanceof o.SpreadElementExpr) {
       return `...${this.keyOf(expr.expression)}`;
     } else {

@@ -258,6 +258,16 @@
       ]
     },
     {
+      "description": "should support void expressions in array and object literals",
+      "inputFiles": ["literal_void.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid array/object literal binding",
+          "files": ["literal_void.js"]
+        }
+      ]
+    },
+    {
       "description": "should support expressions nested deeply in object/array literals",
       "inputFiles": ["literal_nested_expression.ts"],
       "expectations": [
