@@ -1043,6 +1043,218 @@ runInEachFileSystem(() => {
         );
       });
 
+      describe('deferred dependency also used as a type', () => {
+        const HEAVY_DYNAMIC_IMPORT = /import\(['"]\.\/heavy['"]\)\.then\(\(?m\)? => m\.Heavy\)/;
+        const HEAVY_STATIC_IMPORT = /from ['"]\.\/heavy['"]/;
+
+        beforeEach(() => {
+          env.write(
+            'heavy.ts',
+            `
+            import {Component} from '@angular/core';
+            export interface HeavyConfig {}
+            @Component({selector: 'heavy', template: ''})
+            export class Heavy {}
+          `,
+          );
+        });
+
+        function writeConsumer(
+          name: string,
+          imports: string,
+          members: string,
+          deferred = 'Heavy',
+        ): void {
+          env.write(
+            `${name}.ts`,
+            `
+            import {Component, viewChild} from '@angular/core';
+            ${imports}
+            @Component({
+              selector: '${name}',
+              template: '@defer (name block1) { <heavy #h/> }',
+              // @ts-ignore
+              deferredImports: {block1: [${deferred}]},
+            })
+            export class Consumer {
+              ${members}
+            }
+          `,
+          );
+        }
+
+        function expectLazyHeavy(name: string): string {
+          const jsContents = env.getRawContents(`${name}.js`);
+          expect(cleanNewLines(jsContents)).toMatch(HEAVY_DYNAMIC_IMPORT);
+          expect(jsContents).not.toMatch(HEAVY_STATIC_IMPORT);
+          return jsContents;
+        }
+
+        it('should keep the declaration import clause', () => {
+          // The deferred class is also referenced through a user-written type-only alias.
+          writeConsumer(
+            'aliased',
+            `import {Heavy, type Heavy as HeavyType} from './heavy';`,
+            `readonly h = viewChild<HeavyType>('h');`,
+          );
+          writeConsumer(
+            'plain',
+            `import {Heavy} from './heavy';`,
+            `readonly h = viewChild<Heavy>('h');`,
+          );
+          // A user-written `type` specifier sits next to the deferred one.
+          writeConsumer(
+            'mixed',
+            `import {Heavy, type HeavyConfig} from './heavy';`,
+            `readonly h = viewChild<Heavy>('h'); config: HeavyConfig = {};`,
+          );
+          // The deferred class is imported under a local alias.
+          writeConsumer(
+            'value-alias',
+            `import {Heavy as H} from './heavy';`,
+            `readonly h = viewChild<H>('h');`,
+            'H',
+          );
+
+          env.driveMain();
+
+          for (const name of ['aliased', 'plain', 'mixed', 'value-alias']) {
+            expectLazyHeavy(name);
+          }
+
+          const aliasedDts = env.getRawContents('aliased.d.ts');
+          const plainDts = env.getRawContents('plain.d.ts');
+          const mixedDts = env.getRawContents('mixed.d.ts');
+          const valueAliasDts = env.getRawContents('value-alias.d.ts');
+          if (isNgpTestMode()) {
+            // TODO(parity): ngp adds a `type` modifier to every specifier of a deferred import
+            // that is still referenced as a type, and the declaration emit keeps it.
+            expect(aliasedDts).toContain(`import { type Heavy } from './heavy';`);
+            expect(plainDts).toContain(`import { type Heavy } from './heavy';`);
+            expect(mixedDts).toContain(`import { type Heavy, type HeavyConfig } from './heavy';`);
+            expect(valueAliasDts).toContain(`import { type Heavy as H } from './heavy';`);
+          } else {
+            expect(aliasedDts).toContain(`import { Heavy } from './heavy';`);
+            expect(plainDts).toContain(`import { Heavy } from './heavy';`);
+            expect(mixedDts).toContain(`import { Heavy, type HeavyConfig } from './heavy';`);
+            expect(valueAliasDts).toContain(`import { Heavy as H } from './heavy';`);
+          }
+        });
+
+        it('should keep the declaration import clause under emitDecoratorMetadata', () => {
+          env.tsconfig({onlyExplicitDeferDependencyImports: true}, {emitDecoratorMetadata: true});
+          writeConsumer(
+            'plain',
+            `import {Heavy} from './heavy';`,
+            `readonly h = viewChild<Heavy>('h');`,
+          );
+          // Angular's DI decorators are consumed by the factory and stripped, so they serialize
+          // nothing either.
+          writeConsumer(
+            'injected',
+            `import {Inject, InjectionToken, Optional} from '@angular/core';
+            import {Heavy} from './heavy';
+            const TOKEN = new InjectionToken<Heavy>('TOKEN');`,
+            `constructor(@Inject(TOKEN) @Optional() readonly h: Heavy) {}`,
+          );
+
+          env.driveMain();
+
+          expectLazyHeavy('plain');
+          const plainDts = env.getRawContents('plain.d.ts');
+          if (isNgpTestMode()) {
+            // TODO(parity): see above.
+            expect(plainDts).toContain(`import { type Heavy } from './heavy';`);
+          } else {
+            expect(plainDts).toContain(`import { Heavy } from './heavy';`);
+          }
+
+          const injectedJs = env.getRawContents('injected.js');
+          const injectedDts = env.getRawContents('injected.d.ts');
+          if (isNgpTestMode()) {
+            expect(injectedJs).not.toMatch(HEAVY_STATIC_IMPORT);
+            // TODO(parity): see above.
+            expect(injectedDts).toContain(`import { type Heavy } from './heavy';`);
+          } else {
+            // ngtsc's `ctorParameters` metadata reads `i1.Heavy`, which imports the module
+            // eagerly.
+            expect(injectedJs).toContain(`import * as i1 from "./heavy";`);
+            expect(injectedDts).toContain(`import { Heavy } from './heavy';`);
+          }
+        });
+
+        it('should stay lazy when decorator metadata serializes the deferred type', () => {
+          env.tsconfig({onlyExplicitDeferDependencyImports: true}, {emitDecoratorMetadata: true});
+          writeConsumer(
+            'tracked',
+            `import {Heavy} from './heavy';
+            declare function Track(): PropertyDecorator;`,
+            `@Track() h?: Heavy;`,
+          );
+
+          env.driveMain();
+
+          const jsContents = expectLazyHeavy('tracked');
+          const trackedDts = env.getRawContents('tracked.d.ts');
+          if (isNgpTestMode()) {
+            // A `type` specifier keeps `tsc` from serializing `Heavy` as a value, which would
+            // otherwise keep the static import alive.
+            expect(jsContents).toContain('__metadata("design:type", Function)');
+            // TODO(parity): the declaration emit keeps the added `type` modifier.
+            expect(trackedDts).toContain(`import { type Heavy } from './heavy';`);
+          } else {
+            // ngtsc drops the import but still serializes `Heavy`, which dangles at runtime.
+            expect(jsContents).toContain('__metadata("design:type", Heavy)');
+            expect(trackedDts).toContain(`import { Heavy } from './heavy';`);
+          }
+        });
+
+        it('should stay lazy for a default import under verbatimModuleSyntax', () => {
+          env.tsconfig({onlyExplicitDeferDependencyImports: true}, {verbatimModuleSyntax: true});
+          env.write(
+            'heavy-default.ts',
+            `
+            import {Component} from '@angular/core';
+            @Component({selector: 'heavy', template: ''})
+            export default class HeavyD {}
+          `,
+          );
+          env.write(
+            'default-import.ts',
+            `
+            import {Component, viewChild} from '@angular/core';
+            import HeavyD from './heavy-default';
+            @Component({
+              selector: 'default-import',
+              template: '@defer (name block1) { <heavy #h/> }',
+              // @ts-ignore
+              deferredImports: {block1: [HeavyD]},
+            })
+            export class Consumer {
+              readonly h = viewChild<HeavyD>('h');
+            }
+          `,
+          );
+
+          env.driveMain();
+
+          const jsContents = env.getRawContents('default-import.js');
+          expect(cleanNewLines(jsContents)).toMatch(
+            /import\(['"]\.\/heavy-default['"]\)\.then\(\(?m\)? => m\.default\)/,
+          );
+          expect(jsContents).not.toMatch(/from ['"]\.\/heavy-default['"]/);
+          const dts = env.getRawContents('default-import.d.ts');
+          if (isNgpTestMode()) {
+            // TODO(parity): TypeScript keeps an import that is only referenced as a type under
+            // `verbatimModuleSyntax`, so ngp makes the declaration type-only and the declaration
+            // emit keeps the modifier.
+            expect(dts).toContain(`import type HeavyD from './heavy-default';`);
+          } else {
+            expect(dts).toContain(`import HeavyD from './heavy-default';`);
+          }
+        });
+      });
+
       it('should handle defer blocks that rely on deps from `deferredImports` and `imports`', () => {
         env.write(
           'eager-a.ts',
