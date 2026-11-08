@@ -331,6 +331,32 @@ describe('Image directive', () => {
     expect(img.getAttribute('height')).toBe('50');
   });
 
+  it('should not read the attributes that it writes when hydration is disabled', async () => {
+    // Only run this test in a browser since the Node-based DOM mocks don't
+    // allow to override `Element.prototype.getAttribute` easily.
+    if (!isBrowser) return;
+
+    setupTestingModule();
+
+    const template = '<img ngSrc="path/img.png" width="150" height="50">';
+    TestBed.overrideComponent(TestComponent, {set: {template: template}});
+
+    const _window = TestBed.inject(DOCUMENT).defaultView!;
+    const getAttributeSpy = spyOn(_window.Element.prototype, 'getAttribute').and.callThrough();
+
+    const fixture = TestBed.createComponent(TestComponent);
+    await fixture.whenStable();
+
+    const img = (fixture.nativeElement as HTMLElement).querySelector('img')!;
+    const directiveAttrs = ['width', 'height', 'loading', 'fetchpriority', 'decoding', 'src'];
+    const reads = getAttributeSpy.calls
+      .all()
+      .filter((call) => call.object === img && directiveAttrs.includes(call.args[0]))
+      .map((call) => call.args[0]);
+    expect(reads).toEqual([]);
+    expect(img.hasAttribute('src')).toBe(true);
+  });
+
   describe('setup error handling', () => {
     it('should throw if both `src` and `ngSrc` are present', async () => {
       setupTestingModule();

@@ -18,6 +18,7 @@ import {
   ɵIMAGE_CONFIG_DEFAULTS as IMAGE_CONFIG_DEFAULTS,
   ɵImageConfig as ImageConfig,
   inject,
+  ɵIS_HYDRATION_DOM_REUSE_ENABLED as IS_HYDRATION_DOM_REUSE_ENABLED,
   Injector,
   Input,
   NgZone,
@@ -276,6 +277,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
   private imgElement: HTMLImageElement = inject(ElementRef).nativeElement;
   private injector = inject(Injector);
   private destroyRef = inject(DestroyRef);
+  private isHydrationEnabled = inject(IS_HYDRATION_DOM_REUSE_ENABLED, {optional: true});
 
   // An LCP image observer should be injected only in development mode.
   // Do not assign it to `null` to avoid having a redundant property in the production bundle.
@@ -783,7 +785,17 @@ export class NgOptimizedImage implements OnInit, OnChanges {
   }
 
   private setHostAttribute(name: string, value: string): void {
-    this.renderer.setAttribute(this.imgElement, name, value);
+    // During hydration, the element already has the values that the server rendered, and the
+    // browser selects the image source again after a write, even with an identical value.
+    // An image that still has a placeholder keeps its writes, so that an image that failed before
+    // hydration fires `error` again and the placeholder is removed.
+    if (
+      !this.isHydrationEnabled ||
+      this.placeholder ||
+      this.imgElement.getAttribute(name) !== value
+    ) {
+      this.renderer.setAttribute(this.imgElement, name, value);
+    }
   }
 }
 
