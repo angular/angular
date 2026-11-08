@@ -511,6 +511,21 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     );
   }
 
+  unsupportedNgContentAttribute(id: TypeCheckId, attr: TmplAstTextAttribute): void {
+    const lower = attr.name.toLowerCase();
+    const message =
+      lower === 'selection' || lower === 'selector'
+        ? `'${attr.name}' is not supported on ng-content. Did you mean 'select'?`
+        : `'${attr.name}' is not supported on ng-content.`;
+    this.pushDiagnostic(
+      id,
+      message,
+      attr.sourceSpan,
+      OutOfBandDiagnosticCategory.Error,
+      ErrorCode.TEMPLATE_PARSE_ERROR,
+    );
+  }
+
   /**
    * Span covering only the tag name of a node, since highlighting the entire start tag can be
    * noisy. Falls back to the whole start tag for nodes without a name (e.g. `<ng-template>`).

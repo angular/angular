@@ -1,7 +1,10 @@
-import {Component} from '@angular/core';
+import { Component, Directive } from '@angular/core';
 
+@Directive({selector: '[ngIf]'})
+export class FakeNgIf {}
 @Component({
   selector: 'test',
+  imports: [FakeNgIf],
   template: `
     <ng-content select="basic">Basic fallback</ng-content>
 

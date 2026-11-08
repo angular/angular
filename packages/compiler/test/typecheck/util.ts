@@ -586,4 +586,5 @@ class NoopOobRecorder implements OutOfBandDiagnosticRecorder<unknown> {
   formFieldUnsupportedBinding(): void {}
   multipleMatchingComponents(): void {}
   conflictingHostDirectiveBinding(): void {}
+  unsupportedNgContentAttribute(): void {}
 }

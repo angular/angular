@@ -7,6 +7,7 @@
  */
 
 import {SchemaMetadata} from '../../core';
+import {Content, TextAttribute} from '../../render3/r3_ast';
 import {BoundTarget} from '../../render3/view/t2_api';
 import {TypeCheckId, TcbDirectiveMetadata, TcbPipeMetadata, TcbEnvironment} from '../api';
 import {OutOfBandDiagnosticRecorder} from '../oob';
@@ -49,6 +50,12 @@ export enum TcbGenericContextBehavior {
  */
 export class Context {
   private nextId = 1;
+
+  /**
+   * Static attributes on `<ng-content>` nodes that select a content projection slot of their
+   * parent component.
+   */
+  readonly contentAttributesInProjectionSlots = new Map<Content, Set<TextAttribute>>();
 
   constructor(
     readonly env: TcbEnvironment,
