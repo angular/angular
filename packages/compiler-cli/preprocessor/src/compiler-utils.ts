@@ -39,7 +39,6 @@ import {PipeMeta} from './tcb.js';
 import type {ParsedComponentTemplate} from './file_analysis.js';
 import {RawSource} from './output_ast_printer.js';
 import {offsetToPosition} from './tcb_util.js';
-import MagicString from 'magic-string';
 
 /** Minimal directive metadata for `R3TargetBinder`. */
 export interface MinimalDirectiveMeta extends DirectiveMeta {
@@ -396,7 +395,6 @@ export function buildDeps(
   constructorParams: nga.ConstructorParamMetadata[] | undefined,
   usesInheritance: boolean,
   o: typeof outputAst,
-  s: MagicString,
 ):
   | Array<{
       token: outputAst.Expression;
@@ -437,32 +435,26 @@ export function buildDeps(
     // https://github.com/angular/angular/blob/50e599e/packages/compiler-cli/src/ngtsc/annotations/common/src/di.ts#L62-L100
     for (const decorator of param.decorators) {
       const arg = decorator.args?.[0];
-      let isInjectDecorator = false;
       const decoratorKind = decorator.canonicalName ?? decorator.name;
 
       switch (decoratorKind) {
         case 'Optional':
           optional = true;
-          isInjectDecorator = true;
           break;
         case 'Self':
           self = true;
-          isInjectDecorator = true;
           break;
         case 'SkipSelf':
           skipSelf = true;
-          isInjectDecorator = true;
           break;
         case 'Host':
           host = true;
-          isInjectDecorator = true;
           break;
         case 'Inject':
           if (arg) {
             token = arg.isLiteral ? o.literal(arg.value) : rawToken(arg, decorator);
             tokenResolved = true;
           }
-          isInjectDecorator = true;
           break;
         case 'Attribute':
           if (arg) {
@@ -473,12 +465,7 @@ export function buildDeps(
               : new o.WrappedNodeExpr(new RawSource('unknown'));
             tokenResolved = true;
           }
-          isInjectDecorator = true;
           break;
-      }
-
-      if (isInjectDecorator && decorator.decoratorSpan !== undefined) {
-        s.remove(decorator.decoratorSpan.start, decorator.decoratorSpan.end);
       }
     }
 

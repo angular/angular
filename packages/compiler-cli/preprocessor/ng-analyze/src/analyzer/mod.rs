@@ -637,6 +637,7 @@ pub fn get_constructor_params<'a>(
     import_map: &std::collections::HashMap<String, ImportedSymbol>,
     angular_imports: &crate::analyzer::imports::AngularImports,
     jit_removal_spans: &mut Vec<oxc_span::Span>,
+    di_removal_spans: &mut Vec<oxc_span::Span>,
     mut top_level_reads: Option<&mut TopLevelReads<'_, 'a, '_>>,
 ) -> Option<ConstructorParams> {
     let target_method = constructor_method(class, false)?;
@@ -694,8 +695,16 @@ pub fn get_constructor_params<'a>(
                 ));
             }
 
+            let is_di_decorator =
+                is_angular && canonical_name.is_some_and(|c| DI_PARAMETER_DECORATORS.contains(&c));
+            // A compiled class consumes its DI decorators in the factory and drops them, matching
+            // ngtsc's `IvyTransformationVisitor._stripAngularDecorators`.
+            if is_di_decorator {
+                di_removal_spans.push(decorator.span);
+            }
+
             // Flag unrecognized @angular/core decorators on constructor parameters (NG1005).
-            if is_angular && !canonical_name.is_some_and(|c| DI_PARAMETER_DECORATORS.contains(&c)) {
+            if is_angular && !is_di_decorator {
                 if let Some(reported) =
                     self::utils::reported_decorator_name(decorator, angular_imports, import_map)
                 {

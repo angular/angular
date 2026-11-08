@@ -110,6 +110,8 @@ interface HybridCompilerContext {
   legacyOptionalChaining: boolean;
   isClosureCompilerEnabled: boolean;
   emitDeclarationOnly?: boolean;
+  emitDecoratorMetadata?: boolean;
+  verbatimModuleSyntax?: boolean;
   externalRuntimeStyles?: boolean;
   onlyExplicitDeferDependencyImports?: boolean;
   enableTemplateSourceLocations?: boolean;
@@ -547,7 +549,7 @@ export function processFileSync(
 
     // Build deps from constructor params
     // Use empty array for no-arg constructors (null means "inherit from parent")
-    const deps = buildDeps(constructorParams, classMeta.usesInheritance, o, s);
+    const deps = buildDeps(constructorParams, classMeta.usesInheritance, o);
     const usesCtorDepsInFactory = Boolean(
       pipe || component || directive || ngModule || (injectable && !service),
     );
@@ -1869,7 +1871,14 @@ export function processFileSync(
   );
   const removedDecls = ctx.enableHmr
     ? new Set<nga.ImportDeclarationMetadata>()
-    : removeDeferredImports(s, content, importDeclarations, deferredOnlyNames, eagerlyBoundNames);
+    : removeDeferredImports(
+        s,
+        content,
+        importDeclarations,
+        deferredOnlyNames,
+        eagerlyBoundNames,
+        ctx,
+      );
 
   // Hoist the import statements written after another statement up to `importsEnd`, like ngtsc's
   // `ImportManager`, which rebuilds a file it adds imports to as its existing import statements
@@ -3327,9 +3336,28 @@ function reportEagerlyImportedDeferredDependencies(
  *
  * When a deferrable declaration has no surviving references at all (`!binding.eagerlyReferenced`),
  * it is removed outright. When any binding is still referenced in a TypeScript type annotation
- * (`binding.eagerlyReferenced`), non-type specifiers are converted to `type` specifiers so
- * downstream `tsc` / `tsickle` elides the runtime import while keeping type annotations valid.
+ * (`binding.eagerlyReferenced`), the declaration is kept, and as far as possible exactly as
+ * written: nothing references it as a value any more, so the downstream `tsc` elides it from
+ * JavaScript while the declaration emit keeps the user's import clause. ngtsc likewise drops the
+ * declaration only in its JavaScript transform (`IvyTransformationVisitor.visitOtherNode`), so
+ * its `.d.ts` emit sees the original clause.
+ *
+ * A specifier still gets a `type` modifier where the output would otherwise read it as a value:
+ * - an aliased specifier (`{Cmp as Alias}`): the `ɵsetClassMetadataAsync` callback names its
+ *   parameter after the exported name (see `deferredImportOf`), so the copied decorator metadata
+ *   reads `Alias` from the import. ngtsc emits the same callback but deletes the import;
+ * - under `emitDecoratorMetadata`, a binding `tsc` serializes into `design:*` metadata
+ *   (`binding.decoratorMetadataReferenced`). A `type` specifier is serialized as `Function`.
+ *   ngtsc deletes the import here too, leaving the serialized reference dangling.
+ * Under `verbatimModuleSyntax`, `tsc` keeps any import without a `type` modifier, so every
+ * specifier of the declaration gets one.
+ *
+ * TODO(parity): the `type` modifiers added in those cases reach the `.d.ts`. Under
+ * `verbatimModuleSyntax`, named specifiers that all carry `type` still leave
+ * `import {} from '…'` behind, which loads the module eagerly; only a declaration-level
+ * `import type` is erased there.
  * https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/imports/src/deferred_symbol_tracker.ts
+ * https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/transform/src/transform.ts
  */
 function removeDeferredImports(
   s: MagicString,
@@ -3337,6 +3365,7 @@ function removeDeferredImports(
   importDeclarations: readonly nga.ImportDeclarationMetadata[],
   deferredOnlyNames: ReadonlySet<string>,
   eagerlyBoundNames: ReadonlySet<string>,
+  ctx: Pick<HybridCompilerContext, 'emitDecoratorMetadata' | 'verbatimModuleSyntax'>,
 ): Set<nga.ImportDeclarationMetadata> {
   const removed = new Set<nga.ImportDeclarationMetadata>();
   if (deferredOnlyNames.size === 0) {
@@ -3359,42 +3388,54 @@ function removeDeferredImports(
     if (!deferrable) {
       continue;
     }
-    if (decl.bindings.some((binding) => binding.eagerlyReferenced)) {
-      convertImportToTypeOnly(s, content, decl);
-    } else {
+    if (!decl.bindings.some((binding) => binding.eagerlyReferenced)) {
       s.remove(decl.removalSpan.start, decl.removalSpan.end);
       removed.add(decl);
+      continue;
     }
+    convertImportToTypeOnly(
+      s,
+      content,
+      decl,
+      (binding) =>
+        ctx.verbatimModuleSyntax === true ||
+        (binding.imported !== undefined &&
+          binding.imported !== 'default' &&
+          binding.imported !== binding.local) ||
+        (ctx.emitDecoratorMetadata === true && binding.decoratorMetadataReferenced),
+    );
   }
   return removed;
 }
 
 /**
- * Convert all non-`type` specifiers of `decl` into `type` specifiers so the declaration remains
- * valid for TypeScript type annotations while eliding any runtime module import.
+ * Convert the non-`type` specifiers of `decl` that satisfy `shouldConvert` into `type`
+ * specifiers, so the declaration remains valid for TypeScript type annotations while those
+ * bindings no longer keep the runtime module import alive.
  */
 function convertImportToTypeOnly(
   s: MagicString,
   content: string,
   decl: nga.ImportDeclarationMetadata,
+  shouldConvert: (binding: nga.ImportBindingMetadata) => boolean,
 ): void {
   const first = decl.bindings[0];
+  // `import type D, {A}` is not valid syntax, so converting a default binding converts the whole
+  // declaration.
+  const convertsDefault = first.imported === 'default' && !first.isType && shouldConvert(first);
   const hasDefaultClauseWithNamed =
+    convertsDefault &&
     decl.bindings.length > 1 &&
-    first.imported === 'default' &&
     !content.slice(decl.span.start, first.span.start).includes('{');
   if (hasDefaultClauseWithNamed) {
     const braceIdx = content.indexOf('{', first.span.end);
     s.overwrite(first.span.start, braceIdx + 1, `{ type default as ${first.local},`);
-    for (const binding of decl.bindings.slice(1)) {
-      if (!binding.isType) {
-        s.appendLeft(binding.span.start, 'type ');
-      }
-    }
-    return;
   }
   for (const binding of decl.bindings) {
-    if (!binding.isType) {
+    if (binding.isType || (hasDefaultClauseWithNamed && binding === first)) {
+      continue;
+    }
+    if (convertsDefault || shouldConvert(binding)) {
       s.appendLeft(binding.span.start, 'type ');
     }
   }

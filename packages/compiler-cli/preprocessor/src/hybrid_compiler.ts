@@ -154,6 +154,16 @@ export interface HybridCompilerOptions {
   legacyOptionalChaining?: boolean;
   isClosureCompilerEnabled?: boolean;
   emitDeclarationOnly?: boolean;
+  /**
+   * TypeScript's `emitDecoratorMetadata`, under which the downstream `tsc` serializes the type
+   * annotations of decorated members as values.
+   */
+  emitDecoratorMetadata?: boolean;
+  /**
+   * TypeScript's `verbatimModuleSyntax`, under which the downstream `tsc` keeps every import
+   * without a `type` modifier.
+   */
+  verbatimModuleSyntax?: boolean;
   externalRuntimeStyles?: boolean;
   onlyExplicitDeferDependencyImports?: boolean;
   enableTemplateSourceLocations?: boolean;
@@ -250,6 +260,8 @@ export function createHybridCompiler(
     onlyExplicitDeferDependencyImports: angularCompilerOptions?.onlyExplicitDeferDependencyImports,
     enableTemplateSourceLocations: angularCompilerOptions?.enableTemplateSourceLocations,
     emitDeclarationOnly,
+    emitDecoratorMetadata: angularCompilerOptions?.emitDecoratorMetadata === true,
+    verbatimModuleSyntax: angularCompilerOptions?.verbatimModuleSyntax === true,
     onlyPublishPublicTypingsForNgModules,
     forbidOrphanComponents: angularCompilerOptions?.forbidOrphanComponents,
     supportJitMode: angularCompilerOptions?.supportJitMode !== false,
@@ -303,6 +315,8 @@ export class HybridCompiler {
   readonly legacyOptionalChaining: boolean;
   readonly isClosureCompilerEnabled: boolean;
   readonly emitDeclarationOnly: boolean;
+  readonly emitDecoratorMetadata: boolean;
+  readonly verbatimModuleSyntax: boolean;
   readonly externalRuntimeStyles: boolean;
   readonly onlyExplicitDeferDependencyImports: boolean;
   readonly enableTemplateSourceLocations: boolean;
@@ -352,6 +366,8 @@ export class HybridCompiler {
       options.legacyOptionalChaining ?? LEGACY_OPTIONAL_CHAINING_DEFAULT;
     this.isClosureCompilerEnabled = options.isClosureCompilerEnabled ?? false;
     this.emitDeclarationOnly = options.emitDeclarationOnly ?? false;
+    this.emitDecoratorMetadata = options.emitDecoratorMetadata ?? false;
+    this.verbatimModuleSyntax = options.verbatimModuleSyntax ?? false;
     this.externalRuntimeStyles = options.externalRuntimeStyles ?? false;
     this.onlyExplicitDeferDependencyImports = options.onlyExplicitDeferDependencyImports ?? false;
     this.enableTemplateSourceLocations = options.enableTemplateSourceLocations ?? false;

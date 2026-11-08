@@ -1126,17 +1126,15 @@ runInEachFileSystem(() => {
           const plainDts = env.getRawContents('plain.d.ts');
           const mixedDts = env.getRawContents('mixed.d.ts');
           const valueAliasDts = env.getRawContents('value-alias.d.ts');
+          expect(aliasedDts).toContain(`import { Heavy } from './heavy';`);
+          expect(plainDts).toContain(`import { Heavy } from './heavy';`);
+          expect(mixedDts).toContain(`import { Heavy, type HeavyConfig } from './heavy';`);
           if (isNgpTestMode()) {
-            // TODO(parity): ngp adds a `type` modifier to every specifier of a deferred import
-            // that is still referenced as a type, and the declaration emit keeps it.
-            expect(aliasedDts).toContain(`import { type Heavy } from './heavy';`);
-            expect(plainDts).toContain(`import { type Heavy } from './heavy';`);
-            expect(mixedDts).toContain(`import { type Heavy, type HeavyConfig } from './heavy';`);
+            // TODO(parity): the `ɵsetClassMetadataAsync` callback names its parameter `Heavy`
+            // while the copied decorator reads `H`, so ngp marks the specifier `type` to keep
+            // that read from loading the module, and the declaration emit keeps the modifier.
             expect(valueAliasDts).toContain(`import { type Heavy as H } from './heavy';`);
           } else {
-            expect(aliasedDts).toContain(`import { Heavy } from './heavy';`);
-            expect(plainDts).toContain(`import { Heavy } from './heavy';`);
-            expect(mixedDts).toContain(`import { Heavy, type HeavyConfig } from './heavy';`);
             expect(valueAliasDts).toContain(`import { Heavy as H } from './heavy';`);
           }
         });
@@ -1161,26 +1159,17 @@ runInEachFileSystem(() => {
           env.driveMain();
 
           expectLazyHeavy('plain');
-          const plainDts = env.getRawContents('plain.d.ts');
-          if (isNgpTestMode()) {
-            // TODO(parity): see above.
-            expect(plainDts).toContain(`import { type Heavy } from './heavy';`);
-          } else {
-            expect(plainDts).toContain(`import { Heavy } from './heavy';`);
-          }
+          expect(env.getRawContents('plain.d.ts')).toContain(`import { Heavy } from './heavy';`);
 
           const injectedJs = env.getRawContents('injected.js');
-          const injectedDts = env.getRawContents('injected.d.ts');
           if (isNgpTestMode()) {
             expect(injectedJs).not.toMatch(HEAVY_STATIC_IMPORT);
-            // TODO(parity): see above.
-            expect(injectedDts).toContain(`import { type Heavy } from './heavy';`);
           } else {
             // ngtsc's `ctorParameters` metadata reads `i1.Heavy`, which imports the module
             // eagerly.
             expect(injectedJs).toContain(`import * as i1 from "./heavy";`);
-            expect(injectedDts).toContain(`import { Heavy } from './heavy';`);
           }
+          expect(env.getRawContents('injected.d.ts')).toContain(`import { Heavy } from './heavy';`);
         });
 
         it('should stay lazy when decorator metadata serializes the deferred type', () => {

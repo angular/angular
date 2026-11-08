@@ -630,9 +630,14 @@ export interface ImportBindingMetadata {
   /**
    * True when `local` has a surviving value-position reference; ngtsc decides `@defer`
    * eligibility on this. `eagerly_referenced` then decides whether a deferrable import is
-   * deleted outright or has its non-type specifiers converted to `type`.
+   * deleted outright or kept for its type references (see `removeDeferredImports`).
    */
   valueReferenced: boolean;
+  /**
+   * True when a type reference to `local` is serialized into `design:*` decorator metadata under
+   * `emitDecoratorMetadata`, which keeps a plain import alive in JavaScript.
+   */
+  decoratorMetadataReferenced: boolean;
   /** True for `import type { X }` / `import { type X }` (ignored by ngtsc's deferrability check). */
   isType: boolean;
 }
