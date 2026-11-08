@@ -11,11 +11,13 @@ import '@angular/localize/init';
 import {
   CommonModule,
   DOCUMENT,
+  IMAGE_LOADER,
   isPlatformBrowser,
   isPlatformServer,
   NgComponentOutlet,
   NgFor,
   NgIf,
+  NgOptimizedImage,
   NgSwitch,
   NgSwitchCase,
   NgTemplateOutlet,
@@ -62,6 +64,8 @@ import {provideRouter, RouterOutlet, Routes} from '@angular/router';
 import {
   clearDocument,
   getAppContents,
+  hydrate,
+  prepareEnvironment,
   prepareEnvironmentAndHydrate,
   resetTViewsFor,
   stripUtilAttributes,
@@ -8459,6 +8463,93 @@ describe('platform-server full application hydration integration', () => {
 
         // The fallback should still be rendered (either hydrated or re-created)
         expect(clientRootNode.textContent).toContain('Error occurred on server and client!');
+      });
+    });
+
+    describe('NgOptimizedImage', () => {
+      const envProviders = [
+        {provide: IMAGE_LOADER, useValue: () => 'https://cdn.example.com/hero.jpg'},
+      ];
+      const directiveAttrs = ['src', 'srcset', 'loading', 'fetchpriority', 'decoding', 'ng-img'];
+
+      @Component({
+        selector: 'app',
+        imports: [NgOptimizedImage],
+        template: `<img ngSrc="hero.jpg" width="400" height="300" />`,
+      })
+      class ImageComponent {}
+
+      @Component({
+        selector: 'app',
+        imports: [NgOptimizedImage],
+        template: `
+          <img
+            ngSrc="hero.jpg"
+            width="40"
+            height="40"
+            placeholder="data:image/gif;base64,R0lGODlhAQABAAAAACw="
+          />
+        `,
+      })
+      class PlaceholderImageComponent {}
+
+      async function renderOnServer(component: Type<unknown>): Promise<HTMLImageElement> {
+        const html = await ssr(component, {envProviders});
+        resetTViewsFor(component);
+        prepareEnvironment(doc, html);
+        return doc.querySelector('img')!;
+      }
+
+      async function hydrateImage(component: Type<unknown>): Promise<void> {
+        const appRef = await hydrate(doc, component, {envProviders});
+        await appRef.whenStable();
+      }
+
+      // DOM shims define `setAttribute` as a read-only inherited property, which `spyOn` can't
+      // replace, so record the calls through an own property instead.
+      function recordDirectiveWrites(img: HTMLImageElement): string[] {
+        const written: string[] = [];
+        const setAttribute = img.setAttribute;
+        Object.defineProperty(img, 'setAttribute', {
+          configurable: true,
+          value(this: Element, name: string, value: string) {
+            if (directiveAttrs.includes(name)) {
+              written.push(name);
+            }
+            return setAttribute.call(this, name, value);
+          },
+        });
+        return written;
+      }
+
+      it('should not write again the attributes that it rendered on the server', async () => {
+        const img = await renderOnServer(ImageComponent);
+        const ssrValues = directiveAttrs.map((name) => img.getAttribute(name));
+        const written = recordDirectiveWrites(img);
+
+        await hydrateImage(ImageComponent);
+
+        expect(written).toEqual([]);
+        expect(directiveAttrs.map((name) => img.getAttribute(name))).toEqual(ssrValues);
+      });
+
+      it('should write an attribute whose value differs from the server', async () => {
+        const img = await renderOnServer(ImageComponent);
+        img.setAttribute('src', 'https://cdn.example.com/stale.jpg');
+
+        await hydrateImage(ImageComponent);
+
+        expect(img.getAttribute('src')).toBe('https://cdn.example.com/hero.jpg');
+      });
+
+      it('should write again the attributes of an image that still has a placeholder', async () => {
+        const img = await renderOnServer(PlaceholderImageComponent);
+        const written = recordDirectiveWrites(img);
+
+        await hydrateImage(PlaceholderImageComponent);
+
+        expect(written).toContain('src');
+        expect(img.getAttribute('style')).toContain('background-image');
       });
     });
 
