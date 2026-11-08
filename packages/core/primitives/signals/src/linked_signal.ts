@@ -107,6 +107,7 @@ export function linkedSignalSetFn<S, D>(node: LinkedSignalNode<S, D>, newValue: 
   producerUpdateValueVersion(node);
   signalSetFn(node, newValue);
   producerMarkClean(node);
+  node.error = null;
 }
 
 export function linkedSignalUpdateFn<S, D>(
@@ -171,6 +172,7 @@ export const LINKED_SIGNAL_NODE: Omit<
         // to track any reactive reads inside `equal`.
         setActiveConsumer(null);
         wasEqual = oldValueValid && newValue !== ERRORED && node.equal(oldValue, newValue);
+        node.error = null;
       } catch (err) {
         newValue = ERRORED;
         node.error = err;
