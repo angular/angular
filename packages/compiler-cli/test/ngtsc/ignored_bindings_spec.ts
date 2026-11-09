@@ -476,9 +476,14 @@ runInEachFileSystem(() => {
           [NG8031, NG8031],
         ],
         [
-          'should not report static attributes on ng-content that is projected again',
-          `<proj><ng-content title="t" /></proj>`,
+          'should not report a static class on ng-content that a projection slot selects',
+          `<proj><ng-content class="card-body" /></proj>`,
           [],
+        ],
+        [
+          'should report a static attribute on ng-content that no projection slot selects',
+          `<proj><ng-content title="t" /></proj>`,
+          [NG8031],
         ],
         [
           'should report static attributes on ng-content projected into a catch-all slot',

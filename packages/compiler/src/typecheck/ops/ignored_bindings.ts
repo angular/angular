@@ -10,7 +10,7 @@ import {NO_ERRORS_SCHEMA} from '../../core';
 import {CssSelector} from '../../directive_matching';
 import {BindingType, ParsedEventType} from '../../expression_parser/ast';
 import {PRESERVE_WS_ATTR_NAME} from '../../ml_parser/html_whitespaces';
-import {isNgContainer, isNgTemplate} from '../../ml_parser/tags';
+import {isNgContainer, isNgTemplate, splitNsName} from '../../ml_parser/tags';
 import {
   BoundAttribute,
   BoundEvent,
@@ -270,19 +270,39 @@ export function getNodesInProjectionSlots(
       candidate.children.length === 1
         ? candidate.children[0]
         : candidate;
-    if (target instanceof Content || ngContentSelectors === null) {
-      // An `<ng-content>` can be projected again, and a component whose slots are unknown may
-      // select any of its content; keep their attributes conservatively.
+    if (ngContentSelectors === null) {
+      // A component whose slots are unknown may select any of its content.
       result.add(target);
     } else if (
-      (target instanceof Element || target instanceof Template) &&
+      (target instanceof Element || target instanceof Template || target instanceof Content) &&
       !target.attributes.some((attr) => attr.name === NG_PROJECT_AS) &&
-      matcher.match(createCssSelectorFromNode(target), null)
+      matcher.match(createProjectionSelector(target), null)
     ) {
       result.add(target);
     }
   }
   return result;
+}
+
+/**
+ * Creates the selector that content projection matches `node` against. An `<ng-content>` that is
+ * projected again has no tag name at runtime, so only its attributes and classes can select it.
+ */
+function createProjectionSelector(node: Element | Template | Content): CssSelector {
+  if (!(node instanceof Content)) {
+    return createCssSelectorFromNode(node);
+  }
+  const selector = new CssSelector();
+  for (const attr of node.attributes) {
+    const name = splitNsName(attr.name)[1];
+    selector.addAttribute(name, attr.value);
+    if (name.toLowerCase() === 'class') {
+      for (const className of attr.value.trim().split(/\s+/)) {
+        selector.addClassName(className);
+      }
+    }
+  }
+  return selector;
 }
 
 /** Collects the nodes at the root of a component's content, descending only into blocks. */
