@@ -2712,6 +2712,42 @@ describe('navigation', () => {
       await expectAsync(locals.navigation.navigate('/page').finished).toBeRejected();
       expect(caughtError?.name).toBe('InvalidStateError');
     });
+
+    it('throws InvalidStateError from intercept() after preventDefault()', async () => {
+      let caughtError: any = null;
+      locals.setExtraNavigateCallback((event) => {
+        // `preventDefault()` sets the DOM event's canceled flag, which the shared checks reject.
+        event.preventDefault();
+        try {
+          event.intercept({handler: () => {}});
+        } catch (e) {
+          caughtError = e;
+        }
+      });
+
+      await expectAsync(locals.navigation.navigate('/page').finished).toBeRejectedWith(
+        jasmine.objectContaining({name: 'AbortError'}),
+      );
+      expect(caughtError?.name).toBe('InvalidStateError');
+      expect(locals.navigation.currentEntry.url).toBe('https://test.com/');
+    });
+
+    it('allows intercept() after a no-op preventDefault() on a non-cancelable event', async () => {
+      let caughtError: any = null;
+      locals.setExtraNavigateCallback((event) => {
+        // `preventDefault()` does not set the canceled flag when the event is not cancelable.
+        event.preventDefault();
+        try {
+          event.intercept({});
+        } catch (e) {
+          caughtError = e;
+        }
+      });
+
+      await locals.navigation.navigateForTesting('/page', {cancelable: false}).finished;
+      expect(caughtError).toBeNull();
+      expect(locals.navigation.currentEntry.url).toBe('https://test.com/page');
+    });
   });
 
   describe('structuredClone state serialization', () => {

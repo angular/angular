@@ -1033,9 +1033,11 @@ interface InternalFakeNavigateEvent extends FakeNavigateEvent {
    */
   dispatchFlag: boolean;
   /**
-   * The spec's "canceled flag", set when the navigation is aborted during dispatch (for example
-   * by `preventDefault()`). The "shared checks" reject calls into the event once it is set.
-   * https://html.spec.whatwg.org/multipage/nav-history-apis.html#navigateevent-canceled-flag
+   * Tracks the abort half of the DOM event's "canceled flag": the spec sets that flag when the
+   * navigation is aborted while the event is being dispatched (e.g. by a nested navigation), but
+   * a native `Event`'s canceled flag can only be set through `preventDefault()`. The "shared
+   * checks" treat the event as canceled if either this or `defaultPrevented` is set.
+   * https://dom.spec.whatwg.org/#canceled-flag
    */
   canceledFlag: boolean;
 
@@ -1120,10 +1122,11 @@ function dispatchNavigateEvent({
    * >    an "InvalidStateError" DOMException.
    * > 2. If event's canceled flag is set, then throw an "InvalidStateError" DOMException.
    *
-   * The "fully active" check has no analogue in this fake.
+   * The "fully active" check has no analogue in this fake. The canceled flag is set either by
+   * `preventDefault()` (reflected by `defaultPrevented`) or by an abort during dispatch.
    */
   function performSharedChecks() {
-    if (event.canceledFlag) {
+    if (event.canceledFlag || event.defaultPrevented) {
       throw new DOMException('The navigation was canceled', 'InvalidStateError');
     }
   }
