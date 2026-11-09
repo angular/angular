@@ -383,7 +383,7 @@ class TcbExprTranslator implements AstVisitor {
 
   visitArrowFunction(ast: ArrowFunction): TcbExpr {
     const params = ast.parameters
-      .map((param) => new TcbExpr(param.name).markIgnoreDiagnostics().print())
+      .map((param) => new TcbExpr(param.name).addParseSpanInfo(param.sourceSpan).print())
       .join(', ');
     const body = astToTcbExpr(
       ast.body,

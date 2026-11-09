@@ -2551,9 +2551,9 @@ describe('type check blocks', () => {
       expect(tcb(TEMPLATE)).toContain('(this).withCallback(() => (_t1) + (((_t3).value)));');
     });
 
-    it('should ignore diagnostics on arrow function parameters', () => {
+    it('should add span info to arrow function parameters', () => {
       const result = tcb(`{{(a, b) => a + b}}`, undefined, undefined, {emitSpans: true});
-      expect(result).toContain('((a /*D:ignore*/, b /*D:ignore*/) =>');
+      expect(result).toContain('((a /*3,4*/, b /*6,7*/) =>');
     });
   });
 

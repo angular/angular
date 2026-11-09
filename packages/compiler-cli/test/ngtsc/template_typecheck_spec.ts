@@ -10456,6 +10456,116 @@ suppress
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(0);
       });
+
+      it('should report errors that start at an arrow function parameter', () => {
+        env.tsconfig({strictTemplates: true});
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: '<div (click)="takes((value) => () => 1)"></div>',
+            })
+            class TestCmp {
+              takes(fn: (x: number) => number) {}
+            }
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].code).toBe(2345);
+        expect(getSourceCodeForDiagnostic(diags[0])).toBe('value');
+      });
+
+      it('should report arrow functions with more parameters than the callback receives', () => {
+        env.tsconfig({strictTemplates: true});
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: '<button (click)="retry((attempt) => load(attempt))"></button>',
+            })
+            class TestCmp {
+              retry(fn: () => void) {}
+              load(attempt: number) {}
+            }
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].code).toBe(2345);
+        expect(getSourceCodeForDiagnostic(diags[0])).toBe('attempt');
+      });
+
+      it('should map errors at an unparenthesized parameter in an interpolation', () => {
+        env.tsconfig({strictTemplates: true}, {strict: true, noImplicitAny: true});
+        const template = '{{retry(attempt => load(attempt))}}';
+        env.write('test.html', template);
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+
+            @Component({templateUrl: './test.html'})
+            class TestCmp {
+              retry(fn: () => void) {}
+              load(attempt: number) {}
+            }
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].code).toBe(2345);
+        expect(diags[0].file!.text).toBe(template);
+        expect(diags[0].start).toBe(template.indexOf('attempt'));
+        expect(getSourceCodeForDiagnostic(diags[0])).toBe('attempt');
+      });
+
+      it('should not report implicit any errors on arrow functions without a contextual type', () => {
+        env.tsconfig({strictTemplates: true}, {strict: true, noImplicitAny: true});
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: '<div (click)="handler = (a, b) => a"></div>',
+            })
+            class TestCmp {
+              handler: unknown;
+            }
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should not report errors on contextually typed arrow function parameters', () => {
+        env.tsconfig({strictTemplates: true}, {strict: true, noImplicitAny: true});
+        env.write(
+          'test.ts',
+          `
+            import {Component, signal} from '@angular/core';
+
+            @Component({
+              template: '<div (click)="sig.update((prev) => prev + 1)"></div>',
+            })
+            class TestCmp {
+              sig = signal(0);
+            }
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
     });
 
     describe('multiple matching components', () => {

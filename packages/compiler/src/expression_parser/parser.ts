@@ -1829,10 +1829,11 @@ class _ParseAST {
   }
 
   private getArrowFunctionIdentifierArg(token: Token): ArrowFunctionParameter {
+    const start = token.index + this.offset;
     return new ArrowFunctionIdentifierParameter(
       token.strValue,
-      this.span(token.index),
-      this.sourceSpan(token.index),
+      this.span(start),
+      this.sourceSpan(start),
     );
   }
 
