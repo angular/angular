@@ -14,7 +14,6 @@ import {factory as invalidBananaInBoxFactory} from './checks/invalid_banana_in_b
 import {factory as missingControlFlowDirectiveFactory} from './checks/missing_control_flow_directive';
 import {factory as missingNgForOfLetFactory} from './checks/missing_ngforof_let';
 import {factory as missingStructuralDirectiveFactory} from './checks/missing_structural_directive';
-import {factory as nullishCoalescingNotNullableFactory} from './checks/nullish_coalescing_not_nullable';
 import {factory as numericCssPropertyRequiresUnitFactory} from './checks/numeric_css_property_requires_unit';
 import {factory as optionalChainNotNullableFactory} from './checks/optional_chain_not_nullable';
 import {factory as skipHydrationNotStaticFactory} from './checks/skip_hydration_not_static';
@@ -33,7 +32,6 @@ export const ALL_DIAGNOSTIC_FACTORIES: readonly TemplateCheckFactory<
   ExtendedTemplateDiagnosticName
 >[] = [
   invalidBananaInBoxFactory,
-  nullishCoalescingNotNullableFactory,
   numericCssPropertyRequiresUnitFactory,
   optionalChainNotNullableFactory,
   missingControlFlowDirectiveFactory,
@@ -54,7 +52,10 @@ export const ALL_DIAGNOSTIC_FACTORIES: readonly TemplateCheckFactory<
  * Diagnostics that we've deprecated, but don't want to start throwing errors for yet.
  * TODO(crisbeto): remove this list and remaining references to the names when making breaking changes.
  */
-const DEPRECATED_DIAGNOSTICS: string[] = [ExtendedTemplateDiagnosticName.UNINVOKED_TRACK_FUNCTION];
+const DEPRECATED_DIAGNOSTICS: string[] = [
+  ExtendedTemplateDiagnosticName.UNINVOKED_TRACK_FUNCTION,
+  ExtendedTemplateDiagnosticName.NULLISH_COALESCING_NOT_NULLABLE,
+];
 
 export const SUPPORTED_DIAGNOSTIC_NAMES = new Set<string>([
   ExtendedTemplateDiagnosticName.CONTROL_FLOW_PREVENTING_CONTENT_PROJECTION,
