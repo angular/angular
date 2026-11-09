@@ -21,7 +21,6 @@ import {factory as textAttributeNotBindingFactory} from './checks/text_attribute
 import {factory as uninvokedFunctionInEventBindingFactory} from './checks/uninvoked_function_in_event_binding';
 import {factory as unparenthesizedNullishCoalescingFactory} from './checks/unparenthesized_nullish_coalescing';
 import {factory as unusedLetDeclarationFactory} from './checks/unused_let_declaration';
-import {factory as uninvokedFunctionInTextInterpolationFactory} from './checks/uninvoked_function_in_text_interpolation';
 import {factory as deferTriggerMisconfigurationFactory} from './checks/defer_trigger_misconfiguration';
 
 export {ExtendedTemplateCheckerImpl} from './src/extended_template_checker';
@@ -42,7 +41,6 @@ export const ALL_DIAGNOSTIC_FACTORIES: readonly TemplateCheckFactory<
   unusedLetDeclarationFactory,
   skipHydrationNotStaticFactory,
   unparenthesizedNullishCoalescingFactory,
-  uninvokedFunctionInTextInterpolationFactory,
   deferTriggerMisconfigurationFactory,
 ];
 
@@ -54,6 +52,7 @@ const DEPRECATED_DIAGNOSTICS: string[] = [
   ExtendedTemplateDiagnosticName.UNINVOKED_TRACK_FUNCTION,
   ExtendedTemplateDiagnosticName.NULLISH_COALESCING_NOT_NULLABLE,
   ExtendedTemplateDiagnosticName.OPTIONAL_CHAIN_NOT_NULLABLE,
+  ExtendedTemplateDiagnosticName.UNINVOKED_FUNCTION_IN_TEXT_INTERPOLATION,
 ];
 
 export const SUPPORTED_DIAGNOSTIC_NAMES = new Set<string>([
