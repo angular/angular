@@ -10,6 +10,7 @@ import {createRequire} from 'node:module';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import {pathExists, resolveWasmBinding} from './utils.js';
+import {WasmAnalyzer as WasmAnalyzerAdapter} from '../src/analyzer_wasm.js';
 import {createNodeHostFs} from '../src/wasm_host_fs.js';
 
 const require = createRequire(import.meta.url);
@@ -114,6 +115,28 @@ describe('wasm engine over a real filesystem', () => {
     const metadata = analyzer.get_metadata_for_file(path.join(root, 'src/app.component.ts'));
     expect(metadata).toBeTruthy();
     expect(JSON.parse(metadata!)).toEqual(jasmine.any(Object));
+  });
+
+  it('drives async getMetadataForFile through request_metadata and pump', async () => {
+    const {WasmAnalyzer: RawWasmAnalyzer} = require(wasmGlue);
+    const inner = new RawWasmAnalyzer(
+      JSON.stringify({tsconfigPath, optimize: true}),
+      createNodeHostFs(),
+    );
+    const analyzer = new WasmAnalyzerAdapter(inner);
+    try {
+      const metadata = await analyzer.getMetadataForFile(path.join(root, 'src/app.component.ts'));
+      expect(metadata).toBeTruthy();
+      expect(metadata!.classes.length).toBe(1);
+
+      const nonTs = await analyzer.getMetadataForFile(tsconfigPath);
+      expect(nonTs).toBeNull();
+
+      const missing = await analyzer.getMetadataForFile(path.join(root, 'src/missing.ts'));
+      expect(missing).toBeNull();
+    } finally {
+      analyzer.close();
+    }
   });
 
   it('finds a file added to a subdirectory the glob covers', async () => {
