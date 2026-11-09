@@ -576,9 +576,50 @@ impl Analyzer {
         invalidated_paths.extend(evicted);
     }
 
+    /// Whether the configured [`crate::host::AnalysisHost`] answers every request synchronously.
+    pub fn is_synchronous_host(&self) -> bool {
+        self.engine.is_synchronous_host()
+    }
+
+    /// Fail with [`crate::host::SYNC_HOST_REQUIRED_MSG`] unless the host is synchronous.
+    ///
+    /// Fallible entry points call this before reaching a `*_blocking` engine API, which panics on
+    /// an asynchronous host instead of returning an error.
+    pub fn ensure_synchronous_host(&self) -> Result<(), String> {
+        if self.is_synchronous_host() {
+            Ok(())
+        } else {
+            Err(crate::host::SYNC_HOST_REQUIRED_MSG.to_string())
+        }
+    }
+
+    /// Read `file_path` from the analyzer's filesystem.
+    ///
+    /// This never calls the host, but it is still gated on a synchronous host: under an
+    /// asynchronous host, module text comes from [`crate::host::AnalysisHost::load`] and the
+    /// filesystem is not authoritative, so it could return text that differs from what was
+    /// analyzed or miss virtual modules entirely.
+    ///
+    /// TODO: add pump-driven equivalents of this and [`Self::read_resource_checked`] that go
+    /// through the host (as `request_metadata_core` does for metadata) so asynchronous hosts can
+    /// serve file content and resources.
     pub fn get_file_content_core(&self, file_path: String) -> Result<String, String> {
+        self.ensure_synchronous_host()?;
         let path = PathBuf::from(&file_path);
         self.fs.read_to_string(&path).map_err(|e| e.to_string())
+    }
+
+    /// Fallible form of [`Self::get_metadata_for_file`]: an asynchronous host is reported as an
+    /// `Err` instead of a panic.
+    pub fn get_metadata_for_file_checked(
+        &self,
+        file_path: String,
+    ) -> Result<Option<AnalysisResult>, String> {
+        self.ensure_synchronous_host()?;
+        let Some(file_id) = self.resolve_metadata_target(crate::ModuleRef::Path(file_path)) else {
+            return Ok(None);
+        };
+        Ok(self.engine.get_metadata_for_file_id_blocking(file_id))
     }
 
     /// Resolve `url` the way a component's `templateUrl`/`styleUrls` are resolved from
@@ -586,16 +627,29 @@ impl Analyzer {
     /// after parsing a template (`<link rel="stylesheet">`), which ngtsc also resolves from the
     /// component file rather than from the template.
     /// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L876-L883
+    ///
+    /// An asynchronous host is reported as an `Err` instead of a panic.
+    pub fn read_resource_checked(
+        &self,
+        containing_file: String,
+        url: String,
+    ) -> Result<Option<crate::ResolvedResource>, String> {
+        self.ensure_synchronous_host()?;
+        Ok(self.engine.read_resource_blocking(
+            &containing_file,
+            &url,
+            crate::host::ResourceKind::Style,
+        ))
+    }
+
+    /// Panicking form of [`Self::read_resource_checked`], for callers with no error channel.
     pub fn read_resource_core(
         &self,
         containing_file: String,
         url: String,
     ) -> Option<crate::ResolvedResource> {
-        self.engine.read_resource_blocking(
-            &containing_file,
-            &url,
-            crate::host::ResourceKind::Style,
-        )
+        self.read_resource_checked(containing_file, url)
+            .unwrap_or_else(|msg| panic!("{msg}"))
     }
 
     pub fn canonical_paths_core(&self, paths: Vec<String>) -> Vec<String> {
@@ -1054,10 +1108,23 @@ impl Analyzer {
         Ok(crate::AnalysisIterator::new(rx))
     }
 
-    #[cfg_attr(feature = "napi", napi)]
+    /// Panicking form of [`Self::get_metadata_for_file_checked`], for Rust callers with no error
+    /// channel. N-API is served by `get_metadata_for_file_napi` instead.
     pub fn get_metadata_for_file(&self, file_path: String) -> Option<AnalysisResult> {
-        let file_id = self.resolve_metadata_target(crate::host::ModuleRef::Path(file_path))?;
-        self.engine.get_metadata_for_file_id_blocking(file_id)
+        self.get_metadata_for_file_checked(file_path)
+            .unwrap_or_else(|msg| panic!("{msg}"))
+    }
+
+    /// N-API `getMetadataForFile`: an asynchronous host is thrown as a JS error, since a panic
+    /// over N-API aborts the host process.
+    #[cfg(feature = "napi")]
+    #[napi(js_name = "getMetadataForFile")]
+    pub fn get_metadata_for_file_napi(
+        &self,
+        file_path: String,
+    ) -> napi::Result<Option<AnalysisResult>> {
+        self.get_metadata_for_file_checked(file_path)
+            .map_err(napi::Error::from_reason)
     }
 
     #[cfg(feature = "napi")]
@@ -1072,13 +1139,27 @@ impl Analyzer {
         self.get_file_content_core(file_path)
     }
 
-    #[cfg_attr(feature = "napi", napi)]
+    /// Panicking form of [`Self::read_resource_checked`], for Rust callers with no error channel.
+    /// N-API is served by `read_resource_napi` instead.
     pub fn read_resource(
         &self,
         containing_file: String,
         url: String,
     ) -> Option<crate::ResolvedResource> {
         self.read_resource_core(containing_file, url)
+    }
+
+    /// N-API `readResource`: an asynchronous host is thrown as a JS error, since a panic over
+    /// N-API aborts the host process.
+    #[cfg(feature = "napi")]
+    #[napi(js_name = "readResource")]
+    pub fn read_resource_napi(
+        &self,
+        containing_file: String,
+        url: String,
+    ) -> napi::Result<Option<crate::ResolvedResource>> {
+        self.read_resource_checked(containing_file, url)
+            .map_err(napi::Error::from_reason)
     }
 
     #[cfg_attr(feature = "napi", napi)]
@@ -3205,6 +3286,75 @@ mod entry_point_tests {
         assert_eq!(
             *engine.dirty_wire_files.lock().unwrap(),
             Some(HashSet::new())
+        );
+    }
+
+    #[test]
+    fn test_checked_synchronous_apis_reject_async_host() {
+        use crate::host::{
+            AnalysisHost, HostError, HostFuture, LoadKind, LoadedModule, ModuleId, ResolveRequest,
+            ResolvedModule, ResolvedResourceId, ResourceKind, SYNC_HOST_REQUIRED_MSG,
+        };
+
+        struct AsyncStubHost;
+
+        impl AnalysisHost for AsyncStubHost {
+            fn resolve(
+                &self,
+                _req: ResolveRequest,
+            ) -> HostFuture<Result<Option<ResolvedModule>, HostError>> {
+                futures::future::pending().boxed()
+            }
+
+            fn load(
+                &self,
+                _id: &ModuleId,
+                _kind: LoadKind,
+                _external: bool,
+            ) -> HostFuture<Result<Option<LoadedModule>, HostError>> {
+                futures::future::pending().boxed()
+            }
+
+            fn resolve_resource(
+                &self,
+                _containing: &ModuleId,
+                _url: &str,
+                _kind: ResourceKind,
+            ) -> HostFuture<Result<Option<ResolvedResourceId>, HostError>> {
+                futures::future::pending().boxed()
+            }
+        }
+
+        let mut analyzer = Analyzer::new_core(AnalyzerOptions::default()).unwrap();
+        let entrypoints = Arc::new(RwLock::new(Vec::new()));
+        analyzer.engine = crate::query::QueryEngine::new_default_with_host(
+            Arc::new(AsyncStubHost),
+            analyzer.resource_registry.clone(),
+            entrypoints,
+        );
+
+        assert!(!analyzer.is_synchronous_host());
+        assert_eq!(
+            analyzer.ensure_synchronous_host().unwrap_err(),
+            SYNC_HOST_REQUIRED_MSG
+        );
+        assert_eq!(
+            analyzer
+                .get_file_content_core("/project/app.ts".to_string())
+                .unwrap_err(),
+            SYNC_HOST_REQUIRED_MSG
+        );
+        assert_eq!(
+            analyzer
+                .get_metadata_for_file_checked("/project/app.ts".to_string())
+                .unwrap_err(),
+            SYNC_HOST_REQUIRED_MSG
+        );
+        assert_eq!(
+            analyzer
+                .read_resource_checked("/project/app.ts".to_string(), "./app.css".to_string())
+                .unwrap_err(),
+            SYNC_HOST_REQUIRED_MSG
         );
     }
 }
