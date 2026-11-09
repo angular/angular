@@ -455,6 +455,13 @@ export class HybridCompiler {
       }
 
       const metadataMap = chunkMetadataMap(chunk);
+      if (this.emitDeclarationOnly || (!this.optimize && chunk.files.length <= 1)) {
+        return {
+          remoteScopedClasses: new Set(),
+          metadataMap,
+          eagerlyUsedDeclarations: new Map(),
+        };
+      }
       const boundFiles = await Promise.all(
         chunk.files.map(async (file) => ({
           file,
@@ -475,6 +482,13 @@ export class HybridCompiler {
       }
 
       const metadataMap = chunkMetadataMap(chunk);
+      if (this.emitDeclarationOnly || (!this.optimize && chunk.files.length <= 1)) {
+        return {
+          remoteScopedClasses: new Set(),
+          metadataMap,
+          eagerlyUsedDeclarations: new Map(),
+        };
+      }
       const boundFiles = chunk.files.map((file) => ({
         file,
         analysis: this.ensureBoundWithMetadataSync(file, undefined, metadataMap),
@@ -1253,7 +1267,7 @@ export class HybridCompiler {
     if (cached && cached.preparedTcbData !== undefined && this.metadataByFile.has(filePath)) {
       return cached;
     }
-    const result = this.analyzer.getMetadataForFileSync(filePath);
+    const result = this.getCachedMetadata(filePath);
     if (!result) {
       return unanalyzedFile(filePath);
     }
@@ -1639,9 +1653,9 @@ export class HybridCompiler {
       existing.parsedTemplates.clear();
       existing.preparedTcbData = undefined;
       existing.tcb = undefined;
-      existing.boundFingerprint = nextFingerprint;
-      existing.sourceContent = content;
     }
+    existing.boundFingerprint = nextFingerprint;
+    existing.sourceContent = content;
   }
 
   /**

@@ -141,7 +141,11 @@ export async function getIndexedComponents(
   for (const [filePath, fileAnalysis] of compiler.fileCache.entries()) {
     const result = await compiler.analyzer.getMetadataForFile(filePath);
     if (!result) continue;
-    indexFileComponents(filePath, fileAnalysis, result, indexedComponents);
+    const boundAnalysis =
+      fileAnalysis.preparedTcbData !== undefined
+        ? fileAnalysis
+        : await compiler.ensureBoundWithMetadata(result);
+    indexFileComponents(filePath, boundAnalysis, result, indexedComponents);
   }
 
   return indexedComponents;
@@ -151,9 +155,13 @@ export function getIndexedComponentsSync(compiler: HybridCompiler): Map<string, 
   const indexedComponents = new Map<string, IndexedComponent>();
 
   for (const [filePath, fileAnalysis] of compiler.fileCache.entries()) {
-    const result = compiler.analyzer.getMetadataForFileSync(filePath);
+    const result = compiler.getCachedMetadata(filePath);
     if (!result) continue;
-    indexFileComponents(filePath, fileAnalysis, result, indexedComponents);
+    const boundAnalysis =
+      fileAnalysis.preparedTcbData !== undefined
+        ? fileAnalysis
+        : compiler.ensureBoundWithMetadataSync(result);
+    indexFileComponents(filePath, boundAnalysis, result, indexedComponents);
   }
 
   return indexedComponents;

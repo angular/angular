@@ -158,7 +158,8 @@ async function emitFile(
   fileId: number,
 ) {
   const {filePath} = file;
-  const content = await fs.readFile(filePath, 'utf-8');
+  const content =
+    compiler.fileCache.get(filePath)?.sourceContent ?? (await fs.readFile(filePath, 'utf-8'));
   const processed = await compiler.processFile(filePath, content, file, chunkContext, fileId);
   const s = processed.magicString;
 

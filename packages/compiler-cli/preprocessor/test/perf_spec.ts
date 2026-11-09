@@ -360,19 +360,69 @@ describe('Tracer', () => {
     expect(tracer.take().summary.node.gc).toEqual({count: 0, totalUs: 0});
   });
 
-  it('counts and times each template parse, including the diagnostic copy', () => {
+  it('counts and times each template parse, parsing the diagnostic copy on first use', () => {
     const tracer = createTracer();
     const component = {
       template: '<div>{{ a }}</div>',
       templateUrl: null,
       templateContentSpan: null,
     } as unknown as nga.ComponentMetadata;
-    parseComponentTemplate(component, '/app.ts', '', {}, tracer);
+    const parsed = parseComponentTemplate(component, '/app.ts', '', {}, tracer);
 
-    const {events, summary} = tracer.take();
-    expect(summary.node.counters['TemplatesParsed']).toBe(2);
-    expect(summary.node.spans['TemplateParse'].count).toBe(2);
-    expect(spans(events, 'X').filter((e) => e.name === 'ngp.TemplateParse').length).toBe(2);
+    let {events, summary} = tracer.take();
+    expect(summary.node.counters['TemplatesParsed']).toBe(1);
+    expect(summary.node.spans['TemplateParse'].count).toBe(1);
+    expect(spans(events, 'X').filter((e) => e.name === 'ngp.TemplateParse').length).toBe(1);
+
+    // Reading `diagNodes` parses the span-faithful copy once and memoizes it.
+    expect(parsed.diagNodes).toBe(parsed.diagNodes);
+    ({events, summary} = tracer.take());
+    expect(summary.node.counters['TemplatesParsed']).toBe(1);
+    expect(summary.node.spans['TemplateParse'].count).toBe(1);
+    expect(spans(events, 'X').filter((e) => e.name === 'ngp.TemplateParse').length).toBe(1);
+  });
+
+  it('parses each template once in devmode, and parses diagNodes on demand when indexing', async () => {
+    const virtualFiles: Record<string, string> = {
+      '/tsconfig.json': JSON.stringify({
+        compilerOptions: {},
+        files: ['/a.ts', '/b.ts'],
+      }),
+      '/a.ts': `
+        import {Component} from '@angular/core';
+        import {B} from './b';
+        @Component({selector: 'app-a', imports: [B], template: '<app-b />'})
+        export class A {}
+      `,
+      '/b.ts': `
+        import {Component} from '@angular/core';
+        @Component({selector: 'app-b', template: '<span>b</span>'})
+        export class B {}
+      `,
+    };
+    const analyzer = await createAnalyzer('/tsconfig.json', {
+      virtualFiles,
+      backend: 'wasm',
+      wasmBinding: resolveWasmBinding(),
+      optimize: false,
+      nodeModulesPathOverride: resolveFixtureNodeModules(),
+    });
+    const tracer = createTracer();
+    const compiler = new HybridCompiler(analyzer, {
+      optimize: false,
+      tcbConfig: buildTypeCheckingConfig({strictTemplates: true}),
+      tracer,
+    });
+    try {
+      compiler.compileSync();
+      expect(tracer.take().summary.node.counters['TemplatesParsed']).toBe(2);
+
+      // Indexing on demand afterwards reuses cached templates and parses only `diagNodes`.
+      compiler.getIndexedComponentsSync();
+      expect(tracer.take().summary.node.counters['TemplatesParsed']).toBe(2);
+    } finally {
+      analyzer.close();
+    }
   });
 
   it('keeps compiling after a file throws mid-Compile, with its sections closed', async () => {

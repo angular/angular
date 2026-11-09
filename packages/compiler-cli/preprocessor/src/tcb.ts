@@ -605,21 +605,23 @@ export function prepareTcbTargets(
     tcbMeta: TcbTypeCheckBlockMetadata;
     targetMeta: TcbComponentMetadata;
     hostElement: TmplAstHostElement | null;
+    adaptedWithInline: boolean;
   }> = [];
 
   for (let i = 0; i < tcbTargets.length; i++) {
     const comp = tcbTargets[i];
     const typeCheckId = `tcb${i + 1}` as TypeCheckId;
+    const adaptedWithInline = requiresInline;
     const adapted = adaptTcbInput(
       comp,
       typeCheckId,
       filePath,
       config,
-      requiresInline,
+      adaptedWithInline,
       content,
       tracer,
     );
-    intermediateTargets.push({comp, typeCheckId, ...adapted});
+    intermediateTargets.push({comp, typeCheckId, ...adapted, adaptedWithInline});
 
     if (
       !requiresInline &&
@@ -635,10 +637,11 @@ export function prepareTcbTargets(
   const targets: PreparedTcbTarget[] = [];
 
   for (let i = 0; i < tcbTargets.length; i++) {
-    const {comp, typeCheckId} = intermediateTargets[i];
-    const {tcbMeta, targetMeta, hostElement} = requiresInline
-      ? adaptTcbInput(comp, typeCheckId, filePath, config, true, content, tracer)
-      : intermediateTargets[i];
+    const {comp, typeCheckId, adaptedWithInline} = intermediateTargets[i];
+    const {tcbMeta, targetMeta, hostElement} =
+      requiresInline && !adaptedWithInline
+        ? adaptTcbInput(comp, typeCheckId, filePath, config, true, content, tracer)
+        : intermediateTargets[i];
 
     const classKey = makeClassKey(comp.className, comp.classMeta.span.start);
     boundTargetMap.set(classKey, tcbMeta.boundTarget);
