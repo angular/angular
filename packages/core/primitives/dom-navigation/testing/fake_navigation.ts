@@ -401,7 +401,7 @@ export class FakeNavigation implements Navigation {
         info: options?.info,
         hasUAVisualTransition: options?.hasUAVisualTransition,
       });
-      if (!intercepted && this.navigateEvent) {
+      if (!intercepted && this.navigateEvent?.result === result) {
         this.userAgentTraverse(this.navigateEvent);
       }
     });
@@ -468,7 +468,7 @@ export class FakeNavigation implements Navigation {
         userInitiated: false,
         hashChange,
       });
-      if (!intercepted && this.navigateEvent) {
+      if (!intercepted && this.navigateEvent?.result === result) {
         this.userAgentTraverse(this.navigateEvent);
       }
     });
@@ -498,9 +498,11 @@ export class FakeNavigation implements Navigation {
   ): FakeNavigationResult {
     const result = new InternalNavigationResult(this);
     const intercepted = this.userAgentNavigate(destination, result, options);
-    // The event may have been aborted during dispatch, e.g. by a `navigate` listener starting
-    // another navigation. There is nothing left to commit in that case.
-    if (!intercepted && this.navigateEvent) {
+    // The event may have been aborted during dispatch, e.g. by `preventDefault()` or by a
+    // `navigate` listener starting another navigation. There is nothing left to commit in that
+    // case. In the latter, `navigateEvent` is the nested navigation's event, which has already
+    // been handled by its own call, so only commit when it still belongs to this navigation.
+    if (!intercepted && this.navigateEvent?.result === result) {
       this.updateNavigationEntriesForSameDocumentNavigation(this.navigateEvent);
     }
     return {

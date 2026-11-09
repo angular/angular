@@ -2935,6 +2935,92 @@ describe('navigation', () => {
     });
   });
 
+  describe('navigation started from a navigate listener', () => {
+    const entryUrls = () => locals.navigation.entries().map((entry) => entry.url);
+
+    it('commits only the nested navigation', async () => {
+      let nestedResult: ReturnType<FakeNavigation['navigate']> | undefined;
+      locals.setExtraNavigateCallback((event) => {
+        if (event.destination.url.endsWith('/page1')) {
+          nestedResult = locals.navigation.navigate('/page2');
+        }
+      });
+
+      const outerResult = locals.navigation.navigate('/page1');
+      await expectAsync(outerResult.finished).toBeRejectedWith(
+        jasmine.objectContaining({name: 'AbortError'}),
+      );
+      await nestedResult!.finished;
+
+      expect(entryUrls()).toEqual(['https://test.com/', 'https://test.com/page2']);
+      expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
+    });
+
+    it('commits only an intercepted nested navigation', async () => {
+      let nestedResult: ReturnType<FakeNavigation['navigate']> | undefined;
+      locals.setExtraNavigateCallback((event) => {
+        if (event.destination.url.endsWith('/page1')) {
+          locals.pendingInterceptOptions.push({});
+          nestedResult = locals.navigation.navigate('/page2');
+        }
+      });
+
+      const outerResult = locals.navigation.navigate('/page1');
+      await expectAsync(outerResult.finished).toBeRejectedWith(
+        jasmine.objectContaining({name: 'AbortError'}),
+      );
+      await nestedResult!.finished;
+
+      expect(entryUrls()).toEqual(['https://test.com/', 'https://test.com/page2']);
+      expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
+    });
+
+    it('commits only a nested reload()', async () => {
+      let nestedResult: ReturnType<FakeNavigation['reload']> | undefined;
+      locals.setExtraNavigateCallback((event) => {
+        if (event.navigationType === 'push') {
+          nestedResult = locals.navigation.reload();
+        }
+      });
+
+      const outerResult = locals.navigation.navigate('/page1');
+      await expectAsync(outerResult.finished).toBeRejectedWith(
+        jasmine.objectContaining({name: 'AbortError'}),
+      );
+      await nestedResult!.finished;
+
+      expect(entryUrls()).toEqual(['https://test.com/']);
+      expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
+    });
+
+    it('does not complete a traversal superseded by a nested navigation', async () => {
+      locals.navigation.setSynchronousTraversalsForTesting(true);
+      await setUpEntries();
+      let nestedResult: ReturnType<FakeNavigation['navigate']> | undefined;
+      locals.setExtraNavigateCallback((event) => {
+        if (event.navigationType === 'traverse') {
+          nestedResult = locals.navigation.navigate('/page4');
+        }
+      });
+
+      const traverseResult = locals.navigation.back();
+      await expectAsync(traverseResult.finished).toBeRejectedWith(
+        jasmine.objectContaining({name: 'AbortError'}),
+      );
+      await nestedResult!.finished;
+
+      expect(entryUrls()).toEqual([
+        'https://test.com/',
+        'https://test.com/page1',
+        'https://test.com/page2',
+        'https://test.com/page3',
+        'https://test.com/page4',
+      ]);
+      expect(locals.navigation.currentEntry.url).toBe('https://test.com/page4');
+      expect(locals.popStateEvents.length).toBe(0);
+    });
+  });
+
   describe('post-commit handlers error handling', () => {
     it('handles multiple rejecting post-commit handlers without unhandled rejections', async () => {
       locals.pendingInterceptOptions.push({
