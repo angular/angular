@@ -485,7 +485,7 @@
       "source": {
         "filePath": "/src/aria/accordion/accordion-trigger.ts",
         "startLine": 43,
-        "endLine": 155
+        "endLine": 154
       }
     },
     {
@@ -688,7 +688,7 @@
       "source": {
         "filePath": "src/aria/accordion/accordion-group.ts",
         "startLine": 61,
-        "endLine": 141
+        "endLine": 136
       }
     }
   ],
