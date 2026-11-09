@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {PluginItem, transformSync} from '@babel/core';
+import {InputOptions, PluginItem, transformSync} from '@babel/core';
 
 import {needsLinking} from '../../../linker';
 import {createEs2015LinkerPlugin} from '../../../linker/babel';
@@ -92,6 +92,26 @@ function linkPartials(fileSystem: FileSystem, test: ComplianceTest): CompileResu
  * @param linkerPlugin The linker plugin to apply.
  * @returns The file's source content, which has been transformed using the linker if necessary.
  */
+function toBabelInputSourceMap(
+  sourceMap: RawSourceMap | undefined,
+): NonNullable<InputOptions['inputSourceMap']> {
+  if (sourceMap === undefined) {
+    return false;
+  }
+  return {
+    version:
+      typeof sourceMap.version === 'string' ? parseInt(sourceMap.version, 10) : sourceMap.version,
+    sources: sourceMap.sources,
+    names: sourceMap.names,
+    sourceRoot: sourceMap.sourceRoot,
+    sourcesContent: sourceMap.sourcesContent
+      ? sourceMap.sourcesContent.map((s) => s ?? '')
+      : undefined,
+    mappings: sourceMap.mappings,
+    file: sourceMap.file ?? '',
+  };
+}
+
 function applyLinker(
   cwd: string,
   filename: string,
@@ -105,6 +125,7 @@ function applyLinker(
   const result = transformSync(source, {
     cwd,
     filename,
+    inputSourceMap: toBabelInputSourceMap(sourceMap),
     sourceMaps: !!sourceMap,
     plugins: [linkerPlugin],
     parserOpts: {sourceType: 'unambiguous'},
