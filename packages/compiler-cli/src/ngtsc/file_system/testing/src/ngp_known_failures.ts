@@ -147,13 +147,7 @@ const NGP_INTENTIONAL_BEHAVIOR_DIFFERENCES: ReadonlySet<string> = new Set([
   'ngtsc type checking stability should allow for complete program reuse during incremental compilations',
 
   // Extended diagnostics that won't be ported to the new compilation model
-  'ngtsc extended template checks should produce nullish coalescing not nullable warning',
   'should produce optional chain warning for chained property access',
-  'NullishCoalescingNotNullableCheck does not warn for pipe arguments when parens are used',
-  'NullishCoalescingNotNullableCheck should produce nullish coalescing warning',
-  'NullishCoalescingNotNullableCheck should produce nullish coalescing warning for classes with inline TCBs',
-  'NullishCoalescingNotNullableCheck should respect configured diagnostic category',
-  'NullishCoalescingNotNullableCheck warns for pipe arguments which are likely configured incorrectly (?? operates on "format" here)',
   'OptionalChainNotNullableCheck should produce optional chain warning for classes with inline TCBs',
   'OptionalChainNotNullableCheck should produce optional chain warning for indexed access',
   'OptionalChainNotNullableCheck should produce optional chain warning for method call',
