@@ -1319,12 +1319,22 @@ impl QueryEngine {
     }
 
     #[cfg(not(target_arch = "wasm32"))]
-    fn block_on_query<F: std::future::Future>(fut: F) -> F::Output {
+    fn block_on_query<F: std::future::Future>(&self, fut: F) -> F::Output {
+        assert!(
+            self.host.is_synchronous(),
+            "{}",
+            crate::host::SYNC_HOST_REQUIRED_MSG
+        );
         futures::executor::block_on(fut)
     }
 
     #[cfg(target_arch = "wasm32")]
-    fn block_on_query<F: std::future::Future>(fut: F) -> F::Output {
+    fn block_on_query<F: std::future::Future>(&self, fut: F) -> F::Output {
+        assert!(
+            self.host.is_synchronous(),
+            "{}",
+            crate::host::SYNC_HOST_REQUIRED_MSG
+        );
         let mut fut = Box::pin(fut);
         loop {
             if let Some(value) = (&mut fut).now_or_never() {
@@ -1341,7 +1351,7 @@ impl QueryEngine {
     ) -> Arc<FileData> {
         let file_id = self.intern_path(path);
         let me = self.clone();
-        Self::block_on_query(async move {
+        self.block_on_query(async move {
             me.ensure_singletons_fresh(true).await;
             QueryContext::new(me).analyze_file_semantic(file_id).await
         })
@@ -1391,7 +1401,7 @@ impl QueryEngine {
         self: &Arc<Self>,
         file_id: FileId,
     ) -> Option<crate::AnalysisResult> {
-        Self::block_on_query(self.clone().get_metadata_for_file_id(file_id))
+        self.block_on_query(self.clone().get_metadata_for_file_id(file_id))
     }
 
     /// Synchronously drive `AnalyzeFileWire` to completion.
@@ -1402,7 +1412,7 @@ impl QueryEngine {
     ) -> Arc<crate::query::keys::WireFileResult> {
         let file_id = self.intern_path(path);
         let me = self.clone();
-        Self::block_on_query(async move {
+        self.block_on_query(async move {
             me.ensure_singletons_fresh(is_optimized).await;
             QueryContext::new(me)
                 .analyze_file_wire(file_id, is_optimized)
@@ -1415,14 +1425,14 @@ impl QueryEngine {
         self: &Arc<Self>,
         file_data: &FileData,
     ) -> crate::analyzer::import_emit::DeclaringExportNames {
-        Self::block_on_query(QueryContext::new(self.clone()).declaring_export_names(file_data))
+        self.block_on_query(QueryContext::new(self.clone()).declaring_export_names(file_data))
     }
 
     pub fn parse_file_by_id_blocking(
         self: &Arc<Self>,
         file_id: FileId,
     ) -> Arc<std::sync::Mutex<crate::ParsedFile>> {
-        Self::block_on_query(QueryContext::new(self.clone()).parse_file(file_id))
+        self.block_on_query(QueryContext::new(self.clone()).parse_file(file_id))
     }
 
     /// Synchronously resolve and load a component resource through [`crate::host::AnalysisHost`].
@@ -1434,17 +1444,13 @@ impl QueryEngine {
         url: &str,
         kind: crate::host::ResourceKind,
     ) -> Option<crate::ResolvedResource> {
-        assert!(
-            self.host.is_synchronous(),
-            "synchronous APIs require a synchronous host"
-        );
         let containing = self
             .get_interned_file_id(Path::new(containing_file))
             .map(|id| self.lookup_id(id))
             .unwrap_or_else(|| crate::host::ModuleId::from(containing_file));
         let host = Arc::clone(&self.host);
         let url = url.to_owned();
-        Self::block_on_query(async move {
+        self.block_on_query(async move {
             let (resolved_path, content) = crate::analyzer::resolve_and_load_resource(
                 host.as_ref(),
                 &containing,
@@ -6361,6 +6367,23 @@ mod tests {
             .expect("resolved declarations");
         assert_eq!(declarations.len(), 1);
         assert_eq!(declarations[0].selector.as_deref(), Some("[appHighlight]"));
+    }
+
+    #[test]
+    #[should_panic(expected = "synchronous APIs require a synchronous host")]
+    fn test_blocking_query_panics_on_async_host() {
+        let engine = QueryEngine::new_default_with_host(
+            Arc::new(AsyncMemoryHost {
+                resolutions: HashMap::new(),
+                modules: HashMap::new(),
+                resources: HashMap::new(),
+                resource_contents: HashMap::new(),
+            }),
+            Arc::new(ResourceRegistry::default()),
+            Arc::new(RwLock::new(Vec::new())),
+        );
+        let file_id = engine.intern_path("/async_only/app.ts");
+        let _ = engine.get_metadata_for_file_id_blocking(file_id);
     }
 }
 

@@ -258,3 +258,54 @@ describe('WasmAnalyzer pump-driven getMetadataForFile', () => {
     await expectAsync(stalledStreamNext).toBeRejectedWithError('WasmAnalyzer closed');
   });
 });
+
+describe('WasmAnalyzer synchronous host gating', () => {
+  it('surfaces synchronous host rejections on single-call exports while keeping pump and in-memory APIs working', async () => {
+    const syncHostMsg = 'synchronous APIs require a synchronous host';
+    const queuedEvents: Array<string | undefined> = [];
+    const inner: WasmInner = {
+      free() {},
+      pump: () => queuedEvents.shift(),
+      analyze: () => 1,
+      request_metadata() {
+        queuedEvents.push(
+          JSON.stringify({
+            event: 'metadataResult',
+            id: 1,
+            data: {filePath: '/app/a.ts', classes: [], diagnostics: []},
+          }),
+        );
+        return 1;
+      },
+      get_file_content() {
+        throw syncHostMsg;
+      },
+      read_resource() {
+        throw syncHostMsg;
+      },
+      update_file_content: () => JSON.stringify(['/app/a.ts']),
+      invalidate_files: () => JSON.stringify(['/app/a.ts']),
+      clear_resolution_cache: () => JSON.stringify(['/app/a.ts']),
+      canonical_paths: (pathsJson: string) => pathsJson,
+      get_ts_file_for_template: () => JSON.stringify([{tsFilePath: '/app/a.ts', symbolId: 0}]),
+    };
+
+    const analyzer = new WasmAnalyzer(inner);
+    await expectAsync(analyzer.getFileContent('/app/a.ts')).toBeRejectedWithError(syncHostMsg);
+    await expectAsync(analyzer.readResource('/app/a.ts', './a.css')).toBeRejectedWithError(
+      syncHostMsg,
+    );
+
+    // Pump-driven metadata, mutations, and in-memory lookups continue working with an async host.
+    expect((await analyzer.getMetadataForFile('/app/a.ts'))?.filePath).toBe('/app/a.ts');
+    expect(await analyzer.updateFileContent([{filePath: '/app/a.ts', content: 'x'}])).toEqual([
+      '/app/a.ts',
+    ]);
+    expect(await analyzer.invalidateFiles([])).toEqual(['/app/a.ts']);
+    expect(await analyzer.clearResolutionCache()).toEqual(['/app/a.ts']);
+    expect(await analyzer.canonicalPaths(['/app/a.ts'])).toEqual(['/app/a.ts']);
+    expect(await analyzer.getTsFileForTemplate('/app/a.html')).toEqual([
+      {tsFilePath: '/app/a.ts', symbolId: 0},
+    ]);
+  });
+});

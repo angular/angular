@@ -224,11 +224,17 @@ fn handle_rpc_request(req: RpcRequest, analyzer: &mut Option<Analyzer>) -> RpcRe
                     error: Some("Invalid getMetadataForFile params".to_string()),
                 };
             };
-            let meta = a.get_metadata_for_file(param.file_path);
-            RpcResponse {
-                id: req.id,
-                result: Some(serde_json::to_value(&meta).unwrap()),
-                error: None,
+            match a.get_metadata_for_file_checked(param.file_path) {
+                Ok(meta) => RpcResponse {
+                    id: req.id,
+                    result: Some(serde_json::to_value(&meta).unwrap()),
+                    error: None,
+                },
+                Err(e) => RpcResponse {
+                    id: req.id,
+                    result: None,
+                    error: Some(e),
+                },
             }
         }
         "updateFileContent" => {
@@ -350,11 +356,17 @@ fn handle_rpc_request(req: RpcRequest, analyzer: &mut Option<Analyzer>) -> RpcRe
                     error: Some("Invalid readResource params".to_string()),
                 };
             };
-            let res = a.read_resource_core(params.containing_file, params.url);
-            RpcResponse {
-                id: req.id,
-                result: Some(serde_json::to_value(&res).unwrap()),
-                error: None,
+            match a.read_resource_checked(params.containing_file, params.url) {
+                Ok(res) => RpcResponse {
+                    id: req.id,
+                    result: Some(serde_json::to_value(&res).unwrap()),
+                    error: None,
+                },
+                Err(e) => RpcResponse {
+                    id: req.id,
+                    result: None,
+                    error: Some(e),
+                },
             }
         }
         "canonicalPaths" => {
