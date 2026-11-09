@@ -73,7 +73,7 @@
     "hast-util-whitespace": "^3.0.0",
     "html-void-elements": "^3.0.0",
     "jasmine-core": "7.0.2",
-    "jsdom": "30.1.3",
+    "jsdom": "31.0.0",
     "karma-chrome-launcher": "3.2.0",
     "karma-coverage": "2.2.1",
     "karma-jasmine": "5.1.0",
