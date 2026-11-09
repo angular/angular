@@ -9174,3 +9174,116 @@ fn test_prefix_strategy_dts_host_directive_skips_barrel_export_map() {
         .unwrap();
     assert!(host_invalidated.contains(&"/project/app.ts".to_string()));
 }
+
+#[test]
+fn test_request_metadata_core_resolves_component_and_skips_missing_or_non_ts() {
+    let mut virtual_files = HashMap::new();
+    virtual_files.insert(
+        "/project/tsconfig.json".to_string(),
+        r#"{"files": ["app.ts"]}"#.to_string(),
+    );
+    virtual_files.insert(
+        "/project/app.ts".to_string(),
+        r#"
+        import { Component } from '@angular/core';
+        @Component({ selector: 'app-root', templateUrl: './app.component.html' })
+        export class AppComponent {}
+        "#
+        .to_string(),
+    );
+    virtual_files.insert(
+        "/project/app.component.html".to_string(),
+        "<h1>Hello</h1>".to_string(),
+    );
+    virtual_files.insert(
+        "/@id/virtual-cmp".to_string(),
+        r#"
+        import { Component } from '@angular/core';
+        @Component({ selector: 'app-virtual', template: '<span>v</span>' })
+        export class VirtualCmp {}
+        "#
+        .to_string(),
+    );
+
+    let analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
+        optimize: Some(true),
+        virtual_files: Some(virtual_files),
+        ..Default::default()
+    })
+    .unwrap();
+
+    let spawner = crate::compiler::analyzer::get_global_pool().clone();
+
+    let html_rx = analyzer
+        .request_metadata_core(
+            crate::ModuleRef::from("/project/app.component.html"),
+            spawner.clone(),
+        )
+        .unwrap();
+    let html_meta = futures::executor::block_on(html_rx).unwrap().unwrap();
+    assert!(html_meta.is_none());
+
+    let missing_rx = analyzer
+        .request_metadata_core(
+            crate::ModuleRef::from("/project/missing.ts"),
+            spawner.clone(),
+        )
+        .unwrap();
+    let missing_meta = futures::executor::block_on(missing_rx).unwrap().unwrap();
+    assert!(missing_meta.is_none());
+
+    let app_rx = analyzer
+        .request_metadata_core(crate::ModuleRef::from("/project/app.ts"), spawner.clone())
+        .unwrap();
+    let app_meta = futures::executor::block_on(app_rx)
+        .unwrap()
+        .unwrap()
+        .expect("expected metadata for app.ts");
+    assert_eq!(app_meta.classes.len(), 1);
+    assert_eq!(
+        app_meta.classes[0].class_name.as_deref(),
+        Some("AppComponent")
+    );
+
+    // Once a virtual module without a `.ts` extension is interned as `IdKind::Virtual`, follow-up
+    // bare-string (`ModuleRef::Path`) lookups resolve to its virtual `FileId` instead of failing
+    // `is_ts_file`.
+    let explicit_virtual_rx = analyzer
+        .request_metadata_core(
+            crate::ModuleRef::Explicit {
+                id: "/@id/virtual-cmp".to_string(),
+                id_kind: crate::host::IdKind::Virtual,
+            },
+            spawner.clone(),
+        )
+        .unwrap();
+    let explicit_virtual_meta = futures::executor::block_on(explicit_virtual_rx)
+        .unwrap()
+        .unwrap()
+        .expect("expected metadata for explicit virtual module");
+    assert_eq!(
+        explicit_virtual_meta.classes[0].class_name.as_deref(),
+        Some("VirtualCmp")
+    );
+
+    let bare_virtual_rx = analyzer
+        .request_metadata_core(crate::ModuleRef::from("/@id/virtual-cmp"), spawner)
+        .unwrap();
+    let bare_virtual_meta = futures::executor::block_on(bare_virtual_rx)
+        .unwrap()
+        .unwrap()
+        .expect("expected metadata for bare-string lookup of interned virtual module");
+    assert_eq!(
+        bare_virtual_meta.classes[0].class_name.as_deref(),
+        Some("VirtualCmp")
+    );
+
+    let sync_virtual_meta = analyzer
+        .get_metadata_for_file("/@id/virtual-cmp".to_string())
+        .expect("expected sync metadata for bare-string lookup of interned virtual module");
+    assert_eq!(
+        sync_virtual_meta.classes[0].class_name.as_deref(),
+        Some("VirtualCmp")
+    );
+}

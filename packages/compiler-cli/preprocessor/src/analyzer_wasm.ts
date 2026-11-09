@@ -29,6 +29,8 @@ export interface WasmInner {
   set_entry_points?(entryPointsJson: string): string;
   clearResolutionCache?(): string;
   clear_resolution_cache?(): string;
+  requestMetadata?(moduleRefJson: string): number;
+  request_metadata?(moduleRefJson: string): number;
   getMetadataForFile?(filePath: string): string | undefined;
   get_metadata_for_file?(filePath: string): string | undefined;
   getFileContent?(filePath: string): string;
@@ -45,46 +47,125 @@ export interface WasmInner {
   close_stream?(id: number): void;
 }
 
-interface WasmEvent {
-  id: number;
-  event: 'analysisResult' | 'analysisComplete' | 'analysisError';
-  data?: nga.CompilationChunk;
-  error?: string;
-}
+type WasmEvent =
+  | {
+      id: number;
+      event: 'analysisResult';
+      data: nga.CompilationChunk;
+    }
+  | {
+      id: number;
+      event: 'analysisComplete';
+    }
+  | {
+      id: number;
+      event: 'analysisError';
+      error: string;
+    }
+  | {
+      id: number;
+      event: 'metadataResult';
+      data: nga.AnalysisResult | null;
+      error?: string;
+    };
 
 /** JS-side state of one engine stream; `null` in `queue` marks its end. */
 interface WasmStream {
   queue: (nga.CompilationChunk | null)[];
   nextResolve: ((val: nga.CompilationChunk | null) => void) | null;
   error?: Error;
+  /** Whether the engine has emitted a terminal event (`analysisComplete` or `analysisError`). */
+  ended: boolean;
+}
+
+interface PendingMetadataRequest {
+  resolve: (val: nga.AnalysisResult | null) => void;
+  reject: (err: Error) => void;
 }
 
 export class WasmAnalyzer implements IAnalyzer {
   private inner: WasmInner;
   private streams = new Map<number, WasmStream>();
-  private isPumping = false;
+  private metadataRequests = new Map<number, PendingMetadataRequest>();
+  private microtaskScheduled = false;
+  private pumpTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor(inner: WasmInner) {
     this.inner = inner;
   }
 
-  private schedulePump() {
-    if (this.isPumping) {
+  private hasActivePumpWork(): boolean {
+    if (this.metadataRequests.size > 0) {
+      return true;
+    }
+    for (const stream of this.streams.values()) {
+      if (!stream.ended) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private clearPumpTimer(): void {
+    if (this.pumpTimer !== null) {
+      clearTimeout(this.pumpTimer);
+      this.pumpTimer = null;
+    }
+  }
+
+  private schedulePump(): void {
+    if (this.microtaskScheduled) {
       return;
     }
-    this.isPumping = true;
-    setTimeout(this.pumpLoop, 0);
+    this.clearPumpTimer();
+    this.microtaskScheduled = true;
+    queueMicrotask(this.pumpLoop);
+  }
+
+  private dispatchEvent(event: WasmEvent): void {
+    if (event.event === 'metadataResult') {
+      const pending = this.metadataRequests.get(event.id);
+      if (pending) {
+        this.metadataRequests.delete(event.id);
+        if (event.error !== undefined) {
+          pending.reject(new Error(event.error));
+        } else {
+          pending.resolve(event.data ?? null);
+        }
+      }
+      return;
+    }
+
+    const stream = this.streams.get(event.id);
+    if (!stream) {
+      return;
+    }
+    if (event.event === 'analysisResult' && event.data != null) {
+      stream.queue.push(event.data);
+    } else if (event.event === 'analysisComplete') {
+      stream.ended = true;
+      stream.queue.push(null);
+    } else if (event.event === 'analysisError' && event.error !== undefined) {
+      stream.ended = true;
+      stream.error = new Error(event.error);
+    }
+    if (stream.nextResolve) {
+      const resolve = stream.nextResolve;
+      stream.nextResolve = null;
+      resolve(null);
+    }
   }
 
   private pumpLoop = () => {
-    if (this.streams.size === 0) {
-      this.isPumping = false;
+    this.microtaskScheduled = false;
+    this.clearPumpTimer();
+    if (!this.hasActivePumpWork()) {
       return;
     }
 
     const start = Date.now();
     let idleCount = 0;
-    while (this.streams.size > 0 && Date.now() - start < 15) {
+    while (this.hasActivePumpWork() && Date.now() - start < 15) {
       const eventStr = this.inner.pump();
       if (!eventStr) {
         idleCount++;
@@ -96,30 +177,14 @@ export class WasmAnalyzer implements IAnalyzer {
       idleCount = 0;
       try {
         const event = JSON.parse(eventStr) as WasmEvent;
-        const stream = this.streams.get(event.id);
-        if (stream) {
-          if (event.event === 'analysisResult' && event.data) {
-            stream.queue.push(event.data);
-          } else if (event.event === 'analysisComplete') {
-            stream.queue.push(null);
-          } else if (event.event === 'analysisError' && event.error) {
-            stream.error = new Error(event.error);
-          }
-          if (stream.nextResolve) {
-            const resolve = stream.nextResolve;
-            stream.nextResolve = null;
-            resolve(null);
-          }
-        }
+        this.dispatchEvent(event);
       } catch (e) {
         console.error('Failed to parse WASM pump event', e);
       }
     }
 
-    if (this.streams.size > 0) {
-      setTimeout(this.pumpLoop, 0);
-    } else {
-      this.isPumping = false;
+    if (this.hasActivePumpWork() && !this.microtaskScheduled) {
+      this.pumpTimer = setTimeout(this.pumpLoop, 0);
     }
   };
 
@@ -187,7 +252,7 @@ export class WasmAnalyzer implements IAnalyzer {
     start: () => number,
   ): AsyncGenerator<nga.CompilationChunk, void, unknown> {
     const id = start();
-    const stream: WasmStream = {queue: [], nextResolve: null};
+    const stream: WasmStream = {queue: [], nextResolve: null, ended: false};
     this.streams.set(id, stream);
     this.schedulePump();
 
@@ -216,22 +281,29 @@ export class WasmAnalyzer implements IAnalyzer {
 
   /**
    * Unregisters stream `id` and drops the engine's receiver for it. Once a stream has ended
-   * the engine has already dropped the receiver, so `close_stream` does nothing then. Older
-   * engine builds do not export `close_stream`; for those only the JS side is released.
+   * the engine has already dropped the receiver, so `close_stream` does nothing then. If
+   * `close()` already cleared `streams` and freed `inner`, skip `close_stream` so cleanup does
+   * not touch the freed WASM handle. Older engine builds do not export `close_stream`; for those
+   * only the JS side is released.
    */
   private releaseStream(id: number): void {
-    this.streams.delete(id);
+    if (!this.streams.delete(id)) {
+      return;
+    }
     const close = this.inner.close_stream ?? this.inner.closeStream;
     close?.call(this.inner, id);
   }
 
   async getMetadataForFile(filePath: string): Promise<nga.AnalysisResult | null> {
-    const res = this.invoke(
-      this.inner.getMetadataForFile ?? this.inner.get_metadata_for_file,
-      'getMetadataForFile',
-      filePath,
+    const id = this.invoke(
+      this.inner.requestMetadata ?? this.inner.request_metadata,
+      'requestMetadata',
+      JSON.stringify(filePath),
     );
-    return res ? (JSON.parse(res) as nga.AnalysisResult) : null;
+    return new Promise<nga.AnalysisResult | null>((resolve, reject) => {
+      this.metadataRequests.set(id, {resolve, reject});
+      this.schedulePump();
+    });
   }
 
   async updateFileContent(updates: {filePath: string; content: string}[]): Promise<string[]> {
@@ -323,6 +395,22 @@ export class WasmAnalyzer implements IAnalyzer {
   }
 
   close(): void {
+    this.clearPumpTimer();
+    const closeError = new Error('WasmAnalyzer closed');
+    for (const pending of this.metadataRequests.values()) {
+      pending.reject(closeError);
+    }
+    this.metadataRequests.clear();
+    for (const stream of this.streams.values()) {
+      stream.ended = true;
+      stream.error = closeError;
+      if (stream.nextResolve) {
+        const resolve = stream.nextResolve;
+        stream.nextResolve = null;
+        resolve(null);
+      }
+    }
+    this.streams.clear();
     try {
       this.inner.free();
     } catch {
