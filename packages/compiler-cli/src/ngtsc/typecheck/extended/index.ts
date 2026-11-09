@@ -15,7 +15,6 @@ import {factory as missingControlFlowDirectiveFactory} from './checks/missing_co
 import {factory as missingNgForOfLetFactory} from './checks/missing_ngforof_let';
 import {factory as missingStructuralDirectiveFactory} from './checks/missing_structural_directive';
 import {factory as numericCssPropertyRequiresUnitFactory} from './checks/numeric_css_property_requires_unit';
-import {factory as optionalChainNotNullableFactory} from './checks/optional_chain_not_nullable';
 import {factory as skipHydrationNotStaticFactory} from './checks/skip_hydration_not_static';
 import {factory as suffixNotSupportedFactory} from './checks/suffix_not_supported';
 import {factory as textAttributeNotBindingFactory} from './checks/text_attribute_not_binding';
@@ -33,7 +32,6 @@ export const ALL_DIAGNOSTIC_FACTORIES: readonly TemplateCheckFactory<
 >[] = [
   invalidBananaInBoxFactory,
   numericCssPropertyRequiresUnitFactory,
-  optionalChainNotNullableFactory,
   missingControlFlowDirectiveFactory,
   textAttributeNotBindingFactory,
   missingNgForOfLetFactory,
@@ -55,6 +53,7 @@ export const ALL_DIAGNOSTIC_FACTORIES: readonly TemplateCheckFactory<
 const DEPRECATED_DIAGNOSTICS: string[] = [
   ExtendedTemplateDiagnosticName.UNINVOKED_TRACK_FUNCTION,
   ExtendedTemplateDiagnosticName.NULLISH_COALESCING_NOT_NULLABLE,
+  ExtendedTemplateDiagnosticName.OPTIONAL_CHAIN_NOT_NULLABLE,
 ];
 
 export const SUPPORTED_DIAGNOSTIC_NAMES = new Set<string>([

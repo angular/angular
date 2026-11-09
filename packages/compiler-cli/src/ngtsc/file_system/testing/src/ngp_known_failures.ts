@@ -147,12 +147,6 @@ const NGP_INTENTIONAL_BEHAVIOR_DIFFERENCES: ReadonlySet<string> = new Set([
   'ngtsc type checking stability should allow for complete program reuse during incremental compilations',
 
   // Extended diagnostics that won't be ported to the new compilation model
-  'should produce optional chain warning for chained property access',
-  'OptionalChainNotNullableCheck should produce optional chain warning for classes with inline TCBs',
-  'OptionalChainNotNullableCheck should produce optional chain warning for indexed access',
-  'OptionalChainNotNullableCheck should produce optional chain warning for method call',
-  'OptionalChainNotNullableCheck should produce optional chain warning for property access',
-  'OptionalChainNotNullableCheck should respect configured diagnostic category',
   'Uninvoked function in text interpolation compiler check should produce a warning when a function is not invoked in text interpolation',
   'Uninvoked function in text interpolation compiler check should produce a warning when a property method is not invoked in text interpolation (with and without safe navigation)',
   'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a function in a chain is not invoked',
