@@ -1083,6 +1083,16 @@ describe('R3 template transform', () => {
       ]);
     });
 
+    it('should convert &ngsp; to a space inside elements with ngNonBindable', () => {
+      expectFromR3Nodes(
+        parse('<pre ngNonBindable>a&ngsp;b</pre>', {preserveWhitespaces: true}).nodes,
+      ).toEqual([
+        ['Element', 'pre'],
+        ['TextAttribute', 'ngNonBindable', ''],
+        ['Text', 'a b'],
+      ]);
+    });
+
     it('should ignore <link rel="stylesheet"> elements inside of elements with ngNonBindable', () => {
       expectFromHtml('<div ngNonBindable><link rel="stylesheet">a</div>').toEqual([
         ['Element', 'div'],
