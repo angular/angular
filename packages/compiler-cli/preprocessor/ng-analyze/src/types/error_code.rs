@@ -438,7 +438,7 @@ define_error_codes! {
     DEFER_TRIGGER_MISCONFIGURATION = 8021,
 
     /// Raised when the user has an unsupported binding on a `FormField` directive.
-    FORM_FIELD_UNSUPPORTED_BINDING = 8022,
+    FORM_FIELD_UNSUPPORTED_BINDING = -8022,
 
     /// Raised when multiple components in the compilation scope match a given element in a template.
     MULTIPLE_MATCHING_COMPONENTS = -8023,
