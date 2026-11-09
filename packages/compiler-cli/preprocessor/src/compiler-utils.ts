@@ -29,6 +29,7 @@ import {
   outputAst,
   parseTemplate,
   ParseTemplateOptions,
+  TmplAstNode,
   getSafePropertyAccessString,
   SelectorlessMatcher,
   ForeignComponentMeta,
@@ -676,27 +677,30 @@ export function parseComponentTemplate(
   // into it. An external template, or an inline one computed by any other expression, is parsed
   // on its own: its spans are offsets into the template string (ngtsc's `external` and
   // `indirect` source mappings).
-  // Mirroring ngtsc's `parseExtractedTemplate`, also parse a second, span-faithful copy
+  // Mirroring ngtsc's `parseExtractedTemplate`, also expose a second, span-faithful copy
   // (`diagNodes`: whitespace, line endings and leading trivia preserved) for type-checking,
-  // diagnostics, and indexing.
+  // diagnostics, and indexing, parsed lazily on first access so devmode and cross-file
+  // `ngContentSelectors` lookups do not pay for a second parse when `diagNodes` is unused.
   const contentSpan = component.templateContentSpan;
-  if (component.templateUrl == null && contentSpan != null) {
-    const parsed = traced(() =>
-      parseDirectInlineTemplate(content, filePath, contentSpan, parseOptions),
-    );
-    const diagNodes = traced(() =>
-      parseDirectInlineTemplate(content, filePath, contentSpan, diagParseOptions),
-    ).nodes;
-    return {...parsed, diagNodes};
-  }
+  const parseWithOptions =
+    component.templateUrl == null && contentSpan != null
+      ? (opts: ParseTemplateOptions) =>
+          traced(() => parseDirectInlineTemplate(content, filePath, contentSpan, opts))
+      : (opts: ParseTemplateOptions) => {
+          // The URL identifies the file the spans are offsets into, which for an external template
+          // is the template file itself (as in ngtsc's `extractTemplate`).
+          const templateStr = component.template || '';
+          const templateUrl = component.templateUrl?.resolvedPath ?? filePath;
+          return traced(() => parseTemplate(templateStr, templateUrl, opts));
+        };
 
-  // The URL identifies the file the spans are offsets into, which for an external template is
-  // the template file itself (as in ngtsc's `extractTemplate`).
-  const templateStr = component.template || '';
-  const templateUrl = component.templateUrl?.resolvedPath ?? filePath;
-  const parsed = traced(() => parseTemplate(templateStr, templateUrl, parseOptions));
-  const diagNodes = traced(() => parseTemplate(templateStr, templateUrl, diagParseOptions)).nodes;
-  return {...parsed, diagNodes};
+  let cachedDiagNodes: TmplAstNode[] | undefined;
+  return {
+    ...parseWithOptions(parseOptions),
+    get diagNodes(): TmplAstNode[] {
+      return (cachedDiagNodes ??= parseWithOptions(diagParseOptions).nodes);
+    },
+  };
 }
 
 /**
@@ -716,10 +720,9 @@ export function getOrParseComponentTemplate(
   const classKey = makeClassKey(classMeta.className, classMeta.span.start);
   let parsed = templatesByClass.get(classKey);
   if (parsed === undefined) {
-    parsed = {
-      ...parseComponentTemplate(component, filePath, content, options, tracer),
-      classNameStart: classMeta.nameSpan?.start,
-    };
+    parsed = parseComponentTemplate(component, filePath, content, options, tracer);
+    // Set in place: spreading `parsed` would read its lazy `diagNodes` getter.
+    parsed.classNameStart = classMeta.nameSpan?.start;
     templatesByClass.set(classKey, parsed);
   }
   return parsed;
