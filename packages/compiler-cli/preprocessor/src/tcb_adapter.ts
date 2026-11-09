@@ -32,6 +32,7 @@ import {
 import type {TcbTargetInput, NgpTypeCheckingConfig} from './tcb.js';
 import * as nga from './types.js';
 import {createForeignComponentMatcher, createSpan, isStaticSourceNode} from './compiler-utils.js';
+import {NOOP_TRACER, SpanKind, type Tracer} from './perf.js';
 
 export function createInputPropertyMapping(
   metadata: nga.InputMetadata[] | null | undefined,
@@ -217,6 +218,7 @@ export function adaptTcbInput(
   config: NgpTypeCheckingConfig,
   requiresInline: boolean = false,
   content?: string,
+  tracer: Tracer = NOOP_TRACER,
 ): {
   tcbMeta: TcbTypeCheckBlockMetadata;
   targetMeta: TcbComponentMetadata;
@@ -305,15 +307,17 @@ export function adaptTcbInput(
   const ownHostDirective = host
     ? declarationToMetadata(target.ownDeclaration, filePath, requiresInline, content, filePath)
     : null;
-  const boundTarget = binder.bind({
-    template: target.templateNodes,
-    host: host
-      ? {
-          node: host,
-          directives: [...hostDirectivesOnTarget, ownHostDirective!],
-        }
-      : undefined,
-  });
+  const boundTarget = tracer.slice(SpanKind.TemplateBind, () =>
+    binder.bind({
+      template: target.templateNodes,
+      host: host
+        ? {
+            node: host,
+            directives: [...hostDirectivesOnTarget, ownHostDirective!],
+          }
+        : undefined,
+    }),
+  );
   // Monkey-patch missing method in reference compiler
   boundTarget.getConflictingHostDirectiveBindings ??= () => null;
   (

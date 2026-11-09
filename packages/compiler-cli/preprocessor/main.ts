@@ -15,6 +15,14 @@ import * as path from 'path';
 import {resolveWorkspaceConfig} from './src/workspace.js';
 import {createHybridCompiler, HybridCompiler, IAnalyzer} from './src/hybrid_compiler.js';
 import {SidecarAnalyzer} from './src/analyzer_sidecar.js';
+import {
+  createTracer,
+  NOOP_TRACER,
+  processStartMicros,
+  SpanKind,
+  writeSummaryFile,
+  writeTraceFile,
+} from './src/perf.js';
 import {run} from './ngp.js';
 
 (async () => {
@@ -42,11 +50,30 @@ import {run} from './ngp.js';
       outDir = args[outIndex + 1];
     }
 
+    // Parse --perf-trace <path> and --perf-summary <path> arguments
+    let perfTracePath: string | undefined;
+    const perfTraceIndex = args.indexOf('--perf-trace');
+    if (perfTraceIndex !== -1 && args[perfTraceIndex + 1]) {
+      perfTracePath = args[perfTraceIndex + 1];
+    }
+    let perfSummaryPath: string | undefined;
+    const perfSummaryIndex = args.indexOf('--perf-summary');
+    if (perfSummaryIndex !== -1 && args[perfSummaryIndex + 1]) {
+      perfSummaryPath = args[perfSummaryIndex + 1];
+    }
+    const perfTraceDetail = args.includes('--perf-trace-detail');
+
     let targetArg: string | undefined;
     for (let i = 0; i < args.length; i++) {
       const arg = args[i];
       if (arg.startsWith('--')) {
-        if (arg === '--out' || arg === '--root' || arg === '--sidecar') {
+        if (
+          arg === '--out' ||
+          arg === '--root' ||
+          arg === '--sidecar' ||
+          arg === '--perf-trace' ||
+          arg === '--perf-summary'
+        ) {
           i++;
         }
       } else {
@@ -56,7 +83,7 @@ import {run} from './ngp.js';
     }
     if (!targetArg) {
       console.error(
-        'Usage: ngp <project-dir|angular.json|tsconfig.json> [--optimize] [--wasm] [--out <dir>] [--in-place] [--root <dir>] [--sidecar <path>]',
+        'Usage: ngp <project-dir|angular.json|tsconfig.json> [--optimize] [--wasm] [--out <dir>] [--in-place] [--root <dir>] [--sidecar <path>] [--perf-trace <path>] [--perf-summary <path>] [--perf-trace-detail]',
       );
       process.exit(1);
     }
@@ -82,14 +109,25 @@ import {run} from './ngp.js';
       rootDir = path.resolve(args[rootIndex + 1]);
     }
 
+    const tracer = perfTracePath || perfSummaryPath ? createTracer() : NOOP_TRACER;
+    if (tracer.enabled) {
+      tracer.record(SpanKind.Startup, processStartMicros());
+    }
+
     console.log(
       `Running ngp...${useWasm ? ' (wasm)' : ''}${optimize ? ' (optimize mode)' : ''}${outDir ? ` (output: ${outDir})` : ''} (root: ${rootDir})`,
     );
 
     let innerAnalyzer: IAnalyzer;
     if (sidecarPath) {
-      const sidecar = new SidecarAnalyzer(sidecarPath);
-      await sidecar.initialize(tsconfigPath, optimize);
+      const sidecar = new SidecarAnalyzer(sidecarPath, tracer);
+      await sidecar.initialize(
+        tsconfigPath,
+        optimize,
+        undefined,
+        undefined,
+        tracer.enabled ? {perfTrace: true, perfTraceDetail} : undefined,
+      );
       innerAnalyzer = sidecar;
     } else {
       const {NapiAnalyzer} = await import('./src/analyzer_napi.js');
@@ -112,10 +150,23 @@ import {run} from './ngp.js';
       rootDir,
       enableTemplateTypeChecker: enableTemplateTypeCheckerArg,
       incremental: false,
+      tracer,
     });
 
     console.log('Processing files...');
-    await run(compiler, {outDir, rootDir, inPlace, tsconfigPath});
+    try {
+      await run(compiler, {outDir, rootDir, inPlace, tsconfigPath});
+    } finally {
+      if (tracer.enabled) {
+        const {events, summary} = tracer.take();
+        if (perfTracePath) {
+          await writeTraceFile(perfTracePath, events);
+        }
+        if (perfSummaryPath) {
+          await writeSummaryFile(perfSummaryPath, summary);
+        }
+      }
+    }
   } catch (e) {
     console.error('Fatal Execution Error:', e);
     process.exit(1);

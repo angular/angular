@@ -54,6 +54,12 @@ impl FileIdInterner {
             .expect("FileId out of bounds in FileIdInterner")
     }
 
+    /// Like [`Self::lookup_path`], but `None` for an unknown id.
+    pub fn try_lookup_path(&self, id: FileId) -> Option<PathBuf> {
+        let read = self.inner.read().expect("FileIdInterner lock poisoned");
+        read.vec.get(id as usize).cloned()
+    }
+
     /// Return the `FileId` if the path has already been interned, without allocating.
     pub fn get_if_interned(&self, path: impl AsRef<Path>) -> Option<FileId> {
         let path_ref = path.as_ref();

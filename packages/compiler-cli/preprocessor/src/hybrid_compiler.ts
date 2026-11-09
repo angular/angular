@@ -26,6 +26,7 @@ import {IndexedComponent} from './indexer_api.js';
 import {IncrementalEmitTracker} from './incremental.js';
 import {getIndexedComponents, getIndexedComponentsSync} from './indexing/indexer.js';
 import {fingerprintOf, ProcessedFileCache} from './processed_file_cache.js';
+import {Counter, NOOP_TRACER, SpanKind, type AnalyzerPerfTake, type Tracer} from './perf.js';
 import {buildTcbTargets, processFile, processFileSync, type ProcessedFile} from './processor.js';
 import {
   buildTypeCheckingConfig,
@@ -144,6 +145,8 @@ export interface IAnalyzer {
   readResourceSync?(containingFile: string, url: string): nga.ResolvedResource | null;
   canonicalPathsSync?(paths: string[]): string[];
   getCompilerOptions?(): NgpCompilerOptions;
+  /** Drains the analyzer's perf events and summary. */
+  takePerf?(): Promise<AnalyzerPerfTake>;
   close(): void;
 }
 export interface HybridCompilerOptions {
@@ -207,6 +210,8 @@ export interface HybridCompilerOptions {
    * have differed.
    */
   verifyReusedProcessedFiles?: boolean;
+  /** Records perf spans and counters. Defaults to `NOOP_TRACER`. */
+  tracer?: Tracer;
 }
 
 /** Options for {@link createHybridCompiler}. */
@@ -215,6 +220,7 @@ export interface CreateHybridCompilerOptions {
   rootDir?: string;
   enableTemplateTypeChecker?: boolean;
   incremental?: boolean;
+  tracer?: Tracer;
 }
 
 /**
@@ -265,6 +271,7 @@ export function createHybridCompiler(
     workspaceName,
     rootDirs,
     incremental: options.incremental,
+    tracer: options.tracer,
   });
 }
 
@@ -316,6 +323,7 @@ export class HybridCompiler {
   readonly complianceMode: boolean;
   readonly workspaceName?: string;
   readonly rootDirs?: string[];
+  readonly tracer: Tracer;
   private readonly reuseProcessedFiles: boolean;
   private readonly verifyReusedProcessedFiles: boolean;
   private readonly processedFiles = new ProcessedFileCache();
@@ -390,6 +398,7 @@ export class HybridCompiler {
     this.incrementalEnabled = options.incremental ?? true;
     this.reuseProcessedFiles = this.incrementalEnabled && (options.reuseProcessedFiles ?? true);
     this.verifyReusedProcessedFiles = options.verifyReusedProcessedFiles ?? false;
+    this.tracer = options.tracer ?? NOOP_TRACER;
     this.workspaceName = options.workspaceName;
     if (options.rootDirs) {
       this.rootDirs = options.rootDirs.map((d) => {
@@ -436,40 +445,46 @@ export class HybridCompiler {
   }
 
   async prepareChunk(chunk: nga.CompilationChunk): Promise<ChunkContext> {
-    this.recordChunkDiagnostics(chunk);
-    if (!this.incrementalEnabled) {
-      for (const file of chunk.files) {
-        this.fileCache.delete(file.filePath);
+    // Spans awaits, but chunks are prepared one at a time with no other work in between.
+    return this.tracer.sliceAsync(SpanKind.PrepareChunk, async () => {
+      this.recordChunkDiagnostics(chunk);
+      if (!this.incrementalEnabled) {
+        for (const file of chunk.files) {
+          this.fileCache.delete(file.filePath);
+        }
       }
-    }
 
-    const metadataMap = chunkMetadataMap(chunk);
-    const boundFiles = await Promise.all(
-      chunk.files.map(async (file) => ({
-        file,
-        analysis: await this.ensureBoundWithMetadata(file, undefined, metadataMap),
-      })),
-    );
-    return this.finalizePreparedChunk(chunk, boundFiles, metadataMap);
+      const metadataMap = chunkMetadataMap(chunk);
+      const boundFiles = await Promise.all(
+        chunk.files.map(async (file) => ({
+          file,
+          analysis: await this.ensureBoundWithMetadata(file, undefined, metadataMap),
+        })),
+      );
+      return this.finalizePreparedChunk(chunk, boundFiles, metadataMap);
+    });
   }
 
   prepareChunkSync(chunk: nga.CompilationChunk): ChunkContext {
-    this.recordChunkDiagnostics(chunk);
-    if (!this.incrementalEnabled) {
-      for (const file of chunk.files) {
-        this.fileCache.delete(file.filePath);
+    return this.tracer.slice(SpanKind.PrepareChunk, () => {
+      this.recordChunkDiagnostics(chunk);
+      if (!this.incrementalEnabled) {
+        for (const file of chunk.files) {
+          this.fileCache.delete(file.filePath);
+        }
       }
-    }
 
-    const metadataMap = chunkMetadataMap(chunk);
-    const boundFiles = chunk.files.map((file) => ({
-      file,
-      analysis: this.ensureBoundWithMetadataSync(file, undefined, metadataMap),
-    }));
-    return this.finalizePreparedChunk(chunk, boundFiles, metadataMap);
+      const metadataMap = chunkMetadataMap(chunk);
+      const boundFiles = chunk.files.map((file) => ({
+        file,
+        analysis: this.ensureBoundWithMetadataSync(file, undefined, metadataMap),
+      }));
+      return this.finalizePreparedChunk(chunk, boundFiles, metadataMap);
+    });
   }
 
   private recordChunkDiagnostics(chunk: nga.CompilationChunk): void {
+    this.tracer.count(Counter.FilesAnalyzed, chunk.files.length);
     if (chunk.removedFiles && chunk.removedFiles.length > 0) {
       for (const removed of chunk.removedFiles) {
         this.evictRemovedFile(removed);
@@ -1378,6 +1393,7 @@ export class HybridCompiler {
       this.fileCache,
       this.templateParseOptions,
       knownMetadata,
+      this.tracer,
     );
   }
 
@@ -1430,14 +1446,11 @@ export class HybridCompiler {
       this.templateParseOptions,
       this.tcbConfig,
       dependencyTemplates,
+      this.tracer,
     );
 
-    const prepared = prepareTcbTargets(
-      filePath,
-      tcbTargets,
-      content,
-      this.tcbConfig,
-      result.classes,
+    const prepared = this.tracer.slice(SpanKind.PrepareTcbTargets, () =>
+      prepareTcbTargets(filePath, tcbTargets, content, this.tcbConfig, result.classes, this.tracer),
     );
     if (prepared) {
       fileAnalysis.preparedTcbData = prepared;
@@ -1507,11 +1520,13 @@ export class HybridCompiler {
     return this.analyzer.getMetadataForFileSync(filePath);
   }
 
+  /** `fileId` is the file's trace id from `Tracer.newFileId`, or 0 when untraced. */
   async processFile(
     filePath: string,
     content: string,
     metadata?: nga.AnalysisResult,
     chunkContext?: ChunkContext,
+    fileId = 0,
   ): Promise<ProcessedFile> {
     const result = metadata || (await this.analyzer.getMetadataForFile(filePath));
     if (result) {
@@ -1538,7 +1553,7 @@ export class HybridCompiler {
         : this.rememberProcessed(
             normPath,
             fingerprint,
-            await processFile(this, normPath, content, result || undefined, chunkContext),
+            await processFile(this, normPath, content, result || undefined, chunkContext, fileId),
           );
       this.recordProcessedDiagnostics(normPath, processed);
       return processed;
@@ -1646,6 +1661,7 @@ export class HybridCompiler {
 
   /** Repeats what processing `filePath` does besides returning its output. */
   private adoptReused(filePath: string, reused: ProcessedFile): ProcessedFile {
+    this.tracer.count(Counter.FilesReused);
     if (reused.tcb) {
       getOrCreateFileAnalysis(this.fileCache, filePath).tcb = reused.tcb.code;
     }
