@@ -131,13 +131,20 @@ export class KeyValuePipe implements PipeTransform {
     const differChanges: KeyValueChanges<K, V> | null = this.differ.diff(input as any);
     const compareFnChanged = compareFn !== this.compareFn;
 
-    if (differChanges) {
-      this.keyValues = [];
-      differChanges.forEachItem((r: KeyValueChangeRecord<K, V>) => {
-        this.keyValues.push(makeKeyValuePair(r.key, r.currentValue!));
-      });
-    }
     if (differChanges || compareFnChanged) {
+      this.keyValues = [];
+      if (differChanges) {
+        differChanges.forEachItem((r: KeyValueChangeRecord<K, V>) => {
+          this.keyValues.push(makeKeyValuePair(r.key, r.currentValue!));
+        });
+      } else if (input instanceof Map) {
+        // Only `compareFn` changed. Rebuild from the input, since the previous result may be sorted.
+        input.forEach((value: V, key: K) => this.keyValues.push(makeKeyValuePair(key, value)));
+      } else {
+        for (const key of Object.keys(input)) {
+          this.keyValues.push(makeKeyValuePair(key as K, (input as any)[key]));
+        }
+      }
       if (compareFn) {
         this.keyValues.sort(compareFn);
       }
