@@ -23,7 +23,6 @@ import {factory as textAttributeNotBindingFactory} from './checks/text_attribute
 import {factory as uninvokedFunctionInEventBindingFactory} from './checks/uninvoked_function_in_event_binding';
 import {factory as unparenthesizedNullishCoalescingFactory} from './checks/unparenthesized_nullish_coalescing';
 import {factory as unusedLetDeclarationFactory} from './checks/unused_let_declaration';
-import {factory as uninvokedTrackFunctionFactory} from './checks/uninvoked_track_function';
 import {factory as uninvokedFunctionInTextInterpolationFactory} from './checks/uninvoked_function_in_text_interpolation';
 import {factory as deferTriggerMisconfigurationFactory} from './checks/defer_trigger_misconfiguration';
 
@@ -47,13 +46,19 @@ export const ALL_DIAGNOSTIC_FACTORIES: readonly TemplateCheckFactory<
   unusedLetDeclarationFactory,
   skipHydrationNotStaticFactory,
   unparenthesizedNullishCoalescingFactory,
-  uninvokedTrackFunctionFactory,
   uninvokedFunctionInTextInterpolationFactory,
   deferTriggerMisconfigurationFactory,
 ];
+
+/**
+ * Diagnostics that we've deprecated, but don't want to start throwing errors for yet.
+ * TODO(crisbeto): remove this list and remaining references to the names when making breaking changes.
+ */
+const DEPRECATED_DIAGNOSTICS: string[] = [ExtendedTemplateDiagnosticName.UNINVOKED_TRACK_FUNCTION];
 
 export const SUPPORTED_DIAGNOSTIC_NAMES = new Set<string>([
   ExtendedTemplateDiagnosticName.CONTROL_FLOW_PREVENTING_CONTENT_PROJECTION,
   ExtendedTemplateDiagnosticName.UNUSED_STANDALONE_IMPORTS,
   ...ALL_DIAGNOSTIC_FACTORIES.map((factory) => factory.name),
+  ...DEPRECATED_DIAGNOSTICS,
 ]);

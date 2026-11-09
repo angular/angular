@@ -170,10 +170,6 @@ const NGP_INTENTIONAL_BEHAVIOR_DIFFERENCES: ReadonlySet<string> = new Set([
   'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a nested function in an event binding is not invoked',
   'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when a nested function that uses key read in an event binding is not invoked',
   'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic when no function in a conditional is not invoked',
-  'UninvokedTrackFunctionCheck should produce a diagnostic when a track function in a @for block is not invoked',
-  'UninvokedTrackFunctionCheck should produce a warning when track is a method on an item',
-  'UninvokedTrackFunctionCheck should produce a warning when track is a regular function on an object',
-  'UninvokedTrackFunctionCheck should produce a warning when track is an arrow function property on component',
 ]);
 
 /**
