@@ -1244,7 +1244,7 @@ class NonBindableVisitor implements html.Visitor {
   }
 
   visitText(text: html.Text): t.Text {
-    return new t.Text(text.value, text.sourceSpan);
+    return new t.Text(replaceNgsp(text.value), text.sourceSpan);
   }
 
   visitExpansion(expansion: html.Expansion): any {
