@@ -1332,6 +1332,53 @@ impl QueryEngine {
         })
     }
 
+    pub fn is_synchronous_host(&self) -> bool {
+        self.host.is_synchronous()
+    }
+
+    /// Drive `AnalyzeFileWire` for `file_id` and return its wire metadata, or `None` when `file_id`
+    /// is a non-module path or cannot be loaded from the host.
+    pub async fn get_metadata_for_file_id(
+        self: &Arc<Self>,
+        file_id: FileId,
+    ) -> Option<crate::AnalysisResult> {
+        let (_, id_kind) = self.lookup_module(file_id);
+        if id_kind == crate::host::IdKind::Path
+            && !crate::utils::is_ts_file(&self.lookup_path(file_id))
+        {
+            return None;
+        }
+        self.ensure_singletons_fresh(true).await;
+        let ctx = QueryContext::new(self.clone());
+        let parsed = ctx.parse_file(file_id).await;
+        let loaded = parsed.lock().unwrap().borrow_owner().loaded;
+        drop(parsed);
+        if !loaded {
+            return None;
+        }
+        let wire_res = ctx.analyze_file_wire(file_id, true).await;
+        match &wire_res.0 {
+            Ok(result) => Some(result.clone()),
+            Err(err) => {
+                // TODO(diagnostics): surface WireError via a diagnostics channel instead of
+                // logging to stderr and returning None.
+                #[allow(clippy::print_stderr)]
+                {
+                    eprintln!("ERROR: {err}; skipping metadata for this file");
+                }
+                None
+            }
+        }
+    }
+
+    /// Synchronously drive [`Self::get_metadata_for_file_id`] to completion.
+    pub fn get_metadata_for_file_id_blocking(
+        self: &Arc<Self>,
+        file_id: FileId,
+    ) -> Option<crate::AnalysisResult> {
+        Self::block_on_query(self.clone().get_metadata_for_file_id(file_id))
+    }
+
     /// Synchronously drive `AnalyzeFileWire` to completion.
     pub fn analyze_file_wire_blocking(
         self: &Arc<Self>,
@@ -1411,7 +1458,7 @@ impl QueryEngine {
         // The cache memoizes the whole `ResolvedModule` and survives edits to the target, so a
         // hit carries the text the target had when it was resolved, and keeps that text alive.
         // Clear `code` before memoizing, or take it only from an answer the host just gave.
-        let (source_text, host_format, cache_key) = match self
+        let (source_text, host_format, cache_key, loaded) = match self
             .host
             .load(&module_id, crate::host::LoadKind::Module, false)
             .await
@@ -1431,7 +1478,7 @@ impl QueryEngine {
                         return parsed;
                     }
                 }
-                (loaded.code.to_string(), loaded.format, cache_key)
+                (loaded.code.to_string(), loaded.format, cache_key, true)
             }
             Ok(None) => {
                 // Warn before falling back to an empty parse so unreadable files are not silently skipped.
@@ -1442,7 +1489,7 @@ impl QueryEngine {
                         module_id
                     );
                 }
-                (String::new(), None, None)
+                (String::new(), None, None, false)
             }
             Err(e) => {
                 // Warn before falling back to an empty parse so unreadable files are not silently skipped.
@@ -1450,7 +1497,7 @@ impl QueryEngine {
                 {
                     eprintln!("Warning: Failed to read '{}': {}", module_id, e);
                 }
-                (String::new(), None, None)
+                (String::new(), None, None, false)
             }
         };
         let cache_entry = cache_key.map(|key| (file_path.clone(), key));
@@ -1469,6 +1516,7 @@ impl QueryEngine {
         let owner = crate::ParsedFileOwner {
             file_path,
             source_text,
+            loaded,
             allocator: oxc_allocator::Allocator::default(),
         };
 
@@ -6167,6 +6215,137 @@ mod tests {
                 HashSet::from([importer_id, UNRESOLVED_IMPORTS_FILE_ID])
             );
         }
+    }
+
+    #[test]
+    fn test_get_metadata_for_file_id_async_host() {
+        use crate::host::{
+            AnalysisHost, HostError, HostFuture, IdKind, LoadKind, LoadedModule, ModuleFormat,
+            ModuleId, ResolveRequest, ResolvedModule, ResolvedResourceId, ResourceKind,
+        };
+
+        struct AsyncMetadataHost {
+            resolutions: HashMap<(String, String), ResolvedModule>,
+            modules: HashMap<String, LoadedModule>,
+            load_calls: Mutex<Vec<String>>,
+        }
+
+        impl AnalysisHost for AsyncMetadataHost {
+            fn resolve(
+                &self,
+                req: ResolveRequest,
+            ) -> HostFuture<Result<Option<ResolvedModule>, HostError>> {
+                let key = (req.importer.as_str().to_owned(), req.specifier);
+                yield_once(Ok(self.resolutions.get(&key).cloned()))
+            }
+
+            fn load(
+                &self,
+                id: &ModuleId,
+                _kind: LoadKind,
+                _external: bool,
+            ) -> HostFuture<Result<Option<LoadedModule>, HostError>> {
+                self.load_calls.lock().unwrap().push(id.as_str().to_owned());
+                yield_once(Ok(self.modules.get(id.as_str()).cloned()))
+            }
+
+            fn resolve_resource(
+                &self,
+                _containing: &ModuleId,
+                _url: &str,
+                _kind: ResourceKind,
+            ) -> HostFuture<Result<Option<ResolvedResourceId>, HostError>> {
+                yield_once(Ok(None))
+            }
+        }
+
+        let virtual_cmp_id = "\0virtual:app.component";
+        let dir_path = "/async_meta/highlight.dir.ts";
+
+        let mut resolutions = HashMap::new();
+        resolutions.insert(
+            (virtual_cmp_id.to_owned(), "./highlight.dir".to_owned()),
+            ResolvedModule {
+                id: ModuleId::new(dir_path),
+                id_kind: IdKind::Path,
+                format: Some(ModuleFormat::Ts),
+                external: false,
+                code: None,
+            },
+        );
+
+        let mut modules = HashMap::new();
+        modules.insert(
+            virtual_cmp_id.to_owned(),
+            LoadedModule {
+                code: Arc::from(
+                    "import { Component } from '@angular/core';\n\
+                     import { HighlightDir } from './highlight.dir';\n\
+                     @Component({\n\
+                       selector: 'app-virtual',\n\
+                       template: '<div appHighlight></div>',\n\
+                       imports: [HighlightDir],\n\
+                     })\n\
+                     export class VirtualAppCmp {}\n",
+                ),
+                format: Some(ModuleFormat::Ts),
+            },
+        );
+        modules.insert(
+            dir_path.to_owned(),
+            LoadedModule {
+                code: Arc::from(
+                    "import { Directive } from '@angular/core';\n\
+                     @Directive({ selector: '[appHighlight]' })\n\
+                     export class HighlightDir {}\n",
+                ),
+                format: Some(ModuleFormat::Ts),
+            },
+        );
+
+        let host = Arc::new(AsyncMetadataHost {
+            resolutions,
+            modules,
+            load_calls: Mutex::new(Vec::new()),
+        });
+        let engine = QueryEngine::new_default_with_host(
+            host.clone(),
+            Arc::new(ResourceRegistry::default()),
+            Arc::new(RwLock::new(Vec::new())),
+        );
+        assert!(!engine.is_synchronous_host());
+
+        // The returned future borrows the engine, so each request owns a clone to give
+        // `block_on_with_timeout` the `'static` future it requires.
+        let metadata_for = |file_id| {
+            let engine = engine.clone();
+            block_on_with_timeout(async move { engine.get_metadata_for_file_id(file_id).await })
+        };
+
+        // Non-module paths short-circuit before calling `host.load`.
+        let html_id = engine.intern_module("/async_meta/view.html", IdKind::Path);
+        assert!(metadata_for(html_id).is_none());
+        assert!(host.load_calls.lock().unwrap().is_empty());
+
+        // Missing modules (`host.load` -> `Ok(None)`) return `None` rather than an empty result.
+        let missing_id = engine.intern_module("/async_meta/missing.ts", IdKind::Path);
+        assert!(metadata_for(missing_id).is_none());
+
+        // Virtual component modules resolve dependencies asynchronously across host yields.
+        let cmp_id = engine.intern_module(virtual_cmp_id, IdKind::Virtual);
+        let cmp_meta = metadata_for(cmp_id).expect("expected metadata for virtual component");
+        assert_eq!(cmp_meta.classes.len(), 1);
+        assert_eq!(
+            cmp_meta.classes[0].class_name.as_deref(),
+            Some("VirtualAppCmp")
+        );
+        let declarations = cmp_meta.classes[0]
+            .component
+            .as_ref()
+            .and_then(|c| c.resolved_declarations.as_ref())
+            .expect("resolved declarations");
+        assert_eq!(declarations.len(), 1);
+        assert_eq!(declarations[0].selector.as_deref(), Some("[appHighlight]"));
     }
 }
 

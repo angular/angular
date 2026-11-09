@@ -8988,3 +8988,66 @@ fn test_host_directives_entries_are_never_dropped() {
         }
     }
 }
+
+#[test]
+fn test_request_metadata_core_resolves_component_and_skips_missing_or_non_ts() {
+    let mut virtual_files = HashMap::new();
+    virtual_files.insert(
+        "/project/tsconfig.json".to_string(),
+        r#"{"files": ["app.ts"]}"#.to_string(),
+    );
+    virtual_files.insert(
+        "/project/app.ts".to_string(),
+        r#"
+        import { Component } from '@angular/core';
+        @Component({ selector: 'app-root', templateUrl: './app.component.html' })
+        export class AppComponent {}
+        "#
+        .to_string(),
+    );
+    virtual_files.insert(
+        "/project/app.component.html".to_string(),
+        "<h1>Hello</h1>".to_string(),
+    );
+
+    let analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
+        optimize: Some(true),
+        virtual_files: Some(virtual_files),
+        ..Default::default()
+    })
+    .unwrap();
+
+    let spawner = crate::compiler::analyzer::get_global_pool().clone();
+
+    let html_rx = analyzer
+        .request_metadata_core(
+            crate::ModuleRef::from("/project/app.component.html"),
+            spawner.clone(),
+        )
+        .unwrap();
+    let html_meta = futures::executor::block_on(html_rx).unwrap().unwrap();
+    assert!(html_meta.is_none());
+
+    let missing_rx = analyzer
+        .request_metadata_core(
+            crate::ModuleRef::from("/project/missing.ts"),
+            spawner.clone(),
+        )
+        .unwrap();
+    let missing_meta = futures::executor::block_on(missing_rx).unwrap().unwrap();
+    assert!(missing_meta.is_none());
+
+    let app_rx = analyzer
+        .request_metadata_core(crate::ModuleRef::from("/project/app.ts"), spawner)
+        .unwrap();
+    let app_meta = futures::executor::block_on(app_rx)
+        .unwrap()
+        .unwrap()
+        .expect("expected metadata for app.ts");
+    assert_eq!(app_meta.classes.len(), 1);
+    assert_eq!(
+        app_meta.classes[0].class_name.as_deref(),
+        Some("AppComponent")
+    );
+}
