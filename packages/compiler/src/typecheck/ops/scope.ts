@@ -61,8 +61,8 @@ import {TcbLetDeclarationOp} from './let';
 import {LocalSymbol, TcbInvalidReferenceOp, TcbReferenceOp} from './references';
 import {TcbDomSchemaCheckerOp} from './schema';
 import {
+  getAttributesInProjectionSlots,
   getElementWrappedByTemplate,
-  getNodesInProjectionSlots,
   isNonRenderingNode,
   TcbIgnoredBindingsOp,
 } from './ignored_bindings';
@@ -556,8 +556,8 @@ export class Scope {
   }
 
   /**
-   * Records the content of a component that its specific projection slots select, so that
-   * `TcbIgnoredBindingsOp` leaves their static attributes alone.
+   * Records the static attributes through which the specific projection slots of a component
+   * select its content, so that `TcbIgnoredBindingsOp` leaves them alone.
    */
   private recordNodesInProjectionSlots(root: Element | Component): void {
     if (this.tcb.env.config.ignoredBinding === 'suppress') {
@@ -572,8 +572,8 @@ export class Scope {
     if (selectors !== null && selectors.every((selector) => selector === '*')) {
       return;
     }
-    for (const node of getNodesInProjectionSlots(root.children, selectors)) {
-      this.tcb.nodesInProjectionSlots.add(node);
+    for (const [node, attributes] of getAttributesInProjectionSlots(root.children, selectors)) {
+      this.tcb.attributesInProjectionSlots.set(node, attributes);
     }
   }
 

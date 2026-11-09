@@ -7,7 +7,7 @@
  */
 
 import {NO_ERRORS_SCHEMA} from '../../core';
-import {CssSelector} from '../../directive_matching';
+import {CssSelector, SelectorMatcher} from '../../directive_matching';
 import {BindingType, ParsedEventType} from '../../expression_parser/ast';
 import {PRESERVE_WS_ATTR_NAME} from '../../ml_parser/html_whitespaces';
 import {isNgContainer, isNgTemplate, splitNsName} from '../../ml_parser/tags';
@@ -127,11 +127,10 @@ export class TcbIgnoredBindingsOp extends TcbOp {
     if (
       this.directives.length === 0 &&
       node.directives.length === 0 &&
-      !this.isProjected() &&
       !this.tcb.nodesWrappedByStructuralDirectives.has(node)
     ) {
       for (const attr of node.attributes) {
-        if (!isAttributeReadByAngular(attr.name)) {
+        if (!isAttributeReadByAngular(attr.name) && !this.selectsProjectionSlot(attr)) {
           this.tcb.oobRecorder.ignoredBinding(this.tcb.id, this.category, node, attr);
         }
       }
@@ -140,8 +139,9 @@ export class TcbIgnoredBindingsOp extends TcbOp {
     return null;
   }
 
-  private isProjected(): boolean {
-    return this.tcb.nodesInProjectionSlots.has(this.node);
+  /** Whether a specific content projection slot selects this node through `attr`. */
+  private selectsProjectionSlot(attr: TextAttribute): boolean {
+    return this.tcb.attributesInProjectionSlots.get(this.node)?.has(attr) ?? false;
   }
 
   /**
@@ -186,7 +186,7 @@ export class TcbIgnoredBindingsOp extends TcbOp {
     for (const attr of node.attributes) {
       // `<ng-content>` keeps every attribute as text, including the ones meant as bindings.
       const isBinding = isBindingAttributeName(attr.name);
-      if (isBinding || (!this.isProjected() && isIgnoredNgContentAttribute(attr))) {
+      if (isBinding || (!this.selectsProjectionSlot(attr) && isIgnoredNgContentAttribute(attr))) {
         this.tcb.oobRecorder.ignoredBinding(this.tcb.id, this.category, node, attr);
       }
     }
@@ -248,20 +248,21 @@ export function getElementWrappedByTemplate(template: Template): Element | null 
 }
 
 /**
- * Finds the nodes that a specific content projection slot of a component selects among its
- * content, looking through control flow blocks the way content projection does. Static attributes
- * of those nodes take part in projection, so they take effect. Slots match a node with
- * `ngProjectAs` against that value instead of its attributes, so its own attributes don't select it.
+ * Finds the static attributes through which a specific content projection slot of a component
+ * selects the nodes of its content, looking through control flow blocks the way content projection
+ * does. An attribute takes part in projection if the node would land in a different slot without
+ * it. Slots match a node with `ngProjectAs` against that value instead of its attributes, so none
+ * of its own attributes select it.
  */
-export function getNodesInProjectionSlots(
+export function getAttributesInProjectionSlots(
   children: Node[],
   ngContentSelectors: string[] | null,
-): Set<Node> {
+): Map<Node, Set<TextAttribute>> {
   const matcher = createSlotMatcher(ngContentSelectors ?? []);
   const collector = new ProjectionCandidateCollector();
   visitAll(collector, children);
 
-  const result = new Set<Node>();
+  const result = new Map<Node, Set<TextAttribute>>();
   for (const candidate of collector.candidates) {
     // A structural wrapper is projected by the tag and attributes of the node it wraps.
     const target =
@@ -270,15 +271,65 @@ export function getNodesInProjectionSlots(
       candidate.children.length === 1
         ? candidate.children[0]
         : candidate;
-    if (ngContentSelectors === null) {
-      // A component whose slots are unknown may select any of its content.
-      result.add(target);
-    } else if (
-      (target instanceof Element || target instanceof Template || target instanceof Content) &&
-      !target.attributes.some((attr) => attr.name === NG_PROJECT_AS) &&
-      matcher.match(createProjectionSelector(target), null)
+    // A rendered element keeps its attributes wherever it's projected, so only these nodes matter.
+    if (
+      !isNonRenderingNode(target) ||
+      target.attributes.some((attr) => attr.name === NG_PROJECT_AS)
     ) {
-      result.add(target);
+      continue;
+    }
+    if (ngContentSelectors === null) {
+      // A component whose slots are unknown may select any of its content through any attribute.
+      result.set(target, new Set(target.attributes));
+      continue;
+    }
+    const selector = createProjectionSelector(target);
+    // Also checked for the catch-all slot: an attribute can keep a node out of a `:not()` slot.
+    const slot = findProjectionSlot(matcher, ngContentSelectors, selector);
+    const attributes = new Set<TextAttribute>();
+    for (const attr of target.attributes) {
+      const withoutAttr = removeAttributeFromSelector(selector, attr.name);
+      if (findProjectionSlot(matcher, ngContentSelectors, withoutAttr) !== slot) {
+        attributes.add(attr);
+      }
+    }
+    result.set(target, attributes);
+  }
+  return result;
+}
+
+/**
+ * Returns the index of the specific slot that content projection puts a node matching `selector`
+ * in, or `null` for the catch-all slot. The first slot that matches wins.
+ */
+function findProjectionSlot(
+  matcher: SelectorMatcher<string>,
+  ngContentSelectors: string[],
+  selector: CssSelector,
+): number | null {
+  let slot: number | null = null;
+  matcher.match(selector, (_, slotSelector) => {
+    const index = ngContentSelectors.indexOf(slotSelector);
+    if (slot === null || index < slot) {
+      slot = index;
+    }
+  });
+  return slot;
+}
+
+/** Returns a copy of `selector` without the attribute `name`, and its classes if it's `class`. */
+function removeAttributeFromSelector(selector: CssSelector, name: string): CssSelector {
+  const nameNoNs = splitNsName(name)[1];
+  const result = new CssSelector();
+  result.setElement(selector.element);
+  for (let i = 0; i < selector.attrs.length; i += 2) {
+    if (selector.attrs[i] !== nameNoNs) {
+      result.addAttribute(selector.attrs[i], selector.attrs[i + 1]);
+    }
+  }
+  if (nameNoNs.toLowerCase() !== 'class') {
+    for (const className of selector.classNames) {
+      result.addClassName(className);
     }
   }
   return result;

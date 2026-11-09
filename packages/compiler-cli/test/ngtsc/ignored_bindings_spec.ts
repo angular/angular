@@ -446,6 +446,11 @@ runInEachFileSystem(() => {
           [],
         ],
         [
+          'should report other static attributes on ng-container that a projection slot selects',
+          `<proj><ng-container card-header title="t">H</ng-container></proj>`,
+          [NG8031],
+        ],
+        [
           'should not report a static class that a projection slot selects',
           `<proj><ng-container class="card-body">B</ng-container></proj>`,
           [],
@@ -481,6 +486,11 @@ runInEachFileSystem(() => {
           [],
         ],
         [
+          'should report other static attributes on ng-content that a projection slot selects',
+          `<proj><ng-content class="card-body" title="t" /></proj>`,
+          [NG8031],
+        ],
+        [
           'should report a static attribute on ng-content that no projection slot selects',
           `<proj><ng-content title="t" /></proj>`,
           [NG8031],
@@ -490,7 +500,62 @@ runInEachFileSystem(() => {
           `<catch-all><ng-content title="t" /></catch-all>`,
           [NG8031],
         ],
+        [
+          'should not report static attributes on an element that a projection slot selects',
+          `<proj><div card-header title="t">H</div></proj>`,
+          [],
+        ],
+        [
+          'should not report static attributes on an element projected into the catch-all slot',
+          `<proj><div title="t">D</div></proj>`,
+          [],
+        ],
+        [
+          'should not report static attributes on a component host that a projection slot selects',
+          `<proj><div card card-header title="t"></div></proj>`,
+          [],
+        ],
+        [
+          'should not report static attributes on a component host projected into the catch-all slot',
+          `<proj><div card title="t"></div></proj>`,
+          [],
+        ],
       ]);
+
+      it('should report only the static attributes that change the projection slot', () => {
+        env.tsconfig({strictTemplates: true});
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'slots',
+            template:
+              '<ng-content select="[a]" /><ng-content select="[b]" />' +
+              '<ng-content select="[c][d]" /><ng-content select="[e]:not([f])" /><ng-content />',
+          })
+          export class Slots {}
+
+          @Component({
+            template: \`<slots>
+              <ng-container a b>1</ng-container>
+              <ng-container c d>2</ng-container>
+              <ng-container e f>3</ng-container>
+              <ng-container c>4</ng-container>
+            </slots>\`,
+            imports: [Slots],
+          })
+          export class TestCmp {}
+        `,
+        );
+        // `[a]` comes before `[b]`, `[c][d]` needs both attributes, so a lone `c` selects nothing,
+        // and `f` keeps the third node out of the `[e]:not([f])` slot, so `e` changes nothing.
+        const reported = getDiagnostics().map((diag) =>
+          diag.file!.text.slice(diag.start!, diag.start! + diag.length!),
+        );
+        expect(reported.sort()).toEqual(['b', 'c', 'e']);
+      });
 
       it('should not report a static attribute that a selectorless component slot selects', () => {
         env.tsconfig({strictTemplates: true, _enableSelectorless: true});

@@ -7,7 +7,7 @@
  */
 
 import {SchemaMetadata} from '../../core';
-import {Node} from '../../render3/r3_ast';
+import {Node, TextAttribute} from '../../render3/r3_ast';
 import {BoundTarget} from '../../render3/view/t2_api';
 import {TypeCheckId, TcbDirectiveMetadata, TcbPipeMetadata, TcbEnvironment} from '../api';
 import {OutOfBandDiagnosticRecorder} from '../oob';
@@ -52,10 +52,10 @@ export class Context {
   private nextId = 1;
 
   /**
-   * Nodes that a specific content projection slot selects. Their static attributes take part in
-   * projection, see `getNodesInProjectionSlots`.
+   * The static attributes through which a specific content projection slot selects a node. They
+   * take part in projection, see `getAttributesInProjectionSlots`.
    */
-  readonly nodesInProjectionSlots = new Set<Node>();
+  readonly attributesInProjectionSlots = new Map<Node, Set<TextAttribute>>();
 
   /**
    * Elements that a structural directive wraps. The directive's template gets their static
