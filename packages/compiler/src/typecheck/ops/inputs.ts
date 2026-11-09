@@ -69,6 +69,7 @@ export class TcbDirectiveInputsOp extends TcbOp {
     // TODO(joost): report duplicate properties
     const seenRequiredInputs = new Set<ClassPropertyName>();
     const boundAttrs = getBoundAttributes(this.dir, this.node);
+    const allDirectiveMatches = this.tcb.boundTarget.getDirectivesOfNode(this.node) ?? [];
 
     if (this.customFormControlType !== null) {
       checkUnsupportedFieldBindings(this.node, customFormControlBannedInputFields, this.tcb);
@@ -79,6 +80,7 @@ export class TcbDirectiveInputsOp extends TcbOp {
         this.dir,
         this.node,
         this.customFormControlType,
+        allDirectiveMatches,
       );
 
       if (additionalBindings !== null) {
