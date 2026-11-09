@@ -490,6 +490,15 @@ mod tests {
         }
     }
 
+    fn take_perf(analyzer: &mut Option<Analyzer>) -> RpcResponse {
+        let req = RpcRequest {
+            id: 2,
+            method: "takePerf".to_string(),
+            params: serde_json::Value::Null,
+        };
+        handle_rpc_request(req, analyzer)
+    }
+
     fn analyze_and_take_perf(analyzer: &mut Option<Analyzer>) -> RpcResponse {
         let a = analyzer.as_ref().unwrap();
         let mut rx = a
@@ -563,19 +572,27 @@ mod tests {
             let res = handle_rpc_request(req, analyzer).result.unwrap();
             res["nowUs"].as_f64().unwrap()
         };
+        // Same clock as the events: a synchronous span recorded between two samples lands
+        // between them. `Initialize` runs on this thread, so unlike the pool-driven analysis
+        // spans it is always closed by the time `takePerf` drains.
         let first = now_us(&mut analyzer);
-        // The same clock as the events: the analysis run in between lands between the samples.
-        let take = analyze_and_take_perf(&mut analyzer).result.unwrap();
+        assert!(handle_rpc_request(init_request(true), &mut analyzer)
+            .error
+            .is_none());
         let second = now_us(&mut analyzer);
-        let analyze_ts = |ph: &str| {
-            let events = take["events"].as_array().unwrap();
-            let event = events
-                .iter()
-                .find(|e| e["ph"] == ph && e["name"] == "ngp.rust.Analyze")
-                .unwrap();
-            event["ts"].as_f64().unwrap()
-        };
-        assert!(first <= analyze_ts("b") && analyze_ts("e") <= second);
+        let take = take_perf(&mut analyzer).result.unwrap();
+        let init = take["events"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|e| e["ph"] == "X" && e["name"] == "ngp.rust.Initialize")
+            .map(|e| {
+                let ts = e["ts"].as_f64().unwrap();
+                (ts, ts + e["dur"].as_f64().unwrap())
+            })
+            .find(|&(start, _)| start >= first)
+            .unwrap();
+        assert!(init.1 <= second);
         // Unlike `takePerf`, it works while not recording: the clock exists once installed.
         assert!(handle_rpc_request(init_request(false), &mut analyzer)
             .error
