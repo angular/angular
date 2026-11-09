@@ -2773,6 +2773,63 @@ describe('navigation', () => {
         locals.navigation.updateCurrentEntry({state: unclonable});
       }).toThrowMatching((e: any) => e.name === 'DataCloneError');
     });
+
+    // Some test environments, notably Jest's jsdom environment, do not expose `structuredClone`.
+    describe('without a global structuredClone', () => {
+      let originalDescriptor: PropertyDescriptor | undefined;
+
+      beforeEach(() => {
+        originalDescriptor = Object.getOwnPropertyDescriptor(globalThis, 'structuredClone');
+        delete (globalThis as {structuredClone?: unknown}).structuredClone;
+        expect(typeof structuredClone).toBe('undefined');
+      });
+
+      afterEach(() => {
+        if (originalDescriptor) {
+          Object.defineProperty(globalThis, 'structuredClone', originalDescriptor);
+        }
+      });
+
+      it('round-trips history state passed to pushState() and replaceState()', () => {
+        // The shape of the state the Router passes through `Location`.
+        locals.navigation.pushState({navigationId: 1, ɵrouterPageId: 1}, '', '/page1');
+        expect(locals.navigation.currentEntry.url).toBe('https://test.com/page1');
+        expect(locals.navigation.currentEntry.getHistoryState()).toEqual({
+          navigationId: 1,
+          ɵrouterPageId: 1,
+        });
+
+        locals.navigation.replaceState({navigationId: 2, ɵrouterPageId: 1}, '', '/page2');
+        expect(locals.navigation.currentEntry.url).toBe('https://test.com/page2');
+        expect(locals.navigation.currentEntry.getHistoryState()).toEqual({
+          navigationId: 2,
+          ɵrouterPageId: 1,
+        });
+      });
+
+      it('round-trips and copies navigation state passed to navigate()', async () => {
+        const state = {counter: 1};
+        const result = locals.navigation.navigate('/page', {state});
+        state.counter = 2;
+        await result.finished;
+
+        const entryState = locals.navigation.currentEntry.getState() as {counter: number};
+        expect(entryState).toEqual({counter: 1});
+        expect(entryState).not.toBe(state);
+      });
+
+      it('reports DataCloneError for state that cannot be serialized', async () => {
+        const circular: {self?: unknown} = {};
+        circular.self = circular;
+
+        expect(() => {
+          locals.navigation.pushState(circular, '', '/page');
+        }).toThrowMatching((e: any) => e.name === 'DataCloneError');
+        await expectAsync(
+          locals.navigation.navigate('/page', {state: circular}).finished,
+        ).toBeRejectedWith(jasmine.objectContaining({name: 'DataCloneError'}));
+      });
+    });
   });
 
   describe('IDL event handler attribute this binding', () => {

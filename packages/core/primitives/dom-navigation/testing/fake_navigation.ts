@@ -1701,10 +1701,22 @@ function setEventHandler<H extends ((...args: any[]) => any) | null>(
  *
  * `structuredClone()` throws its own `DataCloneError` `DOMException`, which carries a more useful
  * message than anything synthesized here, so it is deliberately left unwrapped.
+ *
+ * `structuredClone()` is not available in every test environment (notably Jest's jsdom
+ * environment, whose global object is a jsdom `Window`). There, state falls back to a JSON
+ * round-trip, which is lossier (functions are dropped, `Date`s become strings, etc.) but keeps
+ * navigations working.
  */
 function cloneState<T>(state: T): T {
   if (state === undefined || state === null) {
     return state;
+  }
+  if (typeof structuredClone !== 'function') {
+    try {
+      return JSON.parse(JSON.stringify(state)) as T;
+    } catch (e: unknown) {
+      throw asDataCloneError(e);
+    }
   }
   return structuredClone(state);
 }
