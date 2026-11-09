@@ -6013,8 +6013,8 @@ describe('platform-server full application hydration integration', () => {
         let h2 = clientRootNode.querySelector('h2');
         let span = clientRootNode.querySelector('span');
 
-        expect(h1).not.toBeDefined();
-        expect(h2).not.toBeDefined();
+        expect(h1).toBeNull();
+        expect(h2).toBeNull();
         expect(span.textContent).toBe('no');
 
         // Flip the flag to enable content projection.
@@ -6088,8 +6088,8 @@ describe('platform-server full application hydration integration', () => {
         h2 = clientRootNode.querySelector('h2');
         span = clientRootNode.querySelector('span');
 
-        expect(h1).not.toBeDefined();
-        expect(h2).not.toBeDefined();
+        expect(h1).toBeNull();
+        expect(h2).toBeNull();
         expect(span.textContent).toBe('no');
       });
 
