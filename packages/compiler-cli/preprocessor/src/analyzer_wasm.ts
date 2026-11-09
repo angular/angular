@@ -43,8 +43,14 @@ export interface WasmInner {
   canonical_paths?(pathsJson: string): string;
   getCompilerOptions?(): string;
   get_compiler_options?(): string;
+  isSynchronousHost?(): boolean;
+  is_synchronous_host?(): boolean;
   closeStream?(id: number): void;
   close_stream?(id: number): void;
+}
+
+export interface WasmAnalyzerOptions {
+  isSynchronousHost?: boolean;
 }
 
 type WasmEvent =
@@ -83,12 +89,22 @@ interface PendingMetadataRequest {
 
 export class WasmAnalyzer implements IAnalyzer {
   private inner: WasmInner;
+  private explicitSyncHost: boolean | undefined;
   private streams = new Map<number, WasmStream>();
   private metadataRequests = new Map<number, PendingMetadataRequest>();
   private isPumping = false;
 
-  constructor(inner: WasmInner) {
+  constructor(inner: WasmInner, options?: WasmAnalyzerOptions) {
     this.inner = inner;
+    this.explicitSyncHost = options?.isSynchronousHost;
+  }
+
+  get isSynchronousHost(): boolean {
+    if (this.explicitSyncHost !== undefined) {
+      return this.explicitSyncHost;
+    }
+    const fn = this.inner.isSynchronousHost ?? this.inner.is_synchronous_host;
+    return fn ? fn.call(this.inner) : true;
   }
 
   private hasActivePumpWork(): boolean {

@@ -355,6 +355,10 @@ pub struct LoadedModule {
 /// Boxed `'static` future returned by [`AnalysisHost`] methods.
 pub type HostFuture<T> = BoxFuture<'static, T>;
 
+/// Error message surfaced when a synchronous (`*_blocking` / `*Sync`) entry point is invoked while
+/// an asynchronous [`AnalysisHost`] is configured.
+pub const SYNC_HOST_REQUIRED_MSG: &str = "synchronous APIs require a synchronous host";
+
 /// Environment boundary for resolving module specifiers, resolving component resources, and
 /// loading file contents.
 ///

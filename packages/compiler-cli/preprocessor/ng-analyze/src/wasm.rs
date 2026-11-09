@@ -206,6 +206,10 @@ impl WasmAnalyzer {
         serde_json::to_string(&res).map_err(|e| e.to_string())
     }
 
+    pub fn is_synchronous_host(&self) -> bool {
+        self.analyzer.is_synchronous_host()
+    }
+
     pub fn get_ts_file_for_template(&self, template_path: String) -> Option<String> {
         let res = self.analyzer.get_ts_file_for_template_core(template_path)?;
         serde_json::to_string(&res).ok()
@@ -215,14 +219,26 @@ impl WasmAnalyzer {
         self.analyzer.get_file_content_core(file_path)
     }
 
-    pub fn get_metadata_for_file(&self, file_path: String) -> Option<String> {
-        let res = self.analyzer.get_metadata_for_file(file_path)?;
-        serde_json::to_string(&res).ok()
+    pub fn get_metadata_for_file(&self, file_path: String) -> Result<Option<String>, String> {
+        let Some(res) = self.analyzer.get_metadata_for_file_checked(file_path)? else {
+            return Ok(None);
+        };
+        serde_json::to_string(&res)
+            .map(Some)
+            .map_err(|e| e.to_string())
     }
 
-    pub fn read_resource(&self, containing_file: String, url: String) -> Option<String> {
-        let res = self.analyzer.read_resource_core(containing_file, url)?;
-        serde_json::to_string(&res).ok()
+    pub fn read_resource(
+        &self,
+        containing_file: String,
+        url: String,
+    ) -> Result<Option<String>, String> {
+        let Some(res) = self.analyzer.read_resource_checked(containing_file, url)? else {
+            return Ok(None);
+        };
+        serde_json::to_string(&res)
+            .map(Some)
+            .map_err(|e| e.to_string())
     }
 
     pub fn canonical_paths(&self, paths_json: &str) -> Result<String, String> {

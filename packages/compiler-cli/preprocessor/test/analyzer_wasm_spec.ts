@@ -227,3 +227,33 @@ describe('WasmAnalyzer pump-driven getMetadataForFile', () => {
     await expectAsync(stalledPromise).toBeRejectedWithError('WasmAnalyzer closed');
   });
 });
+
+describe('WasmAnalyzer synchronous host reporting', () => {
+  it('exposes isSynchronousHost and keeps async APIs working when the host is asynchronous', async () => {
+    const inner: WasmInner = {
+      free() {},
+      pump: () => undefined,
+      is_synchronous_host: () => false,
+      analyze: () => 1,
+      update_file_content: () => JSON.stringify(['/app/a.ts']),
+      invalidate_files: () => JSON.stringify(['/app/a.ts']),
+      clear_resolution_cache: () => JSON.stringify(['/app/a.ts']),
+      canonical_paths: (pathsJson: string) => pathsJson,
+      get_ts_file_for_template: () => JSON.stringify([{tsFilePath: '/app/a.ts', symbolId: 0}]),
+    };
+
+    const analyzer = new WasmAnalyzer(inner);
+    expect(analyzer.isSynchronousHost).toBe(false);
+
+    // Async mutations and in-memory lookups continue working with an asynchronous host.
+    expect(await analyzer.updateFileContent([{filePath: '/app/a.ts', content: 'x'}])).toEqual([
+      '/app/a.ts',
+    ]);
+    expect(await analyzer.invalidateFiles([])).toEqual(['/app/a.ts']);
+    expect(await analyzer.clearResolutionCache()).toEqual(['/app/a.ts']);
+    expect(await analyzer.canonicalPaths(['/app/a.ts'])).toEqual(['/app/a.ts']);
+    expect(await analyzer.getTsFileForTemplate('/app/a.html')).toEqual([
+      {tsFilePath: '/app/a.ts', symbolId: 0},
+    ]);
+  });
+});

@@ -576,9 +576,33 @@ impl Analyzer {
         invalidated_paths.extend(evicted);
     }
 
+    pub fn is_synchronous_host(&self) -> bool {
+        self.engine.is_synchronous_host()
+    }
+
+    pub fn ensure_synchronous_host(&self) -> Result<(), String> {
+        if self.is_synchronous_host() {
+            Ok(())
+        } else {
+            Err(crate::host::SYNC_HOST_REQUIRED_MSG.to_string())
+        }
+    }
+
     pub fn get_file_content_core(&self, file_path: String) -> Result<String, String> {
+        self.ensure_synchronous_host()?;
         let path = PathBuf::from(&file_path);
         self.fs.read_to_string(&path).map_err(|e| e.to_string())
+    }
+
+    pub fn get_metadata_for_file_checked(
+        &self,
+        file_path: String,
+    ) -> Result<Option<AnalysisResult>, String> {
+        self.ensure_synchronous_host()?;
+        let Some(file_id) = self.resolve_metadata_target(crate::ModuleRef::Path(file_path)) else {
+            return Ok(None);
+        };
+        Ok(self.engine.get_metadata_for_file_id_blocking(file_id))
     }
 
     /// Resolve `url` the way a component's `templateUrl`/`styleUrls` are resolved from
@@ -586,16 +610,26 @@ impl Analyzer {
     /// after parsing a template (`<link rel="stylesheet">`), which ngtsc also resolves from the
     /// component file rather than from the template.
     /// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L876-L883
+    pub fn read_resource_checked(
+        &self,
+        containing_file: String,
+        url: String,
+    ) -> Result<Option<crate::ResolvedResource>, String> {
+        self.ensure_synchronous_host()?;
+        Ok(self.engine.read_resource_blocking(
+            &containing_file,
+            &url,
+            crate::host::ResourceKind::Style,
+        ))
+    }
+
     pub fn read_resource_core(
         &self,
         containing_file: String,
         url: String,
     ) -> Option<crate::ResolvedResource> {
-        self.engine.read_resource_blocking(
-            &containing_file,
-            &url,
-            crate::host::ResourceKind::Style,
-        )
+        self.read_resource_checked(containing_file, url)
+            .expect(crate::host::SYNC_HOST_REQUIRED_MSG)
     }
 
     pub fn canonical_paths_core(&self, paths: Vec<String>) -> Vec<String> {
@@ -1053,8 +1087,8 @@ impl Analyzer {
 
     #[cfg_attr(feature = "napi", napi)]
     pub fn get_metadata_for_file(&self, file_path: String) -> Option<AnalysisResult> {
-        let file_id = self.resolve_metadata_target(crate::host::ModuleRef::Path(file_path))?;
-        self.engine.get_metadata_for_file_id_blocking(file_id)
+        self.get_metadata_for_file_checked(file_path)
+            .expect(crate::host::SYNC_HOST_REQUIRED_MSG)
     }
 
     #[cfg(feature = "napi")]
