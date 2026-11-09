@@ -10,9 +10,9 @@ import {
   APP_ID,
   ApplicationRef,
   Component,
-  Directive,
   ɵDEHYDRATED_BLOCK_REGISTRY as DEHYDRATED_BLOCK_REGISTRY,
   destroyPlatform,
+  Directive,
   ɵgetDocument as getDocument,
   inject,
   Input,
@@ -22,8 +22,8 @@ import {
   PLATFORM_ID,
   Provider,
   QueryList,
-  ɵresetIncrementalHydrationRuntimeForTests as resetIncrementalHydrationRuntimeForTests,
   ɵresetIncrementalHydrationEnabledWarnedForTests as resetIncrementalHydrationEnabledWarnedForTests,
+  ɵresetIncrementalHydrationRuntimeForTests as resetIncrementalHydrationRuntimeForTests,
   signal,
   ɵTimerScheduler as TimerScheduler,
   ViewChild,
@@ -701,7 +701,7 @@ describe('platform-server partial hydration integration', () => {
         appRef.tick();
 
         const innerParagraph = doc.body.querySelector('p')!;
-        expect(innerParagraph).toBeUndefined();
+        expect(innerParagraph).toBeNull();
 
         // An event was replayed after hydration, which resulted in
         // an `@if` block becoming active and its inner content got
