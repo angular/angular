@@ -51,9 +51,6 @@ class ScriptedAnalyzer implements IAnalyzer {
 
   // Optional engine capabilities a test may opt into.
   canonicalPaths?: IAnalyzer['canonicalPaths'];
-  canonicalPathsSync?: IAnalyzer['canonicalPathsSync'];
-  updateFileContentSync?: IAnalyzer['updateFileContentSync'];
-  invalidateFilesSync?: IAnalyzer['invalidateFilesSync'];
 
   async *analyze(): AsyncGenerator<CompilationChunk> {}
   async *analyzeOptimized(): AsyncGenerator<CompilationChunk> {}
@@ -278,49 +275,24 @@ for (const {optimize} of [{optimize: true}, {optimize: false}]) {
       expect(getFileContentCalled).toBe(false);
     });
 
-    describe('records changes under the paths results carry', () => {
+    it('records changes under the paths results carry', async () => {
       // The host reports paths through a symlinked directory; results use the resolved one.
       const canonicalize = (paths: string[]) => paths.map((p) => p.replace('/link/', '/real/'));
+      const analyzer = new ScriptedAnalyzer();
+      analyzer.canonicalPaths = async (paths) => canonicalize(paths);
+      const compiler = new HybridCompiler(analyzer, {optimize});
+      const recordChanges = spyOn(compiler.incremental, 'recordChanges').and.callThrough();
 
-      function createAnalyzer(): ScriptedAnalyzer {
-        const analyzer = new ScriptedAnalyzer();
-        analyzer.canonicalPaths = async (paths) => canonicalize(paths);
-        analyzer.canonicalPathsSync = canonicalize;
-        analyzer.updateFileContentSync = (updates) => updates.map((u) => u.filePath);
-        analyzer.invalidateFilesSync = (updates) => updates.map((u) => u.filePath);
-        return analyzer;
-      }
+      await compiler.updateFileContent([{filePath: '/link/a.ts', content: 'next'}]);
+      await compiler.invalidateFiles([
+        {filePath: '/link/b.html', updateType: FileUpdateType.Changed},
+        {filePath: '/link/c.ts', updateType: FileUpdateType.Deleted},
+      ]);
 
-      it('for asynchronous updates', async () => {
-        const compiler = new HybridCompiler(createAnalyzer(), {optimize});
-        const recordChanges = spyOn(compiler.incremental, 'recordChanges').and.callThrough();
-
-        await compiler.updateFileContent([{filePath: '/link/a.ts', content: 'next'}]);
-        await compiler.invalidateFiles([
-          {filePath: '/link/b.html', updateType: FileUpdateType.Changed},
-          {filePath: '/link/c.ts', updateType: FileUpdateType.Deleted},
-        ]);
-
-        expect(recordChanges.calls.allArgs()).toEqual([
-          [['/real/a.ts'], []],
-          [['/real/b.html'], ['/real/c.ts']],
-        ]);
-      });
-
-      it('for synchronous updates', () => {
-        const compiler = new HybridCompiler(createAnalyzer(), {optimize});
-        const recordChanges = spyOn(compiler.incremental, 'recordChanges').and.callThrough();
-
-        compiler.updateFileContentSync([{filePath: '/link/a.ts', content: 'next'}]);
-        compiler.invalidateFilesSync([
-          {filePath: '/link/c.ts', updateType: FileUpdateType.Deleted},
-        ]);
-
-        expect(recordChanges.calls.allArgs()).toEqual([
-          [['/real/a.ts'], []],
-          [[], ['/real/c.ts']],
-        ]);
-      });
+      expect(recordChanges.calls.allArgs()).toEqual([
+        [['/real/a.ts'], []],
+        [['/real/b.html'], ['/real/c.ts']],
+      ]);
     });
   });
 }

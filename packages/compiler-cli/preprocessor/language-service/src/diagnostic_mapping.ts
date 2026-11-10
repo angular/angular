@@ -141,12 +141,12 @@ export function translatePosition(
   };
 }
 
-export function mapDiagnostics(
+export async function mapDiagnostics(
   tcbCode: string,
   diagnostics: Diagnostic[],
   tsFilePath: string,
   hybridCompiler: HybridCompiler,
-): {[filePath: string]: Diagnostic[]} | null {
+): Promise<{[filePath: string]: Diagnostic[]} | null> {
   if (diagnostics.length === 0) {
     return null;
   }
@@ -155,10 +155,10 @@ export function mapDiagnostics(
   const tcbSf = ts.createSourceFile(tcbPath, tcbCode, ts.ScriptTarget.Latest, true);
   const currentTcbFsPath = URI.file(tcbPath).fsPath;
 
-  const metadata = hybridCompiler.getClassMetadata(tsFilePath);
+  const metadata = await hybridCompiler.getClassMetadata(tsFilePath);
 
   const typeCheckIdToTemplateMap = new Map<string, string>();
-  const typeCheckIdMap = hybridCompiler.getTypeCheckIdMap(tsFilePath);
+  const typeCheckIdMap = await hybridCompiler.getTypeCheckIdMap(tsFilePath);
   if (metadata && typeCheckIdMap) {
     for (const cls of metadata.classes ?? []) {
       if (cls.className && cls.component?.templateUrl) {
@@ -193,7 +193,7 @@ export function mapDiagnostics(
     let content = fileContentCache.get(templateFilePath) ?? null;
     if (content === null && !fileContentCache.has(templateFilePath)) {
       try {
-        content = hybridCompiler.getFileContent(templateFilePath);
+        content = await hybridCompiler.getFileContent(templateFilePath);
       } catch (e) {
         content = null;
       }
@@ -221,7 +221,8 @@ export function mapDiagnostics(
     };
 
     if (diag.relatedInformation) {
-      const mappedInfo = diag.relatedInformation.flatMap((relInfo) => {
+      const mappedInfo = [];
+      for (const relInfo of diag.relatedInformation) {
         if (URI.parse(relInfo.location.uri).fsPath === currentTcbFsPath) {
           const mappedLoc = translatePosition(
             relInfo.location.range.start,
@@ -234,7 +235,7 @@ export function mapDiagnostics(
             let relContent = fileContentCache.get(mappedLoc.templateUrl) ?? null;
             if (relContent === null && !fileContentCache.has(mappedLoc.templateUrl)) {
               try {
-                relContent = hybridCompiler.getFileContent(mappedLoc.templateUrl);
+                relContent = await hybridCompiler.getFileContent(mappedLoc.templateUrl);
               } catch (e) {
                 relContent = null;
               }
@@ -242,25 +243,23 @@ export function mapDiagnostics(
             }
 
             if (typeof relContent === 'string') {
-              return [
-                {
-                  ...relInfo,
-                  location: {
-                    uri: URI.file(mappedLoc.templateUrl).toString(),
-                    range: {
-                      start: offsetToPosition(relContent, mappedLoc.span.start),
-                      end: offsetToPosition(relContent, mappedLoc.span.end),
-                    },
+              mappedInfo.push({
+                ...relInfo,
+                location: {
+                  uri: URI.file(mappedLoc.templateUrl).toString(),
+                  range: {
+                    start: offsetToPosition(relContent, mappedLoc.span.start),
+                    end: offsetToPosition(relContent, mappedLoc.span.end),
                   },
                 },
-              ];
+              });
             }
           }
           // Drop unmappable TCB references
-          return [];
+          continue;
         }
-        return [relInfo];
-      });
+        mappedInfo.push(relInfo);
+      }
 
       if (mappedInfo.length > 0) {
         mappedDiag.relatedInformation = mappedInfo;

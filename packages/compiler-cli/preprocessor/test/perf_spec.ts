@@ -414,11 +414,11 @@ describe('Tracer', () => {
       tracer,
     });
     try {
-      compiler.compileSync();
+      await compiler.compile();
       expect(tracer.take().summary.node.counters['TemplatesParsed']).toBe(2);
 
       // Indexing on demand afterwards reuses cached templates and parses only `diagNodes`.
-      compiler.getIndexedComponentsSync();
+      await compiler.getIndexedComponents();
       expect(tracer.take().summary.node.counters['TemplatesParsed']).toBe(2);
     } finally {
       analyzer.close();
@@ -429,7 +429,7 @@ describe('Tracer', () => {
     const root = await fs.mkdtemp(path.join(process.env['TEST_TMPDIR'] || os.tmpdir(), 'perf-'));
     const files: Record<string, string> = {
       'tsconfig.json': JSON.stringify({compilerOptions: {}, files: ['a.component.ts', 'bad.ts']}),
-      // The stylesheet link is read while `bad.ts` compiles, which is where the throw happens.
+      // The stylesheet link's content is read while `bad.ts` compiles, which is where the throw happens.
       'bad.ts': `
         import {Component} from '@angular/core';
         @Component({selector: 'app-bad', template: '<link rel="stylesheet" href="./missing.css">'})
@@ -452,13 +452,16 @@ describe('Tracer', () => {
       optimize: true,
       nodeModulesPathOverride: resolveFixtureNodeModules(),
     });
-    // `readResourceSync` is only called from the `Compile` section, for the stylesheet link.
+    // The resolved resource's `content` is read inside the `Compile` section for the stylesheet link.
     const throwingAnalyzer = new Proxy(analyzer, {
       get(target, prop, receiver) {
-        if (prop === 'readResourceSync') {
-          return () => {
-            throw new Error('no stylesheet');
-          };
+        if (prop === 'readResource') {
+          return async (): Promise<nga.ResolvedResource> => ({
+            resolvedPath: path.join(root, 'missing.css'),
+            get content(): string {
+              throw new Error('no stylesheet');
+            },
+          });
         }
         const value = Reflect.get(target, prop, receiver);
         return typeof value === 'function' ? value.bind(target) : value;
@@ -471,7 +474,7 @@ describe('Tracer', () => {
       tracer,
     });
     try {
-      const outputs = compiler.compileSync();
+      const outputs = await compiler.compile();
       expect([...compiler.currentProcessErrors.values()]).toEqual(['no stylesheet']);
       expect([...outputs.keys()].map((p) => path.basename(p))).toEqual(['a.component.ts']);
     } finally {

@@ -1579,7 +1579,7 @@ describe('QuickInfo with TS 7 binary', () => {
       `;
 
       await env.run('app_host_bindings.ts', appText, async (ls, filePath) => {
-        env.compiler!.getParsedTemplate(filePath, 'AppCmp');
+        await env.compiler!.getParsedTemplate(filePath, 'AppCmp');
         await env.expectHoverAtCursor(ls, filePath, ['AppCmp.myTitle', 'string']);
       });
     });
@@ -1620,7 +1620,7 @@ describe('QuickInfo with TS 7 binary', () => {
       `;
 
       await env.run('app_host_bindings.ts', appText, async (ls, filePath) => {
-        env.compiler!.getParsedTemplate(filePath, 'AppCmp');
+        await env.compiler!.getParsedTemplate(filePath, 'AppCmp');
         await env.expectHoverAtCursor(ls, filePath, ['$event', 'PointerEvent']);
       });
     });

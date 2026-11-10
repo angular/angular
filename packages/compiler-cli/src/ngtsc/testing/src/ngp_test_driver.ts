@@ -51,13 +51,79 @@ import {NgtscTestCompilerHost} from './compiler_host';
 const ROOT_HOST_WORKSPACE_NAME = 'root';
 const ROOT_HOST_PREFIX = `${ROOT_HOST_WORKSPACE_NAME}/`;
 
+let jasmineMacrotaskHookInstalled = false;
+
+/**
+ * Jasmine 7 dispatches `suiteStarted` and `specStarted` via `Promise.then(next)` and uses
+ * `queueMicrotask` for stack clearing in Node.js, which means synchronous `beforeAll`,
+ * `beforeEach`, and `it` callbacks execute inside an active V8 microtask checkpoint
+ * (`is_running_microtasks == true`). While V8 is already inside a microtask checkpoint,
+ * `process._tickCallback()` is a no-op and cannot synchronously drain `Promise` continuations in
+ * `runNgpSync`.
+ *
+ * Scheduling a `setImmediate` boundary at the start of each spec and `beforeAll` moves test
+ * execution onto a libuv macrotask where `process._tickCallback()` can synchronously drain V8
+ * microtasks.
+ */
+function ensureJasmineMacrotaskBoundary(): void {
+  if (jasmineMacrotaskHookInstalled) {
+    return;
+  }
+  const g = globalThis as {
+    jasmine?: {
+      getEnv?: () => {
+        beforeEach?: (fn: (...args: any[]) => unknown, timeout?: number) => void;
+      };
+    };
+    beforeEach?: (fn: (...args: any[]) => unknown, timeout?: number) => void;
+    beforeAll?: (fn: (...args: any[]) => unknown, timeout?: number) => void;
+  };
+  const env = g.jasmine?.getEnv?.();
+  if (!env?.beforeEach) {
+    return;
+  }
+  jasmineMacrotaskHookInstalled = true;
+  env.beforeEach((done: () => void) => {
+    setImmediate(done);
+  });
+  if (typeof g.beforeEach === 'function') {
+    const origBeforeEach = g.beforeEach;
+    g.beforeEach = (fn: (...args: any[]) => unknown, timeout?: number) => {
+      const res = origBeforeEach(fn, timeout);
+      if (fn.length > 0 || fn.constructor?.name === 'AsyncFunction') {
+        origBeforeEach((done: () => void) => {
+          setImmediate(done);
+        });
+      }
+      return res;
+    };
+  }
+  if (typeof g.beforeAll === 'function') {
+    const origBeforeAll = g.beforeAll;
+    g.beforeAll = (fn: (...args: any[]) => unknown, timeout?: number) => {
+      origBeforeAll((done: () => void) => {
+        setImmediate(done);
+      });
+      return origBeforeAll(fn, timeout);
+    };
+  }
+}
+
 /**
  * Returns true if the current test run is configured to use the NGP compiler backend.
  */
 export function isNgpTestMode(): boolean {
   const backend = process.env['NG_COMPILER_BACKEND'];
   const useNgp = process.env['USE_NGP'];
-  return backend === 'ngp' || useNgp === '1' || useNgp === 'true';
+  const enabled = backend === 'ngp' || useNgp === '1' || useNgp === 'true';
+  if (enabled) {
+    ensureJasmineMacrotaskBoundary();
+  }
+  return enabled;
+}
+
+if (isNgpTestMode()) {
+  ensureJasmineMacrotaskBoundary();
 }
 
 /**
@@ -131,6 +197,49 @@ function createTestWasmAnalyzerSync(
     hostFs,
   );
   return new WasmAnalyzer(inner);
+}
+
+/**
+ * Synchronously drives an NGP promise backed by the single-threaded `WasmAnalyzer` to completion
+ * by pumping the WASM event stream and draining V8 microtasks.
+ */
+export function runNgpSync<T>(promise: Promise<T>, analyzer?: unknown): T {
+  let result!: T;
+  let error: unknown;
+  let hasError = false;
+  let done = false;
+  promise.then(
+    (v) => {
+      result = v;
+      done = true;
+    },
+    (e) => {
+      error = e;
+      hasError = true;
+      done = true;
+    },
+  );
+  const tickCallback = (process as unknown as {_tickCallback(): void})._tickCallback;
+  const pumpLoop =
+    analyzer !== undefined && analyzer !== null
+      ? (analyzer as {pumpLoop?: () => void}).pumpLoop
+      : undefined;
+  let spins = 0;
+  try {
+    while (!done) {
+      pumpLoop?.();
+      tickCallback();
+      if (++spins > 100_000) {
+        throw new Error('Timed out waiting for synchronous NGP promise resolution');
+      }
+    }
+  } finally {
+    pumpLoop?.();
+  }
+  if (hasError) {
+    throw error;
+  }
+  return result;
 }
 
 /**
@@ -307,7 +416,10 @@ function relayHostChanges(
   // holds it as a virtual file, which an invalidation would drop rather than re-read.
   const tsconfigContent = virtualFiles[posixTsconfigPath];
   if (tsconfigContent !== undefined && tsconfigContent !== state.tsconfigContent) {
-    state.compiler.updateFileContentSync([{filePath: posixTsconfigPath, content: tsconfigContent}]);
+    runNgpSync(
+      state.compiler.updateFileContent([{filePath: posixTsconfigPath, content: tsconfigContent}]),
+      state.analyzer,
+    );
     state.tsconfigContent = tsconfigContent;
   }
   const invalidations: Array<{filePath: string; updateType: FileUpdateType}> = [];
@@ -325,7 +437,7 @@ function relayHostChanges(
         : FileUpdateType.Changed;
     invalidations.push({filePath, updateType});
   }
-  state.compiler.invalidateFilesSync(invalidations);
+  runNgpSync(state.compiler.invalidateFiles(invalidations), state.analyzer);
 }
 
 /**
@@ -547,16 +659,15 @@ export function performNgpCompilationSync(params: {
   const processorThrownErrors: Array<{fsFilePath: AbsoluteFsPath; message: string}> = [];
 
   if (compiler !== undefined && rootNames.length > 0) {
-    const processedFiles = compiler.compileSync({
-      readFile: (posixFilePath: string) => {
-        const fsFilePath = fromPosixPath(fs, posixFilePath);
-        return fs.exists(fsFilePath) ? fs.readFile(fsFilePath) : undefined;
-      },
-      readResource: (resPosixPath: string) => {
-        const resFsPath = fromPosixPath(fs, resPosixPath);
-        return fs.exists(resFsPath) ? fs.readFile(resFsPath) : undefined;
-      },
-    });
+    const processedFiles = runNgpSync(
+      compiler.compile({
+        readFile: (posixFilePath: string) => {
+          const fsFilePath = fromPosixPath(fs, posixFilePath);
+          return fs.exists(fsFilePath) ? fs.readFile(fsFilePath) : undefined;
+        },
+      }),
+      analyzer,
+    );
     for (const [posixFilePath, message] of compiler.currentProcessErrors) {
       processorThrownErrors.push({fsFilePath: fromPosixPath(fs, posixFilePath), message});
     }
@@ -582,8 +693,8 @@ export function performNgpCompilationSync(params: {
         tcbFileMap.set(tcbFsPath, {code: processed.tcb.code, originFsPath: fsFilePath});
       }
 
-      const typeCheckIdMap = compiler.getTypeCheckIdMap(posixFilePath);
-      const fileResult = compiler.getCachedMetadata(posixFilePath);
+      const typeCheckIdMap = runNgpSync(compiler.getTypeCheckIdMap(posixFilePath), analyzer);
+      const fileResult = runNgpSync(compiler.getCachedMetadata(posixFilePath), analyzer);
       if (typeCheckIdMap && fileResult) {
         for (const cls of fileResult.classes) {
           const component = cls.component;
@@ -1473,13 +1584,18 @@ export function createNgpBoundTemplate(
       optimize: true,
       templateParseOptions: options,
     });
-    for (const chunk of compiler.analyzeOptimizedSync()) {
-      for (const result of chunk.files) {
-        compiler.ensureBoundWithMetadataSync(result);
-      }
-    }
+    runNgpSync(
+      (async () => {
+        for await (const chunk of compiler.analyzeOptimized()) {
+          for (const result of chunk.files) {
+            await compiler.ensureBoundWithMetadata(result);
+          }
+        }
+      })(),
+      analyzer,
+    );
     const fileAnalysis = compiler.fileCache.get(posixTestPath);
-    const result = analyzer.getMetadataForFileSync(posixTestPath);
+    const result = runNgpSync(analyzer.getMetadataForFile(posixTestPath), analyzer);
     const hostCls = result?.classes.find((c) => c.className === hostClassName);
     const classKey = hostCls ? `${hostCls.className}@${hostCls.span.start}` : '';
     const boundTarget = fileAnalysis?.preparedTcbData?.boundTargetMap.get(classKey);
@@ -1572,7 +1688,7 @@ export function createNgpTestCompiler(
   let currentResult!: NgpCompilationResult;
   const metadataByFile = new Map<
     AbsoluteFsPath,
-    NonNullable<ReturnType<HybridCompiler['analyzer']['getMetadataForFileSync']>>
+    NonNullable<Awaited<ReturnType<HybridCompiler['analyzer']['getMetadataForFile']>>>
   >();
 
   const runCompile = () => {
@@ -1590,7 +1706,10 @@ export function createNgpTestCompiler(
     try {
       for (const rootName of inputFiles) {
         const fsPath = fs.resolve(rootName);
-        const meta = res.compiler.analyzer.getMetadataForFileSync(toPosixPath(fsPath));
+        const meta = runNgpSync(
+          res.compiler.analyzer.getMetadataForFile(toPosixPath(fsPath)),
+          res.compiler.analyzer,
+        );
         if (meta) {
           metadataByFile.set(fsPath, meta);
         }

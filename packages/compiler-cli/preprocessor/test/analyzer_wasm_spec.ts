@@ -50,15 +50,6 @@ describe('WasmAnalyzer engine errors', () => {
     );
   });
 
-  it('throws an Error carrying the engine message from sync methods', () => {
-    const analyzer = new WasmAnalyzer(throwingInner(MESSAGE));
-
-    expect(() => analyzer.getFileContentSync('/main.ts')).toThrowError(MESSAGE);
-    expect(() => analyzer.getMetadataForFileSync('/main.ts')).toThrowError(MESSAGE);
-    expect(() => analyzer.getTsFileForTemplateSync('/main.html')).toThrowError(MESSAGE);
-    expect(() => analyzer.readResourceSync('/main.ts', './main.html')).toThrowError(MESSAGE);
-  });
-
   it('fails an analysis stream with an Error when the engine refuses to start it', async () => {
     const analyzer = new WasmAnalyzer(throwingInner(MESSAGE));
 
@@ -66,8 +57,6 @@ describe('WasmAnalyzer engine errors', () => {
     await expectAsync(analyzer.analyzeOptimized().next()).toBeRejectedWithError(MESSAGE);
     await expectAsync(analyzer.analyzeDelta().next()).toBeRejectedWithError(MESSAGE);
     await expectAsync(analyzer.analyzeOptimizedDelta().next()).toBeRejectedWithError(MESSAGE);
-    expect(() => analyzer.analyzeSync().next()).toThrowError(MESSAGE);
-    expect(() => analyzer.analyzeOptimizedSync().next()).toThrowError(MESSAGE);
   });
 
   it('passes Error instances through unchanged', async () => {

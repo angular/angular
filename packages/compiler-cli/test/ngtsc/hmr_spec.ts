@@ -15,6 +15,7 @@ import {
   loadStandardTestFiles,
   normalizeNgpOutputFile,
   performNgpCompilationSync,
+  runNgpSync,
   toPosixPath,
 } from '../../src/ngtsc/testing';
 import {CompilerOptions} from '../../src/transformers/api';
@@ -1085,7 +1086,10 @@ runInEachFileSystem(() => {
         });
         try {
           const filePath = toPosixPath(fs.resolve('/test.ts'));
-          const rawHmr = result.compiler.emitHmrUpdateModuleSync(filePath, 'Cmp');
+          const rawHmr = runNgpSync(
+            result.compiler.emitHmrUpdateModule(filePath, 'Cmp'),
+            result.compiler.analyzer,
+          );
           const hmrContents =
             rawHmr === null
               ? null

@@ -92,12 +92,12 @@ export function collectMemberMethods(clazz: ts.ClassDeclaration): ts.MethodDecla
   return members;
 }
 
-export function getTargetDetailsAtTemplatePosition(
+export async function getTargetDetailsAtTemplatePosition(
   info: SetupResult,
   position: number,
   templateTypeChecker: TemplateTypeChecker,
   hybridCompiler: HybridCompiler,
-): TemplateLocationDetails[] | null {
+): Promise<TemplateLocationDetails[] | null> {
   const positionDetails = getTargetAtPosition(info.parsedTemplate.nodes, position);
   if (positionDetails === null) {
     return null;
@@ -112,7 +112,7 @@ export function getTargetDetailsAtTemplatePosition(
 
   for (const node of nodes) {
     if (!node) continue;
-    const symbol = templateTypeChecker.getSymbolForNode(
+    const symbol = await templateTypeChecker.getSymbolForNode(
       node,
       info.tsFilePath,
       info.meta.classKey,
@@ -127,7 +127,11 @@ export function getTargetDetailsAtTemplatePosition(
           templateTarget instanceof TmplAstTextAttribute ||
           templateTarget instanceof TmplAstBoundAttribute
         ) {
-          const pos = getPositionForDirective(symbol, info.meta.allDeclarations, hybridCompiler);
+          const pos = await getPositionForDirective(
+            symbol,
+            info.meta.allDeclarations,
+            hybridCompiler,
+          );
           if (pos) {
             details.push({
               typescriptLocations: [pos],
@@ -147,7 +151,7 @@ export function getTargetDetailsAtTemplatePosition(
           symbol.directives || [],
         );
         details.push({
-          typescriptLocations: getPositionsForDirectives(
+          typescriptLocations: await getPositionsForDirectives(
             matches,
             info.meta.allDeclarations,
             hybridCompiler,
@@ -168,7 +172,7 @@ export function getTargetDetailsAtTemplatePosition(
           symbol.host.directives || [],
         );
         details.push({
-          typescriptLocations: getPositionsForDirectives(
+          typescriptLocations: await getPositionsForDirectives(
             Array.from(directives),
             info.meta.allDeclarations,
             hybridCompiler,
@@ -379,15 +383,15 @@ function getDirectiveMatchesForElementTag(templateNode: TmplAstElement, directiv
   return matching.length > 0 ? matching : directives;
 }
 
-export function getPositionsForDirectives(
+export async function getPositionsForDirectives(
   directives: any[] | Set<any>,
   allDeclarations: ClassMetadata[] = [],
   hybridCompiler?: HybridCompiler,
-): FilePosition[] {
+): Promise<FilePosition[]> {
   const positions: FilePosition[] = [];
   const list = directives instanceof Set ? Array.from(directives) : directives;
   for (const dir of list) {
-    const pos = getPositionForDirective(dir, allDeclarations, hybridCompiler);
+    const pos = await getPositionForDirective(dir, allDeclarations, hybridCompiler);
     if (pos) {
       positions.push(pos);
     }
@@ -395,11 +399,11 @@ export function getPositionsForDirectives(
   return positions;
 }
 
-export function getPositionForDirective(
+export async function getPositionForDirective(
   directive: any,
   allDeclarations: ClassMetadata[] = [],
   hybridCompiler?: HybridCompiler,
-): FilePosition | null {
+): Promise<FilePosition | null> {
   if (directive.ref) {
     if (directive.ref.nodeFilePath && directive.ref.nodeNameSpan) {
       return {
@@ -429,7 +433,7 @@ export function getPositionForDirective(
     if (hybridCompiler && hybridCompiler.fileCache) {
       for (const filePath of hybridCompiler.fileCache.keys()) {
         if (typeof filePath !== 'string') continue;
-        const meta = hybridCompiler.getClassMetadata(filePath);
+        const meta = await hybridCompiler.getClassMetadata(filePath);
         for (const decl of meta?.classes || []) {
           if (decl.className === dirName && decl.nameSpan) {
             return {
@@ -462,7 +466,7 @@ export async function convertToTemplateDocumentSpan(
   }
 
   const tsFilePath = filePath.replace(/(\.ts)?\.ngtypecheck\.ts$/, '.ts');
-  const tcbCode = hybridCompiler.getTcbForFile(tsFilePath);
+  const tcbCode = await hybridCompiler.getTcbForFile(tsFilePath);
   if (!tcbCode) {
     return null;
   }
@@ -502,8 +506,8 @@ export async function convertToTemplateDocumentSpan(
     currentNode = currentNode.parent;
   }
 
-  const metadata = hybridCompiler.getClassMetadata(tsFilePath);
-  const typeCheckIdMap = hybridCompiler.getTypeCheckIdMap(tsFilePath);
+  const metadata = await hybridCompiler.getClassMetadata(tsFilePath);
+  const typeCheckIdMap = await hybridCompiler.getTypeCheckIdMap(tsFilePath);
   let templatePath = tsFilePath;
 
   if (metadata && typeCheckIdMap && typeCheckId) {
@@ -538,7 +542,7 @@ export async function convertToTemplateDocumentSpan(
 
   let templateContent: string;
   try {
-    templateContent = hybridCompiler.getFileContent(templatePath);
+    templateContent = await hybridCompiler.getFileContent(templatePath);
   } catch {
     return null;
   }
@@ -553,7 +557,7 @@ export async function convertToTemplateDocumentSpan(
   });
   if (targetClass) {
     const ck = makeClassKey(targetClass.className, targetClass.span.start);
-    const parsed = hybridCompiler.getParsedTemplate(tsFilePath, ck);
+    const parsed = await hybridCompiler.getParsedTemplate(tsFilePath, ck);
     if (parsed && parsed.nodes) {
       const target = getTargetAtPosition(parsed.nodes, mapped.start);
       if (target) {

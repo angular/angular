@@ -33,15 +33,15 @@ export interface SetupResult {
  * shims into a persistent TypeScript program, this queries `HybridCompiler` for the TCB code and
  * parsed template on demand and constructs a synthetic source file for `SymbolBuilder`.
  */
-export function getSetup(
+export async function getSetup(
   hybridCompiler: HybridCompiler,
   filePath: string,
   position: {line: number; character: number},
-): SetupResult | null {
+): Promise<SetupResult | null> {
   try {
     let fileContent: string;
     try {
-      fileContent = hybridCompiler.getFileContent(filePath);
+      fileContent = await hybridCompiler.getFileContent(filePath);
     } catch {
       return null;
     }
@@ -52,14 +52,14 @@ export function getSetup(
     let isHostBinding = false;
 
     if (filePath.endsWith('.html')) {
-      const resolved = hybridCompiler.getTsFileForTemplate(filePath);
+      const resolved = await hybridCompiler.getTsFileForTemplate(filePath);
 
       if (!resolved) {
         return null;
       }
       tsFilePath = resolved.tsFilePath;
 
-      const fileResult = hybridCompiler.getClassMetadata(tsFilePath);
+      const fileResult = await hybridCompiler.getClassMetadata(tsFilePath);
       if (!fileResult) {
         return null;
       }
@@ -82,7 +82,7 @@ export function getSetup(
         allDeclarations: fileResult.classes || [],
       };
     } else {
-      const fileResult = hybridCompiler.getClassMetadata(filePath);
+      const fileResult = await hybridCompiler.getClassMetadata(filePath);
       if (!fileResult) {
         return null;
       }
@@ -123,12 +123,12 @@ export function getSetup(
       return null;
     }
 
-    const tcbCode = hybridCompiler.getTcbForFile(tsFilePath);
+    const tcbCode = await hybridCompiler.getTcbForFile(tsFilePath);
     if (!tcbCode) {
       return null;
     }
 
-    let parsedTemplate = hybridCompiler.getParsedTemplate(tsFilePath, meta.classKey);
+    let parsedTemplate = await hybridCompiler.getParsedTemplate(tsFilePath, meta.classKey);
     if (!parsedTemplate) {
       if (isHostBinding) {
         parsedTemplate = {nodes: [], errors: []};
@@ -147,7 +147,7 @@ export function getSetup(
     );
 
     const hostElement = isHostBinding
-      ? hybridCompiler.getHostElement(tsFilePath, meta.classKey)
+      ? await hybridCompiler.getHostElement(tsFilePath, meta.classKey)
       : null;
 
     return {
