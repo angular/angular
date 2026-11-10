@@ -119,7 +119,10 @@ export class DependencyTemplates {
    * analyzers without synchronous lookups (the sidecar), this has to run before the consumer is
    * bound. The dependency files are read concurrently.
    */
-  async prefetch(consumer: nga.AnalysisResult): Promise<void> {
+  async prefetch(
+    consumer: nga.AnalysisResult,
+    onMetadata?: (metadata: nga.AnalysisResult) => void,
+  ): Promise<void> {
     const missing: MissingTemplates = new Map();
     for (const cls of consumer.classes) {
       this.collectMissing(cls.component?.resolvedDeclarations ?? [], consumer.filePath, missing);
@@ -131,6 +134,7 @@ export class DependencyTemplates {
         if (metadata == null) {
           return;
         }
+        onMetadata?.(metadata);
         const content = await this.analyzer.getFileContent(filePath);
         this.parseTemplates(filePath, metadata.classes, content, classIds.values());
       }),

@@ -17,9 +17,14 @@
 import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import * as path from 'path';
-import {SidecarAnalyzer} from '../api.js';
+import {createHybridCompiler, FileUpdateType, run, SidecarAnalyzer} from '../api.js';
 import type {CompilationChunk} from '../src/types.js';
-import {runPipeline, TestFile} from './utils.js';
+import {
+  getOrCreateSyntheticNodeModules,
+  resolveSidecarBinary,
+  runPipeline,
+  TestFile,
+} from './utils.js';
 
 const LS = '\u2028';
 const PS = '\u2029';
@@ -159,5 +164,107 @@ readline.createInterface({input: process.stdin}).on('line', async (line) => {
         sidecar.close();
       }
     });
+  });
+
+  it('supports incremental invalidation and cross-file dependency template prefetch in sidecar mode', async () => {
+    const tmpDir = await fs.realpath(
+      await fs.mkdtemp(path.join(process.env['TEST_TMPDIR'] || os.tmpdir(), 'sidecar-inc-')),
+    );
+    const sidecar = new SidecarAnalyzer(resolveSidecarBinary());
+    try {
+      const nodeModules = getOrCreateSyntheticNodeModules();
+      if (nodeModules) {
+        await fs.symlink(nodeModules, path.join(tmpDir, 'node_modules'), 'dir');
+      }
+      const childTs = path.join(tmpDir, 'child.component.ts');
+      const deferredTs = path.join(tmpDir, 'deferred.component.ts');
+      const parentTs = path.join(tmpDir, 'parent.component.ts');
+      const parentHtml = path.join(tmpDir, 'parent.component.html');
+      const tsconfigPath = path.join(tmpDir, 'tsconfig.json');
+
+      await Promise.all([
+        fs.writeFile(
+          childTs,
+          `
+import {Component} from '@angular/core';
+@Component({selector: 'app-child', template: '<ng-content></ng-content>'})
+export class ChildComponent {}
+`,
+        ),
+        fs.writeFile(
+          deferredTs,
+          `
+import {Component} from '@angular/core';
+@Component({selector: 'app-deferred', template: '<ng-content select="[slot]"></ng-content>'})
+export class DeferredComponent {}
+`,
+        ),
+        fs.writeFile(
+          parentTs,
+          `
+import {Component} from '@angular/core';
+import {ChildComponent} from './child.component';
+import {DeferredComponent} from './deferred.component';
+@Component({
+  selector: 'app-parent',
+  imports: [ChildComponent, DeferredComponent],
+  templateUrl: './parent.component.html',
+})
+export class ParentComponent {}
+`,
+        ),
+        fs.writeFile(
+          parentHtml,
+          `<app-child>v1</app-child>@defer {<app-deferred><span slot>d</span></app-deferred>}`,
+        ),
+        fs.writeFile(
+          tsconfigPath,
+          JSON.stringify({
+            compilerOptions: {target: 'es2022', module: 'esnext'},
+            files: ['child.component.ts', 'deferred.component.ts', 'parent.component.ts'],
+          }),
+        ),
+      ]);
+
+      await sidecar.initialize(tsconfigPath, true, undefined, undefined, {
+        workspaceName: 'custom_ws',
+      });
+      expect(sidecar.getCompilerOptions().workspaceName).toBe('custom_ws');
+
+      const compiler = createHybridCompiler(sidecar, {
+        optimize: true,
+        rootDir: tmpDir,
+        incremental: true,
+      });
+
+      await run(compiler, {
+        inPlace: true,
+        rootDir: tmpDir,
+        tsconfigPath,
+        keepAnalyzerAlive: true,
+      });
+      expect(compiler.fileCache.get(parentTs)?.boundFingerprint).toBeDefined();
+
+      await fs.writeFile(
+        parentHtml,
+        `<app-child>v2</app-child>@defer {<app-deferred><span slot>d</span></app-deferred>}`,
+      );
+      const changes = [{filePath: parentHtml, updateType: FileUpdateType.Changed}];
+      const invalidated = await sidecar.invalidateFiles(changes);
+      expect(invalidated).toContain(parentTs);
+      compiler.applyInvalidations(changes, invalidated);
+
+      await run(compiler, {
+        inPlace: true,
+        rootDir: tmpDir,
+        tsconfigPath,
+        keepAnalyzerAlive: true,
+      });
+      const parentNgTs = await fs.readFile(path.join(tmpDir, 'parent.component.ng.ts'), 'utf-8');
+      expect(parentNgTs).toContain('v2');
+    } finally {
+      sidecar.close();
+      await fs.rm(tmpDir, {recursive: true, force: true});
+    }
   });
 });

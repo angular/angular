@@ -8,13 +8,14 @@
 
 import * as child_process from 'child_process';
 import type {Readable} from 'stream';
-import type {
-  AnalysisResult,
-  AnalyzerOptions,
-  FileInvalidation,
-  CompilationChunk,
-  ResolvedResource,
-  TemplateUsage,
+import {
+  FileUpdateType,
+  type AnalysisResult,
+  type AnalyzerOptions,
+  type CompilationChunk,
+  type FileInvalidation,
+  type ResolvedResource,
+  type TemplateUsage,
 } from './types.js';
 import type {NgpCompilerOptions} from './compiler_options.js';
 import type {IAnalyzer} from './hybrid_compiler.js';
@@ -247,7 +248,10 @@ export class SidecarAnalyzer implements IAnalyzer {
         nodeModulesPathOverride,
       }),
     );
-    this.compilerOptions = res ?? {};
+    this.compilerOptions = {
+      workspaceName: options?.workspaceName,
+      ...res,
+    };
     return this.compilerOptions;
   }
 
@@ -355,7 +359,13 @@ export class SidecarAnalyzer implements IAnalyzer {
   }
 
   async invalidateFiles(updates: FileInvalidation[]): Promise<string[]> {
-    return this.callRpc('invalidateFiles', updates);
+    return this.callRpc(
+      'invalidateFiles',
+      updates.map((u) => ({
+        filePath: u.filePath,
+        updateType: typeof u.updateType === 'number' ? FileUpdateType[u.updateType] : u.updateType,
+      })),
+    );
   }
 
   async setEntryPoints(entryPoints: string[]): Promise<string[]> {

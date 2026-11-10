@@ -860,6 +860,21 @@ export class HybridCompiler {
     }
   }
 
+  /**
+   * Applies file invalidations already executed on `this.analyzer` (e.g. when reusing a
+   * `HybridCompiler` across persistent worker requests with `run()`).
+   */
+  applyInvalidations(
+    updates: readonly nga.FileInvalidation[],
+    invalidatedTsFiles: readonly string[],
+    canonicalPaths?: readonly string[],
+  ): void {
+    this.recordCanonicalInvalidations(updates, canonicalPaths);
+    for (const filePath of invalidatedTsFiles) {
+      this.invalidateCachedFile(filePath);
+    }
+  }
+
   private async recordInvalidations(updates: readonly nga.FileInvalidation[]): Promise<void> {
     const canonical = await this.analyzer.canonicalPaths?.(updates.map(({filePath}) => filePath));
     this.recordCanonicalInvalidations(updates, canonical);
@@ -1382,13 +1397,13 @@ export class HybridCompiler {
       effectiveContent !== undefined
         ? effectiveContent
         : await this.analyzer.getFileContent(result.filePath);
-    const finalFingerprint =
-      boundFingerprint ??
-      this.computeBoundFingerprint(result.filePath, fileContent, result, knownMetadata);
     // Binding is synchronous; read the templates of dependencies declared in other files here,
     // where the analyzer can be awaited (the sidecar analyzer has no synchronous lookups).
     const dependencyTemplates = this.dependencyTemplates(knownMetadata);
-    await dependencyTemplates.prefetch(result);
+    await dependencyTemplates.prefetch(result, (metadata) => this.recordMetadata(metadata));
+    const finalFingerprint =
+      boundFingerprint ??
+      this.computeBoundFingerprint(result.filePath, fileContent, result, knownMetadata);
     return this.populateBoundData(
       result.filePath,
       fileAnalysis,
