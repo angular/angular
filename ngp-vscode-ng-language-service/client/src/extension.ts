@@ -17,6 +17,15 @@ import {
 import {registerCommands} from './commands';
 import * as fs from 'node:fs/promises';
 
+interface TsLanguageServerSdk {
+  initializeAPIConnection(): Promise<string>;
+}
+
+interface TsNativePreviewExtensionApi {
+  onLanguageServerInitialized?: vscode.Event<TsLanguageServerSdk>;
+  initializeAPIConnection?: () => Promise<string>;
+}
+
 let client: LanguageClient;
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -26,16 +35,61 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   let tsApiPipe: string | undefined;
+  let usingNativePreviewExtension = false;
+  let resolveClientReady!: () => void;
+  const clientReady = new Promise<void>((resolve) => {
+    resolveClientReady = resolve;
+  });
+
   try {
-    const commands = await vscode.commands.getCommands();
-    if (commands.includes('typescript.native-preview.initializeAPIConnection')) {
-      tsApiPipe = await vscode.commands.executeCommand<string>(
-        'typescript.native-preview.initializeAPIConnection',
-      );
-      if (tsApiPipe) {
-        outputChannel.appendLine(
-          `Reusing existing TypeScript API connection on pipe: ${tsApiPipe}`,
+    const tsPreviewExt = vscode.extensions.getExtension<TsNativePreviewExtensionApi>(
+      'typescriptteam.native-preview',
+    );
+    if (tsPreviewExt) {
+      const extApi = tsPreviewExt.isActive ? tsPreviewExt.exports : await tsPreviewExt.activate();
+      if (extApi && typeof extApi.onLanguageServerInitialized === 'function') {
+        usingNativePreviewExtension = true;
+        context.subscriptions.push(
+          extApi.onLanguageServerInitialized(async (sdk) => {
+            try {
+              const pipe = await sdk.initializeAPIConnection();
+              if (!pipe) {
+                return;
+              }
+              tsApiPipe = pipe;
+              outputChannel.appendLine(
+                `Reusing existing TypeScript API connection on pipe: ${pipe}`,
+              );
+              await clientReady;
+              client.sendNotification('angular/setTsApiPipe', {pipe});
+            } catch (err) {
+              outputChannel.appendLine(`Failed to initialize TypeScript API connection: ${err}`);
+            }
+          }),
         );
+      } else if (extApi && typeof extApi.initializeAPIConnection === 'function') {
+        tsApiPipe = await extApi.initializeAPIConnection();
+        if (tsApiPipe) {
+          usingNativePreviewExtension = true;
+          outputChannel.appendLine(
+            `Reusing existing TypeScript API connection on pipe: ${tsApiPipe}`,
+          );
+        }
+      }
+    }
+
+    if (!usingNativePreviewExtension) {
+      const commands = await vscode.commands.getCommands();
+      if (commands.includes('typescript.native-preview.initializeAPIConnection')) {
+        tsApiPipe = await vscode.commands.executeCommand<string>(
+          'typescript.native-preview.initializeAPIConnection',
+        );
+        if (tsApiPipe) {
+          usingNativePreviewExtension = true;
+          outputChannel.appendLine(
+            `Reusing existing TypeScript API connection on pipe: ${tsApiPipe}`,
+          );
+        }
       }
     }
   } catch (err) {
@@ -77,16 +131,22 @@ export async function activate(context: vscode.ExtensionContext) {
 
   registerCommands(context, client, outputChannel);
 
-  client.start().catch((err) => {
-    outputChannel.appendLine(`Failed to start Angular Language Service: ${err}`);
-  });
+  client
+    .start()
+    .then(() => {
+      resolveClientReady();
+    })
+    .catch((err) => {
+      outputChannel.appendLine(`Failed to start Angular Language Service: ${err}`);
+    });
 
   const tsGoPath = await resolveTsGoPath();
 
-  // If we already connected to an existing TypeScript LSP server via tsApiPipe,
+  // If we already connected to an existing TypeScript LSP server via tsApiPipe
+  // or are subscribed to `typescriptteam.native-preview`'s language server initialization,
   // we do not need to launch a separate fallback ts7Client.
   // Otherwise, if tsGoPath is available, launch our fallback ts7Client.
-  if (!tsApiPipe && tsGoPath) {
+  if (!tsApiPipe && !usingNativePreviewExtension && tsGoPath) {
     launchTs7Client(tsGoPath, context);
   }
 }
