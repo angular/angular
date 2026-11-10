@@ -1,0 +1,16 @@
+{
+  "name": "angular",
+  "description": "Angular agent skills",
+  "author": {
+    "name": "Angular",
+    "url": "https://github.com/angular"
+  },
+  "homepage": "https://angular.dev",
+  "repository": "https://github.com/angular/angular",
+  "license": "MIT",
+  "keywords": ["angular", "typescript", "web-framework"],
+  "skills": ["./angular-developer", "./angular-new-app"],
+  "interface": {
+    "displayName": "Angular"
+  }
+}

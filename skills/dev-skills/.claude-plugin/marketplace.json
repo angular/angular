@@ -1,0 +1,26 @@
+{
+  "name": "angular",
+  "owner": {
+    "name": "Angular"
+  },
+  "description": "Angular agent skills",
+  "plugins": [
+    {
+      "name": "angular",
+      "displayName": "Angular",
+      "description": "Angular agent skills for Claude Code",
+      "source": "./",
+      "strict": false,
+      "skills": ["./angular-developer", "./angular-new-app"],
+      "author": {
+        "name": "Angular",
+        "url": "https://github.com/angular"
+      },
+      "homepage": "https://angular.dev",
+      "repository": "https://github.com/angular/angular",
+      "license": "MIT",
+      "keywords": ["angular", "typescript", "web-framework"],
+      "category": "development"
+    }
+  ]
+}
