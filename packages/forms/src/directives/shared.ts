@@ -18,8 +18,8 @@ import {getControlAsyncValidators, getControlValidators, mergeValidators} from '
 import type {AbstractControlDirective} from './abstract_control_directive';
 import type {AbstractFormGroupDirective} from './abstract_form_group_directive';
 import type {ControlContainer} from './control_container';
-import {BuiltInControlValueAccessor, ControlValueAccessor} from './control_value_accessor';
-import {DefaultValueAccessor} from './default_value_accessor';
+import {isBuiltInAccessor, ControlValueAccessor} from './control_value_accessor';
+import {isDefaultValueAccessor} from './default_value_accessor';
 import type {NgControl} from './ng_control';
 import type {FormArrayName} from './reactive_directives/form_group_name';
 import {ngModelWarning} from './reactive_errors';
@@ -377,12 +377,6 @@ export function isPropertyUpdated(changes: {[key: string]: any}, viewModel: any)
   return !Object.is(viewModel, change.currentValue);
 }
 
-export function isBuiltInAccessor(valueAccessor: ControlValueAccessor): boolean {
-  // Check if a given value accessor is an instance of a class that directly extends
-  // `BuiltInControlValueAccessor` one.
-  return Object.getPrototypeOf(valueAccessor.constructor) === BuiltInControlValueAccessor;
-}
-
 export function syncPendingControls(
   form: AbstractControl,
   directives: Set<NgControl> | NgControl[],
@@ -412,7 +406,7 @@ export function selectValueAccessor(
   let customAccessor: ControlValueAccessor | undefined = undefined;
 
   valueAccessors.forEach((v: ControlValueAccessor) => {
-    if (v.constructor === DefaultValueAccessor) {
+    if (isDefaultValueAccessor(v)) {
       defaultAccessor = v;
     } else if (isBuiltInAccessor(v)) {
       if (builtinAccessor && (typeof ngDevMode === 'undefined' || ngDevMode))

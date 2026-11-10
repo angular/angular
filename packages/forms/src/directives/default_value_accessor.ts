@@ -30,6 +30,15 @@ export const DEFAULT_VALUE_ACCESSOR: Provider = {
   multi: true,
 };
 
+const DEFAULT_VALUE_ACCESSOR_TYPE = /* @__PURE__ */ Symbol();
+
+/** Identifies the default accessor without retaining its directive class. */
+export function isDefaultValueAccessor(valueAccessor: ControlValueAccessor): boolean {
+  const type = valueAccessor.constructor as typeof DefaultValueAccessor;
+  const marker = type?._ngDefaultValueAccessor;
+  return marker?.id === DEFAULT_VALUE_ACCESSOR_TYPE && marker.type === type;
+}
+
 /**
  * We must check whether the agent is Android because composition events
  * behave differently between iOS and Android.
@@ -99,6 +108,12 @@ export const COMPOSITION_BUFFER_MODE = new InjectionToken<boolean>(
   standalone: false,
 })
 export class DefaultValueAccessor extends BaseControlValueAccessor implements ControlValueAccessor {
+  /** @internal */
+  static readonly _ngDefaultValueAccessor = {
+    id: DEFAULT_VALUE_ACCESSOR_TYPE,
+    type: DefaultValueAccessor,
+  };
+
   /** Whether the user is creating a composition string (IME events). */
   private _composing = false;
 
