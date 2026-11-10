@@ -11,6 +11,7 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import {getDiagnosticPath, HybridCompiler, serializeDiagnostics} from './src/hybrid_compiler.js';
+import type {ProcessedFile} from './src/processor.js';
 import {
   Counter,
   createTracer,
@@ -22,6 +23,11 @@ import {
 } from './src/perf.js';
 import {AnalysisResult} from './src/types.js';
 import {ChunkContext} from './src/file_analysis.js';
+
+const reusedSourceMapCache = new WeakMap<
+  ProcessedFile,
+  {key: string; sourceWithMap: string; mapString: string}
+>();
 
 export {
   Counter,
@@ -197,23 +203,35 @@ async function emitFile(
     const outputDir = path.dirname(outputPath);
     const mapPath = outputPath + '.map';
 
-    await fs.mkdir(outputDir, {recursive: true});
+    if (outDir) {
+      await fs.mkdir(outputDir, {recursive: true});
+    }
 
-    const {sourceWithMap, mapString} = tracer.slice(
-      SpanKind.SourceMap,
-      () => {
-        const map = processed.generateSourceMap({
-          source: relativeSourcePath,
-          file: path.basename(outputPath),
-          includeContent: true,
-        });
-        return {
-          sourceWithMap: s.toString() + `\n//# sourceMappingURL=${path.basename(mapPath)}\n`,
-          mapString: map.toString(),
-        };
-      },
-      fileId,
-    );
+    const outputBase = path.basename(outputPath);
+    const mapCacheKey = `${relativeSourcePath}\0${outputBase}`;
+    let mapEntry = reusedSourceMapCache.get(processed);
+    if (!mapEntry || mapEntry.key !== mapCacheKey) {
+      mapEntry = tracer.slice(
+        SpanKind.SourceMap,
+        () => {
+          const map = processed.generateSourceMap({
+            source: relativeSourcePath,
+            file: outputBase,
+            includeContent: true,
+          });
+          return {
+            key: mapCacheKey,
+            sourceWithMap: s.toString() + `\n//# sourceMappingURL=${path.basename(mapPath)}\n`,
+            mapString: map.toString(),
+          };
+        },
+        fileId,
+      );
+      if (compiler.incrementalEnabled) {
+        reusedSourceMapCache.set(processed, mapEntry);
+      }
+    }
+    const {sourceWithMap, mapString} = mapEntry;
     // Writes of different files overlap, so this is an async slice.
     tracer.asyncBegin(SpanKind.WriteOutput, fileId);
 
