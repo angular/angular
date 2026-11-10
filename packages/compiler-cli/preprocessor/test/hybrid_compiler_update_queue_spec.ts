@@ -110,15 +110,6 @@ class ScriptedAnalyzer implements IAnalyzer {
   async readResource(containingFile: string, url: string): Promise<ResolvedResource | null> {
     return null;
   }
-  getMetadataForFileSync(filePath: string): AnalysisResult | null {
-    return null;
-  }
-  getFileContentSync(filePath: string): string {
-    return '';
-  }
-  getTsFileForTemplateSync(templatePath: string): TemplateUsage[] | null {
-    return null;
-  }
   close(): void {}
 }
 

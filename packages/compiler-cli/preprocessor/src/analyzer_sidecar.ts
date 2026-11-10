@@ -398,16 +398,4 @@ export class SidecarAnalyzer implements IAnalyzer {
     const take = await this.callRpc<RustPerfTake>('takePerf', {});
     return {...take, requestUs, nowUs, responseUs};
   }
-
-  getMetadataForFileSync(filePath: string): AnalysisResult | null {
-    throw new Error('Synchronous AST lookups are not supported in Sidecar mode');
-  }
-
-  getFileContentSync(filePath: string): string {
-    throw new Error('Synchronous AST lookups are not supported in Sidecar mode');
-  }
-
-  getTsFileForTemplateSync(templatePath: string): TemplateUsage[] | null {
-    throw new Error('Synchronous AST lookups are not supported in Sidecar mode');
-  }
 }

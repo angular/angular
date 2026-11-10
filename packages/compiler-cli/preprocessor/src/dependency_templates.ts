@@ -75,28 +75,14 @@ export class DependencyTemplates {
 
   /**
    * Returns `declarations` with `ngContentSelectors` filled in for every source-file component
-   * that lacks them. The input array and its entries are not mutated; it is returned as is when
+   * that lacks them. Cross-file dependencies must be pre-fetched via `prefetch` before calling
+   * this method. The input array and its entries are not mutated; it is returned as is when
    * nothing had to change.
    */
   withNgContentSelectors(
     declarations: nga.DeclarationMetadata[],
     consumer: DependencyTemplateConsumer,
   ): nga.DeclarationMetadata[] {
-    const missing: MissingTemplates = new Map();
-    this.collectMissing(declarations, consumer.filePath, missing);
-    for (const [filePath, classIds] of missing) {
-      // The sidecar analyzer has no synchronous lookups and throws. Its callers `prefetch` first,
-      // so nothing is missing by the time they get here; a dependency that still is gets no
-      // selectors rather than failing the whole file.
-      const metadata =
-        this.knownMetadata?.get(filePath) ??
-        safeLookup(() => this.analyzer.getMetadataForFileSync(filePath));
-      const content = metadata && safeLookup(() => this.analyzer.getFileContentSync(filePath));
-      if (metadata && content !== null) {
-        this.parseTemplates(filePath, metadata.classes, content, classIds.values());
-      }
-    }
-
     let result: nga.DeclarationMetadata[] | null = null;
     for (let i = 0; i < declarations.length; i++) {
       const decl = declarations[i];
@@ -115,9 +101,8 @@ export class DependencyTemplates {
 
   /**
    * Parses and caches the templates of the cross-file component dependencies of every component
-   * in `consumer` that `withNgContentSelectors` would otherwise have to read synchronously. For
-   * analyzers without synchronous lookups (the sidecar), this has to run before the consumer is
-   * bound. The dependency files are read concurrently.
+   * in `consumer` so `withNgContentSelectors` can read their `ngContentSelectors` synchronously
+   * during template target binding. The dependency files are read concurrently.
    */
   async prefetch(
     consumer: nga.AnalysisResult,
@@ -319,12 +304,4 @@ function findParsedTemplate(
     }
   }
   return null;
-}
-
-function safeLookup<T>(lookup: () => T): T | null {
-  try {
-    return lookup();
-  } catch {
-    return null;
-  }
 }
