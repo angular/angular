@@ -209,12 +209,12 @@ These events track the core navigation process from start through route recognit
 
 ### Activation events
 
-These events occur during the activation phase when route components are being instantiated and initialized. Activation events fire for each route in the route tree, including parent and child routes.
+These events fire for each route in the route tree, including parent and child routes. The start events fire during the guard phase, before the route's guards run. The end events fire after the route is activated.
 
 | Event                                                     | Description                                   |
 | --------------------------------------------------------- | --------------------------------------------- |
-| [`ActivationStart`](api/router/ActivationStart)           | Occurs at the start of route activation       |
 | [`ChildActivationStart`](api/router/ChildActivationStart) | Occurs at the start of child route activation |
+| [`ActivationStart`](api/router/ActivationStart)           | Occurs at the start of route activation       |
 | [`ActivationEnd`](api/router/ActivationEnd)               | Occurs at the end of route activation         |
 | [`ChildActivationEnd`](api/router/ChildActivationEnd)     | Occurs at the end of child route activation   |
 
