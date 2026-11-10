@@ -246,7 +246,9 @@ export class GenericKeyFn implements ExpressionKeyFn {
 
   keyOf(expr: o.Expression): string {
     if (expr instanceof o.LiteralExpr && typeof expr.value === 'string') {
-      return `"${expr.value}"`;
+      // Prefix with the string length so embedded quotes/delimiters cannot cause key collisions
+      // without needing to scan or escape the string.
+      return `"${expr.value.length}:${expr.value}"`;
     } else if (expr instanceof o.LiteralExpr) {
       return String(expr.value);
     } else if (expr instanceof o.RegularExpressionLiteralExpr) {
@@ -265,7 +267,7 @@ export class GenericKeyFn implements ExpressionKeyFn {
         } else {
           let key = entry.key;
           if (entry.quoted) {
-            key = `"${key}"`;
+            key = `"${key.length}:${key}"`;
           }
           entries.push(key + ':' + this.keyOf(entry.value));
         }
