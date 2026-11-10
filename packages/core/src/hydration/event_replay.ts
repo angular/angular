@@ -16,6 +16,7 @@ import {
   getAppScopedQueuedEventInfos,
   clearAppScopedEarlyEventContract,
   EventPhase,
+  Attribute,
 } from '../../primitives/event-dispatch';
 
 import {APP_BOOTSTRAP_LISTENER, ApplicationRef} from '../application/application_ref';
@@ -117,6 +118,10 @@ export function withEventReplay(): Provider[] {
                   // this element could be a comment node. So we need to ensure we have an actual element
                   // node before stashing anything.
                   if ((rEl as Node).nodeType !== Node.ELEMENT_NODE) return;
+                  // Only elements from the server have a `jsaction` attribute.
+                  // Events on other elements are never replayed, so we don't keep them.
+                  // Keeping them would cause a memory leak.
+                  if (!(rEl as Element).hasAttribute(Attribute.JSACTION)) return;
                   sharedStashFunction(rEl as RElement, eventName, listenerFn);
                   sharedMapFunction(rEl as RElement, jsActionMap);
                 },

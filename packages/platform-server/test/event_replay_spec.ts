@@ -16,8 +16,10 @@ import {
   inject,
   PendingTasks,
   PLATFORM_ID,
+  signal,
   ɵgetDocument as getDocument,
   ɵEVENT_REPLAY_QUEUE as EVENT_REPLAY_QUEUE,
+  ɵJSACTION_BLOCK_ELEMENT_MAP as JSACTION_BLOCK_ELEMENT_MAP,
 } from '@angular/core';
 import {isPlatformBrowser} from '@angular/common';
 import {
@@ -326,6 +328,46 @@ describe('event replay', () => {
 
     expect(earlyJsactionData.q.length).toBe(0);
   });
+
+  for (const incrementalHydration of [true, false]) {
+    it(`should not stash listeners of elements created after hydration (incremental hydration: ${incrementalHydration})`, async () => {
+      @Component({
+        selector: 'app',
+        template: `
+          <button (click)="onClick()"></button>
+          @if (showLateButton()) {
+            <button id="late-btn" (click)="onClick()"></button>
+          }
+        `,
+      })
+      class AppComponent {
+        showLateButton = signal(false);
+        onClick() {}
+      }
+
+      const hydrationFeatures = () =>
+        incrementalHydration ? [] : [withEventReplay(), withNoIncrementalHydration()];
+      const html = await ssr(AppComponent, {hydrationFeatures});
+      const ssrContents = getAppContents(html);
+      const doc = getDocument();
+
+      prepareEnvironment(doc, ssrContents);
+      resetTViewsFor(AppComponent);
+
+      const appRef = await hydrate(doc, AppComponent, {hydrationFeatures});
+      await appRef.whenStable();
+
+      appRef.components[0].instance.showLateButton.set(true);
+      await appRef.whenStable();
+
+      const lateButton = doc.getElementById('late-btn')!;
+      expect(lateButton).not.toBeNull();
+      // Before the fix: a Set with the late button in it
+      expect(appRef.injector.get(JSACTION_BLOCK_ELEMENT_MAP).get('')).toBeUndefined();
+      // Before the fix: a Map with the click listener in it
+      expect(lateButton.__jsaction_fns).toBeUndefined();
+    });
+  }
 
   // Two apps with the same APP_ID both see `_ejsas[appId]` as set, so both enable event
   // replay. The first one to stabilize reads it and clears it. The second one used to crash
