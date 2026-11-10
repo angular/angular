@@ -36,7 +36,7 @@ import {HandlerContext} from './handlers/utils';
 import * as fs from 'node:fs/promises';
 import * as rpc from 'vscode-jsonrpc/node';
 
-import {API} from '@typescript/native-preview/unstable/async';
+import {API} from '@typescript/native-preview/async';
 import {TsGoFacade} from '../../../packages/compiler-cli/preprocessor/language-service/src/facade';
 import {fileURLToPath} from 'node:url';
 import {getTcbPath} from '../../../packages/compiler-cli/preprocessor/language-service/src/tcb_ls_util.js';
@@ -141,7 +141,7 @@ connection.onDidChangeWatchedFiles((params: DidChangeWatchedFilesParams) => {
 connection.onInitialize(async (params: InitializeParams) => {
   connection.console.log(`Initializing Angular Hybrid Language Server`);
 
-  let api: API | undefined;
+  let api: API<true> | undefined;
   if (params.initializationOptions?.tsApiPipe) {
     try {
       api = await API.fromLSPConnection({pipe: params.initializationOptions.tsApiPipe});
