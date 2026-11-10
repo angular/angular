@@ -25,17 +25,19 @@ jobs:
       - name: Install node modules
         run: pnpm install --frozen-lockfile
       - name: Check code lint
-        run: pnpm tslint
+        run: node scripts/ci/run-with-annotations.mts pnpm tslint
       - name: Check for circular dependencies
-        run: pnpm ts-circular-deps:check
+        run: node scripts/ci/run-with-annotations.mts pnpm ts-circular-deps:check
       - name: Validate pull approve configuration
-        run: pnpm ng-dev pullapprove verify
+        run: node scripts/ci/run-with-annotations.mts pnpm ng-dev pullapprove verify
       - name: Validate angular robot configuration
-        run: pnpm ng-dev ngbot verify
+        run: node scripts/ci/run-with-annotations.mts pnpm ng-dev ngbot verify
       - name: Validate agent skills
-        run: pnpm ng-dev misc validate-skills
+        run: node scripts/ci/run-with-annotations.mts pnpm ng-dev misc validate-skills
       - name: Confirm code builds with typescript as expected
-        run: pnpm check-tooling-setup
+        run: node scripts/ci/run-with-annotations.mts pnpm check-tooling-setup
+      - name: Test CI failure annotation helpers
+        run: node --test scripts/ci/run-with-annotations.spec.mts
 
   devtools:
     runs-on: ubuntu-latest
@@ -53,13 +55,13 @@ jobs:
       - name: Install node modules
         run: pnpm install --frozen-lockfile
       - name: Run unit tests
-        run: pnpm devtools:test
+        run: node scripts/ci/run-with-annotations.mts pnpm devtools:test
       - name: Test build
-        run: pnpm devtools:build:chrome
+        run: node scripts/ci/run-with-annotations.mts pnpm devtools:build:chrome
       - name: Cypress run
         uses: cypress-io/github-action@18016a55674bd02cabf197de5762a1710cb5577c # v7.4.9
         with:
-          command: pnpm devtools:test:e2e
+          command: node scripts/ci/run-with-annotations.mts pnpm devtools:test:e2e
           start: pnpm bazel run //devtools/src:devserver
           wait-on: 'http://localhost:4200'
           wait-on-timeout: 300
@@ -79,7 +81,7 @@ jobs:
       - name: Install node modules
         run: pnpm install --frozen-lockfile
       - name: Run CI tests for framework
-        run: pnpm test:ci
+        run: node scripts/ci/run-with-annotations.mts pnpm test:ci
 
   integration-tests:
     runs-on: ubuntu-latest
@@ -95,7 +97,7 @@ jobs:
       - name: Install node modules
         run: pnpm install --frozen-lockfile
       - name: Run integration CI tests for framework
-        run: pnpm integration-tests:ci
+        run: node scripts/ci/run-with-annotations.mts pnpm integration-tests:ci
 
   adev:
     runs-on:
@@ -112,9 +114,9 @@ jobs:
       - name: Install node modules
         run: pnpm install --frozen-lockfile
       - name: Run tests
-        run: pnpm bazel test //adev/...
+        run: node scripts/ci/run-with-annotations.mts pnpm bazel test //adev/...
       - name: Build adev in fast mode to ensure it continues to work
-        run: pnpm bazel build //adev:build
+        run: node scripts/ci/run-with-annotations.mts pnpm bazel build //adev:build
 
   vscode-ng-language-service:
     runs-on:
@@ -131,7 +133,7 @@ jobs:
       - name: Install node modules
         run: pnpm install --frozen-lockfile
       - name: Run tests
-        run: pnpm bazel test //vscode-ng-language-service/...
+        run: node scripts/ci/run-with-annotations.mts pnpm bazel test //vscode-ng-language-service/...
 
   publish-snapshots:
     runs-on:
@@ -163,11 +165,13 @@ jobs:
           google_credential: ${{ secrets.RBE_TRUSTED_BUILDS_USER }}
       - name: Install node modules
         run: pnpm install --frozen-lockfile
-      - run: |
-          pnpm bazel build \
-          //packages/zone.js/bundles:zone.umd.js \
-          //packages/zone.js:npm_package \
-          //packages/zone.js/test/closure:closure
+      - name: Build zone.js
+        run: |
+          node scripts/ci/run-with-annotations.mts \
+            pnpm bazel build \
+            //packages/zone.js/bundles:zone.umd.js \
+            //packages/zone.js:npm_package \
+            //packages/zone.js/test/closure:closure
 
       - run: |
           rm -Rf packages/zone.js/build
@@ -184,13 +188,20 @@ jobs:
         # Install
       - run: pnpm -C packages/zone.js install --frozen-lockfile
         # Run zone.js tools tests
-      - run: pnpm -C packages/zone.js promisefinallytest
-      - run: pnpm -C packages/zone.js jest:test
-      - run: pnpm -C packages/zone.js jest:nodetest
-      - run: pnpm -C packages/zone.js vitest:test
-      - run: pnpm -C packages/zone.js vitest-globals:test
-      - run: pnpm -C packages/zone.js electrontest
-      - run: pnpm -C packages/zone.js/test/typings test
+      - name: Run zone.js promisefinallytest
+        run: node scripts/ci/run-with-annotations.mts pnpm -C packages/zone.js promisefinallytest
+      - name: Run zone.js jest:test
+        run: node scripts/ci/run-with-annotations.mts pnpm -C packages/zone.js jest:test
+      - name: Run zone.js jest:nodetest
+        run: node scripts/ci/run-with-annotations.mts pnpm -C packages/zone.js jest:nodetest
+      - name: Run zone.js vitest:test
+        run: node scripts/ci/run-with-annotations.mts pnpm -C packages/zone.js vitest:test
+      - name: Run zone.js vitest-globals:test
+        run: node scripts/ci/run-with-annotations.mts pnpm -C packages/zone.js vitest-globals:test
+      - name: Run zone.js electrontest
+        run: node scripts/ci/run-with-annotations.mts pnpm -C packages/zone.js electrontest
+      - name: Run zone.js typings test
+        run: node scripts/ci/run-with-annotations.mts pnpm -C packages/zone.js/test/typings test
 
   adev-deploy:
     needs: [adev]
