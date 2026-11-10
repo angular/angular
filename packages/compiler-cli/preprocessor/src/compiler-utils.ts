@@ -27,6 +27,7 @@ import {
   ParseSourceSpan,
   ParseLocation,
   outputAst,
+  ParsedTemplate,
   parseTemplate,
   ParseTemplateOptions,
   TmplAstNode,
@@ -650,6 +651,56 @@ export function parseDirectInlineTemplate(
   });
 }
 
+function tracedTemplateParse<T>(tracer: Tracer, parse: () => T): T {
+  tracer.count(Counter.TemplatesParsed);
+  return tracer.slice(SpanKind.TemplateParse, parse);
+}
+
+// Separate factories keep the lazy `diagNodes` getter from pinning unused inputs (such as the
+// containing `.ts` file's `content` for external templates or full `ComponentMetadata`), and
+// clearing `parseDiag` releases the remaining inputs once `diagNodes` is evaluated.
+function createInlineDiagParser(
+  content: string,
+  filePath: string,
+  contentSpan: nga.SpanMetadata,
+  diagParseOptions: Partial<ParseTemplateOptions>,
+  tracer: Tracer,
+): () => TmplAstNode[] {
+  return () =>
+    tracedTemplateParse(tracer, () =>
+      parseDirectInlineTemplate(content, filePath, contentSpan, diagParseOptions),
+    ).nodes;
+}
+
+function createExternalDiagParser(
+  templateStr: string,
+  templateUrl: string,
+  diagParseOptions: Partial<ParseTemplateOptions>,
+  tracer: Tracer,
+): () => TmplAstNode[] {
+  return () =>
+    tracedTemplateParse(tracer, () => parseTemplate(templateStr, templateUrl, diagParseOptions))
+      .nodes;
+}
+
+function defineLazyDiagNodes(
+  parsed: ParsedTemplate,
+  parseDiag: () => TmplAstNode[],
+): ParsedComponentTemplate {
+  let cachedDiagNodes: TmplAstNode[] | undefined;
+  let parse: (() => TmplAstNode[]) | undefined = parseDiag;
+  return {
+    ...parsed,
+    get diagNodes(): TmplAstNode[] {
+      if (cachedDiagNodes === undefined) {
+        cachedDiagNodes = parse!();
+        parse = undefined;
+      }
+      return cachedDiagNodes;
+    },
+  };
+}
+
 export function parseComponentTemplate(
   component: nga.ComponentMetadata,
   filePath: string,
@@ -657,10 +708,6 @@ export function parseComponentTemplate(
   options: Partial<ParseTemplateOptions> = {},
   tracer: Tracer = NOOP_TRACER,
 ): ParsedComponentTemplate {
-  const traced = <T>(parse: () => T): T => {
-    tracer.count(Counter.TemplatesParsed);
-    return tracer.slice(SpanKind.TemplateParse, parse);
-  };
   const parseOptions: Partial<ParseTemplateOptions> = {
     ...options,
     preserveWhitespaces: component.preserveWhitespaces ?? options.preserveWhitespaces ?? false,
@@ -682,25 +729,27 @@ export function parseComponentTemplate(
   // diagnostics, and indexing, parsed lazily on first access so devmode and cross-file
   // `ngContentSelectors` lookups do not pay for a second parse when `diagNodes` is unused.
   const contentSpan = component.templateContentSpan;
-  const parseWithOptions =
-    component.templateUrl == null && contentSpan != null
-      ? (opts: ParseTemplateOptions) =>
-          traced(() => parseDirectInlineTemplate(content, filePath, contentSpan, opts))
-      : (opts: ParseTemplateOptions) => {
-          // The URL identifies the file the spans are offsets into, which for an external template
-          // is the template file itself (as in ngtsc's `extractTemplate`).
-          const templateStr = component.template || '';
-          const templateUrl = component.templateUrl?.resolvedPath ?? filePath;
-          return traced(() => parseTemplate(templateStr, templateUrl, opts));
-        };
+  if (component.templateUrl == null && contentSpan != null) {
+    const parsed = tracedTemplateParse(tracer, () =>
+      parseDirectInlineTemplate(content, filePath, contentSpan, parseOptions),
+    );
+    return defineLazyDiagNodes(
+      parsed,
+      createInlineDiagParser(content, filePath, contentSpan, diagParseOptions, tracer),
+    );
+  }
 
-  let cachedDiagNodes: TmplAstNode[] | undefined;
-  return {
-    ...parseWithOptions(parseOptions),
-    get diagNodes(): TmplAstNode[] {
-      return (cachedDiagNodes ??= parseWithOptions(diagParseOptions).nodes);
-    },
-  };
+  // The URL identifies the file the spans are offsets into, which for an external template is
+  // the template file itself (as in ngtsc's `extractTemplate`).
+  const templateStr = component.template || '';
+  const templateUrl = component.templateUrl?.resolvedPath ?? filePath;
+  const parsed = tracedTemplateParse(tracer, () =>
+    parseTemplate(templateStr, templateUrl, parseOptions),
+  );
+  return defineLazyDiagNodes(
+    parsed,
+    createExternalDiagParser(templateStr, templateUrl, diagParseOptions, tracer),
+  );
 }
 
 /**

@@ -1471,6 +1471,7 @@ export class HybridCompiler {
     } else {
       fileAnalysis.preparedTcbData = null;
     }
+    fileAnalysis.tcb = undefined;
     fileAnalysis.sourceContent = content;
     fileAnalysis.boundFingerprint = boundFingerprint;
     return fileAnalysis;
@@ -1648,7 +1649,7 @@ export class HybridCompiler {
     if (
       unverifiable ||
       existing.sourceContent !== content ||
-      (existing.boundFingerprint !== undefined && existing.boundFingerprint !== nextFingerprint)
+      existing.boundFingerprint !== nextFingerprint
     ) {
       existing.parsedTemplates.clear();
       existing.preparedTcbData = undefined;
