@@ -159,6 +159,49 @@ const SUPPORTED_BLOCKS = [
 
 const INTERPOLATION = {start: '{{', end: '}}'} as const;
 
+/**
+ * Whether a `/` at the current position starts a regex literal, based on the previous two
+ * significant (non-whitespace) characters seen outside of quotes and comments. This mirrors
+ * `isStartOfRegex` in the expression lexer, which makes the same decision based on the
+ * previous token: a `/` is a regex when it follows an operator, `(`, `[`, `,` or `:` (or
+ * starts the expression), and a division otherwise (e.g. after an identifier, a number, `)`
+ * or `]`). A `!` is special-cased like in the expression lexer: it introduces a regex when
+ * it is a negation, but a division when it is a non-null assertion.
+ */
+function isStartOfRegex(prevChar: number | null, prevPrevChar: number | null): boolean {
+  if (prevChar === null) {
+    return true;
+  }
+  if (prevChar === chars.$BANG) {
+    return (
+      prevPrevChar === null ||
+      (!chars.isAsciiLetter(prevPrevChar) &&
+        prevPrevChar !== chars.$_ &&
+        prevPrevChar !== chars.$$ &&
+        prevPrevChar !== chars.$RPAREN &&
+        prevPrevChar !== chars.$RBRACKET)
+    );
+  }
+  return (
+    prevChar === chars.$LPAREN ||
+    prevChar === chars.$LBRACKET ||
+    prevChar === chars.$COMMA ||
+    prevChar === chars.$COLON ||
+    prevChar === chars.$PLUS ||
+    prevChar === chars.$MINUS ||
+    prevChar === chars.$STAR ||
+    prevChar === chars.$SLASH ||
+    prevChar === chars.$PERCENT ||
+    prevChar === chars.$CARET ||
+    prevChar === chars.$QUESTION ||
+    prevChar === chars.$LT ||
+    prevChar === chars.$GT ||
+    prevChar === chars.$EQ ||
+    prevChar === chars.$AMPERSAND ||
+    prevChar === chars.$BAR
+  );
+}
+
 const DEFAULT_NEVER_PATTERN = /^default[^\S\r\n]+never/;
 
 const ELSE_IF_PATTERN = /^else[^\S\r\n]+if/;
@@ -1290,6 +1333,11 @@ class _Tokenizer {
     const expressionStart = this._cursor.clone();
     let inQuote: number | null = null;
     let inComment = false;
+    // The last two significant (non-whitespace) characters seen outside of quotes and comments.
+    // They are used to decide whether a `/` starts a regex literal or is a division operator,
+    // mirroring `isStartOfRegex` in the expression lexer.
+    let prevChar: number | null = null;
+    let prevPrevChar: number | null = null;
     while (
       this._cursor.peek() !== chars.$EOF &&
       (prematureEndPredicate === null || !prematureEndPredicate())
@@ -1319,6 +1367,19 @@ class _Tokenizer {
         }
       }
 
+      if (
+        inQuote === null &&
+        !inComment &&
+        this._cursor.peek() === chars.$SLASH &&
+        isStartOfRegex(prevChar, prevPrevChar) &&
+        this._tryConsumeRegexLiteral()
+      ) {
+        // A regex literal is a value, so a `/` following it is a division operator.
+        prevPrevChar = prevChar;
+        prevChar = chars.$a;
+        continue;
+      }
+
       const char = this._cursor.peek();
       this._cursor.advance();
       if (char === chars.$BACKSLASH) {
@@ -1331,11 +1392,58 @@ class _Tokenizer {
         // Entering a new quoted string
         inQuote = char;
       }
+
+      if (char !== chars.$BACKSLASH && !inComment && inQuote === null) {
+        if (!chars.isWhitespace(char)) {
+          prevPrevChar = prevChar;
+          prevChar = char;
+        }
+      }
     }
 
     // We hit EOF without finding a closing interpolation marker
     parts.push(this._getProcessedChars(expressionStart, this._cursor));
     this._endToken(parts);
+  }
+
+  /**
+   * Attempts to consume a regex literal starting at the current cursor position (which must be
+   * at the opening `/`), including its flags. Only consumes input when a closing `/` is found
+   * on the same line; otherwise the cursor is left untouched so that an unterminated regex
+   * keeps its previous behavior instead of swallowing the rest of the template.
+   */
+  private _tryConsumeRegexLiteral(): boolean {
+    const cursor = this._cursor.clone();
+    // Consume the opening `/`.
+    cursor.advance();
+    let inEscape = false;
+    let inCharacterClass = false;
+    let closed = false;
+    while (cursor.peek() !== chars.$EOF && !chars.isNewLine(cursor.peek())) {
+      const char = cursor.peek();
+      cursor.advance();
+      if (inEscape) {
+        inEscape = false;
+      } else if (char === chars.$BACKSLASH) {
+        inEscape = true;
+      } else if (char === chars.$LBRACKET) {
+        inCharacterClass = true;
+      } else if (char === chars.$RBRACKET) {
+        inCharacterClass = false;
+      } else if (char === chars.$SLASH && !inCharacterClass) {
+        closed = true;
+        break;
+      }
+    }
+    if (!closed) {
+      return false;
+    }
+    // Consume any regex flags (e.g. the `u` in `/[}}]/u`).
+    while (chars.isAsciiLetter(cursor.peek())) {
+      cursor.advance();
+    }
+    this._cursor = cursor;
+    return true;
   }
 
   private _consumeDirective(start: CharacterCursor, nameStart: CharacterCursor) {

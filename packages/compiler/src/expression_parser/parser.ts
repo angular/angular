@@ -537,13 +537,19 @@ export class Parser {
   }
 
   /**
-   * Generator used to iterate over the character indexes of a string that are outside of quotes.
+   * Generator used to iterate over the character indexes of a string that are outside of quotes
+   * and regex literals.
    * @param input String to loop through.
    * @param start Index within the string at which to start.
    */
   private *_forEachUnquotedChar(input: string, start: number) {
     let currentQuote: string | null = null;
     let escapeCount = 0;
+    // The last two significant (non-whitespace) characters seen outside of quotes. They are
+    // used to decide whether a `/` starts a regex literal or is a division operator, mirroring
+    // `isStartOfRegex` in the expression lexer.
+    let prevChar: string | null = null;
+    let prevPrevChar: string | null = null;
     for (let i = start; i < input.length; i++) {
       const char = input[i];
       // Skip the characters inside quotes. Note that we only care about the outer-most
@@ -553,13 +559,116 @@ export class Parser {
         (currentQuote === null || currentQuote === char) &&
         escapeCount % 2 === 0
       ) {
+        const closingQuote = currentQuote !== null;
         currentQuote = currentQuote === null ? char : null;
+        if (closingQuote) {
+          // A closing quote ends a value, so a `/` following it is division.
+          prevPrevChar = prevChar;
+          prevChar = char;
+        }
       } else if (currentQuote === null) {
+        if (
+          char === '/' &&
+          input[i + 1] !== '/' &&
+          isStartOfRegex(prevChar, prevPrevChar)
+        ) {
+          const regexEnd = scanRegexEnd(input, i);
+          if (regexEnd !== -1) {
+            // Skip the whole regex literal: a `}}` inside it does not end the interpolation.
+            // A regex literal is a value, so a `/` following it is division.
+            i = regexEnd - 1;
+            prevPrevChar = prevChar;
+            prevChar = 'a';
+            escapeCount = 0;
+            continue;
+          }
+        }
         yield i;
+        if (!chars.isWhitespace(input.charCodeAt(i))) {
+          prevPrevChar = prevChar;
+          prevChar = char;
+        }
       }
       escapeCount = char === '\\' ? escapeCount + 1 : 0;
     }
   }
+}
+
+/**
+ * Whether a `/` at the current position starts a regex literal, based on the previous two
+ * significant (non-whitespace) characters seen outside of quotes. This mirrors `isStartOfRegex`
+ * in the expression lexer, which makes the same decision based on the previous token: a `/` is
+ * a regex when it follows an operator, `(`, `[`, `,` or `:` (or starts the expression), and a
+ * division otherwise (e.g. after an identifier, a number, `)` or `]`). A `!` is special-cased
+ * like in the expression lexer: it introduces a regex when it is a negation, but a division
+ * when it is a non-null assertion.
+ */
+function isStartOfRegex(prevChar: string | null, prevPrevChar: string | null): boolean {
+  if (prevChar === null) {
+    return true;
+  }
+  if (prevChar === '!') {
+    return (
+      prevPrevChar === null ||
+      (!chars.isAsciiLetter(prevPrevChar.charCodeAt(0)) &&
+        prevPrevChar !== '_' &&
+        prevPrevChar !== '$' &&
+        prevPrevChar !== ')' &&
+        prevPrevChar !== ']')
+    );
+  }
+  return (
+    prevChar === '(' ||
+    prevChar === '[' ||
+    prevChar === ',' ||
+    prevChar === ':' ||
+    prevChar === '+' ||
+    prevChar === '-' ||
+    prevChar === '*' ||
+    prevChar === '/' ||
+    prevChar === '%' ||
+    prevChar === '^' ||
+    prevChar === '?' ||
+    prevChar === '<' ||
+    prevChar === '>' ||
+    prevChar === '=' ||
+    prevChar === '&' ||
+    prevChar === '|'
+  );
+}
+
+/**
+ * If a regex literal starts at `start` in `input` (which must be at the opening `/`), returns
+ * the index just past the regex literal and its flags. Returns -1 when no closing `/` is found
+ * on the same line, in which case the `/` is not treated as the start of a regex literal.
+ */
+function scanRegexEnd(input: string, start: number): number {
+  let i = start + 1;
+  let inEscape = false;
+  let inCharacterClass = false;
+  while (i < input.length) {
+    const char = input[i];
+    if (char === '\n' || char === '\r') {
+      return -1;
+    }
+    if (inEscape) {
+      inEscape = false;
+    } else if (char === '\\') {
+      inEscape = true;
+    } else if (char === '[') {
+      inCharacterClass = true;
+    } else if (char === ']') {
+      inCharacterClass = false;
+    } else if (char === '/' && !inCharacterClass) {
+      i++;
+      while (i < input.length && chars.isAsciiLetter(input.charCodeAt(i))) {
+        i++;
+      }
+      return i;
+    }
+    i++;
+  }
+  return -1;
 }
 
 /** Describes a stateful context an expression parser is in. */

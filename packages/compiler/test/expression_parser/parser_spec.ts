@@ -1816,6 +1816,23 @@ describe('parser', () => {
       checkInterpolation('{{ a < b ? a : b }}');
     });
 
+    it('should parse interpolation with a regex literal containing }}', () => {
+      checkInterpolation(`{{ /[}}]/u.test('}') }}`, `{{ /[}}]/u.test("}") }}`);
+      checkInterpolation(`{{ /}}/.test('}}') }}`, `{{ /}}/.test("}}") }}`);
+      checkInterpolation('{{ x ? /}}/ : /{{/ }}');
+      checkInterpolation(
+        `before {{ /[}}]/u.test('}') }} after`,
+        `before {{ /[}}]/u.test("}") }} after`,
+      );
+    });
+
+    it('should still treat a slash after a value as division in interpolation', () => {
+      checkInterpolation('{{ 6 / 2 }}');
+      checkInterpolation('{{ a / b }}');
+      // A regex literal is a value, so a slash following it is division.
+      checkInterpolation('{{ /a/ / 2 }}');
+    });
+
     it('should parse expression with newline characters', () => {
       checkInterpolation(`{{ 'foo' +\n 'bar' +\r 'baz' }}`, `{{ "foo" + "bar" + "baz" }}`);
     });

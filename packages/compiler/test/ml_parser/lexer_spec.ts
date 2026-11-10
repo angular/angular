@@ -2279,6 +2279,53 @@ describe('HtmlLexer', () => {
       ]);
     });
 
+    it('should parse interpolation with a regex literal containing }}', () => {
+      expect(tokenizeAndHumanizeParts(`{{ /[}}]/u.test('}') }}`)).toEqual([
+        [TokenType.TEXT, ''],
+        [TokenType.INTERPOLATION, '{{', ` /[}}]/u.test('}') `, '}}'],
+        [TokenType.TEXT, ''],
+        [TokenType.EOF],
+      ]);
+
+      expect(tokenizeAndHumanizeParts(`{{ /}}/.test('}}') }}`)).toEqual([
+        [TokenType.TEXT, ''],
+        [TokenType.INTERPOLATION, '{{', ` /}}/.test('}}') `, '}}'],
+        [TokenType.TEXT, ''],
+        [TokenType.EOF],
+      ]);
+
+      expect(tokenizeAndHumanizeParts(`{{ x ? /}}/ : /{{/ }}`)).toEqual([
+        [TokenType.TEXT, ''],
+        [TokenType.INTERPOLATION, '{{', ' x ? /}}/ : /{{/ ', '}}'],
+        [TokenType.TEXT, ''],
+        [TokenType.EOF],
+      ]);
+    });
+
+    it('should still treat a slash after a value as division in interpolation', () => {
+      expect(tokenizeAndHumanizeParts('{{ 6 / 2 }}')).toEqual([
+        [TokenType.TEXT, ''],
+        [TokenType.INTERPOLATION, '{{', ' 6 / 2 ', '}}'],
+        [TokenType.TEXT, ''],
+        [TokenType.EOF],
+      ]);
+
+      expect(tokenizeAndHumanizeParts('{{ a / b }}')).toEqual([
+        [TokenType.TEXT, ''],
+        [TokenType.INTERPOLATION, '{{', ' a / b ', '}}'],
+        [TokenType.TEXT, ''],
+        [TokenType.EOF],
+      ]);
+
+      // A regex literal is a value, so a slash following it is division.
+      expect(tokenizeAndHumanizeParts('{{ /a/ / 2 }}')).toEqual([
+        [TokenType.TEXT, ''],
+        [TokenType.INTERPOLATION, '{{', ' /a/ / 2 ', '}}'],
+        [TokenType.TEXT, ''],
+        [TokenType.EOF],
+      ]);
+    });
+
     it('should handle CR & LF in text', () => {
       expect(tokenizeAndHumanizeParts('t\ne\rs\r\nt')).toEqual([
         [TokenType.TEXT, 't\ne\ns\nt'],
