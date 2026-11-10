@@ -224,14 +224,15 @@ export class WasmAnalyzer implements IAnalyzer {
   }
 
   async getMetadataForFile(filePath: string): Promise<nga.AnalysisResult | null> {
-    return Promise.resolve(this.getMetadataForFileSync(filePath));
+    const res = this.invoke(
+      this.inner.getMetadataForFile ?? this.inner.get_metadata_for_file,
+      'getMetadataForFile',
+      filePath,
+    );
+    return res ? (JSON.parse(res) as nga.AnalysisResult) : null;
   }
 
   async updateFileContent(updates: {filePath: string; content: string}[]): Promise<string[]> {
-    return Promise.resolve(this.updateFileContentSync(updates));
-  }
-
-  updateFileContentSync(updates: {filePath: string; content: string}[]): string[] {
     const res = this.invoke(
       this.inner.updateFileContent ?? this.inner.update_file_content,
       'updateFileContent',
@@ -241,10 +242,6 @@ export class WasmAnalyzer implements IAnalyzer {
   }
 
   async invalidateFiles(updates: nga.FileInvalidation[]): Promise<string[]> {
-    return Promise.resolve(this.invalidateFilesSync(updates));
-  }
-
-  invalidateFilesSync(updates: nga.FileInvalidation[]): string[] {
     const stringNames = ['Created', 'Deleted', 'Changed'];
     const mapped = updates.map((u) => ({
       filePath: u.filePath,
@@ -271,18 +268,23 @@ export class WasmAnalyzer implements IAnalyzer {
   }
 
   async getTsFileForTemplate(templatePath: string): Promise<nga.TemplateUsage[] | null> {
-    return Promise.resolve(this.getTsFileForTemplateSync(templatePath));
+    const res = this.invoke(
+      this.inner.getTsFileForTemplate ?? this.inner.get_ts_file_for_template,
+      'getTsFileForTemplate',
+      templatePath,
+    );
+    return res ? (JSON.parse(res) as nga.TemplateUsage[]) : null;
   }
 
   async getFileContent(filePath: string): Promise<string> {
-    return Promise.resolve(this.getFileContentSync(filePath));
+    return this.invoke(
+      this.inner.getFileContent ?? this.inner.get_file_content,
+      'getFileContent',
+      filePath,
+    );
   }
 
   async readResource(containingFile: string, url: string): Promise<nga.ResolvedResource | null> {
-    return Promise.resolve(this.readResourceSync(containingFile, url));
-  }
-
-  readResourceSync(containingFile: string, url: string): nga.ResolvedResource | null {
     const res = this.invoke(
       this.inner.readResource ?? this.inner.read_resource,
       'readResource',
@@ -293,42 +295,12 @@ export class WasmAnalyzer implements IAnalyzer {
   }
 
   async canonicalPaths(paths: string[]): Promise<string[]> {
-    return Promise.resolve(this.canonicalPathsSync(paths));
-  }
-
-  canonicalPathsSync(paths: string[]): string[] {
     const res = this.invoke(
       this.inner.canonicalPaths ?? this.inner.canonical_paths,
       'canonicalPaths',
       JSON.stringify(paths),
     );
     return JSON.parse(res) as string[];
-  }
-
-  getMetadataForFileSync(filePath: string): nga.AnalysisResult | null {
-    const res = this.invoke(
-      this.inner.getMetadataForFile ?? this.inner.get_metadata_for_file,
-      'getMetadataForFile',
-      filePath,
-    );
-    return res ? (JSON.parse(res) as nga.AnalysisResult) : null;
-  }
-
-  getFileContentSync(filePath: string): string {
-    return this.invoke(
-      this.inner.getFileContent ?? this.inner.get_file_content,
-      'getFileContent',
-      filePath,
-    );
-  }
-
-  getTsFileForTemplateSync(templatePath: string): nga.TemplateUsage[] | null {
-    const res = this.invoke(
-      this.inner.getTsFileForTemplate ?? this.inner.get_ts_file_for_template,
-      'getTsFileForTemplate',
-      templatePath,
-    );
-    return res ? (JSON.parse(res) as nga.TemplateUsage[]) : null;
   }
 
   getCompilerOptions(): NgpCompilerOptions {
@@ -338,58 +310,6 @@ export class WasmAnalyzer implements IAnalyzer {
     }
     const raw = fn.call(this.inner);
     return raw ? (JSON.parse(raw) as NgpCompilerOptions) : {};
-  }
-
-  analyzeSync(): Generator<nga.CompilationChunk, void, unknown> {
-    return this.consumeStreamSync(() => this.invoke(this.inner.analyze, 'analyze'));
-  }
-
-  analyzeOptimizedSync(): Generator<nga.CompilationChunk, void, unknown> {
-    return this.consumeStreamSync(() =>
-      this.invoke(this.inner.analyze_optimized ?? this.inner.analyzeOptimized, 'analyzeOptimized'),
-    );
-  }
-
-  analyzeDeltaSync(): Generator<nga.CompilationChunk, void, unknown> {
-    return this.consumeStreamSync(() =>
-      this.invoke(this.inner.analyze_delta ?? this.inner.analyzeDelta, 'analyzeDelta'),
-    );
-  }
-
-  analyzeOptimizedDeltaSync(): Generator<nga.CompilationChunk, void, unknown> {
-    return this.consumeStreamSync(() =>
-      this.invoke(
-        this.inner.analyze_optimized_delta ?? this.inner.analyzeOptimizedDelta,
-        'analyzeOptimizedDelta',
-      ),
-    );
-  }
-
-  private *consumeStreamSync(start: () => number): Generator<nga.CompilationChunk, void, unknown> {
-    const id = start();
-    try {
-      while (true) {
-        const eventStr = this.inner.pump();
-        if (!eventStr) {
-          throw new Error(`WASM analysis stream ${id} stalled before emitting analysisComplete`);
-        }
-        const event = JSON.parse(eventStr) as WasmEvent;
-        if (event.id !== id) {
-          continue;
-        }
-        if (event.event === 'analysisError' && event.error) {
-          throw new Error(event.error);
-        }
-        if (event.event === 'analysisComplete') {
-          return;
-        }
-        if (event.event === 'analysisResult' && event.data) {
-          yield event.data;
-        }
-      }
-    } finally {
-      this.releaseStream(id);
-    }
   }
 
   close(): void {

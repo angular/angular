@@ -49,7 +49,6 @@ import {
 } from '@angular/compiler';
 import {ErrorCode} from './error_code.js';
 import MagicString, {type SourceMap} from 'magic-string';
-import * as fsSync from 'node:fs';
 import * as path from 'path';
 import {hasAnimations} from './animations.js';
 import {
@@ -333,7 +332,7 @@ export async function processFile(
   }
   // Templates of dependencies declared in other files are needed to bind this file's
   // templates for type-checking; read them here, where the analyzer can be awaited. The
-  // condition mirrors when `processFileSync` builds the TCB targets.
+  // condition mirrors when `processFile` builds the TCB targets.
   if (rawCtx.optimize && !rawCtx.emitDeclarationOnly) {
     await new DependencyTemplates(
       rawCtx.analyzer,
@@ -343,18 +342,6 @@ export async function processFile(
       rawCtx.tracer,
     ).prefetch(result);
   }
-  return processFileSync(rawCtx, filePath, content, resourceMap, result, chunkContext, fileId);
-}
-
-export function processFileSync(
-  rawCtx: HybridCompilerContext,
-  filePath: string,
-  content: string,
-  readResource?: ((file: string) => string | undefined) | Map<string, nga.ResolvedResource | null>,
-  metadata?: nga.AnalysisResult,
-  chunkContext?: ChunkContext,
-  fileId = 0,
-): ProcessedFile {
   const ctx: ProcessFileContext = {
     ...rawCtx,
     remoteScopedClasses:
@@ -366,11 +353,7 @@ export function processFileSync(
   const fileDiagnostics: nga.NgDiagnostic[] = [];
   const referencedStyleFiles: string[] = [];
 
-  const result = metadata || ctx.analyzer.getMetadataForFileSync(filePath);
-  if (!result) {
-    return unprocessedFile(s);
-  }
-  const {classes, importsEnd, imports: importDeclarations} = result;
+  const {classes, imports: importDeclarations} = result;
 
   // Inside `@angular/core` itself, generated imports of `@angular/core` go to `r3_symbols.ts`.
   const printer = new ExpressionPrinter(
@@ -385,8 +368,6 @@ export function processFileSync(
   if (!ctx.emitDeclarationOnly) {
     insertSignalDebugNames(s, result.signalDebugNames, printer.emitTypes);
   }
-
-  const {parsedTemplates: templatesByClass} = getOrCreateFileAnalysis(ctx.fileCache, filePath);
 
   // Shared pool for all components and directives in the file.
   // This mirrors Angular's behavior:
@@ -436,7 +417,7 @@ export function processFileSync(
     ctx,
     filePath,
     content,
-    readResource,
+    readResource: resourceMap,
     s,
     result,
     printer,
@@ -490,13 +471,12 @@ type ProcessFileContext = HybridCompilerContext & {
   eagerlyUsedDeclarations: Map<string, nga.DeclarationMetadata[]>;
 };
 
-/** The state of one `processFileSync` call that its passes below share. */
+/** The state of one `processFile` call that its passes below share. */
 interface FileCompilation {
   ctx: ProcessFileContext;
   filePath: string;
   content: string;
-  readResource:
-    ((file: string) => string | undefined) | Map<string, nga.ResolvedResource | null> | undefined;
+  readResource: ReadonlyMap<string, nga.ResolvedResource | null>;
   s: MagicString;
   result: nga.AnalysisResult;
   printer: ExpressionPrinter;
@@ -843,31 +823,7 @@ function compileClasses(file: FileCompilation): string | null | undefined {
       // preprocessor-extension fallback as the decorator's `styleUrls`.
       // https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L876-L923
       for (const styleUrl of parsed.styleUrls) {
-        let resource: nga.ResolvedResource | null = null;
-        if (readResource instanceof Map) {
-          resource = readResource.get(styleUrl) ?? null;
-        } else if (ctx.analyzer.readResourceSync) {
-          resource = ctx.analyzer.readResourceSync(filePath, styleUrl);
-          if (resource === null && typeof readResource === 'function') {
-            const resolvedPath = path.resolve(path.dirname(filePath), styleUrl);
-            const content = readResource(resolvedPath);
-            if (content !== undefined) {
-              resource = {resolvedPath, content};
-            }
-          }
-        } else if (typeof readResource === 'function') {
-          const resolvedPath = path.resolve(path.dirname(filePath), styleUrl);
-          const content = readResource(resolvedPath);
-          resource = content !== undefined ? {resolvedPath, content} : null;
-        } else {
-          const resolvedPath = path.resolve(path.dirname(filePath), styleUrl);
-          try {
-            const content = fsSync.readFileSync(resolvedPath, 'utf8');
-            resource = {resolvedPath, content};
-          } catch {
-            resource = null;
-          }
-        }
+        const resource = readResource.get(styleUrl) ?? null;
 
         if (resource !== null) {
           referencedStyleFiles.push(resource.resolvedPath);

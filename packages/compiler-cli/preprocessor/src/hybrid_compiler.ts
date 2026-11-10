@@ -24,10 +24,10 @@ import {flattenNgDiagnosticMessage, withErrorGuide} from './diagnostic.js';
 import {ChunkContext, FileAnalysis, getOrCreateFileAnalysis} from './file_analysis.js';
 import {IndexedComponent} from './indexer_api.js';
 import {IncrementalEmitTracker} from './incremental.js';
-import {getIndexedComponents, getIndexedComponentsSync} from './indexing/indexer.js';
+import {getIndexedComponents} from './indexing/indexer.js';
 import {fingerprintOf, ProcessedFileCache} from './processed_file_cache.js';
 import {Counter, NOOP_TRACER, SpanKind, type AnalyzerPerfTake, type Tracer} from './perf.js';
-import {buildTcbTargets, processFile, processFileSync, type ProcessedFile} from './processor.js';
+import {buildTcbTargets, processFile, type ProcessedFile} from './processor.js';
 import {
   buildTypeCheckingConfig,
   combineTcbContent,
@@ -131,19 +131,6 @@ export interface IAnalyzer {
    * Engines without it report paths as given.
    */
   canonicalPaths?(paths: string[]): Promise<string[]>;
-
-  // Synchronous lookups (supported in NAPI and WASM modes, throws in Sidecar mode)
-  analyzeSync?(): Iterable<nga.CompilationChunk>;
-  analyzeOptimizedSync?(): Iterable<nga.CompilationChunk>;
-  analyzeDeltaSync?(): Iterable<nga.CompilationChunk>;
-  analyzeOptimizedDeltaSync?(): Iterable<nga.CompilationChunk>;
-  updateFileContentSync?(updates: {filePath: string; content: string}[]): string[];
-  invalidateFilesSync?(updates: nga.FileInvalidation[]): string[];
-  getMetadataForFileSync(filePath: string): nga.AnalysisResult | null;
-  getFileContentSync(filePath: string): string;
-  getTsFileForTemplateSync(templatePath: string): nga.TemplateUsage[] | null;
-  readResourceSync?(containingFile: string, url: string): nga.ResolvedResource | null;
-  canonicalPathsSync?(paths: string[]): string[];
   getCompilerOptions?(): NgpCompilerOptions;
   /** Drains the analyzer's perf events and summary. */
   takePerf?(): Promise<AnalyzerPerfTake>;
@@ -277,7 +264,6 @@ export function createHybridCompiler(
 
 export interface CompileOptions {
   readFile?: (filePath: string) => string | undefined;
-  readResource?: ((file: string) => string | undefined) | Map<string, nga.ResolvedResource | null>;
 }
 
 /** A diagnostic together with the file it is reported against in `diagnosticsMap`. */
@@ -295,10 +281,10 @@ export class HybridCompiler {
   readonly incrementalEnabled: boolean;
   /**
    * Persistent map of the latest `ProcessedFile` for every file in the program across incremental
-   * builds, updated by `compile()` and `compileSync()`.
+   * builds, updated by `compile()`.
    */
   readonly currentProcessedFiles = new Map<string, ProcessedFile>();
-  /** Errors thrown while processing individual files in the latest `compile()` / `compileSync()`. */
+  /** Errors thrown while processing individual files in the latest `compile()`. */
   readonly currentProcessErrors = new Map<string, string>();
   readonly optimize: boolean;
   readonly diagnosticsMap = new Map<string, nga.NgDiagnostic[]>();
@@ -468,31 +454,6 @@ export class HybridCompiler {
           analysis: await this.ensureBoundWithMetadata(file, undefined, metadataMap),
         })),
       );
-      return this.finalizePreparedChunk(chunk, boundFiles, metadataMap);
-    });
-  }
-
-  prepareChunkSync(chunk: nga.CompilationChunk): ChunkContext {
-    return this.tracer.slice(SpanKind.PrepareChunk, () => {
-      this.recordChunkDiagnostics(chunk);
-      if (!this.incrementalEnabled) {
-        for (const file of chunk.files) {
-          this.fileCache.delete(file.filePath);
-        }
-      }
-
-      const metadataMap = chunkMetadataMap(chunk);
-      if (this.emitDeclarationOnly || (!this.optimize && chunk.files.length <= 1)) {
-        return {
-          remoteScopedClasses: new Set(),
-          metadataMap,
-          eagerlyUsedDeclarations: new Map(),
-        };
-      }
-      const boundFiles = chunk.files.map((file) => ({
-        file,
-        analysis: this.ensureBoundWithMetadataSync(file, undefined, metadataMap),
-      }));
       return this.finalizePreparedChunk(chunk, boundFiles, metadataMap);
     });
   }
@@ -816,51 +777,6 @@ export class HybridCompiler {
   }
 
   /**
-   * Synchronous counterpart of `updateFileContent` for callers that drive each build
-   * synchronously, such as the ngtsc test driver. The caller runs the delta pass that follows
-   * (`analyzeDeltaSync` or `analyzeOptimizedDeltaSync`) and must not mix this with the
-   * asynchronous update queue.
-   */
-  updateFileContentSync(updates: {filePath: string; content: string}[]): void {
-    if (updates.length === 0) {
-      return;
-    }
-    if (!this.analyzer.updateFileContentSync) {
-      throw new Error('Analyzer does not support updateFileContentSync');
-    }
-    const invalidations = updates.map(({filePath}) => ({
-      filePath,
-      updateType: nga.FileUpdateType.Changed,
-    }));
-    this.recordCanonicalInvalidations(
-      invalidations,
-      this.analyzer.canonicalPathsSync?.(updates.map(({filePath}) => filePath)),
-    );
-    const invalidated = this.analyzer.updateFileContentSync(updates);
-    for (const filePath of invalidated) {
-      this.invalidateCachedFile(filePath);
-    }
-  }
-
-  /** Synchronous counterpart of `invalidateFiles`; see `updateFileContentSync`. */
-  invalidateFilesSync(updates: nga.FileInvalidation[]): void {
-    if (updates.length === 0) {
-      return;
-    }
-    if (!this.analyzer.invalidateFilesSync) {
-      throw new Error('Analyzer does not support invalidateFilesSync');
-    }
-    this.recordCanonicalInvalidations(
-      updates,
-      this.analyzer.canonicalPathsSync?.(updates.map(({filePath}) => filePath)),
-    );
-    const invalidated = this.analyzer.invalidateFilesSync(updates);
-    for (const filePath of invalidated) {
-      this.invalidateCachedFile(filePath);
-    }
-  }
-
-  /**
    * Applies file invalidations already executed on `this.analyzer` (e.g. when reusing a
    * `HybridCompiler` across persistent worker requests with `run()`).
    */
@@ -977,35 +893,10 @@ export class HybridCompiler {
     return this.fullAsync(this.analyzer.analyzeOptimized());
   }
 
-  analyzeSync(): Iterable<nga.CompilationChunk> {
-    if (!this.analyzer.analyzeSync) {
-      throw new Error('Analyzer does not support analyzeSync');
-    }
-    return this.fullSync(this.analyzer.analyzeSync());
-  }
-
-  analyzeOptimizedSync(): Iterable<nga.CompilationChunk> {
-    if (!this.analyzer.analyzeOptimizedSync) {
-      throw new Error('Analyzer does not support analyzeOptimizedSync');
-    }
-    return this.fullSync(this.analyzer.analyzeOptimizedSync());
-  }
-
   private recordFullChunk(chunk: nga.CompilationChunk): void {
     for (const file of chunk.files) {
       this.recordMetadata(file);
       this.lastChunkByFile.set(file.filePath, chunk);
-    }
-  }
-
-  private *fullSync(
-    chunks: Iterable<nga.CompilationChunk>,
-  ): Generator<nga.CompilationChunk, void, unknown> {
-    this.jsDirtyFiles.clear();
-    this.pendingDeltaChunks.length = 0;
-    for (const chunk of chunks) {
-      this.recordFullChunk(chunk);
-      yield chunk;
     }
   }
 
@@ -1018,22 +909,6 @@ export class HybridCompiler {
       this.recordFullChunk(chunk);
       yield chunk;
     }
-  }
-
-  /** Synchronous delta pass after `updateFileContentSync`/`invalidateFilesSync`. */
-  analyzeDeltaSync(): Iterable<nga.CompilationChunk> {
-    if (!this.analyzer.analyzeDeltaSync) {
-      throw new Error('Analyzer does not support analyzeDeltaSync');
-    }
-    return this.deltaSync(this.analyzer.analyzeDeltaSync());
-  }
-
-  /** Synchronous optimized delta pass after `updateFileContentSync`/`invalidateFilesSync`. */
-  analyzeOptimizedDeltaSync(): Iterable<nga.CompilationChunk> {
-    if (!this.analyzer.analyzeOptimizedDeltaSync) {
-      throw new Error('Analyzer does not support analyzeOptimizedDeltaSync');
-    }
-    return this.deltaSync(this.analyzer.analyzeOptimizedDeltaSync());
   }
 
   private recordDeltaChunk(chunk: nga.CompilationChunk, yieldedFiles: Set<string>): boolean {
@@ -1075,23 +950,6 @@ export class HybridCompiler {
       }
       yield refreshedChunk;
     }
-  }
-
-  private *deltaSync(
-    chunks: Iterable<nga.CompilationChunk>,
-  ): Generator<nga.CompilationChunk, void, unknown> {
-    const yieldedFiles = new Set<string>();
-    for (const chunk of this.pendingDeltaChunks.splice(0)) {
-      if (this.recordDeltaChunk(chunk, yieldedFiles)) {
-        yield chunk;
-      }
-    }
-    for (const chunk of chunks) {
-      if (this.recordDeltaChunk(chunk, yieldedFiles)) {
-        yield chunk;
-      }
-    }
-    yield* this.drainJsDirtyChunks(yieldedFiles);
   }
 
   analyzeDelta(): AsyncIterable<nga.CompilationChunk> {
@@ -1143,53 +1001,6 @@ export class HybridCompiler {
    * `incremental` is `false`), and returns the full map of current `ProcessedFile`s across the
    * program.
    */
-  compileSync(options?: CompileOptions): ReadonlyMap<string, ProcessedFile> {
-    const {useDelta, useOptimized} = this.beginCompilationPass();
-    const chunks = useDelta
-      ? useOptimized
-        ? this.analyzeOptimizedDeltaSync()
-        : this.analyzeDeltaSync()
-      : useOptimized
-        ? this.analyzeOptimizedSync()
-        : this.analyzeSync();
-
-    for (const chunk of chunks) {
-      if (chunk.files.length === 0) {
-        this.recordChunkDiagnostics(chunk);
-        continue;
-      }
-      const chunkContext = this.prepareChunkSync(chunk);
-      for (const fileResult of chunk.files) {
-        const filePath = fileResult.filePath;
-        const content = options?.readFile
-          ? options.readFile(filePath)
-          : (this.fileCache.get(filePath)?.sourceContent ??
-            this.analyzer.getFileContentSync(filePath));
-        if (content === undefined) {
-          this.currentProcessedFiles.delete(filePath);
-          continue;
-        }
-        try {
-          const processed = this.processFileSync(
-            filePath,
-            content,
-            options?.readResource,
-            fileResult,
-            chunkContext,
-          );
-          this.currentProcessedFiles.set(filePath, processed);
-          this.currentProcessErrors.delete(filePath);
-        } catch (e: unknown) {
-          this.currentProcessedFiles.delete(filePath);
-          this.currentProcessErrors.set(filePath, e instanceof Error ? e.message : String(e));
-        }
-      }
-    }
-    this.hasCompiled = true;
-    return this.currentProcessedFiles;
-  }
-
-  /** Asynchronous counterpart of `compileSync`. */
   async compile(options?: CompileOptions): Promise<ReadonlyMap<string, ProcessedFile>> {
     const {useDelta, useOptimized} = this.beginCompilationPass();
     const chunks = useDelta
@@ -1320,38 +1131,6 @@ export class HybridCompiler {
       fileAnalysis.tcb = undefined;
     }
     return {fileAnalysis, effectiveContent, boundFingerprint, reuseExisting: false};
-  }
-
-  /**
-   * Synchronously binds template targets using a pre-fetched `AnalysisResult`. `knownMetadata`
-   * (e.g. the other files of the chunk) spares a round trip to the analyzer for the templates of
-   * dependencies declared in those files.
-   */
-  ensureBoundWithMetadataSync(
-    result: nga.AnalysisResult,
-    content?: string,
-    knownMetadata?: ReadonlyMap<string, nga.AnalysisResult>,
-  ): FileAnalysis {
-    const {fileAnalysis, effectiveContent, boundFingerprint, reuseExisting} =
-      this.prepareFileAnalysisForBinding(result, content, knownMetadata);
-    if (reuseExisting) {
-      return fileAnalysis;
-    }
-    const fileContent =
-      effectiveContent !== undefined
-        ? effectiveContent
-        : this.analyzer.getFileContentSync(result.filePath);
-    const finalFingerprint =
-      boundFingerprint ??
-      this.computeBoundFingerprint(result.filePath, fileContent, result, knownMetadata);
-    return this.populateBoundData(
-      result.filePath,
-      fileAnalysis,
-      result,
-      fileContent,
-      this.dependencyTemplates(knownMetadata),
-      finalFingerprint,
-    );
   }
 
   /**
@@ -1589,58 +1368,6 @@ export class HybridCompiler {
     }
   }
 
-  processFileSync(
-    filePath: string,
-    content: string,
-    readResource?:
-      ((file: string) => string | undefined) | Map<string, nga.ResolvedResource | null>,
-    metadata?: nga.AnalysisResult,
-    chunkContext?: ChunkContext,
-  ): ProcessedFile {
-    const result = metadata || this.analyzer.getMetadataForFileSync(filePath);
-    if (result) {
-      this.recordMetadata(result);
-    }
-    const normPath = result ? result.filePath : filePath;
-    let processed: ProcessedFile | undefined;
-    try {
-      const boundFingerprint = result
-        ? this.computeBoundFingerprint(normPath, content, result, chunkContext?.metadataMap)
-        : undefined;
-      const fingerprint = this.processingFingerprint(
-        normPath,
-        result,
-        chunkContext,
-        boundFingerprint,
-      );
-      const reused = this.reusableOutput(normPath, fingerprint);
-      if (!reused && result) {
-        this.invalidateStaleFileAnalysis(normPath, content, boundFingerprint, chunkContext);
-      }
-      processed = reused
-        ? this.adoptReused(normPath, reused)
-        : this.rememberProcessed(
-            normPath,
-            fingerprint,
-            processFileSync(
-              this,
-              normPath,
-              content,
-              readResource,
-              result || undefined,
-              chunkContext,
-            ),
-          );
-      this.recordProcessedDiagnostics(normPath, processed);
-      return processed;
-    } catch (e) {
-      this.processedFiles.delete(normPath);
-      throw e;
-    } finally {
-      this.recordForIncrementalEmit(result, chunkContext, processed);
-    }
-  }
-
   private invalidateStaleFileAnalysis(
     filePath: string,
     content: string,
@@ -1782,17 +1509,9 @@ export class HybridCompiler {
       ) {
         continue;
       }
-      let metadata = knownMetadata?.get(decl.filePath) ?? this.metadataByFile.get(decl.filePath);
+      const metadata = knownMetadata?.get(decl.filePath) ?? this.metadataByFile.get(decl.filePath);
       if (metadata === undefined) {
-        try {
-          metadata = this.analyzer.getMetadataForFileSync(decl.filePath) ?? undefined;
-          if (metadata) {
-            this.recordMetadata(metadata);
-          }
-        } catch {
-          // No synchronous lookups (sidecar): nothing to fingerprint the dependency by.
-          return null;
-        }
+        return null;
       }
       const declaring = metadata?.classes.find(
         (c) => c.className === decl.name && c.nameSpan?.start === decl.nameSpan.start,
@@ -1877,25 +1596,6 @@ export class HybridCompiler {
     return processed.hmrUpdateModule ?? null;
   }
 
-  emitHmrUpdateModuleSync(filePath: string, className: string): string | null {
-    if (!this.enableHmr) {
-      return null;
-    }
-    const result = this.analyzer.getMetadataForFileSync(filePath);
-    if (!result) {
-      return null;
-    }
-    const content = this.analyzer.getFileContentSync(result.filePath);
-    const processed = processFileSync(
-      {...this, hmrUpdateTarget: className},
-      result.filePath,
-      content,
-      undefined,
-      result,
-    );
-    return processed.hmrUpdateModule ?? null;
-  }
-
   async getBoundTarget(
     filePath: string,
     classKey: string,
@@ -1913,16 +1613,6 @@ export class HybridCompiler {
     }
 
     return getIndexedComponents(this);
-  }
-
-  getIndexedComponentsSync(): Map<string, IndexedComponent> {
-    const chunks = this.optimize ? this.analyzeOptimizedSync() : this.analyzeSync();
-    for (const chunk of chunks) {
-      for (const result of chunk.files) {
-        this.ensureBoundWithMetadataSync(result);
-      }
-    }
-    return getIndexedComponentsSync(this);
   }
 
   async getTsFileForTemplate(templatePath: string): Promise<nga.TemplateUsage | null> {
