@@ -292,7 +292,6 @@ export interface ComponentMetadata {
   stylesFromUrls?: Array<string>;
   styleUrls?: Array<UrlMetadata>;
   standalone: boolean;
-  signals: boolean;
   exportAs?: Array<string>;
   schemas?: Array<string>;
   rawImportsSpan?: SpanMetadata;
@@ -517,7 +516,6 @@ export interface DirectiveMetadata {
   decoratorName?: string;
   selector?: string;
   standalone: boolean;
-  signals: boolean;
   isStructural: boolean;
   exportAs?: Array<string>;
   /** Syntax of the `host` object literal, for the type-check block. */

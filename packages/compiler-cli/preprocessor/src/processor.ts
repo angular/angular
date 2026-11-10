@@ -1566,7 +1566,6 @@ function compileClasses(file: FileCompilation): string | null | undefined {
             )
           : null,
         isStandalone: standalone,
-        isSignal: component.signals,
         hostDirectives: buildHostDirectives(hostDirectives),
 
         // Component-specific
@@ -1697,7 +1696,6 @@ function compileClasses(file: FileCompilation): string | null | undefined {
             )
           : null,
         isStandalone: standalone,
-        isSignal: directive.signals,
         hostDirectives: buildHostDirectives(hostDirectives),
         legacyOptionalChaining: ctx.legacyOptionalChaining,
       };

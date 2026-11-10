@@ -132,7 +132,6 @@ pub fn extract_directive_metadata<'a>(
                     }
                 }
             }
-            "signals" => data.signals = extract_bool(&p.value, semantic).unwrap_or(false),
             "exportAs" => {
                 data.export_as_span = Some(p.value.span());
                 data.export_as = Some(Resolved::from_syntax(
@@ -583,64 +582,6 @@ mod tests {
         let backtick_end = source_text.rfind('`').unwrap() as u32;
         assert_eq!(properties[0].value.span.start, backtick_start + 1);
         assert_eq!(properties[0].value.span.end, backtick_end);
-    }
-
-    #[test]
-    fn test_extract_directive_metadata_signals() {
-        let source_text = r#"
-            let x = {
-                selector: '[signalDir]',
-                standalone: false,
-                signals: true
-            };
-        "#;
-
-        let allocator = Allocator::default();
-        let source_type = SourceType::default();
-        let ret = Parser::new(&allocator, source_text, source_type).parse();
-
-        let semantic_ret = SemanticBuilder::new()
-            .with_build_nodes(true)
-            .build(&ret.program);
-
-        let mut object_expr = None;
-        if let oxc_ast::ast::Statement::VariableDeclaration(decl) = &ret.program.body[0] {
-            if let Some(init) = &decl.declarations[0].init {
-                object_expr = Some(init);
-            }
-        }
-
-        let expr = object_expr.expect("Expected object expression");
-        let oxc_ast::ast::Expression::ObjectExpression(obj) = expr else {
-            panic!("Expected object expression");
-        };
-
-        let import_map = crate::analyzer::extract_import_map(&ret.module_record);
-        let angular_imports = crate::analyzer::imports::extract_angular_imports(
-            &ret.module_record,
-            &semantic_ret.semantic,
-            false,
-        );
-        let env = crate::evaluator::ResolvedEnv::new();
-        let interner = crate::query::FileIdInterner::new();
-        let eval = EvalInput {
-            semantic: &semantic_ret.semantic,
-            file: interner.intern_path("/test/file.ts"),
-            import_map: &import_map,
-            mode: crate::evaluator::EvalMode::Syntax,
-            env: &env,
-            foreign: crate::analyzer::resolvers::angular_foreign_resolvers(),
-        };
-        let meta =
-            extract_directive_metadata(obj, None, &semantic_ret.semantic, &angular_imports, &eval)
-                .expect("non-jit metadata should be extracted");
-
-        assert_eq!(
-            meta.selector.as_ref().and_then(Resolved::get_optional),
-            Some("[signalDir]".to_string())
-        );
-        assert!(!meta.standalone);
-        assert!(meta.signals);
     }
 
     #[test]

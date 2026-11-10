@@ -95,9 +95,6 @@ function baseDirectiveFields(
   if (meta.isStandalone === false) {
     definitionMap.set('standalone', o.literal(false));
   }
-  if (meta.isSignal) {
-    definitionMap.set('signals', o.literal(true));
-  }
 
   return definitionMap;
 }
@@ -341,12 +338,6 @@ export function createComponentType(meta: R3ComponentMetadata<R3TemplateDependen
   typeParams.push(stringArrayAsType(meta.template.ngContentSelectors));
   typeParams.push(o.expressionType(o.literal(meta.isStandalone)));
   typeParams.push(createHostDirectivesType(meta));
-  // TODO(signals): Always include this metadata starting with v17. Right
-  // now Angular v16.0.x does not support this field and library distributions
-  // would then be incompatible with v16.0.x framework users.
-  if (meta.isSignal) {
-    typeParams.push(o.expressionType(o.literal(meta.isSignal)));
-  }
   return o.expressionType(o.importExpr(R3.ComponentDeclaration, typeParams));
 }
 
@@ -443,12 +434,6 @@ export function createDirectiveType(meta: R3DirectiveMetadata): o.Type {
   typeParams.push(o.NONE_TYPE);
   typeParams.push(o.expressionType(o.literal(meta.isStandalone)));
   typeParams.push(createHostDirectivesType(meta));
-  // TODO(signals): Always include this metadata starting with v17. Right
-  // now Angular v16.0.x does not support this field and library distributions
-  // would then be incompatible with v16.0.x framework users.
-  if (meta.isSignal) {
-    typeParams.push(o.expressionType(o.literal(meta.isSignal)));
-  }
   return o.expressionType(o.importExpr(R3.DirectiveDeclaration, typeParams));
 }
 

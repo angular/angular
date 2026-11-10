@@ -201,8 +201,6 @@ export class DtsMetadataReader implements MetadataReader {
       def.type.typeArguments.length > 8
         ? readHostDirectivesType(this.checker, def.type.typeArguments[8], ref.bestGuessOwningModule)
         : null;
-    const isSignal =
-      def.type.typeArguments.length > 9 && (readBooleanType(def.type.typeArguments[9]) ?? false);
 
     // At this point in time, the `.d.ts` may not be fully extractable when
     // trying to resolve host directive types to their declarations.
@@ -228,7 +226,6 @@ export class DtsMetadataReader implements MetadataReader {
       animationTriggerNames: null,
       ngContentSelectors,
       isStandalone,
-      isSignal,
       // We do not transfer information about inputs from class metadata
       // via `.d.ts` declarations. This is fine because this metadata is
       // currently only used for classes defined in source files. E.g. in migrations.
