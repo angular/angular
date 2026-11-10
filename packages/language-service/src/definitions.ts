@@ -23,8 +23,6 @@ import {
   isExternalResource,
   NgCompiler,
   Resource,
-  SelectorlessComponentSymbol,
-  SelectorlessDirectiveSymbol,
   Symbol,
   SymbolKind,
   TcbLocation,
@@ -122,8 +120,6 @@ export class DefinitionBuilder {
       case SymbolKind.Element:
       case SymbolKind.Template:
       case SymbolKind.DomBinding:
-      case SymbolKind.SelectorlessComponent:
-      case SymbolKind.SelectorlessDirective:
         // Though it is generally more appropriate for the above symbol definitions to be
         // associated with "type definitions" since the location in the template is the
         // actual definition location, the better user experience would be to allow
@@ -239,8 +235,6 @@ export class DefinitionBuilder {
         case SymbolKind.DomBinding:
         case SymbolKind.Element:
         case SymbolKind.Template:
-        case SymbolKind.SelectorlessComponent:
-        case SymbolKind.SelectorlessDirective:
           definitions.push(...this.getTypeDefinitionsForTemplateInstance(symbol, node));
           break;
         case SymbolKind.Output:
@@ -289,13 +283,7 @@ export class DefinitionBuilder {
   }
 
   private getTypeDefinitionsForTemplateInstance(
-    symbol:
-      | TemplateSymbol
-      | ElementSymbol
-      | DomBindingSymbol
-      | DirectiveSymbol
-      | SelectorlessComponentSymbol
-      | SelectorlessDirectiveSymbol,
+    symbol: TemplateSymbol | ElementSymbol | DomBindingSymbol | DirectiveSymbol,
     node: AST | TmplAstNode,
   ): ts.DefinitionInfo[] {
     switch (symbol.kind) {
@@ -322,8 +310,6 @@ export class DefinitionBuilder {
         );
         return this.getTypeDefinitionsForSymbols(...dirs);
       }
-      case SymbolKind.SelectorlessComponent:
-      case SymbolKind.SelectorlessDirective:
       case SymbolKind.Directive:
         return this.getTypeDefinitionsForSymbols(symbol);
     }

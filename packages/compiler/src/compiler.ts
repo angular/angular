@@ -188,8 +188,6 @@ export {
   Variable as TmplAstVariable,
   ViewportDeferredTrigger as TmplAstViewportDeferredTrigger,
   HostElement as TmplAstHostElement,
-  Component as TmplAstComponent,
-  Directive as TmplAstDirective,
   ContentBlock as TmplAstContentBlock,
   visitAll as tmplAstVisitAll,
   Visitor as TmplAstVisitor,

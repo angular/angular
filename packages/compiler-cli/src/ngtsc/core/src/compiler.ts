@@ -101,7 +101,6 @@ import {
   CompoundComponentScopeReader,
   LocalModuleScopeRegistry,
   MetadataDtsModuleScopeResolver,
-  SelectorlessComponentScopeReader,
   TypeCheckScopeRegistry,
 } from '../../scope';
 import {StandaloneComponentScopeReader} from '../../scope/src/standalone';
@@ -400,7 +399,6 @@ export class NgCompiler {
   private readonly angularCoreVersion: string | null;
   private readonly enableHmr: boolean;
   private readonly implicitStandaloneValue: boolean;
-  private readonly enableSelectorless: boolean;
   private readonly emitDeclarationOnly: boolean;
   private readonly enableTemplateSourceLocations: boolean;
 
@@ -477,7 +475,6 @@ export class NgCompiler {
     this.enableLetSyntax =
       this.angularCoreVersion === null ||
       coreVersionSupportsFeature(this.angularCoreVersion, '>= 18.1.0');
-    this.enableSelectorless = options['_enableSelectorless'] ?? false;
     this.enableTemplateSourceLocations = options['enableTemplateSourceLocations'] ?? false;
     this.emitDeclarationOnly =
       !!options.emitDeclarationOnly && !!options._experimentalAllowEmitDeclarationOnly;
@@ -1435,10 +1432,8 @@ export class NgCompiler {
       ngModuleScopeRegistry,
       depScopeReader,
     );
-    const selectorlessScopeReader = new SelectorlessComponentScopeReader(metaReader, reflector);
     const scopeReader: ComponentScopeReader = new CompoundComponentScopeReader([
       ngModuleScopeRegistry,
-      selectorlessScopeReader,
       standaloneScopeReader,
     ]);
     const semanticDepGraphUpdater = this.incrementalCompilation.semanticDepGraphUpdater;
@@ -1566,7 +1561,6 @@ export class NgCompiler {
         this.enableHmr,
         this.implicitStandaloneValue,
         typeCheckHostBindings,
-        this.enableSelectorless,
         this.emitDeclarationOnly,
         this.options.legacyOptionalChaining ?? LEGACY_OPTIONAL_CHAINING_DEFAULT,
         this.enableTemplateSourceLocations,

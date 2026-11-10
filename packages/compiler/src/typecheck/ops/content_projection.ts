@@ -9,7 +9,6 @@
 import {CssSelector, SelectorMatcher} from '../../directive_matching';
 import {
   BoundaryBlock,
-  Component,
   Element,
   ForLoopBlock,
   ForLoopBlockEmpty,
@@ -44,7 +43,7 @@ export class TcbControlFlowContentProjectionOp extends TcbOp {
 
   constructor(
     private tcb: Context,
-    private element: Element | Component,
+    private element: Element,
     private ngContentSelectors: string[],
     private componentName: string,
   ) {

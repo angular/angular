@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {BoundAttribute, Directive, Template} from '../../render3/r3_ast';
+import {BoundAttribute, Template} from '../../render3/r3_ast';
 import {TcbDirectiveMetadata, TemplateGuardMeta} from '../api';
 import {TcbOp} from './base';
 import {declareVariable, getStatementsBlock, TcbExpr} from './codegen';
@@ -79,14 +79,6 @@ export class TcbTemplateBodyOp extends TcbOp {
       this.tcb.boundTarget.getDirectivesOfNode(this.template),
     );
 
-    for (const directive of this.template.directives) {
-      this.addDirectiveGuards(
-        directiveGuards,
-        directive,
-        this.tcb.boundTarget.getDirectivesOfNode(directive),
-      );
-    }
-
     // If there are any guards from directives, use them instead.
     if (directiveGuards.length > 0) {
       // Pop the first value and use it as the initializer to reduce(). This way, a single guard
@@ -131,7 +123,7 @@ export class TcbTemplateBodyOp extends TcbOp {
 
   private addDirectiveGuards(
     guards: TcbExpr[],
-    hostNode: Template | Directive,
+    hostNode: Template,
     directives: TcbDirectiveMetadata[] | null,
   ) {
     if (directives === null || directives.length === 0) {

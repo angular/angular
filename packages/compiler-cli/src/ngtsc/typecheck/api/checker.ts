@@ -15,8 +15,6 @@ import {
   PropertyRead,
   SafePropertyRead,
   TemplateEntity,
-  TmplAstComponent,
-  TmplAstDirective,
   TmplAstElement,
   TmplAstHostElement,
   TmplAstNode,
@@ -50,8 +48,6 @@ import {
   BindingSymbol,
   ClassSymbol,
   ElementSymbol,
-  SelectorlessComponentSymbol,
-  SelectorlessDirectiveSymbol,
   Symbol,
   TcbLocation,
   TemplateSymbol,
@@ -172,14 +168,6 @@ export interface TemplateTypeChecker {
     node: TmplAstTemplate | TmplAstElement,
     component: ts.ClassDeclaration,
   ): TemplateSymbol | ElementSymbol | null;
-  getSymbolOfNode(
-    node: TmplAstComponent,
-    component: ts.ClassDeclaration,
-  ): SelectorlessComponentSymbol | null;
-  getSymbolOfNode(
-    node: TmplAstDirective,
-    component: ts.ClassDeclaration,
-  ): SelectorlessDirectiveSymbol | null;
   getSymbolOfNode(node: AST | TmplAstNode, component: ts.ClassDeclaration): Symbol | null;
 
   /**

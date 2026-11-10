@@ -339,8 +339,6 @@ export class DirectiveDecoratorHandler implements DecoratorHandler<
       assumedToExportProviders: false,
       isExplicitlyDeferred: false,
       deferredBlocks: null,
-      selectorlessEnabled: false,
-      localReferencedSymbols: null,
     });
 
     this.resourceRegistry.registerResources(analysis.resources, node);

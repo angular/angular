@@ -10,8 +10,6 @@ import {AbsoluteSourceSpan, AST} from '../expression_parser/ast';
 import {
   BoundAttribute,
   BoundEvent,
-  Component,
-  Directive,
   Element,
   LetDeclaration,
   Node,
@@ -33,8 +31,6 @@ export enum IdentifierKind {
   Reference,
   Variable,
   LetDeclaration,
-  Component,
-  Directive,
   Input,
   Output,
   Pipe,
@@ -105,16 +101,6 @@ export interface TemplateNodeIdentifier<T = unknown> extends BaseDirectiveHostId
   kind: IdentifierKind.Template;
 }
 
-/** Describes a selectorless component node in a template file. */
-export interface ComponentNodeIdentifier<T = unknown> extends BaseDirectiveHostIdentifier<T> {
-  kind: IdentifierKind.Component;
-}
-
-/** Describes a selectorless directive node in a template file. */
-export interface DirectiveNodeIdentifier<T = unknown> extends BaseDirectiveHostIdentifier<T> {
-  kind: IdentifierKind.Directive;
-}
-
 /** Describes a reference in a template like "foo" in `<div #foo></div>`. */
 export interface ReferenceIdentifier<T = unknown> extends TemplateIdentifier {
   kind: IdentifierKind.Reference;
@@ -170,17 +156,11 @@ export type TopLevelIdentifier<T = unknown> =
   | VariableIdentifier
   | MethodIdentifier<T>
   | LetDeclarationIdentifier
-  | ComponentNodeIdentifier<T>
-  | DirectiveNodeIdentifier<T>
   | BoundAttributeIdentifier<T>
   | PipeIdentifier<T>;
 
 /** Identifiers that can bring in directives to the template. */
-export type DirectiveHostIdentifier<T = unknown> =
-  | ElementIdentifier<T>
-  | TemplateNodeIdentifier<T>
-  | ComponentNodeIdentifier<T>
-  | DirectiveNodeIdentifier<T>;
+export type DirectiveHostIdentifier<T = unknown> = ElementIdentifier<T> | TemplateNodeIdentifier<T>;
 
 /**
  * Describes an analyzed, indexed component and its template.
@@ -202,15 +182,13 @@ export interface IndexedComponent<T = unknown> {
  */
 export interface AbstractBoundTemplate<T = unknown> {
   getDirectivesOfNode(
-    node: Element | Template | Component | Directive,
+    node: Element | Template,
   ): Array<{ref: {node: T}; selector: string | null}> | null;
   getReferenceTarget(node: Reference):
     | Element
     | Template
-    | Component
-    | Directive
     | {
-        node: Element | Template | Component | Directive;
+        node: Element | Template;
         directive: {ref: {node: T}};
       }
     | null;

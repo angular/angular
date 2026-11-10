@@ -250,10 +250,6 @@ export class DtsMetadataReader implements MetadataReader {
       preserveWhitespaces: false,
       isExplicitlyDeferred: false,
       deferredBlocks: null,
-      // We don't need to know if imported components from .d.ts
-      // files are selectorless for type-checking purposes.
-      selectorlessEnabled: false,
-      localReferencedSymbols: null,
     };
   }
 

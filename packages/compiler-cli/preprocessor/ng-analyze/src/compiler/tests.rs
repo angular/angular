@@ -2271,7 +2271,7 @@ fn test_component_dts_readonly_tuple_typeof_array_spread() {
 /// declarations and the component's own metadata must carry that effective selector, so that
 /// emit matching and the type-check block agree with ngtsc.
 #[test]
-fn test_selectorless_component_gets_default_selector() {
+fn test_component_without_selector_gets_default_selector() {
     let mut virtual_files = HashMap::new();
     virtual_files.insert(
         "/project/tsconfig.json".to_string(),

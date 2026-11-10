@@ -10,13 +10,11 @@ import {
   ClassPropertyMapping,
   CssSelector,
   AbstractBoundTemplate,
-  DirectiveMatcher,
   DirectiveMeta,
   MatchSource,
   parseTemplate,
   ParseTemplateOptions,
   R3TargetBinder,
-  SelectorlessMatcher,
   SelectorMatcher,
 } from '@angular/compiler';
 import ts from 'typescript';
@@ -90,23 +88,11 @@ export function getBoundTemplate(
     matchSource: MatchSource.Selector,
   }));
 
-  let matcher: DirectiveMatcher<ComponentMeta>;
+  const matcher = new SelectorMatcher<ComponentMeta[]>();
 
-  if (options.enableSelectorless) {
-    const registry = new Map<string, ComponentMeta[]>();
-
-    for (const current of componentsMeta) {
-      registry.set(current.name, [current]);
-    }
-
-    matcher = new SelectorlessMatcher(registry);
-  } else {
-    matcher = new SelectorMatcher();
-
-    for (const current of componentsMeta) {
-      if (current.selector !== null) {
-        matcher.addSelectables(CssSelector.parse(current.selector), [current]);
-      }
+  for (const current of componentsMeta) {
+    if (current.selector !== null) {
+      matcher.addSelectables(CssSelector.parse(current.selector), [current]);
     }
   }
 

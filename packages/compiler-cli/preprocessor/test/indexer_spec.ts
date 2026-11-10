@@ -58,7 +58,7 @@ async function setupCompiler(content: string, options?: {strictTemplates?: boole
 
 async function setupMultiFileCompiler(
   files: Record<string, string>,
-  options?: {strictTemplates?: boolean; enableSelectorless?: boolean},
+  options?: {strictTemplates?: boolean},
 ) {
   const projectRoot = process.cwd();
   const tsconfigPath = join(projectRoot, 'tsconfig.json');
@@ -88,7 +88,6 @@ async function setupMultiFileCompiler(
   const compiler = new HybridCompiler(analyzer, {
     optimize: true,
     tcbConfig: buildTypeCheckingConfig({strictTemplates: options?.strictTemplates ?? false}),
-    templateParseOptions: {enableSelectorless: options?.enableSelectorless ?? false},
   });
 
   return {compiler, filePaths, projectRoot};
@@ -361,13 +360,13 @@ describe('Indexer', () => {
       @Component({
         template: '{{ foo }}',
       })
-      export class SelectorlessComp {
+      export class NoSelectorComp {
         foo = 'bar';
       }
     `);
 
-    const comp = await getIndexedComponent(compiler, 'SelectorlessComp');
-    expect(comp.name).toBe('SelectorlessComp');
+    const comp = await getIndexedComponent(compiler, 'NoSelectorComp');
+    expect(comp.name).toBe('NoSelectorComp');
     expect(comp.selector).toBe('ng-component');
     expect(comp.template.identifiers.size).toBe(1);
 
@@ -619,57 +618,6 @@ describe('Indexer', () => {
     const bRef = getIdentifier<ReferenceIdentifier>(comp, IdentifierKind.Reference, 'bRef');
     expect(bRef.target?.directive?.name).toBe('DirB');
     expect(bRef.target?.directive?.filePath.toLowerCase()).toBe(expectedDirBPath);
-  });
-
-  it('should index cross-file selectorless components with their source file paths', async () => {
-    const {compiler, projectRoot} = await setupMultiFileCompiler(
-      {
-        'dep-comp.ts': `
-          import {Component} from '@angular/core';
-
-          @Component({
-            template: '<span>dep comp</span>',
-          })
-          export class DepComp {}
-        `,
-        'other-comp.ts': `
-          import {Component} from '@angular/core';
-
-          @Component({
-            template: '<span>other comp</span>',
-          })
-          export class OtherComp {}
-        `,
-        'test.ts': `
-          import {Component} from '@angular/core';
-          import {DepComp} from './dep-comp';
-          import {OtherComp} from './other-comp';
-
-          @Component({
-            template: '<DepComp #compRef /><OtherComp #otherRef />',
-            imports: [DepComp, OtherComp],
-          })
-          export class TestComp {}
-        `,
-      },
-      {enableSelectorless: true, strictTemplates: true},
-    );
-
-    const comp = await getIndexedComponentByName(compiler, 'TestComp');
-    const expectedDepPath = join(projectRoot, 'dep-comp.ts').toLowerCase();
-    const expectedOtherPath = join(projectRoot, 'other-comp.ts').toLowerCase();
-
-    // Check selectorless Component nodes
-    getIdentifier<DirectiveHostIdentifier>(comp, IdentifierKind.Component, 'DepComp');
-    getIdentifier<DirectiveHostIdentifier>(comp, IdentifierKind.Component, 'OtherComp');
-
-    const compRef = getIdentifier<ReferenceIdentifier>(comp, IdentifierKind.Reference, 'compRef');
-    expect(compRef.target?.directive?.name).toBe('DepComp');
-    expect(compRef.target?.directive?.filePath.toLowerCase()).toBe(expectedDepPath);
-
-    const otherRef = getIdentifier<ReferenceIdentifier>(comp, IdentifierKind.Reference, 'otherRef');
-    expect(otherRef.target?.directive?.name).toBe('OtherComp');
-    expect(otherRef.target?.directive?.filePath.toLowerCase()).toBe(expectedOtherPath);
   });
 
   it('should index cross-file structural directives applied on templates with their source file path', async () => {

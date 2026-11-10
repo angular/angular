@@ -46,15 +46,9 @@ export function getLinkedEditingRangeAtPosition(
   // For closing tag: context may be ElementInBodyContext but we check explicitly
   let element: TmplAstElement | null = null;
 
-  if (
-    target.context.kind === TargetNodeKind.ElementInTagContext ||
-    target.context.kind === TargetNodeKind.ComponentInTagContext
-  ) {
+  if (target.context.kind === TargetNodeKind.ElementInTagContext) {
     element = target.context.node as TmplAstElement;
-  } else if (
-    target.context.kind === TargetNodeKind.ElementInBodyContext ||
-    target.context.kind === TargetNodeKind.ComponentInBodyContext
-  ) {
+  } else if (target.context.kind === TargetNodeKind.ElementInBodyContext) {
     // When in body context, check if we're actually on the closing tag
     const potentialElement = target.context.node as TmplAstElement;
     if (isOnClosingTagName(potentialElement, position)) {

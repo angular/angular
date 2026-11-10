@@ -1,9 +1,0 @@
-{
-  "extends": "../../../tsconfig-test.json",
-  "compilerOptions": {
-    "strict": true
-  },
-  "angularCompilerOptions": {
-    "_enableSelectorless": true
-  }
-}

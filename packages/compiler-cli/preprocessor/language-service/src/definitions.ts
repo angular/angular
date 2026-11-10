@@ -94,9 +94,7 @@ export class DefinitionBuilder {
     await this.facade.ensureDocument(tcbUri, tcbResult.code);
 
     switch (ngSymbol.kind) {
-      case SymbolKind.Directive:
-      case SymbolKind.SelectorlessComponent:
-      case SymbolKind.SelectorlessDirective: {
+      case SymbolKind.Directive: {
         if (!ngSymbol.tcbLocation) return null;
         const pos = offsetToPosition(tcbResult.code, ngSymbol.tcbLocation.positionInFile);
 

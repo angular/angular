@@ -490,9 +490,6 @@ export function performNgpCompilationSync(params: {
         optimize,
         tcbConfig,
         optionDiagnostics,
-        templateParseOptions: {
-          enableSelectorless: Boolean(rawOpts['_enableSelectorless']),
-        },
         legacyOptionalChaining: Boolean(rawOpts['legacyOptionalChaining']),
         isClosureCompilerEnabled,
         emitDeclarationOnly,

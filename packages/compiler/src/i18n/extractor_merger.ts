@@ -126,7 +126,6 @@ class _Visitor implements html.Visitor {
     const wrapper = new html.Element(
       'wrapper',
       [],
-      [],
       nodes,
       false,
       undefined!,
@@ -265,14 +264,6 @@ class _Visitor implements html.Visitor {
 
   visitLetDeclaration(decl: html.LetDeclaration, context: any) {}
 
-  visitComponent(component: html.Component, context: any): html.Component | null {
-    return this._visitElementLike(component, context);
-  }
-
-  visitDirective(directive: html.Directive, context: any) {
-    throw new Error('unreachable code');
-  }
-
   private _init(mode: _VisitorMode): void {
     this._mode = mode;
     this._inI18nBlock = false;
@@ -292,10 +283,7 @@ class _Visitor implements html.Visitor {
     );
   }
 
-  private _visitElementLike<T extends html.Element | html.Component>(
-    node: T,
-    context: any,
-  ): T | null {
+  private _visitElementLike(node: html.Element, context: any): html.Element | null {
     this._mayBeAddBlockChildren(node);
     this._depth++;
     const wasInI18nNode = this._inI18nNode;
@@ -306,7 +294,7 @@ class _Visitor implements html.Visitor {
     // Extract:
     // - top level nodes with the (implicit) "i18n" attribute if not already in a section
     // - ICU messages
-    const nodeName = node instanceof html.Component ? node.tagName : node.name;
+    const nodeName = node.name;
     const i18nAttr = _getI18nAttr(node);
     const i18nMeta = i18nAttr ? i18nAttr.value : '';
     const isImplicit =
@@ -362,41 +350,24 @@ class _Visitor implements html.Visitor {
     this._inImplicitNode = wasInImplicitNode;
 
     if (this._mode === _VisitorMode.Merge) {
-      if (node instanceof html.Element) {
-        return new html.Element(
-          node.name,
-          this._translateAttributes(node),
-          this._translateDirectives(node),
-          childNodes,
-          node.isSelfClosing,
-          node.sourceSpan,
-          node.startSourceSpan,
-          node.endSourceSpan,
-          node.isVoid,
-        ) as T;
-      } else {
-        return new html.Component(
-          node.componentName,
-          node.tagName,
-          node.fullName,
-          this._translateAttributes(node),
-          this._translateDirectives(node),
-          childNodes,
-          node.isSelfClosing,
-          node.sourceSpan,
-          node.startSourceSpan,
-          node.endSourceSpan,
-        ) as T;
-      }
+      return new html.Element(
+        node.name,
+        this._translateAttributes(node),
+        childNodes,
+        node.isSelfClosing,
+        node.sourceSpan,
+        node.startSourceSpan,
+        node.endSourceSpan,
+        node.isVoid,
+      );
     }
     return null;
   }
 
   // looks for translatable attributes
-  private _visitAttributesOf(el: html.Element | html.Component): void {
+  private _visitAttributesOf(el: html.Element): void {
     const explicitAttrNameToValue: {[k: string]: string} = {};
-    const implicitAttrNames: string[] =
-      this._implicitAttrs[el instanceof html.Component ? el.tagName || '' : el.name] || [];
+    const implicitAttrNames: string[] = this._implicitAttrs[el.name] || [];
 
     el.attrs
       .filter((attr) => attr instanceof html.Attribute && attr.name.startsWith(_I18N_ATTR_PREFIX))
@@ -496,9 +467,7 @@ class _Visitor implements html.Visitor {
   }
 
   // translate the attributes of an element and remove i18n specific attributes
-  private _translateAttributes(
-    node: html.Element | html.Component | html.Directive,
-  ): html.Attribute[] {
+  private _translateAttributes(node: html.Element): html.Attribute[] {
     const i18nParsedMessageMeta: {
       [name: string]: {meaning: string; description: string; id: string};
     } = {};
@@ -570,19 +539,6 @@ class _Visitor implements html.Visitor {
     });
 
     return translatedAttributes;
-  }
-
-  private _translateDirectives(node: html.Element | html.Component): html.Directive[] {
-    return node.directives.map(
-      (dir) =>
-        new html.Directive(
-          dir.name,
-          this._translateAttributes(dir),
-          dir.sourceSpan,
-          dir.startSourceSpan,
-          dir.endSourceSpan,
-        ),
-    );
   }
 
   /**
@@ -671,7 +627,7 @@ function _isClosingComment(n: html.Node): boolean {
   return !!(n instanceof html.Comment && n.value && n.value === '/i18n');
 }
 
-function _getI18nAttr(p: html.Element | html.Component): html.Attribute | null {
+function _getI18nAttr(p: html.Element): html.Attribute | null {
   return (
     (p.attrs.find((attr) => attr instanceof html.Attribute && attr.name === _I18N_ATTR) as
       html.Attribute | undefined) || null

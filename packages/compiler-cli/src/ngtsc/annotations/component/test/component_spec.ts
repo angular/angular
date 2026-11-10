@@ -161,7 +161,6 @@ function setup(
     /* enableHmr */ false,
     /* implicitStandaloneValue */ true,
     /* typeCheckHostBindings */ true,
-    /* enableSelectorless */ false,
     /* emitDeclarationOnly */ false,
     /* enableInlineStyles */ true,
     /* enableTemplateSourceLocations */ false,

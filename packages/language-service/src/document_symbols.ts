@@ -13,7 +13,6 @@ import {
   TmplAstBoundDeferredTrigger,
   TmplAstBoundaryBlock,
   TmplAstBoundaryErrorBlock,
-  TmplAstComponent,
   TmplAstContent,
   TmplAstDeferredBlock,
   TmplAstDeferredBlockError,
@@ -598,27 +597,6 @@ class TemplateSymbolVisitor extends TmplAstRecursiveVisitor {
 
     // Visit child elements
     tmplAstVisitAll(this, element.children);
-    this.popChildren();
-  }
-
-  override visitComponent(component: TmplAstComponent): void {
-    const symbol: TemplateDocumentSymbol = {
-      text: `<${component.tagName || component.componentName}>`,
-      kind: ts.ScriptElementKind.classElement,
-      lspKind: AngularSymbolKind.Class,
-      spans: [toTextSpan(component.sourceSpan)],
-      nameSpan: toTextSpan(component.startSourceSpan),
-    };
-    this.addSymbol(symbol);
-    this.pushChildren(symbol);
-
-    // Add references as children
-    for (const ref of component.references) {
-      ref.visit(this);
-    }
-
-    // Visit child elements
-    tmplAstVisitAll(this, component.children);
     this.popChildren();
   }
 

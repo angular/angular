@@ -11,7 +11,6 @@ import {
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
   TmplAstBoundText,
-  TmplAstComponent,
   TmplAstContent,
   TmplAstContentBlock,
   TmplAstDeferredBlock,
@@ -19,7 +18,6 @@ import {
   TmplAstDeferredBlockLoading,
   TmplAstDeferredBlockPlaceholder,
   TmplAstDeferredTrigger,
-  TmplAstDirective,
   TmplAstElement,
   TmplAstForLoopBlock,
   TmplAstForLoopBlockEmpty,
@@ -222,9 +220,6 @@ class ClassificationVisitor implements TmplAstVisitor {
 
   visitUnknownBlock(block: TmplAstUnknownBlock) {}
   visitLetDeclaration(decl: TmplAstLetDeclaration) {}
-
-  visitComponent(component: TmplAstComponent) {}
-  visitDirective(directive: TmplAstDirective) {}
 
   visitAll(children: TmplAstNode[]) {
     for (const child of children) {

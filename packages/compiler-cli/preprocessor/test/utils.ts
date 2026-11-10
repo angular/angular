@@ -354,7 +354,6 @@ export async function runPipeline(
   options: {
     optimize: boolean;
     sidecar?: boolean;
-    enableSelectorless?: boolean;
     templateParseOptions?: Record<string, any>;
     errors?: string[];
     format?: boolean;
@@ -483,7 +482,6 @@ export async function runPipeline(
     tcbConfig,
     optionDiagnostics,
     templateParseOptions: {
-      enableSelectorless: options.enableSelectorless,
       ...options.templateParseOptions,
     },
     legacyOptionalChaining: tsconfigOptions.legacyOptionalChaining,
