@@ -373,7 +373,6 @@ pub struct ComponentMetadata {
     pub styles_from_urls: Option<Vec<String>>,
     pub style_urls: Option<Vec<UrlMetadata>>,
     pub standalone: bool,
-    pub signals: bool,
     pub export_as: Option<Vec<String>>,
     pub schemas: Option<Vec<String>>,
     pub raw_imports_span: Option<SpanMetadata>,
@@ -488,7 +487,6 @@ pub struct DirectiveMetadata {
     pub decorator_name: Option<String>,
     pub selector: Option<String>,
     pub standalone: bool,
-    pub signals: bool,
     pub is_structural: bool,
     pub export_as: Option<Vec<String>>,
     /// Syntax of the `host` object literal, for the type-check block.

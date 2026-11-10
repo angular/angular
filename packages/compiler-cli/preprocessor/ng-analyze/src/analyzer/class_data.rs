@@ -255,7 +255,6 @@ pub struct DirectiveData {
     /// True when the `standalone` property was present but did not fold to a boolean, in
     /// which case `standalone` falls back to `true` (the implicit default).
     pub standalone_dynamic: bool,
-    pub signals: bool,
     pub is_structural: bool,
     /// `exportAs` as the partial evaluator sees it.
     pub export_as: Option<Resolved<crate::evaluator::ExportAsNames>>,
@@ -526,7 +525,6 @@ impl Default for DirectiveData {
             standalone: true,
             standalone_span: None,
             standalone_dynamic: false,
-            signals: false,
             is_structural: false,
             export_as: None,
             export_as_span: None,
@@ -4938,7 +4936,6 @@ impl ClassData {
             decorator_name: d.decorator_name.clone(),
             selector: self.read_optional_string(&d.selector, cx, "directive.selector")?,
             standalone: d.standalone,
-            signals: d.signals,
             is_structural: d.is_structural,
             export_as: self
                 .read_optional_field(d.export_as.as_ref(), cx, "directive.exportAs")?
@@ -5079,7 +5076,6 @@ impl ClassData {
                 .map(|s| s.iter().map(|u| u.to_wire(cx.converter)).collect()),
             encapsulation,
             standalone: c.directive.standalone,
-            signals: c.directive.signals,
             export_as: self
                 .read_optional_field(c.directive.export_as.as_ref(), cx, "component.exportAs")?
                 .map(|names| names.0),

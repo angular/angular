@@ -17,7 +17,6 @@ import { Observable } from 'rxjs';
 @Directive({
   selector: '[signalDir]',
   standalone: false,
-  signals: true
 })
 export class SignalDir {}
 
@@ -25,7 +24,6 @@ export class SignalDir {}
   selector: 'signal-comp',
   template: '<div>Signal Component</div>',
   standalone: false,
-  signals: true
 })
 export class SignalComp {
   val = model(0);
@@ -38,7 +36,6 @@ export class SignalComp {
 @Component({
   selector: 'standalone-signal-comp',
   template: '<div>Standalone Signal Component</div>',
-  signals: true
 })
 export class StandaloneSignalComp {}
 ```

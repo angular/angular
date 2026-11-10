@@ -1087,7 +1087,6 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       isPoisoned: analysis.isPoisoned,
       isStructural: false,
       isStandalone: analysis.meta.isStandalone,
-      isSignal: analysis.meta.isSignal,
       imports: analysis.resolvedImports,
       foreignImports: analysis.foreignImports,
       rawImports: analysis.rawImports,

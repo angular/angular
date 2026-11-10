@@ -120,7 +120,6 @@ export function toR3DirectiveMeta<TExpression>(
     isStandalone: metaObj.has('isStandalone')
       ? metaObj.getBoolean('isStandalone')
       : getDefaultStandaloneValue(version),
-    isSignal: metaObj.has('isSignal') ? metaObj.getBoolean('isSignal') : false,
     hostDirectives: metaObj.has('hostDirectives')
       ? toHostDirectivesMetadata(metaObj.getValue('hostDirectives'))
       : null,

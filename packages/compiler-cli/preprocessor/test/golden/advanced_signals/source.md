@@ -19,7 +19,6 @@ import { Observable } from 'rxjs';
 @Component({
   selector: 'advanced-comp',
   template: '<div>Advanced Component</div>',
-  signals: true
 })
 export class AdvancedComp {
   // Direct function calls

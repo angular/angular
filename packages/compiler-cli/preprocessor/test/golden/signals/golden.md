@@ -23,15 +23,13 @@ export class SignalDir {
     never,
     never,
     false,
-    never,
-    true
+    never
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineDirective({
       type: SignalDir,
       selectors: [['', 'signalDir', '']],
       standalone: false,
-      signals: true,
     });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
@@ -44,7 +42,6 @@ export class SignalDir {
               {
                 selector: '[signalDir]',
                 standalone: false,
-                signals: true,
               },
             ],
           },
@@ -89,8 +86,7 @@ export class SignalComp {
     never,
     never,
     false,
-    never,
-    true
+    never
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineComponent({
@@ -105,7 +101,6 @@ export class SignalComp {
         obsCustom: 'obsAlias',
       },
       standalone: false,
-      signals: true,
       decls: 2,
       vars: 0,
       template: function SignalComp_Template(rf: number, ctx: any): any {
@@ -130,7 +125,6 @@ export class SignalComp {
                 selector: 'signal-comp',
                 template: '<div>Signal Component</div>',
                 standalone: false,
-                signals: true,
               },
             ],
           },
@@ -157,7 +151,7 @@ export class SignalComp {
     i0.ɵsetClassDebugInfo(SignalComp, {
       className: 'SignalComp',
       filePath: 'test.ts',
-      lineNumber: 18,
+      lineNumber: 16,
     });
 })();
 
@@ -177,14 +171,12 @@ export class StandaloneSignalComp {
     never,
     never,
     true,
-    never,
-    true
+    never
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineComponent({
       type: StandaloneSignalComp,
       selectors: [['standalone-signal-comp']],
-      signals: true,
       decls: 2,
       vars: 0,
       template: function StandaloneSignalComp_Template(rf: number, ctx: any): any {
@@ -207,7 +199,6 @@ export class StandaloneSignalComp {
               {
                 selector: 'standalone-signal-comp',
                 template: '<div>Standalone Signal Component</div>',
-                signals: true,
               },
             ],
           },
@@ -222,7 +213,7 @@ export class StandaloneSignalComp {
     i0.ɵsetClassDebugInfo(StandaloneSignalComp, {
       className: 'StandaloneSignalComp',
       filePath: 'test.ts',
-      lineNumber: 31,
+      lineNumber: 28,
     });
 })();
 

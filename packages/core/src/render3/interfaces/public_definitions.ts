@@ -32,7 +32,6 @@ export type ɵɵDirectiveDeclaration<
   // are not standalone.
   IsStandalone extends boolean = false,
   HostDirectives = never,
-  IsSignal extends boolean = false,
 > = unknown;
 
 /**
@@ -53,7 +52,6 @@ export type ɵɵComponentDeclaration<
   // are not standalone.
   IsStandalone extends boolean = false,
   HostDirectives = never,
-  IsSignal extends boolean = false,
 > = unknown;
 
 /**
