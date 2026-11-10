@@ -544,6 +544,58 @@
       "deprecated": false
     },
     {
+      "name": "entry-point",
+      "command": "entry-point [name]",
+      "shortDescription": "Creates a new secondary entry point in an Angular library project.",
+      "options": [
+        {
+          "name": "entry-file",
+          "type": "string",
+          "default": "public-api",
+          "description": "The file name at which to create the secondary entry point's public API file, without the `.ts` extension."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "description": "The name of the secondary entry point (for example, 'testing' or 'feature/sub').",
+          "positional": 0
+        },
+        {
+          "name": "prefix",
+          "type": "string",
+          "aliases": [
+            "p"
+          ],
+          "description": "A prefix to apply to generated selectors."
+        },
+        {
+          "name": "project",
+          "type": "string",
+          "description": "The name of the library project where the secondary entry point should be added. If not specified, the CLI will determine the project from the current directory."
+        },
+        {
+          "name": "skip-tests",
+          "type": "boolean",
+          "default": false,
+          "description": "Do not create `spec.ts` test files for the new secondary entry point."
+        },
+        {
+          "name": "skip-ts-config",
+          "type": "boolean",
+          "default": false,
+          "description": "Do not update `tsconfig.json` to add a path mapping for the new secondary entry point."
+        },
+        {
+          "name": "standalone",
+          "type": "boolean",
+          "default": true,
+          "description": "Creates a secondary entry point based upon the standalone API, without NgModules."
+        }
+      ],
+      "aliases": [],
+      "deprecated": false
+    },
+    {
       "name": "enum",
       "command": "enum [name]",
       "shortDescription": "Creates a new enum in your project. Enums (enumerations) are a way to define a set of named constants, making your code more readable and maintainable. This schematic generates a new enum with the specified name and type.",
