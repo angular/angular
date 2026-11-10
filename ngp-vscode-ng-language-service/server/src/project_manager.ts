@@ -218,17 +218,19 @@ export class ProjectManager {
 
     try {
       let targetPath = normFilePath;
+      let shouldOpenTarget = false;
       if (normFilePath.endsWith('.html')) {
         targetPath = normFilePath.replace(/\.html$/, '.ts');
-        if (!(await this.facade.isDocumentOpen(targetPath))) {
-          const content = await fs.readFile(targetPath, 'utf8').catch(() => null);
-          if (content !== null) {
-            await this.facade.ensureDocument(targetPath, content);
-          }
-        }
+        shouldOpenTarget = await pathExists(targetPath);
       }
 
-      this.currentSnapshot = await this.api.getCurrentLanguageServerSnapshot();
+      const previousSnapshot = this.currentSnapshot;
+      this.currentSnapshot = shouldOpenTarget
+        ? await this.api.getCurrentLanguageServerSnapshot({openFiles: [targetPath]})
+        : await this.api.getCurrentLanguageServerSnapshot();
+      if (previousSnapshot && previousSnapshot !== this.currentSnapshot) {
+        await previousSnapshot.dispose().catch(() => {});
+      }
       const defaultProject = await this.currentSnapshot.getDefaultProjectForFile(targetPath);
       if (defaultProject?.configFileName && (await pathExists(defaultProject.configFileName))) {
         return await normalizePath(defaultProject.configFileName);
