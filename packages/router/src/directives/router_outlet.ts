@@ -90,6 +90,8 @@ export interface RouterOutletContract {
 
   /**
    * Whether the given outlet is currently rendering an error component instead of the primary component.
+   *
+   * @developerPreview 22.3
    */
   isErrorComponentActive?: boolean;
 
@@ -434,7 +436,6 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
         childContexts,
         onErrorHandler,
       );
-      this.isErrorComponentActive = false;
     } catch (error: any) {
       if (onErrorHandler) {
         onErrorHandler(error);

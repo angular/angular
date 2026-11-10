@@ -189,7 +189,7 @@ export class ActivateRoutes {
         const context = parentContexts.getOrCreateContext(future.outlet);
         if (context.outlet?.isErrorComponentActive) {
           context.outlet.deactivate();
-          context.outlet.activateWith(future, context.injector!);
+          context.outlet.activateWith(future, context.injector);
         }
         this.activateChildRoutes(futureNode, currNode, context.children);
       } else {

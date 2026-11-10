@@ -666,6 +666,8 @@ export interface Route {
    * The component to instantiate when an error occurs in this route.
    *
    * Requires the error boundary feature to be enabled with `withErrorBoundaries`.
+   *
+   * @developerPreview 22.3
    */
   errorComponent?: Type<unknown>;
 
