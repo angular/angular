@@ -192,3 +192,36 @@ describe('HybridCompiler fileCache invalidation', () => {
     }
   });
 });
+
+describe('HybridCompiler inline TCB namespace alias collisions', () => {
+  it('avoids namespaceAliasConflicts when generating inline TCB imports', async () => {
+    const inlineSource = `
+      import {Component} from '@angular/core';
+      import {Dir} from './Shared/dir';
+      const i0 = 1;
+      @Component({
+        selector: 'app-inline',
+        imports: [Dir],
+        template: '<div dir [first]="value"></div>',
+      })
+      class InlineComponent {
+        value = String(i0);
+      }
+    `;
+    const {compiler, root} = await createCompiler('inline_tcb_collision', [
+      TSCONFIG,
+      MAIN,
+      {path: 'Shared/dir.ts', content: directiveSource('first')},
+      {path: 'inline.ts', content: inlineSource},
+    ]);
+    try {
+      const inlinePath = path.join(root, 'inline.ts');
+      const tcb = compiler.getTcbForFile(inlinePath);
+      expect(tcb).not.toBeNull();
+      expect(tcb).not.toContain('import * as i0 ');
+      expect(tcb).toContain("import * as i0_1 from './Shared/dir'");
+    } finally {
+      compiler.analyzer.close();
+    }
+  });
+});

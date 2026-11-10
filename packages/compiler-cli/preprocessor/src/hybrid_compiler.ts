@@ -1482,7 +1482,12 @@ export class HybridCompiler {
       return fileAnalysis;
     }
 
-    const tcbResult = generateTcbCode(normPath, fileAnalysis.preparedTcbData, this.tcbConfig);
+    const tcbResult = generateTcbCode(
+      normPath,
+      fileAnalysis.preparedTcbData,
+      this.tcbConfig,
+      result.namespaceAliasConflicts,
+    );
     if (!tcbResult) {
       fileAnalysis.tcb = null;
       return fileAnalysis;

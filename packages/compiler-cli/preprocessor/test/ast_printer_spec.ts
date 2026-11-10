@@ -8,6 +8,7 @@
 
 import {outputAst as o} from '@angular/compiler';
 import {ExpressionPrinter} from '../src/output_ast_printer.js';
+import {TcbImportManager} from '../src/tcb.js';
 import {stripIife} from '../src/compiler-utils.js';
 
 describe('ExpressionPrinter.printType', () => {
@@ -363,10 +364,32 @@ describe('ExpressionPrinter @angular/core import rewriting', () => {
     expect(printer.getImportStatements()).toBe("// @ts-ignore\nimport * as i1 from './injector';");
   });
 
-  it('should reuse an existing namespace import of r3_symbols.ts for @angular/core', () => {
-    const printer = new ExpressionPrinter('core/src/di/injectable.ts', '../r3_symbols');
-    printer.addNamespaceImport('../r3_symbols', 'i0');
-    expect(printer.print(defineInjectable)).toBe('i0.ɵɵdefineInjectable');
-    expect(printer.getImportStatements()).toBeNull();
+  it('should avoid conflicting names in namespaceAliasConflicts without cross-prefix overlap', () => {
+    const printer = new ExpressionPrinter('app/service.ts', null, new Set(['i0', 'i0_1', 'i1']));
+    const modA = o.importExpr({name: 'A', moduleName: './a'});
+    const modB = o.importExpr({name: 'B', moduleName: './b'});
+    expect(printer.print(defineInjectable)).toBe('i0_2.ɵɵdefineInjectable');
+    expect(printer.print(modA)).toBe('i1_1.A');
+    expect(printer.print(modB)).toBe('i2.B');
+    expect(printer.getImportStatements()).toBe(
+      [
+        "// @ts-ignore\nimport * as i0_2 from '@angular/core';",
+        "// @ts-ignore\nimport * as i1_1 from './a';",
+        "// @ts-ignore\nimport * as i2 from './b';",
+      ].join('\n'),
+    );
+  });
+});
+
+describe('TcbImportManager', () => {
+  it('avoids namespaceAliasConflicts when allocating aliases', () => {
+    const imports = new TcbImportManager(new Set(['i0', 'i0_1', 'i1']));
+    expect(imports.addImport('./a')).toBe('i0_2');
+    expect(imports.addImport('./b')).toBe('i1_1');
+    expect(imports.addImport('./c')).toBe('i2');
+    expect(imports.addImport('./a')).toBe('i0_2');
+    expect(imports.generateImportStatements()).toBe(
+      "import * as i0_2 from './a';\nimport * as i1_1 from './b';\nimport * as i2 from './c';\n",
+    );
   });
 });

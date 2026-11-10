@@ -606,6 +606,9 @@ pub struct FileData {
     /// Root-scope runtime binding names for HMR (`None` unless the engine runs with
     /// `enable_hmr`).
     pub(crate) top_level_value_bindings: Option<Vec<String>>,
+    /// Names in the file a generated namespace import alias must avoid
+    /// ([`crate::analyzer::imports::namespace_alias_conflicts`]).
+    pub(crate) namespace_alias_conflicts: Vec<String>,
 }
 
 impl FileData {
@@ -693,6 +696,7 @@ impl FileData {
                 .collect(),
             r3_symbols_specifier: self.r3_symbols_specifier(cx.r3_symbols_path),
             top_level_value_bindings: self.top_level_value_bindings.clone(),
+            namespace_alias_conflicts: self.namespace_alias_conflicts.clone(),
             static_dependencies: self
                 .resolved_dependencies
                 .iter()

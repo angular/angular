@@ -1109,6 +1109,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                 signal_debug_names: Vec::new(),
                 is_core: false,
                 top_level_value_bindings: None,
+                namespace_alias_conflicts: Vec::new(),
             });
         }
 
@@ -1196,6 +1197,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             signal_debug_names: analysis.signal_debug_names,
             is_core: analysis.is_core,
             top_level_value_bindings: analysis.top_level_value_bindings,
+            namespace_alias_conflicts: analysis.namespace_alias_conflicts,
         })
     }
 

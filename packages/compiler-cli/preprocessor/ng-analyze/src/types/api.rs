@@ -129,6 +129,11 @@ pub struct AnalysisResult {
     pub r3_symbols_specifier: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub top_level_value_bindings: Option<Vec<String>>,
+    /// Names bound in the file that a generated namespace import alias (`i0`, `i1`, …) must
+    /// avoid, as ngtsc's `ImportManager` does. Only names of that shape are listed; see
+    /// `analyzer::imports::namespace_alias_conflicts`.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub namespace_alias_conflicts: Vec<String>,
     /// Resolved paths of the local TS files this file statically imports, in the same form as
     /// `file_path`. Consumers use these as the file's dependency edges (e.g. incremental
     /// re-emit decisions) without resolving module specifiers themselves.

@@ -84,20 +84,6 @@ const KNOWN_FAILURES = new Map<string, string>([
       '`ɵsetClassMetadata` half, which this fixture exists to pin, is clean because its guard sits ' +
       'on each parameter `type` property assignment.',
   ],
-  [
-    'namespace_alias_collisions',
-    'the generated `@angular/core` namespace import in `collisions.ts` is named `i0`, which the ' +
-      "file's top-level `const i0 = 1` shadows, so `i0.ɵsetClassMetadata(…)` resolves to the " +
-      'number. ngtsc names the import `i0_1` instead. TODO(ngp-parity): avoid names already used ' +
-      'in the file.',
-  ],
-  [
-    'namespace_alias_collisions (optimized)',
-    'the generated `@angular/core` namespace import in `collisions.ts` is named `i0`, which the ' +
-      "file's top-level `const i0 = 1` shadows, so `i0.ɵsetClassMetadata(…)` resolves to the " +
-      'number. ngtsc names the import `i0_1` instead. TODO(ngp-parity): avoid names already used ' +
-      'in the file.',
-  ],
 ]);
 
 /**

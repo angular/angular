@@ -21,9 +21,9 @@ function _tcb1(this: i0.Cmp) {
 import { Component } from '@angular/core';
 import { DirModule } from './dir';
 // @ts-ignore
-import * as i0 from '@angular/core';
+import * as i0_1 from '@angular/core';
 // @ts-ignore
-import * as i1 from './dir';
+import * as i1_1 from './dir';
 
 const i0 = 1;
 
@@ -38,15 +38,15 @@ export class Cmp {
     return a.every((i1: Incident) => i1.stage === a[0].stage);
   }
   // @ts-ignore
-  static ɵfac: i0.ɵɵFactoryDeclaration<Cmp, never> = function Cmp_Factory(
+  static ɵfac: i0_1.ɵɵFactoryDeclaration<Cmp, never> = function Cmp_Factory(
     __ngFactoryType__: any,
   ): any {
     return new (__ngFactoryType__ || Cmp)();
   };
   // @ts-ignore
-  static ɵcmp: i0.ɵɵComponentDeclaration<Cmp, 'cmp', never, {}, {}, never, never, true, never> =
+  static ɵcmp: i0_1.ɵɵComponentDeclaration<Cmp, 'cmp', never, {}, {}, never, never, true, never> =
     // @ts-ignore
-    /*@__PURE__*/ i0.ɵɵdefineComponent({
+    /*@__PURE__*/ i0_1.ɵɵdefineComponent({
       type: Cmp,
       selectors: [['cmp']],
       decls: 1,
@@ -54,15 +54,15 @@ export class Cmp {
       consts: [['dir', '']],
       template: function Cmp_Template(rf: number, ctx: any): any {
         if (rf & 1) {
-          i0.ɵɵelement(0, 'div', 0);
+          i0_1.ɵɵelement(0, 'div', 0);
         }
       },
-      dependencies: [DirModule, i1.Dir],
+      dependencies: [DirModule, i1_1.Dir],
       encapsulation: 2,
     });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
-      i0.ɵsetClassMetadata(
+      i0_1.ɵsetClassMetadata(
         Cmp,
         [
           {
@@ -77,7 +77,7 @@ export class Cmp {
 }
 ((): any => {
   (typeof ngDevMode === 'undefined' || ngDevMode) &&
-    i0.ɵsetClassDebugInfo(Cmp, { className: 'Cmp', filePath: 'collisions.ts', lineNumber: 11 });
+    i0_1.ɵsetClassDebugInfo(Cmp, { className: 'Cmp', filePath: 'collisions.ts', lineNumber: 11 });
 })();
 
 ```
@@ -170,18 +170,22 @@ import { Component } from '@angular/core';
 import * as i0 from '@angular/core';
 import { DirModule } from './dir';
 import * as i1 from './dir';
+// @ts-ignore
+import * as i0_1 from '@angular/core';
+// @ts-ignore
+import * as i1_1 from './dir';
 
 export class Existing {
   version = i0.VERSION;
   readonly dir = i1.Dir;
   // @ts-ignore
-  static ɵfac: i0.ɵɵFactoryDeclaration<Existing, never> = function Existing_Factory(
+  static ɵfac: i0_1.ɵɵFactoryDeclaration<Existing, never> = function Existing_Factory(
     __ngFactoryType__: any,
   ): any {
     return new (__ngFactoryType__ || Existing)();
   };
   // @ts-ignore
-  static ɵcmp: i0.ɵɵComponentDeclaration<
+  static ɵcmp: i0_1.ɵɵComponentDeclaration<
     Existing,
     'existing',
     never,
@@ -193,7 +197,7 @@ export class Existing {
     never
   > =
     // @ts-ignore
-    /*@__PURE__*/ i0.ɵɵdefineComponent({
+    /*@__PURE__*/ i0_1.ɵɵdefineComponent({
       type: Existing,
       selectors: [['existing']],
       decls: 1,
@@ -201,15 +205,15 @@ export class Existing {
       consts: [['dir', '']],
       template: function Existing_Template(rf: number, ctx: any): any {
         if (rf & 1) {
-          i0.ɵɵelement(0, 'div', 0);
+          i0_1.ɵɵelement(0, 'div', 0);
         }
       },
-      dependencies: [DirModule, i1.Dir],
+      dependencies: [DirModule, i1_1.Dir],
       encapsulation: 2,
     });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
-      i0.ɵsetClassMetadata(
+      i0_1.ɵsetClassMetadata(
         Existing,
         [
           {
@@ -224,9 +228,166 @@ export class Existing {
 }
 ((): any => {
   (typeof ngDevMode === 'undefined' || ngDevMode) &&
-    i0.ɵsetClassDebugInfo(Existing, {
+    i0_1.ɵsetClassDebugInfo(Existing, {
       className: 'Existing',
       filePath: 'existing_imports.ts',
+      lineNumber: 7,
+    });
+})();
+
+```
+
+# /out/inline_tcb_dir.ts
+```ts
+import { Directive, Input } from '@angular/core';
+// @ts-ignore
+import * as i0 from '@angular/core';
+
+export class StandaloneDir {
+  sdir = '';
+  // @ts-ignore
+  static ɵfac: i0.ɵɵFactoryDeclaration<StandaloneDir, never> = function StandaloneDir_Factory(
+    __ngFactoryType__: any,
+  ): any {
+    return new (__ngFactoryType__ || StandaloneDir)();
+  };
+  // @ts-ignore
+  static ɵdir: i0.ɵɵDirectiveDeclaration<
+    StandaloneDir,
+    '[sdir]',
+    never,
+    { 'sdir': { 'alias': 'sdir'; 'required': false } },
+    {},
+    never,
+    never,
+    true,
+    never
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0.ɵɵdefineDirective({
+      type: StandaloneDir,
+      selectors: [['', 'sdir', '']],
+      inputs: { sdir: 'sdir' },
+    });
+  static {
+    (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        StandaloneDir,
+        [{ type: Directive, args: [{ selector: '[sdir]' }] }],
+        null,
+        { sdir: [{ type: Input }] },
+      );
+  }
+}
+
+```
+
+# /out/inline_tcb.ngtypecheck.ts
+```ts
+/**
+ * TCB for /inline_tcb.ts
+ * @generated
+ */
+
+import * as i0_1 from './inline_tcb_dir';
+
+import { Component } from '@angular/core';
+import { StandaloneDir } from './inline_tcb_dir';
+
+const i0 = 1;
+
+@Component({
+  selector: 'inline-cmp',
+  template: '<div [sdir]="\'ok\'"></div>',
+  imports: [StandaloneDir],
+})
+class InlineCmp {
+  v = i0;
+}
+
+/*tcb1*/
+function _tcb1(this: InlineCmp) {
+  if (true) {
+    var _t1 /*T:DIR:0*/ /*157,178*/ = null! as i0_1.StandaloneDir; /*T:VAE*/
+    _t1.sdir /*163,167*/ = 'ok' /*170,174*/; /*162,177*/
+  }
+}
+
+```
+
+# /out/inline_tcb.ts
+```ts
+import { Component } from '@angular/core';
+import { StandaloneDir } from './inline_tcb_dir';
+// @ts-ignore
+import * as i0_1 from '@angular/core';
+
+const i0 = 1;
+
+class InlineCmp {
+  v = i0;
+  // @ts-ignore
+  static ɵfac: i0_1.ɵɵFactoryDeclaration<InlineCmp, never> = function InlineCmp_Factory(
+    __ngFactoryType__: any,
+  ): any {
+    return new (__ngFactoryType__ || InlineCmp)();
+  };
+  // @ts-ignore
+  static ɵcmp: i0_1.ɵɵComponentDeclaration<
+    InlineCmp,
+    'inline-cmp',
+    never,
+    {},
+    {},
+    never,
+    never,
+    true,
+    never
+  > =
+    // @ts-ignore
+    /*@__PURE__*/ i0_1.ɵɵdefineComponent({
+      type: InlineCmp,
+      selectors: [['inline-cmp']],
+      decls: 1,
+      vars: 1,
+      consts: [[3, 'sdir']],
+      template: function InlineCmp_Template(rf: number, ctx: any): any {
+        if (rf & 1) {
+          i0_1.ɵɵelement(0, 'div', 0);
+        }
+        if (rf & 2) {
+          i0_1.ɵɵproperty('sdir', 'ok');
+        }
+      },
+      dependencies: [StandaloneDir],
+      encapsulation: 2,
+    });
+  static {
+    (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      i0_1.ɵsetClassMetadata(
+        InlineCmp,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: 'inline-cmp',
+                template: '<div [sdir]="\'ok\'"></div>',
+                imports: [StandaloneDir],
+              },
+            ],
+          },
+        ],
+        null,
+        null,
+      );
+  }
+}
+((): any => {
+  (typeof ngDevMode === 'undefined' || ngDevMode) &&
+    i0_1.ɵsetClassDebugInfo(InlineCmp, {
+      className: 'InlineCmp',
+      filePath: 'inline_tcb.ts',
       lineNumber: 7,
     });
 })();

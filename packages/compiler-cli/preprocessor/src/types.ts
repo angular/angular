@@ -83,6 +83,11 @@ export interface AnalysisResult {
   r3SymbolsSpecifier?: string;
   topLevelValueBindings?: Array<string>;
   /**
+   * Names bound in the file that a generated namespace import alias (`i0`, `i1`, …) must
+   * avoid, as ngtsc's `ImportManager` does. Only names of that shape are listed.
+   */
+  namespaceAliasConflicts?: Array<string>;
+  /**
    * Resolved paths of the local TS files this file statically imports, in the same form as
    * `filePath`. Consumers use these as the file's dependency edges (e.g. incremental re-emit
    * decisions) without resolving module specifiers themselves.
