@@ -1,25 +1,36 @@
 {
   "name": "angular",
+  "description": "Angular agent skills for Claude Code",
   "owner": {
-    "name": "Angular"
+    "name": "Angular",
+    "url": "https://angular.dev"
   },
-  "description": "Angular agent skills",
   "plugins": [
     {
       "name": "angular",
       "displayName": "Angular",
-      "description": "Angular agent skills for Claude Code",
+      "description": "Angular agent skills for generating modern Angular code, architectural guidance, and scaffolding new apps with the Angular CLI. Use when creating or changing Angular apps, components, services, HTTP, signals, forms, DI, routing, SSR, accessibility, styling, testing, or CLI tooling.",
       "source": "./",
       "strict": false,
       "skills": ["./angular-developer", "./angular-new-app"],
+      "version": "0.1.1",
       "author": {
         "name": "Angular",
-        "url": "https://github.com/angular"
+        "url": "https://angular.dev"
       },
       "homepage": "https://angular.dev",
       "repository": "https://github.com/angular/angular",
       "license": "MIT",
-      "keywords": ["angular", "typescript", "web-framework"],
+      "keywords": [
+        "angular",
+        "typescript",
+        "web-framework",
+        "signals",
+        "cli",
+        "scaffolding",
+        "best-practices",
+        "coding-agents"
+      ],
       "category": "development"
     }
   ]
