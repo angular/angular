@@ -353,6 +353,7 @@
       "checkStable",
       "claimDehydratedIcuCase",
       "cleanUpView",
+      "clearInertBodyElement",
       "clobberedElementError",
       "collectNativeNodes",
       "collectNativeNodesInLContainer",
