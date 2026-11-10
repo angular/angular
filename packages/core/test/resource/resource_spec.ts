@@ -1220,6 +1220,10 @@ describe('resource', () => {
   });
 });
 
+function flushMicrotasks(): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, 0));
+}
+
 function extractError(fn: () => unknown): Error | undefined {
   try {
     fn();
