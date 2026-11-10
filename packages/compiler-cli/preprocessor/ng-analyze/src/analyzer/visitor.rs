@@ -904,8 +904,8 @@ pub struct ParsedFileAnalysis {
     pub file_exports: FileExportInfo,
     pub imports_end: u32,
     /// The file's static `import` declarations, in source order. Drives import removal for
-    /// `@defer` and namespace-alias discovery — both need the exact declaration text, so both
-    /// would otherwise have to re-parse the source downstream.
+    /// `@defer`, which needs the exact declaration text and would otherwise have to re-parse the
+    /// source downstream.
     pub import_declarations: Vec<ImportDeclarationInfo>,
     /// The file's top-level `import X = …` statements, in source order, which the emitter hoists
     /// alongside [`Self::import_declarations`].
@@ -927,6 +927,10 @@ pub struct ParsedFileAnalysis {
     /// Root-scope runtime binding names for HMR ([`super::top_level_value_bindings`]); `None`
     /// unless analyzed with `enable_hmr`.
     pub top_level_value_bindings: Option<Vec<String>>,
+    /// Names in the file a generated namespace import alias must avoid
+    /// ([`super::imports::namespace_alias_conflicts`]); empty when `classes` is, as nothing then
+    /// generates an import.
+    pub namespace_alias_conflicts: Vec<String>,
 }
 
 /// Raw output of [`ClassVisitor`] before the file-level fields (`imports_end`, …) are attached.
@@ -1019,6 +1023,13 @@ pub fn analyze_parsed(
     let signal_debug_names =
         super::signal_debug_name::collect_signal_debug_names(program, semantic, source_text);
     let top_level_value_bindings = enable_hmr.then(|| super::top_level_value_bindings(semantic));
+    // The emitter generates namespace imports only for code it compiles from these classes, so a
+    // file without any has no alias to keep clear.
+    let namespace_alias_conflicts = if output.classes.is_empty() {
+        Vec::new()
+    } else {
+        super::imports::namespace_alias_conflicts(semantic)
+    };
 
     ParsedFileAnalysis {
         classes: output.classes,
@@ -1038,6 +1049,7 @@ pub fn analyze_parsed(
         signal_debug_names,
         is_core,
         top_level_value_bindings,
+        namespace_alias_conflicts,
     }
 }
 
@@ -3680,6 +3692,45 @@ export class Cmp {}
         );
         // `EXTRA_CSS` is an imported constant, so `pending_style_urls` stays parked for Stage 2.
         assert_eq!(comp.pending_style_urls.as_ref().unwrap().len(), 3);
+    }
+
+    /// Generated namespace imports only come with a compiled class, so a file without one reports
+    /// no names for their aliases to avoid.
+    #[test]
+    fn test_analyze_parsed_reports_namespace_alias_conflicts_only_with_classes() {
+        let conflicts_of = |source: &str| {
+            let allocator = oxc_allocator::Allocator::default();
+            let ret =
+                oxc_parser::Parser::new(&allocator, source, oxc_span::SourceType::ts()).parse();
+            let semantic_ret = oxc_semantic::SemanticBuilder::new()
+                .with_build_nodes(true)
+                .with_class_table(true)
+                .build(&ret.program);
+            let converter = Utf8ToUtf16::new(source);
+            analyze_parsed(
+                Path::new("/test/app.ts"),
+                0,
+                source,
+                &ret.program,
+                &ret.module_record,
+                &semantic_ret.semantic,
+                &converter,
+                false,
+                false,
+                false,
+                true,
+            )
+            .namespace_alias_conflicts
+        };
+
+        assert!(conflicts_of("const i0 = 1;\nexport class Plain {}\n").is_empty());
+        assert_eq!(
+            conflicts_of(
+                "import { Injectable } from '@angular/core';\nconst i0 = 1;\n\
+                 @Injectable()\nexport class Svc {}\n"
+            ),
+            ["i0"]
+        );
     }
 
     #[test]

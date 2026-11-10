@@ -174,6 +174,46 @@ pub fn extract_dynamic_imports(semantic: &Semantic<'_>) -> Vec<String> {
         .collect()
 }
 
+/// Generated-alias-shaped names (`i0`, `i0_1`, …) bound or referenced as globals in the file, which
+/// generated namespace imports must avoid (ngtsc's `createGenerateUniqueIdentifierHelper`).
+///
+/// TODO(parity): ngtsc also avoids non-binding identifiers (e.g. property names), which can't
+/// capture a generated reference.
+pub fn namespace_alias_conflicts(semantic: &Semantic<'_>) -> Vec<String> {
+    let scoping = semantic.scoping();
+    let unresolved = scoping
+        .root_unresolved_references()
+        .keys()
+        .map(|name| name.as_str());
+    let mut names: Vec<String> = scoping
+        .symbol_names()
+        .chain(unresolved)
+        .filter(|name| has_generated_namespace_alias_shape(name))
+        .map(str::to_string)
+        .collect();
+    names.sort_unstable();
+    names.dedup();
+    names
+}
+
+/// Whether `name` could be a namespace alias the emitter generates: `i<digits>`, optionally
+/// followed by the `_<digits>` suffix ngtsc's unique-name helper appends.
+fn has_generated_namespace_alias_shape(name: &str) -> bool {
+    // Most names fail on the first or second byte.
+    let [b'i', first, rest @ ..] = name.as_bytes() else {
+        return false;
+    };
+    if !first.is_ascii_digit() {
+        return false;
+    }
+    let index_len = rest.iter().take_while(|b| b.is_ascii_digit()).count();
+    match &rest[index_len..] {
+        [] => true,
+        [b'_', suffix @ ..] => !suffix.is_empty() && suffix.iter().all(u8::is_ascii_digit),
+        _ => false,
+    }
+}
+
 /// Resolve an `imports`-shaped value (`imports`, `deferredImports` or one of its blocks) to the
 /// identifiers its entries are rooted at, in source order.
 pub fn resolve_imports_expression<'a>(
@@ -1708,6 +1748,113 @@ mod tests {
         let source_type = SourceType::default().with_typescript(true);
         let ret = Parser::new(&allocator, source, source_type).parse();
         find_imports_end(&ret.program, source)
+    }
+
+    fn namespace_alias_conflicts_of(source: &str) -> Vec<String> {
+        let allocator = Allocator::default();
+        let ret = Parser::new(&allocator, source, SourceType::tsx()).parse();
+        assert!(ret.diagnostics.is_empty(), "{:?}", ret.diagnostics);
+        let semantic = SemanticBuilder::new()
+            .with_build_nodes(true)
+            .build(&ret.program)
+            .semantic;
+        namespace_alias_conflicts(&semantic)
+    }
+
+    /// `i0` through `i<last>`, sorted as strings.
+    fn alias_names_through(last: usize) -> Vec<String> {
+        let mut names: Vec<String> = (0..=last).map(|n| format!("i{n}")).collect();
+        names.sort_unstable();
+        names
+    }
+
+    /// Every symbol the file declares counts, whatever its kind, depth or space.
+    #[test]
+    fn namespace_alias_conflicts_include_every_binding() {
+        let source = r#"
+            import i0 from 'a';
+            import {x as i1} from 'b';
+            import * as i2 from 'c';
+            import i3 = require('d');
+            const i4 = 1;
+            let i5;
+            var i6;
+            function i7(i8: number, ...i9: number[]) {
+                const i10 = (i11: number) => { let i12 = i11; return i12; };
+                try {} catch (i13) {}
+                for (const i14 of []) {}
+                const {a: i15, ...i16} = {a: 1};
+                const [i17] = [1];
+            }
+            class i18 { m(i19 = 1) {} }
+            const c = class i20 {};
+            const f = function i21() {};
+            enum i22 { i23, 'i24' }
+            type i25<i26> = i26;
+            interface i27<i28> {}
+            namespace i29 { export const i30 = 1; }
+            declare module 'm' { const i31: number; }
+            declare global { var i32: number; }
+            type M = { [i33 in string]: 1 };
+            type N<T> = T extends infer i34 ? i34 : never;
+            const el = <div ref={(i35: unknown) => i35} />;
+        "#;
+        assert_eq!(
+            namespace_alias_conflicts_of(source),
+            alias_names_through(35)
+        );
+    }
+
+    /// A reference that resolves to no declaration in the file (a global) counts, in value or
+    /// type position.
+    #[test]
+    fn namespace_alias_conflicts_include_unresolved_references() {
+        let source = r#"
+            i0.foo();
+            let x: i1.T;
+            let y: i2;
+            type Q = typeof i3;
+            function f() { return () => i4; }
+        "#;
+        assert_eq!(namespace_alias_conflicts_of(source), alias_names_through(4));
+    }
+
+    /// Names that are not bindings do not count, although TypeScript's `identifiers` table holds
+    /// them; see the `TODO(parity)` on [`namespace_alias_conflicts`]. Nor do comments and other
+    /// strings.
+    #[test]
+    fn namespace_alias_conflicts_ignore_names_that_are_not_bindings() {
+        let source = r#"
+            import {i0 as a} from 'i1';
+            export {a as i2};
+            declare module 'i3' {}
+            const o = {i4: 1, 'i5': 2, ['i6']: 3};
+            o.i4; o['i5']; o[`i7`];
+            class C { i8 = 0; i9() {} #i10 = 1; m() { return this.i8; } }
+            interface I { i11: string; i12(): void; [i13: string]: unknown; }
+            i14: for (;;) { break i14; }
+            const el = <i15 i16="" />;
+            /** @param i17 {@link i18} */
+            function g(p: number) {}
+            // i19
+            const s = 'i20', t = `i21`;
+        "#;
+        assert!(namespace_alias_conflicts_of(source).is_empty());
+    }
+
+    /// Only names of the generated alias shape are returned, each once and sorted.
+    #[test]
+    fn namespace_alias_conflicts_only_list_the_generated_alias_shape() {
+        let source = r#"
+            const i0_1 = 1, i0_ = 2, i = 3, ix = 4, I0 = 5, i0x = 6, i_1 = 7, i0_1_2 = 8;
+            const i12_34 = 9, i0_x = 10, ii0 = 11, i٠ = 12;
+            function f(i3: number) { return i3; }
+            function g(i3: number) { return i3; }
+        "#;
+        assert_eq!(
+            namespace_alias_conflicts_of(source),
+            ["i0_1", "i12_34", "i3"]
+        );
     }
 
     #[test]

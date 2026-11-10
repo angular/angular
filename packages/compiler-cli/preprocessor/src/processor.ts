@@ -144,13 +144,6 @@ const DeferBlockDepsEmitMode = {PerBlock: 0, PerComponent: 1} as const;
 const R3NgModuleMetadataKind = {Global: 0, Local: 1, Isolated: 2} as const;
 const R3SelectorScopeMode = {Inline: 0, SideEffect: 1, Omit: 2} as const;
 
-/**
- * Shape of the namespace aliases this compiler generates (`i0`, `i1`, … and the `ɵ`-prefixed
- * variants). Matching one in an already-processed file lets its alias be reused rather than a
- * second one minted for the same module.
- */
-const GENERATED_NAMESPACE_ALIAS = /^(ɵ?i\d+|ɵng)$/;
-
 export interface ProcessedFile {
   magicString: MagicString;
   /**
@@ -389,24 +382,17 @@ export function processFileSync(
   const {classes, importsEnd, imports: importDeclarations} = result;
 
   // Inside `@angular/core` itself, generated imports of `@angular/core` go to `r3_symbols.ts`.
-  const printer = new ExpressionPrinter(filePath, result.r3SymbolsSpecifier ?? null);
+  const printer = new ExpressionPrinter(
+    filePath,
+    result.r3SymbolsSpecifier ?? null,
+    new Set(result.namespaceAliasConflicts),
+  );
   // Compiled text goes through `out` rather than `s` directly, so its source mappings survive.
   const out = new OutputSourceMapBuilder(s, printer, filePath, content);
   const generateSourceMap = (options?: OutputSourceMapOptions) => out.generateMap(options);
 
   if (!ctx.emitDeclarationOnly) {
     insertSignalDebugNames(s, result.signalDebugNames, printer.emitTypes);
-  }
-
-  // Reuse namespace aliases the file already has, so re-processing an already-processed file
-  // doesn't mint a second `i0` for `@angular/core`.
-  for (const decl of importDeclarations) {
-    for (const binding of decl.bindings) {
-      // `imported` is absent exactly for `import * as ns from '...'`.
-      if (binding.imported == null && GENERATED_NAMESPACE_ALIAS.test(binding.local)) {
-        printer.addNamespaceImport(decl.specifier, binding.local);
-      }
-    }
   }
 
   const {parsedTemplates: templatesByClass} = getOrCreateFileAnalysis(ctx.fileCache, filePath);
@@ -2087,7 +2073,8 @@ function generateTcb(file: FileCompilation): TcbResult | undefined {
     analysis.sourceContent = content;
   }
   const tcb = prepared
-    ? (generateTcbCode(filePath, prepared, ctx.tcbConfig) ?? undefined)
+    ? (generateTcbCode(filePath, prepared, ctx.tcbConfig, result.namespaceAliasConflicts) ??
+      undefined)
     : undefined;
 
   const returnTcb = tcb

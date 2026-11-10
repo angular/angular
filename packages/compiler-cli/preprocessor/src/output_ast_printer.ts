@@ -129,9 +129,22 @@ export class RawSource {
   ) {}
 }
 
+/**
+ * Names namespace import `index` as `i<index>`, moved to the first free `i<index>_<k>` when
+ * `conflicts` already uses that name, like ngtsc's `ImportManager` does with the helper from
+ * `createGenerateUniqueIdentifierHelper` (`translator/src/import_manager/`).
+ */
+export function allocateNamespaceAlias(index: number, conflicts: ReadonlySet<string>): string {
+  const baseName = `i${index}`;
+  let name = baseName;
+  for (let counter = 1; conflicts.has(name); counter++) {
+    name = `${baseName}_${counter}`;
+  }
+  return name;
+}
+
 export class ExpressionPrinter {
   private moduleToNamespace = new Map<string, string>();
-  private existingNamespaces = new Set<string>();
   /**
    * Modules to emit as bare `import '<specifier>';` statements. Used by local compilation mode
    * to preserve the module-graph edges that the optimized pipeline expresses through the
@@ -146,13 +159,17 @@ export class ExpressionPrinter {
   /** Printed snippets that carry source mappings and haven't been claimed by an insertion yet. */
   private pendingSnippets: PrintedSnippet[] = [];
 
+  /**
+   * @param namespaceAliasConflicts Names bound in the file that a generated namespace alias
+   *     must avoid (`AnalysisResult.namespaceAliasConflicts`).
+   */
   constructor(
     filePath: string,
     private readonly r3SymbolsSpecifier: string | null = null,
+    private readonly namespaceAliasConflicts: ReadonlySet<string> = new Set(),
   ) {
     this.emitTypes = filePath.endsWith('.ts') || filePath.endsWith('.mts');
-    this.moduleToNamespace.set(CORE_MODULE, 'i0');
-    this.generatedNamespaceCount = 1;
+    this.moduleToNamespace.set(CORE_MODULE, this.generateNamespaceAlias());
     this.exprVisitor = new EmitterVisitor(this);
     this.typeVisitor = new EmitterVisitor(this, true);
   }
@@ -201,9 +218,13 @@ export class ExpressionPrinter {
     if (this.moduleToNamespace.has(moduleName)) {
       return this.moduleToNamespace.get(moduleName)!;
     }
-    const namespace = `i${this.generatedNamespaceCount++}`;
+    const namespace = this.generateNamespaceAlias();
     this.moduleToNamespace.set(moduleName, namespace);
     return namespace;
+  }
+
+  private generateNamespaceAlias(): string {
+    return allocateNamespaceAlias(this.generatedNamespaceCount++, this.namespaceAliasConflicts);
   }
 
   rewriteSymbol(symbolName: string, moduleName: string): string {
@@ -220,15 +241,9 @@ export class ExpressionPrinter {
     return this.r3SymbolsSpecifier;
   }
 
+  /** Registers a pre-bound namespace alias for printing (e.g. HMR `ɵhmr*` locals). */
   addNamespaceImport(moduleSpecifier: string, namespaceAlias: string): void {
-    // A pre-existing namespace import of `r3_symbols.ts` is this file's `@angular/core` import,
-    // already rewritten; register it under the module name requests arrive with.
-    const moduleName =
-      this.r3SymbolsSpecifier !== null && moduleSpecifier === this.r3SymbolsSpecifier
-        ? CORE_MODULE
-        : moduleSpecifier;
-    this.moduleToNamespace.set(moduleName, namespaceAlias);
-    this.existingNamespaces.add(moduleName);
+    this.moduleToNamespace.set(moduleSpecifier, namespaceAlias);
   }
 
   addSideEffectImport(moduleSpecifier: string): void {
@@ -244,16 +259,14 @@ export class ExpressionPrinter {
         continue;
       }
 
-      if (!this.existingNamespaces.has(moduleName)) {
-        const specifier = this.rewriteSpecifier(moduleName);
-        statements.push(`// @ts-ignore\nimport * as ${namespace} from '${specifier}';`);
-      }
+      const specifier = this.rewriteSpecifier(moduleName);
+      statements.push(`// @ts-ignore\nimport * as ${namespace} from '${specifier}';`);
     }
 
     for (const moduleName of this.sideEffectImports) {
-      // A module already bound as a namespace import (generated or pre-existing) carries the
-      // same edge, so a bare import on top of it would be redundant.
-      if (this.usedNamespaces.has(moduleName) || this.existingNamespaces.has(moduleName)) {
+      // A module already bound as a namespace import carries the same edge, so a bare import on
+      // top of it would be redundant.
+      if (this.usedNamespaces.has(moduleName)) {
         continue;
       }
 
@@ -265,11 +278,10 @@ export class ExpressionPrinter {
 
   reset(): void {
     this.moduleToNamespace.clear();
-    this.existingNamespaces.clear();
     this.sideEffectImports.clear();
     this.usedNamespaces.clear();
-    this.generatedNamespaceCount = 1;
-    this.moduleToNamespace.set(CORE_MODULE, 'i0');
+    this.generatedNamespaceCount = 0;
+    this.moduleToNamespace.set(CORE_MODULE, this.generateNamespaceAlias());
   }
 }
 

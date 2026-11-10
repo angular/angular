@@ -4,23 +4,34 @@
   "compilerOptions": {
     "strict": true
   },
-  "files": ["dir.ts", "collisions.ts", "existing_imports.ts", "property_names.ts"]
+  "files": [
+    "dir.ts",
+    "collisions.ts",
+    "existing_imports.ts",
+    "inline_tcb.ts",
+    "inline_tcb_dir.ts",
+    "property_names.ts"
+  ]
 }
 ```
 
 ngtsc names the `n`th namespace import it generates `i<n>` and moves it to `i<n>_1`, `i<n>_2`, …
 while the source file already uses that name. It never reuses a namespace import the file already
-has.
+has. ngp applies the same rule to the file's bindings: every name it declares, at any depth, and
+every global it references.
 
-- `collisions.ts`: a top-level `const i0` and a nested arrow parameter `i1`. ngtsc names the
-  `@angular/core` import `i0_1` and the `./dir` import (only the optimized output has it) `i1_1`.
-- `existing_imports.ts`: user-written `import * as i0` and `import * as i1`. ngtsc adds separate
-  `i0_1` and `i1_1` imports.
-- `property_names.ts`: `i0` appears only as a property name. ngtsc names the import `i0_1`.
-
-ngp doesn't do this yet. It always uses `i0`, `i1`, … and reuses a namespace import named like one,
-so the output below keeps those names. In `collisions.ts` the generated `i0.ɵɵ…` references then
-resolve to the number, and the file doesn't compile.
+- `collisions.ts`: the top-level `const i0` moves the `@angular/core` import to `i0_1`. Without
+  that, the generated `i0.ɵɵ…` references would resolve to the number and the file wouldn't
+  compile. The nested arrow parameter `i1` can't capture a generated reference, but ngtsc avoids
+  it too, so the `./dir` import (only the optimized output has it) moves to `i1_1`.
+- `existing_imports.ts`: the user-written `import * as i0` and `import * as i1` aren't reused, so
+  the generated imports are `i0_1` and `i1_1`.
+- `inline_tcb.ts`: `InlineCmp` is unexported (`requiresInline: true`), so its `.ngtypecheck.ts`
+  inlines `sourceContent` alongside `TcbImportManager`'s imports; `const i0` moves the
+  `./inline_tcb_dir` import to `i0_1` so the `.ngtypecheck.ts` compiles cleanly.
+- `property_names.ts`: `i0` is only a property name, not a binding, so the generated import keeps
+  `i0`. ngtsc counts every identifier in the file and names it `i0_1`. This divergence is
+  deliberate; see the `TODO(parity)` on `namespace_alias_conflicts` in `ng-analyze`.
 
 # /dir.ts
 ```ts
@@ -65,6 +76,29 @@ import * as i1 from './dir';
 export class Existing {
   version = i0.VERSION;
   readonly dir = i1.Dir;
+}
+```
+
+# /inline_tcb.ts
+```ts
+import { Component } from '@angular/core';
+import { StandaloneDir } from './inline_tcb_dir';
+
+const i0 = 1;
+
+@Component({ selector: 'inline-cmp', template: '<div [sdir]="\'ok\'"></div>', imports: [StandaloneDir] })
+class InlineCmp {
+  v = i0;
+}
+```
+
+# /inline_tcb_dir.ts
+```ts
+import { Directive, Input } from '@angular/core';
+
+@Directive({ selector: '[sdir]' })
+export class StandaloneDir {
+  @Input() sdir = '';
 }
 ```
 
