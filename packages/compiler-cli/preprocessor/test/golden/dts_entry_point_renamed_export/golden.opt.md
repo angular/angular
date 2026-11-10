@@ -101,7 +101,7 @@ export class AppModule {
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     AppModule,
     [typeof AppComponent],
-    [typeof InnerModule],
+    [typeof i1.InnerModule],
     never
   > =
     // @ts-ignore

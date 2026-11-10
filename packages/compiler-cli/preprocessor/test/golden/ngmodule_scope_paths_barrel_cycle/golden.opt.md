@@ -81,6 +81,10 @@ import { SharedModule } from '@shared';
 import { A } from './a.component';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './a.component';
+// @ts-ignore
+import * as i2 from '@shared';
 
 export class AModule {
   // @ts-ignore
@@ -90,7 +94,7 @@ export class AModule {
     return new (__ngFactoryType__ || AModule)();
   };
   // @ts-ignore
-  static ɵmod: i0.ɵɵNgModuleDeclaration<AModule, [typeof A], [typeof SharedModule], never> =
+  static ɵmod: i0.ɵɵNgModuleDeclaration<AModule, [typeof i1.A], [typeof i2.SharedModule], never> =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AModule });
   // @ts-ignore
@@ -203,6 +207,8 @@ import { NgModule } from '@angular/core';
 import { B } from './b.component';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './b.component';
 
 export class SharedModule {
   // @ts-ignore
@@ -212,7 +218,7 @@ export class SharedModule {
     return new (__ngFactoryType__ || SharedModule)();
   };
   // @ts-ignore
-  static ɵmod: i0.ɵɵNgModuleDeclaration<SharedModule, [typeof B], never, [typeof B]> =
+  static ɵmod: i0.ɵɵNgModuleDeclaration<SharedModule, [typeof i1.B], never, [typeof i1.B]> =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: SharedModule });
   // @ts-ignore

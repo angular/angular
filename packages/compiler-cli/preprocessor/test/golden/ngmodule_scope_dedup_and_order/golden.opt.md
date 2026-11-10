@@ -100,7 +100,7 @@ export class AppModule {
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     AppModule,
     [typeof AppComp],
-    [typeof ModuleA, typeof ModuleB, typeof ReexportModule],
+    [typeof i1.ModuleA, typeof i1.ModuleB, typeof i2.ReexportModule],
     never
   > =
     // @ts-ignore
@@ -144,8 +144,6 @@ export class AppModule {
 import { Directive, NgModule } from '@angular/core';
 // @ts-ignore
 import * as i0 from '@angular/core';
-// @ts-ignore
-import * as i1 from './reexport';
 
 class InternalDir {
   // @ts-ignore
@@ -203,9 +201,9 @@ export class ReexportModule {
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     ReexportModule,
-    [typeof i1.PublicDir],
+    [typeof InternalDir],
     never,
-    [typeof i1.PublicDir]
+    [typeof InternalDir]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: ReexportModule });

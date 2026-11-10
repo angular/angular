@@ -124,6 +124,8 @@ import { NgModule } from '@angular/core';
 import { MatButton } from './button';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './button';
 
 export class MatButtonModule {
   // @ts-ignore
@@ -135,9 +137,9 @@ export class MatButtonModule {
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     MatButtonModule,
-    [typeof MatButton],
+    [typeof i1.MatButton],
     never,
-    [typeof MatButton]
+    [typeof i1.MatButton]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MatButtonModule });
@@ -232,6 +234,8 @@ import { NgModule } from '@angular/core';
 import { TrimPipe } from './pipe';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './pipe';
 
 export class TrimPipeModule {
   // @ts-ignore
@@ -243,9 +247,9 @@ export class TrimPipeModule {
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     TrimPipeModule,
-    [typeof TrimPipe],
+    [typeof i1.TrimPipe],
     never,
-    [typeof TrimPipe]
+    [typeof i1.TrimPipe]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: TrimPipeModule });

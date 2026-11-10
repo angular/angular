@@ -60,12 +60,6 @@ const NGP_REQUIRES_TYPE_CHECKER: ReadonlySet<string> = new Set([
  * Includes behaviors that are intentionally different with ngp, or functionality we have decided not to support.
  */
 const NGP_INTENTIONAL_BEHAVIOR_DIFFERENCES: ReadonlySet<string> = new Set([
-  // Design difference, not a bug: when an imported transform function's parameter type references
-  // another symbol imported in the external declaration file (rather than a self-contained type),
-  // ngp emits `Parameters<typeof i1.transformFn>[0]` instead of re-importing the external symbol.
-  'ngtsc behavioral tests input transforms should compile an input with an external transform function',
-  'ngtsc behavioral tests input transforms should compile an input with using an ambient type in the transform function',
-
   // Partial compilation isn't implemented in ngp.
   'ngtsc behavioral tests cycle detection should detect a simple cycle and fatally error if doing partial-compilation',
 
@@ -167,6 +161,13 @@ const NGP_INTENTIONAL_BEHAVIOR_DIFFERENCES: ReadonlySet<string> = new Set([
 const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'import generation should report an error when a library entry-point does not export the symbol',
   'import generation should report an error when using a directive outside of rootDirs',
+
+  // When a transform function declared in a `.d.ts` file has a parameter type that references
+  // another symbol (rather than a self-contained type), ngp emits
+  // `Parameters<typeof transformFn>[0]` instead of re-importing that symbol through the
+  // function's owning package.
+  'ngtsc behavioral tests input transforms should compile an input with an external transform function',
+  'ngtsc behavioral tests input transforms should compile an input with using an ambient type in the transform function',
 
   // API documentation extraction (`getApiDocumentation`) is not implemented in NGP.
   'ngtsc NgModule docs extraction should extract NgModule info',

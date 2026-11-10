@@ -223,11 +223,8 @@ export interface ClassMetadata {
    * class decorators not been stripped. Apply only when annotating for Closure Compiler.
    */
   nocollapseInsertions: Array<TextInsertionMetadata>;
-  /**
-   * The ready-to-splice `declare static ngAcceptInputType_...` member block for
-   * decorator-based inputs with a `transform`, empty when there are none.
-   */
-  coercionMembers: string;
+  /** The `ngAcceptInputType_...` coercion members of decorator-based inputs with a `transform`. */
+  coercionMembers: Array<CoercionMemberMetadata>;
   hostBindings: Array<HostBindingMetadata>;
   hostListeners: Array<HostListenerMetadata>;
   typeParameters?: Array<TypeParameterMetadata>;
@@ -740,6 +737,36 @@ export interface IsolatedTypeElementMetadata {
    * expressions (e.g. `RouterModule.forChild(...)`) when `kind` is `ReferenceTuple`.
    */
   elements?: Array<IsolatedTypeElementMetadata>;
+  /**
+   * The entity name `span` holds, written through the import its leftmost identifier is bound
+   * by, for the `Typeof` and `CallReturnType` forms ngtsc routes through its `ImportManager`.
+   */
+  importedEntityName?: ImportedEntityNameMetadata;
+}
+
+/** The coercion member (`static ngAcceptInputType_<input>`) of a decorator-based input. */
+export interface CoercionMemberMetadata {
+  /** The property key, quoted when it is not an identifier. */
+  key: string;
+  /**
+   * The member's type, as the text around each of `typeImports`:
+   * `typeSegments[0] typeImports[0] typeSegments[1] …`.
+   */
+  typeSegments: Array<string>;
+  /** The type names written through a generated namespace import of their declaration. */
+  typeImports: Array<ImportableRef>;
+}
+
+/**
+ * An entity name (`Foo`, `Foo.forRoot`) whose leftmost identifier is bound by an import, which
+ * ngtsc's type translator writes through that import instead of the identifier:
+ * `<namespace of import>.<symbol>.<members>`.
+ */
+export interface ImportedEntityNameMetadata {
+  /** The specifier as written and the name ngtsc's `getExportedName` reads for the binding. */
+  import: ImportableRef;
+  /** The property names following the leftmost identifier. */
+  members: Array<string>;
 }
 
 export interface IsolatedTypeTupleMetadata {
@@ -894,6 +921,13 @@ export interface ReferenceMetadata {
   typecheckImport?: ImportableRef;
   /** Identifier in the consumer file's lexical scope (for same-file declarations or local aliases). */
   localAlias?: string;
+  /**
+   * How a `.d.ts` type position in the consumer refers to the target, when not by `localAlias`.
+   * ngtsc emits the type side of a reference with `ImportFlags.ForceNewImport`, which never
+   * reuses the consumer's own import binding: a target declared in another file is imported
+   * afresh.
+   */
+  typeImport?: ImportableRef;
   /** Reason the target could not be imported from its owning package. */
   invalidReason?: string;
 }

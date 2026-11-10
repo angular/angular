@@ -491,6 +491,7 @@ export async function runPipeline(
     onlyExplicitDeferDependencyImports: tsconfigOptions.onlyExplicitDeferDependencyImports,
     enableTemplateSourceLocations: tsconfigOptions.enableTemplateSourceLocations,
     emitDeclarationOnly,
+    verbatimModuleSyntax: compilerOptions.verbatimModuleSyntax === true,
     onlyPublishPublicTypingsForNgModules,
     forbidOrphanComponents,
     supportJitMode,

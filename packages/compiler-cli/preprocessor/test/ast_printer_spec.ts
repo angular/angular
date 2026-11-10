@@ -370,3 +370,25 @@ describe('ExpressionPrinter @angular/core import rewriting', () => {
     expect(printer.getImportStatements()).toBeNull();
   });
 });
+
+describe('ExpressionPrinter.getImportStatements', () => {
+  /** Prints `./value` in an expression and `./type` (and `./value`) only in types. */
+  function importsPrintedBy(printer: ExpressionPrinter): string | null {
+    printer.print(o.importExpr({moduleName: './value', name: 'Value'}));
+    printer.printType(o.expressionType(o.importExpr({moduleName: './type', name: 'Type'})));
+    printer.printType(o.expressionType(o.importExpr({moduleName: './value', name: 'Value'})));
+    return printer.getImportStatements();
+  }
+
+  it('writes every generated import as a value import by default', () => {
+    expect(importsPrintedBy(new ExpressionPrinter('test.ts'))).toBe(
+      `// @ts-ignore\nimport * as i1 from './value';\n// @ts-ignore\nimport * as i2 from './type';`,
+    );
+  });
+
+  it('writes the imports only types use as type-only under `verbatimModuleSyntax`', () => {
+    expect(importsPrintedBy(new ExpressionPrinter('test.ts', null, true))).toBe(
+      `// @ts-ignore\nimport * as i1 from './value';\n// @ts-ignore\nimport type * as i2 from './type';`,
+    );
+  });
+});

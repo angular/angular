@@ -20,7 +20,7 @@ fn tuples(imports: &[ImportInfo]) -> Vec<crate::DeclarationTuple> {
 }
 
 use crate::types::analysis::{HostDirectiveEntry, Reference};
-use crate::types::metadata::ReferenceMetadata;
+use crate::types::metadata::{ImportableRef, ReferenceMetadata};
 use crate::{
     types::analysis::{DeclarationData, ResolvedHostDirective},
     ClassMetadata, ClassType, ComponentMetadata, ConstructorParamMetadata, DeclarationMetadata,
@@ -457,6 +457,9 @@ async fn complete_local_host_directives<Fs: crate::ResourceResolverFs + Clone + 
     let ambient_only = ctx.engine.emit_declaration_only;
     if let Some(host_directives) = &mut d.host_directives {
         complete_for_local_compilation(host_directives, ambient_only, ctx, foreign).await;
+        if ambient_only {
+            resolve_imported_host_directives(host_directives, ctx, foreign).await;
+        }
     }
     for (probe, _) in &mut d.unsupported_host_directives {
         complete_for_local_compilation(probe, ambient_only, ctx, foreign).await;
@@ -468,6 +471,55 @@ async fn complete_local_host_directives<Fs: crate::ResourceResolverFs + Clone + 
                 | crate::evaluator::ResolvedValue::Incomplete(_)
         )
     });
+}
+
+/// Under `emitDeclarationOnly`, resolve each `hostDirectives` entry written as an imported
+/// identifier (or a `directive:` property that is one) to the declaration it names.
+///
+/// ngtsc resolves a host directive the program can see to its declaration in declaration-only
+/// emission too (which it always runs as local compilation), so its `.d.ts` type names the
+/// declaration rather than the import it was reached through. An import it cannot resolve, or one
+/// that doesn't resolve to a declaration, stays the import as written. Only the entry's own
+/// reference is resolved: other cross-file values in `hostDirectives` still don't fold (see
+/// [`complete_local_host_directives`]).
+async fn resolve_imported_host_directives<Fs: crate::ResourceResolverFs + Clone + 'static>(
+    host_directives: &mut Resolved<Vec<HostDirectiveEntry>>,
+    ctx: &crate::query::QueryContext<Fs>,
+    foreign: &[&dyn crate::evaluator::ForeignFunctionResolver],
+) {
+    use crate::evaluator::{IncompleteDep, ResolvedValue};
+
+    let mut value = host_directives.raw().clone();
+    let ResolvedValue::Array(items) = value.unwrap_named_mut() else {
+        return;
+    };
+    let mut resolved_any = false;
+    for item in items {
+        let directive = match item.unwrap_named_mut() {
+            ResolvedValue::Map(map) => {
+                let Some((_, directive)) = map.iter_mut().find(|(key, _)| key == "directive")
+                else {
+                    continue;
+                };
+                directive
+            }
+            other => other,
+        };
+        let ResolvedValue::Incomplete(hole) = directive.unwrap_named() else {
+            continue;
+        };
+        if !hole.transparent || !matches!(hole.dep, IncompleteDep::Reference(_)) {
+            continue;
+        }
+        let resolved = crate::evaluator::evaluate_value_completely(ctx, directive, foreign).await;
+        if matches!(resolved.unwrap_named(), ResolvedValue::Reference(_)) {
+            *directive = resolved;
+            resolved_any = true;
+        }
+    }
+    if resolved_any {
+        host_directives.set_value(value);
+    }
 }
 
 async fn complete_for_local_compilation<T, Fs: crate::ResourceResolverFs + Clone + 'static>(
@@ -1567,9 +1619,15 @@ pub enum IsolatedTypeElementData {
     Typeof {
         span: Option<oxc_span::Span>,
         reference: Option<Reference>,
+        /// `span`'s identifier, written through the import that binds it.
+        imported: Option<crate::types::metadata::ImportedEntityNameMetadata>,
     },
     /// `ReturnType<typeof <span>>` — a call expression with an entity-name callee.
-    CallReturnType { callee_span: oxc_span::Span },
+    CallReturnType {
+        callee_span: oxc_span::Span,
+        /// The callee, written through the import that binds its leftmost identifier.
+        imported: Option<crate::types::metadata::ImportedEntityNameMetadata>,
+    },
     /// `[typeof A, typeof B, ...]` — locally evaluates to an array of references.
     ReferenceTuple { references: Vec<Reference> },
     /// `[<el1>, <el2>, ...]` — a same-file `const` array expanded element-by-element when it cannot
@@ -1834,6 +1892,9 @@ pub struct WireContext<'a> {
     /// Pre-resolved answers for [`crate::analyzer::import_emit::ReferenceEmitStrategy::emit`]'s
     /// `declaring_export_name`; build it with `declaring_export_names[_blocking]`.
     pub declaring_exports: &'a crate::analyzer::import_emit::DeclaringExportNames,
+    /// The projected file's import declarations, for the `.d.ts` types that name a symbol
+    /// through the import binding it was written with.
+    pub import_declarations: &'a [crate::analyzer::ImportDeclarationInfo],
     pub r3_symbols_path: Option<&'a std::path::Path>,
 }
 
@@ -1842,12 +1903,43 @@ impl WireContext<'_> {
     /// pre-pass never resolved the pair — a drift from [`ClassData::wire_reference_slots`] —
     /// which asserts in debug and degrades to "unexported" in release.
     fn declaring_export_name(&self, file: crate::query::FileId, name: &str) -> Option<&str> {
-        let entry = self.declaring_exports.get(&(file, name.to_string()));
+        let entry = self
+            .declaring_exports
+            .declaring
+            .get(&(file, name.to_string()));
         debug_assert!(
             entry.is_some(),
             "export-name pre-pass never resolved ({file:?}, {name})"
         );
         entry.and_then(|exported| exported.as_deref())
+    }
+
+    /// `reference` with its owning package's export name replaced by the name the package's
+    /// entry point publishes the declaration under, when the pre-pass found one (see
+    /// [`crate::analyzer::import_emit::DeclaringExportNames::published`]).
+    // TODO(parity): only `.d.ts` type positions use this. Value-position package references,
+    // e.g. component `dependencies` projected by `project_reference` in
+    // `compiler/decorators/component.rs`, still use the name the consumer imported.
+    fn with_published_owning_name(&self, reference: &Reference) -> Reference {
+        let Some(owning) = &reference.owning_reference else {
+            return reference.clone();
+        };
+        let key = (
+            owning.specifier().to_string(),
+            reference.file,
+            reference.name.clone(),
+        );
+        let Some(published) = self.declaring_exports.published.get(&key) else {
+            return reference.clone();
+        };
+        let mut reference = reference.clone();
+        reference.owning_reference = Some(
+            crate::types::analysis::OwningReference::from_source_specifier(
+                owning.specifier(),
+                published.clone(),
+            ),
+        );
+        reference
     }
 }
 
@@ -2009,6 +2101,32 @@ impl ClassData {
             .flatten()
             .flat_map(IsolatedTypeTupleData::references)
             .collect()
+    }
+
+    /// The references this class's `.d.ts` types name (see
+    /// [`crate::types::analysis::FileData::type_position_references`]).
+    pub(crate) fn type_position_references(&self) -> Vec<Reference> {
+        let mut references = self.host_directive_references();
+        references.extend(self.isolated_tuple_references());
+        if let Some(m) = self.as_ng_module() {
+            for slot in [&m.declarations, &m.imports, &m.exports, &m.bootstrap] {
+                if let Some(refs) = slot.as_ref().and_then(Resolved::get_optional) {
+                    references.extend(refs);
+                }
+            }
+        }
+        references
+    }
+
+    /// The `hostDirectives` references whose `.d.ts` type [`Self::to_wire_host_directives`]
+    /// projects through the emit strategy, for the export-name pre-pass. These are the entries
+    /// local and declaration-only compilation emit, which include every entry a fully resolved
+    /// `hostDirectives` emits.
+    pub(crate) fn host_directive_references(&self) -> Vec<Reference> {
+        let Some((entries, _)) = self.directive_part().and_then(local_host_directives) else {
+            return Vec::new();
+        };
+        entries.into_iter().map(|e| e.directive).collect()
     }
 
     /// The `@Injectable` data, whether it is the classification itself or a weak decorator
@@ -4004,25 +4122,16 @@ impl AngularField {
     }
 }
 
-/// The member API surface pre-derived from a directive part's `fields`, plus the ready-made
-/// coercion member block.
+/// The member API surface pre-derived from a directive part's `fields`, plus the coercion
+/// members.
 #[derive(Default)]
 struct PreparedMembers {
     inputs: Vec<InputMetadata>,
     outputs: Vec<OutputMetadata>,
     queries: Vec<QueryMetadata>,
     view_queries: Vec<QueryMetadata>,
-    coercion_members: String,
+    coercion_members: Vec<crate::types::metadata::CoercionMemberMetadata>,
 }
-
-/// `ngAcceptInputType_` coercion members are type-checking-only declarations: ngtsc adds them
-/// solely to the `.d.ts` (via DtsTransform) and never to the emitted JS. They are spliced as
-/// `declare static` ambient members so TypeScript strips them entirely from JS (a plain
-/// type-only field would otherwise leak as a value-less `static ngAcceptInputType_x;` under
-/// `useDefineForClassFields`) while preserving them in the `.d.ts`. The `@ts-ignore` guards
-/// against `noImplicitOverride` when the class extends another component.
-/// https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/annotations/common/src/input_transforms.ts#L14-L36
-const NG_ACCEPT_INPUT_TYPE_PREFIX: &str = "  // @ts-ignore\n  declare static ";
 
 /// The property key of the coercion member for the input declared on `class_property_name`,
 /// quoted when it is not a valid identifier (e.g. `'aria-label'`).
@@ -4048,10 +4157,60 @@ fn coercion_member_key(class_property_name: &str) -> String {
     quoted
 }
 
+/// The coercion member of the input declared on `class_property_name`, typed `type_text` with
+/// each of `names` (sorted, relative to `type_text`) written as emitted.
+fn coercion_member(
+    class_property_name: &str,
+    type_text: &str,
+    names: &[super::transforms::EmittedTypeName],
+) -> crate::types::metadata::CoercionMemberMetadata {
+    use super::transforms::WrittenTypeName;
+    let mut type_segments = Vec::with_capacity(names.len() + 1);
+    let mut type_imports = Vec::with_capacity(names.len());
+    let mut segment = String::new();
+    let mut cursor = 0;
+    for name in names {
+        segment.push_str(&type_text[cursor..name.span.start as usize]);
+        cursor = name.span.end as usize;
+        match &name.written {
+            WrittenTypeName::Declared(declared) => segment.push_str(declared),
+            WrittenTypeName::Import(import) => {
+                type_segments.push(std::mem::take(&mut segment));
+                type_imports.push(import.clone());
+            }
+        }
+    }
+    segment.push_str(&type_text[cursor..]);
+    type_segments.push(segment);
+    crate::types::metadata::CoercionMemberMetadata {
+        key: coercion_member_key(class_property_name),
+        type_segments,
+        type_imports,
+    }
+}
+
+/// The `Parameters<typeof transform>[0]` coercion member of the input declared on
+/// `class_property_name`, with the transform written through its import.
+fn imported_parameters_coercion_member(
+    class_property_name: &str,
+    transform: &crate::types::metadata::ImportedEntityNameMetadata,
+) -> crate::types::metadata::CoercionMemberMetadata {
+    let members: String = transform.members.iter().map(|m| format!(".{m}")).collect();
+    crate::types::metadata::CoercionMemberMetadata {
+        key: coercion_member_key(class_property_name),
+        type_segments: vec!["Parameters<typeof ".to_string(), format!("{members}>[0]")],
+        type_imports: vec![transform.import.clone()],
+    }
+}
+
+/// `emit_declaration_only` routes a `Parameters<typeof transform>[0]` coercion type through
+/// the transform's import, as ngtsc's declaration-only path transplants it; elsewhere ngtsc
+/// emits the parameter type itself, so the fallback keeps the transform as written.
 fn prepare_members(
     d: &DirectiveData,
     source_text: &str,
     converter: &crate::utils::Utf8ToUtf16,
+    emit_declaration_only: bool,
 ) -> PreparedMembers {
     let mut prepared = PreparedMembers::default();
     let mut coercions: std::collections::HashSet<&str> = std::collections::HashSet::new();
@@ -4064,58 +4223,63 @@ fn prepare_members(
                 // ones. `.d.ts` extraction stamps an empty span on transforms it cannot
                 // locate, which would splice a malformed `: ;` member.
                 if !i.is_signal {
-                    use std::fmt::Write;
                     let site = d.input_transforms.iter().rfind(|site| site.input == i.name);
                     if let Some(site) = site.filter(|s| s.is_invalid()) {
                         if !site.conflicting_coercion {
-                            let _ = writeln!(
-                                prepared.coercion_members,
-                                "{NG_ACCEPT_INPUT_TYPE_PREFIX}{}: unknown;",
-                                coercion_member_key(&i.name)
-                            );
+                            prepared.coercion_members.push(coercion_member(
+                                &i.name,
+                                "unknown",
+                                &[],
+                            ));
                         }
                         prepared
                             .inputs
                             .push(i.to_wire(source_text, converter, false));
                         continue;
                     }
-                    match &i.transform {
+                    // The parameter type as Stage 2 resolved it, with its imported names.
+                    let resolved = site.and_then(|s| {
+                        s.resolved_type
+                            .as_deref()
+                            .map(|ty| (ty, s.resolved_type_names.as_slice()))
+                    });
+                    let member = match &i.transform {
                         Some(TransformData::Type { type_span, .. }) if !type_span.is_empty() => {
                             let type_str =
                                 &source_text[type_span.start as usize..type_span.end as usize];
-                            let _ = writeln!(
-                                prepared.coercion_members,
-                                "{NG_ACCEPT_INPUT_TYPE_PREFIX}{}: {type_str};",
-                                coercion_member_key(&i.name)
-                            );
+                            let names = resolved
+                                .filter(|(ty, _)| *ty == type_str)
+                                .map_or(&[][..], |(_, names)| names);
+                            Some(coercion_member(&i.name, type_str, names))
                         }
                         Some(TransformData::Type { value_span, .. }) if !value_span.is_empty() => {
-                            let _ = writeln!(
-                                prepared.coercion_members,
-                                "{NG_ACCEPT_INPUT_TYPE_PREFIX}{}: unknown;",
-                                coercion_member_key(&i.name)
-                            );
+                            Some(coercion_member(&i.name, "unknown", &[]))
                         }
                         Some(TransformData::Expression(span)) if !span.is_empty() => {
-                            if let Some(resolved_type) =
-                                site.and_then(|s| s.resolved_type.as_deref())
-                            {
-                                let _ = writeln!(
-                                    prepared.coercion_members,
-                                    "{NG_ACCEPT_INPUT_TYPE_PREFIX}{}: {resolved_type};",
-                                    coercion_member_key(&i.name)
-                                );
-                            } else {
-                                let expr_str = &source_text[span.start as usize..span.end as usize];
-                                let _ = writeln!(
-                                    prepared.coercion_members,
-                                    "{NG_ACCEPT_INPUT_TYPE_PREFIX}{}: Parameters<typeof {expr_str}>[0];",
-                                    coercion_member_key(&i.name)
-                                );
-                            }
+                            Some(match resolved {
+                                Some((ty, names)) => coercion_member(&i.name, ty, names),
+                                None => match site
+                                    .and_then(|s| s.imported_entity_name.as_ref())
+                                    .filter(|_| emit_declaration_only)
+                                {
+                                    Some(imported) => {
+                                        imported_parameters_coercion_member(&i.name, imported)
+                                    }
+                                    None => {
+                                        let expr_str =
+                                            &source_text[span.start as usize..span.end as usize];
+                                        coercion_member(
+                                            &i.name,
+                                            &format!("Parameters<typeof {expr_str}>[0]"),
+                                            &[],
+                                        )
+                                    }
+                                },
+                            })
                         }
-                        _ => {}
-                    }
+                        _ => None,
+                    };
+                    prepared.coercion_members.extend(member);
                 }
                 prepared
                     .inputs
@@ -4303,9 +4467,9 @@ impl ClassData {
                     decorator_name: m.decorator_name.clone(),
                     remote_scopes_may_require_cycle_protection: any_synthetic(&m.declarations)
                         || any_synthetic(&m.imports),
-                    declarations: self.to_wire_refs(&m.declarations, cx),
+                    declarations: self.to_wire_type_refs(&m.declarations, cx),
                     public_declarations: self.public_declarations_wire(m, cx),
-                    imports: self.to_wire_refs(&m.imports, cx),
+                    imports: self.to_wire_type_refs(&m.imports, cx),
                     injector_imports: self.to_wire_refs(&m.injector_imports, cx),
                     injector_import_raw_spans: m.injector_import_raws.as_ref().map(|raws| {
                         raws.iter()
@@ -4320,8 +4484,8 @@ impl ClassData {
                             })
                             .collect()
                     }),
-                    exports: self.to_wire_refs(&m.exports, cx),
-                    bootstrap: self.to_wire_refs(&m.bootstrap, cx),
+                    exports: self.to_wire_type_refs(&m.exports, cx),
+                    bootstrap: self.to_wire_type_refs(&m.bootstrap, cx),
                     providers_span: m
                         .providers_span
                         .map(|s| crate::types::metadata::SpanMetadata::new(s, cx.converter)),
@@ -4385,7 +4549,7 @@ impl ClassData {
         // non-directive classifications (the wire shape keeps these top-level).
         let members = self.directive_part();
         let prepared = members
-            .map(|m| prepare_members(m, cx.source_text, cx.converter))
+            .map(|m| prepare_members(m, cx.source_text, cx.converter, cx.emit_declaration_only))
             .unwrap_or_default();
         let is_jit = members.is_some_and(|d| d.is_jit)
             || matches!(&self.decorator, DecoratorData::NgModule(m) if m.is_jit);
@@ -4637,6 +4801,28 @@ impl ClassData {
         slot: &Option<Resolved<Vec<Reference>>>,
         cx: &WireContext,
     ) -> Option<Vec<ReferenceMetadata>> {
+        self.wire_slot_refs(slot, cx)
+            .map(|refs| self.emit_wire_refs(&refs, cx))
+    }
+
+    /// [`Self::to_wire_refs`] for a slot whose references a `.d.ts` type also names.
+    fn to_wire_type_refs(
+        &self,
+        slot: &Option<Resolved<Vec<Reference>>>,
+        cx: &WireContext,
+    ) -> Option<Vec<ReferenceMetadata>> {
+        self.wire_slot_refs(slot, cx).map(|refs| {
+            refs.iter()
+                .map(|r| self.emit_wire_type_ref(r, cx))
+                .collect()
+        })
+    }
+
+    fn wire_slot_refs(
+        &self,
+        slot: &Option<Resolved<Vec<Reference>>>,
+        cx: &WireContext,
+    ) -> Option<Vec<Reference>> {
         let Some(slot) = slot else {
             return None;
         };
@@ -4648,32 +4834,59 @@ impl ClassData {
         }
 
         slot.get_optional()
-            .map(|refs| self.emit_wire_refs(&refs, cx))
     }
 
     /// Project references into this class's file, the frame every NgModule/component
     /// reference is emitted in.
     fn emit_wire_refs(&self, refs: &[Reference], cx: &WireContext) -> Vec<ReferenceMetadata> {
+        refs.iter().map(|r| self.emit_wire_ref(r, cx)).collect()
+    }
+
+    /// Project one reference into this class's file through the emit strategy.
+    fn emit_wire_ref(&self, r: &Reference, cx: &WireContext) -> ReferenceMetadata {
         let file_id = self.reference_id.file;
         let current_file_path = cx
             .path_lookup
             .map(|lookup| lookup(file_id))
             .unwrap_or_default();
-        refs.iter()
-            .map(|r| {
-                let target_path = cx
-                    .path_lookup
-                    .map(|lookup| lookup(r.file))
-                    .unwrap_or_default();
-                cx.reference_strategy.emit(
-                    r,
-                    file_id,
-                    &current_file_path,
-                    &target_path,
-                    cx.declaring_export_name(r.file, &r.name),
-                )
-            })
-            .collect()
+        let target_path = cx
+            .path_lookup
+            .map(|lookup| lookup(r.file))
+            .unwrap_or_default();
+        cx.reference_strategy.emit(
+            r,
+            file_id,
+            &current_file_path,
+            &target_path,
+            cx.declaring_export_name(r.file, &r.name),
+        )
+    }
+
+    /// [`Self::emit_wire_ref`] for a reference a `.d.ts` type also names.
+    fn emit_wire_type_ref(&self, r: &Reference, cx: &WireContext) -> ReferenceMetadata {
+        let mut emitted = self.emit_wire_ref(r, cx);
+        emitted.type_import = self.type_import(r, cx);
+        emitted
+    }
+
+    /// How a `.d.ts` type in this file names `r`: ngtsc's `toR3Reference` emits the type with
+    /// `ImportFlags.ForceNewImport`, which imports a reference declared in another file afresh
+    /// (by the name its owning package's entry point publishes, as `AbsoluteModuleStrategy`
+    /// reads it) rather than through this file's own binding.
+    fn type_import(&self, r: &Reference, cx: &WireContext) -> Option<ImportableRef> {
+        if crate::analyzer::import_emit::is_declared_in(r, self.reference_id.file) {
+            return None;
+        }
+        // An import nothing resolved is recorded against this file with the import as its
+        // owner. ngtsc writes it as that import (an `ExternalReference`), whatever the strategy.
+        if let (true, Some(owning)) = (r.file == self.reference_id.file, &r.owning_reference) {
+            return Some(ImportableRef {
+                specifier: owning.specifier().to_string(),
+                symbol: owning.export_name().to_string(),
+            });
+        }
+        self.emit_wire_ref(&cx.with_published_owning_name(r), cx)
+            .typecheck_import
     }
 
     /// ngtsc's `exportedDeclarations`: the declarations whose class is also in `exports`, kept
@@ -4695,7 +4908,12 @@ impl ClassData {
             .into_iter()
             .filter(|d| exported.contains(&(d.file, d.name.as_str())))
             .collect();
-        Some(self.emit_wire_refs(&public, cx))
+        Some(
+            public
+                .iter()
+                .map(|r| self.emit_wire_type_ref(r, cx))
+                .collect(),
+        )
     }
 
     fn to_wire_single_ref(
@@ -4719,6 +4937,14 @@ impl ClassData {
         if r.owning_reference.is_some() && emitted.typecheck_import.is_some() {
             emitted.consumer_import = emitted.typecheck_import.clone();
             emitted.local_alias = None;
+        }
+        emitted.type_import = self.type_import(r, cx);
+        // ngtsc emits a declaration-only tuple element without `ImportFlags.ForceNewImport`
+        // (`resolvedToTypeTupleElement`), so a symbol this file binds keeps that binding's import.
+        if let Some(binding) = r.aliases.get(&file_id).and_then(|local| {
+            crate::analyzer::import_emit::import_binding_of_local(cx.import_declarations, local)
+        }) {
+            emitted.type_import = Some(binding);
         }
         emitted
     }
@@ -4754,22 +4980,29 @@ impl ClassData {
             IsolatedTypeElementKind, IsolatedTypeElementMetadata, SpanMetadata,
         };
         match el {
-            IsolatedTypeElementData::Typeof { span, reference } => IsolatedTypeElementMetadata {
+            IsolatedTypeElementData::Typeof {
+                span,
+                reference,
+                imported,
+            } => IsolatedTypeElementMetadata {
                 kind: IsolatedTypeElementKind::Typeof,
                 span: span.map(|s| SpanMetadata::new(s, cx.converter)),
                 references: reference
                     .as_ref()
                     .map(|r| vec![self.to_wire_single_ref(r, current_file_path, cx)]),
                 elements: None,
+                imported_entity_name: imported.clone(),
             },
-            IsolatedTypeElementData::CallReturnType { callee_span } => {
-                IsolatedTypeElementMetadata {
-                    kind: IsolatedTypeElementKind::CallReturnType,
-                    span: Some(SpanMetadata::new(*callee_span, cx.converter)),
-                    references: None,
-                    elements: None,
-                }
-            }
+            IsolatedTypeElementData::CallReturnType {
+                callee_span,
+                imported,
+            } => IsolatedTypeElementMetadata {
+                kind: IsolatedTypeElementKind::CallReturnType,
+                span: Some(SpanMetadata::new(*callee_span, cx.converter)),
+                references: None,
+                elements: None,
+                imported_entity_name: imported.clone(),
+            },
             IsolatedTypeElementData::ReferenceTuple { references } => IsolatedTypeElementMetadata {
                 kind: IsolatedTypeElementKind::ReferenceTuple,
                 span: None,
@@ -4780,6 +5013,7 @@ impl ClassData {
                         .collect(),
                 ),
                 elements: None,
+                imported_entity_name: None,
             },
             IsolatedTypeElementData::Tuple { elements, fallback } => {
                 let projected: Vec<_> = elements
@@ -4798,6 +5032,7 @@ impl ClassData {
                                         ),
                                     ]),
                                     elements: None,
+                                    imported_entity_name: None,
                                 };
                             }
                         }
@@ -4825,6 +5060,7 @@ impl ClassData {
                         span: None,
                         references: Some(references),
                         elements: None,
+                        imported_entity_name: None,
                     };
                 }
                 IsolatedTypeElementMetadata {
@@ -4832,6 +5068,7 @@ impl ClassData {
                     span: None,
                     references: None,
                     elements: Some(projected),
+                    imported_entity_name: None,
                 }
             }
             IsolatedTypeElementData::Never { span } => IsolatedTypeElementMetadata {
@@ -4839,6 +5076,7 @@ impl ClassData {
                 span: Some(SpanMetadata::new(*span, cx.converter)),
                 references: None,
                 elements: None,
+                imported_entity_name: None,
             },
             IsolatedTypeElementData::Deferred { resolved, fallback } => {
                 let Some(element) =
@@ -4879,6 +5117,7 @@ impl ClassData {
                     span: None,
                     references: Some(references),
                     elements: None,
+                    imported_entity_name: None,
                 }
             }
         }
@@ -4886,13 +5125,14 @@ impl ClassData {
 
     /// Project an evaluated [`HostDirectiveEntry`] list into this class's own file frame — the file
     /// the directive definition is emitted into, so it decides whether each entry is written as
-    /// a local binding or through a generated import.
+    /// a local binding or through a generated import. The `.d.ts` type of each entry comes from
+    /// the emit strategy, as ngtsc's `toHostDirectiveMetadata` emits it through `toR3Reference`.
     fn to_wire_host_directives(
         &self,
         d: &DirectiveData,
         cx: &WireContext,
     ) -> Option<Vec<HostDirectiveMetadata>> {
-        if cx.emit_declaration_only || cx.mode != WireMode::Semantic {
+        let entries = if cx.emit_declaration_only || cx.mode != WireMode::Semantic {
             if !d.unsupported_host_directives.is_empty() {
                 return None;
             }
@@ -4900,23 +5140,31 @@ impl ClassData {
             if !issues.is_empty() {
                 return None;
             }
-            let file_id = self.reference_id.file;
-            let current_file_path = cx.path_lookup.map(|lookup| lookup(file_id));
-            return Some(
-                entries
-                    .into_iter()
-                    .map(|e| e.into_wire(file_id, current_file_path.as_deref(), cx.path_lookup))
-                    .collect(),
-            );
-        }
-        let slot = d.host_directives.as_ref()?;
-        let entries = slot.get_optional()?;
+            entries
+        } else {
+            d.host_directives.as_ref()?.get_optional()?
+        };
         let file_id = self.reference_id.file;
         let current_file_path = cx.path_lookup.map(|lookup| lookup(file_id));
         Some(
             entries
                 .into_iter()
-                .map(|e| e.into_wire(file_id, current_file_path.as_deref(), cx.path_lookup))
+                .map(|e| {
+                    // Local compilation's JS keeps the host directive as written, for the type
+                    // as for the value.
+                    // TODO(parity): ngtsc's local compilation resolves an import the program can
+                    // see (`[i1.Dir]`); only an unresolvable one stays the written expression.
+                    let type_import =
+                        if cx.experimental_local_compilation && !cx.emit_declaration_only {
+                            None
+                        } else {
+                            self.type_import(&e.directive, cx)
+                        };
+                    let mut wire =
+                        e.into_wire(file_id, current_file_path.as_deref(), cx.path_lookup);
+                    wire.directive.type_import = type_import;
+                    wire
+                })
                 .collect(),
         )
     }
@@ -5034,6 +5282,7 @@ impl ClassData {
                 consumer_import,
                 typecheck_import,
                 local_alias: Some(i.local_name.clone()),
+                type_import: None,
                 invalid_reason: None,
             }
         };

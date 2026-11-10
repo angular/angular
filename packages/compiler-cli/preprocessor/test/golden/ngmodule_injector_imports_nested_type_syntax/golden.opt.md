@@ -35,7 +35,13 @@ export class AppModule {
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     AppModule,
     never,
-    [typeof AModule, typeof BModule, typeof i1.AModule, typeof i1.BModule, typeof ADirective],
+    [
+      typeof i1.AModule,
+      typeof i1.BModule,
+      typeof i1.AModule,
+      typeof i1.BModule,
+      typeof i1.ADirective,
+    ],
     never
   > =
     // @ts-ignore

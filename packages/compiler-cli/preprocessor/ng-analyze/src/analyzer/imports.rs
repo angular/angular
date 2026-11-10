@@ -349,6 +349,10 @@ pub struct ImportBindingInfo {
     /// `"default"` for a default import, or `None` for a namespace import (`import * as ns`),
     /// which binds the module object itself rather than any one export.
     pub imported: Option<String>,
+    /// The name ngtsc's `getExportedName` reads for this binding (see
+    /// [`super::utils::ImportBinding::exported_name`]): unlike [`Self::imported`], it tells
+    /// `import {default as X}` (`default`) apart from `import X` (`X`).
+    pub exported_name: String,
     /// Whether any reference to `local` survives the edits this compiler makes to the file.
     ///
     /// References from a component's `imports: [...]` array are excluded, because the whole
@@ -510,10 +514,14 @@ fn collect_import_bindings(
                 }
             };
             let references = reference_use(local.name.as_str(), semantic, dependency_refs);
+            let exported_name = super::utils::ImportBinding::of(specifier)
+                .exported_name(local.name.as_str())
+                .to_string();
             ImportBindingInfo {
                 span,
                 local: local.name.to_string(),
                 imported,
+                exported_name,
                 eagerly_referenced: references.any,
                 value_referenced: references.value,
                 is_type: decl.import_kind.is_type() || is_type,

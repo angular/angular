@@ -4,6 +4,8 @@ import { NgModule, forwardRef } from '@angular/core';
 import { ExternalComponent } from './external.component';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './external.component';
 
 export class AppModule {
   // @ts-ignore
@@ -15,9 +17,9 @@ export class AppModule {
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     AppModule,
-    [typeof ExternalComponent],
+    [typeof i1.ExternalComponent],
     never,
-    [typeof ExternalComponent]
+    [typeof i1.ExternalComponent]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule, bootstrap: [ExternalComponent] });

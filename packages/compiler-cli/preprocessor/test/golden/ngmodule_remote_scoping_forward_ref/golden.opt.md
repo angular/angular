@@ -22,6 +22,8 @@ import { NgModule, Component, forwardRef } from '@angular/core';
 import { CompB } from './comp-b.component';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './comp-b.component';
 
 // `CompA` is declared below, so the reference genuinely needs `forwardRef`. That makes it a
 // synthetic reference, which sets `remoteScopesMayRequireCycleProtection` and forces the
@@ -37,9 +39,9 @@ export class AppModule {
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     AppModule,
-    [typeof CompA, typeof CompB],
+    [typeof CompA, typeof i1.CompB],
     never,
-    [typeof CompB]
+    [typeof i1.CompB]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });

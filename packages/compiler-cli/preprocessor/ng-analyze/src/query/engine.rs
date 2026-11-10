@@ -1280,6 +1280,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                 reference_strategy: &*self.reference_strategy,
                 path_lookup: Some(&path_lookup),
                 declaring_exports: &declaring_exports,
+                import_declarations: &semantic_res.import_declarations,
                 r3_symbols_path: r3_symbols_path.as_deref(),
             };
             (semantic_res.to_wire(&cx), chunk_info)
@@ -1320,6 +1321,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
                 reference_strategy: &*self.reference_strategy,
                 path_lookup: Some(&path_lookup),
                 declaring_exports: &declaring_exports,
+                import_declarations: &syntax_res.import_declarations,
                 r3_symbols_path: r3_symbols_path.as_deref(),
             };
             (syntax_res.to_wire(&cx), chunk_info)
@@ -4546,6 +4548,68 @@ mod tests {
             .map(|d| d.selector.as_deref())
             .collect();
         assert_eq!(selectors, vec![Some("my-dialog")]);
+    }
+
+    /// Local analysis leaves an NgModule's imports unresolved, and a `.d.ts` type writes such a
+    /// reference as the import it was written with. The export-name pre-pass therefore has
+    /// nothing to look up for it, and must not walk (and depend on) the imported module's
+    /// export graph.
+    #[test]
+    fn declaring_export_names_skip_unresolved_imports() {
+        let engine = selector_engine(
+            &[
+                (
+                    "/app/lib/dir.ts",
+                    "import { Directive } from '@angular/core';\n\
+                     @Directive({ selector: '[dir]' })\n\
+                     export class Dir {}\n",
+                ),
+                ("/app/lib/index.ts", "export { Dir } from './dir';\n"),
+                (
+                    "/app/node_modules/pkg/index.d.ts",
+                    "export declare class PkgModule {}\n",
+                ),
+                (
+                    "/app/node_modules/pkg/package.json",
+                    r#"{"name": "pkg", "typings": "index.d.ts"}"#,
+                ),
+                (
+                    "/app/app.ts",
+                    "import { NgModule } from '@angular/core';\n\
+                     import { Dir } from './lib/index';\n\
+                     import { PkgModule } from 'pkg';\n\
+                     @NgModule({ imports: [Dir, PkgModule], exports: [Dir] })\n\
+                     export class AppModule {}\n",
+                ),
+            ],
+            "/app/app.ts",
+        );
+        let app = engine.intern_path("/app/app.ts");
+        let barrel = engine.intern_path("/app/lib/index.ts");
+        let package_entry = engine.intern_path("/app/node_modules/pkg/index.d.ts");
+
+        let syntax = block_on_with_timeout({
+            let ctx = QueryContext::new(engine.clone());
+            async move { ctx.analyze_file_syntax(app).await }
+        });
+        let unresolved: Vec<_> = syntax
+            .type_position_references()
+            .into_iter()
+            .filter(|r| r.file == app && r.owning_reference.is_some())
+            .map(|r| r.name)
+            .collect();
+        assert_eq!(unresolved, vec!["Dir", "PkgModule", "Dir"]);
+
+        let ctx = QueryContext::new(engine.clone());
+        let (names, dependencies) = block_on_with_timeout(async move {
+            let names = ctx.declaring_export_names(&syntax).await;
+            (names, ctx.dependencies())
+        });
+        assert!(names.published.is_empty(), "{:?}", names.published);
+        for file in [barrel, package_entry] {
+            assert!(!dependencies.contains(&file), "depends on {file:?}");
+            assert!(engine.cache.get(&QueryKey::ModuleExportMap(file)).is_none());
+        }
     }
 }
 

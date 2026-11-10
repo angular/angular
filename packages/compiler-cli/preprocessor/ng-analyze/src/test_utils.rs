@@ -99,6 +99,23 @@ pub fn find_class<'a>(
     })
 }
 
+/// Each coercion member of `class` as `(key, type)`, with every type name written through an
+/// import shown as `<specifier>#<symbol>`.
+pub fn coercion_member_types(class: &crate::ClassMetadata) -> Vec<(&str, String)> {
+    class
+        .coercion_members
+        .iter()
+        .map(|member| {
+            let mut ty = member.type_segments[0].clone();
+            for (import, segment) in member.type_imports.iter().zip(&member.type_segments[1..]) {
+                ty.push_str(&format!("<{}>#{}", import.specifier, import.symbol));
+                ty.push_str(segment);
+            }
+            (member.key.as_str(), ty)
+        })
+        .collect()
+}
+
 /// Run a closure with the parsed expression and its Semantic model
 pub fn with_expression_semantic<F>(source: &str, f: F)
 where
@@ -865,13 +882,163 @@ export class PrepComponent {
             .iter()
             .all(|span| class.removal_spans[0].start < span.start));
 
-        // The coercion member block: expression transforms wrap in Parameters<typeof ...>,
+        // The coercion members: expression transforms wrap in Parameters<typeof ...>,
         // typed-arrow transforms splice the parameter type.
         assert_eq!(
-            class.coercion_members,
-            "  // @ts-ignore\n  declare static ngAcceptInputType_flag: Parameters<typeof booleanAttribute>[0];\n\
-             \x20 // @ts-ignore\n  declare static ngAcceptInputType_typed: string | number;\n"
+            coercion_member_types(class),
+            vec![
+                (
+                    "ngAcceptInputType_flag",
+                    "Parameters<typeof booleanAttribute>[0]".to_string()
+                ),
+                ("ngAcceptInputType_typed", "string | number".to_string()),
+            ]
         );
+    }
+
+    /// ngtsc re-emits each type reference of a transform's parameter type through its reference
+    /// emitter, so a type named through an import (a namespace member, a barrel's alias, a
+    /// type-only import or re-export) becomes a fresh import of its declaration, while a type
+    /// declared in the file keeps its name. The parameter type of a transform declared in
+    /// another file is re-emitted the same way, from that file.
+    #[test]
+    fn test_coercion_member_type_names_through_imports() {
+        let fs = create_test_fs(&[
+            (
+                "/test/tsconfig.json",
+                r#"{"compilerOptions": {}, "files": ["dir.ts"]}"#,
+            ),
+            ("/test/api.ts", "export interface Item { id: string; }"),
+            ("/test/index.ts", "export {Item as Entry} from './api';"),
+            (
+                "/test/typeonly.ts",
+                "export type {Item as TypeOnly} from './api';",
+            ),
+            (
+                "/test/util.ts",
+                "import {Entry} from './index'; export interface Opts { a: number; } \
+                 export function toEntry(v: Entry | Opts): number { return 1; }",
+            ),
+            (
+                "/test/dir.ts",
+                r#"
+import { Directive, Input } from '@angular/core';
+import * as api from './api';
+import { Entry } from './index';
+import type { Item } from './api';
+import { TypeOnly } from './typeonly';
+import { toEntry } from './util';
+
+export interface Local { id: string; }
+export function map(value: api.Item[] | Array<Entry> | Local): Local { return value as Local; }
+
+@Directive({ selector: '[dir]' })
+export class Dir {
+    @Input({ transform: map }) items: Local = {id: ''};
+    @Input({ transform: (value: Item | TypeOnly | null) => '' }) one = '';
+    @Input({ transform: toEntry }) other = 0;
+}
+"#,
+            ),
+        ]);
+
+        let results = run_analyzer(fs, "/test/tsconfig.json", true);
+        let class = find_class(&results, "Dir").expect("Dir should exist");
+
+        assert_eq!(
+            coercion_member_types(class),
+            vec![
+                (
+                    "ngAcceptInputType_items",
+                    "<./api>#Item[] | Array<<./api>#Item> | Local".to_string()
+                ),
+                (
+                    "ngAcceptInputType_one",
+                    "<./api>#Item | <./api>#Item | null".to_string()
+                ),
+                (
+                    "ngAcceptInputType_other",
+                    "<./api>#Item | <./util>#Opts".to_string()
+                ),
+            ]
+        );
+    }
+
+    /// Declaration-only emission writes an entity name through the import its leftmost
+    /// identifier is bound by, except for a namespace import: `ns.member` stays as written
+    /// rather than becoming ngtsc's `iN.ns.member`, which the module does not export.
+    #[test]
+    fn test_declaration_only_entity_names_through_namespace_imports_stay_as_written() {
+        let fs = create_test_fs(&[
+            (
+                "/test/tsconfig.json",
+                r#"{"compilerOptions": {"emitDeclarationOnly": true}, "angularCompilerOptions": {"_experimentalAllowEmitDeclarationOnly": true}, "files": ["dir.ts"]}"#,
+            ),
+            (
+                "/test/util.ts",
+                "export function toNum(v: string | number): number { return 1; }",
+            ),
+            (
+                "/test/mod.ts",
+                r#"
+import { NgModule } from '@angular/core';
+@NgModule({})
+export class FooModule { static forRoot() { return { ngModule: FooModule }; } }
+"#,
+            ),
+            (
+                "/test/dir.ts",
+                r#"
+import { Directive, Input, NgModule } from '@angular/core';
+import * as u from './util';
+import { toNum } from './util';
+import * as m from './mod';
+import { FooModule } from './mod';
+
+@Directive({ selector: '[dir]' })
+export class Dir {
+    @Input({ transform: u.toNum }) viaNamespace = 0;
+    @Input({ transform: toNum }) viaNamed = 0;
+}
+
+@NgModule({ imports: [m.FooModule.forRoot(), FooModule.forRoot()] })
+export class AppModule {}
+"#,
+            ),
+        ]);
+
+        let results = run_analyzer(fs, "/test/tsconfig.json", false);
+        let dir = find_class(&results, "Dir").expect("Dir should exist");
+        assert_eq!(
+            coercion_member_types(dir),
+            vec![
+                (
+                    "ngAcceptInputType_viaNamespace",
+                    "Parameters<typeof u.toNum>[0]".to_string()
+                ),
+                (
+                    "ngAcceptInputType_viaNamed",
+                    "Parameters<typeof <./util>#toNum>[0]".to_string()
+                ),
+            ]
+        );
+
+        let app = find_class(&results, "AppModule").expect("AppModule should exist");
+        let imports = app
+            .ng_module
+            .as_ref()
+            .and_then(|m| m.isolated_imports.as_ref())
+            .expect("isolated imports");
+        let imported: Vec<_> = imports
+            .elements
+            .iter()
+            .map(|el| {
+                el.imported_entity_name
+                    .as_ref()
+                    .map(|name| (name.import.specifier.as_str(), name.import.symbol.as_str()))
+            })
+            .collect();
+        assert_eq!(imported, vec![None, Some(("./mod", "FooModule"))]);
     }
 
     /// An input whose class property name is not an identifier gets a quoted coercion member
@@ -904,10 +1071,18 @@ export class Dir {
         let class = find_class(&results, "Dir").expect("Dir should exist");
 
         assert_eq!(
-            class.coercion_members,
-            "  // @ts-ignore\n  declare static \"ngAcceptInputType_aria-label\": string;\n\
-             \x20 // @ts-ignore\n  declare static \"ngAcceptInputType_data-value\": Parameters<typeof toNumber>[0];\n\
-             \x20 // @ts-ignore\n  declare static ngAcceptInputType_plain: Parameters<typeof toNumber>[0];\n"
+            coercion_member_types(class),
+            vec![
+                ("\"ngAcceptInputType_aria-label\"", "string".to_string()),
+                (
+                    "\"ngAcceptInputType_data-value\"",
+                    "Parameters<typeof toNumber>[0]".to_string()
+                ),
+                (
+                    "ngAcceptInputType_plain",
+                    "Parameters<typeof toNumber>[0]".to_string()
+                ),
+            ]
         );
     }
 

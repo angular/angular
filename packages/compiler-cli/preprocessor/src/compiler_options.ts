@@ -139,6 +139,7 @@ export interface NgpCompilerOptions {
   // TypeScript `compilerOptions` that ngtsc reads off the same merged options object.
   emitDeclarationOnly?: boolean;
   rootDirs?: string[];
+  verbatimModuleSyntax?: boolean;
 }
 
 /**

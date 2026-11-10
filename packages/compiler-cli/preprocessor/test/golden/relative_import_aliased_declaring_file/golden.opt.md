@@ -152,6 +152,8 @@ import { NgModule } from '@angular/core';
 import { PublicDirectiveA } from './directive';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './directive';
 
 export class UpstreamModule {
   // @ts-ignore
@@ -163,9 +165,9 @@ export class UpstreamModule {
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     UpstreamModule,
-    [typeof PublicDirectiveA],
+    [typeof i1.PublicDirectiveA],
     never,
-    [typeof PublicDirectiveA]
+    [typeof i1.PublicDirectiveA]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: UpstreamModule });

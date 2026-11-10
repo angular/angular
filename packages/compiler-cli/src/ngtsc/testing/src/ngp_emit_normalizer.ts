@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import ts from 'typescript';
-
 const STRING_LIKE_TOKEN =
   /\/\/[^\n]*|\/\*[\s\S]*?\*\/|`(?:\\[\s\S]|[^\\`])*`|"(?:\\[\s\S]|[^\\"])*"|'(?:\\[\s\S]|[^\\'])*'/g;
 
@@ -208,9 +206,7 @@ export function normalizeNgpEmitForComparison(
  * `NgtscTestEnvironment.getContents()`.
  */
 export function normalizeNgpOutputFile(content: string): string {
-  const normalized = normalizeDtsNamedImportsInStaticDeclarations(
-    applyReplacements(content, OUTPUT_FILE_REPLACEMENTS),
-  );
+  const normalized = applyReplacements(content, OUTPUT_FILE_REPLACEMENTS);
   let out = '';
   let last = 0;
   for (const match of normalized.matchAll(STRING_LIKE_TOKEN)) {
@@ -218,95 +214,6 @@ export function normalizeNgpOutputFile(content: string): string {
     last = match.index + match[0].length;
   }
   return out + normalized.slice(last).replace(/,(?=[^\s,])/g, ', ');
-}
-
-/**
- * In `.d.ts` files, `ngp` preserves named imports (`import { Foo } from "./foo"`) for types and
- * values referenced inside `static ɵ...` declarations, whereas `ngtsc` synthesizes
- * `import * as iN from "./foo"` and qualifies references as `iN.Foo`.
- *
- * TODO(ngp-parity): Either synthesize namespace imports (`import * as iN`) for external symbols
- * referenced in `static ɵ...` and `ngAcceptInputType_*` `.d.ts` declarations in NGP, or update
- * `.d.ts` test assertions not to depend on `ngtsc`'s namespace import aliasing.
- */
-function normalizeDtsNamedImportsInStaticDeclarations(content: string): string {
-  if (!content.includes('static ɵ')) {
-    return content;
-  }
-
-  const sf = ts.createSourceFile('__cmp__.d.ts', content, ts.ScriptTarget.Latest, true);
-  const namespaceByModule = new Map<string, {ns: string; mod: string; pos: number}>([
-    ['@angular/core', {ns: 'i0', mod: '@angular/core', pos: -1}],
-  ]);
-  const symbolToQualified = new Map<string, {qualified: string; ns: string}>();
-
-  for (const stmt of sf.statements) {
-    if (
-      ts.isImportDeclaration(stmt) &&
-      ts.isStringLiteral(stmt.moduleSpecifier) &&
-      stmt.importClause?.namedBindings &&
-      ts.isNamedImports(stmt.importClause.namedBindings)
-    ) {
-      const mod = stmt.moduleSpecifier.text;
-      let entry = namespaceByModule.get(mod);
-      if (!entry) {
-        entry = {ns: `i${namespaceByModule.size}`, mod, pos: stmt.getStart(sf)};
-        namespaceByModule.set(mod, entry);
-      }
-      for (const spec of stmt.importClause.namedBindings.elements) {
-        symbolToQualified.set(spec.name.text, {
-          qualified: `${entry.ns}.${(spec.propertyName ?? spec.name).text}`,
-          ns: entry.ns,
-        });
-      }
-    }
-  }
-
-  if (symbolToQualified.size === 0) {
-    return content;
-  }
-
-  const edits: Array<{start: number; end: number; text: string}> = [];
-  const usedNamespaces = new Set<string>();
-  const visitTypeNode = (node: ts.Node): void => {
-    if (ts.isIdentifier(node)) {
-      const isRightOfAccess =
-        (ts.isQualifiedName(node.parent) && node.parent.right === node) ||
-        (ts.isPropertyAccessExpression(node.parent) && node.parent.name === node);
-      const match = !isRightOfAccess ? symbolToQualified.get(node.text) : undefined;
-      if (match !== undefined) {
-        usedNamespaces.add(match.ns);
-        edits.push({start: node.getStart(sf), end: node.getEnd(), text: match.qualified});
-      }
-    }
-    ts.forEachChild(node, visitTypeNode);
-  };
-
-  for (const stmt of sf.statements) {
-    if (!ts.isClassDeclaration(stmt)) continue;
-    for (const member of stmt.members) {
-      if (
-        ts.isPropertyDeclaration(member) &&
-        member.type &&
-        (ts.isIdentifier(member.name) || ts.isStringLiteral(member.name)) &&
-        (member.name.text.startsWith('ɵ') || member.name.text.startsWith('ngAcceptInputType_'))
-      ) {
-        visitTypeNode(member.type);
-      }
-    }
-  }
-
-  for (const {ns, mod, pos} of namespaceByModule.values()) {
-    if (pos >= 0 && usedNamespaces.has(ns)) {
-      edits.push({start: pos, end: pos, text: `import * as ${ns} from "${mod}";\n`});
-    }
-  }
-
-  let out = content;
-  for (const {start, end, text} of edits.sort((a, b) => b.start - a.start)) {
-    out = out.slice(0, start) + text + out.slice(end);
-  }
-  return out;
 }
 
 /**

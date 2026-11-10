@@ -15,10 +15,46 @@ pub fn strip_extension_str(s: &str) -> &str {
     s
 }
 
-/// The name each `(declaring file, declared name)` is published under by its own declaring
-/// file, for the references a wire projection emits. A key mapped to `None` was resolved
-/// and is not published at all; an absent key was never resolved by the pre-pass.
-pub type DeclaringExportNames = std::collections::HashMap<(FileId, String), Option<String>>;
+/// Export names a wire projection's references need, resolved ahead of the synchronous
+/// [`ReferenceEmitStrategy::emit`].
+#[derive(Clone, Debug, Default)]
+pub struct DeclaringExportNames {
+    /// The name each `(declaring file, declared name)` is published under by its own declaring
+    /// file. A key mapped to `None` was resolved and is not published at all; an absent key was
+    /// never resolved by the pre-pass.
+    pub declaring: std::collections::HashMap<(FileId, String), Option<String>>,
+    /// The name the entry point of a reference's owning package publishes its declaration under,
+    /// keyed by `(owning specifier, declaring file, declared name)`, for the references a `.d.ts`
+    /// type names (ngtsc's `AbsoluteModuleStrategy` reads the module's export table, not the
+    /// name the consumer imported). Absent when the entry point does not publish it.
+    pub published: std::collections::HashMap<(String, FileId, String), String>,
+}
+
+/// Whether `reference` is declared in `consumer`, so that file names it directly rather than
+/// importing it (ngtsc's `LocalIdentifierStrategy` for a node declared in the context file). A
+/// reference synthesized from a still-unresolved import records the importer as its `file`, so
+/// only one with no `owning_reference` is actually declared there.
+pub(crate) fn is_declared_in(reference: &Reference, consumer: FileId) -> bool {
+    reference.file == consumer && reference.owning_reference.is_none()
+}
+
+/// The import ngtsc's type translator writes a symbol through when it names the symbol by the
+/// consumer's own identifier `local` (`LocalIdentifierStrategy`, then
+/// `TypeTranslatorVisitor.routeEntityNameThroughImportManager`): the declaration that binds
+/// `local`, with its specifier as written and the name `getExportedName` reads
+/// ([`crate::analyzer::ImportBindingInfo::exported_name`]). `None` when no import binds `local`.
+pub(crate) fn import_binding_of_local(
+    import_declarations: &[crate::analyzer::ImportDeclarationInfo],
+    local: &str,
+) -> Option<ImportableRef> {
+    import_declarations.iter().find_map(|decl| {
+        let binding = decl.bindings.iter().find(|b| b.local == local)?;
+        Some(ImportableRef {
+            specifier: decl.specifier.clone(),
+            symbol: binding.exported_name.clone(),
+        })
+    })
+}
 
 /// Strategy for emitting symbol references and module specifiers (after ngtsc's
 /// `ReferenceEmitter` / `ReferenceEmitStrategy`).
@@ -135,11 +171,7 @@ impl ReferenceEmitStrategy for ApfImportStrategy {
             Some(owning) => Some(owning.export_name().to_string()),
             None => declaring_export_name.map(str::to_string),
         };
-        // A reference synthesized from a still-unresolved import records the importer as its
-        // `file`, so only a reference with no `owning_reference` is actually declared in
-        // `consumer`.
-        let declared_in_consumer =
-            reference.file == consumer && reference.owning_reference.is_none();
+        let declared_in_consumer = is_declared_in(reference, consumer);
         if declared_in_consumer {
             // Already in scope here, so nothing is being imported and there is nothing to
             // decline; the .ngtypecheck.ts import is governed by export and bounds status.
@@ -158,6 +190,7 @@ impl ReferenceEmitStrategy for ApfImportStrategy {
                     .get(&consumer)
                     .cloned()
                     .or_else(|| Some(reference.name.clone())),
+                type_import: None,
                 invalid_reason: None,
             }
         } else {
@@ -170,6 +203,7 @@ impl ReferenceEmitStrategy for ApfImportStrategy {
             ReferenceMetadata {
                 consumer_import,
                 typecheck_import,
+                type_import: None,
                 local_alias,
                 invalid_reason: None,
             }
@@ -264,8 +298,7 @@ impl ReferenceEmitStrategy for PrefixImportStrategy {
         // so the name has to be the declaring file's too — pairing it with a barrel's alias
         // emits an import that file does not satisfy.
         let mut symbol = declaring_export_name.map(str::to_string);
-        let declared_in_consumer =
-            reference.file == consumer && reference.owning_reference.is_none();
+        let declared_in_consumer = is_declared_in(reference, consumer);
         if declared_in_consumer {
             symbol = symbol.or_else(|| Some(reference.name.clone()));
         }
@@ -280,6 +313,7 @@ impl ReferenceEmitStrategy for PrefixImportStrategy {
                     .get(&consumer)
                     .cloned()
                     .or_else(|| Some(reference.name.clone())),
+                type_import: None,
                 invalid_reason: None,
             }
         } else {
@@ -292,6 +326,7 @@ impl ReferenceEmitStrategy for PrefixImportStrategy {
             ReferenceMetadata {
                 consumer_import,
                 typecheck_import,
+                type_import: None,
                 local_alias,
                 invalid_reason: None,
             }

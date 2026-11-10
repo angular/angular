@@ -203,13 +203,13 @@ export class C1 {
     never,
     never,
     true,
-    [{ directive: typeof DepA; inputs: {}; outputs: {} }]
+    [{ directive: typeof i1.DepA; inputs: {}; outputs: {} }]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineComponent({
       type: C1,
       selectors: [['c1']],
-      features: [i0.ɵɵHostDirectivesFeature([DepA])],
+      features: [i0.ɵɵHostDirectivesFeature([i1.DepA])],
       decls: 0,
       vars: 0,
       template: function C1_Template(rf: number, ctx: any): any {},
@@ -249,15 +249,15 @@ export class C2 {
     never,
     true,
     [
-      { directive: typeof DepA; inputs: {}; outputs: {} },
-      { directive: typeof DepB; inputs: {}; outputs: {} },
+      { directive: typeof i1.DepA; inputs: {}; outputs: {} },
+      { directive: typeof i1.DepB; inputs: {}; outputs: {} },
     ]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineComponent({
       type: C2,
       selectors: [['c2']],
-      features: [i0.ɵɵHostDirectivesFeature([DepA, DepB])],
+      features: [i0.ɵɵHostDirectivesFeature([i1.DepA, i1.DepB])],
       decls: 0,
       vars: 0,
       template: function C2_Template(rf: number, ctx: any): any {},
@@ -408,14 +408,16 @@ export class C6 {
     never,
     never,
     true,
-    [{ directive: typeof DepA; inputs: { 'a': 'b' }; outputs: { 'c': 'd' } }]
+    [{ directive: typeof i1.DepA; inputs: { 'a': 'b' }; outputs: { 'c': 'd' } }]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineComponent({
       type: C6,
       selectors: [['c6']],
       features: [
-        i0.ɵɵHostDirectivesFeature([{ directive: DepA, inputs: ['a', 'b'], outputs: ['c', 'd'] }]),
+        i0.ɵɵHostDirectivesFeature([
+          { directive: i1.DepA, inputs: ['a', 'b'], outputs: ['c', 'd'] },
+        ]),
       ],
       decls: 0,
       vars: 0,
@@ -467,15 +469,15 @@ export class C7 {
     never,
     true,
     [
-      { directive: typeof DepA; inputs: {}; outputs: {} },
-      { directive: typeof DepB; inputs: {}; outputs: {} },
+      { directive: typeof i1.DepA; inputs: {}; outputs: {} },
+      { directive: typeof i1.DepB; inputs: {}; outputs: {} },
     ]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineComponent({
       type: C7,
       selectors: [['c7']],
-      features: [i0.ɵɵHostDirectivesFeature([DepA, DepB])],
+      features: [i0.ɵɵHostDirectivesFeature([i1.DepA, i1.DepB])],
       decls: 0,
       vars: 0,
       template: function C7_Template(rf: number, ctx: any): any {},
@@ -519,13 +521,13 @@ export class C8 {
     never,
     never,
     true,
-    [{ directive: typeof DepA; inputs: {}; outputs: {} }]
+    [{ directive: typeof i1.DepA; inputs: {}; outputs: {} }]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineComponent({
       type: C8,
       selectors: [['c8']],
-      features: [i0.ɵɵHostDirectivesFeature([DepA])],
+      features: [i0.ɵɵHostDirectivesFeature([i1.DepA])],
       decls: 0,
       vars: 0,
       template: function C8_Template(rf: number, ctx: any): any {},
@@ -669,7 +671,7 @@ export class C12 {
     never,
     never,
     true,
-    [{ directive: typeof DepA; inputs: {}; outputs: {} }]
+    [{ directive: typeof i1.DepA; inputs: {}; outputs: {} }]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineComponent({
@@ -677,7 +679,7 @@ export class C12 {
       selectors: [['c12']],
       features: [
         i0.ɵɵHostDirectivesFeature(function (): any {
-          return [DepA];
+          return [i1.DepA];
         }),
       ],
       decls: 0,
@@ -722,7 +724,7 @@ export class C13 {
     never,
     never,
     true,
-    [{ directive: typeof DepB; inputs: { 'x': 'y' }; outputs: {} }]
+    [{ directive: typeof i1.DepB; inputs: { 'x': 'y' }; outputs: {} }]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineComponent({
@@ -730,7 +732,7 @@ export class C13 {
       selectors: [['c13']],
       features: [
         i0.ɵɵHostDirectivesFeature(function (): any {
-          return [{ directive: DepB, inputs: ['x', 'y'] }];
+          return [{ directive: i1.DepB, inputs: ['x', 'y'] }];
         }),
       ],
       decls: 0,
@@ -782,13 +784,13 @@ export class C14 {
     never,
     never,
     true,
-    [{ directive: typeof DepA; inputs: {}; outputs: {} }]
+    [{ directive: typeof i1.DepA; inputs: {}; outputs: {} }]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineComponent({
       type: C14,
       selectors: [['c14']],
-      features: [i0.ɵɵHostDirectivesFeature([{ directive: DepA }])],
+      features: [i0.ɵɵHostDirectivesFeature([{ directive: i1.DepA }])],
       decls: 0,
       vars: 0,
       template: function C14_Template(rf: number, ctx: any): any {},
@@ -834,13 +836,13 @@ export class C15 {
     never,
     never,
     true,
-    [{ directive: typeof DepA; inputs: { 'a': 'b' }; outputs: {} }]
+    [{ directive: typeof i1.DepA; inputs: { 'a': 'b' }; outputs: {} }]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineComponent({
       type: C15,
       selectors: [['c15']],
-      features: [i0.ɵɵHostDirectivesFeature([{ directive: DepA, inputs: ['a', 'b'] }])],
+      features: [i0.ɵɵHostDirectivesFeature([{ directive: i1.DepA, inputs: ['a', 'b'] }])],
       decls: 0,
       vars: 0,
       template: function C15_Template(rf: number, ctx: any): any {},

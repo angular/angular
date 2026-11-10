@@ -37,6 +37,10 @@ import * as i0 from '@angular/core';
 import * as i1 from './first.module';
 // @ts-ignore
 import * as i2 from './sub/sub.pipe';
+// @ts-ignore
+import * as i3 from './second.module';
+// @ts-ignore
+import * as i4 from './sub/sub.module';
 
 export class AppComponent {
   // @ts-ignore
@@ -126,7 +130,7 @@ export class AppModule {
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     AppModule,
     [typeof AppComponent],
-    [typeof FirstModule, typeof SecondModule, typeof SubModule],
+    [typeof i1.FirstModule, typeof i3.SecondModule, typeof i4.SubModule],
     never
   > =
     // @ts-ignore
@@ -264,6 +268,8 @@ import { NgModule } from '@angular/core';
 import { FirstModule } from './first.module';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './first.module';
 
 export class SecondModule {
   // @ts-ignore
@@ -276,8 +282,8 @@ export class SecondModule {
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     SecondModule,
     never,
-    [typeof FirstModule],
-    [typeof FirstModule]
+    [typeof i1.FirstModule],
+    [typeof i1.FirstModule]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: SecondModule });
@@ -318,6 +324,8 @@ import { NgModule } from '@angular/core';
 import { SubPipe } from './sub.pipe';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './sub.pipe';
 
 export class SubModule {
   // @ts-ignore
@@ -327,7 +335,12 @@ export class SubModule {
     return new (__ngFactoryType__ || SubModule)();
   };
   // @ts-ignore
-  static ɵmod: i0.ɵɵNgModuleDeclaration<SubModule, [typeof SubPipe], never, [typeof SubPipe]> =
+  static ɵmod: i0.ɵɵNgModuleDeclaration<
+    SubModule,
+    [typeof i1.SubPipe],
+    never,
+    [typeof i1.SubPipe]
+  > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: SubModule });
   // @ts-ignore

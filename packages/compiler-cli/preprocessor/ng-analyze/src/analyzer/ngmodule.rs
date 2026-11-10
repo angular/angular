@@ -425,6 +425,7 @@ fn classify_isolated_element_with_visited<'a>(
             return IsolatedTypeElementData::Typeof {
                 span: None,
                 reference: Some(Reference::from_value_reference(r)),
+                imported: None,
             };
         }
         ResolvedValue::Array(items) if !items.is_empty() => {
@@ -630,11 +631,19 @@ fn syntactic_isolated_element<'a>(
         Expression::CallExpression(call) if is_entity_name(&call.callee) => {
             IsolatedTypeElementData::CallReturnType {
                 callee_span: call.callee.span(),
+                imported: super::utils::imported_entity_name(&call.callee, semantic),
             }
         }
+        // ngtsc rebuilds a property access from synthetic identifiers before routing it
+        // (`expressionToEntityName` in `translator/src/type_translator.ts`), and a synthetic
+        // identifier has no import to route through, so only a bare identifier is rewritten.
         expr if is_entity_name(expr) => IsolatedTypeElementData::Typeof {
             span: Some(expr.span()),
             reference: None,
+            imported: match expr {
+                Expression::Identifier(_) => super::utils::imported_entity_name(expr, semantic),
+                _ => None,
+            },
         },
         expr => IsolatedTypeElementData::Never { span: expr.span() },
     }
@@ -1164,6 +1173,7 @@ mod tests {
                     IsolatedTypeElementData::Typeof {
                         span: Some(span),
                         reference: None,
+                        ..
                     } => {
                         assert_eq!(
                             &source[span.start as usize..span.end as usize],
@@ -1176,6 +1186,7 @@ mod tests {
                     IsolatedTypeElementData::Typeof {
                         span: Some(span),
                         reference: None,
+                        ..
                     } => {
                         assert_eq!(
                             &source[span.start as usize..span.end as usize],
@@ -1190,7 +1201,7 @@ mod tests {
 
         // 1: `FooModule.forRoot()` -> CallReturnType with `FooModule.forRoot`
         match settled(&isolated_imports.elements[1]) {
-            IsolatedTypeElementData::CallReturnType { callee_span } => {
+            IsolatedTypeElementData::CallReturnType { callee_span, .. } => {
                 assert_eq!(
                     &source[callee_span.start as usize..callee_span.end as usize],
                     "FooModule.forRoot"
@@ -1201,7 +1212,7 @@ mod tests {
 
         // 2: `provideFoo()` -> CallReturnType with `provideFoo`
         match settled(&isolated_imports.elements[2]) {
-            IsolatedTypeElementData::CallReturnType { callee_span } => {
+            IsolatedTypeElementData::CallReturnType { callee_span, .. } => {
                 assert_eq!(
                     &source[callee_span.start as usize..callee_span.end as usize],
                     "provideFoo"
@@ -1224,6 +1235,7 @@ mod tests {
             IsolatedTypeElementData::Typeof {
                 span: Some(span),
                 reference: None,
+                ..
             } => {
                 assert_eq!(&source[span.start as usize..span.end as usize], "FooModule");
             }

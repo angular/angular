@@ -97,6 +97,8 @@ import { NgModule } from '@angular/core';
 import { MatButtonModule } from './mat_button_module';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './mat_button_module';
 
 export class Gm2ButtonModule {
   // @ts-ignore
@@ -109,8 +111,8 @@ export class Gm2ButtonModule {
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     Gm2ButtonModule,
     never,
-    [typeof MatButtonModule],
-    [typeof MatButtonModule]
+    [typeof i1.MatButtonModule],
+    [typeof i1.MatButtonModule]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: Gm2ButtonModule });
@@ -154,6 +156,8 @@ import { NgModule } from '@angular/core';
 import { MatButton } from './mat_button';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './mat_button';
 
 export class MatButtonModule {
   // @ts-ignore
@@ -165,9 +169,9 @@ export class MatButtonModule {
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     MatButtonModule,
-    [typeof MatButton],
+    [typeof i1.MatButton],
     never,
-    [typeof MatButton]
+    [typeof i1.MatButton]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MatButtonModule });

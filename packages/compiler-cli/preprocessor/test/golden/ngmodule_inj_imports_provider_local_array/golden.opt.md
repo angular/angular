@@ -51,6 +51,8 @@ import { NgModule, Component } from '@angular/core';
 import { NoProvModule, ProvModule, SaDir } from './lib';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './lib';
 
 const NG_COMPONENT_IMPORTS = [NoProvModule, ProvModule];
 const NO_PROVIDER_IMPORTS = [NoProvModule, SaDir];
@@ -64,7 +66,12 @@ export class LocalTransitiveModule {
       return new (__ngFactoryType__ || LocalTransitiveModule)();
     };
   // @ts-ignore
-  static ɵmod: i0.ɵɵNgModuleDeclaration<LocalTransitiveModule, never, [typeof ProvModule], never> =
+  static ɵmod: i0.ɵɵNgModuleDeclaration<
+    LocalTransitiveModule,
+    never,
+    [typeof i1.ProvModule],
+    never
+  > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: LocalTransitiveModule });
   // @ts-ignore

@@ -28,7 +28,7 @@ export class LocalAliasModule {
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     LocalAliasModule,
     never,
-    [typeof SharedModule, typeof OtherModule],
+    [typeof i1.SharedModule, typeof i1.OtherModule],
     never
   > =
     // @ts-ignore
@@ -159,7 +159,7 @@ export class TernaryModule {
     return new (__ngFactoryType__ || TernaryModule)();
   };
   // @ts-ignore
-  static ɵmod: i0.ɵɵNgModuleDeclaration<TernaryModule, never, [typeof SharedModule], never> =
+  static ɵmod: i0.ɵɵNgModuleDeclaration<TernaryModule, never, [typeof i1.SharedModule], never> =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: TernaryModule });
   // @ts-ignore
@@ -203,7 +203,7 @@ export class SpreadModule {
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     SpreadModule,
     never,
-    [typeof SharedModule, typeof OtherModule],
+    [typeof i1.SharedModule, typeof i1.OtherModule],
     never
   > =
     // @ts-ignore
@@ -248,7 +248,7 @@ export class SpreadWithMwpModule {
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     SpreadWithMwpModule,
     never,
-    [typeof SharedModule, typeof OtherModule, typeof i1.SharedModule],
+    [typeof i1.SharedModule, typeof i1.OtherModule, typeof i1.SharedModule],
     never
   > =
     // @ts-ignore
@@ -295,7 +295,7 @@ export class NonArrayModule {
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     NonArrayModule,
     never,
-    [typeof SharedModule, typeof OtherModule],
+    [typeof i1.SharedModule, typeof i1.OtherModule],
     never
   > =
     // @ts-ignore
@@ -340,7 +340,7 @@ export class FilteredAliasModule {
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     FilteredAliasModule,
     never,
-    [typeof SharedModule, typeof StandaloneDir],
+    [typeof i1.SharedModule, typeof i1.StandaloneDir],
     never
   > =
     // @ts-ignore
@@ -385,7 +385,12 @@ export class FilteredAliasBeforeMwpModule {
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     FilteredAliasBeforeMwpModule,
     never,
-    [typeof SharedModule, typeof StandaloneDir, typeof i1.SharedModule, typeof OtherModule],
+    [
+      typeof i1.SharedModule,
+      typeof i1.StandaloneDir,
+      typeof i1.SharedModule,
+      typeof i1.OtherModule,
+    ],
     never
   > =
     // @ts-ignore
@@ -433,7 +438,7 @@ export class FilteredSpreadBeforeMwpModule {
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     FilteredSpreadBeforeMwpModule,
     never,
-    [typeof SharedModule, typeof StandaloneDir, typeof i1.SharedModule],
+    [typeof i1.SharedModule, typeof i1.StandaloneDir, typeof i1.SharedModule],
     never
   > =
     // @ts-ignore
@@ -478,7 +483,7 @@ export class ForwardRefModule {
     return new (__ngFactoryType__ || ForwardRefModule)();
   };
   // @ts-ignore
-  static ɵmod: i0.ɵɵNgModuleDeclaration<ForwardRefModule, never, [typeof OtherModule], never> =
+  static ɵmod: i0.ɵɵNgModuleDeclaration<ForwardRefModule, never, [typeof i1.OtherModule], never> =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: ForwardRefModule });
   // @ts-ignore
@@ -521,7 +526,7 @@ export class TypeAssertionModule {
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     TypeAssertionModule,
     never,
-    [typeof SharedModule, typeof OtherModule],
+    [typeof i1.SharedModule, typeof i1.OtherModule],
     never
   > =
     // @ts-ignore
@@ -568,7 +573,7 @@ export class ObjectLiteralNgModuleArrayModule {
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     ObjectLiteralNgModuleArrayModule,
     never,
-    [typeof SharedModule, typeof OtherModule, typeof i1.SharedModule],
+    [typeof i1.SharedModule, typeof i1.OtherModule, typeof i1.SharedModule],
     never
   > =
     // @ts-ignore
@@ -619,10 +624,10 @@ export class DeepNestedModule {
     DeepNestedModule,
     never,
     [
-      typeof SharedModule,
-      typeof OtherModule,
-      typeof StandaloneDir,
-      typeof SharedModule,
+      typeof i1.SharedModule,
+      typeof i1.OtherModule,
+      typeof i1.StandaloneDir,
+      typeof i1.SharedModule,
       typeof i1.SharedModule,
     ],
     never

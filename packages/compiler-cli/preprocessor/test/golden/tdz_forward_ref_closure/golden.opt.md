@@ -4,6 +4,8 @@ import { NgModule } from '@angular/core';
 import { ForwardRefPanel, ForwardRefPipe } from 'app/panels/forward_ref_panel';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from 'app/panels/forward_ref_panel';
 
 export class ForwardRefModule {
   // @ts-ignore
@@ -15,9 +17,9 @@ export class ForwardRefModule {
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     ForwardRefModule,
-    [typeof ForwardRefPanel, typeof ForwardRefPipe],
+    [typeof i1.ForwardRefPanel, typeof i1.ForwardRefPipe],
     never,
-    [typeof ForwardRefPanel]
+    [typeof i1.ForwardRefPanel]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: ForwardRefModule });

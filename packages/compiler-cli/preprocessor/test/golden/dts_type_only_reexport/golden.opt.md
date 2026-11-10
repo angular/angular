@@ -24,6 +24,8 @@ import { TypeOnlyModule } from 'type-lib';
 import * as i0 from '@angular/core';
 // @ts-ignore
 import * as i1 from './node_modules/type-lib/internal';
+// @ts-ignore
+import * as i2 from 'type-lib';
 
 export class AppComponent {
   // @ts-ignore
@@ -101,7 +103,7 @@ export class AppModule {
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     AppModule,
     [typeof AppComponent],
-    [typeof TypeOnlyModule],
+    [typeof i2.TypeOnlyModule],
     never
   > =
     // @ts-ignore

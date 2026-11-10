@@ -714,6 +714,12 @@ pub struct ReferenceMetadata {
     /// Identifier in the consumer file's lexical scope (for same-file declarations or local aliases).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub local_alias: Option<String>,
+    /// How a `.d.ts` type position in the consumer refers to the target, when not by
+    /// `local_alias`. ngtsc emits the type side of a reference with `ImportFlags.ForceNewImport`
+    /// (`toR3Reference` in `annotations/common/src/util.ts`), which never reuses the consumer's
+    /// own import binding: a target declared in another file is imported afresh.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub type_import: Option<ImportableRef>,
     /// Reason the target could not be imported from its owning package.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub invalid_reason: Option<String>,
@@ -725,6 +731,7 @@ impl ReferenceMetadata {
             consumer_import: None,
             typecheck_import: None,
             local_alias: Some(name),
+            type_import: None,
             invalid_reason: None,
         }
     }
@@ -742,6 +749,7 @@ impl ReferenceMetadata {
             consumer_import: importable.clone(),
             typecheck_import: importable,
             local_alias: reference.aliases.get(&consumer).cloned(),
+            type_import: None,
             invalid_reason: None,
         }
     }
@@ -848,6 +856,42 @@ pub struct IsolatedTypeElementMetadata {
     /// same-file `const` array containing non-reference elements (such as `CallReturnType`).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub elements: Option<Vec<IsolatedTypeElementMetadata>>,
+    /// The entity name `span` holds, written through the import its leftmost identifier is
+    /// bound by, for the `Typeof` and `CallReturnType` forms ngtsc routes through its
+    /// `ImportManager`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub imported_entity_name: Option<ImportedEntityNameMetadata>,
+}
+
+/// The coercion member (`static ngAcceptInputType_<input>`) of a decorator-based input with a
+/// `transform`.
+#[cfg_attr(feature = "napi", napi(object))]
+#[derive(Clone, Debug, PartialEq, Eq, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CoercionMemberMetadata {
+    /// The property key, quoted when it is not an identifier.
+    pub key: String,
+    /// The member's type, as the text around each of `type_imports`:
+    /// `type_segments[0] type_imports[0] type_segments[1] …`.
+    pub type_segments: Vec<String>,
+    /// The type names written through a generated namespace import of their declaration, as
+    /// ngtsc's `translateTypeReference` re-emits each type reference of a transform's parameter
+    /// type.
+    pub type_imports: Vec<ImportableRef>,
+}
+
+/// An entity name (`Foo`, `Foo.forRoot`) whose leftmost identifier is bound by an import, which
+/// ngtsc's type translator writes through that import instead of the identifier
+/// (`routeEntityNameThroughImportManager` in `translator/src/type_translator.ts`):
+/// `<namespace of import>.<symbol>.<members>`.
+#[cfg_attr(feature = "napi", napi(object))]
+#[derive(Clone, Debug, PartialEq, Eq, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ImportedEntityNameMetadata {
+    /// The specifier as written and the name ngtsc's `getExportedName` reads for the binding.
+    pub import: ImportableRef,
+    /// The property names following the leftmost identifier.
+    pub members: Vec<String>,
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
@@ -1079,9 +1123,9 @@ pub struct ClassMetadata {
     /// Edits adding the `@nocollapse` tsickle would have put on static properties had the
     /// class decorators not been stripped. Apply only when annotating for Closure Compiler.
     pub nocollapse_insertions: Vec<TextInsertionMetadata>,
-    /// The ready-to-splice `declare static ngAcceptInputType_...` member block for
-    /// decorator-based inputs with a `transform`, empty when there are none.
-    pub coercion_members: String,
+    /// The `ngAcceptInputType_...` coercion members of decorator-based inputs with a
+    /// `transform`.
+    pub coercion_members: Vec<CoercionMemberMetadata>,
     pub host_bindings: Vec<HostBindingMetadata>,
     pub host_listeners: Vec<HostListenerMetadata>,
     #[serde(skip_serializing_if = "Option::is_none")]

@@ -97,6 +97,8 @@ import { NgModule } from '@angular/core';
 import { BModule } from '@fake-package/b';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from '@fake-package/b';
 
 export class AModule {
   // @ts-ignore
@@ -106,7 +108,7 @@ export class AModule {
     return new (__ngFactoryType__ || AModule)();
   };
   // @ts-ignore
-  static ɵmod: i0.ɵɵNgModuleDeclaration<AModule, never, [typeof BModule], [typeof BModule]> =
+  static ɵmod: i0.ɵɵNgModuleDeclaration<AModule, never, [typeof i1.BModule], [typeof i1.BModule]> =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AModule });
   // @ts-ignore
@@ -146,6 +148,8 @@ import { NgModule } from '@angular/core';
 import { MatButton } from './mat_button';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './mat_button';
 
 export class BModule {
   // @ts-ignore
@@ -155,7 +159,12 @@ export class BModule {
     return new (__ngFactoryType__ || BModule)();
   };
   // @ts-ignore
-  static ɵmod: i0.ɵɵNgModuleDeclaration<BModule, [typeof MatButton], never, [typeof MatButton]> =
+  static ɵmod: i0.ɵɵNgModuleDeclaration<
+    BModule,
+    [typeof i1.MatButton],
+    never,
+    [typeof i1.MatButton]
+  > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: BModule });
   // @ts-ignore

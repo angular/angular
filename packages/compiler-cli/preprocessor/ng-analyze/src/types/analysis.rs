@@ -741,13 +741,35 @@ impl FileData {
             for r in class.isolated_tuple_references() {
                 out.insert((r.file, r.name));
             }
+            for r in class.host_directive_references() {
+                out.insert((r.file, r.name));
+            }
         }
         out
+    }
+
+    /// The references this file's `.d.ts` types name: the `ɵmod` reference lists, the
+    /// `hostDirectives` entries and the declaration-only type tuples.
+    pub(crate) fn type_position_references(&self) -> Vec<Reference> {
+        self.classes
+            .iter()
+            .flat_map(|class| class.type_position_references())
+            .collect()
     }
 
     /// The name this file publishes a symbol it declares under, or `None` when it publishes
     /// none — the rule behind `findExportedNameOfNode`. A non-alias export wins over an alias.
     pub(crate) fn exported_name_of(&self, declared: &str) -> Option<String> {
+        self.exported_name(declared, false)
+    }
+
+    /// [`Self::exported_name_of`] for a symbol a type position names, which may also be
+    /// imported through a type-only export (ngtsc's `ImportFlags.AllowTypeImports`).
+    pub(crate) fn exported_type_name_of(&self, declared: &str) -> Option<String> {
+        self.exported_name(declared, true)
+    }
+
+    fn exported_name(&self, declared: &str, allow_type_exports: bool) -> Option<String> {
         // `import {X} from './y'; export {X}` republishes `./y`'s declaration, not one of ours.
         if self
             .import_declarations
@@ -760,7 +782,7 @@ impl FileData {
         for a in self.file_exports.local_aliases.iter() {
             // Deliberate divergence: upstream's `findExportedNameOfNode` accepts type-only
             // exports, emitting value imports a consumer's tsc rejects; we decline instead.
-            if a.is_type || a.local_name != declared {
+            if (a.is_type && !allow_type_exports) || a.local_name != declared {
                 continue;
             }
             if a.exported_name == declared {

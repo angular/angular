@@ -201,10 +201,10 @@ describe('isolated NgModule imports under emitDeclarationOnly', () => {
 
       const content = outputs.get('/out/test.ts')!;
       expect(content).toContain(
-        'static ɵmod: i0.ɵɵNgModuleDeclaration<FeatureModule, never, [[typeof FeaturePage, ReturnType<typeof RouterModule.forChild>, typeof SharedWidget]], [[typeof FeaturePage, ReturnType<typeof RouterModule.forChild>, typeof SharedWidget]]>',
+        'static ɵmod: i0.ɵɵNgModuleDeclaration<FeatureModule, never, [[typeof FeaturePage, ReturnType<typeof i1.RouterModule.forChild>, typeof SharedWidget]], [[typeof FeaturePage, ReturnType<typeof i1.RouterModule.forChild>, typeof SharedWidget]]>',
       );
       expect(content).toContain(
-        'static ɵmod: i0.ɵɵNgModuleDeclaration<DirectFeatureModule, never, [typeof FeaturePage, ReturnType<typeof RouterModule.forChild>, typeof SharedWidget], [typeof FeaturePage, ReturnType<typeof RouterModule.forChild>, typeof SharedWidget]>',
+        'static ɵmod: i0.ɵɵNgModuleDeclaration<DirectFeatureModule, never, [typeof FeaturePage, ReturnType<typeof i1.RouterModule.forChild>, typeof SharedWidget], [typeof FeaturePage, ReturnType<typeof i1.RouterModule.forChild>, typeof SharedWidget]>',
       );
       expect(content).not.toContain('typeof MODULE_IMPORTS');
 
@@ -220,10 +220,10 @@ describe('isolated NgModule imports under emitDeclarationOnly', () => {
       });
       expect(dtsResult.diagnostics ?? []).toEqual([]);
       expect(dtsResult.outputText).toContain(
-        'static ɵmod: i0.ɵɵNgModuleDeclaration<FeatureModule, never, [[typeof FeaturePage, ReturnType<typeof RouterModule.forChild>, typeof SharedWidget]], [[typeof FeaturePage, ReturnType<typeof RouterModule.forChild>, typeof SharedWidget]]>;',
+        'static ɵmod: i0.ɵɵNgModuleDeclaration<FeatureModule, never, [[typeof FeaturePage, ReturnType<typeof i1.RouterModule.forChild>, typeof SharedWidget]], [[typeof FeaturePage, ReturnType<typeof i1.RouterModule.forChild>, typeof SharedWidget]]>;',
       );
       expect(dtsResult.outputText).toContain(
-        'static ɵmod: i0.ɵɵNgModuleDeclaration<DirectFeatureModule, never, [typeof FeaturePage, ReturnType<typeof RouterModule.forChild>, typeof SharedWidget], [typeof FeaturePage, ReturnType<typeof RouterModule.forChild>, typeof SharedWidget]>;',
+        'static ɵmod: i0.ɵɵNgModuleDeclaration<DirectFeatureModule, never, [typeof FeaturePage, ReturnType<typeof i1.RouterModule.forChild>, typeof SharedWidget], [typeof FeaturePage, ReturnType<typeof i1.RouterModule.forChild>, typeof SharedWidget]>;',
       );
     }
   });

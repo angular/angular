@@ -348,6 +348,8 @@ import { NgModule } from '@angular/core';
 import { LegacyHost, LegacyWidget } from './legacy.component';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './legacy.component';
 
 export class LegacyModule {
   // @ts-ignore
@@ -359,7 +361,7 @@ export class LegacyModule {
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     LegacyModule,
-    [typeof LegacyWidget, typeof LegacyHost],
+    [typeof i1.LegacyWidget, typeof i1.LegacyHost],
     never,
     never
   > =

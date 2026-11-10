@@ -97,6 +97,11 @@ pub enum FirstParam {
         is_emittable_in_file: bool,
         /// The first type it references that is declared in its file but not exported from it.
         unexported: Option<UnexportedType>,
+        /// The type names it references that resolve to a declaration, in source order.
+        type_names: Vec<TypeName>,
+        /// True when every symbol the type references is one of `type_names`, so it can be
+        /// emitted in another file with each name written through an import of its declaration.
+        is_reemittable: bool,
     },
 }
 
@@ -104,6 +109,29 @@ pub enum FirstParam {
 pub struct UnexportedType {
     pub name: String,
     pub decl_span: Span,
+}
+
+/// A type name (`Foo`, `ns.Foo`) in a parameter type that resolves to a declaration. ngtsc
+/// re-emits each type reference of a transform's parameter type through its reference emitter
+/// (`translateTypeReference` in `translator/src/type_translator.ts`), so in the coercion member
+/// the name becomes an import of that declaration unless it is declared in the consumer.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct TypeName {
+    /// The type name, relative to the start of the parameter type.
+    pub span: Span,
+    pub target: TypeNameTarget,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum TypeNameTarget {
+    /// Reached through an import: the module specifier as written and the name the module
+    /// exports the type under.
+    Imported {
+        specifier: String,
+        export_name: String,
+    },
+    /// Declared at the top level of the parameter type's file under this name.
+    Local(String),
 }
 
 impl FunctionFacts {
@@ -150,14 +178,17 @@ impl FunctionFacts {
 }
 
 fn typed_param(ty: &TSType<'_>, semantic: &Semantic<'_>) -> FirstParam {
+    let span = ty.span();
     let mut finder = UnexportedTypeFinder {
         semantic,
+        type_start: span.start,
         is_self_contained: true,
         is_emittable_in_file: true,
         found: None,
+        type_names: Vec::new(),
+        is_reemittable: true,
     };
     finder.visit_ts_type(ty);
-    let span = ty.span();
     let type_text = semantic
         .source_text()
         .get(span.start as usize..span.end as usize)
@@ -169,18 +200,25 @@ fn typed_param(ty: &TSType<'_>, semantic: &Semantic<'_>) -> FirstParam {
         is_self_contained: finder.is_self_contained,
         is_emittable_in_file: finder.is_emittable_in_file,
         unexported: finder.found,
+        type_names: finder.type_names,
+        is_reemittable: finder.is_reemittable,
     }
 }
 
 /// Finds the type references ngtsc's `assertEmittableInputType` rejects within the context file:
 /// identifiers naming a declaration of the file that it does not statically export. Also tracks
-/// whether the type is self-contained across files (`is_self_contained`) and emittable at class
-/// scope in the declaring file (`is_emittable_in_file`).
+/// whether the type is self-contained across files (`is_self_contained`), emittable at class
+/// scope in the declaring file (`is_emittable_in_file`), and which type names resolve to a
+/// declaration (`type_names`, `is_reemittable`).
 struct UnexportedTypeFinder<'s, 'a> {
     semantic: &'s Semantic<'a>,
+    /// Where the parameter type starts, which [`TypeName::span`] is relative to.
+    type_start: u32,
     is_self_contained: bool,
     is_emittable_in_file: bool,
     found: Option<UnexportedType>,
+    type_names: Vec<TypeName>,
+    is_reemittable: bool,
 }
 
 impl<'a> Visit<'a> for UnexportedTypeFinder<'_, 'a> {
@@ -190,7 +228,16 @@ impl<'a> Visit<'a> for UnexportedTypeFinder<'_, 'a> {
                 self.check(ident);
             }
         }
-        walk::walk_ts_type_reference(self, it);
+        let Some(name) = self.type_name(&it.type_name) else {
+            walk::walk_ts_type_reference(self, it);
+            return;
+        };
+        // The name itself is covered by `name`; its type arguments are visited as usual.
+        self.is_self_contained = false;
+        self.type_names.push(name);
+        if let Some(type_arguments) = &it.type_arguments {
+            self.visit_ts_type_parameter_instantiation(type_arguments);
+        }
     }
 
     fn visit_identifier_reference(&mut self, ident: &IdentifierReference<'a>) {
@@ -201,6 +248,7 @@ impl<'a> Visit<'a> for UnexportedTypeFinder<'_, 'a> {
             .and_then(|id| scoping.get_reference(id).symbol_id())
         {
             self.is_self_contained = false;
+            self.is_reemittable = false;
             if scoping
                 .symbol_flags(symbol_id)
                 .intersects(SymbolFlags::FunctionScopedVariable)
@@ -212,26 +260,86 @@ impl<'a> Visit<'a> for UnexportedTypeFinder<'_, 'a> {
 
     fn visit_ts_import_type(&mut self, it: &oxc_ast::ast::TSImportType<'a>) {
         self.is_self_contained = false;
+        self.is_reemittable = false;
         walk::walk_ts_import_type(self, it);
     }
 
     fn visit_ts_type_query(&mut self, it: &oxc_ast::ast::TSTypeQuery<'a>) {
         self.is_self_contained = false;
+        self.is_reemittable = false;
         walk::walk_ts_type_query(self, it);
     }
 
     fn visit_ts_this_type(&mut self, _it: &oxc_ast::ast::TSThisType) {
         self.is_self_contained = false;
         self.is_emittable_in_file = false;
+        self.is_reemittable = false;
     }
 
     fn visit_this_expression(&mut self, _it: &oxc_ast::ast::ThisExpression) {
         self.is_self_contained = false;
         self.is_emittable_in_file = false;
+        self.is_reemittable = false;
     }
 }
 
 impl UnexportedTypeFinder<'_, '_> {
+    /// The declaration `type_name` resolves to: a top-level declaration of the file (`Foo`), a
+    /// named or default import (`Foo`), or a member of a namespace import (`ns.Foo`).
+    // TODO(parity): ngtsc also re-emits deeper qualified names (`ns.Inner.Foo`) and members of a
+    // named import (`Enum.Member`) through the declaration of their rightmost identifier.
+    fn type_name(&self, type_name: &TSTypeName<'_>) -> Option<TypeName> {
+        use super::utils::{import_binding_of_identifier, ImportBinding};
+        let (specifier, export_name) = match type_name {
+            TSTypeName::IdentifierReference(ident) => {
+                match import_binding_of_identifier(ident, self.semantic) {
+                    Some((specifier, ImportBinding::Named(name))) => (specifier, name),
+                    Some((specifier, ImportBinding::Default)) => (specifier, "default"),
+                    Some((_, ImportBinding::Namespace)) => return None,
+                    None => return self.local_type_name(ident),
+                }
+            }
+            TSTypeName::QualifiedName(qualified) => {
+                let TSTypeName::IdentifierReference(namespace) = &qualified.left else {
+                    return None;
+                };
+                match import_binding_of_identifier(namespace, self.semantic)? {
+                    (specifier, ImportBinding::Namespace) => {
+                        (specifier, qualified.right.name.as_str())
+                    }
+                    _ => return None,
+                }
+            }
+            TSTypeName::ThisExpression(_) => return None,
+        };
+        Some(TypeName {
+            span: self.relative_span(type_name.span()),
+            target: TypeNameTarget::Imported {
+                specifier: specifier.to_string(),
+                export_name: export_name.to_string(),
+            },
+        })
+    }
+
+    /// `ident` as a [`TypeNameTarget::Local`] when it names a top-level declaration.
+    fn local_type_name(&self, ident: &IdentifierReference<'_>) -> Option<TypeName> {
+        let scoping = self.semantic.scoping();
+        let symbol_id = scoping
+            .get_reference(ident.reference_id.get()?)
+            .symbol_id()?;
+        if scoping.symbol_scope_id(symbol_id) != scoping.root_scope_id() {
+            return None;
+        }
+        Some(TypeName {
+            span: self.relative_span(ident.span),
+            target: TypeNameTarget::Local(ident.name.to_string()),
+        })
+    }
+
+    fn relative_span(&self, span: Span) -> Span {
+        Span::new(span.start - self.type_start, span.end - self.type_start)
+    }
+
     fn check(&mut self, ident: &IdentifierReference<'_>) {
         let scoping = self.semantic.scoping();
         let Some(symbol_id) = ident
@@ -358,6 +466,29 @@ pub struct InputTransformSite {
     /// The resolved first-parameter type string for `ngAcceptInputType_<input>` when Stage 2 can
     /// emit the parameter type directly (mirroring ngtsc's full-compilation `Reference(firstParam.type)`).
     pub resolved_type: Option<String>,
+    /// The type names of `resolved_type` written through a fresh import of their declaration.
+    pub resolved_type_names: Vec<EmittedTypeName>,
+    /// The `transform` expression, written through the import its leftmost identifier is bound
+    /// by, for the `Parameters<typeof transform>[0]` coercion type ngtsc routes through its
+    /// `ImportManager`.
+    pub imported_entity_name: Option<crate::types::metadata::ImportedEntityNameMetadata>,
+}
+
+/// A [`TypeName`] emitted through the reference emitter.
+#[derive(Clone, Debug)]
+pub struct EmittedTypeName {
+    /// The type name, relative to the start of the parameter type.
+    pub span: Span,
+    pub written: WrittenTypeName,
+}
+
+/// How the consumer writes an emitted [`TypeName`].
+#[derive(Clone, Debug)]
+pub enum WrittenTypeName {
+    /// Through a generated namespace import of its declaration.
+    Import(crate::types::metadata::ImportableRef),
+    /// By its declared name, for a declaration of the consumer itself.
+    Declared(String),
 }
 
 /// What a transform evaluates to, as far as ngtsc's reflector can read a function from it.
@@ -395,6 +526,8 @@ impl InputTransformSite {
             conflicting_coercion: false,
             issue: None,
             resolved_type: None,
+            resolved_type_names: Vec::new(),
+            imported_entity_name: super::utils::imported_entity_name(expr, eval.semantic),
         })
     }
 
@@ -511,8 +644,8 @@ fn imported_function(
 enum Declared {
     /// Written in place or declared in the class's file.
     InFile,
-    /// Declared in another source file.
-    OtherFile,
+    /// Declared in another source file, at this path.
+    OtherFile(std::path::PathBuf),
     /// Declared in a `.d.ts` file.
     Declarations,
 }
@@ -573,27 +706,75 @@ impl InputTransformSite {
         };
         self.issue = self.definition_issue(&facts, detail, &declared);
         if self.issue.is_none() && !self.conflicting_coercion {
-            self.resolved_type = match (&facts.first_param, &declared) {
-                (FirstParam::Absent, _) => Some("unknown".to_string()),
-                (
-                    FirstParam::Typed {
-                        type_text,
-                        is_emittable_in_file: true,
-                        ..
-                    },
-                    Declared::InFile,
-                ) if !type_text.is_empty() => Some(type_text.clone()),
-                (
-                    FirstParam::Typed {
-                        type_text,
-                        is_self_contained: true,
-                        ..
-                    },
-                    Declared::OtherFile | Declared::Declarations,
-                ) if !type_text.is_empty() => Some(type_text.clone()),
-                _ => None,
-            };
+            self.resolve_type(&facts.first_param, &declared, file_path, ctx)
+                .await;
         }
+    }
+
+    /// The coercion type for a transform's first parameter, as ngtsc transplants it into the
+    /// class's `.d.ts` (`translateTypeReference` for each type reference). `None` keeps the
+    /// `Parameters<typeof transform>[0]` fallback.
+    async fn resolve_type<Fs: ResourceResolverFs + Clone + 'static>(
+        &mut self,
+        first_param: &FirstParam,
+        declared: &Declared,
+        file_path: &std::path::Path,
+        ctx: &QueryCtx<Fs>,
+    ) {
+        let FirstParam::Typed {
+            type_text,
+            is_self_contained,
+            is_emittable_in_file,
+            is_reemittable,
+            type_names,
+            ..
+        } = first_param
+        else {
+            if matches!(first_param, FirstParam::Absent) {
+                self.resolved_type = Some("unknown".to_string());
+            }
+            return;
+        };
+        if type_text.is_empty() {
+            return;
+        }
+        match declared {
+            // Names declared in this file stay as they are; imported ones are imported afresh,
+            // or keep their spelling when that is not possible.
+            Declared::InFile if *is_emittable_in_file => {
+                for name in type_names {
+                    if matches!(name.target, TypeNameTarget::Local(_)) {
+                        continue;
+                    }
+                    if let Some(written) = emit_type_name(name, file_path, file_path, ctx).await {
+                        self.resolved_type_names.push(EmittedTypeName {
+                            span: name.span,
+                            written,
+                        });
+                    }
+                }
+            }
+            _ if *is_self_contained => {}
+            // Every name is imported into this file from the transform's declaring file.
+            Declared::OtherFile(declaring_path) if *is_reemittable => {
+                let mut emitted = Vec::with_capacity(type_names.len());
+                for name in type_names {
+                    let Some(written) = emit_type_name(name, declaring_path, file_path, ctx).await
+                    else {
+                        return;
+                    };
+                    emitted.push(EmittedTypeName {
+                        span: name.span,
+                        written,
+                    });
+                }
+                self.resolved_type_names = emitted;
+            }
+            // TODO(parity): a transform declared in a `.d.ts` file has its types re-emitted
+            // relative to its owning package (`viaModule` in `translateTypeReference`).
+            _ => return,
+        }
+        self.resolved_type = Some(type_text.clone());
     }
 
     fn definition_issue(
@@ -643,7 +824,7 @@ impl InputTransformSite {
                 unexported.decl_span,
             )),
             // TODO(parity): ngtsc reports this on the type reference, in the function's file.
-            Declared::OtherFile => Some(ValueIssue::import_generation_failure(
+            Declared::OtherFile(_) => Some(ValueIssue::import_generation_failure(
                 self.value_span,
                 &unexported.name,
             )),
@@ -684,20 +865,11 @@ async fn imported_function_facts<Fs: ResourceResolverFs + Clone + 'static>(
     let declared = if crate::utils::is_dts(&resolved.file_path) {
         Declared::Declarations
     } else {
-        Declared::OtherFile
+        Declared::OtherFile(resolved.file_path.clone())
     };
     let file_id = ctx.engine.intern_path(&resolved.file_path);
     let syntax = ctx.analyze_file_syntax(file_id).await;
-    let parsed = ctx.parse_file(file_id).await;
-    let symbol_name = {
-        let guard = parsed.lock().unwrap();
-        guard
-            .borrow_dependent()
-            .semantic
-            .scoping()
-            .symbol_name(resolved.symbol_id)
-            .to_string()
-    };
+    let symbol_name = declared_symbol_name(file_id, resolved.symbol_id, ctx).await;
     let facts = syntax
         .function_facts
         .get(&symbol_name)
@@ -714,6 +886,96 @@ async fn imported_function_facts<Fs: ResourceResolverFs + Clone + 'static>(
             }
         });
     Some((facts, declared))
+}
+
+/// The name `symbol_id` is declared under in `file_id`.
+async fn declared_symbol_name<Fs: ResourceResolverFs + Clone + 'static>(
+    file_id: crate::query::FileId,
+    symbol_id: SymbolId,
+    ctx: &QueryCtx<Fs>,
+) -> String {
+    let parsed = ctx.parse_file(file_id).await;
+    let guard = parsed.lock().unwrap();
+    let name = guard
+        .borrow_dependent()
+        .semantic
+        .scoping()
+        .symbol_name(symbol_id)
+        .to_string();
+    name
+}
+
+/// ngtsc's `translateTypeReference` for `name`, written in `declaring_path`: the declaration it
+/// resolves to, emitted into `consumer_path` through the reference emitter as a fresh
+/// `Reference`, so never through the consumer's own import binding, and a declaration of the
+/// consumer itself by its declared name (`LocalIdentifierStrategy`). `None` when the declaration
+/// cannot be followed or imported.
+async fn emit_type_name<Fs: ResourceResolverFs + Clone + 'static>(
+    name: &TypeName,
+    declaring_path: &std::path::Path,
+    consumer_path: &std::path::Path,
+    ctx: &QueryCtx<Fs>,
+) -> Option<WrittenTypeName> {
+    use crate::types::analysis::{OwningReference, Reference};
+    let (file, declared_name, declaration_path, owning_reference) = match &name.target {
+        TypeNameTarget::Local(local) => (
+            ctx.engine.intern_path(declaring_path),
+            local.clone(),
+            declaring_path.to_path_buf(),
+            None,
+        ),
+        TypeNameTarget::Imported {
+            specifier,
+            export_name,
+        } => {
+            let mut visited = std::collections::HashSet::new();
+            let resolved = crate::evaluator::cross_file::cross_file_resolve_type(
+                ctx,
+                declaring_path,
+                Some(specifier),
+                export_name.clone(),
+                &mut visited,
+            )
+            .await
+            .ok()??;
+            let file = ctx.engine.intern_path(&resolved.file_path);
+            (
+                file,
+                declared_symbol_name(file, resolved.symbol_id, ctx).await,
+                resolved.file_path,
+                // ngtsc's `_viaModule`: a declaration reached through a non-relative import is
+                // owned by that module.
+                OwningReference::is_absolute_specifier(specifier)
+                    .then(|| OwningReference::from_source_specifier(specifier, export_name)),
+            )
+        }
+    };
+    let consumer = ctx.engine.intern_path(consumer_path);
+    let reference = Reference {
+        file,
+        name: declared_name,
+        owning_reference,
+        aliases: std::collections::HashMap::new(),
+        is_default_export: false,
+    };
+    if crate::analyzer::import_emit::is_declared_in(&reference, consumer) {
+        return Some(WrittenTypeName::Declared(reference.name));
+    }
+    let declaring_export_name = ctx
+        .analyze_file_syntax(file)
+        .await
+        .exported_type_name_of(&reference.name);
+    ctx.engine
+        .reference_strategy
+        .emit(
+            &reference,
+            consumer,
+            consumer_path,
+            &declaration_path,
+            declaring_export_name.as_deref(),
+        )
+        .typecheck_import
+        .map(WrittenTypeName::Import)
 }
 
 #[cfg(test)]

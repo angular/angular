@@ -103,6 +103,8 @@ import { MORE } from './more';
 import * as i0 from '@angular/core';
 // @ts-ignore
 import * as i1 from './shared';
+// @ts-ignore
+import * as i2 from './app.component';
 
 // `SharedModule.forRoot()` is reached twice along sibling paths: directly, and through the
 // `MORE` const. Each occurrence evaluates independently (as in ngtsc's `StaticInterpreter`),
@@ -118,7 +120,7 @@ export class AppModule {
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     AppModule,
-    [typeof AppComponent],
+    [typeof i2.AppComponent],
     [typeof i1.SharedModule, typeof i1.SharedModule],
     never
   > =

@@ -100,6 +100,12 @@ import { CompB } from './b.component';
 import { CompC } from './c.component';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './a.component';
+// @ts-ignore
+import * as i2 from './b.component';
+// @ts-ignore
+import * as i3 from './c.component';
 
 export class AppModule {
   // @ts-ignore
@@ -111,9 +117,9 @@ export class AppModule {
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     AppModule,
-    [typeof CompA, typeof CompB, typeof CompC],
+    [typeof i1.CompA, typeof i2.CompB, typeof i3.CompC],
     never,
-    [typeof CompA, typeof CompB, typeof CompC]
+    [typeof i1.CompA, typeof i2.CompB, typeof i3.CompC]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });

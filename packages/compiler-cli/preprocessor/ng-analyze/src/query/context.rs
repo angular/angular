@@ -124,13 +124,49 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryContext<Fs> {
         for (file, name) in file_data.wire_reference_decls() {
             wanted.entry(file).or_default().push(name);
         }
-        let mut out = crate::analyzer::import_emit::DeclaringExportNames::new();
+        let mut out = crate::analyzer::import_emit::DeclaringExportNames::default();
         for (file, names) in wanted {
             let syntax = self.analyze_file_syntax(file).await;
             for name in names {
                 let exported = syntax.exported_name_of(&name);
-                out.insert((file, name), exported);
+                out.declaring.insert((file, name), exported);
             }
+        }
+        if !self.engine.reference_strategy.uses_owning_reference() {
+            return out;
+        }
+        let consumer_path = self.engine.lookup_path(file_data.file_id);
+        for reference in file_data.type_position_references() {
+            let Some(owning) = &reference.owning_reference else {
+                continue;
+            };
+            // An import nothing resolved is recorded against this file, and its `.d.ts` type is
+            // the import as written (see `ClassData::type_import`): there is no declaration to
+            // look up in the module's export table.
+            if reference.file == file_data.file_id {
+                continue;
+            }
+            let Some(entry_path) = crate::evaluator::cross_file::resolve_specifier(
+                self.engine.resolver.as_ref(),
+                &consumer_path,
+                owning.specifier(),
+            ) else {
+                continue;
+            };
+            let exports = self
+                .module_export_map(self.engine.intern_path(&entry_path))
+                .await;
+            let Some(published) = exports.get(&(reference.file, reference.name.clone())) else {
+                continue;
+            };
+            out.published.insert(
+                (
+                    owning.specifier().to_string(),
+                    reference.file,
+                    reference.name,
+                ),
+                published.clone(),
+            );
         }
         out
     }

@@ -5,6 +5,10 @@ import { CompA } from './comp-a.component';
 import { CompB } from './comp-b.component';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './comp-a.component';
+// @ts-ignore
+import * as i2 from './comp-b.component';
 
 export class AppModule {
   // @ts-ignore
@@ -16,9 +20,9 @@ export class AppModule {
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     AppModule,
-    [typeof CompA, typeof CompB],
+    [typeof i1.CompA, typeof i2.CompB],
     never,
-    [typeof CompA, typeof CompB]
+    [typeof i1.CompA, typeof i2.CompB]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });

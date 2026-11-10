@@ -540,19 +540,30 @@ export function refToExpression(ref: nga.ReferenceMetadata): o.Expression {
 
 /**
  * Converts a `ReferenceMetadata` to an expression suitable for `.d.ts` type parameter emission
- * (such as `ɵɵNgModuleDeclaration` type arguments). When a symbol was imported under a local alias
- * (e.g., `import { Foo as LocalFoo } from './foo'`) or resolved to an underlying class declaration
- * behind a re-exported `const` alias, emits an external module reference (`i<N>.Foo`) so the
- * generated `.d.ts` references the exported symbol rather than an unexported local alias.
+ * (such as `ɵɵNgModuleDeclaration` type arguments). The analyzer decides how such a type names
+ * the target (`typeImport`, mirroring ngtsc's `ImportFlags.ForceNewImport`); a target without
+ * one is written as it is in expressions.
  */
 export function refToTypeExpression(ref: nga.ReferenceMetadata): o.Expression {
-  if (ref.typecheckImport && ref.localAlias && ref.localAlias !== ref.typecheckImport.symbol) {
+  if (ref.typeImport) {
     return o.importExpr({
-      moduleName: ref.typecheckImport.specifier,
-      name: ref.typecheckImport.symbol,
+      moduleName: ref.typeImport.specifier,
+      name: ref.typeImport.symbol,
     });
   }
   return refToExpression(ref);
+}
+
+/** The entity name `<namespace of import>.<symbol>.<members>` the analyzer resolved. */
+export function importedEntityNameExpr(name: nga.ImportedEntityNameMetadata): o.Expression {
+  let expr: o.Expression = o.importExpr({
+    moduleName: name.import.specifier,
+    name: name.import.symbol,
+  });
+  for (const member of name.members) {
+    expr = expr.prop(member);
+  }
+  return expr;
 }
 
 /**
@@ -567,7 +578,7 @@ export function buildHostDirectives(
   return parsedHostDirectives.map((hd) => ({
     directive: {
       value: refToExpression(hd.directive),
-      type: refToExpression(hd.directive),
+      type: refToTypeExpression(hd.directive),
     },
     isForwardReference: hd.isForwardRef,
     inputs: hd.inputs

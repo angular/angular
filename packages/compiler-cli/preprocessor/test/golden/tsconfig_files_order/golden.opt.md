@@ -94,6 +94,10 @@ import { ZFirstComp } from './z_first';
 import { ASecondComp } from './a_second';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './z_first';
+// @ts-ignore
+import * as i2 from './a_second';
 
 export class AppModule {
   // @ts-ignore
@@ -105,7 +109,7 @@ export class AppModule {
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     AppModule,
-    [typeof ZFirstComp, typeof ASecondComp],
+    [typeof i1.ZFirstComp, typeof i2.ASecondComp],
     never,
     never
   > =
