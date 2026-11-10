@@ -415,12 +415,7 @@ export function getPositionForDirective(
     }
   }
 
-  const dirName =
-    directive.name ||
-    directive.ref?.name ||
-    directive.className ||
-    directive.selectorlessNode?.componentName ||
-    directive.selectorlessNode?.name;
+  const dirName = directive.name || directive.ref?.name || directive.className;
   if (dirName) {
     for (const decl of allDeclarations) {
       if (decl.className === dirName && decl.nameSpan) {

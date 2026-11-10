@@ -20,15 +20,11 @@ import {
   BlockParameterToken,
   CdataStartToken,
   CommentStartToken,
-  ComponentCloseToken,
-  ComponentOpenStartToken,
-  DirectiveNameToken,
   ExpansionCaseExpressionEndToken,
   ExpansionCaseExpressionStartToken,
   ExpansionCaseValueToken,
   ExpansionFormStartToken,
   IncompleteBlockOpenToken,
-  IncompleteComponentOpenToken,
   IncompleteLetToken,
   IncompleteTagOpenToken,
   InElementCommentToken,
@@ -45,7 +41,7 @@ import {
 } from './tokens';
 
 /** Nodes that can contain other nodes. */
-type NodeContainer = html.Element | html.Block | html.Component;
+type NodeContainer = html.Element | html.Block;
 
 /** Class that can construct a `NodeContainer`. */
 interface NodeContainerConstructor extends Function {
@@ -139,13 +135,6 @@ class _TreeBuilder {
       } else if (this._peek.type === TokenType.INCOMPLETE_LET) {
         this._closeVoidElement();
         this._consumeIncompleteLet(this._advance());
-      } else if (
-        this._peek.type === TokenType.COMPONENT_OPEN_START ||
-        this._peek.type === TokenType.INCOMPLETE_COMPONENT_OPEN
-      ) {
-        this._consumeComponentStartTag(this._advance());
-      } else if (this._peek.type === TokenType.COMPONENT_CLOSE) {
-        this._consumeComponentEndTag(this._advance());
       } else {
         // Skip all other tokens...
         this._advance();
@@ -392,9 +381,8 @@ class _TreeBuilder {
 
   private _consumeElementStartTag(startTagToken: TagOpenStartToken | IncompleteTagOpenToken) {
     const attrs: html.Attribute[] = [];
-    const directives: html.Directive[] = [];
     const comments: html.StartTagComment[] = [];
-    this._consumeAttributesAndDirectives(attrs, directives, comments);
+    this._consumeAttributes(attrs, comments);
 
     const fullName = this._getElementFullName(startTagToken, this._getClosestElementLikeParent());
     const tagDef = this._getTagDefinition(fullName);
@@ -432,7 +420,6 @@ class _TreeBuilder {
     const el = new html.Element(
       fullName,
       attrs,
-      directives,
       [],
       selfClosing,
       span,
@@ -461,76 +448,15 @@ class _TreeBuilder {
     }
   }
 
-  private _consumeComponentStartTag(
-    startToken: ComponentOpenStartToken | IncompleteComponentOpenToken,
-  ) {
-    const componentName = startToken.parts[0];
-    const attrs: html.Attribute[] = [];
-    const directives: html.Directive[] = [];
-    const comments: html.StartTagComment[] = [];
-    this._consumeAttributesAndDirectives(attrs, directives, comments);
-
-    const closestElement = this._getClosestElementLikeParent();
-    const tagName = this._getComponentTagName(startToken, closestElement);
-    const fullName = this._getComponentFullName(startToken, closestElement);
-    const selfClosing = this._peek.type === TokenType.COMPONENT_OPEN_END_VOID;
-    this._advance();
-
-    const end = this._peek.sourceSpan.fullStart;
-    const span = new ParseSourceSpan(
-      startToken.sourceSpan.start,
-      end,
-      startToken.sourceSpan.fullStart,
-    );
-    const startSpan = new ParseSourceSpan(
-      startToken.sourceSpan.start,
-      end,
-      startToken.sourceSpan.fullStart,
-    );
-    const node = new html.Component(
-      componentName,
-      tagName,
-      fullName,
-      attrs,
-      directives,
-      [],
-      selfClosing,
-      span,
-      startSpan,
-      undefined,
-      undefined,
-      comments,
-    );
-    const parent = this._getContainer();
-    const isClosedByChild =
-      parent !== null &&
-      node.tagName !== null &&
-      !!this._getTagDefinition(parent)?.isClosedByChild(node.tagName);
-    this._pushContainer(node, isClosedByChild);
-
-    if (selfClosing) {
-      this._popContainer(fullName, html.Component, span);
-    } else if (startToken.type === TokenType.INCOMPLETE_COMPONENT_OPEN) {
-      this._popContainer(fullName, html.Component, null);
-      this.errors.push(
-        TreeError.create(fullName, span, `Opening tag "${fullName}" not terminated.`),
-      );
-    }
-  }
-
-  private _consumeAttributesAndDirectives(
+  private _consumeAttributes(
     attributesResult: html.Attribute[],
-    directivesResult: html.Directive[],
     commentsResult: html.StartTagComment[],
   ) {
     while (
       this._peek.type === TokenType.ATTR_NAME ||
-      this._peek.type === TokenType.DIRECTIVE_NAME ||
       this._peek.type === TokenType.IN_ELEMENT_COMMENT
     ) {
-      if (this._peek.type === TokenType.DIRECTIVE_NAME) {
-        directivesResult.push(this._consumeDirective(this._peek));
-      } else if (this._peek.type === TokenType.ATTR_NAME) {
+      if (this._peek.type === TokenType.ATTR_NAME) {
         attributesResult.push(this._consumeAttr(this._advance<AttributeNameToken>()));
       } else {
         const commentToken = this._advance<InElementCommentToken>();
@@ -545,31 +471,11 @@ class _TreeBuilder {
     }
   }
 
-  private _consumeComponentEndTag(endToken: ComponentCloseToken) {
-    const fullName = this._getComponentFullName(endToken, this._getClosestElementLikeParent());
-
-    if (!this._popContainer(fullName, html.Component, endToken.sourceSpan)) {
-      const container = this._containerStack[this._containerStack.length - 1];
-      let suffix: string;
-
-      if (container instanceof html.Component && container.componentName === endToken.parts[0]) {
-        suffix = `, did you mean "${container.fullName}"?`;
-      } else {
-        suffix = '. It may happen when the tag has already been closed by another tag.';
-      }
-
-      const errMsg = `Unexpected closing tag "${fullName}"${suffix}`;
-      this.errors.push(TreeError.create(fullName, endToken.sourceSpan, errMsg));
-    }
-  }
-
   private _getTagDefinition(nodeOrName: html.Node | string): TagDefinition | null {
     if (typeof nodeOrName === 'string') {
       return this.tagDefinitionResolver(nodeOrName);
     } else if (nodeOrName instanceof html.Element) {
       return this.tagDefinitionResolver(nodeOrName.name);
-    } else if (nodeOrName instanceof html.Component && nodeOrName.tagName !== null) {
-      return this.tagDefinitionResolver(nodeOrName.tagName);
     } else {
       return null;
     }
@@ -615,7 +521,7 @@ class _TreeBuilder {
     let unexpectedCloseTagDetected = false;
     for (let stackIndex = this._containerStack.length - 1; stackIndex >= 0; stackIndex--) {
       const node = this._containerStack[stackIndex];
-      const nodeName = node instanceof html.Component ? node.fullName : node.name;
+      const nodeName = node.name;
 
       if ((nodeName === expectedName || expectedName === null) && node instanceof expectedType) {
         // Record the parse span with the element that is being closed. Any elements that are
@@ -712,53 +618,6 @@ class _TreeBuilder {
     );
   }
 
-  private _consumeDirective(nameToken: DirectiveNameToken): html.Directive {
-    const attributes: html.Attribute[] = [];
-    let startSourceSpanEnd: ParseLocation = nameToken.sourceSpan.end;
-    let endSourceSpan: ParseSourceSpan | null = null;
-    this._advance();
-
-    if (this._peek.type === TokenType.DIRECTIVE_OPEN) {
-      // Capture the opening token in the start span.
-      startSourceSpanEnd = this._peek.sourceSpan.end;
-      this._advance();
-
-      // Cast here is necessary, because TS doesn't know that `_advance` changed `_peek`.
-      while ((this._peek as Token).type === TokenType.ATTR_NAME) {
-        attributes.push(this._consumeAttr(this._advance<AttributeNameToken>()));
-      }
-
-      if ((this._peek as Token).type === TokenType.DIRECTIVE_CLOSE) {
-        endSourceSpan = this._peek.sourceSpan;
-        this._advance();
-      } else {
-        this.errors.push(
-          TreeError.create(null, nameToken.sourceSpan, 'Unterminated directive definition'),
-        );
-      }
-    }
-
-    const startSourceSpan = new ParseSourceSpan(
-      nameToken.sourceSpan.start,
-      startSourceSpanEnd,
-      nameToken.sourceSpan.fullStart,
-    );
-
-    const sourceSpan = new ParseSourceSpan(
-      startSourceSpan.start,
-      endSourceSpan === null ? nameToken.sourceSpan.end : endSourceSpan.end,
-      startSourceSpan.fullStart,
-    );
-
-    return new html.Directive(
-      nameToken.parts[0],
-      attributes,
-      sourceSpan,
-      startSourceSpan,
-      endSourceSpan,
-    );
-  }
-
   private _consumeBlockOpen(token: BlockOpenStartToken) {
     const parameters: html.BlockParameter[] = [];
 
@@ -784,7 +643,7 @@ class _TreeBuilder {
     const topNode = this._containerStack[initialStackLength - 1];
     if (!this._popContainer(null, html.Block, token.sourceSpan)) {
       if (this._containerStack.length < initialStackLength) {
-        const nodeName = topNode instanceof html.Component ? topNode.fullName : topNode.name;
+        const nodeName = topNode.name;
         this.errors.push(
           TreeError.create(
             null,
@@ -927,10 +786,10 @@ class _TreeBuilder {
       : null;
   }
 
-  private _getClosestElementLikeParent(): html.Element | html.Component | null {
+  private _getClosestElementLikeParent(): html.Element | null {
     for (let i = this._containerStack.length - 1; i > -1; i--) {
       const current = this._containerStack[i];
-      if (current instanceof html.Element || current instanceof html.Component) {
+      if (current instanceof html.Element) {
         return current;
       }
     }
@@ -950,78 +809,25 @@ class _TreeBuilder {
 
   private _getElementFullName(
     token: TagOpenStartToken | IncompleteTagOpenToken | TagCloseToken,
-    parent: html.Element | html.Component | null,
+    parent: html.Element | null,
   ): string {
     const prefix = this._getPrefix(token, parent);
     return mergeNsAndName(prefix, token.parts[1]);
   }
 
-  private _getComponentFullName(
-    token: ComponentOpenStartToken | IncompleteComponentOpenToken | ComponentCloseToken,
-    parent: html.Element | html.Component | null,
-  ): string {
-    const componentName = token.parts[0];
-    const tagName = this._getComponentTagName(token, parent);
-
-    if (tagName === null) {
-      return componentName;
-    }
-
-    return tagName.startsWith(':') ? componentName + tagName : `${componentName}:${tagName}`;
-  }
-
-  private _getComponentTagName(
-    token: ComponentOpenStartToken | IncompleteComponentOpenToken | ComponentCloseToken,
-    parent: html.Element | html.Component | null,
-  ): string | null {
-    const prefix = this._getPrefix(token, parent);
-    const tagName = token.parts[2];
-
-    if (!prefix && !tagName) {
-      return null;
-    } else if (!prefix && tagName) {
-      return tagName;
-    } else {
-      // TODO(crisbeto): re-evaluate this fallback. Maybe base it off the class name?
-      return mergeNsAndName(prefix, tagName || 'ng-component');
-    }
-  }
-
   private _getPrefix(
-    token:
-      | TagOpenStartToken
-      | IncompleteTagOpenToken
-      | ComponentOpenStartToken
-      | IncompleteComponentOpenToken
-      | TagCloseToken
-      | ComponentCloseToken,
-    parent: html.Element | html.Component | null,
+    token: TagOpenStartToken | IncompleteTagOpenToken | TagCloseToken,
+    parent: html.Element | null,
   ): string {
-    let prefix: string;
-    let tagName: string;
-
-    if (
-      token.type === TokenType.COMPONENT_OPEN_START ||
-      token.type === TokenType.INCOMPLETE_COMPONENT_OPEN ||
-      token.type === TokenType.COMPONENT_CLOSE
-    ) {
-      prefix = token.parts[1];
-      tagName = token.parts[2];
-    } else {
-      prefix = token.parts[0];
-      tagName = token.parts[1];
-    }
-
-    prefix = prefix || this._getTagDefinition(tagName)?.implicitNamespacePrefix || '';
+    const tagName = token.parts[1];
+    let prefix = token.parts[0] || this._getTagDefinition(tagName)?.implicitNamespacePrefix || '';
 
     if (!prefix && parent) {
-      const parentName = parent instanceof html.Element ? parent.name : parent.tagName;
-      if (parentName !== null) {
-        const parentTagName = splitNsName(parentName)[1];
-        const parentTagDefinition = this._getTagDefinition(parentTagName);
-        if (parentTagDefinition !== null && !parentTagDefinition.preventNamespaceInheritance) {
-          prefix = getNsPrefix(parentName);
-        }
+      const parentName = parent.name;
+      const parentTagName = splitNsName(parentName)[1];
+      const parentTagDefinition = this._getTagDefinition(parentTagName);
+      if (parentTagDefinition !== null && !parentTagDefinition.preventNamespaceInheritance) {
+        prefix = getNsPrefix(parentName);
       }
     }
 

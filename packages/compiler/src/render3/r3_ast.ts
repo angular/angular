@@ -163,7 +163,6 @@ export class Element implements Node {
     public attributes: TextAttribute[],
     public inputs: BoundAttribute[],
     public outputs: BoundEvent[],
-    public directives: Directive[],
     public children: Node[],
     public references: Reference[],
     public isSelfClosing: boolean,
@@ -645,45 +644,6 @@ export class LetDeclaration implements Node {
   }
 }
 
-export class Component implements Node {
-  constructor(
-    public componentName: string,
-    public tagName: string | null,
-    public fullName: string,
-    public attributes: TextAttribute[],
-    public inputs: BoundAttribute[],
-    public outputs: BoundEvent[],
-    public directives: Directive[],
-    public children: Node[],
-    public references: Reference[],
-    public isSelfClosing: boolean,
-    public sourceSpan: ParseSourceSpan,
-    public startSourceSpan: ParseSourceSpan,
-    public endSourceSpan: ParseSourceSpan | null,
-    public i18n?: I18nMeta,
-  ) {}
-  visit<Result>(visitor: Visitor<Result>): Result {
-    return visitor.visitComponent(this);
-  }
-}
-
-export class Directive implements Node {
-  constructor(
-    public name: string,
-    public attributes: TextAttribute[],
-    public inputs: BoundAttribute[],
-    public outputs: BoundEvent[],
-    public references: Reference[],
-    public sourceSpan: ParseSourceSpan,
-    public startSourceSpan: ParseSourceSpan,
-    public endSourceSpan: ParseSourceSpan | null,
-    public i18n?: I18nMeta,
-  ) {}
-  visit<Result>(visitor: Visitor<Result>): Result {
-    return visitor.visitDirective(this);
-  }
-}
-
 export class Template implements Node {
   constructor(
     // tagName is the name of the container element, if applicable.
@@ -694,7 +654,6 @@ export class Template implements Node {
     public attributes: TextAttribute[],
     public inputs: BoundAttribute[],
     public outputs: BoundEvent[],
-    public directives: Directive[],
     public templateAttrs: (BoundAttribute | TextAttribute)[],
     public children: Node[],
     public references: Reference[],
@@ -820,8 +779,6 @@ export interface Visitor<Result = any> {
   visitBoundaryErrorBlock(block: BoundaryErrorBlock): Result;
   visitUnknownBlock(block: UnknownBlock): Result;
   visitLetDeclaration(decl: LetDeclaration): Result;
-  visitComponent(component: Component): Result;
-  visitDirective(directive: Directive): Result;
   visitContentBlock(block: ContentBlock): Result;
 }
 
@@ -830,7 +787,6 @@ export class RecursiveVisitor implements Visitor<void> {
     visitAll(this, element.attributes);
     visitAll(this, element.inputs);
     visitAll(this, element.outputs);
-    visitAll(this, element.directives);
     visitAll(this, element.children);
     visitAll(this, element.references);
   }
@@ -838,7 +794,6 @@ export class RecursiveVisitor implements Visitor<void> {
     visitAll(this, template.attributes);
     visitAll(this, template.inputs);
     visitAll(this, template.outputs);
-    visitAll(this, template.directives);
     visitAll(this, template.children);
     visitAll(this, template.references);
     visitAll(this, template.variables);
@@ -889,20 +844,6 @@ export class RecursiveVisitor implements Visitor<void> {
   }
   visitContent(content: Content): void {
     visitAll(this, content.children);
-  }
-  visitComponent(component: Component): void {
-    visitAll(this, component.attributes);
-    visitAll(this, component.inputs);
-    visitAll(this, component.outputs);
-    visitAll(this, component.directives);
-    visitAll(this, component.children);
-    visitAll(this, component.references);
-  }
-  visitDirective(directive: Directive): void {
-    visitAll(this, directive.attributes);
-    visitAll(this, directive.inputs);
-    visitAll(this, directive.outputs);
-    visitAll(this, directive.references);
   }
   visitVariable(variable: Variable): void {}
   visitReference(reference: Reference): void {}

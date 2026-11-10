@@ -176,8 +176,10 @@ describe('Definitions with TS 7 binary', () => {
     `;
 
     await env.createFile('app.ts', appTsContent);
-    await env.createFile('dir.ts', dirTsContent);
-    await env.createFile('dir2.ts', dir2TsContent);
+    const dirPath = await env.createFile('dir.ts', dirTsContent);
+    await env.openFile(dirPath, dirTsContent);
+    const dir2Path = await env.createFile('dir2.ts', dir2TsContent);
+    await env.openFile(dir2Path, dir2TsContent);
 
     await env.run('app.html', appHtmlContent, async (ls, filePath) => {
       await ls.getTcb(filePath, {line: 0, character: 0});
@@ -468,203 +470,6 @@ describe('Definitions with TS 7 binary', () => {
     });
   });
 
-  describe('Selectorless tests', () => {
-    it('gets definition for selectorless component', async () => {
-      const appHtmlContent = '<Dep¦/>';
-      const appTsContent = `
-        import {Component} from '@angular/core';
-        import {Dep} from './dep';
-
-        @Component({
-          selector: 'app-cmp',
-          templateUrl: './app.html',
-          imports: [Dep],
-        })
-        export class AppCmp {}
-      `;
-
-      const depTsContent = `
-        import {Component} from '@angular/core';
-
-        @Component({
-          template: '',
-        })
-        export class Dep {}
-      `;
-
-      await env.createFile('app.ts', appTsContent);
-      await env.createFile('dep.ts', depTsContent);
-
-      await env.run(
-        'app.html',
-        appHtmlContent,
-        async (ls, filePath) => {
-          await ls.getTcb(filePath, {line: 0, character: 0});
-          await env.expectDefinitionAtCursor(ls, filePath, 'dep.ts');
-        },
-        {enableSelectorless: true},
-      );
-    });
-
-    it('gets definition for selectorless directive', async () => {
-      const appHtmlContent = '<div @De¦p></div>';
-      const appTsContent = `
-        import {Component} from '@angular/core';
-        import {Dep} from './dep';
-
-        @Component({
-          selector: 'app-cmp',
-          templateUrl: './app.html',
-          imports: [Dep],
-        })
-        export class AppCmp {}
-      `;
-
-      const depTsContent = `
-        import {Directive} from '@angular/core';
-
-        @Directive({
-        })
-        export class Dep {}
-      `;
-
-      await env.createFile('app.ts', appTsContent);
-      await env.createFile('dep.ts', depTsContent);
-
-      await env.run(
-        'app.html',
-        appHtmlContent,
-        async (ls, filePath) => {
-          await ls.getTcb(filePath, {line: 0, character: 0});
-          await env.expectDefinitionAtCursor(ls, filePath, 'dep.ts');
-        },
-        {enableSelectorless: true},
-      );
-    });
-
-    it('gets definition of selectorless component input', async () => {
-      const appContent = `
-        import {Component, Input} from '@angular/core';
-
-        @Component({
-          template: '',
-        })
-        export class Dep {
-          @Input() someInput: any;
-        }
-
-        @Component({
-          selector: 'app-cmp',
-          template: '<Dep [someInpu¦t]="123"/>',
-          imports: [Dep],
-        })
-        export class AppCmp {}
-      `;
-
-      await env.run(
-        'app.ts',
-        appContent,
-        async (ls, filePath) => {
-          await ls.getTcb(filePath, {line: 0, character: 0});
-          await env.expectDefinitionAtCursor(ls, filePath, 'app.ts');
-        },
-        {enableSelectorless: true},
-      );
-    });
-
-    it('gets definition of selectorless directive input', async () => {
-      const appContent = `
-        import {Component, Directive, Input} from '@angular/core';
-
-        @Directive({
-        })
-        export class Dep {
-          @Input() someInput: any;
-        }
-
-        @Component({
-          selector: 'app-cmp',
-          template: '<div @Dep([someInpu¦t]="123")></div>',
-          imports: [Dep],
-        })
-        export class AppCmp {}
-      `;
-
-      await env.run(
-        'app.ts',
-        appContent,
-        async (ls, filePath) => {
-          await ls.getTcb(filePath, {line: 0, character: 0});
-          await env.expectDefinitionAtCursor(ls, filePath, 'app.ts');
-        },
-        {enableSelectorless: true},
-      );
-    });
-
-    it('gets definition of selectorless component output', async () => {
-      const appContent = `
-        import {Component, Output, EventEmitter} from '@angular/core';
-
-        @Component({
-          template: '',
-        })
-        export class Dep {
-          @Output() someEvent = new EventEmitter<void>();
-        }
-
-        @Component({
-          selector: 'app-cmp',
-          template: '<Dep (someEv¦ent)="handler()"/>',
-          imports: [Dep],
-        })
-        export class AppCmp {
-          handler() {}
-        }
-      `;
-
-      await env.run(
-        'app.ts',
-        appContent,
-        async (ls, filePath) => {
-          await ls.getTcb(filePath, {line: 0, character: 0});
-          await env.expectDefinitionAtCursor(ls, filePath, 'app.ts');
-        },
-        {enableSelectorless: true},
-      );
-    });
-
-    it('gets definition of selectorless directive output', async () => {
-      const appContent = `
-        import {Component, Directive, Output, EventEmitter} from '@angular/core';
-
-        @Directive({
-        })
-        export class Dep {
-          @Output() someEvent = new EventEmitter<void>();
-        }
-
-        @Component({
-          selector: 'app-cmp',
-          template: '<div @Dep((someEv¦ent)="handler()")></div>',
-          imports: [Dep],
-        })
-        export class AppCmp {
-          handler() {}
-        }
-      `;
-
-      await env.run(
-        'app.ts',
-        appContent,
-        async (ls, filePath) => {
-          await ls.getTcb(filePath, {line: 0, character: 0});
-          await env.expectDefinitionAtCursor(ls, filePath, 'app.ts');
-        },
-        {enableSelectorless: true},
-      );
-    });
-  });
-
   xit('should go to the pre-compiled style sheet', async () => {
     const appTsContent = `
       import {Component} from '@angular/core';
@@ -769,8 +574,10 @@ describe('Definitions with TS 7 binary', () => {
     `;
 
     await env.createFile('app.ts', appTsContent);
-    await env.createFile('dir.ts', dirTsContent);
-    await env.createFile('dir2.ts', dir2TsContent);
+    const dirPath = await env.createFile('dir.ts', dirTsContent);
+    await env.openFile(dirPath, dirTsContent);
+    const dir2Path = await env.createFile('dir2.ts', dir2TsContent);
+    await env.openFile(dir2Path, dir2TsContent);
 
     await env.run('app.html', appHtmlContent, async (ls, filePath) => {
       await ls.getTcb(filePath, {line: 0, character: 0});

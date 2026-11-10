@@ -17,7 +17,6 @@ import {
   TmplAstBoundEvent,
   TmplAstBoundText,
   TmplAstBoundaryBlock,
-  TmplAstComponent,
   TmplAstDeferredBlock,
   TmplAstElement,
   TmplAstForLoopBlock,
@@ -152,11 +151,7 @@ class SelectionSpanVisitor extends TmplAstRecursiveVisitor {
           endSpan === node.endSourceSpan ? endSpan.start.offset : endSpan.end.offset - 1;
         this.addSpan(node.startSourceSpan.end.offset, contentEnd);
       }
-    } else if (
-      node instanceof TmplAstElement ||
-      node instanceof TmplAstTemplate ||
-      node instanceof TmplAstComponent
-    ) {
+    } else if (node instanceof TmplAstElement || node instanceof TmplAstTemplate) {
       // The content between the opening and closing tags.
       if (node.endSourceSpan !== null && node.endSourceSpan !== node.startSourceSpan) {
         this.addSpan(node.startSourceSpan.end.offset, node.endSourceSpan.start.offset);

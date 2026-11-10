@@ -172,7 +172,6 @@ export function tcb(
   const {matcher, pipes, foreignMatcher} = prepareDeclarations(
     declarations,
     fullConfig,
-    templateParserOptions?.enableSelectorless ?? false,
     foreignComponents,
   );
   const boundTarget = new R3TargetBinder<TcbDirectiveMetadata>(matcher, foreignMatcher).bind({
@@ -419,7 +418,6 @@ function toTcbTypeParameters(representations: string[]): TcbTypeParameter[] {
 function prepareDeclarations(
   declarations: TestDeclaration[],
   config: TypeCheckingConfig,
-  selectorlessEnabled: boolean,
   foreignComponentNames: string[],
 ) {
   const directives: TcbDirectiveMetadata[] = [];
@@ -446,14 +444,6 @@ function prepareDeclarations(
     foreignRegistry.set(name, [{name}]);
   }
   const foreignMatcher = new SelectorlessMatcher<ForeignComponentMeta>(foreignRegistry);
-
-  if (selectorlessEnabled) {
-    const registry = new Map<string, TcbDirectiveMetadata[]>();
-    for (const meta of directives) {
-      registry.set(meta.name, [meta, ...hostDirectives.get(meta)!]);
-    }
-    return {matcher: new SelectorlessMatcher(registry), pipes, foreignMatcher};
-  }
 
   const matcher = new SelectorMatcher<TcbDirectiveMetadata[]>();
   for (const meta of directives) {

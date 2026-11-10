@@ -10,14 +10,12 @@ import type {
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
   TmplAstBoundText,
-  TmplAstComponent,
   TmplAstContent,
   TmplAstDeferredBlock,
   TmplAstDeferredBlockError,
   TmplAstDeferredBlockLoading,
   TmplAstDeferredBlockPlaceholder,
   TmplAstDeferredTrigger,
-  TmplAstDirective,
   TmplAstElement,
   TmplAstForLoopBlock,
   TmplAstForLoopBlockEmpty,
@@ -89,8 +87,6 @@ export class TemplateAstVisitor implements TmplAstRecursiveVisitor {
   visitIfBlock(block: TmplAstIfBlock): void {}
   visitIfBlockBranch(block: TmplAstIfBlockBranch): void {}
   visitLetDeclaration(decl: TmplAstLetDeclaration): void {}
-  visitComponent(component: TmplAstComponent): void {}
-  visitDirective(directive: TmplAstDirective): void {}
   visitSwitchExhaustiveCheck(block: TmplAstSwitchExhaustiveCheck): void {}
   visitContentBlock(block: TmplAstContentBlock): void {}
   visitBoundaryBlock(block: TmplAstBoundaryBlock): void {}

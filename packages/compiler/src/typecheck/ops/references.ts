@@ -7,8 +7,6 @@
  */
 
 import {
-  Component,
-  Directive,
   Element,
   HostElement,
   LetDeclaration,
@@ -23,15 +21,7 @@ import type {Scope} from './scope';
 import {TcbDirectiveMetadata} from '../api';
 
 /** Types that can referenced locally in a template. */
-export type LocalSymbol =
-  | Element
-  | Template
-  | Variable
-  | LetDeclaration
-  | Reference
-  | HostElement
-  | Component
-  | Directive;
+export type LocalSymbol = Element | Template | Variable | LetDeclaration | Reference | HostElement;
 
 /**
  * A `TcbOp` which creates a variable for a local ref in a template.
@@ -58,7 +48,7 @@ export class TcbReferenceOp extends TcbOp {
     private readonly tcb: Context,
     private readonly scope: Scope,
     private readonly node: Reference,
-    private readonly host: Element | Template | Component | Directive,
+    private readonly host: Element | Template,
     private readonly target: TcbDirectiveMetadata | Template | Element,
   ) {
     super();

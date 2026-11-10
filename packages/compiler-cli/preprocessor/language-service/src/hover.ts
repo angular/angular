@@ -185,17 +185,12 @@ function getSymbolLocation(
     case SymbolKind.Output:
       return getSymbolLocationForBinding(symbol, templateName, isDirectiveFallback);
     case SymbolKind.Directive:
-    case SymbolKind.SelectorlessComponent:
-    case SymbolKind.SelectorlessDirective:
       if (symbol.tcbLocation) {
         return {
           offset: symbol.tcbLocation.positionInFile,
           templateName,
           isDirective: true,
-          overrideKind:
-            symbol.isComponent || symbol.kind === SymbolKind.SelectorlessComponent
-              ? 'component'
-              : 'directive',
+          overrideKind: symbol.isComponent ? 'component' : 'directive',
         };
       }
       return null;

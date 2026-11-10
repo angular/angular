@@ -23,7 +23,6 @@ import {
   ASTWithSource,
   Binary,
   BindingPipe,
-  BindingPipeType,
   Call,
   Chain,
   Conditional,
@@ -101,10 +100,7 @@ function getLocation(span: ParseSourceSpan): string {
 }
 
 export class Parser {
-  constructor(
-    private readonly _lexer: Lexer,
-    private readonly _supportsDirectPipeReferences = false,
-  ) {}
+  constructor(private readonly _lexer: Lexer) {}
 
   parseAction(
     input: string,
@@ -123,7 +119,6 @@ export class Parser {
       ParseFlags.Action,
       errors,
       0,
-      this._supportsDirectPipeReferences,
     ).parseChain();
 
     return new ASTWithSource(ast, input, getLocation(parseSourceSpan), absoluteOffset, errors);
@@ -185,7 +180,6 @@ export class Parser {
       ParseFlags.None,
       errors,
       0,
-      this._supportsDirectPipeReferences,
     ).parseChain();
   }
 
@@ -232,7 +226,6 @@ export class Parser {
       ParseFlags.None,
       errors,
       0 /* relative offset */,
-      this._supportsDirectPipeReferences,
     );
     return parser.parseTemplateBindings({
       source: templateKey,
@@ -287,7 +280,6 @@ export class Parser {
         ParseFlags.None,
         errors,
         offsets[i],
-        this._supportsDirectPipeReferences,
       ).parseChain();
       expressionNodes.push(ast);
     }
@@ -323,7 +315,6 @@ export class Parser {
       ParseFlags.None,
       errors,
       0,
-      this._supportsDirectPipeReferences,
     ).parseChain();
     const strings = ['', '']; // The prefix and suffix strings are both empty
     return this.createInterpolationAst(
@@ -600,7 +591,6 @@ class _ParseAST {
     private parseFlags: ParseFlags,
     private errors: ParseError[],
     private offset: number,
-    private supportsDirectPipeReferences: boolean,
   ) {}
 
   private peek(offset: number): Token {
@@ -887,24 +877,12 @@ class _ParseAST {
           // If there are additional expressions beyond the name, then the artificial end for the
           // name is no longer relevant.
         }
-        let type: BindingPipeType;
-        if (this.supportsDirectPipeReferences) {
-          const charCode = nameId.charCodeAt(0);
-          type =
-            charCode === chars.$_ || (charCode >= chars.$A && charCode <= chars.$Z)
-              ? BindingPipeType.ReferencedDirectly
-              : BindingPipeType.ReferencedByName;
-        } else {
-          type = BindingPipeType.ReferencedByName;
-        }
-
         result = new BindingPipe(
           this.span(start),
           this.sourceSpan(start, fullSpanEnd),
           result,
           nameId,
           args,
-          type,
           nameSpan,
         );
       } while (this.consumeOptionalOperator('|'));

@@ -23,8 +23,6 @@ import {
   OutputBindingSymbol,
   PipeSymbol,
   ReferenceSymbol,
-  SelectorlessComponentSymbol,
-  SelectorlessDirectiveSymbol,
   Symbol,
   SymbolKind,
   TcbLocation,
@@ -122,9 +120,6 @@ export class QuickInfoBuilder {
         return this.getQuickInfoForDomBinding(symbol);
       case SymbolKind.Pipe:
         return this.getQuickInfoForPipeSymbol(symbol);
-      case SymbolKind.SelectorlessComponent:
-      case SymbolKind.SelectorlessDirective:
-        return this.getQuickInfoForSelectorlessSymbol(symbol);
       case SymbolKind.Expression:
         return this.getQuickInfoAtTcbLocation(symbol.tcbLocation);
       case SymbolKind.Directive:
@@ -267,28 +262,6 @@ export class QuickInfoBuilder {
       kind,
       getTextSpanOfNode(this.node),
       containerName,
-      undefined,
-      info?.documentation,
-      info?.tags,
-    );
-  }
-
-  private getQuickInfoForSelectorlessSymbol(
-    symbol: SelectorlessComponentSymbol | SelectorlessDirectiveSymbol,
-  ): ts.QuickInfo {
-    const kind =
-      symbol.kind === SymbolKind.SelectorlessComponent
-        ? DisplayInfoKind.COMPONENT
-        : DisplayInfoKind.DIRECTIVE;
-    const info = this.getQuickInfoFromTypeDefAtLocation(symbol.tcbLocation);
-
-    return createQuickInfo(
-      this.typeChecker.typeToString(
-        this.compiler.getTemplateTypeChecker().getTypeOfSymbol(symbol)!,
-      ),
-      kind,
-      getTextSpanOfNode(this.node),
-      undefined,
       undefined,
       info?.documentation,
       info?.tags,

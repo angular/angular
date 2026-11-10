@@ -58,8 +58,6 @@ export interface TcbTargetInput {
   schemas: SchemaMetadata[];
   typeParameters: nga.TypeParameterMetadata[] | null;
   pipeRegistry: Map<string, PipeMeta> | null;
-  enableSelectorless?: boolean;
-  selectorlessEnabled?: boolean;
   foreignImports?: nga.ForeignImportMetadata[] | null;
 }
 

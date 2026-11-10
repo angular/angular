@@ -8,7 +8,6 @@
 
 import {
   SelectorMatcher,
-  SelectorlessMatcher,
   CssSelector,
   R3TargetBinder,
   TmplAstHostElement,
@@ -225,12 +224,6 @@ export function adaptTcbInput(
   hostElement: TmplAstHostElement | null;
 } {
   const isStandalone = target.isStandalone ?? target.ownDeclaration.isStandalone ?? false;
-  const isSelectorless =
-    target.ownDeclaration.declarationType === 'component' &&
-    isStandalone &&
-    (target.selectorlessEnabled ?? false);
-  let matcher: SelectorMatcher<TcbDirectiveMetadata[]> | SelectorlessMatcher<TcbDirectiveMetadata>;
-
   const declarations =
     isStandalone && target.ownDeclaration
       ? [
@@ -246,14 +239,13 @@ export function adaptTcbInput(
         ]
       : target.declarations;
 
-  if (isSelectorless) {
-    const registry = new Map<string, TcbDirectiveMetadata[]>();
-    for (const decl of declarations) {
-      if (decl.declarationType !== 'directive' && decl.declarationType !== 'component') {
-        continue;
-      }
+  const matcher = new SelectorMatcher<TcbDirectiveMetadata[]>();
+  for (const decl of declarations) {
+    if (decl.declarationType !== 'directive' && decl.declarationType !== 'component') {
+      continue;
+    }
+    if (decl.selector) {
       const declPath = decl.filePath || filePath;
-      const meta = declarationToMetadata(decl, declPath, requiresInline, content, filePath);
       const hostDirectives = resolveHostDirectives(
         decl.resolvedHostDirectives,
         declPath,
@@ -261,32 +253,11 @@ export function adaptTcbInput(
         content,
         filePath,
       );
-      const existing = registry.get(decl.name) || [];
-      registry.set(decl.name, [...existing, ...hostDirectives, meta]);
+      matcher.addSelectables(CssSelector.parse(decl.selector), [
+        ...hostDirectives,
+        declarationToMetadata(decl, declPath, requiresInline, content, filePath),
+      ]);
     }
-    matcher = new SelectorlessMatcher<TcbDirectiveMetadata>(registry);
-  } else {
-    const selectorMatcher = new SelectorMatcher<TcbDirectiveMetadata[]>();
-    for (const decl of declarations) {
-      if (decl.declarationType !== 'directive' && decl.declarationType !== 'component') {
-        continue;
-      }
-      if (decl.selector) {
-        const declPath = decl.filePath || filePath;
-        const hostDirectives = resolveHostDirectives(
-          decl.resolvedHostDirectives,
-          declPath,
-          requiresInline,
-          content,
-          filePath,
-        );
-        selectorMatcher.addSelectables(CssSelector.parse(decl.selector), [
-          ...hostDirectives,
-          declarationToMetadata(decl, declPath, requiresInline, content, filePath),
-        ]);
-      }
-    }
-    matcher = selectorMatcher;
   }
 
   const hostDirectivesOnTarget = target.ownDeclaration

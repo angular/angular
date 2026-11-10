@@ -11,7 +11,6 @@ import {ClassPropertyMapping} from '../../property_mapping';
 import {
   BoundAttribute,
   BoundEvent,
-  Component,
   Content,
   ContentBlock,
   DeferredBlock,
@@ -19,7 +18,6 @@ import {
   DeferredBlockLoading,
   DeferredBlockPlaceholder,
   DeferredTrigger,
-  Directive,
   Element,
   ForLoopBlock,
   ForLoopBlockEmpty,
@@ -57,7 +55,7 @@ export type ReferenceTarget<DirectiveT> =
 export type TemplateEntity = Reference | Variable | LetDeclaration;
 
 /** Nodes that can have directives applied to them. */
-export type DirectiveOwner = Element | Template | Component | Directive | HostElement;
+export type DirectiveOwner = Element | Template | HostElement;
 
 /** Information about a host directive binding that was exposed under conflicting aliases. */
 export interface ConflictingHostDirectiveBinding<DirectiveT> {
@@ -327,12 +325,6 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
    * Gets the list of `@defer` blocks enclosing a given pipe, ordered from outermost to innermost.
    */
   getDeferBlocksOfPipe(ast: BindingPipe): DeferredBlock[];
-
-  /**
-   * Checks whether a component/directive that was referenced directly in the template exists.
-   * @param name Name of the component/directive.
-   */
-  referencedDirectiveExists(name: string): boolean;
 
   /**
    * Returns any cases of conflicting host bindings that were detected during directive matching.

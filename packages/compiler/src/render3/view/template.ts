@@ -125,9 +125,6 @@ export interface ParseTemplateOptions {
 
   /** Whether the `@let` syntax is enabled. */
   enableLetSyntax?: boolean;
-
-  /** Whether the selectorless syntax is enabled. */
-  enableSelectorless?: boolean;
 }
 
 /**
@@ -143,8 +140,7 @@ export function parseTemplate(
   options: ParseTemplateOptions = {},
 ): ParsedTemplate {
   const {preserveWhitespaces, enableI18nLegacyMessageIdFormat} = options;
-  const selectorlessEnabled = options.enableSelectorless ?? false;
-  const bindingParser = makeBindingParser(selectorlessEnabled);
+  const bindingParser = makeBindingParser();
   const htmlParser = new HtmlParser();
   const parseResult = htmlParser.parse(template, templateUrl, {
     leadingTriviaChars: LEADING_TRIVIA_CHARS,
@@ -152,7 +148,6 @@ export function parseTemplate(
     tokenizeExpansionForms: true,
     tokenizeBlocks: options.enableBlockSyntax ?? true,
     tokenizeLet: options.enableLetSyntax ?? true,
-    selectorlessEnabled,
   });
 
   if (
@@ -280,8 +275,8 @@ const elementRegistry = new DomElementSchemaRegistry();
 /**
  * Construct a `BindingParser` with a default configuration.
  */
-export function makeBindingParser(selectorlessEnabled = false): BindingParser {
-  return new BindingParser(new Parser(new Lexer(), selectorlessEnabled), elementRegistry, []);
+export function makeBindingParser(): BindingParser {
+  return new BindingParser(new Parser(new Lexer()), elementRegistry, []);
 }
 
 /**

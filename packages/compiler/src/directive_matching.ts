@@ -473,6 +473,10 @@ export class SelectorContext<T = any> {
   }
 }
 
+/**
+ * Matches template nodes against a registry keyed by tag name. Currently used to match
+ * foreign components (`foreignImports`) by their tag name.
+ */
 export class SelectorlessMatcher<T = unknown> {
   constructor(private registry: Map<string, T[]>) {}
 

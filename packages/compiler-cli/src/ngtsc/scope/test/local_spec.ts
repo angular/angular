@@ -373,8 +373,6 @@ function fakeDirective(ref: Reference<ClassDeclaration>): DirectiveMeta {
     deferredImports: null,
     deferredImportsByBlock: null,
     inputFieldNamesFromMetadataArray: null,
-    selectorlessEnabled: false,
-    localReferencedSymbols: null,
   };
 }
 

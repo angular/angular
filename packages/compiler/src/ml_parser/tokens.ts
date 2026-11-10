@@ -43,14 +43,6 @@ export const enum TokenType {
   LET_VALUE,
   LET_END,
   INCOMPLETE_LET,
-  COMPONENT_OPEN_START,
-  COMPONENT_OPEN_END,
-  COMPONENT_OPEN_END_VOID,
-  COMPONENT_CLOSE,
-  INCOMPLETE_COMPONENT_OPEN,
-  DIRECTIVE_NAME,
-  DIRECTIVE_OPEN,
-  DIRECTIVE_CLOSE,
   PROCESSING_INSTRUCTION,
   EOF,
 }
@@ -89,14 +81,6 @@ export type Token =
   | LetValueToken
   | LetEndToken
   | IncompleteLetToken
-  | ComponentOpenStartToken
-  | ComponentOpenEndToken
-  | ComponentOpenEndVoidToken
-  | ComponentCloseToken
-  | IncompleteComponentOpenToken
-  | DirectiveNameToken
-  | DirectiveOpenToken
-  | DirectiveCloseToken
   | ProcessingInstructionToken;
 
 export type InterpolatedTextToken = TextToken | InterpolationToken | EncodedEntityToken;
@@ -277,46 +261,6 @@ export interface LetEndToken extends TokenBase {
 export interface IncompleteLetToken extends TokenBase {
   type: TokenType.INCOMPLETE_LET;
   parts: [name: string];
-}
-
-export interface ComponentOpenStartToken extends TokenBase {
-  type: TokenType.COMPONENT_OPEN_START;
-  parts: [componentName: string, prefix: string, tagName: string];
-}
-
-export interface ComponentOpenEndToken extends TokenBase {
-  type: TokenType.COMPONENT_OPEN_END;
-  parts: [];
-}
-
-export interface ComponentOpenEndVoidToken extends TokenBase {
-  type: TokenType.COMPONENT_OPEN_END_VOID;
-  parts: [];
-}
-
-export interface ComponentCloseToken extends TokenBase {
-  type: TokenType.COMPONENT_CLOSE;
-  parts: [componentName: string, prefix: string, tagName: string];
-}
-
-export interface IncompleteComponentOpenToken extends TokenBase {
-  type: TokenType.INCOMPLETE_COMPONENT_OPEN;
-  parts: [componentName: string, prefix: string, tagName: string];
-}
-
-export interface DirectiveNameToken extends TokenBase {
-  type: TokenType.DIRECTIVE_NAME;
-  parts: [name: string];
-}
-
-export interface DirectiveOpenToken extends TokenBase {
-  type: TokenType.DIRECTIVE_OPEN;
-  parts: [];
-}
-
-export interface DirectiveCloseToken extends TokenBase {
-  type: TokenType.DIRECTIVE_CLOSE;
-  parts: [];
 }
 
 export interface ProcessingInstructionToken extends TokenBase {

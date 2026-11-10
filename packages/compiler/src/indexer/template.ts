@@ -23,9 +23,7 @@ import {
   AbstractBoundTemplate,
   AttributeIdentifier,
   BoundAttributeIdentifier,
-  ComponentNodeIdentifier,
   DirectiveHostIdentifier,
-  DirectiveNodeIdentifier,
   ElementIdentifier,
   IdentifierKind,
   LetDeclarationIdentifier,
@@ -42,7 +40,7 @@ type ExpressionIdentifier<T> = PropertyIdentifier<T> | MethodIdentifier<T>;
 type TmplTarget = t.Reference | t.Variable | t.LetDeclaration;
 type TargetIdentifier<T> = ReferenceIdentifier<T> | VariableIdentifier | LetDeclarationIdentifier;
 type TargetIdentifierMap<T> = Map<TmplTarget, TargetIdentifier<T>>;
-type DirectiveHostNode = t.Element | t.Template | t.Component | t.Directive;
+type DirectiveHostNode = t.Element | t.Template;
 
 /**
  * Visits the AST of a parsed Angular template. Discovers and stores
@@ -115,22 +113,6 @@ export class IndexerVisitor<T = unknown> extends CombinedRecursiveAstVisitor {
       this.identifiers.add(identifier);
     }
     super.visitLetDeclaration(decl);
-  }
-
-  override visitComponent(component: t.Component): void {
-    const identifier = this.directiveHostToIdentifier(component);
-    if (identifier !== null) {
-      this.identifiers.add(identifier);
-    }
-    super.visitComponent(component);
-  }
-
-  override visitDirective(directive: t.Directive): void {
-    const identifier = this.directiveHostToIdentifier(directive);
-    if (identifier !== null) {
-      this.identifiers.add(identifier);
-    }
-    super.visitDirective(directive);
   }
 
   override visitPropertyRead(ast: PropertyRead) {
@@ -242,28 +224,18 @@ export class IndexerVisitor<T = unknown> extends CombinedRecursiveAstVisitor {
     }
 
     let name: string;
-    let kind:
-      | IdentifierKind.Element
-      | IdentifierKind.Template
-      | IdentifierKind.Component
-      | IdentifierKind.Directive;
+    let kind: IdentifierKind.Element | IdentifierKind.Template;
     if (node instanceof t.Template) {
       name = node.tagName ?? 'ng-template';
       kind = IdentifierKind.Template;
-    } else if (node instanceof t.Element) {
-      name = node.name;
-      kind = IdentifierKind.Element;
-    } else if (node instanceof t.Component) {
-      name = node.fullName;
-      kind = IdentifierKind.Component;
     } else {
       name = node.name;
-      kind = IdentifierKind.Directive;
+      kind = IdentifierKind.Element;
     }
     // Namespaced elements have a particular format for `node.name` that needs to be handled.
     // For example, an `<svg>` element has a `node.name` of `':svg:svg'`.
     // TODO(alxhub): properly handle namespaced elements
-    if ((node instanceof t.Template || node instanceof t.Element) && name.startsWith(':')) {
+    if (name.startsWith(':')) {
       name = name.split(':').pop()!;
     }
 
@@ -302,11 +274,7 @@ export class IndexerVisitor<T = unknown> extends CombinedRecursiveAstVisitor {
         }),
       ),
       // cast b/c pre-TypeScript 3.5 unions aren't well discriminated
-    } as
-      | ElementIdentifier<T>
-      | TemplateNodeIdentifier<T>
-      | ComponentNodeIdentifier<T>
-      | DirectiveNodeIdentifier<T>;
+    } as ElementIdentifier<T> | TemplateNodeIdentifier<T>;
 
     this.directiveHostIdentifierCache.set(node, identifier);
     return identifier;
@@ -336,12 +304,7 @@ export class IndexerVisitor<T = unknown> extends CombinedRecursiveAstVisitor {
       if (refTarget) {
         let node: DirectiveHostIdentifier<T> | null = null;
         let directive: T | null = null;
-        if (
-          refTarget instanceof t.Element ||
-          refTarget instanceof t.Template ||
-          refTarget instanceof t.Component ||
-          refTarget instanceof t.Directive
-        ) {
+        if (refTarget instanceof t.Element || refTarget instanceof t.Template) {
           node = this.directiveHostToIdentifier(refTarget);
         } else {
           node = this.directiveHostToIdentifier(refTarget.node);

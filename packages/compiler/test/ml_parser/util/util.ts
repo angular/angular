@@ -11,7 +11,7 @@ import {getHtmlTagDefinition} from '../../../src/ml_parser/html_tags';
 
 class _SerializerVisitor implements html.Visitor {
   visitElement(element: html.Element, context: any): any {
-    const attrs = `${this._visitAll(element.attrs, ' ', ' ')}${this._visitAll(element.directives, ' ', ' ')}`;
+    const attrs = this._visitAll(element.attrs, ' ', ' ');
 
     if (getHtmlTagDefinition(element.name).isVoid) {
       return `<${element.name}${attrs}/>`;
@@ -52,15 +52,6 @@ class _SerializerVisitor implements html.Visitor {
 
   visitLetDeclaration(decl: html.LetDeclaration, context: any) {
     return `@let ${decl.name} = ${decl.value};`;
-  }
-
-  visitComponent(node: html.Component, context: any): any {
-    const attrs = `${this._visitAll(node.attrs, ' ', ' ')}${this._visitAll(node.directives, ' ', ' ')}`;
-    return `<${node.fullName}${attrs}>${this._visitAll(node.children)}</${node.fullName}>`;
-  }
-
-  visitDirective(directive: html.Directive, context: any) {
-    return `@${directive.name}${this._visitAll(directive.attrs, ' ', ' ')}`;
   }
 
   private _visitAll(nodes: html.Node[], separator = '', prefix = ''): string {

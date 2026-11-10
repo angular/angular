@@ -343,11 +343,7 @@ export class TestEnv {
     return this.fileManager.getCursorOffset();
   }
 
-  async getLanguageService(
-    options?: NgpCompilerOptions & {
-      enableSelectorless?: boolean;
-    },
-  ): Promise<LanguageService> {
+  async getLanguageService(options?: NgpCompilerOptions): Promise<LanguageService> {
     const tsconfigPath = path.join(this.fileManager.getWorkspacePath(), 'tsconfig.json');
     const wasmBinding = resolveWasmBinding();
     const tcbConfig = buildTypeCheckingConfig(options, true, true);
@@ -364,7 +360,6 @@ export class TestEnv {
         preserveLineEndings: true,
         preserveSignificantWhitespace: true,
         leadingTriviaChars: [],
-        ...(options?.enableSelectorless ? {enableSelectorless: true} : {}),
       },
     });
     await this.compiler.init();
@@ -467,9 +462,7 @@ export class TestEnv {
     name: string,
     content: string,
     callback: (ls: LanguageService, filePath: string) => Promise<void>,
-    options?: NgpCompilerOptions & {
-      enableSelectorless?: boolean;
-    },
+    options?: NgpCompilerOptions,
   ) {
     try {
       const filePath = await this.createFile(name, content);

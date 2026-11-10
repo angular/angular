@@ -86,7 +86,6 @@ import type {IAnalyzer} from './hybrid_compiler.js';
 import {ExpressionPrinter, RawSource} from './output_ast_printer.js';
 import {OutputSourceMapBuilder, type OutputSourceMapOptions} from './output_source_map.js';
 import {Counter, SpanKind, type Tracer} from './perf.js';
-import {analyzeTemplateForSelectorless} from './selectorless.js';
 import {
   combineTcbContent,
   generateTcbCode,
@@ -221,12 +220,6 @@ export function buildTcbTargets(
         }
       }
 
-      let selectorlessEnabled = false;
-      if (options.enableSelectorless) {
-        const analysis = analyzeTemplateForSelectorless(parsed.nodes);
-        selectorlessEnabled = analysis.isSelectorless;
-      }
-
       // 9. Collect component for TCB generation (optimize mode only)
       tcbTargets.push({
         // TODO(cleanup): access fields mirrored from `classMeta` directly instead of duplicating them on `TcbTargetInput`.
@@ -238,8 +231,6 @@ export function buildTcbTargets(
           component.resolvedDeclarations ?? [],
           consumer,
         ),
-        enableSelectorless: options.enableSelectorless ?? false,
-        selectorlessEnabled,
         ownDeclaration: metadataToDeclaration(
           component,
           cls,
@@ -1617,9 +1608,7 @@ function compileClasses(file: FileCompilation): string | null | undefined {
       };
 
       // 5. Compile
-      const bindingParser = makeBindingParser(
-        ctx.templateParseOptions?.enableSelectorless ?? false,
-      );
+      const bindingParser = makeBindingParser();
 
       let compileResult: R3CompiledExpression;
       try {
@@ -1714,9 +1703,7 @@ function compileClasses(file: FileCompilation): string | null | undefined {
       };
 
       // Compile directive
-      const bindingParser = makeBindingParser(
-        ctx.templateParseOptions?.enableSelectorless ?? false,
-      );
+      const bindingParser = makeBindingParser();
       let compileResult: R3CompiledExpression;
 
       try {

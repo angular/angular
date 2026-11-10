@@ -8,8 +8,6 @@
 
 import {
   MatchSource,
-  TmplAstComponent,
-  TmplAstDirective,
   TmplAstElement,
   TmplAstLetDeclaration,
   TmplAstReference,
@@ -35,8 +33,6 @@ export enum SymbolKind {
   DomBinding,
   Pipe,
   LetDeclaration,
-  SelectorlessComponent,
-  SelectorlessDirective,
 }
 
 /**
@@ -53,9 +49,7 @@ export type Symbol =
   | TemplateSymbol
   | DomBindingSymbol
   | PipeSymbol
-  | LetDeclarationSymbol
-  | SelectorlessComponentSymbol
-  | SelectorlessDirectiveSymbol;
+  | LetDeclarationSymbol;
 
 /**
  * A `Symbol` which declares a new named entity in the template scope.
@@ -247,40 +241,6 @@ export interface TemplateSymbol {
   directives: DirectiveSymbol[];
 
   templateNode: TmplAstTemplate;
-}
-
-/** A representation of a selectorless component reference in a template. */
-export interface SelectorlessComponentSymbol {
-  kind: SymbolKind.SelectorlessComponent;
-
-  /**
-   * Includes the component class itself and any host directives
-   * that may have been applied as a side-effect of it.
-   */
-  directives: DirectiveSymbol[];
-
-  /** The location in the shim file for the variable that holds the type of the component. */
-  tcbLocation: TcbLocation;
-
-  /** Template AST node defining the component. */
-  templateNode: TmplAstComponent;
-}
-
-/** A representation of a selectorless directive reference in a template. */
-export interface SelectorlessDirectiveSymbol {
-  kind: SymbolKind.SelectorlessDirective;
-
-  /**
-   * Includes the directive class itself and any host directives
-   * that may have been applied as a side-effect of it.
-   */
-  directives: DirectiveSymbol[];
-
-  /** The location in the shim file for the variable that holds the type of the directive. */
-  tcbLocation: TcbLocation;
-
-  /** Template AST node defining the directive. */
-  templateNode: TmplAstDirective;
 }
 
 /** Interface shared between host and non-host directives. */

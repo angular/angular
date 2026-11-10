@@ -13,8 +13,6 @@ import {
   IndexerVisitor,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
-  TmplAstComponent,
-  TmplAstDirective,
   TmplAstElement,
   TmplAstLetDeclaration,
   TmplAstNode,
@@ -37,7 +35,7 @@ import {makeClassKey} from '../compiler-utils.js';
 import {createInputPropertyMapping, createOutputPropertyMapping} from '../tcb_adapter.js';
 import type * as nga from '../types.js';
 
-type DirectiveHost = TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective;
+type DirectiveHost = TmplAstElement | TmplAstTemplate;
 
 /** A matched directive, in the shape `AbstractBoundTemplate` reports it. */
 interface DirectiveRef {

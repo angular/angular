@@ -330,8 +330,6 @@ function ingestNodes(unit: ViewCompilationUnit, template: t.Node[]): void {
       ingestLetDeclaration(unit, node);
     } else if (node instanceof t.BoundaryBlock) {
       ingestBoundaryBlock(unit, node);
-    } else if (node instanceof t.Component) {
-      // TODO(crisbeto): account for selectorless nodes.
     } else {
       throw new Error(`Unsupported template node: ${node.constructor.name}`);
     }

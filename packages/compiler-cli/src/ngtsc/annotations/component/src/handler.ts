@@ -43,7 +43,6 @@ import {
   R3TemplateDependencyKind,
   R3TemplateDependencyMetadata,
   SchemaMetadata,
-  SelectorlessMatcher,
   SelectorMatcher,
   TmplAstDeferredBlock,
   TypeCheckId,
@@ -196,7 +195,6 @@ import {
   StyleUrlMeta,
   transformDecoratorResources,
 } from './resources';
-import {analyzeTemplateForSelectorless} from './selectorless';
 import {ComponentSymbol} from './symbol';
 import {
   collectLegacyAnimationNames,
@@ -287,7 +285,6 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
     private readonly enableHmr: boolean,
     private readonly implicitStandaloneValue: boolean,
     private readonly typeCheckHostBindings: boolean,
-    private readonly enableSelectorless: boolean,
     private readonly emitDeclarationOnly: boolean,
     private readonly legacyOptionalChaining: boolean,
     private readonly enableTemplateSourceLocations: boolean,
@@ -298,7 +295,6 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       usePoisonedData: this.usePoisonedData,
       enableBlockSyntax: this.enableBlockSyntax,
       enableLetSyntax: this.enableLetSyntax,
-      enableSelectorless: this.enableSelectorless,
       preserveSignificantWhitespace: this.i18nPreserveSignificantWhitespace,
     };
 
@@ -334,7 +330,6 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
     usePoisonedData: boolean;
     enableBlockSyntax: boolean;
     enableLetSyntax: boolean;
-    enableSelectorless: boolean;
     preserveSignificantWhitespace?: boolean;
   };
 
@@ -750,7 +745,6 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
             usePoisonedData: this.usePoisonedData,
             enableBlockSyntax: this.enableBlockSyntax,
             enableLetSyntax: this.enableLetSyntax,
-            enableSelectorless: this.enableSelectorless,
             preserveSignificantWhitespace: this.i18nPreserveSignificantWhitespace,
           },
           this.compilationMode,
@@ -823,39 +817,6 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       this.rootDirs,
       this.compilerHost,
     );
-
-    let selectorlessEnabled = false;
-    let localReferencedSymbols: Set<string> | null = null;
-
-    if (this.enableSelectorless) {
-      const templateAnalysis = analyzeTemplateForSelectorless(template.nodes);
-      selectorlessEnabled = templateAnalysis.isSelectorless;
-      localReferencedSymbols = templateAnalysis.localReferencedSymbols;
-    }
-
-    if (selectorlessEnabled) {
-      if (!metadata.isStandalone) {
-        isPoisoned = true;
-        diagnostics ??= [];
-        diagnostics.push(
-          makeDiagnostic(
-            ErrorCode.COMPONENT_NOT_STANDALONE,
-            component.get('standalone') || node.name,
-            `Cannot use selectorless with a component that is not standalone`,
-          ),
-        );
-      } else if (rawImports || rawDeferredImports) {
-        isPoisoned = true;
-        diagnostics ??= [];
-        diagnostics.push(
-          makeDiagnostic(
-            ErrorCode.UNSUPPORTED_SELECTORLESS_COMPONENT_FIELD,
-            (rawImports || rawDeferredImports)!,
-            `Cannot use the "${rawImports === null ? 'deferredImports' : 'imports'}" field in a selectorless component`,
-          ),
-        );
-      }
-    }
 
     const foreignMatcher = createForeignComponentMatcher(foreignImports);
     const foreignComponentDiagnostics = analyzeForeignComponentFeatures(template, foreignMatcher);
@@ -1023,8 +984,6 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
         outputs,
         hostDirectives,
         rawHostDirectives,
-        selectorlessEnabled,
-        localReferencedSymbols,
         meta: {
           ...metadata,
           template,
@@ -1142,8 +1101,6 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       preserveWhitespaces: analysis.template.preserveWhitespaces ?? false,
       isExplicitlyDeferred: false,
       deferredBlocks: null,
-      selectorlessEnabled: analysis.selectorlessEnabled,
-      localReferencedSymbols: analysis.localReferencedSymbols,
     });
 
     this.resourceRegistry.registerResources(analysis.resources, node);
@@ -1179,7 +1136,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
         return null;
       }
 
-      matcher = createMatcherFromScope(scope, this.hostDirectivesResolver);
+      matcher = createMatcherFromScope(scope);
     }
 
     const binder = new R3TargetBinder<DirectiveMeta>(matcher);
@@ -1475,7 +1432,6 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       if (this.compilationMode !== CompilationMode.LOCAL) {
         this.resolveDeferBlocks(
           node,
-          scope,
           deferBlocks,
           declarations,
           data,
@@ -1870,7 +1826,6 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
     // type-checking and will eventually replace matching in the TemplateDefinitionBuilder.
 
     const isModuleScope = scope.kind === ComponentScopeKind.NgModule;
-    const isSelectorlessScope = scope.kind === ComponentScopeKind.Selectorless;
     const pipes = new Map<string, PipeMeta>();
 
     // Dependencies from the `@Component.deferredImports` field.
@@ -1878,23 +1833,12 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       scope.kind === ComponentScopeKind.Standalone ? scope.deferredDependencies : null;
     const dependencies: (DirectiveMeta | PipeMeta | NgModuleMeta)[] = [];
 
-    if (isSelectorlessScope) {
-      for (const [localName, dep] of scope.dependencies) {
-        // In selectorless the pipes are referred to by their local name.
-        if (dep.kind === MetaKind.Pipe) {
-          pipes.set(localName, dep);
-        }
-        dependencies.push(dep);
+    const scopeDeps = isModuleScope ? scope.compilation.dependencies : scope.dependencies;
+    for (const dep of scopeDeps) {
+      if (dep.kind === MetaKind.Pipe && dep.name !== null) {
+        pipes.set(dep.name, dep);
       }
-    } else {
-      const scopeDeps = isModuleScope ? scope.compilation.dependencies : scope.dependencies;
-      for (const dep of scopeDeps) {
-        // Outside of selectorless the pipes are referred to by their defined name.
-        if (dep.kind === MetaKind.Pipe && dep.name !== null) {
-          pipes.set(dep.name, dep);
-        }
-        dependencies.push(dep);
-      }
+      dependencies.push(dep);
     }
 
     // Mark the component is an NgModule-based component with its NgModule in a different file
@@ -1906,7 +1850,6 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
     // Make sure that `@Component.imports` and `@Component.deferredImports` do not have
     // the same dependencies.
     if (
-      !isSelectorlessScope &&
       metadata.isStandalone &&
       analysis.rawDeferredImports !== null &&
       explicitlyDeferredDependencies !== null &&
@@ -1924,7 +1867,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
 
     // Set up the R3TargetBinder.
     const binder = new R3TargetBinder(
-      createMatcherFromScope(scope, this.hostDirectivesResolver),
+      createMatcherFromScope(scope),
       createForeignComponentMatcher(analysis.foreignImports),
     );
     let allDependencies = dependencies;
@@ -2075,7 +2018,6 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       declarations.set(dep.ref.node, {
         kind: R3TemplateDependencyKind.Pipe,
         type: pipeType.expression,
-        // Use the local name for pipes to account for selectorless.
         name: localName,
         ref: dep.ref,
         importedFile: pipeType.importedFile,
@@ -2466,7 +2408,6 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
    */
   private resolveDeferBlocks(
     componentClassDecl: ClassDeclaration,
-    scope: ComponentScope,
     deferBlocks: Map<TmplAstDeferredBlock, BoundTarget<DirectiveMeta>>,
     deferrableDecls: Map<ClassDeclaration, AnyUsedType>,
     resolutionData: ComponentResolutionData,
@@ -2637,20 +2578,6 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
           }
         }
       }
-
-      // Selectorless references dependencies directly so we register through the identifiers.
-      if (scope.kind === ComponentScopeKind.Selectorless) {
-        for (const identifier of scope.dependencyIdentifiers) {
-          this.registerDeferrableCandidate(
-            componentClassDecl,
-            identifier,
-            false /* isDeferredImport */,
-            allDeferredDecls,
-            eagerlyUsedDecls,
-            resolutionData,
-          );
-        }
-      }
     }
 
     // Any directive or pipe used inside a defer block that wasn't deferred
@@ -2787,26 +2714,11 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
 
   /** Creates a new binding parser. */
   private getNewBindingParser() {
-    return makeBindingParser(this.enableSelectorless);
+    return makeBindingParser();
   }
 }
 
-function createMatcherFromScope(
-  scope: ComponentScope,
-  hostDirectivesResolver: HostDirectivesResolver,
-): DirectiveMatcher<DirectiveMeta> {
-  if (scope.kind === ComponentScopeKind.Selectorless) {
-    const registry = new Map<string, DirectiveMeta[]>();
-
-    for (const [name, dep] of scope.dependencies) {
-      if (dep.kind === MetaKind.Directive) {
-        registry.set(name, [dep, ...hostDirectivesResolver.resolve(dep)]);
-      }
-    }
-
-    return new SelectorlessMatcher(registry);
-  }
-
+function createMatcherFromScope(scope: ComponentScope): DirectiveMatcher<DirectiveMeta> {
   const matcher = new SelectorMatcher();
   const dependencies =
     scope.kind === ComponentScopeKind.NgModule

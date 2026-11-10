@@ -177,22 +177,6 @@ export enum ErrorCode {
   NON_STANDALONE_NOT_ALLOWED = 2023,
 
   /**
-   * Raised when a named template dependency isn't defined in the component's source file.
-   */
-  MISSING_NAMED_TEMPLATE_DEPENDENCY = 2024,
-
-  /**
-   * Raised if an incorrect type is used for a named template dependency (e.g. directive
-   * class used as a component).
-   */
-  INCORRECT_NAMED_TEMPLATE_DEPENDENCY_TYPE = 2025,
-
-  /**
-   * Raised for `@Component` fields that aren't supported in a selectorless context.
-   */
-  UNSUPPORTED_SELECTORLESS_COMPONENT_FIELD = 2026,
-
-  /**
    * A component is using both the `animations` property and `animate.enter` or `animate.leave`
    * in the template.
    */
@@ -417,12 +401,6 @@ export enum ErrorCode {
    * A `@let` declaration conflicts with another symbol in the same scope.
    */
   CONFLICTING_LET_DECLARATION = 8017,
-
-  /**
-   * A binding inside selectorless directive syntax did
-   * not match any inputs/outputs of the directive.
-   */
-  UNCLAIMED_DIRECTIVE_BINDING = 8018,
 
   /**
    * An `@defer` block with an implicit trigger does not have a placeholder, for example:

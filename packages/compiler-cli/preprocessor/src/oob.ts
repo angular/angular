@@ -16,8 +16,6 @@ import {
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
   TmplAstBoundaryBlock,
-  TmplAstComponent,
-  TmplAstDirective,
   TmplAstElement,
   TmplAstForLoopBlock,
   TmplAstForLoopBlockEmpty,
@@ -288,7 +286,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
 
   missingRequiredInputs(
     id: TypeCheckId,
-    element: TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
+    element: TmplAstElement | TmplAstTemplate,
     directiveName: string,
     isComponent: boolean,
     inputAliases: string[],
@@ -416,42 +414,6 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     );
   }
 
-  missingNamedTemplateDependency(id: TypeCheckId, node: TmplAstComponent | TmplAstDirective) {
-    this.pushDiagnostic(
-      id,
-      `Cannot find name "${node instanceof TmplAstDirective ? node.name : node.componentName}". ` +
-        `Selectorless references are only supported to classes or non-type import statements.`,
-      node.startSourceSpan,
-      OutOfBandDiagnosticCategory.Error,
-      ErrorCode.MISSING_NAMED_TEMPLATE_DEPENDENCY,
-    );
-  }
-
-  incorrectTemplateDependencyType(id: TypeCheckId, node: TmplAstComponent | TmplAstDirective) {
-    this.pushDiagnostic(
-      id,
-      `Incorrect reference type. Type must be a standalone @Component or @Directive.`,
-      node.startSourceSpan,
-      OutOfBandDiagnosticCategory.Error,
-      ErrorCode.INCORRECT_NAMED_TEMPLATE_DEPENDENCY_TYPE,
-    );
-  }
-
-  unclaimedDirectiveBinding(
-    id: TypeCheckId,
-    directive: TmplAstDirective,
-    node: TmplAstBoundAttribute | TmplAstTextAttribute | TmplAstBoundEvent,
-  ) {
-    this.pushDiagnostic(
-      id,
-      `Directive ${directive.name} does not have an input or output named "${node.name}". ` +
-        `Bindings to directives must target existing inputs or outputs.`,
-      node.keySpan || node.sourceSpan,
-      OutOfBandDiagnosticCategory.Error,
-      ErrorCode.UNCLAIMED_DIRECTIVE_BINDING,
-    );
-  }
-
   deferImplicitTriggerMissingPlaceholder(
     id: TypeCheckId,
     trigger:
@@ -529,7 +491,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
 
   conflictingHostDirectiveBinding(
     id: TypeCheckId,
-    node: TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
+    node: TmplAstElement | TmplAstTemplate,
     directiveName: string,
     kind: 'input' | 'output',
     classPropertyName: string,
@@ -553,15 +515,11 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
    * Span covering only the tag name of a node, since highlighting the entire start tag can be
    * noisy. Falls back to the whole start tag for nodes without a name (e.g. `<ng-template>`).
    */
-  private getTagNameSpan(
-    node: TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
-  ): ParseSourceSpan {
+  private getTagNameSpan(node: TmplAstElement | TmplAstTemplate): ParseSourceSpan {
     let name: string | null;
 
-    if (node instanceof TmplAstElement || node instanceof TmplAstDirective) {
+    if (node instanceof TmplAstElement) {
       name = node.name;
-    } else if (node instanceof TmplAstComponent) {
-      name = node.componentName;
     } else {
       name = null;
     }

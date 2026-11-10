@@ -12,7 +12,6 @@ import {
   ArrowFunction,
   ASTWithSource,
   BindingPipe,
-  BindingPipeType,
   Call,
   EmptyExpr,
   Interpolation,
@@ -1174,24 +1173,6 @@ describe('parser', () => {
           // The nameSpan should be positioned at the end of the input.
           expect(rawSpan(binding.nameSpan)).toEqual([bindingText.length, bindingText.length]);
         });
-
-        it('should parse pipes with the correct type when supportsDirectPipeReferences is enabled', () => {
-          expect((parseBinding('0 | Foo', true).ast as BindingPipe).type).toBe(
-            BindingPipeType.ReferencedDirectly,
-          );
-          expect((parseBinding('0 | foo', true).ast as BindingPipe).type).toBe(
-            BindingPipeType.ReferencedByName,
-          );
-        });
-
-        it('should parse pipes with the correct type when supportsDirectPipeReferences is disabled', () => {
-          expect((parseBinding('0 | Foo', false).ast as BindingPipe).type).toBe(
-            BindingPipeType.ReferencedByName,
-          );
-          expect((parseBinding('0 | foo', false).ast as BindingPipe).type).toBe(
-            BindingPipeType.ReferencedByName,
-          );
-        });
       });
 
       it('should only allow identifier or keyword as formatter names', () => {
@@ -2018,16 +1999,16 @@ describe('parser', () => {
   });
 });
 
-function createParser(supportsDirectPipeReferences = false) {
-  return new Parser(new Lexer(), supportsDirectPipeReferences);
+function createParser() {
+  return new Parser(new Lexer());
 }
 
 function parseAction(text: string): ASTWithSource {
   return createParser().parseAction(text, getFakeSpan(), 0);
 }
 
-function parseBinding(text: string, supportsDirectPipeReferences?: boolean): ASTWithSource {
-  return createParser(supportsDirectPipeReferences).parseBinding(text, getFakeSpan(), 0);
+function parseBinding(text: string): ASTWithSource {
+  return createParser().parseBinding(text, getFakeSpan(), 0);
 }
 
 function parseTemplateBindings(attribute: string, templateUrl = 'foo.html'): TemplateBinding[] {
