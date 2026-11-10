@@ -13,7 +13,7 @@ export async function onReferences(
   params: ReferenceParams,
   context: HandlerContext,
 ): Promise<Location[] | null> {
-  const docContext = getDocumentContext(context, params.textDocument.uri, params.position);
+  const docContext = await getDocumentContext(context, params.textDocument.uri, params.position);
   if (!docContext) {
     return null;
   }

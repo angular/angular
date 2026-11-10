@@ -1251,12 +1251,12 @@ export class HybridCompiler {
   }
 
   /** Returns the latest cached `AnalysisResult` for `filePath`, or queries the analyzer if needed. */
-  getCachedMetadata(filePath: string): nga.AnalysisResult | null {
-    return this.metadataByFile.get(filePath) ?? this.analyzer.getMetadataForFileSync(filePath);
+  async getCachedMetadata(filePath: string): Promise<nga.AnalysisResult | null> {
+    return this.metadataByFile.get(filePath) ?? (await this.analyzer.getMetadataForFile(filePath));
   }
 
-  getTcbForFile(filePath: string): string | null {
-    return this.ensureTcb(filePath).tcb || null;
+  async getTcbForFile(filePath: string): Promise<string | null> {
+    return (await this.ensureTcb(filePath)).tcb || null;
   }
 
   private hasTcbCandidates(classes: nga.ClassMetadata[]): boolean {
@@ -1271,22 +1271,6 @@ export class HybridCompiler {
               c.hostBindings.length > 0 ||
               c.hostListeners.length > 0))),
     );
-  }
-
-  /**
-   * Binds template targets for `filePath` without generating or printing TCB code (sufficient for
-   * template indexing, which only needs `BoundTarget`).
-   */
-  private ensureBoundSync(filePath: string): FileAnalysis {
-    const cached = this.fileCache.get(filePath);
-    if (cached && cached.preparedTcbData !== undefined && this.metadataByFile.has(filePath)) {
-      return cached;
-    }
-    const result = this.getCachedMetadata(filePath);
-    if (!result) {
-      return unanalyzedFile(filePath);
-    }
-    return this.ensureBoundWithMetadataSync(result);
   }
 
   private prepareFileAnalysisForBinding(
@@ -1375,7 +1359,11 @@ export class HybridCompiler {
    * This is used in sidecar/async mode to avoid blocking CPU tasks.
    */
   async ensureBound(filePath: string): Promise<FileAnalysis> {
-    const result = await this.analyzer.getMetadataForFile(filePath);
+    const cached = this.fileCache.get(filePath);
+    if (cached && cached.preparedTcbData !== undefined && this.metadataByFile.has(filePath)) {
+      return cached;
+    }
+    const result = await this.getCachedMetadata(filePath);
     if (!result) {
       return unanalyzedFile(filePath);
     }
@@ -1492,8 +1480,8 @@ export class HybridCompiler {
   }
 
   /** Generates and caches the Type Check Block (TCB) for `filePath` on demand. */
-  private ensureTcb(filePath: string): FileAnalysis {
-    const fileAnalysis = this.ensureBoundSync(filePath);
+  private async ensureTcb(filePath: string): Promise<FileAnalysis> {
+    const fileAnalysis = await this.ensureBound(filePath);
 
     if (fileAnalysis.tcb !== undefined) {
       return fileAnalysis;
@@ -1505,7 +1493,7 @@ export class HybridCompiler {
     }
 
     const normPath = fileAnalysis.filePath;
-    const result = this.analyzer.getMetadataForFileSync(normPath);
+    const result = await this.getCachedMetadata(normPath);
     if (!result) {
       fileAnalysis.tcb = null;
       return fileAnalysis;
@@ -1524,7 +1512,7 @@ export class HybridCompiler {
 
     let inlineTcbInfo = {sourceContent: '', classes: [] as nga.ClassMetadata[]};
     if (tcbResult.isInline) {
-      const content = this.analyzer.getFileContentSync(normPath);
+      const content = fileAnalysis.sourceContent ?? (await this.analyzer.getFileContent(normPath));
       inlineTcbInfo = {
         sourceContent: content,
         classes: result.classes,
@@ -1537,21 +1525,23 @@ export class HybridCompiler {
     return fileAnalysis;
   }
 
-  getParsedTemplate(filePath: string, classKey: string): any | null {
-    const parsed = this.ensureBoundSync(filePath).parsedTemplates.get(classKey);
+  async getParsedTemplate(filePath: string, classKey: string): Promise<any | null> {
+    const parsed = (await this.ensureBound(filePath)).parsedTemplates.get(classKey);
     return parsed ? {...parsed, nodes: parsed.diagNodes} : null;
   }
 
-  getHostElement(filePath: string, classKey: string): any | null {
-    return this.ensureBoundSync(filePath).preparedTcbData?.hostElementsMap.get(classKey) ?? null;
+  async getHostElement(filePath: string, classKey: string): Promise<any | null> {
+    return (
+      (await this.ensureBound(filePath)).preparedTcbData?.hostElementsMap.get(classKey) ?? null
+    );
   }
 
-  getTypeCheckIdMap(filePath: string): Map<string, string> | null {
-    return this.ensureBoundSync(filePath).preparedTcbData?.typeCheckIdMap ?? null;
+  async getTypeCheckIdMap(filePath: string): Promise<Map<string, string> | null> {
+    return (await this.ensureBound(filePath)).preparedTcbData?.typeCheckIdMap ?? null;
   }
 
-  getClassMetadata(filePath: string): nga.AnalysisResult | null {
-    return this.analyzer.getMetadataForFileSync(filePath);
+  async getClassMetadata(filePath: string): Promise<nga.AnalysisResult | null> {
+    return this.analyzer.getMetadataForFile(filePath);
   }
 
   /** `fileId` is the file's trace id from `Tracer.newFileId`, or 0 when untraced. */
@@ -1906,8 +1896,11 @@ export class HybridCompiler {
     return processed.hmrUpdateModule ?? null;
   }
 
-  getBoundTarget(filePath: string, classKey: string): BoundTarget<TcbDirectiveMetadata> | null {
-    return this.ensureBoundSync(filePath).preparedTcbData?.boundTargetMap.get(classKey) || null;
+  async getBoundTarget(
+    filePath: string,
+    classKey: string,
+  ): Promise<BoundTarget<TcbDirectiveMetadata> | null> {
+    return (await this.ensureBound(filePath)).preparedTcbData?.boundTargetMap.get(classKey) || null;
   }
 
   async getIndexedComponents(): Promise<Map<string, IndexedComponent>> {
@@ -1932,13 +1925,13 @@ export class HybridCompiler {
     return getIndexedComponentsSync(this);
   }
 
-  getTsFileForTemplate(templatePath: string): nga.TemplateUsage | null {
-    const res = this.analyzer.getTsFileForTemplateSync(templatePath);
+  async getTsFileForTemplate(templatePath: string): Promise<nga.TemplateUsage | null> {
+    const res = await this.analyzer.getTsFileForTemplate(templatePath);
     return res?.[0] ?? null;
   }
 
-  getFileContent(filePath: string): string {
-    return this.analyzer.getFileContentSync(filePath);
+  async getFileContent(filePath: string): Promise<string> {
+    return this.analyzer.getFileContent(filePath);
   }
 }
 

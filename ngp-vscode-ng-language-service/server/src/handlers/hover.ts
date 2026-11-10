@@ -10,7 +10,7 @@ import {HandlerContext, getDocumentContext} from './utils.js';
 import {offsetToPosition} from '../../../../packages/compiler-cli/preprocessor/language-service/src/tcb_ls_util.js';
 
 export async function onHover(params: any, context: HandlerContext) {
-  const docContext = getDocumentContext(context, params.textDocument.uri, params.position);
+  const docContext = await getDocumentContext(context, params.textDocument.uri, params.position);
   if (!docContext) {
     return null;
   }

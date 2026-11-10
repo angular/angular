@@ -10,7 +10,7 @@ import {DefinitionParams, Definition, LocationLink} from 'vscode-languageserver'
 import {HandlerContext, getDocumentContext} from './utils.js';
 
 export async function onDefinition(params: DefinitionParams, context: HandlerContext) {
-  const docContext = getDocumentContext(context, params.textDocument.uri, params.position);
+  const docContext = await getDocumentContext(context, params.textDocument.uri, params.position);
   if (!docContext) {
     return null;
   }

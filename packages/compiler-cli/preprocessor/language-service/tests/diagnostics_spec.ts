@@ -211,7 +211,7 @@ describe('Diagnostics Mapping', () => {
       const originalGetTcb = (ls as any).hybridCompiler.getTcbForFile.bind(
         (ls as any).hybridCompiler,
       );
-      (ls as any).hybridCompiler.getTcbForFile = () => updatedTcbCode;
+      (ls as any).hybridCompiler.getTcbForFile = async () => updatedTcbCode;
 
       const tcbDoc = TextDocument.create(tcb.filePath, 'typescript', 0, updatedTcbCode);
       const tcbPosition = tcbDoc.positionAt(commentOffset);

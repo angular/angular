@@ -37,7 +37,7 @@ export async function getSignatureHelp(
   facade: TsGoFacade,
   context?: SignatureHelpContext,
 ): Promise<SignatureHelp | null> {
-  const setup = getSetup(hybridCompiler, filePath, position);
+  const setup = await getSetup(hybridCompiler, filePath, position);
   if (!setup) {
     return null;
   }
@@ -61,7 +61,7 @@ export async function getSignatureHelp(
     return null;
   }
 
-  const symbol = templateTypeChecker.getSymbolForNode(
+  const symbol = await templateTypeChecker.getSymbolForNode(
     target.context.node,
     tsFilePath,
     meta.classKey,

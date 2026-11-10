@@ -48,7 +48,7 @@ export async function getHover(
   templateTypeChecker: TemplateTypeChecker,
   facade: TsGoFacade,
 ): Promise<{text: string; span?: {start: number; length: number}} | null> {
-  const setup = getSetup(hybridCompiler, filePath, position);
+  const setup = await getSetup(hybridCompiler, filePath, position);
   if (!setup) {
     return null;
   }
@@ -107,13 +107,13 @@ export async function getHover(
     templateName = node.name;
   }
 
-  const tcbResult = templateTypeChecker.getTcb(filePath, position);
+  const tcbResult = await templateTypeChecker.getTcb(filePath, position);
 
   if (!tcbResult) {
     return null;
   }
 
-  let ngSymbol = templateTypeChecker.getSymbolOfNode(filePath, position);
+  let ngSymbol = await templateTypeChecker.getSymbolOfNode(filePath, position);
 
   const tcbUri = tcbResult.filePath;
   const selection = tcbResult.selections[0];

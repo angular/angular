@@ -72,26 +72,26 @@ async function createSession(
     incremental,
   });
 
-  /** Runs a full build first, then a delta pass per call via `compiler.compileSync()`. */
-  const build = (): BuildOutputs => {
+  /** Runs a full build first, then a delta pass per call via `compiler.compile()`. */
+  const build = async (): Promise<BuildOutputs> => {
     const outputs: BuildOutputs = new Map();
-    for (const [filePath, processed] of compiler.compileSync()) {
+    for (const [filePath, processed] of await compiler.compile()) {
       outputs.set(path.basename(filePath), processed);
     }
     return outputs;
   };
   const edit = (name: string, content: string) =>
-    compiler.updateFileContentSync([{filePath: path.join(root, name), content}]);
+    compiler.updateFileContent([{filePath: path.join(root, name), content}]);
   return {compiler, analyzer, root, build, edit};
 }
 
 describe('HybridCompiler processed output reuse', () => {
   it('reprocesses only the files whose processing inputs changed', async () => {
     const {analyzer, build, edit} = await createSession('template_edit');
-    const first = build();
+    const first = await build();
 
-    edit('b.component.html', '<p>b, edited</p>');
-    const second = build();
+    await edit('b.component.html', '<p>b, edited</p>');
+    const second = await build();
 
     expect(second.get('a.component.ts')).toBe(first.get('a.component.ts'));
     expect(second.get('dir.ts')).toBe(first.get('dir.ts'));
@@ -100,12 +100,15 @@ describe('HybridCompiler processed output reuse', () => {
     analyzer.close();
   });
 
-  it('streams only dirty chunks during analyzeOptimizedDeltaSync', async () => {
+  it('streams only dirty chunks during analyzeOptimizedDelta', async () => {
     const {compiler, analyzer, build, edit} = await createSession('delta_stream_only_dirty');
-    build();
+    await build();
 
-    edit('b.component.html', '<p>b, edited</p>');
-    const deltaChunks = Array.from(compiler.analyzeOptimizedDeltaSync());
+    await edit('b.component.html', '<p>b, edited</p>');
+    const deltaChunks = [];
+    for await (const chunk of compiler.analyzeOptimizedDelta()) {
+      deltaChunks.push(chunk);
+    }
     const streamedFiles = deltaChunks.flatMap((c) => c.files.map((f) => path.basename(f.filePath)));
 
     expect(streamedFiles).toEqual(['b.component.ts']);
@@ -114,10 +117,10 @@ describe('HybridCompiler processed output reuse', () => {
 
   it("reprocesses a component when a dependency's public API changes", async () => {
     const {analyzer, build, edit} = await createSession('dependency_edit');
-    const first = build();
+    const first = await build();
 
-    edit('dir.ts', FILES['dir.ts'].replace(`@Input() first = '';`, `@Input() second = '';`));
-    const second = build();
+    await edit('dir.ts', FILES['dir.ts'].replace(`@Input() first = '';`, `@Input() second = '';`));
+    const second = await build();
 
     expect(second.get('dir.ts')).not.toBe(first.get('dir.ts'));
     expect(second.get('a.component.ts')).not.toBe(first.get('a.component.ts'));
@@ -127,17 +130,17 @@ describe('HybridCompiler processed output reuse', () => {
 
   it('reprocesses everything when a file that is no known resource changes', async () => {
     const {compiler, analyzer, root, build} = await createSession('unknown_resource');
-    const first = build();
+    const first = await build();
     compiler.recordSuccessfulEmit([
       path.join(root, 'a.component.ts'),
       path.join(root, 'b.component.ts'),
       path.join(root, 'dir.ts'),
     ]);
 
-    compiler.invalidateFilesSync([
+    await compiler.invalidateFiles([
       {filePath: path.join(root, 'theme.css'), updateType: FileUpdateType.Changed},
     ]);
-    const second = build();
+    const second = await build();
 
     for (const [name, processed] of second) {
       expect(processed).withContext(name).not.toBe(first.get(name)!);
@@ -166,7 +169,7 @@ describe('HybridCompiler processed output reuse', () => {
         `,
       },
     );
-    const first = build();
+    const first = await build();
     expect(first.get('a.component.ts')!.magicString.toString()).toContain("'app-a'");
     compiler.recordSuccessfulEmit([
       path.join(root, 'a.component.ts'),
@@ -178,8 +181,8 @@ describe('HybridCompiler processed output reuse', () => {
 
     // `a.component.ts` only imports `barrel.ts`, so `const.ts` is not among its static
     // dependencies, but its output depends on it all the same.
-    edit('const.ts', `export const SEL = 'app-a-v2';`);
-    const second = build();
+    await edit('const.ts', `export const SEL = 'app-a-v2';`);
+    const second = await build();
 
     expect(second.get('a.component.ts')!.magicString.toString()).toContain("'app-a-v2'");
     const shouldEmit = compiler.createEmitFilter();
@@ -223,11 +226,11 @@ describe('HybridCompiler processed output reuse', () => {
     );
     const contentProjectionDiagnostics = () =>
       compiler.getDiagnostics().filter((diag) => diag.code === 8011);
-    const first = build();
+    const first = await build();
     expect(contentProjectionDiagnostics()).toEqual([]);
 
-    edit('child.component.html', childTemplate('<ng-content select="span"></ng-content>'));
-    const second = build();
+    await edit('child.component.html', childTemplate('<ng-content select="span"></ng-content>'));
+    const second = await build();
 
     expect(second.get('parent.component.ts')).not.toBe(first.get('parent.component.ts'));
     expect(contentProjectionDiagnostics().map((diag) => diag.messageText)).toEqual([
@@ -238,12 +241,12 @@ describe('HybridCompiler processed output reuse', () => {
 
   it('in verification mode, re-processes reusable files and accepts identical output', async () => {
     const {compiler, analyzer, root, build} = await createSession('verification', true);
-    const first = build();
+    const first = await build();
 
     // Force a chunk containing a.component.ts to be re-processed without changing its inputs.
     const aPath = path.join(root, 'a.component.ts');
-    const aMeta = compiler.getCachedMetadata(aPath)!;
-    const secondA = compiler.processFileSync(aPath, FILES['a.component.ts'], undefined, aMeta);
+    const aMeta = (await compiler.getCachedMetadata(aPath))!;
+    const secondA = await compiler.processFile(aPath, FILES['a.component.ts'], aMeta);
 
     // Nothing is reused, but nothing differs from what would have been.
     const firstA = first.get('a.component.ts')!;
@@ -254,7 +257,7 @@ describe('HybridCompiler processed output reuse', () => {
 
   it('reuses cached template parsing and target binding across delta passes for unchanged files', async () => {
     const {compiler, analyzer, root, build, edit} = await createSession('file_cache_reuse');
-    build();
+    await build();
     const aPath = path.join(root, 'a.component.ts');
     const bPath = path.join(root, 'b.component.ts');
     const firstAPrepared = compiler.fileCache.get(aPath)?.preparedTcbData;
@@ -262,8 +265,8 @@ describe('HybridCompiler processed output reuse', () => {
     expect(firstAPrepared).toBeTruthy();
     expect(firstBPrepared).toBeTruthy();
 
-    edit('b.component.html', '<p>b, edited</p>');
-    build();
+    await edit('b.component.html', '<p>b, edited</p>');
+    await build();
 
     expect(compiler.fileCache.get(aPath)?.preparedTcbData).toBe(firstAPrepared);
     expect(compiler.fileCache.get(bPath)?.preparedTcbData).not.toBe(firstBPrepared);
@@ -273,8 +276,8 @@ describe('HybridCompiler processed output reuse', () => {
   it('reprocesses only the component whose template <link rel="stylesheet"> resource changed', async () => {
     const {compiler, analyzer, root, build, edit} = await createSession('linked_stylesheet');
     await fs.writeFile(path.join(root, 'linked.css'), '.linked { color: red; }');
-    edit('b.component.html', '<link rel="stylesheet" href="./linked.css"><p>b</p>');
-    const first = build();
+    await edit('b.component.html', '<link rel="stylesheet" href="./linked.css"><p>b</p>');
+    const first = await build();
     expect(first.get('b.component.ts')!.magicString.toString()).toContain('color: red');
     compiler.incremental.recordSuccessfulEmit([
       path.join(root, 'a.component.ts'),
@@ -283,10 +286,10 @@ describe('HybridCompiler processed output reuse', () => {
     ]);
 
     await fs.writeFile(path.join(root, 'linked.css'), '.linked { color: blue; }');
-    compiler.invalidateFilesSync([
+    await compiler.invalidateFiles([
       {filePath: path.join(root, 'linked.css'), updateType: FileUpdateType.Changed},
     ]);
-    const second = build();
+    const second = await build();
 
     expect(second.get('a.component.ts')).toBe(first.get('a.component.ts'));
     expect(second.get('dir.ts')).toBe(first.get('dir.ts'));
@@ -300,17 +303,17 @@ describe('HybridCompiler processed output reuse', () => {
 
   it('evicts files that leave the program closure on delta builds', async () => {
     const {compiler, analyzer, root, build, edit} = await createSession('removed_from_program');
-    const first = build();
+    const first = await build();
     expect(first.has('b.component.ts')).toBeTrue();
 
-    edit(
+    await edit(
       'tsconfig.json',
       JSON.stringify({
         compilerOptions: {},
         files: ['a.component.ts', 'dir.ts'],
       }),
     );
-    const second = build();
+    const second = await build();
 
     expect(second.has('b.component.ts')).toBeFalse();
     expect(compiler.currentProcessedFiles.has(path.join(root, 'b.component.ts'))).toBeFalse();
@@ -326,15 +329,15 @@ describe('HybridCompiler processed output reuse', () => {
       false,
       false,
     );
-    const first = build();
+    const first = await build();
     compiler.recordSuccessfulEmit([
       path.join(root, 'a.component.ts'),
       path.join(root, 'b.component.ts'),
       path.join(root, 'dir.ts'),
     ]);
 
-    edit('b.component.html', '<p>b, edited</p>');
-    const second = build();
+    await edit('b.component.html', '<p>b, edited</p>');
+    const second = await build();
 
     expect(second.get('a.component.ts')).not.toBe(first.get('a.component.ts')!);
     expect(second.get('dir.ts')).not.toBe(first.get('dir.ts')!);
@@ -391,14 +394,14 @@ describe('HybridCompiler processed output reuse', () => {
     expect(boundState(oneShot)?.boundFingerprint).toBeUndefined();
 
     // Processing a file again with unchanged inputs reuses the cached output only when incremental.
-    const reprocess = (session: {compiler: HybridCompiler; root: string}) => {
+    const reprocess = async (session: {compiler: HybridCompiler; root: string}) => {
       const aPath = path.join(session.root, 'a.component.ts');
-      const aMeta = session.compiler.getCachedMetadata(aPath)!;
-      return session.compiler.processFileSync(aPath, FILES['a.component.ts'], undefined, aMeta);
+      const aMeta = (await session.compiler.getCachedMetadata(aPath))!;
+      return session.compiler.processFile(aPath, FILES['a.component.ts'], aMeta);
     };
-    expect(reprocess(incremental)).toBe(incrementalOutputs.get('a.component.ts')!);
+    expect(await reprocess(incremental)).toBe(incrementalOutputs.get('a.component.ts')!);
     const oneShotPrepared = boundState(oneShot)?.preparedTcbData;
-    const reprocessedOneShot = reprocess(oneShot);
+    const reprocessedOneShot = await reprocess(oneShot);
     expect(reprocessedOneShot).not.toBe(oneShotOutputs.get('a.component.ts')!);
     expect(boundState(oneShot)?.preparedTcbData).toBeTruthy();
     expect(boundState(oneShot)?.preparedTcbData).not.toBe(oneShotPrepared);

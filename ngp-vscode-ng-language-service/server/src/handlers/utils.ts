@@ -23,11 +23,11 @@ export interface DocumentContext {
   offset: number;
 }
 
-export function getDocumentContext(
+export async function getDocumentContext(
   context: HandlerContext,
   uri: string,
   position: Position,
-): DocumentContext | null {
+): Promise<DocumentContext | null> {
   if (!uri.startsWith('file:')) {
     return null;
   }
@@ -44,7 +44,7 @@ export function getDocumentContext(
 
   let fileContent: string;
   try {
-    fileContent = context.languageService.hybridCompiler.getFileContent(filePath);
+    fileContent = await context.languageService.hybridCompiler.getFileContent(filePath);
   } catch {
     return null;
   }

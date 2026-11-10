@@ -278,7 +278,7 @@ connection.onRequest('textDocument/diagnostic', async (params: DocumentDiagnosti
 
   let tsFilePath = filePath;
   if (filePath.endsWith('.html')) {
-    const templateUsage = project.hybridCompiler.getTsFileForTemplate(filePath);
+    const templateUsage = await project.hybridCompiler.getTsFileForTemplate(filePath);
     if (!templateUsage) {
       connection.console.log(`[SERVER] No component found for template ${filePath}`);
       await diagnosticPublisher.clearAllFor(uri);
@@ -293,7 +293,7 @@ connection.onRequest('textDocument/diagnostic', async (params: DocumentDiagnosti
   await project.hybridCompiler.ensureReady();
 
   const tcbFilePath = getTcbPath(tsFilePath);
-  const tcbContent = project.hybridCompiler.getTcbForFile(tsFilePath);
+  const tcbContent = await project.hybridCompiler.getTcbForFile(tsFilePath);
   if (!tcbContent) {
     await diagnosticPublisher.clearAllFor(uri);
     return {kind: 'full', items: []};
@@ -370,7 +370,7 @@ async function computeWorkspaceDiagnostics(): Promise<WorkspaceDiagnosticReport>
 
     for (const filePath of validCandidateFiles) {
       try {
-        const tcbContent = project.hybridCompiler.getTcbForFile(filePath);
+        const tcbContent = await project.hybridCompiler.getTcbForFile(filePath);
         if (!tcbContent) {
           continue;
         }

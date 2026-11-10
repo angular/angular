@@ -94,8 +94,8 @@ describe('HybridCompiler fileCache invalidation', () => {
     ]);
     try {
       const loosePath = path.join(root, 'Feature/loose.ts');
-      expect(compiler.getTcbForFile(loosePath)).toContain('LooseComponent');
-      const key = compiler.getClassMetadata(loosePath)!.filePath;
+      expect(await compiler.getTcbForFile(loosePath)).toContain('LooseComponent');
+      const key = (await compiler.getClassMetadata(loosePath))!.filePath;
       expect(compiler.fileCache.has(key)).toBe(true);
 
       const updated = componentSource('<b>{{value.length}}</b>');
@@ -103,7 +103,7 @@ describe('HybridCompiler fileCache invalidation', () => {
       await compiler.updateFileContent([{filePath: loosePath, content: updated}]);
 
       expect(compiler.fileCache.has(key)).toBe(false);
-      expect(compiler.getTcbForFile(loosePath)).toContain('.length');
+      expect(await compiler.getTcbForFile(loosePath)).toContain('.length');
     } finally {
       compiler.analyzer.close();
     }
@@ -118,8 +118,8 @@ describe('HybridCompiler fileCache invalidation', () => {
     ]);
     try {
       const dependentPath = path.join(root, 'dependent.ts');
-      const before = compiler.getTcbForFile(dependentPath);
-      const key = compiler.getClassMetadata(dependentPath)!.filePath;
+      const before = await compiler.getTcbForFile(dependentPath);
+      const key = (await compiler.getClassMetadata(dependentPath))!.filePath;
       expect(compiler.fileCache.has(key)).toBe(true);
       expect(before).toContain('_t1.first');
       expect(before).not.toContain('_t1.second');
@@ -130,7 +130,7 @@ describe('HybridCompiler fileCache invalidation', () => {
       await compiler.updateFileContent([{filePath: dirPath, content: updated}]);
 
       expect(compiler.fileCache.has(key)).toBe(false);
-      const after = compiler.getTcbForFile(dependentPath);
+      const after = await compiler.getTcbForFile(dependentPath);
       expect(after).toContain('_t1.second');
       expect(after).not.toContain('_t1.first');
     } finally {
@@ -176,8 +176,8 @@ describe('HybridCompiler fileCache invalidation', () => {
     ]);
     try {
       const cmpPath = path.join(root, 'cmp.ts');
-      expect(compiler.getTcbForFile(cmpPath)).not.toContain('_t1.first');
-      const key = compiler.getClassMetadata(cmpPath)!.filePath;
+      expect(await compiler.getTcbForFile(cmpPath)).not.toContain('_t1.first');
+      const key = (await compiler.getClassMetadata(cmpPath))!.filePath;
       expect(compiler.fileCache.has(key)).toBe(true);
 
       const modPath = path.join(root, 'mod.ts');
@@ -186,7 +186,7 @@ describe('HybridCompiler fileCache invalidation', () => {
       await compiler.updateFileContent([{filePath: modPath, content: updated}]);
 
       expect(compiler.fileCache.has(key)).toBe(false);
-      expect(compiler.getTcbForFile(cmpPath)).toContain('_t1.first');
+      expect(await compiler.getTcbForFile(cmpPath)).toContain('_t1.first');
     } finally {
       compiler.analyzer.close();
     }
@@ -216,7 +216,7 @@ describe('HybridCompiler inline TCB namespace alias collisions', () => {
     ]);
     try {
       const inlinePath = path.join(root, 'inline.ts');
-      const tcb = compiler.getTcbForFile(inlinePath);
+      const tcb = await compiler.getTcbForFile(inlinePath);
       expect(tcb).not.toBeNull();
       expect(tcb).not.toContain('import * as i0 ');
       expect(tcb).toContain("import * as i0_1 from './Shared/dir'");

@@ -106,13 +106,13 @@ export class ProjectManager {
       }
     } else {
       for (const project of loadedProjects) {
-        if (project.hybridCompiler.getTsFileForTemplate(normFilePath)) {
+        if (await project.hybridCompiler.getTsFileForTemplate(normFilePath)) {
           return project;
         }
       }
       await Promise.all(loadedProjects.map((p) => p.hybridCompiler.ensureReady()));
       for (const project of loadedProjects) {
-        if (project.hybridCompiler.getTsFileForTemplate(normFilePath)) {
+        if (await project.hybridCompiler.getTsFileForTemplate(normFilePath)) {
           return project;
         }
       }
@@ -132,7 +132,7 @@ export class ProjectManager {
     // 3. Verify template ownership for HTML files
     if (
       normFilePath.endsWith('.html') &&
-      !project.hybridCompiler.getTsFileForTemplate(normFilePath)
+      !(await project.hybridCompiler.getTsFileForTemplate(normFilePath))
     ) {
       return null;
     }
