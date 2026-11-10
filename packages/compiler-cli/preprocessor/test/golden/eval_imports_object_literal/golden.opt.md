@@ -104,6 +104,10 @@ import { AppComponent } from './app.component';
 import { SharedModule } from './shared.module';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './app.component';
+// @ts-ignore
+import * as i2 from './shared.module';
 
 export class AppModule {
   // @ts-ignore
@@ -115,8 +119,8 @@ export class AppModule {
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     AppModule,
-    [typeof AppComponent],
-    [typeof SharedModule],
+    [typeof i1.AppComponent],
+    [typeof i2.SharedModule],
     never
   > =
     // @ts-ignore
@@ -251,6 +255,8 @@ import { NgModule } from '@angular/core';
 import { SharedComponent } from './shared.component';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './shared.component';
 
 export class SharedModule {
   // @ts-ignore
@@ -262,9 +268,9 @@ export class SharedModule {
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     SharedModule,
-    [typeof SharedComponent],
+    [typeof i1.SharedComponent],
     never,
-    [typeof SharedComponent]
+    [typeof i1.SharedComponent]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: SharedModule });

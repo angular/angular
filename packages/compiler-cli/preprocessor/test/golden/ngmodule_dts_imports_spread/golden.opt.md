@@ -100,6 +100,8 @@ import { EXTRA_MODULES } from './extra';
 import * as i0 from '@angular/core';
 // @ts-ignore
 import * as i1 from './modules';
+// @ts-ignore
+import * as i2 from './app.component';
 
 export class AppModule {
   // @ts-ignore
@@ -111,7 +113,7 @@ export class AppModule {
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     AppModule,
-    [typeof AppComponent],
+    [typeof i2.AppComponent],
     [typeof i1.ModuleC, typeof i1.ModuleD],
     never
   > =

@@ -105,6 +105,10 @@ import { C } from './c.component';
 import { D } from './d.directive';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './c.component';
+// @ts-ignore
+import * as i2 from './d.directive';
 
 export class M1Module {
   // @ts-ignore
@@ -114,7 +118,7 @@ export class M1Module {
     return new (__ngFactoryType__ || M1Module)();
   };
   // @ts-ignore
-  static ɵmod: i0.ɵɵNgModuleDeclaration<M1Module, [typeof C, typeof D], never, never> =
+  static ɵmod: i0.ɵɵNgModuleDeclaration<M1Module, [typeof i1.C, typeof i2.D], never, never> =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: M1Module });
   // @ts-ignore
@@ -145,6 +149,10 @@ import { C } from './c.component';
 import { D } from './d.directive';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './c.component';
+// @ts-ignore
+import * as i2 from './d.directive';
 
 export class M2Module {
   // @ts-ignore
@@ -154,7 +162,7 @@ export class M2Module {
     return new (__ngFactoryType__ || M2Module)();
   };
   // @ts-ignore
-  static ɵmod: i0.ɵɵNgModuleDeclaration<M2Module, [typeof C, typeof D], never, never> =
+  static ɵmod: i0.ɵɵNgModuleDeclaration<M2Module, [typeof i1.C, typeof i2.D], never, never> =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: M2Module });
   // @ts-ignore

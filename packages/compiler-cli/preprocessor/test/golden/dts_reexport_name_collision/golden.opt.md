@@ -24,6 +24,8 @@ import { CollideModule } from 'collide-lib';
 import * as i0 from '@angular/core';
 // @ts-ignore
 import * as i1 from './node_modules/collide-lib/internal';
+// @ts-ignore
+import * as i2 from 'collide-lib';
 
 export class AppComponent {
   // @ts-ignore
@@ -101,7 +103,7 @@ export class AppModule {
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     AppModule,
     [typeof AppComponent],
-    [typeof CollideModule],
+    [typeof i2.CollideModule],
     never
   > =
     // @ts-ignore

@@ -248,28 +248,120 @@ pub(crate) fn import_of_identifier<'a>(
     ident: &oxc_ast::ast::IdentifierReference<'a>,
     semantic: &Semantic<'a>,
 ) -> Option<(&'a str, Option<&'a str>)> {
+    let (specifier, binding) = import_binding_of_identifier(ident, semantic)?;
+    let imported_name = match binding {
+        ImportBinding::Named(name) => Some(name),
+        ImportBinding::Namespace => None,
+        ImportBinding::Default => return None,
+    };
+    Some((specifier, imported_name))
+}
+
+/// The entity name `expr`, written through the import its leftmost identifier is bound by, as
+/// ngtsc's `routeEntityNameThroughImportManager` does; `None` when no import binds it. The
+/// import is named as ngtsc's `getDirectImportOfIdentifier` names it (`getExportedName`): by the
+/// imported name of a named import, and by the identifier itself for a default import.
+///
+/// https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/reflection/src/typescript.ts#L285-L315
+pub(crate) fn imported_entity_name(
+    expr: &Expression<'_>,
+    semantic: &Semantic<'_>,
+) -> Option<crate::types::metadata::ImportedEntityNameMetadata> {
+    let mut members = Vec::new();
+    let mut current = expr;
+    while let Expression::StaticMemberExpression(member) = current {
+        members.push(member.property.name.to_string());
+        current = &member.object;
+    }
+    let Expression::Identifier(ident) = current else {
+        return None;
+    };
+    members.reverse();
+    let (specifier, binding) = import_binding_of_identifier(ident, semantic)?;
+    // Deliberate divergence: `getExportedName` names a namespace import by its local name too,
+    // so ngtsc writes `ns.member` as `iN.ns.member`, which the module does not export. The
+    // expression as written stays valid in the `.d.ts`, as the user's namespace import is kept
+    // for it.
+    if matches!(binding, ImportBinding::Namespace) {
+        return None;
+    }
+    Some(crate::types::metadata::ImportedEntityNameMetadata {
+        import: crate::types::metadata::ImportableRef {
+            specifier: specifier.to_string(),
+            symbol: binding.exported_name(ident.name.as_str()).to_string(),
+        },
+        members,
+    })
+}
+
+/// What an import declaration binds an identifier to.
+pub(crate) enum ImportBinding<'a> {
+    /// `import {name as local}`.
+    Named(&'a str),
+    /// `import local from`.
+    Default,
+    /// `import * as local from`.
+    Namespace,
+}
+
+impl<'a> ImportBinding<'a> {
+    pub(crate) fn of(specifier: &'a oxc_ast::ast::ImportDeclarationSpecifier<'a>) -> Self {
+        use oxc_ast::ast::ImportDeclarationSpecifier;
+        match specifier {
+            ImportDeclarationSpecifier::ImportSpecifier(named) => {
+                Self::Named(named.imported.name().as_str())
+            }
+            ImportDeclarationSpecifier::ImportDefaultSpecifier(_) => Self::Default,
+            ImportDeclarationSpecifier::ImportNamespaceSpecifier(_) => Self::Namespace,
+        }
+    }
+
+    /// The name ngtsc's `getExportedName` reads for a binding to `local`: the imported name of
+    /// a named import (`default` for `import {default as local}`), and `local` itself for a
+    /// default or namespace import.
+    ///
+    /// https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/reflection/src/typescript.ts#L849-L853
+    pub(crate) fn exported_name<'n>(&self, local: &'n str) -> &'n str
+    where
+        'a: 'n,
+    {
+        match self {
+            Self::Named(name) => name,
+            Self::Default | Self::Namespace => local,
+        }
+    }
+}
+
+/// The module specifier, as written, of the import declaration that binds `ident`, and what it
+/// binds `ident` to.
+pub(crate) fn import_binding_of_identifier<'a>(
+    ident: &oxc_ast::ast::IdentifierReference<'a>,
+    semantic: &Semantic<'a>,
+) -> Option<(&'a str, ImportBinding<'a>)> {
     let ref_id = ident.reference_id.get()?;
     let scoping = semantic.scoping();
     let symbol_id = scoping.get_reference(ref_id).symbol_id()?;
+    // `import type` bindings carry `TypeImport` instead of `Import`; ngtsc's reflector reads
+    // them like any other import.
     if !scoping
         .symbol_flags(symbol_id)
-        .contains(SymbolFlags::Import)
+        .intersects(SymbolFlags::Import | SymbolFlags::TypeImport)
     {
         return None;
     }
 
     let decl_node = semantic.symbol_declaration(symbol_id);
-    let imported_name = match decl_node.kind() {
-        AstKind::ImportSpecifier(spec) => Some(spec.imported.name().as_str()),
-        AstKind::ImportNamespaceSpecifier(_) => None,
+    let binding = match decl_node.kind() {
+        AstKind::ImportSpecifier(spec) => ImportBinding::Named(spec.imported.name().as_str()),
+        AstKind::ImportDefaultSpecifier(_) => ImportBinding::Default,
+        AstKind::ImportNamespaceSpecifier(_) => ImportBinding::Namespace,
         _ => return None,
     };
-
     let parent = semantic.nodes().parent_node(decl_node.id());
     let AstKind::ImportDeclaration(decl) = parent.kind() else {
         return None;
     };
-    Some((decl.source.value.as_str(), imported_name))
+    Some((decl.source.value.as_str(), binding))
 }
 
 /// Whether a call's callee is `@angular/core`'s `forwardRef`, reached through an import

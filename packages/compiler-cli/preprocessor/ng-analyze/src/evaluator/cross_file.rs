@@ -108,6 +108,22 @@ pub fn cross_file_resolve<'a, Fs: ResourceResolverFs + Clone + 'static>(
     .boxed()
 }
 
+/// [`cross_file_resolve`] for a name a type position reads, which may also be reached through
+/// type-only exports (`export type {X} from`, `export type *`), as TypeScript resolves it.
+pub fn cross_file_resolve_type<'a, Fs: ResourceResolverFs + Clone + 'static>(
+    ctx: &'a crate::QueryCtx<Fs>,
+    file_path: &'a Path,
+    specifier: Option<&'a str>,
+    export_name: String,
+    visited: &'a mut HashSet<(PathBuf, String)>,
+) -> BoxFuture<'a, Result<Option<DeclaredSymbol>, ChaseSymbolError>> {
+    async move {
+        let chased = resolve_export(ctx, file_path, specifier, export_name, visited, true).await?;
+        Ok(chased.and_then(ChasedExport::into_symbol))
+    }
+    .boxed()
+}
+
 /// Like [`cross_file_resolve`], but also returns [`ChasedExport::DefaultExpression`] for unnamed
 /// `export default <expression>`.
 pub fn cross_file_resolve_export<'a, Fs: ResourceResolverFs + Clone + 'static>(
@@ -116,6 +132,18 @@ pub fn cross_file_resolve_export<'a, Fs: ResourceResolverFs + Clone + 'static>(
     specifier: Option<&'a str>,
     export_name: String,
     visited: &'a mut HashSet<(PathBuf, String)>,
+) -> BoxFuture<'a, Result<Option<ChasedExport>, ChaseSymbolError>> {
+    resolve_export(ctx, file_path, specifier, export_name, visited, false)
+}
+
+/// `include_type_exports` also follows type-only exports, which only a type position may read.
+fn resolve_export<'a, Fs: ResourceResolverFs + Clone + 'static>(
+    ctx: &'a crate::QueryCtx<Fs>,
+    file_path: &'a Path,
+    specifier: Option<&'a str>,
+    export_name: String,
+    visited: &'a mut HashSet<(PathBuf, String)>,
+    include_type_exports: bool,
 ) -> BoxFuture<'a, Result<Option<ChasedExport>, ChaseSymbolError>> {
     async move {
         let (target_file, initial_owning) = match specifier {
@@ -142,6 +170,7 @@ pub fn cross_file_resolve_export<'a, Fs: ResourceResolverFs + Clone + 'static>(
             visited,
             0,
             entered_from_specifier,
+            include_type_exports,
         )
         .await?;
         if let (Some(chased), true) = (resolved.as_mut(), entered_from_specifier) {
@@ -192,13 +221,14 @@ fn chase_symbol_in_file_inner(
     dep: &crate::parsed::ParsedFileDependent<'_>,
     name: &str,
     require_exported: bool,
+    include_type_exports: bool,
 ) -> ChaseTarget {
     let module_record = &dep.module_record;
 
     // Indirect exports and local export aliases match export names (only checked when
     // `require_exported` is true, since `export { a as SHARED, b as a }` leaves local `a` as `a`).
     for entry in &module_record.indirect_export_entries {
-        if entry.is_type {
+        if entry.is_type && !include_type_exports {
             continue;
         }
         let Some(ref source) = entry.module_request else {
@@ -311,7 +341,7 @@ fn chase_symbol_in_file_inner(
     }
     let mut wildcards = Vec::new();
     for entry in &module_record.star_export_entries {
-        if entry.is_type {
+        if entry.is_type && !include_type_exports {
             continue;
         }
         let Some(ref source) = entry.module_request else {
@@ -331,13 +361,14 @@ async fn chase_symbol_in_file<Fs: ResourceResolverFs + Clone + 'static>(
     file_path: &Path,
     name: &str,
     require_exported: bool,
+    include_type_exports: bool,
 ) -> ChaseTarget {
     let file_id = ctx.engine.intern_path(file_path);
     let syntax = ctx.analyze_file_syntax(file_id).await;
     let exports = &syntax.file_exports;
 
     for entry in &exports.named {
-        if entry.is_type {
+        if entry.is_type && !include_type_exports {
             continue;
         }
         if require_exported && entry.exported_name == name {
@@ -355,7 +386,7 @@ async fn chase_symbol_in_file<Fs: ResourceResolverFs + Clone + 'static>(
             if entry.local_name != name {
                 return ChaseTarget::LocalAlias(entry.local_name.clone());
             }
-            if !entry.is_type {
+            if !entry.is_type || include_type_exports {
                 is_exported_in_local_aliases = true;
             }
         }
@@ -367,6 +398,7 @@ async fn chase_symbol_in_file<Fs: ResourceResolverFs + Clone + 'static>(
         guard.borrow_dependent(),
         name,
         require_exported && !is_exported_in_local_aliases,
+        include_type_exports,
     );
     if !matches!(inner_target, ChaseTarget::NotFound) {
         return inner_target;
@@ -378,7 +410,7 @@ async fn chase_symbol_in_file<Fs: ResourceResolverFs + Clone + 'static>(
     let value_wildcards: Vec<String> = exports
         .wildcards
         .iter()
-        .filter(|w| !w.is_type)
+        .filter(|w| !w.is_type || include_type_exports)
         .map(|w| w.source.clone())
         .collect();
     if !value_wildcards.is_empty() {
@@ -396,6 +428,7 @@ fn chase_symbol_declaration<'a, Fs: ResourceResolverFs + Clone + 'static>(
     visited: &'a mut HashSet<(PathBuf, String)>,
     depth: usize,
     require_exported: bool,
+    include_type_exports: bool,
 ) -> BoxFuture<'a, Result<Option<ChasedExport>, ChaseSymbolError>> {
     async move {
         if depth >= MAX_SYMBOL_CHASE_DEPTH {
@@ -418,7 +451,14 @@ fn chase_symbol_declaration<'a, Fs: ResourceResolverFs + Clone + 'static>(
         ctx.record_file(file_id);
 
         let res = async {
-            let target = chase_symbol_in_file(ctx, &file_path, &name, require_exported).await;
+            let target = chase_symbol_in_file(
+                ctx,
+                &file_path,
+                &name,
+                require_exported,
+                include_type_exports,
+            )
+            .await;
 
             match target {
                 ChaseTarget::Exported {
@@ -443,6 +483,7 @@ fn chase_symbol_declaration<'a, Fs: ResourceResolverFs + Clone + 'static>(
                             visited,
                             depth + 1,
                             true,
+                            include_type_exports,
                         )
                         .await?;
                         // Record on return so abandoned wildcard branches do not contribute hops.
@@ -466,6 +507,7 @@ fn chase_symbol_declaration<'a, Fs: ResourceResolverFs + Clone + 'static>(
                         visited,
                         depth + 1,
                         false,
+                        include_type_exports,
                     )
                     .await
                     {
@@ -513,6 +555,7 @@ fn chase_symbol_declaration<'a, Fs: ResourceResolverFs + Clone + 'static>(
                             visited,
                             depth + 1,
                             true,
+                            include_type_exports,
                         )
                         .await
                         {

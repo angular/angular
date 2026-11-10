@@ -157,6 +157,11 @@ export interface HybridCompilerOptions {
   legacyOptionalChaining?: boolean;
   isClosureCompilerEnabled?: boolean;
   emitDeclarationOnly?: boolean;
+  /**
+   * TypeScript's `verbatimModuleSyntax`, which keeps the generated imports only `.d.ts` types use
+   * in the JavaScript output unless they are written as type-only imports.
+   */
+  verbatimModuleSyntax?: boolean;
   externalRuntimeStyles?: boolean;
   onlyExplicitDeferDependencyImports?: boolean;
   enableTemplateSourceLocations?: boolean;
@@ -256,6 +261,7 @@ export function createHybridCompiler(
     onlyExplicitDeferDependencyImports: angularCompilerOptions?.onlyExplicitDeferDependencyImports,
     enableTemplateSourceLocations: angularCompilerOptions?.enableTemplateSourceLocations,
     emitDeclarationOnly,
+    verbatimModuleSyntax: angularCompilerOptions?.verbatimModuleSyntax === true,
     onlyPublishPublicTypingsForNgModules,
     forbidOrphanComponents: angularCompilerOptions?.forbidOrphanComponents,
     supportJitMode: angularCompilerOptions?.supportJitMode !== false,
@@ -310,6 +316,7 @@ export class HybridCompiler {
   readonly legacyOptionalChaining: boolean;
   readonly isClosureCompilerEnabled: boolean;
   readonly emitDeclarationOnly: boolean;
+  readonly verbatimModuleSyntax: boolean;
   readonly externalRuntimeStyles: boolean;
   readonly onlyExplicitDeferDependencyImports: boolean;
   readonly enableTemplateSourceLocations: boolean;
@@ -360,6 +367,7 @@ export class HybridCompiler {
       options.legacyOptionalChaining ?? LEGACY_OPTIONAL_CHAINING_DEFAULT;
     this.isClosureCompilerEnabled = options.isClosureCompilerEnabled ?? false;
     this.emitDeclarationOnly = options.emitDeclarationOnly ?? false;
+    this.verbatimModuleSyntax = options.verbatimModuleSyntax ?? false;
     this.externalRuntimeStyles = options.externalRuntimeStyles ?? false;
     this.onlyExplicitDeferDependencyImports = options.onlyExplicitDeferDependencyImports ?? false;
     this.enableTemplateSourceLocations = options.enableTemplateSourceLocations ?? false;

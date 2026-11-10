@@ -181,6 +181,7 @@ fn run_async_compiler_test<Fs: crate::ResourceResolverFs + Clone + 'static>(
                 reference_strategy: &*engine.reference_strategy,
                 path_lookup: Some(&path_lookup),
                 declaring_exports: &declaring_exports,
+                import_declarations: &resolved.import_declarations,
                 r3_symbols_path: r3_symbols_path.as_deref(),
             };
 
@@ -8760,4 +8761,81 @@ fn test_host_directives_entries_are_never_dropped() {
             );
         }
     }
+}
+
+/// Declaration-only emission resolves a `hostDirectives` entry written as an imported identifier
+/// to its declaration, so its `.d.ts` type names the declaration by the name its declaring file
+/// exports, even when another entry depends on a value from another file that doesn't fold.
+#[test]
+fn test_declaration_only_host_directives_name_resolved_declarations() {
+    let mut files = HashMap::new();
+    files.insert(
+        "/project/tsconfig.json".to_string(),
+        r#"{"files": ["other.ts", "app.ts"], "compilerOptions": {"declaration": true, "emitDeclarationOnly": true}, "angularCompilerOptions": {"_experimentalAllowEmitDeclarationOnly": true}}"#
+            .to_string(),
+    );
+    files.insert(
+        "/project/other.ts".to_string(),
+        "import { Directive } from '@angular/core';\n\
+         @Directive({selector: '[real]'}) export class RealDir {}\n\
+         export {RealDir as OldDir};\n\
+         export const IMPORTED_INPUTS = ['x'];\n"
+            .to_string(),
+    );
+    files.insert(
+        "/project/app.ts".to_string(),
+        "import { Component, Directive, Input } from '@angular/core';\n\
+         import { OldDir, IMPORTED_INPUTS } from './other';\n\
+         @Directive({selector: '[loc]'}) export class LocalDir { @Input() x: any; }\n\
+         @Component({selector: 'c', template: '', \
+         hostDirectives: [OldDir, {directive: LocalDir, inputs: IMPORTED_INPUTS}]})\n\
+         export class Cmp {}\n"
+            .to_string(),
+    );
+    let analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: Some("/project/tsconfig.json".to_string()),
+        optimize: Some(false),
+        virtual_files: Some(files),
+        ..Default::default()
+    })
+    .unwrap();
+    let iter = analyzer.analyze().unwrap();
+    let mut all_files = Vec::new();
+    while let Ok(Some(chunk)) = futures::executor::block_on(iter.next()) {
+        all_files.extend(chunk.files);
+    }
+    let meta = all_files
+        .iter()
+        .find(|f| f.file_path.ends_with("app.ts"))
+        .expect("app.ts metadata");
+    assert!(meta.diagnostics.is_empty(), "{:?}", meta.diagnostics);
+    let entries: Vec<(Option<String>, Option<String>)> = meta
+        .classes
+        .iter()
+        .find(|c| c.class_name.as_deref() == Some("Cmp"))
+        .and_then(|c| c.component.as_ref())
+        .and_then(|c| c.host_directives.as_ref())
+        .expect("hostDirectives")
+        .iter()
+        .map(|entry| {
+            (
+                entry.directive.local_alias.clone(),
+                entry
+                    .directive
+                    .type_import
+                    .as_ref()
+                    .map(|i| format!("{}:{}", i.specifier, i.symbol)),
+            )
+        })
+        .collect();
+    assert_eq!(
+        entries,
+        vec![
+            (
+                Some("OldDir".to_string()),
+                Some("./other:RealDir".to_string())
+            ),
+            (Some("LocalDir".to_string()), None),
+        ]
+    );
 }

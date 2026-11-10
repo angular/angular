@@ -115,6 +115,8 @@ import { Directive } from '@angular/core';
 import { HostDir } from './nested/host_dir';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './nested/host_dir';
 
 export class MyDir {
   // @ts-ignore
@@ -135,7 +137,7 @@ export class MyDir {
     true,
     [
       {
-        directive: typeof HostDir;
+        directive: typeof i1.HostDir;
         inputs: { 'hostInp': 'myDirAliasedInp' };
         outputs: { 'hostOut': 'myDirAliasedOut' };
       },
@@ -148,7 +150,7 @@ export class MyDir {
       features: [
         i0.ɵɵHostDirectivesFeature([
           {
-            directive: HostDir,
+            directive: i1.HostDir,
             inputs: ['hostInp', 'myDirAliasedInp'],
             outputs: ['hostOut', 'myDirAliasedOut'],
           },

@@ -4,6 +4,8 @@ import { NgModule } from '@angular/core';
 import { MiddleComp } from './middle';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './middle';
 
 export class AppModule {
   // @ts-ignore
@@ -13,7 +15,7 @@ export class AppModule {
     return new (__ngFactoryType__ || AppModule)();
   };
   // @ts-ignore
-  static ɵmod: i0.ɵɵNgModuleDeclaration<AppModule, never, [typeof MiddleComp], never> =
+  static ɵmod: i0.ɵɵNgModuleDeclaration<AppModule, never, [typeof i1.MiddleComp], never> =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
   // @ts-ignore

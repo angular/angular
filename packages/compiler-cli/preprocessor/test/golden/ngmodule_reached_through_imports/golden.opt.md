@@ -180,6 +180,12 @@ import { C2 } from './c2.component';
 import { D } from './d.directive';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './c1.component';
+// @ts-ignore
+import * as i2 from './c2.component';
+// @ts-ignore
+import * as i3 from './d.directive';
 
 export class MModule {
   // @ts-ignore
@@ -189,7 +195,12 @@ export class MModule {
     return new (__ngFactoryType__ || MModule)();
   };
   // @ts-ignore
-  static ɵmod: i0.ɵɵNgModuleDeclaration<MModule, [typeof C1, typeof C2, typeof D], never, never> =
+  static ɵmod: i0.ɵɵNgModuleDeclaration<
+    MModule,
+    [typeof i1.C1, typeof i2.C2, typeof i3.D],
+    never,
+    never
+  > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MModule });
   // @ts-ignore

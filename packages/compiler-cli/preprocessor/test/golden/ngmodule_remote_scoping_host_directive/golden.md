@@ -209,6 +209,8 @@ import { Directive } from '@angular/core';
 import { HostDir } from './host.directive';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './host.directive';
 
 export class DirWithHost {
   // @ts-ignore
@@ -227,14 +229,14 @@ export class DirWithHost {
     never,
     never,
     false,
-    [{ directive: typeof HostDir; inputs: {}; outputs: {} }]
+    [{ directive: typeof i1.HostDir; inputs: {}; outputs: {} }]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineDirective({
       type: DirWithHost,
       selectors: [['', 'dirWithHost', '']],
       standalone: false,
-      features: [i0.ɵɵHostDirectivesFeature([HostDir])],
+      features: [i0.ɵɵHostDirectivesFeature([i1.HostDir])],
     });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&

@@ -8,6 +8,8 @@ import { AliasedPipe as ReexportedPipe } from './widgets';
 import * as i0 from '@angular/core';
 // @ts-ignore
 import * as i1 from './widgets';
+// @ts-ignore
+import * as i2 from './shared.module';
 
 export class AppModule {
   // @ts-ignore
@@ -19,9 +21,9 @@ export class AppModule {
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     AppModule,
-    [typeof PublicDir, typeof AliasedPipe],
+    [typeof i1.PublicDir, typeof i1.AliasedPipe],
     never,
-    [typeof PublicDir, typeof i1.AliasedPipe, typeof SharedModule]
+    [typeof i1.PublicDir, typeof i1.AliasedPipe, typeof i2.SharedModule]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });

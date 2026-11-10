@@ -6,6 +6,10 @@ import { FooModule, provideFoo } from '@external/foo';
 import { ForwardModule } from '@external/forward';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from '@external/foo';
+// @ts-ignore
+import * as i2 from '@external/forward';
 
 export interface PermissionsCheckerState {
   allowed: boolean;
@@ -112,10 +116,10 @@ export class PermissionsCheckerModule {
     never,
     [
       [typeof AveLoggingModule],
-      ReturnType<typeof FooModule.forRoot>,
-      ReturnType<typeof provideFoo>,
+      ReturnType<typeof i1.FooModule.forRoot>,
+      ReturnType<typeof i1.provideFoo>,
       [typeof LocalHelperModule],
-      typeof ForwardModule,
+      typeof i2.ForwardModule,
     ],
     [typeof PermissionsChecker]
   > =

@@ -96,6 +96,8 @@ import { NgModule } from '@angular/core';
 import { StandaloneBtn } from 'repo/src/components/standalone-btn.component';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from 'repo/src/components/standalone-btn.component';
 
 export class ParentModule {
   // @ts-ignore
@@ -108,8 +110,8 @@ export class ParentModule {
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     ParentModule,
     never,
-    [typeof StandaloneBtn],
-    [typeof StandaloneBtn]
+    [typeof i1.StandaloneBtn],
+    [typeof i1.StandaloneBtn]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: ParentModule });

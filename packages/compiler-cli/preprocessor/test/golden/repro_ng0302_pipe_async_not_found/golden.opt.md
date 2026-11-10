@@ -34,6 +34,10 @@ import { PipeModule } from './pipe.module';
 import { ExternalModule } from '@third-party/external';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './pipe.module';
+// @ts-ignore
+import * as i2 from '@third-party/external';
 
 export class LabelsPanel {
   data: any;
@@ -116,7 +120,7 @@ export class LabelsPanelModule {
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     LabelsPanelModule,
     [typeof LabelsPanel],
-    [typeof PipeModule, typeof ExternalModule],
+    [typeof i1.PipeModule, typeof i2.ExternalModule],
     [typeof LabelsPanel]
   > =
     // @ts-ignore

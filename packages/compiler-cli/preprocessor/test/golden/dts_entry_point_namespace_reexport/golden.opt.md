@@ -24,6 +24,8 @@ import { NsModule } from 'ns-lib';
 import * as i0 from '@angular/core';
 // @ts-ignore
 import * as i1 from './node_modules/ns-lib/internal';
+// @ts-ignore
+import * as i2 from 'ns-lib';
 
 export class AppComponent {
   // @ts-ignore
@@ -101,7 +103,7 @@ export class AppModule {
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     AppModule,
     [typeof AppComponent],
-    [typeof NsModule],
+    [typeof i2.NsModule],
     never
   > =
     // @ts-ignore

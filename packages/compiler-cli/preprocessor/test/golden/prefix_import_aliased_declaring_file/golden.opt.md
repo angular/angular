@@ -4,6 +4,8 @@ import { NgModule } from '@angular/core';
 import { Dir } from './lib/index';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from 'google3/lib/dir';
 
 export class M {
   // @ts-ignore
@@ -11,7 +13,7 @@ export class M {
     return new (__ngFactoryType__ || M)();
   };
   // @ts-ignore
-  static ɵmod: i0.ɵɵNgModuleDeclaration<M, never, [typeof Dir], [typeof Dir]> =
+  static ɵmod: i0.ɵɵNgModuleDeclaration<M, never, [typeof i1.Dir], [typeof i1.Dir]> =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: M });
   // @ts-ignore
@@ -263,6 +265,8 @@ import { NgModule } from '@angular/core';
 import { PublicDirectiveA } from './directive';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from 'google3/my/upstream/directive';
 
 export class UpstreamModule {
   // @ts-ignore
@@ -274,9 +278,9 @@ export class UpstreamModule {
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     UpstreamModule,
-    [typeof PublicDirectiveA],
+    [typeof i1.PublicDirectiveA],
     never,
-    [typeof PublicDirectiveA]
+    [typeof i1.PublicDirectiveA]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: UpstreamModule });
@@ -338,6 +342,8 @@ import { Component, Input } from '@angular/core';
 import * as api from './api';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from 'google3/api';
 
 export interface Mapped {
   id: string;
@@ -376,7 +382,7 @@ export class C {
       encapsulation: 2,
     });
   // @ts-ignore
-  declare static ngAcceptInputType_items: api.Item[];
+  declare static ngAcceptInputType_items: i1.Item[];
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -413,7 +419,7 @@ export class M {
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     M,
     never,
-    [typeof i1.AwesomechartsModule, typeof Other],
+    [typeof i1.AwesomechartsModule, typeof i1.Other],
     never
   > =
     // @ts-ignore

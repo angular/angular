@@ -4,6 +4,8 @@ import { NgModule } from '@angular/core';
 import { Dir } from './lib/index';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import type * as i1 from './lib/dir';
 
 export class M {
   // @ts-ignore
@@ -11,7 +13,7 @@ export class M {
     return new (__ngFactoryType__ || M)();
   };
   // @ts-ignore
-  static ɵmod: i0.ɵɵNgModuleDeclaration<M, never, [typeof Dir], [typeof Dir]> =
+  static ɵmod: i0.ɵɵNgModuleDeclaration<M, never, [typeof i1.Dir], [typeof i1.Dir]> =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: M });
   // @ts-ignore
@@ -59,6 +61,8 @@ import { Component } from '@angular/core';
 import { Dir } from './lib/index';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './lib/dir';
 
 export class C {
   // @ts-ignore
@@ -75,13 +79,13 @@ export class C {
     never,
     never,
     true,
-    [{ directive: typeof Dir; inputs: {}; outputs: {} }]
+    [{ directive: typeof i1.Dir; inputs: {}; outputs: {} }]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineComponent({
       type: C,
       selectors: [['c']],
-      features: [i0.ɵɵHostDirectivesFeature([Dir])],
+      features: [i0.ɵɵHostDirectivesFeature([i1.Dir])],
       decls: 0,
       vars: 0,
       template: function C_Template(rf: number, ctx: any): any {},
@@ -153,6 +157,8 @@ import { Component, Input } from '@angular/core';
 import type { Item } from 'typeonly-pkg';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import type * as i1 from 'typeonly-pkg';
 
 export function map(v: Item | null): string[] {
   return [];
@@ -187,7 +193,7 @@ export class C {
       encapsulation: 2,
     });
   // @ts-ignore
-  declare static ngAcceptInputType_items: Item | null;
+  declare static ngAcceptInputType_items: i1.Item | null;
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(

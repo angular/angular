@@ -100,6 +100,8 @@ import { NgModule } from '@angular/core';
 import { LocalDir } from './local_dir';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './local_dir';
 
 export class InternalLocalModule {
   // @ts-ignore
@@ -110,9 +112,9 @@ export class InternalLocalModule {
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     InternalLocalModule,
-    [typeof LocalDir],
+    [typeof i1.LocalDir],
     never,
-    [typeof LocalDir]
+    [typeof i1.LocalDir]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: InternalLocalModule });

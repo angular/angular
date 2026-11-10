@@ -114,6 +114,8 @@ import { NgModule } from '@angular/core';
 import { Dir } from './lib/index';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './lib/index';
 
 export class M {
   // @ts-ignore
@@ -121,7 +123,7 @@ export class M {
     return new (__ngFactoryType__ || M)();
   };
   // @ts-ignore
-  static ɵmod: i0.ɵɵNgModuleDeclaration<M, never, [typeof Dir], [typeof Dir]> =
+  static ɵmod: i0.ɵɵNgModuleDeclaration<M, never, [typeof i1.Dir], [typeof i1.Dir]> =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: M });
   // @ts-ignore
@@ -150,7 +152,7 @@ export class M {
     return new (__ngFactoryType__ || M)();
   };
   // @ts-ignore
-  static ɵmod: i0.ɵɵNgModuleDeclaration<M, never, [typeof i1.default, typeof i2.default], never> =
+  static ɵmod: i0.ɵɵNgModuleDeclaration<M, never, [typeof i1.Dflt, typeof i2.default], never> =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: M });
   // @ts-ignore
@@ -167,6 +169,8 @@ import { Directive } from '@angular/core';
 import { OldDir } from './deprecated';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './deprecated';
 
 export class X {
   // @ts-ignore
@@ -183,13 +187,13 @@ export class X {
     never,
     never,
     true,
-    [{ directive: typeof OldDir; inputs: {}; outputs: {} }]
+    [{ directive: typeof i1.RealDir; inputs: {}; outputs: {} }]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineDirective({
       type: X,
       selectors: [['', 'x', '']],
-      features: [i0.ɵɵHostDirectivesFeature([OldDir])],
+      features: [i0.ɵɵHostDirectivesFeature([i1.RealDir])],
     });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
@@ -255,6 +259,8 @@ import { RootModule } from './lib';
 import * as lib from './lib';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './lib';
 
 export class M {
   // @ts-ignore
@@ -262,7 +268,12 @@ export class M {
     return new (__ngFactoryType__ || M)();
   };
   // @ts-ignore
-  static ɵmod: i0.ɵɵNgModuleDeclaration<M, never, [ReturnType<typeof RootModule.forRoot>], never> =
+  static ɵmod: i0.ɵɵNgModuleDeclaration<
+    M,
+    never,
+    [ReturnType<typeof i1.RootModule.forRoot>],
+    never
+  > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: M });
   // @ts-ignore
@@ -301,6 +312,8 @@ import { Component, Directive, Input } from '@angular/core';
 import { OldDir, IMPORTED_INPUTS } from './deprecated';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './deprecated';
 
 export class LocalDir {
   x: any;
@@ -354,7 +367,7 @@ export class Cmp {
     never,
     true,
     [
-      { directive: typeof OldDir; inputs: {}; outputs: {} },
+      { directive: typeof i1.RealDir; inputs: {}; outputs: {} },
       { directive: typeof LocalDir; inputs: {}; outputs: {} },
     ]
   > =
@@ -362,7 +375,7 @@ export class Cmp {
     /*@__PURE__*/ i0.ɵɵdefineComponent({
       type: Cmp,
       selectors: [['c']],
-      features: [i0.ɵɵHostDirectivesFeature([OldDir, LocalDir])],
+      features: [i0.ɵɵHostDirectivesFeature([i1.RealDir, LocalDir])],
       decls: 0,
       vars: 0,
       template: function Cmp_Template(rf: number, ctx: any): any {},
@@ -562,6 +575,10 @@ import { FooModule, provideFoo } from '@external/foo';
 import { ForwardModule } from '@external/forward';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from '@external/foo';
+// @ts-ignore
+import * as i2 from '@external/forward';
 
 export interface PermissionsCheckerState {
   allowed: boolean;
@@ -668,10 +685,10 @@ export class PermissionsCheckerModule {
     never,
     [
       [typeof AveLoggingModule],
-      ReturnType<typeof FooModule.forRoot>,
-      ReturnType<typeof provideFoo>,
+      ReturnType<typeof i1.FooModule.forRoot>,
+      ReturnType<typeof i1.provideFoo>,
       [typeof LocalHelperModule],
-      typeof ForwardModule,
+      typeof i2.ForwardModule,
     ],
     [typeof PermissionsChecker]
   > =
@@ -693,7 +710,9 @@ import { TaskDetail as TaskDetailOld } from './b/task';
 // @ts-ignore
 import * as i0 from '@angular/core';
 // @ts-ignore
-import * as i1 from './b/task';
+import * as i1 from './a/task';
+// @ts-ignore
+import * as i2 from './b/task';
 
 export class M {
   // @ts-ignore
@@ -704,7 +723,7 @@ export class M {
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     M,
     never,
-    [typeof TaskDetail, typeof i1.TaskDetail],
+    [typeof i1.TaskDetail, typeof i2.TaskDetail],
     never
   > =
     // @ts-ignore
@@ -724,6 +743,10 @@ import { Dir } from './lib/index';
 import { SHARED } from './shared';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './shared';
+// @ts-ignore
+import * as i2 from './lib/index';
 
 export class M {
   // @ts-ignore
@@ -731,7 +754,12 @@ export class M {
     return new (__ngFactoryType__ || M)();
   };
   // @ts-ignore
-  static ɵmod: i0.ɵɵNgModuleDeclaration<M, never, [typeof SHARED, typeof Dir], [typeof SHARED]> =
+  static ɵmod: i0.ɵɵNgModuleDeclaration<
+    M,
+    never,
+    [typeof i1.SHARED, typeof i2.Dir],
+    [typeof i1.SHARED]
+  > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: M });
   // @ts-ignore
@@ -751,6 +779,10 @@ import { Grid as AliasGrid } from 'google3/some/grid/';
 import { Plain } from 'plain-lib';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from 'google3/some/grid/';
+// @ts-ignore
+import * as i2 from 'plain-lib';
 
 export class X {
   // @ts-ignore
@@ -768,15 +800,15 @@ export class X {
     never,
     true,
     [
-      { directive: typeof AliasGrid; inputs: {}; outputs: {} },
-      { directive: typeof Plain; inputs: {}; outputs: {} },
+      { directive: typeof i1.Grid; inputs: {}; outputs: {} },
+      { directive: typeof i2.Plain; inputs: {}; outputs: {} },
     ]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineDirective({
       type: X,
       selectors: [['', 'x', '']],
-      features: [i0.ɵɵHostDirectivesFeature([AliasGrid, Plain])],
+      features: [i0.ɵɵHostDirectivesFeature([i1.Grid, i2.Plain])],
     });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
@@ -800,6 +832,10 @@ import { AwesomechartsModule as Ng2AwesomechartsModule } from 'ng2-awesomecharts
 import { Plain } from 'plain-lib';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from 'ng2-awesomecharts';
+// @ts-ignore
+import * as i2 from 'plain-lib';
 
 export class M {
   // @ts-ignore
@@ -810,7 +846,7 @@ export class M {
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     M,
     never,
-    [typeof Ng2AwesomechartsModule, typeof Plain],
+    [typeof i1.AwesomechartsModule, typeof i2.Plain],
     never
   > =
     // @ts-ignore

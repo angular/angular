@@ -5,6 +5,8 @@ import { FocusRing } from './focus';
 import { Menu } from './menu';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './focus';
 
 export class App {
   label = 'hello';
@@ -24,13 +26,13 @@ export class App {
     never,
     never,
     true,
-    [{ directive: typeof FocusRing; inputs: {}; outputs: {} }]
+    [{ directive: typeof i1.FocusRing; inputs: {}; outputs: {} }]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineComponent({
       type: App,
       selectors: [['app-root']],
-      features: [i0.ɵɵHostDirectivesFeature([FocusRing])],
+      features: [i0.ɵɵHostDirectivesFeature([i1.FocusRing])],
       decls: 2,
       vars: 1,
       consts: [
@@ -260,6 +262,8 @@ import { Component } from '@angular/core';
 import { Tooltip } from './tooltip';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './tooltip';
 
 const _c0 = ['*'];
 
@@ -280,13 +284,15 @@ export class Menu {
     never,
     ['*'],
     true,
-    [{ directive: typeof Tooltip; inputs: { 'tooltip': 'tip' }; outputs: {} }]
+    [{ directive: typeof i1.Tooltip; inputs: { 'tooltip': 'tip' }; outputs: {} }]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineComponent({
       type: Menu,
       selectors: [['menu-el']],
-      features: [i0.ɵɵHostDirectivesFeature([{ directive: Tooltip, inputs: ['tooltip', 'tip'] }])],
+      features: [
+        i0.ɵɵHostDirectivesFeature([{ directive: i1.Tooltip, inputs: ['tooltip', 'tip'] }]),
+      ],
       ngContentSelectors: _c0,
       decls: 1,
       vars: 0,
@@ -386,6 +392,8 @@ import { Directive, Input } from '@angular/core';
 import { Ripple } from './ripple';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './ripple';
 
 export class Tooltip {
   tooltip: string = '';
@@ -405,7 +413,7 @@ export class Tooltip {
     never,
     never,
     true,
-    [{ directive: typeof Ripple; inputs: { 'rippleColor': 'rippleColor' }; outputs: {} }]
+    [{ directive: typeof i1.Ripple; inputs: { 'rippleColor': 'rippleColor' }; outputs: {} }]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineDirective({
@@ -413,7 +421,9 @@ export class Tooltip {
       selectors: [['', 'tooltip', '']],
       inputs: { tooltip: 'tooltip' },
       features: [
-        i0.ɵɵHostDirectivesFeature([{ directive: Ripple, inputs: ['rippleColor', 'rippleColor'] }]),
+        i0.ɵɵHostDirectivesFeature([
+          { directive: i1.Ripple, inputs: ['rippleColor', 'rippleColor'] },
+        ]),
       ],
     });
   static {

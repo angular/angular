@@ -97,6 +97,8 @@ import { NgModule } from '@angular/core';
 import { MatButton } from './mat_button';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './mat_button';
 
 export class Gm2ButtonModule {
   // @ts-ignore
@@ -108,9 +110,9 @@ export class Gm2ButtonModule {
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     Gm2ButtonModule,
-    [typeof MatButton],
+    [typeof i1.MatButton],
     never,
-    [typeof MatButton]
+    [typeof i1.MatButton]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: Gm2ButtonModule });

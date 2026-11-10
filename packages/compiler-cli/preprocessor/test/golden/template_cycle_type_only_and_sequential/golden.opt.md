@@ -357,6 +357,14 @@ import { CompC } from './c';
 import { CompD } from './d';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './a';
+// @ts-ignore
+import * as i2 from './b';
+// @ts-ignore
+import * as i3 from './c';
+// @ts-ignore
+import * as i4 from './d';
 
 export class AppModule {
   // @ts-ignore
@@ -368,7 +376,7 @@ export class AppModule {
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     AppModule,
-    [typeof CompA, typeof CompB, typeof CompC, typeof CompD],
+    [typeof i1.CompA, typeof i2.CompB, typeof i3.CompC, typeof i4.CompD],
     never,
     never
   > =

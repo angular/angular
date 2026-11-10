@@ -43,6 +43,10 @@ import { GreetPipe } from './greet.pipe';
 import { SharedWidget } from './widget';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './greet.pipe';
+// @ts-ignore
+import * as i2 from './widget';
 
 const SHARED: Array<Type<unknown>> = [GreetPipe, SharedWidget];
 
@@ -58,7 +62,7 @@ export class SharedModule {
     SharedModule,
     never,
     never,
-    [typeof GreetPipe, typeof SharedWidget]
+    [typeof i1.GreetPipe, typeof i2.SharedWidget]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: SharedModule });

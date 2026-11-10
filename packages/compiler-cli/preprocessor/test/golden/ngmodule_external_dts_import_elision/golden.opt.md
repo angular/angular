@@ -32,6 +32,8 @@ import { Component, NgModule } from '@angular/core';
 import { CdkScrollable, DragDropModule } from '@angular/cdk/drag-drop';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from '@angular/cdk/drag-drop';
 
 export class DummyComponent {
   // @ts-ignore
@@ -173,7 +175,7 @@ export class TestModule {
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     TestModule,
     [typeof AppComponent],
-    [typeof DragDropModule],
+    [typeof i1.DragDropModule],
     never
   > =
     // @ts-ignore

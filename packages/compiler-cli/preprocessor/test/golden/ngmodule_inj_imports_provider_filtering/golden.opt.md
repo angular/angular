@@ -40,6 +40,8 @@ import { NgModule, Component } from '@angular/core';
 import { NoProvModule, ProvModule, TransitiveModule, PlainModule, SaDir, SaPipe } from './lib';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './lib';
 
 export class CmpNoProv {
   // @ts-ignore
@@ -235,9 +237,9 @@ export class AppModule {
       typeof CmpProv,
       typeof CmpTrans,
       typeof CmpPlain,
-      typeof PlainModule,
-      typeof SaDir,
-      typeof SaPipe,
+      typeof i1.PlainModule,
+      typeof i1.SaDir,
+      typeof i1.SaPipe,
     ],
     never
   > =

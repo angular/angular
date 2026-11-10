@@ -103,6 +103,8 @@ import * as i0 from '@angular/core';
 import * as i1 from './lib';
 // @ts-ignore
 import * as i2 from './local';
+// @ts-ignore
+import * as i3 from './app.component';
 
 export class AppModule {
   // @ts-ignore
@@ -114,9 +116,9 @@ export class AppModule {
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     AppModule,
-    [typeof AppComponent],
-    [typeof i1.ForeignModule, typeof ModA, typeof i2.ModB, typeof ModC, typeof ModD],
-    [typeof ModE]
+    [typeof i3.AppComponent],
+    [typeof i1.ForeignModule, typeof i2.ModA, typeof i2.ModB, typeof i2.ModC, typeof i2.ModD],
+    [typeof i2.ModE]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });

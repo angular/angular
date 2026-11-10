@@ -244,6 +244,8 @@ import { NgModule } from '@angular/core';
 import { BDirective } from './b.directive';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './b.directive';
 
 export class BModule {
   // @ts-ignore
@@ -253,7 +255,12 @@ export class BModule {
     return new (__ngFactoryType__ || BModule)();
   };
   // @ts-ignore
-  static ɵmod: i0.ɵɵNgModuleDeclaration<BModule, [typeof BDirective], never, [typeof BDirective]> =
+  static ɵmod: i0.ɵɵNgModuleDeclaration<
+    BModule,
+    [typeof i1.BDirective],
+    never,
+    [typeof i1.BDirective]
+  > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: BModule });
   // @ts-ignore
@@ -389,6 +396,8 @@ import MODULES from './modules';
 import * as i0 from '@angular/core';
 // @ts-ignore
 import * as i1 from './b.module';
+// @ts-ignore
+import * as i2 from './legacy.component';
 
 export class LegacyModule {
   // @ts-ignore
@@ -400,7 +409,7 @@ export class LegacyModule {
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     LegacyModule,
-    [typeof LegacyComponent],
+    [typeof i2.LegacyComponent],
     [typeof i1.BModule],
     never
   > =

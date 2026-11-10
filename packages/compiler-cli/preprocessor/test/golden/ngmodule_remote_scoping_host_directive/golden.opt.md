@@ -6,6 +6,12 @@ import { CompB } from './comp-b.component';
 import { DirWithHost } from './dir-with-host.directive';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './comp-a.component';
+// @ts-ignore
+import * as i2 from './comp-b.component';
+// @ts-ignore
+import * as i3 from './dir-with-host.directive';
 
 export class AppModule {
   // @ts-ignore
@@ -17,9 +23,9 @@ export class AppModule {
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     AppModule,
-    [typeof CompA, typeof CompB, typeof DirWithHost],
+    [typeof i1.CompA, typeof i2.CompB, typeof i3.DirWithHost],
     never,
-    [typeof CompA, typeof CompB, typeof DirWithHost]
+    [typeof i1.CompA, typeof i2.CompB, typeof i3.DirWithHost]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
@@ -249,6 +255,8 @@ import { Directive } from '@angular/core';
 import { HostDir } from './host.directive';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './host.directive';
 
 export class DirWithHost {
   // @ts-ignore
@@ -267,14 +275,14 @@ export class DirWithHost {
     never,
     never,
     false,
-    [{ directive: typeof HostDir; inputs: {}; outputs: {} }]
+    [{ directive: typeof i1.HostDir; inputs: {}; outputs: {} }]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineDirective({
       type: DirWithHost,
       selectors: [['', 'dirWithHost', '']],
       standalone: false,
-      features: [i0.ɵɵHostDirectivesFeature([HostDir])],
+      features: [i0.ɵɵHostDirectivesFeature([i1.HostDir])],
     });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&

@@ -139,6 +139,8 @@ export class ExpressionPrinter {
    */
   private sideEffectImports = new Set<string>();
   private usedNamespaces = new Set<string>();
+  /** The modules of `usedNamespaces` printed outside a type, so the JavaScript output uses them. */
+  private valueNamespaces = new Set<string>();
   private generatedNamespaceCount = 0;
   readonly emitTypes: boolean;
   private readonly exprVisitor: EmitterVisitor;
@@ -146,9 +148,14 @@ export class ExpressionPrinter {
   /** Printed snippets that carry source mappings and haven't been claimed by an insertion yet. */
   private pendingSnippets: PrintedSnippet[] = [];
 
+  /**
+   * @param verbatimModuleSyntax Whether the file is compiled with `verbatimModuleSyntax`, under
+   *     which TypeScript keeps a namespace import that only types use in the JavaScript output.
+   */
   constructor(
     filePath: string,
     private readonly r3SymbolsSpecifier: string | null = null,
+    private readonly verbatimModuleSyntax = false,
   ) {
     this.emitTypes = filePath.endsWith('.ts') || filePath.endsWith('.mts');
     this.moduleToNamespace.set(CORE_MODULE, 'i0');
@@ -196,13 +203,47 @@ export class ExpressionPrinter {
     return text;
   }
 
-  getOrCreateNamespace(moduleName: string): string {
+  /**
+   * The namespace of `moduleName`'s generated import. `inType` is true when the namespace is
+   * printed by {@link printType}, whose output never reaches the JavaScript.
+   */
+  getOrCreateNamespace(moduleName: string, inType = false): string {
     this.usedNamespaces.add(moduleName);
-    if (this.moduleToNamespace.has(moduleName)) {
-      return this.moduleToNamespace.get(moduleName)!;
+    if (!inType) {
+      this.valueNamespaces.add(moduleName);
     }
-    const namespace = `i${this.generatedNamespaceCount++}`;
-    this.moduleToNamespace.set(moduleName, namespace);
+    return this.allocateNamespace(moduleName);
+  }
+
+  /**
+   * Numbers the namespaces of the modules `nodes` import from, in the order printing them would,
+   * without printing anything.
+   *
+   * ngtsc numbers the generated imports of the JS output and of the `.d.ts` output
+   * independently, each in its own order of first use. This emitter writes a single file that
+   * both are compiled from, so reserving the namespaces of everything that becomes JS before
+   * any type is printed keeps a namespace used only by a `.d.ts` type from renumbering one the
+   * JS output keeps.
+   */
+  reserveNamespaces(nodes: ReadonlyArray<o.Expression | o.Statement>): void {
+    const visitor = new NamespaceReservingVisitor((moduleName) =>
+      this.allocateNamespace(moduleName),
+    );
+    for (const node of nodes) {
+      if (node instanceof o.Expression) {
+        node.visitExpression(visitor, null);
+      } else {
+        node.visitStatement(visitor, null);
+      }
+    }
+  }
+
+  private allocateNamespace(moduleName: string): string {
+    let namespace = this.moduleToNamespace.get(moduleName);
+    if (namespace === undefined) {
+      namespace = `i${this.generatedNamespaceCount++}`;
+      this.moduleToNamespace.set(moduleName, namespace);
+    }
     return namespace;
   }
 
@@ -246,7 +287,14 @@ export class ExpressionPrinter {
 
       if (!this.existingNamespaces.has(moduleName)) {
         const specifier = this.rewriteSpecifier(moduleName);
-        statements.push(`// @ts-ignore\nimport * as ${namespace} from '${specifier}';`);
+        // ngtsc adds the imports only types use to the `.d.ts` alone. TypeScript drops them from
+        // the JavaScript on its own, except under `verbatimModuleSyntax`, which needs them
+        // written as type-only imports.
+        const importKeyword =
+          this.verbatimModuleSyntax && !this.valueNamespaces.has(moduleName)
+            ? 'import type'
+            : 'import';
+        statements.push(`// @ts-ignore\n${importKeyword} * as ${namespace} from '${specifier}';`);
       }
     }
 
@@ -268,8 +316,34 @@ export class ExpressionPrinter {
     this.existingNamespaces.clear();
     this.sideEffectImports.clear();
     this.usedNamespaces.clear();
+    this.valueNamespaces.clear();
     this.generatedNamespaceCount = 1;
     this.moduleToNamespace.set(CORE_MODULE, 'i0');
+  }
+}
+
+/**
+ * Visits expressions and statements in printing order, reporting each module an `ExternalExpr`
+ * imports from. Types are skipped: they never reach the JavaScript output.
+ */
+class NamespaceReservingVisitor extends o.RecursiveAstVisitor {
+  constructor(private readonly reserve: (moduleName: string) => void) {
+    super();
+  }
+
+  override visitExpression(ast: o.Expression): o.Expression {
+    return ast;
+  }
+
+  override visitExpressionType(type: o.ExpressionType): o.Type {
+    return type;
+  }
+
+  override visitExternalExpr(ast: o.ExternalExpr): o.Expression {
+    if (ast.value.moduleName) {
+      this.reserve(ast.value.moduleName);
+    }
+    return ast;
   }
 }
 
@@ -459,9 +533,10 @@ class EmitterVisitor extends AbstractEmitterVisitor {
 
   constructor(
     private printer: ExpressionPrinter,
-    forcePrintTypes = false,
+    /** Whether this visitor prints standalone types (`ExpressionPrinter.printType`). */
+    private readonly printsTypeOnly = false,
   ) {
-    super(true /* printComments */, printer.emitTypes || forcePrintTypes);
+    super(true /* printComments */, printer.emitTypes || printsTypeOnly);
   }
 
   withSuppressedColon(fn: () => void): void {
@@ -593,7 +668,7 @@ class EmitterVisitor extends AbstractEmitterVisitor {
     const symbolName = ast.value.name;
 
     if (moduleName) {
-      const namespace = this.printer.getOrCreateNamespace(moduleName);
+      const namespace = this.printer.getOrCreateNamespace(moduleName, this.printsTypeOnly);
       // `name` is `null` when the module itself is referenced (e.g. the namespaces an HMR
       // initializer captures).
       ctx.print(

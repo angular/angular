@@ -99,6 +99,8 @@ import { WidgetProviders } from './widget.module';
 import * as i0 from '@angular/core';
 // @ts-ignore
 import * as i1 from './widget.module';
+// @ts-ignore
+import * as i2 from './app.component';
 
 export class AppModule {
   // @ts-ignore
@@ -110,7 +112,7 @@ export class AppModule {
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     AppModule,
-    [typeof AppComponent],
+    [typeof i2.AppComponent],
     [typeof i1.WidgetModule],
     never
   > =
@@ -244,6 +246,8 @@ import { NgModule } from '@angular/core';
 import { WidgetComponent } from './widget.component';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './widget.component';
 
 export class WidgetModule {
   // @ts-ignore
@@ -255,9 +259,9 @@ export class WidgetModule {
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     WidgetModule,
-    [typeof WidgetComponent],
+    [typeof i1.WidgetComponent],
     never,
-    [typeof WidgetComponent]
+    [typeof i1.WidgetComponent]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: WidgetModule });

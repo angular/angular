@@ -1887,6 +1887,7 @@ mod chunk_order_tests {
                 reference_strategy: &*engine.reference_strategy,
                 path_lookup: Some(&path_lookup),
                 declaring_exports: &declaring_exports,
+                import_declarations: &semantic.import_declarations,
                 r3_symbols_path: r3_symbols_path.as_deref(),
             };
             (semantic.to_wire(&cx).expect("wire projection"), chunk_info)

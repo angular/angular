@@ -103,6 +103,10 @@ import { EXTRA_DECLARATIONS } from './extra';
 import * as i0 from '@angular/core';
 // @ts-ignore
 import * as i1 from './bar.directive';
+// @ts-ignore
+import * as i2 from './app.component';
+// @ts-ignore
+import * as i3 from './foo.component';
 
 export class AppModule {
   // @ts-ignore
@@ -114,7 +118,7 @@ export class AppModule {
   // @ts-ignore
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     AppModule,
-    [typeof AppComponent, typeof FooComponent, typeof i1.BarDirective],
+    [typeof i2.AppComponent, typeof i3.FooComponent, typeof i1.BarDirective],
     never,
     never
   > =

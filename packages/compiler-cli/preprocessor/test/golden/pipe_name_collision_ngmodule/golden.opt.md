@@ -28,6 +28,8 @@ import { LocalModule } from './local.module';
 import * as i0 from '@angular/core';
 // @ts-ignore
 import * as i1 from './shared.module';
+// @ts-ignore
+import * as i2 from './local.module';
 
 export class AppComponent {
   // @ts-ignore
@@ -111,7 +113,7 @@ export class AppModule {
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     AppModule,
     [typeof AppComponent],
-    [typeof LocalModule],
+    [typeof i2.LocalModule],
     never
   > =
     // @ts-ignore
@@ -153,6 +155,8 @@ import { NgModule, Pipe, PipeTransform } from '@angular/core';
 import { SharedModule } from './shared.module';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './shared.module';
 
 export class LocalTranslatePipe implements PipeTransform {
   transform(value: string): string {
@@ -204,8 +208,8 @@ export class LocalModule {
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     LocalModule,
     [typeof LocalTranslatePipe],
-    [typeof SharedModule],
-    [typeof LocalTranslatePipe, typeof SharedModule]
+    [typeof i1.SharedModule],
+    [typeof LocalTranslatePipe, typeof i1.SharedModule]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: LocalModule });

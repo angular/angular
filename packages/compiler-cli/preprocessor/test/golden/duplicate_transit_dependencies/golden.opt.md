@@ -29,6 +29,8 @@ import { SecondModule } from './second.module';
 import * as i0 from '@angular/core';
 // @ts-ignore
 import * as i1 from './first.module';
+// @ts-ignore
+import * as i2 from './second.module';
 
 export class AppComponent {
   // @ts-ignore
@@ -112,7 +114,7 @@ export class AppModule {
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     AppModule,
     [typeof AppComponent],
-    [typeof FirstModule, typeof SecondModule],
+    [typeof i1.FirstModule, typeof i2.SecondModule],
     never
   > =
     // @ts-ignore
@@ -250,6 +252,8 @@ import { NgModule } from '@angular/core';
 import { FirstModule } from './first.module';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './first.module';
 
 export class SecondModule {
   // @ts-ignore
@@ -262,8 +266,8 @@ export class SecondModule {
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     SecondModule,
     never,
-    [typeof FirstModule],
-    [typeof FirstModule]
+    [typeof i1.FirstModule],
+    [typeof i1.FirstModule]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: SecondModule });

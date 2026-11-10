@@ -65,6 +65,7 @@ import {
   createEmptySourceSpan,
   createForeignComponentMatcher,
   getOrParseComponentTemplate,
+  importedEntityNameExpr,
   makeClassKey,
   metadataToDeclaration,
   refName,
@@ -111,6 +112,7 @@ interface HybridCompilerContext {
   legacyOptionalChaining: boolean;
   isClosureCompilerEnabled: boolean;
   emitDeclarationOnly?: boolean;
+  verbatimModuleSyntax?: boolean;
   externalRuntimeStyles?: boolean;
   onlyExplicitDeferDependencyImports?: boolean;
   enableTemplateSourceLocations?: boolean;
@@ -389,7 +391,11 @@ export function processFileSync(
   const {classes, importsEnd, imports: importDeclarations} = result;
 
   // Inside `@angular/core` itself, generated imports of `@angular/core` go to `r3_symbols.ts`.
-  const printer = new ExpressionPrinter(filePath, result.r3SymbolsSpecifier ?? null);
+  const printer = new ExpressionPrinter(
+    filePath,
+    result.r3SymbolsSpecifier ?? null,
+    ctx.verbatimModuleSyntax === true,
+  );
   // Compiled text goes through `out` rather than `s` directly, so its source mappings survive.
   const out = new OutputSourceMapBuilder(s, printer, filePath, content);
   const generateSourceMap = (options?: OutputSourceMapOptions) => out.generateMap(options);
@@ -1989,6 +1995,13 @@ function serializeOutput(file: FileCompilation): void {
     eagerDependencyNames,
   } = file;
   const {classes, importsEnd, imports: importDeclarations} = result;
+
+  // Everything that becomes JavaScript is numbered first, so a namespace only a `.d.ts` type uses
+  // comes after the ones the JavaScript output keeps.
+  printer.reserveNamespaces([
+    ...compiledClasses.flatMap(valueNodesOfCompiledClass),
+    ...sharedPool.statements,
+  ]);
   for (const compiledClass of compiledClasses) {
     appendCompiledClass(compiledClass, out, printer, ctx);
   }
@@ -2142,12 +2155,58 @@ interface CompiledClass {
   fields: Array<{
     factory: R3CompiledExpression | null;
     def: {name: string; def: R3CompiledExpression};
-    coercionMembers?: string;
+    coercionMembers?: nga.CoercionMemberMetadata[];
   }>;
   ngModule: CompiledNgModuleDef | null;
   classMetadataStmt: o.Statement | null;
   debugInfoStmt: o.Statement | null;
   hmrInitializerStmt: o.Statement | null;
+}
+
+/**
+ * Prints an `ngAcceptInputType_` coercion member. These are type-checking-only declarations:
+ * ngtsc adds them solely to the `.d.ts` (via DtsTransform) and never to the emitted JS. They are
+ * spliced as `declare static` ambient members so TypeScript strips them entirely from JS (a plain
+ * type-only field would otherwise leak as a value-less `static ngAcceptInputType_x;` under
+ * `useDefineForClassFields`) while preserving them in the `.d.ts`. The `@ts-ignore` guards
+ * against `noImplicitOverride` when the class extends another component.
+ * https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/annotations/common/src/input_transforms.ts#L14-L36
+ */
+function printCoercionMember(
+  member: nga.CoercionMemberMetadata,
+  printer: ExpressionPrinter,
+): string {
+  let type = member.typeSegments[0];
+  member.typeImports.forEach((ref, i) => {
+    const name = o.importExpr({moduleName: ref.specifier, name: ref.symbol});
+    type += printer.printType(o.expressionType(name)) + member.typeSegments[i + 1];
+  });
+  return `  // @ts-ignore\n  declare static ${member.key}: ${type};\n`;
+}
+
+/** The expressions and statements `appendCompiledClass` prints as values, in its order. */
+function valueNodesOfCompiledClass(compiled: CompiledClass): Array<o.Expression | o.Statement> {
+  const nodes: Array<o.Expression | o.Statement> = [];
+  for (const field of compiled.fields) {
+    if (field.factory) {
+      nodes.push(field.factory.expression);
+    }
+    nodes.push(field.def.def.expression);
+  }
+  if (compiled.ngModule !== null) {
+    const {factory, mod, statements, inj} = compiled.ngModule;
+    nodes.push(factory.expression, mod.expression, ...statements, inj.expression);
+  }
+  for (const stmt of [
+    compiled.classMetadataStmt,
+    compiled.debugInfoStmt,
+    compiled.hmrInitializerStmt,
+  ]) {
+    if (stmt !== null) {
+      nodes.push(stmt);
+    }
+  }
+  return nodes;
 }
 
 function appendCompiledClass(
@@ -2174,7 +2233,10 @@ function appendCompiledClass(
       true,
       ctx.isClosureCompilerEnabled,
     );
-    out.appendLeft(span.end - 1, compiledFactory + compiledDef + (field.coercionMembers ?? ''));
+    const coercionMembers = (field.coercionMembers ?? [])
+      .map((member) => printCoercionMember(member, printer))
+      .join('');
+    out.appendLeft(span.end - 1, compiledFactory + compiledDef + coercionMembers);
   }
 
   let ngModuleStatements = '';
@@ -3057,6 +3119,9 @@ function compileNgModuleDef(
           if (el.references && el.references.length > 0) {
             return new o.TypeofExpr(refToTypeExpression(el.references[0]));
           }
+          if (el.importedEntityName) {
+            return new o.TypeofExpr(importedEntityNameExpr(el.importedEntityName));
+          }
           if (el.span && sourceText !== undefined) {
             return new o.TypeofExpr(
               new o.WrappedNodeExpr(
@@ -3067,6 +3132,12 @@ function compileNgModuleDef(
           return new o.WrappedNodeExpr(new RawSource('never'));
         }
         case 'callReturnType': {
+          if (el.importedEntityName) {
+            // `ReturnType<typeof iN.callee>`, as a global with a type argument.
+            return o.importExpr({moduleName: null, name: 'ReturnType'}, [
+              o.expressionType(new o.TypeofExpr(importedEntityNameExpr(el.importedEntityName))),
+            ]);
+          }
           const calleeText =
             el.span && sourceText !== undefined
               ? sourceText.substring(el.span.start, el.span.end)

@@ -168,6 +168,8 @@ import { Component } from '@angular/core';
 import { Dir } from './lib/';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './lib/dir';
 
 export class C {
   // @ts-ignore
@@ -184,13 +186,13 @@ export class C {
     never,
     never,
     true,
-    [{ directive: typeof Dir; inputs: {}; outputs: {} }]
+    [{ directive: typeof i1.Dir; inputs: {}; outputs: {} }]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineComponent({
       type: C,
       selectors: [['c']],
-      features: [i0.ɵɵHostDirectivesFeature([Dir])],
+      features: [i0.ɵɵHostDirectivesFeature([i1.Dir])],
       decls: 0,
       vars: 0,
       template: function C_Template(rf: number, ctx: any): any {},
@@ -268,6 +270,8 @@ import { Directive } from '@angular/core';
 import { OldDir } from './deprecated';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './deprecated';
 
 export class X {
   // @ts-ignore
@@ -284,13 +288,13 @@ export class X {
     never,
     never,
     true,
-    [{ directive: typeof OldDir; inputs: {}; outputs: {} }]
+    [{ directive: typeof i1.RealDir; inputs: {}; outputs: {} }]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineDirective({
       type: X,
       selectors: [['', 'x', '']],
-      features: [i0.ɵɵHostDirectivesFeature([OldDir])],
+      features: [i0.ɵɵHostDirectivesFeature([i1.RealDir])],
     });
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
@@ -444,7 +448,7 @@ export class C {
       encapsulation: 2,
     });
   // @ts-ignore
-  declare static ngAcceptInputType_n: Parameters<typeof toNum>[0];
+  declare static ngAcceptInputType_n: Foo | string;
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -490,6 +494,8 @@ import { Component, Input } from '@angular/core';
 import { toNum } from './util';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './foo';
 
 export class C {
   n = 0;
@@ -520,7 +526,7 @@ export class C {
       encapsulation: 2,
     });
   // @ts-ignore
-  declare static ngAcceptInputType_n: Parameters<typeof toNum>[0];
+  declare static ngAcceptInputType_n: i1.Foo | string;
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -544,6 +550,8 @@ import { NgModule } from '@angular/core';
 import { Dir, mk } from './lib/dir';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './lib/dir';
 
 export class M {
   thing = mk();
@@ -552,7 +560,7 @@ export class M {
     return new (__ngFactoryType__ || M)();
   };
   // @ts-ignore
-  static ɵmod: i0.ɵɵNgModuleDeclaration<M, never, [typeof Dir], never> =
+  static ɵmod: i0.ɵɵNgModuleDeclaration<M, never, [typeof i1.Dir], never> =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: M });
   // @ts-ignore
@@ -659,6 +667,8 @@ import { Component, Input } from '@angular/core';
 import * as api from './api';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './api';
 
 export interface Mapped {
   id: string;
@@ -697,7 +707,7 @@ export class C {
       encapsulation: 2,
     });
   // @ts-ignore
-  declare static ngAcceptInputType_items: api.Item[];
+  declare static ngAcceptInputType_items: i1.Item[];
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -721,6 +731,8 @@ import { NgModule } from '@angular/core';
 import { Dir } from './lib/index';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './lib/dir';
 
 export class M {
   // @ts-ignore
@@ -728,7 +740,7 @@ export class M {
     return new (__ngFactoryType__ || M)();
   };
   // @ts-ignore
-  static ɵmod: i0.ɵɵNgModuleDeclaration<M, never, [typeof Dir], [typeof Dir]> =
+  static ɵmod: i0.ɵɵNgModuleDeclaration<M, never, [typeof i1.Dir], [typeof i1.Dir]> =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: M });
   // @ts-ignore
@@ -776,6 +788,8 @@ import { Component, NgModule } from '@angular/core';
 import { OldDir } from 'mylib';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from 'mylib';
 
 export class C {
   // @ts-ignore
@@ -792,13 +806,13 @@ export class C {
     never,
     never,
     true,
-    [{ directive: typeof OldDir; inputs: {}; outputs: {} }]
+    [{ directive: typeof i1.RealDir; inputs: {}; outputs: {} }]
   > =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineComponent({
       type: C,
       selectors: [['c']],
-      features: [i0.ɵɵHostDirectivesFeature([OldDir])],
+      features: [i0.ɵɵHostDirectivesFeature([i1.RealDir])],
       decls: 0,
       vars: 0,
       template: function C_Template(rf: number, ctx: any): any {},
@@ -825,7 +839,7 @@ export class M {
     return new (__ngFactoryType__ || M)();
   };
   // @ts-ignore
-  static ɵmod: i0.ɵɵNgModuleDeclaration<M, never, [typeof OldDir], never> =
+  static ɵmod: i0.ɵɵNgModuleDeclaration<M, never, [typeof i1.RealDir], never> =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: M });
   // @ts-ignore
@@ -853,6 +867,8 @@ import { Other } from 'charts-dir';
 import * as i0 from '@angular/core';
 // @ts-ignore
 import * as i1 from 'charts-alias';
+// @ts-ignore
+import * as i2 from 'charts-dir';
 
 export class M {
   // @ts-ignore
@@ -863,7 +879,7 @@ export class M {
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     M,
     never,
-    [typeof i1.AwesomechartsModule, typeof Other],
+    [typeof i1.AwesomechartsModule, typeof i2.Other],
     never
   > =
     // @ts-ignore
@@ -897,7 +913,9 @@ import { TaskDetail as TaskDetailOld } from './b/task';
 // @ts-ignore
 import * as i0 from '@angular/core';
 // @ts-ignore
-import * as i1 from './b/task';
+import * as i1 from './a/task';
+// @ts-ignore
+import * as i2 from './b/task';
 
 export class M {
   // @ts-ignore
@@ -908,7 +926,7 @@ export class M {
   static ɵmod: i0.ɵɵNgModuleDeclaration<
     M,
     never,
-    [typeof TaskDetail, typeof i1.TaskDetail],
+    [typeof i1.TaskDetail, typeof i2.TaskDetail],
     never
   > =
     // @ts-ignore
@@ -940,6 +958,8 @@ import { NgModule } from '@angular/core';
 import { Dir } from '../lib';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from '../lib/dir';
 
 export class M {
   // @ts-ignore
@@ -947,7 +967,7 @@ export class M {
     return new (__ngFactoryType__ || M)();
   };
   // @ts-ignore
-  static ɵmod: i0.ɵɵNgModuleDeclaration<M, never, [typeof Dir], [typeof Dir]> =
+  static ɵmod: i0.ɵɵNgModuleDeclaration<M, never, [typeof i1.Dir], [typeof i1.Dir]> =
     // @ts-ignore
     /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: M });
   // @ts-ignore
@@ -995,6 +1015,8 @@ import { Component, Input } from '@angular/core';
 import type { Item } from './types/item';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './types/item';
 
 export function map(v: Item | null): string[] {
   return [];
@@ -1029,7 +1051,7 @@ export class C {
       encapsulation: 2,
     });
   // @ts-ignore
-  declare static ngAcceptInputType_items: Item | null;
+  declare static ngAcceptInputType_items: i1.Item | null;
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -1071,6 +1093,8 @@ import { Component, Input } from '@angular/core';
 import { Item as It } from './types/typeonly';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './types/item';
 
 export function map(v: It[]): string[] {
   return [];
@@ -1105,7 +1129,7 @@ export class C {
       encapsulation: 2,
     });
   // @ts-ignore
-  declare static ngAcceptInputType_items: It[];
+  declare static ngAcceptInputType_items: i1.Item[];
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
@@ -1151,6 +1175,8 @@ import { Component, Input } from '@angular/core';
 import { Item } from './types/typeonly';
 // @ts-ignore
 import * as i0 from '@angular/core';
+// @ts-ignore
+import * as i1 from './types/item';
 
 export function map(v: Item[]): string[] {
   return [];
@@ -1185,7 +1211,7 @@ export class C {
       encapsulation: 2,
     });
   // @ts-ignore
-  declare static ngAcceptInputType_items: Item[];
+  declare static ngAcceptInputType_items: i1.Item[];
   static {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       i0.ɵsetClassMetadata(
