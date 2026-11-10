@@ -237,8 +237,13 @@ describe('HttpUrlEncodedParams', () => {
       const body = new HttpParams({fromObject: {a: ['', false, 3] as const}});
       expect(body.toString()).toBe('a=&a=false&a=3');
     });
-    it('should stringify empty array params', () => {
+    it('should omit empty array params', () => {
       const body = new HttpParams({fromObject: {a: '', b: [], c: '3'}});
+      expect(body.has('b')).toBe(false);
+      expect(body.get('b')).toBeNull();
+      expect(body.getAll('b')).toBeNull();
+      expect(body.keys()).toEqual(['a', 'c']);
+      expect(body.get('a')).toBe('');
       expect(body.toString()).toBe('a=&c=3');
     });
   });
