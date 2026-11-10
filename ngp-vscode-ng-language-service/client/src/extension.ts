@@ -93,8 +93,12 @@ export async function activate(context: vscode.ExtensionContext) {
 
 function launchTs7Client(tsGoPath: string, context: vscode.ExtensionContext) {
   const isNative =
+    tsGoPath.includes(`typescript-${process.platform}-${process.arch}`) ||
     tsGoPath.includes(`native-preview-${process.platform}-${process.arch}`) ||
+    tsGoPath.endsWith('/lib/tsc') ||
+    tsGoPath.endsWith('/tsc.exe') ||
     tsGoPath.endsWith('/tsgo.exe') ||
+    tsGoPath.endsWith('/built/local/tsc') ||
     tsGoPath.endsWith('/built/local/tsgo');
   const ts7ServerOptions: ServerOptions = isNative
     ? {
@@ -210,9 +214,14 @@ async function resolveTsGoPath(): Promise<string | null> {
 
   const workspaceRoot = path.resolve(__dirname, '../../..');
 
-  const platformName = `@typescript/native-preview-${process.platform}-${process.arch}`;
+  const ext = process.platform === 'win32' ? '.exe' : '';
+  const tsPlatformName = `@typescript/typescript-${process.platform}-${process.arch}`;
+  const previewPlatformName = `@typescript/native-preview-${process.platform}-${process.arch}`;
   const localCandidates = [
-    path.join(workspaceRoot, 'node_modules', platformName, 'lib', 'tsgo'),
+    path.join(workspaceRoot, 'node_modules', tsPlatformName, 'lib', `tsc${ext}`),
+    path.join(workspaceRoot, 'node_modules', '@typescript', 'native-preview', 'lib', 'tsc.js'),
+    path.join(workspaceRoot, 'node_modules', '@typescript', 'native-preview', 'bin', 'tsc'),
+    path.join(workspaceRoot, 'node_modules', previewPlatformName, 'lib', `tsgo${ext}`),
     path.join(workspaceRoot, 'node_modules', '@typescript', 'native-preview', 'bin', 'tsgo'),
     path.join(workspaceRoot, 'node_modules', '@typescript', 'native-preview', 'bin', 'tsgo.js'),
   ];
@@ -229,6 +238,12 @@ async function resolveTsGoPath(): Promise<string | null> {
   if (tsGoExtension) {
     const extensionPath = tsGoExtension.extensionPath;
     const candidates = [
+      path.join(extensionPath, 'lib', 'tsc'),
+      path.join(extensionPath, 'lib', 'tsc.exe'),
+      path.join(extensionPath, 'bin', 'tsc'),
+      path.join(extensionPath, 'bin', 'tsc.exe'),
+      path.join(extensionPath, 'tsc'),
+      path.join(extensionPath, 'tsc.exe'),
       path.join(extensionPath, 'bin', 'tsgo'),
       path.join(extensionPath, 'bin', 'tsgo.exe'),
       path.join(extensionPath, 'lib', 'tsgo'),

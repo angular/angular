@@ -8,7 +8,7 @@
 
 import * as fs from 'node:fs/promises';
 import {readConfiguration} from '@angular/compiler-cli';
-import {API, Snapshot} from '@typescript/native-preview/unstable/async';
+import {API, Snapshot} from '@typescript/native-preview/async';
 import {HybridCompiler} from '../../../packages/compiler-cli/preprocessor/src/hybrid_compiler.js';
 import {NapiAnalyzer} from '../../../packages/compiler-cli/preprocessor/src/analyzer_napi.js';
 import {buildTypeCheckingConfig} from '../../../packages/compiler-cli/preprocessor/src/tcb';
@@ -29,7 +29,7 @@ export interface ProjectInstance {
 
 export interface ProjectManagerOptions {
   facade: TsGoFacade;
-  api?: API;
+  api?: API<true>;
   nodeModulesPathOverride?: string;
   onLog?: (msg: string) => void;
   onError?: (msg: string) => void;
@@ -39,7 +39,7 @@ export class ProjectManager {
   private projects = new Map<string, ProjectInstance>();
   private pendingProjects = new Map<string, Promise<ProjectInstance | null>>();
   private facade: TsGoFacade;
-  private api?: API;
+  private api?: API<true>;
   private currentSnapshot?: Snapshot;
   private nodeModulesPathOverride?: string;
   /**
@@ -59,7 +59,7 @@ export class ProjectManager {
     this.err = options.onError ?? (() => {});
   }
 
-  setApi(api: API): void {
+  setApi(api: API<true>): void {
     this.api = api;
     this.currentSnapshot = undefined;
   }
@@ -228,7 +228,7 @@ export class ProjectManager {
         }
       }
 
-      this.currentSnapshot = await this.api.updateSnapshot();
+      this.currentSnapshot = await this.api.getCurrentLanguageServerSnapshot();
       const defaultProject = await this.currentSnapshot.getDefaultProjectForFile(targetPath);
       if (defaultProject?.configFileName && (await pathExists(defaultProject.configFileName))) {
         return await normalizePath(defaultProject.configFileName);
