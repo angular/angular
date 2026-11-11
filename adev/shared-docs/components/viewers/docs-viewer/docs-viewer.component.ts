@@ -81,6 +81,7 @@ export class DocViewer {
   private readonly pendingTasks = inject(PendingTasks);
 
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private preserveInitialContent = true;
 
   private countOfExamples = 0;
 
@@ -96,7 +97,13 @@ export class DocViewer {
     const contentContainer = this.elementRef.nativeElement;
 
     if (content) {
-      if (this.isBrowser && !(this.document as any).startViewTransition) {
+      const shouldPreserveExistingContent = this.shouldPreserveExistingContent(contentContainer);
+
+      if (
+        this.isBrowser &&
+        !shouldPreserveExistingContent &&
+        !(this.document as any).startViewTransition
+      ) {
         // Apply a special class to the host node to trigger animation.
         // Note: when a page is hydrated, the `content` would be empty,
         // so we don't trigger an animation to avoid a content flickering
@@ -104,11 +111,18 @@ export class DocViewer {
         this.animateContent = true;
       }
 
-      contentContainer.innerHTML = content;
+      this.preserveInitialContent = false;
+
+      // Keep the existing SSR/SSG DOM on the initial load and only run the client setup below.
+      // Replacing it with the same HTML is redundant and removes browser-owned state such as
+      // native text-fragment highlights.
+      if (!shouldPreserveExistingContent) {
+        contentContainer.innerHTML = content;
+      }
     }
 
     if (this.isBrowser) {
-      // First we setup event listeners on the HTML we just loaded.
+      // First we set up event listeners on the HTML we just loaded.
       // We want to do this before things like the example viewers are loaded.
       this.setupAnchorListeners(contentContainer);
       // Rewrite relative anchors (hrefs starting with `#`) because relative hrefs are relative to the base URL, which is '/'
@@ -136,6 +150,14 @@ export class DocViewer {
     this.renderTableOfContents(contentContainer);
 
     this.contentLoaded.emit();
+  }
+
+  private shouldPreserveExistingContent(contentContainer: HTMLElement): boolean {
+    return (
+      this.preserveInitialContent &&
+      (contentContainer.childElementCount > 0 ||
+        (contentContainer.textContent?.trim() ?? '') !== '')
+    );
   }
 
   /**
