@@ -31,72 +31,6 @@
           "jsdocTags": [],
           "inputAlias": "ownedBy",
           "isRequiredInput": true
-        },
-        {
-          "name": "ngOnInit",
-          "signatures": [
-            {
-              "name": "ngOnInit",
-              "entryType": "function",
-              "description": "",
-              "generics": [],
-              "isNewType": false,
-              "jsdocTags": [],
-              "params": [],
-              "rawComment": "",
-              "returnType": "void"
-            }
-          ],
-          "implementation": {
-            "params": [],
-            "isNewType": false,
-            "returnType": "void",
-            "generics": [],
-            "name": "ngOnInit",
-            "description": "",
-            "entryType": "function",
-            "jsdocTags": [],
-            "rawComment": ""
-          },
-          "entryType": "function",
-          "description": "",
-          "jsdocTags": [],
-          "rawComment": "",
-          "memberType": "method",
-          "memberTags": []
-        },
-        {
-          "name": "ngOnDestroy",
-          "signatures": [
-            {
-              "name": "ngOnDestroy",
-              "entryType": "function",
-              "description": "",
-              "generics": [],
-              "isNewType": false,
-              "jsdocTags": [],
-              "params": [],
-              "rawComment": "",
-              "returnType": "void"
-            }
-          ],
-          "implementation": {
-            "params": [],
-            "isNewType": false,
-            "returnType": "void",
-            "generics": [],
-            "name": "ngOnDestroy",
-            "description": "",
-            "entryType": "function",
-            "jsdocTags": [],
-            "rawComment": ""
-          },
-          "entryType": "function",
-          "description": "",
-          "jsdocTags": [],
-          "rawComment": "",
-          "memberType": "method",
-          "memberTags": []
         }
       ],
       "generics": [
@@ -112,10 +46,7 @@
         }
       ],
       "rawComment": "/**\n * Group that contains children tree items.\n *\n * The `ngTreeItemGroup` structural directive should be applied to an `ng-template` that\n * wraps the child `ngTreeItem` elements. It is used to define a group of children for an\n * expandable `ngTreeItem`. The `ownedBy` input links the group to its parent `ngTreeItem`.\n *\n * ```html\n * <li ngTreeItem [value]=\"'parent-id'\">\n *   Parent Item\n *   <ul role=\"group\">\n *     <ng-template ngTreeItemGroup [ownedBy]=\"parentTreeItemRef\">\n *       <li ngTreeItem [value]=\"'child-id'\">Child Item</li>\n *     </ng-template>\n *   </ul>\n * </li>\n * ```\n *\n * @see [Tree](guide/aria/tree)\n */",
-      "implements": [
-        "OnInit",
-        "OnDestroy"
-      ],
+      "implements": [],
       "isStandalone": true,
       "selector": "ng-template[ngTreeItemGroup]",
       "exportAs": [
@@ -127,7 +58,7 @@
       "source": {
         "filePath": "/src/aria/tree/tree-item-group.ts",
         "startLine": 42,
-        "endLine": 86
+        "endLine": 88
       }
     },
     {
@@ -332,39 +263,6 @@
           "memberTags": []
         },
         {
-          "name": "ngOnDestroy",
-          "signatures": [
-            {
-              "name": "ngOnDestroy",
-              "entryType": "function",
-              "description": "",
-              "generics": [],
-              "isNewType": false,
-              "jsdocTags": [],
-              "params": [],
-              "rawComment": "",
-              "returnType": "void"
-            }
-          ],
-          "implementation": {
-            "params": [],
-            "isNewType": false,
-            "returnType": "void",
-            "generics": [],
-            "name": "ngOnDestroy",
-            "description": "",
-            "entryType": "function",
-            "jsdocTags": [],
-            "rawComment": ""
-          },
-          "entryType": "function",
-          "description": "",
-          "jsdocTags": [],
-          "rawComment": "",
-          "memberType": "method",
-          "memberTags": []
-        },
-        {
           "name": "contentVisible",
           "type": "WritableSignal<boolean>",
           "memberType": "property",
@@ -398,7 +296,6 @@
       "extends": "DeferredContentAware",
       "implements": [
         "OnInit",
-        "OnDestroy",
         "HasElement"
       ],
       "isStandalone": true,
@@ -411,8 +308,8 @@
       ],
       "source": {
         "filePath": "/src/aria/tree/tree-item.ts",
-        "startLine": 41,
-        "endLine": 167
+        "startLine": 42,
+        "endLine": 172
       }
     },
     {
@@ -761,11 +658,11 @@
       "@angular/core"
     ],
     [
-      "OnInit",
+      "effect",
       "@angular/core"
     ],
     [
-      "OnDestroy",
+      "untracked",
       "@angular/core"
     ],
     [
@@ -785,6 +682,10 @@
       "@angular/core"
     ],
     [
+      "OnInit",
+      "@angular/core"
+    ],
+    [
       "_IdGenerator",
       "@angular/cdk/a11y"
     ],
@@ -793,7 +694,7 @@
       "@angular/core"
     ],
     [
-      "untracked",
+      "OnDestroy",
       "@angular/core"
     ],
     [
@@ -822,14 +723,6 @@
     ],
     [
       "TreeItemGroup.ownedBy",
-      "@angular/aria/tree"
-    ],
-    [
-      "TreeItemGroup.ngOnInit",
-      "@angular/aria/tree"
-    ],
-    [
-      "TreeItemGroup.ngOnDestroy",
       "@angular/aria/tree"
     ],
     [
@@ -894,10 +787,6 @@
     ],
     [
       "TreeItem.ngOnInit",
-      "@angular/aria/tree"
-    ],
-    [
-      "TreeItem.ngOnDestroy",
       "@angular/aria/tree"
     ],
     [
