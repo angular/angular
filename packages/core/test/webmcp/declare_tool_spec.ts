@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {initializeWebMCPPolyfill, cleanupWebMCPPolyfill} from '@mcp-b/webmcp-polyfill';
 import type {ModelContextTool} from '../../third_party/webmcp-types';
 import {inject, Injectable, Injector, runInInjectionContext} from '../../src/di';
 import {declareExperimentalWebMcpTool} from '../../src/webmcp/declare_tool';
 import {Execute} from '../../src/webmcp/types';
 import {RuntimeErrorCode} from '../../src/errors';
+import {installWebMcpMock, ModelContextMock, uninstallWebMcpMock} from './webmcp_mock';
 
 // Whether or not the input type is `any`.
 type IsAny<T> = 0 extends 1 & T ? true : false;
@@ -19,23 +19,15 @@ type IsAny<T> = 0 extends 1 & T ? true : false;
 // Whether or not the type has an index signature.
 type HasIndexSignature<T> = string extends keyof T ? true : false;
 
-interface ModelContextTesting {
-  listTools(): Array<{name: string}>;
-  executeTool(toolName: string, inputArgsJson: string): Promise<string | null>;
-}
-
-function getModelContextTesting(): ModelContextTesting {
-  return (globalThis.navigator as unknown as {modelContextTesting: ModelContextTesting})
-    .modelContextTesting;
-}
-
 describe('declareExperimentalWebMcpTool', () => {
+  let modelContext: ModelContextMock;
+
   beforeEach(() => {
-    initializeWebMCPPolyfill({installTestingShim: true});
+    modelContext = installWebMcpMock();
   });
 
   afterEach(() => {
-    cleanupWebMCPPolyfill();
+    uninstallWebMcpMock();
   });
 
   it('should register a tool', async () => {
@@ -58,13 +50,11 @@ describe('declareExperimentalWebMcpTool', () => {
       Injector.create({providers: []}),
     );
 
-    expect(getModelContextTesting().listTools()).toEqual([
-      jasmine.objectContaining({name: 'testTool'}),
-    ]);
+    expect(await modelContext.getTools()).toEqual([jasmine.objectContaining({name: 'testTool'})]);
 
-    const result = await getModelContextTesting().executeTool('testTool', '{"arg": "foo"}');
+    const result = await modelContext.executeTool({name: 'testTool'}, {arg: 'foo'});
     expect(execute).toHaveBeenCalledOnceWith({arg: 'foo'}, jasmine.anything());
-    expect(JSON.parse(result!)).toEqual({
+    expect(JSON.parse(result)).toEqual({
       content: [{type: 'text', text: 'Hello!'}],
     });
   });
@@ -108,13 +98,11 @@ describe('declareExperimentalWebMcpTool', () => {
       injector,
     );
 
-    expect(getModelContextTesting().listTools()).toEqual([
-      jasmine.objectContaining({name: 'testTool'}),
-    ]);
+    expect(await modelContext.getTools()).toEqual([jasmine.objectContaining({name: 'testTool'})]);
 
     injector.destroy();
 
-    expect(getModelContextTesting().listTools()).toEqual([]);
+    expect(await modelContext.getTools()).toEqual([]);
   });
 
   it('should unregister the tool when its injection context is destroyed and no `injector` is provided', async () => {
@@ -129,13 +117,11 @@ describe('declareExperimentalWebMcpTool', () => {
       });
     });
 
-    expect(getModelContextTesting().listTools()).toEqual([
-      jasmine.objectContaining({name: 'testTool'}),
-    ]);
+    expect(await modelContext.getTools()).toEqual([jasmine.objectContaining({name: 'testTool'})]);
 
     injector.destroy();
 
-    expect(getModelContextTesting().listTools()).toEqual([]);
+    expect(await modelContext.getTools()).toEqual([]);
   });
 
   it('should throw when called outside an injection context and no `injector` is provided', async () => {
@@ -165,7 +151,7 @@ describe('declareExperimentalWebMcpTool', () => {
       injector,
     );
 
-    await getModelContextTesting().executeTool('testTool', '{}');
+    await modelContext.executeTool({name: 'testTool'});
     const [, {signal}] = execute.calls.first().args;
     expect(signal.aborted).toBeFalse();
 
@@ -177,7 +163,6 @@ describe('declareExperimentalWebMcpTool', () => {
     const injector = Injector.create({providers: []});
     const execute = jasmine.createSpy<Execute>('execute').and.returnValue({content: []});
 
-    const modelContext = (globalThis.document as any).modelContext;
     const registerToolSpy = spyOn(modelContext, 'registerTool').and.callThrough();
 
     await declareExperimentalWebMcpTool(
@@ -224,7 +209,7 @@ describe('declareExperimentalWebMcpTool', () => {
       injector,
     );
 
-    await getModelContextTesting().executeTool('testTool', '{}');
+    await modelContext.executeTool({name: 'testTool'});
 
     expect(injectedService).toBeInstanceOf(TestService);
   });

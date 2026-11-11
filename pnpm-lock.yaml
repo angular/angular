@@ -1279,9 +1279,6 @@ importers:
         specifier: ~0.15.0 || ~0.16.0
         version: 0.16.3
     devDependencies:
-      '@mcp-b/webmcp-polyfill':
-        specifier: ^5.0.0
-        version: 5.1.0
       webmcp-types:
         specifier: 0.1.10
         version: 0.1.10
