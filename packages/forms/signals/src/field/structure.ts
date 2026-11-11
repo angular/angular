@@ -94,6 +94,12 @@ export abstract class FieldNodeStructure {
 
   /** Lazily initialized injector. */
   get injector(): DestroyableInjector {
+    if (this._injector === undefined && this.fieldManager.isDestroyed) {
+      throw new RuntimeError(
+        RuntimeErrorCode.FORM_INJECTOR_DESTROYED,
+        ngDevMode && `Cannot create a field injector after the form's injector has been destroyed.`,
+      );
+    }
     this._injector ??= Injector.create({
       providers: [],
       parent: this.fieldManager.injector,
@@ -303,6 +309,11 @@ export abstract class FieldNodeStructure {
     prevData: ChildrenData | undefined,
     forceMaterialize: boolean,
   ): ChildrenData | undefined {
+    // Cleanup callbacks can read existing fields while the form is being destroyed.
+    if (this.fieldManager.isDestroyed) {
+      return prevData;
+    }
+
     if (!isObject(value)) {
       // Non-object values have no children. This short-circuit path makes `childrenMap` fast
       // for primitive-valued fields.
@@ -472,6 +483,7 @@ export class RootFieldNodeStructure extends FieldNodeStructure {
   ) {
     super(logic, node, createChildNode);
     this.childrenMap = this.createChildrenMap();
+    this.fieldManager.structures.add(this);
   }
 }
 
