@@ -7,10 +7,12 @@
  */
 
 import {
+  ArrowFunction,
   AST,
   ASTWithSource,
   Binary,
   BindingPipe,
+  Call,
   Conditional,
   Interpolation,
   KeyedRead,
@@ -1547,6 +1549,176 @@ runInEachFileSystem(() => {
             .getTypeChecker()
             .typeToString(templateTypeChecker.getTypeOfSymbol(safeCallSymbol)!),
         ).toBe('string | undefined');
+      });
+
+      describe('class resolver bindings', () => {
+        // The shorthand `(class)="F"` is checked as a call of `F` inside wrappers whose
+        // diagnostics map to `F`. The symbol of `F` must still be `F`, not a wrapper.
+        function setupClassResolver(
+          template: string,
+          source: string,
+          config?: Partial<TypeCheckingConfig>,
+        ) {
+          const fileName = absoluteFrom('/main.ts');
+          const {templateTypeChecker, program} = setup(
+            [
+              {
+                fileName,
+                templates: {'Cmp': template},
+                source: `
+                  import {BoundClassResolver, ClassCallback, ResolvedAttribute} from '@angular/core';
+                  ${source}
+                `,
+              },
+            ],
+            config,
+          );
+          const cmp = getClass(getSourceFileOrError(program, fileName), 'Cmp');
+          const output = getAstElements(templateTypeChecker, cmp)[0].outputs[0];
+          const handler = (output.handler as ASTWithSource).ast;
+          return {templateTypeChecker, program, cmp, handler};
+        }
+
+        it('should get the symbol of a method in a shorthand', () => {
+          const {templateTypeChecker, program, cmp, handler} = setupClassResolver(
+            `<div (class)="classes"></div>`,
+            `export class Cmp {
+              classes(cn: BoundClassResolver): ResolvedAttribute { return cn(); }
+            }`,
+          );
+
+          const symbol = templateTypeChecker.getSymbolOfNode(handler, cmp)!;
+          assertExpressionSymbol(symbol);
+          const tsSymbol = templateTypeChecker.getTsSymbolOfSymbol(symbol)!;
+          expect(program.getTypeChecker().symbolToString(tsSymbol)).toEqual('classes');
+          expect(ts.isMethodDeclaration(tsSymbol.declarations![0])).toBeTrue();
+          expect((tsSymbol.declarations![0].parent as ts.ClassDeclaration).name!.text).toEqual(
+            'Cmp',
+          );
+          expect(
+            program.getTypeChecker().typeToString(templateTypeChecker.getTypeOfSymbol(symbol)!),
+          ).toEqual('(cn: BoundClassResolver) => ResolvedAttribute');
+        });
+
+        it('should get the symbol of a safe read in a shorthand', () => {
+          const {templateTypeChecker, program, cmp, handler} = setupClassResolver(
+            `<div (class)="choice?.classes"></div>`,
+            `interface Choice {
+              classes: ClassCallback;
+            }
+            export class Cmp {
+              choice: Choice | null = null;
+            }`,
+          );
+
+          const symbol = templateTypeChecker.getSymbolOfNode(handler, cmp)!;
+          assertExpressionSymbol(symbol);
+          const tsSymbol = templateTypeChecker.getTsSymbolOfSymbol(symbol)!;
+          expect(program.getTypeChecker().symbolToString(tsSymbol)).toEqual('classes');
+          expect((tsSymbol.declarations![0].parent as ts.InterfaceDeclaration).name.text).toEqual(
+            'Choice',
+          );
+          expect(
+            program.getTypeChecker().typeToString(templateTypeChecker.getTypeOfSymbol(symbol)!),
+          ).toEqual('ClassCallback | undefined');
+        });
+
+        it('should get the symbol of a safe read in a shorthand without checkTypeOfOutputEvents', () => {
+          const {templateTypeChecker, program, cmp, handler} = setupClassResolver(
+            `<div (class)="choice?.classes"></div>`,
+            `interface Choice {
+              classes: ClassCallback;
+            }
+            export class Cmp {
+              choice: Choice | null = null;
+            }`,
+            {checkTypeOfOutputEvents: false},
+          );
+
+          const symbol = templateTypeChecker.getSymbolOfNode(handler, cmp)!;
+          assertExpressionSymbol(symbol);
+          const tsSymbol = templateTypeChecker.getTsSymbolOfSymbol(symbol)!;
+          expect(program.getTypeChecker().symbolToString(tsSymbol)).toEqual('classes');
+          expect((tsSymbol.declarations![0].parent as ts.InterfaceDeclaration).name.text).toEqual(
+            'Choice',
+          );
+          expect(
+            program.getTypeChecker().typeToString(templateTypeChecker.getTypeOfSymbol(symbol)!),
+          ).toEqual('ClassCallback | undefined');
+        });
+
+        it('should get the symbols of a conditional in a shorthand', () => {
+          const {templateTypeChecker, program, cmp, handler} = setupClassResolver(
+            `<div (class)="active ? first : classes"></div>`,
+            `export class Cmp {
+              active = false;
+              first(cn: BoundClassResolver): ResolvedAttribute { return cn('first'); }
+              classes(cn: BoundClassResolver): ResolvedAttribute { return cn(); }
+            }`,
+          );
+          const conditional = handler as Conditional;
+
+          const firstSymbol = templateTypeChecker.getSymbolOfNode(conditional.trueExp, cmp)!;
+          assertExpressionSymbol(firstSymbol);
+          const firstTsSymbol = templateTypeChecker.getTsSymbolOfSymbol(firstSymbol)!;
+          expect(program.getTypeChecker().symbolToString(firstTsSymbol)).toEqual('first');
+          expect(ts.isMethodDeclaration(firstTsSymbol.declarations![0])).toBeTrue();
+          expect(
+            program
+              .getTypeChecker()
+              .typeToString(templateTypeChecker.getTypeOfSymbol(firstSymbol)!),
+          ).toEqual('(cn: BoundClassResolver) => ResolvedAttribute');
+
+          const conditionalSymbol = templateTypeChecker.getSymbolOfNode(conditional, cmp)!;
+          assertExpressionSymbol(conditionalSymbol);
+          expect(templateTypeChecker.getTsSymbolOfSymbol(conditionalSymbol)).toBeNull();
+          expect(
+            program
+              .getTypeChecker()
+              .typeToString(templateTypeChecker.getTypeOfSymbol(conditionalSymbol)!),
+          ).toEqual('(cn: BoundClassResolver) => ResolvedAttribute');
+        });
+
+        it('should get the symbol of an arrow function parameter in a shorthand', () => {
+          const {templateTypeChecker, program, cmp, handler} = setupClassResolver(
+            `<div (class)="(cn) => cn()"></div>`,
+            `export class Cmp {}`,
+          );
+          const cnRead = ((handler as ArrowFunction).body as Call).receiver;
+
+          const symbol = templateTypeChecker.getSymbolOfNode(cnRead, cmp)!;
+          assertExpressionSymbol(symbol);
+          expect(
+            program
+              .getTypeChecker()
+              .symbolToString(templateTypeChecker.getTsSymbolOfSymbol(symbol)!),
+          ).toEqual('cn');
+          expect(
+            program.getTypeChecker().typeToString(templateTypeChecker.getTypeOfSymbol(symbol)!),
+          ).toEqual('BoundClassResolver');
+        });
+
+        it('should get the symbol of a method in the full form', () => {
+          const {templateTypeChecker, program, cmp, handler} = setupClassResolver(
+            `<div (attr.class)="$event.resolve(classes($event.resolver))"></div>`,
+            `export class Cmp {
+              classes(cn: BoundClassResolver): ResolvedAttribute { return cn(); }
+            }`,
+          );
+          const classesRead = ((handler as Call).args[0] as Call).receiver;
+
+          const symbol = templateTypeChecker.getSymbolOfNode(classesRead, cmp)!;
+          assertExpressionSymbol(symbol);
+          const tsSymbol = templateTypeChecker.getTsSymbolOfSymbol(symbol)!;
+          expect(program.getTypeChecker().symbolToString(tsSymbol)).toEqual('classes');
+          expect(ts.isMethodDeclaration(tsSymbol.declarations![0])).toBeTrue();
+          expect((tsSymbol.declarations![0].parent as ts.ClassDeclaration).name!.text).toEqual(
+            'Cmp',
+          );
+          expect(
+            program.getTypeChecker().typeToString(templateTypeChecker.getTypeOfSymbol(symbol)!),
+          ).toEqual('(cn: BoundClassResolver) => ResolvedAttribute');
+        });
       });
     });
 

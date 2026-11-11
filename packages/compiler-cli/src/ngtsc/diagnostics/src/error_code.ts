@@ -714,6 +714,18 @@ export enum ErrorCode {
   NUMERIC_CSS_PROPERTY_REQUIRES_UNIT = 8119,
 
   /**
+   * An attribute resolver, such as `(class)` or `(attr.role)`, is declared on a container, which
+   * has no attributes to resolve.
+   *
+   * For example:
+   * ```html
+   * <ng-container (class)="(cn) => cn('px-2')"></ng-container>
+   * <ng-container (attr.role)="$event.resolve('list')"></ng-container>
+   * ```
+   */
+  ATTRIBUTE_RESOLVER_ON_CONTAINER = 8121,
+
+  /**
    * The template type-checking engine would need to generate an inline type check block for a
    * component, but the current type-checking environment doesn't support it.
    */

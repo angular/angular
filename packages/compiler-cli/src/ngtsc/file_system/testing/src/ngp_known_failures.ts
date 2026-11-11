@@ -135,6 +135,30 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'import generation should report an error when a library entry-point does not export the symbol',
   'import generation should report an error when using a directive outside of rootDirs',
 
+  // NGP doesn't check attribute resolver bindings the way ngtsc does: it reports the arrow function
+  // of a `(class)` shorthand as never invoked, and its diagnostics for resolvers differ.
+  'UninvokedFunctionInEventBindingFactoryCheck should not produce a diagnostic for a callback in a (class) binding',
+  'UninvokedFunctionInEventBindingFactoryCheck should not produce a diagnostic for a class resolver on a container',
+  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic for a function in an (attr.class) binding',
+  'ngtsc type checking attribute resolver bindings should reject a callable map as a class value and as an attribute value',
+  'ngtsc type checking attribute resolver bindings should accept a class map with a key named call',
+  'ngtsc type checking class resolver bindings should accept a ClassCallback in the shorthand',
+  'ngtsc type checking class resolver bindings should check a (class) binding under a structural directive once, as a resolver',
+  'ngtsc type checking class resolver bindings should check the earlier expressions of a shorthand chain as statements',
+  'ngtsc type checking class resolver bindings should check the handler with $event as any after reporting a class resolver on an ng-container in the math namespace',
+  'ngtsc type checking class resolver bindings should check the handler with $event as any after reporting a class resolver on an ng-container in the svg namespace',
+  'ngtsc type checking class resolver bindings should check the number of parameters of an arrow function in the shorthand',
+  'ngtsc type checking class resolver bindings should check the shorthand as a ClassCallback',
+  'ngtsc type checking class resolver bindings should infer the parameter named $event of an arrow function in the shorthand',
+  'ngtsc type checking class resolver bindings should infer the parameter named cn of an arrow function in the shorthand',
+  'ngtsc type checking class resolver bindings should infer the parameter of an arrow function in both branches of a conditional',
+  'ngtsc type checking class resolver bindings should report a class resolver on a container',
+  'ngtsc type checking class resolver bindings should report a class resolver on a container next to a directive output named class',
+  'ngtsc type checking class resolver bindings should report a class resolver on an ng-container in the svg namespace',
+  'ngtsc type checking class resolver bindings should report an (attr.role) resolver on a container',
+  'ngtsc type checking strictOutputEventTypes and class resolver bindings should infer the type of $event as ClassResolveEvent and check the shorthand when enabled',
+  'ngtsc type checking strictOutputEventTypes and class resolver bindings should not infer the type of $event or check the shorthand when not enabled',
+
   // NGP doesn't check the resolvers of host metadata.
   "ngtsc behavioral tests attribute resolver declarations should report @HostListener('attr.role')",
   'ngtsc behavioral tests attribute resolver declarations should report a @HostListener name that the parser trims into a resolver',

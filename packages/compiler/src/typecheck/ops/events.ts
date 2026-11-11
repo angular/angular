@@ -6,8 +6,17 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AST, ImplicitReceiver, ParsedEventType, PropertyRead} from '../../expression_parser/ast';
-import {BoundAttribute, BoundEvent, Element} from '../../render3/r3_ast';
+import {
+  AST,
+  ASTWithSource,
+  Chain,
+  ImplicitReceiver,
+  ParsedEventType,
+  PropertyRead,
+} from '../../expression_parser/ast';
+import {isNgContainer, isNgTemplate} from '../../ml_parser/tags';
+import {BoundAttribute, BoundEvent, Element, HostElement, Template} from '../../render3/r3_ast';
+import {AttributeResolverBinding, getAttributeResolver} from '../../render3/r3_attribute_resolver';
 import {DirectiveOwner} from '../../render3/view/t2_api';
 import {TcbOp} from './base';
 import {getStatementsBlock, TcbExpr} from './codegen';
@@ -40,6 +49,28 @@ function tcbEventHandlerExpression(ast: AST, tcb: Context, scope: Scope): TcbExp
 }
 
 /**
+ * Gets the attribute resolver that an event binding declares, or `null` for an ordinary event
+ * binding or a node other than an element, a template, or a host. A `<ng-container>` or an explicit
+ * `<ng-template>` gets one too, so that `TcbUnclaimedOutputsOp` can report the resolver on it.
+ */
+function getAttributeResolverOf(
+  node: LocalSymbol,
+  output: BoundEvent,
+): AttributeResolverBinding | null {
+  if (!(node instanceof Element || node instanceof Template || node instanceof HostElement)) {
+    return null;
+  }
+  return getAttributeResolver(output.name, output.type, output.target);
+}
+
+function isAttributeResolverContainer(node: LocalSymbol): boolean {
+  return (
+    (node instanceof Element && isNgContainer(node.name)) ||
+    (node instanceof Template && node.tagName !== null && isNgTemplate(node.tagName))
+  );
+}
+
+/**
  * A `TcbOp` which generates code to check event bindings on an element that correspond with the
  * outputs of a directive.
  *
@@ -68,7 +99,10 @@ export class TcbDirectiveOutputsOp extends TcbOp {
     for (const output of this.outputs) {
       if (
         output.type === ParsedEventType.LegacyAnimation ||
-        !outputs.hasBindingPropertyName(output.name)
+        !outputs.hasBindingPropertyName(output.name) ||
+        // Attribute resolvers, such as `(class)` and `(attr.role)`, resolve their attribute even next
+        // to an output of the same name, so they're checked once as unclaimed.
+        getAttributeResolverOf(this.node, output) !== null
       ) {
         continue;
       }
@@ -145,7 +179,9 @@ export class TcbUnclaimedOutputsOp extends TcbOp {
 
     // TODO(alxhub): this could be more efficient.
     for (const output of this.outputs) {
-      if (this.claimedOutputs?.has(output.name)) {
+      const attributeResolver = getAttributeResolverOf(this.target, output);
+
+      if (attributeResolver === null && this.claimedOutputs?.has(output.name)) {
         // Skip this event handler as it was claimed by a directive.
         continue;
       }
@@ -160,6 +196,21 @@ export class TcbUnclaimedOutputsOp extends TcbOp {
           // Skip this event handler as the error was already handled.
           continue;
         }
+      }
+
+      if (attributeResolver !== null && isAttributeResolverContainer(this.target)) {
+        this.tcb.oobRecorder.attributeResolverOnContainer?.(this.tcb.id, output);
+        const handler = tcbCreateEventHandler(output, this.tcb, this.scope, EventParamType.Any);
+        this.scope.addStatement(handler);
+        continue;
+      }
+
+      // A structural directive's template copies its element's outputs, which the element checks.
+      if (attributeResolver !== null && !(this.target instanceof Template)) {
+        this.scope.addStatement(
+          tcbCreateAttributeResolverHandler(output, attributeResolver, this.tcb, this.scope),
+        );
+        continue;
       }
 
       if (
@@ -317,7 +368,77 @@ function tcbCreateEventHandler(
   }
 
   statements.push(handler);
+  return tcbCreateHandlerFunction(statements, scope, eventType);
+}
 
+function getResolveEventType(attribute: string): string {
+  return attribute === 'class' ? 'ClassResolveEvent' : 'AttributeResolveEvent';
+}
+
+/**
+ * Creates the handler function of an attribute resolver, such as `(attr.role)`. `$event` is the
+ * resolve event of the attribute, such as `ClassResolveEvent` for `class`. A shorthand, `(class)="F"`,
+ * is checked the way it's compiled, as `$event.resolve((F)($event.resolver))`. When the type of
+ * `$event` is checked, the call is `((F) satisfies ClassCallback)!($event.resolver)`, because a
+ * direct call accepts `(cn) => 'x'`. `satisfies` also infers the parameters of an arrow function
+ * and keeps the type of `F`, so the call checks the `this` that a method declares, the overload it
+ * selects, and its argument. A second `satisfies` checks the call's result.
+ */
+function tcbCreateAttributeResolverHandler(
+  event: BoundEvent,
+  binding: AttributeResolverBinding,
+  tcb: Context,
+  scope: Scope,
+): TcbExpr {
+  const resolveEvent = tcb.env.config.checkTypeOfOutputEvents
+    ? tcb.env.referenceExternalSymbol('@angular/core', getResolveEventType(binding.attribute))
+    : null;
+  const eventType = resolveEvent === null ? EventParamType.Any : resolveEvent.print();
+
+  if (binding.form === 'fullForm') {
+    return tcbCreateEventHandler(event, tcb, scope, eventType);
+  }
+
+  const ast = event.handler instanceof ASTWithSource ? event.handler.ast : event.handler;
+  const expressions = ast instanceof Chain ? ast.expressions : [ast];
+  const statements = expressions.map((expression) =>
+    tcbEventHandlerExpression(expression, tcb, scope),
+  );
+  const callback = statements.pop()!;
+  // The symbol search doesn't visit `(` and `satisfies` tokens. Node spans sit only on parentheses
+  // that unwrap to `F` or the argument, and diagnostics that start at those tokens map through
+  // spans on them.
+  const span = expressions[expressions.length - 1].sourceSpan;
+  const callee = new TcbExpr(`(${callback.print()})`).addParseSpanInfo(span);
+  const resolver = new TcbExpr(`(${EVENT_PARAMETER}.resolver)`).addParseSpanInfo(span);
+  let call: TcbExpr;
+
+  if (resolveEvent !== null) {
+    const resolvedAttribute = tcb.env
+      .referenceExternalSymbol('@angular/core', 'ResolvedAttribute')
+      .print();
+    // Only `class` has a shorthand.
+    const callbackType = tcb.env.referenceExternalSymbol('@angular/core', 'ClassCallback').print();
+    const open = new TcbExpr('(').addParseSpanInfo(span).print();
+    const satisfies = new TcbExpr('satisfies').addParseSpanInfo(span).print();
+    const checkedCallee = `${open}(${callee.print()} ${satisfies} ${callbackType})!)`;
+    // `resolve()` doesn't check the result again.
+    call = new TcbExpr(
+      `(${checkedCallee}(${resolver.print()}) ${satisfies} ${resolvedAttribute}) as any`,
+    );
+  } else {
+    call = new TcbExpr(`${callee.print()}(${resolver.print()})`);
+  }
+
+  statements.push(new TcbExpr(`${EVENT_PARAMETER}.resolve((${call.print()}))`));
+  return tcbCreateHandlerFunction(statements, scope, eventType);
+}
+
+function tcbCreateHandlerFunction(
+  statements: TcbExpr[],
+  scope: Scope,
+  eventType: EventParamType | string,
+): TcbExpr {
   let eventParamType: string | undefined;
   if (eventType === EventParamType.Infer) {
     eventParamType = undefined;

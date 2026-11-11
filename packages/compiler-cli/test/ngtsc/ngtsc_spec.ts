@@ -3808,13 +3808,109 @@ runInEachFileSystem((os: string) => {
         expect(getDiagnosticSourceCode(diag)).toBe(`'count(); resolve'`);
       });
 
+      it('should report a second class resolver on one element', () => {
+        env.write(
+          'test.ts',
+          `
+          import {ClassCallback, ClassResolveEvent, Component} from '@angular/core';
+
+          @Component({
+            selector: 'test',
+            template: '<div (class)="resolve" (attr.class)="capture($event)"></div>',
+          })
+          export class TestCmp {
+            resolve: ClassCallback = (cn) => cn();
+            capture(event: ClassResolveEvent) {}
+          }
+        `,
+        );
+
+        const diag = getSingleDiagnostic();
+        expect(diag.code).toBe(ngErrorCode(ErrorCode.TEMPLATE_PARSE_ERROR));
+        expect(diag.messageText).toBe(
+          `Can't have multiple class resolvers on one element. Use only one '(class)' or ` +
+            `'(attr.class)' binding.`,
+        );
+        expect(getDiagnosticSourceCode(diag)).toBe(`(attr.class)="capture($event)"`);
+      });
+
+      it('should report a second (class) on one element', () => {
+        env.write(
+          'test.ts',
+          `
+          import {ClassCallback, Component} from '@angular/core';
+
+          @Component({
+            selector: 'test',
+            template: '<div (class)="resolve" (class)="other"></div>',
+          })
+          export class TestCmp {
+            resolve: ClassCallback = (cn) => cn();
+            other: ClassCallback = (cn) => cn();
+          }
+        `,
+        );
+
+        const diag = getSingleDiagnostic();
+        expect(diag.code).toBe(ngErrorCode(ErrorCode.TEMPLATE_PARSE_ERROR));
+        expect(diag.messageText).toBe(
+          `Can't have multiple class resolvers on one element. Use only one '(class)' or ` +
+            `'(attr.class)' binding.`,
+        );
+        expect(getDiagnosticSourceCode(diag)).toBe(`(class)="other"`);
+      });
+
+      it('should report a chain in a (class) shorthand', () => {
+        env.write(
+          'test.ts',
+          `
+          import {ClassCallback, Component} from '@angular/core';
+
+          @Component({
+            selector: 'test',
+            template: '<div (class)="count(); resolve"></div>',
+          })
+          export class TestCmp {
+            resolve: ClassCallback = (cn) => cn();
+            count() {}
+          }
+        `,
+        );
+
+        const diag = getSingleDiagnostic();
+        expect(diag.code).toBe(ngErrorCode(ErrorCode.TEMPLATE_PARSE_ERROR));
+        expect(diag.messageText).toBe(chainMessage);
+        expect(getDiagnosticSourceCode(diag)).toBe('count(); resolve');
+      });
+
+      it('should accept a chain in an (attr.class) binding', () => {
+        env.write(
+          'test.ts',
+          `
+          import {ClassResolveEvent, Component} from '@angular/core';
+
+          @Component({
+            selector: 'test',
+            template: '<div (attr.class)="count(); capture($event)"></div>',
+            host: {'(attr.class)': 'count(); capture($event)'},
+          })
+          export class TestCmp {
+            capture(event: ClassResolveEvent) {}
+            count() {}
+          }
+        `,
+        );
+
+        expect(env.driveDiagnostics()).toEqual([]);
+      });
+
       for (const [form, binding] of [
         ['(class)', '(class)="resolve"'],
         ['(attr.class)', '(attr.class)="capture($event)"'],
       ]) {
         it(`should require 22.3.0 in the partial declaration of ${form} on an ng-container`, () => {
-          // The binding sits on an ng-container in the body of an ng-template, so the version is
-          // detected in a nested template.
+          // Type checking reports a class resolver on an ng-container, except in the body of an
+          // ng-template, which basic type checking skips.
           env.tsconfig({compilationMode: 'partial', strictTemplates: false});
           env.write(
             'test.ts',
@@ -3867,6 +3963,25 @@ runInEachFileSystem((os: string) => {
         return diags[0];
       }
 
+      function writeTemplate(template: string): void {
+        env.write(
+          'test.ts',
+          `
+          import {ClassCallback, Component} from '@angular/core';
+
+          @Component({
+            selector: 'test',
+            template: '${template}',
+          })
+          export class TestCmp {
+            resolve: ClassCallback = (cn) => cn();
+            capture(event: unknown) {}
+            other(event: unknown) {}
+          }
+        `,
+        );
+      }
+
       function writeHost(host: string): void {
         env.write(
           'test.ts',
@@ -3885,6 +4000,81 @@ runInEachFileSystem((os: string) => {
         `,
         );
       }
+
+      it('should accept (class) and (attr.role) on one element', () => {
+        writeTemplate('<div (class)="resolve" (attr.role)="capture($event)"></div>');
+
+        expect(env.driveDiagnostics()).toEqual([]);
+      });
+
+      it('should report a second (attr.role) on one element', () => {
+        writeTemplate('<div (attr.role)="capture($event)" (attr.role)="other($event)"></div>');
+
+        const diag = getSingleDiagnostic();
+        expect(diag.code).toBe(ngErrorCode(ErrorCode.TEMPLATE_PARSE_ERROR));
+        expect(diag.messageText).toBe(
+          `Can't have multiple role resolvers on one element. Use only one '(attr.role)' binding.`,
+        );
+        expect(getDiagnosticSourceCode(diag)).toBe(`(attr.role)="other($event)"`);
+      });
+
+      it('should accept (attr.title) on an element', () => {
+        writeTemplate('<div (attr.title)="capture($event)"></div>');
+
+        expect(env.driveDiagnostics()).toEqual([]);
+      });
+
+      for (const [element, tag, name, template] of [
+        ['<a>', 'a', 'href', '<a (attr.href)="capture($event)"></a>'],
+        ['<a> in <svg>', 'a', 'href', '<svg><a (attr.href)="capture($event)"></a></svg>'],
+        ['<iframe>', 'iframe', 'srcdoc', '<iframe (attr.srcdoc)="capture($event)"></iframe>'],
+        ['<iframe>', 'iframe', 'sandbox', '<iframe (attr.sandbox)="capture($event)"></iframe>'],
+        ['<embed>', 'embed', 'src', '<embed (attr.src)="capture($event)">'],
+        ['<mi> in <math>', 'mi', 'href', '<math><mi (attr.href)="capture($event)"></mi></math>'],
+      ]) {
+        it(`should report (attr.${name}) on ${element}`, () => {
+          writeTemplate(template);
+
+          const diag = getSingleDiagnostic();
+          expect(diag.code).toBe(ngErrorCode(ErrorCode.TEMPLATE_PARSE_ERROR));
+          expect(diag.messageText).toBe(
+            `Can't resolve the '${name}' attribute of <${tag}>, because its value needs ` +
+              `sanitization.`,
+          );
+          expect(getDiagnosticSourceCode(diag)).toBe(`(attr.${name})="capture($event)"`);
+        });
+      }
+
+      for (const name of ['onclick', 'OnClick']) {
+        it(`should report (attr.${name}) on an element`, () => {
+          writeTemplate(`<div (attr.${name})="capture($event)"></div>`);
+
+          const diag = getSingleDiagnostic();
+          expect(diag.code).toBe(ngErrorCode(ErrorCode.TEMPLATE_PARSE_ERROR));
+          expect(diag.messageText).toBe(
+            `Can't resolve the event attribute '${name}' for security reasons.`,
+          );
+          expect(getDiagnosticSourceCode(diag)).toBe(`(attr.${name})="capture($event)"`);
+        });
+      }
+
+      it('should accept (attr.src) on <img>', () => {
+        writeTemplate('<img (attr.src)="capture($event)">');
+
+        expect(env.driveDiagnostics()).toEqual([]);
+      });
+
+      it('should report (attr.xlink:title) on an element', () => {
+        writeTemplate('<svg><a (attr.xlink:title)="capture($event)"></a></svg>');
+
+        const diag = getSingleDiagnostic();
+        expect(diag.code).toBe(ngErrorCode(ErrorCode.TEMPLATE_PARSE_ERROR));
+        expect(diag.messageText).toBe(
+          `Can't resolve the namespaced attribute 'xlink:title'. Only attributes without a ` +
+            `namespace can be resolved.`,
+        );
+        expect(getDiagnosticSourceCode(diag)).toBe(`(attr.xlink:title)="capture($event)"`);
+      });
 
       it(`should report @HostListener('attr.role')`, () => {
         env.write(

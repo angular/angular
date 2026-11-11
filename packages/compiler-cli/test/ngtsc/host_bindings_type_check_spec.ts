@@ -254,6 +254,183 @@ runInEachFileSystem(() => {
       expect(getDiagnosticSourceCode(diags[0])).toBe('$event');
     });
 
+    it('should infer the type of $event in a host (attr.class) binding as ClassResolveEvent next to an output named attr.class', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component, EventEmitter, Output} from '@angular/core';
+
+        @Component({
+          template: '',
+          selector: 'ui-button',
+          host: {'(attr.class)': 'resolve($event)'},
+        })
+        export class Comp {
+          @Output('attr.class') changed = new EventEmitter<string>();
+          resolve(value: number) {}
+        }
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toBe(
+        `Argument of type 'ClassResolveEvent' is not assignable to parameter of type 'number'.`,
+      );
+      expect(getDiagnosticSourceCode(diags[0])).toBe('$event');
+    });
+
+    it('should check a host (class) binding as a ClassCallback', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+
+        @Component({
+          template: '',
+          selector: 'ui-button',
+          host: {'(class)': "(cn) => 'x'"},
+        })
+        export class Comp {}
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.map((diag) => diag.messageText)).toEqual([
+        `Type 'string' is not assignable to type 'ResolvedAttribute'.`,
+        `Type 'string' does not satisfy the expected type 'ResolvedAttribute'.`,
+      ]);
+      expect(diags.map((diag) => getDiagnosticSourceCode(diag))).toEqual([`'x'`, `(cn) => 'x'`]);
+    });
+
+    it('should infer the type of $event in a host (class) binding as ClassResolveEvent', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component, ResolvedAttribute} from '@angular/core';
+
+        @Component({
+          template: '',
+          selector: 'ui-button',
+          host: {'(class)': '(cn) => resolve($event)'},
+        })
+        export class Comp {
+          resolve(value: number): ResolvedAttribute { return null!; }
+        }
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toBe(
+        `Argument of type 'ClassResolveEvent' is not assignable to parameter of type 'number'.`,
+      );
+      expect(getDiagnosticSourceCode(diags[0])).toBe('$event');
+    });
+
+    it('should check this when a host (class) binding calls a method it reads from a conditional', () => {
+      env.write(
+        'test.ts',
+        `
+        import {BoundClassResolver, Component} from '@angular/core';
+
+        @Component({
+          template: '',
+          selector: 'ui-button',
+          host: {'(class)': 'active ? first : classes'},
+        })
+        export class Comp {
+          active = false;
+          extra = 'extra';
+          first(this: Comp, cn: BoundClassResolver) {
+            return cn();
+          }
+          classes(this: Comp, cn: BoundClassResolver) {
+            return cn(this.extra);
+          }
+        }
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.map((diag) => [diag.code, getDiagnosticSourceCode(diag)])).toEqual([
+        [2684, 'active ? first : classes'],
+      ]);
+    });
+
+    it('should check a host (class) binding as a ClassCallback next to an own output named class', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component, EventEmitter, Output} from '@angular/core';
+
+        @Component({
+          template: '',
+          selector: 'ui-card',
+          host: {'(class)': 'resolve'},
+        })
+        export class Comp {
+          @Output('class') changed = new EventEmitter<string>();
+          resolve(value: number) { return ''; }
+        }
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.map((diag) => ts.flattenDiagnosticMessageText(diag.messageText, '\n'))).toEqual([
+        `Type '(value: number) => string' does not satisfy the expected type 'ClassCallback'.\n` +
+          `  Types of parameters 'value' and 'cn' are incompatible.\n` +
+          `    Type 'BoundClassResolver' is not assignable to type 'number'.`,
+        `Argument of type '(...extras: ClassBindingValue[]) => ResolvedAttribute' is not ` +
+          `assignable to parameter of type 'number'.`,
+        `Type 'string' does not satisfy the expected type 'ResolvedAttribute'.`,
+      ]);
+      expect(diags.map((diag) => [diag.code, getDiagnosticSourceCode(diag)])).toEqual([
+        [1360, 'resolve'],
+        [2345, 'resolve'],
+        [1360, 'resolve'],
+      ]);
+    });
+
+    it('should check a host (class) binding as a ClassCallback next to a host directive output aliased as class', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component, Directive, EventEmitter, Output} from '@angular/core';
+
+        @Directive()
+        export class HostDir {
+          @Output() changed = new EventEmitter<string>();
+        }
+
+        @Component({
+          template: '',
+          selector: 'ui-card',
+          host: {'(class)': 'resolve'},
+          hostDirectives: [{directive: HostDir, outputs: ['changed: class']}],
+        })
+        export class Comp {
+          resolve(value: number) { return ''; }
+        }
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.map((diag) => ts.flattenDiagnosticMessageText(diag.messageText, '\n'))).toEqual([
+        `Type '(value: number) => string' does not satisfy the expected type 'ClassCallback'.\n` +
+          `  Types of parameters 'value' and 'cn' are incompatible.\n` +
+          `    Type 'BoundClassResolver' is not assignable to type 'number'.`,
+        `Argument of type '(...extras: ClassBindingValue[]) => ResolvedAttribute' is not ` +
+          `assignable to parameter of type 'number'.`,
+        `Type 'string' does not satisfy the expected type 'ResolvedAttribute'.`,
+      ]);
+      expect(diags.map((diag) => [diag.code, getDiagnosticSourceCode(diag)])).toEqual([
+        [1360, 'resolve'],
+        [2345, 'resolve'],
+        [1360, 'resolve'],
+      ]);
+    });
+
     it('should check @HostListener with a target', () => {
       env.write(
         'test.ts',

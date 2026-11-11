@@ -216,4 +216,11 @@ export interface OutOfBandDiagnosticRecorder<T> {
     classPropertyName: string,
     aliases: string[],
   ): void;
+
+  /**
+   * Reports an attribute resolver, such as `(class)` or `(attr.role)`, on a container, such as
+   * `<ng-container>`, which has no attributes to resolve. Optional, because the recorder in
+   * `compiler-cli/preprocessor` doesn't report it.
+   */
+  attributeResolverOnContainer?(id: TypeCheckId, event: BoundEvent): void;
 }

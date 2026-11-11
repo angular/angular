@@ -11,6 +11,7 @@ import {
   AST,
   BindingPipe,
   BindingType,
+  getAttributeResolver,
   OutOfBandDiagnosticCategory,
   OutOfBandDiagnosticRecorder,
   ParseSourceSpan,
@@ -676,6 +677,25 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         this.getTagNameSpan(node),
         ts.DiagnosticCategory.Error,
         ngErrorCode(ErrorCode.CONFLICTING_HOST_DIRECTIVE_BINDING),
+        message,
+      ),
+    );
+  }
+
+  attributeResolverOnContainer(id: TypeCheckId, event: TmplAstBoundEvent): void {
+    const attribute = getAttributeResolver(event.name, event.type, event.target)?.attribute;
+    const resolved = attribute === 'class' ? 'classes' : `the '${attribute}' attribute`;
+    const message =
+      `The '(${event.name})' binding can't resolve ${resolved} on '<ng-container>' or ` +
+      `'<ng-template>', because neither is rendered as an element. Bind it on an element instead.`;
+
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        this.resolver.getTemplateSourceMapping(id),
+        event.keySpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.ATTRIBUTE_RESOLVER_ON_CONTAINER),
         message,
       ),
     );
