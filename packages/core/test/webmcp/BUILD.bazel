@@ -10,7 +10,6 @@ ts_project(
     srcs = glob(["**/*.ts"]),
     deps = [
         "//packages/core",
-        "//packages/core:node_modules/@mcp-b/webmcp-polyfill",
         "//packages/core/testing",
         "//packages/core/third_party/webmcp-types",
         "//packages/router",
