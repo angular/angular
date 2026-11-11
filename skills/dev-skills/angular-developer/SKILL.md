@@ -54,6 +54,8 @@ When working with Angular components, consult the following references based on 
 - **Deferrable Views**: Lazy loading, code splitting, triggers, prefetching, loading states, SSR, and layout stability with `@defer`. Read [deferrable-views.md](references/deferrable-views.md)
 - **Error Boundaries**: Catching render and change detection errors in a template subtree with `@boundary`/`@error`, retrying with `$reset`. Read [error-boundary.md](references/error-boundary.md)
 
+**Template expressions**: Avoid expensive work in templates (e.g. building arrays or objects, filtering, sorting), since it re-runs on every change detection cycle. Reading signals (`count()`) and cheap calls are fine. Derive other values with `computed()`, a pure pipe, or a child component. See [Avoiding expensive work in templates](references/components.md#avoiding-expensive-work-in-templates).
+
 If you require deeper documentation not found in the references above, read the documentation at `https://angular.dev/guide/components`.
 
 ## Reactivity and Data Management
