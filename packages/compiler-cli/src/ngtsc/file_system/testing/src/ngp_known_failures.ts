@@ -171,6 +171,38 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'ngtsc type checking strictOutputEventTypes and attribute resolver bindings should infer the type of $event per attribute and check the (style) shorthand when enabled',
   'ngtsc type checking strictOutputEventTypes and attribute resolver bindings should not infer the type of $event or check the (style) shorthand when not enabled',
 
+  // NGP doesn't run the `outputShadowedByAttributeResolver` check and rejects its name in
+  // `extendedDiagnostics.checks`.
+  'OutputShadowedByAttributeResolverCheck should produce a diagnostic on an element inside <svg>',
+  'OutputShadowedByAttributeResolverCheck should produce a diagnostic when a (class) binding shadows a directive output named class',
+  'OutputShadowedByAttributeResolverCheck should produce a diagnostic when a (style) binding shadows a directive output named style',
+  'OutputShadowedByAttributeResolverCheck should produce a diagnostic when an (attr.class) binding shadows a directive output named attr.class',
+  'OutputShadowedByAttributeResolverCheck should produce a diagnostic when an (attr.role) binding shadows a directive output named attr.role',
+  'ngtsc type checking class resolver bindings should not let a directive output named attr.class claim an (attr.class) binding',
+  'ngtsc type checking class resolver bindings should not let a directive output named class claim a (class) binding',
+  'ngtsc type checking class resolver bindings should warn when a class resolver shadows a host directive output exposed as class or attr.class',
+
+  // NGP doesn't run the `propertyBindingBypassesResolver` check and rejects its name in
+  // `extendedDiagnostics.checks`.
+  'PropertyBindingBypassesResolverCheck should look up the host of each directive once per run',
+  'PropertyBindingBypassesResolverCheck should not look up hosts when host bindings are not type-checked',
+  'PropertyBindingBypassesResolverCheck should produce a diagnostic for a property that the DOM schema maps to the attribute',
+  'PropertyBindingBypassesResolverCheck should produce a diagnostic for a translated interpolation',
+  'PropertyBindingBypassesResolverCheck should produce a diagnostic for an ARIA binding',
+  'PropertyBindingBypassesResolverCheck should produce a diagnostic for an interpolation',
+  'PropertyBindingBypassesResolverCheck should produce a diagnostic on an element inside <svg>',
+  'PropertyBindingBypassesResolverCheck should produce a diagnostic when a property binding writes an attribute that the element resolves',
+  'ngtsc type checking property bindings that bypass a resolver inherited from a base class should warn on the element for a host binding that the directive inherits',
+  'ngtsc type checking property bindings that bypass a resolver inherited from a base class should warn once per directive that inherits a bypassing host binding',
+  'ngtsc type checking property bindings that bypass a resolver inherited from a base class should warn when a template property binding writes an attribute that an inherited host resolver resolves',
+  'ngtsc type checking property bindings that bypass a resolver should report the check as an error when configured',
+  'ngtsc type checking property bindings that bypass a resolver should warn for a directive on the element that carries ngNonBindable',
+  'ngtsc type checking property bindings that bypass a resolver should warn on the element for a @HostBinding',
+  'ngtsc type checking property bindings that bypass a resolver should warn on the element when a directive host binding writes an attribute that the element resolves',
+  'ngtsc type checking property bindings that bypass a resolver should warn once per template for a directive whose host binding bypasses its own host resolver',
+  'ngtsc type checking property bindings that bypass a resolver should warn when a template property binding writes an attribute that a directive resolves in its host',
+  'ngtsc type checking property bindings that bypass a resolver should warn when a template property binding writes an attribute that the element resolves',
+
   // NGP doesn't check the resolvers of host metadata.
   'ngtsc behavioral tests attribute resolver declarations should report (style) and (attr.style) in one host',
   "ngtsc behavioral tests attribute resolver declarations should report @HostListener('attr.role')",

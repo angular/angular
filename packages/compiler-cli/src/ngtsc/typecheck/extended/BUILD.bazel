@@ -20,6 +20,8 @@ ts_project(
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/missing_ngforof_let",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/missing_structural_directive",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/numeric_css_property_requires_unit",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/output_shadowed_by_attribute_resolver",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/property_binding_bypasses_resolver",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/skip_hydration_not_static",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/suffix_not_supported",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/text_attribute_not_binding",

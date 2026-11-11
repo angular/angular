@@ -27,6 +27,8 @@ Currently, Angular supports the following extended diagnostics:
 | `NG8116` | [`missingStructuralDirective`](extended-diagnostics/NG8116)           |
 | `NG8117` | [`uninvokedFunctionInTextInterpolation`](extended-diagnostics/NG8117) |
 | `NG8119` | [`numericCssPropertyRequiresUnit`](extended-diagnostics/NG8119)       |
+| `NG8120` | [`outputShadowedByAttributeResolver`](extended-diagnostics/NG8120)    |
+| `NG8122` | [`propertyBindingBypassesResolver`](extended-diagnostics/NG8122)      |
 | `NG8021` | [`deferTriggerMisconfiguration`](extended-diagnostics/NG8021)         |
 
 ## Configuration

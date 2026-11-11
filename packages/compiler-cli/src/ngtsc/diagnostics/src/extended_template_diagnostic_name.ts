@@ -35,4 +35,6 @@ export enum ExtendedTemplateDiagnosticName {
   UNINVOKED_FUNCTION_IN_TEXT_INTERPOLATION = 'uninvokedFunctionInTextInterpolation',
   DEFER_TRIGGER_MISCONFIGURATION = 'deferTriggerMisconfiguration',
   NUMERIC_CSS_PROPERTY_REQUIRES_UNIT = 'numericCssPropertyRequiresUnit',
+  OUTPUT_SHADOWED_BY_ATTRIBUTE_RESOLVER = 'outputShadowedByAttributeResolver',
+  PROPERTY_BINDING_BYPASSES_RESOLVER = 'propertyBindingBypassesResolver',
 }

@@ -1515,7 +1515,10 @@ runInEachFileSystem(() => {
       });
 
       it('should not let a directive output named class claim a (class) binding', () => {
-        env.tsconfig({strictTemplates: true});
+        env.tsconfig({
+          strictTemplates: true,
+          extendedDiagnostics: {checks: {outputShadowedByAttributeResolver: 'suppress'}},
+        });
         writeComponent(
           `<div dir (class)="h"></div>`,
           `h(e: number) {}`,
@@ -1542,7 +1545,10 @@ runInEachFileSystem(() => {
       });
 
       it('should not let a directive output named attr.class claim an (attr.class) binding', () => {
-        env.tsconfig({strictTemplates: true});
+        env.tsconfig({
+          strictTemplates: true,
+          extendedDiagnostics: {checks: {outputShadowedByAttributeResolver: 'suppress'}},
+        });
         writeComponent(
           `<div dir (attr.class)="h($event)"></div>`,
           `h(e: number) {}`,
@@ -1557,6 +1563,37 @@ runInEachFileSystem(() => {
           `Argument of type 'ClassResolveEvent' is not assignable to parameter of type 'number'.`,
         ]);
         expect(getSourceCodeForDiagnostic(diags[0])).toBe('$event');
+      });
+
+      it('should warn when a class resolver shadows a host directive output exposed as class or attr.class', () => {
+        writeComponent(
+          `<div dir (class)="(cn) => cn()"></div>
+           <div dir (attr.class)="$event.resolve($event.resolver())"></div>`,
+          '',
+          `@Directive()
+           class Events {
+             @Output() changed = new EventEmitter<number>();
+             @Output() resolved = new EventEmitter<number>();
+           }
+
+           @Directive({
+             selector: '[dir]',
+             hostDirectives: [{directive: Events, outputs: ['changed: class', 'resolved: attr.class']}],
+           })
+           class TestDir {}`,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map((diag) => [diag.code, diag.category])).toEqual([
+          [
+            ngErrorCode(ErrorCode.OUTPUT_SHADOWED_BY_ATTRIBUTE_RESOLVER),
+            ts.DiagnosticCategory.Warning,
+          ],
+          [
+            ngErrorCode(ErrorCode.OUTPUT_SHADOWED_BY_ATTRIBUTE_RESOLVER),
+            ts.DiagnosticCategory.Warning,
+          ],
+        ]);
       });
 
       it('should check an output named class that a host directive exposes under another name as an ordinary output', () => {
@@ -2012,6 +2049,270 @@ runInEachFileSystem(() => {
           [2345, 'onClick'],
           [1360, 'onClick'],
         ]);
+      });
+    });
+
+    describe('property bindings that bypass a resolver', () => {
+      function writeComponent(template: string, directive: string, options = ''): void {
+        env.write(
+          'test.ts',
+          `
+          import {Component, Directive, HostBinding} from '@angular/core';
+
+          @Directive({selector: '[dir]', ${options}})
+          class TestDir {
+            ${directive}
+          }
+
+          @Component({
+            selector: 'test',
+            imports: [TestDir],
+            template: \`${template}\`,
+          })
+          class TestCmp {
+            value = '';
+            resolve(event: unknown) {}
+          }
+        `,
+        );
+      }
+
+      function codesAndSources(): [number, string][] {
+        return env.driveDiagnostics().map((diag) => [diag.code, getSourceCodeForDiagnostic(diag)]);
+      }
+
+      const code = ngErrorCode(ErrorCode.PROPERTY_BINDING_BYPASSES_RESOLVER);
+
+      it('should warn when a template property binding writes an attribute that the element resolves', () => {
+        writeComponent(`<div dir [title]="value" (attr.title)="resolve($event)"></div>`, '');
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map((diag) => [diag.code, diag.category])).toEqual([
+          [code, ts.DiagnosticCategory.Warning],
+        ]);
+        expect(getSourceCodeForDiagnostic(diags[0])).toBe('title');
+      });
+
+      it('should report the check as an error when configured', () => {
+        env.tsconfig({
+          strictTemplates: true,
+          extendedDiagnostics: {checks: {propertyBindingBypassesResolver: 'error'}},
+        });
+        writeComponent(`<div dir [title]="value" (attr.title)="resolve($event)"></div>`, '');
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map((diag) => [diag.code, diag.category])).toEqual([
+          [code, ts.DiagnosticCategory.Error],
+        ]);
+      });
+
+      it('should warn when a template property binding writes an attribute that a directive resolves in its host', () => {
+        writeComponent(
+          `<div dir [title]="value"></div>`,
+          'resolve(event: unknown) {}',
+          `host: {'(attr.title)': 'resolve($event)'}`,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map((diag) => [diag.code, getSourceCodeForDiagnostic(diag)])).toEqual([
+          [code, 'title'],
+        ]);
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toContain(
+          'The `title` property binding writes the `title` attribute, which the `(attr.title)` ' +
+            'host binding of `TestDir` resolves.',
+        );
+      });
+
+      it('should warn on the element when a directive host binding writes an attribute that the element resolves', () => {
+        writeComponent(
+          `<div dir (attr.title)="resolve($event)"></div>`,
+          '',
+          `host: {'[title]': '"x"'}`,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map((diag) => [diag.code, getSourceCodeForDiagnostic(diag)])).toEqual([
+          [code, '<div dir (attr.title)="resolve($event)">'],
+        ]);
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toContain(
+          'The `title` host property binding of `TestDir` writes the `title` attribute, which the ' +
+            "element's `(attr.title)` binding resolves.",
+        );
+      });
+
+      it('should warn on the element for a @HostBinding', () => {
+        writeComponent(
+          `<div dir (attr.title)="resolve($event)"></div>`,
+          `@HostBinding('title') title = 'x';`,
+        );
+
+        expect(codesAndSources()).toEqual([[code, '<div dir (attr.title)="resolve($event)">']]);
+      });
+
+      it('should warn once per template for a directive whose host binding bypasses its own host resolver', () => {
+        writeComponent(
+          `<div dir></div>
+           <span dir></span>`,
+          'resolve(event: unknown) {}',
+          `host: {'[title]': '"x"', '(attr.title)': 'resolve($event)'}`,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map((diag) => [diag.code, getSourceCodeForDiagnostic(diag)])).toEqual([
+          [code, '<div dir>'],
+        ]);
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toContain(
+          'The `title` host property binding of `TestDir` writes the `title` attribute, which the ' +
+            '`(attr.title)` host binding of `TestDir` resolves.',
+        );
+      });
+
+      it('should not warn for host bindings that are sources of the resolver', () => {
+        writeComponent(
+          `<div dir></div>`,
+          'resolve(event: unknown) {}',
+          `host: {
+            '[attr.title]': '"x"',
+            '(attr.title)': 'resolve($event)',
+            '[class]': '"a"',
+            '[class.b]': 'true',
+            '(attr.class)': 'resolve($event)',
+          }`,
+        );
+
+        expect(env.driveDiagnostics()).toEqual([]);
+      });
+
+      it('should not warn for host bindings when host bindings are not type-checked', () => {
+        env.tsconfig({strictTemplates: true, typeCheckHostBindings: false});
+        writeComponent(
+          `<div dir (attr.title)="resolve($event)"></div>`,
+          '',
+          `host: {'[title]': '"x"'}`,
+        );
+
+        expect(env.driveDiagnostics()).toEqual([]);
+      });
+
+      it('should not warn for a directive inside an ngNonBindable element', () => {
+        writeComponent(
+          `<div ngNonBindable><span dir></span><p><b dir></b></p></div>`,
+          'resolve(event: unknown) {}',
+          `host: {'[title]': '"x"', '(attr.title)': 'resolve($event)'}`,
+        );
+
+        expect(env.driveDiagnostics()).toEqual([]);
+      });
+
+      it('should warn for a directive on the element that carries ngNonBindable', () => {
+        writeComponent(
+          `<div ngNonBindable dir></div>`,
+          'resolve(event: unknown) {}',
+          `host: {'[title]': '"x"', '(attr.title)': 'resolve($event)'}`,
+        );
+
+        expect(codesAndSources()).toEqual([[code, '<div ngNonBindable dir>']]);
+      });
+
+      describe('inherited from a base class', () => {
+        function writeInheritingComponent(
+          template: string,
+          base: string,
+          baseOptions = '',
+          imports = 'TestDir',
+        ): void {
+          env.write(
+            'base.ts',
+            `
+            import {Directive, HostBinding} from '@angular/core';
+
+            @Directive({${baseOptions}})
+            export class Base {
+              ${base}
+            }
+          `,
+          );
+          env.write(
+            'test.ts',
+            `
+            import {Component, Directive} from '@angular/core';
+            import {Base} from './base';
+
+            @Directive({selector: '[dir]'})
+            class TestDir extends Base {}
+
+            @Directive({selector: '[other]'})
+            class OtherDir extends Base {}
+
+            @Component({
+              selector: 'test',
+              imports: [${imports}],
+              template: \`${template}\`,
+            })
+            class TestCmp {
+              value = '';
+              resolve(event: unknown) {}
+            }
+          `,
+          );
+        }
+
+        it('should warn on the element for a host binding that the directive inherits', () => {
+          writeInheritingComponent(
+            `<div dir (attr.title)="resolve($event)"></div>`,
+            `@HostBinding('title') title = 'x';`,
+          );
+
+          const diags = env.driveDiagnostics();
+          expect(diags.map((diag) => [diag.code, getSourceCodeForDiagnostic(diag)])).toEqual([
+            [code, '<div dir (attr.title)="resolve($event)">'],
+          ]);
+          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toContain(
+            'The `title` host property binding of `TestDir` writes the `title` attribute, which ' +
+              "the element's `(attr.title)` binding resolves.",
+          );
+        });
+
+        it('should warn when a template property binding writes an attribute that an inherited host resolver resolves', () => {
+          writeInheritingComponent(
+            `<div dir [title]="value"></div>`,
+            'resolve(event: unknown) {}',
+            `host: {'(attr.title)': 'resolve($event)'}`,
+          );
+
+          const diags = env.driveDiagnostics();
+          expect(diags.map((diag) => [diag.code, getSourceCodeForDiagnostic(diag)])).toEqual([
+            [code, 'title'],
+          ]);
+          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toContain(
+            'the `(attr.title)` host binding of `TestDir` resolves.',
+          );
+        });
+
+        it('should warn once per directive that inherits a bypassing host binding', () => {
+          writeInheritingComponent(
+            `<div dir></div>
+             <span other></span>
+             <p dir></p>`,
+            'resolve(event: unknown) {}',
+            `host: {'[title]': '"x"', '(attr.title)': 'resolve($event)'}`,
+            'TestDir, OtherDir',
+          );
+
+          expect(codesAndSources()).toEqual([
+            [code, '<div dir>'],
+            [code, '<span other>'],
+          ]);
+        });
+
+        it('should not warn when an inherited host binding writes another attribute', () => {
+          writeInheritingComponent(
+            `<div dir (attr.title)="resolve($event)"></div>`,
+            `@HostBinding('id') id = 'x';`,
+          );
+
+          expect(env.driveDiagnostics()).toEqual([]);
+        });
       });
     });
 

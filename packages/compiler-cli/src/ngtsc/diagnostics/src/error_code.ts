@@ -714,8 +714,20 @@ export enum ErrorCode {
   NUMERIC_CSS_PROPERTY_REQUIRES_UNIT = 8119,
 
   /**
-   * An attribute resolver, such as `(class)` or `(attr.role)`, is declared on a container, which
-   * has no attributes to resolve.
+   * An attribute resolver binding on an element, such as `(class)`, `(style)`, or `(attr.role)`,
+   * resolves the element's attribute, so it doesn't listen to a directive output of the same name.
+   *
+   * For example:
+   * ```html
+   * <!-- `withClassOutput` declares an output named `class`. -->
+   * <div withClassOutput (class)="(cn) => cn('px-2')"></div>
+   * ```
+   */
+  OUTPUT_SHADOWED_BY_ATTRIBUTE_RESOLVER = 8120,
+
+  /**
+   * An attribute resolver, such as `(class)`, `(style)`, or `(attr.role)`, is declared on a
+   * container, which has no attributes to resolve.
    *
    * For example:
    * ```html
@@ -724,6 +736,18 @@ export enum ErrorCode {
    * ```
    */
   ATTRIBUTE_RESOLVER_ON_CONTAINER = 8121,
+
+  /**
+   * A property binding writes an attribute that an attribute resolver on the same element
+   * resolves. The resolver doesn't receive the binding's value, and the binding's writes can stay
+   * in the DOM while the resolved value doesn't change.
+   *
+   * For example:
+   * ```html
+   * <div [title]="title" (attr.title)="$event.resolve($event.resolver())"></div>
+   * ```
+   */
+  PROPERTY_BINDING_BYPASSES_RESOLVER = 8122,
 
   /**
    * The template type-checking engine would need to generate an inline type check block for a

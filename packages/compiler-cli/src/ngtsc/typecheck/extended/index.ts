@@ -22,6 +22,8 @@ import {factory as uninvokedFunctionInEventBindingFactory} from './checks/uninvo
 import {factory as unparenthesizedNullishCoalescingFactory} from './checks/unparenthesized_nullish_coalescing';
 import {factory as unusedLetDeclarationFactory} from './checks/unused_let_declaration';
 import {factory as deferTriggerMisconfigurationFactory} from './checks/defer_trigger_misconfiguration';
+import {factory as outputShadowedByAttributeResolverFactory} from './checks/output_shadowed_by_attribute_resolver';
+import {factory as propertyBindingBypassesResolverFactory} from './checks/property_binding_bypasses_resolver';
 
 export {ExtendedTemplateCheckerImpl} from './src/extended_template_checker';
 
@@ -42,6 +44,8 @@ export const ALL_DIAGNOSTIC_FACTORIES: readonly TemplateCheckFactory<
   skipHydrationNotStaticFactory,
   unparenthesizedNullishCoalescingFactory,
   deferTriggerMisconfigurationFactory,
+  outputShadowedByAttributeResolverFactory,
+  propertyBindingBypassesResolverFactory,
 ];
 
 /**
