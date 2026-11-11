@@ -108,6 +108,39 @@ The `@for` block iterates over collections. The `track` expression is **required
 
 **Implicit Variables**: `$index`, `$count`, `$first`, `$last`, `$even`, `$odd`.
 
+### Avoiding function calls in templates
+
+Do not call component methods from template expressions, especially methods that take arguments or build a new array or object (e.g. `@for (x of getItems(count))`, `{{ formatDate(item.date) }}`). A method is re-run every time the component's template is checked, which happens on every change when the component is dirty (OnPush and zoneless reduce how often, but do not make the call cached). Methods that return a new array or object also give `@for` a new collection on every run.
+
+Reading a signal (`count()`, `items()`) is fine, and so is a trivial lookup. For anything else, derive the value once:
+
+- **`computed()`** for values derived from signals.
+- **A pure pipe** for formatting a value (see [pipes.md](pipes.md)).
+- **A child component** when each item needs its own derived state.
+
+A `computed()` cannot take arguments, so when the template passes a loop variable to a method, derive the whole nested structure instead:
+
+```ts
+// Avoid: items() runs again for every group on every check.
+groups = computed(() => [this.count(), 1, 1]);
+items(count: number) {
+  return Array(count);
+}
+```
+
+```html
+@for (count of groups(); track $index) { @for (_ of items(count); track $index) { ... } }
+```
+
+```ts
+// Prefer: derive the nested data once.
+groups = computed(() => [this.count(), 1, 1].map((n) => Array.from({length: n}, (_, i) => i)));
+```
+
+```html
+@for (group of groups(); track $index) { @for (item of group; track item) { ... } }
+```
+
 ### Switching Content (`@switch`)
 
 The `@switch` block renders content based on a value. It uses strict equality (`===`) and has **no fallthrough**.
