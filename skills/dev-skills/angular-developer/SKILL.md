@@ -53,6 +53,8 @@ When working with Angular components, consult the following references based on 
 - **Queries and Content Projection**: Signal-based view and content queries (viewChild, viewChildren, contentChild, contentChildren) and content projection with `<ng-content>` slots and fallback content. Read [queries-and-projection.md](references/queries-and-projection.md)
 - **Deferrable Views**: Lazy loading, code splitting, triggers, prefetching, loading states, SSR, and layout stability with `@defer`. Read [deferrable-views.md](references/deferrable-views.md)
 
+**Template expressions**: Avoid expensive work in templates (e.g. building arrays or objects, filtering, sorting), since it re-runs on every change detection cycle. Reading signals (`count()`) and cheap calls are fine. Derive other values with `computed()`, a pure pipe, or a child component. See [Avoiding expensive work in templates](references/components.md#avoiding-expensive-work-in-templates).
+
 If you require deeper documentation not found in the references above, read the documentation at `https://angular.dev/guide/components`.
 
 ## Reactivity and Data Management
