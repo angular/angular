@@ -56,18 +56,28 @@ pub fn load_and_resolve_tsconfig(
         resolved_exclude.push(PathBuf::from("jspm_packages"));
     }
 
+    let base_dir = path.parent().unwrap_or(Path::new("."));
+
     // Like TypeScript, a config with no `exclude` (including through `extends`) skips its own
     // output directories, so emitted `.d.ts`/`.js` files aren't picked up as sources. oxc has
-    // already resolved these relative to the config that set them. See
+    // already resolved these relative to the canonicalized config that set them, so re-anchor
+    // against `base_dir` when `base_dir` is under a symlink. See
     // `parseJsonConfigFileContentWorker` in TypeScript's `internal/tsoptions/tsconfigparsing.go`.
     let excluded_dirs: Vec<PathBuf> = if tsconfig.exclude.is_none() {
+        let canonical_base_dir = fs.canonicalize(base_dir).ok();
         [
             &resolved_compiler_options.out_dir,
             &resolved_compiler_options.declaration_dir,
         ]
         .into_iter()
         .flatten()
-        .cloned()
+        .map(|dir| {
+            let rebased = canonical_base_dir
+                .as_ref()
+                .and_then(|canon| dir.strip_prefix(canon).ok())
+                .map(|rel| base_dir.join(rel));
+            crate::fs::normalize_path(rebased.as_deref().unwrap_or(dir)).into_owned()
+        })
         .collect()
     } else {
         Vec::new()
@@ -90,7 +100,6 @@ pub fn load_and_resolve_tsconfig(
     // Resolve files (preserving tsconfig `files` order, then sorted `include` expansion)
     let mut files = Vec::new();
     let mut seen_files = HashSet::new();
-    let base_dir = path.parent().unwrap_or(Path::new("."));
 
     // 1. files
     for f in resolved_files {
@@ -290,7 +299,13 @@ fn expand_globs(
         .iter()
         .map(|p| p.to_string_lossy().to_string())
         .collect();
-    let is_in_excluded_dir = |path: &Path| excluded_dirs.iter().any(|dir| path.starts_with(dir));
+    let is_in_excluded_dir = |path: &Path| {
+        if excluded_dirs.is_empty() {
+            return false;
+        }
+        let normalized = crate::fs::normalize_path(path);
+        excluded_dirs.iter().any(|dir| normalized.starts_with(dir))
+    };
 
     // Pre-process include patterns to handle directory matches
     let mut effective_patterns = vec![];
@@ -2230,5 +2245,38 @@ mod tests {
                 PathBuf::from("/virtual/src/dist/nested.ts"),
             ]
         );
+    }
+
+    #[test]
+    fn test_out_dir_with_config_dir_parent_segments() {
+        let fs = output_dir_fixture(r#"{"compilerOptions": {"outDir": "${configDir}/sub/../dist"}}"#);
+
+        let config = load_and_resolve_tsconfig(Path::new("/virtual/tsconfig.json"), &fs).unwrap();
+        assert_eq!(config.files, vec![PathBuf::from("/virtual/src/app.ts")]);
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn test_out_dir_with_symlinks_on_disk() {
+        let dir = TempDir::new().unwrap();
+
+        let real_dir = dir.path().join("real");
+        std::fs::create_dir_all(real_dir.join("src")).unwrap();
+        std::fs::create_dir_all(real_dir.join("dist")).unwrap();
+        std::fs::write(
+            real_dir.join("tsconfig.json"),
+            r#"{"compilerOptions": {"outDir": "./dist", "allowJs": true}}"#,
+        )
+        .unwrap();
+        std::fs::write(real_dir.join("src/app.ts"), "export const a = 1;").unwrap();
+        std::fs::write(real_dir.join("dist/app.d.ts"), "export declare const a = 1;").unwrap();
+        std::fs::write(real_dir.join("dist/app.js"), "export const a = 1;").unwrap();
+
+        let link_dir = dir.path().join("link");
+        std::os::unix::fs::symlink(&real_dir, &link_dir).unwrap();
+
+        let fs = crate::fs::OverlayFileSystem::new_with_overlay();
+        let config = load_and_resolve_tsconfig(&link_dir.join("tsconfig.json"), &fs).unwrap();
+        assert_eq!(config.files, vec![link_dir.join("src/app.ts")]);
     }
 }
