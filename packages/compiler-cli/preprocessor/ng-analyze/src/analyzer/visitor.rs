@@ -1296,13 +1296,13 @@ pub fn resolve_local_imports(
 
         if !def_imports.is_empty() {
             let mut resolved_def = Vec::new();
-            let mut resolved_def_by_block: std::collections::HashMap<
+            let mut resolved_def_by_block: std::collections::BTreeMap<
                 String,
                 Vec<crate::types::analysis::DeclarationData>,
-            > = std::collections::HashMap::new();
+            > = std::collections::BTreeMap::new();
 
-            let mut name_to_blocks: std::collections::HashMap<String, Vec<String>> =
-                std::collections::HashMap::new();
+            let mut name_to_blocks: std::collections::BTreeMap<String, Vec<String>> =
+                std::collections::BTreeMap::new();
             if let Some(ref by_block) = component.parsed_deferred_imports_by_block {
                 for (block_name, block_imps) in by_block {
                     for imp in block_imps {

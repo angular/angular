@@ -5,6 +5,7 @@ use super::metadata::{
 use crate::evaluator::Resolved;
 use crate::query::{FileId, ReferenceId};
 use std::collections::{HashMap, HashSet};
+use std::hash::{Hash, Hasher};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
@@ -665,7 +666,7 @@ impl FileData {
             .map(|c| c.to_wire(cx))
             .collect::<Result<Vec<_>, _>>()?;
 
-        Ok(crate::AnalysisResult {
+        let mut result = crate::AnalysisResult {
             file_id: self.file_id,
             file_path: self.file_path.to_string_lossy().into(),
             imports_end: self.imports_end,
@@ -702,7 +703,10 @@ impl FileData {
                 .iter()
                 .map(|path| path.to_string_lossy().into_owned())
                 .collect(),
-        })
+            fingerprint: None,
+        };
+        result.fingerprint = Some(hash_analysis_result(&result));
+        Ok(result)
     }
 
     fn r3_symbols_specifier(&self, r3_symbols_path: Option<&Path>) -> Option<String> {
@@ -781,4 +785,11 @@ impl FileData {
             class.validate(cx, &self.file_path, &self.converter, &mut self.diagnostics);
         }
     }
+}
+
+fn hash_analysis_result(result: &crate::AnalysisResult) -> String {
+    debug_assert!(result.fingerprint.is_none());
+    let mut hasher = std::collections::hash_map::DefaultHasher::new();
+    result.hash(&mut hasher);
+    format!("{:016x}", hasher.finish())
 }

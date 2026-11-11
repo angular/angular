@@ -93,6 +93,12 @@ export interface AnalysisResult {
    * decisions) without resolving module specifiers themselves.
    */
   staticDependencies?: Array<string>;
+  /**
+   * Content fingerprint covering the remaining fields of this result, computed in Rust during
+   * wire projection so JS consumers can check whether an `AnalysisResult` changed without
+   * re-serializing large payloads.
+   */
+  fingerprint?: string;
 }
 
 /**

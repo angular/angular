@@ -8,7 +8,7 @@ use napi_derive::napi;
 use std::collections::HashMap;
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize, serde::Deserialize, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct NgRelatedInformation {
     pub file_path: String,
@@ -17,7 +17,7 @@ pub struct NgRelatedInformation {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize, serde::Deserialize, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct NgDiagnostic {
     pub category: u8,
@@ -104,7 +104,7 @@ impl NgDiagnostic {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AnalysisResult {
     pub file_id: FileId,
@@ -139,6 +139,11 @@ pub struct AnalysisResult {
     /// re-emit decisions) without resolving module specifiers themselves.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub static_dependencies: Vec<String>,
+    /// Structural digest of the remaining fields of this result, computed during wire projection
+    /// so JS consumers can check whether an `AnalysisResult` changed without re-serializing large
+    /// payloads.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub fingerprint: Option<String>,
 }
 
 /// Options for constructing an [`crate::Analyzer`].
@@ -269,7 +274,7 @@ pub struct FileInvalidation {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DeclarationMetadata {
     pub name: String,
@@ -310,7 +315,7 @@ pub struct DeclarationMetadata {
 
 /// Wire form of `ResolvedHostDirective`.
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ResolvedHostDirectiveMetadata {
     pub directive: DeclarationMetadata,
