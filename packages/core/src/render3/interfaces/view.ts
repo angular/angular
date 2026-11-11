@@ -840,7 +840,8 @@ export interface TView {
 
   /**
    * A list of element indices, each listed once, whose attributes are computed by a resolver
-   * binding. These indices have already been adjusted for the HEADER_OFFSET.
+   * binding or automatic resolution. These indices have already been adjusted for the
+   * HEADER_OFFSET.
    */
   attributeResolvers: number[] | null;
 

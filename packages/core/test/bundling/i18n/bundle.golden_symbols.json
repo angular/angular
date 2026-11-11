@@ -294,6 +294,7 @@
       "_retrieveHydrationInfoImpl",
       "_sanitizeHtml",
       "_sanitizeUrl",
+      "_setUpAttributeResolution",
       "_wasLastNodeCreated",
       "activeConsumer",
       "addAfterRenderSequencesForView",

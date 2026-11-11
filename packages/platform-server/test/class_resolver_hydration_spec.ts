@@ -27,7 +27,10 @@ import {
   prepareEnvironmentAndHydrate,
   resetTViewsFor,
 } from './dom_utils';
-import {describeRootHostHydration} from './class_resolver_hydration_cases';
+import {
+  describeOffSubtreeHydration,
+  describeRootHostHydration,
+} from './class_resolver_hydration_cases';
 import {
   clearConsole,
   getComponentRef,
@@ -131,6 +134,11 @@ describe('(class) binding with hydration', () => {
     verifyAllNodesClaimedForHydration(host);
     expect(Array.from(host.querySelector('div')!.classList)).toEqual(['client-only']);
   });
+
+  describeOffSubtreeHydration(
+    () => [],
+    () => doc,
+  );
 
   describeRootHostHydration(
     () => [],

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {bindingUpdated} from '../bindings';
+import {AttributeResolverSlot} from '../interfaces/attribute_resolver';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {
   getCurrentDirectiveIndex,
@@ -54,7 +55,11 @@ export function ɵɵattribute(
         'attribute',
       );
     }
-    if (tAttributeResolver === undefined) {
+    if (
+      tAttributeResolver === undefined ||
+      (tAttributeResolver.owners.length === 0 &&
+        lView[tAttributeResolver.index + AttributeResolverSlot.AutoResolver] === null)
+    ) {
       elementAttributeInternal(tNode, lView, name, value, sanitizer, namespace);
     }
     ngDevMode && storePropertyBindingMetadata(tView.data, tNode, 'attr.' + name, bindingIndex);

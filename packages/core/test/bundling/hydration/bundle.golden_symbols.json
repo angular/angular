@@ -341,6 +341,7 @@
       "_refreshAttributeResolvers",
       "_retrieveHydrationInfoImpl",
       "_runIncrementalHydrationBootstrap",
+      "_setUpAttributeResolution",
       "_stashEventListenerImpl",
       "_wasLastNodeCreated",
       "activeConsumer",

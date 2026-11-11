@@ -357,6 +357,7 @@
       "_refreshAttributeResolvers",
       "_registerAttributeResolverBinding",
       "_retrieveHydrationInfoImpl",
+      "_setUpAttributeResolution",
       "_stashEventListenerImpl",
       "_testabilityGetter",
       "_wasLastNodeCreated",

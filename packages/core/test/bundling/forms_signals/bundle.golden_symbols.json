@@ -370,6 +370,7 @@
       "_refreshAttributeResolvers",
       "_registerAttributeResolverBinding",
       "_retrieveHydrationInfoImpl",
+      "_setUpAttributeResolution",
       "_stashEventListenerImpl",
       "_wasLastNodeCreated",
       "activeConsumer",

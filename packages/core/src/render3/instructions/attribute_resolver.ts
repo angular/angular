@@ -133,7 +133,7 @@ function getAttributeGrammar(name: string): AttributeGrammar {
 }
 
 /** Gets the resolver data of an element's attribute `name`, or `null` if it isn't resolved. */
-function getTAttributeResolver(tNode: TNode, name: string): TAttributeResolver | null {
+export function getTAttributeResolver(tNode: TNode, name: string): TAttributeResolver | null {
   const tAttributeResolvers = tNode.attributeResolvers;
   if (tAttributeResolvers !== null) {
     for (const tAttributeResolver of tAttributeResolvers) {
@@ -149,7 +149,7 @@ function getTAttributeResolver(tNode: TNode, name: string): TAttributeResolver |
  * Records that hydration claimed an element, for the first resolution of its classes or styles.
  * Call it when the element is created.
  */
-function seedHydratedValue(
+export function seedHydratedValue(
   tNode: TNode,
   tAttributeResolver: TAttributeResolver,
   lView: LView,
@@ -239,7 +239,7 @@ function injectAttributeResolver(
  * @param includeViewProviders Whether the lookup sees the `viewProviders` of the component on the
  *     element.
  */
-function injectFromElement<T>(
+export function injectFromElement<T>(
   tNode: TDirectiveHostNode,
   lView: LView,
   token: ProviderToken<T>,
@@ -281,7 +281,7 @@ function attributeResolverFirstCreatePass(
     return;
   }
 
-  enableAttributeResolverHooks(refreshAttributeResolvers, registerAttributeResolverBinding);
+  enableAttributeResolverHooks(refreshAttributeResolvers, registerAttributeResolverBinding, null);
   const tAttributeResolver = createTAttributeResolver(
     tView,
     lView,
@@ -298,7 +298,7 @@ function attributeResolverFirstCreatePass(
  *
  * @param slotCount Number of `AttributeResolverSlot`s to allocate in each instance.
  */
-function createTAttributeResolver(
+export function createTAttributeResolver(
   tView: TView,
   lView: LView,
   tNode: TNode,
@@ -341,7 +341,7 @@ function createTAttributeResolver(
 }
 
 /** Records a binding of a resolved attribute with the source that owns it. */
-function registerAttributeResolverBinding(
+export function registerAttributeResolverBinding(
   tAttributeResolver: TAttributeResolver,
   directiveIndex: number,
   bindingIndex: number,
@@ -459,14 +459,28 @@ function readStaticClasses(attrs: TAttributes | null): string[] {
  * Resolves the attributes of every element in the view that has a resolver binding, such as
  * `(class)` or `(attr.class)`. The resolvers run on every refresh because they may read state other
  * than their argument.
+ *
+ * @param refreshAutomatic Resolves an attribute that automatic resolution set up without a
+ *     registration. Only automatic resolution creates such attributes, and it passes this function.
  */
-function refreshAttributeResolvers(tView: TView, lView: LView): void {
+export function refreshAttributeResolvers(
+  tView: TView,
+  lView: LView,
+  refreshAutomatic?: (
+    tView: TView,
+    lView: LView,
+    tNode: TNode,
+    tAttributeResolver: TAttributeResolver,
+  ) => void,
+): void {
   const resolverNodes = tView.attributeResolvers!;
   try {
     for (let i = 0; i < resolverNodes.length; i++) {
       const tNode = tView.data[resolverNodes[i]] as TNode;
       for (const tAttributeResolver of tNode.attributeResolvers!) {
-        if (
+        if (tAttributeResolver.owners.length === 0) {
+          refreshAutomatic!(tView, lView, tNode, tAttributeResolver);
+        } else if (
           tAttributeResolver.grammar === AttributeGrammar.Scalar ||
           tAttributeResolver.grammar === AttributeGrammar.TokenList
         ) {
@@ -736,7 +750,7 @@ function mergeClassSources(
  * repeated names. An entry splits on ASCII whitespace, the way the `class` attribute separates
  * classes, and empty names are left out.
  */
-function toResolverArguments(classes: readonly string[]): string[] {
+export function toResolverArguments(classes: readonly string[]): string[] {
   const args: string[] = [];
   for (const entry of classes) {
     for (const className of entry.split(/[\t\n\f\r ]+/)) {
@@ -749,7 +763,7 @@ function toResolverArguments(classes: readonly string[]): string[] {
 }
 
 /** Reads classes the way a `[class]` binding reads them, but without names that contain a space. */
-function readClassNames(value: unknown): string[] {
+export function readClassNames(value: unknown): string[] {
   const classNames = new Set<string>();
   const add = (className: unknown) => {
     const name = String(className);
@@ -795,7 +809,7 @@ function foldClassNames(
 }
 
 /** Groups the element's classes by source. */
-function collectClassSources(
+export function collectClassSources(
   tData: TData,
   lView: LView,
   tAttributeResolver: TAttributeResolver,
@@ -860,7 +874,7 @@ function decideClass(
 }
 
 /** Applies the difference between the previously applied classes and the resolved ones. */
-function applyResolvedClasses(
+export function applyResolvedClasses(
   tNode: TNode,
   tAttributeResolver: TAttributeResolver,
   lView: LView,
@@ -1076,7 +1090,7 @@ function foldTokens(
 }
 
 /** Groups the values of an attribute that holds one value or a list of tokens by source. */
-function collectValueSources(
+export function collectValueSources(
   lView: LView,
   tNode: TNode,
   tAttributeResolver: TAttributeResolver,
@@ -1168,7 +1182,7 @@ function warnConflictingValues(
  * Sets or removes the attribute when the resolved value differs from the one that the previous
  * resolution applied.
  */
-function applyResolvedValue(
+export function applyResolvedValue(
   tNode: TNode,
   tAttributeResolver: TAttributeResolver,
   lView: LView,
@@ -1730,7 +1744,7 @@ interface DecidedDeclaration {
  *
  * @param named Receives the name of every property that a source names, whatever its value.
  */
-function collectStyleSources(
+export function collectStyleSources(
   tData: TData,
   lView: LView,
   tAttributeResolver: TAttributeResolver,
@@ -2171,7 +2185,7 @@ function setsLonghand(longhands: ReadonlySet<string>, property: string): boolean
  *     its sources name. The element holds the styles that the server resolved, and those that
  *     aren't named or resolved, such as styles that a constructor set, stay.
  */
-function applyResolvedStyles(
+export function applyResolvedStyles(
   tNode: TNode,
   tAttributeResolver: TAttributeResolver,
   lView: LView,

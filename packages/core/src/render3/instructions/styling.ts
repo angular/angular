@@ -26,6 +26,7 @@ import {concatStringsWithSpace, stringify} from '../../util/stringify';
 import {assertFirstUpdatePass} from '../assert';
 import {bindingUpdated} from '../bindings';
 import {AttributeMarker} from '../interfaces/attribute_marker';
+import {AttributeResolverSlot} from '../interfaces/attribute_resolver';
 import {DirectiveDef} from '../interfaces/definition';
 import {TAttributes, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {Renderer} from '../interfaces/renderer';
@@ -915,7 +916,11 @@ function updateStyling(
           (tAttributeResolver) => tAttributeResolver.name === (isClassBased ? 'class' : 'style'),
         )
       : undefined;
-  if (tStylingResolver !== undefined) {
+  if (
+    tStylingResolver !== undefined &&
+    (tStylingResolver.owners.length > 0 ||
+      lView[tStylingResolver.index + AttributeResolverSlot.AutoResolver] !== null)
+  ) {
     return;
   }
   const tData = tView.data;

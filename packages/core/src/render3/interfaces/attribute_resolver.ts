@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import type {Provider} from '../../di/interface/provider';
+
 /**
  * Classes that each source applies to an element, ordered from the lowest to the highest priority.
  * An `(attr.class)` binding receives them as `$event.sources`.
@@ -114,6 +116,26 @@ export interface ClassResolveEvent {
  * @experimental 22.3
  */
 export type ClassResolver = (...classes: string[]) => string;
+
+/**
+ * A feature of the attribute resolvers that `provideAttributeResolvers` registers, such as
+ * `withAutoResolution()`.
+ *
+ * @experimental 22.3
+ */
+export interface AttributeResolverFeature {
+  readonly ɵkind: AttributeResolverFeatureKind;
+  readonly ɵproviders: Provider[];
+}
+
+/** Kind of an `AttributeResolverFeature`. */
+export const enum AttributeResolverFeatureKind {
+  /** `withAutoResolution()`, which turns automatic resolution on. */
+  AutoResolution,
+
+  /** `withAutoResolution(false)`, which turns automatic resolution off. */
+  NoAutoResolution,
+}
 
 /**
  * Values that each source gives an attribute other than `class`, ordered from the lowest to the
@@ -367,11 +389,26 @@ export const enum AttributeResolverSlot {
    * or `null` for the built-in rule.
    */
   Resolvers = 2,
+
+  /**
+   * The resolver of the attribute in the instance's view, or its built-in rule when no provider
+   * names the attribute, or `null` where automatic resolution is off. Only an element that automatic
+   * resolution set up has this slot, and it's used while `owners` is empty.
+   */
+  AutoResolver = 3,
+
+  /**
+   * The sources that the previous automatic resolution received, or `null` before the first
+   * resolution: for `class`, the classes of each source as space-separated strings, and for another
+   * attribute, the values of each source. Only an element that automatic resolution set up has this
+   * slot.
+   */
+  AutoSources = 4,
 }
 
 /**
  * Data shared by all instances of an element whose attribute `name` is computed by a resolver
- * binding.
+ * binding or by automatic resolution.
  */
 export interface TAttributeResolver {
   name: string;
@@ -382,7 +419,8 @@ export interface TAttributeResolver {
 
   /**
    * Owner of each registered resolver, from the lowest to the highest priority: the index of the
-   * `DirectiveDef` in `TView.data`, or `-1` for the template.
+   * `DirectiveDef` in `TView.data`, or `-1` for the template. Empty for an element that only
+   * automatic resolution resolves.
    */
   owners: number[];
 

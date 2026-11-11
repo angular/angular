@@ -395,6 +395,7 @@
       "_registerAttributeResolverBinding",
       "_retrieveHydrationInfoImpl",
       "_sanitizeUrl",
+      "_setUpAttributeResolution",
       "_stashEventListenerImpl",
       "_stripBasePath",
       "_stripIndexHtml",

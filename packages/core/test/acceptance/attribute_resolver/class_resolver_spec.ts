@@ -41,6 +41,8 @@ import {
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
+import {describeOffSubtree} from './off_subtree_cases';
+
 /**
  * Stand-in for `cn` (`clsx` and `tailwind-merge`). It flattens nested arrays and lets a later class
  * replace an earlier one with the same prefix, so `px-4` after `px-2` wins.
@@ -2309,3 +2311,7 @@ function resolveNumber(event: ClassResolveEvent) {
   // @ts-expect-error: a number is neither a class value nor `ResolvedAttribute`.
   event.resolve(42);
 }
+
+describe('without automatic resolution', () => {
+  describeOffSubtree(() => []);
+});

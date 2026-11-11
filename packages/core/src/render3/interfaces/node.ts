@@ -724,9 +724,10 @@ export interface TNode {
   styleBindings: TStylingRange;
 
   /**
-   * One entry per attribute that a resolver binding computes, such as `class`. The attribute's
-   * bindings on such an element record their values instead of writing to the DOM, and the resolver
-   * applies the result once the element's host bindings have run.
+   * One entry per attribute that a resolver binding or automatic resolution computes, such as
+   * `class`. Where the resolver is on, the attribute's bindings on such an element record their
+   * values instead of writing to the DOM, and the resolver applies the result once the element's
+   * host bindings have run.
    */
   attributeResolvers: TAttributeResolver[] | null;
 }

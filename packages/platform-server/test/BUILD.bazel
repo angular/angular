@@ -24,6 +24,7 @@ ts_project(
             "event_replay_spec.ts",
             "hydration_utils.ts",
             "dom_utils.ts",
+            "class_resolver_auto_hydration_spec.ts",
             "class_resolver_hydration_cases.ts",
         ],
     ),
@@ -62,6 +63,21 @@ ts_project(
     ],
 )
 
+# Automatic resolution turns its runtime on for the whole process, so its hydration specs run
+# in their own target, apart from the specs above that must run without it.
+ts_project(
+    name = "attribute_resolver_auto_hydration_test_lib",
+    testonly = True,
+    srcs = ["class_resolver_auto_hydration_spec.ts"],
+    deps = [
+        ":attribute_resolver_hydration_cases",
+        ":dom_utils",
+        "//packages/common",
+        "//packages/core",
+        "//packages/core/testing",
+    ],
+)
+
 ts_project(
     name = "event_replay_test_lib",
     testonly = True,
@@ -91,6 +107,14 @@ zoneless_jasmine_test(
     name = "event_replay_test",
     data = [
         ":event_replay_test_lib",
+        "//packages/core/primitives/event-dispatch:contract_bundle_min",
+    ],
+)
+
+angular_jasmine_test(
+    name = "attribute_resolver_auto_hydration_test",
+    data = [
+        ":attribute_resolver_auto_hydration_test_lib",
         "//packages/core/primitives/event-dispatch:contract_bundle_min",
     ],
 )

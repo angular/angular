@@ -302,7 +302,8 @@ export function refreshView<T>(
 
     processHostBindingOpCodes(tView, lView);
 
-    // Attributes computed by resolver bindings depend on both template and host bindings.
+    // Attributes computed by resolver bindings or automatic resolution depend on both template and
+    // host bindings.
     if (tView.attributeResolvers !== null && !isInCheckNoChangesPass) {
       _refreshAttributeResolvers!(tView, lView);
     }

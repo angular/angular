@@ -35,6 +35,7 @@ import {
   TI18n,
   TIcu,
 } from '../interfaces/i18n';
+import {AttributeResolverSlot} from '../interfaces/attribute_resolver';
 import {TNode} from '../interfaces/node';
 import {RElement, RNode, RText} from '../interfaces/renderer_dom';
 import {SanitizerFn} from '../interfaces/sanitization';
@@ -447,9 +448,16 @@ function applyUpdateOpCodes(
                   );
                 } else {
                   if (typeof sanitizeFnOrValueIndex === 'number') {
-                    // A resolver of the element reads the value.
                     lView[sanitizeFnOrValueIndex] = value;
-                    break;
+                    const tAttributeResolver = tNodeOrTagName.attributeResolvers!.find(
+                      (tAttributeResolver) => tAttributeResolver.name === propName,
+                    )!;
+                    if (
+                      tAttributeResolver.owners.length > 0 ||
+                      lView[tAttributeResolver.index + AttributeResolverSlot.AutoResolver] !== null
+                    ) {
+                      break;
+                    }
                   }
                   const prevSelectedIndex = getSelectedIndex();
                   setSelectedIndex(nodeIndex);

@@ -201,6 +201,14 @@ export interface AttributeResolveEvent {
 export type AttributeResolver = (...values: string[]) => string | null;
 
 // @public
+export interface AttributeResolverFeature {
+    // (undocumented)
+    readonly ɵkind: AttributeResolverFeatureKind;
+    // (undocumented)
+    readonly ɵproviders: Provider[];
+}
+
+// @public
 export type AttributeSources = readonly [
 component: readonly string[],
 directives: readonly string[],
@@ -1577,7 +1585,7 @@ export function provideAppInitializer(initializerFn: () => Observable<unknown> |
 export function provideAttributeResolvers(resolvers: {
     readonly class?: ClassResolver;
     readonly [name: string]: AttributeResolver | undefined;
-}): Provider;
+}, ...features: AttributeResolverFeature[]): Provider;
 
 // @public
 export function provideBrowserGlobalErrorListeners(): EnvironmentProviders;
@@ -2272,6 +2280,9 @@ export interface WebMcpToolDescriptor<InputSchema extends object = object> exten
 
 // @public
 export type WebMcpToolExecute<InputSchema extends object = object> = ModelContextToolFromSchema<InputSchema>['execute'];
+
+// @public
+export function withAutoResolution(enabled?: boolean): AttributeResolverFeature;
 
 // @public
 export interface WritableResource<T> extends Resource<T> {

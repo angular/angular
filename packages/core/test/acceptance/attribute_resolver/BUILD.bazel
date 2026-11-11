@@ -1,6 +1,16 @@
-load("//tools:defaults.bzl", "ng_web_test_suite", "ts_project", "zoneless_jasmine_test")
+load("//tools:defaults.bzl", "ng_web_test_suite", "ts_project", "zoneless_jasmine_test", "zoneless_web_test_suite")
 
 package(default_visibility = ["//visibility:private"])
+
+ts_project(
+    name = "off_subtree_cases",
+    testonly = True,
+    srcs = ["off_subtree_cases.ts"],
+    deps = [
+        "//packages/core",
+        "//packages/core/testing",
+    ],
+)
 
 ts_project(
     name = "attribute_resolver_lib",
@@ -8,10 +18,15 @@ ts_project(
     srcs = glob(
         ["**/*.ts"],
         exclude = [
+            "auto_attribute_resolution_spec.ts",
+            "auto_resolution_security_spec.ts",
+            "auto_resolution_spec.ts",
+            "off_subtree_cases.ts",
             "style_order_spec.ts",
         ],
     ),
     deps = [
+        ":off_subtree_cases",
         "//packages/core",
         "//packages/core/testing",
         "//packages/localize",
@@ -45,5 +60,50 @@ ng_web_test_suite(
     deps = [
         ":attribute_resolver_lib",
         ":style_order_lib",
+    ],
+)
+
+# Automatic resolution turns its runtime on for the whole process, so its specs run in their own
+# target, apart from the specs above that must run without it.
+ts_project(
+    name = "auto_resolution_lib",
+    testonly = True,
+    srcs = [
+        "auto_attribute_resolution_spec.ts",
+        "auto_resolution_spec.ts",
+    ],
+    deps = [
+        ":off_subtree_cases",
+        "//packages/common",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/router",
+    ],
+)
+
+# The specs of the names of elements, which come from the DOM for a host created in code, so they
+# run in Domino and in a browser.
+ts_project(
+    name = "auto_resolution_security_lib",
+    testonly = True,
+    srcs = ["auto_resolution_security_spec.ts"],
+    deps = [
+        "//packages/core",
+        "//packages/core/testing",
+    ],
+)
+
+zoneless_jasmine_test(
+    name = "auto_resolution",
+    data = [
+        ":auto_resolution_lib",
+        ":auto_resolution_security_lib",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "auto_resolution_web",
+    deps = [
+        ":auto_resolution_security_lib",
     ],
 )

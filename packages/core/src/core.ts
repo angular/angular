@@ -29,6 +29,7 @@ export {ApplicationConfig, mergeApplicationConfig} from './application/applicati
 export {
   AttributeResolveEvent,
   AttributeResolver,
+  AttributeResolverFeature,
   AttributeSources,
   AttributeValue,
   BoundClassResolver,
@@ -51,6 +52,7 @@ export {
   lastValue,
   provideAttributeResolvers,
 } from './render3/attribute_resolver_provider';
+export {withAutoResolution} from './render3/attribute_resolver_auto';
 export {
   APP_INITIALIZER,
   ApplicationInitStatus,

@@ -9,13 +9,15 @@
 /**
  * @fileoverview
  *
- * Change detection and the styling instructions call the attribute resolver runtime through these
- * hooks instead of importing it, so an app without an attribute resolver doesn't bundle that
- * runtime. They're set before anything creates a `TView.attributeResolvers` or a
- * `TNode.attributeResolvers`, so code that finds either can call them.
+ * Change detection, the styling instructions, and element creation call the attribute resolver
+ * runtime through these hooks instead of importing it, so an app without an attribute resolver
+ * doesn't bundle that runtime. `_refreshAttributeResolvers` and `_registerAttributeResolverBinding`
+ * are set before anything creates a `TView.attributeResolvers` or a `TNode.attributeResolvers`, so
+ * code that finds either can call them.
  */
 
 import type {TAttributeBinding, TAttributeResolver} from '../interfaces/attribute_resolver';
+import type {TElementNode} from '../interfaces/node';
 import type {LView, TView} from '../interfaces/view';
 
 /** Resolves the attributes of every element in a view that has an attribute resolver. */
@@ -31,7 +33,17 @@ export let _registerAttributeResolverBinding:
     ) => void)
   | null = null;
 
-/** Called when an attribute resolver registers. */
+/**
+ * Sets up automatic resolution for an element once its directives are created. Stays `null` until
+ * `withAutoResolution()` is called.
+ */
+export let _setUpAttributeResolution:
+  ((tView: TView, lView: LView, tNode: TElementNode) => void) | null = null;
+
+/**
+ * Called when an attribute resolver registers, which passes `null` for `setUpImpl`, and when
+ * `withAutoResolution()` is called.
+ */
 export function enableAttributeResolverHooks(
   refreshImpl: (tView: TView, lView: LView) => void,
   registerBindingImpl: (
@@ -40,7 +52,13 @@ export function enableAttributeResolverHooks(
     bindingIndex: number,
     kind: TAttributeBinding['kind'],
   ) => void,
+  setUpImpl: ((tView: TView, lView: LView, tNode: TElementNode) => void) | null,
 ): void {
-  _refreshAttributeResolvers = refreshImpl;
-  _registerAttributeResolverBinding = registerBindingImpl;
+  // Once automatic resolution is on, its refresh also refreshes the resolver bindings, so a binding
+  // that registers later keeps it.
+  if (_setUpAttributeResolution === null) {
+    _refreshAttributeResolvers = refreshImpl;
+    _registerAttributeResolverBinding = registerBindingImpl;
+    _setUpAttributeResolution = setUpImpl;
+  }
 }

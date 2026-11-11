@@ -66,6 +66,7 @@ import {retrieveHydrationInfo} from '../hydration/utils';
 import {getComponentName} from '../internal/get_closest_component_name';
 import {NG_REFLECT_ATTRS_FLAG, NG_REFLECT_ATTRS_FLAG_DEFAULT} from '../ng_reflect';
 import {ChainedInjector} from './chained_injector';
+import {_setUpAttributeResolution} from './instructions/attribute_resolver_hook';
 import {createElementNode, setupStaticAttributes} from './dom_node_manipulation';
 import {BINDING, Binding, BindingInternal, DirectiveWithBindings} from './dynamic_bindings';
 import {getDocument} from './interfaces/document';
@@ -425,6 +426,9 @@ export class ComponentFactory<T> {
 
       // TODO(pk): this logic is similar to the instruction code where a node can have directives
       createDirectivesInstances(rootTView, rootLView, hostTNode);
+      if (_setUpAttributeResolution !== null) {
+        _setUpAttributeResolution(rootTView, rootLView, hostTNode as TElementNode);
+      }
       executeContentQueries(rootTView, hostTNode, rootLView);
       directiveHostEndFirstCreatePass(rootTView, hostTNode);
 

@@ -30,6 +30,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     ATTRIBUTE_RESOLVER_ON_CONTAINER = 321,
     // (undocumented)
+    AUTO_ATTRIBUTE_RESOLUTION_BELOW_ROOT = 322,
+    // (undocumented)
     BOOTSTRAP_COMPONENTS_NOT_FOUND = -403,
     // (undocumented)
     COMPONENT_ID_COLLISION = -912,

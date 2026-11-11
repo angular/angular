@@ -9,7 +9,21 @@
 import {InjectionToken} from '../di/injection_token';
 import {Provider} from '../di/interface/provider';
 
-import {AttributeResolver, ClassResolver} from './interfaces/attribute_resolver';
+import {
+  AttributeResolver,
+  AttributeResolverFeature,
+  AttributeResolverFeatureKind,
+  ClassResolver,
+} from './interfaces/attribute_resolver';
+
+/**
+ * The names of each `provideAttributeResolvers` call in an injector that turns automatic resolution
+ * on with `withAutoResolution()`. The root providers' names join the names that automatic
+ * resolution covers.
+ */
+export const AUTO_RESOLVED_NAMES = /* @__PURE__ */ new InjectionToken<
+  readonly (readonly string[])[]
+>(typeof ngDevMode !== 'undefined' && ngDevMode ? 'AUTO_RESOLVED_NAMES' : '');
 
 const attributeResolverTokens = /* @__PURE__ */ new Map<
   string,
@@ -63,20 +77,32 @@ function getOrCreateAttributeResolverToken(
  * environment injector, such as a lazy route's, and a later call in the same providers replaces
  * only the resolvers that it names.
  *
+ * With `withAutoResolution()` in the root providers, Angular also resolves `class`, `style`, and
+ * the attributes that the call names on every element that a component or directive matches, except
+ * an attribute whose value is a URL or HTML there, such as the `href` of an `<a>`. Below the root,
+ * a component turns that off for its template by providing `withAutoResolution(false)`, and back on
+ * by providing `withAutoResolution()`. A call without the feature keeps the setting of the
+ * providers above it, whichever resolvers it names. A call below the root changes the resolver of
+ * an attribute, but never which attributes automatic resolution covers.
+ *
  * ```ts
  * bootstrapApplication(App, {
- *   providers: [provideAttributeResolvers({class: twMerge})],
+ *   providers: [provideAttributeResolvers({class: twMerge}, withAutoResolution())],
  * });
  * ```
  *
  * @param resolvers The resolver of each attribute.
+ * @param features Features of the resolvers, such as `withAutoResolution()`.
  *
  * @experimental 22.3
  */
-export function provideAttributeResolvers(resolvers: {
-  readonly class?: ClassResolver;
-  readonly [name: string]: AttributeResolver | undefined;
-}): Provider {
+export function provideAttributeResolvers(
+  resolvers: {
+    readonly class?: ClassResolver;
+    readonly [name: string]: AttributeResolver | undefined;
+  },
+  ...features: AttributeResolverFeature[]
+): Provider {
   if (typeof ngDevMode === 'undefined' || ngDevMode) {
     for (const name of Object.keys(resolvers)) {
       if (name.toLowerCase().startsWith('on')) {
@@ -87,10 +113,16 @@ export function provideAttributeResolvers(resolvers: {
       }
     }
   }
-  return Object.keys(resolvers).map((name) => ({
-    provide: getOrCreateAttributeResolverToken(name),
-    useValue: resolvers[name] ?? null,
-  }));
+  return [
+    Object.keys(resolvers).map((name) => ({
+      provide: getOrCreateAttributeResolverToken(name),
+      useValue: resolvers[name] ?? null,
+    })),
+    features.map((feature) => feature.ɵproviders),
+    features.some((feature) => feature.ɵkind === AttributeResolverFeatureKind.AutoResolution)
+      ? {provide: AUTO_RESOLVED_NAMES, useValue: Object.keys(resolvers), multi: true}
+      : [],
+  ];
 }
 
 /**

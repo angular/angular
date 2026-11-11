@@ -312,6 +312,7 @@
       "_processI18nInsertBefore",
       "_refreshAttributeResolvers",
       "_retrieveHydrationInfoImpl",
+      "_setUpAttributeResolution",
       "_wasLastNodeCreated",
       "activeConsumer",
       "addAfterRenderSequencesForView",
