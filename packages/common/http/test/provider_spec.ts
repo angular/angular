@@ -6,6 +6,22 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {
+  ApplicationRef,
+  createEnvironmentInjector,
+  effect,
+  EnvironmentInjector,
+  ErrorHandler,
+  inject,
+  InjectionToken,
+  Injector,
+  PLATFORM_ID,
+  Provider,
+  signal,
+} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
+import {EMPTY, firstValueFrom, from, Observable, Subject, throwError} from 'rxjs';
+import {tap} from 'rxjs/operators';
 import {DOCUMENT, XhrFactory} from '../../index';
 import {
   FetchBackend,
@@ -22,23 +38,8 @@ import {
   JsonpClientBackend,
 } from '../index';
 import {HttpClientTestingModule, HttpTestingController, provideHttpClientTesting} from '../testing';
-import {
-  ApplicationRef,
-  createEnvironmentInjector,
-  effect,
-  EnvironmentInjector,
-  ErrorHandler,
-  inject,
-  Injector,
-  InjectionToken,
-  PLATFORM_ID,
-  Provider,
-  signal,
-} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
-import {EMPTY, Observable, from} from 'rxjs';
-import {tap} from 'rxjs/operators';
 
+import {resetFetchBackendWarningFlag} from '../src/backend';
 import {HTTP_ROOT_INTERCEPTOR_FNS, HttpInterceptorFn} from '../src/interceptor';
 import {
   HttpFeature,
@@ -53,9 +54,85 @@ import {
   withXhr,
   withXsrfConfiguration,
 } from '../src/provider';
-import {resetFetchBackendWarningFlag} from '../src/backend';
 
 describe('without provideHttpClientTesting', () => {
+  for (const kind of ['functional', 'legacy']) {
+    describe(`${kind} interceptor stability`, () => {
+      function configureInterceptor(interceptor: HttpInterceptorFn): void {
+        TestBed.configureTestingModule({
+          providers:
+            kind === 'functional'
+              ? [provideHttpClient(withInterceptors([interceptor]))]
+              : [
+                  provideHttpClient(withInterceptorsFromDi()),
+                  {
+                    provide: HTTP_INTERCEPTORS,
+                    multi: true,
+                    useValue: {
+                      intercept: (req: HttpRequest<unknown>, next: HttpHandler) =>
+                        interceptor(req, (request) => next.handle(request)),
+                    },
+                  },
+                ],
+        });
+      }
+
+      it('should become stable after a synchronous interceptor error', async () => {
+        const error = new Error('interceptor failed');
+        configureInterceptor(() => {
+          throw error;
+        });
+        const appRef = TestBed.inject(ApplicationRef);
+
+        await expectAsync(firstValueFrom(TestBed.inject(HttpClient).get('/test'))).toBeRejectedWith(
+          error,
+        );
+        await expectAsync(appRef.whenStable()).toBeResolved();
+      });
+
+      it('should become stable after an observable interceptor error', async () => {
+        const error = new Error('request failed');
+        configureInterceptor(() => throwError(() => error));
+        const appRef = TestBed.inject(ApplicationRef);
+
+        await expectAsync(firstValueFrom(TestBed.inject(HttpClient).get('/test'))).toBeRejectedWith(
+          error,
+        );
+        await expectAsync(appRef.whenStable()).toBeResolved();
+      });
+
+      it('should remain unstable until the request completes', async () => {
+        const response = new Subject<HttpEvent<unknown>>();
+        configureInterceptor(() => response);
+        const appRef = TestBed.inject(ApplicationRef);
+        const next = jasmine.createSpy('next');
+
+        TestBed.inject(HttpClient).get('/test').subscribe(next);
+        expect(await firstValueFrom(appRef.isStable)).toBeFalse();
+
+        response.next(new HttpResponse({body: 'response'}));
+        expect(await firstValueFrom(appRef.isStable)).toBeFalse();
+        response.complete();
+
+        await expectAsync(appRef.whenStable()).toBeResolved();
+        expect(next).toHaveBeenCalledOnceWith('response');
+      });
+
+      it('should become stable after unsubscribing from the request', async () => {
+        const response = new Subject<HttpEvent<unknown>>();
+        configureInterceptor(() => response);
+        const appRef = TestBed.inject(ApplicationRef);
+
+        const subscription = TestBed.inject(HttpClient).get('/test').subscribe();
+        expect(await firstValueFrom(appRef.isStable)).toBeFalse();
+        subscription.unsubscribe();
+
+        await expectAsync(appRef.whenStable()).toBeResolved();
+        expect(response.observed).toBeFalse();
+      });
+    });
+  }
+
   it('should contribute to stability', async () => {
     TestBed.configureTestingModule({
       providers: [
