@@ -12,7 +12,6 @@ import {
   EmitterVisitorContext,
   ParseSourceSpan,
 } from '@angular/compiler';
-import {validateAndRewriteCoreSymbol} from '@angular/compiler-cli/private/hybrid_preprocessor';
 import type {SpanMetadata} from './types.js';
 
 /** A location in a source file that some printed text originates from. */
@@ -56,6 +55,27 @@ const EQUALITY_OPERATORS = new Set([
   o.BinaryOperator.NotEquals,
   o.BinaryOperator.Identical,
   o.BinaryOperator.NotIdentical,
+]);
+
+/**
+ * A mapping of supported symbols that can be imported from within @angular/core, and the names by
+ * which they're exported from r3_symbols.
+ */
+const CORE_SUPPORTED_SYMBOLS = new Map<string, string>([
+  ['ɵɵdefineInjectable', 'ɵɵdefineInjectable'],
+  ['ɵɵdefineService', 'ɵɵdefineService'],
+  ['ɵɵdefineInjector', 'ɵɵdefineInjector'],
+  ['ɵɵdefineNgModule', 'ɵɵdefineNgModule'],
+  ['ɵɵsetNgModuleScope', 'ɵɵsetNgModuleScope'],
+  ['ɵɵinject', 'ɵɵinject'],
+  ['ɵɵFactoryDeclaration', 'ɵɵFactoryDeclaration'],
+  ['ɵsetClassMetadata', 'setClassMetadata'],
+  ['ɵsetClassMetadataAsync', 'setClassMetadataAsync'],
+  ['ɵɵInjectableDeclaration', 'ɵɵInjectableDeclaration'],
+  ['ɵɵInjectorDeclaration', 'ɵɵInjectorDeclaration'],
+  ['ɵɵNgModuleDeclaration', 'ɵɵNgModuleDeclaration'],
+  ['ɵNgModuleFactory', 'NgModuleFactory'],
+  ['ɵnoSideEffects', 'ɵnoSideEffects'],
 ]);
 
 const VALID_TYPEOF_VALUES = new Set([
@@ -231,7 +251,12 @@ export class ExpressionPrinter {
     if (this.r3SymbolsSpecifier === null || moduleName !== CORE_MODULE) {
       return symbolName;
     }
-    return validateAndRewriteCoreSymbol(symbolName);
+
+    if (!CORE_SUPPORTED_SYMBOLS.has(symbolName)) {
+      throw new Error(`Importing unexpected symbol ${symbolName} while compiling ${CORE_MODULE}`);
+    }
+
+    return CORE_SUPPORTED_SYMBOLS.get(symbolName)!;
   }
 
   private rewriteSpecifier(moduleName: string): string {

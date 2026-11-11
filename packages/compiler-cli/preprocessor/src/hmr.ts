@@ -6,13 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {compileHmrUpdateCallback, outputAst as o, R3HmrMetadata} from '@angular/compiler';
 import {
+  compileHmrUpdateCallback,
+  outputAst as o,
+  R3HmrMetadata,
   extractHmrDependenciesFromOutput,
   PotentialTopLevelReadsVisitor,
   type HmrCompiledOutput,
   type HmrReadResolver,
-} from '@angular/compiler-cli/private/hybrid_preprocessor';
+} from '@angular/compiler';
 import {ExpressionPrinter, RawSource} from './output_ast_printer.js';
 import * as nga from './types.js';
 
