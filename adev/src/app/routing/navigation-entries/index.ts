@@ -162,6 +162,12 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/components/host-elements',
           },
           {
+            label: 'Attribute resolvers',
+            path: 'guide/components/attribute-resolvers',
+            contentPath: 'guide/components/attribute-resolvers',
+            status: 'new',
+          },
+          {
             label: 'Lifecycle',
             path: 'guide/components/lifecycle',
             contentPath: 'guide/components/lifecycle',

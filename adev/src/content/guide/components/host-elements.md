@@ -134,6 +134,8 @@ For non-styling properties and attributes (such as `id`, `role`, or `[attr.aria-
 - **Static and dynamic:** If one value is static and the other is dynamic, the dynamic value wins.
 - **Dynamic bindings:** Avoid binding to the same DOM property or attribute both in the template and via host bindings. Angular does not reconcile duplicate property bindings; overlapping dynamic bindings can lead to unexpected overwrites based on change detection execution order.
 
+NOTE: To decide the winner yourself, for example to merge utility classes from a component and its consumers, use [attribute resolvers](guide/components/attribute-resolvers).
+
 ## Styling with CSS custom properties
 
 Developers often rely on [CSS Custom Properties](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_cascading_variables/Using_CSS_custom_properties) to enable a flexible configuration of their component's styles.

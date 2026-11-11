@@ -37,6 +37,8 @@ Angular works with any tool that outputs CSS,
 including [Sass](https://sass-lang.com), [Less](https://lesscss.org),
 and [Stylus](https://stylus-lang.com).
 
+HELPFUL: If a component and its consumers set conflicting utility classes, such as Tailwind CSS classes, [attribute resolvers](guide/components/attribute-resolvers) can merge them by priority instead of by stylesheet order.
+
 ## Style scoping
 
 Every component has a **view encapsulation** setting that determines how the framework scopes a
