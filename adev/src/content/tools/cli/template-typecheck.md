@@ -139,7 +139,7 @@ The `AppComponent` template uses this component as follows:
 ```angular-ts
 @Component({
   selector: 'app-root',
-  template: '<user-detail [user]="selectedUser"></user-detail>',
+  template: '<user-detail [user]="selectedUser" />',
 })
 export class AppComponent {
   selectedUser: User | null = null;
@@ -176,14 +176,14 @@ There are two potential workarounds to the preceding issues:
 - In the template, include the non-null assertion operator `!` at the end of a nullable expression, such as
 
 ```html
-<user-detail [user]="user!"></user-detail>
+<user-detail [user]="user!" />
 ```
 
 In this example, the compiler disregards type incompatibilities in nullability, just as in TypeScript code.
 In the case of the `async` pipe, notice that the expression needs to be wrapped in parentheses, as in
 
 ```html
-<user-detail [user]="(user$ | async)!"></user-detail>
+<user-detail [user]="(user$ | async)!" />
 ```
 
 - Disable strict null checks in Angular templates completely.
@@ -225,13 +225,13 @@ All of this works as expected, as long as a `boolean` value is bound to the inpu
 But, suppose a consumer uses this input in the template as an attribute:
 
 ```html
-<submit-button disabled></submit-button>
+<submit-button disabled />
 ```
 
 This has the same effect as the binding:
 
 ```html
-<submit-button [disabled]="''"></submit-button>
+<submit-button [disabled]="''" />
 ```
 
 At runtime, the input will be set to the empty string, which is not a `boolean` value.
