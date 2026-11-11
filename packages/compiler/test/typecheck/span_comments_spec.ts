@@ -6,12 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {initMockFileSystem} from '../../file_system/testing';
-import {tcb, TestDeclaration} from '../testing';
+import {tcb, TestDeclaration} from './util';
 
 describe('type check blocks diagnostics', () => {
-  beforeEach(() => initMockFileSystem('Native'));
-
   describe('parse spans', () => {
     it('should annotate unary ops', () => {
       expect(tcbWithSpans('{{ -a }}')).toContain('(-((this).a /*4,5*/) /*4,5*/) /*3,5*/');
