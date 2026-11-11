@@ -43,12 +43,13 @@
     {
       "name": "i18n-duplicate-translation",
       "type": "string",
+      "default": "warning",
       "enum": [
         "error",
         "ignore",
         "warning"
       ],
-      "description": "How to handle duplicate translations."
+      "description": "How to handle duplicate messages found during extraction."
     },
     {
       "name": "out-file",
