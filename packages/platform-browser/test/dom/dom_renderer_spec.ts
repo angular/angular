@@ -507,7 +507,6 @@ describe('DefaultDomRendererV2', () => {
       it('should namespace style property bindings starting with `--`', async () => {
         @Component({
           template: `<div [style.--foo]="'blue'"></div>`,
-          standalone: true,
         })
         class CmpStylePropNamespace {}
 
@@ -527,7 +526,6 @@ describe('DefaultDomRendererV2', () => {
       xit('should throw an error if style property binding starts with `--global-` with a single hyphen', () => {
         @Component({
           template: `<div [style.--global-foo]="'blue'"></div>`,
-          standalone: true,
         })
         class CmpStylePropError {}
 
@@ -542,7 +540,6 @@ describe('DefaultDomRendererV2', () => {
       it('should namespace styles set via Renderer2.setStyle/removeStyle', () => {
         @Component({
           template: '',
-          standalone: true,
         })
         class CmpRendererSetStyle {
           constructor(public renderer: Renderer2) {}

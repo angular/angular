@@ -580,13 +580,11 @@ describe('diGraphTool', () => {
     withBody('<test-comp-1></test-comp-1>', async () => {
       @Directive({
         selector: '[dir-a]',
-        standalone: true,
       })
       class DirA {}
 
       @Directive({
         selector: '[dir-b]',
-        standalone: true,
       })
       class DirB {}
 
@@ -594,7 +592,6 @@ describe('diGraphTool', () => {
         selector: 'test-comp-1',
         template: '<div dir-a></div><div dir-b></div>',
         imports: [DirA, DirB],
-        standalone: true,
       })
       class TestComponent1 {}
 
@@ -615,13 +612,11 @@ describe('diGraphTool', () => {
     withBody('<test-comp-2></test-comp-2>', async () => {
       @Directive({
         selector: '[dir-a]',
-        standalone: true,
       })
       class DirA {}
 
       @Directive({
         selector: '[dir-b]',
-        standalone: true,
       })
       class DirB {}
 
@@ -629,7 +624,6 @@ describe('diGraphTool', () => {
         selector: 'test-comp-2',
         template: ' @if (true) { <div dir-a></div><div dir-b></div> }',
         imports: [DirA, DirB],
-        standalone: true,
       })
       class TestComponent2 {}
 
