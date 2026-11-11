@@ -2011,7 +2011,7 @@ function makeListenerHandlerOps(
 }
 
 /**
- * Makes the handler of a shorthand, such as `(class)`. `(class)="F"` means exactly
+ * Makes the handler of a shorthand, such as `(class)` or `(style)`. `(class)="F"` means exactly
  * `(attr.class)="$event.resolve((F)($event.resolver))"`.
  */
 function makeShorthandHandlerOps(

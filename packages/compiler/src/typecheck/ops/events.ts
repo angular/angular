@@ -372,17 +372,25 @@ function tcbCreateEventHandler(
 }
 
 function getResolveEventType(attribute: string): string {
-  return attribute === 'class' ? 'ClassResolveEvent' : 'AttributeResolveEvent';
+  switch (attribute) {
+    case 'class':
+      return 'ClassResolveEvent';
+    case 'style':
+      return 'StyleResolveEvent';
+    default:
+      return 'AttributeResolveEvent';
+  }
 }
 
 /**
  * Creates the handler function of an attribute resolver, such as `(attr.role)`. `$event` is the
- * resolve event of the attribute, such as `ClassResolveEvent` for `class`. A shorthand, `(class)="F"`,
- * is checked the way it's compiled, as `$event.resolve((F)($event.resolver))`. When the type of
- * `$event` is checked, the call is `((F) satisfies ClassCallback)!($event.resolver)`, because a
- * direct call accepts `(cn) => 'x'`. `satisfies` also infers the parameters of an arrow function
- * and keeps the type of `F`, so the call checks the `this` that a method declares, the overload it
- * selects, and its argument. A second `satisfies` checks the call's result.
+ * resolve event of the attribute, such as `ClassResolveEvent` for `class`. A shorthand, `(class)="F"`
+ * or `(style)="F"`, is checked the way it's compiled, as `$event.resolve((F)($event.resolver))`.
+ * When the type of `$event` is checked, the call is `((F) satisfies Callback)!($event.resolver)`,
+ * because a direct call accepts `(cn) => 'x'`. `Callback` is `ClassCallback` for `class`, and a
+ * function of the event's resolver for `style`. `satisfies` also infers the parameters of an arrow
+ * function and keeps the type of `F`, so the call checks the `this` that a method declares, the
+ * overload it selects, and its argument. A second `satisfies` checks the call's result.
  */
 function tcbCreateAttributeResolverHandler(
   event: BoundEvent,
@@ -417,8 +425,11 @@ function tcbCreateAttributeResolverHandler(
     const resolvedAttribute = tcb.env
       .referenceExternalSymbol('@angular/core', 'ResolvedAttribute')
       .print();
-    // Only `class` has a shorthand.
-    const callbackType = tcb.env.referenceExternalSymbol('@angular/core', 'ClassCallback').print();
+    // Only `class` and `style` have a shorthand. The callback of `style` has no public name.
+    const callbackType =
+      binding.attribute === 'class'
+        ? tcb.env.referenceExternalSymbol('@angular/core', 'ClassCallback').print()
+        : `(resolver: ${resolveEvent.print()}['resolver']) => ${resolvedAttribute}`;
     const open = new TcbExpr('(').addParseSpanInfo(span).print();
     const satisfies = new TcbExpr('satisfies').addParseSpanInfo(span).print();
     const checkedCallee = `${open}(${callee.print()} ${satisfies} ${callbackType})!)`;

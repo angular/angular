@@ -218,6 +218,36 @@
           "failureMessage": "Incorrect host bindings"
         }
       ]
+    },
+    {
+      "description": "should create style resolver instructions for (style) and (attr.style) on elements",
+      "inputFiles": ["style_resolver_element.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "style_resolver_element_template.js",
+              "generated": "style_resolver_element.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should create a style resolver instruction for (style) in host bindings",
+      "inputFiles": ["style_resolver_host.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "style_resolver_host_host_bindings.js",
+              "generated": "style_resolver_host.js"
+            }
+          ],
+          "failureMessage": "Incorrect host bindings"
+        }
+      ]
     }
   ]
 }

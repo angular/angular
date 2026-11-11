@@ -1227,6 +1227,53 @@ runInEachFileSystem(() => {
       });
     });
 
+    describe('strictOutputEventTypes and attribute resolver bindings', () => {
+      beforeEach(() => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test',
+            template: \`
+              <div (attr.role)="count($event)"></div>
+              <div (attr.style)="count($event)"></div>
+              <div (style)="(m) => 'x'"></div>
+            \`,
+          })
+          class TestCmp {
+            count(value: number) {}
+          }
+        `,
+        );
+      });
+
+      it('should infer the type of $event per attribute and check the (style) shorthand when enabled', () => {
+        env.tsconfig({strictTemplates: true});
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map((diag) => diag.messageText)).toEqual([
+          `Argument of type 'AttributeResolveEvent' is not assignable to parameter of type 'number'.`,
+          `Argument of type 'StyleResolveEvent' is not assignable to parameter of type 'number'.`,
+          `Type 'string' is not assignable to type 'ResolvedAttribute'.`,
+          `Type 'string' does not satisfy the expected type 'ResolvedAttribute'.`,
+        ]);
+        expect(diags.map((diag) => getSourceCodeForDiagnostic(diag))).toEqual([
+          '$event',
+          '$event',
+          `'x'`,
+          `(m) => 'x'`,
+        ]);
+      });
+
+      it('should not infer the type of $event or check the (style) shorthand when not enabled', () => {
+        env.tsconfig({strictTemplates: true, strictOutputEventTypes: false});
+
+        expect(env.driveDiagnostics()).toEqual([]);
+      });
+    });
+
     describe('class resolver bindings', () => {
       function writeComponent(template: string, members: string, preamble = ''): void {
         env.write(
@@ -1609,6 +1656,21 @@ runInEachFileSystem(() => {
         );
       });
 
+      it('should report a (style) resolver on a container', () => {
+        writeComponent(`<ng-container (style)="noop()"></ng-container>`, `noop() {}`);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map((diag) => diag.code)).toEqual([
+          ngErrorCode(ErrorCode.ATTRIBUTE_RESOLVER_ON_CONTAINER),
+        ]);
+        expect(getSourceCodeForDiagnostic(diags[0])).toBe('style');
+        expect(diags[0].messageText).toBe(
+          `The '(style)' binding can't resolve the 'style' attribute on '<ng-container>' or ` +
+            `'<ng-template>', because neither is rendered as an element. Bind it on an element ` +
+            `instead.`,
+        );
+      });
+
       it('should report a class resolver on a container next to a directive output named class', () => {
         writeComponent(
           `<ng-container dir (class)="h()"></ng-container>`,
@@ -1711,6 +1773,85 @@ runInEachFileSystem(() => {
         expect(env.driveDiagnostics()).toEqual([]);
       });
 
+      it('should accept style values in a (style) callback and an (attr.style) binding', () => {
+        writeComponent(
+          `<div (style)="(s) => s({color: 'red'}, 'padding: 4px', ['margin: 0'], null)"></div>
+           <div (style)="styles"></div>
+           <div (attr.style)="$event.resolve({color: 'red'})"></div>`,
+          `styles = (s: StyleResolveEvent['resolver']) => s({width: '1px'});`,
+          ', StyleResolveEvent',
+        );
+
+        expect(env.driveDiagnostics()).toEqual([]);
+      });
+
+      it('should accept an interface-typed map and a trusted style as style values', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, ɵSafeStyle} from '@angular/core';
+
+          interface Palette {
+            color: string;
+            padding?: string;
+          }
+
+          @Component({
+            selector: 'test',
+            template: \`
+              <div (style)="(s) => s(palette, trusted)"></div>
+              <div (attr.style)="$event.resolve($event.resolver(palette, trusted))"></div>
+              <div (attr.style)="$event.resolve(palette)"></div>
+              <div (attr.style)="$event.resolve(trusted)"></div>
+            \`,
+          })
+          class TestCmp {
+            readonly palette: Palette = {color: 'red'};
+            readonly trusted = {} as ɵSafeStyle;
+          }
+        `,
+        );
+
+        expect(env.driveDiagnostics()).toEqual([]);
+      });
+
+      it('should reject numbers, booleans, and functions as style values', () => {
+        writeComponent(
+          `<div (style)="(s) => s(true)"></div>
+           <div (style)="(s) => s(styles)"></div>
+           <div (attr.style)="$event.resolve(42)"></div>
+           <div (attr.style)="$event.resolve(false)"></div>
+           <div (attr.style)="$event.resolve(styles)"></div>
+           <div (attr.style)="$event.resolve($event.resolver(1, styles))"></div>`,
+          `readonly styles = () => 'color: red';`,
+        );
+
+        expect(codesAndSources()).toEqual([
+          [2345, 'true'],
+          [2345, 'styles'],
+          [2345, '42'],
+          [2345, 'false'],
+          [2345, 'styles'],
+          [2345, '1'],
+        ]);
+      });
+
+      it('should reject a callable map with a string index signature as a style value', () => {
+        writeComponent(
+          `<div (style)="(s) => s(callablePalette)"></div>
+           <div (attr.style)="$event.resolve(callablePalette)"></div>
+           <div (attr.style)="$event.resolve($event.resolver(callablePalette))"></div>`,
+          `readonly palette: Record<string, string> = {color: 'red'};
+           readonly callablePalette = Object.assign(() => {}, this.palette);`,
+        );
+
+        expect(codesAndSources()).toEqual([
+          [2345, 'callablePalette'],
+          [2345, 'callablePalette'],
+          [2345, 'callablePalette'],
+        ]);
+      });
+
       it('should reject a callable map as a class value and as an attribute value', () => {
         writeComponent(
           `<div (class)="(cn) => cn(callableClasses)"></div>
@@ -1731,6 +1872,61 @@ runInEachFileSystem(() => {
         ]);
       });
 
+      it('should reject callable arrays and sets as class, style, and attribute values', () => {
+        writeComponent(
+          `<div (class)="(cn) => cn(callableNames)"></div>
+           <div (class)="(cn) => cn(callableSet)"></div>
+           <div (attr.class)="$event.resolve(callableNames)"></div>
+           <div (attr.class)="$event.resolve(callableSet)"></div>
+           <div (attr.class)="$event.resolve($event.resolver(callableNames))"></div>
+           <div (attr.class)="$event.resolve($event.resolver(callableSet))"></div>
+           <div (style)="(s) => s(callableNames)"></div>
+           <div (attr.style)="$event.resolve(callableNames)"></div>
+           <div (attr.style)="$event.resolve(callableSet)"></div>
+           <div (attr.style)="$event.resolve($event.resolver(callableNames))"></div>
+           <div (attr.role)="$event.resolve(callableNames)"></div>
+           <div (attr.role)="$event.resolve(callableSet)"></div>
+           <div (attr.role)="$event.resolve($event.resolver(callableNames))"></div>`,
+          `readonly callableNames = Object.assign(() => {}, ['active']);
+           readonly callableSet = Object.assign(() => {}, new Set(['active']));`,
+        );
+
+        expect(codesAndSources()).toEqual([
+          [2345, 'callableNames'],
+          [2345, 'callableSet'],
+          [2345, 'callableNames'],
+          [2345, 'callableSet'],
+          [2345, 'callableNames'],
+          [2345, 'callableSet'],
+          [2345, 'callableNames'],
+          [2345, 'callableNames'],
+          [2345, 'callableSet'],
+          [2345, 'callableNames'],
+          [2345, 'callableNames'],
+          [2345, 'callableSet'],
+          [2345, 'callableNames'],
+        ]);
+      });
+
+      it('should accept readonly arrays and sets as class, style, and attribute values', () => {
+        writeComponent(
+          `<div (class)="(cn) => cn(names, nameSet)"></div>
+           <div (attr.class)="$event.resolve(names)"></div>
+           <div (attr.class)="$event.resolve(nameSet)"></div>
+           <div (attr.class)="$event.resolve($event.resolver(names, nameSet))"></div>
+           <div (style)="(s) => s(declarations)"></div>
+           <div (attr.style)="$event.resolve(declarations)"></div>
+           <div (attr.style)="$event.resolve($event.resolver(declarations))"></div>
+           <div (attr.role)="$event.resolve(names)"></div>
+           <div (attr.role)="$event.resolve($event.resolver(names))"></div>`,
+          `readonly names: readonly string[] = ['active'];
+           readonly nameSet: ReadonlySet<string> = new Set(['active']);
+           readonly declarations: readonly string[] = ['color: red'];`,
+        );
+
+        expect(env.driveDiagnostics()).toEqual([]);
+      });
+
       it('should accept a class map with a key named call', () => {
         writeComponent(
           `<div (class)="(cn) => cn({call: true})"></div>
@@ -1739,6 +1935,83 @@ runInEachFileSystem(() => {
         );
 
         expect(env.driveDiagnostics()).toEqual([]);
+      });
+
+      it('should accept maps, trusted styles, arrays, and resolved styles in an (attr.style) binding', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, ResolvedAttribute, ɵSafeStyle} from '@angular/core';
+
+          interface Palette {
+            color: string;
+            padding?: string;
+          }
+
+          @Component({
+            selector: 'test',
+            template: \`
+              <div (attr.style)="$event.resolve($event.resolver(palette, {color: 'red'}, trusted, ['margin: 0']))"></div>
+              <div (attr.style)="$event.resolve(['margin: 0'])"></div>
+              <div (attr.style)="$event.resolve(resolved)"></div>
+            \`,
+          })
+          class TestCmp {
+            readonly palette: Palette = {color: 'red'};
+            readonly trusted = {} as ɵSafeStyle;
+            readonly resolved = {} as ResolvedAttribute;
+          }
+        `,
+        );
+
+        expect(env.driveDiagnostics()).toEqual([]);
+      });
+
+      it('should reject resolved styles and iterables other than arrays as style extras', () => {
+        writeComponent(
+          `<div (attr.style)="$event.resolve($event.resolver(resolved))"></div>
+           <div (attr.style)="$event.resolve($event.resolver($event.resolver()))"></div>
+           <div (attr.style)="$event.resolve($event.resolver(declarations))"></div>
+           <div (attr.style)="$event.resolve($event.resolver(map))"></div>
+           <div (attr.style)="$event.resolve($event.resolver(iterable))"></div>
+           <div (attr.style)="$event.resolve(declarations)"></div>`,
+          `readonly resolved = {} as ResolvedAttribute;
+           readonly declarations = new Set(['color: red']);
+           readonly map = new Map();
+           readonly iterable = {
+             *[Symbol.iterator]() {
+               yield 'color: red';
+             },
+           };`,
+          ', ResolvedAttribute',
+        );
+
+        expect(codesAndSources()).toEqual([
+          [2345, 'resolved'],
+          [2345, 'resolver'],
+          [2345, 'declarations'],
+          [2345, 'map'],
+          [2345, 'iterable'],
+          [2345, 'declarations'],
+        ]);
+      });
+
+      it('should check the (style) shorthand as a callback that receives the style resolver', () => {
+        writeComponent(
+          `<div (style)="(m) => 'x'"></div>
+           <div (style)="(m) => m(42)"></div>
+           <div (style)="onClick"></div>`,
+          `onClick(e: MouseEvent): void {}`,
+        );
+
+        expect(codesAndSources()).toEqual([
+          [2322, `'x'`],
+          [1360, `(m) => 'x'`],
+          [2345, '42'],
+          [1360, 'onClick'],
+          [2345, 'onClick'],
+          [1360, 'onClick'],
+        ]);
       });
     });
 

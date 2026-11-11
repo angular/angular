@@ -32,8 +32,8 @@ export interface AttributeResolverBinding {
 
 /**
  * Gets the attribute that an event binding resolves and the form of the binding, or `null` for an
- * ordinary event binding. `(attr.x)` resolves the attribute `x` for any `x` other than `style`;
- * whether `x` can be resolved is checked by `getAttributeResolverError`.
+ * ordinary event binding. `(attr.x)` resolves the attribute `x` for any `x`; whether `x` can be
+ * resolved is checked by `getAttributeResolverError`.
  */
 export function getAttributeResolver(
   name: string,
@@ -48,10 +48,8 @@ export function getAttributeResolver(
     if (hasShorthand(name)) {
       return {attribute: name, form: 'shorthand'};
     }
-    // Resolving `style` isn't supported yet, so `(attr.style)` stays an ordinary event binding.
     if (name.startsWith(ATTRIBUTE_PREFIX) && name.length > ATTRIBUTE_PREFIX.length) {
-      const attribute = name.slice(ATTRIBUTE_PREFIX.length);
-      return attribute === 'style' ? null : {attribute, form: 'fullForm'};
+      return {attribute: name.slice(ATTRIBUTE_PREFIX.length), form: 'fullForm'};
     }
     return null;
   }
@@ -77,7 +75,7 @@ export function getHostListenerAttributeResolver(rawName: string): AttributeReso
 }
 
 function hasShorthand(attribute: string): boolean {
-  return attribute === 'class';
+  return attribute === 'class' || attribute === 'style';
 }
 
 let domSchema: DomElementSchemaRegistry | null = null;
@@ -121,9 +119,12 @@ export function getAttributeResolverError(
   return null;
 }
 
-/** Whether a value in the given context needs sanitization. */
+/**
+ * Whether a value in the given context needs sanitization. Resolved styles aren't sanitized, like
+ * `[style]` bindings.
+ */
 function needsSanitization(context: SecurityContext): boolean {
-  return context !== SecurityContext.NONE;
+  return context !== SecurityContext.NONE && context !== SecurityContext.STYLE;
 }
 
 /** Gets the error for a shorthand of `attribute`, such as `(class)`, that isn't a single expression. */

@@ -9,11 +9,14 @@
 import {InternalInjectFlags} from '../../di/interface/injector';
 import {ProviderToken} from '../../di/provider_token';
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../../errors';
+import {RendererStyleFlags2} from '../../render/api_flags';
+import {unwrapSafeValue} from '../../sanitization/bypass';
 import {KeyValueArray} from '../../util/array_utils';
 import {EMPTY_ARRAY} from '../../util/empty';
 import {
   getAttributeResolverToken,
   callAttributeResolver,
+  joinDeclarations,
   joinTokens,
   lastValue,
 } from '../attribute_resolver_provider';
@@ -32,13 +35,17 @@ import {
   ClassResolveEvent,
   ClassResolver,
   ResolvedAttribute,
+  StyleBindingValue,
+  StyleResolveEvent,
   TAttributeBinding,
   TAttributeResolver,
   TAttributeSourceSegment,
+  TStaticStyle,
   ɵRESOLVED_CLASSES_BRAND,
 } from '../interfaces/attribute_resolver';
 import {DirectiveDef} from '../interfaces/definition';
 import {TAttributes, TDirectiveHostNode, TNode, TNodeType} from '../interfaces/node';
+import {Renderer} from '../interfaces/renderer';
 import {RElement} from '../interfaces/renderer_dom';
 import {TStylingKey} from '../interfaces/styling';
 import {LView, OpaqueViewState, RENDERER, TData, TView, TVIEW} from '../interfaces/view';
@@ -119,6 +126,8 @@ const TOKEN_LIST_ATTRIBUTES = new Set([
 function getAttributeGrammar(name: string): AttributeGrammar {
   if (name === 'class') {
     return AttributeGrammar.ClassList;
+  } else if (name === 'style') {
+    return AttributeGrammar.Declarations;
   }
   return TOKEN_LIST_ATTRIBUTES.has(name) ? AttributeGrammar.TokenList : AttributeGrammar.Scalar;
 }
@@ -137,8 +146,8 @@ function getTAttributeResolver(tNode: TNode, name: string): TAttributeResolver |
 }
 
 /**
- * Records that hydration claimed an element, for the first resolution of its classes. Call it when
- * the element is created.
+ * Records that hydration claimed an element, for the first resolution of its classes or styles.
+ * Call it when the element is created.
  */
 function seedHydratedValue(
   tNode: TNode,
@@ -146,6 +155,16 @@ function seedHydratedValue(
   lView: LView,
 ): void {
   const appliedIndex = tAttributeResolver.index + AttributeResolverSlot.AppliedValue;
+  if (
+    tAttributeResolver.grammar === AttributeGrammar.Declarations &&
+    !wasLastNodeCreated() &&
+    lView[appliedIndex] === null
+  ) {
+    // With static styles, static initialization has already replaced the server's `style`
+    // attribute with them, so styles that only the server or outside code set are lost there.
+    lView[appliedIndex] = true;
+    return;
+  }
   if (tAttributeResolver.grammar !== AttributeGrammar.ClassList) {
     return;
   }
@@ -162,7 +181,7 @@ function seedHydratedValue(
 }
 
 function hasShorthand(name: string): boolean {
-  return name === 'class';
+  return name === 'class' || name === 'style';
 }
 
 function bindingForm(name: string, flags: AttributeResolverFlags): string {
@@ -290,7 +309,14 @@ function createTAttributeResolver(
   const grammar = getAttributeGrammar(name);
   const segments: TAttributeSourceSegment[] = [];
   const addSegment = (source: AttributeSource, directiveIndex: number, statics: string[]) => {
-    segments.push({source, directiveIndex, statics, bindings: []});
+    segments.push({
+      source,
+      directiveIndex,
+      statics,
+      staticStyles:
+        grammar === AttributeGrammar.Declarations ? readStaticDeclarations(statics) : null,
+      bindings: [],
+    });
   };
   for (let i = tNode.directiveStart; i < tNode.directiveEnd; i++) {
     const hostAttrs = (tData[i] as DirectiveDef<unknown>).hostAttrs;
@@ -358,6 +384,8 @@ function readStaticValues(
 ): string[] {
   if (grammar === AttributeGrammar.ClassList) {
     return readStaticClasses(attrs);
+  } else if (grammar === AttributeGrammar.Declarations) {
+    return readStaticStyles(attrs);
   }
   return readStaticAttribute(attrs, name);
 }
@@ -379,6 +407,33 @@ function readStaticAttribute(attrs: TAttributes | null, name: string): string[] 
     }
   }
   return [];
+}
+
+function readStaticStyles(attrs: TAttributes | null): string[] {
+  const declarations: string[] = [];
+  if (attrs !== null) {
+    let marker = AttributeMarker.ImplicitAttributes;
+    for (let i = 0; i < attrs.length; i++) {
+      const item = attrs[i];
+      if (typeof item === 'number') {
+        marker = item;
+      } else if (marker === AttributeMarker.Styles) {
+        // Styles are stored as key/value pairs.
+        declarations.push(`${item}: ${attrs[++i]}`);
+      }
+    }
+  }
+  return declarations;
+}
+
+/** The compiler has split the `style` attribute into names and values already. */
+function readStaticDeclarations(statics: string[]): TStaticStyle[] {
+  return statics.map((declaration) => {
+    const colon = declaration.indexOf(':');
+    const property = canonicalPropertyName(decodeCssEscapes(declaration.slice(0, colon)));
+    const value = readStyleValue(declaration.slice(colon + 1), property.startsWith('--'));
+    return [property, value, value && writeDeclaration(property, value[0], value[1])];
+  });
 }
 
 function readStaticClasses(attrs: TAttributes | null): string[] {
@@ -416,6 +471,8 @@ function refreshAttributeResolvers(tView: TView, lView: LView): void {
           tAttributeResolver.grammar === AttributeGrammar.TokenList
         ) {
           refreshValueResolver(lView, tNode, tAttributeResolver);
+        } else if (tAttributeResolver.grammar === AttributeGrammar.Declarations) {
+          refreshStyleResolver(tView, lView, tNode, tAttributeResolver);
         } else {
           refreshClassResolver(tView, lView, tNode, tAttributeResolver);
         }
@@ -602,7 +659,7 @@ function foreignResultError(
 }
 
 function foreignShorthandResultError(name: string): RuntimeError {
-  const example = "(cn) => cn('px-4')";
+  const example = name === 'class' ? "(cn) => cn('px-4')" : "(s) => s('padding: 4px')";
   return new RuntimeError(
     RuntimeErrorCode.INVALID_ATTRIBUTE_RESOLUTION,
     `The \`(${name})\` callback returned a value that its own resolver didn't create. Return ` +
@@ -1132,4 +1189,1082 @@ function applyResolvedValue(
     }
   }
   lView[appliedIndex] = resolved ?? false;
+}
+
+function refreshStyleResolver(
+  tView: TView,
+  lView: LView,
+  tNode: TNode,
+  tAttributeResolver: TAttributeResolver,
+): void {
+  const index = tAttributeResolver.index;
+  const resolverFns = lView[index + AttributeResolverSlot.ResolverFns] as AttributeResolverFn[];
+  const resolvers = lView[index + AttributeResolverSlot.Resolvers] as (AttributeResolver | null)[];
+  const lastLevel = resolverFns.length - 1;
+  const named =
+    lView[index + AttributeResolverSlot.AppliedValue] === true ? new Set<string>() : null;
+  let sources = collectStyleSources(tView.data, lView, tAttributeResolver, named);
+  for (let level = 0; level < lastLevel; level++) {
+    const ownerSource = attributeSourceOf(tNode, tAttributeResolver.owners[level]);
+    const declarations = resolveStyleThroughEvent(
+      resolverFns[level],
+      tAttributeResolver.flags[level],
+      resolvers[level],
+      sources,
+      ownerSource,
+    );
+    sources = foldDeclarations(sources, declarations, ownerSource);
+  }
+  const resolved = resolveStyleThroughEvent(
+    resolverFns[lastLevel],
+    tAttributeResolver.flags[lastLevel],
+    resolvers[lastLevel],
+    sources,
+    attributeSourceOf(tNode, tAttributeResolver.owners[lastLevel]),
+  );
+  applyResolvedStyles(tNode, tAttributeResolver, lView, resolved, named);
+}
+
+function resolveStyleThroughEvent(
+  resolverFn: AttributeResolverFn,
+  flags: AttributeResolverFlags,
+  resolver: AttributeResolver | null,
+  sources: CollectedSources,
+  ownerSource: AttributeSource,
+): string | null {
+  let resolved: string | null | undefined = undefined;
+  let calls = 0;
+  let sealed = false;
+  const event: StyleResolveEvent = {
+    sources,
+    resolver: (...extras) =>
+      new ResolvedValue(
+        AttributeGrammar.Declarations,
+        mergeStyleSources(sources, extras, ownerSource, resolver, flags),
+        event,
+      ),
+    resolve: (value) => {
+      if (ngDevMode && (sealed || calls > 0)) {
+        throw invalidResolveCallError('style', flags, sealed);
+      }
+      if (sealed) {
+        return;
+      }
+      // Count the call before checking or reading `value`, whose proxy traps and getters can call
+      // `resolve()` again. In production, the call that starts last wins.
+      const call = ++calls;
+      let declarations: string | null | undefined = undefined;
+      if (value instanceof ResolvedValue) {
+        declarations = readResult(
+          value,
+          event,
+          AttributeGrammar.Declarations,
+          'style',
+          flags,
+          false,
+        ) as string | null;
+      } else if (ngDevMode) {
+        checkSuppliedValue(value, 'style', flags, false);
+      }
+      if (declarations === undefined) {
+        declarations = value == null ? null : readDeclarations(value).join('; ');
+      }
+      if (call === calls) {
+        resolved = declarations;
+      }
+    },
+  };
+  try {
+    resolverFn(event);
+  } finally {
+    sealed = true;
+  }
+  // Without a call to `resolve()`, the built-in rule applies, without the app's resolver.
+  return resolved === undefined ? sources.flat().join('; ') : resolved;
+}
+
+function mergeStyleSources(
+  sources: CollectedSources,
+  extras: StyleBindingValue[],
+  ownerSource: AttributeSource,
+  resolver: AttributeResolver | null,
+  flags: AttributeResolverFlags,
+): string | null {
+  const declarations = sources.flatMap((sourceDeclarations, source) => {
+    if (source !== ownerSource) {
+      return sourceDeclarations;
+    }
+    const merged = [...sourceDeclarations];
+    for (const extra of extras) {
+      for (const declaration of readDeclarations(
+        readExtra(extra, AttributeGrammar.Declarations, 'style', flags),
+      )) {
+        merged.push(declaration);
+      }
+    }
+    return merged;
+  });
+  return callAttributeResolver(resolver ?? joinDeclarations, declarations);
+}
+
+function readDeclarations(value: unknown): string[] {
+  const declarations: string[] = [];
+  const unwrapped = unwrapSafeValue(value);
+  if (typeof unwrapped === 'string' || Array.isArray(unwrapped)) {
+    const texts: readonly unknown[] = typeof unwrapped === 'string' ? [unwrapped] : unwrapped;
+    for (const text of texts) {
+      for (const [property, propertyValue, important] of parseDeclarationList(`${text ?? ''}`)) {
+        declarations.push(writeDeclaration(property, propertyValue, important));
+      }
+    }
+  } else if (unwrapped !== null && typeof unwrapped === 'object') {
+    const styleMap = unwrapped as {[property: string]: unknown};
+    for (const key of Object.keys(styleMap)) {
+      const property = canonicalPropertyName(key);
+      const read = readBindingValue(property, unwrapSafeValue(styleMap[key]));
+      if (read != null) {
+        declarations.push(writeDeclaration(property, read[0], read[1]));
+      }
+    }
+  }
+  return declarations;
+}
+
+type StyleValue = [value: string, important: boolean];
+
+/**
+ * Writes a declaration the way sources and resolved results hold it, such as `color: red`. The
+ * property is written as a CSS identifier, so that reading the declaration again gives the same
+ * name.
+ */
+function writeDeclaration(property: string, value: string, important: boolean): string {
+  const name = serializeCssIdentifier(property);
+  return important ? `${name}: ${value} !important` : `${name}: ${value}`;
+}
+
+/**
+ * Writes a name as a CSS identifier, as CSSOM serializes one: a character that CSS wouldn't read as
+ * part of the name is escaped, so that `--x;color` is written `--x\;color`.
+ */
+function serializeCssIdentifier(name: string): string {
+  if (/^(?!-?[0-9]|-$)[-\w\u0080-\uffff]+$/.test(name)) {
+    return name;
+  }
+  let serialized = '';
+  for (let i = 0; i < name.length; i++) {
+    const char = name[i];
+    const code = name.charCodeAt(i);
+    if (code === 0) {
+      serialized += '\ufffd';
+    } else if (
+      code <= 0x1f ||
+      code === 0x7f ||
+      (code >= 0x30 && code <= 0x39 && (i === 0 || (i === 1 && name[0] === '-')))
+    ) {
+      // A control character, or a digit that would start a number.
+      serialized += `\\${code.toString(16)} `;
+    } else if (isCssNameChar(char) && !(char === '-' && name.length === 1)) {
+      serialized += char;
+    } else {
+      serialized += `\\${char}`;
+    }
+  }
+  return serialized;
+}
+
+/**
+ * Reads the value of a style binding, or of an entry of a `[style]` map, for `property`, the way
+ * the `style` attribute reads it. Returns `undefined` for a value that has no opinion, and `null`
+ * for one that removes the property: `null`, `''`, and, except for a custom property, whitespace.
+ */
+function readBindingValue(property: string, value: unknown): StyleValue | null | undefined {
+  if (value === undefined || value === null) {
+    return value;
+  }
+  const text = String(value);
+  return text === '' ? null : readStyleValue(text, property.startsWith('--'));
+}
+
+/** Kinds of the tokens that `readCssToken` reads. */
+const enum CssToken {
+  Whitespace,
+  Comment,
+  /** A run of name characters and escapes, such as `color`, `-webkit-box`, or `1px`. */
+  Name,
+  /** A single character that no other kind takes, such as `!`, `:`, or `;`. */
+  Delim,
+  /** A string, a block with its contents, a function with its arguments, or a `url()`. */
+  Other,
+}
+
+function isCssWhitespace(char: string | undefined): boolean {
+  return char === ' ' || char === '\t' || char === '\n' || char === '\r' || char === '\f';
+}
+
+function isCssNameChar(char: string): boolean {
+  const code = char.charCodeAt(0);
+  return (
+    (code >= 0x61 && code <= 0x7a) || // a-z
+    (code >= 0x41 && code <= 0x5a) || // A-Z
+    (code >= 0x30 && code <= 0x39) || // 0-9
+    code === 0x2d || // -
+    code === 0x5f || // _
+    code >= 0x80
+  );
+}
+
+function isHexDigit(char: string | undefined): boolean {
+  return char !== undefined && /^[0-9a-f]$/i.test(char);
+}
+
+/**
+ * Gets the end of the escape that starts with the backslash at `start`, or `-1` when the backslash
+ * doesn't start one, before a newline or at the end. An escape is up to six hexadecimal digits
+ * and one whitespace character, or any other single character.
+ */
+function cssEscapeEnd(text: string, start: number): number {
+  const next = text[start + 1];
+  if (next === undefined || next === '\n' || next === '\r' || next === '\f') {
+    return -1;
+  }
+  let end = start + 1;
+  while (end < start + 7 && isHexDigit(text[end])) {
+    end++;
+  }
+  if (end === start + 1) {
+    return start + 2;
+  }
+  if (text[end] === '\r' && text[end + 1] === '\n') {
+    return end + 2;
+  }
+  return isCssWhitespace(text[end]) ? end + 1 : end;
+}
+
+/** Decodes the escapes of a CSS name, so that `\63 olor` reads as `color`. */
+function decodeCssEscapes(text: string): string {
+  if (!text.includes('\\')) {
+    return text;
+  }
+  let decoded = '';
+  for (let i = 0; i < text.length; i++) {
+    const end = text[i] === '\\' ? cssEscapeEnd(text, i) : -1;
+    if (end === -1) {
+      decoded += text[i];
+      continue;
+    }
+    const escaped = text.slice(i + 1, end);
+    if (isHexDigit(escaped[0])) {
+      const code = parseInt(escaped, 16);
+      decoded +=
+        code === 0 || code > 0x10ffff || (code >= 0xd800 && code <= 0xdfff)
+          ? '\ufffd'
+          : String.fromCodePoint(code);
+    } else {
+      decoded += escaped;
+    }
+    i = end - 1;
+  }
+  return decoded;
+}
+
+/**
+ * Reads the CSS token that starts at `start`, as CSS tokenizes a declaration list, and returns its
+ * kind and its end. A block, such as `(a; b)`, is read with its contents up to its closing
+ * bracket, and a function, such as `var(--x)`, with its arguments. An unquoted `url()` is read as
+ * one token, so that `/*` or `;` in it is part of the URL.
+ */
+function readCssToken(text: string, start: number): [kind: CssToken, end: number] {
+  const char = text[start];
+  if (isCssWhitespace(char)) {
+    let end = start + 1;
+    while (isCssWhitespace(text[end])) {
+      end++;
+    }
+    return [CssToken.Whitespace, end];
+  }
+  if (char === '/' && text[start + 1] === '*') {
+    const close = text.indexOf('*/', start + 2);
+    return [CssToken.Comment, close === -1 ? text.length : close + 2];
+  }
+  if (char === '"' || char === "'") {
+    return [CssToken.Other, cssStringEnd(text, start)];
+  }
+  if (char === '(' || char === '[' || char === '{') {
+    return [CssToken.Other, cssBlockEnd(text, start)];
+  }
+  if (isCssNameChar(char) || (char === '\\' && cssEscapeEnd(text, start) !== -1)) {
+    let end = start;
+    while (end < text.length) {
+      if (isCssNameChar(text[end])) {
+        end++;
+      } else if (text[end] === '\\' && cssEscapeEnd(text, end) !== -1) {
+        end = cssEscapeEnd(text, end);
+      } else {
+        break;
+      }
+    }
+    if (text[end] !== '(') {
+      return [CssToken.Name, end];
+    }
+    let argument = end + 1;
+    while (isCssWhitespace(text[argument])) {
+      argument++;
+    }
+    const isUrl =
+      decodeCssEscapes(text.slice(start, end)).toLowerCase() === 'url' &&
+      text[argument] !== '"' &&
+      text[argument] !== "'";
+    return [CssToken.Other, isUrl ? cssUrlEnd(text, end + 1) : cssBlockEnd(text, end)];
+  }
+  return [CssToken.Delim, start + 1];
+}
+
+function cssStringEnd(text: string, start: number): number {
+  const quote = text[start];
+  for (let i = start + 1; i < text.length; i++) {
+    const char = text[i];
+    if (char === quote) {
+      return i + 1;
+    } else if (char === '\\') {
+      i++;
+    } else if (char === '\n' || char === '\r' || char === '\f') {
+      // An unescaped newline ends a string that CSS drops.
+      return i;
+    }
+  }
+  return text.length;
+}
+
+function cssBlockEnd(text: string, start: number): number {
+  const close = text[start] === '(' ? ')' : text[start] === '[' ? ']' : '}';
+  let i = start + 1;
+  while (i < text.length) {
+    if (text[i] === close) {
+      return i + 1;
+    }
+    i = readCssToken(text, i)[1];
+  }
+  return text.length;
+}
+
+function cssUrlEnd(text: string, start: number): number {
+  for (let i = start; i < text.length; i++) {
+    if (text[i] === ')') {
+      return i + 1;
+    } else if (text[i] === '\\') {
+      const end = cssEscapeEnd(text, i);
+      if (end !== -1) {
+        i = end - 1;
+      }
+    }
+  }
+  return text.length;
+}
+
+/**
+ * Splits a list of declarations, such as `color: red; padding: 4px`, into property names, values,
+ * and importance, in the order written, the way CSS reads a `style` attribute. Semicolons and
+ * colons inside strings, blocks, functions, and `url()` don't separate. Names are decoded and
+ * written as `canonicalPropertyName` writes them. A declaration without a name is left out, as CSS
+ * drops it, and so is one with an empty value, except for a custom property, whose value can be
+ * empty.
+ */
+function parseDeclarationList(
+  text: string,
+): Array<[property: string, value: string, important: boolean]> {
+  const declarations: Array<[property: string, value: string, important: boolean]> = [];
+  let start = 0;
+  let colon = -1;
+  const end = (position: number) => {
+    if (colon !== -1) {
+      const property = canonicalPropertyName(readPropertyName(text.slice(start, colon)));
+      const value = readStyleValue(text.slice(colon + 1, position), property.startsWith('--'));
+      if (property !== '' && value !== null) {
+        declarations.push([property, value[0], value[1]]);
+      }
+    }
+  };
+  let i = 0;
+  while (i < text.length) {
+    const [kind, tokenEnd] = readCssToken(text, i);
+    if (kind === CssToken.Delim && text[i] === ';') {
+      end(i);
+      start = tokenEnd;
+      colon = -1;
+    } else if (kind === CssToken.Delim && text[i] === ':' && colon === -1) {
+      colon = i;
+    }
+    i = tokenEnd;
+  }
+  end(text.length);
+  return declarations;
+}
+
+/**
+ * Reads the property name of a declaration from the text before its colon, without the whitespace
+ * and comments around it, and decodes its escapes. A comment in the name reads as a space, since
+ * it separates what's around it. Only CSS whitespace is left out, so a no-break space or an
+ * escaped space is part of the name.
+ */
+function readPropertyName(text: string): string {
+  let name = '';
+  let blank = '';
+  for (let i = 0; i < text.length;) {
+    const [kind, end] = readCssToken(text, i);
+    if (kind === CssToken.Whitespace || kind === CssToken.Comment) {
+      blank += kind === CssToken.Comment ? ' ' : text.slice(i, end);
+    } else {
+      name += (name === '' ? '' : blank) + text.slice(i, end);
+      blank = '';
+    }
+    i = end;
+  }
+  return decodeCssEscapes(name);
+}
+
+/**
+ * Reads the value of a declaration as CSS does, without the whitespace around it. Its
+ * `!important` annotation is a `!` and the name `important`, in any case, as the last tokens apart
+ * from whitespace and comments. The value of a custom property keeps its comments as written, and
+ * can be empty; the value of another property leaves comments out, and `null` is returned when
+ * it's empty.
+ */
+function readStyleValue(text: string, isCustomProperty: boolean): StyleValue | null {
+  const tokens: Array<[kind: CssToken, start: number, end: number]> = [];
+  for (let i = 0; i < text.length;) {
+    const [kind, end] = readCssToken(text, i);
+    tokens.push([kind, i, end]);
+    i = end;
+  }
+  const isBlank = (index: number) =>
+    tokens[index][0] === CssToken.Whitespace || tokens[index][0] === CssToken.Comment;
+  let last = tokens.length;
+  while (last > 0 && isBlank(last - 1)) {
+    last--;
+  }
+  let important = false;
+  if (
+    last > 0 &&
+    tokens[last - 1][0] === CssToken.Name &&
+    decodeCssEscapes(text.slice(tokens[last - 1][1], tokens[last - 1][2])).toLowerCase() ===
+      'important'
+  ) {
+    let bang = last - 1;
+    while (bang > 0 && isBlank(bang - 1)) {
+      bang--;
+    }
+    if (bang > 0 && tokens[bang - 1][0] === CssToken.Delim && text[tokens[bang - 1][1]] === '!') {
+      important = true;
+      last = bang - 1;
+      while (last > 0 && isBlank(last - 1)) {
+        last--;
+      }
+    }
+  }
+  let first = 0;
+  while (first < last && isBlank(first)) {
+    first++;
+  }
+  let value = '';
+  for (let i = first; i < last; i++) {
+    const [kind, start, end] = tokens[i];
+    if (kind === CssToken.Comment && !isCustomProperty) {
+      value += ' ';
+    } else if (kind === CssToken.Delim && end === text.length && text[start] === '\\') {
+      // CSS reads an escape at the end of the input as U+FFFD. Completing it keeps the backslash
+      // from escaping the separator of a declaration joined after this one.
+      value += '\ufffd';
+    } else {
+      value += text.slice(start, end);
+    }
+  }
+  return value === '' && !isCustomProperty ? null : [value, important];
+}
+
+/**
+ * Writes the name of a style property the way CSS names the property, so that the names of one
+ * property meet: an ordinary property in dash case and in lowercase, such as `font-size` for
+ * `fontSize` or `COLOR`, a vendor-prefixed one with its leading dash, such as `-webkit-transform`
+ * for `WebkitTransform` or `webkit-transform`, `float` for `cssFloat`, and a custom property as
+ * written. The compiler writes `[style.WebkitTransform]` as `webkit-transform`, which this repairs.
+ */
+function canonicalPropertyName(property: string): string {
+  if (property.startsWith('--')) {
+    return property;
+  }
+  const name = property.replace(/[a-z][A-Z]/g, (pair) => `${pair[0]}-${pair[1]}`).toLowerCase();
+  if (name === 'css-float') {
+    return 'float';
+  }
+  return /^(webkit|moz|ms)-/.test(name) ? `-${name}` : name;
+}
+
+function foldDeclarations(
+  sources: CollectedSources,
+  value: string | null,
+  ownerSource: AttributeSource,
+): CollectedSources {
+  const origins = new Map<string, AttributeSource>();
+  for (let source = AttributeSource.Component; source <= AttributeSource.Template; source++) {
+    for (const declaration of sources[source]) {
+      origins.set(declaration, source);
+    }
+  }
+  const folded: CollectedSources = [[], [], []];
+  if (value !== null) {
+    for (const declaration of readDeclarations(value)) {
+      folded[origins.get(declaration) ?? ownerSource].push(declaration);
+    }
+  }
+  return folded;
+}
+
+interface DecidedDeclaration {
+  source: AttributeSource;
+  declaration: string;
+  important: boolean;
+}
+
+/**
+ * Groups the element's style declarations by source, one per property.
+ *
+ * @param named Receives the name of every property that a source names, whatever its value.
+ */
+function collectStyleSources(
+  tData: TData,
+  lView: LView,
+  tAttributeResolver: TAttributeResolver,
+  named: Set<string> | null,
+): CollectedSources {
+  // Insertion order of the map is the priority order. `null` marks a property that is removed.
+  const decided = new Map<string, DecidedDeclaration | null>();
+  for (const segment of tAttributeResolver.segments) {
+    const source = segment.source;
+    for (const [property, value, declaration] of segment.staticStyles!) {
+      decideDeclaration(decided, property, value ?? undefined, source, named, declaration);
+    }
+    for (const binding of segment.bindings) {
+      if (binding.kind === 'attribute') {
+        const value = lView[binding.index];
+        if (value !== NO_CHANGE && value != null) {
+          const text = renderStringify(unwrapSafeValue(value));
+          for (const [property, propertyValue, important] of parseDeclarationList(text)) {
+            decideDeclaration(decided, property, [propertyValue, important], source, named);
+          }
+        }
+        continue;
+      }
+      const rawKey = tData[binding.index] as TStylingKey;
+      const key = Array.isArray(rawKey) ? rawKey[1] : rawKey;
+      const value = lView[binding.index + 1];
+      if (value === NO_CHANGE) {
+        // The binding hasn't executed yet.
+        continue;
+      }
+      if (key === null) {
+        // `[style]` binding. Its normalized string keeps only the last declaration of a property,
+        // which can drop an earlier important one, so a string is read as written.
+        const raw = unwrapSafeValue(lView[binding.index]);
+        if (typeof raw === 'string') {
+          for (const [property, propertyValue, important] of parseDeclarationList(raw)) {
+            decideDeclaration(decided, property, [propertyValue, important], source, named);
+          }
+          continue;
+        }
+        const styles = value as KeyValueArray<unknown>;
+        for (let j = 0; j < styles.length; j += 2) {
+          const property = canonicalPropertyName(styles[j] as string);
+          const read = readBindingValue(property, styles[j + 1]);
+          decideDeclaration(decided, property, read, source, named);
+        }
+      } else {
+        // `[style.property]` binding.
+        const property = canonicalPropertyName(key as string);
+        decideDeclaration(decided, property, readBindingValue(property, value), source, named);
+      }
+    }
+  }
+
+  const sources: CollectedSources = [[], [], []];
+  for (const decision of decided.values()) {
+    if (decision !== null) {
+      sources[decision.source].push(decision.declaration);
+    }
+  }
+  return sources;
+}
+
+/**
+ * @param value The value and its importance, `undefined` for no opinion, or `null` to remove it.
+ * @param declaration The declaration that `writeDeclaration` writes for the value, when known.
+ */
+function decideDeclaration(
+  decided: Map<string, DecidedDeclaration | null>,
+  property: string,
+  value: StyleValue | null | undefined,
+  source: AttributeSource,
+  named: Set<string> | null,
+  declaration: string | null = null,
+): void {
+  named?.add(property);
+  if (value === undefined) {
+    return;
+  }
+  const important = value !== null && value[1];
+  if (!important && decided.get(property)?.important) {
+    // An important declaration wins over a later one that isn't, and over a later removal.
+    return;
+  }
+  // Re-insert so the property moves to the position of the binding that decided it.
+  decided.delete(property);
+  decided.set(
+    property,
+    value === null
+      ? null
+      : {
+          source,
+          declaration: declaration ?? writeDeclaration(property, value[0], important),
+          important,
+        },
+  );
+}
+
+interface StyleDeclaration {
+  value: string;
+  important: boolean;
+  position: number;
+}
+
+/**
+ * Evaluates a list of declarations into one declaration per property, keyed by property in the
+ * order that they apply. As in CSS, the last declaration of a property wins, except that a
+ * declaration marked `!important` wins over later ones that aren't. How the importance of a
+ * shorthand and of its longhands interact isn't modeled.
+ */
+function evaluateDeclarations(text: string | null): Map<string, StyleDeclaration> {
+  const declarations = new Map<string, StyleDeclaration>();
+  if (text !== null) {
+    for (const [property, value, important] of parseDeclarationList(text)) {
+      if (!important && declarations.get(property)?.important) {
+        continue;
+      }
+      // The winning declaration applies at its own position.
+      declarations.delete(property);
+      declarations.set(property, {value, important, position: 0});
+    }
+    let position = 0;
+    for (const declaration of declarations.values()) {
+      declaration.position = position++;
+    }
+  }
+  return declarations;
+}
+
+/**
+ * The properties that each CSS shorthand sets, from the CSS specifications: its longhands, and the
+ * shorthands in it, such as `border-top` in `border`, which list their own. A shorthand that
+ * resets a property without setting it from its value, as `border` resets `border-image`, lists
+ * that property too. A legacy alias, such as `grid-gap`, lists the properties that it sets. A
+ * property that isn't a key is its own only longhand.
+ *
+ * Logical and physical properties, vendor-prefixed aliases, and `all` aren't linked.
+ */
+const SHORTHAND_PROPERTIES = new Map<string, readonly string[]>([
+  [
+    'animation',
+    [
+      'animation-name',
+      'animation-duration',
+      'animation-timing-function',
+      'animation-delay',
+      'animation-iteration-count',
+      'animation-direction',
+      'animation-fill-mode',
+      'animation-play-state',
+      'animation-timeline',
+      'animation-range-start',
+      'animation-range-end',
+    ],
+  ],
+  ['animation-range', ['animation-range-start', 'animation-range-end']],
+  [
+    'background',
+    [
+      'background-image',
+      'background-position',
+      'background-size',
+      'background-repeat',
+      'background-attachment',
+      'background-origin',
+      'background-clip',
+      'background-color',
+    ],
+  ],
+  ['background-position', ['background-position-x', 'background-position-y']],
+  ['border', ['border-top', 'border-right', 'border-bottom', 'border-left', 'border-image']],
+  ['border-block', ['border-block-start', 'border-block-end']],
+  ['border-block-color', ['border-block-start-color', 'border-block-end-color']],
+  [
+    'border-block-end',
+    ['border-block-end-width', 'border-block-end-style', 'border-block-end-color'],
+  ],
+  [
+    'border-block-start',
+    ['border-block-start-width', 'border-block-start-style', 'border-block-start-color'],
+  ],
+  ['border-block-style', ['border-block-start-style', 'border-block-end-style']],
+  ['border-block-width', ['border-block-start-width', 'border-block-end-width']],
+  ['border-bottom', ['border-bottom-width', 'border-bottom-style', 'border-bottom-color']],
+  [
+    'border-color',
+    ['border-top-color', 'border-right-color', 'border-bottom-color', 'border-left-color'],
+  ],
+  [
+    'border-image',
+    [
+      'border-image-source',
+      'border-image-slice',
+      'border-image-width',
+      'border-image-outset',
+      'border-image-repeat',
+    ],
+  ],
+  ['border-inline', ['border-inline-start', 'border-inline-end']],
+  ['border-inline-color', ['border-inline-start-color', 'border-inline-end-color']],
+  [
+    'border-inline-end',
+    ['border-inline-end-width', 'border-inline-end-style', 'border-inline-end-color'],
+  ],
+  [
+    'border-inline-start',
+    ['border-inline-start-width', 'border-inline-start-style', 'border-inline-start-color'],
+  ],
+  ['border-inline-style', ['border-inline-start-style', 'border-inline-end-style']],
+  ['border-inline-width', ['border-inline-start-width', 'border-inline-end-width']],
+  ['border-left', ['border-left-width', 'border-left-style', 'border-left-color']],
+  [
+    'border-radius',
+    [
+      'border-top-left-radius',
+      'border-top-right-radius',
+      'border-bottom-right-radius',
+      'border-bottom-left-radius',
+    ],
+  ],
+  ['border-right', ['border-right-width', 'border-right-style', 'border-right-color']],
+  [
+    'border-style',
+    ['border-top-style', 'border-right-style', 'border-bottom-style', 'border-left-style'],
+  ],
+  ['border-top', ['border-top-width', 'border-top-style', 'border-top-color']],
+  [
+    'border-width',
+    ['border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width'],
+  ],
+  ['column-rule', ['column-rule-width', 'column-rule-style', 'column-rule-color']],
+  ['columns', ['column-width', 'column-count', 'column-height', 'column-wrap']],
+  ['contain-intrinsic-size', ['contain-intrinsic-width', 'contain-intrinsic-height']],
+  ['container', ['container-name', 'container-type']],
+  ['corner-block-end-shape', ['corner-end-start-shape', 'corner-end-end-shape']],
+  ['corner-block-start-shape', ['corner-start-start-shape', 'corner-start-end-shape']],
+  ['corner-bottom-shape', ['corner-bottom-left-shape', 'corner-bottom-right-shape']],
+  ['corner-inline-end-shape', ['corner-start-end-shape', 'corner-end-end-shape']],
+  ['corner-inline-start-shape', ['corner-start-start-shape', 'corner-end-start-shape']],
+  ['corner-left-shape', ['corner-top-left-shape', 'corner-bottom-left-shape']],
+  ['corner-right-shape', ['corner-top-right-shape', 'corner-bottom-right-shape']],
+  [
+    'corner-shape',
+    [
+      'corner-top-left-shape',
+      'corner-top-right-shape',
+      'corner-bottom-right-shape',
+      'corner-bottom-left-shape',
+    ],
+  ],
+  ['corner-top-shape', ['corner-top-left-shape', 'corner-top-right-shape']],
+  ['flex', ['flex-grow', 'flex-shrink', 'flex-basis']],
+  ['flex-flow', ['flex-direction', 'flex-wrap']],
+  [
+    'font',
+    [
+      'font-style',
+      'font-variant',
+      'font-weight',
+      'font-width',
+      'font-size',
+      'line-height',
+      'font-family',
+      'font-size-adjust',
+      'font-kerning',
+      'font-optical-sizing',
+      'font-feature-settings',
+      'font-variation-settings',
+      'font-language-override',
+    ],
+  ],
+  ['font-stretch', ['font-width']],
+  [
+    'font-synthesis',
+    [
+      'font-synthesis-weight',
+      'font-synthesis-style',
+      'font-synthesis-small-caps',
+      'font-synthesis-position',
+    ],
+  ],
+  [
+    'font-variant',
+    [
+      'font-variant-ligatures',
+      'font-variant-caps',
+      'font-variant-alternates',
+      'font-variant-numeric',
+      'font-variant-east-asian',
+      'font-variant-position',
+      'font-variant-emoji',
+    ],
+  ],
+  ['gap', ['row-gap', 'column-gap']],
+  ['grid', ['grid-template', 'grid-auto-rows', 'grid-auto-columns', 'grid-auto-flow']],
+  ['grid-area', ['grid-row', 'grid-column']],
+  ['grid-column', ['grid-column-start', 'grid-column-end']],
+  ['grid-column-gap', ['column-gap']],
+  ['grid-gap', ['row-gap', 'column-gap']],
+  ['grid-row', ['grid-row-start', 'grid-row-end']],
+  ['grid-row-gap', ['row-gap']],
+  ['grid-template', ['grid-template-rows', 'grid-template-columns', 'grid-template-areas']],
+  ['inset', ['top', 'right', 'bottom', 'left']],
+  ['inset-block', ['inset-block-start', 'inset-block-end']],
+  ['inset-inline', ['inset-inline-start', 'inset-inline-end']],
+  ['list-style', ['list-style-position', 'list-style-image', 'list-style-type']],
+  ['margin', ['margin-top', 'margin-right', 'margin-bottom', 'margin-left']],
+  ['margin-block', ['margin-block-start', 'margin-block-end']],
+  ['margin-inline', ['margin-inline-start', 'margin-inline-end']],
+  ['marker', ['marker-start', 'marker-mid', 'marker-end']],
+  [
+    'mask',
+    [
+      'mask-image',
+      'mask-mode',
+      'mask-position',
+      'mask-size',
+      'mask-repeat',
+      'mask-origin',
+      'mask-clip',
+      'mask-composite',
+      'mask-border',
+    ],
+  ],
+  [
+    'mask-border',
+    [
+      'mask-border-source',
+      'mask-border-slice',
+      'mask-border-width',
+      'mask-border-outset',
+      'mask-border-repeat',
+      'mask-border-mode',
+    ],
+  ],
+  [
+    'offset',
+    ['offset-position', 'offset-path', 'offset-distance', 'offset-rotate', 'offset-anchor'],
+  ],
+  ['outline', ['outline-width', 'outline-style', 'outline-color']],
+  ['overflow', ['overflow-x', 'overflow-y']],
+  ['overscroll-behavior', ['overscroll-behavior-x', 'overscroll-behavior-y']],
+  ['padding', ['padding-top', 'padding-right', 'padding-bottom', 'padding-left']],
+  ['padding-block', ['padding-block-start', 'padding-block-end']],
+  ['padding-inline', ['padding-inline-start', 'padding-inline-end']],
+  ['page-break-after', ['break-after']],
+  ['page-break-before', ['break-before']],
+  ['page-break-inside', ['break-inside']],
+  ['place-content', ['align-content', 'justify-content']],
+  ['place-items', ['align-items', 'justify-items']],
+  ['place-self', ['align-self', 'justify-self']],
+  ['position-try', ['position-try-order', 'position-try-fallbacks']],
+  [
+    'scroll-margin',
+    ['scroll-margin-top', 'scroll-margin-right', 'scroll-margin-bottom', 'scroll-margin-left'],
+  ],
+  ['scroll-margin-block', ['scroll-margin-block-start', 'scroll-margin-block-end']],
+  ['scroll-margin-inline', ['scroll-margin-inline-start', 'scroll-margin-inline-end']],
+  [
+    'scroll-padding',
+    ['scroll-padding-top', 'scroll-padding-right', 'scroll-padding-bottom', 'scroll-padding-left'],
+  ],
+  ['scroll-padding-block', ['scroll-padding-block-start', 'scroll-padding-block-end']],
+  ['scroll-padding-inline', ['scroll-padding-inline-start', 'scroll-padding-inline-end']],
+  ['scroll-timeline', ['scroll-timeline-name', 'scroll-timeline-axis']],
+  ['text-box', ['text-box-trim', 'text-box-edge']],
+  [
+    'text-decoration',
+    [
+      'text-decoration-line',
+      'text-decoration-style',
+      'text-decoration-color',
+      'text-decoration-thickness',
+    ],
+  ],
+  ['text-emphasis', ['text-emphasis-style', 'text-emphasis-color']],
+  ['text-wrap', ['text-wrap-mode', 'text-wrap-style']],
+  [
+    'timeline-trigger',
+    ['timeline-trigger-name', 'timeline-trigger-source', 'timeline-trigger-range'],
+  ],
+  [
+    'timeline-trigger-activation-range',
+    ['timeline-trigger-activation-range-start', 'timeline-trigger-activation-range-end'],
+  ],
+  [
+    'timeline-trigger-active-range',
+    ['timeline-trigger-active-range-start', 'timeline-trigger-active-range-end'],
+  ],
+  [
+    'timeline-trigger-range',
+    ['timeline-trigger-activation-range', 'timeline-trigger-active-range'],
+  ],
+  [
+    'transition',
+    [
+      'transition-property',
+      'transition-duration',
+      'transition-timing-function',
+      'transition-delay',
+      'transition-behavior',
+    ],
+  ],
+  ['view-timeline', ['view-timeline-name', 'view-timeline-axis', 'view-timeline-inset']],
+  ['white-space', ['white-space-collapse', 'text-wrap-mode']],
+  ['word-wrap', ['overflow-wrap']],
+]);
+
+function addLonghands(longhands: Set<string>, property: string): void {
+  const properties = SHORTHAND_PROPERTIES.get(property);
+  if (properties === undefined) {
+    longhands.add(property);
+    return;
+  }
+  for (const subproperty of properties) {
+    addLonghands(longhands, subproperty);
+  }
+}
+
+function setsLonghand(longhands: ReadonlySet<string>, property: string): boolean {
+  const properties = SHORTHAND_PROPERTIES.get(property);
+  if (properties === undefined) {
+    return longhands.has(property);
+  }
+  for (const subproperty of properties) {
+    if (setsLonghand(longhands, subproperty)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Applies the resolved styles in order, after removing the properties that the previous resolution
+ * set and this one doesn't.
+ *
+ * @param named On the first resolution of an element that hydration claimed, the properties that
+ *     its sources name. The element holds the styles that the server resolved, and those that
+ *     aren't named or resolved, such as styles that a constructor set, stay.
+ */
+function applyResolvedStyles(
+  tNode: TNode,
+  tAttributeResolver: TAttributeResolver,
+  lView: LView,
+  resolved: string | null,
+  named: Set<string> | null,
+): void {
+  const renderer = lView[RENDERER];
+  const element = getNativeByTNode(tNode, lView) as RElement;
+  const appliedIndex = tAttributeResolver.index + AttributeResolverSlot.AppliedValue;
+  const next = evaluateDeclarations(resolved);
+  // Before the first resolution, an element that hydration didn't claim has the static styles
+  // from all sources.
+  const previous =
+    named === null
+      ? ((lView[appliedIndex] as Map<string, StyleDeclaration> | null) ??
+        evaluateDeclarations(tNode.styles))
+      : null;
+  lView[appliedIndex] = next;
+
+  let written: Set<string> | null = null;
+  let earlier: Set<string> | null = null;
+  for (const property of previous === null ? named! : previous.keys()) {
+    if (!next.has(property)) {
+      applyStyling(renderer, false, element, property, null);
+      addLonghands((written ??= new Set()), property);
+    }
+  }
+  let highest = -1;
+  for (const [property, declaration] of next) {
+    const before = previous === null ? undefined : previous.get(property);
+    const overlaps = written !== null && setsLonghand(written, property);
+    let changed =
+      before === undefined ||
+      before.value !== declaration.value ||
+      before.important !== declaration.important ||
+      overlaps;
+    if (before !== undefined) {
+      if (before.position < highest) {
+        changed = true;
+      } else {
+        highest = before.position;
+      }
+    }
+    // A declaration that the previous resolution didn't set can be on the element already, as when
+    // a constructor set it, before a declaration that comes before it in the result.
+    const takesOver =
+      before === undefined &&
+      !overlaps &&
+      setsLonghand((earlier ??= getLonghandsBefore(next, property)), property);
+    if (changed) {
+      // Removing a declaration before setting it again moves it to the end of the element's
+      // declarations, so that the element serializes them in the resolved order, as on the server.
+      if (before !== undefined || overlaps || takesOver) {
+        applyStyling(renderer, false, element, property, null);
+      }
+      setResolvedStyle(renderer, element, property, declaration);
+      addLonghands((written ??= new Set()), property);
+    }
+    if (earlier !== null) {
+      addLonghands(earlier, property);
+    }
+  }
+}
+
+function getLonghandsBefore(
+  declarations: Map<string, StyleDeclaration>,
+  property: string,
+): Set<string> {
+  const longhands = new Set<string>();
+  for (const other of declarations.keys()) {
+    if (other === property) {
+      break;
+    }
+    addLonghands(longhands, other);
+  }
+  return longhands;
+}
+
+/**
+ * Sets a resolved declaration with the renderer, as `applyStyling` sets a style, except that its
+ * importance comes from the declaration, so a value such as `\!important` isn't read as important.
+ */
+function setResolvedStyle(
+  renderer: Renderer,
+  element: RElement,
+  property: string,
+  declaration: StyleDeclaration,
+) {
+  let flags: number = property.includes('-') ? RendererStyleFlags2.DashCase : 0;
+  if (declaration.important) {
+    flags |= RendererStyleFlags2.Important;
+  }
+  // The renderer would remove a custom property set to `''`, but an empty value is a value.
+  const value = declaration.value === '' ? ' ' : declaration.value;
+  renderer.setStyle(element, property, value, flags || undefined);
 }

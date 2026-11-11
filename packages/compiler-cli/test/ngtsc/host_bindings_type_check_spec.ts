@@ -303,6 +303,36 @@ runInEachFileSystem(() => {
       expect(diags.map((diag) => getDiagnosticSourceCode(diag))).toEqual([`'x'`, `(cn) => 'x'`]);
     });
 
+    it('should infer the type of $event in a host (attr.role) binding and check a host (style) binding', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+
+        @Component({
+          template: '',
+          selector: 'ui-button',
+          host: {'(attr.role)': 'resolve($event)', '(style)': "(m) => 'x'"},
+        })
+        export class Comp {
+          resolve(value: number) {}
+        }
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.map((diag) => diag.messageText)).toEqual([
+        `Argument of type 'AttributeResolveEvent' is not assignable to parameter of type 'number'.`,
+        `Type 'string' is not assignable to type 'ResolvedAttribute'.`,
+        `Type 'string' does not satisfy the expected type 'ResolvedAttribute'.`,
+      ]);
+      expect(diags.map((diag) => getDiagnosticSourceCode(diag))).toEqual([
+        '$event',
+        `'x'`,
+        `(m) => 'x'`,
+      ]);
+    });
+
     it('should infer the type of $event in a host (class) binding as ClassResolveEvent', () => {
       env.write(
         'test.ts',

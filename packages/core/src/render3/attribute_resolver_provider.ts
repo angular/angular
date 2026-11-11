@@ -134,6 +134,19 @@ function joinTokenList(tokens: readonly string[]): string {
   return Array.from(joined).join(' ');
 }
 
+/**
+ * The resolver that Angular uses for the `style` attribute without a resolver from
+ * `provideAttributeResolvers`: it joins the declarations with `; `.
+ *
+ * @param declarations The style declarations of the element, such as `padding: 4px`, from the
+ *     lowest to the highest priority.
+ *
+ * @experimental 22.3
+ */
+export function joinDeclarations(...declarations: string[]): string {
+  return declarations.join('; ');
+}
+
 /** The separators of the resolvers that `joinValues` created, for `callAttributeResolver`. */
 const joinValuesSeparators = /* @__PURE__ */ new WeakMap<AttributeResolver, string>();
 
@@ -151,6 +164,9 @@ export function callAttributeResolver(
   }
   if (resolver === joinTokens) {
     return joinTokenList(values);
+  }
+  if (resolver === joinDeclarations) {
+    return values.join('; ');
   }
   const separator = joinValuesSeparators.get(resolver);
   if (separator !== undefined) {

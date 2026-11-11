@@ -69,8 +69,8 @@ class UninvokedFunctionInEventBindingSpec extends TemplateCheckWithVisitor<Error
     if (node.type !== ParsedEventType.Regular && node.type !== ParsedEventType.LegacyAnimation)
       return [];
 
-    // A `(class)` shorthand calls the function its expression returns, so `(class)="resolve"` is
-    // intended.
+    // A `(class)` or `(style)` shorthand calls the function its expression returns, so
+    // `(class)="resolve"` and `(style)="(s) => s()"` are intended.
     const attributeResolver = getAttributeResolver(node.name, node.type, node.target);
     if (
       attributeResolver?.form === 'shorthand' ||

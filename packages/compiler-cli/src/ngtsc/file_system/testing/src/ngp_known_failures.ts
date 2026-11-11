@@ -136,12 +136,21 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'import generation should report an error when using a directive outside of rootDirs',
 
   // NGP doesn't check attribute resolver bindings the way ngtsc does: it reports the arrow function
-  // of a `(class)` shorthand as never invoked, and its diagnostics for resolvers differ.
+  // of a `(class)` or `(style)` shorthand as never invoked, and its diagnostics for resolvers differ.
   'UninvokedFunctionInEventBindingFactoryCheck should not produce a diagnostic for a callback in a (class) binding',
+  'UninvokedFunctionInEventBindingFactoryCheck should not produce a diagnostic for a callback in a (style) binding',
   'UninvokedFunctionInEventBindingFactoryCheck should not produce a diagnostic for a class resolver on a container',
   'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic for a function in an (attr.class) binding',
+  'UninvokedFunctionInEventBindingFactoryCheck should produce a diagnostic for a function in an (attr.style) binding',
+  'ngtsc type checking attribute resolver bindings should accept an interface-typed map and a trusted style as style values',
+  'ngtsc type checking attribute resolver bindings should accept style values in a (style) callback and an (attr.style) binding',
+  'ngtsc type checking attribute resolver bindings should reject numbers, booleans, and functions as style values',
+  'ngtsc type checking attribute resolver bindings should reject a callable map with a string index signature as a style value',
   'ngtsc type checking attribute resolver bindings should reject a callable map as a class value and as an attribute value',
+  'ngtsc type checking attribute resolver bindings should reject callable arrays and sets as class, style, and attribute values',
+  'ngtsc type checking attribute resolver bindings should accept readonly arrays and sets as class, style, and attribute values',
   'ngtsc type checking attribute resolver bindings should accept a class map with a key named call',
+  'ngtsc type checking attribute resolver bindings should check the (style) shorthand as a callback that receives the style resolver',
   'ngtsc type checking class resolver bindings should accept a ClassCallback in the shorthand',
   'ngtsc type checking class resolver bindings should check a (class) binding under a structural directive once, as a resolver',
   'ngtsc type checking class resolver bindings should check the earlier expressions of a shorthand chain as statements',
@@ -155,11 +164,15 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'ngtsc type checking class resolver bindings should report a class resolver on a container',
   'ngtsc type checking class resolver bindings should report a class resolver on a container next to a directive output named class',
   'ngtsc type checking class resolver bindings should report a class resolver on an ng-container in the svg namespace',
+  'ngtsc type checking class resolver bindings should report a (style) resolver on a container',
   'ngtsc type checking class resolver bindings should report an (attr.role) resolver on a container',
   'ngtsc type checking strictOutputEventTypes and class resolver bindings should infer the type of $event as ClassResolveEvent and check the shorthand when enabled',
   'ngtsc type checking strictOutputEventTypes and class resolver bindings should not infer the type of $event or check the shorthand when not enabled',
+  'ngtsc type checking strictOutputEventTypes and attribute resolver bindings should infer the type of $event per attribute and check the (style) shorthand when enabled',
+  'ngtsc type checking strictOutputEventTypes and attribute resolver bindings should not infer the type of $event or check the (style) shorthand when not enabled',
 
   // NGP doesn't check the resolvers of host metadata.
+  'ngtsc behavioral tests attribute resolver declarations should report (style) and (attr.style) in one host',
   "ngtsc behavioral tests attribute resolver declarations should report @HostListener('attr.role')",
   'ngtsc behavioral tests attribute resolver declarations should report a @HostListener name that the parser trims into a resolver',
   'ngtsc behavioral tests attribute resolver declarations should report a host (attr.href)',

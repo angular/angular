@@ -3967,7 +3967,7 @@ runInEachFileSystem((os: string) => {
         env.write(
           'test.ts',
           `
-          import {ClassCallback, Component} from '@angular/core';
+          import {ClassCallback, Component, StyleResolveEvent} from '@angular/core';
 
           @Component({
             selector: 'test',
@@ -3975,6 +3975,7 @@ runInEachFileSystem((os: string) => {
           })
           export class TestCmp {
             resolve: ClassCallback = (cn) => cn();
+            styles = (s: StyleResolveEvent['resolver']) => s();
             capture(event: unknown) {}
             other(event: unknown) {}
           }
@@ -3986,7 +3987,7 @@ runInEachFileSystem((os: string) => {
         env.write(
           'test.ts',
           `
-          import {ClassCallback, Directive} from '@angular/core';
+          import {ClassCallback, Directive, StyleResolveEvent} from '@angular/core';
 
           @Directive({
             selector: '[dir]',
@@ -3994,6 +3995,7 @@ runInEachFileSystem((os: string) => {
           })
           export class Dir {
             resolve: ClassCallback = (cn) => cn();
+            styles = (s: StyleResolveEvent['resolver']) => s();
             capture(event: unknown) {}
             other(event: unknown) {}
           }
@@ -4018,10 +4020,36 @@ runInEachFileSystem((os: string) => {
         expect(getDiagnosticSourceCode(diag)).toBe(`(attr.role)="other($event)"`);
       });
 
-      it('should accept (attr.title) on an element', () => {
-        writeTemplate('<div (attr.title)="capture($event)"></div>');
+      for (const name of ['style', 'title']) {
+        it(`should accept (attr.${name}) on an element`, () => {
+          writeTemplate(`<div (attr.${name})="capture($event)"></div>`);
 
-        expect(env.driveDiagnostics()).toEqual([]);
+          expect(env.driveDiagnostics()).toEqual([]);
+        });
+      }
+
+      it('should report (style) and (attr.style) on one element', () => {
+        writeTemplate('<div (style)="styles" (attr.style)="capture($event)"></div>');
+
+        const diag = getSingleDiagnostic();
+        expect(diag.code).toBe(ngErrorCode(ErrorCode.TEMPLATE_PARSE_ERROR));
+        expect(diag.messageText).toBe(
+          `Can't have multiple style resolvers on one element. Use only one '(style)' or ` +
+            `'(attr.style)' binding.`,
+        );
+        expect(getDiagnosticSourceCode(diag)).toBe(`(attr.style)="capture($event)"`);
+      });
+
+      it('should report a chain in a (style) shorthand', () => {
+        writeTemplate('<div (style)="capture($event); styles"></div>');
+
+        const diag = getSingleDiagnostic();
+        expect(diag.code).toBe(ngErrorCode(ErrorCode.TEMPLATE_PARSE_ERROR));
+        expect(diag.messageText).toBe(
+          `A '(style)' shorthand must be a single expression, a function that receives the ` +
+            `resolver. Bind '(attr.style)' to run more than one statement.`,
+        );
+        expect(getDiagnosticSourceCode(diag)).toBe('capture($event); styles');
       });
 
       for (const [element, tag, name, template] of [
@@ -4162,10 +4190,24 @@ runInEachFileSystem((os: string) => {
         expect(getDiagnosticSourceCode(diag)).toBe(`'(attr.xlink:title)'`);
       });
 
-      it('should accept a host (attr.title)', () => {
-        writeHost(`{'(attr.title)': 'capture($event)'}`);
+      for (const name of ['style', 'title']) {
+        it(`should accept a host (attr.${name})`, () => {
+          writeHost(`{'(attr.${name})': 'capture($event)'}`);
 
-        expect(env.driveDiagnostics()).toEqual([]);
+          expect(env.driveDiagnostics()).toEqual([]);
+        });
+      }
+
+      it('should report (style) and (attr.style) in one host', () => {
+        writeHost(`{'(style)': 'styles', '(attr.style)': 'capture($event)'}`);
+
+        const diag = getSingleDiagnostic();
+        expect(diag.code).toBe(ngErrorCode(ErrorCode.HOST_BINDING_PARSE_ERROR));
+        expect(diag.messageText).toBe(
+          `Can't have multiple style resolvers in one host. Use only one '(style)' or ` +
+            `'(attr.style)' binding.`,
+        );
+        expect(getDiagnosticSourceCode(diag)).toBe(`'(attr.style)'`);
       });
     });
 

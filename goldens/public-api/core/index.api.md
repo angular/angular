@@ -244,6 +244,9 @@ export interface BootstrapOptions {
 export type BoundClassResolver = (...extras: ClassBindingValue[]) => ResolvedAttribute;
 
 // @public
+export type BoundStyleResolver = (...extras: StyleBindingValue[]) => ResolvedAttribute;
+
+// @public
 export enum ChangeDetectionStrategy {
     // @deprecated
     Default = 1,
@@ -1197,6 +1200,9 @@ export class IterableDiffers {
 }
 
 // @public
+export function joinDeclarations(...declarations: string[]): string;
+
+// @public
 export function joinTokens(...tokens: string[]): string;
 
 // @public
@@ -1992,6 +1998,31 @@ export type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvi
 export interface StreamingResourceOptions<T, R> extends BaseResourceOptions<T, R> {
     loader?: never;
     stream: ResourceStreamingLoader<T, R>;
+}
+
+// @public
+export type StyleBindingValue = string | (readonly string[] & {
+    readonly call?: never;
+}) | ({
+    readonly [property: string]: unknown;
+} & {
+    readonly call?: never;
+    readonly [Symbol.iterator]?: never;
+    readonly [ɵRESOLVED_CLASSES_BRAND]?: never;
+}) | (object & {
+    readonly call?: never;
+    readonly [Symbol.iterator]?: never;
+    readonly [ɵRESOLVED_CLASSES_BRAND]?: never;
+}) | null | undefined;
+
+// @public
+export type StyleCallback = (s: BoundStyleResolver) => ResolvedAttribute;
+
+// @public
+export interface StyleResolveEvent {
+    resolve(value: StyleBindingValue | ResolvedAttribute): void;
+    resolver(...extras: StyleBindingValue[]): ResolvedAttribute;
+    readonly sources: AttributeSources;
 }
 
 // @public

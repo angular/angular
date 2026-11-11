@@ -384,8 +384,10 @@ function stylingFirstUpdatePass(
       tStylingKey = false;
     }
     const tStylingResolver =
-      isClassBased && tNode.attributeResolvers !== null && tStylingKey !== false
-        ? tNode.attributeResolvers.find((tAttributeResolver) => tAttributeResolver.name === 'class')
+      tNode.attributeResolvers !== null && tStylingKey !== false
+        ? tNode.attributeResolvers.find(
+            (tAttributeResolver) => tAttributeResolver.name === (isClassBased ? 'class' : 'style'),
+          )
         : undefined;
     if (tStylingResolver !== undefined) {
       _registerAttributeResolverBinding!(
@@ -908,8 +910,10 @@ function updateStyling(
     return;
   }
   const tStylingResolver =
-    isClassBased && tNode.attributeResolvers !== null
-      ? tNode.attributeResolvers.find((tAttributeResolver) => tAttributeResolver.name === 'class')
+    tNode.attributeResolvers !== null
+      ? tNode.attributeResolvers.find(
+          (tAttributeResolver) => tAttributeResolver.name === (isClassBased ? 'class' : 'style'),
+        )
       : undefined;
   if (tStylingResolver !== undefined) {
     return;

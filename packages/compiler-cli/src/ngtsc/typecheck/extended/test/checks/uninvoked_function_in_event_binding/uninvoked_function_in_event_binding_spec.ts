@@ -190,6 +190,26 @@ runInEachFileSystem(() => {
       expect(diags[0].messageText).toBe(generateDiagnosticText('resolve()'));
     });
 
+    it('should not produce a diagnostic for a callback in a (style) binding', () => {
+      const diags = setupTestComponent(
+        `<div (style)="resolve"></div><div (style)="(s) => resolve(s)"></div>`,
+        `resolve(s: () => string) { return s(); }`,
+      );
+
+      expect(diags.length).toBe(0);
+    });
+
+    it('should produce a diagnostic for a function in an (attr.style) binding', () => {
+      const diags = setupTestComponent(
+        `<div (attr.style)="resolve"></div>`,
+        `resolve(s: () => string) { return s(); }`,
+      );
+
+      expect(diags.length).toBe(1);
+      expect(getSourceCodeForDiagnostic(diags[0])).toBe(`(attr.style)="resolve"`);
+      expect(diags[0].messageText).toBe(generateDiagnosticText('resolve()'));
+    });
+
     it('should not produce a diagnostic for a class resolver on a container', () => {
       const diags = setupTestComponent(
         `

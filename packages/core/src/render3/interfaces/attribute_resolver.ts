@@ -150,7 +150,7 @@ export type AttributeValue = string | (readonly string[] & {readonly call?: neve
 export type AttributeResolver = (...values: string[]) => string | null;
 
 /**
- * `$event` of an `(attr.x)` binding for an attribute other than `class`.
+ * `$event` of an `(attr.x)` binding for an attribute other than `class` and `style`.
  *
  * If the handler doesn't call `resolve()`, an attribute that holds a list of tokens, such as
  * `aria-describedby`, takes the tokens of its sources without repeated ones, and any other attribute
@@ -175,8 +175,85 @@ export interface AttributeResolveEvent {
   resolve(value: AttributeValue | ResolvedAttribute | null): void;
 }
 
+/**
+ * A value that holds style declarations, read the way a `[style]` binding reads it: a string holds
+ * declarations separated by semicolons, an array lists strings that join with `; `, and an object
+ * map keeps the properties whose values aren't `null`, `undefined`, or `''`. A trusted style, such
+ * as one from `DomSanitizer.bypassSecurityTrustStyle`, reads as its string. `null` and `undefined`
+ * add nothing.
+ *
+ * Besides object literals, objects that the runtime reads as maps are accepted, such as a map typed
+ * by an interface or a `SafeStyle`, which index signatures alone would reject. Numbers and booleans
+ * are rejected, and so are a `ResolvedAttribute` and iterables other than arrays, such as a `Set`
+ * or a `Map`, whose entries the runtime wouldn't read as styles.
+ *
+ * The type rejects plain functions, and maps and arrays that are also functions, through the `call`
+ * member that every function has. A structural check can't reject every function, such as
+ * `Object.assign(() => {}, {call: undefined})`. In dev mode, a function that a handler supplies
+ * throws `NG0320` at runtime.
+ *
+ * @experimental 22.3
+ */
+export type StyleBindingValue =
+  | string
+  | (readonly string[] & {readonly call?: never})
+  | ({readonly [property: string]: unknown} & {
+      readonly call?: never;
+      readonly [Symbol.iterator]?: never;
+      readonly [ɵRESOLVED_CLASSES_BRAND]?: never;
+    })
+  | (object & {
+      readonly call?: never;
+      readonly [Symbol.iterator]?: never;
+      readonly [ɵRESOLVED_CLASSES_BRAND]?: never;
+    })
+  | null
+  | undefined;
+
+/**
+ * The resolver of a `StyleResolveEvent`. It merges the event's sources with the extras, which rank
+ * at the end of the source of the binding that calls it.
+ *
+ * @experimental 22.3
+ */
+export type BoundStyleResolver = (...extras: StyleBindingValue[]) => ResolvedAttribute;
+
+/**
+ * A function that computes an element's styles with the resolver of a `StyleResolveEvent`.
+ *
+ * @experimental 22.3
+ */
+export type StyleCallback = (s: BoundStyleResolver) => ResolvedAttribute;
+
+/**
+ * `$event` of a `(style)` or `(attr.style)` binding, which resolves the styles of its element.
+ *
+ * If the handler doesn't call `resolve()`, the element takes the declarations of its sources,
+ * joined by `joinDeclarations`.
+ *
+ * @experimental 22.3
+ */
+export interface StyleResolveEvent {
+  /** Declarations, such as `padding: 4px`, that each source gives the element, one per property. */
+  readonly sources: AttributeSources;
+
+  /**
+   * Merges the sources with `extras`, which rank at the end of the source of the binding that
+   * calls it.
+   */
+  resolver(...extras: StyleBindingValue[]): ResolvedAttribute;
+
+  /**
+   * Sets the element's styles; `null` removes the styles that the resolver set. Call it at most
+   * once, while the handler runs; in dev mode, another call throws.
+   */
+  resolve(value: StyleBindingValue | ResolvedAttribute): void;
+}
+
 /** Handler compiled from a resolver binding, such as `(class)` or `(attr.role)`. */
-export type AttributeResolverFn = (event: ClassResolveEvent | AttributeResolveEvent) => unknown;
+export type AttributeResolverFn = (
+  event: ClassResolveEvent | StyleResolveEvent | AttributeResolveEvent,
+) => unknown;
 
 /**
  * Flags of a `ɵɵattributeResolver` registration.
@@ -196,6 +273,9 @@ export const enum AttributeGrammar {
   /** Class names, merged like `class`. */
   ClassList,
 
+  /** Style declarations, one per property. */
+  Declarations,
+
   /** Tokens separated by whitespace. */
   TokenList,
 
@@ -212,7 +292,10 @@ export const enum AttributeSource {
 
 /** A binding that contributes to an attribute's sources. */
 export interface TAttributeBinding {
-  /** `styling` for a `[class]` or `[class.name]` binding, `attribute` for an `[attr.x]` binding. */
+  /**
+   * `styling` for a `[class]`, `[class.name]`, `[style]`, or `[style.property]` binding,
+   * `attribute` for an `[attr.x]` binding.
+   */
   kind: 'styling' | 'attribute';
 
   /**
@@ -221,6 +304,16 @@ export interface TAttributeBinding {
    */
   index: number;
 }
+
+/**
+ * A static style declaration: its canonical property name, its value and importance or `null` for
+ * an empty value, and the declaration as sources hold it, or `null` for an empty value.
+ */
+export type TStaticStyle = [
+  property: string,
+  value: [value: string, important: boolean] | null,
+  declaration: string | null,
+];
 
 /** Values contributed by one directive's host bindings or by the template. */
 export interface TAttributeSourceSegment {
@@ -232,6 +325,12 @@ export interface TAttributeSourceSegment {
 
   /** Static values from the directive's `hostAttrs` or the element's `attrs`. */
   statics: string[];
+
+  /**
+   * The static declarations of a `style` resolver, read once from `statics` in the same order, or
+   * `null` for another attribute.
+   */
+  staticStyles: TStaticStyle[] | null;
 
   /**
    * The segment's bindings: styling bindings in execution order, which is their priority order,
@@ -252,6 +351,10 @@ export const enum AttributeResolverSlot {
    * For `class`, the `KeyValueArray` of the classes applied by the previous resolution. Before the
    * first resolution, it holds the classes of an element claimed by hydration, or `null` if the
    * element still has the static classes it was created with.
+   *
+   * For `style`, the declarations applied by the previous resolution, in a `Map` keyed by property
+   * in the order that they apply. Before the first resolution, it's `true` for an element claimed
+   * by hydration, or `null` while the element has the static styles it was created with.
    *
    * For an attribute with one value or a list of tokens, the value applied by the previous
    * resolution, or `false` if it removed the attribute. Before the first resolution, it's `null`,
