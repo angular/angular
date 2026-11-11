@@ -296,72 +296,6 @@
           "jsdocTags": []
         },
         {
-          "name": "ngOnInit",
-          "signatures": [
-            {
-              "name": "ngOnInit",
-              "entryType": "function",
-              "description": "",
-              "generics": [],
-              "isNewType": false,
-              "jsdocTags": [],
-              "params": [],
-              "rawComment": "",
-              "returnType": "void"
-            }
-          ],
-          "implementation": {
-            "params": [],
-            "isNewType": false,
-            "returnType": "void",
-            "generics": [],
-            "name": "ngOnInit",
-            "description": "",
-            "entryType": "function",
-            "jsdocTags": [],
-            "rawComment": ""
-          },
-          "entryType": "function",
-          "description": "",
-          "jsdocTags": [],
-          "rawComment": "",
-          "memberType": "method",
-          "memberTags": []
-        },
-        {
-          "name": "ngOnDestroy",
-          "signatures": [
-            {
-              "name": "ngOnDestroy",
-              "entryType": "function",
-              "description": "",
-              "generics": [],
-              "isNewType": false,
-              "jsdocTags": [],
-              "params": [],
-              "rawComment": "",
-              "returnType": "void"
-            }
-          ],
-          "implementation": {
-            "params": [],
-            "isNewType": false,
-            "returnType": "void",
-            "generics": [],
-            "name": "ngOnDestroy",
-            "description": "",
-            "entryType": "function",
-            "jsdocTags": [],
-            "rawComment": ""
-          },
-          "entryType": "function",
-          "description": "",
-          "jsdocTags": [],
-          "rawComment": "",
-          "memberType": "method",
-          "memberTags": []
-        },
-        {
           "name": "expand",
           "signatures": [
             {
@@ -470,10 +404,7 @@
         }
       ],
       "rawComment": "/**\n * The trigger that toggles the visibility of its associated `ngAccordionPanel`.\n *\n * This directive requires the `panel` input be set to the template reference of the `ngAccordionPanel`\n * it controls. When clicked, it will expand or collapse the panel. It also handles keyboard\n * interactions for navigation within the `ngAccordionGroup`. It applies `role=\"button\"` and manages\n * `aria-expanded`, `aria-controls`, and `aria-disabled` attributes for accessibility.\n * The `disabled` input can be used to disable the trigger.\n *\n * ```html\n * <button ngAccordionTrigger [panel]=\"panel\">\n *   Accordion Trigger Text\n * </button>\n * ```\n *\n * @see [Accordion](guide/aria/accordion)\n */",
-      "implements": [
-        "OnInit",
-        "OnDestroy"
-      ],
+      "implements": [],
       "isStandalone": true,
       "selector": "[ngAccordionTrigger]",
       "exportAs": [
@@ -730,11 +661,11 @@
       "@angular/cdk/a11y"
     ],
     [
-      "OnDestroy",
+      "effect",
       "@angular/core"
     ],
     [
-      "OnInit",
+      "untracked",
       "@angular/core"
     ],
     [
@@ -751,6 +682,10 @@
     ],
     [
       "afterNextRender",
+      "@angular/core"
+    ],
+    [
+      "OnDestroy",
       "@angular/core"
     ],
     [
@@ -843,14 +778,6 @@
     ],
     [
       "AccordionTrigger.active",
-      "@angular/aria/accordion"
-    ],
-    [
-      "AccordionTrigger.ngOnInit",
-      "@angular/aria/accordion"
-    ],
-    [
-      "AccordionTrigger.ngOnDestroy",
       "@angular/aria/accordion"
     ],
     [
