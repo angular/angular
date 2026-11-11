@@ -157,11 +157,13 @@ function canUseOrCacheRequest(req: HttpRequest<unknown>, options: CacheOptions):
     includeRequestsWithCredentials,
     includeNonCacheableRequests,
   } = options;
-  const {transferCache: requestOptions, method: requestMethod} = req;
+  const {transferCache: requestOptions, method: requestMethod, responseType} = req;
 
   if (
     !isCacheActive ||
     requestOptions === false ||
+    // Blob bodies can only be read asynchronously, so they cannot be stored in the cache.
+    responseType === 'blob' ||
     // POST requests are allowed either globally or at request level
     (requestMethod === 'POST' && !includePostRequests && !requestOptions) ||
     (requestMethod !== 'POST' && !ALLOWED_METHODS.includes(requestMethod)) ||
@@ -250,16 +252,8 @@ export function retrieveStateFromCache(
     [REQ_URL]: url,
   } = response;
   // Request found in cache. Respond using it.
-  let body: ArrayBuffer | Blob | string | undefined = undecodedBody;
-
-  switch (responseType) {
-    case 'arraybuffer':
-      body = fromBase64(undecodedBody);
-      break;
-    case 'blob':
-      body = new Blob([fromBase64(undecodedBody)]);
-      break;
-  }
+  const body: ArrayBuffer | string | undefined =
+    responseType === 'arraybuffer' ? fromBase64(undecodedBody) : undecodedBody;
 
   // We want to warn users accessing a header provided from the cache
   // That HttpTransferCache alters the headers
@@ -337,8 +331,7 @@ export function transferCacheInterceptorFn(
           const headersToInclude = getHeadersToInclude(options, requestOptions);
 
           transferState.set<TransferHttpResponse>(storeKey, {
-            [BODY]:
-              responseType === 'arraybuffer' || responseType === 'blob' ? toBase64(body) : body,
+            [BODY]: responseType === 'arraybuffer' ? toBase64(body) : body,
             [HEADERS]: getFilteredHeaders(headers, headersToInclude),
             [STATUS]: status,
             [STATUS_TEXT]: statusText,

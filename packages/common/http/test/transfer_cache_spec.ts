@@ -570,16 +570,18 @@ describe('TransferCache', () => {
       expect(new Uint8Array(cachedResponse)).toEqual(new Uint8Array([1, 2, 3, 4, 5]));
     });
 
-    it('should cache blob responses correctly', () => {
+    it('should not cache blob responses', () => {
       const testData = new Uint8Array([10, 20, 30, 40, 50]).buffer;
-      let response!: Blob;
-      TestBed.inject(HttpClient)
-        .get('/test-blob', {responseType: 'blob'})
-        .subscribe((r) => (response = r));
-      TestBed.inject(HttpTestingController).expectOne('/test-blob').flush(testData);
+      const httpClient = TestBed.inject(HttpClient);
+      const httpTestingController = TestBed.inject(HttpTestingController);
 
-      expect(response instanceof Blob).toBeTrue();
-      expect(response.size).toBe(5);
+      httpClient.get('/test-blob', {responseType: 'blob'}).subscribe();
+      httpTestingController.expectOne('/test-blob').flush(testData);
+
+      httpClient.get('/test-blob', {responseType: 'blob'}).subscribe();
+      httpTestingController.expectOne('/test-blob').flush(testData);
+
+      expect(TestBed.inject(TransferState).isEmpty).toBeTrue();
     });
 
     it('should stop storing HTTP calls in `TransferState` after application becomes stable', async () => {
