@@ -11,7 +11,7 @@ import {inject, Injectable, Injector, runInInjectionContext} from '../../src/di'
 import {declareExperimentalWebMcpTool} from '../../src/webmcp/declare_tool';
 import {Execute} from '../../src/webmcp/types';
 import {RuntimeErrorCode} from '../../src/errors';
-import {installWebMcpMock, ModelContextMock, uninstallWebMcpMock} from './webmcp_mock';
+import {installWebMcpMock, ModelContextMock, uninstallWebMcpMock} from '@angular/private/testing';
 
 // Whether or not the input type is `any`.
 type IsAny<T> = 0 extends 1 & T ? true : false;

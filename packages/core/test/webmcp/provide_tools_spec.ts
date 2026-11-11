@@ -11,7 +11,7 @@ import {Component, createEnvironmentInjector, EnvironmentInjector} from '../../s
 import {provideExperimentalWebMcpTools} from '../../src/webmcp/provide_tools';
 import {Execute} from '../../src/webmcp/types';
 import {TestBed} from '../../testing';
-import {installWebMcpMock, ModelContextMock, uninstallWebMcpMock} from './webmcp_mock';
+import {installWebMcpMock, ModelContextMock, uninstallWebMcpMock} from '@angular/private/testing';
 
 describe('provideExperimentalWebMcpTools', () => {
   let modelContext: ModelContextMock;
