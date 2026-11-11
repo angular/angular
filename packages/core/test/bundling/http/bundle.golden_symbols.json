@@ -602,6 +602,7 @@
       "isReadableStreamLike",
       "isRefreshingViews",
       "isResolved",
+      "isResourceAttribute",
       "isRootView",
       "isScheduler",
       "isSchedulerTick",

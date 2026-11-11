@@ -734,6 +734,7 @@
       "isPromise2",
       "isReadableStreamLike",
       "isRefreshingViews",
+      "isResourceAttribute",
       "isRootView",
       "isScheduler",
       "isSchedulerTick",
