@@ -16,6 +16,7 @@ import {
 } from 'vscode-languageclient/node';
 import {registerCommands} from './commands';
 import * as fs from 'node:fs/promises';
+import {createRequire} from 'node:module';
 
 interface TsLanguageServerSdk {
   initializeAPIConnection(): Promise<string>;
@@ -96,7 +97,11 @@ export async function activate(context: vscode.ExtensionContext) {
     outputChannel.appendLine(`Could not get existing TypeScript API connection: ${err}`);
   }
 
-  const serverModule = context.asAbsolutePath(path.join('dist', 'server', 'server.js'));
+  const distServer = context.asAbsolutePath(path.join('dist', 'server', 'server.js'));
+  const bazelServer = context.asAbsolutePath(
+    path.join('..', 'dist', 'bin', 'ngp-vscode-ng-language-service', 'server', 'server_bundle.js'),
+  );
+  const serverModule = (await pathExists(distServer)) ? distServer : bazelServer;
   const serverOptions: ServerOptions = {
     run: {module: serverModule, transport: TransportKind.ipc},
     debug: {
@@ -142,16 +147,20 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const tsGoPath = await resolveTsGoPath();
 
-  // If we already connected to an existing TypeScript LSP server via tsApiPipe
-  // or are subscribed to `typescriptteam.native-preview`'s language server initialization,
-  // we do not need to launch a separate fallback ts7Client.
-  // Otherwise, if tsGoPath is available, launch our fallback ts7Client.
-  if (!tsApiPipe && !usingNativePreviewExtension && tsGoPath) {
-    launchTs7Client(tsGoPath, context);
+  // Launch ts7Client when tsGoPath is available so registerTs7RelayHandlers is active
+  // for TsGoFacade LSP requests. Only initialize an API session on ts7Client if we
+  // didn't already connect to typescriptteam.native-preview's API pipe.
+  if (tsGoPath) {
+    launchTs7Client(tsGoPath, context, clientReady, !tsApiPipe && !usingNativePreviewExtension);
   }
 }
 
-function launchTs7Client(tsGoPath: string, context: vscode.ExtensionContext) {
+function launchTs7Client(
+  tsGoPath: string,
+  context: vscode.ExtensionContext,
+  clientReady: Promise<void>,
+  initializeApiSession: boolean,
+) {
   const isNative =
     tsGoPath.includes(`typescript-${process.platform}-${process.arch}`) ||
     tsGoPath.includes(`native-preview-${process.platform}-${process.arch}`) ||
@@ -211,12 +220,16 @@ function launchTs7Client(tsGoPath: string, context: vscode.ExtensionContext) {
   ts7Client
     .start()
     .then(async () => {
+      if (!initializeApiSession) {
+        return;
+      }
       try {
         const res = await ts7Client!.sendRequest<{sessionId: string; pipe: string}>(
           'custom/initializeAPISession',
           {},
         );
         if (res?.pipe) {
+          await clientReady;
           client.sendNotification('angular/setTsApiPipe', {pipe: res.pipe});
         }
       } catch {}
@@ -272,19 +285,39 @@ async function resolveTsGoPath(): Promise<string | null> {
     return process.env.TSGO_BINARY_PATH;
   }
 
+  const extensionRoot = path.resolve(__dirname, '../..');
   const workspaceRoot = path.resolve(__dirname, '../../..');
-
   const ext = process.platform === 'win32' ? '.exe' : '';
   const tsPlatformName = `@typescript/typescript-${process.platform}-${process.arch}`;
   const previewPlatformName = `@typescript/native-preview-${process.platform}-${process.arch}`;
-  const localCandidates = [
-    path.join(workspaceRoot, 'node_modules', tsPlatformName, 'lib', `tsc${ext}`),
-    path.join(workspaceRoot, 'node_modules', '@typescript', 'native-preview', 'lib', 'tsc.js'),
-    path.join(workspaceRoot, 'node_modules', '@typescript', 'native-preview', 'bin', 'tsc'),
-    path.join(workspaceRoot, 'node_modules', previewPlatformName, 'lib', `tsgo${ext}`),
-    path.join(workspaceRoot, 'node_modules', '@typescript', 'native-preview', 'bin', 'tsgo'),
-    path.join(workspaceRoot, 'node_modules', '@typescript', 'native-preview', 'bin', 'tsgo.js'),
-  ];
+
+  try {
+    const req = createRequire(path.join(extensionRoot, 'package.json'));
+    const previewPkg = req.resolve('@typescript/native-preview/package.json');
+    const previewReq = createRequire(previewPkg);
+    const platformTargets = [
+      {pkg: tsPlatformName, bin: `tsc${ext}`},
+      {pkg: previewPlatformName, bin: `tsgo${ext}`},
+    ];
+    for (const target of platformTargets) {
+      try {
+        const platPkg = previewReq.resolve(`${target.pkg}/package.json`);
+        const exe = path.join(path.dirname(platPkg), 'lib', target.bin);
+        if (await pathExists(exe)) {
+          return exe;
+        }
+      } catch {}
+    }
+  } catch {}
+
+  const localCandidates = [extensionRoot, workspaceRoot].flatMap((root) => [
+    path.join(root, 'node_modules', tsPlatformName, 'lib', `tsc${ext}`),
+    path.join(root, 'node_modules', '@typescript', 'native-preview', 'lib', 'tsc.js'),
+    path.join(root, 'node_modules', '@typescript', 'native-preview', 'bin', 'tsc'),
+    path.join(root, 'node_modules', previewPlatformName, 'lib', `tsgo${ext}`),
+    path.join(root, 'node_modules', '@typescript', 'native-preview', 'bin', 'tsgo'),
+    path.join(root, 'node_modules', '@typescript', 'native-preview', 'bin', 'tsgo.js'),
+  ]);
 
   const localResults = await Promise.all(
     localCandidates.map(async (candidate) => ((await pathExists(candidate)) ? candidate : null)),
