@@ -7,6 +7,7 @@
  */
 
 import {APP_BOOTSTRAP_LISTENER, ApplicationRef} from '../application/application_ref';
+import {IS_TESTING} from '../application/application_tokens';
 import {Console} from '../console';
 import {
   ENVIRONMENT_INITIALIZER,
@@ -230,6 +231,7 @@ export function withDomHydration(): EnvironmentProviders {
         } else if (
           typeof ngDevMode !== 'undefined' &&
           ngDevMode &&
+          !inject(IS_TESTING) &&
           !isClientRenderModeEnabled(doc)
         ) {
           const console = inject(Console);

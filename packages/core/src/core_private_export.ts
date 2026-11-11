@@ -29,6 +29,7 @@ export {
   IMAGE_CONFIG as ɵIMAGE_CONFIG,
   IMAGE_CONFIG_DEFAULTS as ɵIMAGE_CONFIG_DEFAULTS,
   ImageConfig as ɵImageConfig,
+  IS_TESTING as ɵIS_TESTING,
 } from './application/application_tokens';
 export {internalCreateApplication as ɵinternalCreateApplication} from './application/create_application';
 export {
