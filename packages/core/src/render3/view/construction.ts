@@ -109,6 +109,7 @@ export function createTView(
     cleanup: null,
     contentQueries: null,
     components: null,
+    attributeResolvers: null,
     directiveRegistry: typeof directives === 'function' ? directives() : directives,
     pipeRegistry: typeof pipes === 'function' ? pipes() : pipes,
     firstChild: null,

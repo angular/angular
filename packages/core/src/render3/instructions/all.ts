@@ -67,3 +67,4 @@ export * from './attach_source_locations';
 export * from './value_interpolation';
 export * from './arrow_function';
 export * from './invalid';
+export {ɵɵattributeResolver} from './attribute_resolver';

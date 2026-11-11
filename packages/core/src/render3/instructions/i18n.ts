@@ -14,7 +14,7 @@ import {bindingUpdated} from '../bindings';
 import {applyCreateOpCodes, applyI18n, setMaskBit} from '../i18n/i18n_apply';
 import {i18nAttributesFirstPass, i18nStartFirstCreatePass} from '../i18n/i18n_parse';
 import {i18nPostprocess} from '../i18n/i18n_postprocess';
-import {TI18n} from '../interfaces/i18n';
+import {I18nAttributesMarker, TI18n} from '../interfaces/i18n';
 import {TElementNode, TNodeType} from '../interfaces/node';
 import {
   DECLARATION_COMPONENT_VIEW,
@@ -157,7 +157,7 @@ export function ɵɵi18n(index: number, messageIndex: number, subTemplateIndex?:
 export function ɵɵi18nAttributes(index: number, attrsIndex: number): void {
   const tView = getTView();
   ngDevMode && assertDefined(tView, `tView should be defined`);
-  const attrs = getConstant<string[]>(tView.consts, attrsIndex)!;
+  const attrs = getConstant<Array<string | I18nAttributesMarker>>(tView.consts, attrsIndex)!;
   i18nAttributesFirstPass(tView, index + HEADER_OFFSET, attrs);
 }
 

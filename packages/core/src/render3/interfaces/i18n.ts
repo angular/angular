@@ -88,6 +88,20 @@ export const enum IcuCreateOpCode {
 }
 
 /**
+ * Markers in the config of `ɵɵi18nAttributes`, a list of name and message pairs.
+ *
+ * NOTE: Ensure changes here are in sync with
+ * `packages/compiler/src/template/pipeline/src/phases/i18n_const_collection.ts`.
+ */
+export const enum I18nAttributesMarker {
+  /**
+   * Marks the next pair as an attribute binding without a namespace, such as
+   * `attr.title="Hi {{name}}"`. Other pairs are property bindings.
+   */
+  AttributeBinding = 0,
+}
+
+/**
  * Array storing OpCode for dynamically creating `i18n` blocks.
  *
  * Example:
@@ -153,7 +167,10 @@ export const enum I18nUpdateOpCode {
    */
   Text = 0b00,
   /**
-   * Instruction to update a attribute of a node.
+   * Instruction to update a attribute of a node. It's followed by the attribute's name and its
+   * sanitizer. For an attribute binding that an attribute resolver of the node reads, such as
+   * `attr.title="Hi {{name}}"` next to `(attr.title)`, the sanitizer's place holds the `LView`
+   * index where the value is kept instead; such attributes never need a sanitizer.
    */
   Attr = 0b01,
   /**

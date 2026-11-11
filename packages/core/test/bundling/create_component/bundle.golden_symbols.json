@@ -235,6 +235,7 @@
       "_ngOnChangesFeatureImpl",
       "_platformInjector",
       "_processI18nInsertBefore",
+      "_refreshAttributeResolvers",
       "_retrieveHydrationInfoImpl",
       "_wasLastNodeCreated",
       "activeConsumer",

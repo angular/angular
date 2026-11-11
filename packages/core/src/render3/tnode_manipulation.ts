@@ -139,11 +139,7 @@ export function getOrCreateTNode(
   }
   setCurrentTNode(tNode, true);
   return tNode as
-    | TElementNode
-    | TContainerNode
-    | TElementContainerNode
-    | TProjectionNode
-    | TIcuContainerNode;
+    TElementNode | TContainerNode | TElementContainerNode | TProjectionNode | TIcuContainerNode;
 }
 
 export function createTNodeAtIndex(
@@ -330,6 +326,7 @@ export function createTNode(
     residualClasses: undefined,
     classBindings: 0 as TStylingRange,
     styleBindings: 0 as TStylingRange,
+    attributeResolvers: null,
   };
 
   if (ngDevMode) {

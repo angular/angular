@@ -94,6 +94,7 @@ export {
   ɵɵarrowFunction,
   ɵɵattachSourceLocations,
   ɵɵattribute,
+  ɵɵattributeResolver,
   ɵɵboundaryCreate,
   ɵɵboundaryUpdate,
   ɵɵclassMap,

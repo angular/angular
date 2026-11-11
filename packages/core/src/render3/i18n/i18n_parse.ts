@@ -43,6 +43,7 @@ import {
   I18nPlaceholderNode,
   I18nPlaceholderType,
   I18nRemoveOpCodes,
+  I18nAttributesMarker,
   I18nUpdateOpCode,
   I18nUpdateOpCodes,
   ICU_MARKER,
@@ -53,10 +54,12 @@ import {
   TI18n,
   TIcu,
 } from '../interfaces/i18n';
+import {TAttributeResolver} from '../interfaces/attribute_resolver';
 import {TNode, TNodeType} from '../interfaces/node';
+import {_registerAttributeResolverBinding} from '../instructions/attribute_resolver_hook';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {HEADER_OFFSET, LView, TView} from '../interfaces/view';
-import {getCurrentParentTNode, getCurrentTNode, setCurrentTNode} from '../state';
+import {getCurrentParentTNode, getCurrentTNode, getLView, setCurrentTNode} from '../state';
 
 import {createTNodeAtIndex} from '../tnode_manipulation';
 import {allocExpando} from '../view/construction';
@@ -370,7 +373,11 @@ function i18nStartFirstCreatePassProcessTextNode(
 /**
  * See `i18nAttributes` above.
  */
-export function i18nAttributesFirstPass(tView: TView, index: number, values: string[]) {
+export function i18nAttributesFirstPass(
+  tView: TView,
+  index: number,
+  values: Array<string | I18nAttributesMarker>,
+) {
   const previousElement = getCurrentTNode()!;
   const previousElementIndex = previousElement.index;
   const updateOpCodes: I18nUpdateOpCodes = [] as any;
@@ -379,10 +386,38 @@ export function i18nAttributesFirstPass(tView: TView, index: number, values: str
   }
   if (tView.firstCreatePass && tView.data[index] === null) {
     for (let i = 0; i < values.length; i += 2) {
-      const attrName = values[i];
-      const message = values[i + 1];
+      const isAttributeBinding = values[i] === I18nAttributesMarker.AttributeBinding;
+      if (isAttributeBinding) {
+        i++;
+      }
+      const attrName = values[i] as string;
+      const message = values[i + 1] as string;
+      const tAttributeResolver = isAttributeBinding
+        ? getResolvedAttribute(previousElement, attrName)
+        : undefined;
 
-      if (message !== '') {
+      if (tAttributeResolver !== undefined) {
+        // The element's resolvers are registered by now: its directives' during element creation,
+        // and the template's before this instruction.
+        if (ICU_REGEXP.test(message)) {
+          throw new Error(
+            `ICU expressions are not supported in attributes. Message: "${message}".`,
+          );
+        }
+        const hasBindings = message.split(BINDING_REGEXP).length > 1;
+        const valueIndex = allocExpando(tView, getLView(), 1, hasBindings ? null : message);
+        _registerAttributeResolverBinding!(tAttributeResolver, -1, valueIndex, 'attribute');
+        if (hasBindings) {
+          generateBindingUpdateOpCodes(
+            updateOpCodes,
+            message,
+            previousElementIndex,
+            attrName,
+            countBindings(updateOpCodes),
+            valueIndex,
+          );
+        }
+      } else if (message !== '') {
         // Check if attribute value contains an ICU and throw an error if that's the case.
         // ICUs in element attributes are not supported.
         // Note: we intentionally retain the error here by not using `ngDevMode`, because
@@ -415,6 +450,10 @@ export function i18nAttributesFirstPass(tView: TView, index: number, values: str
   }
 }
 
+function getResolvedAttribute(tNode: TNode, name: string): TAttributeResolver | undefined {
+  return tNode.attributeResolvers?.find((tAttributeResolver) => tAttributeResolver.name === name);
+}
+
 /**
  * Generate the OpCodes to update the bindings of a string.
  *
@@ -422,7 +461,8 @@ export function i18nAttributesFirstPass(tView: TView, index: number, values: str
  * @param str The string containing the bindings.
  * @param destinationNode Index of the destination node which will receive the binding.
  * @param attrName Name of the attribute, if the string belongs to an attribute.
- * @param sanitizeFn Sanitization function used to sanitize the string after update, if necessary.
+ * @param sanitizeFn Sanitization function used to sanitize the string after update, if necessary,
+ *     or the lView index where the value of an attribute that a resolver reads is kept.
  * @param bindingStart The lView index of the next expression that can be bound via an opCode.
  * @returns The mask value for these bindings
  */
@@ -432,7 +472,7 @@ function generateBindingUpdateOpCodes(
   destinationNode: number,
   attrName: string | null,
   bindingStart: number,
-  sanitizeFn: SanitizerFn | null,
+  sanitizeFn: SanitizerFn | number | null,
 ): number {
   ngDevMode &&
     assertGreaterThanOrEqual(

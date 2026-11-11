@@ -336,7 +336,7 @@ export function setDomProperty<T>(
  *
  * This workaround is intended to be dropped in v23 when the breaking change window opens.
  */
-function unwrapImgVideoSrcValue(
+export function unwrapImgVideoSrcValue(
   propName: string,
   element: RElement,
   value: unknown,

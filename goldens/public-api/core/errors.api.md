@@ -28,9 +28,13 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     ASYNC_INITIALIZERS_STILL_RUNNING = 405,
     // (undocumented)
+    ATTRIBUTE_RESOLVER_ON_CONTAINER = 321,
+    // (undocumented)
     BOOTSTRAP_COMPONENTS_NOT_FOUND = -403,
     // (undocumented)
     COMPONENT_ID_COLLISION = -912,
+    // (undocumented)
+    CONFLICTING_ATTRIBUTE_VALUES = 324,
     // (undocumented)
     CYCLIC_DI_DEPENDENCY = -200,
     // (undocumented)
@@ -81,6 +85,8 @@ export const enum RuntimeErrorCode {
     INJECTOR_ALREADY_DESTROYED = -205,
     // (undocumented)
     INVALID_APP_ID = 211,
+    // (undocumented)
+    INVALID_ATTRIBUTE_RESOLUTION = 320,
     // (undocumented)
     INVALID_BINDING_TARGET = 316,
     // (undocumented)
@@ -133,6 +139,8 @@ export const enum RuntimeErrorCode {
     MISSING_SSR_CONTENT_INTEGRITY_MARKER = -507,
     // (undocumented)
     MISSING_ZONEJS = 908,
+    // (undocumented)
+    MULTIPLE_ATTRIBUTE_RESOLVERS = 323,
     // (undocumented)
     MULTIPLE_COMPONENTS_MATCH = -300,
     // (undocumented)

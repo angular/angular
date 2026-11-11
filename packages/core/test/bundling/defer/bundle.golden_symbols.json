@@ -280,6 +280,7 @@
       "_platformInjector",
       "_populateDehydratedViewsInLContainer",
       "_processI18nInsertBefore",
+      "_refreshAttributeResolvers",
       "_retrieveHydrationInfoImpl",
       "_wasLastNodeCreated",
       "activeConsumer",

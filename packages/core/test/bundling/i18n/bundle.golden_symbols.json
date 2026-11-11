@@ -290,6 +290,7 @@
       "_platformInjector",
       "_prepareI18nBlockForHydrationImpl",
       "_processI18nInsertBefore",
+      "_refreshAttributeResolvers",
       "_retrieveHydrationInfoImpl",
       "_sanitizeHtml",
       "_sanitizeUrl",

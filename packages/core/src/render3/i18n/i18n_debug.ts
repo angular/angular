@@ -85,6 +85,10 @@ export function i18nUpdateOpCodesToString(
         return `(lView[${ref}] as Text).textContent = $$$`;
       case I18nUpdateOpCode.Attr:
         const attrName = parser.consumeString();
+        if (typeof parser.codes[parser.i] === 'number') {
+          const valueIndex = parser.consumeNumber();
+          return `lView[${valueIndex}] = $$$`;
+        }
         const sanitizationFn = parser.consumeFunction();
         const value = sanitizationFn ? `(${sanitizationFn})($$$)` : '$$$';
         return `(lView[${ref}] as Element).setAttribute('${attrName}', ${value})`;

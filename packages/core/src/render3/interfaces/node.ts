@@ -9,6 +9,7 @@ import {AbstractType, Type} from '../../interface/type';
 import {KeyValueArray} from '../../util/array_utils';
 import {TStylingRange} from '../interfaces/styling';
 import {AttributeMarker} from './attribute_marker';
+import type {TAttributeResolver} from './attribute_resolver';
 import {ForeignComponent} from '../../interface/foreign_component';
 
 import {TIcu} from './i18n';
@@ -721,6 +722,13 @@ export interface TNode {
    * inserted so that they can be sorted in priority order.
    */
   styleBindings: TStylingRange;
+
+  /**
+   * One entry per attribute that a resolver binding computes, such as `class`. The attribute's
+   * bindings on such an element record their values instead of writing to the DOM, and the resolver
+   * applies the result once the element's host bindings have run.
+   */
+  attributeResolvers: TAttributeResolver[] | null;
 }
 
 /**

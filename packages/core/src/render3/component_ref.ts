@@ -50,6 +50,7 @@ import {RElement, RNode} from './interfaces/renderer_dom';
 import {
   CONTEXT,
   HEADER_OFFSET,
+  HYDRATION,
   LView,
   LViewEnvironment,
   LViewFlags,
@@ -77,7 +78,7 @@ import {
 } from './node_selector_matcher';
 import {profiler} from './profiler';
 import {executeContentQueries} from './queries/query_execution';
-import {enterView, leaveView} from './state';
+import {enterView, lastNodeWasCreated, leaveView, wasLastNodeCreated} from './state';
 import {debugStringifyTypeForError, stringifyForError} from './util/stringify_utils';
 import {getComponentLViewByIndex, getTNode, storeLViewOnDestroy} from './util/view_utils';
 import {createLView, createTView, getInitialLViewFlagsFromDef} from './view/construction';
@@ -279,6 +280,10 @@ export class ComponentFactory<T> {
     profiler(ProfilerEvent.DynamicComponentStart);
 
     const prevConsumer = setActiveConsumer(null);
+    // Creating the host sets whether the last node was created or claimed by hydration. Restore it,
+    // so that a component created in a constructor doesn't change what the code that creates the
+    // outer node reads.
+    const prevWasLastNodeCreated = wasLastNodeCreated();
     try {
       const cmpDef = this.componentDef;
       ngDevMode && verifyNotAnOrphanComponent(cmpDef);
@@ -317,6 +322,7 @@ export class ComponentFactory<T> {
       }
     } finally {
       setActiveConsumer(prevConsumer);
+      lastNodeWasCreated(prevWasLastNodeCreated);
     }
   }
 
@@ -410,6 +416,13 @@ export class ComponentFactory<T> {
       setupStaticAttributes(hostRenderer, hostElement, hostTNode);
       attachPatchData(hostElement, rootLView);
 
+      // Read before the host's directives are created, so that their attribute resolvers know whether
+      // hydration claimed the host.
+      const hostHydrationInfo = rootSelectorOrNode
+        ? retrieveHydrationInfo(hostElement, rootViewInjector)
+        : null;
+      lastNodeWasCreated(hostHydrationInfo === null);
+
       // TODO(pk): this logic is similar to the instruction code where a node can have directives
       createDirectivesInstances(rootTView, rootLView, hostTNode);
       executeContentQueries(rootTView, hostTNode, rootLView);
@@ -420,6 +433,8 @@ export class ComponentFactory<T> {
       }
 
       componentView = getComponentLViewByIndex(hostTNode.index, rootLView);
+      // `renderComponent` reads the hydration info only if the view doesn't have it yet.
+      componentView[HYDRATION] = hostHydrationInfo;
 
       // TODO(pk): why do we need this logic?
       rootLView[CONTEXT] = componentView[CONTEXT] as T;

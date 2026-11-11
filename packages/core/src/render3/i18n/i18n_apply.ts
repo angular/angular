@@ -427,7 +427,9 @@ function applyUpdateOpCodes(
             switch (opCode & I18nUpdateOpCode.MASK_OPCODE) {
               case I18nUpdateOpCode.Attr:
                 const propName = updateOpCodes[++j] as string;
-                const sanitizeFn = updateOpCodes[++j] as SanitizerFn | null;
+                const sanitizeFnOrValueIndex = updateOpCodes[++j] as SanitizerFn | number | null;
+                const sanitizeFn =
+                  typeof sanitizeFnOrValueIndex === 'number' ? null : sanitizeFnOrValueIndex;
                 const tNodeOrTagName = tView.data[nodeIndex] as TNode | string;
                 ngDevMode && assertDefined(tNodeOrTagName, 'Experting TNode or string');
                 if (typeof tNodeOrTagName === 'string') {
@@ -444,6 +446,11 @@ function applyUpdateOpCodes(
                     sanitizeFn,
                   );
                 } else {
+                  if (typeof sanitizeFnOrValueIndex === 'number') {
+                    // A resolver of the element reads the value.
+                    lView[sanitizeFnOrValueIndex] = value;
+                    break;
+                  }
                   const prevSelectedIndex = getSelectedIndex();
                   setSelectedIndex(nodeIndex);
                   try {

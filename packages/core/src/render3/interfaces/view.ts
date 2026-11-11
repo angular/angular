@@ -839,6 +839,12 @@ export interface TView {
   components: number[] | null;
 
   /**
+   * A list of element indices, each listed once, whose attributes are computed by a resolver
+   * binding. These indices have already been adjusted for the HEADER_OFFSET.
+   */
+  attributeResolvers: number[] | null;
+
+  /**
    * A collection of queries tracked in a given view.
    */
   queries: TQueries | null;

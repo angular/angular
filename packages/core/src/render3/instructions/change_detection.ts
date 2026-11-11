@@ -80,6 +80,7 @@ import {
   viewAttachedToChangeDetector,
 } from '../util/view_utils';
 
+import {_refreshAttributeResolvers} from './attribute_resolver_hook';
 import {executeTemplate} from './shared';
 
 /**
@@ -300,6 +301,11 @@ export function refreshView<T>(
     }
 
     processHostBindingOpCodes(tView, lView);
+
+    // Attributes computed by resolver bindings depend on both template and host bindings.
+    if (tView.attributeResolvers !== null && !isInCheckNoChangesPass) {
+      _refreshAttributeResolvers!(tView, lView);
+    }
 
     // Refresh child component views.
     const components = tView.components;

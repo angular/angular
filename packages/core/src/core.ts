@@ -27,6 +27,26 @@ export {
 } from './animation/interfaces';
 export {ApplicationConfig, mergeApplicationConfig} from './application/application_config';
 export {
+  AttributeResolveEvent,
+  AttributeResolver,
+  AttributeSources,
+  AttributeValue,
+  BoundClassResolver,
+  ClassBindingValue,
+  ClassCallback,
+  ClassResolveEvent,
+  ClassResolver,
+  ClassSources,
+  ResolvedAttribute,
+  ɵRESOLVED_CLASSES_BRAND,
+} from './render3/interfaces/attribute_resolver';
+export {
+  joinTokens,
+  joinValues,
+  lastValue,
+  provideAttributeResolvers,
+} from './render3/attribute_resolver_provider';
+export {
   APP_INITIALIZER,
   ApplicationInitStatus,
   provideAppInitializer,

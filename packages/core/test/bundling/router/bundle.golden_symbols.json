@@ -391,6 +391,8 @@
       "_ngOnChangesFeatureImpl",
       "_platformInjector",
       "_processI18nInsertBefore",
+      "_refreshAttributeResolvers",
+      "_registerAttributeResolverBinding",
       "_retrieveHydrationInfoImpl",
       "_sanitizeUrl",
       "_stashEventListenerImpl",
