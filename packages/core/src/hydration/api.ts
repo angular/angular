@@ -25,6 +25,7 @@ import {enableLocateOrCreateElementContainerNodeImpl} from '../render3/instructi
 import {enableApplyRootElementTransformImpl} from '../render3/instructions/shared';
 import {enableLocateOrCreateContainerAnchorImpl} from '../render3/instructions/template';
 import {enableLocateOrCreateTextNodeImpl} from '../render3/instructions/text';
+import {enableIsRenderedResourceImpl} from '../render3/util/attrs_utils';
 import {TransferState} from '../transfer_state';
 import {performanceMarkFeature} from '../util/performance';
 import {NgZone} from '../zone';
@@ -107,6 +108,7 @@ function enableHydrationRuntimeSupport() {
     enableLocateOrCreateContainerRefImpl();
     enableFindMatchingDehydratedViewImpl();
     enableApplyRootElementTransformImpl();
+    enableIsRenderedResourceImpl();
   }
 }
 
