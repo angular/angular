@@ -24,7 +24,7 @@ When you open the extension, you'll see four additional tabs:
 | [Injector Tree](tools/devtools/injectors) | Lets you visualize the Environment and Element Injector hierarchy                                                      |
 | [Router Tree](tools/devtools/router)      | Lets you visualize the routing tree of your application.                                                               |
 
-A `Transfer State` tab also appears when the application uses hydration. It is not documented yet.
+A `Transfer State` tab also appears when the application uses hydration.
 
 HELPFUL: For users of Chromium based browsers, you might be interested in the [Performance panel integration](/best-practices/profiling-with-chrome-devtools).
 
