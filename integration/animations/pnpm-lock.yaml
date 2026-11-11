@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@angular/cdk':
-        specifier: 22.2.6
-        version: 22.2.6(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/forms@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(rxjs@7.8.2)
+        specifier: 22.2.7
+        version: 22.2.7(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/forms@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(rxjs@7.8.2)
       '@angular/common':
         specifier: link:./in-existing-linked-by-bazel
         version: link:in-existing-linked-by-bazel
@@ -204,8 +204,8 @@ packages:
       vitest:
         optional: true
 
-  '@angular/cdk@22.2.6':
-    resolution: {integrity: sha512-BNAEN+NTWneKcWLi6ZSvbHA99O2AcSQjvnKG/Fa7V9eB+WgXhDRTrfa8qSx2zb57NjFnmABgPWIVkvF76VymEQ==}
+  '@angular/cdk@22.2.7':
+    resolution: {integrity: sha512-S9gJRQVGchy38Y0aYnEfKjFYY34c9sKbbLvwbef6wzGnYvesmsTqskQRbysWvg+F7mZuHuK0uZEDCvEfOZxYbw==}
     peerDependencies:
       '@angular/common': ^22.0.0 || ^23.0.0
       '@angular/core': ^22.0.0 || ^23.0.0
@@ -4312,7 +4312,7 @@ snapshots:
       - tsx
       - yaml
 
-  '@angular/cdk@22.2.6(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/forms@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(rxjs@7.8.2)':
+  '@angular/cdk@22.2.7(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/forms@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(rxjs@7.8.2)':
     dependencies:
       '@angular/common': link:in-existing-linked-by-bazel
       '@angular/core': link:in-existing-linked-by-bazel
