@@ -77,7 +77,6 @@ ts_project(
         exclude = [
             "src/integrationtest/**/*.ts",
             "src/ngtsc/diagnostics/src/error_code.ts",
-            "src/ngtsc/hmr/src/extract_dependencies_output.ts",
             "src/ngtsc/imports/src/core_symbols.ts",
         ],
     ),
@@ -95,7 +94,6 @@ ts_project(
         "//packages/compiler-cli/src/ngtsc/diagnostics:error_code",
         "//packages/compiler-cli/src/ngtsc/docs",
         "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/src/ngtsc/hmr:extract_dependencies_output",
         "//packages/compiler-cli/src/ngtsc/imports",
         "//packages/compiler-cli/src/ngtsc/imports:core_symbols",
         "//packages/compiler-cli/src/ngtsc/incremental",

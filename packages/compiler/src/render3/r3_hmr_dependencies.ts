@@ -6,13 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  DeferBlockDepsEmitMode,
-  R3CompiledExpression,
-  R3ComponentDeferMetadata,
-  R3HmrNamespaceDependency,
-  outputAst as o,
-} from '@angular/compiler';
+import * as o from '../output/output_ast';
+import {R3HmrNamespaceDependency} from './r3_hmr_compiler';
+import {R3CompiledExpression} from './util';
+import {DeferBlockDepsEmitMode, R3ComponentDeferMetadata} from './view/api';
 
 /**
  * The compiled output of a class that HMR inspects for the file-level dependencies it has to

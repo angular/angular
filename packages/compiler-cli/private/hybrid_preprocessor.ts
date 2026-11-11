@@ -8,10 +8,12 @@
 
 export {ErrorCode} from '../src/ngtsc/diagnostics/src/error_code';
 export {validateAndRewriteCoreSymbol} from '../src/ngtsc/imports/src/core_symbols';
+
+// TODO(crisbeto): temporary re-export until we update the preprocessor.
 export {
   extractHmrDependenciesFromOutput,
   PotentialTopLevelReadsVisitor,
   type HmrCompiledOutput,
   type HmrDependencies,
   type HmrReadResolver,
-} from '../src/ngtsc/hmr/src/extract_dependencies_output';
+} from '@angular/compiler';

@@ -215,6 +215,13 @@ export {
   R3HmrMetadata,
   R3HmrNamespaceDependency,
 } from './render3/r3_hmr_compiler';
+export {
+  extractHmrDependenciesFromOutput,
+  HmrCompiledOutput,
+  HmrDependencies,
+  HmrReadResolver,
+  PotentialTopLevelReadsVisitor,
+} from './render3/r3_hmr_dependencies';
 export {Identifiers as R3Identifiers} from './render3/r3_identifiers';
 export {compileInjector, R3InjectorMetadata} from './render3/r3_injector_compiler';
 export {
