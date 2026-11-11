@@ -146,10 +146,10 @@
   ],
   "main": "./dist/client/extension.js",
   "scripts": {
+    "build:wasm": "bazel build //packages/compiler-cli/preprocessor/ng-analyze:wasm",
     "compile": "tsc -p client --noEmit && tsc -p server --noEmit && node build.js",
     "typecheck": "tsc -p client --noEmit && tsc -p server --noEmit",
-    "test": "pnpm run compile && node e2e/build-tests.js && node e2e/runTests.js",
-    "watch": "pnpm --prefix client run watch & pnpm --prefix server run watch"
+    "test": "pnpm run compile && node e2e/build-tests.js && node e2e/runTests.js"
   },
   "dependencies": {
     "@typescript/native-preview": "npm:typescript@7.1.0-dev.20261109.1",
