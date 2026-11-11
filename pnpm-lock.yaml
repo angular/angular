@@ -458,8 +458,8 @@ importers:
         specifier: ^0.6.0
         version: 0.6.1
       cldr:
-        specifier: 8.0.0
-        version: 8.0.0
+        specifier: 9.0.0
+        version: 9.0.0
       cldrjs:
         specifier: 0.5.5
         version: 0.5.5
@@ -5922,8 +5922,8 @@ packages:
     resolution: {integrity: sha512-yKNcXi/Mvi5kb1uK0sahubYiyfUO2EUgOp4NcY9+8NX5Xmc+4yeNogZuLFkpLBBj7/QI9MjRUIuXrV9XOw5kVg==}
     engines: {node: '>= 0.3.0'}
 
-  cldr@8.0.0:
-    resolution: {integrity: sha512-wRq8XBgmVemoq5jJeSWw8Sq1TdsVx02ZZWvfOAio3OEPjkstGprBHTMC3DxI1tmdd7CjS826lIOsdfgJHMu2lg==}
+  cldr@9.0.0:
+    resolution: {integrity: sha512-osC0C6AjmO1usqJ/o83ID3b8rMuEQJhaI0JQDQKw1jpwH+OQbnqQqQxstr8GSY7djbTSXbYXeTBcP0q4EopRmw==}
 
   cldrjs@0.5.5:
     resolution: {integrity: sha512-KDwzwbmLIPfCgd8JERVDpQKrUUM1U4KpFJJg2IROv89rF172lLufoJnqJ/Wea6fXL5bO6WjuLMzY8V52UWPvkA==}
@@ -11462,8 +11462,8 @@ packages:
   xmlchars@2.2.0:
     resolution: {integrity: sha512-JZnDKK8B0RCDw84FNdDAIpZK+JuJw+s7Lz8nksI7SIuU3UXJJslUthsi+uWBUYOwPFwW7W7PRLRfUKpxjtjFCw==}
 
-  xpath@0.0.34:
-    resolution: {integrity: sha512-FxF6+rkr1rNSQrhUNYrAFJpRXNzlDoMxeXN5qI84939ylEv3qqPFKa85Oxr6tDaJKqwW6KKyo2v26TSv3k6LeA==}
+  xpath@0.0.36:
+    resolution: {integrity: sha512-HuqAnJx5YJoDeLub7hhcNoiRvnqqrgoSsI4kLrOtv6XkaUI0zY9ylL4+ULozB35JT1SVMfdexsMqRbTp7bkFGQ==}
     engines: {node: '>=0.6.0'}
 
   xtend@4.0.2:
@@ -16216,7 +16216,7 @@ snapshots:
     dependencies:
       json-parse-helpfulerror: 1.0.3
 
-  cldr@8.0.0:
+  cldr@9.0.0:
     dependencies:
       '@xmldom/xmldom': 0.8.15
       escodegen: 2.1.0
@@ -16226,7 +16226,7 @@ snapshots:
       pegjs: 0.10.0
       seq: 0.3.5
       unicoderegexp: 0.4.1
-      xpath: 0.0.34
+      xpath: 0.0.36
 
   cldrjs@0.5.5: {}
 
@@ -22776,7 +22776,7 @@ snapshots:
 
   xmlchars@2.2.0: {}
 
-  xpath@0.0.34: {}
+  xpath@0.0.36: {}
 
   xtend@4.0.2: {}
 
