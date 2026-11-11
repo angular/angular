@@ -124,9 +124,14 @@ export class HttpInterceptorHandler implements HttpHandler {
     const chain = this.chain;
     if (this.contributeToStability) {
       const removeTask = this.pendingTasks.add();
-      return untracked(() =>
-        chain(initialRequest, (downstreamRequest) => this.backend.handle(downstreamRequest)),
-      ).pipe(finalize(removeTask));
+      try {
+        return untracked(() =>
+          chain(initialRequest, (downstreamRequest) => this.backend.handle(downstreamRequest)),
+        ).pipe(finalize(removeTask));
+      } catch (error) {
+        removeTask();
+        throw error;
+      }
     } else {
       return untracked(() =>
         chain(initialRequest, (downstreamRequest) => this.backend.handle(downstreamRequest)),

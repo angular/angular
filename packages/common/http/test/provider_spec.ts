@@ -36,7 +36,7 @@ import {
   signal,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {EMPTY, Observable, from} from 'rxjs';
+import {EMPTY, firstValueFrom, Observable, from} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
 import {HTTP_ROOT_INTERCEPTOR_FNS, HttpInterceptorFn} from '../src/interceptor';
@@ -56,6 +56,42 @@ import {
 import {resetFetchBackendWarningFlag} from '../src/backend';
 
 describe('without provideHttpClientTesting', () => {
+  for (const kind of ['functional', 'legacy']) {
+    it(`should become stable after a synchronous ${kind} interceptor error`, async () => {
+      const error = new Error('interceptor failed');
+      TestBed.configureTestingModule({
+        providers: [
+          kind === 'functional'
+            ? provideHttpClient(
+                withInterceptors([
+                  () => {
+                    throw error;
+                  },
+                ]),
+              )
+            : [
+                provideHttpClient(withInterceptorsFromDi()),
+                {
+                  provide: HTTP_INTERCEPTORS,
+                  multi: true,
+                  useValue: {
+                    intercept: () => {
+                      throw error;
+                    },
+                  },
+                },
+              ],
+        ],
+      });
+
+      const appRef = TestBed.inject(ApplicationRef);
+      const client = TestBed.inject(HttpClient);
+
+      await expectAsync(firstValueFrom(client.get('/test'))).toBeRejectedWith(error);
+      await expectAsync(appRef.whenStable()).toBeResolved();
+    });
+  }
+
   it('should contribute to stability', async () => {
     TestBed.configureTestingModule({
       providers: [

@@ -6,15 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  EnvironmentInjector,
-  inject,
-  InjectionToken,
-  runInInjectionContext,
-  PendingTasks,
-} from '@angular/core';
+import {EnvironmentInjector, inject, InjectionToken, runInInjectionContext} from '@angular/core';
 import {Observable} from 'rxjs';
-import {finalize} from 'rxjs/operators';
 
 import type {HttpHandler} from './backend';
 
@@ -240,13 +233,6 @@ export function legacyInterceptorFnFactory(): HttpInterceptorFn {
       );
     }
 
-    const pendingTasks = inject(PendingTasks);
-    const contributeToStability = inject(REQUESTS_CONTRIBUTE_TO_STABILITY);
-    if (contributeToStability) {
-      const removeTask = pendingTasks.add();
-      return chain(req, handler).pipe(finalize(removeTask));
-    } else {
-      return chain(req, handler);
-    }
+    return chain(req, handler);
   };
 }
