@@ -122,6 +122,36 @@
       ]
     },
     {
+      "description": "should keep attribute bindings apart from property bindings in interpolation",
+      "inputFiles": ["interpolation_attribute.ts"],
+      "expectations": [
+        {
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"],
+          "files": [
+            {
+              "expected": "interpolation_attribute_template.js",
+              "generated": "interpolation_attribute.js"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should keep one entry for a property and an attribute binding of the same name",
+      "inputFiles": ["interpolation_property_and_attribute.ts"],
+      "expectations": [
+        {
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"],
+          "files": [
+            {
+              "expected": "interpolation_property_and_attribute_template.js",
+              "generated": "interpolation_property_and_attribute.js"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "description": "should correctly bind to context in nested template",
       "inputFiles": ["interpolation_nested_context.ts"],
       "expectations": [

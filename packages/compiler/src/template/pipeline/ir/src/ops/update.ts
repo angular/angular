@@ -1003,6 +1003,12 @@ export interface I18nExpressionOp
    */
   name: string;
 
+  /**
+   * Whether the expression belongs to an attribute binding without a namespace, such as
+   * `attr.title="Hi {{name}}"`, rather than to a property binding.
+   */
+  isAttributeBinding: boolean;
+
   sourceSpan: ParseSourceSpan;
 }
 
@@ -1020,6 +1026,7 @@ export function createI18nExpressionOp(
   resolutionTime: I18nParamResolutionTime,
   usage: I18nExpressionFor,
   name: string,
+  isAttributeBinding: boolean,
   sourceSpan: ParseSourceSpan,
 ): I18nExpressionOp {
   return {
@@ -1034,6 +1041,7 @@ export function createI18nExpressionOp(
     resolutionTime,
     usage,
     name,
+    isAttributeBinding,
     sourceSpan,
     ...NEW_OP,
     ...TRAIT_CONSUMES_VARS,

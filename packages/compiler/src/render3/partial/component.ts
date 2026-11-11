@@ -8,7 +8,8 @@
 import * as core from '../../core';
 import * as o from '../../output/output_ast';
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../parse_util';
-import {RecursiveVisitor, visitAll} from '../r3_ast';
+import {BoundEvent, Element, RecursiveVisitor, Template, visitAll} from '../r3_ast';
+import {getAttributeResolver} from '../r3_attribute_resolver';
 import {Identifiers as R3} from '../r3_identifiers';
 import {generateForwardRef, R3CompiledExpression} from '../util';
 import {
@@ -28,7 +29,7 @@ import {
   R3DeclareNgModuleDependencyMetadata,
   R3DeclarePipeDependencyMetadata,
 } from './api';
-import {createDirectiveDefinitionMap} from './directive';
+import {createDirectiveDefinitionMap, hasHostAttributeResolver} from './directive';
 import {toOptionalLiteralArray} from './util';
 
 export interface DeclareComponentTemplateInfo {
@@ -88,6 +89,8 @@ function createComponentDefinitionMap(
     createDirectiveDefinitionMap(meta);
   const blockVisitor = new BlockPresenceVisitor();
   visitAll(blockVisitor, template.nodes);
+  const attributeResolverVisitor = new AttributeResolverPresenceVisitor();
+  visitAll(attributeResolverVisitor, template.nodes);
 
   definitionMap.set('template', getTemplateExpression(template, templateInfo));
 
@@ -99,6 +102,12 @@ function createComponentDefinitionMap(
   // We don't do this for templates without blocks, in order to preserve backwards compatibility.
   if (blockVisitor.hasBlocks) {
     definitionMap.set('minVersion', o.literal('17.0.0'));
+  }
+
+  // Checks the host again, because the blocks rule above overwrites the version that
+  // `createDirectiveDefinitionMap` set for a host resolver.
+  if (hasHostAttributeResolver(meta) || attributeResolverVisitor.hasAttributeResolver) {
+    definitionMap.set('minVersion', o.literal('22.3.0'));
   }
 
   definitionMap.set('styles', toOptionalLiteralArray(meta.styles, o.literal));
@@ -284,5 +293,34 @@ class BlockPresenceVisitor extends RecursiveVisitor {
 
   override visitSwitchBlockCaseGroup(): void {
     this.hasBlocks = true;
+  }
+}
+
+/**
+ * Finds a resolver in a template, in either form. A resolver on `<ng-container>` or
+ * `<ng-template>` counts as well: it compiles to the same instruction, which an older linker
+ * compiles to a listener.
+ */
+class AttributeResolverPresenceVisitor extends RecursiveVisitor {
+  hasAttributeResolver = false;
+
+  override visitElement(element: Element): void {
+    this.visitOutputs(element.outputs);
+    super.visitElement(element);
+  }
+
+  override visitTemplate(template: Template): void {
+    this.visitOutputs(template.outputs);
+    super.visitTemplate(template);
+  }
+
+  private visitOutputs(outputs: BoundEvent[]): void {
+    if (
+      outputs.some(
+        (output) => getAttributeResolver(output.name, output.type, output.target) !== null,
+      )
+    ) {
+      this.hasAttributeResolver = true;
+    }
   }
 }

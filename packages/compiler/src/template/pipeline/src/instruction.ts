@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {AttributeResolverFlags} from '../../../core';
 import * as o from '../../../output/output_ast';
 import {ParseSourceSpan} from '../../../parse_util';
 import {Identifiers} from '../../../render3/r3_identifiers';
@@ -231,6 +232,19 @@ export function listener(
   return call(
     syntheticHost ? Identifiers.syntheticHostListener : Identifiers.listener,
     args,
+    sourceSpan,
+  );
+}
+
+export function attributeResolver(
+  name: string,
+  handlerFn: o.Expression,
+  flags: AttributeResolverFlags,
+  sourceSpan: ParseSourceSpan,
+): ir.CreateOp {
+  return call(
+    Identifiers.attributeResolver,
+    [o.literal(name), handlerFn, o.literal(flags)],
     sourceSpan,
   );
 }

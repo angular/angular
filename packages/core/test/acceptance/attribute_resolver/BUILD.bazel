@@ -8,6 +8,11 @@ ts_project(
     srcs = glob(["**/*.ts"]),
     deps = [
         "//packages/core",
+        "//packages/core/testing",
+        "//packages/localize",
+        "//packages/localize/init",
+        "//packages/platform-browser",
+        "//packages/private/testing",
     ],
 )
 

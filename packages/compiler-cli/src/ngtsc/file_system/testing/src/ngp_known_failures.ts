@@ -67,6 +67,9 @@ const NGP_INTENTIONAL_BEHAVIOR_DIFFERENCES: ReadonlySet<string> = new Set([
   'ngtsc behavioral tests input transforms should compile an input with using an ambient type in the transform function',
 
   // Partial compilation isn't implemented in ngp.
+  'ngtsc behavioral tests class resolver declarations should not require 22.3.0 in the partial declaration of a host (window:class) listener',
+  'ngtsc behavioral tests class resolver declarations should require 22.3.0 in the partial declaration of (attr.class) on an ng-container',
+  'ngtsc behavioral tests class resolver declarations should require 22.3.0 in the partial declaration of (class) on an ng-container',
   'ngtsc behavioral tests cycle detection should detect a simple cycle and fatally error if doing partial-compilation',
 
   // Design difference, not a bug: on an `@Inject` parameter whose type is imported from another
@@ -131,6 +134,12 @@ const NGP_INTENTIONAL_BEHAVIOR_DIFFERENCES: ReadonlySet<string> = new Set([
 const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'import generation should report an error when a library entry-point does not export the symbol',
   'import generation should report an error when using a directive outside of rootDirs',
+
+  // NGP doesn't check the resolvers of host metadata.
+  'ngtsc behavioral tests attribute resolver declarations should report a @HostListener name that the parser trims into a resolver',
+  'ngtsc behavioral tests attribute resolver declarations should report a host (attr.href)',
+  'ngtsc behavioral tests attribute resolver declarations should report a host (attr.onclick)',
+  'ngtsc behavioral tests attribute resolver declarations should report a host (attr.xlink:title)',
 
   // API documentation extraction (`getApiDocumentation`) is not implemented in NGP.
   'ngtsc NgModule docs extraction should extract NgModule info',

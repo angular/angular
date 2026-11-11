@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import * as o from '../../output/output_ast';
+import {getHostListenerAttributeResolver} from '../r3_attribute_resolver';
 import {Identifiers as R3} from '../r3_identifiers';
 import {
   convertFromMaybeForwardRefExpression,
@@ -153,7 +154,20 @@ function getMinimumVersionForPartialOutput(meta: R3DirectiveMetadata): string {
     minVersion = '17.2.0';
   }
 
+  // A `class` or `attr.*` host listener is a resolver, which older linkers compile to a
+  // plain listener.
+  if (hasHostAttributeResolver(meta)) {
+    minVersion = '22.3.0';
+  }
+
   return minVersion;
+}
+
+/** Gets whether the given directive declares a resolver in its host. */
+export function hasHostAttributeResolver(meta: R3DirectiveMetadata): boolean {
+  return Object.keys(meta.host.listeners).some(
+    (key) => getHostListenerAttributeResolver(key) !== null,
+  );
 }
 
 /**

@@ -1,0 +1,223 @@
+{
+  "$schema": "../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should create a class resolver instruction for (class) on an element",
+      "inputFiles": ["class_resolver_element.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "class_resolver_element_template.js",
+              "generated": "class_resolver_element.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should create a class resolver instruction for (class) on a component",
+      "inputFiles": ["class_resolver_component.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "class_resolver_component_template.js",
+              "generated": "class_resolver_component.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should call an arrow function from a (class) shorthand with the resolver",
+      "inputFiles": ["class_resolver_arrow_function.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "class_resolver_arrow_function_template.js",
+              "generated": "class_resolver_arrow_function.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should create a class resolver instruction for (class) in host bindings",
+      "inputFiles": ["class_resolver_host.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "class_resolver_host_host_bindings.js",
+              "generated": "class_resolver_host.js"
+            }
+          ],
+          "failureMessage": "Incorrect host bindings"
+        }
+      ]
+    },
+    {
+      "description": "should create class resolver instructions for (class) and (attr.class) on an ng-template",
+      "inputFiles": ["class_resolver_ng_template.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "class_resolver_ng_template_template.js",
+              "generated": "class_resolver_ng_template.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should create a class resolver instruction for (class) inside a block",
+      "inputFiles": ["class_resolver_with_blocks.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "class_resolver_with_blocks_template.js",
+              "generated": "class_resolver_with_blocks.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should require 22.3.0 for a host class resolver when the template has blocks",
+      "inputFiles": ["class_resolver_host_with_blocks.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "class_resolver_host_with_blocks_host_bindings.js",
+              "generated": "class_resolver_host_with_blocks.js"
+            }
+          ],
+          "failureMessage": "Incorrect host bindings"
+        }
+      ]
+    },
+    {
+      "description": "should create a full-form class resolver instruction for (attr.class) on an element",
+      "inputFiles": ["class_resolver_attr_class_element.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "class_resolver_attr_class_element_template.js",
+              "generated": "class_resolver_attr_class_element.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should create a full-form class resolver instruction for (attr.class) in host bindings",
+      "inputFiles": ["class_resolver_attr_class_host.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "class_resolver_attr_class_host_host_bindings.js",
+              "generated": "class_resolver_attr_class_host.js"
+            }
+          ],
+          "failureMessage": "Incorrect host bindings"
+        }
+      ]
+    },
+    {
+      "description": "should call a (class) shorthand's callback like its literal (attr.class) expansion with legacyOptionalChaining",
+      "inputFiles": ["class_resolver_shorthand_safe_read.ts"],
+      "compilationModeFilter": ["full compile", "instruction compile"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "class_resolver_shorthand_safe_read_template.js",
+              "generated": "class_resolver_shorthand_safe_read.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ],
+      "angularCompilerOptions": {
+        "legacyOptionalChaining": true
+      }
+    },
+    {
+      "description": "should call a host (class) shorthand's callback like its literal (attr.class) expansion with legacyOptionalChaining",
+      "inputFiles": ["class_resolver_shorthand_safe_read_host.ts"],
+      "compilationModeFilter": ["full compile", "instruction compile"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "class_resolver_shorthand_safe_read_host_host_bindings.js",
+              "generated": "class_resolver_shorthand_safe_read_host.js"
+            }
+          ],
+          "failureMessage": "Incorrect host bindings"
+        }
+      ],
+      "angularCompilerOptions": {
+        "legacyOptionalChaining": true
+      }
+    },
+    {
+      "description": "should create an attribute resolver instruction for (attr.role) on an element",
+      "inputFiles": ["attribute_resolver_role_element.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "attribute_resolver_role_element_template.js",
+              "generated": "attribute_resolver_role_element.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should create an attribute resolver before the i18n attributes of its element",
+      "inputFiles": ["attribute_resolver_i18n_attribute.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "attribute_resolver_i18n_attribute_template.js",
+              "generated": "attribute_resolver_i18n_attribute.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should create an attribute resolver instruction for (attr.role) in host bindings",
+      "inputFiles": ["attribute_resolver_role_host.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "attribute_resolver_role_host_host_bindings.js",
+              "generated": "attribute_resolver_role_host.js"
+            }
+          ],
+          "failureMessage": "Incorrect host bindings"
+        }
+      ]
+    }
+  ]
+}

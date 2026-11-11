@@ -16,7 +16,7 @@ import {TypeScriptAstHost} from '../../src/ast/typescript/typescript_ast_host';
 import {DeclarationScope} from '../../src/file_linker/declaration_scope';
 import {FileLinker} from '../../src/file_linker/file_linker';
 import {LinkerEnvironment} from '../../src/file_linker/linker_environment';
-import {DEFAULT_LINKER_OPTIONS} from '../../src/file_linker/linker_options';
+import {DEFAULT_LINKER_OPTIONS, LinkerOptions} from '../../src/file_linker/linker_options';
 import {PartialDirectiveLinkerVersion1} from '../../src/file_linker/partial_linkers/partial_directive_linker_1';
 
 import {generate} from './helpers';
@@ -364,6 +364,74 @@ describe('FileLinker', () => {
     });
   });
 
+  describe('attribute resolvers in host listeners', () => {
+    function linkDirectiveWithListener(
+      name: string,
+      versions: {minVersion?: string; version?: string} = {},
+    ): string {
+      return linkDirectiveWithHost(`listeners: {"${name}": "f($event)"}`, versions);
+    }
+
+    function linkDirectiveWithHost(
+      host: string,
+      {minVersion = '0.0.0-PLACEHOLDER', version = '22.3.0'} = {},
+    ): string {
+      const source = `
+        ɵɵngDeclareDirective({
+          minVersion: "${minVersion}",
+          version: "${version}",
+          ngImport: core,
+          host: {${host}},
+          type: SomeDir
+        });
+      `;
+
+      // The test linker's own version is the placeholder `0.0.0`, which no released `minVersion`
+      // satisfies. A released linker links such a declaration with its latest partial linker,
+      // which is what `ignore` selects here.
+      const {fileLinker} = createFileLinker(source, {unknownDeclarationVersionHandling: 'ignore'});
+      const sourceFile = ts.createSourceFile('', source, ts.ScriptTarget.Latest, true);
+      const call = (sourceFile.statements[0] as ts.ExpressionStatement)
+        .expression as ts.CallExpression;
+      const result = fileLinker.linkPartialDeclaration(
+        'ɵɵngDeclareDirective',
+        [call.arguments[0]],
+        new MockDeclarationScope(),
+      );
+      return ts.createPrinter().printNode(ts.EmitHint.Unspecified, result, sourceFile);
+    }
+
+    it('should link an (attr.role) listener to an attribute resolver', () => {
+      expect(linkDirectiveWithListener('attr.role')).toContain('ɵɵattributeResolver("role"');
+    });
+
+    const olderLibrary = {minVersion: '14.0.0', version: '22.2.0'};
+
+    it('should reject an (attr.href) listener of an older library', () => {
+      expect(() => linkDirectiveWithListener('attr.href', olderLibrary)).toThrowError(
+        `Can't resolve the 'href' attribute in a host binding, because its value needs ` +
+          `sanitization on some elements.`,
+      );
+    });
+
+    it('should reject a namespaced (attr.xlink:title) listener of an older library', () => {
+      expect(() => linkDirectiveWithListener('attr.xlink:title', olderLibrary)).toThrowError(
+        `Can't resolve the namespaced attribute 'xlink:title'. Only attributes without a ` +
+          `namespace can be resolved.`,
+      );
+    });
+
+    it('should report an invalid host binding before a rejected resolver', () => {
+      const host = `
+        properties: {"attr.:onclick": "payload"},
+        listeners: {"attr.href": "resolve($event)"}
+      `;
+      expect(() => linkDirectiveWithHost(host, olderLibrary)).toThrowError(
+        `Invalid attribute name ':onclick'. Attribute names cannot start with a colon.`,
+      );
+    });
+  });
+
   describe('getConstantStatements()', () => {
     it('should capture shared constant values', () => {
       const {fileLinker} = createFileLinker();
@@ -447,7 +515,10 @@ describe('FileLinker', () => {
     });
   });
 
-  function createFileLinker(code = '// test code'): {
+  function createFileLinker(
+    code = '// test code',
+    options: Partial<LinkerOptions> = {},
+  ): {
     host: AstHost<ts.Expression>;
     fileLinker: FileLinker<MockConstantScopeRef, ts.Statement, ts.Expression, ts.TypeNode>;
   } {
@@ -458,7 +529,7 @@ describe('FileLinker', () => {
       logger,
       new TypeScriptAstHost(),
       new TypeScriptAstFactory(/* annotateForClosureCompiler */ false),
-      DEFAULT_LINKER_OPTIONS,
+      {...DEFAULT_LINKER_OPTIONS, ...options},
     );
     const fileLinker = new FileLinker<
       MockConstantScopeRef,

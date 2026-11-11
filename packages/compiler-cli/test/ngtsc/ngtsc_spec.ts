@@ -3670,6 +3670,149 @@ runInEachFileSystem((os: string) => {
       });
     });
 
+    describe('class resolver declarations', () => {
+      for (const [form, binding] of [
+        ['(class)', '(class)="resolve"'],
+        ['(attr.class)', '(attr.class)="capture($event)"'],
+      ]) {
+        it(`should require 22.3.0 in the partial declaration of ${form} on an ng-container`, () => {
+          // The binding sits on an ng-container in the body of an ng-template, so the version is
+          // detected in a nested template.
+          env.tsconfig({compilationMode: 'partial', strictTemplates: false});
+          env.write(
+            'test.ts',
+            `
+            import {ClassCallback, ClassResolveEvent, Component} from '@angular/core';
+
+            @Component({
+              selector: 'test',
+              template: '<ng-template><ng-container ${binding}></ng-container></ng-template>',
+            })
+            export class TestCmp {
+              resolve: ClassCallback = (cn) => cn();
+              capture(event: ClassResolveEvent) {}
+            }
+          `,
+          );
+
+          env.driveMain();
+          expect(env.getContents('test.js')).toMatch(
+            /ɵɵngDeclareComponent\(\{\s*minVersion: "22\.3\.0"/,
+          );
+        });
+      }
+
+      it('should not require 22.3.0 in the partial declaration of a host (window:class) listener', () => {
+        env.tsconfig({compilationMode: 'partial'});
+        env.write(
+          'test.ts',
+          `
+          import {Directive} from '@angular/core';
+
+          @Directive({selector: '[dir]', host: {'(window:class)': 'onClass()'}})
+          export class Dir {
+            onClass() {}
+          }
+        `,
+        );
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).toContain(`"window:class": "onClass()"`);
+        expect(jsContents).not.toMatch(/minVersion: "22\.3\.0"/);
+      });
+    });
+
+    describe('attribute resolver declarations', () => {
+      function getSingleDiagnostic(): ts.Diagnostic {
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        return diags[0];
+      }
+
+      function writeHost(host: string): void {
+        env.write(
+          'test.ts',
+          `
+          import {ClassCallback, Directive} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+            host: ${host},
+          })
+          export class Dir {
+            resolve: ClassCallback = (cn) => cn();
+            capture(event: unknown) {}
+            other(event: unknown) {}
+          }
+        `,
+        );
+      }
+
+      it('should report a @HostListener name that the parser trims into a resolver', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Directive, HostListener} from '@angular/core';
+
+          @Directive({selector: '[dir]'})
+          export class Dir {
+            @HostListener(' attr.xlink:href', ['$event'])
+            capture(event: unknown) {}
+          }
+        `,
+        );
+
+        const diag = getSingleDiagnostic();
+        expect(diag.code).toBe(ngErrorCode(ErrorCode.HOST_BINDING_PARSE_ERROR));
+        expect(diag.messageText).toBe(
+          `Can't resolve the namespaced attribute 'xlink:href'. Only attributes without a ` +
+            `namespace can be resolved.`,
+        );
+      });
+
+      it('should report a host (attr.href)', () => {
+        writeHost(`{'(attr.href)': 'capture($event)'}`);
+
+        const diag = getSingleDiagnostic();
+        expect(diag.code).toBe(ngErrorCode(ErrorCode.HOST_BINDING_PARSE_ERROR));
+        expect(diag.messageText).toBe(
+          `Can't resolve the 'href' attribute in a host binding, because its value needs ` +
+            `sanitization on some elements.`,
+        );
+        expect(getDiagnosticSourceCode(diag)).toBe(`'(attr.href)'`);
+      });
+
+      it('should report a host (attr.onclick)', () => {
+        writeHost(`{'(attr.onclick)': 'capture($event)'}`);
+
+        const diag = getSingleDiagnostic();
+        expect(diag.code).toBe(ngErrorCode(ErrorCode.HOST_BINDING_PARSE_ERROR));
+        expect(diag.messageText).toBe(
+          `Can't resolve the event attribute 'onclick' for security reasons.`,
+        );
+        expect(getDiagnosticSourceCode(diag)).toBe(`'(attr.onclick)'`);
+      });
+
+      it('should report a host (attr.xlink:title)', () => {
+        writeHost(`{'(attr.xlink:title)': 'capture($event)'}`);
+
+        const diag = getSingleDiagnostic();
+        expect(diag.code).toBe(ngErrorCode(ErrorCode.HOST_BINDING_PARSE_ERROR));
+        expect(diag.messageText).toBe(
+          `Can't resolve the namespaced attribute 'xlink:title'. Only attributes without a ` +
+            `namespace can be resolved.`,
+        );
+        expect(getDiagnosticSourceCode(diag)).toBe(`'(attr.xlink:title)'`);
+      });
+
+      it('should accept a host (attr.title)', () => {
+        writeHost(`{'(attr.title)': 'capture($event)'}`);
+
+        expect(env.driveDiagnostics()).toEqual([]);
+      });
+    });
+
     describe('multiple decorators on classes', () => {
       it('should compile @Injectable on Components, Directives, Pipes, and Modules', () => {
         env.write(

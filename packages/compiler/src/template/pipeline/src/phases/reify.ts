@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {AttributeResolverFlags} from '../../../../core';
 import * as o from '../../../../output/output_ast';
 import {Identifiers} from '../../../../render3/r3_identifiers';
 import {isUnsafeObjectKey} from '../../../../render3/util';
@@ -327,6 +328,17 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
           throw new Error(
             `Unexpected global target '${op.eventTarget}' defined for '${op.name}' event. Supported list of global targets: window,document,body.`,
           );
+        }
+        if (op.attributeResolver !== null) {
+          const flags =
+            op.attributeResolver.form === 'shorthand'
+              ? AttributeResolverFlags.FullForm | AttributeResolverFlags.Shorthand
+              : AttributeResolverFlags.FullForm;
+          ir.OpList.replace(
+            op,
+            ng.attributeResolver(op.attributeResolver.attribute, listenerFn, flags, op.sourceSpan),
+          );
+          break;
         }
         ir.OpList.replace(
           op,

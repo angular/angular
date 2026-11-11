@@ -23,6 +23,7 @@ import {
   R3InputMetadata,
   R3PartialDeclaration,
   R3QueryMetadata,
+  verifyHostAttributeResolvers,
   verifyHostBindings,
 } from '@angular/compiler';
 
@@ -78,6 +79,7 @@ export function toR3DirectiveMeta<TExpression>(
     );
   }
 
+  const typeSourceSpan = createSourceSpan(typeExpr.getRange(), code, sourceUrl);
   const host = toHostMetadata(metaObj);
   // Partial declarations are external linker inputs, so validate them before emitting host code.
   if (metaObj.has('host')) {
@@ -86,10 +88,18 @@ export function toR3DirectiveMeta<TExpression>(
     if (errors.length > 0) {
       throw new FatalLinkerError(hostMeta.expression, errors.map((error) => error.msg).join('\n'));
     }
+    // A listener of a library declared before resolvers existed is a resolver too.
+    const resolverError = verifyHostAttributeResolvers(host.listeners, typeSourceSpan);
+    if (resolverError !== null) {
+      throw new FatalLinkerError(
+        metaObj.getObject('host').getValue('listeners').expression,
+        resolverError.message,
+      );
+    }
   }
 
   return {
-    typeSourceSpan: createSourceSpan(typeExpr.getRange(), code, sourceUrl),
+    typeSourceSpan,
     type: wrapReference(typeExpr.getOpaque()),
     typeArgumentCount: 0,
     deps: null,

@@ -15,6 +15,7 @@ import {CompilationJobKind, TemplateCompilationMode} from '../../template/pipeli
 import {emitHostBindingFunction, emitTemplateFn, transform} from '../../template/pipeline/src/emit';
 import {ingestComponent, ingestHostBinding} from '../../template/pipeline/src/ingest';
 import {BindingParser} from '../../template_parser/binding_parser';
+import {getAttributeResolver, getAttributeResolverError} from '../r3_attribute_resolver';
 import {Identifiers as R3} from '../r3_identifiers';
 import {R3CompiledExpression, tsIgnoreComment, typeWithParameters} from '../util';
 
@@ -583,6 +584,44 @@ export function verifyHostBindings(
   validateNoEventBindings(bindings, bindingParser, sourceSpan);
 
   return bindingParser.errors;
+}
+
+/** An error in the attribute resolvers that the listeners of a host declare. */
+export interface HostAttributeResolverError {
+  /** Key of the listener, without parentheses, such as `attr.href`. */
+  readonly listener: string;
+
+  /** Description of the error. */
+  readonly message: string;
+}
+
+/**
+ * Verifies the attribute resolvers that host listeners declare.
+ * @param listeners host listeners, keyed by event name without parentheses.
+ * @param sourceSpan source span where the host bindings were defined.
+ * @returns the first error, or `null`.
+ */
+export function verifyHostAttributeResolvers(
+  listeners: {[key: string]: string},
+  sourceSpan: ParseSourceSpan,
+): HostAttributeResolverError | null {
+  const bindingParser = makeBindingParser();
+  for (const listener of Object.keys(listeners)) {
+    const events =
+      bindingParser.createDirectiveHostEventAsts({[listener]: listeners[listener]}, sourceSpan) ??
+      [];
+    for (const event of events) {
+      const resolver = getAttributeResolver(event.name, event.type, event.targetOrPhase);
+      if (resolver === null) {
+        continue;
+      }
+      const message = getAttributeResolverError(resolver.attribute, null);
+      if (message !== null) {
+        return {listener, message};
+      }
+    }
+  }
+  return null;
 }
 
 /**

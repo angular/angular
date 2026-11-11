@@ -17,6 +17,7 @@ import {
   ExternalExpr,
   ExternalReference,
   ForwardRefHandling,
+  getHostListenerAttributeResolver,
   getSafePropertyAccessString,
   HostBindingDecorator,
   HostListenerDecorator,
@@ -36,6 +37,7 @@ import {
   R3QueryMetadata,
   R3Reference,
   SourceNode,
+  verifyHostAttributeResolvers,
   verifyHostBindings,
   WrappedNodeExpr,
 } from '@angular/compiler';
@@ -758,6 +760,24 @@ function extractHostBindings(
               );
             }
             args = resolvedArgs;
+          }
+        }
+
+        // A listener named like a resolver binding compiles to a resolver of the attribute.
+        const resolver = getHostListenerAttributeResolver(eventName);
+        if (resolver !== null) {
+          const resolverError = verifyHostAttributeResolvers(
+            {[eventName]: `${member.name}(${args.join(',')})`},
+            createSourceSpan(decorator.node),
+          );
+          if (resolverError !== null) {
+            throw new FatalDiagnosticError(
+              ErrorCode.HOST_BINDING_PARSE_ERROR,
+              decorator.args !== null && decorator.args.length > 0
+                ? decorator.args[0]
+                : decorator.node,
+              resolverError.message,
+            );
           }
         }
 
@@ -2083,7 +2103,36 @@ function evaluateHostExpressionBindings(
     );
   }
 
+  const resolverError = verifyHostAttributeResolvers(
+    bindings.listeners,
+    createSourceSpan(hostExpr),
+  );
+  if (resolverError !== null) {
+    // A listener's key is its event name in parentheses.
+    const property = getHostProperty(hostExpr, `(${resolverError.listener})`);
+    throw new FatalDiagnosticError(
+      ErrorCode.HOST_BINDING_PARSE_ERROR,
+      property?.name ?? hostExpr,
+      resolverError.message,
+    );
+  }
+
   return bindings;
+}
+
+function getHostProperty(hostExpr: ts.Expression, key: string): ts.PropertyAssignment | null {
+  if (ts.isObjectLiteralExpression(hostExpr)) {
+    for (const prop of hostExpr.properties) {
+      if (
+        ts.isPropertyAssignment(prop) &&
+        ts.isStringLiteral(prop.name) &&
+        prop.name.text === key
+      ) {
+        return prop;
+      }
+    }
+  }
+  return null;
 }
 
 /**

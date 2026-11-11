@@ -101,6 +101,7 @@ export function convertI18nText(job: CompilationJob): void {
                 resolutionTime,
                 ir.I18nExpressionFor.I18nText,
                 '',
+                false,
                 expr.sourceSpan ?? op.sourceSpan,
               ),
             );

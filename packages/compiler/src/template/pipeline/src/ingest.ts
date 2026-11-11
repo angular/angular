@@ -14,6 +14,7 @@ import {splitNsName} from '../../../ml_parser/tags';
 import * as o from '../../../output/output_ast';
 import {ParseError, ParseSourceSpan} from '../../../parse_util';
 import * as t from '../../../render3/r3_ast';
+import {getAttributeResolver} from '../../../render3/r3_attribute_resolver';
 import {
   DeferBlockDepsEmitMode,
   R3ComponentDeferMetadata,
@@ -286,17 +287,22 @@ function ingestHostEvent(job: HostBindingCompilationJob, event: e.ParsedEvent) {
         ? [null, event.targetOrPhase]
         : [event.targetOrPhase, null];
 
-    eventBinding = ir.createListenerOp(
+    const attributeResolver = getAttributeResolver(event.name, event.type, target);
+    const listenerOp = ir.createListenerOp(
       job.root.xref,
       new ir.SlotHandle(),
       event.name,
       null,
-      makeListenerHandlerOps(job.root, event.handler, event.handlerSpan),
+      attributeResolver?.form === 'shorthand'
+        ? makeShorthandHandlerOps(job.root, event.handler, event.handlerSpan)
+        : makeListenerHandlerOps(job.root, event.handler, event.handlerSpan),
       phase,
       target,
       true,
       event.sourceSpan,
     );
+    listenerOp.attributeResolver = attributeResolver;
+    eventBinding = listenerOp;
   }
   job.root.create.push(eventBinding);
 }
@@ -1658,19 +1664,24 @@ function ingestElementBindings(
         ),
       );
     } else {
-      unit.create.push(
-        ir.createListenerOp(
-          op.xref,
-          op.handle,
-          output.name,
-          op.tag,
-          makeListenerHandlerOps(unit, output.handler, output.handlerSpan),
-          output.phase,
-          output.target,
-          false,
-          output.sourceSpan,
-        ),
+      // On `<ng-container>`, a resolver binding still compiles to a resolver, which the runtime
+      // reports.
+      const attributeResolver = getAttributeResolver(output.name, output.type, output.target);
+      const listenerOp = ir.createListenerOp(
+        op.xref,
+        op.handle,
+        output.name,
+        op.tag,
+        attributeResolver?.form === 'shorthand'
+          ? makeShorthandHandlerOps(unit, output.handler, output.handlerSpan)
+          : makeListenerHandlerOps(unit, output.handler, output.handlerSpan),
+        output.phase,
+        output.target,
+        false,
+        output.sourceSpan,
       );
+      listenerOp.attributeResolver = attributeResolver;
+      unit.create.push(listenerOp);
     }
   }
 
@@ -1793,19 +1804,24 @@ function ingestTemplateBindings(
           ),
         );
       } else {
-        unit.create.push(
-          ir.createListenerOp(
-            op.xref,
-            op.handle,
-            output.name,
-            op.tag,
-            makeListenerHandlerOps(unit, output.handler, output.handlerSpan),
-            output.phase,
-            output.target,
-            false,
-            output.sourceSpan,
-          ),
+        // As on `<ng-container>`, a resolver binding compiles to a resolver, which the runtime
+        // reports.
+        const attributeResolver = getAttributeResolver(output.name, output.type, output.target);
+        const listenerOp = ir.createListenerOp(
+          op.xref,
+          op.handle,
+          output.name,
+          op.tag,
+          attributeResolver?.form === 'shorthand'
+            ? makeShorthandHandlerOps(unit, output.handler, output.handlerSpan)
+            : makeListenerHandlerOps(unit, output.handler, output.handlerSpan),
+          output.phase,
+          output.target,
+          false,
+          output.sourceSpan,
         );
+        listenerOp.attributeResolver = attributeResolver;
+        unit.create.push(listenerOp);
       }
     }
     if (
@@ -1991,6 +2007,38 @@ function makeListenerHandlerOps(
     ),
   );
   handlerOps.push(ir.createStatementOp(new o.ReturnStatement(returnExpr, returnExpr.sourceSpan)));
+  return handlerOps;
+}
+
+/**
+ * Makes the handler of a shorthand, such as `(class)`. `(class)="F"` means exactly
+ * `(attr.class)="$event.resolve((F)($event.resolver))"`.
+ */
+function makeShorthandHandlerOps(
+  unit: CompilationUnit,
+  handler: e.AST,
+  handlerSpan: ParseSourceSpan,
+): ir.UpdateOp[] {
+  handler = astOf(handler);
+  const handlerOps = new Array<ir.UpdateOp>();
+  const handlerExprs: e.AST[] = handler instanceof e.Chain ? handler.expressions : [handler];
+  if (handlerExprs.length === 0) {
+    throw new Error('Expected listener to have non-empty expression list.');
+  }
+  const expressions = handlerExprs.map((expr) => convertAst(expr, unit.job, handlerSpan));
+  const callback = expressions.pop()!;
+  handlerOps.push(
+    ...expressions.map((e) =>
+      ir.createStatementOp<ir.UpdateOp>(new o.ExpressionStatement(e, e.sourceSpan)),
+    ),
+  );
+  // The parentheses keep the call out of a safe read in `F`, as in `(choice?.classes)(resolver)`.
+  const parenthesized = new o.ParenthesizedExpr(callback, undefined, callback.sourceSpan);
+  const resolver = new ir.LexicalReadExpr('$event').prop('resolver');
+  const resolveExpr = new ir.LexicalReadExpr('$event')
+    .prop('resolve')
+    .callFn([parenthesized.callFn([resolver], callback.sourceSpan)], callback.sourceSpan);
+  handlerOps.push(ir.createStatementOp(new o.ReturnStatement(resolveExpr, callback.sourceSpan)));
   return handlerOps;
 }
 

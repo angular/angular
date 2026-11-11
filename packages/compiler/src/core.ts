@@ -322,4 +322,16 @@ export const enum AttributeMarker {
   I18n = 6,
 }
 
+// Pasted from render3/interfaces/attribute_resolver.ts
+/**
+ * Flags of a `ɵɵattributeResolver` registration.
+ */
+export const enum AttributeResolverFlags {
+  /** The handler receives a resolve event. */
+  FullForm = 1 << 0,
+
+  /** The handler was compiled from a shorthand, whose result must come from its event. */
+  Shorthand = 1 << 1,
+}
+
 export {SecurityContext} from './schema/dom_security_schema';

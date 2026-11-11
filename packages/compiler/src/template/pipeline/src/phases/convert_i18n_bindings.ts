@@ -47,6 +47,9 @@ export function convertI18nBindings(job: CompilationJob): void {
             );
           }
 
+          // An attribute resolver reads the translated value of an attribute binding. Namespaced
+          // attributes can't be resolved, so they're treated like property bindings.
+          const isAttributeBinding = op.kind === ir.OpKind.Attribute && op.namespace === null;
           const ops: ir.UpdateOp[] = [];
           for (let i = 0; i < op.expression.expressions.length; i++) {
             const expr = op.expression.expressions[i];
@@ -69,6 +72,7 @@ export function convertI18nBindings(job: CompilationJob): void {
                 ir.I18nParamResolutionTime.Creation,
                 ir.I18nExpressionFor.I18nAttribute,
                 op.name,
+                isAttributeBinding,
                 op.sourceSpan,
               ),
             );

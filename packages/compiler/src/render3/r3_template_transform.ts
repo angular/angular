@@ -7,7 +7,9 @@
  */
 
 import {
+  ASTWithSource,
   BindingType,
+  Chain,
   EmptyExpr,
   ParsedEvent,
   ParsedProperty,
@@ -26,6 +28,12 @@ import {PreparsedElementType, preparseElement} from '../template_parser/template
 
 import * as t from './r3_ast';
 import {createBoundaryBlock, isConnectedBoundaryErrorBlock} from './r3_boundaries';
+import {
+  getAttributeResolver,
+  getAttributeResolverError,
+  getMultipleAttributeResolversError,
+  getShorthandChainError,
+} from './r3_attribute_resolver';
 import {createContentBlock} from './r3_content_blocks';
 import {
   createForLoop,
@@ -162,7 +170,7 @@ class HtmlAstToIvyAst implements html.Visitor {
       parsedProperties,
       templateParsedProperties,
       i18nAttrsMeta,
-    } = this.prepareAttributes(element.attrs, isTemplateElement);
+    } = this.prepareAttributes(element.name, element.attrs, isTemplateElement);
 
     let children: t.Node[];
 
@@ -544,7 +552,11 @@ class HtmlAstToIvyAst implements html.Visitor {
     return {bound, literal};
   }
 
-  private prepareAttributes(attrs: html.Attribute[], isTemplateElement: boolean) {
+  private prepareAttributes(
+    elementName: string | null,
+    attrs: html.Attribute[],
+    isTemplateElement: boolean,
+  ) {
     const parsedProperties: ParsedProperty[] = [];
     const boundEvents: t.BoundEvent[] = [];
     const variables: t.Variable[] = [];
@@ -633,6 +645,8 @@ class HtmlAstToIvyAst implements html.Visitor {
         attributes.push(this.visitAttribute(attribute));
       }
     }
+
+    this.validateAttributeResolvers(elementName, boundEvents);
 
     return {
       attributes,
@@ -985,6 +999,34 @@ class HtmlAstToIvyAst implements html.Visitor {
       keySpan,
     );
     addEvents(events, boundEvents);
+  }
+
+  /** @param elementName The element's name, or `null` when the element isn't known. */
+  private validateAttributeResolvers(
+    elementName: string | null,
+    boundEvents: t.BoundEvent[],
+  ): void {
+    const attributes = new Set<string>();
+    for (const event of boundEvents) {
+      const resolver = getAttributeResolver(event.name, event.type, event.target);
+      if (resolver === null) {
+        continue;
+      }
+      const error = getAttributeResolverError(resolver.attribute, elementName);
+      if (error !== null) {
+        this.reportError(error, event.sourceSpan);
+      } else if (attributes.has(resolver.attribute)) {
+        this.reportError(
+          getMultipleAttributeResolversError(resolver.attribute, 'on one element'),
+          event.sourceSpan,
+        );
+      }
+      attributes.add(resolver.attribute);
+      const ast = event.handler instanceof ASTWithSource ? event.handler.ast : event.handler;
+      if (resolver.form === 'shorthand' && ast instanceof Chain) {
+        this.reportError(getShorthandChainError(resolver.attribute), event.handlerSpan);
+      }
+    }
   }
 
   private reportError(

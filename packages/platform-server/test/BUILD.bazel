@@ -24,9 +24,11 @@ ts_project(
             "event_replay_spec.ts",
             "hydration_utils.ts",
             "dom_utils.ts",
+            "class_resolver_hydration_cases.ts",
         ],
     ),
     deps = [
+        ":attribute_resolver_hydration_cases",
         ":dom_utils",
         "//:node_modules/rxjs",
         "//packages:types",
@@ -46,6 +48,17 @@ ts_project(
         "//packages/platform-server/third_party/domino:bundled_domino_lib",
         "//packages/private/testing",
         "//packages/router",
+    ],
+)
+
+ts_project(
+    name = "attribute_resolver_hydration_cases",
+    testonly = True,
+    srcs = ["class_resolver_hydration_cases.ts"],
+    deps = [
+        ":dom_utils",
+        "//packages/common",
+        "//packages/core",
     ],
 )
 

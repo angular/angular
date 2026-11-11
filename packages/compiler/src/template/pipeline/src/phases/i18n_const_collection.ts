@@ -16,6 +16,14 @@ import {createGoogleGetMsgStatements} from '../../../../render3/view/i18n/get_ms
 import {createLocalizeStatements} from '../../../../render3/view/i18n/localize_utils';
 import {formatI18nPlaceholderNamesInMap} from '../../../../render3/view/i18n/util';
 import * as ir from '../../ir';
+
+/**
+ * Marks an attribute binding in the config of `ɵɵi18nAttributes`.
+ *
+ * NOTE: Ensure it's in sync with `I18nAttributesMarker` in
+ * `packages/core/src/render3/interfaces/i18n.ts`.
+ */
+const I18N_ATTRIBUTE_BINDING_MARKER = 0;
 import {ComponentCompilationJob} from '../compilation';
 
 /** Name of the global variable that is used to determine if we use Closure translations or not */
@@ -195,7 +203,10 @@ export function collectI18nConsts(job: ComponentCompilationJob): void {
           if (i18nExprValue === undefined) {
             throw new Error("AssertionError: Could not find i18n expression's value");
           }
-          return [o.literal(i18nExpr.name), i18nExprValue];
+          const entry = [o.literal(i18nExpr.name), i18nExprValue];
+          return i18nExpr.isAttributeBinding
+            ? [o.literal(I18N_ATTRIBUTE_BINDING_MARKER), ...entry]
+            : entry;
         });
 
         i18nAttributes.i18nAttributesConfig = job.addConst(

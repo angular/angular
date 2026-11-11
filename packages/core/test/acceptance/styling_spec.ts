@@ -653,7 +653,7 @@ describe('styling', () => {
     expectStyle(div).toEqual({'color': 'red', 'width': '20px'});
   });
 
-  it('should deliver events from an output named class while [class] is bound', async () => {
+  it('should deliver events from an output named class to a subscriber while [class] is bound', async () => {
     @Directive({
       selector: '[dir-with-class-output]',
     })
@@ -662,27 +662,21 @@ describe('styling', () => {
     }
 
     @Component({
-      template: `
-        <div
-          dir-with-class-output
-          class="s1"
-          [class]="classBinding()"
-          (class)="received.push($event)"
-        ></div>
-      `,
+      template: `<div dir-with-class-output class="s1" [class]="classBinding()"></div>`,
       imports: [DirectiveWithClassOutput],
     })
     class Cmp {
       @ViewChild(DirectiveWithClassOutput) dir!: DirectiveWithClassOutput;
       classBinding = signal('d1');
-      received: string[] = [];
     }
 
     const fixture = TestBed.createComponent(Cmp);
     await fixture.whenStable();
+    const received: string[] = [];
+    fixture.componentInstance.dir.classOutput.subscribe((value) => received.push(value));
     fixture.componentInstance.dir.classOutput.emit('e1');
 
-    expect(fixture.componentInstance.received).toEqual(['e1']);
+    expect(received).toEqual(['e1']);
     expectClass(fixture.nativeElement.querySelector('div')).toEqual({'s1': true, 'd1': true});
   });
 

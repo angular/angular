@@ -203,6 +203,12 @@ export {
   R3ClassMetadataCtorParameter,
 } from './render3/r3_class_metadata_compiler';
 export {
+  AttributeResolverBinding,
+  AttributeResolverForm,
+  getAttributeResolver,
+  getHostListenerAttributeResolver,
+} from './render3/r3_attribute_resolver';
+export {
   compileFactoryFunction,
   R3DependencyMetadata,
   R3FactoryMetadata,
@@ -248,6 +254,7 @@ export {
   encapsulateStyle,
   ParsedHostBindings,
   parseHostBindings,
+  verifyHostAttributeResolvers,
   verifyHostBindings,
 } from './render3/view/compiler';
 export * from './render3/view/t2_api';
