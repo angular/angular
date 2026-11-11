@@ -6,7 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AbstractControl, FormArray, FormGroup, ValidationErrors} from '@angular/forms';
+import {
+  type AbstractControl,
+  type ValidationErrors,
+  ɵforEachChildControl as forEachChildControl,
+} from '@angular/forms';
 import {ValidationError} from '../api/rules';
 import {ReadonlyFieldTree} from '../api/types';
 
@@ -77,11 +81,9 @@ export function extractNestedReactiveErrors(control: AbstractControl): CompatVal
     errors.push(...reactiveErrorsToSignalErrors(control.errors, control));
   }
 
-  if (control instanceof FormGroup || control instanceof FormArray) {
-    for (const c of Object.values(control.controls)) {
-      errors.push(...extractNestedReactiveErrors(c));
-    }
-  }
+  forEachChildControl(control, (child) => {
+    errors.push(...extractNestedReactiveErrors(child));
+  });
 
   return errors;
 }

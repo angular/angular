@@ -476,6 +476,17 @@ export function isAbstractControl(value: unknown): value is AbstractControl {
 }
 
 /**
+ * Calls `fn` for each direct child of the given control without a value reference to the
+ * `FormGroup` or `FormArray` classes, so they can be tree-shaken.
+ */
+export function forEachChildControl(
+  control: AbstractControl,
+  fn: (child: AbstractControl) => void,
+): void {
+  control._forEachChild(fn);
+}
+
+/**
  * This is the base class for `FormControl`, `FormGroup`, and `FormArray`.
  *
  * It provides some of the shared behavior that all controls and groups of controls have, like

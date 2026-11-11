@@ -80,6 +80,7 @@ export {
   AbstractControl,
   AbstractControlOptions,
   ControlEvent,
+  forEachChildControl as ɵforEachChildControl,
   FormControlStatus,
   FormResetEvent,
   FormSubmittedEvent,
