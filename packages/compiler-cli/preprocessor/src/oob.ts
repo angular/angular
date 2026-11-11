@@ -36,7 +36,7 @@ import {
   type TcbDirectiveMetadata,
   type TypeCheckId,
 } from '@angular/compiler';
-import {ErrorCode} from '@angular/compiler-cli/private/hybrid_preprocessor';
+import {ErrorCode} from './error_code.js';
 import {Diagnostic, DiagnosticRelatedInformation} from './diagnostic.js';
 
 /** Fallback code for generic template errors that do not have a dedicated `ErrorCode` member. */

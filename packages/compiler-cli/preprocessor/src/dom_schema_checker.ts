@@ -17,7 +17,7 @@ import {
   TmplAstHostElement,
   TypeCheckId,
 } from '@angular/compiler';
-import {ErrorCode} from '@angular/compiler-cli/private/hybrid_preprocessor';
+import {ErrorCode} from './error_code.js';
 import {Diagnostic} from './diagnostic.js';
 
 const REGISTRY = new DomElementSchemaRegistry();

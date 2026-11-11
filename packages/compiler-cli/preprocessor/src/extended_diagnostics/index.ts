@@ -7,7 +7,7 @@
  */
 
 import {BoundTarget, TcbDirectiveMetadata, TypeCheckId} from '@angular/compiler';
-import {ErrorCode} from '@angular/compiler-cli/private/hybrid_preprocessor';
+import {ErrorCode} from '../error_code.js';
 import type {
   DiagnosticCategoryLabel,
   ExtendedDiagnosticsOptions,

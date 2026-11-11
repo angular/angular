@@ -23,6 +23,9 @@ ts_project(
 
 write_source_file(
     name = "sync_error_code",
+    additional_update_targets = [
+        "//packages/compiler-cli/preprocessor:sync_error_code",
+    ],
     in_file = "//packages/compiler-cli/preprocessor/ng-analyze:generated_error_code.ts",
     out_file = "src/error_code.ts",
 )

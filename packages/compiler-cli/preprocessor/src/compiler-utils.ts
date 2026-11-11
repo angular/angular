@@ -34,7 +34,7 @@ import {
   SelectorlessMatcher,
   ForeignComponentMeta,
 } from '@angular/compiler';
-import {ErrorCode} from '@angular/compiler-cli/private/hybrid_preprocessor';
+import {ErrorCode} from './error_code.js';
 import * as nga from './types.js';
 import {PipeMeta} from './tcb.js';
 import type {ParsedComponentTemplate} from './file_analysis.js';

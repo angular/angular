@@ -47,7 +47,7 @@ import {
   type R3DeferPerBlockDependency,
   type R3DeferPerComponentDependency,
 } from '@angular/compiler';
-import {ErrorCode} from '@angular/compiler-cli/private/hybrid_preprocessor';
+import {ErrorCode} from './error_code.js';
 import MagicString, {type SourceMap} from 'magic-string';
 import * as fsSync from 'node:fs';
 import * as path from 'path';
