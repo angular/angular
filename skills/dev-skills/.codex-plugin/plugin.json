@@ -22,7 +22,7 @@
   "skills": ["./angular-developer", "./angular-new-app"],
   "interface": {
     "displayName": "Angular",
-    "shortDescription": "Build and scaffold modern Angular apps with agent skills",
+    "shortDescription": "Build and scaffold modern Angular apps",
     "longDescription": "Angular agent skills help coding agents create applications aligned with the latest Angular versions, idiomatic patterns, and current best practices.\n\nThis plugin includes angular-developer for generating components, services, HTTP communication, and architectural guidance on signals, forms, dependency injection, routing, SSR, accessibility, animations, styling, testing, and CLI tooling — and angular-new-app for scaffolding a new project with the Angular CLI and modern defaults.\n\nUse it when creating or changing Angular apps, choosing reactivity and forms approaches, wiring routing or HTTP, or setting up a new project. The skills steer agents toward the Angular CLI and current APIs rather than outdated patterns.",
     "developerName": "Angular",
     "category": "Coding",

@@ -1,6 +1,6 @@
 {
   "name": "angular",
-  "description": "Angular agent skills for Claude Code",
+  "description": "Angular agent skills",
   "owner": {
     "name": "Angular",
     "url": "https://angular.dev"
