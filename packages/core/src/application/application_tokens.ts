@@ -51,6 +51,16 @@ export const APP_ID = new InjectionToken<string>(
 /** Default value of the `APP_ID` token. */
 const DEFAULT_APP_ID = 'ng';
 
+/**
+ * Internal token that indicates whether the application is running in a test environment (e.g. TestBed).
+ */
+export const IS_TESTING = new InjectionToken<boolean>(
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'IS_TESTING' : '',
+  {
+    factory: () => false,
+  },
+);
+
 /** Initializer check for the validity of the APP_ID */
 export const validAppIdInitializer: StaticProvider = {
   provide: ENVIRONMENT_INITIALIZER,
