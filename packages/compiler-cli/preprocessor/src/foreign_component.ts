@@ -35,7 +35,7 @@ import {
   ParseSourceSpan,
 } from '@angular/compiler';
 
-import {ErrorCode} from '@angular/compiler-cli/private/hybrid_preprocessor';
+import {ErrorCode} from './error_code.js';
 import * as nga from './types.js';
 
 /**

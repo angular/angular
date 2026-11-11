@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ErrorCode} from '@angular/compiler-cli/private/hybrid_preprocessor';
+import {ErrorCode} from './error_code.js';
 import type {NgDiagnostic} from './types.js';
 
 /**

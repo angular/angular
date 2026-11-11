@@ -10,14 +10,16 @@ macro_rules! define_error_codes {
         /// Angular compiler diagnostic codes.
         ///
         /// This enum is the single hand-edited source of truth for diagnostic codes shared by
-        /// `ngp` (`ng-analyze` and `@angular/compiler-cli/preprocessor`) and `ngtsc`
-        /// (`packages/compiler-cli/src/ngtsc/diagnostics/src/error_code.ts`).
+        /// `ngp` (`ng-analyze` and `@angular/compiler-cli/preprocessor`) and `ngtsc`.
+        /// TypeScript mirrors are generated into
+        /// `packages/compiler-cli/preprocessor/src/error_code.ts` (`ngp`) and
+        /// `packages/compiler-cli/src/ngtsc/diagnostics/src/error_code.ts` (`ngtsc`).
         ///
         /// Negative discriminants mark error codes that have a detailed guide at
         /// `https://angular.dev/errors/NG<code>` (matching `ngtsc`'s convention). Use
         /// [`ErrorCode::code`] to obtain the positive numeric diagnostic code emitted on the wire.
         ///
-        /// After editing this enum, regenerate the TypeScript mirror with:
+        /// After editing this enum, regenerate both TypeScript mirrors with:
         /// `pnpm bazel run //packages/compiler-cli/src/ngtsc/diagnostics:sync_error_code`
         #[repr(i32)]
         #[allow(non_camel_case_types, clippy::upper_case_acronyms)]

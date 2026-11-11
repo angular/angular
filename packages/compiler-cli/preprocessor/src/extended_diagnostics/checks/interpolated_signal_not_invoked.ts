@@ -30,7 +30,7 @@ import {
   TmplAstSwitchBlock,
   TmplAstTemplate,
 } from '@angular/compiler';
-import {ErrorCode} from '@angular/compiler-cli/private/hybrid_preprocessor';
+import {ErrorCode} from '../../error_code.js';
 import type {Diagnostic} from '../../diagnostic.js';
 import type {TcbTargetInput} from '../../tcb.js';
 import {

@@ -1,6 +1,17 @@
+load("@bazel_lib//lib:write_source_files.bzl", "write_source_file")
 load("//tools:defaults.bzl", "js_binary", "npm_package", "ts_config", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
+
+# `src/error_code.ts` is generated from the Rust source of truth in
+# `ng-analyze/src/types/error_code.rs`. It is updated together with the `ngtsc` copy by
+# `//packages/compiler-cli/src/ngtsc/diagnostics:sync_error_code`.
+write_source_file(
+    name = "sync_error_code",
+    in_file = "//packages/compiler-cli/preprocessor/ng-analyze:generated_error_code.ts",
+    out_file = "src/error_code.ts",
+    suggested_update_target = "//packages/compiler-cli/src/ngtsc/diagnostics:sync_error_code",
+)
 
 ts_config(
     name = "tsconfig",

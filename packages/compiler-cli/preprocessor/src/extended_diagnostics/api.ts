@@ -24,7 +24,7 @@ import {
   TmplAstTemplate,
   VERSION,
 } from '@angular/compiler';
-import {ErrorCode} from '@angular/compiler-cli/private/hybrid_preprocessor';
+import {ErrorCode} from '../error_code.js';
 import type {ExtendedTemplateDiagnosticName, NgpCompilerOptions} from '../compiler_options.js';
 import type {Diagnostic, DiagnosticRelatedInformation} from '../diagnostic.js';
 import type {TcbTargetInput} from '../tcb.js';
