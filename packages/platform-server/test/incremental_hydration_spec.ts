@@ -847,7 +847,7 @@ describe('platform-server partial hydration integration', () => {
 
     describe('triggers', () => {
       describe('hydrate on interaction', () => {
-        it('click', async () => {
+        it('should hydrate and replay a click once with a cold client runtime', async () => {
           @Component({
             selector: 'app',
             template: `
@@ -863,9 +863,11 @@ describe('platform-server partial hydration integration', () => {
           })
           class SimpleComponent {
             value = signal('start');
+            clicks = signal(0);
             fnA() {}
             fnB() {
               this.value.set('end');
+              this.clicks.update((clicks) => clicks + 1);
             }
           }
 
@@ -885,6 +887,7 @@ describe('platform-server partial hydration integration', () => {
 
           // Internal cleanup before we do server->client transition in this test.
           resetTViewsFor(SimpleComponent);
+          resetIncrementalHydrationRuntimeForTests();
 
           ////////////////////////////////
           const doc = getDocument();
@@ -893,7 +896,6 @@ describe('platform-server partial hydration integration', () => {
             hydrationFeatures,
           });
           const compRef = getComponentRef<SimpleComponent>(appRef);
-          appRef.tick();
           await appRef.whenStable();
 
           const appHostNode = compRef.location.nativeElement;
@@ -903,13 +905,17 @@ describe('platform-server partial hydration integration', () => {
           // Emit an event inside of a defer block, which should result
           // in triggering the defer block (start loading deps, etc) and
           // subsequent hydration.
-          const article = doc.getElementsByTagName('article')![0];
+          const target = doc.getElementById('test')!;
           const clickEvent = new CustomEvent('click', {bubbles: true});
-          article.dispatchEvent(clickEvent);
-          await allPendingDynamicImports();
+          target.dispatchEvent(clickEvent);
+          await appRef.whenStable();
 
-          appRef.tick();
-          expect(appHostNode.outerHTML).not.toContain('<div jsaction="click:;keydown:;"');
+          // Hydration removes its pending task before replaying the click, so wait again
+          // for the render scheduled by the replayed listener and the jsaction cleanup.
+          await appRef.whenStable();
+          expect(target.textContent).toBe('end');
+          expect(target.hasAttribute('jsaction')).toBeFalse();
+          expect(compRef.instance.clicks()).toBe(1);
         });
 
         it('keydown', async () => {

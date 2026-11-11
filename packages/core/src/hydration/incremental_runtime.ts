@@ -7,7 +7,10 @@
  */
 
 import {DehydratedBlockRegistry} from '../defer/registry';
-import {processAndInitTriggers} from '../defer/triggering';
+import {
+  processAndInitTriggers,
+  triggerHydrationFromBlockName as triggerHydrationFromBlockNameImpl,
+} from '../defer/triggering';
 import type {Injector} from '../di';
 import {InjectionToken} from '../di/injection_token';
 import {INJECTOR} from '../render3/interfaces/view';
@@ -30,6 +33,9 @@ let _dehydratedBlockRegistryFactory: () => DehydratedBlockRegistry | null = () =
  * real implementation when `ɵɵenableIncrementalHydrationRuntime` is called.
  */
 let _runIncrementalHydrationBootstrap: (injector: Injector, doc: Document) => void = () => {};
+
+/** Event replay alone must not retain the incremental-hydration implementation. */
+let _triggerHydrationFromBlockName: typeof triggerHydrationFromBlockNameImpl | undefined;
 
 /**
  * Whether the incremental-hydration runtime has been activated.
@@ -67,6 +73,15 @@ export function runIncrementalHydrationBootstrap(state: IncrementalHydrationBoot
   }
 }
 
+/** Triggers hydration from event replay once the runtime has been activated. */
+export function triggerHydrationFromBlockName(
+  injector: Injector,
+  blockName: string,
+  replayQueuedEventsFn?: Function,
+) {
+  return _triggerHydrationFromBlockName?.(injector, blockName, replayQueuedEventsFn);
+}
+
 /**
  * Activates the incremental-hydration runtime.
  *
@@ -86,6 +101,7 @@ export function ɵɵenableIncrementalHydrationRuntime(): void {
     performanceMarkFeature('NgIncrementalHydration');
 
     _dehydratedBlockRegistryFactory = () => new DehydratedBlockRegistry();
+    _triggerHydrationFromBlockName = triggerHydrationFromBlockNameImpl;
 
     _runIncrementalHydrationBootstrap = (injector, doc) => {
       const deferBlockData = processBlockData(injector);
@@ -114,4 +130,5 @@ export function resetIncrementalHydrationRuntimeForTests(): void {
   isIncrementalHydrationRuntimeActive = false;
   _dehydratedBlockRegistryFactory = () => null;
   _runIncrementalHydrationBootstrap = () => {};
+  _triggerHydrationFromBlockName = undefined;
 }

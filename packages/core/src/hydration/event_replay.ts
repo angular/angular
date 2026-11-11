@@ -46,7 +46,7 @@ import {
 } from '../event_delegation_utils';
 import {APP_ID} from '../application/application_tokens';
 import {performanceMarkFeature} from '../util/performance';
-import {triggerHydrationFromBlockName} from '../defer/triggering';
+import {triggerHydrationFromBlockName} from './incremental_runtime';
 import {isIncrementalHydrationEnabled} from './utils';
 import {formatRuntimeError, RuntimeErrorCode} from '../errors';
 
