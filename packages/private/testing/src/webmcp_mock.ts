@@ -6,8 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {ModelContextTool, ModelContext} from '../../third_party/webmcp-types';
+import type {ModelContextTool, ModelContext} from '@angular/core/third_party/webmcp-types';
 
+/**
+ * A `WebMCP.ModelContext` mock with partially implemented API.
+ */
 export class ModelContextMock implements Pick<
   ModelContext,
   'registerTool' | 'getTools' | 'executeTool'
@@ -47,6 +50,11 @@ export class ModelContextMock implements Pick<
   }
 }
 
+/**
+ * Installs a WebMCP mock on the document (document.modelContext).
+ *
+ * @returns The mock instance.
+ */
 export function installWebMcpMock(): ModelContextMock {
   const mock = new ModelContextMock();
   Object.defineProperty(document, 'modelContext', {value: mock, configurable: true});
@@ -54,6 +62,13 @@ export function installWebMcpMock(): ModelContextMock {
   return mock;
 }
 
+/**
+ * Uninstalls the current WebMCP mock from the document.
+ */
 export function uninstallWebMcpMock() {
-  delete (document as {modelContext?: unknown}).modelContext;
+  const doc = document as {modelContext?: unknown};
+
+  if (doc.modelContext instanceof ModelContextMock) {
+    delete doc.modelContext;
+  }
 }

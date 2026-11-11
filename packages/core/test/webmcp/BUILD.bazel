@@ -12,6 +12,7 @@ ts_project(
         "//packages/core",
         "//packages/core/testing",
         "//packages/core/third_party/webmcp-types",
+        "//packages/private/testing",
         "//packages/router",
         "//packages/router/testing",
     ],
