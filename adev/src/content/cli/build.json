@@ -149,7 +149,7 @@
         },
         {
           "name": "localize",
-          "type": "boolean",
+          "type": "array",
           "description": "Translate the bundles in one or more locales."
         },
         {

@@ -10,7 +10,7 @@
   "options": [
     {
       "name": "allowed-hosts",
-      "type": "boolean",
+      "type": "array",
       "description": "The hosts that the development server will respond to. This option sets the Vite option of the same name. For further details: https://vite.dev/config/server-options.html#server-allowedhosts"
     },
     {
