@@ -18,6 +18,7 @@ import {
   ExternalReference,
   ForwardRefHandling,
   getHostListenerAttributeResolver,
+  getHostListenerAttributeResolverError,
   getSafePropertyAccessString,
   HostBindingDecorator,
   HostListenerDecorator,
@@ -763,22 +764,19 @@ function extractHostBindings(
           }
         }
 
-        // A listener named like a resolver binding compiles to a resolver of the attribute.
         const resolver = getHostListenerAttributeResolver(eventName);
         if (resolver !== null) {
-          const resolverError = verifyHostAttributeResolvers(
-            {[eventName]: `${member.name}(${args.join(',')})`},
-            createSourceSpan(decorator.node),
+          throw new FatalDiagnosticError(
+            ErrorCode.HOST_BINDING_PARSE_ERROR,
+            decorator.args !== null && decorator.args.length > 0
+              ? decorator.args[0]
+              : decorator.node,
+            getHostListenerAttributeResolverError(
+              eventName,
+              resolver.attribute,
+              `${member.name}(${args.join(',')})`,
+            ),
           );
-          if (resolverError !== null) {
-            throw new FatalDiagnosticError(
-              ErrorCode.HOST_BINDING_PARSE_ERROR,
-              decorator.args !== null && decorator.args.length > 0
-                ? decorator.args[0]
-                : decorator.node,
-              resolverError.message,
-            );
-          }
         }
 
         if (ts.isDecorator(decorator.node)) {
@@ -2112,7 +2110,7 @@ function evaluateHostExpressionBindings(
     const property = getHostProperty(hostExpr, `(${resolverError.listener})`);
     throw new FatalDiagnosticError(
       ErrorCode.HOST_BINDING_PARSE_ERROR,
-      property?.name ?? hostExpr,
+      (resolverError.inHandler ? property?.initializer : property?.name) ?? hostExpr,
       resolverError.message,
     );
   }

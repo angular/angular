@@ -89,7 +89,11 @@ export function toR3DirectiveMeta<TExpression>(
       throw new FatalLinkerError(hostMeta.expression, errors.map((error) => error.msg).join('\n'));
     }
     // A listener of a library declared before resolvers existed is a resolver too.
-    const resolverError = verifyHostAttributeResolvers(host.listeners, typeSourceSpan);
+    const resolverError = verifyHostAttributeResolvers(
+      host.listeners,
+      typeSourceSpan,
+      /* checkDeclarationRules */ false,
+    );
     if (resolverError !== null) {
       throw new FatalLinkerError(
         metaObj.getObject('host').getValue('listeners').expression,

@@ -136,10 +136,16 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'import generation should report an error when using a directive outside of rootDirs',
 
   // NGP doesn't check the resolvers of host metadata.
+  "ngtsc behavioral tests attribute resolver declarations should report @HostListener('attr.role')",
   'ngtsc behavioral tests attribute resolver declarations should report a @HostListener name that the parser trims into a resolver',
   'ngtsc behavioral tests attribute resolver declarations should report a host (attr.href)',
   'ngtsc behavioral tests attribute resolver declarations should report a host (attr.onclick)',
   'ngtsc behavioral tests attribute resolver declarations should report a host (attr.xlink:title)',
+  'ngtsc behavioral tests class resolver declarations should report (class) and (attr.class) in one host',
+  "ngtsc behavioral tests class resolver declarations should report @HostListener('attr.class')",
+  "ngtsc behavioral tests class resolver declarations should report @HostListener('class')",
+  "ngtsc behavioral tests class resolver declarations should report @HostListener('class') next to a host (class)",
+  'ngtsc behavioral tests class resolver declarations should report a chain in a host (class) shorthand',
 
   // API documentation extraction (`getApiDocumentation`) is not implemented in NGP.
   'ngtsc NgModule docs extraction should extract NgModule info',

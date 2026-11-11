@@ -144,3 +144,22 @@ export function getMultipleAttributeResolversError(
     : `'(attr.${attribute})' binding`;
   return `Can't have multiple ${attribute} resolvers ${place}. Use only one ${bindings}.`;
 }
+
+/**
+ * Gets the error for a `@HostListener` that would declare a resolver of `attribute`: why the
+ * attribute can't be resolved, or else where to declare the resolver instead.
+ */
+export function getHostListenerAttributeResolverError(
+  eventName: string,
+  attribute: string,
+  handler: string,
+): string {
+  const unresolvable = getAttributeResolverError(attribute, null);
+  if (unresolvable !== null) {
+    return unresolvable;
+  }
+  return (
+    `@HostListener('${eventName}') can't declare a ${attribute} resolver. Bind it in the host ` +
+    `metadata instead: host: {'(${eventName})': '${handler}'}.`
+  );
+}

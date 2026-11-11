@@ -3671,6 +3671,143 @@ runInEachFileSystem((os: string) => {
     });
 
     describe('class resolver declarations', () => {
+      const chainMessage =
+        `A '(class)' shorthand must be a single expression, a function that receives the ` +
+        `resolver. Bind '(attr.class)' to run more than one statement.`;
+
+      function getSingleDiagnostic(): ts.Diagnostic {
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        return diags[0];
+      }
+
+      for (const name of ['class', 'attr.class']) {
+        it(`should report @HostListener('${name}')`, () => {
+          env.write(
+            'test.ts',
+            `
+            import {Directive, HostListener} from '@angular/core';
+
+            @Directive({selector: '[dir]'})
+            export class Dir {
+              @HostListener('${name}', ['$event'])
+              onClass(event: unknown) {}
+            }
+          `,
+          );
+
+          const diag = getSingleDiagnostic();
+          expect(diag.code).toBe(ngErrorCode(ErrorCode.HOST_BINDING_PARSE_ERROR));
+          expect(diag.messageText).toBe(
+            `@HostListener('${name}') can't declare a class resolver. Bind it in the host ` +
+              `metadata instead: host: {'(${name})': 'onClass($event)'}.`,
+          );
+          expect(getDiagnosticSourceCode(diag)).toBe(`'${name}'`);
+        });
+      }
+
+      it(`should report @HostListener('class') next to a host (class)`, () => {
+        env.write(
+          'test.ts',
+          `
+          import {ClassCallback, Directive, HostListener} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+            host: {'(class)': 'fromHost'},
+          })
+          export class Dir {
+            fromHost: ClassCallback = (cn) => cn();
+
+            @HostListener('class')
+            fromDecorator(): ClassCallback {
+              return (cn) => cn();
+            }
+          }
+        `,
+        );
+
+        const diag = getSingleDiagnostic();
+        expect(diag.code).toBe(ngErrorCode(ErrorCode.HOST_BINDING_PARSE_ERROR));
+        expect(diag.messageText).toBe(
+          `@HostListener('class') can't declare a class resolver. Bind it in the host ` +
+            `metadata instead: host: {'(class)': 'fromDecorator()'}.`,
+        );
+        expect(getDiagnosticSourceCode(diag)).toBe(`'class'`);
+      });
+
+      it(`should accept @HostListener('window:class') next to a host (class)`, () => {
+        env.tsconfig({strictTemplates: true});
+        env.write(
+          'test.ts',
+          `
+          import {ClassCallback, Directive, HostListener} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+            host: {'(class)': 'resolve'},
+          })
+          export class Dir {
+            resolve: ClassCallback = (cn) => cn();
+
+            @HostListener('window:class', ['$event'])
+            onClass(event: Event) {}
+          }
+        `,
+        );
+
+        expect(env.driveDiagnostics()).toEqual([]);
+      });
+
+      it('should report (class) and (attr.class) in one host', () => {
+        env.write(
+          'test.ts',
+          `
+          import {ClassCallback, ClassResolveEvent, Directive} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+            host: {'(class)': 'resolve', '(attr.class)': 'capture($event)'},
+          })
+          export class Dir {
+            resolve: ClassCallback = (cn) => cn();
+            capture(event: ClassResolveEvent) {}
+          }
+        `,
+        );
+
+        const diag = getSingleDiagnostic();
+        expect(diag.code).toBe(ngErrorCode(ErrorCode.HOST_BINDING_PARSE_ERROR));
+        expect(diag.messageText).toBe(
+          `Can't have multiple class resolvers in one host. Use only one '(class)' or ` +
+            `'(attr.class)' binding.`,
+        );
+        expect(getDiagnosticSourceCode(diag)).toBe(`'(attr.class)'`);
+      });
+
+      it('should report a chain in a host (class) shorthand', () => {
+        env.write(
+          'test.ts',
+          `
+          import {ClassCallback, Directive} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+            host: {'(class)': 'count(); resolve'},
+          })
+          export class Dir {
+            resolve: ClassCallback = (cn) => cn();
+            count() {}
+          }
+        `,
+        );
+
+        const diag = getSingleDiagnostic();
+        expect(diag.code).toBe(ngErrorCode(ErrorCode.HOST_BINDING_PARSE_ERROR));
+        expect(diag.messageText).toBe(chainMessage);
+        expect(getDiagnosticSourceCode(diag)).toBe(`'count(); resolve'`);
+      });
+
       for (const [form, binding] of [
         ['(class)', '(class)="resolve"'],
         ['(attr.class)', '(attr.class)="capture($event)"'],
@@ -3749,6 +3886,29 @@ runInEachFileSystem((os: string) => {
         );
       }
 
+      it(`should report @HostListener('attr.role')`, () => {
+        env.write(
+          'test.ts',
+          `
+          import {Directive, HostListener} from '@angular/core';
+
+          @Directive({selector: '[dir]'})
+          export class Dir {
+            @HostListener('attr.role', ['$event'])
+            onRole(event: unknown) {}
+          }
+        `,
+        );
+
+        const diag = getSingleDiagnostic();
+        expect(diag.code).toBe(ngErrorCode(ErrorCode.HOST_BINDING_PARSE_ERROR));
+        expect(diag.messageText).toBe(
+          `@HostListener('attr.role') can't declare a role resolver. Bind it in the host ` +
+            `metadata instead: host: {'(attr.role)': 'onRole($event)'}.`,
+        );
+        expect(getDiagnosticSourceCode(diag)).toBe(`'attr.role'`);
+      });
+
       it('should report a @HostListener name that the parser trims into a resolver', () => {
         env.write(
           'test.ts',
@@ -3769,6 +3929,12 @@ runInEachFileSystem((os: string) => {
           `Can't resolve the namespaced attribute 'xlink:href'. Only attributes without a ` +
             `namespace can be resolved.`,
         );
+      });
+
+      it('should accept (class) and (attr.role) in one host', () => {
+        writeHost(`{'(class)': 'resolve', '(attr.role)': 'capture($event)'}`);
+
+        expect(env.driveDiagnostics()).toEqual([]);
       });
 
       it('should report a host (attr.href)', () => {

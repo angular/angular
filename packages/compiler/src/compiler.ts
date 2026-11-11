@@ -207,6 +207,7 @@ export {
   AttributeResolverForm,
   getAttributeResolver,
   getHostListenerAttributeResolver,
+  getHostListenerAttributeResolverError,
 } from './render3/r3_attribute_resolver';
 export {
   compileFactoryFunction,
