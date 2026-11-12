@@ -1,6 +1,6 @@
 ---
 name: angular-developer
-description: Generates Angular code and provides architectural guidance. Trigger when creating projects, components, services, or HTTP communication, or for best practices on reactivity (signals, linkedSignal, resource, httpResource), queries and content projection, forms, dependency injection, routing, server and hybrid rendering (SSR, prerendering, hydration), accessibility (ARIA), animations, styling (component styles, Tailwind CSS), testing, naming conventions, or CLI tooling.
+description: Generates Angular code and provides architectural guidance. Trigger when creating projects, components, services, or HTTP communication, or for best practices on reactivity (signals, linkedSignal, resource, httpResource), queries and content projection, forms, dependency injection, routing, server and hybrid rendering (SSR, prerendering, hydration), accessibility (ARIA), security (XSS, sanitization, CSP), animations, styling (component styles, Tailwind CSS), testing, naming conventions, or CLI tooling.
 license: MIT
 metadata:
   author: Copyright 2026 Google LLC
@@ -103,6 +103,12 @@ When formatting values in templates, creating custom pipes, or reusing pipe-like
 When building accessible custom components for any of the following patterns: Accordion, Listbox, Combobox, Menu, Tabs, Toolbar, Tree, Grid, consult the following reference:
 
 - **Angular Aria Components**: Building headless, accessible components (Accordion, Listbox, Combobox, Menu, Tabs, Toolbar, Tree, Grid) and styling ARIA attributes. Read [angular-aria.md](references/angular-aria.md)
+
+## Security
+
+When rendering untrusted data, binding HTML or URLs, using `DomSanitizer`, or configuring a Content Security Policy or Trusted Types, consult the following reference:
+
+- **Security**: Preventing XSS, security contexts, when (not) to use `bypassSecurityTrust*`, CSP nonces and `autoCsp`, and Trusted Types. Read [security.md](references/security.md)
 
 ## Routing
 
