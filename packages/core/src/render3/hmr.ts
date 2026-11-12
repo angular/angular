@@ -11,6 +11,7 @@ import {assertDefined, assertEqual, assertNotEqual} from '../util/assert';
 import {assertLView} from './assert';
 import {getComponentDef} from './def_getters';
 import {assertComponentDef} from './errors';
+import {prepareHmrTextUpdate} from './hmr_text';
 import {refreshView} from './instructions/change_detection';
 import {renderView} from './instructions/render';
 import {CONTAINER_HEADER_OFFSET} from './interfaces/container';
@@ -105,6 +106,14 @@ export function ɵɵreplaceMetadata(
   // require some internal changes. We re-add the metadata here manually.
   (type as any)[NG_COMP_DEF] = newDef;
 
+  if (typeof ngHmrMode !== 'undefined' && ngHmrMode) {
+    const update = prepareHmrTextUpdate(oldDef, newDef);
+    if (update !== null) {
+      executeWithInvalidateFallback(importMeta, id, update);
+      return;
+    }
+  }
+
   // If a `tView` hasn't been created yet, it means that this component hasn't been instantianted
   // before. In this case there's nothing left for us to do aside from patching it in.
   if (oldDef.tView) {
@@ -136,6 +145,8 @@ function mergeWithExistingDefinition(
   // Keep the object in place, because there can be references to it, for example in the
   // `directiveDefs` of another definition.
   const replacement = Object.assign(currentDef, newDef, {
+    hmrText: newDef.hmrText,
+
     // We need to keep the existing directive and pipe defs, because they can get patched on
     // by a call to `setComponentScope` from a module file. That call won't make it into the
     // HMR replacement function, because it lives in an entirely different file.
