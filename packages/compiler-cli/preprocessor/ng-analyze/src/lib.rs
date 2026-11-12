@@ -39,9 +39,10 @@ pub use analyzer::{
 pub use compiler::{AnalysisIterator, Analyzer, SharedQuery, Spawner};
 pub use evaluator::cross_file::{cross_file_resolve, ChaseSymbolError, DeclaredSymbol};
 pub use host::{
-    AnalysisHost, DefaultFsHost, HostError, HostFuture, IdKind, ImportKind, LoadKind,
-    LoadedModule, ModuleFormat, ModuleId, ModuleRef, ResolveRequest, ResolvedModule,
-    ResolvedResourceId, ResourceKind,
+    AnalysisHost, BatchingHost, DefaultFsHost, HostBatchResults, HostError, HostFileContentLookup,
+    HostFuture, HostRequestBatch, IdKind, ImportKind, LoadKind, LoadedModule, ModuleFormat,
+    ModuleId, ModuleRef, ResolveRequest, ResolvedModule, ResolvedResourceId, ResourceKind,
+    WireLoadRequest, WireLoadResult, WireResolveRequest, WireResolveResult, WireSlotOutcome,
 };
 pub use physical_fs::{DirEntry, PhysicalFs};
 pub use query::{QueryCtx, QueryEngine, QueryKey, QueryValue, ReferenceId};
