@@ -9394,3 +9394,981 @@ fn test_virtual_entry_points_updates_and_invalidations() {
         .unwrap();
     assert!(deleted.contains(&virtual_id.to_string()));
 }
+
+fn drive_batching_stream<F>(
+    mut rx: futures::channel::mpsc::UnboundedReceiver<Result<crate::CompilationChunk, String>>,
+    batch_host: &crate::host::BatchingHost,
+    mut handle_batch: F,
+) -> Vec<crate::CompilationChunk>
+where
+    F: FnMut(crate::host::HostRequestBatch) -> crate::host::HostBatchResults,
+{
+    use futures::FutureExt;
+    use futures::StreamExt;
+
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(5);
+    let mut chunks = Vec::new();
+    loop {
+        if let Some(next_item) = rx.next().now_or_never() {
+            match next_item {
+                Some(Ok(chunk)) => {
+                    chunks.push(chunk);
+                    continue;
+                }
+                Some(Err(err)) => panic!("analysis stream failed: {err}"),
+                None => return chunks,
+            }
+        }
+        if let Some(batch) = batch_host.take_pending_batch() {
+            let results = handle_batch(batch.clone());
+            batch_host.provide_results(batch.id, results).unwrap();
+            continue;
+        }
+        assert!(
+            std::time::Instant::now() < deadline,
+            "BatchingHost stream timed out"
+        );
+        std::thread::sleep(std::time::Duration::from_micros(200));
+    }
+}
+
+#[test]
+fn test_batching_host_analyzer_matches_default_fs_host_wire_output() {
+    use crate::fs::OverlayFileSystem;
+    use crate::host::{
+        AnalysisHost, DefaultFsHost, HostBatchResults, ResolveRequest, WireLoadResult,
+        WireResolveResult, WireSlotOutcome,
+    };
+    use crate::AnalyzerOptions;
+    use futures::FutureExt;
+    use std::collections::BTreeMap;
+
+    let files = HashMap::from([
+        (
+            "/parity/app.module.ts".to_string(),
+            "import { NgModule } from '@angular/core';\n\
+             import { BannerCmp } from './banner.component';\n\
+             import { SharedPipe } from './shared/shared.pipe';\n\
+             import { LibDir } from '@my/lib';\n\
+             @NgModule({\n\
+               declarations: [BannerCmp],\n\
+               imports: [SharedPipe, LibDir],\n\
+               exports: [BannerCmp, SharedPipe, LibDir],\n\
+             })\n\
+             export class AppModule {}\n"
+                .to_string(),
+        ),
+        (
+            "/parity/banner.component.ts".to_string(),
+            "import { Component } from '@angular/core';\n\
+             @Component({\n\
+               selector: 'app-banner',\n\
+               standalone: false,\n\
+               templateUrl: './banner.component.html',\n\
+               styleUrl: './banner.component.css',\n\
+             })\n\
+             export class BannerCmp { label = 'hello'; }\n"
+                .to_string(),
+        ),
+        (
+            "/parity/banner.component.html".to_string(),
+            "<div libDir>{{ label | sharedPipe }}</div>".to_string(),
+        ),
+        (
+            "/parity/banner.component.css".to_string(),
+            ".banner { display: block; }".to_string(),
+        ),
+        (
+            "/parity/shared/shared.pipe.ts".to_string(),
+            "import { Pipe } from '@angular/core';\n\
+             @Pipe({ name: 'sharedPipe' })\n\
+             export class SharedPipe { transform(v: string) { return v; } }\n"
+                .to_string(),
+        ),
+        (
+            "/parity/standalone.component.ts".to_string(),
+            "import { Component } from '@angular/core';\n\
+             import { AppModule } from './app.module';\n\
+             @Component({\n\
+               selector: 'app-standalone',\n\
+               template: '<app-banner></app-banner>',\n\
+               imports: [AppModule],\n\
+             })\n\
+             export class StandaloneCmp {}\n"
+                .to_string(),
+        ),
+        (
+            "/parity/node_modules/@my/lib/package.json".to_string(),
+            r#"{"name": "@my/lib", "typings": "./index.d.ts"}"#.to_string(),
+        ),
+        (
+            "/parity/node_modules/@my/lib/index.d.ts".to_string(),
+            "import * as i0 from '@angular/core';\n\
+             export declare class LibDir {\n\
+               static ɵdir: i0.ɵɵDirectiveDeclaration<LibDir, '[libDir]', never, {}, {}, never, never, true, never>;\n\
+             }\n"
+                .to_string(),
+        ),
+    ]);
+
+    let entry_points = vec![
+        "/parity/app.module.ts".to_string(),
+        "/parity/standalone.component.ts".to_string(),
+    ];
+
+    let default_analyzer = Analyzer::new_core(AnalyzerOptions {
+        entry_points: Some(entry_points.clone()),
+        optimize: Some(true),
+        virtual_files: Some(files.clone()),
+        ..Default::default()
+    })
+    .unwrap();
+    let mut default_by_file = BTreeMap::new();
+    let default_iterator = default_analyzer.analyze_optimized().unwrap();
+    while let Ok(Some(chunk)) = futures::executor::block_on(default_iterator.next()) {
+        for file in chunk.files {
+            default_by_file.insert(
+                file.file_path.clone(),
+                serde_json::to_value(&file).unwrap(),
+            );
+        }
+    }
+
+    // Build a standalone TS-style backing host over `files` while `batch_analyzer` itself runs on
+    // `NoopFs` with zero virtual files.
+    let backing_fs = OverlayFileSystem::new_with_overlay();
+    for (p, content) in &files {
+        backing_fs.upsert_file(PathBuf::from(p), content.clone());
+    }
+    let backing_host = DefaultFsHost::from_fs_and_options(backing_fs, None, false, None);
+
+    let (batch_analyzer, batch_host) = Analyzer::new_core_with_batching_host(AnalyzerOptions {
+        entry_points: Some(entry_points),
+        optimize: Some(true),
+        ..Default::default()
+    })
+    .unwrap();
+    assert!(!batch_analyzer.is_synchronous_host());
+    assert!(batch_analyzer
+        .get_file_content_core("/parity/app.module.ts".to_string())
+        .is_err());
+    assert!(default_analyzer
+        .lookup_host_file_content_core("/parity/app.module.ts".to_string())
+        .is_err());
+    let pre_lookup = batch_analyzer
+        .lookup_host_file_content_core("/parity/app.module.ts".to_string())
+        .unwrap();
+    assert_eq!(pre_lookup.code, None);
+    assert_eq!(pre_lookup.id.as_str(), "/parity/app.module.ts");
+    assert!(!pre_lookup.external);
+
+    let spawner = crate::compiler::analyzer::get_global_pool().clone();
+    let rx = batch_analyzer.analyze_optimized_core(spawner).unwrap();
+    let batch_chunks = drive_batching_stream(rx, &batch_host, |batch| {
+        let resolve = batch
+            .resolve
+            .into_iter()
+            .map(|w| {
+                let req = ResolveRequest::new(w.importer, w.specifier, w.kind)
+                    .with_type_only(w.type_only)
+                    .with_attributes(w.attributes.into_iter().collect());
+                let resolved = backing_host
+                    .resolve(req)
+                    .now_or_never()
+                    .unwrap()
+                    .unwrap()?;
+                let is_external = resolved.id.as_str().contains("/node_modules/");
+                Some(WireSlotOutcome::Ok(WireResolveResult {
+                    id: resolved.id,
+                    id_kind: resolved.id_kind,
+                    format: resolved.format,
+                    external: is_external,
+                    code: None,
+                }))
+            })
+            .collect();
+        let load = batch
+            .load
+            .into_iter()
+            .map(|w| {
+                let loaded = backing_host
+                    .load(&w.id, w.kind, w.external)
+                    .now_or_never()
+                    .unwrap()
+                    .unwrap()?;
+                Some(WireSlotOutcome::Ok(WireLoadResult {
+                    code: loaded.code.to_string(),
+                    format: loaded.format,
+                }))
+            })
+            .collect();
+        HostBatchResults { resolve, load }
+    });
+
+    let mut batch_by_file = BTreeMap::new();
+    for chunk in batch_chunks {
+        for file in chunk.files {
+            batch_by_file.insert(
+                file.file_path.clone(),
+                serde_json::to_value(&file).unwrap(),
+            );
+        }
+    }
+
+    assert_eq!(default_by_file.len(), 4);
+    assert_eq!(batch_by_file, default_by_file);
+
+    let module_lookup = batch_analyzer
+        .lookup_host_file_content_core("/parity/app.module.ts".to_string())
+        .unwrap();
+    assert_eq!(
+        module_lookup.code.as_deref(),
+        files.get("/parity/app.module.ts").map(String::as_str)
+    );
+    assert!(!module_lookup.external);
+
+    let ext_dts_path = "/parity/node_modules/@my/lib/index.d.ts";
+    let ext_lookup = batch_analyzer
+        .lookup_host_file_content_core(ext_dts_path.to_string())
+        .unwrap();
+    assert_eq!(
+        ext_lookup.code.as_deref(),
+        files.get(ext_dts_path).map(String::as_str)
+    );
+    assert!(ext_lookup.external);
+
+    batch_analyzer
+        .invalidate_files_core(vec![crate::FileInvalidation {
+            file_path: ext_dts_path.to_string(),
+            update_type: crate::FileUpdateType::Changed,
+            id_kind: None,
+        }])
+        .unwrap();
+    let evicted_ext = batch_analyzer
+        .lookup_host_file_content_core(ext_dts_path.to_string())
+        .unwrap();
+    assert_eq!(evicted_ext.code, None);
+    assert!(evicted_ext.external);
+
+    batch_analyzer
+        .update_file_content_core(vec![crate::FileUpdate {
+            file_path: "/parity/app.module.ts".to_string(),
+            content: "// overlay edit\n".to_string(),
+            id_kind: None,
+        }])
+        .unwrap();
+    let overlay_lookup = batch_analyzer
+        .lookup_host_file_content_core("/parity/app.module.ts".to_string())
+        .unwrap();
+    assert_eq!(overlay_lookup.code.as_deref(), Some("// overlay edit\n"));
+}
+
+#[test]
+fn test_batching_host_protocol_errors_cancellation_and_created_reresolution() {
+    use crate::host::{
+        HostBatchResults, IdKind, ModuleFormat, ModuleId, WireLoadResult, WireResolveResult,
+        WireSlotOutcome,
+    };
+    use crate::{AnalyzerOptions, FileInvalidation, FileUpdateType};
+    use std::sync::Mutex;
+
+    let sources: Arc<Mutex<HashMap<String, String>>> = Arc::new(Mutex::new(HashMap::from([(
+        "/proto/app.ts".to_string(),
+        "import { Component } from '@angular/core';\n\
+         import { BrokenDir } from './broken';\n\
+         import { CreatedDir } from './created';\n\
+         @Component({\n\
+           selector: 'app-proto',\n\
+           template: '<div createdDir></div>',\n\
+           imports: [BrokenDir, CreatedDir],\n\
+         })\n\
+         export class ProtoCmp {}\n"
+            .to_string(),
+    )])));
+
+    let (analyzer, batch_host) = Analyzer::new_core_with_batching_host(AnalyzerOptions {
+        entry_points: Some(vec!["/proto/app.ts".to_string()]),
+        optimize: Some(true),
+        ..Default::default()
+    })
+    .unwrap();
+    let spawner = crate::compiler::analyzer::get_global_pool().clone();
+
+    // 1. Start an initial stream, wait until its first batch is active, then cancel mid-wave by
+    //    starting a fresh stream and verify late results for the cancelled batch are ignored.
+    let _abandoned_rx = analyzer.analyze_optimized_core(spawner.clone()).unwrap();
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(5);
+    let cancelled_batch = loop {
+        if let Some(batch) = batch_host.take_pending_batch() {
+            break batch;
+        }
+        assert!(
+            std::time::Instant::now() < deadline,
+            "timed out waiting for first batch"
+        );
+        std::thread::sleep(std::time::Duration::from_micros(200));
+    };
+
+    // Starting a new stream cancels the in-flight run and drops `cancelled_batch`.
+    let rx1 = analyzer.analyze_optimized_core(spawner.clone()).unwrap();
+    batch_host
+        .provide_results(cancelled_batch.id, HostBatchResults::default())
+        .expect("late results for cancelled batch must be ignored");
+
+    // 2. Drive `rx1`: `./broken` returns `{ error }`, `./created` returns `null` (not created yet).
+    let sources_ref = Arc::clone(&sources);
+    let chunks1 = drive_batching_stream(rx1, &batch_host, |batch| {
+        let map = sources_ref.lock().unwrap();
+        let resolve = batch
+            .resolve
+            .into_iter()
+            .map(|req| match req.specifier.as_str() {
+                "./broken" => Some(WireSlotOutcome::Error {
+                    error: "Simulated bundler resolver error".to_string(),
+                }),
+                "./created" => map.contains_key("/proto/created.ts").then(|| {
+                    WireSlotOutcome::Ok(WireResolveResult {
+                        id: ModuleId::from("/proto/created.ts"),
+                        id_kind: IdKind::Path,
+                        format: Some(ModuleFormat::Ts),
+                        external: false,
+                        code: None,
+                    })
+                }),
+                _ => None,
+            })
+            .collect();
+        let load = batch
+            .load
+            .into_iter()
+            .map(|req| {
+                map.get(req.id.as_str()).map(|code| {
+                    WireSlotOutcome::Ok(WireLoadResult {
+                        code: code.clone(),
+                        format: Some(ModuleFormat::Ts),
+                    })
+                })
+            })
+            .collect();
+        HostBatchResults { resolve, load }
+    });
+
+    // The names in the scope of the first class of `file`.
+    let declaration_names = |file: &AnalysisResult| -> Vec<String> {
+        file.classes
+            .first()
+            .and_then(|class| class.component.as_ref())
+            .and_then(|component| component.resolved_declarations.as_ref())
+            .map(|decls| decls.iter().map(|d| d.name.clone()).collect())
+            .unwrap_or_default()
+    };
+
+    let app_res1 = &chunks1[0].files[0];
+    assert_eq!(app_res1.file_path, "/proto/app.ts");
+    // Neither `./broken` (`{error}`) nor `./created` (`null`) resolves, and neither panics. The
+    // engine reports nothing for an unresolved import, a host error included, so both are simply
+    // missing from the component's scope.
+    let names1 = declaration_names(app_res1);
+    assert!(
+        !names1.iter().any(|n| n == "BrokenDir" || n == "CreatedDir"),
+        "unresolved imports must not be in scope, got: {names1:?}"
+    );
+
+    // 3. Create `/proto/created.ts`, fix `./broken` to resolve to `/proto/broken.ts`, notify
+    //    `FileUpdateType::Created`, and verify delta compilation re-resolves both imports.
+    {
+        let mut map = sources.lock().unwrap();
+        map.insert(
+            "/proto/created.ts".to_string(),
+            "import { Directive } from '@angular/core';\n\
+             @Directive({ selector: '[createdDir]' })\n\
+             export class CreatedDir {}\n"
+                .to_string(),
+        );
+        map.insert(
+            "/proto/broken.ts".to_string(),
+            "import { Directive } from '@angular/core';\n\
+             @Directive({ selector: '[brokenDir]' })\n\
+             export class BrokenDir {}\n"
+                .to_string(),
+        );
+    }
+
+    let invalidated = analyzer
+        .invalidate_files_core(vec![FileInvalidation {
+            file_path: "/proto/created.ts".to_string(),
+            update_type: FileUpdateType::Created,
+            id_kind: None,
+        }])
+        .unwrap();
+    assert!(invalidated.contains(&"/proto/app.ts".to_string()));
+
+    let rx2 = analyzer.analyze_optimized_delta_core(spawner).unwrap();
+    let sources_ref = Arc::clone(&sources);
+    let chunks2 = drive_batching_stream(rx2, &batch_host, |batch| {
+        let map = sources_ref.lock().unwrap();
+        let resolve = batch
+            .resolve
+            .into_iter()
+            .map(|req| match req.specifier.as_str() {
+                "./broken" => Some(WireSlotOutcome::Ok(WireResolveResult {
+                    id: ModuleId::from("/proto/broken.ts"),
+                    id_kind: IdKind::Path,
+                    format: Some(ModuleFormat::Ts),
+                    external: false,
+                    code: None,
+                })),
+                "./created" => Some(WireSlotOutcome::Ok(WireResolveResult {
+                    id: ModuleId::from("/proto/created.ts"),
+                    id_kind: IdKind::Path,
+                    format: Some(ModuleFormat::Ts),
+                    external: false,
+                    code: None,
+                })),
+                _ => None,
+            })
+            .collect();
+        let load = batch
+            .load
+            .into_iter()
+            .map(|req| {
+                map.get(req.id.as_str()).map(|code| {
+                    WireSlotOutcome::Ok(WireLoadResult {
+                        code: code.clone(),
+                        format: Some(ModuleFormat::Ts),
+                    })
+                })
+            })
+            .collect();
+        HostBatchResults { resolve, load }
+    });
+
+    let app_res2 = chunks2
+        .iter()
+        .flat_map(|chunk| &chunk.files)
+        .find(|file| file.file_path == "/proto/app.ts")
+        .expect("expected /proto/app.ts in delta output");
+    assert!(
+        app_res2.diagnostics.is_empty(),
+        "expected diagnostics to clear after Created re-resolution, got: {:?}",
+        app_res2.diagnostics
+    );
+    let decls = app_res2.classes[0]
+        .component
+        .as_ref()
+        .unwrap()
+        .resolved_declarations
+        .as_ref()
+        .unwrap();
+    assert!(decls.iter().any(|d| d.name == "CreatedDir"));
+}
+
+/// A delta stream that is cancelled while parked on the host must give back the dirty files it
+/// took, including one it had already streamed: that stream never completed, so the next delta
+/// pass has to stream the file again, without re-streaming completed unchanged files.
+///
+/// Streams here are not optimized, so nothing asks the host before the dirty files are taken, and
+/// `a.ts` needs no other file to be analyzed. `c.ts` is only reached through `a.ts`, so its load
+/// is requested after every request `a.ts` makes, and can be withheld without holding `a.ts` up.
+#[test]
+fn test_batching_host_delta_cancellation_restores_dirty_snapshot_and_normalizes_paths() {
+    use crate::host::{
+        HostBatchResults, IdKind, ModuleFormat, ModuleId, WireLoadResult, WireResolveResult,
+        WireSlotOutcome,
+    };
+    use crate::{AnalyzerOptions, FileInvalidation, FileUpdate, FileUpdateType};
+    use futures::FutureExt;
+    use futures::StreamExt;
+    use std::collections::HashSet;
+    use std::sync::Mutex;
+
+    let component_a = |text: &str| {
+        format!(
+            "import {{ Component }} from '@angular/core';\n\
+             import {{ CmpC }} from './c';\n\
+             export const KEEP_C = CmpC;\n\
+             @Component({{ selector: 'cmp-a', template: '<p>{text}</p>' }})\n\
+             export class CmpA {{}}\n"
+        )
+    };
+    let component_c = |text: &str| {
+        format!(
+            "import {{ Component }} from '@angular/core';\n\
+             @Component({{ selector: 'cmp-c', template: '<p>{text}</p>' }})\n\
+             export class CmpC {{}}\n"
+        )
+    };
+    let component_u = |text: &str| {
+        format!(
+            "import {{ Component }} from '@angular/core';\n\
+             @Component({{ selector: 'cmp-u', template: '<p>{text}</p>' }})\n\
+             export class CmpU {{}}\n"
+        )
+    };
+    let sources: Mutex<HashMap<String, String>> = Mutex::new(HashMap::from([
+        ("/delta/a.ts".to_string(), component_a("a1")),
+        ("/delta/c.ts".to_string(), component_c("c1")),
+        ("/delta/unchanged.ts".to_string(), component_u("u1")),
+    ]));
+
+    let (analyzer, batch_host) = Analyzer::new_core_with_batching_host(AnalyzerOptions {
+        entry_points: Some(vec![
+            "/delta/a.ts".to_string(),
+            "/delta/unchanged.ts".to_string(),
+        ]),
+        ..Default::default()
+    })
+    .unwrap();
+    let spawner = crate::compiler::analyzer::get_global_pool().clone();
+
+    // Resolves `./c` and `@angular/core` so `unchanged.ts` has no unresolved imports that a
+    // newly created file (`/delta/uninterned.ts`) would force to re-resolve, and loads `sources`.
+    let answer = |batch: crate::host::HostRequestBatch| {
+        let map = sources.lock().unwrap();
+        let resolve = batch
+            .resolve
+            .into_iter()
+            .map(|req| match req.specifier.as_str() {
+                "./c" => Some(WireSlotOutcome::Ok(WireResolveResult {
+                    id: ModuleId::from("/delta/c.ts"),
+                    id_kind: IdKind::Path,
+                    format: Some(ModuleFormat::Ts),
+                    external: false,
+                    code: None,
+                })),
+                "@angular/core" => Some(WireSlotOutcome::Ok(WireResolveResult {
+                    id: ModuleId::from("/node_modules/@angular/core/index.d.ts"),
+                    id_kind: IdKind::Path,
+                    format: Some(ModuleFormat::Dts),
+                    external: true,
+                    code: Some("export declare const Component: any;\n".to_string()),
+                })),
+                _ => None,
+            })
+            .collect();
+        let load = batch
+            .load
+            .into_iter()
+            .map(|req| {
+                map.get(req.id.as_str()).map(|code| {
+                    WireSlotOutcome::Ok(WireLoadResult {
+                        code: code.clone(),
+                        format: Some(ModuleFormat::Ts),
+                    })
+                })
+            })
+            .collect();
+        HostBatchResults { resolve, load }
+    };
+    let streamed = |chunks: &[crate::CompilationChunk]| -> HashSet<String> {
+        chunks
+            .iter()
+            .flat_map(|chunk| chunk.files.iter().map(|f| f.file_path.clone()))
+            .collect()
+    };
+
+    // 1. Baseline: a completed full stream over `a.ts`, `c.ts`, and `unchanged.ts`.
+    let rx0 = analyzer.analyze_core(spawner.clone()).unwrap();
+    let chunks0 = drive_batching_stream(rx0, &batch_host, &answer);
+    assert_eq!(
+        streamed(&chunks0),
+        HashSet::from([
+            "/delta/a.ts".to_string(),
+            "/delta/c.ts".to_string(),
+            "/delta/unchanged.ts".to_string(),
+        ])
+    );
+    let unchanged_lookup = analyzer
+        .lookup_host_file_content_core("/delta/unchanged.ts".to_string())
+        .unwrap();
+    let unchanged_code = unchanged_lookup.code.unwrap();
+    assert!(unchanged_code.contains("<p>u1</p>"));
+
+    // 2. Non-normalized `IdKind::Path` updates and lookups hit the normalized `ModuleId` key,
+    //    including for uninterned files.
+    analyzer
+        .update_file_content_core(vec![
+            FileUpdate {
+                file_path: "/delta/./a.ts".to_string(),
+                content: component_a("a2"),
+                id_kind: None,
+            },
+            FileUpdate {
+                file_path: "/delta/uninterned.ts".to_string(),
+                content: "export const EXTRA = 1;\n".to_string(),
+                id_kind: None,
+            },
+        ])
+        .unwrap();
+    assert!(analyzer
+        .lookup_host_file_content_core("/delta/a.ts".to_string())
+        .unwrap()
+        .code
+        .as_deref()
+        .unwrap()
+        .contains("<p>a2</p>"));
+    assert_eq!(
+        analyzer
+            .lookup_host_file_content_core("/delta/./uninterned.ts".to_string())
+            .unwrap()
+            .code
+            .as_deref(),
+        Some("export const EXTRA = 1;\n")
+    );
+
+    // `c.ts` changes on the host without an overlay, so analyzing it again has to load it.
+    sources
+        .lock()
+        .unwrap()
+        .insert("/delta/c.ts".to_string(), component_c("c2"));
+    analyzer
+        .invalidate_files_core(vec![FileInvalidation {
+            file_path: "/delta/./c.ts".to_string(),
+            update_type: FileUpdateType::Changed,
+            id_kind: None,
+        }])
+        .unwrap();
+
+    // 3. Delta stream 1 takes the dirty files (`a.ts` and `c.ts`), streams `a.ts` from its
+    //    overlay, and parks on the load of `c.ts`, which is withheld.
+    let mut rx1 = analyzer.analyze_delta_core(spawner.clone()).unwrap();
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(5);
+    let mut streamed_a = false;
+    let mut parked_on_c = false;
+    while !(streamed_a && parked_on_c) {
+        if let Some(item) = rx1.next().now_or_never() {
+            let chunk = item
+                .expect("stream 1 cannot end while the load of c.ts is withheld")
+                .expect("chunk");
+            streamed_a |= chunk.files.iter().any(|f| f.file_path == "/delta/a.ts");
+            continue;
+        }
+        if let Some(batch) = batch_host.take_pending_batch() {
+            if batch.load.iter().any(|req| req.id.as_str() == "/delta/c.ts") {
+                assert!(
+                    batch.resolve.is_empty() && batch.load.len() == 1,
+                    "the load of c.ts must not share a batch with a request a.ts needs: {batch:?}"
+                );
+                parked_on_c = true;
+            } else {
+                let results = answer(batch.clone());
+                batch_host.provide_results(batch.id, results).unwrap();
+            }
+            continue;
+        }
+        assert!(
+            std::time::Instant::now() < deadline,
+            "timed out in stream 1 (streamed a.ts: {streamed_a}, parked on c.ts: {parked_on_c})"
+        );
+        std::thread::sleep(std::time::Duration::from_micros(200));
+    }
+
+    //    Starting delta stream 2 cancels stream 1 mid-wave. `a.ts` is analyzed and cached by now,
+    //    so only the dirty files stream 1 gives back make stream 2 stream it again, while
+    //    completed `unchanged.ts` stays cached and is not re-emitted.
+    let rx2 = analyzer.analyze_delta_core(spawner.clone()).unwrap();
+    drop(rx1);
+    let chunks2 = drive_batching_stream(rx2, &batch_host, &answer);
+    assert_eq!(
+        streamed(&chunks2),
+        HashSet::from(["/delta/a.ts".to_string(), "/delta/c.ts".to_string()]),
+        "delta stream 2 must re-stream dirty a.ts and c.ts without re-streaming unchanged.ts"
+    );
+
+    // 4. Dropping a `request_metadata_core` receiver mid-wave cancels its parked lookup cleanly
+    //    without re-enqueuing an orphaned host request on cancellation.
+    analyzer
+        .invalidate_files_core(vec![FileInvalidation {
+            file_path: "/delta/./a.ts".to_string(),
+            update_type: FileUpdateType::Changed,
+            id_kind: None,
+        }])
+        .unwrap();
+    let meta_rx = analyzer
+        .request_metadata_core(crate::ModuleRef::from("/delta/a.ts"), spawner)
+        .unwrap();
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(5);
+    loop {
+        if batch_host.take_pending_batch().is_some() {
+            break;
+        }
+        assert!(
+            std::time::Instant::now() < deadline,
+            "timed out waiting for parked metadata batch"
+        );
+        std::thread::sleep(std::time::Duration::from_micros(200));
+    }
+    drop(meta_rx);
+    // Give the pool time to see the dropped receiver, and then the cancellation, before checking
+    // that nothing was queued again.
+    std::thread::sleep(std::time::Duration::from_millis(50));
+    analyzer.cancel_current_analysis();
+    std::thread::sleep(std::time::Duration::from_millis(50));
+    assert!(batch_host.take_pending_batch().is_none());
+}
+
+/// Editing a file while its `request_metadata_core` lookup has already parsed the pre-edit source
+/// and is parked on a dependency must restart the metadata lookup against the post-edit source
+/// rather than caching a stale `AnalyzeFileWire` entry after invalidation.
+#[test]
+fn test_batching_host_in_flight_metadata_restarts_on_file_update_without_stale_cache() {
+    use crate::host::{
+        HostBatchResults, IdKind, ModuleFormat, ModuleId, WireLoadResult, WireResolveResult,
+        WireSlotOutcome,
+    };
+    use crate::{AnalyzerOptions, FileUpdate};
+
+    let app_v1 = "import { Component } from '@angular/core';\n\
+                  import { Dir } from './dir';\n\
+                  @Component({ selector: 'app-v1', imports: [Dir], template: '<p dir>v1</p>' })\n\
+                  export class AppV1 {}\n";
+    let app_v2 = "import { Component } from '@angular/core';\n\
+                  import { Dir } from './dir';\n\
+                  @Component({ selector: 'app-v2', imports: [Dir], template: '<p dir>v2</p>' })\n\
+                  export class AppV2 {}\n";
+    let dir_src = "import { Directive } from '@angular/core';\n\
+                   @Directive({ selector: '[dir]' })\n\
+                   export class Dir {}\n";
+
+    let (analyzer, batch_host) = Analyzer::new_core_with_batching_host(AnalyzerOptions {
+        entry_points: Some(vec!["/meta/app.ts".to_string()]),
+        optimize: Some(true),
+        ..Default::default()
+    })
+    .unwrap();
+    let spawner = crate::compiler::analyzer::get_global_pool().clone();
+
+    let answer = |batch: crate::host::HostRequestBatch| {
+        let resolve = batch
+            .resolve
+            .into_iter()
+            .map(|req| {
+                (req.specifier == "./dir").then(|| {
+                    WireSlotOutcome::Ok(WireResolveResult {
+                        id: ModuleId::from("/meta/dir.ts"),
+                        id_kind: IdKind::Path,
+                        format: Some(ModuleFormat::Ts),
+                        external: false,
+                        code: None,
+                    })
+                })
+            })
+            .collect();
+        let load = batch
+            .load
+            .into_iter()
+            .map(|req| {
+                let code = match req.id.as_str() {
+                    "/meta/app.ts" => Some(app_v1.to_string()),
+                    "/meta/dir.ts" => Some(dir_src.to_string()),
+                    _ => None,
+                };
+                code.map(|code| {
+                    WireSlotOutcome::Ok(WireLoadResult {
+                        code,
+                        format: Some(ModuleFormat::Ts),
+                    })
+                })
+            })
+            .collect();
+        HostBatchResults { resolve, load }
+    };
+
+    let target = crate::ModuleRef::from("/meta/app.ts");
+    let mut meta_rx = analyzer
+        .request_metadata_core(target, spawner.clone())
+        .unwrap();
+
+    // Answer `app.ts` and `./dir` resolution until the lookup parks on loading `/meta/dir.ts`.
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(5);
+    loop {
+        assert!(
+            meta_rx.try_recv().unwrap().is_none(),
+            "metadata cannot finish while /meta/dir.ts load is withheld"
+        );
+        if let Some(batch) = batch_host.take_pending_batch() {
+            if batch.load.iter().any(|req| req.id.as_str() == "/meta/dir.ts") {
+                break;
+            }
+            let results = answer(batch.clone());
+            batch_host.provide_results(batch.id, results).unwrap();
+            continue;
+        }
+        assert!(
+            std::time::Instant::now() < deadline,
+            "timed out waiting for metadata lookup to park on /meta/dir.ts"
+        );
+        std::thread::sleep(std::time::Duration::from_micros(200));
+    }
+
+    // Update `/meta/app.ts` while `meta_rx` is parked on `/meta/dir.ts`.
+    analyzer
+        .update_file_content_core(vec![FileUpdate {
+            file_path: "/meta/app.ts".to_string(),
+            content: app_v2.to_string(),
+            id_kind: None,
+        }])
+        .unwrap();
+
+    // Drive the restarted metadata lookup to completion and verify both `meta_rx` and the cached
+    // `AnalyzeFileWire` entry reflect `AppV2` rather than the pre-edit `AppV1`.
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(5);
+    let meta = loop {
+        if let Some(res) = meta_rx.try_recv().unwrap() {
+            break res.unwrap().expect("expected metadata for /meta/app.ts");
+        }
+        if let Some(batch) = batch_host.take_pending_batch() {
+            let results = answer(batch.clone());
+            batch_host.provide_results(batch.id, results).unwrap();
+            continue;
+        }
+        assert!(
+            std::time::Instant::now() < deadline,
+            "timed out waiting for restarted metadata lookup"
+        );
+        std::thread::sleep(std::time::Duration::from_micros(200));
+    };
+    assert_eq!(meta.classes.len(), 1);
+    assert_eq!(meta.classes[0].class_name.as_deref(), Some("AppV2"));
+
+    let rx = analyzer.analyze_optimized_core(spawner).unwrap();
+    let chunks = drive_batching_stream(rx, &batch_host, &answer);
+    let app_file = chunks
+        .iter()
+        .flat_map(|c| c.files.iter())
+        .find(|f| f.file_path == "/meta/app.ts")
+        .expect("expected /meta/app.ts in optimized output");
+    assert_eq!(app_file.classes[0].class_name.as_deref(), Some("AppV2"));
+}
+
+/// Virtual `.d.ts` modules resolved via `BatchingHost` carry `ModuleFormat::Dts` only in
+/// `resolved_meta` (their ID has no `.d.ts` suffix). Clearing resolution caches or creating files
+/// must preserve `resolved_meta` so subsequent `update_file_content_core` overlays still parse as
+/// `.d.ts` and keep their Angular declarations.
+#[test]
+fn test_batching_host_virtual_dts_overlay_retains_format_after_cache_clear() {
+    use crate::host::{
+        HostBatchResults, IdKind, ModuleFormat, ModuleId, WireLoadResult, WireResolveResult,
+        WireSlotOutcome,
+    };
+    use crate::{AnalyzerOptions, FileUpdate};
+
+    let virt_id = "\0virtual:lib";
+    let dts_for = |selector: &str| {
+        format!(
+            "import * as i0 from '@angular/core';\n\
+             export declare class VirtDir {{\n\
+               static ɵdir: i0.ɵɵDirectiveDeclaration<\
+                 VirtDir, '{selector}', never, {{}}, {{}}, never, never, true, never\
+               >;\n\
+             }}\n"
+        )
+    };
+    let app_for = |attr: &str| {
+        format!(
+            "import {{ Component }} from '@angular/core';\n\
+             import {{ VirtDir }} from 'virtual:lib';\n\
+             @Component({{\n\
+               selector: 'app-cmp', imports: [VirtDir], template: '<div {attr}></div>'\n\
+             }})\n\
+             export class AppCmp {{}}\n"
+        )
+    };
+    let app_initial = app_for("virt-v1");
+    let dts_initial = dts_for("[virt-v1]");
+
+    let (analyzer, batch_host) = Analyzer::new_core_with_batching_host(AnalyzerOptions {
+        entry_points: Some(vec!["/vdts/app.ts".to_string()]),
+        optimize: Some(true),
+        ..Default::default()
+    })
+    .unwrap();
+    let spawner = crate::compiler::analyzer::get_global_pool().clone();
+
+    let answer = |batch: crate::host::HostRequestBatch| {
+        let resolve = batch
+            .resolve
+            .into_iter()
+            .map(|req| {
+                (req.specifier == "virtual:lib").then(|| {
+                    WireSlotOutcome::Ok(WireResolveResult {
+                        id: ModuleId::from(virt_id),
+                        id_kind: IdKind::Virtual,
+                        format: Some(ModuleFormat::Dts),
+                        external: true,
+                        code: Some(dts_initial.clone()),
+                    })
+                })
+            })
+            .collect();
+        let load = batch
+            .load
+            .into_iter()
+            .map(|req| {
+                (req.id.as_str() == "/vdts/app.ts").then(|| {
+                    WireSlotOutcome::Ok(WireLoadResult {
+                        code: app_initial.clone(),
+                        format: Some(ModuleFormat::Ts),
+                    })
+                })
+            })
+            .collect();
+        HostBatchResults { resolve, load }
+    };
+
+    let rx0 = analyzer.analyze_optimized_core(spawner.clone()).unwrap();
+    let chunks0 = drive_batching_stream(rx0, &batch_host, &answer);
+    let decls0 = chunks0[0].files[0].classes[0]
+        .component
+        .as_ref()
+        .unwrap()
+        .resolved_declarations
+        .as_ref()
+        .unwrap();
+    assert!(decls0
+        .iter()
+        .any(|d| d.name == "VirtDir" && d.selector.as_deref() == Some("[virt-v1]")));
+
+    // Both `clear_resolution_cache_core` and creating a new file invoke `host.clear_cache()`.
+    analyzer.clear_resolution_cache_core().unwrap();
+    analyzer
+        .update_file_content_core(vec![
+            FileUpdate {
+                file_path: "/vdts/extra.ts".to_string(),
+                content: "export const EXTRA = 1;\n".to_string(),
+                id_kind: None,
+            },
+            FileUpdate {
+                file_path: virt_id.to_string(),
+                content: dts_for("[virt-v2]"),
+                id_kind: Some(IdKind::Virtual),
+            },
+            FileUpdate {
+                file_path: "/vdts/app.ts".to_string(),
+                content: app_for("virt-v2"),
+                id_kind: None,
+            },
+        ])
+        .unwrap();
+
+    let rx1 = analyzer.analyze_optimized_delta_core(spawner).unwrap();
+    let chunks1 = drive_batching_stream(rx1, &batch_host, &answer);
+    let app_file = chunks1
+        .iter()
+        .flat_map(|c| c.files.iter())
+        .find(|f| f.file_path == "/vdts/app.ts")
+        .expect("expected /vdts/app.ts in delta output");
+    let decls1 = app_file.classes[0]
+        .component
+        .as_ref()
+        .unwrap()
+        .resolved_declarations
+        .as_ref()
+        .unwrap();
+    assert!(
+        decls1
+            .iter()
+            .any(|d| d.name == "VirtDir" && d.selector.as_deref() == Some("[virt-v2]")),
+        "expected updated virtual .d.ts declaration VirtDir ([virt-v2]), got: {decls1:?}"
+    );
+}

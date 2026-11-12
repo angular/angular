@@ -544,12 +544,36 @@ impl QueryEngine {
         crate::analyzer::utils::exports_its_just_angular(guard.borrow_dependent().program)
     }
 
-    fn get_interned_file_id(&self, path: &Path) -> Option<FileId> {
+    pub(crate) fn get_interned_file_id(&self, path: &Path) -> Option<FileId> {
         self.interner.get_if_interned(path).or_else(|| {
             self.host
                 .resolve_backing_path(path)
                 .and_then(|backing| self.interner.get_if_interned(backing))
         })
+    }
+
+    /// Return the already-loaded source text for `file_id` from [`QueryKey::ParseFile`], if a
+    /// completed parse with `loaded == true` is currently cached.
+    pub(crate) fn cached_parsed_source(&self, file_id: FileId) -> Option<String> {
+        let shared = self.cache.get(&QueryKey::ParseFile(file_id))?;
+        let cached = shared.now_or_never()?;
+        let QueryValue::ParsedFile(parsed) = &*cached.value else {
+            return None;
+        };
+        let guard = parsed.lock().unwrap();
+        let owner = guard.borrow_owner();
+        owner.loaded.then(|| owner.source_text.clone())
+    }
+
+    /// Drop every cached query whose `SharedQuery` has not completed yet and cancel pending host
+    /// batches so mid-wave cancellation never leaves parked queries behind in the cache.
+    pub fn cancel_in_flight_queries(&self) {
+        for key in self.cache.remove_incomplete() {
+            if let Some(fid) = key.file_id() {
+                self.mark_file_dirty(fid);
+            }
+        }
+        self.host.cancel_pending();
     }
 
     /// Purge every cached query that depends on `path` (file invalidation). Dropping the cached
