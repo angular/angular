@@ -8323,6 +8323,42 @@ describe('platform-server full application hydration integration', () => {
         verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
         expect(clientRootNode.textContent).toContain('Main:  Slot: 2');
       });
+
+      it('should not modify an array stored in a let declaration during cleanup', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            @let list = items;
+            @if (true) {
+              Length: {{ list.length }}
+            }
+          `,
+        })
+        class SimpleComponent {
+          items = Array.from({length: 8}, (_, i) => ({id: i}));
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+        expect(ssrContents).toContain('Length: 8');
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        expect(clientRootNode.textContent).toContain('Length: 8');
+
+        await appRef.whenStable();
+
+        expect(Object.keys(compRef.instance.items[6])).toEqual(['id']);
+      });
     });
 
     describe('@boundary', () => {
