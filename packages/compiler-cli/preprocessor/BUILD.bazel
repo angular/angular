@@ -29,7 +29,6 @@ ts_project(
             "src/**/*.ts",
         ],
         exclude = [
-            "serve.ts",
             "src/diagnostics.ts",
         ],
     ),
@@ -43,19 +42,6 @@ ts_project(
     ],
 )
 
-ts_project(
-    name = "serve_lib",
-    srcs = ["serve.ts"],
-    tsconfig = ":tsconfig",
-    deps = [
-        ":preprocessor",
-        "//:node_modules/@types/node",
-        "//:node_modules/esbuild",
-        "//:node_modules/typescript",
-        "//packages/compiler-cli/linker/babel",
-    ],
-)
-
 js_binary(
     name = "main",
     data = [
@@ -64,17 +50,6 @@ js_binary(
         "//packages/compiler-cli/preprocessor/ng-analyze:package_json",
     ],
     entry_point = "main.js",
-)
-
-js_binary(
-    name = "serve",
-    data = [
-        ":preprocessor",
-        ":serve_lib",
-        "//packages/compiler-cli/preprocessor/ng-analyze:ng_analyze_wasm",
-        "//packages/compiler-cli/preprocessor/ng-analyze:package_json",
-    ],
-    entry_point = "serve.js",
 )
 
 npm_package(
