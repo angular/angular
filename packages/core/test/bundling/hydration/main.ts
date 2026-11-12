@@ -9,9 +9,20 @@
 import {Component} from '@angular/core';
 import {bootstrapApplication, provideClientHydration} from '@angular/platform-browser';
 
+import {DeferComponent} from './defer.component';
+
 @Component({
   selector: 'hello-world',
-  template: 'Hello World!',
+  imports: [DeferComponent],
+  template: `
+    <h1>Hello World!</h1>
+
+    @defer (hydrate on interaction) {
+      <defer-cmp />
+    } @placeholder {
+      <p>Placeholder</p>
+    }
+  `,
 })
 class HelloWorld {}
 
