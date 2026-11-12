@@ -32,6 +32,8 @@ export const routes: Routes = [
 
 When you navigate to `/products/123`, if `ProductDetails` throws an error during creation or rendering, Angular Router instantiates `ProductErrorFallback` inside the `<router-outlet>` instead.
 
+NOTE: `errorComponent` only takes effect after you enable error boundaries. See [Global error boundary configuration](#global-error-boundary-configuration).
+
 NOTE: Unlike route components which can be lazily loaded using `loadComponent`, the `errorComponent` must be eagerly loaded in your route configuration.
 
 ---
@@ -89,7 +91,7 @@ export class ProductErrorFallback {
 
 ## Global error boundary configuration
 
-You can enable router error boundaries globally across your application using the `withErrorBoundaries` feature in `provideRouter`:
+Enable router error boundaries for your application with the `withErrorBoundaries` feature in `provideRouter`. Without it, a route's `errorComponent` is ignored:
 
 ```ts {header:"app.config.ts"}
 import {ApplicationConfig, inject} from '@angular/core';
