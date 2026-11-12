@@ -10,6 +10,10 @@ import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata, SecurityContex
 import {isNgContainer, isNgContent, isNgTemplate, splitNsName} from '../ml_parser/tags';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from '../template/pipeline/src/namespaces';
 import {dashCaseToCamelCase} from '../util';
+import {
+  CustomElementsManifestIndex,
+  normalizeCustomElementTagName,
+} from './custom_elements_manifest_schema';
 import {checkSecurityContext} from './dom_security_schema';
 import {ElementSchemaRegistry} from './element_schema_registry';
 
@@ -19,7 +23,7 @@ const STRING = 'string';
 const OBJECT = 'object';
 
 function normalizeTagName(tagName: string): string {
-  const tagNameLower = tagName.toLowerCase();
+  const tagNameLower = normalizeCustomElementTagName(tagName);
   const [ns, name] = splitNsName(tagNameLower, false);
 
   return ns === SVG_NAMESPACE || ns === MATH_ML_NAMESPACE ? `:${ns}:${name}` : name;
@@ -349,8 +353,16 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
   // Union of all events in `_eventSchema`, built lazily by `isKnownEventOfAnyElement`. Since
   // events bubble, any known event can be observed on any element, regardless of its tag.
   private _allKnownEvents: Set<string> | null = null;
+  // Event names declared by Custom Elements Manifests, built lazily by `isEventFromManifest`.
+  private _manifestEvents: Set<string> | null = null;
 
-  constructor() {
+  /**
+   * @param customElementsManifestIndex custom elements from the configured Custom Elements
+   *     Manifests, added to the built-in DOM schema.
+   */
+  constructor(
+    private readonly customElementsManifestIndex: CustomElementsManifestIndex | null = null,
+  ) {
     super();
     SCHEMA.forEach((encodedType) => {
       const type = new Map<string, string>();
@@ -392,6 +404,32 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
         }
       });
     });
+
+    for (const customElement of customElementsManifestIndex?.schemas ?? []) {
+      // Start from the HTMLElement schema because manifests usually omit inherited DOM members.
+      // The manifest loader has already rejected invalid tag names.
+      const type = new Map<string, string>(this._schema.get('[htmlelement]')!);
+      const events = new Set<string>(this._eventSchema.get('[htmlelement]')!);
+      for (const property of customElement.properties) {
+        // Schema checks use only the name; the type is unused.
+        type.set(property.name, OBJECT);
+      }
+      for (const event of customElement.events) {
+        events.add(event.name);
+      }
+      this._schema.set(normalizeTagName(customElement.tagName), type);
+      this._eventSchema.set(normalizeTagName(customElement.tagName), events);
+    }
+  }
+
+  /** Whether any Custom Elements Manifest declares an element. */
+  hasCustomElementsManifestSchemas(): boolean {
+    return (this.customElementsManifestIndex?.tagNames.size ?? 0) > 0;
+  }
+
+  /** Whether a configured Custom Elements Manifest declares `tagName`. */
+  isCustomElementFromManifest(tagName: string): boolean {
+    return this.customElementsManifestIndex?.getSchema(tagName) != null;
   }
 
   override hasProperty(tagName: string, propName: string, schemaMetas: SchemaMetadata[]): boolean {
@@ -411,7 +449,8 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
 
       if (schemaMetas.some((schema) => schema.name === CUSTOM_ELEMENTS_SCHEMA.name)) {
         // Can't tell now as we don't know which properties a custom element will get
-        // once it is instantiated
+        // once it is instantiated. This includes an element that a Custom Elements Manifest
+        // declares, because a manifest can omit members, such as inherited ones.
         return true;
       }
     }
@@ -476,6 +515,8 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
     return 'ng-component';
   }
 
+  // This runs before manifest schemas are consulted, so it also rejects declared custom element
+  // properties such as `onDark`.
   override validateProperty(name: string): {error: boolean; msg?: string} {
     if (name.startsWith(':')) {
       return {
@@ -523,8 +564,19 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
   allKnownAttributesOfElement(tagName: string): string[] {
     const normalizedTag = normalizeTagName(tagName);
     const elementProperties = this._schema.get(normalizedTag) || this._schema.get('unknown')!;
-    // Convert properties to attributes.
-    return Array.from(elementProperties.keys()).map((prop) => _PROP_TO_ATTR.get(prop) ?? prop);
+    const manifestIndex = this.customElementsManifestIndex;
+    const inheritedProperties = this._schema.get('[htmlelement]')!;
+    // Convert properties to attributes. Custom Elements Manifest properties keep their names.
+    // Properties that only the element class declares are valid in bindings but aren't listed.
+    return Array.from(elementProperties.keys())
+      .filter(
+        (prop) =>
+          inheritedProperties.has(prop) ||
+          manifestIndex?.getProperty(normalizedTag, prop)?.fromElementClass !== true,
+      )
+      .map((prop) =>
+        manifestIndex?.hasProperty(normalizedTag, prop) ? prop : (_PROP_TO_ATTR.get(prop) ?? prop),
+      );
   }
 
   allKnownEventsOfElement(tagName: string): string[] {
@@ -541,6 +593,16 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
     // The schema stores event names in lowercase, but some events have camelCase names at
     // runtime (e.g. the vendor-prefixed `webkitAnimationEnd`), so compare ignoring case.
     return this._allKnownEvents.has(eventName.toLowerCase());
+  }
+
+  /** Whether a configured Custom Elements Manifest declares an event with exactly this name. */
+  isEventFromManifest(eventName: string): boolean {
+    this._manifestEvents ??= new Set(
+      (this.customElementsManifestIndex?.schemas ?? []).flatMap((schema) =>
+        schema.events.map((event) => event.name),
+      ),
+    );
+    return this._manifestEvents.has(eventName);
   }
 
   override normalizeAnimationStyleProperty(propName: string): string {

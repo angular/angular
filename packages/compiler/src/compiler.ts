@@ -265,6 +265,11 @@ export {CombinedRecursiveAstVisitor} from './combined_visitor';
 export {type BindingParser} from './template_parser/binding_parser';
 export {createCssSelectorFromNode} from './render3/view/util';
 export * from './resource_loader';
+export {
+  CustomElementsManifestIndex,
+  CustomElementsManifestProperty,
+  CustomElementsManifestSchema,
+} from './schema/custom_elements_manifest_schema';
 export * from './schema/dom_element_schema_registry';
 export * from './schema/element_schema_registry';
 export * from './directive_matching';
