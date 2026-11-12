@@ -92,6 +92,12 @@ export class LanguageServiceTestEnv {
     return this.projects.get(name);
   }
 
+  notifyFileChange(path: string, eventKind: ts.FileWatcherEventKind): void {
+    this.host.invokeFileWatcher(path, eventKind);
+    // Flush deferred TypeScript project updates after delivering watcher events.
+    this.host.flushPendingTimers();
+  }
+
   getTextFromTsSpan(fileName: string, span: ts.TextSpan): string | null {
     const scriptInfo = this.projectService.getScriptInfo(fileName);
     if (scriptInfo === undefined) {
