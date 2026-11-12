@@ -49,7 +49,7 @@
     "@modelcontextprotocol/server": "^2.0.0"
   },
   "peerDependencies": {
-    "@angular/compiler": "22.3.0-next.4",
+    "@angular/compiler": "22.3.0-rc.0",
     "rxjs": "^6.5.3 || ^7.4.0",
     "zone.js": "~0.15.0 || ~0.16.0"
   },
