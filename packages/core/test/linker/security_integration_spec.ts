@@ -551,6 +551,92 @@ describe('security integration tests', function () {
       fixture.detectChanges();
       expect(e.innerHTML).toEqual('also  evil');
     });
+
+    for (const ngDevModeValue of [true, false]) {
+      it(`should not strip !important from non-style/class host property bindings (ngDevMode=${ngDevModeValue})`, () => {
+        const originalNgDevMode = (globalThis as any).ngDevMode;
+        (globalThis as any).ngDevMode = ngDevModeValue;
+
+        @Directive({
+          selector: '[dirInnerHtmlImportant]',
+          host: {
+            '[innerHTML!important]': 'dirInnerHtmlImportant',
+          },
+        })
+        class InnerHtmlImportantDirective {
+          @Input() dirInnerHtmlImportant: string | undefined;
+        }
+
+        @Directive({
+          selector: '[dirHostBindingInnerHtmlImportant]',
+        })
+        class HostBindingInnerHtmlImportantDirective {
+          @HostBinding('innerHTML!important')
+          @Input()
+          dirHostBindingInnerHtmlImportant: string | undefined;
+        }
+
+        @Directive({
+          selector: 'a[dirHrefImportant]',
+          host: {
+            '[href!important]': 'dirHrefImportant',
+          },
+        })
+        class HrefImportantDirective {
+          @Input() dirHrefImportant: string | undefined;
+        }
+
+        @Component({
+          imports: [
+            InnerHtmlImportantDirective,
+            HostBindingInnerHtmlImportantDirective,
+            HrefImportantDirective,
+          ],
+          template: `
+            <div [dirInnerHtmlImportant]="ctxProp">Initial</div>
+            <div [dirHostBindingInnerHtmlImportant]="ctxProp">Initial</div>
+            <a [dirHrefImportant]="unsafeHref">Link</a>
+          `,
+        })
+        class LocalHostImportantComponent {
+          ctxProp = '<img src="x" onerror="evil()">';
+          unsafeHref = 'javascript:alert(1)';
+        }
+
+        try {
+          const consoleErrorSpy = spyOn(console, 'error');
+          const fixture = TestBed.createComponent(LocalHostImportantComponent);
+          fixture.detectChanges();
+
+          const firstDiv = fixture.debugElement.children[0].nativeElement;
+          const secondDiv = fixture.debugElement.children[1].nativeElement;
+          const anchor = fixture.debugElement.children[2].nativeElement;
+
+          expect(firstDiv.innerHTML).toEqual('Initial');
+          expect(secondDiv.innerHTML).toEqual('Initial');
+          expect(anchor.getAttribute('href')).toBeNull();
+          expect((firstDiv as any)['innerHTML!important']).toEqual(
+            '<img src="x" onerror="evil()">',
+          );
+          expect((secondDiv as any)['innerHTML!important']).toEqual(
+            '<img src="x" onerror="evil()">',
+          );
+          expect((anchor as any)['href!important']).toEqual('javascript:alert(1)');
+          if (ngDevModeValue) {
+            expect(consoleErrorSpy).toHaveBeenCalledWith(
+              jasmine.stringMatching(/Can't bind to 'innerHTML!important'/),
+            );
+            expect(consoleErrorSpy).toHaveBeenCalledWith(
+              jasmine.stringMatching(/Can't bind to 'href!important'/),
+            );
+          } else {
+            expect(consoleErrorSpy).not.toHaveBeenCalled();
+          }
+        } finally {
+          (globalThis as any).ngDevMode = originalNgDevMode;
+        }
+      });
+    }
   });
 
   describe('translation', () => {

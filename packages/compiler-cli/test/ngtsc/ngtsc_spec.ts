@@ -5851,6 +5851,46 @@ runInEachFileSystem((os: string) => {
       expect(errors.length).toBe(0);
     });
 
+    it('should not strip !important from non-style/class host property bindings', () => {
+      env.tsconfig({typeCheckHostBindings: false});
+      env.write(
+        'test.ts',
+        `
+        import {Directive, HostBinding} from '@angular/core';
+
+        @Directive({
+          selector: '[test]',
+          host: {
+            '[innerHTML!important]': 'html',
+            '[style!important]': 'styles',
+            '[class!important]': 'classes',
+            '[style.width!important]': 'width',
+            '[class.active!important]': 'isActive',
+          },
+        })
+        export class Dir {
+          html = '<b>bold</b>';
+          styles = {color: 'red'};
+          classes = {active: true};
+          width = '100px';
+          isActive = true;
+
+          @HostBinding('href!important') href = 'javascript:alert(1)';
+        }
+      `,
+      );
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain(
+        'i0.ɵɵdomProperty("innerHTML!important", ctx.html)("style!important", ctx.styles)("class!important", ctx.classes)("href!important", ctx.href);',
+      );
+      expect(jsContents).not.toContain('ɵɵstyleMap');
+      expect(jsContents).not.toContain('ɵɵclassMap');
+      expect(jsContents).toContain('i0.ɵɵstyleProp("width", ctx.width);');
+      expect(jsContents).toContain('i0.ɵɵclassProp("active", ctx.isActive);');
+    });
+
     it('should use proper default value for preserveWhitespaces config param', () => {
       env.tsconfig(); // default is `false`
       env.write(
