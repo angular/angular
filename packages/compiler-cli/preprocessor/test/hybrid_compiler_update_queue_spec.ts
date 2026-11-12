@@ -13,6 +13,8 @@ import {
   type AnalysisResult,
   type CompilationChunk,
   type FileInvalidation,
+  type FileUpdate,
+  type ModuleRef,
   type ResolvedResource,
   type TemplateUsage,
 } from '../src/types.js';
@@ -76,7 +78,7 @@ class ScriptedAnalyzer implements IAnalyzer {
     }
   }
 
-  async updateFileContent(updates: {filePath: string; content: string}[]): Promise<string[]> {
+  async updateFileContent(updates: FileUpdate[]): Promise<string[]> {
     this.calls.push(`updateFileContent(${updates.map((u) => u.content).join(',')})`);
     const error = this.updateErrors[this.updateCount++];
     if (error) {
@@ -94,12 +96,14 @@ class ScriptedAnalyzer implements IAnalyzer {
     return updates.map((u) => u.filePath);
   }
 
-  async setEntryPoints(entryPoints: string[]): Promise<string[]> {
-    this.calls.push(`setEntryPoints(${entryPoints.join(',')})`);
+  async setEntryPoints(entryPoints: ModuleRef[]): Promise<string[]> {
+    this.calls.push(
+      `setEntryPoints(${entryPoints.map((e) => (typeof e === 'string' ? e : e.id)).join(',')})`,
+    );
     return [];
   }
 
-  async getMetadataForFile(filePath: string): Promise<AnalysisResult | null> {
+  async getMetadataForFile(file: ModuleRef): Promise<AnalysisResult | null> {
     return null;
   }
   async getTsFileForTemplate(templatePath: string): Promise<TemplateUsage[] | null> {
@@ -317,6 +321,100 @@ for (const {optimize} of [{optimize: true}, {optimize: false}]) {
       await compiler.clearResolutionCache();
 
       expect(recordChanges).not.toHaveBeenCalled();
+    });
+
+    it('queues setEntryPoints, evicts stale file caches, and records incremental changes', async () => {
+      const analyzer = new ScriptedAnalyzer();
+      const received: ModuleRef[][] = [];
+      analyzer.setEntryPoints = async (entryPoints) => {
+        analyzer.calls.push('setEntryPoints');
+        received.push(entryPoints);
+        return ['/app/a.ts', 'virtual:entry'];
+      };
+      const compiler = new HybridCompiler(analyzer, {optimize});
+      const recordChanges = spyOn(compiler.incremental, 'recordChanges').and.callThrough();
+      getOrCreateFileAnalysis(compiler.fileCache, '/app/a.ts');
+      getOrCreateFileAnalysis(compiler.fileCache, 'virtual:entry');
+      getOrCreateFileAnalysis(compiler.fileCache, '/app/keep.ts');
+
+      const entryPoints: ModuleRef[] = ['/app/a.ts', {id: 'virtual:entry', idKind: 'virtual'}];
+      await compiler.setEntryPoints(entryPoints);
+
+      expect(received).toEqual([entryPoints]);
+      expect(analyzer.calls).toEqual(['setEntryPoints', deltaCall]);
+      expect([...compiler.fileCache.keys()]).toEqual(['/app/keep.ts']);
+      expect(recordChanges.calls.allArgs()).toEqual([[['/app/a.ts', 'virtual:entry'], []]]);
+    });
+
+    it('records no incremental change when setEntryPoints evicts nothing', async () => {
+      const analyzer = new ScriptedAnalyzer();
+      const compiler = new HybridCompiler(analyzer, {optimize});
+      const recordChanges = spyOn(compiler.incremental, 'recordChanges').and.callThrough();
+
+      await compiler.setEntryPoints(['/app/main.ts']);
+
+      expect(analyzer.calls).toEqual(['setEntryPoints(/app/main.ts)', deltaCall]);
+      expect(recordChanges).not.toHaveBeenCalled();
+    });
+
+    it('forwards idKind and records a virtual ID as the host reported it', async () => {
+      // An opaque ID is not a path, so the engine's canonical form of the string is not used.
+      const analyzer = new ScriptedAnalyzer();
+      analyzer.canonicalPaths = async (paths) => paths.map((p) => p.replace('/link/', '/real/'));
+      const updateFileContent = spyOn(analyzer, 'updateFileContent').and.callThrough();
+      const invalidateFiles = spyOn(analyzer, 'invalidateFiles').and.callThrough();
+      const compiler = new HybridCompiler(analyzer, {optimize});
+      const recordChanges = spyOn(compiler.incremental, 'recordChanges').and.callThrough();
+
+      const update: FileUpdate = {filePath: 'virtual:/link/a', content: 'next', idKind: 'virtual'};
+      const invalidations: FileInvalidation[] = [
+        {filePath: 'virtual:/link/b', updateType: FileUpdateType.Changed, idKind: 'virtual'},
+        {filePath: '/link/c.ts', updateType: FileUpdateType.Changed},
+      ];
+      await compiler.updateFileContent([update]);
+      await compiler.invalidateFiles(invalidations);
+
+      expect(updateFileContent).toHaveBeenCalledOnceWith([update]);
+      expect(invalidateFiles).toHaveBeenCalledOnceWith(invalidations);
+      expect(recordChanges.calls.allArgs()).toEqual([
+        [['virtual:/link/a'], []],
+        [['virtual:/link/b', '/real/c.ts'], []],
+      ]);
+    });
+
+    it('re-streams every known file for an unknown path resource but not for a virtual ID', async () => {
+      const analyzer = new ScriptedAnalyzer();
+      const fullChunks = async function* (): AsyncGenerator<CompilationChunk> {
+        yield {files: [resultFor('/app/a.ts'), resultFor('/app/b.ts')]};
+      };
+      analyzer.analyze = fullChunks;
+      analyzer.analyzeOptimized = fullChunks;
+      const compiler = new HybridCompiler(analyzer, {optimize});
+      for await (const _chunk of optimize ? compiler.analyzeOptimized() : compiler.analyze()) {
+        // Record the files of the program.
+      }
+
+      const restreamedAfter = async (update: FileInvalidation): Promise<string[]> => {
+        await compiler.invalidateFiles([update]);
+        const delta = optimize ? compiler.analyzeOptimizedDelta() : compiler.analyzeDelta();
+        const files: string[] = [];
+        for await (const chunk of delta) {
+          files.push(...chunk.files.map((file) => file.filePath));
+        }
+        return files;
+      };
+
+      // Unlike an unknown path resource, a virtual ID does not make every known file reprocess.
+      expect(
+        await restreamedAfter({
+          filePath: 'virtual:theme',
+          updateType: FileUpdateType.Changed,
+          idKind: 'virtual',
+        }),
+      ).toEqual([]);
+      expect(
+        await restreamedAfter({filePath: '/app/theme.css', updateType: FileUpdateType.Changed}),
+      ).toEqual(['/app/a.ts', '/app/b.ts']);
     });
   });
 }

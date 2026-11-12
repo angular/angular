@@ -30,9 +30,9 @@ import {fileURLToPath} from 'node:url';
 import * as path from 'node:path';
 import * as fs from 'node:fs/promises';
 import type {IAnalyzer} from './hybrid_compiler.js';
-import type {WasmInner} from './analyzer_wasm.js';
+import type {AnalyzerHost, WasmInner} from './analyzer_wasm.js';
 import type {WasmHostFs} from './wasm_host_fs.js';
-import type * as nga from './types.js';
+import * as nga from './types.js';
 
 /** Which engine backs the analyzer. */
 export type AnalyzerBackend = 'native' | 'wasm';
@@ -53,6 +53,15 @@ export interface LoadAnalyzerOptions extends nga.AnalyzerOptions {
   nativeBinding?: string;
   /** Explicit path or bare specifier of a wasm-bindgen glue module. Highest priority. */
   wasmBinding?: string;
+
+  /**
+   * Asynchronous bundler host supplying module resolutions and source text.
+   *
+   * When provided without an explicit `backend`, the `'wasm'` backend is selected automatically.
+   * Mutually exclusive with `backend: 'native'`, `tsconfigPath`, `hostFs`, `defaultHost`,
+   * `nodeModulesPathOverride`, and `allowedSources`.
+   */
+  host?: AnalyzerHost;
 
   /**
    * Filesystem bridge for the wasm engine, which has no OS of its own.
@@ -87,9 +96,43 @@ export function toLoadAnalyzerOptions(
     : tsconfigPathOrOptions;
 }
 
+function hasVirtualEntryPoints(options: LoadAnalyzerOptions): boolean {
+  return options.entryPoints?.some(nga.isVirtualModuleRef) ?? false;
+}
+
+/** Validates option combinations that require the `'wasm'` backend. */
+function validateLoaderOptions(options: LoadAnalyzerOptions): void {
+  if (options.backend === 'native' && hasVirtualEntryPoints(options)) {
+    throw new Error(
+      "Virtual entryPoints cannot be used with backend: 'native'; virtual ModuleRef IDs require the 'wasm' backend",
+    );
+  }
+  if (!options.host) {
+    return;
+  }
+  if (options.backend === 'native') {
+    throw new Error(
+      "'host' cannot be used with backend: 'native'; custom AnalyzerHost requires the 'wasm' backend",
+    );
+  }
+  const forbidden = [
+    ['tsconfigPath', options.tsconfigPath],
+    ['hostFs', options.hostFs],
+    ['defaultHost', options.defaultHost],
+    ['nodeModulesPathOverride', options.nodeModulesPathOverride],
+    ['allowedSources', options.allowedSources],
+  ] as const;
+  for (const [name, value] of forbidden) {
+    if (value !== undefined) {
+      throw new Error(`'host' cannot be combined with '${name}'`);
+    }
+  }
+}
+
 /** Strips the loader-only keys from `options`, leaving exactly the engine's options. */
 function engineOptions(options: LoadAnalyzerOptions): nga.AnalyzerOptions {
-  const {backend, nativeBinding, wasmBinding, hostFs, ngAnalyzeDir, useWasm, ...engine} = options;
+  const {backend, nativeBinding, wasmBinding, host, hostFs, ngAnalyzeDir, useWasm, ...engine} =
+    options;
   return {...engine, optimize: options.optimize ?? true};
 }
 
@@ -108,8 +151,14 @@ interface Candidate {
   origin: string;
 }
 
-type AnalyzerConstructor = new (options: nga.AnalyzerOptions) => nga.Analyzer;
-type WasmInnerConstructor = new (optionsJson: string, hostFs?: WasmHostFs | null) => WasmInner;
+type AnalyzerConstructor = new (
+  options: nga.AnalyzerOptions & {entryPoints?: Array<string>},
+) => nga.Analyzer;
+type WasmInnerConstructor = new (
+  optionsJson: string,
+  hostFs?: WasmHostFs | null,
+  useBatchingHost?: boolean,
+) => WasmInner;
 
 const SELF_DIR = path.dirname(fileURLToPath(import.meta.url));
 const requireFromHere = createRequire(import.meta.url);
@@ -162,22 +211,33 @@ async function existingPath(candidate: string): Promise<string | null> {
   return (await pathExists(candidate)) ? candidate : null;
 }
 
+interface RequestedBackend {
+  backend: AnalyzerBackend | null;
+  wasmRequiredBy?: string;
+}
+
 /** Resolves the requested backend, or `null` to mean "native, then fall back to wasm". */
-function requestedBackend(options: LoadAnalyzerOptions): AnalyzerBackend | null {
+function requestedBackend(options: LoadAnalyzerOptions): RequestedBackend {
   if (options.backend) {
-    return options.backend;
+    return {backend: options.backend};
+  }
+  if (options.host) {
+    return {backend: 'wasm', wasmRequiredBy: "'host'"};
+  }
+  if (hasVirtualEntryPoints(options)) {
+    return {backend: 'wasm', wasmRequiredBy: "virtual 'entryPoints'"};
   }
   if (options.useWasm) {
-    return 'wasm';
+    return {backend: 'wasm'};
   }
   const fromEnv = process.env['NG_EXP_COMPILER_BACKEND'];
   if (fromEnv === 'native' || fromEnv === 'wasm') {
-    return fromEnv;
+    return {backend: fromEnv};
   }
   if (envFlag('NG_EXP_FORCE_WASM')) {
-    return 'wasm';
+    return {backend: 'wasm'};
   }
-  return null;
+  return {backend: null};
 }
 
 async function nativeCandidates(options: LoadAnalyzerOptions): Promise<Candidate[]> {
@@ -258,8 +318,16 @@ async function constructNative(spec: string, options: LoadAnalyzerOptions): Prom
       `'${spec}' does not export an 'Analyzer' constructor (${describeExports(mod)})`,
     );
   }
+  const rawEngine = engineOptions(options);
+  const nativeOptions = {
+    ...rawEngine,
+    entryPoints: nga.unwrapPathEntryPoints(
+      rawEngine.entryPoints,
+      'createAnalyzer (native backend)',
+    ),
+  };
   const {NapiAnalyzer} = await import('./analyzer_napi.js');
-  return new NapiAnalyzer(new Analyzer(engineOptions(options)));
+  return new NapiAnalyzer(new Analyzer(nativeOptions));
 }
 
 async function constructWasm(spec: string, options: LoadAnalyzerOptions): Promise<IAnalyzer> {
@@ -273,6 +341,18 @@ async function constructWasm(spec: string, options: LoadAnalyzerOptions): Promis
     );
   }
   const {WasmAnalyzer} = await import('./analyzer_wasm.js');
+
+  if (options.host) {
+    const inner = new Inner(JSON.stringify(engineOptions(options)), undefined, true);
+    try {
+      return new WasmAnalyzer(inner, {host: options.host});
+    } catch (error) {
+      // `WasmAnalyzer` rejects an engine build that cannot serve a host. Release this engine
+      // instance before the candidate is reported as failed.
+      inner.free();
+      throw error;
+    }
+  }
 
   // The engine has no OS beneath it, so without this bridge it can only see
   // `virtualFiles` and cannot analyze a project on disk. Callers can substitute their
@@ -295,6 +375,7 @@ function hostDescription(): string {
 function noAnalyzerError(
   attempts: {candidate: Candidate; error: unknown}[],
   strict: boolean,
+  wasmRequiredBy?: string,
 ): Error {
   const lines = attempts.map(({candidate, error}, i) => {
     const reason = error instanceof Error ? error.message.split('\n')[0] : String(error);
@@ -306,17 +387,20 @@ function noAnalyzerError(
       ? `Tried, in order:\n${lines.join('\n')}`
       : 'No candidate engines were available to try.';
 
-  const remedy = strict
-    ? 'A specific backend was requested, so no fallback was attempted. Unset ' +
-      'NG_EXP_COMPILER_BACKEND / NG_EXP_FORCE_WASM (or drop the `backend` option) to allow fallback.'
-    : [
-        'The engines ship as optionalDependencies. Package managers skip optional',
-        'dependencies when installed with --omit=optional / --no-optional, or when a',
-        'lockfile was generated on a different platform (npm/cli#4828).',
-        '',
-        'Fix:  npm install --save-optional ng-exp-compiler-arch-wasm',
-        ' or:  rm -rf node_modules package-lock.json && npm install',
-      ].join('\n');
+  const remedy = wasmRequiredBy
+    ? `${wasmRequiredBy} requires the 'wasm' backend, so native N-API fallback is unavailable. ` +
+      'Install a compatible ng-exp-compiler-arch-wasm package or pass options.wasmBinding.'
+    : strict
+      ? 'A specific backend was requested, so no fallback was attempted. Unset ' +
+        'NG_EXP_COMPILER_BACKEND / NG_EXP_FORCE_WASM (or drop the `backend` option) to allow fallback.'
+      : [
+          'The engines ship as optionalDependencies. Package managers skip optional',
+          'dependencies when installed with --omit=optional / --no-optional, or when a',
+          'lockfile was generated on a different platform (npm/cli#4828).',
+          '',
+          'Fix:  npm install --save-optional ng-exp-compiler-arch-wasm',
+          ' or:  rm -rf node_modules package-lock.json && npm install',
+        ].join('\n');
 
   const error = new Error(
     `Could not load the ng-exp-compiler analysis engine.\n\n` +
@@ -336,9 +420,9 @@ function noAnalyzerError(
 /**
  * Loads the analysis engine and reports which one was used.
  *
- * Selection order: `backend` option, the deprecated `useWasm` option,
- * `NG_EXP_COMPILER_BACKEND`, `NG_EXP_FORCE_WASM`, then the default (native, falling
- * back to wasm). An explicit choice is strict and never falls back.
+ * Selection order: `backend` option, `host` / virtual `entryPoints` (which imply `'wasm'`), the
+ * deprecated `useWasm` option, `NG_EXP_COMPILER_BACKEND`, `NG_EXP_FORCE_WASM`, then the default
+ * (native, falling back to wasm). An explicit choice is strict and never falls back.
  */
 export function loadAnalyzerWithInfo(options: LoadAnalyzerOptions): Promise<LoadedAnalyzer>;
 export function loadAnalyzerWithInfo(
@@ -350,7 +434,8 @@ export async function loadAnalyzerWithInfo(
   maybeOptions?: LoadAnalyzerOptions,
 ): Promise<LoadedAnalyzer> {
   const options = toLoadAnalyzerOptions(tsconfigPathOrOptions, maybeOptions);
-  const requested = requestedBackend(options);
+  validateLoaderOptions(options);
+  const {backend: requested, wasmRequiredBy} = requestedBackend(options);
   const candidates =
     requested === 'wasm'
       ? await wasmCandidates(options)
@@ -378,7 +463,7 @@ export async function loadAnalyzerWithInfo(
     }
   }
 
-  throw noAnalyzerError(attempts, requested !== null);
+  throw noAnalyzerError(attempts, requested !== null, wasmRequiredBy);
 }
 
 /** Loads the analysis engine. See {@link loadAnalyzerWithInfo} for selection rules. */

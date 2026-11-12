@@ -164,6 +164,83 @@ readline.createInterface({input: process.stdin}).on('line', async (line) => {
         sidecar.close();
       }
     });
+
+    it('unwraps path ModuleRefs across initialize, getMetadataForFile, and setEntryPoints and rejects virtual IDs', async () => {
+      const logPath = path.join(tmpDir, 'rpc_log.json');
+      const script = path.join(tmpDir, 'recording_sidecar.mjs');
+      await fs.writeFile(
+        script,
+        `
+import * as fs from 'node:fs';
+import * as readline from 'node:readline';
+const calls = [];
+readline.createInterface({input: process.stdin}).on('line', (line) => {
+  const {id, method, params} = JSON.parse(line);
+  calls.push({method, params});
+  fs.writeFileSync(${JSON.stringify(logPath)}, JSON.stringify(calls));
+  const result = method === 'setEntryPoints' || method === 'invalidateFiles' ? [] : null;
+  process.stdout.write(JSON.stringify({id, result}) + '\\n');
+});
+`,
+      );
+      const launcher = path.join(tmpDir, 'recording_sidecar');
+      await fs.writeFile(launcher, `#!/bin/sh\nexec "${process.execPath}" "${script}"\n`);
+      await fs.chmod(launcher, 0o755);
+
+      const sidecar = new SidecarAnalyzer(launcher);
+      try {
+        await expectAsync(
+          sidecar.initialize('/tsconfig.json', true, undefined, undefined, {
+            entryPoints: [{id: '\0virtual:entry', idKind: 'virtual'}],
+          }),
+        ).toBeRejectedWithError(
+          'SidecarAnalyzer.initialize does not support virtual ModuleRef IDs',
+        );
+
+        await sidecar.initialize('/tsconfig.json', true, undefined, undefined, {
+          entryPoints: ['/app/a.ts', {id: '/app/b.ts', idKind: 'path'}, {id: '/app/c.ts'}],
+        });
+        await sidecar.getMetadataForFile({id: '/app/b.ts', idKind: 'path'});
+        await sidecar.setEntryPoints(['/app/d.ts', {id: '/app/e.ts', idKind: 'path'}]);
+        await sidecar.invalidateFiles([
+          {filePath: '/app/b.ts', updateType: FileUpdateType.Changed, idKind: 'path'},
+        ]);
+
+        await expectAsync(
+          sidecar.getMetadataForFile({id: '\0virtual:meta', idKind: 'virtual'}),
+        ).toBeRejectedWithError(
+          'SidecarAnalyzer.getMetadataForFile does not support virtual ModuleRef IDs',
+        );
+        await expectAsync(
+          sidecar.setEntryPoints([{id: '\0virtual:entry', idKind: 'virtual'}]),
+        ).toBeRejectedWithError(
+          'SidecarAnalyzer.setEntryPoints does not support virtual ModuleRef IDs',
+        );
+
+        const recorded = JSON.parse(await fs.readFile(logPath, 'utf-8')) as Array<{
+          method: string;
+          params: unknown;
+        }>;
+        expect(recorded).toEqual([
+          {
+            method: 'initialize',
+            params: {
+              entryPoints: ['/app/a.ts', '/app/b.ts', '/app/c.ts'],
+              tsconfigPath: '/tsconfig.json',
+              optimize: true,
+            },
+          },
+          {method: 'getMetadataForFile', params: {filePath: '/app/b.ts'}},
+          {method: 'setEntryPoints', params: ['/app/d.ts', '/app/e.ts']},
+          {
+            method: 'invalidateFiles',
+            params: [{filePath: '/app/b.ts', updateType: 'Changed', idKind: 'path'}],
+          },
+        ]);
+      } finally {
+        sidecar.close();
+      }
+    });
   });
 
   it('supports incremental invalidation and cross-file dependency template prefetch in sidecar mode', async () => {
