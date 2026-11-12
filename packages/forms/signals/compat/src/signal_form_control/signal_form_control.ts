@@ -90,6 +90,7 @@ export class SignalFormControl<T> extends AbstractControl {
   private readonly fieldState: FieldState<T>;
   private readonly initialValue: T;
   private pendingParentNotifications = 0;
+  private parentStatus?: FormControlStatus;
   private readonly onChangeCallbacks: Array<(value?: any, emitModelEvent?: boolean) => void> = [];
   private readonly onDisabledChangeCallbacks: Array<(isDisabled: boolean) => void> = [];
   override readonly valueChanges = new EventEmitter<T>();
@@ -149,6 +150,10 @@ export class SignalFormControl<T> extends AbstractControl {
         const status = this.status;
         untracked(() => {
           this.statusChanges.emit(status);
+          const parent = this.parent;
+          if (parent && status !== this.parentStatus) {
+            this.updateParentValueAndValidity(parent);
+          }
         });
         this.emitControlEvent(new StatusChangeEvent(status, this));
       },
@@ -240,6 +245,8 @@ export class SignalFormControl<T> extends AbstractControl {
     this.sourceValue.set(value);
     if (parent) {
       this.updateParentValueAndValidity(parent, options?.emitEvent);
+    } else if (options?.onlySelf) {
+      this.parentStatus = this.status;
     }
     if (options?.emitModelToViewChange !== false) {
       for (const fn of this.onChangeCallbacks) {
@@ -312,6 +319,7 @@ export class SignalFormControl<T> extends AbstractControl {
   }
 
   private updateParentValueAndValidity(parent: AbstractControl, emitEvent?: boolean): void {
+    this.parentStatus = this.status;
     parent.updateValueAndValidity({emitEvent, sourceControl: this} as any);
   }
 

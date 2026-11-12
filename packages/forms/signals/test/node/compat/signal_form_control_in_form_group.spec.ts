@@ -6,11 +6,17 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injector} from '@angular/core';
+import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {AbstractControl, FormArray, FormControlStatus, FormGroup} from '@angular/forms';
+import {
+  AbstractControl,
+  FormArray,
+  FormControl,
+  FormControlStatus,
+  FormGroup,
+} from '@angular/forms';
 import {SignalFormControl} from '../../../compat/src/signal_form_control/signal_form_control';
-import {required} from '../../../public_api';
+import {disabled, required} from '../../../public_api';
 import {SchemaFn} from '../../../src/api/types';
 
 function createSignalFormControl<T>(value: T, schema?: SchemaFn<T>) {
@@ -254,6 +260,55 @@ describe('SignalFormControl in FormGroup', () => {
 
     expect(value()).toBe(20);
     expect(form.value).toBe(20);
+  });
+
+  it('should update parent when a rule changes the child status', () => {
+    const isRequired = signal(true);
+    const isDisabled = signal(false);
+    const form = createSignalFormControl('', (p) => {
+      required(p, {when: () => isRequired()});
+      disabled(p, {when: () => isDisabled()});
+    });
+    const group = new FormGroup({
+      n: form,
+      age: new FormControl(25),
+    });
+    TestBed.tick();
+
+    expect(group.status).toBe('INVALID');
+
+    const statuses: FormControlStatus[] = [];
+    group.statusChanges.subscribe((status) => statuses.push(status));
+
+    isRequired.set(false);
+    TestBed.tick();
+    expect(group.status).toBe('VALID');
+
+    isDisabled.set(true);
+    TestBed.tick();
+    expect(group.value).toEqual({age: 25});
+
+    expect(statuses).toEqual(['VALID', 'VALID']);
+  });
+
+  it('should update parent once when setValue changes the child status', () => {
+    const form = createSignalFormControl<number | undefined>(10, (p) => required(p));
+    const group = new FormGroup({
+      n: form,
+    });
+    TestBed.tick();
+
+    const statuses: FormControlStatus[] = [];
+    group.statusChanges.subscribe((status) => statuses.push(status));
+
+    form.setValue(undefined);
+    TestBed.tick();
+    expect(statuses).toEqual(['INVALID']);
+
+    form.setValue(10, {emitEvent: false});
+    TestBed.tick();
+    expect(group.status).toBe('VALID');
+    expect(statuses).toEqual(['INVALID']);
   });
 
   describe('integration with parent', () => {
