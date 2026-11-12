@@ -5851,6 +5851,154 @@ runInEachFileSystem((os: string) => {
       expect(errors.length).toBe(0);
     });
 
+    it('should report diagnostics for event bindings with style! or class! prefix', () => {
+      env.tsconfig({typeCheckHostBindings: false});
+      env.write(
+        'test.ts',
+        `
+        import {Directive} from '@angular/core';
+
+        @Directive({
+          selector: '[test1]',
+          host: {
+            '[style!:onclick]': 'handler',
+          },
+        })
+        export class Dir1 {
+          handler = 'alert(1)';
+        }
+
+        @Directive({
+          selector: '[test2]',
+          host: {
+            '[class!:onclick]': 'handler',
+          },
+        })
+        export class Dir2 {
+          handler = 'alert(1)';
+        }
+      `,
+      );
+
+      const errors = env.driveDiagnostics();
+      const messages = errors.map((e) => ts.flattenDiagnosticMessageText(e.messageText, '\n'));
+      expect(messages).toEqual([
+        "Binding to event property 'style!:onclick' is disallowed for security reasons, please use (click)=...\nIf 'style!:onclick' is a directive input, make sure the directive is imported by the current module.",
+        "Binding to event property 'class!:onclick' is disallowed for security reasons, please use (click)=...\nIf 'class!:onclick' is a directive input, make sure the directive is imported by the current module.",
+      ]);
+    });
+
+    it('should not strip !important from non-style/class host property bindings', () => {
+      env.tsconfig({typeCheckHostBindings: false});
+      env.write(
+        'test.ts',
+        `
+        import {Directive, HostBinding} from '@angular/core';
+
+        @Directive({
+          selector: '[test]',
+          host: {
+            '[innerHTML!important]': 'html',
+            '[style!important]': 'styles',
+            '[class!important]': 'classes',
+            '[style!foo]': 'styleFoo',
+            '[class!foo]': 'classFoo',
+            '[style.width!important]': 'width',
+            '[style.width.px!important]': 'widthPx',
+            '[style.backgroundColor!important]': 'bgColor',
+            '[style.--myVar!important]': 'myVar',
+            '[class.active!important]': 'isActive',
+          },
+        })
+        export class Dir {
+          html = '<b>bold</b>';
+          styles = {color: 'red'};
+          classes = {active: true};
+          styleFoo = 'red';
+          classFoo = true;
+          width = '100px';
+          widthPx = 100;
+          bgColor = 'red';
+          myVar = 'blue';
+          isActive = true;
+
+          @HostBinding('href!important') href = 'javascript:alert(1)';
+        }
+      `,
+      );
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain(
+        'i0.ɵɵdomProperty("innerHTML!important", ctx.html)("style!important", ctx.styles)("class!important", ctx.classes)("style!foo", ctx.styleFoo)("class!foo", ctx.classFoo)("href!important", ctx.href);',
+      );
+      expect(jsContents).not.toContain('ɵɵstyleMap');
+      expect(jsContents).not.toContain('ɵɵclassMap');
+      expect(jsContents).toContain(
+        'i0.ɵɵstyleProp("width", ctx.width)("width", ctx.widthPx, "px")("background-color", ctx.bgColor)("--%NS%myVar", ctx.myVar);',
+      );
+      expect(jsContents).toContain('i0.ɵɵclassProp("active", ctx.isActive);');
+    });
+
+    it('should report NG8002 diagnostics for !important and style!/class! host property bindings when typeCheckHostBindings is enabled', () => {
+      env.tsconfig({typeCheckHostBindings: true});
+      env.write(
+        'test.ts',
+        `
+        import {Directive, HostBinding} from '@angular/core';
+
+        @Directive({
+          selector: '[test]',
+          host: {
+            '[innerHTML!important]': 'html',
+            '[style!important]': 'styles',
+            '[class!important]': 'classes',
+            '[style!foo]': 'styleFoo',
+            '[class!foo]': 'classFoo',
+            '[style.width!important]': 'width',
+            '[style.width.px!important]': 'widthPx',
+            '[style.backgroundColor!important]': 'bgColor',
+            '[style.--myVar!important]': 'myVar',
+            '[class.active!important]': 'isActive',
+          },
+        })
+        export class Dir {
+          html = '<b>bold</b>';
+          styles = {color: 'red'};
+          classes = {active: true};
+          styleFoo = 'red';
+          classFoo = true;
+          width = '100px';
+          widthPx = 100;
+          bgColor = 'red';
+          myVar = 'blue';
+          isActive = true;
+
+          @HostBinding('href!important') href = 'javascript:alert(1)';
+        }
+      `,
+      );
+
+      const errors = env.driveDiagnostics();
+      expect(errors.map((e) => e.code)).toEqual([
+        ngErrorCode(ErrorCode.SCHEMA_INVALID_ATTRIBUTE),
+        ngErrorCode(ErrorCode.SCHEMA_INVALID_ATTRIBUTE),
+        ngErrorCode(ErrorCode.SCHEMA_INVALID_ATTRIBUTE),
+        ngErrorCode(ErrorCode.SCHEMA_INVALID_ATTRIBUTE),
+        ngErrorCode(ErrorCode.SCHEMA_INVALID_ATTRIBUTE),
+        ngErrorCode(ErrorCode.SCHEMA_INVALID_ATTRIBUTE),
+      ]);
+      const messages = errors.map((e) => ts.flattenDiagnosticMessageText(e.messageText, '\n'));
+      expect(messages).toEqual([
+        jasmine.stringContaining("Can't bind to 'innerHTML!important'"),
+        jasmine.stringContaining("Can't bind to 'style!important'"),
+        jasmine.stringContaining("Can't bind to 'class!important'"),
+        jasmine.stringContaining("Can't bind to 'style!foo'"),
+        jasmine.stringContaining("Can't bind to 'class!foo'"),
+        jasmine.stringContaining("Can't bind to 'href!important'"),
+      ]);
+    });
+
     it('should use proper default value for preserveWhitespaces config param', () => {
       env.tsconfig(); // default is `false`
       env.write(

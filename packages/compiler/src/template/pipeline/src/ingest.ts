@@ -138,9 +138,7 @@ export function ingestHostBinding(
     } else if (
       bindingKind === ir.BindingKind.Property &&
       !property.name.startsWith('class.') &&
-      !property.name.startsWith('style.') &&
-      !property.name.startsWith('class!') &&
-      !property.name.startsWith('style!')
+      !property.name.startsWith('style.')
     ) {
       const report = domSchema.validateProperty(property.name);
       if (report.error) {
