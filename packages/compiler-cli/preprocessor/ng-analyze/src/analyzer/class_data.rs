@@ -1830,6 +1830,7 @@ pub struct WireContext<'a> {
     pub converter: &'a crate::utils::Utf8ToUtf16,
     pub reference_strategy: &'a dyn crate::analyzer::import_emit::ReferenceEmitStrategy,
     pub path_lookup: Option<&'a dyn Fn(crate::query::FileId) -> std::path::PathBuf>,
+    pub kind_lookup: Option<&'a dyn Fn(crate::query::FileId) -> crate::host::IdKind>,
     /// Pre-resolved answers for [`crate::analyzer::import_emit::ReferenceEmitStrategy::emit`]'s
     /// `declaring_export_name`; build it with `declaring_export_names[_blocking]`.
     pub declaring_exports: &'a crate::analyzer::import_emit::DeclaringExportNames,
@@ -1837,6 +1838,12 @@ pub struct WireContext<'a> {
 }
 
 impl WireContext<'_> {
+    pub(crate) fn kind_of(&self, file: crate::query::FileId) -> crate::host::IdKind {
+        self.kind_lookup
+            .map(|lookup| lookup(file))
+            .unwrap_or(crate::host::IdKind::Path)
+    }
+
     /// The pre-resolved `declaring_export_name` for `(file, name)`. An absent key means the
     /// pre-pass never resolved the pair — a drift from [`ClassData::wire_reference_slots`] —
     /// which asserts in debug and degrades to "unexported" in release.
@@ -4402,11 +4409,14 @@ impl ClassData {
                 aliases: alias_map,
                 is_default_export: false,
             };
-            let mut r = cx.reference_strategy.emit(
+            let current_kind = cx.kind_of(self.reference_id.file);
+            let mut r = cx.reference_strategy.emit_with_kinds(
                 &self_ref,
                 self.reference_id.file,
                 &current_file_path,
+                current_kind,
                 &current_file_path,
+                current_kind,
                 cx.declaring_export_name(self_ref.file, &self_ref.name),
             );
             if !self.is_exported || self.has_non_exported_bounds {
@@ -4518,15 +4528,18 @@ impl ClassData {
                     .path_lookup
                     .map(|lookup| lookup(self.reference_id.file))
                     .unwrap_or_default();
+                let current_file_kind = cx.kind_of(self.reference_id.file);
                 params
                     .into_iter()
                     .map(|p| {
                         let mut wire_param = p.into_wire(cx.source_text, cx.converter);
-                        wire_param.resolve_specifiers(
-                            cx.reference_strategy,
-                            &current_file_path,
-                            &current_file_path,
-                        );
+                        if current_file_kind == crate::host::IdKind::Path {
+                            wire_param.resolve_specifiers(
+                                cx.reference_strategy,
+                                &current_file_path,
+                                Some(current_file_path.as_path()),
+                            );
+                        }
                         wire_param
                     })
                     .collect()
@@ -4635,17 +4648,20 @@ impl ClassData {
             .path_lookup
             .map(|lookup| lookup(file_id))
             .unwrap_or_default();
+        let current_kind = cx.kind_of(file_id);
         refs.iter()
             .map(|r| {
                 let target_path = cx
                     .path_lookup
                     .map(|lookup| lookup(r.file))
                     .unwrap_or_default();
-                cx.reference_strategy.emit(
+                cx.reference_strategy.emit_with_kinds(
                     r,
                     file_id,
                     &current_file_path,
+                    current_kind,
                     &target_path,
+                    cx.kind_of(r.file),
                     cx.declaring_export_name(r.file, &r.name),
                 )
             })
@@ -4685,11 +4701,13 @@ impl ClassData {
             .path_lookup
             .map(|lookup| lookup(r.file))
             .unwrap_or_default();
-        let mut emitted = cx.reference_strategy.emit(
+        let mut emitted = cx.reference_strategy.emit_with_kinds(
             r,
             file_id,
             current_file_path,
+            cx.kind_of(file_id),
             &target_path,
+            cx.kind_of(r.file),
             cx.declaring_export_name(r.file, &r.name),
         );
         if r.owning_reference.is_some() && emitted.typecheck_import.is_some() {
@@ -4881,7 +4899,14 @@ impl ClassData {
             return Some(
                 entries
                     .into_iter()
-                    .map(|e| e.into_wire(file_id, current_file_path.as_deref(), cx.path_lookup))
+                    .map(|e| {
+                        e.into_wire(
+                            file_id,
+                            current_file_path.as_deref(),
+                            cx.path_lookup,
+                            cx.kind_lookup,
+                        )
+                    })
                     .collect(),
             );
         }
@@ -4892,7 +4917,14 @@ impl ClassData {
         Some(
             entries
                 .into_iter()
-                .map(|e| e.into_wire(file_id, current_file_path.as_deref(), cx.path_lookup))
+                .map(|e| {
+                    e.into_wire(
+                        file_id,
+                        current_file_path.as_deref(),
+                        cx.path_lookup,
+                        cx.kind_lookup,
+                    )
+                })
                 .collect(),
         )
     }
@@ -4932,7 +4964,9 @@ impl ClassData {
             host_directives: self.to_wire_host_directives(d, cx),
             resolved_host_directives: d.resolved_host_directives.as_ref().map(|hds| {
                 hds.iter()
-                    .map(|hd| ResolvedHostDirectiveMetadata::to_wire(hd, cx.path_lookup))
+                    .map(|hd| {
+                        ResolvedHostDirectiveMetadata::to_wire(hd, cx.path_lookup, cx.kind_lookup)
+                    })
                     .collect()
             }),
             providers_span: d
@@ -5139,7 +5173,7 @@ impl ClassData {
                 |decls| {
                     decls
                         .iter()
-                        .map(|d| DeclarationMetadata::to_wire(d, cx.path_lookup))
+                        .map(|d| DeclarationMetadata::to_wire(d, cx.path_lookup, cx.kind_lookup))
                         .collect()
                 },
             ),
@@ -5153,7 +5187,13 @@ impl ClassData {
                             (
                                 k.clone(),
                                 v.iter()
-                                    .map(|d| DeclarationMetadata::to_wire(d, cx.path_lookup))
+                                    .map(|d| {
+                                        DeclarationMetadata::to_wire(
+                                            d,
+                                            cx.path_lookup,
+                                            cx.kind_lookup,
+                                        )
+                                    })
                                     .collect(),
                             )
                         })
@@ -5162,12 +5202,14 @@ impl ClassData {
             resolved_declarations: c.resolved_declarations.as_ref().map(|decls| {
                 decls
                     .iter()
-                    .map(|d| DeclarationMetadata::to_wire(d, cx.path_lookup))
+                    .map(|d| DeclarationMetadata::to_wire(d, cx.path_lookup, cx.kind_lookup))
                     .collect()
             }),
             resolved_host_directives: c.resolved_host_directives.as_ref().map(|hds| {
                 hds.iter()
-                    .map(|hd| ResolvedHostDirectiveMetadata::to_wire(hd, cx.path_lookup))
+                    .map(|hd| {
+                        ResolvedHostDirectiveMetadata::to_wire(hd, cx.path_lookup, cx.kind_lookup)
+                    })
                     .collect()
             }),
             local_compilation_extra_imports: c.local_compilation_extra_imports.clone(),

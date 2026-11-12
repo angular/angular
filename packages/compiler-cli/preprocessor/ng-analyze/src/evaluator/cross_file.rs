@@ -111,8 +111,25 @@ pub fn cross_file_resolve_export<'a>(
                 else {
                     return Ok(None);
                 };
-                let owning = OwningReference::is_absolute_specifier(spec)
-                    .then(|| OwningReference::from_source_specifier(spec, export_name.clone()));
+                let importer_id = ctx.engine.intern_path(file_path);
+                let owning = if OwningReference::is_absolute_specifier(spec) {
+                    let bare = OwningReference::from_source_specifier(spec, export_name.clone());
+                    Some(bare.with_resolution_context(importer_id))
+                } else if !ctx.engine.lookup_external(importer_id)
+                    && ctx.engine.lookup_external(resolved_id)
+                {
+                    let importer_path =
+                        (ctx.engine.lookup_kind(importer_id) == crate::host::IdKind::Path)
+                            .then_some(file_path);
+                    Some(OwningReference::from_external_specifier(
+                        spec,
+                        export_name.clone(),
+                        Some(importer_id),
+                        importer_path,
+                    ))
+                } else {
+                    None
+                };
                 (resolved_id, resolved, owning)
             }
             _ => (
@@ -143,16 +160,28 @@ pub fn cross_file_resolve_export<'a>(
 
 const MAX_SYMBOL_CHASE_DEPTH: usize = 32;
 
-/// Overwrites the owning module whenever a deeper absolute specifier is crossed along the chain.
+/// Overwrites the owning module whenever a deeper absolute specifier is crossed along the chain,
+/// or establishes one when first crossing from an in-bundle module into a bundle-external module.
+/// Either way `importer`, the file `specifier` is written in, is recorded as the resolution
+/// context (ngtsc's `OwningModule.resolutionContext`).
 fn update_owning_reference(
     current: Option<&OwningReference>,
     specifier: &str,
     name_in_target: &str,
+    importer: crate::query::FileId,
+    importer_path: Option<&Path>,
+    crossed_into_external: bool,
 ) -> Option<OwningReference> {
     if OwningReference::is_absolute_specifier(specifier) {
-        return Some(OwningReference::from_source_specifier(
+        let bare = OwningReference::from_source_specifier(specifier, name_in_target);
+        return Some(bare.with_resolution_context(importer));
+    }
+    if current.is_none() && crossed_into_external {
+        return Some(OwningReference::from_external_specifier(
             specifier,
             name_in_target,
+            Some(importer),
+            importer_path,
         ));
     }
     current.cloned()
@@ -423,10 +452,17 @@ fn chase_symbol_declaration<'a>(
                     if let Some((resolved_id, resolved_path)) =
                         ctx.resolve_from_path(&file_path, &source, kind).await
                     {
+                        let importer_is_external = ctx.engine.lookup_external(file_id);
+                        let importer_path = (!importer_is_external
+                            && ctx.engine.lookup_kind(file_id) == crate::host::IdKind::Path)
+                            .then_some(file_path.as_path());
                         let next_owning = update_owning_reference(
                             owning_reference.as_ref(),
                             &source,
                             &original_name,
+                            file_id,
+                            importer_path,
+                            !importer_is_external && ctx.engine.lookup_external(resolved_id),
                         );
                         let mut resolved = chase_symbol_declaration(
                             ctx,
@@ -482,6 +518,10 @@ fn chase_symbol_declaration<'a>(
                     let mut type_only_fallback: Option<ChasedExport> = None;
                     let mut saw_cycle = false;
                     let mut unmatched_deps = HashSet::new();
+                    let importer_is_external = ctx.engine.lookup_external(file_id);
+                    let importer_path = (!importer_is_external
+                        && ctx.engine.lookup_kind(file_id) == crate::host::IdKind::Path)
+                        .then_some(file_path.as_path());
                     for wildcard_source in &wildcards {
                         let Some((resolved_id, resolved_path)) = ctx
                             .resolve_from_path(
@@ -498,6 +538,9 @@ fn chase_symbol_declaration<'a>(
                             owning_reference.as_ref(),
                             wildcard_source,
                             &name,
+                            file_id,
+                            importer_path,
+                            !importer_is_external && ctx.engine.lookup_external(resolved_id),
                         );
                         let branch_ctx = crate::QueryCtx::new(ctx.engine.clone());
                         match chase_symbol_declaration(

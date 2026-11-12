@@ -328,40 +328,56 @@ impl QueryEngine {
         self.interner.intern_module(id, kind)
     }
 
-    /// Intern a module a host resolution reported. The host's `id_kind` wins over the kind the
-    /// module was interned with before, and whatever was computed under that kind is evicted
+    /// Intern a module a host or direct-entry `ModuleRef` reported. The authoritative `id_kind`
+    /// wins over the kind the module was interned with before (preserving any existing `external`
+    /// flag), and whatever was computed under the previous kind is evicted
     /// ([`Self::kind_changed`]).
     pub fn intern_resolved(
         &self,
         id: &crate::host::ModuleId,
         id_kind: crate::host::IdKind,
     ) -> FileId {
-        self.intern_resolved_tracked(id, id_kind).0
+        self.intern_resolved_tracked(id, id_kind, None).0
     }
 
-    /// [`Self::intern_resolved`], also reporting whether the host's `id_kind` replaced the kind
-    /// the module was interned with before.
+    /// [`Self::intern_resolved`], optionally recording `external` and reporting whether the host's
+    /// `id_kind` replaced the kind the module was interned with before. A replaced `id_kind` or
+    /// `external` flag evicts what was computed under the previous one.
     fn intern_resolved_tracked(
         &self,
         id: &crate::host::ModuleId,
         id_kind: crate::host::IdKind,
+        external: Option<bool>,
     ) -> (FileId, bool) {
         let backing = match id_kind {
             crate::host::IdKind::Path => self.host.resolve_backing_path(Path::new(id.as_str())),
             crate::host::IdKind::Virtual => None,
         };
-        let (file_id, previous_kind) = match backing {
-            Some(backing) => self.interner.intern_authoritative(
+        let (file_id, previous_kind, changed) = match (backing, external) {
+            (Some(backing), Some(ext)) => self.interner.intern_authoritative_module_tracked(
                 crate::host::ModuleId::from_path(&backing).as_str(),
                 crate::host::IdKind::Path,
+                ext,
             ),
-            None => self.interner.intern_authoritative(id.as_str(), id_kind),
+            (Some(backing), None) => {
+                let (fid, prev) = self.interner.intern_authoritative(
+                    crate::host::ModuleId::from_path(&backing).as_str(),
+                    crate::host::IdKind::Path,
+                );
+                (fid, prev, prev.is_some())
+            }
+            (None, Some(ext)) => self
+                .interner
+                .intern_authoritative_module_tracked(id.as_str(), id_kind, ext),
+            (None, None) => {
+                let (fid, prev) = self.interner.intern_authoritative(id.as_str(), id_kind);
+                (fid, prev, prev.is_some())
+            }
         };
-        let changed = previous_kind.is_some();
         if changed {
             self.kind_changed(file_id);
         }
-        (file_id, changed)
+        (file_id, previous_kind.is_some())
     }
 
     pub fn validation_context(
@@ -398,11 +414,22 @@ impl QueryEngine {
         self.interner.lookup_kind(id)
     }
 
+    pub fn lookup_external(&self, id: FileId) -> bool {
+        self.interner.lookup_external(id)
+    }
+
     pub fn lookup_module(&self, id: FileId) -> (crate::host::ModuleId, crate::host::IdKind) {
         self.interner.lookup_module(id)
     }
 
-    /// Return `Some(file_id)` if `id` is already interned with [`crate::host::IdKind::Virtual`]
+    /// Whether `id` is already present in the exact module map (under any [`crate::host::IdKind`]).
+    pub(crate) fn has_exact_interned(&self, id: &str) -> bool {
+        self.interner
+            .get_module_if_interned(id, crate::host::IdKind::Virtual)
+            .is_some()
+    }
+
+    /// Return `Some(file_id)` iff `id` is already interned with [`crate::host::IdKind::Virtual`]
     /// and is not shadowed by an interned [`crate::host::IdKind::Path`] entry.
     pub fn get_virtual_if_interned(&self, id: &str) -> Option<FileId> {
         let fid = self
@@ -442,8 +469,11 @@ impl QueryEngine {
         let mut kind_changed = false;
         let outcome = match self.host.resolve(req).await {
             Ok(Some(resolved)) => {
-                let (target_id, changed) =
-                    self.intern_resolved_tracked(&resolved.id, resolved.id_kind);
+                let (target_id, changed) = self.intern_resolved_tracked(
+                    &resolved.id,
+                    resolved.id_kind,
+                    Some(resolved.external),
+                );
                 kind_changed = changed;
                 Ok(Some((target_id, resolved)))
             }
@@ -454,6 +484,10 @@ impl QueryEngine {
         // queries that read the target, and each re-run has to ask the host again, as it did
         // before resolutions were cached, rather than be served this answer. Until a later lookup
         // is memoized, `importer` is not indexed under the target.
+        //
+        // One that only changed the target's `external` flag is memoized: a path interned before
+        // its first resolution starts out non-external, the answer already carries the flag, and
+        // an importer other than the target is not re-run to ask again.
         if !kind_changed {
             self.resolution_cache
                 .insert(importer, key, outcome.clone(), generation);
@@ -503,7 +537,9 @@ impl QueryEngine {
         let Some(r3_symbols_file) = self.r3_symbols_file_tracked(ctx) else {
             return false;
         };
-        let parsed = ctx.parse_file(self.intern_path(r3_symbols_file)).await;
+        let parsed = ctx
+            .parse_file(self.intern_entry_or_dep(&r3_symbols_file))
+            .await;
         let guard = parsed.lock().unwrap();
         crate::analyzer::utils::exports_its_just_angular(guard.borrow_dependent().program)
     }
@@ -1139,13 +1175,18 @@ impl QueryEngine {
             .collect()
     }
 
+    /// Evict importers whose cached module resolutions pointed to `file_id` before it was deleted.
+    pub fn invalidate_deleted_file_id(&self, file_id: FileId) -> Vec<QueryKey> {
+        let importers = self.resolution_cache.remove_deleted_target(file_id);
+        self.evict_importers_preserving_parse(importers)
+    }
+
     /// Evict importers whose cached module resolutions pointed to `path` before `path` was deleted.
     pub fn invalidate_deleted_file(&self, path: &Path) -> Vec<QueryKey> {
         let Some(file_id) = self.get_interned_file_id(path) else {
             return Vec::new();
         };
-        let importers = self.resolution_cache.remove_deleted_target(file_id);
-        self.evict_importers_preserving_parse(importers)
+        self.invalidate_deleted_file_id(file_id)
     }
 
     /// Forget module resolution results after files were created or deleted: the resolver caches
@@ -1473,15 +1514,13 @@ impl QueryEngine {
         ctx.record_file(file_id);
         let (module_id, id_kind) = self.lookup_module(file_id);
         let file_path = self.lookup_path(file_id);
-        // TODO(ngp-host-h5): echo `ResolvedModule::external` instead of passing `false`, and
-        // reuse inline `ResolvedModule::code` in H6.
-        // TODO(ngp-host-h6): do not reuse `code` from a resolution served by `ResolutionCache`.
-        // The cache memoizes the whole `ResolvedModule` and survives edits to the target, so a
-        // hit carries the text the target had when it was resolved, and keeps that text alive.
-        // Clear `code` before memoizing, or take it only from an answer the host just gave.
+        let external = self.lookup_external(file_id);
+        // TODO(ngp-host-h6): reuse inline `ResolvedModule::code` only from an answer the host just
+        // gave, not from `ResolutionCache` (which memoizes `ResolvedModule` across edits to the
+        // target and would otherwise serve stale text).
         let (source_text, host_format, cache_key, loaded) = match self
             .host
-            .load(&module_id, crate::host::LoadKind::Module, false)
+            .load(&module_id, crate::host::LoadKind::Module, external)
             .await
         {
             // Declaration files are shared by every compilation a long-lived analyzer process
@@ -1649,7 +1688,8 @@ impl QueryEngine {
             });
         }
 
-        let is_core = self.is_angular_core_compilation(ctx).await;
+        let is_core =
+            !self.lookup_external(file_id) && self.is_angular_core_compilation(ctx).await;
         let (converter, mut analysis, errors) = {
             let guard = parsed.lock().unwrap();
             let source_text = &guard.borrow_owner().source_text;
@@ -1673,60 +1713,22 @@ impl QueryEngine {
 
         // Resolve component resources and static/dynamic module dependencies concurrently through
         // `AnalysisHost` so async hosts can batch all single-file lookups into one wave.
-        let imported_specifiers: HashSet<&str> = analysis
-            .import_declarations
-            .iter()
-            .map(|decl| decl.specifier.as_str())
-            .collect();
-        let reexport_specifiers: HashSet<&str> = analysis
-            .file_exports
-            .named
-            .iter()
-            .filter(|r| !r.binds_locally)
-            .map(|r| r.source.as_str())
-            .chain(
-                analysis
-                    .file_exports
-                    .wildcards
-                    .iter()
-                    .map(|w| w.source.as_str()),
-            )
-            .collect();
-        let static_requests: Vec<crate::host::ResolveRequest> = {
+        let build_requests = |deps: &[crate::analyzer::ExtractedDependency]| {
             let mut seen = HashSet::new();
-            analysis
-                .static_dependencies
-                .iter()
-                .filter(|spec| seen.insert(spec.as_str()))
-                .map(|spec| {
-                    let kind = if !imported_specifiers.contains(spec.as_str())
-                        && reexport_specifiers.contains(spec.as_str())
-                    {
-                        crate::host::ImportKind::ReExport
-                    } else {
-                        crate::host::ImportKind::Static
-                    };
-                    crate::host::ResolveRequest::new(module_id.clone(), spec.clone(), kind)
-                })
-                .collect()
-        };
-        let dynamic_requests: Vec<crate::host::ResolveRequest> = {
-            let mut seen = HashSet::new();
-            analysis
-                .dynamic_dependencies
-                .iter()
-                .filter(|spec| seen.insert(spec.as_str()))
-                .map(|spec| {
+            deps.iter()
+                .filter(|dep| seen.insert((dep.specifier.as_str(), dep.kind, dep.type_only)))
+                .map(|dep| {
                     crate::host::ResolveRequest::new(
                         module_id.clone(),
-                        spec.clone(),
-                        crate::host::ImportKind::Dynamic,
+                        dep.specifier.clone(),
+                        dep.kind,
                     )
+                    .with_type_only(dep.type_only)
                 })
-                .collect()
+                .collect::<Vec<_>>()
         };
-        drop(imported_specifiers);
-        drop(reexport_specifiers);
+        let static_requests = build_requests(&analysis.static_dependencies);
+        let dynamic_requests = build_requests(&analysis.dynamic_dependencies);
 
         let resolve_ts_sources = |requests: Vec<crate::host::ResolveRequest>| {
             futures::future::join_all(requests.into_iter().map(|req| async move {
@@ -1755,9 +1757,6 @@ impl QueryEngine {
                 file_id,
             ),
             resolve_ts_sources(static_requests),
-            // TODO(ngp-host-h3/h5): split `import type` / `export type` and `TSImportType` out of
-            // `dynamic_dependencies` so `ResolveRequest` carries `type_only: true` and
-            // `ImportKind::TypeImport`.
             resolve_ts_sources(dynamic_requests),
         )
         .await;
@@ -1862,6 +1861,7 @@ impl QueryEngine {
         let parse_res = ctx.parse_file(file_id).await;
         let source_text = parse_res.lock().unwrap().borrow_owner().source_text.clone();
         let path_lookup = |id| self.lookup_path(id);
+        let kind_lookup = |id| self.lookup_kind(id);
         let (projected, chunk_info) = if is_optimized {
             let semantic_res = ctx.analyze_file_semantic(file_id).await;
             let chunk_info =
@@ -1879,6 +1879,7 @@ impl QueryEngine {
                 converter: &semantic_res.converter,
                 reference_strategy: &*self.reference_strategy,
                 path_lookup: Some(&path_lookup),
+                kind_lookup: Some(&kind_lookup),
                 declaring_exports: &declaring_exports,
                 r3_symbols_path: r3_symbols_path.as_deref(),
             };
@@ -1919,12 +1920,21 @@ impl QueryEngine {
                 converter: &syntax_res.converter,
                 reference_strategy: &*self.reference_strategy,
                 path_lookup: Some(&path_lookup),
+                kind_lookup: Some(&kind_lookup),
                 declaring_exports: &declaring_exports,
                 r3_symbols_path: r3_symbols_path.as_deref(),
             };
             (syntax_res.to_wire(&cx), chunk_info)
         };
         Arc::new((projected.map_err(|err| err.to_string()), chunk_info))
+    }
+
+    /// Intern an entrypoint or discovered dependency `Path` while preserving an already-interned
+    /// [`crate::host::IdKind::Virtual`] entry with the exact same spelling.
+    pub(crate) fn intern_entry_or_dep(&self, path: &Path) -> FileId {
+        path.to_str()
+            .and_then(|s| self.get_virtual_if_interned(s))
+            .unwrap_or_else(|| self.intern_path(path))
     }
 
     /// Tsconfig root files plus every local TS source reachable through static and dynamic imports
@@ -1940,8 +1950,8 @@ impl QueryEngine {
         let mut seen: HashSet<FileId> = HashSet::new();
         let mut frontier: Vec<FileId> = roots
             .iter()
-            .map(|path| self.intern_path(path))
-            .filter(|&file_id| seen.insert(file_id))
+            .map(|path| self.intern_entry_or_dep(path))
+            .filter(|&file_id| !self.lookup_external(file_id) && seen.insert(file_id))
             .collect();
         let mut program_files: Vec<FileId> = Vec::new();
 
@@ -1952,12 +1962,16 @@ impl QueryEngine {
                     .map(|&file_id| ctx.analyze_file_syntax(file_id)),
             )
             .await;
-            program_files.append(&mut frontier);
+            program_files.extend(
+                frontier
+                    .drain(..)
+                    .filter(|&file_id| !self.lookup_external(file_id)),
+            );
             frontier = syntax
                 .iter()
                 .flat_map(|file| file.program_dependencies())
-                .map(|dep| self.intern_path(dep))
-                .filter(|&file_id| seen.insert(file_id))
+                .map(|dep| self.intern_entry_or_dep(dep))
+                .filter(|&file_id| !self.lookup_external(file_id) && seen.insert(file_id))
                 .collect();
         }
 
@@ -2078,10 +2092,17 @@ impl QueryEngine {
         let entrypoints: Vec<PathBuf> = self.entrypoints.read().unwrap().clone();
         let entrypoints_ids: HashSet<FileId> = entrypoints
             .iter()
-            .map(|path| self.intern_path(path))
+            .map(|path| self.intern_entry_or_dep(path))
             .collect();
         let mut entrypoints_set: HashSet<PathBuf> = HashSet::with_capacity(entrypoints.len() * 2);
         for path in &entrypoints {
+            if path
+                .to_str()
+                .and_then(|s| self.get_virtual_if_interned(s))
+                .is_some()
+            {
+                continue;
+            }
             entrypoints_set.insert(crate::fs::normalize_path(path).into_owned());
             if let Some(canon) = self.host.canonicalize_path(path) {
                 entrypoints_set.insert(crate::fs::normalize_path(&canon).into_owned());
@@ -2090,7 +2111,7 @@ impl QueryEngine {
 
         let analyze_futures = entrypoints
             .iter()
-            .map(|path| ctx.analyze_file_syntax(self.intern_path(path)));
+            .map(|path| ctx.analyze_file_syntax(self.intern_entry_or_dep(path)));
         let entrypoint_syntax = futures::future::join_all(analyze_futures).await;
 
         let mut candidates: Vec<(FileId, String)> = Vec::new();
@@ -5597,6 +5618,972 @@ mod tests {
             .contains_key(&globals_id));
     }
 
+    #[test]
+    fn async_host_receives_exact_resolve_request_kinds_and_silent_null_for_type_only() {
+        use crate::host::{
+            AnalysisHost, HostError, HostFuture, IdKind, ImportKind, LoadKind, LoadedModule,
+            ModuleFormat, ModuleId, ResolveRequest, ResolvedModule, ResolvedResourceId,
+            ResourceKind,
+        };
+
+        struct RecordingHost {
+            observed_resolves: Mutex<Vec<(String, ImportKind, bool)>>,
+            observed_loads: Mutex<Vec<(String, LoadKind, bool)>>,
+            resolutions: HashMap<(String, String), ResolvedModule>,
+            modules: HashMap<String, LoadedModule>,
+        }
+
+        impl AnalysisHost for RecordingHost {
+            fn resolve(
+                &self,
+                req: ResolveRequest,
+            ) -> HostFuture<Result<Option<ResolvedModule>, HostError>> {
+                self.observed_resolves.lock().unwrap().push((
+                    req.specifier.clone(),
+                    req.kind,
+                    req.type_only,
+                ));
+                let hit = self
+                    .resolutions
+                    .get(&(req.importer.as_str().to_owned(), req.specifier))
+                    .cloned();
+                yield_once(Ok(hit))
+            }
+
+            fn load(
+                &self,
+                id: &ModuleId,
+                kind: LoadKind,
+                external: bool,
+            ) -> HostFuture<Result<Option<LoadedModule>, HostError>> {
+                self.observed_loads.lock().unwrap().push((
+                    id.as_str().to_owned(),
+                    kind,
+                    external,
+                ));
+                let hit = self.modules.get(id.as_str()).cloned();
+                yield_once(Ok(hit))
+            }
+
+            fn resolve_resource(
+                &self,
+                _containing: &ModuleId,
+                _url: &str,
+                _kind: ResourceKind,
+            ) -> HostFuture<Result<Option<ResolvedResourceId>, HostError>> {
+                yield_once(Ok(None))
+            }
+        }
+
+        let app_mod = ModuleId::new("/req_kinds/app.ts");
+        let dir_mod = ModuleId::new("/req_kinds/dir_a.ts");
+        let reexport_mod = ModuleId::new("/req_kinds/dir_b.ts");
+        let lazy_mod = ModuleId::new("/req_kinds/lazy.ts");
+
+        let mut resolutions = HashMap::new();
+        for (spec, target) in [
+            ("./dir_a", &dir_mod),
+            ("./dir_b", &reexport_mod),
+            ("./lazy", &lazy_mod),
+        ] {
+            resolutions.insert(
+                (app_mod.as_str().to_owned(), spec.to_owned()),
+                ResolvedModule {
+                    id: target.clone(),
+                    id_kind: IdKind::Path,
+                    format: Some(ModuleFormat::Ts),
+                    external: false,
+                    code: None,
+                },
+            );
+        }
+
+        let mut modules = HashMap::new();
+        modules.insert(
+            app_mod.as_str().to_owned(),
+            LoadedModule {
+                code: Arc::from(
+                    "import { Component } from '@angular/core';\n\
+                     import { DirA } from './dir_a';\n\
+                     export { DirB } from './dir_b';\n\
+                     import type { MissingA } from './missing_type_a';\n\
+                     export type { MissingB } from './missing_type_b';\n\
+                     export const loadLazy = () => import('./lazy');\n\
+                     export type QueryType = import('./missing_type_query').Foo;\n\
+                     @Component({ selector: 'app-cmp', template: '<div dirA></div>', imports: [DirA] })\n\
+                     export class AppCmp {}\n",
+                ),
+                format: Some(ModuleFormat::Ts),
+            },
+        );
+        modules.insert(
+            dir_mod.as_str().to_owned(),
+            LoadedModule {
+                code: Arc::from(
+                    "import { Directive } from '@angular/core';\n\
+                     @Directive({ selector: '[dirA]' })\n\
+                     export class DirA {}\n",
+                ),
+                format: Some(ModuleFormat::Ts),
+            },
+        );
+        modules.insert(
+            reexport_mod.as_str().to_owned(),
+            LoadedModule {
+                code: Arc::from("export class DirB {}\n"),
+                format: Some(ModuleFormat::Ts),
+            },
+        );
+        modules.insert(
+            lazy_mod.as_str().to_owned(),
+            LoadedModule {
+                code: Arc::from("export const LAZY = 1;\n"),
+                format: Some(ModuleFormat::Ts),
+            },
+        );
+
+        let host = Arc::new(RecordingHost {
+            observed_resolves: Mutex::new(Vec::new()),
+            observed_loads: Mutex::new(Vec::new()),
+            resolutions,
+            modules,
+        });
+        let registry = Arc::new(ResourceRegistry::default());
+        let entrypoints = Arc::new(std::sync::RwLock::new(vec![PathBuf::from(
+            app_mod.as_str(),
+        )]));
+        let engine = QueryEngine::new_default_with_host(host.clone(), registry, entrypoints);
+        let app_id = engine.intern_path(app_mod.as_str());
+        let ctx = QueryContext::new(engine);
+        let semantic =
+            block_on_with_timeout(async move { ctx.analyze_file_semantic(app_id).await });
+
+        assert!(
+            semantic.diagnostics.is_empty(),
+            "unexpected diagnostics: {:?}",
+            semantic.diagnostics
+        );
+        let observed = host.observed_resolves.lock().unwrap().clone();
+        for expected in [
+            ("./dir_a".to_owned(), ImportKind::Static, false),
+            ("./dir_b".to_owned(), ImportKind::ReExport, false),
+            ("./missing_type_a".to_owned(), ImportKind::Static, true),
+            ("./missing_type_b".to_owned(), ImportKind::ReExport, true),
+            ("./lazy".to_owned(), ImportKind::Dynamic, false),
+            (
+                "./missing_type_query".to_owned(),
+                ImportKind::TypeImport,
+                true,
+            ),
+        ] {
+            assert!(
+                observed.contains(&expected),
+                "missing expected ResolveRequest {expected:?} in {observed:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn async_host_propagates_external_flag_to_load_and_preserves_external_specifiers() {
+        use crate::analyzer::import_emit::ApfImportStrategy;
+        use crate::host::{
+            AnalysisHost, HostError, HostFuture, IdKind, LoadKind, LoadedModule, ModuleFormat,
+            ModuleId, ResolveRequest, ResolvedModule, ResolvedResourceId, ResourceKind,
+        };
+
+        struct ExternalRecordingHost {
+            observed_loads: Mutex<Vec<(String, bool)>>,
+            resolutions: HashMap<(String, String), ResolvedModule>,
+            modules: HashMap<String, LoadedModule>,
+        }
+
+        impl AnalysisHost for ExternalRecordingHost {
+            fn resolve(
+                &self,
+                req: ResolveRequest,
+            ) -> HostFuture<Result<Option<ResolvedModule>, HostError>> {
+                let hit = self
+                    .resolutions
+                    .get(&(req.importer.as_str().to_owned(), req.specifier))
+                    .cloned();
+                yield_once(Ok(hit))
+            }
+
+            fn load(
+                &self,
+                id: &ModuleId,
+                _kind: LoadKind,
+                external: bool,
+            ) -> HostFuture<Result<Option<LoadedModule>, HostError>> {
+                self.observed_loads
+                    .lock()
+                    .unwrap()
+                    .push((id.as_str().to_owned(), external));
+                let hit = self.modules.get(id.as_str()).cloned();
+                yield_once(Ok(hit))
+            }
+
+            fn resolve_resource(
+                &self,
+                _containing: &ModuleId,
+                _url: &str,
+                _kind: ResourceKind,
+            ) -> HostFuture<Result<Option<ResolvedResourceId>, HostError>> {
+                yield_once(Ok(None))
+            }
+        }
+
+        let page_mod = ModuleId::new("/app/pages/sub/page.ts");
+        let feature_mod = ModuleId::new("/app/feature/mod.ts");
+        let ext_rel_mod = ModuleId::new("/external-store/opaque-vendor-dir.d.ts");
+        let ext_alias_mod = ModuleId::new("/external-store/opaque-alias-ui/index.ts");
+        let ext_alias_sub_mod =
+            ModuleId::new("/external-store/opaque-alias-ui/internal/sub-dir.ts");
+        let ext_ts_mod = ModuleId::new("/external-store/ext-util.ts");
+        let ext_alias_ui_mod =
+            ModuleId::new("/external-store/opaque-alias-ui/internal/ui.module.ts");
+        let ext_rel_ts_mod = ModuleId::new("/external-store/opaque-vendor-ts-dir.ts");
+
+        let mut resolutions = HashMap::new();
+        resolutions.insert(
+            (page_mod.as_str().to_owned(), "../../feature/mod".to_owned()),
+            ResolvedModule {
+                id: feature_mod.clone(),
+                id_kind: IdKind::Path,
+                format: Some(ModuleFormat::Ts),
+                external: false,
+                code: None,
+            },
+        );
+        resolutions.insert(
+            (page_mod.as_str().to_owned(), "/@ext/ui".to_owned()),
+            ResolvedModule {
+                id: ext_alias_mod.clone(),
+                id_kind: IdKind::Path,
+                format: Some(ModuleFormat::Ts),
+                external: true,
+                code: None,
+            },
+        );
+        resolutions.insert(
+            (
+                ext_alias_mod.as_str().to_owned(),
+                "./internal/sub-dir".to_owned(),
+            ),
+            ResolvedModule {
+                id: ext_alias_sub_mod.clone(),
+                id_kind: IdKind::Path,
+                format: Some(ModuleFormat::Ts),
+                external: true,
+                code: None,
+            },
+        );
+        resolutions.insert(
+            (page_mod.as_str().to_owned(), "/@ext/util".to_owned()),
+            ResolvedModule {
+                id: ext_ts_mod.clone(),
+                id_kind: IdKind::Path,
+                format: Some(ModuleFormat::Ts),
+                external: true,
+                code: None,
+            },
+        );
+        resolutions.insert(
+            (
+                feature_mod.as_str().to_owned(),
+                "../vendor/ext-dir".to_owned(),
+            ),
+            ResolvedModule {
+                id: ext_rel_mod.clone(),
+                id_kind: IdKind::Path,
+                format: Some(ModuleFormat::Dts),
+                external: true,
+                code: None,
+            },
+        );
+
+        resolutions.insert(
+            (
+                ext_alias_mod.as_str().to_owned(),
+                "./internal/ui.module".to_owned(),
+            ),
+            ResolvedModule {
+                id: ext_alias_ui_mod.clone(),
+                id_kind: IdKind::Path,
+                format: Some(ModuleFormat::Ts),
+                external: true,
+                code: None,
+            },
+        );
+        resolutions.insert(
+            (
+                ext_alias_ui_mod.as_str().to_owned(),
+                "../internal/sub-dir".to_owned(),
+            ),
+            ResolvedModule {
+                id: ext_alias_sub_mod.clone(),
+                id_kind: IdKind::Path,
+                format: Some(ModuleFormat::Ts),
+                external: true,
+                code: None,
+            },
+        );
+        resolutions.insert(
+            (
+                feature_mod.as_str().to_owned(),
+                "../vendor/ext-ts-dir".to_owned(),
+            ),
+            ResolvedModule {
+                id: ext_rel_ts_mod.clone(),
+                id_kind: IdKind::Path,
+                format: Some(ModuleFormat::Ts),
+                external: true,
+                code: None,
+            },
+        );
+
+        let mut modules = HashMap::new();
+        modules.insert(
+            page_mod.as_str().to_owned(),
+            LoadedModule {
+                code: Arc::from(
+                    "import { Component } from '@angular/core';\n\
+                     import { FeatureModule } from '../../feature/mod';\n\
+                     import { AliasDir, AliasUiModule } from '/@ext/ui';\n\
+                     import '/@ext/util';\n\
+                     @Component({\n\
+                       selector: 'page-cmp',\n\
+                       template: '<div vendorDir vendorTsDir aliasDir aliasSubDir></div>',\n\
+                       imports: [FeatureModule, AliasDir, AliasUiModule],\n\
+                     })\n\
+                     export class PageCmp {}\n",
+                ),
+                format: Some(ModuleFormat::Ts),
+            },
+        );
+        modules.insert(
+            feature_mod.as_str().to_owned(),
+            LoadedModule {
+                code: Arc::from(
+                    "import { NgModule } from '@angular/core';\n\
+                     import { VendorDir } from '../vendor/ext-dir';\n\
+                     import { VendorTsDir, VendorTsOther } from '../vendor/ext-ts-dir';\n\
+                     @NgModule({\n\
+                       imports: [VendorDir, VendorTsDir],\n\
+                       exports: [VendorDir, VendorTsDir],\n\
+                     })\n\
+                     export class FeatureModule {}\n\
+                     @NgModule({ declarations: [VendorTsOther] })\n\
+                     export class BadModule {}\n",
+                ),
+                format: Some(ModuleFormat::Ts),
+            },
+        );
+        modules.insert(
+            ext_rel_mod.as_str().to_owned(),
+            LoadedModule {
+                code: Arc::from(
+                    "import * as i0 from '@angular/core';\n\
+                     export declare class VendorDir {\n\
+                       static ɵdir: i0.ɵɵDirectiveDeclaration<VendorDir, '[vendorDir]', never, {}, {}, never, never, true, never>;\n\
+                     }\n",
+                ),
+                format: Some(ModuleFormat::Dts),
+            },
+        );
+        modules.insert(
+            ext_alias_mod.as_str().to_owned(),
+            LoadedModule {
+                code: Arc::from(
+                    "import { Directive } from '@angular/core';\n\
+                     export { AliasUiModule } from './internal/ui.module';\n\
+                     export { AliasSubDir } from './internal/sub-dir';\n\
+                     @Directive({ selector: '[aliasDir]' })\n\
+                     export class AliasDir {}\n",
+                ),
+                format: Some(ModuleFormat::Ts),
+            },
+        );
+        modules.insert(
+            ext_alias_sub_mod.as_str().to_owned(),
+            LoadedModule {
+                code: Arc::from(
+                    "import { Directive } from '@angular/core';\n\
+                     @Directive({ selector: '[aliasSubDir]' })\n\
+                     export class AliasSubDir {}\n",
+                ),
+                format: Some(ModuleFormat::Ts),
+            },
+        );
+        modules.insert(
+            ext_ts_mod.as_str().to_owned(),
+            LoadedModule {
+                code: Arc::from("export const EXT_UTIL = 1;\n"),
+                format: Some(ModuleFormat::Ts),
+            },
+        );
+
+        modules.insert(
+            ext_alias_ui_mod.as_str().to_owned(),
+            LoadedModule {
+                code: Arc::from(
+                    "import { NgModule } from '@angular/core';\n\
+                     import { AliasSubDir } from '../internal/sub-dir';\n\
+                     @NgModule({ imports: [AliasSubDir], exports: [AliasSubDir] })\n\
+                     export class AliasUiModule {}\n",
+                ),
+                format: Some(ModuleFormat::Ts),
+            },
+        );
+        modules.insert(
+            ext_rel_ts_mod.as_str().to_owned(),
+            LoadedModule {
+                code: Arc::from(
+                    "import { Directive } from '@angular/core';\n\
+                     @Directive({ selector: '[vendorTsDir]' })\n\
+                     export class VendorTsDir {}\n\
+                     @Directive({ selector: '[vendorTsOther]', standalone: false })\n\
+                     export class VendorTsOther {}\n",
+                ),
+                format: Some(ModuleFormat::Ts),
+            },
+        );
+
+        let host = Arc::new(ExternalRecordingHost {
+            observed_loads: Mutex::new(Vec::new()),
+            resolutions,
+            modules,
+        });
+        let registry = Arc::new(ResourceRegistry::default());
+        let entrypoints = Arc::new(std::sync::RwLock::new(vec![PathBuf::from(
+            page_mod.as_str(),
+        )]));
+        let engine = QueryEngine::new_with_host(
+            host.clone(),
+            registry,
+            entrypoints,
+            Arc::new(ApfImportStrategy::new()),
+            None,
+            Some(true),
+            false,
+            false,
+            false,
+            true,
+            false,
+            true,
+            true,
+            false,
+            false,
+        );
+
+        let page_id = engine.intern_path(page_mod.as_str());
+        let (ext_ts_id, _) = engine.interner.intern_authoritative_module(
+            ext_ts_mod.as_str(),
+            IdKind::Path,
+            true,
+        );
+        let me = engine.clone();
+        let (wire, page_syntax, ext_syntax) = block_on_with_timeout(async move {
+            me.ensure_singletons_fresh(true).await;
+            let ctx = QueryContext::new(me);
+            let wire = ctx.analyze_file_wire(page_id, true).await;
+            let page_syntax = ctx.analyze_file_syntax(page_id).await;
+            let ext_syntax = ctx.analyze_file_syntax(ext_ts_id).await;
+            (wire, page_syntax, ext_syntax)
+        });
+
+        // `angular_core_compilation: Some(true)` marks internal TS files as core, never externals.
+        assert!(page_syntax.is_core);
+        assert!(!ext_syntax.is_core);
+
+        let loads = host.observed_loads.lock().unwrap().clone();
+        assert!(loads.contains(&(page_mod.as_str().to_owned(), false)));
+        assert!(loads.contains(&(feature_mod.as_str().to_owned(), false)));
+        assert!(loads.contains(&(ext_rel_mod.as_str().to_owned(), true)));
+        assert!(loads.contains(&(ext_alias_mod.as_str().to_owned(), true)));
+        assert!(loads.contains(&(ext_alias_sub_mod.as_str().to_owned(), true)));
+        assert!(loads.contains(&(ext_alias_ui_mod.as_str().to_owned(), true)));
+        assert!(loads.contains(&(ext_rel_ts_mod.as_str().to_owned(), true)));
+        assert!(loads.contains(&(ext_ts_mod.as_str().to_owned(), true)));
+
+        let result = wire.0.as_ref().expect("wire result");
+        assert_eq!(result.id_kind, Some(IdKind::Path));
+        let cmp = result.classes[0].component.as_ref().expect("PageCmp");
+        let decls = cmp
+            .resolved_declarations
+            .as_ref()
+            .expect("resolved declarations");
+        let by_name: HashMap<&str, Option<&str>> = decls
+            .iter()
+            .map(|d| {
+                let spec = d
+                    .r#ref
+                    .typecheck_import
+                    .as_ref()
+                    .map(|imp| imp.specifier.as_str());
+                (d.name.as_str(), spec)
+            })
+            .collect();
+        // Relative external specifier (`../vendor/ext-dir` from `/app/feature/mod.ts`) is rebased
+        // to the consumer (`/app/pages/sub/page.ts`) without exposing `/external-store/...`.
+        assert_eq!(
+            by_name.get("VendorDir"),
+            Some(&Some("../../vendor/ext-dir"))
+        );
+        // Non-relative external alias (`/@ext/ui`) is preserved verbatim, including declarations
+        // re-exported from internal relative files inside that external package. `AliasUiModule`
+        // is declared in an internal file and only published by the `index.ts` barrel, so its
+        // exports are found by resolving `/@ext/ui` from the file that imported it.
+        assert_eq!(by_name.get("AliasDir"), Some(&Some("/@ext/ui")));
+        assert_eq!(by_name.get("AliasSubDir"), Some(&Some("/@ext/ui")));
+        // An external `.ts` directive reached through an in-bundle NgModule keeps the specifier
+        // that NgModule imported it by, rebased to the consumer.
+        assert_eq!(
+            by_name.get("VendorTsDir"),
+            Some(&Some("../../vendor/ext-ts-dir"))
+        );
+
+        // An in-bundle NgModule cannot declare a class that lives outside the bundle (NG6001).
+        let feature_id = engine.intern_path(feature_mod.as_str());
+        let me = engine.clone();
+        let feature_wire = block_on_with_timeout(async move {
+            QueryContext::new(me)
+                .analyze_file_wire(feature_id, true)
+                .await
+        });
+        let feature_result = feature_wire.0.as_ref().expect("feature wire result");
+        assert!(
+            feature_wire.1.declared_file_ids.is_empty(),
+            "external .ts declarations must stay out of chunk grouping, got {:?}",
+            feature_wire.1.declared_file_ids
+        );
+        assert!(
+            feature_result
+                .diagnostics
+                .iter()
+                .any(|d| d.code == 6001 && d.message_text.contains("VendorTsOther")),
+            "expected NG6001 for VendorTsOther, got {:?}",
+            feature_result.diagnostics
+        );
+    }
+
+    #[test]
+    fn async_host_virtual_ids_emit_verbatim_specifiers_and_wire_id_kind() {
+        use crate::host::{IdKind, LoadedModule, ModuleFormat, ModuleId, ResolvedModule};
+
+        let app_mod = ModuleId::new("\0virtual:app");
+        let child_mod = ModuleId::new("\0virtual:child.ts?v=1");
+        let bare_mod = ModuleId::new("\0virtual:bare-dir.ts");
+        let list_mod = ModuleId::new("/workspace/src/widgets/list.directive.ts");
+        let models_mod = ModuleId::new("/workspace/src/widgets/models.ts");
+        let vmod = ModuleId::new("\0virtual:feature-module");
+        let vmod_cmp = ModuleId::new("\0virtual:feature-cmp?v=1");
+        let ext_ui_barrel = ModuleId::new("/external-store/ui/index.ts");
+        let ext_ui_mod = ModuleId::new("/external-store/ui/internal/ui.module.ts");
+        let ext_ui_sub = ModuleId::new("/external-store/ui/internal/sub-dir.ts");
+        let bare_ui_barrel = ModuleId::new("/external-store/bare-ui/index.ts");
+        let bare_ui_mod = ModuleId::new("/external-store/bare-ui/internal/ui.module.ts");
+        let bare_ui_sub = ModuleId::new("/external-store/bare-ui/internal/sub-dir.ts");
+
+        let mut resolutions = HashMap::new();
+        resolutions.insert(
+            (app_mod.as_str().to_owned(), "./child".to_owned()),
+            ResolvedModule {
+                id: child_mod.clone(),
+                id_kind: IdKind::Virtual,
+                format: Some(ModuleFormat::Ts),
+                external: false,
+                code: None,
+            },
+        );
+        resolutions.insert(
+            (app_mod.as_str().to_owned(), "virtual:bare-dir".to_owned()),
+            ResolvedModule {
+                id: bare_mod.clone(),
+                id_kind: IdKind::Virtual,
+                format: Some(ModuleFormat::Ts),
+                external: false,
+                code: None,
+            },
+        );
+        resolutions.insert(
+            (
+                app_mod.as_str().to_owned(),
+                "/workspace/src/widgets/list.directive.ts".to_owned(),
+            ),
+            ResolvedModule {
+                id: list_mod.clone(),
+                id_kind: IdKind::Path,
+                format: Some(ModuleFormat::Ts),
+                external: false,
+                code: None,
+            },
+        );
+        resolutions.insert(
+            (list_mod.as_str().to_owned(), "./models".to_owned()),
+            ResolvedModule {
+                id: models_mod.clone(),
+                id_kind: IdKind::Path,
+                format: Some(ModuleFormat::Ts),
+                external: false,
+                code: None,
+            },
+        );
+        resolutions.insert(
+            (app_mod.as_str().to_owned(), "./feature-module".to_owned()),
+            ResolvedModule {
+                id: vmod.clone(),
+                id_kind: IdKind::Virtual,
+                format: Some(ModuleFormat::Ts),
+                external: false,
+                code: None,
+            },
+        );
+        resolutions.insert(
+            (vmod.as_str().to_owned(), "./feature-cmp".to_owned()),
+            ResolvedModule {
+                id: vmod_cmp.clone(),
+                id_kind: IdKind::Virtual,
+                format: Some(ModuleFormat::Ts),
+                external: false,
+                code: None,
+            },
+        );
+        // `/@ext/ui` is registered only from `app_mod` (`IdKind::Virtual`), not from `ext_ui_mod`,
+        // verifying `OwningReference::resolution_context` preserves virtual importers too.
+        resolutions.insert(
+            (app_mod.as_str().to_owned(), "/@ext/ui".to_owned()),
+            ResolvedModule {
+                id: ext_ui_barrel.clone(),
+                id_kind: IdKind::Path,
+                format: Some(ModuleFormat::Ts),
+                external: true,
+                code: None,
+            },
+        );
+        resolutions.insert(
+            (
+                ext_ui_barrel.as_str().to_owned(),
+                "./internal/ui.module".to_owned(),
+            ),
+            ResolvedModule {
+                id: ext_ui_mod.clone(),
+                id_kind: IdKind::Path,
+                format: Some(ModuleFormat::Ts),
+                external: true,
+                code: None,
+            },
+        );
+        resolutions.insert(
+            (
+                ext_ui_barrel.as_str().to_owned(),
+                "./internal/sub-dir".to_owned(),
+            ),
+            ResolvedModule {
+                id: ext_ui_sub.clone(),
+                id_kind: IdKind::Path,
+                format: Some(ModuleFormat::Ts),
+                external: true,
+                code: None,
+            },
+        );
+        resolutions.insert(
+            (
+                ext_ui_mod.as_str().to_owned(),
+                "../internal/sub-dir".to_owned(),
+            ),
+            ResolvedModule {
+                id: ext_ui_sub.clone(),
+                id_kind: IdKind::Path,
+                format: Some(ModuleFormat::Ts),
+                external: true,
+                code: None,
+            },
+        );
+        // The bare `@ext/bare-ui` is likewise registered only from `app_mod`, so its barrel is
+        // found only by resolving the specifier from the file that imported it.
+        resolutions.insert(
+            (app_mod.as_str().to_owned(), "@ext/bare-ui".to_owned()),
+            ResolvedModule {
+                id: bare_ui_barrel.clone(),
+                id_kind: IdKind::Path,
+                format: Some(ModuleFormat::Ts),
+                external: true,
+                code: None,
+            },
+        );
+        resolutions.insert(
+            (
+                bare_ui_barrel.as_str().to_owned(),
+                "./internal/ui.module".to_owned(),
+            ),
+            ResolvedModule {
+                id: bare_ui_mod.clone(),
+                id_kind: IdKind::Path,
+                format: Some(ModuleFormat::Ts),
+                external: true,
+                code: None,
+            },
+        );
+        resolutions.insert(
+            (
+                bare_ui_barrel.as_str().to_owned(),
+                "./internal/sub-dir".to_owned(),
+            ),
+            ResolvedModule {
+                id: bare_ui_sub.clone(),
+                id_kind: IdKind::Path,
+                format: Some(ModuleFormat::Ts),
+                external: true,
+                code: None,
+            },
+        );
+        resolutions.insert(
+            (
+                bare_ui_mod.as_str().to_owned(),
+                "../internal/sub-dir".to_owned(),
+            ),
+            ResolvedModule {
+                id: bare_ui_sub.clone(),
+                id_kind: IdKind::Path,
+                format: Some(ModuleFormat::Ts),
+                external: true,
+                code: None,
+            },
+        );
+
+        let mut modules = HashMap::new();
+        modules.insert(
+            app_mod.as_str().to_owned(),
+            LoadedModule {
+                code: Arc::from(
+                    "import { Component } from '@angular/core';\n\
+                     import { ChildCmp } from './child';\n\
+                     import { BareDir } from 'virtual:bare-dir';\n\
+                     import { ListDir } from '/workspace/src/widgets/list.directive.ts';\n\
+                     import { VirtualFeatureModule } from './feature-module';\n\
+                     import { ExtUiModule } from '/@ext/ui';\n\
+                     import { BareUiModule } from '@ext/bare-ui';\n\
+                     @Component({\n\
+                       selector: 'app-cmp',\n\
+                       template: '<child-cmp bareDir listDir extSubDir bareSubDir></child-cmp><v-feature-cmp></v-feature-cmp>',\n\
+                       imports: [ChildCmp, BareDir, ListDir, VirtualFeatureModule, ExtUiModule, BareUiModule],\n\
+                     })\n\
+                     export class AppCmp {}\n",
+                ),
+                format: Some(ModuleFormat::Ts),
+            },
+        );
+        modules.insert(
+            child_mod.as_str().to_owned(),
+            LoadedModule {
+                code: Arc::from(
+                    "import { Component } from '@angular/core';\n\
+                     @Component({ selector: 'child-cmp', template: '<span>ok</span>' })\n\
+                     export class ChildCmp {}\n",
+                ),
+                format: Some(ModuleFormat::Ts),
+            },
+        );
+        modules.insert(
+            bare_mod.as_str().to_owned(),
+            LoadedModule {
+                code: Arc::from(
+                    "import { Directive } from '@angular/core';\n\
+                     @Directive({ selector: '[bareDir]' })\n\
+                     export class BareDir {}\n",
+                ),
+                format: Some(ModuleFormat::Ts),
+            },
+        );
+        modules.insert(
+            list_mod.as_str().to_owned(),
+            LoadedModule {
+                code: Arc::from(
+                    "import { Directive } from '@angular/core';\n\
+                     import { ListItem } from './models';\n\
+                     @Directive({ selector: '[listDir]' })\n\
+                     export class ListDir<T extends ListItem> {}\n",
+                ),
+                format: Some(ModuleFormat::Ts),
+            },
+        );
+        modules.insert(
+            models_mod.as_str().to_owned(),
+            LoadedModule {
+                code: Arc::from("export interface ListItem { id: string; }\n"),
+                format: Some(ModuleFormat::Ts),
+            },
+        );
+        modules.insert(
+            vmod.as_str().to_owned(),
+            LoadedModule {
+                code: Arc::from(
+                    "import { NgModule } from '@angular/core';\n\
+                     import { VirtualFeatureCmp } from './feature-cmp';\n\
+                     @NgModule({ declarations: [VirtualFeatureCmp], exports: [VirtualFeatureCmp] })\n\
+                     export class VirtualFeatureModule {}\n",
+                ),
+                format: Some(ModuleFormat::Ts),
+            },
+        );
+        modules.insert(
+            vmod_cmp.as_str().to_owned(),
+            LoadedModule {
+                code: Arc::from(
+                    "import { Component } from '@angular/core';\n\
+                     @Component({ selector: 'v-feature-cmp', standalone: false, template: '<b>v</b>' })\n\
+                     export class VirtualFeatureCmp {}\n",
+                ),
+                format: Some(ModuleFormat::Ts),
+            },
+        );
+        modules.insert(
+            ext_ui_barrel.as_str().to_owned(),
+            LoadedModule {
+                code: Arc::from(
+                    "export { ExtUiModule } from './internal/ui.module';\n\
+                     export { ExtSubDir } from './internal/sub-dir';\n",
+                ),
+                format: Some(ModuleFormat::Ts),
+            },
+        );
+        modules.insert(
+            ext_ui_mod.as_str().to_owned(),
+            LoadedModule {
+                code: Arc::from(
+                    "import { NgModule } from '@angular/core';\n\
+                     import { ExtSubDir } from '../internal/sub-dir';\n\
+                     @NgModule({ imports: [ExtSubDir], exports: [ExtSubDir] })\n\
+                     export class ExtUiModule {}\n",
+                ),
+                format: Some(ModuleFormat::Ts),
+            },
+        );
+        modules.insert(
+            ext_ui_sub.as_str().to_owned(),
+            LoadedModule {
+                code: Arc::from(
+                    "import { Directive } from '@angular/core';\n\
+                     @Directive({ selector: '[extSubDir]' })\n\
+                     export class ExtSubDir {}\n",
+                ),
+                format: Some(ModuleFormat::Ts),
+            },
+        );
+        modules.insert(
+            bare_ui_barrel.as_str().to_owned(),
+            LoadedModule {
+                code: Arc::from(
+                    "export { BareUiModule } from './internal/ui.module';\n\
+                     export { BareSubDir } from './internal/sub-dir';\n",
+                ),
+                format: Some(ModuleFormat::Ts),
+            },
+        );
+        modules.insert(
+            bare_ui_mod.as_str().to_owned(),
+            LoadedModule {
+                code: Arc::from(
+                    "import { NgModule } from '@angular/core';\n\
+                     import { BareSubDir } from '../internal/sub-dir';\n\
+                     @NgModule({ imports: [BareSubDir], exports: [BareSubDir] })\n\
+                     export class BareUiModule {}\n",
+                ),
+                format: Some(ModuleFormat::Ts),
+            },
+        );
+        modules.insert(
+            bare_ui_sub.as_str().to_owned(),
+            LoadedModule {
+                code: Arc::from(
+                    "import { Directive } from '@angular/core';\n\
+                     @Directive({ selector: '[bareSubDir]' })\n\
+                     export class BareSubDir {}\n",
+                ),
+                format: Some(ModuleFormat::Ts),
+            },
+        );
+
+        let host = Arc::new(AsyncMemoryHost {
+            resolutions,
+            modules,
+            resources: HashMap::new(),
+            resource_contents: HashMap::new(),
+        });
+        let registry = Arc::new(ResourceRegistry::default());
+        let entrypoints = Arc::new(std::sync::RwLock::new(vec![PathBuf::from(
+            app_mod.as_str(),
+        )]));
+        let engine = QueryEngine::new_default_with_host(host, registry, entrypoints);
+        let app_id = engine.intern_module(app_mod.as_str(), IdKind::Virtual);
+        let me = engine.clone();
+        let wire = block_on_with_timeout(async move {
+            me.ensure_singletons_fresh(true).await;
+            QueryContext::new(me).analyze_file_wire(app_id, true).await
+        });
+
+        let result = wire.0.as_ref().expect("wire result");
+        assert_eq!(result.file_path, "\0virtual:app");
+        assert_eq!(result.id_kind, Some(IdKind::Virtual));
+        let cmp = result.classes[0].component.as_ref().expect("AppCmp");
+        let decls = cmp
+            .resolved_declarations
+            .as_ref()
+            .expect("resolved declarations");
+        let by_name: HashMap<&str, Option<&str>> = decls
+            .iter()
+            .map(|d| {
+                (
+                    d.name.as_str(),
+                    d.r#ref
+                        .typecheck_import
+                        .as_ref()
+                        .map(|imp| imp.specifier.as_str()),
+                )
+            })
+            .collect();
+        // Relative import without `OwningReference` emits the `IdKind::Virtual` target ID verbatim.
+        assert_eq!(
+            by_name.get("ChildCmp"),
+            Some(&Some("\0virtual:child.ts?v=1"))
+        );
+        // Bare virtual specifier is preserved via `OwningReference`.
+        assert_eq!(by_name.get("BareDir"), Some(&Some("virtual:bare-dir")));
+        // External barrel imported by a virtual consumer resolves `/@ext/ui` from the virtual
+        // importer via `OwningReference::resolution_context`.
+        assert_eq!(by_name.get("ExtSubDir"), Some(&Some("/@ext/ui")));
+        // A bare external specifier keeps its importer too: `@ext/bare-ui` does not resolve from
+        // inside the package, so without it the directive would get a path to its internal file.
+        assert_eq!(by_name.get("BareSubDir"), Some(&Some("@ext/bare-ui")));
+        // `IdKind::Path` target consumed from `IdKind::Virtual` emits its full path, and rebases
+        // relative generic type parameter bounds (`./models`) to absolute paths.
+        assert_eq!(
+            by_name.get("ListDir"),
+            Some(&Some("/workspace/src/widgets/list.directive.ts"))
+        );
+        let list_decl = decls.iter().find(|d| d.name == "ListDir").unwrap();
+        let list_type_refs = list_decl.type_parameters.as_ref().unwrap()[0]
+            .type_refs
+            .as_ref()
+            .unwrap();
+        assert_eq!(
+            list_type_refs[0].module_specifier,
+            "/workspace/src/widgets/models"
+        );
+
+        // Virtual NgModule includes its virtual declared component (`\0virtual:feature-cmp?v=1`,
+        // without a plain `.ts` suffix) in `FileChunkInfo::declared_file_ids`.
+        let vmod_id = engine.intern_module(vmod.as_str(), IdKind::Virtual);
+        let vmod_cmp_id = engine.intern_module(vmod_cmp.as_str(), IdKind::Virtual);
+        let me = engine.clone();
+        let vmod_wire = block_on_with_timeout(async move {
+            let ctx = QueryContext::new(me);
+            ctx.analyze_file_wire(vmod_id, true).await
+        });
+        assert_eq!(vmod_wire.1.declared_file_ids, vec![vmod_cmp_id]);
+    }
+
     struct FlippingKindHost {
         id: String,
         resolve_calls: std::sync::atomic::AtomicUsize,
@@ -6236,6 +7223,58 @@ mod tests {
                 HashSet::from([importer_id, UNRESOLVED_IMPORTS_FILE_ID])
             );
         }
+    }
+
+    /// A path interned before its first resolution starts out non-external. The resolution that
+    /// reports it external must still be memoized, or the importer is never indexed under the
+    /// target and the host is asked again on every lookup.
+    #[test]
+    fn resolution_marking_interned_path_external_is_memoized() {
+        use crate::host::{
+            IdKind, ImportKind, ModuleFormat, ModuleId, ResolveRequest, ResolvedModule,
+        };
+        use crate::query::resolution_cache::ResolutionLookupKey;
+
+        let importer = "/ext_flag/app.ts";
+        let target = "/ext_flag/vendor/lib.ts";
+        let mut resolutions = HashMap::new();
+        resolutions.insert(
+            (importer.to_owned(), "./vendor/lib".to_owned()),
+            ResolvedModule {
+                id: ModuleId::new(target),
+                id_kind: IdKind::Path,
+                format: Some(ModuleFormat::Ts),
+                external: true,
+                code: None,
+            },
+        );
+        let engine = QueryEngine::new_default_with_host(
+            Arc::new(AsyncMemoryHost {
+                resolutions,
+                modules: HashMap::new(),
+                resources: HashMap::new(),
+                resource_contents: HashMap::new(),
+            }),
+            Arc::new(ResourceRegistry::default()),
+            Arc::new(std::sync::RwLock::new(Vec::new())),
+        );
+        let importer_id = engine.intern_path(importer);
+        let target_id = engine.intern_path(target);
+        assert!(!engine.lookup_external(target_id));
+        let key = ResolutionLookupKey::from_request(&ResolveRequest::new(
+            importer,
+            "./vendor/lib",
+            ImportKind::Static,
+        ));
+
+        let ctx = QueryContext::new(engine.clone());
+        let resolved = block_on_with_timeout(async move {
+            ctx.resolve_from_id(importer_id, "./vendor/lib", ImportKind::Static)
+                .await
+        });
+        assert_eq!(resolved.map(|(id, _)| id), Some(target_id));
+        assert!(engine.lookup_external(target_id));
+        assert!(engine.resolution_cache.get(importer_id, &key).is_some());
     }
 
     #[test]

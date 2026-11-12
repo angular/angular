@@ -84,6 +84,13 @@ fn is_type_only_import_declaration(decl: &ImportDeclaration<'_>) -> bool {
     if specifiers.is_empty() {
         return true;
     }
+    // ngtsc only inspects the named bindings, so a default or namespace binding next to all-`type`
+    // named bindings (`import Def, { type T } from './x'`) still counts as type-only here. That is
+    // wrong in general: `Def` is a runtime binding, TypeScript keeps the import, and a real cycle
+    // through it goes undetected. The static import graph deliberately reproduces it anyway,
+    // because the graph decides which components are remote-scoped and the emitted output has to
+    // match ngtsc's for now. Hosts are told the truth separately; see
+    // [`import_declaration_binds_at_runtime`].
     let mut has_named_specifier = false;
     for spec in specifiers {
         match spec {
@@ -100,50 +107,140 @@ fn is_type_only_import_declaration(decl: &ImportDeclaration<'_>) -> bool {
     has_named_specifier
 }
 
+/// Whether an `ImportDeclaration` keeps a runtime binding or side effect, which is what a host
+/// needs to know about a resolve request. Unlike [`is_type_only_import_declaration`], a default
+/// or namespace binding counts, so `import Def, { type T } from './x'` is a runtime import.
+fn import_declaration_binds_at_runtime(decl: &ImportDeclaration<'_>) -> bool {
+    if decl.import_kind.is_type() {
+        return false;
+    }
+    let Some(specifiers) = &decl.specifiers else {
+        return true;
+    };
+    specifiers.iter().any(|spec| match spec {
+        ImportDeclarationSpecifier::ImportSpecifier(named) => !named.import_kind.is_type(),
+        ImportDeclarationSpecifier::ImportDefaultSpecifier(_)
+        | ImportDeclarationSpecifier::ImportNamespaceSpecifier(_) => true,
+    })
+}
+
+/// Module specifier dependency extracted syntactically from a file, carrying its
+/// [`crate::host::ImportKind`] and whether it only appears in type-only positions.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct ExtractedDependency {
+    pub specifier: String,
+    pub kind: crate::host::ImportKind,
+    pub type_only: bool,
+}
+
 /// Extracts static import specifiers from a module record and program, partitioned into
 /// `(value_static_imports, type_only_static_imports)`.
 ///
 /// Mirrors ngtsc's `ImportGraph.scanImports`: a module specifier is an edge of the static import
 /// graph iff at least one runtime `export ... from` declaration or non-type-only `import`
-/// declaration requests it. Purely type-only `import` declarations still bring the target file into
-/// the program closure, so they are returned in the second vector.
+/// declaration requests it. Purely type-only `import` and `export type ... from` declarations
+/// still bring the target file into the program closure, so they are returned in the second vector.
+/// `type_only` there is what the host is told: `true`, except for an import ngtsc's graph leaves
+/// out although it binds at runtime (see [`is_type_only_import_declaration`]).
 pub fn extract_imports(
     module_record: &ModuleRecord<'_>,
     program: &Program<'_>,
-) -> (Vec<String>, Vec<String>) {
-    let mut runtime_specifiers = HashSet::new();
+) -> (Vec<ExtractedDependency>, Vec<ExtractedDependency>) {
+    let requested: HashSet<&str> = module_record
+        .requested_modules
+        .keys()
+        .map(|atom| atom.as_str())
+        .collect();
+    let mut ordered_specifiers = Vec::with_capacity(requested.len());
+    let mut seen_specifiers = HashSet::with_capacity(requested.len());
+    let mut runtime_imports = HashSet::new();
+    let mut runtime_reexports = HashSet::new();
+    let mut type_only_imports = HashSet::new();
+    let mut type_only_reexports = HashSet::new();
+    // Specifiers with an import that binds at runtime, whichever way the graph classifies it.
+    let mut runtime_bound_imports = HashSet::new();
     for stmt in &program.body {
         match stmt {
             Statement::ImportDeclaration(decl) => {
-                if !is_type_only_import_declaration(decl) {
-                    runtime_specifiers.insert(decl.source.value.as_str());
+                let spec = decl.source.value.as_str();
+                if requested.contains(spec) && seen_specifiers.insert(spec) {
+                    ordered_specifiers.push(spec);
+                }
+                if import_declaration_binds_at_runtime(decl) {
+                    runtime_bound_imports.insert(spec);
+                }
+                if is_type_only_import_declaration(decl) {
+                    type_only_imports.insert(spec);
+                } else {
+                    runtime_imports.insert(spec);
                 }
             }
-            Statement::ExportFromDeclaration(decl) if !decl.export_kind.is_type() => {
-                let has_runtime_export = decl.specifiers.is_empty()
-                    || decl.specifiers.iter().any(|s| !s.export_kind.is_type());
+            Statement::ExportFromDeclaration(decl) => {
+                let spec = decl.source.value.as_str();
+                if requested.contains(spec) && seen_specifiers.insert(spec) {
+                    ordered_specifiers.push(spec);
+                }
+                let has_runtime_export = !decl.export_kind.is_type()
+                    && (decl.specifiers.is_empty()
+                        || decl.specifiers.iter().any(|s| !s.export_kind.is_type()));
                 if has_runtime_export {
-                    runtime_specifiers.insert(decl.source.value.as_str());
+                    runtime_reexports.insert(spec);
+                } else {
+                    type_only_reexports.insert(spec);
                 }
             }
-            Statement::ExportAllDeclaration(decl) if !decl.export_kind.is_type() => {
-                runtime_specifiers.insert(decl.source.value.as_str());
+            Statement::ExportAllDeclaration(decl) => {
+                let spec = decl.source.value.as_str();
+                if requested.contains(spec) && seen_specifiers.insert(spec) {
+                    ordered_specifiers.push(spec);
+                }
+                if decl.export_kind.is_type() {
+                    type_only_reexports.insert(spec);
+                } else {
+                    runtime_reexports.insert(spec);
+                }
             }
             _ => {}
         }
     }
+    if seen_specifiers.len() < requested.len() {
+        let mut remaining: Vec<&str> = requested
+            .iter()
+            .copied()
+            .filter(|s| !seen_specifiers.contains(s))
+            .collect();
+        remaining.sort_unstable();
+        ordered_specifiers.extend(remaining);
+    }
 
     let mut static_imports = Vec::new();
-    let mut type_only_imports = Vec::new();
-    for atom in module_record.requested_modules.keys() {
-        let s = atom.as_str();
-        if runtime_specifiers.contains(s) {
-            static_imports.push(s.to_string());
+    let mut type_only_static = Vec::new();
+    for s in ordered_specifiers {
+        if runtime_imports.contains(s) || runtime_reexports.contains(s) {
+            let kind = if runtime_imports.contains(s) {
+                crate::host::ImportKind::Static
+            } else {
+                crate::host::ImportKind::ReExport
+            };
+            static_imports.push(ExtractedDependency {
+                specifier: s.to_string(),
+                kind,
+                type_only: false,
+            });
         } else {
-            type_only_imports.push(s.to_string());
+            let kind = if !type_only_imports.contains(s) && type_only_reexports.contains(s) {
+                crate::host::ImportKind::ReExport
+            } else {
+                crate::host::ImportKind::Static
+            };
+            type_only_static.push(ExtractedDependency {
+                specifier: s.to_string(),
+                kind,
+                type_only: !runtime_bound_imports.contains(s),
+            });
         }
     }
-    (static_imports, type_only_imports)
+    (static_imports, type_only_static)
 }
 
 /// The module specifiers of the file's dynamic imports, in source order: `import()` calls and
@@ -160,15 +257,24 @@ pub fn extract_imports(
 ///
 /// The module record lists `import()` calls but not import types, so every file's node list is
 /// scanned. The pass costs under 1% of parsing the file and building its semantic model.
-pub fn extract_dynamic_imports(semantic: &Semantic<'_>) -> Vec<String> {
+pub fn extract_dynamic_imports(semantic: &Semantic<'_>) -> Vec<ExtractedDependency> {
     semantic
         .nodes()
         .iter()
         .filter_map(|node| match node.kind() {
             AstKind::ImportExpression(import) => {
-                crate::analyzer::utils::extract_literal_string(&import.source)
+                let specifier = crate::analyzer::utils::extract_literal_string(&import.source)?;
+                Some(ExtractedDependency {
+                    specifier,
+                    kind: crate::host::ImportKind::Dynamic,
+                    type_only: false,
+                })
             }
-            AstKind::TSImportType(import_type) => Some(import_type.source.value.to_string()),
+            AstKind::TSImportType(import_type) => Some(ExtractedDependency {
+                specifier: import_type.source.value.to_string(),
+                kind: crate::host::ImportKind::TypeImport,
+                type_only: true,
+            }),
             _ => None,
         })
         .collect()

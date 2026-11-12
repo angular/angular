@@ -1149,9 +1149,7 @@ pub fn stamp_owning_reference(
 ) -> ResolvedValue {
     // Only the specifier carries over: packages re-export declarations under their declared name,
     // and renamed exports arise only on chased chains that already carry an `OwningReference`.
-    let owning_for = |name: &str| {
-        OwningReference::from_source_specifier(owning_module.specifier().to_string(), name)
-    };
+    let owning_for = |name: &str| owning_module.with_export_name(name);
     match value {
         ResolvedValue::Reference(mut reference) => {
             if reference.file == file && reference.owning_reference.is_none() {

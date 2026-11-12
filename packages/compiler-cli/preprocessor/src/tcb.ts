@@ -36,7 +36,7 @@ import MagicString from 'magic-string';
 
 import {makeClassKey} from './compiler-utils.js';
 import {OutOfBandDiagnosticRecorderImpl} from './oob.js';
-import {allocateNamespaceAlias} from './output_ast_printer.js';
+import {allocateNamespaceAlias, escapeModuleSpecifier} from './output_ast_printer.js';
 import {NOOP_TRACER, type Tracer} from './perf.js';
 import {adaptTcbInput, ExtendedTcbTypeParameter} from './tcb_adapter.js';
 import {requiresInlineDeclaration, requiresInlineTypeCheckBlock} from './tcb_util.js';
@@ -344,7 +344,7 @@ export class TcbImportManager {
   generateImportStatements(): string {
     let result = '';
     for (const [moduleSpecifier, alias] of this.imports) {
-      result += `import * as ${alias} from '${moduleSpecifier}';\n`;
+      result += `import * as ${alias} from '${escapeModuleSpecifier(moduleSpecifier)}';\n`;
     }
     return result;
   }

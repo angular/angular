@@ -488,6 +488,10 @@ impl<'a> ScopeEnv<'a> {
         crate::utils::is_dts(&self.ctx.engine.lookup_path(file))
     }
 
+    fn is_external(&self, file: FileId) -> bool {
+        self.ctx.engine.lookup_external(file)
+    }
+
     /// A span of `file` in wire (UTF-16) offsets.
     async fn wire_span(&self, file: FileId, span: Span) -> SpanMetadata {
         let syntax = self.ctx.analyze_file_syntax(file).await;
@@ -750,7 +754,11 @@ impl<'a> Resolver<'a> {
                 continue;
             }
             for entry in &lists[0] {
-                if !self.env.is_dts(entry.reference.file) {
+                // A `.d.ts` class, or a bundle-external one declared by an in-bundle NgModule.
+                let declared_in = entry.reference.file;
+                let outside_compilation = self.env.is_dts(declared_in)
+                    || (self.env.is_external(declared_in) && !self.env.is_external(module.file));
+                if !outside_compilation {
                     continue;
                 }
                 let Some(span) = self
@@ -1019,9 +1027,12 @@ impl<'a> Resolver<'a> {
                 Some(ClassType::Component | ClassType::Directive | ClassType::Pipe) => {
                     let info = info.as_ref().unwrap();
                     let is_dts = self.env.is_dts(entry.reference.file);
+                    let outside_compilation = is_dts
+                        || (self.env.is_external(entry.reference.file)
+                            && !self.env.is_external(module.file));
                     let reason = if is_standalone_class(info, is_dts) {
                         "it must be imported first"
-                    } else if is_dts {
+                    } else if outside_compilation {
                         "it must be imported via its NgModule first"
                     } else {
                         "it must be either declared by this NgModule, or imported here via its \

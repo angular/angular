@@ -206,22 +206,29 @@ pub struct TypeParameterMetadata {
 
 impl TypeParameterMetadata {
     /// Rebase/resolve relative module specifiers in this type parameter's type references
-    /// from `declaring_path` into `consumer_path` using the given reference strategy.
+    /// from `declaring_path` into `consumer_path` using the given reference strategy. A `None`
+    /// `consumer_path` is a [`crate::host::IdKind::Virtual`] consumer.
     pub fn resolve_specifiers(
         &mut self,
         strategy: &dyn crate::analyzer::import_emit::ReferenceEmitStrategy,
         declaring_path: &std::path::Path,
-        consumer_path: &std::path::Path,
+        consumer_path: Option<&std::path::Path>,
     ) {
         let Some(type_refs) = &mut self.type_refs else {
             return;
         };
         for r in type_refs {
-            r.module_specifier = strategy.resolve_import_specifier(
-                declaring_path,
-                consumer_path,
-                &r.module_specifier,
-            );
+            r.module_specifier = match consumer_path {
+                Some(consumer_path) => strategy.resolve_import_specifier(
+                    declaring_path,
+                    consumer_path,
+                    &r.module_specifier,
+                ),
+                None => strategy.resolve_import_specifier_for_virtual_consumer(
+                    declaring_path,
+                    &r.module_specifier,
+                ),
+            };
         }
     }
 }

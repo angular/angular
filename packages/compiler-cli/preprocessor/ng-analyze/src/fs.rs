@@ -68,6 +68,12 @@ pub fn path_to_string(path: PathBuf) -> String {
         .unwrap_or_else(|os_str| os_str.to_string_lossy().into_owned())
 }
 
+/// `path` spelled as an import specifier: always with `/` separators, as
+/// `relative_specifier_between` spells relative ones.
+pub fn path_to_import_specifier(path: &Path) -> String {
+    path.to_string_lossy().replace('\\', "/")
+}
+
 /// Whether `path` is absolute. `Path::is_absolute` is always `false` on `wasm32-unknown-unknown`,
 /// which has no platform path rules, so a rooted path (`/a/b`) counts as absolute there.
 pub fn is_absolute_path(path: &Path) -> bool {
@@ -681,6 +687,18 @@ impl FileSystem for OverlayFileSystem {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_path_to_import_specifier_uses_forward_slashes() {
+        assert_eq!(
+            path_to_import_specifier(Path::new("C:\\work\\app\\cmp.ts")),
+            "C:/work/app/cmp.ts"
+        );
+        assert_eq!(
+            path_to_import_specifier(Path::new("/work/app/cmp.ts")),
+            "/work/app/cmp.ts"
+        );
+    }
 
     #[test]
     fn test_virtual_file_read() {

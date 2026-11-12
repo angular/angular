@@ -1543,16 +1543,20 @@ function compileClasses(file: FileCompilation): string | null | undefined {
         encapsulation: encapsulationValue,
         animations: component.animationsSpan ? rawSlice(s, component.animationsSpan, guards) : null,
         changeDetection: changeDetectionValue,
-        relativeContextFilePath: getRelativeContextFilePath(filePath, ctx),
+        relativeContextFilePath:
+          result.idKind === 'virtual'
+            ? filePath.replace(/^\/+/, '')
+            : getRelativeContextFilePath(filePath, ctx),
         i18nUseExternalIds: ctx.i18nUseExternalIds ?? true,
         // Project-relative path of the file the template's text lives in: the `templateUrl`
         // resource, or this file for an inline template. Only `ɵɵattachSourceLocations` reads it,
         // and only under `enableTemplateSourceLocations`.
         // https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L812-L822
-        relativeTemplatePath: getProjectRelativePath(
-          component.templateUrl?.resolvedPath || filePath,
-          ctx,
-        ),
+        relativeTemplatePath: component.templateUrl?.resolvedPath
+          ? getProjectRelativePath(component.templateUrl.resolvedPath, ctx)
+          : result.idKind === 'virtual'
+            ? filePath
+            : getProjectRelativePath(filePath, ctx),
         enableTemplateSourceLocations: ctx.enableTemplateSourceLocations ?? false,
         foreignImports:
           component.foreignImports?.map((fi) => ({
@@ -1837,11 +1841,12 @@ function compileClasses(file: FileCompilation): string | null | undefined {
       }
     }
 
+    const isVirtualFile = result.idKind === 'virtual';
     let debugInfoStmt: o.Statement | null = null;
     if (component) {
       debugInfoStmt = buildSetClassDebugInfo(
         className,
-        getProjectRelativePath(filePath, ctx),
+        isVirtualFile ? filePath : getProjectRelativePath(filePath, ctx),
         content,
         classMeta.nameSpan?.start ?? span.start,
         ctx.forbidOrphanComponents ?? false,
@@ -1850,7 +1855,7 @@ function compileClasses(file: FileCompilation): string | null | undefined {
     }
 
     if (hmrComponent !== null) {
-      const hmrFilePath = getHmrFilePath(filePath, ctx);
+      const hmrFilePath = isVirtualFile ? filePath : getHmrFilePath(filePath, ctx);
       const hmrMeta = extractHmrMetadata({
         className,
         filePath: hmrFilePath,
@@ -1879,6 +1884,7 @@ function compileClasses(file: FileCompilation): string | null | undefined {
                 className,
                 hmrFilePath,
                 filePath,
+                idKind: result.idKind,
                 classMeta,
                 topLevelValueBindings: result.topLevelValueBindings ?? [],
                 decorators: decoratorsToEmit,
@@ -2802,6 +2808,7 @@ interface HmrUpdateModuleOptions {
   /** The component's path as the HMR runtime identifies it (`getHmrFilePath`). */
   hmrFilePath: string;
   filePath: string;
+  idKind?: nga.IdKind;
   classMeta: nga.ClassMetadata;
   topLevelValueBindings: readonly string[];
   decorators: DecoratorMetadata[];
@@ -2832,7 +2839,7 @@ function compileHmrUpdateModule(options: HmrUpdateModuleOptions): string | null 
       : null;
   const debugInfo = buildSetClassDebugInfo(
     className,
-    getProjectRelativePath(filePath, ctx),
+    options.idKind === 'virtual' ? filePath : getProjectRelativePath(filePath, ctx),
     content,
     options.nameOffset,
     ctx.forbidOrphanComponents ?? false,
