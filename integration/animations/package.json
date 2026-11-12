@@ -34,7 +34,7 @@
     "concurrently": "10.0.7",
     "jasmine": "7.0.0",
     "jasmine-core": "7.0.2",
-    "puppeteer": "25.16.0",
+    "puppeteer": "25.17.0",
     "ts-node": "^10.9.1",
     "typescript": "6.0.3"
   },
