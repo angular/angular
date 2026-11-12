@@ -1567,7 +1567,12 @@ function compileClasses(file: FileCompilation): string | null | undefined {
 
       let compileResult: R3CompiledExpression;
       try {
-        compileResult = compileComponentFromMetadata(componentMeta, sharedPool, bindingParser);
+        compileResult = compileComponentFromMetadata(
+          componentMeta,
+          sharedPool,
+          bindingParser,
+          ctx.enableHmr ? stableHmrReferences(classMeta) : null,
+        );
       } catch (e) {
         file.pipelineError ??= e;
         continue;
@@ -2812,11 +2817,32 @@ interface HmrUpdateModuleOptions {
   ctx: HybridCompilerContext;
 }
 
+function stableHmrReferences(classMeta: nga.ClassMetadata): (expression: o.Expression) => boolean {
+  // The analyzer supplies the resolved identifier spans. A token expression is safe to read
+  // only if it consists of one such identifier, with no property accesses or calls.
+  const references = classMeta.topLevelReferences ?? [];
+  return (expression) => {
+    if (!(expression instanceof o.WrappedNodeExpr) || !(expression.node instanceof RawSource)) {
+      return false;
+    }
+    const [span] = expression.node.spans;
+    return (
+      expression.node.spans.length === 1 &&
+      references.some((ref) => ref.span.start === span.start && ref.span.end === span.end)
+    );
+  };
+}
+
 function compileHmrUpdateModule(options: HmrUpdateModuleOptions): string | null {
   const {compiled, className, hmrFilePath, filePath, classMeta, decorators, s, content, ctx} =
     options;
   const pool = new ConstantPool(ctx.isClosureCompilerEnabled);
-  const definition = compileComponentFromMetadata(compiled.meta, pool, compiled.bindingParser);
+  const definition = compileComponentFromMetadata(
+    compiled.meta,
+    pool,
+    compiled.bindingParser,
+    stableHmrReferences(classMeta),
+  );
   // The update callback replaces `ɵsetClassMetadata` outright, so it never defers dependencies.
   const classMetadata =
     decorators.length > 0 && ctx.supportTestBed !== false

@@ -28,6 +28,7 @@ import type {
   DependencyTypeList,
   DirectiveDef,
   DirectiveDefFeature,
+  HmrTextMetadata,
   HostBindingsFunction,
   InputTransformFunction,
   PipeDef,
@@ -257,6 +258,9 @@ interface ComponentDefinition<T> extends Omit<DirectiveDefinition<T>, 'features'
    */
   template: ComponentTemplate<T>;
 
+  /** Static text information emitted only for template HMR. */
+  hmrText?: HmrTextMetadata;
+
   /**
    * Constants for the nodes in the component's view.
    * Includes attribute arrays, local definition arrays etc.
@@ -362,6 +366,9 @@ export function ɵɵdefineComponent<T>(
       tView: null,
       id: '',
     };
+    if (componentDefinition.hmrText !== undefined) {
+      def.hmrText = componentDefinition.hmrText;
+    }
 
     // TODO: Do we still need/want this ?
     if (baseDef.standalone) {
