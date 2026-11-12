@@ -79,9 +79,9 @@ This allows you to determine whether further investigations should focus on the 
 
 Angular uses colors in the flame chart graph to distinguish tasks types:
 
-- 🟦 Blue represents TypeScript code written by the application developer (for example: services, component constructors and lifecycle hooks, etc.).
+- 🟦 Blue represents entry points to the application code and identifies _reasons_ for executing code.
 - 🟪 Purple represents templates code written by the application developer and transformed by the Angular compiler.
-- 🟩 Green represents entry points to the application code and identifies _reasons_ for executing code.
+- 🟩 Green represents TypeScript code written by the application developer (for example: services, component constructors and lifecycle hooks, etc.).
 
 The following examples illustrate the described color-coding in various, real-life recordings.
 
