@@ -66,7 +66,11 @@ export function internalCreateApplication(config: {
     const allAppProviders = [
       provideZonelessChangeDetectionInternal(),
       errorHandlerEnvironmentInitializer,
-      ...(ngDevMode || ngServerMode ? [validAppIdInitializer] : []),
+      ...(typeof ngDevMode === 'undefined' ||
+      ngDevMode ||
+      (typeof ngServerMode !== 'undefined' && ngServerMode)
+        ? [validAppIdInitializer]
+        : []),
       ...(appProviders || []),
     ];
     const adapter = new EnvironmentNgModuleRefAdapter({
