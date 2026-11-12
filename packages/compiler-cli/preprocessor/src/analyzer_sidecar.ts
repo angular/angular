@@ -14,6 +14,8 @@ import {
   type AnalyzerOptions,
   type CompilationChunk,
   type FileInvalidation,
+  type FileUpdate,
+  type ModuleRef,
   type ResolvedResource,
   type TemplateUsage,
 } from './types.js';
@@ -350,11 +352,19 @@ export class SidecarAnalyzer implements IAnalyzer {
     }
   }
 
-  async getMetadataForFile(filePath: string): Promise<AnalysisResult | null> {
-    return this.callRpc<AnalysisResult | null>('getMetadataForFile', {filePath});
+  async getMetadataForFile(file: ModuleRef): Promise<AnalysisResult | null> {
+    if (typeof file !== 'string') {
+      if (file.idKind === 'virtual') {
+        throw new Error(
+          'SidecarAnalyzer.getMetadataForFile does not support virtual ModuleRef IDs',
+        );
+      }
+      return this.callRpc<AnalysisResult | null>('getMetadataForFile', {filePath: file.id});
+    }
+    return this.callRpc<AnalysisResult | null>('getMetadataForFile', {filePath: file});
   }
 
-  async updateFileContent(updates: {filePath: string; content: string}[]): Promise<string[]> {
+  async updateFileContent(updates: FileUpdate[]): Promise<string[]> {
     return this.callRpc('updateFileContent', updates);
   }
 
@@ -364,12 +374,22 @@ export class SidecarAnalyzer implements IAnalyzer {
       updates.map((u) => ({
         filePath: u.filePath,
         updateType: typeof u.updateType === 'number' ? FileUpdateType[u.updateType] : u.updateType,
+        ...(u.idKind !== undefined ? {idKind: u.idKind} : {}),
       })),
     );
   }
 
-  async setEntryPoints(entryPoints: string[]): Promise<string[]> {
-    return this.callRpc('setEntryPoints', entryPoints);
+  async setEntryPoints(entryPoints: ModuleRef[]): Promise<string[]> {
+    const paths = entryPoints.map((entry) => {
+      if (typeof entry === 'string') {
+        return entry;
+      }
+      if (entry.idKind === 'virtual') {
+        throw new Error('SidecarAnalyzer.setEntryPoints does not support virtual ModuleRef IDs');
+      }
+      return entry.id;
+    });
+    return this.callRpc('setEntryPoints', paths);
   }
 
   async clearResolutionCache(): Promise<string[]> {

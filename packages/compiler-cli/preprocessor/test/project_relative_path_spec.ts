@@ -169,11 +169,12 @@ export class MyComp {}
       analyzeOptimizedDelta: () => baseAnalyzer.analyzeOptimizedDelta(),
       updateFileContent: (updates) => baseAnalyzer.updateFileContent(updates),
       invalidateFiles: (updates) => baseAnalyzer.invalidateFiles(updates),
+      setEntryPoints: (entries) => baseAnalyzer.setEntryPoints(entries),
       getFileContent: (filePath) => baseAnalyzer.getFileContent(filePath),
       getTsFileForTemplate: (templatePath) => baseAnalyzer.getTsFileForTemplate(templatePath),
       readResource: (containingFile, url) => baseAnalyzer.readResource(containingFile, url),
-      async getMetadataForFile(filePath: string) {
-        const meta = await baseAnalyzer.getMetadataForFile(filePath);
+      async getMetadataForFile(file) {
+        const meta = await baseAnalyzer.getMetadataForFile(file);
         return meta ? {...meta, idKind: 'virtual'} : null;
       },
     };

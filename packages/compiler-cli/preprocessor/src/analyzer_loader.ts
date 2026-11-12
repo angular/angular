@@ -30,7 +30,7 @@ import {fileURLToPath} from 'node:url';
 import * as path from 'node:path';
 import * as fs from 'node:fs/promises';
 import type {IAnalyzer} from './hybrid_compiler.js';
-import type {WasmInner} from './analyzer_wasm.js';
+import type {AnalyzerHost, WasmInner} from './analyzer_wasm.js';
 import type {WasmHostFs} from './wasm_host_fs.js';
 import type * as nga from './types.js';
 
@@ -53,6 +53,15 @@ export interface LoadAnalyzerOptions extends nga.AnalyzerOptions {
   nativeBinding?: string;
   /** Explicit path or bare specifier of a wasm-bindgen glue module. Highest priority. */
   wasmBinding?: string;
+
+  /**
+   * Asynchronous bundler host supplying module resolutions and source text.
+   *
+   * When provided without an explicit `backend`, the `'wasm'` backend is selected automatically.
+   * Mutually exclusive with `backend: 'native'`, `tsconfigPath`, `hostFs`, `defaultHost`,
+   * `nodeModulesPathOverride`, and `allowedSources`.
+   */
+  host?: AnalyzerHost;
 
   /**
    * Filesystem bridge for the wasm engine, which has no OS of its own.
@@ -87,9 +96,34 @@ export function toLoadAnalyzerOptions(
     : tsconfigPathOrOptions;
 }
 
+/** Validates option combinations when `options.host` is supplied. */
+function validateHostOptions(options: LoadAnalyzerOptions): void {
+  if (!options.host) {
+    return;
+  }
+  if (options.backend === 'native') {
+    throw new Error(
+      "'host' cannot be used with backend: 'native'; custom AnalyzerHost requires the 'wasm' backend",
+    );
+  }
+  const forbidden = [
+    ['tsconfigPath', options.tsconfigPath],
+    ['hostFs', options.hostFs],
+    ['defaultHost', options.defaultHost],
+    ['nodeModulesPathOverride', options.nodeModulesPathOverride],
+    ['allowedSources', options.allowedSources],
+  ] as const;
+  for (const [name, value] of forbidden) {
+    if (value !== undefined) {
+      throw new Error(`'host' cannot be combined with '${name}'`);
+    }
+  }
+}
+
 /** Strips the loader-only keys from `options`, leaving exactly the engine's options. */
 function engineOptions(options: LoadAnalyzerOptions): nga.AnalyzerOptions {
-  const {backend, nativeBinding, wasmBinding, hostFs, ngAnalyzeDir, useWasm, ...engine} = options;
+  const {backend, nativeBinding, wasmBinding, host, hostFs, ngAnalyzeDir, useWasm, ...engine} =
+    options;
   return {...engine, optimize: options.optimize ?? true};
 }
 
@@ -108,8 +142,14 @@ interface Candidate {
   origin: string;
 }
 
-type AnalyzerConstructor = new (options: nga.AnalyzerOptions) => nga.Analyzer;
-type WasmInnerConstructor = new (optionsJson: string, hostFs?: WasmHostFs | null) => WasmInner;
+type AnalyzerConstructor = new (
+  options: nga.AnalyzerOptions & {entryPoints?: Array<string>},
+) => nga.Analyzer;
+type WasmInnerConstructor = new (
+  optionsJson: string,
+  hostFs?: WasmHostFs | null,
+  useBatchingHost?: boolean,
+) => WasmInner;
 
 const SELF_DIR = path.dirname(fileURLToPath(import.meta.url));
 const requireFromHere = createRequire(import.meta.url);
@@ -166,6 +206,9 @@ async function existingPath(candidate: string): Promise<string | null> {
 function requestedBackend(options: LoadAnalyzerOptions): AnalyzerBackend | null {
   if (options.backend) {
     return options.backend;
+  }
+  if (options.host) {
+    return 'wasm';
   }
   if (options.useWasm) {
     return 'wasm';
@@ -250,6 +293,21 @@ function describeExports(mod: unknown): string {
   return keys.length > 0 ? `exports: ${keys.join(', ')}` : 'module has no exports';
 }
 
+function toNativeEntryPoints(entryPoints: nga.ModuleRef[] | undefined): string[] | undefined {
+  if (!entryPoints) {
+    return undefined;
+  }
+  return entryPoints.map((ref) => {
+    if (typeof ref === 'string') {
+      return ref;
+    }
+    if (ref.idKind === 'virtual') {
+      throw new Error("Virtual entryPoints require the 'wasm' backend");
+    }
+    return ref.id;
+  });
+}
+
 async function constructNative(spec: string, options: LoadAnalyzerOptions): Promise<IAnalyzer> {
   const mod = requireFromHere(spec);
   const Analyzer = mod?.Analyzer as AnalyzerConstructor | undefined;
@@ -258,8 +316,13 @@ async function constructNative(spec: string, options: LoadAnalyzerOptions): Prom
       `'${spec}' does not export an 'Analyzer' constructor (${describeExports(mod)})`,
     );
   }
+  const rawEngine = engineOptions(options);
+  const nativeOptions = {
+    ...rawEngine,
+    entryPoints: toNativeEntryPoints(rawEngine.entryPoints),
+  };
   const {NapiAnalyzer} = await import('./analyzer_napi.js');
-  return new NapiAnalyzer(new Analyzer(engineOptions(options)));
+  return new NapiAnalyzer(new Analyzer(nativeOptions));
 }
 
 async function constructWasm(spec: string, options: LoadAnalyzerOptions): Promise<IAnalyzer> {
@@ -273,6 +336,11 @@ async function constructWasm(spec: string, options: LoadAnalyzerOptions): Promis
     );
   }
   const {WasmAnalyzer} = await import('./analyzer_wasm.js');
+
+  if (options.host) {
+    const inner = new Inner(JSON.stringify(engineOptions(options)), undefined, true);
+    return new WasmAnalyzer(inner, {host: options.host});
+  }
 
   // The engine has no OS beneath it, so without this bridge it can only see
   // `virtualFiles` and cannot analyze a project on disk. Callers can substitute their
@@ -336,9 +404,9 @@ function noAnalyzerError(
 /**
  * Loads the analysis engine and reports which one was used.
  *
- * Selection order: `backend` option, the deprecated `useWasm` option,
- * `NG_EXP_COMPILER_BACKEND`, `NG_EXP_FORCE_WASM`, then the default (native, falling
- * back to wasm). An explicit choice is strict and never falls back.
+ * Selection order: `backend` option, `host` option (which implies `'wasm'`), the deprecated
+ * `useWasm` option, `NG_EXP_COMPILER_BACKEND`, `NG_EXP_FORCE_WASM`, then the default (native,
+ * falling back to wasm). An explicit choice is strict and never falls back.
  */
 export function loadAnalyzerWithInfo(options: LoadAnalyzerOptions): Promise<LoadedAnalyzer>;
 export function loadAnalyzerWithInfo(
@@ -350,6 +418,7 @@ export async function loadAnalyzerWithInfo(
   maybeOptions?: LoadAnalyzerOptions,
 ): Promise<LoadedAnalyzer> {
   const options = toLoadAnalyzerOptions(tsconfigPathOrOptions, maybeOptions);
+  validateHostOptions(options);
   const requested = requestedBackend(options);
   const candidates =
     requested === 'wasm'

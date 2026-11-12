@@ -106,16 +106,16 @@ export interface IAnalyzer {
   analyzeOptimized(): AsyncIterable<nga.CompilationChunk>;
   analyzeDelta(): AsyncIterable<nga.CompilationChunk>;
   analyzeOptimizedDelta(): AsyncIterable<nga.CompilationChunk>;
-  getMetadataForFile(filePath: string): Promise<nga.AnalysisResult | null>;
-  /** Applies updates and returns every path whose cached analysis is now stale. */
-  updateFileContent(updates: {filePath: string; content: string}[]): Promise<string[]>;
+  getMetadataForFile(file: nga.ModuleRef): Promise<nga.AnalysisResult | null>;
+  /** Applies updates and returns every path or module ID whose cached analysis is now stale. */
+  updateFileContent(updates: nga.FileUpdate[]): Promise<string[]>;
   /** Like `updateFileContent`, for changed or deleted files. */
   invalidateFiles(updates: nga.FileInvalidation[]): Promise<string[]>;
   /**
-   * Replaces the compilation roots (absolute paths) and returns every path whose cached analysis
-   * is now stale. From then on the roots are no longer re-read from the tsconfig.
+   * Replaces the compilation roots and returns every path or module ID whose cached analysis is
+   * now stale. From then on the roots are no longer re-read from the tsconfig.
    */
-  setEntryPoints(entryPoints: string[]): Promise<string[]>;
+  setEntryPoints(entryPoints: nga.ModuleRef[]): Promise<string[]>;
   /**
    * Flushes cached module resolutions and returns every module ID whose cached analysis is now
    * stale.
@@ -759,13 +759,17 @@ export class HybridCompiler {
     await this.pendingCompilation;
   }
 
-  async updateFileContent(updates: {filePath: string; content: string}[]): Promise<void> {
+  async updateFileContent(updates: nga.FileUpdate[]): Promise<void> {
     if (updates.length === 0) {
       return;
     }
     await this.enqueueUpdate(async () => {
       await this.recordInvalidations(
-        updates.map(({filePath}) => ({filePath, updateType: nga.FileUpdateType.Changed})),
+        updates.map(({filePath, idKind}) => ({
+          filePath,
+          updateType: nga.FileUpdateType.Changed,
+          ...(idKind !== undefined ? {idKind} : {}),
+        })),
       );
       return this.analyzer.updateFileContent(updates);
     });
@@ -778,6 +782,20 @@ export class HybridCompiler {
     await this.enqueueUpdate(async () => {
       await this.recordInvalidations(updates);
       return this.analyzer.invalidateFiles(updates);
+    });
+  }
+
+  /**
+   * Replaces the compilation roots in the underlying analyzer and refreshes stale analyses on the
+   * queued delta pass.
+   */
+  async setEntryPoints(entryPoints: nga.ModuleRef[]): Promise<void> {
+    await this.enqueueUpdate(async () => {
+      const invalidated = await this.analyzer.setEntryPoints(entryPoints);
+      if (this.incrementalEnabled && invalidated.length > 0) {
+        this.incremental.recordChanges(invalidated, []);
+      }
+      return invalidated;
     });
   }
 
@@ -834,15 +852,19 @@ export class HybridCompiler {
   ): void {
     const changed: string[] = [];
     const deleted: string[] = [];
-    updates.forEach(({filePath: hostPath, updateType}, i) => {
-      const filePath = canonicalPaths?.[i] ?? hostPath;
+    updates.forEach(({filePath: hostPath, updateType, idKind}, i) => {
+      const filePath = idKind === 'virtual' ? hostPath : (canonicalPaths?.[i] ?? hostPath);
       // A resource no component is known to use may still be read during processing (e.g. a
       // stylesheet a template links that could not be read before), so every reusable output is
       // dropped. Sources and config files (a `tsconfig.json` edit is how roots change) are never
       // read that way, and are tracked through the analyzer instead. Whether a reprocessed file
       // is then re-emitted is decided by its output (`IncrementalEmitTracker`), so this costs
       // processing time, not spurious emits.
-      if (!isSourceOrConfigFile(filePath) && !this.knownResources.has(filePath)) {
+      if (
+        idKind !== 'virtual' &&
+        !isSourceOrConfigFile(filePath) &&
+        !this.knownResources.has(filePath)
+      ) {
         this.processedFiles.clear();
         for (const knownTs of this.lastChunkByFile.keys()) {
           this.jsDirtyFiles.add(knownTs);
@@ -1345,8 +1367,8 @@ export class HybridCompiler {
     return (await this.ensureBound(filePath)).preparedTcbData?.typeCheckIdMap ?? null;
   }
 
-  async getClassMetadata(filePath: string): Promise<nga.AnalysisResult | null> {
-    return this.analyzer.getMetadataForFile(filePath);
+  async getClassMetadata(file: nga.ModuleRef): Promise<nga.AnalysisResult | null> {
+    return this.analyzer.getMetadataForFile(file);
   }
 
   /** `fileId` is the file's trace id from `Tracer.newFileId`, or 0 when untraced. */

@@ -309,3 +309,314 @@ describe('WasmAnalyzer synchronous host gating', () => {
     ]);
   });
 });
+
+describe('WasmAnalyzer hostRequests pump protocol', () => {
+  it('dispatches hostRequests waves concurrently and resumes pumping via provideHostResults', async () => {
+    const queuedEvents: Array<string | undefined> = [];
+    const providedBatches: Array<{batchId: number; payload: unknown}> = [];
+    let pumpCallsWhileStalled = 0;
+    let waitingForBatch = false;
+
+    const inner: WasmInner = {
+      free() {},
+      pump() {
+        const next = queuedEvents.shift();
+        if (!next && waitingForBatch) {
+          pumpCallsWhileStalled++;
+        }
+        return next;
+      },
+      analyze() {
+        waitingForBatch = true;
+        queuedEvents.push(
+          JSON.stringify({
+            event: 'hostRequests',
+            id: 1,
+            resolve: [
+              {
+                importer: '\0virtual:app',
+                specifier: './dep',
+                kind: 'import',
+                typeOnly: false,
+              },
+            ],
+            load: [
+              {
+                id: '\0virtual:app',
+                kind: 'module',
+                external: false,
+              },
+            ],
+          }),
+        );
+        return 1;
+      },
+      provide_host_results(batchId: number, resultsJson: string) {
+        waitingForBatch = false;
+        providedBatches.push({batchId, payload: JSON.parse(resultsJson)});
+        queuedEvents.push(
+          JSON.stringify({
+            event: 'analysisResult',
+            id: 1,
+            data: {
+              files: [
+                {
+                  filePath: '\0virtual:app',
+                  idKind: 'virtual',
+                  classes: [],
+                  diagnostics: [],
+                },
+              ],
+            },
+          }),
+          JSON.stringify({event: 'analysisComplete', id: 1}),
+        );
+      },
+    };
+
+    let concurrentInFlight = 0;
+    let maxConcurrent = 0;
+    const analyzer = new WasmAnalyzer(inner, {
+      host: {
+        async resolve(requests) {
+          concurrentInFlight++;
+          maxConcurrent = Math.max(maxConcurrent, concurrentInFlight);
+          await Promise.resolve();
+          concurrentInFlight--;
+          expect(requests).toEqual([
+            {
+              importer: '\0virtual:app',
+              specifier: './dep',
+              kind: 'import',
+              typeOnly: false,
+            },
+          ]);
+          return [{id: '\0virtual:dep', idKind: 'virtual', format: 'ts'}];
+        },
+        async load(requests) {
+          concurrentInFlight++;
+          maxConcurrent = Math.max(maxConcurrent, concurrentInFlight);
+          await Promise.resolve();
+          concurrentInFlight--;
+          expect(requests).toEqual([{id: '\0virtual:app', kind: 'module', external: false}]);
+          return [{code: 'export class App {}', format: 'ts'}];
+        },
+      },
+    });
+
+    const emitted: Array<{filePath: string; idKind?: string}> = [];
+    for await (const chunk of analyzer.analyze()) {
+      emitted.push(...chunk.files.map((f) => ({filePath: f.filePath, idKind: f.idKind})));
+    }
+
+    expect(maxConcurrent).toBe(2);
+    // `pumpLoop` breaks immediately once stalled on an in-flight host batch instead of spinning.
+    expect(pumpCallsWhileStalled).toBeLessThanOrEqual(1);
+    expect(providedBatches).toEqual([
+      {
+        batchId: 1,
+        payload: {
+          resolve: [{id: '\0virtual:dep', idKind: 'virtual', format: 'ts'}],
+          load: [{code: 'export class App {}', format: 'ts'}],
+        },
+      },
+    ]);
+    expect(emitted).toEqual([{filePath: '\0virtual:app', idKind: 'virtual'}]);
+  });
+
+  it('maps rejected host batch promises and mismatched array lengths to per-slot error objects', async () => {
+    const queuedEvents: Array<string | undefined> = [];
+    const provided: unknown[] = [];
+
+    const inner: WasmInner = {
+      free() {},
+      pump: () => queuedEvents.shift(),
+      analyze() {
+        queuedEvents.push(
+          JSON.stringify({
+            event: 'hostRequests',
+            id: 7,
+            resolve: [
+              {importer: '/a.ts', specifier: './x', kind: 'import', typeOnly: false},
+              {importer: '/a.ts', specifier: './y', kind: 'import', typeOnly: false},
+            ],
+            load: [{id: '/a.ts', kind: 'module', external: false}],
+          }),
+        );
+        return 1;
+      },
+      provide_host_results(_batchId: number, resultsJson: string) {
+        provided.push(JSON.parse(resultsJson));
+        queuedEvents.push(JSON.stringify({event: 'analysisComplete', id: 1}));
+      },
+    };
+
+    const analyzer = new WasmAnalyzer(inner, {
+      host: {
+        async resolve() {
+          throw new Error('resolver exploded');
+        },
+        async load() {
+          // Intentionally wrong length (0 instead of 1).
+          return [];
+        },
+      },
+    });
+
+    for await (const _chunk of analyzer.analyze()) {
+      // Drain stream.
+    }
+
+    expect(provided).toEqual([
+      {
+        resolve: [{error: 'resolver exploded'}, {error: 'resolver exploded'}],
+        load: [{error: 'AnalyzerHost.load returned 0 results for 1 requests'}],
+      },
+    ]);
+  });
+
+  it('does not invoke provideHostResults if close() runs while a host batch is in flight', async () => {
+    const queuedEvents: Array<string | undefined> = [];
+    let provideCalled = false;
+    let releaseResolve!: () => void;
+
+    const inner: WasmInner = {
+      free() {},
+      pump: () => queuedEvents.shift(),
+      analyze() {
+        queuedEvents.push(
+          JSON.stringify({
+            event: 'hostRequests',
+            id: 1,
+            resolve: [{importer: '/a.ts', specifier: './b', kind: 'import', typeOnly: false}],
+            load: [],
+          }),
+        );
+        return 1;
+      },
+      provide_host_results() {
+        provideCalled = true;
+      },
+    };
+
+    const analyzer = new WasmAnalyzer(inner, {
+      host: {
+        resolve: () =>
+          new Promise((resolve) => {
+            releaseResolve = () => resolve([null]);
+          }),
+        load: async () => [],
+      },
+    });
+
+    const nextPromise = analyzer.analyze().next();
+    await new Promise((r) => setTimeout(r, 0));
+    analyzer.close();
+    await expectAsync(nextPromise).toBeRejectedWithError('WasmAnalyzer closed');
+
+    releaseResolve();
+    await Promise.resolve();
+    expect(provideCalled).toBe(false);
+  });
+
+  it('serializes explicit virtual ModuleRef objects in setEntryPoints and getMetadataForFile', async () => {
+    const seenSetEntries: unknown[] = [];
+    const seenMetadataRefs: unknown[] = [];
+    const queuedEvents: Array<string | undefined> = [];
+
+    const inner: WasmInner = {
+      free() {},
+      pump: () => queuedEvents.shift(),
+      analyze: () => 1,
+      set_entry_points(json: string) {
+        seenSetEntries.push(JSON.parse(json));
+        return JSON.stringify(['\0virtual:old']);
+      },
+      request_metadata(json: string) {
+        seenMetadataRefs.push(JSON.parse(json));
+        queuedEvents.push(
+          JSON.stringify({
+            event: 'metadataResult',
+            id: 1,
+            data: {filePath: '\0virtual:entry', idKind: 'virtual', classes: [], diagnostics: []},
+          }),
+        );
+        return 1;
+      },
+    };
+
+    const analyzer = new WasmAnalyzer(inner);
+    const evicted = await analyzer.setEntryPoints([
+      '/app/real.ts',
+      {id: '\0virtual:entry', idKind: 'virtual'},
+    ]);
+    expect(evicted).toEqual(['\0virtual:old']);
+    expect(seenSetEntries).toEqual([['/app/real.ts', {id: '\0virtual:entry', idKind: 'virtual'}]]);
+
+    const meta = await analyzer.getMetadataForFile({id: '\0virtual:entry', idKind: 'virtual'});
+    expect(seenMetadataRefs).toEqual([{id: '\0virtual:entry', idKind: 'virtual'}]);
+    expect(meta?.idKind).toBe('virtual');
+  });
+
+  it('serves host-mode getFileContent from engine cache before falling back to host.load', async () => {
+    const loadRequests: unknown[] = [];
+    const inner: WasmInner = {
+      free() {},
+      pump: () => undefined,
+      analyze: () => 1,
+      get_file_content() {
+        throw 'synchronous APIs require a synchronous host';
+      },
+      lookup_host_file_content(filePath: string) {
+        if (filePath === '/app/cached.ts') {
+          return JSON.stringify({
+            code: 'export const CACHED = 1;',
+            id: '/app/cached.ts',
+            external: false,
+          });
+        }
+        if (filePath === '/nm/pkg/index.d.ts') {
+          return JSON.stringify({id: '/nm/pkg/index.d.ts', external: true});
+        }
+        return JSON.stringify({id: filePath, external: false});
+      },
+    };
+
+    const analyzer = new WasmAnalyzer(inner, {
+      host: {
+        resolve: async (reqs) => reqs.map(() => null),
+        async load(requests) {
+          loadRequests.push(requests);
+          const req = requests[0]!;
+          if (req.id === '/nm/pkg/index.d.ts') {
+            return [{code: 'export declare const EXT: number;', format: 'dts'}];
+          }
+          if (req.id === '/app/broken.ts') {
+            return [{error: 'disk read failed'}];
+          }
+          return [null];
+        },
+      },
+    });
+
+    expect(await analyzer.getFileContent('/app/cached.ts')).toBe('export const CACHED = 1;');
+    expect(loadRequests).toEqual([]);
+
+    expect(await analyzer.getFileContent('/nm/pkg/index.d.ts')).toBe(
+      'export declare const EXT: number;',
+    );
+    expect(loadRequests).toEqual([[{id: '/nm/pkg/index.d.ts', kind: 'module', external: true}]]);
+
+    await expectAsync(analyzer.getFileContent('/app/broken.ts')).toBeRejectedWithError(
+      'disk read failed',
+    );
+    await expectAsync(analyzer.getFileContent('/app/missing.ts')).toBeRejectedWithError(
+      'Module not found: /app/missing.ts',
+    );
+
+    analyzer.close();
+    await expectAsync(analyzer.getFileContent('/app/cached.ts')).toBeRejectedWithError(
+      'WasmAnalyzer closed',
+    );
+  });
+});

@@ -13,6 +13,8 @@ import {
   type AnalysisResult,
   type CompilationChunk,
   type FileInvalidation,
+  type FileUpdate,
+  type ModuleRef,
   type ResolvedResource,
   type TemplateUsage,
 } from '../src/types.js';
@@ -76,7 +78,7 @@ class ScriptedAnalyzer implements IAnalyzer {
     }
   }
 
-  async updateFileContent(updates: {filePath: string; content: string}[]): Promise<string[]> {
+  async updateFileContent(updates: FileUpdate[]): Promise<string[]> {
     this.calls.push(`updateFileContent(${updates.map((u) => u.content).join(',')})`);
     const error = this.updateErrors[this.updateCount++];
     if (error) {
@@ -94,12 +96,14 @@ class ScriptedAnalyzer implements IAnalyzer {
     return updates.map((u) => u.filePath);
   }
 
-  async setEntryPoints(entryPoints: string[]): Promise<string[]> {
-    this.calls.push(`setEntryPoints(${entryPoints.join(',')})`);
+  async setEntryPoints(entryPoints: ModuleRef[]): Promise<string[]> {
+    this.calls.push(
+      `setEntryPoints(${entryPoints.map((e) => (typeof e === 'string' ? e : e.id)).join(',')})`,
+    );
     return [];
   }
 
-  async getMetadataForFile(filePath: string): Promise<AnalysisResult | null> {
+  async getMetadataForFile(file: ModuleRef): Promise<AnalysisResult | null> {
     return null;
   }
   async getTsFileForTemplate(templatePath: string): Promise<TemplateUsage[] | null> {
