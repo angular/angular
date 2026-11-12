@@ -379,8 +379,17 @@ export async function triggerHydrationFromBlockName(
   const dehydratedBlockRegistry = injector.get(DEHYDRATED_BLOCK_REGISTRY);
   const blocksBeingHydrated = dehydratedBlockRegistry.hydrating;
 
-  // Make sure we don't hydrate/trigger the same thing multiple times
-  if (blocksBeingHydrated.has(blockName)) {
+  // Make sure we don't hydrate/trigger the same thing multiple times. If the block is already
+  // hydrating (e.g. a viewport trigger fired first), replay any events queued for it once that
+  // hydration settles, since the in-flight hydration may have been started without a replay function.
+  const hydrating = blocksBeingHydrated.get(blockName);
+  if (hydrating !== undefined) {
+    if (replayQueuedEventsFn) {
+      hydrating.promise.then(
+        () => replayQueuedEventsFn([blockName]),
+        () => {},
+      );
+    }
     return;
   }
 
