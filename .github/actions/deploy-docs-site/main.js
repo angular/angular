@@ -5494,7 +5494,7 @@ var require_body = __commonJS({
         const boundary = `----formdata-undici-0${`${random(1e11)}`.padStart(11, "0")}`;
         const prefix = `--${boundary}\r
 Content-Disposition: form-data`;
-        const escape = (str) => str.replace(/\n/g, "%0A").replace(/\r/g, "%0D").replace(/"/g, "%22");
+        const escape2 = (str) => str.replace(/\n/g, "%0A").replace(/\r/g, "%0D").replace(/"/g, "%22");
         const normalizeLinefeeds = (value) => value.replace(/\r?\n|\r/g, "\r\n");
         const blobParts = [];
         const rn = new Uint8Array([13, 10]);
@@ -5502,14 +5502,14 @@ Content-Disposition: form-data`;
         let hasUnknownSizeValue = false;
         for (const [name, value] of object) {
           if (typeof value === "string") {
-            const chunk2 = textEncoder.encode(prefix + `; name="${escape(normalizeLinefeeds(name))}"\r
+            const chunk2 = textEncoder.encode(prefix + `; name="${escape2(normalizeLinefeeds(name))}"\r
 \r
 ${normalizeLinefeeds(value)}\r
 `);
             blobParts.push(chunk2);
             length += chunk2.byteLength;
           } else {
-            const chunk2 = textEncoder.encode(`${prefix}; name="${escape(normalizeLinefeeds(name))}"` + (value.name ? `; filename="${escape(value.name)}"` : "") + `\r
+            const chunk2 = textEncoder.encode(`${prefix}; name="${escape2(normalizeLinefeeds(name))}"` + (value.name ? `; filename="${escape2(value.name)}"` : "") + `\r
 Content-Type: ${value.type || "application/octet-stream"}\r
 \r
 `);
@@ -21225,23 +21225,23 @@ var require_lockfile = __commonJS({
           }
           return entries2;
         }
-        function removePrefix(pattern, prefix) {
-          if (pattern.startsWith(prefix)) {
-            pattern = pattern.slice(prefix.length);
+        function removePrefix(pattern2, prefix) {
+          if (pattern2.startsWith(prefix)) {
+            pattern2 = pattern2.slice(prefix.length);
           }
-          return pattern;
+          return pattern2;
         }
-        function removeSuffix(pattern, suffix) {
-          if (pattern.endsWith(suffix)) {
-            return pattern.slice(0, -suffix.length);
+        function removeSuffix(pattern2, suffix) {
+          if (pattern2.endsWith(suffix)) {
+            return pattern2.slice(0, -suffix.length);
           }
-          return pattern;
+          return pattern2;
         }
-        function addSuffix(pattern, suffix) {
-          if (!pattern.endsWith(suffix)) {
-            return pattern + suffix;
+        function addSuffix(pattern2, suffix) {
+          if (!pattern2.endsWith(suffix)) {
+            return pattern2 + suffix;
           }
-          return pattern;
+          return pattern2;
         }
         function hyphenate(str) {
           return str.replace(/[A-Z]/g, (match) => {
@@ -21359,8 +21359,8 @@ var require_lockfile = __commonJS({
         const invariant = __webpack_require__(7);
         const path3 = __webpack_require__(0);
         const ssri = __webpack_require__(55);
-        function getName(pattern) {
-          return (0, (_normalizePattern || _load_normalizePattern()).normalizePattern)(pattern).name;
+        function getName(pattern2) {
+          return (0, (_normalizePattern || _load_normalizePattern()).normalizePattern)(pattern2).name;
         }
         function blankObjectUndefined(obj) {
           return obj && Object.keys(obj).length ? obj : void 0;
@@ -21371,8 +21371,8 @@ var require_lockfile = __commonJS({
         function serializeIntegrity(integrity) {
           return integrity.toString().split(" ").sort().join(" ");
         }
-        function implodeEntry(pattern, obj) {
-          const inferredName = getName(pattern);
+        function implodeEntry(pattern2, obj) {
+          const inferredName = getName(pattern2);
           const integrity = obj.integrity ? serializeIntegrity(obj.integrity) : "";
           const imploded = {
             name: inferredName === obj.name ? void 0 : obj.name,
@@ -21390,13 +21390,13 @@ var require_lockfile = __commonJS({
           }
           return imploded;
         }
-        function explodeEntry(pattern, obj) {
+        function explodeEntry(pattern2, obj) {
           obj.optionalDependencies = obj.optionalDependencies || {};
           obj.dependencies = obj.dependencies || {};
           obj.uid = obj.uid || obj.version;
           obj.permissions = obj.permissions || {};
           obj.registry = obj.registry || "npm";
-          obj.name = obj.name || getName(pattern);
+          obj.name = obj.name || getName(pattern2);
           const integrity = obj.integrity;
           if (integrity && integrity.isIntegrity) {
             obj.integrity = ssri.parse(integrity);
@@ -21445,26 +21445,26 @@ var require_lockfile = __commonJS({
               return new Lockfile({ cache: lockfile2, source: rawLockfile, parseResultType: parseResult && parseResult.type });
             })();
           }
-          getLocked(pattern) {
+          getLocked(pattern2) {
             const cache = this.cache;
             if (!cache) {
               return void 0;
             }
-            const shrunk = pattern in cache && cache[pattern];
+            const shrunk = pattern2 in cache && cache[pattern2];
             if (typeof shrunk === "string") {
               return this.getLocked(shrunk);
             } else if (shrunk) {
-              explodeEntry(pattern, shrunk);
+              explodeEntry(pattern2, shrunk);
               return shrunk;
             }
             return void 0;
           }
-          removePattern(pattern) {
+          removePattern(pattern2) {
             const cache = this.cache;
             if (!cache) {
               return;
             }
-            delete cache[pattern];
+            delete cache[pattern2];
           }
           getLockfile(patterns) {
             const lockfile2 = {};
@@ -21482,21 +21482,21 @@ var require_lockfile = __commonJS({
                   break;
                 _ref = _i.value;
               }
-              const pattern = _ref;
-              const pkg = patterns[pattern];
+              const pattern2 = _ref;
+              const pkg = patterns[pattern2];
               const remote = pkg._remote, ref = pkg._reference;
               invariant(ref, "Package is missing a reference");
               invariant(remote, "Package is missing a remote");
               const remoteKey = keyForRemote(remote);
               const seenPattern = remoteKey && seen.get(remoteKey);
               if (seenPattern) {
-                lockfile2[pattern] = seenPattern;
-                if (!seenPattern.name && getName(pattern) !== pkg.name) {
+                lockfile2[pattern2] = seenPattern;
+                if (!seenPattern.name && getName(pattern2) !== pkg.name) {
                   seenPattern.name = pkg.name;
                 }
                 continue;
               }
-              const obj = implodeEntry(pattern, {
+              const obj = implodeEntry(pattern2, {
                 name: pkg.name,
                 version: pkg.version,
                 uid: pkg._uid,
@@ -21509,7 +21509,7 @@ var require_lockfile = __commonJS({
                 permissions: ref.permissions,
                 prebuiltVariants: pkg.prebuiltVariants
               });
-              lockfile2[pattern] = obj;
+              lockfile2[pattern2] = obj;
               if (remoteKey) {
                 seen.set(remoteKey, obj);
               }
@@ -21599,10 +21599,10 @@ var require_lockfile = __commonJS({
           value: true
         });
         exports2.normalizePattern = normalizePattern;
-        function normalizePattern(pattern) {
+        function normalizePattern(pattern2) {
           let hasVersion = false;
           let range = "latest";
-          let name = pattern;
+          let name = pattern2;
           let isScoped = false;
           if (name[0] === "@") {
             isScoped = true;
@@ -22359,10 +22359,10 @@ var require_lockfile = __commonJS({
         }
         var slashSplit = /\/+/;
         minimatch.filter = filter;
-        function filter(pattern, options) {
+        function filter(pattern2, options) {
           options = options || {};
           return function(p, i, list) {
-            return minimatch(p, pattern, options);
+            return minimatch(p, pattern2, options);
           };
         }
         function ext(a, b) {
@@ -22381,11 +22381,11 @@ var require_lockfile = __commonJS({
           if (!def || !Object.keys(def).length)
             return minimatch;
           var orig = minimatch;
-          var m = function minimatch2(p, pattern, options) {
-            return orig.minimatch(p, pattern, ext(def, options));
+          var m = function minimatch2(p, pattern2, options) {
+            return orig.minimatch(p, pattern2, ext(def, options));
           };
-          m.Minimatch = function Minimatch2(pattern, options) {
-            return new orig.Minimatch(pattern, ext(def, options));
+          m.Minimatch = function Minimatch2(pattern2, options) {
+            return new orig.Minimatch(pattern2, ext(def, options));
           };
           return m;
         };
@@ -22394,35 +22394,35 @@ var require_lockfile = __commonJS({
             return Minimatch;
           return minimatch.defaults(def).Minimatch;
         };
-        function minimatch(p, pattern, options) {
-          if (typeof pattern !== "string") {
+        function minimatch(p, pattern2, options) {
+          if (typeof pattern2 !== "string") {
             throw new TypeError("glob pattern string required");
           }
           if (!options)
             options = {};
-          if (!options.nocomment && pattern.charAt(0) === "#") {
+          if (!options.nocomment && pattern2.charAt(0) === "#") {
             return false;
           }
-          if (pattern.trim() === "")
+          if (pattern2.trim() === "")
             return p === "";
-          return new Minimatch(pattern, options).match(p);
+          return new Minimatch(pattern2, options).match(p);
         }
-        function Minimatch(pattern, options) {
+        function Minimatch(pattern2, options) {
           if (!(this instanceof Minimatch)) {
-            return new Minimatch(pattern, options);
+            return new Minimatch(pattern2, options);
           }
-          if (typeof pattern !== "string") {
+          if (typeof pattern2 !== "string") {
             throw new TypeError("glob pattern string required");
           }
           if (!options)
             options = {};
-          pattern = pattern.trim();
+          pattern2 = pattern2.trim();
           if (path3.sep !== "/") {
-            pattern = pattern.split(path3.sep).join("/");
+            pattern2 = pattern2.split(path3.sep).join("/");
           }
           this.options = options;
           this.set = [];
-          this.pattern = pattern;
+          this.pattern = pattern2;
           this.regexp = null;
           this.negate = false;
           this.comment = false;
@@ -22435,13 +22435,13 @@ var require_lockfile = __commonJS({
         function make() {
           if (this._made)
             return;
-          var pattern = this.pattern;
+          var pattern2 = this.pattern;
           var options = this.options;
-          if (!options.nocomment && pattern.charAt(0) === "#") {
+          if (!options.nocomment && pattern2.charAt(0) === "#") {
             this.comment = true;
             return;
           }
-          if (!pattern) {
+          if (!pattern2) {
             this.empty = true;
             return;
           }
@@ -22466,25 +22466,25 @@ var require_lockfile = __commonJS({
         }
         Minimatch.prototype.parseNegate = parseNegate;
         function parseNegate() {
-          var pattern = this.pattern;
+          var pattern2 = this.pattern;
           var negate = false;
           var options = this.options;
           var negateOffset = 0;
           if (options.nonegate)
             return;
-          for (var i = 0, l = pattern.length; i < l && pattern.charAt(i) === "!"; i++) {
+          for (var i = 0, l = pattern2.length; i < l && pattern2.charAt(i) === "!"; i++) {
             negate = !negate;
             negateOffset++;
           }
           if (negateOffset)
-            this.pattern = pattern.substr(negateOffset);
+            this.pattern = pattern2.substr(negateOffset);
           this.negate = negate;
         }
-        minimatch.braceExpand = function(pattern, options) {
-          return braceExpand(pattern, options);
+        minimatch.braceExpand = function(pattern2, options) {
+          return braceExpand(pattern2, options);
         };
         Minimatch.prototype.braceExpand = braceExpand;
-        function braceExpand(pattern, options) {
+        function braceExpand(pattern2, options) {
           if (!options) {
             if (this instanceof Minimatch) {
               options = this.options;
@@ -22492,25 +22492,25 @@ var require_lockfile = __commonJS({
               options = {};
             }
           }
-          pattern = typeof pattern === "undefined" ? this.pattern : pattern;
-          if (typeof pattern === "undefined") {
+          pattern2 = typeof pattern2 === "undefined" ? this.pattern : pattern2;
+          if (typeof pattern2 === "undefined") {
             throw new TypeError("undefined pattern");
           }
-          if (options.nobrace || !pattern.match(/\{.*\}/)) {
-            return [pattern];
+          if (options.nobrace || !pattern2.match(/\{.*\}/)) {
+            return [pattern2];
           }
-          return expand3(pattern);
+          return expand3(pattern2);
         }
         Minimatch.prototype.parse = parse4;
         var SUBPARSE = {};
-        function parse4(pattern, isSub) {
-          if (pattern.length > 1024 * 64) {
+        function parse4(pattern2, isSub) {
+          if (pattern2.length > 1024 * 64) {
             throw new TypeError("pattern is too long");
           }
           var options = this.options;
-          if (!options.noglobstar && pattern === "**")
+          if (!options.noglobstar && pattern2 === "**")
             return GLOBSTAR;
-          if (pattern === "")
+          if (pattern2 === "")
             return "";
           var re = "";
           var hasMagic = !!options.nocase;
@@ -22521,7 +22521,7 @@ var require_lockfile = __commonJS({
           var inClass = false;
           var reClassStart = -1;
           var classStart = -1;
-          var patternStart = pattern.charAt(0) === "." ? "" : options.dot ? "(?!(?:^|\\/)\\.{1,2}(?:$|\\/))" : "(?!\\.)";
+          var patternStart = pattern2.charAt(0) === "." ? "" : options.dot ? "(?!(?:^|\\/)\\.{1,2}(?:$|\\/))" : "(?!\\.)";
           var self2 = this;
           function clearStateChar() {
             if (stateChar) {
@@ -22542,8 +22542,8 @@ var require_lockfile = __commonJS({
               stateChar = false;
             }
           }
-          for (var i = 0, len = pattern.length, c; i < len && (c = pattern.charAt(i)); i++) {
-            this.debug("%s	%s %s %j", pattern, i, re, c);
+          for (var i = 0, len = pattern2.length, c; i < len && (c = pattern2.charAt(i)); i++) {
+            this.debug("%s	%s %s %j", pattern2, i, re, c);
             if (escaping && reSpecials[c]) {
               re += "\\" + c;
               escaping = false;
@@ -22561,7 +22561,7 @@ var require_lockfile = __commonJS({
               case "+":
               case "@":
               case "!":
-                this.debug("%s	%s %s %j <-- stateChar", pattern, i, re, c);
+                this.debug("%s	%s %s %j <-- stateChar", pattern2, i, re, c);
                 if (inClass) {
                   this.debug("  in class");
                   if (c === "!" && i === classStart + 1)
@@ -22636,7 +22636,7 @@ var require_lockfile = __commonJS({
                   continue;
                 }
                 if (inClass) {
-                  var cs = pattern.substring(classStart + 1, i);
+                  var cs = pattern2.substring(classStart + 1, i);
                   try {
                     RegExp("[" + cs + "]");
                   } catch (er) {
@@ -22662,7 +22662,7 @@ var require_lockfile = __commonJS({
             }
           }
           if (inClass) {
-            cs = pattern.substr(classStart + 1);
+            cs = pattern2.substr(classStart + 1);
             sp = this.parse(cs, SUBPARSE);
             re = re.substr(0, reClassStart) + "\\[" + sp[0];
             hasMagic = hasMagic || sp[1];
@@ -22722,7 +22722,7 @@ var require_lockfile = __commonJS({
             return [re, hasMagic];
           }
           if (!hasMagic) {
-            return globUnescape(pattern);
+            return globUnescape(pattern2);
           }
           var flags = options.nocase ? "i" : "";
           try {
@@ -22730,12 +22730,12 @@ var require_lockfile = __commonJS({
           } catch (er) {
             return new RegExp("$.");
           }
-          regExp._glob = pattern;
+          regExp._glob = pattern2;
           regExp._src = re;
           return regExp;
         }
-        minimatch.makeRe = function(pattern, options) {
-          return new Minimatch(pattern, options || {}).makeRe();
+        minimatch.makeRe = function(pattern2, options) {
+          return new Minimatch(pattern2, options || {}).makeRe();
         };
         Minimatch.prototype.makeRe = makeRe;
         function makeRe() {
@@ -22749,8 +22749,8 @@ var require_lockfile = __commonJS({
           var options = this.options;
           var twoStar = options.noglobstar ? star : options.dot ? twoStarDot : twoStarNoDot;
           var flags = options.nocase ? "i" : "";
-          var re = set.map(function(pattern) {
-            return pattern.map(function(p) {
+          var re = set.map(function(pattern2) {
+            return pattern2.map(function(p) {
               return p === GLOBSTAR ? twoStar : typeof p === "string" ? regExpEscape(p) : p._src;
             }).join("\\/");
           }).join("|");
@@ -22764,14 +22764,14 @@ var require_lockfile = __commonJS({
           }
           return this.regexp;
         }
-        minimatch.match = function(list, pattern, options) {
+        minimatch.match = function(list, pattern2, options) {
           options = options || {};
-          var mm = new Minimatch(pattern, options);
+          var mm = new Minimatch(pattern2, options);
           list = list.filter(function(f) {
             return mm.match(f);
           });
           if (mm.options.nonull && !list.length) {
-            list.push(pattern);
+            list.push(pattern2);
           }
           return list;
         };
@@ -22800,12 +22800,12 @@ var require_lockfile = __commonJS({
               break;
           }
           for (i = 0; i < set.length; i++) {
-            var pattern = set[i];
+            var pattern2 = set[i];
             var file = f;
-            if (options.matchBase && pattern.length === 1) {
+            if (options.matchBase && pattern2.length === 1) {
               file = [filename];
             }
-            var hit = this.matchOne(file, pattern, partial);
+            var hit = this.matchOne(file, pattern2, partial);
             if (hit) {
               if (options.flipNegate)
                 return true;
@@ -22816,22 +22816,22 @@ var require_lockfile = __commonJS({
             return false;
           return this.negate;
         }
-        Minimatch.prototype.matchOne = function(file, pattern, partial) {
+        Minimatch.prototype.matchOne = function(file, pattern2, partial) {
           var options = this.options;
           this.debug(
             "matchOne",
-            { "this": this, file, pattern }
+            { "this": this, file, pattern: pattern2 }
           );
-          this.debug("matchOne", file.length, pattern.length);
-          for (var fi = 0, pi = 0, fl = file.length, pl = pattern.length; fi < fl && pi < pl; fi++, pi++) {
+          this.debug("matchOne", file.length, pattern2.length);
+          for (var fi = 0, pi = 0, fl = file.length, pl = pattern2.length; fi < fl && pi < pl; fi++, pi++) {
             this.debug("matchOne loop");
-            var p = pattern[pi];
+            var p = pattern2[pi];
             var f = file[fi];
-            this.debug(pattern, p, f);
+            this.debug(pattern2, p, f);
             if (p === false)
               return false;
             if (p === GLOBSTAR) {
-              this.debug("GLOBSTAR", [pattern, p, f]);
+              this.debug("GLOBSTAR", [pattern2, p, f]);
               var fr = fi;
               var pr = pi + 1;
               if (pr === pl) {
@@ -22844,13 +22844,13 @@ var require_lockfile = __commonJS({
               }
               while (fr < fl) {
                 var swallowee = file[fr];
-                this.debug("\nglobstar while", file, fr, pattern, pr, swallowee);
-                if (this.matchOne(file.slice(fr), pattern.slice(pr), partial)) {
+                this.debug("\nglobstar while", file, fr, pattern2, pr, swallowee);
+                if (this.matchOne(file.slice(fr), pattern2.slice(pr), partial)) {
                   this.debug("globstar found match!", fr, fl, swallowee);
                   return true;
                 } else {
                   if (swallowee === "." || swallowee === ".." || !options.dot && swallowee.charAt(0) === ".") {
-                    this.debug("dot detected!", file, fr, pattern, pr);
+                    this.debug("dot detected!", file, fr, pattern2, pr);
                     break;
                   }
                   this.debug("globstar swallow a segment, and continue");
@@ -22858,7 +22858,7 @@ var require_lockfile = __commonJS({
                 }
               }
               if (partial) {
-                this.debug("\n>>> no match, partial?", file, fr, pattern, pr);
+                this.debug("\n>>> no match, partial?", file, fr, pattern2, pr);
                 if (fr === fl)
                   return true;
               }
@@ -23054,7 +23054,7 @@ var require_lockfile = __commonJS({
         var childrenIgnored = common2.childrenIgnored;
         var isIgnored = common2.isIgnored;
         var once = __webpack_require__(61);
-        function glob(pattern, options, cb) {
+        function glob(pattern2, options, cb) {
           if (typeof options === "function")
             cb = options, options = {};
           if (!options)
@@ -23062,9 +23062,9 @@ var require_lockfile = __commonJS({
           if (options.sync) {
             if (cb)
               throw new TypeError("callback provided to sync glob");
-            return globSync(pattern, options);
+            return globSync(pattern2, options);
           }
-          return new Glob(pattern, options, cb);
+          return new Glob(pattern2, options, cb);
         }
         glob.sync = globSync;
         var GlobSync = glob.GlobSync = globSync.GlobSync;
@@ -23080,12 +23080,12 @@ var require_lockfile = __commonJS({
           }
           return origin;
         }
-        glob.hasMagic = function(pattern, options_) {
+        glob.hasMagic = function(pattern2, options_) {
           var options = extend({}, options_);
           options.noprocess = true;
-          var g = new Glob(pattern, options);
+          var g = new Glob(pattern2, options);
           var set = g.minimatch.set;
-          if (!pattern)
+          if (!pattern2)
             return false;
           if (set.length > 1)
             return true;
@@ -23097,7 +23097,7 @@ var require_lockfile = __commonJS({
         };
         glob.Glob = Glob;
         inherits(Glob, EE);
-        function Glob(pattern, options, cb) {
+        function Glob(pattern2, options, cb) {
           if (typeof options === "function") {
             cb = options;
             options = null;
@@ -23105,11 +23105,11 @@ var require_lockfile = __commonJS({
           if (options && options.sync) {
             if (cb)
               throw new TypeError("callback provided to sync glob");
-            return new GlobSync(pattern, options);
+            return new GlobSync(pattern2, options);
           }
           if (!(this instanceof Glob))
-            return new Glob(pattern, options, cb);
-          setopts(this, pattern, options);
+            return new Glob(pattern2, options, cb);
+          setopts(this, pattern2, options);
           this._didRealPath = false;
           var n = this.minimatch.set.length;
           this.matches = new Array(n);
@@ -23236,37 +23236,37 @@ var require_lockfile = __commonJS({
             }
           }
         };
-        Glob.prototype._process = function(pattern, index, inGlobStar, cb) {
+        Glob.prototype._process = function(pattern2, index, inGlobStar, cb) {
           assert2(this instanceof Glob);
           assert2(typeof cb === "function");
           if (this.aborted)
             return;
           this._processing++;
           if (this.paused) {
-            this._processQueue.push([pattern, index, inGlobStar, cb]);
+            this._processQueue.push([pattern2, index, inGlobStar, cb]);
             return;
           }
           var n = 0;
-          while (typeof pattern[n] === "string") {
+          while (typeof pattern2[n] === "string") {
             n++;
           }
           var prefix;
           switch (n) {
-            case pattern.length:
-              this._processSimple(pattern.join("/"), index, cb);
+            case pattern2.length:
+              this._processSimple(pattern2.join("/"), index, cb);
               return;
             case 0:
               prefix = null;
               break;
             default:
-              prefix = pattern.slice(0, n).join("/");
+              prefix = pattern2.slice(0, n).join("/");
               break;
           }
-          var remain = pattern.slice(n);
+          var remain = pattern2.slice(n);
           var read;
           if (prefix === null)
             read = ".";
-          else if (isAbsolute(prefix) || isAbsolute(pattern.join("/"))) {
+          else if (isAbsolute(prefix) || isAbsolute(pattern2.join("/"))) {
             if (!prefix || !isAbsolute(prefix))
               prefix = "/" + prefix;
             read = prefix;
@@ -24604,28 +24604,28 @@ var require_lockfile = __commonJS({
             self2.ignore = self2.ignore.map(ignoreMap);
           }
         }
-        function ignoreMap(pattern) {
+        function ignoreMap(pattern2) {
           var gmatcher = null;
-          if (pattern.slice(-3) === "/**") {
-            var gpattern = pattern.replace(/(\/\*\*)+$/, "");
+          if (pattern2.slice(-3) === "/**") {
+            var gpattern = pattern2.replace(/(\/\*\*)+$/, "");
             gmatcher = new Minimatch(gpattern, { dot: true });
           }
           return {
-            matcher: new Minimatch(pattern, { dot: true }),
+            matcher: new Minimatch(pattern2, { dot: true }),
             gmatcher
           };
         }
-        function setopts(self2, pattern, options) {
+        function setopts(self2, pattern2, options) {
           if (!options)
             options = {};
-          if (options.matchBase && -1 === pattern.indexOf("/")) {
+          if (options.matchBase && -1 === pattern2.indexOf("/")) {
             if (options.noglobstar) {
               throw new Error("base matching requires globstar");
             }
-            pattern = "**/" + pattern;
+            pattern2 = "**/" + pattern2;
           }
           self2.silent = !!options.silent;
-          self2.pattern = pattern;
+          self2.pattern = pattern2;
           self2.strict = options.strict !== false;
           self2.realpath = !!options.realpath;
           self2.realpathCache = options.realpathCache || /* @__PURE__ */ Object.create(null);
@@ -24666,7 +24666,7 @@ var require_lockfile = __commonJS({
           self2.nomount = !!options.nomount;
           options.nonegate = true;
           options.nocomment = true;
-          self2.minimatch = new Minimatch(pattern, options);
+          self2.minimatch = new Minimatch(pattern2, options);
           self2.options = self2.minimatch.options;
         }
         function finish(self2) {
@@ -26988,19 +26988,19 @@ ${indent}`);
         var ownProp = common2.ownProp;
         var childrenIgnored = common2.childrenIgnored;
         var isIgnored = common2.isIgnored;
-        function globSync(pattern, options) {
+        function globSync(pattern2, options) {
           if (typeof options === "function" || arguments.length === 3)
             throw new TypeError("callback provided to sync glob\nSee: https://github.com/isaacs/node-glob/issues/167");
-          return new GlobSync(pattern, options).found;
+          return new GlobSync(pattern2, options).found;
         }
-        function GlobSync(pattern, options) {
-          if (!pattern)
+        function GlobSync(pattern2, options) {
+          if (!pattern2)
             throw new Error("must provide pattern");
           if (typeof options === "function" || arguments.length === 3)
             throw new TypeError("callback provided to sync glob\nSee: https://github.com/isaacs/node-glob/issues/167");
           if (!(this instanceof GlobSync))
-            return new GlobSync(pattern, options);
-          setopts(this, pattern, options);
+            return new GlobSync(pattern2, options);
+          setopts(this, pattern2, options);
           if (this.noprocess)
             return this;
           var n = this.minimatch.set.length;
@@ -27032,29 +27032,29 @@ ${indent}`);
           }
           common2.finish(this);
         };
-        GlobSync.prototype._process = function(pattern, index, inGlobStar) {
+        GlobSync.prototype._process = function(pattern2, index, inGlobStar) {
           assert2(this instanceof GlobSync);
           var n = 0;
-          while (typeof pattern[n] === "string") {
+          while (typeof pattern2[n] === "string") {
             n++;
           }
           var prefix;
           switch (n) {
-            case pattern.length:
-              this._processSimple(pattern.join("/"), index);
+            case pattern2.length:
+              this._processSimple(pattern2.join("/"), index);
               return;
             case 0:
               prefix = null;
               break;
             default:
-              prefix = pattern.slice(0, n).join("/");
+              prefix = pattern2.slice(0, n).join("/");
               break;
           }
-          var remain = pattern.slice(n);
+          var remain = pattern2.slice(n);
           var read;
           if (prefix === null)
             read = ".";
-          else if (isAbsolute(prefix) || isAbsolute(pattern.join("/"))) {
+          else if (isAbsolute(prefix) || isAbsolute(pattern2.join("/"))) {
             if (!prefix || !isAbsolute(prefix))
               prefix = "/" + prefix;
             read = prefix;
@@ -33089,11 +33089,15 @@ function cliui(opts, _mixin) {
     wrap: opts === null || opts === void 0 ? void 0 : opts.wrap
   });
 }
+var ST = String.raw`(?:\u001B\u005C|\u009C)`;
+var stringControls = String.raw`\u0018\u001A\u001B\u0080-\u009F`;
+var osc = String.raw`(?:\u001B\]|\u009D)[^\u0007${stringControls}]*(?:\u0007|${ST})`;
+var controlString = String.raw`(?:\u001B[PX^_k]|[\u0090\u0098\u009E\u009F])[^${stringControls}]*${ST}`;
+var linuxPalette = String.raw`\u001B\](?:P[\dA-Fa-f]{7}|R)(?:\u0007|${ST})?`;
+var csi = String.raw`(?:\u001B\[|\u009B)[\u0030-\u003F]*[\u0020-\u002F]*[\u0040-\u007E]`;
+var escape = String.raw`\u001B(?:[\u0020-\u002F]+[\u0030-\u007E]|[\dA-PR-TZcf-oq-uy=><~|}])`;
+var pattern = `${linuxPalette}|${osc}|${controlString}|${csi}|${escape}`;
 function ansiRegex({ onlyFirst = false } = {}) {
-  const ST = "(?:\\u0007|\\u001B\\u005C|\\u009C)";
-  const osc = `(?:(?:\\u001B\\]|\\u009D)[^\\u0007\\u001B\\u009C\\u009D]*${ST})`;
-  const csi = "[\\u001B\\u009B][[\\]()#;?]*(?:\\d{1,4}(?:[;:]\\d{0,4})*)?[\\dA-PR-TZcf-nq-uy=><~]";
-  const pattern = `${osc}|${csi}`;
   return new RegExp(pattern, onlyFirst ? void 0 : "g");
 }
 var regex = ansiRegex();
@@ -34377,8 +34381,8 @@ var YargsParser = class {
     }
     function hasFlagsMatching(arg, ...patterns) {
       const toCheck = [].concat(...patterns);
-      return toCheck.some(function(pattern) {
-        const match = arg.match(pattern);
+      return toCheck.some(function(pattern2) {
+        const match = arg.match(pattern2);
         return match && hasAnyFlag(match[1]);
       });
     }
@@ -63612,6 +63616,8 @@ function deepMerge(...objects) {
   const output = {};
   for (const obj of objects) {
     for (const [key, value] of Object.entries(obj)) {
+      if (value === void 0)
+        continue;
       const prevValue = output[key];
       output[key] = isPlainObject32(prevValue) && isPlainObject32(value) ? deepMerge(prevValue, value) : value;
     }
@@ -65096,11 +65102,11 @@ var dist_default7 = createPrompt((config, done) => {
   const [value, setValue] = useState("");
   const prefix = usePrefix({ status, theme });
   async function validate2(value2) {
-    const { required, pattern, patternError = "Invalid input" } = config;
+    const { required, pattern: pattern2, patternError = "Invalid input" } = config;
     if (required && !value2) {
       return "You must provide a value";
     }
-    if (pattern && !pattern.test(value2)) {
+    if (pattern2 && !pattern2.test(value2)) {
       return patternError;
     }
     if (typeof config.validate === "function") {
@@ -65220,8 +65226,11 @@ var dist_default8 = createPrompt((config, done) => {
       if (required || answer != null) {
         isValid = validateNumber(answer, { min, max, step });
       }
-      if (isValid === true && answer != null) {
-        isValid = await validate2(answer);
+      if (isValid === true) {
+        isValid = await validate2(
+          // oxlint-disable-next-line typescript/no-unsafe-type-assertion
+          answer
+        );
       }
       if (isValid === true) {
         setValue(String(answer ?? ""));
@@ -65356,7 +65365,7 @@ var expand22 = createPrompt((config, done) => {
     [longChoices, helpTip, error2].filter(Boolean).join("\n")
   ];
 });
-var numberRegex = /\d+/;
+var numberRegex = /^\d+$/;
 var rawlistTheme = {
   style: {
     description: (text) => styleText6("cyan", text)
@@ -65395,8 +65404,8 @@ function getSelectedChoice(input, choices) {
   const selectableChoices = choices.filter(isSelectableChoice);
   const trimmedInput = input.trim();
   selectedChoice = selectableChoices.find((choice) => choice.key === input || choice.key === trimmedInput);
-  if (!selectedChoice && numberRegex.test(input)) {
-    const answer = Number.parseInt(input, 10) - 1;
+  if (!selectedChoice && numberRegex.test(trimmedInput)) {
+    const answer = Number.parseInt(trimmedInput, 10) - 1;
     selectedChoice = selectableChoices[answer];
   }
   return selectedChoice ? [selectedChoice, choices.indexOf(selectedChoice)] : [void 0, void 0];
@@ -65716,6 +65725,7 @@ var dist_default11 = createPrompt((config, done) => {
   ].filter(Boolean).join("\n").trimEnd();
   return [header, body];
 });
+var numberLineRegex = /^\d+$/;
 var selectTheme = {
   icon: { cursor: dist_default.pointer },
   style: {
@@ -65808,7 +65818,7 @@ var dist_default12 = createPrompt((config, done) => {
         } while (!isNavigable2(items[next]));
         setActive(next);
       }
-    } else if (isNumberKey(key) && !Number.isNaN(Number(rl.line))) {
+    } else if (isNumberKey(key) && numberLineRegex.test(rl.line)) {
       const selectedIndex = Number(rl.line) - 1;
       let selectableIndex = -1;
       const position = items.findIndex((item2) => {
@@ -66080,7 +66090,7 @@ content-type/dist/index.js:
 @octokit/graphql/dist-bundle/index.js:
   (* v8 ignore if -- @preserve *)
 
-@angular/ng-dev/bundles/chunk-ABXAGCLN.mjs:
+@angular/ng-dev/bundles/chunk-XNKXDVMU.mjs:
   (*! Bundled license information:
   
   yargs-parser/build/lib/string-utils.js:
@@ -66121,7 +66131,7 @@ content-type/dist/index.js:
      *)
   *)
 
-@angular/ng-dev/bundles/chunk-EALSBVQR.mjs:
+@angular/ng-dev/bundles/chunk-WRTEXYVR.mjs:
   (*! Bundled license information:
   
   content-type/dist/index.js:
