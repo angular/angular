@@ -141,4 +141,29 @@ describe('FieldTree proxy', () => {
       }
     }).toThrow();
   });
+
+  it('should report the iterator of object and array fields to the `in` operator', () => {
+    const objectField = form(signal({x: 1, y: 2}), {injector: TestBed.inject(Injector)});
+    const arrayField = form(signal([1, 2]), {injector: TestBed.inject(Injector)});
+    expect(Symbol.iterator in objectField).toBe(true);
+    expect(Symbol.iterator in arrayField).toBe(true);
+  });
+
+  it('should not report an iterator of a primitive field to the `in` operator', () => {
+    const f = form(signal(1), {injector: TestBed.inject(Injector)});
+    expect(Symbol.iterator in f).toBe(false);
+  });
+
+  it('should report exactly the child fields to the `in` operator', () => {
+    const objectField = form(signal({x: 1, y: 2}), {injector: TestBed.inject(Injector)});
+    expect('x' in objectField).toBe(true);
+    expect('z' in objectField).toBe(false);
+    expect('length' in objectField).toBe(false);
+    expect('name' in objectField).toBe(false);
+
+    const arrayField = form(signal([1, 2]), {injector: TestBed.inject(Injector)});
+    expect(0 in arrayField).toBe(true);
+    expect(2 in arrayField).toBe(false);
+    expect('length' in arrayField).toBe(true);
+  });
 });
