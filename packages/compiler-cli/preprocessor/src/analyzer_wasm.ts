@@ -306,7 +306,7 @@ export class WasmAnalyzer implements IAnalyzer {
     });
   }
 
-  async updateFileContent(updates: {filePath: string; content: string}[]): Promise<string[]> {
+  async updateFileContent(updates: nga.FileUpdate[]): Promise<string[]> {
     const res = this.invoke(
       this.inner.updateFileContent ?? this.inner.update_file_content,
       'updateFileContent',
@@ -323,6 +323,7 @@ export class WasmAnalyzer implements IAnalyzer {
         typeof u.updateType === 'number'
           ? (stringNames[u.updateType] ?? u.updateType)
           : u.updateType,
+      ...(u.idKind !== undefined ? {idKind: u.idKind} : {}),
     }));
     const res = this.invoke(
       this.inner.invalidateFiles ?? this.inner.invalidate_files,

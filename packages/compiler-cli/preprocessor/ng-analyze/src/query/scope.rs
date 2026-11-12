@@ -278,7 +278,11 @@ impl QueryEngine {
         r: &crate::types::analysis::Reference,
         info: &crate::ClassInfo,
     ) -> crate::types::analysis::Reference {
-        if crate::utils::is_dts(&self.lookup_path(info.reference_id.file)) {
+        // A declaration outside the bundle keeps the reference it was imported by, which carries
+        // the specifier consumers must write instead of a path to the resolved file.
+        if crate::utils::is_dts(&self.lookup_path(info.reference_id.file))
+            || self.lookup_external(info.reference_id.file)
+        {
             return r.clone();
         }
         let mut aliases = HashMap::with_capacity(1);
@@ -626,14 +630,15 @@ pub(crate) async fn propagate_owning_reference_validated(
         return declarations.to_vec();
     }
     let parent_path = ctx.engine.lookup_path(parent_file);
-    if !crate::utils::is_dts(&parent_path) {
+    if !crate::utils::is_dts(&parent_path) && !ctx.engine.lookup_external(parent_file) {
         return declarations.to_vec();
     }
 
     // Resolve the package entry point so re-exported aliases use the published name.
+    let resolve_base = owning.resolution_context().unwrap_or(parent_file);
     let package_entry = ctx
         .resolve_from_id(
-            parent_file,
+            resolve_base,
             owning.specifier(),
             crate::host::ImportKind::Static,
         )
@@ -650,9 +655,9 @@ pub(crate) async fn propagate_owning_reference_validated(
         let mut d = d.clone();
         if d.reference.owning_reference.is_none() {
             let decl = (d.reference.file, d.reference.name.clone());
-            d.reference.owning_reference = exports.get(&decl).map(|export_name| {
-                OwningReference::from_source_specifier(owning.specifier(), export_name.clone())
-            });
+            d.reference.owning_reference = exports
+                .get(&decl)
+                .map(|name| owning.with_export_name(name.clone()));
         }
         result.push(d);
     }

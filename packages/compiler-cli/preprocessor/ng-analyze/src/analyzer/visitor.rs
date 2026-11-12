@@ -911,12 +911,12 @@ pub struct ParsedFileAnalysis {
     /// alongside [`Self::import_declarations`].
     pub import_equals_declarations: Vec<super::imports::ImportEqualsDeclarationInfo>,
     pub type_only_exports: Vec<String>,
-    pub static_dependencies: Vec<String>,
-    /// The specifiers of the file's dynamic imports, `import()` calls and literal import types
+    pub static_dependencies: Vec<super::imports::ExtractedDependency>,
+    /// Type-only static imports/re-exports, `import()` calls, and literal import types
     /// ([`super::imports::extract_dynamic_imports`]). Kept apart from
-    /// [`Self::static_dependencies`]: both bring a file into the program, but only a static import
-    /// is an edge for cycle detection.
-    pub dynamic_dependencies: Vec<String>,
+    /// [`Self::static_dependencies`]: both bring a file into the program, but only a runtime static
+    /// import is an edge for cycle detection.
+    pub dynamic_dependencies: Vec<super::imports::ExtractedDependency>,
     pub diagnostics: Vec<crate::NgDiagnostic>,
     pub source_file_validator_diagnostics: Vec<crate::NgDiagnostic>,
     /// Where ngtsc's `signalMetadataTransform` would add a `debugName` to a signal-creating
@@ -3600,8 +3600,12 @@ export class Cmp {
         let source = r#"
 import { Component } from '@angular/core';
 import { EXTRA_CSS } from './styles';
+import DefaultHelper, { type InlineHelperType } from './mixed-default';
+export { helper } from './reexport';
 import type { Foo } from './foo';
+export type { Bar } from './bar-types';
 
+export type InlineType = import('./ts-import-type').Quux;
 export const loadLazy = (): Promise<Foo> => import('./lazy').then(m => m.foo);
 
 @Component({
@@ -3637,13 +3641,58 @@ export class Cmp {}
             true,
         );
 
+        use crate::analyzer::ExtractedDependency;
+        use crate::host::ImportKind as HostImportKind;
         assert_eq!(
             analysis.static_dependencies,
-            vec!["@angular/core".to_string(), "./styles".to_string()]
+            vec![
+                ExtractedDependency {
+                    specifier: "@angular/core".to_string(),
+                    kind: HostImportKind::Static,
+                    type_only: false,
+                },
+                ExtractedDependency {
+                    specifier: "./styles".to_string(),
+                    kind: HostImportKind::Static,
+                    type_only: false,
+                },
+                ExtractedDependency {
+                    specifier: "./reexport".to_string(),
+                    kind: HostImportKind::ReExport,
+                    type_only: false,
+                },
+            ]
         );
         assert_eq!(
             analysis.dynamic_dependencies,
-            vec!["./foo".to_string(), "./lazy".to_string()]
+            vec![
+                // Outside the static import graph, as in ngtsc, yet a runtime import to the host.
+                ExtractedDependency {
+                    specifier: "./mixed-default".to_string(),
+                    kind: HostImportKind::Static,
+                    type_only: false,
+                },
+                ExtractedDependency {
+                    specifier: "./foo".to_string(),
+                    kind: HostImportKind::Static,
+                    type_only: true,
+                },
+                ExtractedDependency {
+                    specifier: "./bar-types".to_string(),
+                    kind: HostImportKind::ReExport,
+                    type_only: true,
+                },
+                ExtractedDependency {
+                    specifier: "./ts-import-type".to_string(),
+                    kind: HostImportKind::TypeImport,
+                    type_only: true,
+                },
+                ExtractedDependency {
+                    specifier: "./lazy".to_string(),
+                    kind: HostImportKind::Dynamic,
+                    type_only: false,
+                },
+            ]
         );
 
         let comp = analysis.classes[0]

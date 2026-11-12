@@ -392,4 +392,25 @@ describe('TcbImportManager', () => {
       "import * as i0_2 from './a';\nimport * as i1_1 from './b';\nimport * as i2 from './c';\n",
     );
   });
+
+  it('escapes specifiers that contain a backslash or a quote', () => {
+    const imports = new TcbImportManager();
+    imports.addImport("/@id/it's\\virtual.ts");
+    expect(imports.generateImportStatements()).toBe(
+      "import * as i0 from '/@id/it\\'s\\\\virtual.ts';\n",
+    );
+  });
+});
+
+describe('ExpressionPrinter.getImportStatements', () => {
+  it('escapes specifiers that contain a backslash or a quote', () => {
+    const printer = new ExpressionPrinter('test.ts');
+    printer.reset();
+    const namespace = printer.getOrCreateNamespace("/@id/it's\\virtual.ts");
+    printer.addSideEffectImport('/@id/side\\effect.ts');
+    expect(printer.getImportStatements()).toBe(
+      `// @ts-ignore\nimport * as ${namespace} from '/@id/it\\'s\\\\virtual.ts';\n` +
+        "// @ts-ignore\nimport '/@id/side\\\\effect.ts';",
+    );
+  });
 });

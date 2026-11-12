@@ -88,20 +88,46 @@ impl<'de> serde::Deserialize<'de> for ModuleId {
     }
 }
 
+#[cfg(feature = "napi")]
+use napi_derive::napi;
+
 /// What the core may do with a [`ModuleId`].
 ///
 /// Inference from the string is unreliable: bundler IDs such as Vite's `/@id/...` look like
 /// absolute POSIX paths without being filesystem paths.
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
+// NOTE: `IdKind` uses duplicated `#[cfg]` blocks rather than `#[cfg_attr]` because `napi-derive`
+// cannot evaluate `#[cfg_attr]` on individual enum variants inside `#[napi(string_enum)]`.
+#[cfg(feature = "napi")]
+#[napi(string_enum)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum IdKind {
     /// Absolute filesystem path, without query or hash suffixes. Path math is allowed (relative
     /// import specifiers, debug-info `filePath`, separator/case normalization).
-    #[default]
+    #[napi(value = "path")]
+    Path,
+    /// Opaque identifier (`\0virtual:x`, `x.ts?inline`, URLs, ...). No path math or normalization
+    /// is performed; emitted verbatim.
+    #[napi(value = "virtual")]
+    Virtual,
+}
+
+#[cfg(not(feature = "napi"))]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum IdKind {
+    /// Absolute filesystem path, without query or hash suffixes. Path math is allowed (relative
+    /// import specifiers, debug-info `filePath`, separator/case normalization).
     Path,
     /// Opaque identifier (`\0virtual:x`, `x.ts?inline`, URLs, ...). No path math or normalization
     /// is performed; emitted verbatim.
     Virtual,
+}
+
+impl Default for IdKind {
+    fn default() -> Self {
+        Self::Path
+    }
 }
 
 /// Direct-entry module reference accepted by host-aware APIs (`string` ≡ `{ id, idKind: 'path' }`).

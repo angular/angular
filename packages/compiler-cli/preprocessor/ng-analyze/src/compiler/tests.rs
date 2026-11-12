@@ -52,6 +52,7 @@ fn test_update_file_content() {
             export class AppComponent {}
         "#
         .to_string(),
+        id_kind: None,
     };
 
     analyzer.update_file_content(vec![update]).unwrap();
@@ -170,6 +171,7 @@ fn run_async_compiler_test<Fs: crate::ResourceResolverFs + Clone + 'static>(
             let source_text = parse_res.lock().unwrap().borrow_owner().source_text.clone();
 
             let path_lookup = |id| engine.lookup_path(id);
+            let kind_lookup = |id| engine.lookup_kind(id);
             let declaring_exports = engine.declaring_export_names_blocking(&resolved);
             let r3_symbols_path = engine.r3_symbols_file();
             let cx = crate::analyzer::WireContext {
@@ -180,6 +182,7 @@ fn run_async_compiler_test<Fs: crate::ResourceResolverFs + Clone + 'static>(
                 converter: &resolved.converter,
                 reference_strategy: &*engine.reference_strategy,
                 path_lookup: Some(&path_lookup),
+                kind_lookup: Some(&kind_lookup),
                 declaring_exports: &declaring_exports,
                 r3_symbols_path: r3_symbols_path.as_deref(),
             };
@@ -292,6 +295,7 @@ fn test_invalidate_files_html_returns_affected_ts() {
         .invalidate_files(vec![FileInvalidation {
             file_path: "/project/app.component.html".to_string(),
             update_type: FileUpdateType::Changed,
+            id_kind: None,
         }])
         .unwrap();
 
@@ -342,6 +346,7 @@ fn test_invalidate_files_html_template_deletion_edge_case() {
         .invalidate_files(vec![FileInvalidation {
             file_path: "/project/app.component.html".to_string(),
             update_type: FileUpdateType::Deleted,
+            id_kind: None,
         }])
         .unwrap();
 
@@ -416,6 +421,7 @@ fn test_invalidate_files_html_multiple_components() {
         .invalidate_files(vec![FileInvalidation {
             file_path: "/project/shared.component.html".to_string(),
             update_type: FileUpdateType::Changed,
+            id_kind: None,
         }])
         .unwrap();
 
@@ -461,6 +467,7 @@ fn test_invalidate_files_unregistered_file() {
         .invalidate_files(vec![FileInvalidation {
             file_path: "/project/random.html".to_string(),
             update_type: FileUpdateType::Changed,
+            id_kind: None,
         }])
         .unwrap();
 
@@ -532,6 +539,7 @@ fn test_invalidate_files_multiple_components_in_one_file() {
         .invalidate_files(vec![FileInvalidation {
             file_path: "/project/app.ts".to_string(),
             update_type: FileUpdateType::Deleted,
+            id_kind: None,
         }])
         .unwrap();
 
@@ -597,6 +605,7 @@ fn test_invalidate_files_html_partial_file_invalidation() {
         .invalidate_files(vec![FileInvalidation {
             file_path: "/project/app.component.html".to_string(),
             update_type: FileUpdateType::Deleted,
+            id_kind: None,
         }])
         .unwrap();
 
@@ -680,6 +689,7 @@ fn test_file_changes_report_dependents_in_wire_spelling() {
         .update_file_content(vec![FileUpdate {
             file_path: "/project/Shared/Dir.ts".to_string(),
             content: directive_source("second"),
+            id_kind: None,
         }])
         .unwrap();
     assert!(affected.contains(&dependent), "{affected:?}");
@@ -697,6 +707,7 @@ fn test_file_changes_report_dependents_in_wire_spelling() {
         .invalidate_files(vec![FileInvalidation {
             file_path: "/project/Shared/Dir.ts".to_string(),
             update_type: FileUpdateType::Deleted,
+            id_kind: None,
         }])
         .unwrap();
     assert!(affected.contains(&dependent), "{affected:?}");
@@ -774,6 +785,7 @@ fn test_analysis_cancellation() {
     let update = FileUpdate {
         file_path: "/project/a.ts".to_string(),
         content: "export class A { updated = true; }".to_string(),
+        id_kind: None,
     };
 
     std::thread::sleep(std::time::Duration::from_millis(50));
@@ -1850,6 +1862,7 @@ fn test_dts_root_files_are_not_canonicalized_during_entrypoint_discovery() {
         .invalidate_files(vec![FileInvalidation {
             file_path: "/project/app.ts".into(),
             update_type: FileUpdateType::Changed,
+            id_kind: None,
         }])
         .unwrap();
 }
@@ -5323,6 +5336,7 @@ fn test_update_file_content_dts_invalidates_dependents() {
         .update_file_content(vec![FileUpdate {
             file_path: "/project/lib.d.ts".to_string(),
             content: lib_dts("[libNew]"),
+            id_kind: None,
         }])
         .unwrap();
     // The edited file, then every file whose cached analysis depended on it.
@@ -5361,6 +5375,7 @@ fn test_update_file_content_non_dot_ts_sources_invalidate_dependents() {
             .update_file_content(vec![FileUpdate {
                 file_path: lib_path.clone(),
                 content: lib_source("[libNew]"),
+                id_kind: None,
             }])
             .unwrap();
         assert_eq!(
@@ -5404,6 +5419,7 @@ fn test_invalidate_files_dts_invalidates_dependents() {
         .invalidate_files(vec![FileInvalidation {
             file_path: lib_path_str.clone(),
             update_type: FileUpdateType::Changed,
+            id_kind: None,
         }])
         .unwrap();
 
@@ -5434,6 +5450,7 @@ fn test_invalidate_files_created_file_resolves_failed_import() {
         .invalidate_files(vec![FileInvalidation {
             file_path: lib_path.to_string_lossy().into_owned(),
             update_type: FileUpdateType::Created,
+            id_kind: None,
         }])
         .unwrap();
 
@@ -5456,6 +5473,7 @@ fn test_update_file_content_created_file_resolves_failed_import() {
         .update_file_content(vec![FileUpdate {
             file_path: "/project/lib.ts".to_string(),
             content: lib_source("[libNew]"),
+            id_kind: None,
         }])
         .unwrap();
 
@@ -5519,6 +5537,7 @@ fn test_invalidate_files_created_file_resolves_failed_barrel_reexport() {
         .invalidate_files(vec![FileInvalidation {
             file_path: lib_path.to_string_lossy().into_owned(),
             update_type: FileUpdateType::Created,
+            id_kind: None,
         }])
         .unwrap();
 
@@ -5547,6 +5566,7 @@ fn test_update_file_content_created_file_resolves_failed_dts_reexport() {
         .update_file_content(vec![FileUpdate {
             file_path: "/project/lib.d.ts".to_string(),
             content: lib_dts("[libFromDts]"),
+            id_kind: None,
         }])
         .unwrap();
 
@@ -5589,6 +5609,7 @@ fn test_invalidate_files_deleted_file_re_resolves_importer_to_fallback() {
         .invalidate_files(vec![FileInvalidation {
             file_path: lib_file.to_string_lossy().into_owned(),
             update_type: FileUpdateType::Deleted,
+            id_kind: None,
         }])
         .unwrap();
 
@@ -5632,6 +5653,7 @@ fn test_invalidate_files_deleted_file_evicts_importer_after_unrelated_file_creat
         .invalidate_files(vec![FileInvalidation {
             file_path: unrelated.to_string_lossy().into_owned(),
             update_type: FileUpdateType::Created,
+            id_kind: None,
         }])
         .unwrap();
     assert!(
@@ -5647,6 +5669,7 @@ fn test_invalidate_files_deleted_file_evicts_importer_after_unrelated_file_creat
         .invalidate_files(vec![FileInvalidation {
             file_path: lib_file.to_string_lossy().into_owned(),
             update_type: FileUpdateType::Deleted,
+            id_kind: None,
         }])
         .unwrap();
 
@@ -5894,6 +5917,7 @@ fn test_editing_ngmodule_reached_through_imports_refreshes_declaring_module() {
         .update_file_content(vec![FileUpdate {
             file_path: "/project/m.module.ts".to_string(),
             content: module_with_c1.clone(),
+            id_kind: None,
         }])
         .unwrap();
     files.insert("/project/m.module.ts".to_string(), module_with_c1);
@@ -5905,6 +5929,7 @@ fn test_editing_ngmodule_reached_through_imports_refreshes_declaring_module() {
         .update_file_content(vec![FileUpdate {
             file_path: "/project/m.module.ts".to_string(),
             content: module_without_c1.to_string(),
+            id_kind: None,
         }])
         .unwrap();
     assert_eq!(declaring_module_of_c1(&analyzer), None);
@@ -9064,6 +9089,7 @@ fn test_prefix_strategy_dts_ngmodule_skips_barrel_export_map() {
         .invalidate_files(vec![FileInvalidation {
             file_path: "/project/libs/pkg/unrelated.d.ts".to_string(),
             update_type: FileUpdateType::Changed,
+            id_kind: None,
         }])
         .unwrap();
     assert!(!unrelated_invalidated.contains(&"/project/app.ts".to_string()));
@@ -9072,6 +9098,7 @@ fn test_prefix_strategy_dts_ngmodule_skips_barrel_export_map() {
         .invalidate_files(vec![FileInvalidation {
             file_path: "/project/libs/pkg/b.d.ts".to_string(),
             update_type: FileUpdateType::Changed,
+            id_kind: None,
         }])
         .unwrap();
     assert!(b_invalidated.contains(&"/project/app.ts".to_string()));
@@ -9162,6 +9189,7 @@ fn test_prefix_strategy_dts_host_directive_skips_barrel_export_map() {
         .invalidate_files(vec![FileInvalidation {
             file_path: "/project/libs/pkg/unrelated.d.ts".to_string(),
             update_type: FileUpdateType::Changed,
+            id_kind: None,
         }])
         .unwrap();
     assert!(!unrelated_invalidated.contains(&"/project/app.ts".to_string()));
@@ -9170,6 +9198,7 @@ fn test_prefix_strategy_dts_host_directive_skips_barrel_export_map() {
         .invalidate_files(vec![FileInvalidation {
             file_path: "/project/libs/pkg/host.d.ts".to_string(),
             update_type: FileUpdateType::Changed,
+            id_kind: None,
         }])
         .unwrap();
     assert!(host_invalidated.contains(&"/project/app.ts".to_string()));
@@ -9286,4 +9315,82 @@ fn test_request_metadata_core_resolves_component_and_skips_missing_or_non_ts() {
         sync_virtual_meta.classes[0].class_name.as_deref(),
         Some("VirtualCmp")
     );
+}
+
+#[test]
+fn test_virtual_entry_points_updates_and_invalidations() {
+    use crate::host::IdKind;
+
+    let analyzer = Analyzer::new_core(AnalyzerOptions {
+        entry_points: Some(vec!["/project/boot.ts".to_string()]),
+        optimize: Some(true),
+        virtual_files: Some(HashMap::from([(
+            "/project/boot.ts".to_string(),
+            "export const BOOT = 1;".to_string(),
+        )])),
+        ..Default::default()
+    })
+    .unwrap();
+
+    // Relative `IdKind::Path` entry points are still rejected, while opaque `IdKind::Virtual`
+    // entry points bypass path-absoluteness validation and separator normalization.
+    let rel_entries = vec![crate::ModuleRef::Path("relative/app.ts".to_string())];
+    let err = analyzer
+        .set_entry_points_refs_core(rel_entries)
+        .expect_err("relative path entry point must fail");
+    assert!(err.contains("must be absolute paths"), "got: {err}");
+
+    let virtual_id = "\0virtual:app\\cmp";
+    analyzer
+        .set_entry_points_refs_core(vec![crate::ModuleRef::Explicit {
+            id: virtual_id.to_string(),
+            id_kind: IdKind::Virtual,
+        }])
+        .expect("virtual entry point must succeed");
+
+    let updated = analyzer
+        .update_file_content_core(vec![FileUpdate {
+            file_path: virtual_id.to_string(),
+            content: "import { Component } from '@angular/core';\n\
+                      @Component({ selector: 'virt-cmp', template: '<p>virt</p>' })\n\
+                      export class VirtCmp {}\n"
+                .to_string(),
+            id_kind: Some(IdKind::Virtual),
+        }])
+        .unwrap();
+    assert!(updated.contains(&virtual_id.to_string()));
+
+    // `canonical_paths_core` must not normalize backslashes on interned virtual module IDs.
+    assert_eq!(
+        analyzer.canonical_paths_core(vec![virtual_id.to_string()]),
+        vec![virtual_id.to_string()]
+    );
+
+    let spawner = crate::compiler::analyzer::get_global_pool().clone();
+    let meta_rx = analyzer
+        .request_metadata_core(
+            crate::ModuleRef::Explicit {
+                id: virtual_id.to_string(),
+                id_kind: IdKind::Virtual,
+            },
+            spawner,
+        )
+        .unwrap();
+    let meta = futures::executor::block_on(meta_rx)
+        .unwrap()
+        .unwrap()
+        .expect("expected metadata for virtual module");
+    assert_eq!(meta.file_path, virtual_id);
+    assert_eq!(meta.id_kind, Some(IdKind::Virtual));
+    assert_eq!(meta.classes.len(), 1);
+    assert_eq!(meta.classes[0].class_name.as_deref(), Some("VirtCmp"));
+
+    let deleted = analyzer
+        .invalidate_files_core(vec![FileInvalidation {
+            file_path: virtual_id.to_string(),
+            update_type: FileUpdateType::Deleted,
+            id_kind: Some(IdKind::Virtual),
+        }])
+        .unwrap();
+    assert!(deleted.contains(&virtual_id.to_string()));
 }

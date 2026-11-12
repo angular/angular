@@ -163,6 +163,14 @@ export function allocateNamespaceAlias(index: number, conflicts: ReadonlySet<str
   return name;
 }
 
+/**
+ * Escapes `specifier` for a single-quoted string literal. A host-provided module ID is written
+ * verbatim, so it can contain a backslash or a quote.
+ */
+export function escapeModuleSpecifier(specifier: string): string {
+  return specifier.replace(/[\\']/g, '\\$&').replace(/\n/g, '\\n').replace(/\r/g, '\\r');
+}
+
 export class ExpressionPrinter {
   private moduleToNamespace = new Map<string, string>();
   /**
@@ -284,7 +292,7 @@ export class ExpressionPrinter {
         continue;
       }
 
-      const specifier = this.rewriteSpecifier(moduleName);
+      const specifier = escapeModuleSpecifier(this.rewriteSpecifier(moduleName));
       statements.push(`// @ts-ignore\nimport * as ${namespace} from '${specifier}';`);
     }
 
@@ -295,7 +303,8 @@ export class ExpressionPrinter {
         continue;
       }
 
-      statements.push(`// @ts-ignore\nimport '${this.rewriteSpecifier(moduleName)}';`);
+      const specifier = escapeModuleSpecifier(this.rewriteSpecifier(moduleName));
+      statements.push(`// @ts-ignore\nimport '${specifier}';`);
     }
 
     return statements.length > 0 ? statements.join('\n') : null;

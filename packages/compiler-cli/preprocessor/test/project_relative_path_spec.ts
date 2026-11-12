@@ -132,4 +132,66 @@ export class MyComp {}
         }),
     ).toThrowError(/'C:workspace' in 'rootDir' must be an absolute path/);
   });
+
+  it('preserves verbatim filePath for virtual module IDs in debug info and HMR', async () => {
+    const compPath = '/workspace/bazel-out/k8-fastbuild/bin/pkg/my_comp.ts';
+    const content = `import {Component} from '@angular/core';
+
+@Component({
+  selector: 'my-comp',
+  template: '<div>Hello Virtual</div>',
+})
+export class MyComp {}
+`;
+    const virtualFiles: Record<string, string> = {
+      '/workspace/tsconfig.json': JSON.stringify({
+        compilerOptions: {
+          rootDirs: ['/workspace', '/workspace/bazel-out/k8-fastbuild/bin'],
+        },
+        files: [compPath],
+      }),
+      [compPath]: content,
+    };
+
+    const baseAnalyzer = await createAnalyzer('/workspace/tsconfig.json', {
+      backend: 'wasm',
+      wasmBinding: resolveWasmBinding(),
+      virtualFiles,
+      optimize: false,
+      nodeModulesPathOverride: resolveFixtureNodeModules(),
+      rootDirs: ['/workspace', '/workspace/bazel-out/k8-fastbuild/bin'],
+    });
+    const virtualAnalyzer: IAnalyzer = {
+      ...baseAnalyzer,
+      analyze: () => baseAnalyzer.analyze(),
+      analyzeOptimized: () => baseAnalyzer.analyzeOptimized(),
+      analyzeDelta: () => baseAnalyzer.analyzeDelta(),
+      analyzeOptimizedDelta: () => baseAnalyzer.analyzeOptimizedDelta(),
+      updateFileContent: (updates) => baseAnalyzer.updateFileContent(updates),
+      invalidateFiles: (updates) => baseAnalyzer.invalidateFiles(updates),
+      getFileContent: (filePath) => baseAnalyzer.getFileContent(filePath),
+      getTsFileForTemplate: (templatePath) => baseAnalyzer.getTsFileForTemplate(templatePath),
+      readResource: (containingFile, url) => baseAnalyzer.readResource(containingFile, url),
+      async getMetadataForFile(filePath: string) {
+        const meta = await baseAnalyzer.getMetadataForFile(filePath);
+        return meta ? {...meta, idKind: 'virtual'} : null;
+      },
+    };
+
+    const compiler = new HybridCompiler(virtualAnalyzer, {
+      optimize: false,
+      enableHmr: true,
+      rootDir: '/workspace',
+      rootDirs: ['/workspace', '/workspace/bazel-out/k8-fastbuild/bin'],
+    });
+
+    const processed = await compiler.processFile(compPath, content);
+    const emitted = processed.magicString.toString();
+    expect(emitted).toContain(`filePath: '${compPath}'`);
+    expect(emitted).toContain(encodeURIComponent(`${compPath}@MyComp`));
+
+    const hmrUpdateModule = await compiler.emitHmrUpdateModule(compPath, 'MyComp');
+    expect(hmrUpdateModule).not.toBeNull();
+    expect(hmrUpdateModule!).toContain(`filePath: '${compPath}'`);
+  });
 });

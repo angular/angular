@@ -109,6 +109,8 @@ impl NgDiagnostic {
 pub struct AnalysisResult {
     pub file_id: FileId,
     pub file_path: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub id_kind: Option<crate::host::IdKind>,
     pub imports_end: u32, // byte position after the initial import block
     pub classes: Vec<ClassMetadata>,
     /// The file's static `import` declarations, in source order, so consumers never have to
@@ -249,6 +251,8 @@ pub struct DefaultHostConfig {
 pub struct FileUpdate {
     pub file_path: String,
     pub content: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub id_kind: Option<crate::host::IdKind>,
 }
 
 // https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#fileChangeType
@@ -266,6 +270,8 @@ pub enum FileUpdateType {
 pub struct FileInvalidation {
     pub file_path: String,
     pub update_type: FileUpdateType,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub id_kind: Option<crate::host::IdKind>,
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
@@ -322,9 +328,10 @@ impl ResolvedHostDirectiveMetadata {
     pub fn to_wire(
         hd: &crate::types::analysis::ResolvedHostDirective,
         path_lookup: Option<&dyn Fn(crate::query::FileId) -> std::path::PathBuf>,
+        kind_lookup: Option<&dyn Fn(crate::query::FileId) -> crate::host::IdKind>,
     ) -> Self {
         Self {
-            directive: DeclarationMetadata::to_wire(&hd.directive, path_lookup),
+            directive: DeclarationMetadata::to_wire(&hd.directive, path_lookup, kind_lookup),
             inputs: hd.inputs.clone(),
             outputs: hd.outputs.clone(),
         }
@@ -335,6 +342,7 @@ impl DeclarationMetadata {
     pub fn to_wire(
         d: &crate::types::analysis::DeclarationData,
         path_lookup: Option<&dyn Fn(crate::query::FileId) -> std::path::PathBuf>,
+        kind_lookup: Option<&dyn Fn(crate::query::FileId) -> crate::host::IdKind>,
     ) -> Self {
         let declaration_type = match d.declaration_type {
             crate::types::analysis::ClassType::Component => "component",
@@ -365,7 +373,14 @@ impl DeclarationMetadata {
                 let consumer_path = path_lookup.map(|lookup| lookup(d.reference.file));
                 entries
                     .into_iter()
-                    .map(|e| e.into_wire(d.reference.file, consumer_path.as_deref(), path_lookup))
+                    .map(|e| {
+                        e.into_wire(
+                            d.reference.file,
+                            consumer_path.as_deref(),
+                            path_lookup,
+                            kind_lookup,
+                        )
+                    })
                     .collect()
             }),
             fields: d.fields.clone(),
@@ -386,7 +401,7 @@ impl DeclarationMetadata {
             deferred_blocks: d.deferred_blocks.clone(),
             resolved_host_directives: d.resolved_host_directives.as_ref().map(|hds| {
                 hds.iter()
-                    .map(|hd| ResolvedHostDirectiveMetadata::to_wire(hd, path_lookup))
+                    .map(|hd| ResolvedHostDirectiveMetadata::to_wire(hd, path_lookup, kind_lookup))
                     .collect()
             }),
         }

@@ -302,6 +302,7 @@ mod tests {
             .invalidate_files(vec![FileInvalidation {
                 file_path: "/project/app.ts".to_string(),
                 update_type: FileUpdateType::Deleted,
+                id_kind: None,
             }])
             .unwrap();
 
@@ -366,6 +367,7 @@ mod tests {
                 export class AppComponent {}
             "#
             .to_string(),
+            id_kind: None,
         };
 
         analyzer.update_file_content(vec![update]).unwrap();

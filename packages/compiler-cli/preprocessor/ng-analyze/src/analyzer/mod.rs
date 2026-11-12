@@ -38,8 +38,8 @@ pub use import_emit::{
     strip_extension_str, ApfImportStrategy, PrefixImportStrategy, ReferenceEmitStrategy,
 };
 pub use imports::{
-    extract_import_map, FileExportInfo, ImportDeclarationInfo, ImportEqualsDeclarationInfo,
-    ImportKind, ImportedSymbol,
+    extract_import_map, ExtractedDependency, FileExportInfo, ImportDeclarationInfo,
+    ImportEqualsDeclarationInfo, ImportKind, ImportedSymbol,
 };
 pub use resolver::{flatten_class_info, resolve_declaration_async};
 pub use visitor::{analyze_parsed, ParsedFileAnalysis, RegistrationInfo};
