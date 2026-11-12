@@ -227,6 +227,10 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
   addControl(dir: NgModel): void {
     resolvedPromise.then(() => {
       const container = this._findContainer(dir.path);
+      // The parent group may have been removed before this deferred registration ran.
+      if (container === null) {
+        return;
+      }
       (dir as Writable<NgModel>).control = <FormControl>(
         container.registerControl(dir.name, dir.control)
       );
@@ -271,6 +275,10 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
   addFormGroup(dir: NgModelGroup): void {
     resolvedPromise.then(() => {
       const container = this._findContainer(dir.path);
+      // The parent group may have been removed before this deferred registration ran.
+      if (container === null) {
+        return;
+      }
       const group = new FormGroup({});
       setUpFormContainer(group, dir);
       container.registerControl(dir.name, group);
@@ -366,8 +374,8 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
     }
   }
 
-  private _findContainer(path: string[]): FormGroup {
+  private _findContainer(path: string[]): FormGroup | null {
     path.pop();
-    return path.length ? <FormGroup>this.form.get(path) : this.form;
+    return path.length ? <FormGroup | null>this.form.get(path) : this.form;
   }
 }
