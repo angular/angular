@@ -249,6 +249,23 @@ When the manifest names a declaration that it does not contain, such as one in a
 Bindings to them produce `NG8002`, and an `NG4013` warning reports the missing declaration.
 Correct the manifest, configure a corrected copy, or add `CUSTOM_ELEMENTS_SCHEMA` to the components that use the tag.
 
+#### Generated code
+
+Angular sets the properties that a manifest or element class declares by their exact names.
+For example, `[readonly]` sets the element's `readonly` property instead of mapping it to the native `readOnly`.
+This also applies to property interpolation translated with `i18n-*`.
+Standard properties that the element does not declare keep Angular's usual mapping, and type checking follows it: when an element declares only `readOnly`, `[readonly]` is checked against, and sets, `readOnly`.
+Because the element class counts, a library update that adds a public property to the class can change the property that Angular sets, without a change to the manifest.
+
+IMPORTANT: A template compiled at runtime does not use manifests, so it sets `readOnly` where the same template compiled ahead of time sets `readonly`.
+This affects the six names that Angular maps: `class`, `for`, `formaction`, `innerHtml`, `readonly`, and `tabindex`.
+An element that declares one of these lowercase names without the standard property behaves differently in tests that call `TestBed.overrideComponent` or `TestBed.overrideTemplate`, and in applications bootstrapped with the JIT compiler.
+
+Directive host bindings are compiled without the component's manifests, so `host: {'[readonly]': 'value'}` still sets `readOnly`.
+Bind the property in the component template when the exact name matters.
+
+When a library compiled with `compilationMode: 'partial'` binds a manifest property that Angular would otherwise rename, such as `readonly`, applications that use the library need Angular 22.4.0 or later.
+
 #### Limitations
 
 - Angular does not follow `superclass` or `mixins` in the manifest.

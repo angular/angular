@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, Input} from '../../src/core';
+import {Component, Directive, Input} from '../../src/core';
 import {getSortedClassName} from '../../testing/src/styling';
 
 import {
@@ -18,6 +18,9 @@ import {
   ɵɵstyleMap,
   ɵɵstyleProp,
   ɵɵforeignComponent,
+  ɵɵi18nAttributes,
+  ɵɵi18nExp,
+  ɵɵi18nApply,
 } from '../../src/render3/index';
 import {AttributeMarker} from '../../src/render3/interfaces/attribute_marker';
 import {
@@ -105,6 +108,79 @@ describe('instructions', () => {
 
       t.update();
       expect(t.html).toEqual('<a title="Hello"></a>');
+    });
+
+    it('should bypass HTML property-name mapping for an exact custom-element property', () => {
+      const t = new ViewFixture({create: () => ɵɵelement(0, 'my-element'), decls: 1, vars: 1});
+
+      t.update(() => {
+        ɵɵproperty('readonly', true, null, true);
+      });
+
+      const element = t.host.firstChild as HTMLElement & {readonly?: boolean; readOnly?: boolean};
+      expect(element.readonly).toBe(true);
+      expect(element.readOnly).toBeUndefined();
+    });
+  });
+
+  describe('translated properties', () => {
+    it('should preserve exact names while mapping inherited and native properties', () => {
+      const t = new ViewFixture({
+        create: () => {
+          ɵɵelement(0, 'my-element');
+          ɵɵi18nAttributes(1, 0, ['for']);
+          ɵɵelement(2, 'label');
+          ɵɵi18nAttributes(3, 1);
+        },
+        decls: 4,
+        vars: 3,
+        consts: [
+          ['for', 'Translated �0�', 'tabindex', '�0�'],
+          ['for', '�0�'],
+        ],
+      });
+      const element = t.host.firstChild as HTMLElement & {for?: string; htmlFor?: string};
+      const label = t.host.lastChild as HTMLLabelElement;
+
+      for (const value of ['first', 'second']) {
+        t.update(() => {
+          ɵɵi18nExp(value)(2);
+          ɵɵi18nApply(1);
+          ɵɵi18nExp(value);
+          ɵɵi18nApply(3);
+        });
+        expect(element.for).toBe(`Translated ${value}`);
+        expect(element.htmlFor).toBeUndefined();
+        expect(element.tabIndex).toBe(2);
+        expect(label.htmlFor).toBe(value);
+      }
+    });
+
+    it('should retain directive input precedence for an exact translated property', () => {
+      const values: string[] = [];
+      @Directive({selector: 'my-element'})
+      class TranslatedInput {
+        @Input('for') set target(value: string) {
+          values.push(value);
+        }
+      }
+
+      const t = new ViewFixture({
+        create: () => {
+          ɵɵelement(0, 'my-element');
+          ɵɵi18nAttributes(1, 0, ['for']);
+        },
+        decls: 2,
+        vars: 1,
+        consts: [['for', 'Translated �0�']],
+        directives: [TranslatedInput],
+      });
+      t.update(() => {
+        ɵɵi18nExp('target');
+        ɵɵi18nApply(1);
+      });
+      expect(values).toEqual(['Translated target']);
+      expect((t.host.firstChild as HTMLElement & {for?: string}).for).toBeUndefined();
     });
   });
 
