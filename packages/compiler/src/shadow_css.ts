@@ -591,7 +591,14 @@ export class ShadowCss {
   }
 
   // change a selector like 'div' to 'name div'
-  private _scopeSelectors(cssText: string, scopeSelector: string, hostSelector: string): string {
+  // `isNestedInHost` is true when `cssText` is nested in rules whose selectors all match the host
+  // element itself, so that `&` stands for the host element.
+  private _scopeSelectors(
+    cssText: string,
+    scopeSelector: string,
+    hostSelector: string,
+    isNestedInHost = false,
+  ): string {
     return processRules(cssText, (rule: CssRule) => {
       let selector = rule.selector;
       let content = rule.content;
@@ -599,23 +606,27 @@ export class ShadowCss {
         if (rule.isBlock) {
           const selectorParts = selector.split(_selectorSplitRe);
           const containsDeep = selectorParts.some((part) => _shadowDeepSelectorRe.test(part));
+          const matchesHost = selectorParts.every((part) =>
+            _selectorMatchesHost(part.trim(), isNestedInHost),
+          );
 
           selector = this._scopeSelector({
             selector,
             scopeSelector,
             hostSelector,
             isParentSelector: true,
+            isNestedInHost,
           });
 
           content =
             // Only recurse into content if there might be any child blocks.
             // TODO: support something like `.parent { ::ng-deep { .child {} } }`
             !containsDeep && rule.content.includes('{')
-              ? this._scopeSelectors(rule.content, scopeSelector, hostSelector)
+              ? this._scopeSelectors(rule.content, scopeSelector, hostSelector, matchesHost)
               : this._stripScopingSelectors(rule.content);
         }
       } else if (scopedAtRuleIdentifiers.some((atRule) => rule.selector.startsWith(atRule))) {
-        content = this._scopeSelectors(rule.content, scopeSelector, hostSelector);
+        content = this._scopeSelectors(rule.content, scopeSelector, hostSelector, isNestedInHost);
       } else if (rule.selector.startsWith('@font-face') || rule.selector.startsWith('@page')) {
         content = this._stripScopingSelectors(rule.content);
       }
@@ -665,11 +676,13 @@ export class ShadowCss {
     scopeSelector,
     hostSelector,
     isParentSelector = false,
+    isNestedInHost = false,
   }: {
     selector: string;
     scopeSelector: string;
     hostSelector: string;
     isParentSelector?: boolean;
+    isNestedInHost?: boolean;
   }): string {
     return selector
       .split(_selectorSplitRe)
@@ -683,6 +696,7 @@ export class ShadowCss {
               scopeSelector,
               hostSelector,
               isParentSelector,
+              isNestedInHost,
             });
           } else {
             return shallowPart;
@@ -739,11 +753,13 @@ export class ShadowCss {
     scopeSelector,
     hostSelector,
     isParentSelector,
+    isNestedInHost,
   }: {
     selector: string;
     scopeSelector: string;
     hostSelector: string;
     isParentSelector?: boolean;
+    isNestedInHost?: boolean;
   }): string {
     const isRe = /\[is=([^\]]*)\]/g;
     scopeSelector = scopeSelector.replace(isRe, (_: string, ...parts: string[]) => parts[0]);
@@ -756,6 +772,13 @@ export class ShadowCss {
       // Comments are replaced with placeholders before scoping. A part that only consists of
       // comments is not a selector and must be left untouched.
       if (!scopedP || scopedP === '&' || _onlyCommentPlaceholdersRe.test(scopedP)) {
+        return p;
+      }
+
+      // In a rule nested in `:host`, a compound selector that starts with `&` (e.g. `&.active` or
+      // `&:hover`) matches the host element, which has the host attribute but not the content
+      // attribute of its own component, so it must not get the content attribute.
+      if (isNestedInHost && scopedP.startsWith('&')) {
         return p;
       }
 
@@ -981,6 +1004,35 @@ class SafeSelector {
       return replaceBy;
     });
   }
+}
+
+/**
+ * Whether a selector, after `:host` has been replaced by the polyfill markers, matches the host
+ * element itself (e.g. `:host`, `:host(.a)` or `:host-context(.b)`, but not `:host .child`).
+ * When `isNestedInHost` is true, a compound selector starting with `&` matches the host as well.
+ */
+function _selectorMatchesHost(selector: string, isNestedInHost: boolean): boolean {
+  const compound = _lastCompoundSelector(selector);
+  return (
+    compound.includes(_polyfillHostNoCombinator) ||
+    (isNestedInHost && compound === selector && compound.startsWith('&'))
+  );
+}
+
+/** Returns the last compound selector of a complex selector, e.g. `.b:hover` for `.a > .b:hover`. */
+function _lastCompoundSelector(selector: string): string {
+  let depth = 0;
+  for (let i = selector.length - 1; i >= 0; i--) {
+    const char = selector[i];
+    if (char === ')' || char === ']') {
+      depth++;
+    } else if (char === '(' || char === '[') {
+      depth--;
+    } else if (depth === 0 && (char === ' ' || char === '>' || char === '+' || char === '~')) {
+      return selector.slice(i + 1);
+    }
+  }
+  return selector;
 }
 
 const _cssScopedPseudoFunctionPrefix = '(:(where|is)\\()?';

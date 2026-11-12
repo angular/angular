@@ -366,6 +366,142 @@ describe('ShadowCss nesting', () => {
     expect(result).toEqualCss(expected);
   });
 
+  it('should not scope `&` compound selectors nested in :host', () => {
+    const css = `
+      :host {
+        display: block;
+
+        &.md {
+          width: 70px;
+        }
+
+        &:hover {
+          color: red;
+        }
+
+        & .child {
+          color: blue;
+        }
+
+        .other {
+          color: green;
+        }
+      }
+    `;
+
+    const expected = `
+      [a-host] {
+        display: block;
+
+        &.md {
+          width: 70px;
+        }
+
+        &:hover {
+          color: red;
+        }
+
+        & .child[contenta] {
+          color: blue;
+        }
+
+        .other[contenta] {
+          color: green;
+        }
+      }
+    `;
+
+    const result = shim(css, 'contenta', 'a-host');
+    expect(result).toEqualCss(expected);
+  });
+
+  it('should not scope `&` compound selectors nested in :host() and :host-context()', () => {
+    const css = `
+      :host(.foo) {
+        &.bar {
+          color: red;
+        }
+      }
+
+      :host-context(.dark) {
+        &[disabled] {
+          color: gray;
+        }
+      }
+    `;
+
+    const expected = `
+      .foo[a-host] {
+        &.bar {
+          color: red;
+        }
+      }
+
+      .dark[a-host], .dark [a-host] {
+        &[disabled] {
+          color: gray;
+        }
+      }
+    `;
+
+    const result = shim(css, 'contenta', 'a-host');
+    expect(result).toEqualCss(expected);
+  });
+
+  it('should keep treating `&` as the host in deeper levels nested in :host', () => {
+    const css = `
+      :host {
+        &.md {
+          &:hover {
+            color: red;
+          }
+
+          .child {
+            color: blue;
+          }
+        }
+      }
+    `;
+
+    const expected = `
+      [a-host] {
+        &.md {
+          &:hover {
+            color: red;
+          }
+
+          .child[contenta] {
+            color: blue;
+          }
+        }
+      }
+    `;
+
+    const result = shim(css, 'contenta', 'a-host');
+    expect(result).toEqualCss(expected);
+  });
+
+  it('should scope `&` compound selectors nested in a :host descendant selector', () => {
+    const css = `
+      :host .item {
+        &.active {
+          color: red;
+        }
+      }
+    `;
+
+    const expected = `
+      [a-host] .item[contenta] {
+        &.active[contenta] {
+          color: red;
+        }
+      }
+    `;
+
+    const result = shim(css, 'contenta', 'a-host');
+    expect(result).toEqualCss(expected);
+  });
+
   it('should shim a selector with a nested media query', () => {
     const css = `
       .parent {
