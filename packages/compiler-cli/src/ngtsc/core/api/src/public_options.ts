@@ -198,11 +198,13 @@ export interface TypeCheckingOptions {
    * DOM events — the ones described by TypeScript's `GlobalEventHandlersEventMap` — compared
    * ignoring case to cover vendor-prefixed names like `webkitAnimationEnd`. When
    * `CUSTOM_ELEMENTS_SCHEMA` is in use, elements without a matched Angular component are exempt
-   * as well.
+   * as well. Events that a configured Custom Elements Manifest declares, compared by exact name,
+   * are exempt on every element.
    *
    * Note that this check is a heuristic: the compiler cannot know the set of custom events that
    * may bubble up from descendant elements. Projects listening to camelCase custom events on
-   * elements with matched directives should not enable this option.
+   * elements with matched directives should not enable this option, unless a configured Custom
+   * Elements Manifest declares those events.
    *
    * Defaults to `false`.
    */
@@ -244,6 +246,45 @@ export interface TypeCheckingOptions {
    * Defaults to `false`.
    */
   strictNgTemplateTypes?: boolean;
+
+  /**
+   * Custom Elements Manifest files that describe the custom elements used in templates. Angular
+   * uses them to check custom element tags, bindings, events, and local references, and the
+   * language service uses them for completions and hovers.
+   *
+   * Each entry is one of:
+   * - A file path relative to the project's tsconfig, such as `./custom-elements.json`. Only
+   *   entries that start with `./`, `../`, or an absolute path are file paths.
+   * - A `.json` module specifier, such as `@my/lib/custom-elements.json`.
+   * - A package name, such as `@my/lib`, whose `package.json` has a `customElements` field.
+   *
+   * Relative paths resolve against the directory of the tsconfig being compiled, including
+   * entries inherited through `extends`.
+   *
+   * On a tag that a manifest declares, Angular reports bindings to properties that neither the
+   * manifest nor the element class's TypeScript declaration has, unless `CUSTOM_ELEMENTS_SCHEMA`
+   * is present. Type checks apply with or without that schema and follow the strictness flags.
+   * `strictInputTypes` checks property binding values, `strictAttributeTypes` checks static
+   * attributes typed as string literal unions, `strictDomEventTypes` types `$event`, and
+   * `strictDomLocalRefTypes` types local references as the element class. When a manifest type is
+   * unusable, Angular uses the type of the element class's property if there is one. Otherwise it
+   * reports NG4011 or NG4013 and skips only the checks that need the type.
+   *
+   * See https://angular.dev/reference/configs/angular-compiler-options#customelementsmanifests.
+   */
+  customElementsManifests?: string[];
+
+  /**
+   * How to report Custom Elements Manifest warnings.
+   *
+   * If this is `'summary'`, a manifest of the project gets one warning for each kind of problem,
+   * with a count and examples, and a manifest in `node_modules` gets a single NG4015 warning with
+   * the number of problems of each kind. If this is `'verbose'`, each problem is reported
+   * separately. Errors are always reported separately.
+   *
+   * Defaults to `'summary'`.
+   */
+  customElementsManifestsDiagnostics?: 'summary' | 'verbose';
 }
 
 /**

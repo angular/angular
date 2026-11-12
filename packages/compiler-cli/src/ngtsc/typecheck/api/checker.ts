@@ -9,6 +9,7 @@
 import {
   AbsoluteSourceSpan,
   AST,
+  CustomElementsManifestIndex,
   ForeignComponentMeta,
   LiteralPrimitive,
   ParseSourceSpan,
@@ -301,6 +302,12 @@ export interface TemplateTypeChecker {
   getPotentialDomEvents(tagName: string): string[];
 
   /**
+   * The schemas from the configured Custom Elements Manifests, including documentation for the
+   * language service, or `null` if none are configured.
+   */
+  getCustomElementsManifestIndex(): CustomElementsManifestIndex | null;
+
+  /**
    * Retrieve the type checking engine's metadata for the given directive class, if available.
    */
   getDirectiveMetadata(dir: ts.ClassDeclaration): TypeCheckableDirectiveMeta | null;
@@ -346,6 +353,12 @@ export interface TemplateTypeChecker {
    * the next request.
    */
   invalidateClass(clazz: ts.ClassDeclaration): void;
+
+  /**
+   * Replaces the manifest schemas used by later type-check blocks. Callers must also invalidate
+   * every component, because manifests affect all templates.
+   */
+  updateCustomElementsManifestIndex(index: CustomElementsManifestIndex | null): void;
 
   /**
    * Gets the target of a template expression, if possible.

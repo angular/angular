@@ -16,6 +16,7 @@ ts_project(
         "//packages/compiler",
         "//packages/compiler-cli/src/ngtsc/annotations",
         "//packages/compiler-cli/src/ngtsc/annotations/common",
+        "//packages/compiler-cli/src/ngtsc/custom_elements_manifest",
         "//packages/compiler-cli/src/ngtsc/cycles",
         "//packages/compiler-cli/src/ngtsc/diagnostics",
         "//packages/compiler-cli/src/ngtsc/docs",
