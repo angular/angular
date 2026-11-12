@@ -312,6 +312,9 @@ export class WasmAnalyzer implements IAnalyzer {
       'updateFileContent',
       JSON.stringify(updates),
     );
+    if (this.hasActivePumpWork()) {
+      this.schedulePump();
+    }
     return JSON.parse(res) as string[];
   }
 
@@ -330,6 +333,9 @@ export class WasmAnalyzer implements IAnalyzer {
       'invalidateFiles',
       JSON.stringify(mapped),
     );
+    if (this.hasActivePumpWork()) {
+      this.schedulePump();
+    }
     return JSON.parse(res) as string[];
   }
 
@@ -339,6 +345,9 @@ export class WasmAnalyzer implements IAnalyzer {
       'setEntryPoints',
       JSON.stringify(entryPoints),
     );
+    if (this.hasActivePumpWork()) {
+      this.schedulePump();
+    }
     return JSON.parse(res) as string[];
   }
 
@@ -347,6 +356,9 @@ export class WasmAnalyzer implements IAnalyzer {
       this.inner.clearResolutionCache ?? this.inner.clear_resolution_cache,
       'clearResolutionCache',
     );
+    if (this.hasActivePumpWork()) {
+      this.schedulePump();
+    }
     return JSON.parse(res) as string[];
   }
 
