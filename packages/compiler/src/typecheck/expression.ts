@@ -385,29 +385,7 @@ class TcbExprTranslator implements AstVisitor {
     const params = ast.parameters
       .map((param) => new TcbExpr(param.name).addParseSpanInfo(param.sourceSpan).print())
       .join(', ');
-    const body = astToTcbExpr(
-      ast.body,
-      (innerAst) => {
-        if (
-          !(innerAst instanceof PropertyRead) ||
-          innerAst.receiver instanceof ThisReceiver ||
-          !(innerAst.receiver instanceof ImplicitReceiver)
-        ) {
-          return this.maybeResolve(innerAst);
-        }
-
-        const correspondingParam = ast.parameters.find((arg) => arg.name === innerAst.name);
-
-        if (correspondingParam) {
-          const node = new TcbExpr(innerAst.name);
-          node.addParseSpanInfo(innerAst.sourceSpan);
-          return node;
-        }
-
-        return this.maybeResolve(innerAst);
-      },
-      this.config,
-    );
+    const body = this.translate(ast.body);
 
     return new TcbExpr(
       `${ast.parameters.length === 1 ? params : `(${params})`} => ${body.print()}`,

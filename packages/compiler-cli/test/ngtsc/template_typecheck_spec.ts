@@ -10950,6 +10950,104 @@ suppress
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(0);
       });
+
+      it('should support $any inside an arrow function', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Component, signal} from '@angular/core';
+
+            @Component({
+              template: '<button (click)="sig.update(prev => acceptsString($any(prev)))"></button>',
+            })
+            class TestCmp {
+              sig = signal(1);
+
+              acceptsString(value: string): number {
+                return 1;
+              }
+            }
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should resolve calls to arrow function parameters that shadow template variables', () => {
+        env.tsconfig({strictTemplates: true});
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: \`
+                @for (item of items; track $index) {
+                  <button (click)="run((item) => acceptsNumber(item()))"></button>
+                }
+              \`,
+            })
+            class TestCmp {
+              items = ['a', 'b'];
+              run(fn: (cb: () => number) => void) {}
+              acceptsNumber(value: number) {}
+            }
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should resolve writes to arrow function parameters that shadow template variables', () => {
+        env.tsconfig({strictTemplates: true});
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: \`
+                @for (item of items; track $index) {
+                  <button (click)="run((item) => item = 1)"></button>
+                }
+              \`,
+            })
+            class TestCmp {
+              items = ['a', 'b'];
+              run(fn: (value: number) => void) {}
+            }
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should allow arrow function parameters to be read inside a `track` expression', () => {
+        env.tsconfig({strictTemplates: true});
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: \`
+                @for (item of items; track item.tags.find((tag) => tag.primary)) {
+                  {{item.name}}
+                }
+              \`,
+            })
+            class TestCmp {
+              items = [{name: 'a', tags: [{primary: true}]}];
+            }
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
     });
 
     describe('multiple matching components', () => {
