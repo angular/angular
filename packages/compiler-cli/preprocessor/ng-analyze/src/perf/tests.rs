@@ -1,6 +1,8 @@
 use super::layer::{Cat, Clock, NgPerfLayer, PerfTake, TraceEvent};
 use super::{Counter, KindStats, SpanStats, ASYNC_TARGET, QUERY_TARGET};
 use crate::query::keys::QueryKey;
+use crate::query::ReferenceId;
+use oxc_semantic::SymbolId;
 use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering::Relaxed};
 use std::sync::Arc;
 use tracing::Dispatch;
@@ -48,7 +50,7 @@ fn query(key: &QueryKey) -> tracing::Span {
         target: QUERY_TARGET,
         "query",
         kind = key.kind_index() as u64,
-        file = key.file_id(),
+        file = key.perf_file_id(),
         key = ?key,
         done = tracing::field::Empty,
     )
@@ -425,5 +427,39 @@ fn slowest_executions_serialize_into_the_summary() {
     assert_eq!(
         parse["slowest"],
         serde_json::json!([{"q": q, "busyUs": 3, "selfUs": 3, "wallUs": 4, "file": "/a.d.ts"}])
+    );
+}
+
+#[test]
+fn ngmodule_scope_queries_attribute_declaring_file_without_changing_file_id() {
+    let exports_key = QueryKey::NgModuleExportsScope(ReferenceId::new(4, SymbolId::from(1)));
+    let imports_key = QueryKey::NgModuleImportsScope(ReferenceId::new(7, SymbolId::from(2)));
+    assert_eq!(exports_key.file_id(), None);
+    assert_eq!(imports_key.file_id(), None);
+
+    let h = Harness::new(false);
+    h.on_thread("a", || {
+        let exports_span = query(&exports_key);
+        h.at(10);
+        exports_span.in_scope(|| h.at(15));
+        exports_span.record("done", true);
+
+        let imports_span = query(&imports_key);
+        h.at(20);
+        imports_span.in_scope(|| h.at(28));
+        imports_span.record("done", true);
+    });
+    let take = h.layer.take(&|id| Some(format!("/src/f{id}.ts")));
+    assert_eq!(
+        take.summary.queries["NgModuleExportsScope"].slowest[0]
+            .file
+            .as_deref(),
+        Some("/src/f4.ts")
+    );
+    assert_eq!(
+        take.summary.queries["NgModuleImportsScope"].slowest[0]
+            .file
+            .as_deref(),
+        Some("/src/f7.ts")
     );
 }
