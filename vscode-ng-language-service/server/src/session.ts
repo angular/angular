@@ -32,6 +32,7 @@ import {
 import {clearWorkspaceConfigurationCache} from './config';
 import {tsDiagnosticToLspDiagnostic} from './diagnostic';
 import {ServerHost} from './server_host';
+import {ResourceWatchers} from './resource_watchers';
 import {
   filePathToUri,
   isAngularCore,
@@ -97,6 +98,11 @@ export class Session {
   private readonly host: ServerHost;
   private readonly logToConsole: boolean;
   private readonly openFiles = new MruTracker();
+  private readonly documentVersions = new Map<string, number>();
+  private readonly resourceWatchers: ResourceWatchers;
+  private readonly pendingResourceProjects = new Set<ts.server.Project>();
+  private readonly lastCompilerOptionsProjectVersion = new WeakMap<ts.server.Project, string>();
+  private readonly lastPublishedConfigDiagnostics = new WeakMap<ts.server.Project, string>();
   readonly includeAutomaticOptionalChainCompletions: boolean;
   readonly includeCompletionsWithSnippetText: boolean;
   readonly includeCompletionsForModuleExports: boolean;
@@ -149,6 +155,20 @@ export class Session {
       },
     });
 
+    this.resourceWatchers = new ResourceWatchers(
+      this.host,
+      this.connection,
+      () => this.clientCapabilities,
+      (fileName) => {
+        const scriptInfo = this.projectService.getScriptInfo(fileName);
+        if (scriptInfo !== undefined && !scriptInfo.isScriptOpen()) {
+          // An exact resource event is authoritative even if a shared node_modules watcher
+          // skipped a same-mtime change. Never replace an unsaved editor buffer with disk text.
+          scriptInfo.reloadFromFile();
+        }
+        this.requestDiagnosticsOnOpenOrChangeFile(fileName, `Resource changed: ${fileName}`);
+      },
+    );
     this.addProtocolHandlers(this.connection);
     this.projectService = this.createProjectService(options);
   }
@@ -310,6 +330,16 @@ export class Session {
     }
     this.info(`Disabling language service for ${project.getProjectName()} because ${reason}.`);
     project.disableLanguageService();
+    this.pendingResourceProjects.delete(project);
+    this.lastCompilerOptionsProjectVersion.delete(project);
+    this.lastPublishedConfigDiagnostics.delete(project);
+    this.resourceWatchers.update();
+    if (isConfiguredProject(project)) {
+      this.connection.sendDiagnostics({
+        uri: filePathToUri(project.getConfigFilePath()),
+        diagnostics: [],
+      });
+    }
   }
 
   /**
@@ -342,20 +372,44 @@ export class Session {
     if (!isConfiguredProject(project)) {
       return;
     }
+    this.lastCompilerOptionsProjectVersion.set(project, project.getProjectVersion());
 
-    const diags = project.getLanguageService().getCompilerOptionsDiagnostics();
+    const languageService = project.getLanguageService();
+    const diags = languageService.getCompilerOptionsDiagnostics();
+    if (isNgLanguageService(languageService)) {
+      this.resourceWatchers.update(
+        project,
+        languageService.getCustomElementsManifestResolutionPaths(),
+      );
+    }
     const suggestStrictModeDiag = diags.find((d) => d.code === -9910001);
 
     if (suggestStrictModeDiag) {
-      const configFilePath: string = project.getConfigFilePath();
-      this.connection.sendNotification(SuggestStrictMode, {
-        configFilePath,
-        message: suggestStrictModeDiag.messageText,
-      });
+      if (!this.renameDisabledProjects.has(project)) {
+        this.connection.sendNotification(SuggestStrictMode, {
+          configFilePath: project.getConfigFilePath(),
+          message: ts.flattenDiagnosticMessageText(suggestStrictModeDiag.messageText, '\n'),
+        });
+      }
       this.renameDisabledProjects.add(project);
     } else {
       this.renameDisabledProjects.delete(project);
     }
+
+    const diagnostics = diags
+      .filter((diag) => diag !== suggestStrictModeDiag)
+      .map((diag) => tsDiagnosticToLspDiagnostic(diag, this.projectService));
+    const diagnosticsKey = JSON.stringify(diagnostics);
+    if (this.lastPublishedConfigDiagnostics.get(project) === diagnosticsKey) {
+      return;
+    }
+    this.lastPublishedConfigDiagnostics.set(project, diagnosticsKey);
+    // These diagnostics describe project configuration, including manifest failures that can
+    // disable template checks. Publish them on the config rather than on each open template.
+    this.connection.sendDiagnostics({
+      uri: filePathToUri(project.getConfigFilePath()),
+      diagnostics,
+    });
   }
 
   /**
@@ -425,8 +479,13 @@ export class Session {
    * @param reason Trace to explain why diagnostics are requested
    */
   private requestDiagnosticsOnOpenOrChangeFile(file: string, reason: string): void {
+    // Custom Elements Manifests affect every template in the projects that use them.
+    const manifestProjects = this.resourceWatchers.getProjects(file);
+    for (const project of manifestProjects) {
+      this.pendingResourceProjects.add(project);
+    }
     const files: string[] = [];
-    if (isExternalTemplate(file)) {
+    if (isExternalTemplate(file) && manifestProjects.length === 0) {
       // If only external template is opened / changed, we know for sure it will
       // not affect other files because it is local to the Component.
       files.push(file);
@@ -471,6 +530,15 @@ export class Session {
    * @param reason Trace to explain why diagnostics is triggered
    */
   private async sendPendingDiagnostics(files: string[], reason: string) {
+    const checkedProjects = new Set(this.pendingResourceProjects);
+    this.pendingResourceProjects.clear();
+    // A config can remain visible after its templates are closed. Resource diagnostics belong to
+    // the project and must still be published even when there are no open template buffers.
+    for (const project of checkedProjects) {
+      if (!project.isClosed() && project.languageServiceEnabled) {
+        this.handleCompilerOptionsDiagnostics(project);
+      }
+    }
     for (let i = 0; i < files.length; ++i) {
       const fileName = files[i];
       const result = this.getLSAndScriptInfo(fileName);
@@ -493,6 +561,16 @@ export class Session {
       diagnostics.push(...result.languageService.getSuggestionDiagnostics(fileName));
       if (isDebugMode) {
         console.timeEnd(suggestionLabel);
+      }
+
+      const project = this.getDefaultProjectForScriptInfo(result.scriptInfo);
+      if (
+        project !== null &&
+        !checkedProjects.has(project) &&
+        this.lastCompilerOptionsProjectVersion.get(project) !== project.getProjectVersion()
+      ) {
+        checkedProjects.add(project);
+        this.handleCompilerOptionsDiagnostics(project);
       }
 
       // Need to send diagnostics even if it's empty otherwise editor state will
@@ -612,11 +690,12 @@ export class Session {
   }
 
   private onDidOpenTextDocument(params: lsp.DidOpenTextDocumentParams) {
-    const {uri, languageId, text} = params.textDocument;
+    const {uri, languageId, text, version} = params.textDocument;
     const filePath = uriToFilePath(uri);
     if (!filePath) {
       return;
     }
+    this.documentVersions.set(filePath, version);
     this.openFiles.update(filePath);
     // External templates (HTML files) should be tagged as ScriptKind.Unknown
     // so that they don't get parsed as TS files. See
@@ -683,7 +762,13 @@ export class Session {
     }
     this.logger.info(`Closing file: ${filePath}`);
     this.openFiles.delete(filePath);
+    this.documentVersions.delete(filePath);
     this.projectService.closeClientFile(filePath);
+    this.resourceWatchers.update();
+    // Closing an unsaved manifest restores its disk contents and can change every template.
+    if (this.resourceWatchers.getProjects(filePath).length > 0) {
+      this.requestDiagnosticsOnOpenOrChangeFile(filePath, `Closing ${filePath}`);
+    }
   }
 
   private onDidChangeTextDocument(params: lsp.DidChangeTextDocumentParams): void {
@@ -692,6 +777,13 @@ export class Session {
     if (!filePath) {
       return;
     }
+    // Resource synchronization can overlap the static selector when the editor's language mode
+    // changes. An incremental edit must only be applied once, even during registration changes.
+    const previousVersion = this.documentVersions.get(filePath);
+    if (previousVersion !== undefined && textDocument.version <= previousVersion) {
+      return;
+    }
+    this.documentVersions.set(filePath, textDocument.version);
     this.openFiles.update(filePath);
     const scriptInfo = this.projectService.getScriptInfo(filePath);
     if (!scriptInfo) {
