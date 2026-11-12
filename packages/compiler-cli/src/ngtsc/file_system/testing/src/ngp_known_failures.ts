@@ -44,6 +44,18 @@ export function shouldSkipInNgp(fullSpecName: string): boolean {
   );
 }
 
+export function shouldSkipComplianceInNgp(
+  mode: string,
+  relativePath: string,
+  description: string,
+): boolean {
+  if (!isNgpSkipEnabled()) {
+    return false;
+  }
+  const key = `${mode}::${relativePath.trim()}::${description.replace(/\s+/g, ' ').trim()}`;
+  return NGP_KNOWN_COMPLIANCE_FAILURES.has(key);
+}
+
 /**
  * Tests that rely on a TypeScript `TypeChecker` during analysis or template semantics checking,
  * which `ngp` does not have at preprocessing time.
@@ -333,4 +345,19 @@ const NGP_KNOWN_NGTSC_FAILURES: ReadonlySet<string> = new Set([
   'ngtsc type checking schema checking with custom elements manifests should warn about duplicate tags across manifests and use the first declaration',
   'ngtsc type checking strictUnclaimedEventNames with a Custom Elements Manifest should not report manifest events on a manifest element with a directive',
   'ngtsc type checking strictUnclaimedEventNames with a Custom Elements Manifest should not report manifest events that bubble to another element',
+  'HMR code generation should preserve exact manifest property names in HMR update code',
+  'exact property names of Custom Elements Manifest properties should not retain attribute, style, or class bindings as exact manifest properties',
+  'exact property names of Custom Elements Manifest properties should set a manifest property by its exact name on a tag written in another case',
+  'exact property names of Custom Elements Manifest properties should update exact property instructions after a manifest-only change',
+  'exact property names of Custom Elements Manifest properties should update partial exact-property metadata after a manifest-only change',
+]);
+
+/**
+ * Known failures in `//packages/compiler-cli/test/compliance/full:full_ngp` and
+ * `//packages/compiler-cli/test/compliance/local:local_ngp`.
+ */
+const NGP_KNOWN_COMPLIANCE_FAILURES: ReadonlySet<string> = new Set([
+  // Custom Elements Manifests (the `customElementsManifests` option) are not implemented in NGP.
+  'full compile::r3_view_compiler_custom_elements_manifest/exact_property_names::should preserve exact manifest property names in every compilation mode',
+  'local compile::r3_view_compiler_custom_elements_manifest/exact_property_names::should preserve exact manifest property names in every compilation mode',
 ]);

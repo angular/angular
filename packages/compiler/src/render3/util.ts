@@ -176,6 +176,19 @@ export function tsIgnoreComment(): o.LeadingComment {
   return o.leadingComment('@ts-ignore', true, true);
 }
 
+/**
+ * DOM properties that need to be remapped on the compiler side.
+ * Note: this mapping has to be kept in sync with the equally named mapping in the runtime.
+ */
+export const DOM_PROPERTY_REMAPPING: ReadonlyMap<string, string> = new Map([
+  ['class', 'className'],
+  ['for', 'htmlFor'],
+  ['formaction', 'formAction'],
+  ['innerHtml', 'innerHTML'],
+  ['readonly', 'readOnly'],
+  ['tabindex', 'tabIndex'],
+]);
+
 export function isUnsafeObjectKey(key: string): boolean {
   return UNSAFE_OBJECT_KEY_NAME_REGEXP.test(key);
 }

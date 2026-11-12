@@ -1695,6 +1695,7 @@ export class NgCompiler {
         this.emitDeclarationOnly,
         this.options.legacyOptionalChaining ?? LEGACY_OPTIONAL_CHAINING_DEFAULT,
         this.enableTemplateSourceLocations,
+        () => this.customElementsManifestIndex,
       ),
 
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
