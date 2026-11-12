@@ -10,10 +10,14 @@ import * as child_process from 'child_process';
 import type {Readable} from 'stream';
 import {
   FileUpdateType,
+  unwrapPathEntryPoints,
+  unwrapPathModuleRef,
   type AnalysisResult,
   type AnalyzerOptions,
   type CompilationChunk,
   type FileInvalidation,
+  type FileUpdate,
+  type ModuleRef,
   type ResolvedResource,
   type TemplateUsage,
 } from './types.js';
@@ -239,9 +243,11 @@ export class SidecarAnalyzer implements IAnalyzer {
       'tsconfigPath' | 'optimize' | 'virtualFiles' | 'nodeModulesPathOverride'
     >,
   ): Promise<NgpCompilerOptions> {
+    const entryPoints = unwrapPathEntryPoints(options?.entryPoints, 'SidecarAnalyzer.initialize');
     const res = await this.tracer.sliceAsync(SpanKind.InitializeRpc, () =>
       this.callRpc<NgpCompilerOptions | null>('initialize', {
         ...options,
+        ...(entryPoints !== undefined ? {entryPoints} : {}),
         tsconfigPath,
         optimize,
         virtualFiles,
@@ -350,11 +356,12 @@ export class SidecarAnalyzer implements IAnalyzer {
     }
   }
 
-  async getMetadataForFile(filePath: string): Promise<AnalysisResult | null> {
+  async getMetadataForFile(file: ModuleRef): Promise<AnalysisResult | null> {
+    const filePath = unwrapPathModuleRef(file, 'SidecarAnalyzer.getMetadataForFile');
     return this.callRpc<AnalysisResult | null>('getMetadataForFile', {filePath});
   }
 
-  async updateFileContent(updates: {filePath: string; content: string}[]): Promise<string[]> {
+  async updateFileContent(updates: FileUpdate[]): Promise<string[]> {
     return this.callRpc('updateFileContent', updates);
   }
 
@@ -364,12 +371,14 @@ export class SidecarAnalyzer implements IAnalyzer {
       updates.map((u) => ({
         filePath: u.filePath,
         updateType: typeof u.updateType === 'number' ? FileUpdateType[u.updateType] : u.updateType,
+        ...(u.idKind !== undefined ? {idKind: u.idKind} : {}),
       })),
     );
   }
 
-  async setEntryPoints(entryPoints: string[]): Promise<string[]> {
-    return this.callRpc('setEntryPoints', entryPoints);
+  async setEntryPoints(entryPoints: ModuleRef[]): Promise<string[]> {
+    const paths = unwrapPathEntryPoints(entryPoints, 'SidecarAnalyzer.setEntryPoints')!;
+    return this.callRpc('setEntryPoints', paths);
   }
 
   async clearResolutionCache(): Promise<string[]> {

@@ -10,6 +10,81 @@ import type * as nga from './types.js';
 import type {NgpCompilerOptions} from './compiler_options.js';
 import type {IAnalyzer} from './hybrid_compiler.js';
 
+export type ModuleFormat = 'ts' | 'tsx' | 'dts' | 'js' | 'jsx';
+export type {IdKind, ModuleRef} from './types.js';
+
+export interface HostItemError {
+  error: string;
+}
+
+export interface ResolveRequest {
+  importer: string;
+  specifier: string;
+  /** Syntax form: `'type-import'` is specifically `TSImportType` (`import('...')` in a type). */
+  kind: 'import' | 're-export' | 'dynamic-import' | 'type-import';
+  /** True for `import type`, `export type`, and `'type-import'`. */
+  typeOnly: boolean;
+  attributes?: Record<string, string>;
+}
+
+export interface ResolveResult {
+  id: string;
+  /** Required: the adapter knows its ID scheme; the core never guesses. */
+  idKind: nga.IdKind;
+  /** Optional here if provided on `LoadResult`; required on at least one of the two for modules. */
+  format?: ModuleFormat;
+  external?: boolean;
+  /** Optional inline content: saves the follow-up `load` round trip when the adapter already has it. */
+  code?: string;
+}
+
+export interface ResourceRequest {
+  containingFile: string;
+  url: string;
+  kind: 'template' | 'style';
+}
+
+export interface ResourceResolveResult {
+  id: string;
+  /** Defaults to `'path'` when omitted. */
+  idKind?: nga.IdKind;
+  /** Optional inline content (e.g. compiled Sass/CSS or HTML): skips the follow-up `load` wave. */
+  code?: string;
+}
+
+/** `external` echoes `ResolveResult.external` so the adapter can route external loads directly. */
+export interface LoadRequest {
+  id: string;
+  kind: 'module' | 'template' | 'style';
+  external: boolean;
+}
+
+export interface LoadResult {
+  code: string;
+  /** Required for `'module'` loads unless `ResolveResult.format` was already supplied. */
+  format?: ModuleFormat;
+}
+
+export interface AnalyzerHost {
+  /** Batch-resolve. Index-aligned results; `null` = unresolvable, `{error}` = failed with diagnostic. */
+  resolve(
+    requests: readonly ResolveRequest[],
+  ): Promise<ReadonlyArray<ResolveResult | HostItemError | null>>;
+  /** Required. The bundler is the authority for content; there is no disk fallback. */
+  load(requests: readonly LoadRequest[]): Promise<ReadonlyArray<LoadResult | HostItemError | null>>;
+  /**
+   * Optional: defaults to normalizing bare relative URLs (`./`) and resolving relative to
+   * `containingFile` via `resolve`.
+   *
+   * TODO: Wire dedicated `resolveResource` batch dispatch across `BatchingHost` and
+   * `WasmAnalyzer` in a follow-up phase; `BatchingHost::resolve_resource` currently lowers
+   * resource URLs directly to `resolve`.
+   */
+  resolveResource?(
+    requests: readonly ResourceRequest[],
+  ): Promise<ReadonlyArray<ResourceResolveResult | HostItemError | null>>;
+}
+
 /** The wasm-bindgen `WasmAnalyzer` surface this adapter drives. */
 export interface WasmInner {
   free(): void;
@@ -29,12 +104,16 @@ export interface WasmInner {
   set_entry_points?(entryPointsJson: string): string;
   clearResolutionCache?(): string;
   clear_resolution_cache?(): string;
+  provideHostResults?(batchId: number, resultsJson: string): void;
+  provide_host_results?(batchId: number, resultsJson: string): void;
   requestMetadata?(moduleRefJson: string): number;
   request_metadata?(moduleRefJson: string): number;
   getMetadataForFile?(filePath: string): string | undefined;
   get_metadata_for_file?(filePath: string): string | undefined;
   getFileContent?(filePath: string): string;
   get_file_content?(filePath: string): string;
+  lookupHostFileContent?(filePath: string): string;
+  lookup_host_file_content?(filePath: string): string;
   getTsFileForTemplate?(templatePath: string): string | undefined;
   get_ts_file_for_template?(templatePath: string): string | undefined;
   readResource?(containingFile: string, url: string): string | undefined;
@@ -45,6 +124,16 @@ export interface WasmInner {
   get_compiler_options?(): string;
   closeStream?(id: number): void;
   close_stream?(id: number): void;
+}
+
+export interface WasmAnalyzerOptions {
+  host?: AnalyzerHost;
+}
+
+interface HostFileContentLookup {
+  code?: string;
+  id: string;
+  external: boolean;
 }
 
 type WasmEvent =
@@ -67,6 +156,12 @@ type WasmEvent =
       event: 'metadataResult';
       data: nga.AnalysisResult | null;
       error?: string;
+    }
+  | {
+      id: number;
+      event: 'hostRequests';
+      resolve: ResolveRequest[];
+      load: LoadRequest[];
     };
 
 /** JS-side state of one engine stream; `null` in `queue` marks its end. */
@@ -76,6 +171,8 @@ interface WasmStream {
   error?: Error;
   /** Whether the engine has emitted a terminal event (`analysisComplete` or `analysisError`). */
   ended: boolean;
+  /** Whether `abandonRequests` already invoked `close_stream` for this stream. */
+  closedInEngine?: boolean;
 }
 
 interface PendingMetadataRequest {
@@ -83,15 +180,161 @@ interface PendingMetadataRequest {
   reject: (err: Error) => void;
 }
 
+const MODULE_FORMATS: ReadonlySet<unknown> = new Set<ModuleFormat>([
+  'ts',
+  'tsx',
+  'dts',
+  'js',
+  'jsx',
+]);
+
+/** Why `format` is not a `ModuleFormat` the engine accepts, or `null` when it is one or absent. */
+function invalidModuleFormat(format: unknown): string | null {
+  if (format === undefined || format === null || MODULE_FORMATS.has(format)) {
+    return null;
+  }
+  return `'format' must be one of ${[...MODULE_FORMATS].join(', ')}`;
+}
+
+/**
+ * Validates `slot` as a `ResolveResult` and returns a clean wire object containing only the fields
+ * `WireResolveResult` in `ng-analyze/src/host/batching.rs` consumes, or an error reason string.
+ */
+function normalizeResolveResult(slot: Record<string, unknown>): ResolveResult | string {
+  const id = slot['id'];
+  if (typeof id !== 'string') {
+    return "'id' must be a string";
+  }
+  const idKind = slot['idKind'];
+  if (idKind !== 'path' && idKind !== 'virtual') {
+    return "'idKind' must be 'path' or 'virtual'";
+  }
+  const external = slot['external'];
+  if (external !== undefined && typeof external !== 'boolean') {
+    return "'external' must be a boolean";
+  }
+  const code = slot['code'];
+  if (code !== undefined && code !== null && typeof code !== 'string') {
+    return "'code' must be a string";
+  }
+  const format = slot['format'];
+  const formatErr = invalidModuleFormat(format);
+  if (formatErr !== null) {
+    return formatErr;
+  }
+  const normalized: ResolveResult = {id, idKind};
+  if (format !== undefined && format !== null) {
+    normalized.format = format as ModuleFormat;
+  }
+  if (external !== undefined) {
+    normalized.external = external;
+  }
+  if (code !== undefined && code !== null) {
+    normalized.code = code;
+  }
+  return normalized;
+}
+
+/**
+ * Validates `slot` as a `LoadResult` and returns a clean wire object containing only the fields
+ * `WireLoadResult` in `ng-analyze/src/host/batching.rs` consumes, or an error reason string.
+ */
+function normalizeLoadResult(slot: Record<string, unknown>): LoadResult | string {
+  const code = slot['code'];
+  if (typeof code !== 'string') {
+    return "'code' must be a string";
+  }
+  const format = slot['format'];
+  const formatErr = invalidModuleFormat(format);
+  if (formatErr !== null) {
+    return formatErr;
+  }
+  const normalized: LoadResult = {code};
+  if (format !== undefined && format !== null) {
+    normalized.format = format as ModuleFormat;
+  }
+  return normalized;
+}
+
+/**
+ * Returns `slot` as a clean plain object containing only the validated wire fields.
+ *
+ * The engine deserializes a batch as a whole, so one slot of the wrong shape — or carrying an
+ * unserializable extra property from a bundler hook — would reject every result in it and leave the
+ * batch unanswered. Constructing a fresh wire object also ensures optional keys like
+ * `{error: undefined}` do not survive onto valid results.
+ */
+function checkedHostSlot<Res>(
+  slot: unknown,
+  label: string,
+  index: number,
+  normalize: (slot: Record<string, unknown>) => Res | string,
+): Res | HostItemError | null {
+  if (slot === undefined || slot === null) {
+    return null;
+  }
+  const invalid = (reason: string): HostItemError => ({
+    error: `AnalyzerHost.${label} returned an invalid result at index ${index}: ${reason}`,
+  });
+  if (typeof slot !== 'object') {
+    return invalid(`expected an object or null, got ${typeof slot}`);
+  }
+  const record = slot as Record<string, unknown>;
+  const error = record['error'];
+  if (error !== undefined) {
+    return typeof error === 'string' ? {error} : invalid("'error' must be a string");
+  }
+  const normalized = normalize(record);
+  return typeof normalized === 'string' ? invalid(normalized) : normalized;
+}
+
+async function settleHostSubBatch<Req, Res>(
+  requests: readonly Req[],
+  run: (reqs: readonly Req[]) => Promise<ReadonlyArray<Res | HostItemError | null>>,
+  label: string,
+  normalize: (slot: Record<string, unknown>) => Res | string,
+): Promise<ReadonlyArray<Res | HostItemError | null>> {
+  if (requests.length === 0) {
+    return [];
+  }
+  try {
+    const results = await run(requests);
+    if (!Array.isArray(results) || results.length !== requests.length) {
+      const error = `AnalyzerHost.${label} returned ${
+        Array.isArray(results) ? results.length : typeof results
+      } results for ${requests.length} requests`;
+      return requests.map(() => ({error}));
+    }
+    return results.map((slot: unknown, index: number) =>
+      checkedHostSlot<Res>(slot, label, index, normalize),
+    );
+  } catch (err) {
+    const error = err instanceof Error ? err.message : String(err);
+    return requests.map(() => ({error}));
+  }
+}
+
 export class WasmAnalyzer implements IAnalyzer {
   private inner: WasmInner;
+  private host: AnalyzerHost | undefined;
   private streams = new Map<number, WasmStream>();
   private metadataRequests = new Map<number, PendingMetadataRequest>();
+  private pendingHostBatches = 0;
   private microtaskScheduled = false;
   private pumpTimer: ReturnType<typeof setTimeout> | null = null;
+  private closed = false;
 
-  constructor(inner: WasmInner) {
+  constructor(inner: WasmInner, options?: WasmAnalyzerOptions) {
+    // An engine build without host request support ignores the request for a host and analyzes
+    // with no filesystem at all: nothing resolves and the host is never asked. Fail instead.
+    if (options?.host && !(inner.provideHostResults ?? inner.provide_host_results)) {
+      throw new Error(
+        "WasmAnalyzer: 'host' requires an engine build with host request support, " +
+          "but this build does not export 'provideHostResults'",
+      );
+    }
     this.inner = inner;
+    this.host = options?.host;
   }
 
   private hasActivePumpWork(): boolean {
@@ -114,7 +357,7 @@ export class WasmAnalyzer implements IAnalyzer {
   }
 
   private schedulePump(): void {
-    if (this.microtaskScheduled) {
+    if (this.closed || this.microtaskScheduled) {
       return;
     }
     this.clearPumpTimer();
@@ -122,7 +365,79 @@ export class WasmAnalyzer implements IAnalyzer {
     queueMicrotask(this.pumpLoop);
   }
 
+  private async fulfilHostBatch(
+    batchId: number,
+    resolveReqs: readonly ResolveRequest[],
+    loadReqs: readonly LoadRequest[],
+  ): Promise<void> {
+    const host = this.host;
+    let resolveResults: ReadonlyArray<ResolveResult | HostItemError | null>;
+    let loadResults: ReadonlyArray<LoadResult | HostItemError | null>;
+    if (!host) {
+      const noHost = {error: 'No AnalyzerHost configured for hostRequests'};
+      resolveResults = resolveReqs.map(() => noHost);
+      loadResults = loadReqs.map(() => noHost);
+    } else {
+      [resolveResults, loadResults] = await Promise.all([
+        settleHostSubBatch(
+          resolveReqs,
+          (reqs) => host.resolve(reqs),
+          'resolve',
+          normalizeResolveResult,
+        ),
+        settleHostSubBatch(loadReqs, (reqs) => host.load(reqs), 'load', normalizeLoadResult),
+      ]);
+    }
+
+    this.pendingHostBatches--;
+    if (this.closed) {
+      return;
+    }
+
+    try {
+      this.invoke(
+        this.inner.provideHostResults ?? this.inner.provide_host_results,
+        'provideHostResults',
+        batchId,
+        JSON.stringify({resolve: resolveResults, load: loadResults}),
+      );
+    } catch (err) {
+      const wrapped = err instanceof Error ? err : new Error(String(err));
+      const abandoned = [...this.metadataRequests.keys()];
+      for (const pending of this.metadataRequests.values()) {
+        pending.reject(wrapped);
+      }
+      this.metadataRequests.clear();
+      for (const [streamId, stream] of this.streams) {
+        if (stream.ended) {
+          continue;
+        }
+        abandoned.push(streamId);
+        stream.ended = true;
+        stream.closedInEngine = true;
+        stream.error = wrapped;
+        if (stream.nextResolve) {
+          const resolve = stream.nextResolve;
+          stream.nextResolve = null;
+          resolve(null);
+        }
+      }
+      this.abandonRequests(abandoned);
+      return;
+    }
+
+    if (this.hasActivePumpWork()) {
+      this.schedulePump();
+    }
+  }
+
   private dispatchEvent(event: WasmEvent): void {
+    if (event.event === 'hostRequests') {
+      this.pendingHostBatches++;
+      void this.fulfilHostBatch(event.id, event.resolve ?? [], event.load ?? []);
+      return;
+    }
+
     if (event.event === 'metadataResult') {
       const pending = this.metadataRequests.get(event.id);
       if (pending) {
@@ -159,15 +474,20 @@ export class WasmAnalyzer implements IAnalyzer {
   private pumpLoop = () => {
     this.microtaskScheduled = false;
     this.clearPumpTimer();
-    if (!this.hasActivePumpWork()) {
+    if (this.closed || !this.hasActivePumpWork()) {
       return;
     }
 
     const start = Date.now();
     let idleCount = 0;
+    let stalledOnHost = false;
     while (this.hasActivePumpWork() && Date.now() - start < 15) {
       const eventStr = this.inner.pump();
       if (!eventStr) {
+        if (this.pendingHostBatches > 0) {
+          stalledOnHost = true;
+          break;
+        }
         idleCount++;
         if (idleCount > 1000) {
           break;
@@ -183,7 +503,7 @@ export class WasmAnalyzer implements IAnalyzer {
       }
     }
 
-    if (this.hasActivePumpWork() && !this.microtaskScheduled) {
+    if (this.hasActivePumpWork() && !stalledOnHost && !this.microtaskScheduled) {
       this.pumpTimer = setTimeout(this.pumpLoop, 0);
     }
   };
@@ -280,25 +600,64 @@ export class WasmAnalyzer implements IAnalyzer {
   }
 
   /**
-   * Unregisters stream `id` and drops the engine's receiver for it. Once a stream has ended
-   * the engine has already dropped the receiver, so `close_stream` does nothing then. If
-   * `close()` already cleared `streams` and freed `inner`, skip `close_stream` so cleanup does
-   * not touch the freed WASM handle. Older engine builds do not export `close_stream`; for those
-   * only the JS side is released.
+   * Unregisters stream `id` and drops the engine's receiver for it.
+   *
+   * What happens to a stream that had not ended depends on the analyzer. Without a `host`, the
+   * engine keeps analyzing and filling its caches; only the results go unobserved. With a
+   * `host`, the engine cancels the analysis and its pending host requests instead, so queries
+   * parked on host answers are not left behind for later requests to join. Batches already
+   * handed to the host still settle, and the engine ignores their results.
+   *
+   * Once a stream has ended the engine has already dropped the receiver, so `close_stream` does
+   * nothing then. If `close()` already cleared `streams` and freed `inner`, skip `close_stream`
+   * so cleanup does not touch the freed WASM handle. Older engine builds do not export
+   * `close_stream`; for those only the JS side is released.
    */
   private releaseStream(id: number): void {
-    if (!this.streams.delete(id)) {
+    const stream = this.streams.get(id);
+    if (!stream) {
       return;
     }
-    const close = this.inner.close_stream ?? this.inner.closeStream;
-    close?.call(this.inner, id);
+    this.streams.delete(id);
+    if (!stream.closedInEngine) {
+      const close = this.inner.close_stream ?? this.inner.closeStream;
+      close?.call(this.inner, id);
+    }
+    if (this.hasActivePumpWork()) {
+      this.schedulePump();
+    }
   }
 
-  async getMetadataForFile(filePath: string): Promise<nga.AnalysisResult | null> {
+  /**
+   * Drops the engine's receivers for requests and unended streams that were aborted after
+   * `provideHostResults` failed.
+   *
+   * Closing both active stream IDs and metadata request IDs ensures `active_stream_id` is cleared
+   * even when a stream consumer is paused at `yield`, so `cancel_current_analysis()` cancels all
+   * parked queries instead of leaving them stuck on the unanswered batch.
+   *
+   * Best effort: this runs right after the engine failed, and every caller already has that
+   * error.
+   */
+  private abandonRequests(ids: readonly number[]): void {
+    const close = this.inner.close_stream ?? this.inner.closeStream;
+    if (!close) {
+      return;
+    }
+    try {
+      for (const id of ids) {
+        close.call(this.inner, id);
+      }
+    } catch {
+      // The original failure has been reported; a second one gives callers nothing to act on.
+    }
+  }
+
+  async getMetadataForFile(file: nga.ModuleRef): Promise<nga.AnalysisResult | null> {
     const id = this.invoke(
       this.inner.requestMetadata ?? this.inner.request_metadata,
       'requestMetadata',
-      JSON.stringify(filePath),
+      JSON.stringify(file),
     );
     return new Promise<nga.AnalysisResult | null>((resolve, reject) => {
       this.metadataRequests.set(id, {resolve, reject});
@@ -339,7 +698,7 @@ export class WasmAnalyzer implements IAnalyzer {
     return JSON.parse(res) as string[];
   }
 
-  async setEntryPoints(entryPoints: string[]): Promise<string[]> {
+  async setEntryPoints(entryPoints: nga.ModuleRef[]): Promise<string[]> {
     const res = this.invoke(
       this.inner.setEntryPoints ?? this.inner.set_entry_points,
       'setEntryPoints',
@@ -372,11 +731,50 @@ export class WasmAnalyzer implements IAnalyzer {
   }
 
   async getFileContent(filePath: string): Promise<string> {
-    return this.invoke(
-      this.inner.getFileContent ?? this.inner.get_file_content,
-      'getFileContent',
-      filePath,
-    );
+    if (!this.host) {
+      return this.invoke(
+        this.inner.getFileContent ?? this.inner.get_file_content,
+        'getFileContent',
+        filePath,
+      );
+    }
+    if (this.closed) {
+      throw new Error('WasmAnalyzer closed');
+    }
+    const lookupFn = this.inner.lookupHostFileContent ?? this.inner.lookup_host_file_content;
+    let id = filePath;
+    let external = false;
+    if (lookupFn) {
+      const lookup = JSON.parse(
+        this.invoke(lookupFn, 'lookupHostFileContent', filePath),
+      ) as HostFileContentLookup;
+      if (lookup.code !== undefined) {
+        return lookup.code;
+      }
+      id = lookup.id;
+      external = lookup.external;
+    }
+    let results: ReadonlyArray<LoadResult | HostItemError | null>;
+    try {
+      results = await this.host.load([{id, kind: 'module', external}]);
+    } catch (e) {
+      throw e instanceof Error ? e : new Error(String(e));
+    }
+    if (!Array.isArray(results) || results.length !== 1) {
+      throw new Error(
+        `AnalyzerHost.load returned ${
+          Array.isArray(results) ? results.length : typeof results
+        } results for 1 request`,
+      );
+    }
+    const slot = checkedHostSlot<LoadResult>(results[0], 'load', 0, normalizeLoadResult);
+    if (slot === null) {
+      throw new Error(`Module not found: ${id}`);
+    }
+    if ('error' in slot) {
+      throw new Error(slot.error);
+    }
+    return slot.code;
   }
 
   async readResource(containingFile: string, url: string): Promise<nga.ResolvedResource | null> {
@@ -408,6 +806,7 @@ export class WasmAnalyzer implements IAnalyzer {
   }
 
   close(): void {
+    this.closed = true;
     this.clearPumpTimer();
     const closeError = new Error('WasmAnalyzer closed');
     for (const pending of this.metadataRequests.values()) {

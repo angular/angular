@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type * as nga from './types.js';
+import * as nga from './types.js';
 import type {NgpCompilerOptions} from './compiler_options.js';
 import type {IAnalyzer} from './hybrid_compiler.js';
 
@@ -63,11 +63,12 @@ export class NapiAnalyzer implements IAnalyzer {
     return this.consumeIterator(this.analyzer.analyzeOptimizedDelta());
   }
 
-  async getMetadataForFile(filePath: string): Promise<nga.AnalysisResult | null> {
+  async getMetadataForFile(file: nga.ModuleRef): Promise<nga.AnalysisResult | null> {
+    const filePath = nga.unwrapPathModuleRef(file, 'NapiAnalyzer.getMetadataForFile');
     return this.analyzer.getMetadataForFile(filePath) ?? null;
   }
 
-  async updateFileContent(updates: {filePath: string; content: string}[]): Promise<string[]> {
+  async updateFileContent(updates: nga.FileUpdate[]): Promise<string[]> {
     return this.analyzer.updateFileContent(updates);
   }
 
@@ -75,8 +76,10 @@ export class NapiAnalyzer implements IAnalyzer {
     return this.analyzer.invalidateFiles(updates);
   }
 
-  async setEntryPoints(entryPoints: string[]): Promise<string[]> {
-    return this.analyzer.setEntryPoints(entryPoints);
+  async setEntryPoints(entryPoints: nga.ModuleRef[]): Promise<string[]> {
+    return this.analyzer.setEntryPoints(
+      nga.unwrapPathEntryPoints(entryPoints, 'NapiAnalyzer.setEntryPoints')!,
+    );
   }
 
   async clearResolutionCache(): Promise<string[]> {
