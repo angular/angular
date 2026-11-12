@@ -7,6 +7,7 @@
  */
 
 import * as fs from 'node:fs/promises';
+import * as path from 'node:path';
 import {readConfiguration} from '@angular/compiler-cli';
 import {API, Snapshot} from '@typescript/native-preview/async';
 import {HybridCompiler} from '../../../packages/compiler-cli/preprocessor/src/hybrid_compiler.js';
@@ -220,8 +221,11 @@ export class ProjectManager {
       let targetPath = normFilePath;
       let shouldOpenTarget = false;
       if (normFilePath.endsWith('.html')) {
-        targetPath = normFilePath.replace(/\.html$/, '.ts');
-        shouldOpenTarget = await pathExists(targetPath);
+        const companionTsPath = await findCompanionTsFile(normFilePath);
+        if (companionTsPath) {
+          targetPath = companionTsPath;
+          shouldOpenTarget = true;
+        }
       }
 
       const previousSnapshot = this.currentSnapshot;
@@ -305,6 +309,39 @@ export class ProjectManager {
       );
     });
   }
+}
+
+async function findCompanionTsFile(htmlFilePath: string): Promise<string | null> {
+  const directCandidate = htmlFilePath.replace(/\.html$/, '.ts');
+  if (await pathExists(directCandidate)) {
+    return directCandidate;
+  }
+
+  if (htmlFilePath.endsWith('.template.html')) {
+    const componentCandidate = htmlFilePath.replace(/\.template\.html$/, '.component.ts');
+    if (await pathExists(componentCandidate)) {
+      return componentCandidate;
+    }
+  }
+
+  try {
+    const dir = path.dirname(htmlFilePath);
+    const entries = await fs.readdir(dir);
+    const tsFiles = entries.filter(
+      (f) => f.endsWith('.ts') && !f.endsWith('.d.ts') && !f.endsWith('.ngtypecheck.ts'),
+    );
+    const preferred =
+      tsFiles.find((f) => f.endsWith('.component.ts')) ??
+      tsFiles.find(
+        (f) => !f.endsWith('.spec.ts') && !f.endsWith('.test.ts') && !f.endsWith('.e2e.ts'),
+      ) ??
+      tsFiles[0];
+    if (preferred) {
+      return await normalizePath(path.join(dir, preferred));
+    }
+  } catch {}
+
+  return null;
 }
 
 function pathExists(p: string) {

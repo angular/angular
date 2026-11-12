@@ -175,6 +175,18 @@ connection.onInitialize(async (params: InitializeParams) => {
       if (projectManager) {
         projectManager.setApi(dynamicApi);
         connection.console.log(`[SERVER] Connected to dynamic TS7 API pipe: ${params.pipe}`);
+        const openUpdates = documents
+          .all()
+          .map((doc) => ({filePath: fileURLToPath(doc.uri), content: doc.getText()}))
+          .filter(
+            ({filePath}) =>
+              !filePath.endsWith('.ngtypecheck.ts') &&
+              (filePath.endsWith('.html') || filePath.endsWith('.ts')),
+          );
+        if (openUpdates.length > 0) {
+          await projectManager.updateFileContent(openUpdates);
+          connection.languages.diagnostics.refresh().catch(() => {});
+        }
       }
     } catch (err) {
       connection.console.error(`[SERVER] Failed to connect to dynamic TS7 API pipe: ${err}`);

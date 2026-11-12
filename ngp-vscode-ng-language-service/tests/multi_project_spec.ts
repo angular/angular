@@ -126,7 +126,7 @@ describe('Multi-Project Support', () => {
         import {Component} from '@angular/core';
         @Component({
           selector: 'app-solution-test',
-          templateUrl: './solution.component.html',
+          templateUrl: './solution.template.html',
           standalone: true,
         })
         export class SolutionTestComponent {
@@ -135,14 +135,11 @@ describe('Multi-Project Support', () => {
       `;
 
     const htmlContent = '<div [title]="¦solutionTitle"></div>';
-    const tsFilePath = await env.createFile('solution_proj/solution.component.ts', tsContent);
+    await env.createFile('solution_proj/solution.component.ts', tsContent);
 
     try {
-      await env.run('solution_proj/solution.component.html', htmlContent, async (htmlFilePath) => {
-        // Open the TS file to populate the compiler with component declarations
-        await env.openFile(tsFilePath, tsContent);
-
-        // Verify hover on HTML file works cleanly
+      await env.run('solution_proj/solution.template.html', htmlContent, async (htmlFilePath) => {
+        // Verify hover on HTML file works cleanly without opening the TS file first
         await env.expectHoverAtCursor(htmlFilePath, ['solutionTitle', 'string']);
       });
     } finally {

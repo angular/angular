@@ -97,6 +97,26 @@ export async function activate(context: vscode.ExtensionContext) {
     outputChannel.appendLine(`Could not get existing TypeScript API connection: ${err}`);
   }
 
+  const tsGoPath = await resolveTsGoPath();
+  let ts7Client: LanguageClient | undefined;
+  if (tsGoPath) {
+    ts7Client = createTs7Client(tsGoPath);
+    try {
+      await ts7Client.start();
+      if (!tsApiPipe && !usingNativePreviewExtension) {
+        const res = await ts7Client.sendRequest<{sessionId: string; pipe: string}>(
+          'custom/initializeAPISession',
+          {},
+        );
+        if (res?.pipe) {
+          tsApiPipe = res.pipe;
+        }
+      }
+    } catch (err) {
+      outputChannel.appendLine(`Failed to start TS 7 Server: ${err}`);
+    }
+  }
+
   const distServer = context.asAbsolutePath(path.join('dist', 'server', 'server.js'));
   const bazelServer = context.asAbsolutePath(
     path.join('..', 'dist', 'bin', 'ngp-vscode-ng-language-service', 'server', 'server_bundle.js'),
@@ -134,6 +154,10 @@ export async function activate(context: vscode.ExtensionContext) {
     clientOptions,
   );
 
+  if (ts7Client) {
+    context.subscriptions.push(registerTs7RelayHandlers(client, ts7Client));
+  }
+
   registerCommands(context, client, outputChannel);
 
   client
@@ -144,23 +168,9 @@ export async function activate(context: vscode.ExtensionContext) {
     .catch((err) => {
       outputChannel.appendLine(`Failed to start Angular Language Service: ${err}`);
     });
-
-  const tsGoPath = await resolveTsGoPath();
-
-  // Launch ts7Client when tsGoPath is available so registerTs7RelayHandlers is active
-  // for TsGoFacade LSP requests. Only initialize an API session on ts7Client if we
-  // didn't already connect to typescriptteam.native-preview's API pipe.
-  if (tsGoPath) {
-    launchTs7Client(tsGoPath, context, clientReady, !tsApiPipe && !usingNativePreviewExtension);
-  }
 }
 
-function launchTs7Client(
-  tsGoPath: string,
-  context: vscode.ExtensionContext,
-  clientReady: Promise<void>,
-  initializeApiSession: boolean,
-) {
+function createTs7Client(tsGoPath: string): LanguageClient {
   const isNative =
     tsGoPath.includes(`typescript-${process.platform}-${process.arch}`) ||
     tsGoPath.includes(`native-preview-${process.platform}-${process.arch}`) ||
@@ -210,34 +220,12 @@ function launchTs7Client(
     },
   };
 
-  const ts7Client = new LanguageClient(
+  return new LanguageClient(
     'ng-ts-server',
     'Angular TS 7 Server',
     ts7ServerOptions,
     ts7ClientOptions,
   );
-
-  ts7Client
-    .start()
-    .then(async () => {
-      if (!initializeApiSession) {
-        return;
-      }
-      try {
-        const res = await ts7Client!.sendRequest<{sessionId: string; pipe: string}>(
-          'custom/initializeAPISession',
-          {},
-        );
-        if (res?.pipe) {
-          await clientReady;
-          client.sendNotification('angular/setTsApiPipe', {pipe: res.pipe});
-        }
-      } catch {}
-    })
-    .catch((err) => {
-      ts7OutputChannel.appendLine(`Failed to start TS 7 Server: ${err}`);
-    });
-  context.subscriptions.push(registerTs7RelayHandlers(client, ts7Client));
 }
 
 export function deactivate(): Thenable<void> | undefined {
