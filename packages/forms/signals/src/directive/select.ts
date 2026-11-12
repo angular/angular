@@ -57,6 +57,11 @@ function isRelevantSelectMutation(mutation: MutationRecord) {
     if (mutation.target instanceof Comment) {
       return false;
     }
+    // A changed text may change the value of an option without a `value` attribute. Such a
+    // record never lists added or removed nodes.
+    if (mutation.type === 'characterData') {
+      return true;
+    }
     // Otherwise if any non-comment nodes were added / removed it is relevant.
     for (const node of mutation.addedNodes) {
       if (!(node instanceof Comment)) {
