@@ -19,7 +19,7 @@ export {
   linkedSignalUpdateFn,
 } from './src/linked_signal';
 export {ValueEqualityFn, defaultEquals} from './src/equality';
-export {setThrowInvalidWriteToSignalError} from './src/errors';
+export {setThrowInvalidWriteToSignalError, SignalErrorCode} from './src/errors';
 export {
   REACTIVE_NODE,
   Reactive,

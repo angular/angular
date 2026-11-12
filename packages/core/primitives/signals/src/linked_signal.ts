@@ -8,6 +8,7 @@
 
 import {COMPUTING, ERRORED, UNSET} from './computed';
 import {defaultEquals, ValueEqualityFn} from './equality';
+import {SignalErrorCode} from './errors';
 import {
   consumerAfterComputation,
   consumerBeforeComputation,
@@ -147,7 +148,10 @@ export const LINKED_SIGNAL_NODE: Omit<
       if (node.value === COMPUTING) {
         // Our computation somehow led to a cyclic read of itself.
         throw new Error(
-          typeof ngDevMode !== 'undefined' && ngDevMode ? 'Detected cycle in computations.' : '',
+          `NG0${SignalErrorCode.LINKED_SIGNAL_CYCLE}` +
+            (typeof ngDevMode !== 'undefined' && ngDevMode
+              ? ': Detected cycle in computations.'
+              : ''),
         );
       }
 

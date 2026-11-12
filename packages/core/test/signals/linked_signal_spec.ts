@@ -102,6 +102,46 @@ describe('linkedSignal', () => {
       expect(choice()).toBe('apple');
       expect(debugName).not.toHaveBeenCalled();
     });
+
+    it('should retain and cache the cycle error in production until a dependency changes', () => {
+      const cycle = signal(true);
+      const a: () => unknown = linkedSignal(() => (cycle() ? a() : 1));
+      let error: unknown;
+      try {
+        a();
+      } catch (e) {
+        error = e;
+      }
+      expect(error instanceof Error && error.constructor).toBe(Error);
+      expect(error).toEqual(jasmine.objectContaining({message: 'NG0604'}));
+      expect(() => a()).toThrow(error);
+      cycle.set(false);
+      expect(a()).toBe(1);
+    });
+  });
+
+  it('should detect cycles in the source and computation', () => {
+    const sourceCycle: () => unknown = linkedSignal({
+      source: () => sourceCycle(),
+      computation: (value) => value,
+    });
+    const computationCycle: () => unknown = linkedSignal({
+      source: () => 1,
+      computation: () => computationCycle(),
+    });
+
+    expect(() => sourceCycle()).toThrowError('NG0604: Detected cycle in computations.');
+    expect(() => computationCycle()).toThrowError('NG0604: Detected cycle in computations.');
+  });
+
+  it('should report the type of the signal re-entered in a mixed cycle', () => {
+    const firstComputed: () => unknown = computed(() => firstLinked());
+    const firstLinked: () => unknown = linkedSignal(() => firstComputed());
+    expect(() => firstComputed()).toThrowError('NG0603: Detected cycle in computations.');
+
+    const secondLinked: () => unknown = linkedSignal(() => secondComputed());
+    const secondComputed: () => unknown = computed(() => secondLinked());
+    expect(() => secondLinked()).toThrowError('NG0604: Detected cycle in computations.');
   });
 
   it('should update when the source changes', () => {

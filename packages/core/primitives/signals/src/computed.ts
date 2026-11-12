@@ -7,6 +7,7 @@
  */
 
 import {defaultEquals, ValueEqualityFn} from './equality';
+import {SignalErrorCode} from './errors';
 import {
   consumerAfterComputation,
   consumerBeforeComputation,
@@ -133,7 +134,10 @@ const COMPUTED_NODE: Omit<ComputedNode<unknown>, 'computation'> = /* @__PURE__ *
       if (node.value === COMPUTING) {
         // Our computation somehow led to a cyclic read of itself.
         throw new Error(
-          typeof ngDevMode !== 'undefined' && ngDevMode ? 'Detected cycle in computations.' : '',
+          `NG0${SignalErrorCode.COMPUTED_CYCLE}` +
+            (typeof ngDevMode !== 'undefined' && ngDevMode
+              ? ': Detected cycle in computations.'
+              : ''),
         );
       }
 

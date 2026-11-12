@@ -45,6 +45,9 @@ const isEven = computed(() => counter() % 2 === 0);
 
 Because the calculation function used to create the `computed` is executed in a reactive context, any signals read by that calculation will be tracked as dependencies, and the value of the computed signal recalculated whenever any of those dependencies changes.
 
+When a cycle re-enters a `computed` or `linkedSignal`, it throws an error with code `NG0603` or
+`NG0604`, respectively. The codes are retained in production builds.
+
 Similarly to signals, the `computed` can (optionally) specify an equality comparator function.
 
 ### Side effects: `createWatch()`

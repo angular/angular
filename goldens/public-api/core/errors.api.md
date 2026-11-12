@@ -32,6 +32,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     COMPONENT_ID_COLLISION = -912,
     // (undocumented)
+    COMPUTED_CYCLE = 603,
+    // (undocumented)
     CYCLIC_DI_DEPENDENCY = -200,
     // (undocumented)
     DEF_TYPE_UNDEFINED = -919,
@@ -105,6 +107,8 @@ export const enum RuntimeErrorCode {
     INVALID_SKIP_HYDRATION_HOST = -504,
     // (undocumented)
     INVALID_STYLE_PROP_VALUE = -318,
+    // (undocumented)
+    LINKED_SIGNAL_CYCLE = 604,
     // (undocumented)
     LOOP_TRACK_DUPLICATE_KEYS = -955,
     // (undocumented)

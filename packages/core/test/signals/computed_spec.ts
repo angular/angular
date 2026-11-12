@@ -7,6 +7,7 @@
  */
 
 import {computed, signal} from '../../src/core';
+import {global} from '../../src/util/global';
 import {
   createWatch,
   ReactiveNode,
@@ -85,7 +86,7 @@ describe('computed', () => {
 
   it('should detect simple dependency cycles', () => {
     const a: () => unknown = computed(() => a());
-    expect(() => a()).toThrowError('Detected cycle in computations.');
+    expect(() => a()).toThrowError('NG0603: Detected cycle in computations.');
   });
 
   it('should detect deep dependency cycles', () => {
@@ -93,7 +94,29 @@ describe('computed', () => {
     const b = computed(() => c());
     const c = computed(() => d());
     const d = computed(() => a());
-    expect(() => a()).toThrowError('Detected cycle in computations.');
+    expect(() => a()).toThrowError('NG0603: Detected cycle in computations.');
+  });
+
+  it('should retain and cache the cycle error in production until a dependency changes', () => {
+    const previousNgDevMode = global['ngDevMode'];
+    global['ngDevMode'] = false;
+    try {
+      const cycle = signal(true);
+      const a: () => unknown = computed(() => (cycle() ? a() : 1));
+      let error: unknown;
+      try {
+        a();
+      } catch (e) {
+        error = e;
+      }
+      expect(error instanceof Error && error.constructor).toBe(Error);
+      expect(error).toEqual(jasmine.objectContaining({message: 'NG0603'}));
+      expect(() => a()).toThrow(error);
+      cycle.set(false);
+      expect(a()).toBe(1);
+    } finally {
+      global['ngDevMode'] = previousNgDevMode;
+    }
   });
 
   it('should cache exceptions thrown until computed gets dirty again', () => {

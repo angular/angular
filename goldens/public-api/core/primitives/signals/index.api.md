@@ -198,6 +198,14 @@ export const SIGNAL: unique symbol;
 export const SIGNAL_NODE: SignalNode<unknown>;
 
 // @public (undocumented)
+export const enum SignalErrorCode {
+    // (undocumented)
+    COMPUTED_CYCLE = 603,
+    // (undocumented)
+    LINKED_SIGNAL_CYCLE = 604
+}
+
+// @public (undocumented)
 export function signalGetFn<T>(node: SignalNode<T>): T;
 
 // @public (undocumented)

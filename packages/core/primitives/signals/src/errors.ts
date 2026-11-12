@@ -8,6 +8,11 @@
 
 import type {SignalNode} from './signal';
 
+export const enum SignalErrorCode {
+  COMPUTED_CYCLE = 603,
+  LINKED_SIGNAL_CYCLE = 604,
+}
+
 function defaultThrowError(): never {
   throw new Error();
 }

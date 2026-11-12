@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {SignalErrorCode} from '../primitives/signals';
+
 import {ERROR_DETAILS_PAGE_BASE_URL} from './error_details_base_url';
 
 /**
@@ -97,6 +99,11 @@ export const enum RuntimeErrorCode {
   SIGNAL_WRITE_FROM_ILLEGAL_CONTEXT = -600,
   REQUIRE_SYNC_WITHOUT_SYNC_EMIT = 601,
   ASSERTION_NOT_INSIDE_REACTIVE_CONTEXT = -602,
+  // Const enum values are inlined, so these references have no runtime property access.
+  // tslint:disable-next-line: no-toplevel-property-access
+  COMPUTED_CYCLE = SignalErrorCode.COMPUTED_CYCLE,
+  // tslint:disable-next-line: no-toplevel-property-access
+  LINKED_SIGNAL_CYCLE = SignalErrorCode.LINKED_SIGNAL_CYCLE,
 
   // Animation Errors
   ANIMATE_INVALID_VALUE = 650,
