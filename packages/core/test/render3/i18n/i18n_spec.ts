@@ -364,7 +364,7 @@ describe('Runtime i18n', () => {
         ]),
         update: matchDebug([
           `if (mask & 0b1) { icuSwitchCase(${HEADER_OFFSET + 2}, \`\${lView[i-1]}\`); }`,
-          `if (mask & 0b1) { icuUpdateCase(${HEADER_OFFSET + 2}); }`,
+          `if (mask & 0b11) { icuUpdateCase(${HEADER_OFFSET + 2}); }`,
         ]),
         ast: [
           {

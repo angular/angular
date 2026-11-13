@@ -3505,6 +3505,54 @@ describe('runtime i18n', () => {
     );
   });
 
+  describe('attribute bindings inside ICU cases', () => {
+    @Component({template: '', changeDetection: ChangeDetectionStrategy.Eager})
+    class IcuAttrComp {
+      count = 0;
+      title = 'first';
+    }
+
+    it('should set an attribute binding when it is the only binding in the case', () => {
+      const fixture = initWithTemplate(
+        IcuAttrComp,
+        `<div i18n>{count, plural, =0 {none} other {<span title="{{title}}">item</span>}}</div>`,
+      );
+      fixture.componentInstance.count = 1;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('span').getAttribute('title')).toBe('first');
+    });
+
+    it('should update an attribute binding when only its value changes', () => {
+      const fixture = initWithTemplate(
+        IcuAttrComp,
+        `<div i18n>{count, plural, =0 {none} other {{{count}} <span title="{{title}}">item</span>}}</div>`,
+      );
+      fixture.componentInstance.count = 1;
+      fixture.detectChanges();
+      const span: HTMLElement = fixture.nativeElement.querySelector('span');
+      expect(span.getAttribute('title')).toBe('first');
+
+      fixture.componentInstance.title = 'second';
+      fixture.detectChanges();
+      expect(span.getAttribute('title')).toBe('second');
+    });
+
+    it('should update an attribute binding in a nested element', () => {
+      const fixture = initWithTemplate(
+        IcuAttrComp,
+        `<div i18n>{count, plural, =0 {none} other {<b><span title="{{title}}">item</span></b>}}</div>`,
+      );
+      fixture.componentInstance.count = 1;
+      fixture.detectChanges();
+      const span: HTMLElement = fixture.nativeElement.querySelector('span');
+      expect(span.getAttribute('title')).toBe('first');
+
+      fixture.componentInstance.title = 'second';
+      fixture.detectChanges();
+      expect(span.getAttribute('title')).toBe('second');
+    });
+  });
+
   describe('attribute sanitization', () => {
     @Component({template: '', changeDetection: ChangeDetectionStrategy.Eager})
     class SanitizeAppComp {
