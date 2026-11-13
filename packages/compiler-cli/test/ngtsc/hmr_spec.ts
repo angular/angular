@@ -69,7 +69,57 @@ runInEachFileSystem(() => {
       const hmrContents = env.driveHmr('test.ts', 'Cmp');
       expect(jsContents).not.toContain('import.meta.hot');
       expect(jsContents).not.toContain('replaceMetadata');
+      expect(jsContents).not.toContain('hmrText');
       expect(hmrContents).toBe(null);
+    });
+
+    it('should describe static text in embedded templates in both HMR modules', () => {
+      enableHmr();
+      env.write(
+        'test.ts',
+        `
+          import {Component, TemplateRef, ViewChild} from '@angular/core';
+
+          @Component({
+            selector: 'cmp',
+            template: '<ng-template #header><strong>Status</strong>{{value}}</ng-template>',
+          })
+          export class Cmp {
+            @ViewChild('header') header!: TemplateRef<unknown>;
+            value = 'value';
+          }
+        `,
+      );
+
+      env.driveMain();
+
+      for (const code of [env.getContents('test.js'), env.driveHmr('test.ts', 'Cmp')!]) {
+        expect(code).toMatch(/hmrText:\s*\[/);
+        expect(code).toMatch(/\[1,\s*["']Status["']\]/);
+        expect(code).toContain('Cmp_ng_template_0_Template');
+      }
+    });
+
+    it('should omit static text metadata for control flow and projection', () => {
+      enableHmr();
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({template: '<p>Status</p>@if (true) { Branch }'})
+          export class WithControlFlow {}
+
+          @Component({template: '<p>Status</p><ng-content />'})
+          export class WithProjection {}
+        `,
+      );
+
+      env.driveMain();
+
+      expect(env.getContents('test.js')).not.toContain('hmrText');
+      expect(env.driveHmr('test.ts', 'WithControlFlow')).not.toContain('hmrText');
+      expect(env.driveHmr('test.ts', 'WithProjection')).not.toContain('hmrText');
     });
 
     it('should generate an HMR initializer and update code when enabled', () => {

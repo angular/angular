@@ -48,6 +48,7 @@ import {generateLocalLetReferences} from './phases/generate_local_let_references
 import {generateProjectionDefs} from './phases/generate_projection_def';
 import {generateVariables} from './phases/generate_variables';
 import {collectConstExpressions} from './phases/has_const_expression_collection';
+import {collectHmrTextViews} from './phases/hmr_text';
 import {parseHostStyleProperties} from './phases/host_style_property_parsing';
 import {collectI18nConsts} from './phases/i18n_const_collection';
 import {convertI18nText} from './phases/i18n_text_extraction';
@@ -184,6 +185,7 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: attachSourceLocations},
   {kind: Kind.Tmpl, fn: disableBindings},
   {kind: Kind.Both, fn: extractPureFunctions},
+  {kind: Kind.Tmpl, fn: collectHmrTextViews},
   {kind: Kind.Both, fn: reify},
   {kind: Kind.Both, fn: chain},
 ];

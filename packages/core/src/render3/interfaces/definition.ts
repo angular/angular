@@ -277,6 +277,26 @@ export interface DirectiveDef<T> {
     | null;
 }
 
+/** Compiler-generated data for comparing a text-only HMR update. */
+export type HmrTextMetadata = readonly [
+  source: readonly string[],
+  compilationMode: number,
+  legacyOptionalChaining: boolean,
+  view: HmrTextView,
+  viewQueries: () => unknown[],
+];
+
+export type HmrTextView = readonly [
+  decls: number,
+  vars: number,
+  text: readonly (readonly [index: number, value: string])[],
+  children: readonly (readonly [
+    index: number,
+    template: ComponentTemplate<any>,
+    view: HmrTextView,
+  ])[],
+];
+
 /**
  * Runtime link information for Components.
  *
@@ -300,6 +320,8 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
    * The View template of the component.
    */
   readonly template: ComponentTemplate<T>;
+
+  readonly hmrText?: HmrTextMetadata;
 
   /** Constants associated with the component's view. */
   readonly consts: TConstantsOrFactory | null;
