@@ -153,8 +153,6 @@ pub struct AnalysisResult {
 pub struct AnalyzerOptions {
     /// Record perf spans and counters for `takePerf`. Off by default.
     pub perf_trace: Option<bool>,
-    /// With `perf_trace`, also record query keys and per-query latency slices.
-    pub perf_trace_detail: Option<bool>,
     /// tsconfig to read the root files and unset options from. Optional: every setting it
     /// provides can be passed explicitly instead.
     pub tsconfig_path: Option<String>,
