@@ -37,10 +37,15 @@ export const EXTENDED_ERROR_DETAILS_PAGE_BASE_URL = `https://${versionSubDomain}
  */
 export function formatExtendedError(code: ErrorCode, message?: null | false | string): string {
   const fullCode = `NG${Math.abs(code)}`;
-  const errorMessage = `${fullCode}${message ? ': ' + message : ''}`;
-  const addPeriodSeparator = !/[.,;!?\n]$/.test(errorMessage);
-  const separator = addPeriodSeparator ? '.' : '';
-  return `${errorMessage}${separator} Find more at ${EXTENDED_ERROR_DETAILS_PAGE_BASE_URL}/${fullCode}`;
+  const details = `Find more at ${EXTENDED_ERROR_DETAILS_PAGE_BASE_URL}/${fullCode}`;
+
+  // The code isn't repeated in the message, because tools already print it from `Diagnostic.code`.
+  if (!message) {
+    return details;
+  }
+
+  const separator = /[.,;!?\n]$/.test(message) ? '' : '.';
+  return `${message}${separator} ${details}`;
 }
 
 /**
