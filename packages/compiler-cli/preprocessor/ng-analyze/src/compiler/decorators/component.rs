@@ -1131,7 +1131,7 @@ async fn optimize_component_scope(
         }
 
         let mut def_entries_by_block: Option<
-            std::collections::HashMap<String, Vec<(DefEntry, bool)>>,
+            std::collections::BTreeMap<String, Vec<(DefEntry, bool)>>,
         > = None;
         let mut def_entries_flat: Option<Vec<(DefEntry, bool)>> = None;
 
@@ -1155,7 +1155,7 @@ async fn optimize_component_scope(
             }
             match def_eval.raw() {
                 crate::evaluator::ResolvedValue::Map(map) => {
-                    let mut by_block = std::collections::HashMap::new();
+                    let mut by_block = std::collections::BTreeMap::new();
                     let mut flat = Vec::new();
                     for (block_name, block_val) in map.iter() {
                         let mut block_evaluated = Vec::new();
@@ -1194,7 +1194,7 @@ async fn optimize_component_scope(
 
         if def_entries_flat.is_none() {
             if let Some(ref by_block) = component.parsed_deferred_imports_by_block {
-                let mut block_map = std::collections::HashMap::new();
+                let mut block_map = std::collections::BTreeMap::new();
                 let mut flat = Vec::new();
                 for (block_name, block_imps) in by_block {
                     let block_tuples: Vec<(DefEntry, bool)> = block_imps
@@ -1288,7 +1288,7 @@ async fn optimize_component_scope(
             }
 
             if let Some(by_block) = def_entries_by_block {
-                let mut resolved_by_block = std::collections::HashMap::new();
+                let mut resolved_by_block = std::collections::BTreeMap::new();
                 for (block_name, block_entries) in by_block {
                     let mut block_decls = Vec::new();
                     for (entry, _) in block_entries {

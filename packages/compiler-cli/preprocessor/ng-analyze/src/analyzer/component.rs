@@ -237,7 +237,7 @@ fn parse_component_metadata<'a>(
                             p.value.get_inner_expression(),
                             Expression::ObjectExpression(_)
                         );
-                        let mut by_block = std::collections::HashMap::new();
+                        let mut by_block = std::collections::BTreeMap::new();
                         let mut flattened = Vec::new();
                         for prop in &obj.properties {
                             let ObjectPropertyKind::ObjectProperty(prop) = prop else {

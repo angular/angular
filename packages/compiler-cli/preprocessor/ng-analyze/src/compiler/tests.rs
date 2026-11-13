@@ -8761,3 +8761,143 @@ fn test_host_directives_entries_are_never_dropped() {
         }
     }
 }
+
+#[test]
+fn test_analysis_result_fingerprint_tracks_dts_and_deferred_metadata() {
+    let make_dts = |input_name: &str, deferred_selector: &str, comment: &str| {
+        format!(
+            "import * as i0 from '@angular/core';\n\
+             export declare class DepDir {{\n\
+               static ɵdir: i0.ɵɵDirectiveDeclaration<DepDir, \"[dep]\", never, {{ \"{input_name}\": {{ \"alias\": \"{input_name}\"; \"required\": false; }} }}, {{}}, never, never, true, never>;\n\
+               static ɵfac: i0.ɵɵFactoryDeclaration<DepDir, never>;\n\
+             }}\n\
+             export declare class DeferredCmp {{\n\
+               static ɵcmp: i0.ɵɵComponentDeclaration<DeferredCmp, \"{deferred_selector}\", never, {{}}, {{}}, never, never, true, never>;\n\
+               static ɵfac: i0.ɵɵFactoryDeclaration<DeferredCmp, never>;\n\
+             }}\n\
+             {comment}\n"
+        )
+    };
+    let app_source = r#"
+        import {Component} from '@angular/core';
+        import {DepDir, DeferredCmp} from './dep';
+
+        @Component({
+            selector: 'app-root',
+            imports: [DepDir],
+            deferredImports: {
+                blockA: [DeferredCmp],
+                blockB: [DeferredCmp],
+            },
+            template: '<div dep></div>@defer (name blockA) { <dep-deferred /> } @defer (name blockB) { <dep-deferred /> }',
+        })
+        export class AppComponent {}
+    "#;
+
+    let build_analyzer = |dts_content: String| {
+        let mut virtual_files = HashMap::new();
+        virtual_files.insert(
+            "/project/tsconfig.json".to_string(),
+            r#"{"files": ["app.ts", "dep.d.ts"]}"#.to_string(),
+        );
+        virtual_files.insert("/project/dep.d.ts".to_string(), dts_content);
+        virtual_files.insert("/project/app.ts".to_string(), app_source.to_string());
+        Analyzer::new(AnalyzerOptions {
+            tsconfig_path: Some("/project/tsconfig.json".to_string()),
+            optimize: Some(true),
+            virtual_files: Some(virtual_files),
+            ..Default::default()
+        })
+        .unwrap()
+    };
+
+    let dts_v1 = make_dts("first", "dep-deferred", "");
+    let analyzer = build_analyzer(dts_v1.clone());
+    let initial = analyzer
+        .get_metadata_for_file("/project/app.ts".to_string())
+        .expect("app.ts metadata");
+    let comp = initial
+        .classes
+        .iter()
+        .find(|c| c.class_name.as_deref() == Some("AppComponent"))
+        .and_then(|c| c.component.as_ref())
+        .expect("AppComponent component metadata");
+    let by_block = comp
+        .resolved_deferred_declarations_by_block
+        .as_ref()
+        .expect("resolvedDeferredDeclarationsByBlock should be populated");
+    assert_eq!(
+        by_block.keys().map(String::as_str).collect::<Vec<_>>(),
+        vec!["blockA", "blockB"]
+    );
+    let deferred_decl = comp
+        .resolved_deferred_declarations
+        .as_ref()
+        .and_then(|decls| decls.iter().find(|d| d.name == "DeferredCmp"))
+        .expect("DeferredCmp in resolved_deferred_declarations");
+    assert_eq!(
+        deferred_decl.deferred_blocks.as_deref(),
+        Some(&["blockA".to_string(), "blockB".to_string()][..])
+    );
+    let initial_fp = initial
+        .fingerprint
+        .clone()
+        .expect("AnalysisResult.fingerprint should be populated");
+    assert_eq!(initial_fp.len(), 16);
+
+    // An independent analyzer over identical inputs must produce the exact same fingerprint,
+    // including keyed block maps such as `resolvedDeferredDeclarationsByBlock` and `deferredBlocks`.
+    let second_analyzer = build_analyzer(dts_v1);
+    let second = second_analyzer
+        .get_metadata_for_file("/project/app.ts".to_string())
+        .expect("app.ts metadata");
+    assert_eq!(second.fingerprint.as_deref(), Some(initial_fp.as_str()));
+
+    // A comment-only edit in the `.d.ts` does not alter projected metadata, so the fingerprint
+    // stays identical.
+    analyzer
+        .update_file_content(vec![FileUpdate {
+            file_path: "/project/dep.d.ts".to_string(),
+            content: make_dts("first", "dep-deferred", "// trailing comment"),
+        }])
+        .unwrap();
+    let after_comment = analyzer
+        .get_metadata_for_file("/project/app.ts".to_string())
+        .expect("app.ts metadata after comment edit");
+    assert_eq!(
+        after_comment.fingerprint.as_deref(),
+        Some(initial_fp.as_str())
+    );
+
+    // Changing an input on a resolved declaration in `.d.ts` must change the fingerprint.
+    analyzer
+        .update_file_content(vec![FileUpdate {
+            file_path: "/project/dep.d.ts".to_string(),
+            content: make_dts("second", "dep-deferred", "// trailing comment"),
+        }])
+        .unwrap();
+    let after_input_change = analyzer
+        .get_metadata_for_file("/project/app.ts".to_string())
+        .expect("app.ts metadata after input edit");
+    let after_input_fp = after_input_change
+        .fingerprint
+        .clone()
+        .expect("fingerprint after input edit");
+    assert_ne!(after_input_fp, initial_fp);
+
+    // Changing metadata of a deferred declaration in `.d.ts` must also change the fingerprint.
+    analyzer
+        .update_file_content(vec![FileUpdate {
+            file_path: "/project/dep.d.ts".to_string(),
+            content: make_dts("second", "dep-deferred-v2", "// trailing comment"),
+        }])
+        .unwrap();
+    let after_deferred_change = analyzer
+        .get_metadata_for_file("/project/app.ts".to_string())
+        .expect("app.ts metadata after deferred edit");
+    let after_deferred_fp = after_deferred_change
+        .fingerprint
+        .clone()
+        .expect("fingerprint after deferred edit");
+    assert_ne!(after_deferred_fp, after_input_fp);
+}

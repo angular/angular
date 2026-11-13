@@ -3,7 +3,9 @@ use super::api::{DeclarationMetadata, ResolvedHostDirectiveMetadata};
 use napi_derive::napi;
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[derive(
+    Clone, Copy, Debug, Default, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize,
+)]
 #[serde(rename_all = "camelCase")]
 pub struct SpanMetadata {
     pub start: u32,
@@ -24,7 +26,7 @@ impl SpanMetadata {
 
 /// Text to splice into the source at `position`, a UTF-16 offset.
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, PartialEq, Eq, serde::Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct TextInsertionMetadata {
     pub position: u32,
@@ -43,7 +45,7 @@ impl TextInsertionMetadata {
 
 /// One binding introduced by a static `import` declaration.
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ImportBindingMetadata {
     /// Source span of the individual specifier (`Foo`, `Foo as Bar`, `type Foo`, or `* as ns`).
@@ -65,7 +67,7 @@ pub struct ImportBindingMetadata {
 /// Static `import` declaration metadata used for `@defer` import pruning; deferral is
 /// all-or-nothing per declaration (`DeferredSymbolTracker`).
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ImportDeclarationMetadata {
     /// Statement span for diagnostic anchoring.
@@ -106,7 +108,7 @@ impl ImportDeclarationMetadata {
 
 /// A top-level `import X = …` statement, which the emitter hoists like the `import` declarations.
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ImportEqualsDeclarationMetadata {
     /// Statement span, including a leading `export`.
@@ -130,7 +132,7 @@ impl ImportEqualsDeclarationMetadata {
 /// Implicit signal `debugName` insertion (`signalMetadataTransform`).
 /// https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/transform/src/implicit_signal_debug_name_transform.ts#L11-L93
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SignalDebugNameMetadata {
     /// UTF-16 insertion offset (after `{` when spreading into options, or at the end of the call's arguments).
@@ -175,7 +177,7 @@ impl SignalDebugNameMetadata {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct LegacyAnimationTriggerNames {
     pub static_trigger_names: Vec<String>,
@@ -183,7 +185,7 @@ pub struct LegacyAnimationTriggerNames {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct TypeRefMetadata {
     pub name: String,
@@ -194,7 +196,7 @@ pub struct TypeRefMetadata {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct TypeParameterMetadata {
     pub name: String,
@@ -227,7 +229,7 @@ impl TypeParameterMetadata {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, PartialEq, serde::Serialize)]
+#[derive(Clone, Debug, PartialEq, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ProviderField {
     pub span: SpanMetadata,
@@ -235,7 +237,7 @@ pub struct ProviderField {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DependencyMetadata {
     pub token_span: Option<SpanMetadata>,
@@ -248,7 +250,7 @@ pub struct DependencyMetadata {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct InjectableMetadata {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -263,7 +265,7 @@ pub struct InjectableMetadata {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ServiceMetadata {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -274,7 +276,7 @@ pub struct ServiceMetadata {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DeclaringNgModule {
     pub file_path: String,
@@ -282,7 +284,7 @@ pub struct DeclaringNgModule {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PipeMetadata {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -297,7 +299,7 @@ pub struct PipeMetadata {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, PartialEq, Eq, serde::Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct HostDirectiveBinding {
     pub public_name: String,
@@ -305,7 +307,7 @@ pub struct HostDirectiveBinding {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct HostDirectiveMetadata {
     /// Reference to the host directive class in the emitting file's frame.
@@ -318,7 +320,7 @@ pub struct HostDirectiveMetadata {
 /// URL resource (template or stylesheet) referenced in a component decorator, with its resolved
 /// path and literal span (used for Kythe cross-references).
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct UrlMetadata {
     pub url: String,
@@ -328,7 +330,7 @@ pub struct UrlMetadata {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ComponentImportEntryMetadata {
     pub name: String,
@@ -345,7 +347,7 @@ pub struct ComponentImportEntryMetadata {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ComponentMetadata {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -434,18 +436,18 @@ pub struct ComponentMetadata {
     pub deferred_imports: Option<Vec<ReferenceMetadata>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub deferred_imports_by_block:
-        Option<std::collections::HashMap<String, Vec<ReferenceMetadata>>>,
+        Option<std::collections::BTreeMap<String, Vec<ReferenceMetadata>>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub deferred_imports_span: Option<SpanMetadata>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub resolved_deferred_declarations: Option<Vec<DeclarationMetadata>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub resolved_deferred_declarations_by_block:
-        Option<std::collections::HashMap<String, Vec<DeclarationMetadata>>>,
+        Option<std::collections::BTreeMap<String, Vec<DeclarationMetadata>>>,
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ForeignImportMetadata {
     pub name: String,
@@ -453,7 +455,7 @@ pub struct ForeignImportMetadata {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct HostPropertyMetadata {
     pub key: ExpressionValueMetadata,
@@ -463,7 +465,7 @@ pub struct HostPropertyMetadata {
 /// One entry of the `host` object reduced by the partial evaluator (`Record<string, string | Expression>`).
 /// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L2021-L2047
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct HostMetadataEntry {
     pub key: String,
@@ -480,7 +482,7 @@ pub struct HostMetadataEntry {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DirectiveMetadata {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -514,7 +516,7 @@ pub struct DirectiveMetadata {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct TemplateGuardMetadata {
     pub input_name: String,
@@ -522,7 +524,7 @@ pub struct TemplateGuardMetadata {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct TransformMetadata {
     pub kind: String, // "type" or "expression"
@@ -532,7 +534,7 @@ pub struct TransformMetadata {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct InputMetadata {
     pub name: String, // class property name
@@ -555,7 +557,7 @@ pub struct InputMetadata {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct OutputMetadata {
     pub name: String, // class property name
@@ -570,7 +572,7 @@ pub struct OutputMetadata {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct QueryMetadata {
     pub property_name: String,
@@ -600,7 +602,7 @@ pub struct QueryMetadata {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AngularFieldMetadata {
     pub kind: String, // "input" | "output" | "query" | "coercion"
@@ -619,7 +621,7 @@ pub struct AngularFieldMetadata {
 // inside a `#[napi(string_enum)]` container.
 #[cfg(feature = "napi")]
 #[napi(string_enum)]
-#[derive(Clone, Debug, PartialEq, serde::Serialize, serde::Deserialize)]
+#[derive(Clone, Debug, PartialEq, Hash, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum ExpressionValueKindMetadata {
     #[napi(value = "string")]
@@ -631,7 +633,7 @@ pub enum ExpressionValueKindMetadata {
 }
 
 #[cfg(not(feature = "napi"))]
-#[derive(Clone, Debug, PartialEq, serde::Serialize, serde::Deserialize)]
+#[derive(Clone, Debug, PartialEq, Hash, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum ExpressionValueKindMetadata {
     String,
@@ -640,7 +642,7 @@ pub enum ExpressionValueKindMetadata {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, PartialEq, serde::Serialize)]
+#[derive(Clone, Debug, PartialEq, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ExpressionValueMetadata {
     pub kind: ExpressionValueKindMetadata,
@@ -650,7 +652,7 @@ pub struct ExpressionValueMetadata {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct HostBindingMetadata {
     pub member_name: ExpressionValueMetadata,
@@ -746,7 +748,7 @@ impl ReferenceMetadata {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct NgModuleMetadata {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -799,7 +801,7 @@ pub struct NgModuleMetadata {
 
 #[cfg(feature = "napi")]
 #[napi(string_enum)]
-#[derive(Clone, Debug, PartialEq, serde::Serialize, serde::Deserialize)]
+#[derive(Clone, Debug, PartialEq, Hash, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub enum IsolatedTypeElementKind {
     /// `typeof <span|refs>`: an entity-name expression (`Foo`, `ns.Foo`), optionally
@@ -820,7 +822,7 @@ pub enum IsolatedTypeElementKind {
 }
 
 #[cfg(not(feature = "napi"))]
-#[derive(Clone, Debug, PartialEq, serde::Serialize, serde::Deserialize)]
+#[derive(Clone, Debug, PartialEq, Hash, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub enum IsolatedTypeElementKind {
     Typeof,
@@ -830,7 +832,7 @@ pub enum IsolatedTypeElementKind {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct IsolatedTypeElementMetadata {
     pub kind: IsolatedTypeElementKind,
@@ -849,7 +851,7 @@ pub struct IsolatedTypeElementMetadata {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct IsolatedTypeTupleMetadata {
     /// True when the decorator slot was written as an array literal (`imports: [...]`), so the
@@ -860,7 +862,7 @@ pub struct IsolatedTypeTupleMetadata {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RawInjectorImportMetadata {
     pub index: u32,
@@ -868,7 +870,7 @@ pub struct RawInjectorImportMetadata {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct HostListenerMetadata {
     pub method_name: ExpressionValueMetadata, // class method name
@@ -884,7 +886,7 @@ pub struct HostListenerMetadata {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ConstructorParamMetadata {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -911,7 +913,7 @@ pub struct ConstructorParamMetadata {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DecoratorArg {
     pub value: String,
@@ -920,7 +922,7 @@ pub struct DecoratorArg {
 
 /// A single decorator captured on a class member or constructor parameter for `ɵsetClassMetadata`.
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DecoratorMetadata {
     pub name: String,
@@ -948,7 +950,7 @@ pub struct DecoratorMetadata {
 /// per-member entries ngtsc builds for the property-decorator map of `ɵsetClassMetadata`.
 /// https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/annotations/common/src/metadata.ts#L91-L131
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DecoratedMemberMetadata {
     pub property_name: String,
@@ -962,7 +964,7 @@ pub struct DecoratedMemberMetadata {
 // `ExpressionValueKindMetadata`.
 #[cfg(feature = "napi")]
 #[napi(string_enum)]
-#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum ConstEnumMemberKind {
     #[napi(value = "string")]
@@ -978,7 +980,7 @@ pub enum ConstEnumMemberKind {
 }
 
 #[cfg(not(feature = "napi"))]
-#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum ConstEnumMemberKind {
     String,
@@ -991,7 +993,7 @@ pub enum ConstEnumMemberKind {
 /// A const enum member the HMR update callback receives as an object-literal entry (const
 /// enums are inlined by TypeScript and have no runtime object to pass by reference).
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, PartialEq, serde::Serialize)]
+#[derive(Clone, Debug, PartialEq, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ConstEnumMemberMetadata {
     pub key: String,
@@ -1008,7 +1010,7 @@ pub struct ConstEnumMemberMetadata {
 /// update callback.
 /// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/hmr/src/extract_dependencies.ts#L229-L263
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, PartialEq, serde::Serialize)]
+#[derive(Clone, Debug, PartialEq, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct TopLevelReferenceMetadata {
     pub name: String,
@@ -1022,7 +1024,7 @@ pub struct TopLevelReferenceMetadata {
 }
 
 #[cfg_attr(feature = "napi", napi(object))]
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, Hash, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ClassMetadata {
     pub symbol_id: u32,
