@@ -6,28 +6,28 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {HttpErrorResponse} from '@angular/common/http';
 import {inject, provideEnvironmentInitializer} from '@angular/core';
+import {isFirefox} from '@angular/docs';
 import {
-  provideRouter,
-  withInMemoryScrolling,
-  Router,
-  withViewTransitions,
   createUrlTreeFromSnapshot,
-  withComponentInputBinding,
+  isActive,
+  provideRouter,
+  RedirectCommand,
+  Router,
   RouteReuseStrategy,
   TitleStrategy,
-  RedirectCommand,
+  withComponentInputBinding,
+  withExperimentalPlatformNavigation,
+  withInMemoryScrolling,
   withNavigationErrorHandler,
   withRouterConfig,
-  withExperimentalPlatformNavigation,
-  isActive,
+  withViewTransitions,
 } from '@angular/router';
-import {routes} from './routes';
+import {AppScroller} from '../app-scroller';
 import {ADevTitleStrategy} from '../core/services/a-dev-title-strategy';
 import {ReuseTutorialsRouteStrategy} from '../features/tutorial/tutorials-route-reuse-strategy';
-import {AppScroller} from '../app-scroller';
-import {HttpErrorResponse} from '@angular/common/http';
-import {isFirefox} from '@angular/docs';
+import {routes} from './routes';
 
 /**
  * Integrates the Router with the browser's Navigation API, which lets the browser indicate an
