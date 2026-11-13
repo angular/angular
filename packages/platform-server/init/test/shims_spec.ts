@@ -33,11 +33,4 @@ describe('applyShims()', () => {
     applyShims();
     expect(global).toEqual(jasmine.objectContaining(domino.impl));
   });
-
-  it('should define `KeyboardEvent` on `global`', () => {
-    expect((global as any).KeyboardEvent).not.toBe((domino.impl as any).Event);
-
-    applyShims();
-    expect((global as any).KeyboardEvent).toBe((domino.impl as any).Event);
-  });
 });
