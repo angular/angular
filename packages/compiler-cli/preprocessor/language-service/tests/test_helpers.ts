@@ -146,26 +146,34 @@ export async function resolveTsGoPath(): Promise<string> {
     return process.env['TSGO_BINARY_PATH'];
   }
 
+  const ext = process.platform === 'win32' ? '.exe' : '';
   try {
     const req = createRequire(import.meta.url);
     const previewPkg = req.resolve('@typescript/native-preview/package.json');
     const previewReq = createRequire(previewPkg);
-    const platformPkgName = `@typescript/native-preview-${process.platform}-${process.arch}`;
-    const platPkg = previewReq.resolve(`${platformPkgName}/package.json`);
-    const exe = path.join(
-      path.dirname(platPkg),
-      'lib',
-      `tsgo${process.platform === 'win32' ? '.exe' : ''}`,
-    );
-    if (await pathExists(exe)) {
-      return exe;
+    const platformTargets = [
+      {pkg: `@typescript/typescript-${process.platform}-${process.arch}`, bin: `tsc${ext}`},
+      {pkg: `@typescript/native-preview-${process.platform}-${process.arch}`, bin: `tsgo${ext}`},
+    ];
+    for (const target of platformTargets) {
+      try {
+        const platPkg = previewReq.resolve(`${target.pkg}/package.json`);
+        const exe = path.join(path.dirname(platPkg), 'lib', target.bin);
+        if (await pathExists(exe)) {
+          return exe;
+        }
+      } catch {}
     }
   } catch {}
 
   const workspaceRoot = path.resolve(TESTS_DIR, '../..');
-  const platformName = `@typescript/native-preview-${process.platform}-${process.arch}`;
+  const tsPlatformName = `@typescript/typescript-${process.platform}-${process.arch}`;
+  const previewPlatformName = `@typescript/native-preview-${process.platform}-${process.arch}`;
   const localCandidates = [
-    path.join(workspaceRoot, 'node_modules', platformName, 'lib', 'tsgo'),
+    path.join(workspaceRoot, 'node_modules', tsPlatformName, 'lib', `tsc${ext}`),
+    path.join(workspaceRoot, 'node_modules', '@typescript', 'native-preview', 'lib', 'tsc.js'),
+    path.join(workspaceRoot, 'node_modules', '@typescript', 'native-preview', 'bin', 'tsc'),
+    path.join(workspaceRoot, 'node_modules', previewPlatformName, 'lib', `tsgo${ext}`),
     path.join(workspaceRoot, 'node_modules', '@typescript', 'native-preview', 'bin', 'tsgo.js'),
     path.join(workspaceRoot, 'node_modules', '@typescript', 'native-preview', 'bin', 'tsgo'),
   ];
@@ -176,12 +184,15 @@ export async function resolveTsGoPath(): Promise<string> {
     }
   }
 
-  throw new Error('Could not find tsgo binary.');
+  throw new Error('Could not find TypeScript 7 (tsc/tsgo) binary.');
 }
 
 export async function startTsgo(workspacePath: string) {
   const binaryPath = await resolveTsGoPath();
-  const isJs = binaryPath.endsWith('.js');
+  const isJs =
+    binaryPath.endsWith('.js') ||
+    binaryPath.endsWith(`${path.sep}bin${path.sep}tsc`) ||
+    binaryPath.endsWith(`${path.sep}bin${path.sep}tsgo`);
   const cmd = isJs ? process.execPath : binaryPath;
   const args = isJs ? [binaryPath, '--lsp', '--stdio'] : ['--lsp', '--stdio'];
 

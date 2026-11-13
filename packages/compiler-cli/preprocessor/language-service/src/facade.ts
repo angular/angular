@@ -67,6 +67,7 @@ function normalizeLocations(
 
 export class TsGoFacade {
   private documentVersions = new Map<string, number>();
+  private documentContents = new Map<string, string>();
 
   constructor(private connection: rpc.MessageConnection) {}
 
@@ -77,12 +78,14 @@ export class TsGoFacade {
     if (existingVersion === undefined) {
       const version = 1;
       this.documentVersions.set(uri, version);
+      this.documentContents.set(uri, text);
       await this.connection.sendNotification('textDocument/didOpen', {
         textDocument: {uri, languageId: 'typescript', version, text},
       });
-    } else {
+    } else if (this.documentContents.get(uri) !== text) {
       const version = existingVersion + 1;
       this.documentVersions.set(uri, version);
+      this.documentContents.set(uri, text);
       await this.connection.sendNotification('textDocument/didChange', {
         textDocument: {uri, version},
         contentChanges: [{text}],

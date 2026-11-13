@@ -27,6 +27,11 @@
       "type": "shell",
       "label": "VSCE: package",
       "command": "pnpm --filter=ng-template run package"
+    },
+    {
+      "type": "shell",
+      "label": "NGP VSCE: build",
+      "command": "pnpm bazel build //packages/compiler-cli/preprocessor/ng-analyze:wasm && pnpm --filter=ngp-vscode-ng-language-service run compile"
     }
   ]
 }

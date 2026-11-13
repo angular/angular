@@ -470,7 +470,7 @@ describe('Definitions with TS 7 binary', () => {
     });
   });
 
-  xit('should go to the pre-compiled style sheet', async () => {
+  it('should go to the pre-compiled style sheet', async () => {
     const appTsContent = `
       import {Component} from '@angular/core';
 
@@ -490,7 +490,7 @@ describe('Definitions with TS 7 binary', () => {
     });
   });
 
-  xit('should go to the external template file', async () => {
+  it('should go to the external template file', async () => {
     const appTsContent = `
       import {Component} from '@angular/core';
 
@@ -531,6 +531,9 @@ describe('Definitions with TS 7 binary', () => {
         start: {line: 0, character: 0},
         end: {line: 0, character: 0},
       });
+
+      const finalDoc = TextDocument.create(`file://${filePath}`, 'typescript', 0, finalContent);
+      expect(finalDoc.getText(loc.originSelectionRange)).toBe('./app.html');
     });
   });
 

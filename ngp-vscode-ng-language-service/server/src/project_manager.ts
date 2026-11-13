@@ -7,8 +7,9 @@
  */
 
 import * as fs from 'node:fs/promises';
+import * as path from 'node:path';
 import {readConfiguration} from '@angular/compiler-cli';
-import {API, Snapshot} from '@typescript/native-preview/unstable/async';
+import {API, Snapshot} from '@typescript/native-preview/async';
 import {HybridCompiler} from '../../../packages/compiler-cli/preprocessor/src/hybrid_compiler.js';
 import {NapiAnalyzer} from '../../../packages/compiler-cli/preprocessor/src/analyzer_napi.js';
 import {buildTypeCheckingConfig} from '../../../packages/compiler-cli/preprocessor/src/tcb';
@@ -29,7 +30,7 @@ export interface ProjectInstance {
 
 export interface ProjectManagerOptions {
   facade: TsGoFacade;
-  api?: API;
+  api?: API<true>;
   nodeModulesPathOverride?: string;
   onLog?: (msg: string) => void;
   onError?: (msg: string) => void;
@@ -39,7 +40,7 @@ export class ProjectManager {
   private projects = new Map<string, ProjectInstance>();
   private pendingProjects = new Map<string, Promise<ProjectInstance | null>>();
   private facade: TsGoFacade;
-  private api?: API;
+  private api?: API<true>;
   private currentSnapshot?: Snapshot;
   private nodeModulesPathOverride?: string;
   /**
@@ -59,7 +60,7 @@ export class ProjectManager {
     this.err = options.onError ?? (() => {});
   }
 
-  setApi(api: API): void {
+  setApi(api: API<true>): void {
     this.api = api;
     this.currentSnapshot = undefined;
   }
@@ -218,17 +219,22 @@ export class ProjectManager {
 
     try {
       let targetPath = normFilePath;
+      let shouldOpenTarget = false;
       if (normFilePath.endsWith('.html')) {
-        targetPath = normFilePath.replace(/\.html$/, '.ts');
-        if (!(await this.facade.isDocumentOpen(targetPath))) {
-          const content = await fs.readFile(targetPath, 'utf8').catch(() => null);
-          if (content !== null) {
-            await this.facade.ensureDocument(targetPath, content);
-          }
+        const companionTsPath = await findCompanionTsFile(normFilePath);
+        if (companionTsPath) {
+          targetPath = companionTsPath;
+          shouldOpenTarget = true;
         }
       }
 
-      this.currentSnapshot = await this.api.updateSnapshot();
+      const previousSnapshot = this.currentSnapshot;
+      this.currentSnapshot = shouldOpenTarget
+        ? await this.api.getCurrentLanguageServerSnapshot({openFiles: [targetPath]})
+        : await this.api.getCurrentLanguageServerSnapshot();
+      if (previousSnapshot && previousSnapshot !== this.currentSnapshot) {
+        await previousSnapshot.dispose().catch(() => {});
+      }
       const defaultProject = await this.currentSnapshot.getDefaultProjectForFile(targetPath);
       if (defaultProject?.configFileName && (await pathExists(defaultProject.configFileName))) {
         return await normalizePath(defaultProject.configFileName);
@@ -303,6 +309,39 @@ export class ProjectManager {
       );
     });
   }
+}
+
+async function findCompanionTsFile(htmlFilePath: string): Promise<string | null> {
+  const directCandidate = htmlFilePath.replace(/\.html$/, '.ts');
+  if (await pathExists(directCandidate)) {
+    return directCandidate;
+  }
+
+  if (htmlFilePath.endsWith('.template.html')) {
+    const componentCandidate = htmlFilePath.replace(/\.template\.html$/, '.component.ts');
+    if (await pathExists(componentCandidate)) {
+      return componentCandidate;
+    }
+  }
+
+  try {
+    const dir = path.dirname(htmlFilePath);
+    const entries = await fs.readdir(dir);
+    const tsFiles = entries.filter(
+      (f) => f.endsWith('.ts') && !f.endsWith('.d.ts') && !f.endsWith('.ngtypecheck.ts'),
+    );
+    const preferred =
+      tsFiles.find((f) => f.endsWith('.component.ts')) ??
+      tsFiles.find(
+        (f) => !f.endsWith('.spec.ts') && !f.endsWith('.test.ts') && !f.endsWith('.e2e.ts'),
+      ) ??
+      tsFiles[0];
+    if (preferred) {
+      return await normalizePath(path.join(dir, preferred));
+    }
+  } catch {}
+
+  return null;
 }
 
 function pathExists(p: string) {

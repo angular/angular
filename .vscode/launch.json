@@ -25,6 +25,18 @@
       "preLaunchTask": "VSCE: package"
     },
     {
+      "type": "extensionHost",
+      "request": "launch",
+      "name": "NGP VSCE: Launch Dev Client",
+      "runtimeExecutable": "${execPath}",
+      "args": [
+        "--disable-extensions",
+        "--extensionDevelopmentPath=${workspaceFolder}/ngp-vscode-ng-language-service"
+      ],
+      "outFiles": ["${workspaceFolder}/ngp-vscode-ng-language-service/dist/**/*.js"],
+      "preLaunchTask": "NGP VSCE: build"
+    },
+    {
       "name": "VSCE: Attach to Server",
       "type": "node",
       "request": "attach",
@@ -67,6 +79,10 @@
     {
       "name": "VSCE: Dev Client + Attach to Server",
       "configurations": ["VSCE: Launch Dev Client", "VSCE: Attach to Server"]
+    },
+    {
+      "name": "NGP VSCE: Dev Client + Attach to Server",
+      "configurations": ["NGP VSCE: Launch Dev Client", "VSCE: Attach to Server"]
     },
     {
       "name": "DEBUG: Run bazel test (Custom Target) + Attach",
