@@ -145,4 +145,47 @@ describe('CLI docs to html', () => {
     expect(cards[3].textContent).toContain('Default');
     expect(cards[3].textContent).toContain('partial');
   });
+
+  it('should render deprecated labels and messages for deprecated CLI options', async () => {
+    const newEntry = {
+      name: 'new',
+      command: 'ng new [name]',
+      shortDescription: 'Creates a new Angular workspace.',
+      longDescription: 'Long description.',
+      aliases: ['n'],
+      deprecated: false,
+      options: [
+        {
+          name: 'legacy-flag',
+          type: 'boolean',
+          deprecated: true,
+          description: 'A deprecated boolean option.',
+        },
+        {
+          name: 'test-runner',
+          type: 'string',
+          deprecated: 'New projects will only be configured with Vitest in a future version.',
+          default: 'vitest',
+          enum: ['karma', 'vitest'],
+          description: 'The unit testing runner to use.',
+        },
+      ],
+    };
+
+    const renderableJson = await getRenderable(newEntry as any, '', 'angular/cli');
+    const localFragment = JSDOM.fragment(renderEntry(renderableJson));
+    const items = localFragment.querySelectorAll('.docs-ref-content');
+    expect(items).toHaveSize(2);
+
+    const booleanDeprecatedBadge = items[0].querySelector('.docs-deprecated');
+    expect(booleanDeprecatedBadge?.textContent).toBe('@deprecated');
+    expect(items[0].querySelector('.docs-deprecation-message')).toBeNull();
+
+    const messageContainer = items[1].querySelector('.docs-deprecation-message');
+    expect(messageContainer).not.toBeNull();
+    expect(messageContainer?.querySelector('.docs-deprecated')?.textContent).toBe('@deprecated');
+    expect(messageContainer?.textContent).toContain(
+      'New projects will only be configured with Vitest in a future version.',
+    );
+  });
 });

@@ -70,6 +70,10 @@ function getRenderableOptions(items: CliOption[]): CliOptionRenderable[] {
   return items.map((option) => ({
     ...option,
     deprecated: option.deprecated ? {version: undefined} : undefined,
+    deprecationMessage:
+      typeof option.deprecated === 'string'
+        ? (marked.parse(option.deprecated) as string).replace(angularDevHrefRegex, '$1/')
+        : null,
     description: (marked.parse(option.description) as string).replace(angularDevHrefRegex, '$1/'),
   }));
 }
