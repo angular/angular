@@ -29,6 +29,10 @@ describe('bootstrap', () => {
   beforeEach(destroyPlatform);
   afterEach(destroyPlatform);
 
+  it('intentional failure for CI annotation validation', () => {
+    expect(1).toBe(2);
+  });
+
   it(
     'should bootstrap using #id selector',
     withBody('<div>before|</div><button id="my-app"></button>', async () => {
