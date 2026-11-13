@@ -1,10 +1,13 @@
 use crate::analyzer::utils::unwrap_forward_ref_evaluated;
 use oxc_ast::ast::{
-    ArrayExpression, ArrayExpressionElement, BindingPattern, Declaration, Expression,
-    ImportDeclaration, ImportDeclarationSpecifier, Program, Statement,
+    ArrayExpression, ArrayExpressionElement, BindingPattern, ClassBody, ClassElement, ClassType,
+    Declaration, Decorator, Expression, Function, IdentifierReference, ImportDeclaration,
+    ImportDeclarationSpecifier, MethodDefinition, MethodDefinitionKind, Program, Statement, TSType,
+    TSTypeAnnotation, TSTypeName,
 };
 use oxc_ast::AstKind;
-use oxc_semantic::{Semantic, SymbolId};
+use oxc_semantic::{NodeId, Semantic, SymbolId};
+use oxc_span::GetSpan;
 use oxc_span::Span;
 use oxc_syntax::module_record::ModuleRecord;
 use oxc_syntax::reference::ReferenceId as SemanticReferenceId;
@@ -400,7 +403,8 @@ pub struct ImportBindingInfo {
     /// Unlike ngtsc, references in *type* positions count. ngtsc runs after type checking and
     /// emits JavaScript, so a type reference cannot outlive its import; this compiler emits
     /// TypeScript that is type-checked downstream, so a deferrable declaration that a type
-    /// annotation still names must be converted to a type-only import rather than deleted.
+    /// annotation still names must be kept rather than deleted, and left to the downstream `tsc`
+    /// to elide from JavaScript.
     pub eagerly_referenced: bool,
     /// Whether any reference to `local` outside those same excused arrays is in *value*
     /// position — that is, would survive into JavaScript.
@@ -413,10 +417,13 @@ pub struct ImportBindingInfo {
     ///
     /// Consumers deciding whether a symbol can be deferred (and whether ngtsc would report
     /// `NG8014`) want this; [`Self::eagerly_referenced`] tells the emitter whether a deferrable
-    /// declaration can be removed outright or must have its non-type specifiers converted to
-    /// `type` specifiers so type annotations stay valid.
+    /// declaration can be removed outright or must be kept so type annotations stay valid.
     /// https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/imports/src/deferred_symbol_tracker.ts
     pub value_referenced: bool,
+    /// Whether a type reference to `local` is one `tsc` serializes as a value into `design:*`
+    /// decorator metadata under `emitDecoratorMetadata`, which keeps a plain import alive in
+    /// JavaScript. See [`is_decorator_metadata_reference`].
+    pub decorator_metadata_referenced: bool,
     /// `import type { X }` / `import { type X }`: the binding exists only in type position, so a
     /// re-export of it cannot back a value reference.
     pub is_type: bool,
@@ -450,12 +457,14 @@ pub struct ImportDeclarationInfo {
 /// `dependency_refs` are the identifier occurrences every `@Component.imports` array in the file
 /// resolved to; they do not count towards [`ImportBindingInfo::eagerly_referenced`]. They are
 /// passed in rather than rediscovered because the class visitor already resolved them
-/// ([`ImportInfo::reference_id`]).
+/// ([`ImportInfo::reference_id`]). `stripped_decorators` are the start offsets of the decorators
+/// this compiler removes from the output (see [`is_decorator_metadata_reference`]).
 pub fn collect_import_declarations(
     program: &Program<'_>,
     semantic: &Semantic<'_>,
     source_text: &str,
     dependency_refs: &HashSet<SemanticReferenceId>,
+    stripped_decorators: &HashSet<u32>,
 ) -> Vec<ImportDeclarationInfo> {
     program
         .body
@@ -471,7 +480,7 @@ pub fn collect_import_declarations(
                 extend_past_line_end(source_text, decl.span.end),
             ),
             specifier: decl.source.value.to_string(),
-            bindings: collect_import_bindings(decl, semantic, dependency_refs),
+            bindings: collect_import_bindings(decl, semantic, dependency_refs, stripped_decorators),
         })
         .collect()
 }
@@ -524,6 +533,7 @@ fn collect_import_bindings(
     decl: &ImportDeclaration<'_>,
     semantic: &Semantic<'_>,
     dependency_refs: &HashSet<SemanticReferenceId>,
+    stripped_decorators: &HashSet<u32>,
 ) -> Vec<ImportBindingInfo> {
     let Some(specifiers) = &decl.specifiers else {
         return Vec::new();
@@ -549,13 +559,19 @@ fn collect_import_bindings(
                     (namespace.span, &namespace.local, None, false)
                 }
             };
-            let references = reference_use(local.name.as_str(), semantic, dependency_refs);
+            let references = reference_use(
+                local.name.as_str(),
+                semantic,
+                dependency_refs,
+                stripped_decorators,
+            );
             ImportBindingInfo {
                 span,
                 local: local.name.to_string(),
                 imported,
                 eagerly_referenced: references.any,
                 value_referenced: references.value,
+                decorator_metadata_referenced: references.decorator_metadata,
                 is_type: decl.import_kind.is_type() || is_type,
             }
         })
@@ -569,6 +585,8 @@ struct ReferenceUse {
     /// A reference that survives into JavaScript. A `typeof` query reads a value symbol but
     /// lives inside a type, so it is excluded here for the same reason ngtsc excludes it.
     value: bool,
+    /// A type reference serialized into decorator metadata ([`is_decorator_metadata_reference`]).
+    decorator_metadata: bool,
 }
 
 /// Classify `name`'s module-scope references. The binding site itself is not a reference, so an
@@ -577,19 +595,18 @@ fn reference_use(
     name: &str,
     semantic: &Semantic<'_>,
     dependency_refs: &HashSet<SemanticReferenceId>,
+    stripped_decorators: &HashSet<u32>,
 ) -> ReferenceUse {
-    let scoping = semantic.scoping();
-    let Some(symbol_id) = scoping.get_binding(scoping.root_scope_id(), name.into()) else {
-        return ReferenceUse {
-            any: false,
-            value: false,
-        };
-    };
-
     let mut use_ = ReferenceUse {
         any: false,
         value: false,
+        decorator_metadata: false,
     };
+    let scoping = semantic.scoping();
+    let Some(symbol_id) = scoping.get_binding(scoping.root_scope_id(), name.into()) else {
+        return use_;
+    };
+
     for reference_id in scoping.get_resolved_reference_ids(symbol_id) {
         if dependency_refs.contains(reference_id) {
             continue;
@@ -597,8 +614,317 @@ fn reference_use(
         let flags = scoping.get_reference(*reference_id).flags();
         use_.any = true;
         use_.value |= flags.is_value() && !flags.is_value_as_type();
+        use_.decorator_metadata = use_.decorator_metadata
+            || (flags.is_type()
+                && is_decorator_metadata_reference(
+                    semantic,
+                    scoping.get_reference(*reference_id).node_id(),
+                    *reference_id,
+                    stripped_decorators,
+                ));
     }
     use_
+}
+
+/// Whether the type reference at `node_id` is one `tsc` serializes as a value into `design:type`,
+/// `design:paramtypes` or `design:returntype` decorator metadata under `emitDecoratorMetadata`.
+/// Such a reference marks its import as used in JavaScript, so a plain import of a deferred
+/// dependency would be kept and load the module eagerly.
+///
+/// Mirrors the checker's `markDecoratorAliasReferenced`, which runs once per declaration that
+/// still carries a decorator. `stripped_decorators` holds the start offsets of the Angular
+/// decorators this compiler removes from the output, so only the remaining ones count:
+/// - a class declaration: the parameters of its constructor with a body;
+/// - a property (including an auto-accessor): its type annotation;
+/// - a method: its parameters and its return type;
+/// - a get/set accessor: its annotated type, else that of the paired accessor;
+/// - a parameter: every parameter of the containing signature and its return type.
+///
+/// The checker skips decorators it considers invalid in their position (`nodeCanBeDecorated`),
+/// which this does not, so the result can only err towards marking.
+fn is_decorator_metadata_reference(
+    semantic: &Semantic<'_>,
+    node_id: NodeId,
+    reference_id: SemanticReferenceId,
+    stripped_decorators: &HashSet<u32>,
+) -> bool {
+    let nodes = semantic.nodes();
+    let keeps_decorator = |decorators: &[Decorator<'_>]| {
+        decorators
+            .iter()
+            .any(|decorator| !stripped_decorators.contains(&decorator.span.start))
+    };
+    let Some(annotation_id) = nodes
+        .ancestor_ids(node_id)
+        .find(|id| matches!(nodes.kind(*id), AstKind::TSTypeAnnotation(_)))
+    else {
+        return false;
+    };
+    let AstKind::TSTypeAnnotation(annotation) = nodes.kind(annotation_id) else {
+        return false;
+    };
+    let owner_id = nodes.parent_id(annotation_id);
+    let serialized = match nodes.kind(owner_id) {
+        AstKind::PropertyDefinition(property) => {
+            keeps_decorator(&property.decorators).then_some(&annotation.type_annotation)
+        }
+        AstKind::AccessorProperty(accessor) => {
+            keeps_decorator(&accessor.decorators).then_some(&annotation.type_annotation)
+        }
+        AstKind::FormalParameter(_) | AstKind::FormalParameterRest(_) => {
+            let AstKind::FormalParameters(params) = nodes.parent_kind(owner_id) else {
+                return false;
+            };
+            let is_first = params
+                .items
+                .first()
+                .is_some_and(|first| first.span == nodes.kind(owner_id).span());
+            let function_id = nodes.parent_id(nodes.parent_id(owner_id));
+            let serialized =
+                method_of(semantic, function_id).is_some_and(|(function, method_id)| {
+                    parameters_are_serialized(
+                        semantic,
+                        function,
+                        method_id,
+                        is_first,
+                        &keeps_decorator,
+                    )
+                });
+            match nodes.kind(owner_id) {
+                _ if !serialized => None,
+                AstKind::FormalParameterRest(_) => rest_element_type(&annotation.type_annotation),
+                _ => Some(&annotation.type_annotation),
+            }
+        }
+        AstKind::TSThisParameter(_) => method_of(semantic, nodes.parent_id(owner_id))
+            .is_some_and(|(function, method_id)| {
+                parameters_are_serialized(semantic, function, method_id, false, &keeps_decorator)
+            })
+            .then_some(&annotation.type_annotation),
+        AstKind::Function(_) => method_of(semantic, owner_id)
+            .is_some_and(|(function, method_id)| {
+                return_type_is_serialized(semantic, function, method_id, &keeps_decorator)
+            })
+            .then_some(&annotation.type_annotation),
+        _ => None,
+    };
+    serialized
+        .and_then(metadata_entity)
+        .is_some_and(|(ident, _)| ident.reference_id.get() == Some(reference_id))
+}
+
+/// The function at `function_id` and the id of the class method it is the body of, if any.
+fn method_of<'s, 'a>(
+    semantic: &'s Semantic<'a>,
+    function_id: NodeId,
+) -> Option<(&'a Function<'a>, NodeId)> {
+    let nodes = semantic.nodes();
+    let AstKind::Function(function) = nodes.kind(function_id) else {
+        return None;
+    };
+    let method_id = nodes.parent_id(function_id);
+    matches!(nodes.kind(method_id), AstKind::MethodDefinition(_)).then_some((function, method_id))
+}
+
+/// Whether the parameter types of `function` (a class method's body) are serialized:
+/// `design:paramtypes` of a decorated class (constructor) or method, the parameter case, or, for
+/// the first parameter of a setter, `design:type` of a decorated accessor pair.
+fn parameters_are_serialized(
+    semantic: &Semantic<'_>,
+    function: &Function<'_>,
+    method_id: NodeId,
+    is_first: bool,
+    keeps_decorator: &impl Fn(&[Decorator<'_>]) -> bool,
+) -> bool {
+    let nodes = semantic.nodes();
+    let AstKind::MethodDefinition(method) = nodes.kind(method_id) else {
+        return false;
+    };
+    if has_parameter_decorator(function, keeps_decorator) {
+        return true;
+    }
+    match method.kind {
+        MethodDefinitionKind::Constructor => {
+            let class_id = nodes.parent_id(nodes.parent_id(method_id));
+            let AstKind::Class(class) = nodes.kind(class_id) else {
+                return false;
+            };
+            class.r#type == ClassType::ClassDeclaration
+                && function.body.is_some()
+                && keeps_decorator(&class.decorators)
+        }
+        MethodDefinitionKind::Method => keeps_decorator(&method.decorators),
+        MethodDefinitionKind::Set => {
+            is_first && accessor_type_is_serialized(semantic, method, method_id, keeps_decorator)
+        }
+        MethodDefinitionKind::Get => false,
+    }
+}
+
+/// Whether the return type of `function` (a class method's body) is serialized:
+/// `design:returntype` of a decorated method or of the parameter case, or `design:type` of a
+/// decorated accessor pair whose getter carries the annotation.
+fn return_type_is_serialized(
+    semantic: &Semantic<'_>,
+    function: &Function<'_>,
+    method_id: NodeId,
+    keeps_decorator: &impl Fn(&[Decorator<'_>]) -> bool,
+) -> bool {
+    let AstKind::MethodDefinition(method) = semantic.nodes().kind(method_id) else {
+        return false;
+    };
+    match method.kind {
+        MethodDefinitionKind::Method => {
+            keeps_decorator(&method.decorators)
+                || has_parameter_decorator(function, keeps_decorator)
+        }
+        MethodDefinitionKind::Get => {
+            accessor_type_is_serialized(semantic, method, method_id, keeps_decorator)
+        }
+        _ => false,
+    }
+}
+
+/// Whether the annotation of the accessor `method` is the one serialized for its pair: the
+/// checker takes `getAnnotatedAccessorTypeNode` of the decorated accessor, falling back to the
+/// paired accessor's when the decorated one has no annotation.
+fn accessor_type_is_serialized(
+    semantic: &Semantic<'_>,
+    method: &MethodDefinition<'_>,
+    method_id: NodeId,
+    keeps_decorator: &impl Fn(&[Decorator<'_>]) -> bool,
+) -> bool {
+    if keeps_decorator(&method.decorators) {
+        return true;
+    }
+    let AstKind::ClassBody(body) = semantic.nodes().parent_kind(method_id) else {
+        return false;
+    };
+    paired_accessor(body, method).is_some_and(|other| {
+        keeps_decorator(&other.decorators) && accessor_type_annotation(other).is_none()
+    })
+}
+
+fn has_parameter_decorator(
+    function: &Function<'_>,
+    keeps_decorator: &impl Fn(&[Decorator<'_>]) -> bool,
+) -> bool {
+    let params = &function.params;
+    params
+        .items
+        .iter()
+        .map(|param| param.decorators.as_slice())
+        .chain(params.rest.iter().map(|rest| rest.decorators.as_slice()))
+        .any(keeps_decorator)
+}
+
+/// `getAnnotatedAccessorTypeNode`: a getter's return type, or a setter's parameter type.
+fn accessor_type_annotation<'b, 'a>(
+    method: &'b MethodDefinition<'a>,
+) -> Option<&'b TSTypeAnnotation<'a>> {
+    match method.kind {
+        MethodDefinitionKind::Get => method.value.return_type.as_deref(),
+        MethodDefinitionKind::Set => method
+            .value
+            .params
+            .items
+            .first()?
+            .type_annotation
+            .as_deref(),
+        _ => None,
+    }
+}
+
+/// The other half of a get/set pair: same name, same staticness, opposite kind.
+fn paired_accessor<'b, 'a>(
+    body: &'b ClassBody<'a>,
+    method: &MethodDefinition<'a>,
+) -> Option<&'b MethodDefinition<'a>> {
+    let other_kind = match method.kind {
+        MethodDefinitionKind::Get => MethodDefinitionKind::Set,
+        MethodDefinitionKind::Set => MethodDefinitionKind::Get,
+        _ => return None,
+    };
+    let name = crate::analyzer::utils::extract_property_key(&method.key)?;
+    body.body.iter().find_map(|element| match element {
+        ClassElement::MethodDefinition(other)
+            if other.kind == other_kind
+                && other.r#static == method.r#static
+                && crate::analyzer::utils::extract_property_key(&other.key).as_deref()
+                    == Some(name.as_ref()) =>
+        {
+            Some(&**other)
+        }
+        _ => None,
+    })
+}
+
+/// `getRestParameterElementType`: `T[]` or `Array<T>` gives `T`.
+fn rest_element_type<'b, 'a>(ty: &'b TSType<'a>) -> Option<&'b TSType<'a>> {
+    match ty {
+        TSType::TSArrayType(array) => Some(&array.element_type),
+        TSType::TSTypeReference(reference) => {
+            match reference.type_arguments.as_deref()?.params.as_slice() {
+                [element] => Some(element),
+                _ => None,
+            }
+        }
+        _ => None,
+    }
+}
+
+/// `getEntityNameForDecoratorMetadata`: the root identifier of the entity name the metadata
+/// serializes, and whether the whole name is that identifier (rather than `ns.X`).
+fn metadata_entity<'b, 'a>(ty: &'b TSType<'a>) -> Option<(&'b IdentifierReference<'a>, bool)> {
+    match ty {
+        TSType::TSUnionType(union) => metadata_entity_of_list(union.types.iter()),
+        TSType::TSIntersectionType(intersection) => {
+            metadata_entity_of_list(intersection.types.iter())
+        }
+        TSType::TSConditionalType(conditional) => {
+            metadata_entity_of_list([&conditional.true_type, &conditional.false_type].into_iter())
+        }
+        TSType::TSParenthesizedType(parenthesized) => {
+            metadata_entity(&parenthesized.type_annotation)
+        }
+        TSType::TSTypeReference(reference) => Some((
+            reference.type_name.get_identifier_reference()?,
+            matches!(reference.type_name, TSTypeName::IdentifierReference(_)),
+        )),
+        _ => None,
+    }
+}
+
+/// `getEntityNameForDecoratorMetadataFromTypeList`: every member left after skipping `never`,
+/// `null` and `undefined` must name the same identifier. The checker skips `null` and
+/// `undefined` only without `strictNullChecks`; skipping them regardless can only add marks.
+fn metadata_entity_of_list<'b, 'a>(
+    types: impl Iterator<Item = &'b TSType<'a>>,
+) -> Option<(&'b IdentifierReference<'a>, bool)>
+where
+    'a: 'b,
+{
+    let mut common: Option<(&'b IdentifierReference<'a>, bool)> = None;
+    for mut ty in types {
+        while let TSType::TSParenthesizedType(parenthesized) = ty {
+            ty = &parenthesized.type_annotation;
+        }
+        if matches!(
+            ty,
+            TSType::TSNeverKeyword(_) | TSType::TSNullKeyword(_) | TSType::TSUndefinedKeyword(_)
+        ) {
+            continue;
+        }
+        let entity = metadata_entity(ty)?;
+        let Some((common_ident, common_is_identifier)) = common else {
+            common = Some(entity);
+            continue;
+        };
+        if !common_is_identifier || !entity.1 || common_ident.name != entity.0.name {
+            return None;
+        }
+    }
+    common
 }
 
 /// Extend `end` past trailing horizontal whitespace and a single line terminator, so that
@@ -1379,7 +1705,13 @@ mod tests {
             .with_build_nodes(true)
             .build(&ret.program)
             .semantic;
-        collect_import_declarations(&ret.program, &semantic, source_text, &HashSet::new())
+        collect_import_declarations(
+            &ret.program,
+            &semantic,
+            source_text,
+            &HashSet::new(),
+            &HashSet::new(),
+        )
     }
 
     #[test]
@@ -1430,6 +1762,66 @@ mod tests {
                 ),
                 ("./side-effect", vec![]),
             ]
+        );
+    }
+
+    #[test]
+    fn decorator_metadata_references_follow_the_checker() {
+        let source = "import { A, B, C, P, R, X, Y, Z, K1, G, G2, H, W, Inner, U, V, V2, Xs, Fn } \
+                      from './m';\n\
+                      declare function Track(): any;\n\
+                      declare function Input(): any;\n\
+                      @Track()\n\
+                      export class K {\n\
+                        constructor(k: K1) {}\n\
+                        @Track() a?: A;\n\
+                        @Input() b?: B;\n\
+                        c?: C;\n\
+                        @Track() m(p: P): R { return null!; }\n\
+                        n(@Track() x: X, y: Y): Z { return null!; }\n\
+                        @Track() get g(): G { return null!; }\n\
+                        set g(v: G2) {}\n\
+                        get h() { return null!; }\n\
+                        @Track() set h(v: H) {}\n\
+                        @Track() w?: W<Inner>;\n\
+                        @Track() u?: U | null | undefined;\n\
+                        @Track() v?: V | V2;\n\
+                        @Track() r(...xs: Xs[]) {}\n\
+                        @Track() f?: (fn: Fn) => void;\n\
+                      }\n";
+        let allocator = Allocator::default();
+        let ret = Parser::new(&allocator, source, SourceType::ts()).parse();
+        let semantic = SemanticBuilder::new()
+            .with_build_nodes(true)
+            .build(&ret.program)
+            .semantic;
+        // This compiler strips `@Input()`, so it serializes nothing.
+        let stripped: HashSet<u32> = source
+            .match_indices("@Input()")
+            .map(|(offset, _)| offset as u32)
+            .collect();
+        let declarations = collect_import_declarations(
+            &ret.program,
+            &semantic,
+            source,
+            &HashSet::new(),
+            &stripped,
+        );
+
+        let referenced: Vec<&str> = declarations[0]
+            .bindings
+            .iter()
+            .filter(|binding| binding.decorator_metadata_referenced)
+            .map(|binding| binding.local.as_str())
+            .collect();
+        // Not referenced: `B` (stripped decorator), `C` (undecorated), `G2` (the getter's
+        // annotation wins), `Inner` (a type argument is never serialized), `V` / `V2` (a union of
+        // different entities serializes as `Object`) and `Fn` (inside a function type).
+        // `U` is: `null` and `undefined` are skipped, as the checker does without
+        // `strictNullChecks`.
+        assert_eq!(
+            referenced,
+            vec!["A", "P", "R", "X", "Y", "Z", "K1", "G", "H", "W", "U", "Xs"]
         );
     }
 

@@ -56,8 +56,11 @@ pub struct ImportBindingMetadata {
     pub eagerly_referenced: bool,
     /// True when `local` has a surviving value-position reference; ngtsc decides `@defer`
     /// eligibility on this. `eagerly_referenced` then decides whether a deferrable import is
-    /// deleted outright or has its non-type specifiers converted to `type`.
+    /// deleted outright or kept for its type references (see `removeDeferredImports`).
     pub value_referenced: bool,
+    /// True when a type reference to `local` is serialized into `design:*` decorator metadata
+    /// under `emitDecoratorMetadata`, which keeps a plain import alive in JavaScript.
+    pub decorator_metadata_referenced: bool,
     /// True for `import type { X }` / `import { type X }` (ignored by ngtsc's deferrability check).
     pub is_type: bool,
 }
@@ -97,6 +100,7 @@ impl ImportDeclarationMetadata {
                     imported: binding.imported.clone(),
                     eagerly_referenced: binding.eagerly_referenced,
                     value_referenced: binding.value_referenced,
+                    decorator_metadata_referenced: binding.decorator_metadata_referenced,
                     is_type: binding.is_type,
                 })
                 .collect(),

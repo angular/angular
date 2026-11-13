@@ -1,9 +1,9 @@
 # /out/app.component.ts
 ```ts
 import { Component, ViewChild } from '@angular/core';
-import { type CompA, type CompA as CompAType } from './comp-a';
-import { type CompB } from './comp-b';
-import type CompD from './comp-d';
+import { CompA, type CompA as CompAType } from './comp-a';
+import { CompB } from './comp-b';
+import CompD from './comp-d';
 // @ts-ignore
 import * as i0 from '@angular/core';
 
