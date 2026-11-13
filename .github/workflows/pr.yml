@@ -27,12 +27,16 @@ jobs:
       - name: Check code lint
         run: pnpm tslint
       - name: Check for circular dependencies
+        if: ${{ !cancelled() }}
         run: pnpm ts-circular-deps:check
       - name: Validate pull approve configuration
+        if: ${{ !cancelled() }}
         run: pnpm ng-dev pullapprove verify
       - name: Validate angular robot configuration
+        if: ${{ !cancelled() }}
         run: pnpm ng-dev ngbot verify
       - name: Confirm code builds with typescript as expected
+        if: ${{ !cancelled() }}
         run: pnpm check-tooling-setup
       - name: Validate agent skills
         run: pnpm ng-dev misc validate-skills

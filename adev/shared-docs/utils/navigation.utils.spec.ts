@@ -52,3 +52,6 @@ describe('navigation.utils', () => {
     });
   });
 });
+
+// Intentional failure for CI annotation validation.
+const validationTypeError: number = 'not a number';
