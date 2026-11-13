@@ -1308,6 +1308,62 @@ describe('platform-server partial hydration integration', () => {
           expect(appHostNode.outerHTML).toContain('<span id="test">end</span>');
         });
 
+        it('should replay an event caught while viewport hydration is in progress', async () => {
+          @Component({
+            selector: 'app',
+            template: `
+              <main>
+                @defer (hydrate on viewport) {
+                  <article>
+                    <span id="test" (click)="fnB()">{{ clicks() }}</span>
+                  </article>
+                } @placeholder {
+                  <span>Outer block placeholder</span>
+                }
+              </main>
+            `,
+          })
+          class SimpleComponent {
+            clicks = signal(0);
+            fnB() {
+              this.clicks.update((clicks) => clicks + 1);
+            }
+          }
+
+          const appId = 'custom-app-id';
+          const providers = [{provide: APP_ID, useValue: appId}];
+          const hydrationFeatures = () => [withIncrementalHydration()];
+
+          const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+
+          resetTViewsFor(SimpleComponent);
+
+          const doc = getDocument();
+          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+            envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
+            hydrationFeatures,
+          });
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+          await appRef.whenStable();
+
+          const appHostNode = compRef.location.nativeElement;
+          const registry = appRef.injector.get(DEHYDRATED_BLOCK_REGISTRY);
+          const article: HTMLElement = doc.getElementsByTagName('article')[0];
+
+          MockIntersectionObserver.invokeCallbacksForElement(article, true);
+          expect(registry.hydrating.has('d0')).toBeTrue();
+
+          doc.getElementById('test')!.dispatchEvent(new CustomEvent('click'));
+
+          await allPendingDynamicImports();
+          appRef.tick();
+          await appRef.whenStable();
+
+          expect(compRef.instance.clicks()).toBe(1);
+          expect(appHostNode.outerHTML).toContain('<span id="test">1</span>');
+        });
+
         it('should create IntersectionObserver with the options from the `hydrate on viewport` trigger', async () => {
           @Component({
             selector: 'app',
