@@ -18,6 +18,7 @@ import { ModelSignal } from '@angular/core';
 import { OutputRef } from '@angular/core';
 import { Provider } from '@angular/core';
 import { Resource } from '@angular/core';
+import { ResourceLoader } from '@angular/core';
 import { Signal } from '@angular/core';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import { WritableSignal } from '@angular/core';
@@ -39,6 +40,11 @@ export function applyWhenValue<TValue, TNarrowed extends TValue>(path: SchemaPat
 
 // @public
 export function applyWhenValue<TValue>(path: SchemaPath<TValue>, predicate: (value: TValue) => boolean, schema: NoInfer<SchemaOrSchemaFn<TValue>>): void;
+
+// @public
+export interface AsyncLoaderValidatorOptions<TValue, TParams, TResult, TPathKind extends PathKind = PathKind.Root> extends Omit<ResourceValidatorOptions<TValue, TParams, TResult, TPathKind>, 'factory'> {
+    readonly loader: ResourceLoader<TResult, TParams | undefined>;
+}
 
 // @public
 export type AsyncValidationResult<E extends ValidationError = ValidationError> = ValidationResult<E> | 'pending';
@@ -647,6 +653,16 @@ export class RequiredValidationError extends BaseNgValidationError {
 }
 
 // @public
+export interface ResourceValidatorOptions<TValue, TParams, TResult, TPathKind extends PathKind = PathKind.Root> {
+    readonly debounce?: DebounceTimer<TParams | undefined>;
+    readonly factory: (params: Resource<TParams | undefined>) => Resource<TResult | undefined>;
+    readonly onError: (error: unknown, ctx: FieldContext<TValue, TPathKind>) => TreeValidationResult;
+    readonly onSuccess: MapToErrorsFn<TValue, TResult, TPathKind>;
+    readonly params: (ctx: FieldContext<TValue, TPathKind>) => TParams;
+    readonly when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
+}
+
+// @public
 export interface RootFieldContext<TValue> {
     readonly fieldTree: ReadonlyFieldTree<TValue>;
     fieldTreeOf<PModel>(this: void, p: SchemaPathTree<PModel>): [PModel] extends [any] ? ReadonlyFieldTree<PModel> : never;
@@ -756,11 +772,17 @@ export type TreeValidator<TValue, TPathKind extends PathKind = PathKind.Root> = 
 // @public
 export function validate<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, logic: NoInfer<FieldValidator<TValue, TPathKind>>): void;
 
-// @public
+// @public @deprecated
 export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, opts: AsyncValidatorOptions<TValue, TParams, TResult, TPathKind>): void;
 
 // @public
+export function validateAsyncLoader<TValue, TParams, TResult, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, opts: AsyncLoaderValidatorOptions<TValue, TParams, TResult, TPathKind>): void;
+
+// @public
 export function validateHttp<TValue, TResult = unknown, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, opts: HttpValidatorOptions<TValue, TResult, TPathKind>): void;
+
+// @public
+export function validateResource<TValue, TParams, TResult, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, opts: ResourceValidatorOptions<TValue, TParams, TResult, TPathKind>): void;
 
 // @public
 export function validateStandardSchema<TSchema, TModel extends IgnoreUnknownProperties<TSchema>>(path: SchemaPath<TModel> & SchemaPathTree<TModel>, schema: StandardSchemaV1<TSchema> | LogicFn<TModel, StandardSchemaV1<unknown> | undefined>): void;
