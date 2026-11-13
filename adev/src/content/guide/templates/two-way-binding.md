@@ -56,7 +56,7 @@ import {Counter} from './counter';
   template: `
     <main>
       <h1>Counter: {{ initialCount }}</h1>
-      <app-counter [(count)]="initialCount"></app-counter>
+      <app-counter [(count)]="initialCount" />
     </main>
   `,
 })
@@ -96,9 +96,7 @@ Here is a simplified example:
 ```angular-ts {header: 'counter.ts'}
 import {Component, model} from '@angular/core';
 
-@Component({
-  /* Omitted for brevity */
-})
+@Component({/* Omitted for brevity */})
 export class Counter {
   count = model<number>(0);
 
@@ -124,7 +122,7 @@ import {Counter} from './counter';
   imports: [Counter],
   template: `
     <main>
-      <app-counter [(count)]="initialCount"></app-counter>
+      <app-counter [(count)]="initialCount" />
     </main>
   `,
 })

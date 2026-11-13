@@ -290,7 +290,7 @@ In the template, we bind the `location` field directly to our custom control:
 
 ```html
 Username: <input [formField]="userForm.username" /> Location:
-<location-picker [formField]="userForm.location"></location-picker>
+<location-picker [formField]="userForm.location" />
 ```
 
 Here, `<location-picker>` consumes and produces the entire `Location` object (or `null`), and doesn't access `userForm.location.lat` or `userForm.location.lng`. Therefore, `location` can safely have a dynamic shape without violating the principles of model-driven forms.

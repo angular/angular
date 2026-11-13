@@ -23,7 +23,7 @@ When you are ready to pass in a value through an `input`, values can be set in t
 ```angular-ts {header:"app.ts", highlight:[3]}
 @Component({
   ...
-  template: `<app-user occupation="Angular Developer"></app-user>`
+  template: `<app-user occupation="Angular Developer" />`
 })
 export class App {}
 ```
